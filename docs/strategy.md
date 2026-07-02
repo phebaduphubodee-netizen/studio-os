@@ -218,3 +218,25 @@
   TV feature wall; the bright opening on the right is the entry door") — naming
   what the clay masses ARE lets the repaint dress them correctly (TV inset,
   boucle panel) instead of guessing.
+
+## 2026-07-02 — DECISION: NotebookLM adopted as the external research lane
+- Owner proposed NLM in the main workflow ("ask instead of re-reading
+  textbooks"); Claude initially argued no-API/human-hop — WRONG: owner pointed
+  to project BRAINDEAD, which holds a working `notebooklm` CLI (0.4.1, on PATH,
+  auth persists) + an import-safe DR wrapper (`BRAINDEAD/scripts/
+  notebooklm_dr.py`). Live smoke from this repo: asked the 118-source design
+  notebook (`a5a43395`) for photoreal styling/lighting rules → grounded, cited,
+  directly actionable answer, hands-off. Objection retracted.
+- Adopted shape (CLAUDE.md "External research lane"): vault first for anything
+  ingested; NLM fires on vault GAPS; answers are REFERENCE tier staged in
+  `_inbox/` with notebook/turn attribution and must be distilled into
+  `knowledge/` before gating anything; codes-th outranks NLM always; generic
+  questions only (client privacy — same boundary as web search).
+- First staged artifact: `_inbox/nlm-design-systems/render-photoreal-rules.md`
+  (six rules). Immediately actionable hits: our `--eye` camera's 26 mm lens is
+  a wide-angle CG tell (sources say 35–50 mm) → v0.4 candidate; foreground
+  layering + color-temperature harmony belong in prompt v004 / clay staging.
+- CLI pitfalls encoded in CLAUDE.md so they're never re-learned: `ask --new` is
+  fake (notebook = the only conversation boundary — BRAINDEAD's lesson,
+  re-confirmed here), JSON output is prefixed with warning lines, history
+  schema is `qa_pairs[]`.
