@@ -1,0 +1,110 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "note": "EXAMPLE condo living-dining spec, mm, y-up, origin SW corner. Authored 2026-07-02 as the second room type for render-hybrid production promotion (M2.2). Typical Thai condo flow: entry (south) -> dining zone -> lounge with TV feature wall on the north wall. 4500x7200, ceiling 2700. Windows omitted (builder does not support them yet). Fictional unit - no client data.",
+  "room": {
+    "type": "living_condo",
+    "outline_mm": [
+      [0, 0],
+      [4500, 0],
+      [4500, 7200],
+      [0, 7200]
+    ],
+    "ceiling_mm": 2700,
+    "wall_thk_mm": 100
+  },
+  "door": {
+    "x": 3500,
+    "y": 0,
+    "w": 900,
+    "h": 2000,
+    "wall": "south",
+    "swing": "in-left"
+  },
+  "builtins": [
+    {
+      "name": "ผนังทีวี built-in (TV feature wall)",
+      "kind": "tv_feature",
+      "x": 900,
+      "y": 6790,
+      "w": 2700,
+      "d": 400,
+      "h": 2700
+    },
+    {
+      "name": "ตู้ sideboard โซนทานข้าว",
+      "kind": "sideboard",
+      "x": 0,
+      "y": 600,
+      "w": 400,
+      "d": 1800,
+      "h": 850
+    }
+  ],
+  "items": [
+    {
+      "name": "พรมโซนนั่งเล่น",
+      "kind": "rug",
+      "x": 1300,
+      "y": 3200,
+      "w": 2600,
+      "d": 3200,
+      "h": 10
+    },
+    {
+      "name": "โซฟา 3 ที่นั่ง",
+      "kind": "sofa",
+      "x": 1450,
+      "y": 3400,
+      "w": 2300,
+      "d": 1000,
+      "h": 850,
+      "rot": 180
+    },
+    {
+      "name": "โต๊ะกลาง",
+      "kind": "coffee_table",
+      "x": 2075,
+      "y": 4800,
+      "w": 1050,
+      "d": 1050,
+      "h": 400
+    },
+    {
+      "name": "เก้าอี้อ่านหนังสือ",
+      "kind": "armchair",
+      "x": 1250,
+      "y": 5700,
+      "w": 750,
+      "d": 800,
+      "h": 780
+    },
+    {
+      "name": "โต๊ะทานข้าว 4 ที่",
+      "kind": "dining_table",
+      "x": 1400,
+      "y": 900,
+      "w": 1500,
+      "d": 900,
+      "h": 750
+    },
+    {
+      "name": "เก้าอี้ทานข้าว 1",
+      "kind": "dining_chair",
+      "x": 1700,
+      "y": 1950,
+      "w": 450,
+      "d": 450,
+      "h": 850
+    },
+    {
+      "name": "เก้าอี้ทานข้าว 2",
+      "kind": "dining_chair",
+      "x": 2400,
+      "y": 1950,
+      "w": 450,
+      "d": 450,
+      "h": 850
+    }
+  ]
+}

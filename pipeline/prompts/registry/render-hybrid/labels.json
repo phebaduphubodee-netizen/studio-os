@@ -1,6 +1,7 @@
 {
   "dev": "v003",
   "staging": "v003",
-  "production": null,
-  "_promotion_rule": "production requires critique gate >=4/5 on at least two distinct room types; re-point the label, never edit a version."
+  "production": "v003",
+  "_promotion_rule": "production requires critique gate >=4/5 on at least two distinct room types; re-point the label, never edit a version.",
+  "_promotion_evidence": "v003 promoted 2026-07-02: bedroom_suite (eye cam) 5/5 SHIP + living_condo (eye cam) 4/5 REWORK-styling-only; overlay fidelity eyeball-clean on both (lone red = wood grain / light pools only)."
 }

@@ -283,3 +283,25 @@
   the OneDrive segment — an agent following it would improvise raw source-add;
   mojibake in the committed transcript). Adversarial verification of one's own
   fresh work is worth the tokens.
+
+## 2026-07-02 — render-hybrid v003 PROMOTED TO PRODUCTION (M2.2 promotion rule satisfied)
+- Authored `specs/living_condo.json` — second room type, spec@0.2, fictional
+  Thai condo living-dining (4.5×7.2 m, entry→dining→lounge flow, TV feature
+  wall north, sofa `rot:180`). Model-orientation lesson encoded in the spec
+  work: `sofa_02` fronts -Y at rot 0 (MODEL_FRONT_DEG); use 180° flips (bbox
+  unchanged) and avoid 90°/270° in specs — the clearance engine checks the
+  UNROTATED bbox, so quarter-turns make the spec lie. Also: suite_clearance
+  treats the outline boundary as OUTSIDE — builtins need ~10 mm clearance from
+  the max edge (TV wall at y+d=7200 failed; 6790 passed). Rugs need explicit
+  small `h` or the eye camera treats them as no-stand blocks (default h=400).
+- Chain ran hands-off: clearance PASS → Blender eye-cam clay (grid camera
+  picked the SE entry corner looking down the 7.2 m axis — good depth shot) →
+  hybrid via registry (`@render-hybrid` staging→v003, slots naming each clay
+  mass) → critique **4/5 REWORK** (palette/furniture/room_context/proportion
+  5/5, lighting/composition/photoreal 4/5; only styling_and_life 3/5 — the
+  known human-art-direction gap) → overlay 78.2% recall, eyeball-clean.
+- **Promotion executed by re-pointing the label only**: production=v003 with
+  evidence line in labels.json (bedroom 5/5 + living 4/5, both eye-cam, both
+  via registry). v001/v002 remain immutable for diff/rollback.
+- The "name what the clay masses ARE" slot pattern carried again: white slabs
+  → upholstered dining chairs, dark panel → walnut TV wall with mounted TV.
