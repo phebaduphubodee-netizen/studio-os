@@ -31,9 +31,19 @@
   domain-cleaned from BRAINDEAD/INTERIOR-AI (their scripts hard-coded a BTC prompt — stripped).
   Keys live in a gitignored `.env` (Gemini/OpenAI/Perplexity only; no crypto keys). AI-access
   permissions went in `.claude/settings.local.json`, NOT the PR-only `settings.json`.
+- 2026-07-02 (later): studio-vault v2.2 arrived in Downloads and was migrated to
+  `knowledge/studio-vault/` unmodified, 44/44 files verified (commit 4b5736b). Two safety renames:
+  the vault's own CLAUDE.md → `_vault-CLAUDE-v2.2.md` (a directory CLAUDE.md would auto-load its
+  old orchestration rules into STUDIO-OS sessions) and its .gitignore → `_vault-gitignore.txt`.
+  The vault is operational knowledge (pricing, checklists, client/material/supplier templates,
+  old slash commands) — no codes/ergonomics/lighting content, so those knowledge/ dirs still fill
+  in Phase 1 (M1.2 Thai Authority corpus). Old vault commands are Phase 1 skill-porting source.
+  Blueprint v1.0 now lives at docs/STUDIO-OS_Implementation_Blueprint.md; the 11-report ID-project
+  corpus (source PDFs) is staged in knowledge/_inbox/id-project-corpus/ as LFS objects (72ad58d).
+  ALL Phase 0 exit criteria are now met.
 - 2026-07-02: Phase 0 closed on Windows native (M0.1 + M0.2) — details in Security audit findings.
-  studio-vault v2.2 is NOT on this machine (searched Desktop, Documents, Downloads, BRAINDEAD,
-  INTERIOR-AI) — migration to knowledge/ is blocked on the human locating the vault. Interim: 8
+  studio-vault v2.2 was NOT yet on this machine at close time (searched Desktop, Documents,
+  Downloads, BRAINDEAD, INTERIOR-AI) — resolved later same day, see entry above. Interim: 8
   design-domain DR docs from INTERIOR-AI staged into `knowledge/_inbox/interior-ai/` via the
   sanctioned ingestion path; the thai-building-code DR waits there for human review before any
   of it may enter codes-th/ (PR-only). Machine facts for Phase 2 planning: GPU is an RTX 3060
