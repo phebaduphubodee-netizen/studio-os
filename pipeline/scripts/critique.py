@@ -41,13 +41,13 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="repla
 from dotenv import load_dotenv
 
 HERE = Path(__file__).resolve().parent
-INTERIOR_ROOT = HERE.parent
-# Self-contained: load ONLY this project's .env (no BRAINDEAD fallback).
-load_dotenv(INTERIOR_ROOT / ".env")
+REPO_ROOT = HERE.parent.parent  # pipeline/scripts -> repo root (STUDIO-OS layout)
+# Self-contained: load ONLY this repo's .env.
+load_dotenv(REPO_ROOT / ".env")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
-    sys.exit("ERROR: GEMINI_API_KEY not found in INTERIOR-AI/.env (see .env.example)")
+    sys.exit("ERROR: GEMINI_API_KEY not found in repo .env (see .env.example)")
 
 from google import genai
 from google.genai import types

@@ -10,6 +10,7 @@ CLAUDE.local.md
 .openai_usage.json
 .perplexity_usage.json
 logs/
+pipeline/output/
 __pycache__/
 *.pyc
 .venv/

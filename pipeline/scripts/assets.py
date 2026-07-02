@@ -31,7 +31,7 @@ except Exception:
 API = "https://api.polyhaven.com"
 _CTX = ssl._create_unverified_context()   # trust the local NordLayer TLS interception (curl -k equiv)
 HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(os.path.dirname(HERE), "raw", "assets", "cc0")
+CACHE = os.path.join(os.path.dirname(os.path.dirname(HERE)), "assets", "shared", "cc0")
 
 
 def _get_json(url):

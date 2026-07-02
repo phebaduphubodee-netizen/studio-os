@@ -467,7 +467,7 @@ def _sky_environment(strength=0.55, exposure=-0.9):
 
 def _cc0_root():
     here = os.path.dirname(os.path.abspath(bpy.data.filepath or __file__))
-    return os.path.join(os.path.dirname(here), "raw", "assets", "cc0")
+    return os.path.join(os.path.dirname(os.path.dirname(here)), "assets", "shared", "cc0")
 
 
 def _texset(slug):
@@ -975,7 +975,7 @@ def _model_path(slug):
     pre-downloads; here we only read the cache)."""
     import glob
     here = os.path.dirname(os.path.abspath(bpy.data.filepath or __file__))
-    root = os.path.join(os.path.dirname(here), "raw", "assets", "cc0", "models", slug)
+    root = os.path.join(os.path.dirname(os.path.dirname(here)), "assets", "shared", "cc0", "models", slug)
     hits = glob.glob(os.path.join(root, "*.gltf")) + glob.glob(os.path.join(root, "*.glb"))
     return hits[0] if hits else None
 
