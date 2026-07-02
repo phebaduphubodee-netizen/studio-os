@@ -333,3 +333,33 @@
 - Cost note: the lens A/B burned 3 extra renders + 2 extra hybrid/critique
   rounds (~$0.15) — cheap for settling a doctrine-vs-evidence question
   permanently.
+
+## 2026-07-02 (latest) — scrutiny of 019a67f + fixes: three lessons that cost $0.04
+- **/scrutinize (18-agent cold review + adversarial verify) on our own commit
+  found 12 real defects** — full report + fix outcomes in
+  `qa/reports/2026-07-02-scrutiny-019a67f.md`. Top: the ceiling check compared
+  CLEAR height against the floor-to-floor 2600 statute and stamped the wrong
+  legal basis on every line (fixed: proxy semantics + `floor_to_floor_mm`
+  field; missing data now FAILs loudly); ข้อ 20 was loaded-but-never-enforced
+  (fixed: net-of-subrooms area + narrow side, tiered by how confidently we
+  detect a bedroom); boundary asymmetry FAILed flush east/north placements
+  (fixed: `_inside_or_on`).
+- **Lesson 1 — verify the fix, not just the bug.** A second adversarial
+  workflow on the FIXES caught 4 new defects inside them (daybed false-FAIL,
+  bbox narrow-side false-PASS on L-shapes, silent missing-ceiling, fallback
+  camera bypassing validation). Round-2 rules: proxy checks may only err
+  CONSERVATIVE; unproven ≠ PASS (bedroom_suite now honestly REVIEW on the
+  carved narrow side); absent data ≠ a measurement.
+- **Lesson 2 — static probes can pass and the gate still refutes you.** The
+  "obvious" camera fix (aim at largest non-rug piece) passed 29 verification
+  scenarios, then scored **2.5/5** ("cramped, cuts key elements") on the real
+  gate vs the promoted rug-aim 4/5. The rug was never a bug — it approximates
+  the furniture GROUP footprint. Rule of record: aim at a rug only when the
+  hero piece sits on it; otherwise aim at the hero (this also kills the
+  far-dining-rug empty-shot case). Both gated cameras reproduce
+  pixel-identically (living clay max-diff 0), so v004 production evidence
+  stands without a re-gate; the 2.5/5 negative evidence is kept on disk.
+- **Lesson 3 — commit messages are audit surface.** 019a67f claimed "same
+  verdicts" while the rug whitelist flipped living REVIEW→PASS; this round
+  discloses its own verdict change (bedroom PASS→REVIEW, deliberate honesty)
+  in the message itself.

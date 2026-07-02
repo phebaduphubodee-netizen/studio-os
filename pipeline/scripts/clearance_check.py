@@ -100,9 +100,10 @@ def check(room, items):
         add("PASS" if inside else "FAIL", f"in-bounds: {it.name}",
             "inside room" if inside else f"extends past room ({room.W:.0f}x{room.D:.0f}\")")
 
-    # 3) no overlaps (rugs excluded — they go under furniture)
+    # 3) no overlaps (rug-under-furniture excluded — that is the intent;
+    #    rug-on-rug still flags: two rugs overlapping is an authoring error)
     for a, b in _pairs(items):
-        if "rug" in (a.kind, b.kind):
+        if "rug" in (a.kind, b.kind) and a.kind != b.kind:
             continue
         if a.overlaps(b):
             add("FAIL", f"overlap: {a.name} / {b.name}", "footprints intersect")
