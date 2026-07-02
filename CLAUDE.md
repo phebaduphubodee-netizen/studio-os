@@ -52,6 +52,21 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
 - `vault` (stdio, read-only knowledge) — configure from `.mcp.json.example`.
 - `comfyui`, `catalog`, `git` — Phase 2+; keep stubs commented until then.
 
+## External research lane (NotebookLM)
+- `notebooklm` CLI is installed + authenticated on this machine. Design corpora:
+  `a5a43395` (Design Systems, 118 sources), `79476082` (lighting/rendering).
+- Fire it when the vault has a gap; vault (knowledge-manager) stays first for
+  anything already ingested. Answers are REFERENCE tier: stage in `_inbox/`
+  with notebook/turn attribution, distill into `knowledge/` before any value
+  gates a deliverable. codes-th citations always outrank NLM answers.
+- PRIVACY: generic questions only — never client names, addresses, dimensions,
+  or plan details in a query (same rule as web search).
+- Pitfalls: `ask --new` is advertised but broken — the NOTEBOOK is the only
+  conversation boundary; `--json` output has warning lines before the JSON
+  (skip to first `{`); history schema = `qa_pairs[{turn,question,answer}]`.
+  For firing full DRs with new sources, use the import-safe wrapper at
+  `Desktop/BRAINDEAD/scripts/notebooklm_dr.py`.
+
 ## Current phase
 Phase 0 → 1: foundation, guardrails, studio-vault migration into `knowledge/`.
 Roadmap: blueprint §13. Active milestones: M0.1 (guardrails proven),
