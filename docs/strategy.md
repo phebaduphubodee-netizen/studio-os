@@ -27,6 +27,20 @@
     PowerShell 5.1 pipe). Acceptable while the permissions deny list covers the same paths —
     that second layer held in live test 2.
 ## Session learnings (agents append after major tasks)
+- 2026-07-02 (overnight run): Phase 1 core landed on Windows native.
+  M1.1: BM25 retrieval (scripts/vault_search.py, stdlib-only, Thai char-bigrams)
+  + knowledge-manager agent + 20-question eval at 20/20 (qa/reports/M1.1-…md —
+  read its overfit caveats before re-tuning). M1.3: four directory CLAUDE.mds;
+  root stays ≈70 lines. Five blueprint skills live; intake-parse e2e-proven on
+  the test project including a prompt-injection quarantine fixture that now
+  lives permanently in projects/PRJ-2026-001_test-run/00_intake/.
+  Security: hooks PR branch fix/hook-powershell-matcher (guard matcher +
+  PowerShell patterns, 30 test cases green) awaits push + PR + merge + session
+  restart. NOT done: M1.2 codes-th corpus — needs the actual Thai statute
+  texts (พ.ร.บ./กฎกระทรวง PDFs or authoritative sources), which are not on
+  this machine; the _inbox DR summary is not Authority-grade source. GitHub
+  remote awaits the user's one-time `gh auth login`. Node LTS install may
+  need a UAC confirmation (vault MCP via npx; .mcp.json activated).
 - 2026-07-02: Ported an AI-access layer into `tools/` (Gemini DR + image, Perplexity, ChatGPT),
   domain-cleaned from BRAINDEAD/INTERIOR-AI (their scripts hard-coded a BTC prompt — stripped).
   Keys live in a gitignored `.env` (Gemini/OpenAI/Perplexity only; no crypto keys). AI-access
