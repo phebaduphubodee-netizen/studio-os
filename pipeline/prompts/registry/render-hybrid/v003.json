@@ -1,0 +1,26 @@
+{
+  "id": "render-hybrid",
+  "version": "v003",
+  "intent": "Photoreal beauty pass over a dimensionally-correct clay control render (HYBRID render direction of record, docs/DECISIONS-render-assets.md).",
+  "engine_contract": "Single-track image-edit instruction + one control image. Model choice/fallback lives in the dispatch script (pipeline/scripts/hybrid_render.py), never here.",
+  "template": "Transform this 3D clay render of a {room_type} into a photorealistic interior photograph. CRITICAL: keep the exact room geometry, camera angle, wall/window/door positions, and the position, size and proportions of every furniture piece and built-in unchanged — the layout is dimensionally accurate and must not move or be redrawn. Replace the flat clay materials with: {material_story}. RELIGHT THE SCENE COMPLETELY — do not keep the flat, even CG illumination of the input: {lighting_story}; build a clear key-light direction with golden warm highlights, deep soft shadow areas and gentle falloff across every wall, glowing warm accents (cove light, bedside or floor lamps), and believable contact shadows under every object. The mood should read like a magazine interior shot photographed at dusk. Styling: you MAY add small lived-in decor that does not move or hide the furniture — an area rug under the main furniture group, throw pillows and a draped throw, a few books and a ceramic tray on table surfaces, one potted plant, subtle wall art where a wall is blank. Style direction: {style_brief}. Render as a professional interior photograph, NOT a perfect CG image: include subtle real-world imperfection — natural wrinkles and slouch in fabric, slight unevenness in plaster, natural variation in wood grain, a hint of lens vignetting and very fine photographic grain. No people, no text, no watermarks, no borders.",
+  "slots": {
+    "room_type": "REQUIRED — e.g. 'living room', 'master bedroom suite'",
+    "material_story": "comma prose of the target materials",
+    "lighting_story": "the light sources and mood",
+    "style_brief": "style keywords for the room"
+  },
+  "defaults": {
+    "material_story": "warm walnut wood flooring and millwork, boucle and linen upholstery, matte off-white plaster walls, brushed-metal accents",
+    "lighting_story": "low warm evening light with one dominant soft key direction, layered with warm cove light and a lit table or floor lamp",
+    "style_brief": "contemporary Thai residential, calm and livable, quiet luxury"
+  },
+  "provenance": "v002 + the lighting lesson (2026-07-02 A/B on living + bedroom-eye): every v001/v002 run scored lighting_quality 2/5 — the clay control's flat even light SURVIVES the repaint because the prompt says keep everything. v003 adds an explicit full-relight license (light doesn't move walls, so the layout constraint is untouched) + real-photo imperfection language for the 'overly perfect textures' photoreal ding.",
+  "notes": [
+    "Client work must run on the PAID Gemini tier (free tier = no commercial rights).",
+    "Output is DRAFT until it passes critique.py + human QA.",
+    "Layout-preservation clause is load-bearing — do not weaken it in future versions.",
+    "Decor allowance is bounded on purpose: overlay_fidelity.py must still PASS (added decor reads as lone-green, which is allowed; lone-red is not).",
+    "Relight license means overlay_fidelity recall may dip slightly (shadow edges move) — judge the overlay's lone-red on STRUCTURE lines, not shading."
+  ]
+}

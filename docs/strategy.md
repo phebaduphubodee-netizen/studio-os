@@ -183,3 +183,38 @@
 - Transient Gemini API failure on the first critique call AGAIN (retry clean).
   Pattern is consistent: single calls must be retried once before alarming;
   run_batch's never-raise semantics remain the right default.
+
+## 2026-07-02 (late night) — first 5/5 SHIP; the registry earns its keep in one evening
+- **Eye-level suite camera v0.3** (`build_room.py --eye`): aims at the largest
+  loose item from the farthest clear standing spot. First cut (4 corners) collapsed
+  to the bed's foot — this room's millwork+ensuite eliminate every corner — so it
+  grid-samples the free floor (point-in-poly for L-shapes, stand/ray obstacle split:
+  a bed blocks standing but not an eye-level ray). Output name suffix `_eye`.
+- **Prompt A/B through the registry, all judged by the same gate** (the whole
+  Phase-2 loop working as designed):
+  - v001 (locked layout, no styling ask): living 2/5 — SterileGate. The proven
+    ad-hoc living prompt had implicitly invited styling; locking layout without a
+    decor license strips the life out.
+  - v002 (+ bounded decor license): living 3.5/5, bedroom-eye 2.5/5. Better, but
+    lighting_quality pinned at 2/5 in EVERY v001/v002 run — the clay's flat even
+    light SURVIVES the repaint because the prompt says "keep everything".
+  - v003 (+ explicit FULL-RELIGHT license — light doesn't move walls — + real-photo
+    imperfection language): **bedroom-eye 5/5 SHIP — first SHIP verdict in the
+    pipeline's history** (lighting 2→5, photoreal 2→5). Living still 3–3.5/5.
+- **Promotion discipline held**: production label remains NULL. Rule = ≥4/5 on two
+  room types; bedroom 5/5 ✓, living ✗ — living's ceiling is its CONTROL, not the
+  prompt: living_demo.json is a sparse v0.1 rect spec (bare sofa+table corner, no
+  hero staging possible — `--hero` needs spec@0.2). Next lever: a spec@0.2 living
+  room, then re-run v003 and promote if ≥4/5.
+- **overlay_fidelity caveat discovered on real data**: eye-level close-ups score
+  40–45% recall regardless of prompt version (dollhouse scored 90.7%) — NOT layout
+  drift: the eyeball rule shows structure lines yellow/aligned; the number tanks
+  because clay WOOD-GRAIN texture edges dominate the control's edge set and the
+  repaint redraws grain. The metric is scene-dependent; comparisons are only valid
+  within one camera setup. v2 idea (not built): mask/downweight texture-dense
+  regions or weight long straight lines before scoring.
+- Slot-fill pattern that produced the 5/5: pass room-SPECIFIC context in
+  `room_type` ("the tall dark wall behind the bed is an upholstered headboard /
+  TV feature wall; the bright opening on the right is the entry door") — naming
+  what the clay masses ARE lets the repaint dress them correctly (TV inset,
+  boucle panel) instead of guessing.

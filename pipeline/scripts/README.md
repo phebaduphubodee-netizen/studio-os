@@ -34,6 +34,13 @@ predicted.**
   (control RED / candidate GREEN / aligned YELLOW) + structure-recall metric.
   Proven 2026-07-02 on bedroom_suite: 90.7% recall PASS, lone red = light pool
   + wood grain only. Numbers flag; a human eyeballs the overlay for the call.
+  KNOWN LIMIT (real-data, same day): recall is scene-dependent — eye-level
+  close-ups with grain-heavy clay score 40-45% even when every structure line
+  overlays yellow. Compare numbers only within one camera setup; eyeball rules.
+- `build_room.py --eye` (v0.3) — eye-level interior camera for suites: aims at
+  the largest loose item from the farthest clear standing spot (grid-sampled
+  free floor, L-shape aware, tall-millwork line-of-sight). Suffix `_eye`.
+  This angle + registry v003 produced the pipeline's first 5/5 SHIP verdict.
 - `assets.py` — Poly Haven CC0 fetcher (populates `assets/shared/cc0/`).
 - `package.py`, `qa_checklist.py`, `make_all.py` — deliverable assembly.
 - `build_room.py` (Blender materializer) / `build_room.rb` (native SketchUp
