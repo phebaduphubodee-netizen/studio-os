@@ -31,6 +31,15 @@
   domain-cleaned from BRAINDEAD/INTERIOR-AI (their scripts hard-coded a BTC prompt — stripped).
   Keys live in a gitignored `.env` (Gemini/OpenAI/Perplexity only; no crypto keys). AI-access
   permissions went in `.claude/settings.local.json`, NOT the PR-only `settings.json`.
+- 2026-07-02: Phase 0 closed on Windows native (M0.1 + M0.2) — details in Security audit findings.
+  studio-vault v2.2 is NOT on this machine (searched Desktop, Documents, Downloads, BRAINDEAD,
+  INTERIOR-AI) — migration to knowledge/ is blocked on the human locating the vault. Interim: 8
+  design-domain DR docs from INTERIOR-AI staged into `knowledge/_inbox/interior-ai/` via the
+  sanctioned ingestion path; the thai-building-code DR waits there for human review before any
+  of it may enter codes-th/ (PR-only). Machine facts for Phase 2 planning: GPU is an RTX 3060
+  Laptop 6GB VRAM — FLUX.1-dev local (needs 16–24GB) is NOT feasible here; plan cloud GPU or an
+  API/smaller-model fallback. Repo lives inside OneDrive — watch for sync/file-lock artifacts;
+  moving out of OneDrive (or to WSL2) is the safer long-term home.
 - 2026-07-02: Added the `ffe-research` skill (back-office FF&E product research). It writes
   `03_layout/ffe-candidates.json` (the "furniture candidates with real dimensions" Stage 03 needs)
   and `scripts/ffe_schedule.py` renders a driftless `ffe-schedule.md` from it (JSON = source of
