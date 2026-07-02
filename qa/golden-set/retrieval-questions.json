@@ -1,0 +1,25 @@
+{
+  "_comment": "M1.1 retrieval eval — 20 questions; pass = expected source cited in top-3. any_of = acceptable source path substrings.",
+  "questions": [
+    {"q": "master formula final quote VAT margin contingency", "any_of": ["pricing-formula.md"]},
+    {"q": "rate card ค่าแรง labor material rates", "any_of": ["rate-card.md"]},
+    {"q": "design principles function before form natural materials", "any_of": ["design-principles.md"]},
+    {"q": "stage 8 inspection punch list re-inspect", "any_of": ["checklist-by-stage.md", "09-punch-list.md"]},
+    {"q": "brief ลูกค้า budget range timeline reference images", "any_of": ["01-brief.md", "checklist-by-stage.md"]},
+    {"q": "mood and tone template", "any_of": ["02-mood-and-tone.md"]},
+    {"q": "zoning template", "any_of": ["03-zoning.md"]},
+    {"q": "BOQ bill of quantities template", "any_of": ["06-boq.md", "commands/boq.md"]},
+    {"q": "construction brief quality control contractor", "any_of": ["07-construction-brief.md"]},
+    {"q": "handover checklist client", "any_of": ["10-handover.md", "commands/handover.md", "checklist-by-stage.md"]},
+    {"q": "change order template approve", "any_of": ["change-orders.md", "commands/change-order.md"]},
+    {"q": "meeting template agenda", "any_of": ["_meeting-template.md"]},
+    {"q": "site visit report template", "any_of": ["_visit-template.md"]},
+    {"q": "material card template finish", "any_of": ["material-card-template.md"]},
+    {"q": "contractor card template", "any_of": ["contractor-card-template.md"]},
+    {"q": "wyzenbeek martindale double rubs durability", "any_of": ["STUDIO-OS_Implementation_Blueprint.md"]},
+    {"q": "Thai building code ministerial regulation กฎกระทรวง", "any_of": ["thai-building-code", "STUDIO-OS_Implementation_Blueprint.md"]},
+    {"q": "60/30/10 color distribution rule", "any_of": ["STUDIO-OS_Implementation_Blueprint.md", "INTERIOR-DESIGN-KB.md", "design-components"]},
+    {"q": "CCT 2700K warm white residential lighting", "any_of": ["gemini-DR-lighting.md", "STUDIO-OS_Implementation_Blueprint.md", "INTERIOR-DESIGN-KB.md"]},
+    {"q": "followup after project maintenance check", "any_of": ["99-followup.md"]}
+  ]
+}
