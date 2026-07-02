@@ -2,14 +2,18 @@
 
 Provenance: `Desktop/INTERIOR-AI/pipeline` (predecessor project). Its rendered
 OUTPUTS were poor; this infrastructure is the salvage — the owner-validated
-"correct by construction" layer. **Status: ported, NOT yet smoke-tested inside
-STUDIO-OS. Run a spec through `make_all.py` before trusting any of it here.**
+"correct by construction" layer. **Status: smoke-tested in place (2026-07-03):
+`make_all.py` on `specs/living_demo.json` ran hands-off — clearance PASS → full
+CD set (plan/RCP/elevations/schedules) → Blender 5.1 render → packaged
+deliverable + SHEETSET.pdf. Gemini legs (critique, hybrid image pass) untested —
+no `.env`/GEMINI_API_KEY in this repo yet.**
 
 ## What's here
-- `clearance_check.py` + `dimensional_rules.v0.1.json` — pure-Python clearance/
-  lighting rule engine (Panero-derived values). Seed of Gate 0 (blueprint §9.2,
-  M3.1). NOTE: rules JSON predates `knowledge/codes-th/` — reconcile values
-  against the Authority tier before Gate-0 duty (codes-th outranks it).
+- `clearance_check.py` + `dimensional_rules.v0.2.json` — pure-Python clearance/
+  lighting rule engine. Seed of Gate 0 (blueprint §9.2, M3.1). v0.2 merges Thai
+  statutory floors from `knowledge/codes-th/` (Authority, per-value citations in
+  `thai_code_minimums`); ergonomic values remain Panero-derived DRAFT.
+  v0.1 kept for diff/rollback per the pipeline versioning convention.
 - `plan_2d.py`, `elevations.py`, `rcp.py`, `schedules.py` (+ `suite_*` variants),
   `layout_gen.py`, `furniture.py`, `lighting.py` — ezdxf CD-set generators:
   plans, elevations, reflected ceiling plans, schedules from a validated spec.

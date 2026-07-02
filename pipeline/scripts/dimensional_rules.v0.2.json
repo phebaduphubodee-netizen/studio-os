@@ -1,0 +1,148 @@
+{
+  "_meta": {
+    "name": "Interior dimensional rules (clearances + standard sizes) — Thai statutory floors merged",
+    "version": "0.2",
+    "status": "Thai statutory minimums (section 'thai_code_minimums') are AUTHORITY-tier, cited to knowledge/codes-th (กฎกระทรวง ฉ.55/ฉ.39, consolidated). Ergonomic comfort values remain DRAFT — verify against Panero & Zelnik before client deliverables.",
+    "purpose": "Machine-readable constraints the pipeline ENFORCES so generated models are dimensionally BUILDABLE, not just pretty. Attacks the #1 AI failure: spatially-wrong 'soft-contract' output.",
+    "units": "Ergonomic sections keep in/cm from v0.1 (engine reads 'in'). Thai statutory section is metric-first (mm / m² per studio convention).",
+    "precedence": "knowledge/codes-th (Authority) > client contract > studio standards > ergonomic references. Where a Thai statutory floor is stricter than an ergonomic value, the statutory floor governs and the engine value has been raised to it.",
+    "primary_reference": "Panero, J. & Zelnik, M. — Human Dimension & Interior Space (anthropometric clearances).",
+    "secondary_references": ["NKBA kitchen & bath planning guidelines", "ADA / accessibility clearances", "IRC residential minimums"],
+    "thai_authority_sources": [
+      "knowledge/codes-th/mr55-residential-dimensions.md (กฎกระทรวง ฉ.55 พ.ศ. 2543, consolidated ถึง ฉ.68)",
+      "knowledge/codes-th/mr39-fire-sanitation-ventilation.md (กฎกระทรวง ฉ.39 พ.ศ. 2537, ข้อ 9/ตาราง 2 แก้ไขโดย ฉ.63)"
+    ],
+    "changelog_v0_2": [
+      "hallway_width_min raised 91cm -> 100cm (ฉ.55 ข้อ 21: ทางเดินในอาคารอยู่อาศัย ≥ 1.00 ม.)",
+      "added thai_code_minimums section (room areas, ระยะดิ่ง, corridors, stairs, bathroom, ventilation, legal lux floors) with per-value citations",
+      "ceiling_min_habitable annotated: Thai ข้อ 22 governs as FLOOR-TO-FLOOR 2.60 m (different measurement basis than IRC clear height — do not conflate)"
+    ]
+  },
+
+  "thai_code_minimums": {
+    "_note": "STATUTORY FLOORS (metric-first). Cite format: (กฎกระทรวง; ข้อ; source file). These are legal minimums, not design targets — studio comfort standards are usually higher.",
+    "bedroom_area_min_m2":            { "value": 8.0,  "cite": "ฉ.55 ข้อ 20 — knowledge/codes-th/mr55-residential-dimensions.md" },
+    "bedroom_narrow_side_min_mm":     { "value": 2500, "cite": "ฉ.55 ข้อ 20 — mr55-residential-dimensions.md" },
+    "condo_unit_area_min_m2":         { "value": 20.0, "cite": "ฉ.55 ข้อ 19 — mr55-residential-dimensions.md", "note": "หน่วยพักอาศัยในอาคารอยู่อาศัยรวม" },
+    "floor_to_floor_habitable_min_mm":{ "value": 2600, "cite": "ฉ.55 ข้อ 22 — mr55-residential-dimensions.md", "note": "ระยะดิ่ง = พื้นถึงพื้น (NOT clear ceiling height) — ห้องพักอาศัย ครัว ช่องทางเดิน" },
+    "balcony_floor_to_floor_min_mm":  { "value": 2200, "cite": "ฉ.55 ข้อ 22" },
+    "bathroom_floor_to_ceiling_min_mm":{ "value": 2000, "cite": "ฉ.39 ข้อ 9 (แก้ไขโดย ฉ.63) — mr39-fire-sanitation-ventilation.md", "note": "ห้องน้ำวัดพื้นถึงเพดานจริง" },
+    "bathroom_combined_area_min_m2":  { "value": 1.50, "cite": "ฉ.39 ข้อ 9", "note": "ห้องน้ำ + ส้วม รวมห้องเดียว (พื้นที่ภายใน)" },
+    "bathroom_separated_area_min_m2": { "value": 0.90, "cite": "ฉ.39 ข้อ 9", "note": "แยกห้อง: แต่ละห้อง + กว้างภายใน ≥ 900 มม." },
+    "bathroom_separated_width_min_mm":{ "value": 900,  "cite": "ฉ.39 ข้อ 9" },
+    "bathroom_floor_slope_min":       { "value": "1:100", "cite": "ฉ.39 ข้อ 9", "note": "พร้อมจุดระบายน้ำต่ำสุด" },
+    "corridor_in_house_min_mm":       { "value": 1000, "cite": "ฉ.55 ข้อ 21", "note": "ทางเดินในอาคารอยู่อาศัย (บ้านเดี่ยว/ทาวน์โฮมภายในหน่วย)" },
+    "corridor_collective_min_mm":     { "value": 1500, "cite": "ฉ.55 ข้อ 21", "note": "อาคารอยู่อาศัยรวม (คอนโด common corridor) หอพัก สำนักงาน" },
+    "house_stair_width_min_mm":       { "value": 800,  "cite": "ฉ.55 ข้อ 23", "note": "กว้างสุทธิ; ลูกตั้ง ≤ 200, ลูกนอนสุทธิ ≥ 220, headroom ≥ 1900, ช่วงสูง ≤ 3000 มม." },
+    "house_stair_riser_max_mm":       { "value": 200,  "cite": "ฉ.55 ข้อ 23" },
+    "house_stair_tread_min_mm":       { "value": 220,  "cite": "ฉ.55 ข้อ 23" },
+    "house_stair_headroom_min_mm":    { "value": 1900, "cite": "ฉ.55 ข้อ 23" },
+    "natural_vent_opening_min_pct":   { "value": 10,   "cite": "ฉ.39 ข้อ 13", "note": "ช่องเปิดสู่อากาศภายนอก ≥ 10% ของพื้นที่ห้อง (ไม่นับช่องติดห้องอื่น)" },
+    "mech_vent_ach_min":              { "bathroom_house": 2, "kitchen_residential": 12, "cite": "ฉ.39 ตาราง 4" },
+    "legal_lux_floors":               { "corridor_collective": 100, "bathroom": 100, "residential_unit": 100, "parking": 50, "cite": "ฉ.39 ตาราง 3", "note": "floor ตามกฎหมาย — design targets ในหมวด lighting ด้านล่างสูงกว่านี้เสมอ" }
+  },
+
+  "circulation": {
+    "main_walkway_min":      { "in": 36, "cm": 91,  "note": "ERGONOMIC furniture-path value (ไม่ใช่ทางเดินตามกฎหมาย — statutory corridor ดู thai_code_minimums.corridor_*). Primary path; below 36in feels tight." },
+    "secondary_walkway_min": { "in": 30, "cm": 76,  "note": "Low-traffic / single-person passage." },
+    "minimum_passage_pinch": { "in": 24, "cm": 61,  "note": "Absolute squeeze between objects; avoid as a main path." },
+    "wheelchair_clear_floor":{ "in_w": 30, "in_d": 48, "cm_w": 76, "cm_d": 122, "note": "ADA clear floor space at a fixture/appliance." },
+    "wheelchair_turn_circle":{ "in": 60, "cm": 152, "note": "ADA 360-degree turning space (or 60in T-turn)." }
+  },
+
+  "ceilings_and_heights": {
+    "ceiling_min_habitable":  { "in": 90, "cm": 229, "note": "IRC clear-height reference. Thai law governs separately: ระยะดิ่ง (พื้นถึงพื้น) ≥ 2.60 ม. (ฉ.55 ข้อ 22 — see thai_code_minimums; measurement basis ต่างกัน อย่าสับสน)." },
+    "ceiling_standard":       { "in": 96, "cm": 244 },
+    "counter_height":         { "in": 36, "cm": 91 },
+    "bar_counter_height":     { "in": 42, "cm": 107 },
+    "table_dining_height":    { "in": 30, "cm": 76 },
+    "desk_height":            { "in": 29, "cm": 74 },
+    "seat_height_chair":      { "in": 18, "cm": 46 },
+    "upper_cab_above_counter":{ "in": 18, "cm": 46, "note": "Backsplash gap, counter to wall-cabinet bottom." }
+  },
+
+  "doors_and_openings": {
+    "interior_door_width_std": { "in": 32, "cm": 81, "note": "Clear width; 36in for accessibility." },
+    "interior_door_height_std":{ "in": 80, "cm": 203 },
+    "entry_door_width":        { "in": 36, "cm": 91 },
+    "hallway_width_min":       { "in": 39.4, "cm": 100, "note": "STATUTORY floor: ฉ.55 ข้อ 21 ทางเดินในอาคารอยู่อาศัย ≥ 1.00 ม. (raised from ergonomic 91cm in v0.1). คอนโด common corridor ≥ 1.50 ม." }
+  },
+
+  "living_room": {
+    "sofa_to_coffee_table":     { "in_min": 14, "in_max": 18, "cm_min": 36, "cm_max": 46, "note": "Knee/reach gap." },
+    "coffee_table_height":      { "in": 18, "cm": 46, "note": "Roughly sofa seat height." },
+    "walkway_around_seating":   { "in": 30, "cm": 76 },
+    "tv_viewing_distance_mult": { "min": 1.5, "max": 2.5, "note": "x screen DIAGONAL (e.g. 55in TV -> ~83-138in)." },
+    "seat_depth":               { "in": 21, "cm": 53 }
+  },
+
+  "dining": {
+    "table_edge_to_wall_min":   { "in": 36, "cm": 91, "note": "Chair pull-out + walk-behind; 44in if a path runs behind." },
+    "width_per_diner":          { "in": 24, "cm": 61 },
+    "depth_per_setting":        { "in": 15, "cm": 38 },
+    "chair_pullout_clearance":  { "in": 18, "cm": 46, "note": "To slide a chair out to sit." }
+  },
+
+  "kitchen_NKBA": {
+    "work_aisle_one_cook":      { "in": 42, "cm": 107 },
+    "work_aisle_two_cook":      { "in": 48, "cm": 122 },
+    "walkway_no_work_zone":     { "in": 36, "cm": 91 },
+    "island_clearance_all_sides":{ "in_min": 42, "in_max": 48, "cm_min": 107, "cm_max": 122 },
+    "counter_landing_beside_sink":{ "in": 18, "cm": 46, "note": "Min landing on at least one side." },
+    "counter_landing_beside_cooktop":{ "in": 12, "cm": 30 },
+    "work_triangle_total_legs": { "in_min": 156, "in_max": 312, "cm_min": 396, "cm_max": 792, "note": "Sink+range+fridge; each leg 4-9ft, sum 13-26ft." }
+  },
+
+  "bedroom": {
+    "clearance_around_bed":     { "in_min": 24, "in_max": 36, "cm_min": 61, "cm_max": 91, "note": "At least one side >=30in to make the bed." },
+    "walkway_to_closet":        { "in": 36, "cm": 91 },
+    "mattress_queen":           { "in_w": 60, "in_l": 80, "cm_w": 152, "cm_l": 203 },
+    "mattress_king":            { "in_w": 76, "in_l": 80, "cm_w": 193, "cm_l": 203 },
+    "nightstand_beside_bed":    { "in": 24, "cm": 61 },
+    "room_area_min_m2_th":      { "value": 8.0, "note": "STATUTORY: ฉ.55 ข้อ 20 — พื้นที่ห้องนอน ≥ 8 ตร.ม., ด้านแคบสุด ≥ 2.50 ม. (see thai_code_minimums)" }
+  },
+
+  "bathroom": {
+    "clearance_front_of_fixture":{ "in_min": 21, "in_max": 30, "cm_min": 53, "cm_max": 76 },
+    "toilet_centerline_to_wall": { "in_min": 15, "in_max": 18, "cm_min": 38, "cm_max": 46, "note": ">=15in code min (US ref)." },
+    "toilet_clear_width":        { "in": 30, "cm": 76 },
+    "vanity_height":             { "in": 32, "cm": 81, "note": "32-36in common." },
+    "shower_min":                { "in": 36, "cm": 91, "note": "36x36in min stall (ergonomic). STATUTORY floors: ฉ.39 ข้อ 9 — see thai_code_minimums.bathroom_*" },
+    "accessible_turn":           { "in": 60, "cm": 152 }
+  },
+
+  "anthropometric_basics": {
+    "eye_height_standing_avg":  { "in": 64, "cm": 163, "note": "Adult average; art/sightline reference." },
+    "eye_height_seated_avg":    { "in": 46, "cm": 117, "note": "From floor; TV/monitor reference." },
+    "comfortable_reach_high":   { "in": 72, "cm": 183, "note": "Top usable shelf for average adult." },
+    "comfortable_reach_low":    { "in": 24, "cm": 61 },
+    "shoulder_width_avg":       { "in": 18, "cm": 46, "note": "Passage/seat-width driver." }
+  },
+
+  "lighting": {
+    "_ref": "Design targets (comfort tier) — legal floors ตาม ฉ.39 ตาราง 3 อยู่ใน thai_code_minimums.legal_lux_floors (100 lux ≈ 9.3 fc — ทุก design target ด้านล่างสูงกว่า floor กฎหมายอยู่แล้ว). DRAFT — verify vs current IES RP before client deliverables.",
+    "cu_default": 0.65,
+    "llf_default": 0.80,
+    "cri_min": 90,
+    "general_illuminance_fc": {
+      "_note": "Maintained AVERAGE general/circulation illuminance target (footcandles) hit by the AMBIENT layer; task areas get higher local levels from task fixtures.",
+      "living":   { "min": 10, "max": 20 },
+      "bedroom":  { "min": 10, "max": 20 },
+      "dining":   { "min": 10, "max": 20 },
+      "kitchen":  { "min": 30, "max": 50 },
+      "bathroom": { "min": 20, "max": 30 },
+      "office":   { "min": 30, "max": 50 },
+      "default":  { "min": 10, "max": 30 }
+    },
+    "cct_recommended_k": {
+      "_note": "Correlated colour temperature comfort band per room; warm for living/sleep, cooler for task rooms.",
+      "living":   { "min": 2700, "max": 3000 },
+      "bedroom":  { "min": 2700, "max": 3000 },
+      "dining":   { "min": 2700, "max": 3000 },
+      "kitchen":  { "min": 3000, "max": 4000 },
+      "bathroom": { "min": 3000, "max": 4000 },
+      "office":   { "min": 3000, "max": 4000 },
+      "default":  { "min": 2700, "max": 4000 }
+    }
+  }
+}
