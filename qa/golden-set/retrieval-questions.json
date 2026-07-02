@@ -20,6 +20,11 @@
     {"q": "Thai building code ministerial regulation กฎกระทรวง", "any_of": ["thai-building-code", "STUDIO-OS_Implementation_Blueprint.md"]},
     {"q": "60/30/10 color distribution rule", "any_of": ["STUDIO-OS_Implementation_Blueprint.md", "INTERIOR-DESIGN-KB.md", "design-components"]},
     {"q": "CCT 2700K warm white residential lighting", "any_of": ["gemini-DR-lighting.md", "STUDIO-OS_Implementation_Blueprint.md", "INTERIOR-DESIGN-KB.md"]},
-    {"q": "followup after project maintenance check", "any_of": ["99-followup.md"]}
+    {"q": "followup after project maintenance check", "any_of": ["99-followup.md"]},
+    {"q": "ห้องนอน ความกว้าง พื้นที่ ขั้นต่ำ", "any_of": ["mr55-residential-dimensions.md"]},
+    {"q": "ระยะดิ่ง ความสูง ห้องพักอาศัย เพดาน", "any_of": ["mr55-residential-dimensions.md"]},
+    {"q": "บันได ลูกตั้ง ลูกนอน ความกว้าง อาคารอยู่อาศัย", "any_of": ["mr55-residential-dimensions.md"]},
+    {"q": "ห้องน้ำ ห้องส้วม พื้นที่ ระบายอากาศ", "any_of": ["mr39-fire-sanitation-ventilation.md"]},
+    {"q": "หน้าต่าง ช่องเปิด ระยะห่าง เขตที่ดิน", "any_of": ["mr55-residential-dimensions.md"]}
   ]
 }
