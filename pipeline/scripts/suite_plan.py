@@ -192,7 +192,7 @@ def _title_block(msp, spec, outline, W, D, ceiling):
     lines = [
         f"{rtype}   bounding {W/1000:.1f} x {D/1000:.1f} m   ~{sqm:.1f} sqm   (ceiling {ceiling/1000:.1f} m)",
         "SCALE 1:50   |   DRAFT MASSING v0.2 — outline = APPROX. bounding envelope; real walls / windows / exact positions",
-        "NOT yet traced from the DWG (redacted-dwg). NOT a construction set — furniture + built-in SIZES are DWG-extracted; positions approximate.",
+        "NOT yet traced from the source DWG. NOT a construction set — furniture + built-in SIZES are DWG-extracted; positions approximate.",
         "INTERIOR-AI  (dimensions in millimetres; NCS layers + line weights)",
     ]
     ty = -1000.0

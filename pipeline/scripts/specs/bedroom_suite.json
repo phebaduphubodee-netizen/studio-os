@@ -1,0 +1,177 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "note": "EXAMPLE master-bedroom-suite spec, mm, y-up, origin SW corner. Anonymized 2026-07-03: derived from a real project's dimensioned plan; all client/firm/project identifiers and source references stripped. Room 5500x6500, ceiling 2800. Windows omitted (unknown), door+ensuite placement are draft design judgment.",
+  "room": {
+    "type": "bedroom_suite",
+    "outline_mm": [
+      [
+        0,
+        0
+      ],
+      [
+        5500,
+        0
+      ],
+      [
+        5500,
+        6500
+      ],
+      [
+        0,
+        6500
+      ]
+    ],
+    "ceiling_mm": 2800,
+    "wall_thk_mm": 100
+  },
+  "door": {
+    "x": 4500,
+    "y": 0,
+    "w": 900,
+    "h": 2000,
+    "wall": "south",
+    "swing": "in-left"
+  },
+  "subrooms": [
+    {
+      "name": "ensuite",
+      "th": "ห้องน้ำในตัว",
+      "outline_mm": [
+        [
+          0,
+          3900
+        ],
+        [
+          3100,
+          3900
+        ],
+        [
+          3100,
+          6500
+        ],
+        [
+          0,
+          6500
+        ]
+      ],
+      "ceiling_mm": 2000,
+      "door": {
+        "x": 3100,
+        "y": 4300,
+        "w": 800,
+        "wall": "east"
+      },
+      "fixtures": [
+        {
+          "name": "อ่างอาบน้ำ (tub)",
+          "kind": "tub",
+          "x": 300,
+          "y": 5700,
+          "w": 1700,
+          "d": 750
+        },
+        {
+          "name": "ฝักบัว (shower)",
+          "kind": "shower",
+          "x": 300,
+          "y": 4700,
+          "w": 900,
+          "d": 900
+        },
+        {
+          "name": "อ่างล้างหน้าคู่ 3.05m",
+          "kind": "vanity_double",
+          "x": 25,
+          "y": 3950,
+          "w": 3050,
+          "d": 600
+        },
+        {
+          "name": "ชักโครก (WC)",
+          "kind": "wc",
+          "x": 2650,
+          "y": 4700,
+          "w": 400,
+          "d": 650
+        }
+      ]
+    }
+  ],
+  "builtins": [
+    {
+      "name": "หัวเตียง/ทีวี built-in",
+      "kind": "headboard_tv",
+      "x": 1970,
+      "y": 3226,
+      "w": 3330,
+      "d": 600,
+      "h": 2800
+    },
+    {
+      "name": "ตู้เสื้อผ้า built-in",
+      "kind": "wardrobe",
+      "x": 0,
+      "y": 0,
+      "w": 3200,
+      "d": 600,
+      "h": 2800
+    },
+    {
+      "name": "ตู้ built-in",
+      "kind": "wardrobe",
+      "x": 0,
+      "y": 1200,
+      "w": 600,
+      "d": 2500,
+      "h": 2800
+    },
+    {
+      "name": "ตู้ built-in ข้างเตียง",
+      "kind": "wardrobe",
+      "x": 5350,
+      "y": 500,
+      "w": 100,
+      "d": 3250,
+      "h": 2800
+    }
+  ],
+  "items": [
+    {
+      "name": "ฐานเตียง",
+      "kind": "platform",
+      "x": 3100,
+      "y": 966,
+      "w": 2200,
+      "d": 2260,
+      "h": 150
+    },
+    {
+      "name": "เตียง 6 ฟุต",
+      "kind": "bed",
+      "x": 3198,
+      "y": 1066,
+      "w": 2000,
+      "d": 2160,
+      "h": 600
+    },
+    {
+      "name": "ม้านั่งปลายเตียง",
+      "kind": "bench",
+      "x": 2648,
+      "y": 641,
+      "w": 500,
+      "d": 1000,
+      "h": 450
+    },
+    {
+      "name": "เก้าอี้เครื่องแป้ง",
+      "kind": "armchair",
+      "x": 848,
+      "y": 5012,
+      "w": 546,
+      "d": 509,
+      "h": 750
+    }
+  ]
+}
