@@ -1,0 +1,31 @@
+{
+  "project_id": "PRJ-2026-001",
+  "client_id": "C-000",
+  "unit_type": "condo",
+  "area_m2": 34,
+  "rooms": [
+    {"name": "living+dining", "area_m2": 18, "notes": "combined zone"},
+    {"name": "bedroom", "area_m2": 10, "notes": ""},
+    {"name": "bath", "area_m2": 4, "notes": ""},
+    {"name": "balcony", "area_m2": null, "notes": "small; exact size unknown"}
+  ],
+  "fixed_constraints": [
+    "kitchen-side wall is precast — no drilling",
+    "reuse 2 existing AC units",
+    "ceiling height 2.5 m",
+    "7th floor, north-facing"
+  ],
+  "budget_ceiling_thb": 450000,
+  "budget_scope_note": "furniture + built-in only per notes; appliances/decor scope unconfirmed",
+  "style_direction_hint": "warm, wood-heavy, uncluttered (client suggested Japandi)",
+  "key_dates": {"kickoff": "2026-08", "handover_target": "2026-12-31"},
+  "sources": {
+    "unit_type": "client-brief-notes.md",
+    "area_m2": "client-brief-notes.md",
+    "rooms": "client-brief-notes.md",
+    "fixed_constraints": "client-brief-notes.md",
+    "budget_ceiling_thb": "client-brief-notes.md",
+    "key_dates": "client-brief-notes.md",
+    "style_direction_hint": "client-brief-notes.md"
+  }
+}
