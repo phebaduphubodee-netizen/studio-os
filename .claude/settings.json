@@ -1,0 +1,73 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Write(./qa/thresholds.yaml)",
+      "Edit(./qa/thresholds.yaml)",
+      "Write(./knowledge/codes-th/**)",
+      "Edit(./knowledge/codes-th/**)",
+      "Write(./.claude/settings.json)",
+      "Edit(./.claude/settings.json)",
+      "Write(./.gitattributes)",
+      "Edit(./.gitattributes)",
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)",
+      "Bash(chmod 777:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Write(./clients/**)",
+      "Edit(./clients/**)",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "allow": [
+      "Read(./**)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(python3 scripts/*)",
+      "Bash(bash scripts/test_guards.sh)",
+      "Bash(bash scripts/lfs_audit.sh)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_bash.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_paths.py\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/audit_writes.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "project_id": "PRJ-2026-001",
+  "currency": "THB",
+  "unit_system": "mm",
+  "_note": "GOLD-STANDARD EXAMPLE for the ffe-research skill. Fictional picks; prices/leads are DRAFT (verified:false). Real projects: research per item, set one candidate selected:true, then run scripts/ffe_schedule.py.",
+  "items": [
+    {
+      "tag": "FFE-101",
+      "room": "Living",
+      "role": "Sofa (3-seat)",
+      "candidates": [
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "VERONA 3-seat",
+          "qty": 1,
+          "dimensions_mm": { "w": 2100, "d": 950, "h": 850, "seat_h": 450 },
+          "material_finish": "performance fabric, warm grey",
+          "performance": "~50k double-rub (snippet, unverified)",
+          "certifications": "",
+          "fire": "",
+          "csi": "12 52 00",
+          "unit_price_thb": 24900,
+          "lead_time": "in stock",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/",
+          "notes": "fits ±15% of the 2.0m layout footprint",
+          "verified": false,
+          "unverified_specs": ["unit_price_thb", "performance"],
+          "selected": true
+        },
+        {
+          "manufacturer": "SB Design Square",
+          "model": "MUJI-style 3-seat",
+          "qty": 1,
+          "dimensions_mm": { "w": 1980, "d": 900, "h": 820, "seat_h": 440 },
+          "material_finish": "cotton-linen blend, ecru",
+          "csi": "12 52 00",
+          "unit_price_thb": 32000,
+          "lead_time": "4 wk",
+          "source_th": "SB Design Square",
+          "notes": "over budget; softer aesthetic — alternate",
+          "verified": false,
+          "unverified_specs": ["unit_price_thb", "lead_time"],
+          "selected": false
+        }
+      ]
+    },
+    {
+      "tag": "FFE-102",
+      "room": "Living",
+      "role": "Coffee table",
+      "candidates": [
+        {
+          "manufacturer": "HomePro",
+          "model": "OAK-VENEER rectangular",
+          "qty": 1,
+          "dimensions_mm": { "w": 1100, "d": 600, "h": 400 },
+          "material_finish": "oak veneer over MDF",
+          "csi": "12 52 00",
+          "unit_price_thb": 6900,
+          "lead_time": "in stock",
+          "source_th": "HomePro",
+          "notes": "veneer not solid — flag to client",
+          "verified": false,
+          "unverified_specs": ["unit_price_thb"],
+          "selected": true
+        }
+      ]
+    },
+    {
+      "tag": "FFE-201",
+      "room": "Bedroom",
+      "role": "Bed frame (Queen)",
+      "candidates": [
+        {
+          "manufacturer": "IKEA TH",
+          "model": "MALM (Queen)",
+          "qty": 1,
+          "dimensions_mm": { "w": 1650, "d": 2090, "h": 380 },
+          "material_finish": "white-stained oak veneer",
+          "csi": "12 52 00",
+          "unit_price_thb": 8990,
+          "lead_time": "in stock",
+          "source_th": "IKEA TH",
+          "link": "https://www.ikea.com/th/en/",
+          "verified": false,
+          "unverified_specs": ["unit_price_thb"],
+          "selected": true
+        }
+      ]
+    },
+    {
+      "tag": "FFE-202",
+      "room": "Bedroom",
+      "role": "Wardrobe (2.4m)",
+      "candidates": []
+    }
+  ]
+}

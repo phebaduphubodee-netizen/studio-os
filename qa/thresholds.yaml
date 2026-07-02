@@ -1,0 +1,28 @@
+# STUDIO-OS QA scoring matrix — blueprint §9.3 initial defaults.
+# PROTECTED FILE: changes only via pull request + golden-set regression (M3 calibration).
+version: 1
+prompt_qa:
+  soft_tifa_mean: { pass: 0.85, warn_min: 0.70 }
+image_qa:
+  brisque: { pass_max: 30, warn_max: 45 }   # lower is better
+material_qa:
+  albedo_srgb: { min: 30, max: 240, pass_pct: 99.5, warn_pct: 98.0 }
+  metalness_binary_pct: { pass: 95, warn: 90 }
+  roughness_absolute_extremes_max_pct: 5
+lighting_qa:
+  source_triangulation_deg: { pass_max: 5, warn_max: 10 }
+camera_qa:
+  homography_residual_px: { pass_max: 2, warn_max: 4 }
+consistency_qa:
+  warp_error_over_baseline_pct: { warn: 10 }
+brand_qa:
+  delta_e00: { pass_max: 1.0, warn_max: 2.0 }   # >2.0 = non-compliant
+client_qa:
+  judge_score: { pass_min: 4, warn: 3, scale: 5 }
+revision_qa:
+  background_lpips_delta: { pass_max: 0.05, warn_max: 0.10 }
+repair_loop:
+  max_iterations: 3
+judge_governance:
+  spearman_rho_min: 0.8
+  cohens_kappa_min: 0.8
