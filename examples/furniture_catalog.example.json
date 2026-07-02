@@ -1,0 +1,12 @@
+{
+  "_comment": "Map each furniture 'kind' to a LOCAL SketchUp component (.skp) in raw/assets/. Paths are relative to THIS file. Copy to 'furniture_catalog.json'. Any unmapped/missing kind falls back to a primitive box, so a PARTIAL catalog still works. Furniture is stored LOCALLY (not in R2).",
+  "_fields": "file = .skp path. source/license = provenance (docs/LICENSING.md — only permissive licenses may ship; verify the friend's models actually originate where she thinks). fit = OPTIONAL: true SCALES the model to the spec footprint (use for inaccurate/AI models, e.g. FurniMesh); omit (default) places at the component's NATIVE size (correct for accurate components like the friend's own).",
+  "sofa":         { "file": "sofa.skp",         "source": "friend-library", "license": "original" },
+  "armchair":     { "file": "armchair.skp",     "source": "friend-library", "license": "original" },
+  "coffee_table": { "file": "coffee_table.skp", "source": "friend-library", "license": "original" },
+  "tv_console":   { "file": "tv_console.skp",    "source": "friend-library", "license": "original" },
+  "dining_table": { "file": "dining_table.skp",  "source": "friend-library", "license": "original" },
+  "dining_chair": { "file": "dining_chair.skp",  "source": "friend-library", "license": "original" },
+  "bed":          { "file": "bed.skp",           "source": "friend-library", "license": "original" },
+  "_example_ai_model": { "file": "some_furnimesh_sofa.skp", "source": "furnimesh", "license": "commercial-ok", "fit": true }
+}
