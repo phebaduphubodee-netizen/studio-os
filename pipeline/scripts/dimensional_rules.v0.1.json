@@ -1,0 +1,114 @@
+{
+  "_meta": {
+    "name": "Interior dimensional rules (clearances + standard sizes)",
+    "version": "0.1",
+    "status": "DRAFT — standard published values; VERIFY against Panero & Zelnik 'Human Dimension & Interior Space' + local building code (IBC/IRC, NKBA, ADA/local accessibility) BEFORE any client deliverable.",
+    "purpose": "Machine-readable constraints the SketchUp pipeline ENFORCES so generated models are dimensionally BUILDABLE, not just pretty. This is the project's differentiator (attacks the #1 AI failure: spatially-wrong 'soft-contract' output).",
+    "units": "Each value gives in (inches) and cm. cm rounded.",
+    "primary_reference": "Panero, J. & Zelnik, M. — Human Dimension & Interior Space (anthropometric clearances).",
+    "secondary_references": ["NKBA kitchen & bath planning guidelines", "ADA / accessibility clearances", "IRC residential minimums"]
+  },
+
+  "circulation": {
+    "main_walkway_min":      { "in": 36, "cm": 91,  "note": "Primary path; below 36in feels tight / fails accessibility." },
+    "secondary_walkway_min": { "in": 30, "cm": 76,  "note": "Low-traffic / single-person passage." },
+    "minimum_passage_pinch": { "in": 24, "cm": 61,  "note": "Absolute squeeze between objects; avoid as a main path." },
+    "wheelchair_clear_floor":{ "in_w": 30, "in_d": 48, "cm_w": 76, "cm_d": 122, "note": "ADA clear floor space at a fixture/appliance." },
+    "wheelchair_turn_circle":{ "in": 60, "cm": 152, "note": "ADA 360-degree turning space (or 60in T-turn)." }
+  },
+
+  "ceilings_and_heights": {
+    "ceiling_min_habitable":  { "in": 90, "cm": 229, "note": "IRC habitable-room min ~7'6\"; 8'0\"(96in) is the common standard." },
+    "ceiling_standard":       { "in": 96, "cm": 244 },
+    "counter_height":         { "in": 36, "cm": 91 },
+    "bar_counter_height":     { "in": 42, "cm": 107 },
+    "table_dining_height":    { "in": 30, "cm": 76 },
+    "desk_height":            { "in": 29, "cm": 74 },
+    "seat_height_chair":      { "in": 18, "cm": 46 },
+    "upper_cab_above_counter":{ "in": 18, "cm": 46, "note": "Backsplash gap, counter to wall-cabinet bottom." }
+  },
+
+  "doors_and_openings": {
+    "interior_door_width_std": { "in": 32, "cm": 81, "note": "Clear width; 36in for accessibility." },
+    "interior_door_height_std":{ "in": 80, "cm": 203 },
+    "entry_door_width":        { "in": 36, "cm": 91 },
+    "hallway_width_min":       { "in": 36, "cm": 91, "note": "42-48in feels generous." }
+  },
+
+  "living_room": {
+    "sofa_to_coffee_table":     { "in_min": 14, "in_max": 18, "cm_min": 36, "cm_max": 46, "note": "Knee/reach gap." },
+    "coffee_table_height":      { "in": 18, "cm": 46, "note": "Roughly sofa seat height." },
+    "walkway_around_seating":   { "in": 30, "cm": 76 },
+    "tv_viewing_distance_mult": { "min": 1.5, "max": 2.5, "note": "x screen DIAGONAL (e.g. 55in TV -> ~83-138in)." },
+    "seat_depth":               { "in": 21, "cm": 53 }
+  },
+
+  "dining": {
+    "table_edge_to_wall_min":   { "in": 36, "cm": 91, "note": "Chair pull-out + walk-behind; 44in if a path runs behind." },
+    "width_per_diner":          { "in": 24, "cm": 61 },
+    "depth_per_setting":        { "in": 15, "cm": 38 },
+    "chair_pullout_clearance":  { "in": 18, "cm": 46, "note": "To slide a chair out to sit." }
+  },
+
+  "kitchen_NKBA": {
+    "work_aisle_one_cook":      { "in": 42, "cm": 107 },
+    "work_aisle_two_cook":      { "in": 48, "cm": 122 },
+    "walkway_no_work_zone":     { "in": 36, "cm": 91 },
+    "island_clearance_all_sides":{ "in_min": 42, "in_max": 48, "cm_min": 107, "cm_max": 122 },
+    "counter_landing_beside_sink":{ "in": 18, "cm": 46, "note": "Min landing on at least one side." },
+    "counter_landing_beside_cooktop":{ "in": 12, "cm": 30 },
+    "work_triangle_total_legs": { "in_min": 156, "in_max": 312, "cm_min": 396, "cm_max": 792, "note": "Sink+range+fridge; each leg 4-9ft, sum 13-26ft." }
+  },
+
+  "bedroom": {
+    "clearance_around_bed":     { "in_min": 24, "in_max": 36, "cm_min": 61, "cm_max": 91, "note": "At least one side >=30in to make the bed." },
+    "walkway_to_closet":        { "in": 36, "cm": 91 },
+    "mattress_queen":           { "in_w": 60, "in_l": 80, "cm_w": 152, "cm_l": 203 },
+    "mattress_king":            { "in_w": 76, "in_l": 80, "cm_w": 193, "cm_l": 203 },
+    "nightstand_beside_bed":    { "in": 24, "cm": 61 }
+  },
+
+  "bathroom": {
+    "clearance_front_of_fixture":{ "in_min": 21, "in_max": 30, "cm_min": 53, "cm_max": 76 },
+    "toilet_centerline_to_wall": { "in_min": 15, "in_max": 18, "cm_min": 38, "cm_max": 46, "note": ">=15in code min." },
+    "toilet_clear_width":        { "in": 30, "cm": 76 },
+    "vanity_height":             { "in": 32, "cm": 81, "note": "32-36in common." },
+    "shower_min":                { "in": 36, "cm": 91, "note": "36x36in min stall." },
+    "accessible_turn":           { "in": 60, "cm": 152 }
+  },
+
+  "anthropometric_basics": {
+    "eye_height_standing_avg":  { "in": 64, "cm": 163, "note": "Adult average; art/sightline reference." },
+    "eye_height_seated_avg":    { "in": 46, "cm": 117, "note": "From floor; TV/monitor reference." },
+    "comfortable_reach_high":   { "in": 72, "cm": 183, "note": "Top usable shelf for average adult." },
+    "comfortable_reach_low":    { "in": 24, "cm": 61 },
+    "shoulder_width_avg":       { "in": 18, "cm": 46, "note": "Passage/seat-width driver." }
+  },
+
+  "lighting": {
+    "_ref": "docs/INTERIOR-DESIGN-KB.md §6 (IES illuminance + CCT/CRI + lumen method). DRAFT — verify vs current IES Recommended Practice before any client deliverable.",
+    "cu_default": 0.65,
+    "llf_default": 0.80,
+    "cri_min": 90,
+    "general_illuminance_fc": {
+      "_note": "Maintained AVERAGE general/circulation illuminance target (footcandles) hit by the AMBIENT layer; task areas get higher local levels from task fixtures (KB §6.2).",
+      "living":   { "min": 10, "max": 20 },
+      "bedroom":  { "min": 10, "max": 20 },
+      "dining":   { "min": 10, "max": 20 },
+      "kitchen":  { "min": 30, "max": 50 },
+      "bathroom": { "min": 20, "max": 30 },
+      "office":   { "min": 30, "max": 50 },
+      "default":  { "min": 10, "max": 30 }
+    },
+    "cct_recommended_k": {
+      "_note": "Correlated colour temperature comfort band per room (KB §6.3); warm for living/sleep, cooler for task rooms.",
+      "living":   { "min": 2700, "max": 3000 },
+      "bedroom":  { "min": 2700, "max": 3000 },
+      "dining":   { "min": 2700, "max": 3000 },
+      "kitchen":  { "min": 3000, "max": 4000 },
+      "bathroom": { "min": 3000, "max": 4000 },
+      "office":   { "min": 3000, "max": 4000 },
+      "default":  { "min": 2700, "max": 4000 }
+    }
+  }
+}
