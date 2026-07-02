@@ -1,0 +1,19 @@
+# Obsidian workspace state (per-machine)
+.obsidian/workspace*
+.obsidian/cache
+
+# OS junk
+.DS_Store
+Thumbs.db
+*~
+
+# Backup folders
+.trash/
+
+# Sensitive (uncomment if relevant)
+# */finance/
+# */contracts/
+
+# Temp / scratch
+*.tmp
+scratch/
