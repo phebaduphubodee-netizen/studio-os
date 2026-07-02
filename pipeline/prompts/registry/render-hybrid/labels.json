@@ -1,0 +1,6 @@
+{
+  "dev": "v001",
+  "staging": "v001",
+  "production": null,
+  "_promotion_rule": "production requires critique gate >=4/5 on at least two distinct room types; re-point the label, never edit a version."
+}
