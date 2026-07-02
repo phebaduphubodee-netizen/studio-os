@@ -5,8 +5,11 @@ OUTPUTS were poor; this infrastructure is the salvage — the owner-validated
 "correct by construction" layer. **Status: smoke-tested in place (2026-07-03):
 `make_all.py` on `specs/living_demo.json` ran hands-off — clearance PASS → full
 CD set (plan/RCP/elevations/schedules) → Blender 5.1 render → packaged
-deliverable + SHEETSET.pdf. Gemini legs (critique, hybrid image pass) untested —
-no `.env`/GEMINI_API_KEY in this repo yet.**
+deliverable + SHEETSET.pdf. Gemini legs live-tested same day (`.env` key in
+place): critique gate scored the clay control 1/5 NOT_CLIENT_READY (correct)
+and the hybrid pass 4/5 REWORK — photoreal/proportion/furniture 5/5, remaining
+gap = human art-direction (styling/composition), as DECISIONS-render-assets.md
+predicted.**
 
 ## What's here
 - `clearance_check.py` + `dimensional_rules.v0.2.json` — pure-Python clearance/
@@ -21,6 +24,10 @@ no `.env`/GEMINI_API_KEY in this repo yet.**
   non-commercial-EULA landmine; see docs/LICENSING.md).
 - `critique.py` — independent Gemini-vision critique gate (reads GEMINI_API_KEY
   from `.env`; no hardcoded secrets).
+- `hybrid_render.py` — the HYBRID beauty pass (render direction of record):
+  clay control render + "keep exact layout" instruction → Gemini image model →
+  photoreal repaint at ~$0.04/img. Ported from INTERIOR-AI tools/gemini_image.py.
+  Client work must run on the PAID tier (free tier = no commercial rights).
 - `assets.py` — Poly Haven CC0 fetcher (populates `assets/shared/cc0/`).
 - `package.py`, `qa_checklist.py`, `make_all.py` — deliverable assembly.
 - `build_room.py` (Blender materializer) / `build_room.rb` (native SketchUp

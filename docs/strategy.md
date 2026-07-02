@@ -127,3 +127,26 @@
 - Blocked for Gemini legs (critique + hybrid image pass): no `.env` /
   GEMINI_API_KEY in this repo yet — owner to supply key (do NOT reuse leaked
   predecessor keys; rotate R2 + mint fresh Gemini key).
+
+## 2026-07-02 (later) — Gemini legs LIVE: the HYBRID render loop is real here
+- Owner supplied `.env` (GEMINI + OpenAI + Perplexity keys; usage-counter files
+  for all three were already gitignored). Same-day proof, whole loop hands-off:
+  1. critique gate on the clay control render → **1/5 NOT_CLIENT_READY** — the
+     correct verdict for a massing draft; the gate does not flatter.
+  2. ported `hybrid_render.py` (from INTERIOR-AI tools/gemini_image.py; repo-root
+     paths, usage counter, VPN TLS fallback) and ran the beauty pass on the same
+     image → photoreal boucle/walnut/cove-light living room, layout faithful.
+  3. critique gate on the hybrid output → **4/5 REWORK**: photoreal_believability,
+     proportion_and_scale, furniture_realism all 5/5; dinged on styling_and_life
+     + composition — exactly the "last 10–15% is human art-direction" gap the
+     DECISIONS doc predicted. The pipeline's honest ceiling without a human eye.
+- Chain now proven end-to-end on this machine: spec → clearance gate → CD set →
+  Blender clay control → Gemini beauty pass → independent critic score.
+  M2.1 remaining for full acceptance: run a REAL unit (DWG-derived suite spec)
+  through the suite flow + CAD overlay fidelity check, and promote the pass
+  prompt into the Phase-2 prompt registry (M2.2) instead of ad-hoc CLI text.
+- First critique call on the hybrid image failed transient (API-side, retry
+  succeeded) — batch runs must keep run_batch's never-raise semantics.
+- Ops note for owner: `.env` now holds three live keys inside a OneDrive-synced
+  folder — the predecessor's key leak came from a synced transcript. Fine for
+  now (own cloud), but weigh this in the standing OneDrive-relocation decision.
