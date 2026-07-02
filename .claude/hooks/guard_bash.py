@@ -22,6 +22,17 @@ BLOCKED = [
     (r"\bdd\s+if=", "raw disk write (dd)"),
     (r"\bgit\s+filter-branch\b", "history rewrite"),
     (r"\bshutdown\b|\breboot\b", "system power command"),
+    # PowerShell equivalents (hook matcher covers Bash|PowerShell; PS is case-insensitive)
+    (r"(?i)\b(remove-item|rm|ri|del|erase)\b[^|;]*\s-(recurse|r)\b[^|;]*\s-(force|fo?)\b",
+     "recursive force delete (Remove-Item -Recurse -Force)"),
+    (r"(?i)\b(remove-item|rm|ri|del|erase)\b[^|;]*\s-(force|fo?)\b[^|;]*\s-(recurse|r)\b",
+     "recursive force delete (Remove-Item -Force -Recurse)"),
+    (r"(?i)\b(iex|invoke-expression)\b[^|;]*\b(iwr|invoke-webrequest|invoke-restmethod|curl|wget)\b",
+     "executing downloaded script (iex + web request)"),
+    (r"(?i)\b(iwr|invoke-webrequest|invoke-restmethod)\b[^;]*\|\s*(iex|invoke-expression)\b",
+     "piping web content into Invoke-Expression"),
+    (r"(?i)\b(stop-computer|restart-computer)\b", "system power command"),
+    (r"(?i)\b(format-volume|clear-disk|initialize-disk)\b", "disk format/initialize"),
 ]
 
 # Paths that must never be touched via shell redirection/moves either.
@@ -49,8 +60,11 @@ def main() -> int:
             )
             return 2
 
-    lowered = cmd.lower()
-    if any(tok in lowered for tok in ("rm ", "mv ", " > ", ">> ", "tee ")):
+    lowered = cmd.lower().replace("\\", "/")
+    if any(tok in lowered for tok in ("rm ", "mv ", " > ", ">> ", "tee ",
+                                      "remove-item", "move-item", "copy-item", "rename-item",
+                                      "set-content", "add-content", "out-file", "clear-content",
+                                      "new-item")):
         for p in PROTECTED_PATH_HINTS:
             if p.lower() in lowered:
                 print(
