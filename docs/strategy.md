@@ -27,6 +27,16 @@
     PowerShell 5.1 pipe). Acceptable while the permissions deny list covers the same paths —
     that second layer held in live test 2.
 ## Session learnings (agents append after major tasks)
+- 2026-07-03: M1.2 closed via PR #2 (merged). codes-th now holds the Authority values
+  from กฎกระทรวง ฉ.55 (รวมถึง ฉ.68/2563) + ฉ.39 (รวมถึง ฉ.63/2551) + Act overview, every
+  value cited (ข้อ + PDF page), source PDFs in _inbox/codes-th-sources (LFS, ASA library).
+  The sanitary-fixture table was visually verified against rendered PDF pages (poppler)
+  after text extraction proved column-ambiguous — pattern to reuse: extract text for
+  values, render pages to VERIFY tables. Eval now 25 questions at 23/25 (codes 5/5 top-1);
+  knowledge-manager answers planning questions with correct line citations. Registered
+  gaps: ข้อบัญญัติ กทม. 2544, พ.ร.บ.อาคารชุด/ระเบียบนิติฯ, corridor-width interpretation
+  (within-unit vs common, ข้อ 21). Hooks PR #1 also merged today — restart session then
+  live-test the PowerShell matcher. Poppler + Node LTS now installed on this machine.
 - 2026-07-02 (overnight run): Phase 1 core landed on Windows native.
   M1.1: BM25 retrieval (scripts/vault_search.py, stdlib-only, Thai char-bigrams)
   + knowledge-manager agent + 20-question eval at 20/20 (qa/reports/M1.1-…md —
