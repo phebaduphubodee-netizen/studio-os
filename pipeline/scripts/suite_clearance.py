@@ -1,16 +1,18 @@
 """
-suite_clearance.py — INTERIOR-AI v0.2 clearance engine: METRIC + POLYGON + Thai code.
+suite_clearance.py — INTERIOR-AI v0.3 clearance engine: METRIC + POLYGON + Thai code.
 
-The v0.1 clearance_check assumed a rectangular room in inches against DRAFT US (Panero &
-Zelnik) rules. This v0.2 engine works on a room-spec@0.2 (polygon outline in mm, sub-rooms,
-built-ins) and checks against LOCAL Thai residential rules from
-research/2026-06-30-thai-building-code-DR.md (กฎกระทรวง ฉบับที่ 55 พ.ศ. 2543). It stays the
-engine-agnostic IP: pure Python, PASS / WARN / FAIL, no CAD/3D needed.
+v0.2 embedded its own DR-derived Thai rules; v0.3 (M3.1 unification slice, 2026-07-02)
+loads the statutory floors from dimensional_rules.v0.2.json `thai_code_minimums` —
+ONE cited rule source for every engine. The unification also fixed three
+miscitations the embedded copy carried:
+  * ระยะดิ่ง 2600 is ข้อ 22 (was cited §21) and is FLOOR-TO-FLOOR, not clear ceiling;
+  * bathroom 2000 is ฉ.39 ข้อ 9 (was attributed to กฎกระทรวง 55);
+  * the 800/1900 door minimums are NOT a general statutory interior-door rule —
+    ฉ.55 ข้อ 31 covers FIRE-ESCAPE doors; kept as a STUDIO floor (ergonomic std
+    81 cm per dimensional_rules doors_and_openings), honestly labeled.
+Engine stays engine-agnostic IP: pure Python, PASS / WARN / FAIL, no CAD/3D needed.
 
-⚠️ Thai numbers below are from a cited DR pass but are UNVERIFIED-until-cross-checked against
-the ratchakitcha text before they gate a real client deliverable (verify-citations rule).
-
-    python pipeline/suite_clearance.py [spec.json]
+    python pipeline/scripts/suite_clearance.py [spec.json]
 """
 import json
 import os
@@ -21,17 +23,43 @@ try:
 except Exception:
     pass
 
-# Thai residential rules (mm), from the DR brief. FIRM unless noted.
-RULES_TH = {
-    "ceiling_min_habitable": 2600,   # กฎกระทรวง 55 §21
-    "ceiling_min_bath": 2000,        # กฎกระทรวง 55
-    "bedroom_area_min_mm2": 8_000_000,   # 8 m² (§20)
-    "bedroom_width_min": 2500,       # §20
-    "door_w_min": 800,               # Art.31
-    "door_h_min": 1900,              # Art.31
-    "corridor_min": 1000,            # §22
-    "circulation_min": 900,          # design walkway (UNCERTAIN vs code)
-}
+_RULES_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "dimensional_rules.v0.2.json")
+
+
+def _load_rules():
+    """Thai statutory floors from the ONE cited source (dimensional_rules v0.2,
+    section thai_code_minimums). Values in mm; each carries its legal cite.
+    Door minimums are a STUDIO floor (no general statutory interior-door min —
+    ฉ.55 ข้อ 31 is fire doors), kept at the v0.2 thresholds for gate stability."""
+    with open(_RULES_JSON, encoding="utf-8") as fh:
+        tcm = json.load(fh)["thai_code_minimums"]
+
+    def v(key):
+        return tcm[key]["value"]
+
+    def cite(key):
+        return tcm[key]["cite"].split(" — ")[0]
+
+    return {
+        "ceiling_min_habitable": v("floor_to_floor_habitable_min_mm"),
+        "ceiling_min_habitable_cite": cite("floor_to_floor_habitable_min_mm") + " (ระยะดิ่ง พื้นถึงพื้น)",
+        "ceiling_min_bath": v("bathroom_floor_to_ceiling_min_mm"),
+        "ceiling_min_bath_cite": cite("bathroom_floor_to_ceiling_min_mm"),
+        "bedroom_area_min_mm2": v("bedroom_area_min_m2") * 1e6,
+        "bedroom_area_cite": cite("bedroom_area_min_m2"),
+        "bedroom_width_min": v("bedroom_narrow_side_min_mm"),
+        "bedroom_width_cite": cite("bedroom_narrow_side_min_mm"),
+        "corridor_min": v("corridor_in_house_min_mm"),
+        "corridor_cite": cite("corridor_in_house_min_mm"),
+        "door_w_min": 800,
+        "door_h_min": 1900,
+        "door_cite": "studio floor — no general statutory interior-door min (ฉ.55 ข้อ 31 = fire doors)",
+        "circulation_min": 900,          # ergonomic design walkway (DRAFT, not code)
+    }
+
+
+RULES_TH = _load_rules()
 _WET = ("bath", "ensuite", "toilet", "wc", "ห้องน้ำ")
 
 
@@ -89,7 +117,7 @@ def check(spec):
     # 1) ceiling height (room + each sub-room, wet rooms get the lower min)
     cmin = RULES_TH["ceiling_min_habitable"]
     add("PASS" if ceiling >= cmin else "FAIL", "ceiling height (room)",
-        f"{ceiling:.0f} mm vs {cmin} min (กฎกระทรวง 55 §21)")
+        f"{ceiling:.0f} mm vs {cmin} min ({RULES_TH['ceiling_min_habitable_cite']})")
     for sr in spec.get("subrooms", []):
         wet = any(k in (sr.get("name", "") + sr.get("th", "")).lower() for k in _WET)
         smin = RULES_TH["ceiling_min_bath"] if wet else cmin
@@ -102,13 +130,13 @@ def check(spec):
     if door:
         dw, dh = float(door.get("w", 0)), float(door.get("h", 0))
         add("PASS" if dw >= RULES_TH["door_w_min"] else "FAIL", "door width",
-            f"{dw:.0f} mm vs {RULES_TH['door_w_min']} min (Art.31)")
+            f"{dw:.0f} mm vs {RULES_TH['door_w_min']} min ({RULES_TH['door_cite']})")
         add("PASS" if dh >= RULES_TH["door_h_min"] else "FAIL", "door height",
-            f"{dh:.0f} mm vs {RULES_TH['door_h_min']} min")
+            f"{dh:.0f} mm vs {RULES_TH['door_h_min']} min ({RULES_TH['door_cite']})")
 
     # 3) overall area vs the bedroom floor min (informational for a big suite)
     add("PASS" if area >= RULES_TH["bedroom_area_min_mm2"] else "WARN", "floor area (Thai bedroom min)",
-        f"{area/1e6:.1f} m² vs {RULES_TH['bedroom_area_min_mm2']/1e6:.0f} m² min (§20)")
+        f"{area/1e6:.1f} m² vs {RULES_TH['bedroom_area_min_mm2']/1e6:.0f} m² min ({RULES_TH['bedroom_area_cite']})")
 
     # 4) furniture + built-ins inside the outline polygon (all corners in)
     placed = [dict(it, _grp="item") for it in spec.get("items", [])] + \
@@ -125,6 +153,8 @@ def check(spec):
             a, b = placed[i], placed[j]
             if frozenset({a.get("kind"), b.get("kind")}) in _OK_OVERLAP:
                 continue
+            if "rug" in (a.get("kind"), b.get("kind")):
+                continue          # furniture ON a rug is the intent, not a conflict
             if _overlap(a, b):
                 add("WARN", f"overlap: {a.get('name', a.get('kind'))} / {b.get('name', b.get('kind'))}",
                     "footprints intersect (ok if stacked/against a wall)")
@@ -150,7 +180,8 @@ def report(spec, label=""):
     warns = sum(x["status"] == "WARN" for x in res)
     verdict = "FAIL" if fails else ("REVIEW" if warns else "PASS")
     print(f"  -> {verdict}  ({fails} fail, {warns} warn)")
-    print("  (Thai rules from a cited DR — verify vs the ratchakitcha text before client use)")
+    print("  (statutory floors loaded from dimensional_rules.v0.2.json thai_code_minimums —")
+    print("   cited to knowledge/codes-th; door minimums are a STUDIO floor, see docstring)")
     return res, verdict
 
 

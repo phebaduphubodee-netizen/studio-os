@@ -88,10 +88,15 @@ v004+ prompts and for the clay controls themselves
   weave) — soft physical bokeh, never arbitrary non-physical blur (turn 7).
 - Perspective is governed by camera-to-subject distance, not lens (Ansel Adams,
   turn 6).
-- **OPEN ITEM / รายการค้าง:** current pipeline `--eye` suite camera is
-  **26 mm** — a wide-angle CG tell vs the 35–50 mm standard. Candidate v0.4
-  change; do not silently fix (source: `render-photoreal-rules.md` pipeline
-  note).
+- **RESOLVED 2026-07-02 (v0.4, gate evidence over doctrine):** the `--eye`
+  camera now picks the lens by subject size (frame ≈ 2× the largest non-rug
+  piece), snapped to **26 / 28 / 35 / 50 mm**. A/B through the critique gate:
+  living_condo at 35 mm scored 4/5 (natural perspective ✓ the source rule
+  works in normal rooms); but the tight bedroom_suite at 28 mm dropped
+  room_context 5/5 → 3/5 vs 5/5 at 26 mm — in small rooms the wider frame is
+  what carries room-context, so 26 mm stays in the snap set ON EVIDENCE,
+  documented as a deviation from the 35–50 mm source standard (studio gate
+  outranks general reference for the studio's own outputs).
 
 ### 5. Environmental light + contact shadows — แสงบรรยากาศ / เงาสัมผัส (golden hour, ambient occlusion)
 

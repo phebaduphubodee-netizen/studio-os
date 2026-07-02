@@ -305,3 +305,31 @@
   via registry). v001/v002 remain immutable for diff/rollback.
 - The "name what the clay masses ARE" slot pattern carried again: white slabs
   → upholstered dining chairs, dark panel → walnut TV wall with mounted TV.
+
+## 2026-07-02 (later) — v004 production, camera v0.4, M3.1 rule unification
+- **Prompt v004 promoted** — the first registry version FED BY THE STUDIO'S OWN
+  VAULT (foreground plane-break + CCT-harmony from brand-standards/
+  render-quality.md + lighting/residential-lighting.md; lived-in-personality
+  language targeting the recurring styling_and_life 3/5). Gate evidence:
+  bedroom 4.5/5 + living 4/5, styling raised to 4/5 on BOTH (v003 split 5/3);
+  bedroom −0.5 vs v003's single roll judged within sampling variance, traded
+  for cross-room consistency. v003 = instant rollback via label.
+- **Camera v0.4 — an evidence-over-doctrine lesson worth keeping**: lens is now
+  subject-aware (frame ≈ 2× largest non-rug piece, snapped 26/28/35/50 mm).
+  The straight "35 mm per the sources" first cut framed the bedroom as
+  all-wall; 28 mm still dropped room_context 5→3; the "CG tell" 26 mm is what
+  the gate rewards in tight rooms. Living at 35 mm ✓ (the source rule holds in
+  normal rooms). Documented in render-quality.md §4 as a gate-evidence
+  deviation; general references guide, our own gate decides.
+- **M3.1 slice landed**: suite_clearance v0.3 loads Thai floors from
+  dimensional_rules.v0.2.json thai_code_minimums (ONE cited source for all
+  engines) — and the unification exposed THREE miscitations in the embedded
+  copy: ระยะดิ่ง 2600 cited §21 (is ข้อ 22, and floor-to-floor not clear
+  height); bathroom 2000 attributed to ฉ.55 (is ฉ.39 ข้อ 9); door 800/1900
+  cited "Art.31" which is FIRE-ESCAPE doors — no general statutory
+  interior-door min exists, re-tiered as an honestly-labeled studio floor.
+  Rug/furniture overlap warns whitelisted (a rug under furniture is the
+  intent). Smoke: bedroom PASS, living REVIEW→PASS-clean, same thresholds.
+- Cost note: the lens A/B burned 3 extra renders + 2 extra hybrid/critique
+  rounds (~$0.15) — cheap for settling a doctrine-vs-evidence question
+  permanently.
