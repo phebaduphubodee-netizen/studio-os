@@ -1,0 +1,57 @@
+{
+  "schema": "interior-ai/room-spec@0.1",
+  "note": "AUTO-LAYOUT DRAFT for a living 14.0x16.0ft room - a designer refines this.",
+  "room": {
+    "type": "living",
+    "width_in": 168,
+    "depth_in": 192,
+    "ceiling_in": 96,
+    "wall_thk_in": 4.5,
+    "floor_thk_in": 4.0,
+    "door": {
+      "w_in": 32,
+      "h_in": 80,
+      "wall": "south"
+    }
+  },
+  "render": false,
+  "items": [
+    {
+      "name": "sofa",
+      "kind": "sofa",
+      "x": 42.0,
+      "y": 150.0,
+      "w": 84.0,
+      "d": 36.0,
+      "h": 34
+    },
+    {
+      "name": "coffee table",
+      "kind": "coffee_table",
+      "x": 63.0,
+      "y": 112.0,
+      "w": 42.0,
+      "d": 22.0,
+      "h": 18
+    },
+    {
+      "name": "tv console",
+      "kind": "tv_console",
+      "x": 6.0,
+      "y": 6.0,
+      "w": 56.0,
+      "d": 16.0,
+      "h": 24
+    },
+    {
+      "name": "rug",
+      "kind": "rug",
+      "x": 36.0,
+      "y": 106.0,
+      "w": 96.0,
+      "d": 80.0,
+      "h": 1
+    }
+  ],
+  "layout_status": "PASS"
+}

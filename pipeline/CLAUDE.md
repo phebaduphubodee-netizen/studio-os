@@ -1,5 +1,11 @@
 # pipeline/ — generation infrastructure (loaded when working here)
 
+- scripts/ holds the ported INTERIOR-AI geometry + CD-set engine — read
+  scripts/README.md first (provenance, unvalidated status, the LLM-emits-
+  SPEC-only law). Render direction of record: HYBRID — 3D render as
+  structural control, then a Gemini image pass (docs/DECISIONS-render-assets.md);
+  this sidesteps the 6 GB-VRAM limit for FLUX local.
+
 - comfyui/workflows/*.workflow.json are VERSIONED API-format graphs.
   Never hand-edit a deployed graph; copy → bump version suffix → edit → test.
   Schema-validate before commit (validator lands in pipeline/scripts/, Phase 2).
