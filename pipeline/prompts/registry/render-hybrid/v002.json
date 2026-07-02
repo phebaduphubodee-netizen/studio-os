@@ -1,0 +1,25 @@
+{
+  "id": "render-hybrid",
+  "version": "v002",
+  "intent": "Photoreal beauty pass over a dimensionally-correct clay control render (HYBRID render direction of record, docs/DECISIONS-render-assets.md).",
+  "engine_contract": "Single-track image-edit instruction + one control image. Model choice/fallback lives in the dispatch script (pipeline/scripts/hybrid_render.py), never here.",
+  "template": "Transform this 3D clay render of a {room_type} into a photorealistic interior photograph. CRITICAL: keep the exact room geometry, camera angle, wall/window/door positions, and the position, size and proportions of every furniture piece and built-in unchanged — the layout is dimensionally accurate and must not move or be redrawn. Replace the flat clay materials with: {material_story}. Lighting: {lighting_story} — build visible depth: soft directional light with gentle gradients across the walls, warm pools and cooler shadow areas, believable contact shadows; never flat even illumination. Styling: you MAY add small lived-in decor that does not move or hide the furniture — an area rug under the main furniture group, throw pillows and a draped throw, a few books and a ceramic tray on table surfaces, one potted plant, subtle wall art where a wall is blank. Style direction: {style_brief}. Render as a professional interior-photography shot: realistic fabric weave with soft slouch in the cushions, true wood grain, physically plausible exposure, subtle glass and metal reflections. No people, no text, no watermarks, no borders.",
+  "slots": {
+    "room_type": "REQUIRED — e.g. 'living room', 'master bedroom suite'",
+    "material_story": "comma prose of the target materials",
+    "lighting_story": "the light sources and mood",
+    "style_brief": "style keywords for the room"
+  },
+  "defaults": {
+    "material_story": "warm walnut wood flooring and millwork, boucle and linen upholstery, matte off-white plaster walls, brushed-metal accents",
+    "lighting_story": "warm cove lighting plus diffuse daylight entering from the window side",
+    "style_brief": "contemporary Thai residential, calm and livable, quiet luxury"
+  },
+  "provenance": "v001 + the living_demo A/B lesson (2026-07-02): v001's locked-layout prompt with no styling license produced a sterile room — critique 2/5 (styling_and_life 0/5, lighting 2/5) vs the ad-hoc original's 4/5 which had rug/plant/books. v002 adds an explicit small-decor allowance (bounded: must not move or hide furniture) and depth language for lighting.",
+  "notes": [
+    "Client work must run on the PAID Gemini tier (free tier = no commercial rights).",
+    "Output is DRAFT until it passes critique.py + human QA.",
+    "Layout-preservation clause is load-bearing — do not weaken it in future versions.",
+    "Decor allowance is bounded on purpose: overlay_fidelity.py must still PASS (added decor reads as lone-green, which is allowed; lone-red is not)."
+  ]
+}

@@ -359,6 +359,103 @@ def add_suite_camera(x0, x1, y0, y1, h):
     bpy.context.scene.collection.objects.link(sun)
 
 
+def add_suite_eye_camera(spec, outline_m, h):
+    """v0.3 EYE-LEVEL interior camera for suites (--eye). The dollhouse overview reads
+    as a 'modular unit' to the critique gate (bedroom_suite 2026-07-02: room_context 3/5,
+    dinged exactly for that) — this is the client-facing angle instead. Generic: aim at
+    the LARGEST loose item (the bed, in a bedroom) from the farthest inset room corner
+    that has a clear eye-level line of sight past sub-room walls / full-height millwork.
+    Camera kept LEVEL (§8.3 two-point: verticals stay vertical); shift_y frames down."""
+    from mathutils import Vector
+    main = max(spec["items"], key=lambda it: float(it["w"]) * float(it["d"]))
+    tx = (float(main["x"]) + float(main["w"]) / 2.0) * MM
+    ty = (float(main["y"]) + float(main["d"]) / 2.0) * MM
+
+    # two obstacle classes: where a person can't STAND (any millwork/sub-room/tall
+    # furniture) vs what BLOCKS an eye-level ray (sub-room walls + full-height millwork
+    # only — a bed is below the lens, the ray passes over it).
+    def _bbox(e):
+        return (float(e["x"]) * MM, float(e["y"]) * MM,
+                (float(e["x"]) + float(e["w"])) * MM, (float(e["y"]) + float(e["d"])) * MM)
+    stand_blocks, ray_blocks = [], []
+    for sr in spec.get("subrooms", []):
+        sx = [p[0] for p in sr["outline_mm"]]; sy = [p[1] for p in sr["outline_mm"]]
+        bb = (min(sx) * MM, min(sy) * MM, max(sx) * MM, max(sy) * MM)
+        stand_blocks.append(bb); ray_blocks.append(bb)
+    for b in spec.get("builtins", []):
+        stand_blocks.append(_bbox(b))
+        if float(b.get("h", 0)) * MM >= 1.55:
+            ray_blocks.append(_bbox(b))
+    for it in spec.get("items", []):
+        if float(it.get("h", 400)) * MM >= 0.35:
+            stand_blocks.append(_bbox(it))
+
+    def _inside_poly(px, py):                # ray cast, handles L-shaped outlines
+        n = len(outline_m); hit = False
+        for i in range(n):
+            x1, y1 = outline_m[i]; x2, y2 = outline_m[(i + 1) % n]
+            if (y1 > py) != (y2 > py) and px < x1 + (x2 - x1) * (py - y1) / (y2 - y1):
+                hit = not hit
+        return hit
+
+    def _clear(ex, ey):
+        # standing room: inside the outline with 0.3m of air on all sides, off millwork
+        for ox, oy in ((0, 0), (0.3, 0), (-0.3, 0), (0, 0.3), (0, -0.3)):
+            if not _inside_poly(ex + ox, ey + oy):
+                return False
+        if any(bx0 - 0.3 <= ex <= bx1 + 0.3 and by0 - 0.3 <= ey <= by1 + 0.3
+               for bx0, by0, bx1, by1 in stand_blocks):
+            return False
+        for i in range(1, 20):               # sampled line-of-sight to the target
+            t = i / 20.0
+            px, py = ex + (tx - ex) * t, ey + (ty - ey) * t
+            if any(bx0 <= px <= bx1 and by0 <= py <= by1 for bx0, by0, bx1, by1 in ray_blocks):
+                return False
+        return True
+
+    # grid-sample the free floor and stand as FAR from the subject as the room allows —
+    # the 4-corner version collapsed to the bed's foot in this room (millwork on three
+    # sides + the ensuite eliminate every corner) and the frame was all feature wall.
+    xs = [p[0] for p in outline_m]; ys = [p[1] for p in outline_m]
+    cands = [(gx, gy)
+             for gx in [min(xs) + 0.4 + i * 0.4 for i in range(int((max(xs) - min(xs)) / 0.4))]
+             for gy in [min(ys) + 0.4 + j * 0.4 for j in range(int((max(ys) - min(ys)) / 0.4))]
+             if _clear(gx, gy)]
+    if not cands:
+        cands = [((min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0)]
+    ex, ey = max(cands, key=lambda c: (c[0] - tx) ** 2 + (c[1] - ty) ** 2)
+
+    cam_data = bpy.data.cameras.new("Camera")
+    cam_data.lens = 26                       # §8.3 24-50mm; wide end holds the room
+    cam_data.sensor_fit = 'HORIZONTAL'
+    eye = Vector((ex, ey, 1.5))
+    tgt = Vector((tx, ty, 1.5))              # LEVEL look -> two-point preserved
+    cam = bpy.data.objects.new("Camera", cam_data)
+    bpy.context.scene.collection.objects.link(cam)
+    cam.location = eye
+    cam.rotation_euler = (tgt - eye).to_track_quat('-Z', 'Y').to_euler()
+    cam_data.shift_y = RENDER_SHIFT_Y        # frame down to the furniture without tilting
+    try:
+        cam_data.dof.use_dof = True
+        cam_data.dof.focus_distance = (tgt - eye).length
+        cam_data.dof.aperture_fstop = 9.0    # gentle DoF, subject stays crisp
+    except Exception:
+        pass
+    bpy.context.scene.camera = cam
+    # soft cool fill from behind the lens: the eye shot runs ENCLOSED (ceiling on), so
+    # without it the room is downlights-only and the gate dings 'flat lighting' again.
+    fill_data = bpy.data.lights.new("Fill", type='AREA')
+    fill_data.energy = 60; fill_data.size = 2.0
+    try:
+        fill_data.color = (0.85, 0.90, 1.0)
+    except Exception:
+        pass
+    fill = bpy.data.objects.new("Fill", fill_data)
+    fill.location = (ex, ey, h - 0.25)
+    fill.rotation_euler = (Vector((tx, ty, 0.8)) - fill.location).to_track_quat('-Z', 'Y').to_euler()
+    bpy.context.scene.collection.objects.link(fill)
+
+
 # material family per furniture KIND, so a sofa reads as fabric and a table as wood.
 _FABRIC = {"sofa", "loveseat", "armchair", "chair", "dining_chair", "bed", "bench"}
 _WOODEN = {"coffee_table", "dining_table", "side_table", "nightstand", "desk", "table",
@@ -1233,11 +1330,18 @@ def build_suite(spec, label="suite"):
         _hero_lighting(min(xs), min(ys), max(xs), max(ys), h, cx, cy, gx0, gx1)  # layered luxury light
         _hdri_world("brown_photostudio_07", strength=0.2, rot_deg=30.0, exposure=0.0,
                     look="AgX - Medium High Contrast")
+    elif spec.get("_eye") and spec.get("items"):
+        add_interior_lights(spec, h)
+        _add_ceiling(outline_m, h)                    # enclose -> no HDRI leak over the walls
+        add_suite_eye_camera(spec, outline_m, h)
+        _hdri_world("brown_photostudio_02", strength=0.3, rot_deg=30.0, exposure=-0.1,
+                    look="AgX - Medium High Contrast")
     else:
         add_interior_lights(spec, h)
         add_suite_camera(min(xs), max(xs), min(ys), max(ys), h)
         _hdri_world("brown_photostudio_02", strength=1.0, rot_deg=30.0, exposure=-0.1)
-    name = r.get("type", "suite") + ("_hero" if spec.get("_hero") else "")
+    name = r.get("type", "suite") + ("_hero" if spec.get("_hero") else
+                                     ("_eye" if spec.get("_eye") else ""))
     save(name)
     if spec.get("render"):
         render(name, samples=(400 if hero else 256), res=((2400, 1500) if hero else (2000, 1400)))
@@ -1341,4 +1445,6 @@ if __name__ == "__main__" or True:
         _spec["render"] = True
     if "--hero" in _post_dashdash():      # close magazine shot of the lounge seating group
         _spec["_hero"] = True
+    if "--eye" in _post_dashdash():       # eye-level interior shot aimed at the main piece
+        _spec["_eye"] = True
     print(build(_spec, label=os.path.basename(_p) if _p else "DEFAULT_SPEC"))
