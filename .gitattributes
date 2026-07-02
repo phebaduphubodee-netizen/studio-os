@@ -1,0 +1,28 @@
+# Git LFS — commit this file BEFORE any binary. Retrofitting is prohibited.
+*.psd  filter=lfs diff=lfs merge=lfs -text
+*.psb  filter=lfs diff=lfs merge=lfs -text
+*.max  filter=lfs diff=lfs merge=lfs -text
+*.skp  filter=lfs diff=lfs merge=lfs -text
+*.fbx  filter=lfs diff=lfs merge=lfs -text
+*.obj  filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.usd  filter=lfs diff=lfs merge=lfs -text
+*.usdc filter=lfs diff=lfs merge=lfs -text
+*.usdz filter=lfs diff=lfs merge=lfs -text
+*.exr  filter=lfs diff=lfs merge=lfs -text
+*.hdr  filter=lfs diff=lfs merge=lfs -text
+*.tif  filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+*.dwg  filter=lfs diff=lfs merge=lfs -text
+*.dxf  filter=lfs diff=lfs merge=lfs -text
+*.ifc  filter=lfs diff=lfs merge=lfs -text
+*.pdf  filter=lfs diff=lfs merge=lfs -text
+*.zip  filter=lfs diff=lfs merge=lfs -text
+*.7z   filter=lfs diff=lfs merge=lfs -text
+*.mp4  filter=lfs diff=lfs merge=lfs -text
+*.mov  filter=lfs diff=lfs merge=lfs -text
+assets/**/*.png  filter=lfs diff=lfs merge=lfs -text
+assets/**/*.jpg  filter=lfs diff=lfs merge=lfs -text
+assets/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+assets/**/*.webp filter=lfs diff=lfs merge=lfs -text
+# .usda stays plain text (agent-parseable ASCII scene graphs)
