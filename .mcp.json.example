@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "vault": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "./knowledge"],
+      "_comment": "Read-only knowledge access. Rename this file to .mcp.json to activate."
+    }
+  },
+  "_phase2_stubs": "comfyui (http://127.0.0.1:8188 wrapper), catalog, github — add in Phase 2 per blueprint §3.5"
+}
