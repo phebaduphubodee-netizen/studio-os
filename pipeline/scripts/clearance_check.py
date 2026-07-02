@@ -22,7 +22,7 @@ try:  # keep output legible on a cp1252 Windows console (and allow Thai notes)
 except Exception:
     pass
 
-RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dimensional_rules.v0.1.json")
+RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dimensional_rules.v0.2.json")
 with open(RULES_PATH, encoding="utf-8") as _f:
     RULES = json.load(_f)
 

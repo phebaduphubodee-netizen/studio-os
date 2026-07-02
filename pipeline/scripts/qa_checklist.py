@@ -97,7 +97,7 @@ def build_markdown(spec, spec_path=None, fixtures=None):
             P.append(f"- [ ] ⚠️ {x['check']}: {x['detail']}")
     if not fails and not warns:
         P.append("- [x] No geometry FAIL/WARN raised by the engine (still confirm vs local code).")
-    P.append("- [ ] Clearance rules (`dimensional_rules.v0.1.json`) confirmed vs **local (Thai) code** — DRAFT until then.")
+    P.append("- [ ] Thai statutory floors in `dimensional_rules.v0.2.json` current vs `knowledge/codes-th/` (Authority); ergonomic values still DRAFT vs Panero & Zelnik.")
     P.append("")
 
     P.append("## 3 · Lighting (auto-layout DRAFT — KB §6)")

@@ -31,7 +31,7 @@ except Exception:
 
 # IES targets + CU/LLF live in the rules file (single source of truth, shared with
 # clearance_check.check_lighting). Load once; degrade to {} if unreadable.
-_RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dimensional_rules.v0.1.json")
+_RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dimensional_rules.v0.2.json")
 try:
     with open(_RULES_PATH, encoding="utf-8") as _rf:
         _LIGHTING_RULES = (json.load(_rf).get("lighting", {}) or {})

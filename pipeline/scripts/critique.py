@@ -52,7 +52,7 @@ if not GEMINI_API_KEY:
 from google import genai
 from google.genai import types
 
-USAGE_FILE = INTERIOR_ROOT / ".gemini_usage.json"   # project-local daily-cost counter
+USAGE_FILE = REPO_ROOT / ".gemini_usage.json"   # project-local daily-cost counter
 MODELS = {"flash": "gemini-2.5-flash", "pro": "gemini-2.5-pro"}
 
 # Fixed rubrics. Each dimension scored 0-5 (0 = broken, 5 = genuinely publishable /
