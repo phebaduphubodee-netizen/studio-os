@@ -27,6 +27,21 @@
     PowerShell 5.1 pipe). Acceptable while the permissions deny list covers the same paths —
     that second layer held in live test 2.
 ## Session learnings (agents append after major tasks)
+- 2026-07-03: INTERIOR-AI salvage port (user-directed). Carried the durable lessons:
+  (1) LLM emits a validated SPEC only — never geometry code; one fixed tested generator
+  (now pipeline/scripts/, unvalidated here — smoke test = next pipeline task).
+  (2) Render direction of record: HYBRID — 3D render as structural control + Gemini
+  image pass (~$0.04/img, paid tier for commercial rights) — chosen over local FLUX,
+  which this machine cannot run anyway (6 GB VRAM). (3) Dimensional correctness is the
+  studio's real edge; clearance engine seeds Gate 0 but its rules JSON must be
+  reconciled against codes-th (Authority outranks Panero defaults where they conflict).
+  (4) ODA DWG converter is a non-commercial-EULA landmine — dwg_ingest.py's tiering or
+  DXF-only. (5) licensing: ship assembled Combined-Work scenes only (docs/LICENSING.md).
+  NOT ported: outputs (owner-judged poor), friend/client raw data (privacy), old
+  .claude config (superseded). SECURITY FLAG for the human: an R2 secret once touched
+  a transcript via a synced .env in the predecessor projects — rotate that Cloudflare
+  R2 key. Also NLM notebook "Design Systems and Integration Protocols Interface"
+  (118 sources) queried → 5 REFERENCE summaries staged in _inbox/nlm-design-systems.
 - 2026-07-03: M1.2 closed via PR #2 (merged). codes-th now holds the Authority values
   from กฎกระทรวง ฉ.55 (รวมถึง ฉ.68/2563) + ฉ.39 (รวมถึง ฉ.63/2551) + Act overview, every
   value cited (ข้อ + PDF page), source PDFs in _inbox/codes-th-sources (LFS, ASA library).
