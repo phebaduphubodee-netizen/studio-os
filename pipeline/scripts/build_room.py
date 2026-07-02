@@ -426,7 +426,18 @@ def add_suite_eye_camera(spec, outline_m, h):
     ex, ey = max(cands, key=lambda c: (c[0] - tx) ** 2 + (c[1] - ty) ** 2)
 
     cam_data = bpy.data.cameras.new("Camera")
-    cam_data.lens = 26                       # §8.3 24-50mm; wide end holds the room
+    # v0.4: pick the lens whose frame at the subject spans ~2x the largest NON-RUG
+    # piece (a plain standoff threshold framed the bedroom as all-wall). Snap set:
+    # 28/35/50 per knowledge/brand-standards/render-quality.md §4, PLUS 26 — kept on
+    # GATE EVIDENCE over doctrine: in tight rooms (bedroom_suite) the 26mm frame
+    # scored 5/5 while 28mm dropped room_context to 3/5 (2026-07-02 A/B).
+    standoff = ((ex - tx) ** 2 + (ey - ty) ** 2) ** 0.5
+    subj = max((it for it in spec["items"] if it.get("kind") != "rug"),
+               key=lambda it: float(it["w"]) * float(it["d"]), default=main)
+    subj_dim = max(float(subj["w"]), float(subj["d"])) * MM
+    req_w = max(2.0 * subj_dim, 3.5)             # frame width wanted at the subject (m)
+    raw = 36.0 * standoff / req_w                # 36mm-sensor pinhole approximation
+    cam_data.lens = min((26.0, 28.0, 35.0, 50.0), key=lambda f: abs(f - raw))
     cam_data.sensor_fit = 'HORIZONTAL'
     eye = Vector((ex, ey, 1.5))
     tgt = Vector((tx, ty, 1.5))              # LEVEL look -> two-point preserved

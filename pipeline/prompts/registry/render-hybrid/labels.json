@@ -1,7 +1,7 @@
 {
-  "dev": "v003",
-  "staging": "v003",
-  "production": "v003",
+  "dev": "v004",
+  "staging": "v004",
+  "production": "v004",
   "_promotion_rule": "production requires critique gate >=4/5 on at least two distinct room types; re-point the label, never edit a version.",
-  "_promotion_evidence": "v003 promoted 2026-07-02: bedroom_suite (eye cam) 5/5 SHIP + living_condo (eye cam) 4/5 REWORK-styling-only; overlay fidelity eyeball-clean on both (lone red = wood grain / light pools only)."
+  "_promotion_evidence": "v004 promoted 2026-07-02 (late): bedroom_suite 4.5/5 (26mm eye cam; lighting+room_context 5/5) + living_condo 4/5 (35mm) — styling_and_life raised to 4/5 on BOTH rooms (v003 scored 5/3 split); bedroom overall -0.5 vs v003's single 5/5 roll, judged within single-sample variance and outweighed by the cross-room consistency. v003 (bedroom 5/5 + living 4/5) remains the instant rollback: re-point this label."
 }

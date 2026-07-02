@@ -1,0 +1,26 @@
+{
+  "id": "render-hybrid",
+  "version": "v004",
+  "intent": "Photoreal beauty pass over a dimensionally-correct clay control render (HYBRID render direction of record, docs/DECISIONS-render-assets.md).",
+  "engine_contract": "Single-track image-edit instruction + one control image. Model choice/fallback lives in the dispatch script (pipeline/scripts/hybrid_render.py), never here.",
+  "template": "Transform this 3D clay render of a {room_type} into a photorealistic interior photograph. CRITICAL: keep the exact room geometry, camera angle, wall/window/door positions, and the position, size and proportions of every furniture piece and built-in unchanged — the layout is dimensionally accurate and must not move or be redrawn. Replace the flat clay materials with: {material_story}. RELIGHT THE SCENE COMPLETELY — do not keep the flat, even CG illumination of the input: {lighting_story}; build a clear key-light direction with golden warm highlights, deep soft shadow areas and gentle falloff across every wall, glowing warm accents (cove light, bedside or floor lamps), and believable contact shadows under every object. Keep every light source in ONE coherent warm color-temperature family (2700-3000 K residential) — never a cool clinical source against a warm one in the same zone. The mood should read like a magazine interior shot photographed at dusk. Composition: if the immediate foreground is empty, let one small physical element break the camera plane at a frame edge (a plant leaf, the corner of a table, the back of a chair) — softly out of focus, never hiding the furniture behind it. Styling: dress the room with a SPECIFIC lived-in personality, not showroom-generic — small evidence of a real person's day (an open book left face-down, a half-finished drink on a tray, one slightly rumpled throw), layered textures (wood, ceramic, linen, aged brass), asymmetric arrangements over symmetric ones; you MAY add small decor that does not move or hide the furniture — an area rug under the main furniture group, throw pillows and a draped throw, a few books and a ceramic tray on table surfaces, one potted plant, subtle wall art where a wall is blank. Style direction: {style_brief}. Render as a professional interior photograph, NOT a perfect CG image: include subtle real-world imperfection — natural wrinkles and slouch in fabric, slight unevenness in plaster, natural variation in wood grain, a hint of lens vignetting and very fine photographic grain. No people, no text, no watermarks, no borders.",
+  "slots": {
+    "room_type": "REQUIRED — e.g. 'living room', 'master bedroom suite'; name what each clay mass IS",
+    "material_story": "comma prose of the target materials",
+    "lighting_story": "the light sources and mood",
+    "style_brief": "style keywords for the room"
+  },
+  "defaults": {
+    "material_story": "warm walnut wood flooring and millwork, boucle and linen upholstery, matte off-white plaster walls, brushed-metal accents",
+    "lighting_story": "low warm evening light with one dominant soft key direction, layered with warm cove light and a lit table or floor lamp",
+    "style_brief": "contemporary Thai residential, calm and livable, quiet luxury"
+  },
+  "provenance": "v003 + the styling_and_life ceiling (both v003 promotions scored styling 3/5, critique: 'generic, lacks personality'). Additions are VAULT-DERIVED — the first registry version fed by the studio's own distilled knowledge: foreground plane-break + CCT-harmony from knowledge/brand-standards/render-quality.md (rules 1-2) and knowledge/lighting/residential-lighting.md (CCT mixing, 2700-3000K family); lived-in-personality language targets the exact recurring critique defect. Layout lock, relight license, imperfection language carried from v003 unchanged.",
+  "notes": [
+    "Client work must run on the PAID Gemini tier (free tier = no commercial rights).",
+    "Output is DRAFT until it passes critique.py + human QA.",
+    "Layout-preservation clause is load-bearing — do not weaken it in future versions.",
+    "Foreground element is bounded: frame-edge, out of focus, never occluding furniture — overlay_fidelity lone-green only.",
+    "Promotion vs v003 requires >=4/5 on both proven room types without degrading either."
+  ]
+}
