@@ -17,6 +17,26 @@ predicted.**
   statutory floors from `knowledge/codes-th/` (Authority, per-value citations in
   `thai_code_minimums`); ergonomic values remain Panero-derived DRAFT.
   v0.1 kept for diff/rollback per the pipeline versioning convention.
+- `suite_clearance.py` (v0.4.1, 2026-07-02) — Gate 0 geometry engine for
+  room-spec@0.2 (blueprint §9.2, M3.1): statutory floors loaded from
+  `dimensional_rules.v0.2.json` (ONE cited source); exact maximal-clear-rectangle
+  leg decomposition → ข้อ 20 narrow-side and ข้อ 21 corridor trichotomies on the
+  AS-BUILT basis (build_room extrudes walls outward, so sub-room wall bands carve
+  the parent room: statutory PASS proven on as-built geometry, FAIL only on the
+  charitable raw-outline basis, WARN between); ฉ.39 bath tiers (combined 1.5 m² /
+  separated 0.9 m² + 900 mm width, resolved from fixtures); ข้อ 22 tiers
+  (habitable 2600 / ระเบียง 2200 / wet 2000 พื้นถึงเพดาน / office-dining 3000 =
+  WARN-only); circulation bottleneck via L∞ envelope erosion + multi-start BFS
+  from the whole doorway with line-of-sight reach (ergonomic floors 610 FAIL /
+  910 WARN — Panero, labeled non-statute); exact quarter-disc door-swing arcs
+  (furniture/sub-room walls FAIL, own-boundary WARN); in-bounds vs the net room
+  incl. wall bands; rot 90/270 honored. `test_gate0.py` = 50-seed acceptance
+  suite (M3.1: blocked swing / 800 mm corridor / collision all caught + a
+  regression seed per confirmed scrutiny finding) — run it after ANY engine or
+  rules change. Scrutiny evidence: `qa/reports/2026-07-02-gate0-full.md`.
+  Still open: turning circles, knee/toe (need catalog metadata);
+  `clearance_check.py` unification (below); in-unit condo corridor 1500 scope
+  (vault gap — resolve in codes-th).
 - `plan_2d.py`, `elevations.py`, `rcp.py`, `schedules.py` (+ `suite_*` variants),
   `layout_gen.py`, `furniture.py`, `lighting.py` — ezdxf CD-set generators:
   plans, elevations, reflected ceiling plans, schedules from a validated spec.

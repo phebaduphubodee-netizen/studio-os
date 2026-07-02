@@ -97,20 +97,34 @@ def _label(msp, text, cx, cy, height=TXT, layer=L_TEXT):
                  ).set_placement((cx, cy), align=TextEntityAlignment.MIDDLE_CENTER)
 
 
-def _door_swing(msp, x, y, w, wall):
-    """Draw a leaf + 90deg swing arc for a door on the given wall side."""
-    if wall == "south":       # horizontal wall (y const), swing up into the room
-        msp.add_line((x, y), (x, y + w), dxfattribs={"layer": L_DOOR})
-        msp.add_arc(center=(x, y), radius=w, start_angle=0, end_angle=90, dxfattribs={"layer": L_DOOR})
-    elif wall == "north":
-        msp.add_line((x, y), (x, y - w), dxfattribs={"layer": L_DOOR})
-        msp.add_arc(center=(x, y), radius=w, start_angle=270, end_angle=360, dxfattribs={"layer": L_DOOR})
-    elif wall == "east":      # vertical wall (x const), swing into the room (-x, +y)
-        msp.add_line((x, y), (x, y + w), dxfattribs={"layer": L_DOOR})
-        msp.add_arc(center=(x, y), radius=w, start_angle=90, end_angle=180, dxfattribs={"layer": L_DOOR})
-    else:                     # west
-        msp.add_line((x, y), (x, y + w), dxfattribs={"layer": L_DOOR})
-        msp.add_arc(center=(x, y), radius=w, start_angle=0, end_angle=90, dxfattribs={"layer": L_DOOR})
+def _door_swing(msp, x, y, w, wall, swing="in-left"):
+    """Draw a leaf + 90deg swing arc honoring the spec's swing field (same
+    convention as suite_clearance v0.4: (x,y) = leaf-segment start along +x on
+    south/north walls, +y on east/west; '-left' hinges at the segment start,
+    '-right' at the far end; 'in-' opens to the wall-owner's inside). The drawn
+    arc must MATCH the leaf the clearance engine verified — a sheet that shows a
+    different swing than the gate checked is a deliverable defect."""
+    import math
+    axis, inw = {"south": ("x", +1), "north": ("x", -1),
+                 "west": ("y", +1), "east": ("y", -1)}.get(wall, ("x", +1))
+    swing = (swing or "in-left").lower()
+    side = inw * (+1 if not swing.startswith("out") else -1)
+    left = not swing.endswith("right")
+    if axis == "x":
+        hinge = (x, y) if left else (x + w, y)
+        a_vec = (+1, 0) if left else (-1, 0)      # hinge -> latch (closed leaf)
+        o_vec = (0, side)                          # fully-open leaf
+    else:
+        hinge = (x, y) if left else (x, y + w)
+        a_vec = (0, +1) if left else (0, -1)
+        o_vec = (side, 0)
+    msp.add_line(hinge, (hinge[0] + o_vec[0] * w, hinge[1] + o_vec[1] * w),
+                 dxfattribs={"layer": L_DOOR})
+    a_deg = math.degrees(math.atan2(a_vec[1], a_vec[0])) % 360
+    o_deg = math.degrees(math.atan2(o_vec[1], o_vec[0])) % 360
+    start, end = (a_deg, o_deg) if (o_deg - a_deg) % 360 == 90 else (o_deg, a_deg)
+    msp.add_arc(center=hinge, radius=w, start_angle=start, end_angle=end,
+                dxfattribs={"layer": L_DOOR})
 
 
 def build_dxf(spec):
@@ -138,7 +152,8 @@ def build_dxf(spec):
     # 2) entry door
     door = spec.get("door")
     if door:
-        _door_swing(msp, float(door["x"]), float(door["y"]), float(door.get("w", 900)), door.get("wall", "south"))
+        _door_swing(msp, float(door["x"]), float(door["y"]), float(door.get("w", 900)),
+                    door.get("wall", "south"), door.get("swing", "in-left"))
 
     # 3) sub-rooms (ensuite): walls + door + fixtures
     for sr in spec.get("subrooms", []):
@@ -149,7 +164,8 @@ def build_dxf(spec):
                sum(sxs) / len(sxs), max(sys_) - 250, height=TXT, layer=L_TEXT)
         sd = sr.get("door")
         if sd:
-            _door_swing(msp, float(sd["x"]), float(sd["y"]), float(sd.get("w", 800)), sd.get("wall", "east"))
+            _door_swing(msp, float(sd["x"]), float(sd["y"]), float(sd.get("w", 800)),
+                        sd.get("wall", "east"), sd.get("swing", "in-left"))
         for fx in sr.get("fixtures", []):
             _rect(msp, float(fx["x"]), float(fx["y"]), float(fx["w"]), float(fx["d"]), L_FIXT)
             _label(msp, fx.get("name", fx.get("kind", "")),

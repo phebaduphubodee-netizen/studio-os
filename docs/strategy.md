@@ -334,7 +334,7 @@
   rounds (~$0.15) — cheap for settling a doctrine-vs-evidence question
   permanently.
 
-## 2026-07-02 (latest) — scrutiny of 019a67f + fixes: three lessons that cost $0.04
+## 2026-07-02 — scrutiny of 019a67f + fixes: three lessons that cost $0.04
 - **/scrutinize (18-agent cold review + adversarial verify) on our own commit
   found 12 real defects** — full report + fix outcomes in
   `qa/reports/2026-07-02-scrutiny-019a67f.md`. Top: the ceiling check compared
@@ -363,3 +363,28 @@
   verdicts" while the rug whitelist flipped living REVIEW→PASS; this round
   discloses its own verdict change (bedroom PASS→REVIEW, deliberate honesty)
   in the message itself.
+
+## 2026-07-02 (latest) — Gate 0 full (M3.1): the model IS the liability surface
+- **Shipped:** suite_clearance v0.4→v0.4.1 (leg-proof ข้อ 20/21, circulation
+  erosion+BFS, swing arcs, ฉ.39/ข้อ 22 tiers), test_gate0.py (50 seeds, M3.1
+  acceptance green), bedroom_suite re-designed to PROVEN PASS 0/0 — the engine
+  found the example suite's ensuite was physically unreachable (49 mm past the
+  bed block) and its "compliant" strip was 2400. Full evidence:
+  qa/reports/2026-07-02-gate0-full.md.
+- **Lesson 1 — zero-thickness geometry mints false statutory PASSes.** v0.4
+  "fixed" the 2400 leg by shrinking the ensuite to graze 2500 — measured to the
+  wrong wall face. build_room extrudes walls OUTWARD, so the as-built leg was
+  still 2400. Rule of record: statutory PASS is proven on the AS-BUILT basis
+  (wall bands carved), statutory FAIL only on the charitable raw basis, WARN
+  between. Any spec edit that grazes a threshold exactly is a red flag.
+- **Lesson 2 — every proxy needs a tier table, not a single floor.** Three
+  confirmed false-FAILs were single-value checks applied outside their scope
+  (combined-bath 1.5 on a legal separated WC; 2600 on a 2200 balcony; condo
+  1500 on an in-unit corridor the vault can't prove it binds). The cheap
+  discipline: before enforcing a value, read the statute's whole table and
+  encode which rows are provable vs interpretive.
+- **Lesson 3 — verification infra fails mid-run; unverified ≠ refuted.** The
+  scrutiny workflow lost its geometry finder (network) and 29/58 verifiers
+  (session limit). The failure mode to avoid is silently treating dead-verifier
+  findings as rejected — each was re-verified inline by probe; 6 of 7 were real.
+  Also: zip agent results to their lens BEFORE filter(Boolean), or labels shift.
