@@ -240,3 +240,46 @@
   fake (notebook = the only conversation boundary — BRAINDEAD's lesson,
   re-confirmed here), JSON output is prefixed with warning lines, history
   schema is `qa_pairs[]`.
+
+## 2026-07-02 — NLM lane stress-tested (5-agent workflow): position CONFIRMED, then hardened
+- Owner asked whether the working method still stands. Answered with evidence,
+  not opinion: A/B (same 6 questions through vault_search AND notebooklm) + a
+  3-lens red team (ops / privacy / integrity), all empirical.
+- **A/B confirms the vault-first / NLM-for-gaps split exactly**: vault ~1 s
+  answers with legal citations on statutory questions (mr55 ข้อ 20/22 precise);
+  NLM 3/6 fully grounded at 4-5/5 on design-theory (bed clearance 914 mm cited,
+  CCT mixing, staging checklist) at ~44 s/ask. Critical negative proof: NLM does
+  NOT hold Thai law and VOLUNTEERS MR55 numbers from model memory (zero [n]
+  grounding on one) — the codes-th-outranks rule is load-bearing, keep forever.
+- **Privacy was 100% honor-system** (red team, proven live): guard_bash had
+  zero notebooklm awareness — five realistic leak commands all passed exit 0
+  (prompt-file on client brief, source-add of client profile, piping brief.json
+  into ask, share public, inline query with name+address+dims). FIXED same day:
+  5 block patterns in guard_bash.py + 10 test_guards.sh cases (20/20 green,
+  incl. false-positive checks: generic ask, list preflight, the word "share"
+  inside a question, nlm-output-piped-OUT).
+- **Ops hardening encoded in CLAUDE.md** (each verified in CLI source by the
+  red team): preflight = `list --json` not `doctor` (doctor only checks a local
+  cookie exists); explicit `-n` mandatory (bare ask resumed the WRONG notebook
+  — context.json pointed at a BRAINDEAD DR notebook); single-flight (unlocked
+  context.json + one server conversation per notebook = concurrent asks corrupt
+  turn attribution); `--timeout 120` (default 30 s strands long syntheses);
+  ≤10 asks/unattended run; lane-down ⇒ vault-only + append to
+  `_inbox/nlm-queue.md`, never block a gate on NLM.
+- **Integrity gaps closed**: committed `sources-manifest.md` (433 sources across
+  both notebooks — the [n] audit chain no longer dead-ends in a mutable Google
+  account); qa-history.json refreshed UTF-8 with all 14 turns (drift had already
+  happened day one: staged file cited turn 7, transcript stopped at 6);
+  future-dated provenance headers corrected; new `scripts/inbox_audit.py` makes
+  distillation debt visible (today: 36 staged files, 6 promoted dirs EMPTY —
+  ergonomics/lighting/materials/styles serve from _inbox staging only).
+- **PR-only proposals for the owner** (settings.json is hook-protected):
+  (1) PostToolUse audit hook logging every Bash command containing `notebooklm`
+  to logs/nlm-audit.log (morning-review backstop); (2) add `Bash(notebooklm:*)`
+  to the ask list for web-search parity in interactive sessions; (3) consider
+  `git mv knowledge/_inbox _inbox` so the vault MCP mount stops serving staging
+  as truth — design change, owner's call.
+- Meta: the red team also caught MY OWN day-old mistakes (wrapper path missing
+  the OneDrive segment — an agent following it would improvise raw source-add;
+  mojibake in the committed transcript). Adversarial verification of one's own
+  fresh work is worth the tokens.

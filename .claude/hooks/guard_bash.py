@@ -33,6 +33,20 @@ BLOCKED = [
      "piping web content into Invoke-Expression"),
     (r"(?i)\b(stop-computer|restart-computer)\b", "system power command"),
     (r"(?i)\b(format-volume|clear-disk|initialize-disk)\b", "disk format/initialize"),
+    # NotebookLM external-research lane (CLAUDE.md): client data must never reach
+    # Google. Generic asks pass; these are the realistic leak vectors (red-teamed
+    # 2026-07-02 — all five passed the guard before these patterns existed).
+    (r"(?i)\bnotebooklm\b[^\"'|;&]*\bshare\b",
+     "notebooklm share (external exposure — no studio use case; unblock via PR)"),
+    (r"(?i)\bnotebooklm\b(?=.*(--prompt-file|source\s+add|add-research))"
+     r"(?=.*(clients[/\\]|projects[/\\]|00_intake|01_brief))",
+     "uploading client/project files to NotebookLM"),
+    (r"(?i)(clients[/\\]|projects[/\\])[^|;&]*\|[^|;&]*\bnotebooklm\b",
+     "piping client/project file content into NotebookLM"),
+    (r"(?i)\bnotebooklm\b[^|;&]*(\$\(|`)",
+     "command substitution into a NotebookLM query (unreviewable content)"),
+    (r"(?i)\bnotebooklm\b.*\b(PRJ-\d{4}-\d{3}|C-\d{3})\b",
+     "client/project identifier in a NotebookLM command"),
 ]
 
 # Paths that must never be touched via shell redirection/moves either.

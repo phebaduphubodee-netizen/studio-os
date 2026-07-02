@@ -53,19 +53,40 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
 - `comfyui`, `catalog`, `git` — Phase 2+; keep stubs commented until then.
 
 ## External research lane (NotebookLM)
-- `notebooklm` CLI is installed + authenticated on this machine. Design corpora:
-  `a5a43395` (Design Systems, 118 sources), `79476082` (lighting/rendering).
-- Fire it when the vault has a gap; vault (knowledge-manager) stays first for
-  anything already ingested. Answers are REFERENCE tier: stage in `_inbox/`
-  with notebook/turn attribution, distill into `knowledge/` before any value
-  gates a deliverable. codes-th citations always outrank NLM answers.
-- PRIVACY: generic questions only — never client names, addresses, dimensions,
-  or plan details in a query (same rule as web search).
-- Pitfalls: `ask --new` is advertised but broken — the NOTEBOOK is the only
-  conversation boundary; `--json` output has warning lines before the JSON
-  (skip to first `{`); history schema = `qa_pairs[{turn,question,answer}]`.
-  For firing full DRs with new sources, use the import-safe wrapper at
-  `Desktop/BRAINDEAD/scripts/notebooklm_dr.py`.
+- `notebooklm` CLI is installed + authenticated. Design corpora: `a5a43395`
+  (Design Systems, 118 sources), `79476082` (lighting/rendering). Source
+  manifests: `knowledge/_inbox/nlm-design-systems/sources-manifest.md`.
+- Vault (knowledge-manager) FIRST for anything already ingested; NLM fires on
+  vault GAPS. A/B-proven split (2026-07-02): statutory/ingested → vault (~1 s,
+  cited); design-theory depth → NLM (~44 s, grounded). NLM does NOT hold Thai
+  law — it volunteers MR55 numbers from model memory: never accept statutory
+  values from NLM; codes-th always outranks.
+- Answers are REFERENCE tier: stage in `_inbox/` with notebook/turn attribution
+  AND a refreshed `qa-history.json` in the same commit; resolve `[n]` markers to
+  real source titles at staging time; distill into `knowledge/` before any value
+  gates a deliverable. Run `python scripts/inbox_audit.py` to see what's aging.
+- PRIVACY (hook-enforced in guard_bash.py, tested in test_guards.sh): generic
+  questions only — no client names/addresses/dimensions/plan details; round any
+  numerics to bands (a combination of specifics identifies a unit without a
+  name). `--prompt-file` / `source add` must never point at `clients/` or
+  `projects/`; `share` is blocked outright. A leaked turn is a SERVER-SIDE
+  incident — delete the conversation in the NLM UI, not just local cache.
+- Ops discipline (unattended runs): preflight with `notebooklm list --json`
+  (`doctor` only checks a local cookie); every ask passes `-n <id>` explicitly
+  (bare ask resumes an arbitrary notebook) + `--timeout 120`; NLM calls are
+  SINGLE-FLIGHT — never parallel asks (shared context.json + one server-side
+  conversation per notebook); budget ≤10 asks per unattended run; scripted use
+  always `--json`, classify failures by the JSON `code` field (all failure
+  classes exit 1); on auth/quota/network failure treat the lane as DOWN for the
+  rest of the run — continue vault-only, append the question to
+  `knowledge/_inbox/nlm-queue.md`, never block a gate on an NLM answer. On
+  RPC timeout, check `history --json` for the stranded answer before re-asking.
+- Pitfalls: `ask --new` is broken — the NOTEBOOK is the only conversation
+  boundary; warnings go to stderr, so capture stdout only (if streams are
+  merged, skip to the first LINE starting with `{`); history schema =
+  `qa_pairs[{turn,question,answer}]`. For full DRs with new sources use the
+  import-safe wrapper `C:/Users/teza_/OneDrive/Desktop/BRAINDEAD/scripts/
+  notebooklm_dr.py`; prune DR notebooks after distillation (account cap ~100).
 
 ## Current phase
 Phase 0 → 1: foundation, guardrails, studio-vault migration into `knowledge/`.
