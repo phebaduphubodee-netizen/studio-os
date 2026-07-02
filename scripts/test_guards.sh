@@ -22,6 +22,18 @@ check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"echo hac
 check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"git status"}}' "git status"
 check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"python3 scripts/scaffold_project.py PRJ-2026-001 test"}}' "scaffold script"
 
+echo "== guard_bash.py : NotebookLM lane =="
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm share public --enable"}}' "nlm share public"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm ask --prompt-file projects/PRJ-2026-001_test/00_intake/client-brief-notes.md"}}' "nlm prompt-file from project intake"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm source add clients/C-014/profile.md"}}' "nlm source add client file"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"cat projects/PRJ-2026-001_test/00_intake/brief.json | notebooklm ask -n a5a43395 \"summarize\""}}' "pipe project brief into nlm"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm ask -n a5a43395 \"$(cat brief.json)\""}}' "command substitution into nlm ask"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm ask -n a5a43395 \"bedroom layout for PRJ-2026-001 unit\""}}' "project ID inside nlm query"
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm ask -n a5a43395 --timeout 120 \"What CCT should residential bedrooms use?\""}}' "generic nlm ask"
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm list --json"}}' "nlm list preflight"
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm ask -n a5a43395 \"how should open-plan zones share lighting?\""}}' "generic question containing the word share"
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"notebooklm history -n a5a43395 --json | python -c \"import json,sys; print(1)\""}}' "nlm output piped OUT to python"
+
 echo "== guard_paths.py =="
 check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Edit","tool_input":{"file_path":"qa/thresholds.yaml"}}' "edit thresholds.yaml"
 check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":"knowledge/codes-th/egress.md"}}' "write codes-th"

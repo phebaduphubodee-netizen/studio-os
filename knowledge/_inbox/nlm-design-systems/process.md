@@ -1,6 +1,6 @@
 # Design phases, deliverables, CD-set anatomy (NCIDQ/Piotrowski)
 > PROVENANCE: NotebookLM notebook "Design Systems and Integration Protocols Interface"
-> (a5a43395-e085-4fe6-a46c-4a8f7b438cc2, 118 sources), asked 2026-07-03.
+> (a5a43395-e085-4fe6-a46c-4a8f7b438cc2, 118 sources), asked 2026-07-02 (header previously future-dated by model recall; corrected from git commit date, integrity red-team 2026-07-02).
 > STATUS: secondary summary grounded in the notebook's book/standard sources —
 > REFERENCE tier, NOT Authority. Numbered [n] citations refer to notebook sources
 > (full Q&A in qa-history.json). File to: knowledge/classifications/ or studio-vault checklists after human review.
