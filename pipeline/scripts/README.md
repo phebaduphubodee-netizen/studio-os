@@ -28,6 +28,12 @@ predicted.**
   clay control render + "keep exact layout" instruction → Gemini image model →
   photoreal repaint at ~$0.04/img. Ported from INTERIOR-AI tools/gemini_image.py.
   Client work must run on the PAID tier (free tier = no commercial rights).
+  Accepts `"@<intent>[@label]"` to pull the compiled instruction from
+  `pipeline/prompts/registry/` (M2.2) — prefer that over ad-hoc CLI text.
+- `overlay_fidelity.py` — layout-fidelity gate for the hybrid pass: edge overlay
+  (control RED / candidate GREEN / aligned YELLOW) + structure-recall metric.
+  Proven 2026-07-02 on bedroom_suite: 90.7% recall PASS, lone red = light pool
+  + wood grain only. Numbers flag; a human eyeballs the overlay for the call.
 - `assets.py` — Poly Haven CC0 fetcher (populates `assets/shared/cc0/`).
 - `package.py`, `qa_checklist.py`, `make_all.py` — deliverable assembly.
 - `build_room.py` (Blender materializer) / `build_room.rb` (native SketchUp

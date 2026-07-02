@@ -150,3 +150,36 @@
 - Ops note for owner: `.env` now holds three live keys inside a OneDrive-synced
   folder — the predecessor's key leak came from a synced transcript. Fine for
   now (own cloud), but weigh this in the standing OneDrive-relocation decision.
+
+## 2026-07-02 (night) — M2.1 closed on the real unit; M2.2 registry live
+- **M2.1 acceptance run**: bedroom_suite (the real-project-derived, anonymized
+  spec) through the FULL suite flow hands-off: suite_clearance PASS (17/17,
+  Thai-code metric checks) → suite_package (metric plan + RCP + 4 elevations +
+  schedules + SHEETSET.pdf) → Blender 5.1 clay render (spec@0.2 polygon path,
+  2 CC0 models, 17 downlights) → critique 1/5 NOT_CLIENT_READY (correct for
+  clay) → hybrid pass → critique 3/5 REWORK.
+- **M2.2 opened for real**: `pipeline/prompts/registry/render-hybrid/v001.json`
+  — compiled template + slots + defaults, immutable-version + labels.json per
+  pipeline/CLAUDE.md. `hybrid_render.py` now resolves `"@render-hybrid[@label]"`
+  + `key=value` slot fills; the bedroom hybrid ran FROM the registry (label
+  staging→v001), not ad-hoc CLI. Lesson encoded in the payload's provenance
+  field: the living run's exact prompt text was never preserved — the registry
+  exists so that never recurs.
+- **Fidelity is now measured, not vibes**: new `overlay_fidelity.py` (edge
+  overlay: control RED / candidate GREEN / aligned YELLOW + recall metric).
+  bedroom hybrid vs clay = 90.7% structure recall, PASS; eyeball confirms lone
+  red is only the spotlight pool + redrawn wood grain (light/texture, not
+  layout). This is the automatable half of the "CAD overlay" check — the other
+  half (vs the client's actual DWG) is a client-episode task by nature: the real
+  DWG can't live in this repo (privacy), and the spec itself notes positions
+  were approximated from a plan image.
+- Why bedroom scored 3/5 where living got 4/5: the suite builder's camera is a
+  DOLLHOUSE bird's-eye (room_context/lighting dinged for "modular unit" feel).
+  Not a regression — a v0.3 suite camera (eye-level interior) is the obvious
+  next lever, plus a stronger lighting_story slot for v002 of the prompt.
+- Promotion discipline held: production label stays NULL — the rule (≥4/5 on
+  two distinct room types) isn't met yet (living 4/5 was pre-registry; bedroom
+  3/5). Staging carries v001.
+- Transient Gemini API failure on the first critique call AGAIN (retry clean).
+  Pattern is consistent: single calls must be retried once before alarming;
+  run_batch's never-raise semantics remain the right default.

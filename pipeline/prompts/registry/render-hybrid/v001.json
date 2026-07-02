@@ -1,0 +1,24 @@
+{
+  "id": "render-hybrid",
+  "version": "v001",
+  "intent": "Photoreal beauty pass over a dimensionally-correct clay control render (HYBRID render direction of record, docs/DECISIONS-render-assets.md).",
+  "engine_contract": "Single-track image-edit instruction + one control image. Model choice/fallback lives in the dispatch script (pipeline/scripts/hybrid_render.py), never here.",
+  "template": "Transform this 3D clay render of a {room_type} into a photorealistic interior photograph. CRITICAL: keep the exact room geometry, camera angle, wall/window/door positions, and the position, size and proportions of every furniture piece and built-in unchanged — the layout is dimensionally accurate and must not move or be redrawn. Replace the flat clay materials with: {material_story}. Lighting: {lighting_story}. Style direction: {style_brief}. Render as a professional interior-photography shot: realistic fabric weave, true wood grain, soft contact shadows, subtle glass and metal reflections, physically plausible exposure. No people, no text, no watermarks, no borders.",
+  "slots": {
+    "room_type": "REQUIRED — e.g. 'living room', 'master bedroom suite'",
+    "material_story": "comma prose of the target materials",
+    "lighting_story": "the light sources and mood",
+    "style_brief": "style keywords for the room"
+  },
+  "defaults": {
+    "material_story": "warm walnut wood flooring and millwork, boucle and linen upholstery, matte off-white walls, brushed-metal accents",
+    "lighting_story": "soft warm cove lighting plus diffuse daylight from the window side, gentle falloff, no blown highlights",
+    "style_brief": "contemporary Thai residential, calm and livable, quiet luxury"
+  },
+  "provenance": "Generalized 2026-07-02 from the ad-hoc CLI instruction proven on living_demo: clay control 1/5 NOT_CLIENT_READY -> hybrid 4/5 REWORK (photoreal/proportion/furniture 5/5). Exact original CLI text was not preserved — this registry exists so that never happens again.",
+  "notes": [
+    "Client work must run on the PAID Gemini tier (free tier = no commercial rights).",
+    "Output is DRAFT until it passes critique.py + human QA.",
+    "Layout-preservation clause is load-bearing — do not weaken it in future versions."
+  ]
+}

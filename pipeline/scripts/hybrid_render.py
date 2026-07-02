@@ -10,6 +10,9 @@ can't cheaply reach). Proven in INTERIOR-AI at ~PORS quality, ~$0.04/image
 
 Usage:
   python pipeline/scripts/hybrid_render.py INPUT.png "instruction" OUTPUT.png
+  python pipeline/scripts/hybrid_render.py INPUT.png "@render-hybrid" OUTPUT.png room_type="master bedroom suite"
+      # "@<intent>[@label]" resolves a compiled prompt from pipeline/prompts/registry/
+      # (label defaults to staging); trailing key=value args fill template {slots}.
 
 Commercial note: free tier restricts commercial rights — client work must run on
 the PAID tier (docs/DECISIONS-render-assets.md). Output is a DRAFT until it passes
@@ -125,8 +128,38 @@ def edit(inp, prompt, out):
     return False
 
 
+REGISTRY = REPO_ROOT / "pipeline" / "prompts" / "registry"
+
+
+def resolve_prompt(ref, overrides):
+    """'@<intent>[@label]' -> compiled instruction from the prompt registry.
+    Registry payloads are immutable versions; labels.json picks the version.
+    `overrides` (dict) fills template {slots} on top of the payload defaults."""
+    parts = ref.lstrip("@").split("@")
+    intent, label = parts[0], (parts[1] if len(parts) > 1 else "staging")
+    d = REGISTRY / intent
+    labels = json.loads((d / "labels.json").read_text(encoding="utf-8"))
+    version = labels.get(label)
+    if not version:
+        raise SystemExit(f"registry: label '{label}' of '{intent}' points to no version yet")
+    payload = json.loads((d / f"{version}.json").read_text(encoding="utf-8"))
+    slots = dict(payload.get("defaults", {}))
+    slots.update(overrides)
+    try:
+        prompt = payload["template"].format(**slots)
+    except KeyError as e:
+        raise SystemExit(f"registry: missing required slot {e} for {intent}@{label} "
+                         f"({version}) — pass it as key=value")
+    print(f"  prompt registry: {intent}@{label} -> {version}")
+    return prompt
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         raise SystemExit(__doc__)
-    ok = edit(sys.argv[1], sys.argv[2], sys.argv[3])
+    instruction = sys.argv[2]
+    if instruction.startswith("@"):
+        overrides = dict(kv.split("=", 1) for kv in sys.argv[4:] if "=" in kv)
+        instruction = resolve_prompt(instruction, overrides)
+    ok = edit(sys.argv[1], instruction, sys.argv[3])
     sys.exit(0 if ok else 1)
