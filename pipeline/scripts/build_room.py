@@ -379,18 +379,16 @@ def add_suite_eye_camera(spec, outline_m, h):
     # the hero does NOT touch is scenery, not the group (a far dining rug used to
     # steal the aim and render an empty-rug long shot): aim at the hero instead.
     _area = lambda it: float(it["w"]) * float(it["d"])
-    # AIM OVERRIDE (env EYE_AIM): frame a specific element by kind/name substring —
-    # e.g. EYE_AIM=tv to shoot the foot-wall TV instead of the default largest item.
-    # Searches items + builtins (a wall TV is a builtin); it sizes the lens AND is the
-    # aim point. Unset -> the gate-evidenced largest-piece rule below (unchanged).
-    _aim = (os.environ.get("EYE_AIM") or "").strip().lower()
-    _aim_el = None
-    if _aim:
-        _pool = list(loose) + list(spec.get("builtins", []))
-        _aim_el = next((e for e in _pool if _aim in str(e.get("kind", "")).lower()
-                        or _aim in str(e.get("name", "")).lower()), None)
-        if _aim_el is None:
-            raise SystemExit(f"--eye EYE_AIM='{_aim}' matched no item/builtin by kind or name")
+    # AIM OVERRIDE (env EYE_AIM): frame a specific element by kind/name — e.g. EYE_AIM=tv
+    # to shoot the foot-wall TV instead of the default largest item. Selection (exact kind
+    # -> exact name -> substring, missing-bbox guard) lives in camera_config so it is
+    # unit-testable; here we only turn its ValueError into the loud SystemExit convention.
+    # Unset -> the gate-evidenced largest-piece rule below (unchanged).
+    try:
+        _aim_el = camera_config.select_aim_element(
+            list(loose) + list(spec.get("builtins", [])), os.environ.get("EYE_AIM"))
+    except ValueError as e:
+        raise SystemExit(f"--eye {e}")
     def _touches(a, b):
         ax0, ay0 = float(a["x"]), float(a["y"])
         ax1, ay1 = ax0 + float(a["w"]), ay0 + float(a["d"])

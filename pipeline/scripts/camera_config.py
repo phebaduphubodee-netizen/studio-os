@@ -51,3 +51,37 @@ def ray_block_min_h_m(eye_h=None):
 # reading env once at import is correct)
 EYE_CAM_HEIGHT_M = eye_cam_height_m()
 RAY_BLOCK_MIN_H_M = ray_block_min_h_m()
+
+
+def select_aim_element(elements, aim):
+    """Pick the element the --eye camera should frame for EYE_AIM=<substr> (see
+    build_room.add_suite_eye_camera). Priority: EXACT kind, then EXACT name, then a
+    substring of kind or name — so EYE_AIM=tv frames a wall 'tv' before a 'tv_console',
+    not the first arbitrary match. `elements` is the search pool (items + builtins) in
+    priority order. Returns the element, or None when `aim` is falsy (default camera
+    behaviour). Raises ValueError when aim is set but nothing matches OR the match lacks
+    a usable footprint (x/y/w/d) — build_room turns that into a loud SystemExit rather
+    than a bare KeyError mid-render. Pure/importable, so it is unit-testable (build_room
+    is not — it imports bpy)."""
+    if not aim:
+        return None
+    aim = str(aim).strip().lower()
+    if not aim:
+        return None
+
+    def kind(e):
+        return str(e.get("kind") or "").lower()
+
+    def name(e):
+        return str(e.get("name") or "").lower()
+
+    el = (next((e for e in elements if kind(e) == aim), None)
+          or next((e for e in elements if name(e) == aim), None)
+          or next((e for e in elements if aim in kind(e) or aim in name(e)), None))
+    if el is None:
+        raise ValueError(f"EYE_AIM={aim!r} matched no item/builtin by kind or name")
+    for k in ("x", "y", "w", "d"):
+        if el.get(k) is None:
+            raise ValueError(f"EYE_AIM match {name(el) or kind(el) or '?'!r} lacks '{k}' "
+                             f"— cannot aim the camera at it")
+    return el
