@@ -1,0 +1,168 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "note": "EXAMPLE master-bedroom-suite spec, mm, y-up, origin SW corner. Anonymized 2026-07-03: derived from a real project's dimensioned plan; all client/firm/project identifiers and source references stripped. Room 5500x6500, ceiling 2800. Windows omitted (unknown), door+ensuite placement are draft design judgment. REVISED 2026-07-02 (Gate 0 v0.4 findings, all in the draft-judgment zone): ensuite interior 3100->2900 so the AS-BUILT east leg proves 2500 (walls extrude outward 100 per build_room; kh.55 kh.20); ensuite door moved to its south wall, out-swing (east-face door was unreachable past the bed block); headboard depth 600->574 to clear the ensuite's as-built south wall band; wardrobe 3200->2100 opening a 1000 mm walkway; entry door shifted 100 west (panel pinched entry to ~800); vanity stool moved into the ensuite as a fixture (its old coords sat on the shower); end-of-bed bench REMOVED - no position satisfies the 610 ergonomic pinch in this layout.",
+  "room": {
+    "type": "bedroom_suite",
+    "outline_mm": [
+      [
+        0,
+        0
+      ],
+      [
+        5500,
+        0
+      ],
+      [
+        5500,
+        6500
+      ],
+      [
+        0,
+        6500
+      ]
+    ],
+    "ceiling_mm": 2800,
+    "wall_thk_mm": 100
+  },
+  "door": {
+    "x": 4400,
+    "y": 0,
+    "w": 900,
+    "h": 2000,
+    "wall": "south",
+    "swing": "in-left"
+  },
+  "subrooms": [
+    {
+      "name": "ensuite",
+      "th": "ห้องน้ำในตัว",
+      "outline_mm": [
+        [
+          0,
+          3900
+        ],
+        [
+          2900,
+          3900
+        ],
+        [
+          2900,
+          6500
+        ],
+        [
+          0,
+          6500
+        ]
+      ],
+      "ceiling_mm": 2000,
+      "door": {
+        "x": 1000,
+        "y": 3900,
+        "w": 800,
+        "wall": "south",
+        "swing": "out-right"
+      },
+      "fixtures": [
+        {
+          "name": "อ่างอาบน้ำ (tub)",
+          "kind": "tub",
+          "x": 300,
+          "y": 5700,
+          "w": 1700,
+          "d": 750
+        },
+        {
+          "name": "ฝักบัว (shower)",
+          "kind": "shower",
+          "x": 300,
+          "y": 4700,
+          "w": 900,
+          "d": 900
+        },
+        {
+          "name": "อ่างล้างหน้าคู่ 2.85m",
+          "kind": "vanity_double",
+          "x": 25,
+          "y": 3950,
+          "w": 2850,
+          "d": 600
+        },
+        {
+          "name": "ชักโครก (WC)",
+          "kind": "wc",
+          "x": 2450,
+          "y": 4700,
+          "w": 400,
+          "d": 650
+        },
+        {
+          "name": "เก้าอี้เครื่องแป้ง (vanity stool)",
+          "kind": "stool",
+          "x": 1400,
+          "y": 4650,
+          "w": 546,
+          "d": 509
+        }
+      ]
+    }
+  ],
+  "builtins": [
+    {
+      "name": "หัวเตียง/ทีวี built-in",
+      "kind": "headboard_tv",
+      "x": 1970,
+      "y": 3226,
+      "w": 3330,
+      "d": 574,
+      "h": 2800
+    },
+    {
+      "name": "ตู้เสื้อผ้า built-in",
+      "kind": "wardrobe",
+      "x": 0,
+      "y": 0,
+      "w": 2100,
+      "d": 600,
+      "h": 2800
+    },
+    {
+      "name": "ตู้ built-in",
+      "kind": "wardrobe",
+      "x": 0,
+      "y": 1200,
+      "w": 600,
+      "d": 2500,
+      "h": 2800
+    },
+    {
+      "name": "ตู้ built-in ข้างเตียง",
+      "kind": "wardrobe",
+      "x": 5350,
+      "y": 500,
+      "w": 100,
+      "d": 3250,
+      "h": 2800
+    }
+  ],
+  "items": [
+    {
+      "name": "ฐานเตียง",
+      "kind": "platform",
+      "x": 3100,
+      "y": 966,
+      "w": 2200,
+      "d": 2260,
+      "h": 150
+    },
+    {
+      "name": "เตียง 6 ฟุต",
+      "kind": "bed",
+      "x": 3198,
+      "y": 1066,
+      "w": 2000,
+      "d": 2160,
+      "h": 600
+    }
+  ]
+}

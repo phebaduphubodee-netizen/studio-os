@@ -1,0 +1,23 @@
+{
+  "scores": {
+    "palette_coherence": 5,
+    "lighting_quality": 5,
+    "composition": 5,
+    "furniture_realism": 4,
+    "room_context": 5,
+    "styling_and_life": 5,
+    "proportion_and_scale": 5,
+    "photoreal_believability": 4
+  },
+  "overall_0_5": 4.5,
+  "verdict": "SHIP",
+  "top_defects": [
+    "The platform bed frame's extreme simplicity, while a design choice, lacks the intricate detail often expected in high-end photorealistic furniture renders.",
+    "A subtle uniformity in the wood grain across the wall panels, particularly visible upon close inspection, slightly detracts from the natural variation expected in real wood."
+  ],
+  "one_line": "A beautifully lit and styled bedroom render that achieves near-photorealistic quality, though a touch more natural imperfection would elevate it further.",
+  "if_client_deliverable": "This render is highly acceptable for a paying client. Its strong photorealism, cohesive design, and excellent atmospheric lighting make it a professional-grade deliverable, with any minor imperfections being negligible in overall impact.",
+  "_artifact": "room_bedroom_suite_eye_hybrid_prj002_v01.png",
+  "_kind": "render",
+  "_model": "gemini-2.5-flash"
+}
