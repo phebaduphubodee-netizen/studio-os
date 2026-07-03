@@ -152,13 +152,19 @@ def _spec(fn):
     return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else None
 
 
-def test_real_bedroom_suite_is_caught():
+def test_real_bedroom_suite_tv_now_positioned():
+    # the fused headboard_tv was SPLIT onto the foot wall (2026-07-03 FUNCTION-gate fix):
+    # the real spec must now PASS the TV rules (fused -> positioned) and no longer FAIL.
+    # (test_fused_headboard_tv_is_flagged + living_condo still prove the CATCH capability.)
     spec = _spec("bedroom_suite.json")
     if spec is None:
         return
     rep = P.check(spec)
-    assert rep["tv_status"] == "fused" and rep["status"] == P.FAIL
+    assert rep["tv_status"] == "positioned"
+    assert _s(rep, "tv_positioned") == P.PASS
+    assert _s(rep, "tv_faces_viewer") == P.PASS
     assert _s(rep, "door_vs_bed_head") == P.PASS      # head north, door south -> ok
+    assert rep["status"] != P.FAIL                    # only the pre-existing 100mm wardrobe WARN remains
 
 
 def test_real_living_condo_is_caught():
@@ -313,10 +319,10 @@ def test_inch_spec_tv_behind_sofa_fails():
 # ---- integration: the FUNCTION layer is now part of the pre-render Gate 0 (repair_loop) ----
 def test_repair_loop_gate0_includes_function_and_fails_fused_tv():
     import repair_loop
-    spec = _spec("bedroom_suite.json")
+    spec = _spec("living_condo.json")                                     # still a fused tv_feature
     if spec is None:
         return
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "specs", "bedroom_suite.json")
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "specs", "living_condo.json")
     results, verdict = repair_loop._real_geometry_fn(spec, path)
     assert verdict == P.FAIL                                              # fused TV escalates the gate
     assert any(r["check"] == "function:tv_positioned" and r["status"] == P.FAIL for r in results)
@@ -327,7 +333,7 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_living_tv_behind_sofa_fails, test_door_on_head_wall_fails, test_door_on_other_wall_passes,
          test_door_rule_skips_without_bed_or_door, test_fused_headboard_tv_is_flagged,
          test_no_tv_room_does_not_false_fail, test_name_only_thai_tv_detected_as_fused,
-         test_real_bedroom_suite_is_caught, test_real_living_condo_is_caught,
+         test_real_bedroom_suite_tv_now_positioned, test_real_living_condo_is_caught,
          test_furniture_within_norms_passes, test_oversized_bed_warns,
          test_bad_coffee_table_height_warns, test_shallow_wardrobe_warns,
          test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_flags_shallow_wardrobe,
