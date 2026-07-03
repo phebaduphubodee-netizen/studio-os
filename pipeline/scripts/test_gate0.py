@@ -143,6 +143,11 @@ expect("seed2j exact 610 gap -> WARN at 610", sc.check(pinched(610)),
        "circulation: entry -> sofa", "WARN", detail_has="bottleneck 610")
 expect("seed2k exact 910 gap -> PASS at 910", sc.check(pinched(910)),
        "circulation: entry -> sofa", "PASS", detail_has="bottleneck 910")
+# ...but NO grace band: a gap 0.4 mm under the floor must stay under it
+expect("seed2l 609.6 gap -> FAIL at 609 (no grace band)", sc.check(pinched(609.6)),
+       "circulation: entry -> sofa", "FAIL", detail_has="bottleneck 609")
+expect("seed2m 909.6 gap -> WARN at 909", sc.check(pinched(909.6)),
+       "circulation: entry -> sofa", "WARN", detail_has="bottleneck 909")
 
 # a bed on a wide platform ledge is reachable by stepping onto the platform
 s = room(5000, 5500, rtype="bedroom")
