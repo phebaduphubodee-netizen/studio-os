@@ -127,12 +127,12 @@ def main():
     #     TV behind the viewer's head, the entry door on the bed-head wall. A FUNCTION FAIL
     #     STOPS here, same discipline as clearance — we don't render a functionally-broken
     #     layout. WARN/REVIEW prints but does not block (a designer's call).
-    import placement_logic
     fverdict = "UNWIRED"
     try:
+        import placement_logic   # inside the guard: a load/syntax error must not block a valid build
         print(placement_logic.format_report(spec, os.path.basename(spec_path)))
         _fres, fverdict = placement_logic.report(spec)
-    except Exception as e:  # noqa: BLE001 — a FUNCTION-layer bug must not block a valid build
+    except (SystemExit, Exception) as e:  # noqa: BLE001 — a FUNCTION-layer bug must not block a valid build
         print(f"  (!) FUNCTION check skipped ({type(e).__name__}: {e})")
     if fverdict == "FAIL":
         sys.exit("\n  STOP: FUNCTION check FAILED — the layout breaks a human-usage rule "

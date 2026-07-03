@@ -48,9 +48,10 @@ BATH_WET_KINDS = {"shower", "tub", "bathtub"}
 # ---------- geometry ----------
 def _footprint(el):
     """Axis-aligned (x0,y0,x1,y1) mm, honoring a 90/270 w/d swap (matches
-    suite_clearance; other angles use the unrotated rect)."""
-    x, y = float(el["x"]), float(el["y"])
-    w, d = float(el["w"]), float(el["d"])
+    suite_clearance; other angles use the unrotated rect). Missing coords read as 0 —
+    a malformed element must not crash a pre-render gate (it degrades, never throws)."""
+    x, y = float(el.get("x", 0) or 0), float(el.get("y", 0) or 0)
+    w, d = float(el.get("w", 0) or 0), float(el.get("d", 0) or 0)
     if int(round(float(el.get("rot", 0) or 0))) % 180 == 90:
         w, d = d, w
     return x, y, x + w, y + d
@@ -112,7 +113,7 @@ def _normalize(spec):
     out = {"room": {"outline_mm": [[0, 0], [W, 0], [W, D], [0, D]], "type": r.get("type")},
            "items": [scale(it) for it in spec.get("items", [])],
            "builtins": [scale(b) for b in spec.get("builtins", [])],
-           "subrooms": spec.get("subrooms", [])}   # @0.1 has none -> bathroom rule no-ops
+           "subrooms": []}   # @0.1 has no sub-rooms; never run the mm bathroom rule on inch coords
     dw = float((r.get("door") or {}).get("w_in", 32) or 32) * IN_TO_MM
     out["door"] = {"wall": "south", "x": max(0.0, (W - dw) / 2.0), "y": 0.0, "w": dw}
     return out
@@ -127,7 +128,7 @@ def _iter_elements(spec):
 
 def find_bed(spec):
     beds = [el for el in _iter_elements(spec) if el.get("kind") in BED_KINDS]
-    return max(beds, key=lambda b: float(b["w"]) * float(b["d"]), default=None)
+    return max(beds, key=lambda b: float(b.get("w", 0) or 0) * float(b.get("d", 0) or 0), default=None)
 
 
 def find_primary_viewer(spec):
@@ -144,13 +145,20 @@ def find_primary_viewer(spec):
 
 
 def find_tv(spec):
-    """Return (element, status) where status in {'positioned','fused','absent'}."""
+    """(element, status). 'positioned' = its own coords; 'fused' = a KIND that melds the
+    TV into a wall/headboard (the GS-24 defect — a hard FAIL); 'named_only' = an element
+    merely NAMED like a TV (a hint, not a discrete screen — WARN, so a 'ตู้ทีวี' console
+    can't hard-block a deliverable over a naming coincidence); 'absent'. Kind is decisive;
+    a name is only ever a soft signal."""
     standalone = [el for el in _iter_elements(spec) if el.get("kind") in TV_STANDALONE_KINDS]
     if standalone:
         return standalone[0], "positioned"
     for el in _iter_elements(spec):
-        if el.get("kind") in TV_FUSED_KINDS or _TV_NAME_RE.search(str(el.get("name", ""))):
+        if el.get("kind") in TV_FUSED_KINDS:
             return el, "fused"
+    for el in _iter_elements(spec):
+        if _TV_NAME_RE.search(str(el.get("name", "") or "")):
+            return el, "named_only"
     return None, "absent"
 
 
@@ -181,6 +189,11 @@ def _rule_tv_positioned(spec, ctx):
                 f"TV is FUSED into '{tv.get('kind') or tv.get('name')}' — no independent position, so "
                 f"the render pass decides where the screen lands (GS-24: TV behind/above the head). "
                 f"Split it into a standalone 'tv' facing the {ctx['viewer_kind'] or 'seat'}.")
+    if st == "named_only":
+        return ("tv_positioned", WARN,
+                f"an element named like a TV ('{tv.get('name')}', kind '{tv.get('kind')}') is not a "
+                f"discrete positioned screen — confirm the TV has a controlled position, or model it "
+                f"as a standalone 'tv' facing the {ctx['viewer_kind'] or 'seat'}")
     return None  # absent -> nothing named a TV -> N/A (not a silent pass)
 
 
@@ -258,9 +271,10 @@ def _rule_furniture_dimensions(spec, ctx):
                 issues.append(f"wardrobe depth {dep:.0f}mm (norm {lo}–{hi})")
         elif k == "bed":
             checked = True
-            name, (bw, bl), ok, worst = ergo.nearest_bed_size(el.get("w", 0), el.get("d", 0))
-            if not ok:
-                issues.append(f"bed {float(el['w']):.0f}×{float(el['d']):.0f}mm off standard "
+            bw_, bd_ = float(el.get("w", 0) or 0), float(el.get("d", 0) or 0)
+            name, (bw, bl), ok, worst = ergo.nearest_bed_size(bw_, bd_)
+            if bw_ and bd_ and not ok:
+                issues.append(f"bed {bw_:.0f}×{bd_:.0f}mm off standard "
                               f"(nearest {name} {bw}×{bl}, off {worst:.0f}mm)")
     if issues:
         return ("furniture_dimensions", WARN, "; ".join(issues))
@@ -324,36 +338,38 @@ def _rule_bathroom_logic(spec, ctx):
 
 
 def _rule_seating_faces_focal(spec, ctx):
-    # GS-03/26 ("เก้าอี้หันหน้าเข้าไหน? ไม่มีอะไรให้มอง"): a lounge seat should orient
-    # toward a focal — a coffee/round table, a positioned TV, or another seat (a
-    # conversation group). WARN (advisory): build_room AUTO-FACES a seat that carries no
-    # `rot` to the focal, so this only flags (a) a seat with NO focal to face at all, and
-    # (b) an EXPLICIT rot that points away from every focal (the spec fighting the intent;
-    # the .rb materializer honours rot). A seat facing ANY focal passes.
+    # GS-03/26 ("เก้าอี้หันหน้าเข้าไหน? ไม่มีอะไรให้มอง"): a lounge seat should orient toward
+    # a focal — a coffee/round table, a positioned TV, or another seat (a conversation
+    # group). We judge ONLY a seat that (a) carries an EXPLICIT rot and (b) has a focal to
+    # face: build_room's auto-face is narrow (hero lounge-zone, no-rot only — build_room.py
+    # ~1542) so a no-rot seat's orientation isn't knowable here, and we cannot model a
+    # window/view, so a seat with no focal could legitimately face one. Leaving those
+    # UNJUDGED (None) beats a false WARN. WARN when an explicitly-rotated seat faces AWAY
+    # from every focal (a focal in the front half-plane, dot>0, counts as facing it).
     seats = [el for el in _iter_elements(spec) if el.get("kind") in SEATING_KINDS]
     if not seats:
         return None
-    tables = [el for el in _iter_elements(spec) if el.get("kind") in CONVERSATION_FOCAL_KINDS]
-    base_focals = [_center(t) for t in tables]
+    base = [_center(t) for t in _iter_elements(spec) if t.get("kind") in CONVERSATION_FOCAL_KINDS]
     if ctx["tv_status"] == "positioned":
-        base_focals.append(_center(ctx["tv"]))
-    issues = []
+        base.append(_center(ctx["tv"]))
+    issues, judged = [], 0
     for s in seats:
-        scx, scy = _center(s)
-        focals = base_focals + [_center(o) for o in seats if o is not s]
-        if not focals:
-            issues.append(f"{s.get('kind')} faces nothing — no coffee/round table, positioned "
-                          f"TV, or other seat to orient toward")
-            continue
         if s.get("rot") is None:
-            continue   # no explicit orientation -> build_room auto-faces it to the focal
+            continue                        # orientation not knowable (auto-face / unset)
+        focals = base + [_center(o) for o in seats if o is not s]
+        if not focals:
+            continue                        # nothing to face -> can't judge (may be a window)
+        judged += 1
+        scx, scy = _center(s)
         fx, fy = _front_vec(s.get("rot", 0))
         if not any((cx - scx) * fx + (cy - scy) * fy > 0 for cx, cy in focals):
             issues.append(f"{s.get('kind')} (rot {float(s.get('rot', 0)):.0f}) faces away from every "
                           f"focal (table/TV/other seat) — orient it toward the group")
     if issues:
         return ("seating_faces_focal", WARN, "; ".join(issues))
-    return ("seating_faces_focal", PASS, "lounge seating is oriented toward a focal (table/TV/other seat)")
+    if judged:
+        return ("seating_faces_focal", PASS, "lounge seating is oriented toward a focal (table/TV/other seat)")
+    return None
 
 
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
