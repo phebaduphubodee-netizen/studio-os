@@ -207,12 +207,15 @@ def test_standard_bed_passes_within_tolerance():
     assert _s(P.check(spec), "furniture_dimensions") == P.PASS
 
 
-def test_real_bedroom_furniture_flags_shallow_wardrobe():
+def test_real_bedroom_furniture_now_within_norms():
+    # the 100mm 'wardrobe' beside the bed was re-typed to a shallow 'cabinet' (its true
+    # function; the two 600mm wardrobes handle clothes). furniture_dimensions must now PASS
+    # on the real spec. (test_shallow_wardrobe_warns keeps proving the shallow-depth CATCH.)
     spec = _spec("bedroom_suite.json")
     if spec is None:
         return
     f = next((x for x in P.check(spec)["findings"] if x["rule"] == "furniture_dimensions"), None)
-    assert f is not None and f["status"] == P.WARN and "wardrobe depth 100" in f["detail"]
+    assert f is not None and f["status"] == P.PASS, f
 
 
 # ---- bathroom fixture logic (GS-05 use-frequency + wet/dry zoning; NLM DR f61fded1) ----
@@ -336,7 +339,7 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_real_bedroom_suite_tv_now_positioned, test_real_living_condo_is_caught,
          test_furniture_within_norms_passes, test_oversized_bed_warns,
          test_bad_coffee_table_height_warns, test_shallow_wardrobe_warns,
-         test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_flags_shallow_wardrobe,
+         test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_now_within_norms,
          test_bathroom_good_ordering_passes, test_bathroom_shower_at_entry_fails,
          test_bathroom_wet_not_at_back_warns, test_bathroom_rule_skips_without_bathroom,
          test_real_ensuite_follows_frequency_and_zoning,
