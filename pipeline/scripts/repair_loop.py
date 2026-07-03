@@ -490,15 +490,32 @@ def _real_geometry_fn(spec, spec_path):
     try:
         if is_metric:
             import suite_clearance
-            return suite_clearance.report(spec)   # (res, verdict) verdict in PASS/REVIEW/FAIL
-        import clearance_check
-        room_o, items, _spec = clearance_check.load_spec(spec_path)
-        res = clearance_check.check(room_o, items)
-        fails = sum(1 for r in res if r["status"] == FAIL)
-        warns = sum(1 for r in res if r["status"] == WARN)
-        return res, (FAIL if fails else ("REVIEW" if warns else PASS))  # REVIEW vocab, matches metric route
+            res, verdict = suite_clearance.report(spec)   # (res, verdict) in PASS/REVIEW/FAIL
+        else:
+            import clearance_check
+            room_o, items, _spec = clearance_check.load_spec(spec_path)
+            res = clearance_check.check(room_o, items)
+            fails = sum(1 for r in res if r["status"] == FAIL)
+            warns = sum(1 for r in res if r["status"] == WARN)
+            verdict = FAIL if fails else ("REVIEW" if warns else PASS)  # REVIEW vocab, matches metric route
     except (SystemExit, Exception) as e:  # noqa: BLE001 — precondition must never crash the loop
         return [{"status": UNWIRED, "check": "gate0_routing", "detail": str(e)}], UNWIRED
+    # FUNCTION layer — human-usage placement (placement_logic), the M3.2 answer: the
+    # LLM judge gates on photorealism, this gates on design correctness (TV fused/behind
+    # the viewer, door on the bed-head wall). A FUNCTION FAIL must ALSO abort before a
+    # PAID render. It can only ESCALATE geometry's verdict (PASS->REVIEW->FAIL), never
+    # mask it; degrades to a recorded UNWIRED row on any failure (never crashes the loop).
+    try:
+        import placement_logic
+        fres, fverdict = placement_logic.report(spec)
+        res = list(res) + fres
+        if fverdict == FAIL:
+            verdict = FAIL
+        elif fverdict == "REVIEW" and verdict == PASS:
+            verdict = "REVIEW"
+    except Exception as e:  # noqa: BLE001 — FUNCTION precondition must never crash the loop
+        res = list(res) + [{"status": UNWIRED, "check": "function:routing", "detail": str(e)}]
+    return res, verdict
 
 
 def _real_sanity_fn(candidate):
