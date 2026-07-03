@@ -37,6 +37,11 @@ BED_KINDS = {"bed"}
 SEAT_KINDS = {"sofa", "loveseat"}            # primary lounge seat (a living room's "viewer")
 VIEW_MIN_MM, VIEW_MAX_MM = ergo.TV_VIEW_DIST_MM   # SMPTE/THX comfort band (ergonomics_ref)
 
+# bathroom fixture families for the GS-05 use-frequency + wet/dry rule
+BATH_BASIN_KINDS = {"vanity", "vanity_double", "basin", "lavatory", "washbasin", "sink"}
+BATH_WC_KINDS = {"wc", "toilet"}
+BATH_WET_KINDS = {"shower", "tub", "bathtub"}
+
 
 # ---------- geometry ----------
 def _footprint(el):
@@ -217,8 +222,63 @@ def _rule_furniture_dimensions(spec, ctx):
     return ("furniture_dimensions", PASS, "furniture sizes/heights within ergonomic norms")
 
 
+def _subroom_door_center(sr):
+    d = sr.get("door")
+    if not d:
+        return None
+    x, y, w = float(d.get("x", 0)), float(d.get("y", 0)), float(d.get("w", 0))
+    wall = str(d.get("wall", "")).lower()
+    if wall in ("south", "north"):
+        return (x + w / 2.0, y)
+    if wall in ("east", "west"):
+        return (x, y + w / 2.0)
+    return (x, y)
+
+
+def _rule_bathroom_logic(spec, ctx):
+    # GS-05 ("สลับโถ/อ่างตามการใช้บ่อย + แยกโซนเปียกแห้ง"): fixtures ordered by use
+    # frequency — basin (most-used) nearest the entry, WC intermediate, shower/tub
+    # deepest (the wet zone). Deterministic geometry per bathroom subroom vs its door.
+    # Clearance NUMBERS stay with suite_clearance/codes-th; this checks the LOGIC.
+    details, checked = [], False
+    for sr in spec.get("subrooms", []):
+        fixtures = sr.get("fixtures", [])
+        door = _subroom_door_center(sr)
+        basins = [f for f in fixtures if f.get("kind") in BATH_BASIN_KINDS]
+        wcs = [f for f in fixtures if f.get("kind") in BATH_WC_KINDS]
+        wets = [f for f in fixtures if f.get("kind") in BATH_WET_KINDS]
+        if door is None or not basins or not (wcs or wets):
+            continue
+        checked = True
+        name = sr.get("name", "bath")
+
+        def _d(f):
+            cx, cy = _center(f)
+            return math.hypot(cx - door[0], cy - door[1])
+
+        basin_near = min(_d(b) for b in basins)
+        intruders = sorted({f.get("kind") for f in (wcs + wets) if _d(f) < basin_near - 50})
+        if intruders:
+            details.append((FAIL, f"{name}: {', '.join(intruders)} sits nearer the entry than the "
+                                  f"basin — the basin is the most-used fixture and belongs closest (GS-05)"))
+        if wets:
+            dry = basins + wcs
+            mw = sum(_d(f) for f in wets) / len(wets)
+            md = sum(_d(f) for f in dry) / len(dry)
+            if mw <= md:
+                details.append((WARN, f"{name}: the wet zone (shower/tub) is not pushed to the back "
+                                      f"(wet mean {mw:.0f} ≤ dry mean {md:.0f} mm) — GS-05 wet/dry zoning"))
+    if not checked:
+        return None
+    if not details:
+        return ("bathroom_logic", PASS, "bathroom fixtures follow use-frequency ordering + wet/dry zoning")
+    status = FAIL if any(s == FAIL for s, _ in details) else WARN
+    return ("bathroom_logic", status, "; ".join(t for _, t in details))
+
+
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
-         _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions]
+         _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions,
+         _rule_bathroom_logic]
 
 
 def _worst(statuses):

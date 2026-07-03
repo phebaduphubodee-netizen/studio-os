@@ -209,6 +209,48 @@ def test_real_bedroom_furniture_flags_shallow_wardrobe():
     assert f is not None and f["status"] == P.WARN and "wardrobe depth 100" in f["detail"]
 
 
+# ---- bathroom fixture logic (GS-05 use-frequency + wet/dry zoning; NLM DR f61fded1) ----
+def _bath(fixtures, door=(1000, 0, 800), wall="south"):
+    dx, dy, dw = door
+    return {"room": {"outline_mm": [[0, 0], [3000, 0], [3000, 3000], [0, 3000]]},
+            "subrooms": [{"name": "ensuite",
+                          "outline_mm": [[0, 0], [3000, 0], [3000, 3000], [0, 3000]],
+                          "door": {"x": dx, "y": dy, "w": dw, "wall": wall},
+                          "fixtures": fixtures}]}
+
+
+def _fx(kind, x, y, w=800, d=500):
+    return {"name": kind, "kind": kind, "x": x, "y": y, "w": w, "d": d}
+
+
+def test_bathroom_good_ordering_passes():
+    spec = _bath([_fx("vanity", 100, 100), _fx("wc", 2400, 1200, 400, 650),
+                  _fx("shower", 100, 2000, 900, 900), _fx("tub", 1500, 2100, 1400, 750)])
+    assert _s(P.check(spec), "bathroom_logic") == P.PASS
+
+
+def test_bathroom_shower_at_entry_fails():
+    spec = _bath([_fx("vanity", 100, 1500), _fx("shower", 1000, 100, 900, 900)])
+    assert _s(P.check(spec), "bathroom_logic") == P.FAIL
+
+
+def test_bathroom_wet_not_at_back_warns():
+    spec = _bath([_fx("vanity", 100, 100), _fx("wc", 2400, 2400, 400, 500),
+                  _fx("shower", 100, 400, 900, 900)])
+    assert _s(P.check(spec), "bathroom_logic") == P.WARN
+
+
+def test_bathroom_rule_skips_without_bathroom():
+    assert _s(P.check(_bedroom(_tv())), "bathroom_logic") is None
+
+
+def test_real_ensuite_follows_frequency_and_zoning():
+    spec = _spec("bedroom_suite.json")
+    if spec is None:
+        return
+    assert _s(P.check(spec), "bathroom_logic") == P.PASS      # basin at entry, wet deep
+
+
 TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_over_bed_fails,
          test_tv_too_close_warns, test_bed_rotated_180_flips_front, test_living_sofa_is_the_viewer,
          test_living_tv_behind_sofa_fails, test_door_on_head_wall_fails, test_door_on_other_wall_passes,
@@ -217,7 +259,10 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_real_bedroom_suite_is_caught, test_real_living_condo_is_caught,
          test_furniture_within_norms_passes, test_oversized_bed_warns,
          test_bad_coffee_table_height_warns, test_shallow_wardrobe_warns,
-         test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_flags_shallow_wardrobe]
+         test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_flags_shallow_wardrobe,
+         test_bathroom_good_ordering_passes, test_bathroom_shower_at_entry_fails,
+         test_bathroom_wet_not_at_back_warns, test_bathroom_rule_skips_without_bathroom,
+         test_real_ensuite_follows_frequency_and_zoning]
 
 
 def main():
