@@ -1,0 +1,605 @@
+{
+ "_warning": "judge history — owner must NOT read before labeling",
+ "images": {
+  "GS-01": {
+   "source_stem": "room_bedroom_suite_eye_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 2.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 2,
+      "composition": 3,
+      "furniture_realism": 3,
+      "room_context": 4,
+      "styling_and_life": 3,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 2
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid.critique.json"
+    }
+   ]
+  },
+  "GS-02": {
+   "source_stem": "room_living_hybrid_v001",
+   "rolls": [
+    {
+     "overall_0_5": 2,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 2,
+      "composition": 2,
+      "furniture_realism": 3,
+      "room_context": 2,
+      "styling_and_life": 0,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 2
+     },
+     "source": "pipeline/output/room_living_hybrid_v001.critique.json"
+    }
+   ]
+  },
+  "GS-03": {
+   "source_stem": "room_living_condo_eye_hybrid_v005",
+   "rolls": [
+    {
+     "overall_0_5": 3,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 3,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 3,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_v005.critique.json"
+    }
+   ]
+  },
+  "GS-04": {
+   "source_stem": "room_living",
+   "rolls": [
+    {
+     "overall_0_5": 1,
+     "verdict": "NOT_CLIENT_READY",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 3,
+      "lighting_quality": 1,
+      "composition": 2,
+      "furniture_realism": 0,
+      "room_context": 1,
+      "styling_and_life": 0,
+      "proportion_and_scale": 3,
+      "photoreal_believability": 0
+     },
+     "source": "pipeline/output/room_living.critique.json"
+    }
+   ]
+  },
+  "GS-05": {
+   "source_stem": "room_bedroom_suite_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 3,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 2,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 3,
+      "styling_and_life": 2,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_bedroom_suite_hybrid.critique.json"
+    }
+   ]
+  },
+  "GS-06": {
+   "source_stem": "room_living_condo_eye_hybrid_v004",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 4,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_v004.critique.json"
+    }
+   ]
+  },
+  "GS-07": {
+   "source_stem": "room_living_condo_eye_hybrid_clayfix_pro",
+   "rolls": [
+    {
+     "overall_0_5": 3,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 4,
+      "composition": 4,
+      "furniture_realism": 3,
+      "room_context": 4,
+      "styling_and_life": 4,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_clayfix_pro.critique.json"
+    },
+    {
+     "overall_0_5": 4,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 4,
+      "composition": 3,
+      "furniture_realism": 4,
+      "room_context": 4,
+      "styling_and_life": 4,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_clayfix_pro.critique.roll2.json"
+    }
+   ]
+  },
+  "GS-08": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_v004pro",
+   "rolls": [
+    {
+     "overall_0_5": 4.5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v004pro.critique.json"
+    }
+   ]
+  },
+  "GS-09": {
+   "source_stem": "room_living_condo_eye_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 4,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 3,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid.critique.json"
+    }
+   ]
+  },
+  "GS-10": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_v003",
+   "rolls": [
+    {
+     "overall_0_5": 5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 5,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v003.critique.json"
+    }
+   ]
+  },
+  "GS-11": {
+   "source_stem": "room_living_condo_eye_hybrid_oldclay_pro",
+   "rolls": [
+    {
+     "overall_0_5": 2.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 3,
+      "furniture_realism": 3,
+      "room_context": 3,
+      "styling_and_life": 3,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_oldclay_pro.critique.json"
+    },
+    {
+     "overall_0_5": 3.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 4,
+      "furniture_realism": 3,
+      "room_context": 4,
+      "styling_and_life": 3,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_oldclay_pro.critique.roll2.json"
+    }
+   ]
+  },
+  "GS-12": {
+   "source_stem": "room_living_hybrid_v003b",
+   "rolls": [
+    {
+     "overall_0_5": 3,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 3,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 3,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_hybrid_v003b.critique.json"
+    }
+   ]
+  },
+  "GS-13": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_v005",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 4,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v005.critique.json"
+    }
+   ]
+  },
+  "GS-14": {
+   "source_stem": "room_living_hybrid_v002",
+   "rolls": [
+    {
+     "overall_0_5": 3.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 2,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 3,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_hybrid_v002.critique.json"
+    }
+   ]
+  },
+  "GS-15": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_clayfix_pro",
+   "rolls": [
+    {
+     "overall_0_5": 4.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 4,
+      "composition": 5,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 5,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_clayfix_pro.critique.json"
+    },
+    {
+     "overall_0_5": 4,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_clayfix_pro.critique.roll2.json"
+    },
+    {
+     "overall_0_5": 3.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_clayfix_pro.critique.roll3.json"
+    }
+   ]
+  },
+  "GS-16": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_prj002_v01",
+   "rolls": [
+    {
+     "overall_0_5": 4.5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 5,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 5,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_prj002_v01.critique.json"
+    },
+    {
+     "overall_0_5": 5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 5,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 5,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_prj002_v01.critique.roll2.json"
+    }
+   ]
+  },
+  "GS-17": {
+   "source_stem": "room_living_condo_eye_hybrid_v004pro",
+   "rolls": [
+    {
+     "overall_0_5": 4.5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 4,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 4,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_v004pro.critique.json"
+    },
+    {
+     "overall_0_5": 5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 5,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_v004pro.critique.roll2.json"
+    }
+   ]
+  },
+  "GS-18": {
+   "source_stem": "room_living_hybrid_v003",
+   "rolls": [
+    {
+     "overall_0_5": 3,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 3,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 2,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_hybrid_v003.critique.json"
+    }
+   ]
+  },
+  "GS-19": {
+   "source_stem": "room_living_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 4,
+      "composition": 3,
+      "furniture_realism": 5,
+      "room_context": 4,
+      "styling_and_life": 3,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_living_hybrid.critique.json"
+    }
+   ]
+  },
+  "GS-20": {
+   "source_stem": "room_bedroom_suite",
+   "rolls": [
+    {
+     "overall_0_5": 1,
+     "verdict": "NOT_CLIENT_READY",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 2,
+      "composition": 1,
+      "furniture_realism": 0,
+      "room_context": 0,
+      "styling_and_life": 0,
+      "proportion_and_scale": 3,
+      "photoreal_believability": 1
+     },
+     "source": "pipeline/output/room_bedroom_suite.critique.json"
+    }
+   ]
+  },
+  "GS-21": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_v004",
+   "rolls": [
+    {
+     "overall_0_5": 4.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v004.critique.json"
+    }
+   ]
+  },
+  "GS-22": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_v005pro",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 4,
+      "composition": 5,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v005pro.critique.json"
+    }
+   ]
+  },
+  "GS-23": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_v004b",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 4,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v004b.critique.json"
+    }
+   ]
+  },
+  "GS-24": {
+   "source_stem": "room_living_condo_eye_hybrid_v004b",
+   "rolls": [
+    {
+     "overall_0_5": 2.5,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 2,
+      "furniture_realism": 3,
+      "room_context": 4,
+      "styling_and_life": 3,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_v004b.critique.json"
+    }
+   ]
+  }
+ }
+}
