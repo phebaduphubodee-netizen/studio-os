@@ -1,0 +1,77 @@
+{
+ "thread": {
+  "id": "1269205655093379113",
+  "type": 11,
+  "last_message_id": "1269205655093379113",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Drawers & Drawer Inserts HAFELE",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-09-02T08:12:04.216000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2024-08-03T08:10:08.875000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://image.makewebeasy.net/makeweb/0/u5QBfcnUw/Document/Section_2_Drawers_Inserts.pdf",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1269205655386849341",
+     "filename": "image.png",
+     "size": 188453,
+     "url": "https://cdn.discordapp.com/attachments/1269205655093379113/1269205655386849341/image.png?ex=6a48bfe0&is=6a476e60&hm=7b58631bf3262ce4f4fd04b40abebcd26989c348cc60df1dc81de6339195f062&",
+     "proxy_url": "https://media.discordapp.net/attachments/1269205655093379113/1269205655386849341/image.png?ex=6a48bfe0&is=6a476e60&hm=7b58631bf3262ce4f4fd04b40abebcd26989c348cc60df1dc81de6339195f062&",
+     "width": 456,
+     "height": 639,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "cggKDQJui6+Fd2XIlWmZlpBiBro1",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-08-03T08:10:08.875000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1269205655093379113",
+   "channel_id": "1269205655093379113",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

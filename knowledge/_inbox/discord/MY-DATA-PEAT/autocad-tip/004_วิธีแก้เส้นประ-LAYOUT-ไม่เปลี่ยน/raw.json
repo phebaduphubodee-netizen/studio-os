@@ -1,0 +1,77 @@
+{
+ "thread": {
+  "id": "1247800475827441784",
+  "type": 11,
+  "last_message_id": "1247800475827441784",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "วิธีแก้เส้นประ LAYOUT ไม่เปลี่ยน",
+  "parent_id": "1164132093614362746",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-09-19T06:52:27.620000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-06-05T06:33:36.449000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "ใช้คำสั่ง PSLTSCALE --> 0 หลังจากนั้นกดคำสั่ง REGENALL",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1247800476339011699",
+     "filename": "Desktop_2024.06.05_-_13.31.49.01.mp4",
+     "size": 6943533,
+     "url": "https://cdn.discordapp.com/attachments/1247800475827441784/1247800476339011699/Desktop_2024.06.05_-_13.31.49.01.mp4?ex=6a48a940&is=6a4757c0&hm=e022ae9b57e3a79afa81e08f86d697b5544860be9d3ef886936a3bf5b2ac561a&",
+     "proxy_url": "https://media.discordapp.net/attachments/1247800475827441784/1247800476339011699/Desktop_2024.06.05_-_13.31.49.01.mp4?ex=6a48a940&is=6a4757c0&hm=e022ae9b57e3a79afa81e08f86d697b5544860be9d3ef886936a3bf5b2ac561a&",
+     "width": 1920,
+     "height": 1080,
+     "content_type": "video/mp4",
+     "content_scan_version": 1,
+     "placeholder": "EvgJBIA4eJeAiohxeYmkBJEHSQ==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-06-05T06:33:36.449000+00:00",
+   "edited_timestamp": "2024-08-20T06:43:59.047000+00:00",
+   "flags": 0,
+   "components": [],
+   "id": "1247800475827441784",
+   "channel_id": "1247800475827441784",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

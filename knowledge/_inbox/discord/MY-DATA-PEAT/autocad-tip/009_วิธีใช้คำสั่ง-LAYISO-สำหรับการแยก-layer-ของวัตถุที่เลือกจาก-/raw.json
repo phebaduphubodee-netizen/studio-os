@@ -1,0 +1,78 @@
+{
+ "thread": {
+  "id": "1304282870659027045",
+  "type": 11,
+  "last_message_id": "1304282870659027045",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "วิธีใช้คำสั่ง LAYISO สำหรับการแยก layer ของวัตถุที่เลือกจาก layyer รวม",
+  "parent_id": "1164132093614362746",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-12-08T03:23:57.482000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-11-08T03:14:28.769000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1304282871699345489",
+     "filename": "Desktop_2024.11.08_-_10.11.50.03.mp4",
+     "size": 17898690,
+     "url": "https://cdn.discordapp.com/attachments/1304282870659027045/1304282871699345489/Desktop_2024.11.08_-_10.11.50.03.mp4?ex=6a492355&is=6a47d1d5&hm=de3a53b67f79b5319f7b98a4ff18a53b070a9c5f8d5a8b50d8d4ab609c60ffb4&",
+     "proxy_url": "https://media.discordapp.net/attachments/1304282870659027045/1304282871699345489/Desktop_2024.11.08_-_10.11.50.03.mp4?ex=6a492355&is=6a47d1d5&hm=de3a53b67f79b5319f7b98a4ff18a53b070a9c5f8d5a8b50d8d4ab609c60ffb4&",
+     "width": 1280,
+     "height": 720,
+     "content_type": "video/mp4",
+     "content_scan_version": 1,
+     "placeholder": "jfcFBIBJWIeImYiPZncwI5QBeQ==",
+     "placeholder_version": 1,
+     "title": "Desktop 2024.11.08 - 10.11.50.03"
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-11-08T03:14:28.769000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1304282870659027045",
+   "channel_id": "1304282870659027045",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

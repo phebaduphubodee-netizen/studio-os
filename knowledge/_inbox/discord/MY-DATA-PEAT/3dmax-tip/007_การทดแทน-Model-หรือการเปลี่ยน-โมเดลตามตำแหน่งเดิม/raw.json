@@ -1,0 +1,98 @@
+{
+ "thread": {
+  "id": "1334419980414095430",
+  "type": 11,
+  "last_message_id": "1334419980414095430",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "การทดแทน Model หรือการเปลี่ยน โมเดลตามตำแหน่งเดิม",
+  "parent_id": "1198893170679877642",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2025-03-01T07:15:19.921000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2025-01-30T07:08:35.655000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://www.youtube.com/watch?v=8g6Uc0QWAYs",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=8g6Uc0QWAYs",
+     "title": "The Substitute Modifier | 3ds Max tutorial",
+     "description": "With the built-in Substitute modifier you can quickly replace one object with another.\n\nInstructions:\n1) Select the object(s) you want to replace.\n2) Apply the Substitute modifier.\n3) In Substitute Assignment, select the object to replace.\n\nIn order to work correctly, the object must be a single one (all elements are attached).\n_________________...",
+     "color": 16711680,
+     "author": {
+      "name": "Render.courses",
+      "url": "https://www.youtube.com/channel/UCAtyF5Uwi9u6I51YdtVX4SQ"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/8g6Uc0QWAYs/maxresdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/NWrXQY2Oap2X8vBh1w_X497tCw87MHZLP4OOU3SVEeU/https/i.ytimg.com/vi/8g6Uc0QWAYs/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720,
+      "content_type": "image/jpeg",
+      "placeholder": "yQcGBIAGxoZ2iIh1eYn1h2agmQ==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/8g6Uc0QWAYs",
+      "width": 405,
+      "height": 720,
+      "placeholder": "yQcGBIAGxoZ2iIh1eYn1h2agmQ==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2025-01-30T07:08:35.655000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334419980414095430",
+   "channel_id": "1334419980414095430",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

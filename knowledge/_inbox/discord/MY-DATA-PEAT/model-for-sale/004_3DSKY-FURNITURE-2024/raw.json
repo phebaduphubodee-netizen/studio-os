@@ -1,0 +1,137 @@
+{
+ "thread": {
+  "id": "1248857661081124903",
+  "type": 11,
+  "last_message_id": "1248858408262696980",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "3DSKY FURNITURE 2024",
+  "parent_id": "1248852029376299109",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-07-08T04:42:36.582000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-06-08T04:34:29.055000+00:00"
+  },
+  "message_count": 1,
+  "member_count": 1,
+  "total_message_sent": 1,
+  "applied_tags": [
+   "1248859525923213372",
+   "1248859321476059197"
+  ]
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1248857661219278879",
+     "filename": "FB_IMG_1717820681929.jpg",
+     "size": 130276,
+     "url": "https://cdn.discordapp.com/attachments/1248857661081124903/1248857661219278879/FB_IMG_1717820681929.jpg?ex=6a493615&is=6a47e495&hm=f41634377fa87a5a8850261390206240fa3f6289d532a6e08507b2111eac6968&",
+     "proxy_url": "https://media.discordapp.net/attachments/1248857661081124903/1248857661219278879/FB_IMG_1717820681929.jpg?ex=6a493615&is=6a47e495&hm=f41634377fa87a5a8850261390206240fa3f6289d532a6e08507b2111eac6968&",
+     "width": 1080,
+     "height": 1080,
+     "content_type": "image/jpeg",
+     "content_scan_version": 1,
+     "placeholder": "IwgSBwJ4h4iIh3dweGeHN3eIBjoXsFcE",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-06-08T04:34:29.055000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1248857661081124903",
+   "channel_id": "1248857661081124903",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "https://www.dropbox.com/sh/33im5lgn4x5hjlt/AABdFmy6aTKZ2knVwMph7zxta?e=2&fbclid=IwAR0p4PCKpGgEEVu-aF7JlfU1ldywr8pmmR_0aIp-5vrcltOiY9OBDRKdoMY&dl=0",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://www.dropbox.com/sh/33im5lgn4x5hjlt/AABdFmy6aTKZ2knVwMph7zxta?e=2&fbclid=IwAR0p4PCKpGgEEVu-aF7JlfU1ldywr8pmmR_0aIp-5vrcltOiY9OBDRKdoMY&dl=0",
+     "title": "3dsky furniture 2024",
+     "description": "Shared with Dropbox",
+     "provider": {
+      "name": "Dropbox"
+     },
+     "thumbnail": {
+      "url": "https://www.dropbox.com/static/metaserver/static/images/opengraph/opengraph-content-icon-folder-dropbox-landscape.png",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/IqkjXMmaEk9R4p5kfo7XsWXSV-TPrCEPmp3Xq5dxjpY/https/www.dropbox.com/static/metaserver/static/images/opengraph/opengraph-content-icon-folder-dropbox-landscape.png",
+      "width": 1200,
+      "height": 630,
+      "content_type": "image/png",
+      "placeholder": "8aWBA4A0qAeKdomoho9q+AiXhniDi2c=",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2024-06-08T04:37:27.197000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1248858408262696980",
+   "channel_id": "1248857661081124903",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

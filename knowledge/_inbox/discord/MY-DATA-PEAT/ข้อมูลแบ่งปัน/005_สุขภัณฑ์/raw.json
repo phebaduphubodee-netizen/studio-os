@@ -1,0 +1,369 @@
+{
+ "thread": {
+  "id": "1126888659463970936",
+  "type": 11,
+  "last_message_id": "1126888922052571157",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "สุขภัณฑ์",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2023-11-11T01:54:19.512000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2023-07-07T14:53:12.995000+00:00"
+  },
+  "message_count": 5,
+  "member_count": 1,
+  "total_message_sent": 5,
+  "applied_tags": [
+   "1161842889257652264"
+  ]
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1126888659661111417",
+     "filename": "image.png",
+     "size": 177331,
+     "url": "https://cdn.discordapp.com/attachments/1126888659463970936/1126888659661111417/image.png?ex=6a491e59&is=6a47ccd9&hm=058ab48b765add289fd2d0954f7e81c759ea3f24d68b63422028ba782217f083&",
+     "proxy_url": "https://media.discordapp.net/attachments/1126888659463970936/1126888659661111417/image.png?ex=6a491e59&is=6a47ccd9&hm=058ab48b765add289fd2d0954f7e81c759ea3f24d68b63422028ba782217f083&",
+     "width": 579,
+     "height": 933,
+     "content_type": "image/png"
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2023-07-07T14:53:12.995000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1126888659463970936",
+   "channel_id": "1126888659463970936",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "🔷ยี่ห้อ Cotto \nClick เลือกรุ่น เลื่อนลงมาตรง Shop Drawing\n🚽ชักโครก : https://www.cotto.com/product/toilet\nอ่างล้างหน้า : https://www.cotto.com/product/basins\nก๊อกน้ำ : https://www.cotto.com/product/faucets\nโถปัสสาวะ : https://www.cotto.com/th/product/urinal\nฟลัชวาล์ว : https://www.cotto.com/product/flush-valve\nฝักบัว : https://www.cotto.com/th/product/shower-and-accessories\nตู้อาบน้ำ : https://www.cotto.com/th/product/shower-enclosure\nอ่างอาบน้ำ : https://www.cotto.com/product/bathtubs",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://www.cotto.com/product/toilet",
+     "title": "COTTO | TOILET",
+     "thumbnail": {
+      "url": "http://www.cotto.com/common/img/003/cotto-logo.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/Vu5DwMeYYENDW9SaOrOCvgBrnw4mCGb2Eca9WMR2Dfk/http/www.cotto.com/common/img/003/cotto-logo.jpg",
+      "width": 200,
+      "height": 200,
+      "content_type": "image/jpeg",
+      "flags": 0
+     }
+    },
+    {
+     "type": "link",
+     "url": "https://www.cotto.com/product/basins",
+     "title": "อ่างล้างหน้า อ่างเซรามิค แบบลอย/แขวน เคาน์เตอร์",
+     "description": "อ่างล้างหน้าในฝัน รูปแบบและดีไซน์ทันสมัย อ่างล้างหน้าเซรามิค ทั้งแบบลอย แบบแขวน หรือวางบนเคาน์เตอร์ เพิ่มความสดชื่นทุกเช้าด้วยอ่างล้างหน้า COTTO",
+     "thumbnail": {
+      "url": "http://www.cotto.com/common/img/003/cotto-logo.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/Vu5DwMeYYENDW9SaOrOCvgBrnw4mCGb2Eca9WMR2Dfk/http/www.cotto.com/common/img/003/cotto-logo.jpg",
+      "width": 200,
+      "height": 200,
+      "content_type": "image/jpeg",
+      "flags": 0
+     }
+    },
+    {
+     "type": "link",
+     "url": "https://www.cotto.com/product/faucets",
+     "title": "คอตโต้ | ก๊อกน้ำ",
+     "description": "ก๊อกน้ำคอตโต้ ดีไซน์สวยทันสมัย ทั้งก๊อกน้ำระบบอัตโนมัติ หรือแบบก้านโยก",
+     "thumbnail": {
+      "url": "http://www.cotto.com/common/img/003/cotto-logo.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/Vu5DwMeYYENDW9SaOrOCvgBrnw4mCGb2Eca9WMR2Dfk/http/www.cotto.com/common/img/003/cotto-logo.jpg",
+      "width": 200,
+      "height": 200,
+      "content_type": "image/jpeg",
+      "flags": 0
+     }
+    },
+    {
+     "type": "link",
+     "url": "https://www.cotto.com/th/product/urinal",
+     "title": "คอตโต้ | โถปัสสาวะชาย",
+     "thumbnail": {
+      "url": "http://www.cotto.com/common/img/003/cotto-logo.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/Vu5DwMeYYENDW9SaOrOCvgBrnw4mCGb2Eca9WMR2Dfk/http/www.cotto.com/common/img/003/cotto-logo.jpg",
+      "width": 200,
+      "height": 200,
+      "content_type": "image/jpeg",
+      "flags": 0
+     }
+    },
+    {
+     "type": "link",
+     "url": "https://www.cotto.com/product/flush-valve",
+     "title": "COTTO | ฟลัชวาล์ว",
+     "thumbnail": {
+      "url": "http://www.cotto.com/common/img/003/cotto-logo.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/Vu5DwMeYYENDW9SaOrOCvgBrnw4mCGb2Eca9WMR2Dfk/http/www.cotto.com/common/img/003/cotto-logo.jpg",
+      "width": 200,
+      "height": 200,
+      "content_type": "image/jpeg",
+      "flags": 0
+     }
+    }
+   ],
+   "timestamp": "2023-07-07T14:53:39.797000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1126888771879719043",
+   "channel_id": "1126888659463970936",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "🔷 American Standard \nClick เลือกแต่ละรุ่น แล้วเลื่อนลงมาล่างๆจะเจอ Download\n🚽ชักโครก : https://www.americanstandard.co.th/bathr.../toilets-category\nอ่างล้างหน้า : https://www.americanstandard.co.th/.../wash-basins-category\nก๊อกน้ำ : https://www.americanstandard.co.th/.../basin-faucets...\nอ่างอาบน้ำ : https://www.americanstandard.co.th/bath.../bathtubs-category\nฝักบัว : https://www.americanstandard.co.th/.../bath-showers-category\nAccessories : https://www.americanstandard.co.th/bathrooms/accessories/",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2023-07-07T14:54:00.666000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1126888859410645022",
+   "channel_id": "1126888659463970936",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 1
+  },
+  {
+   "type": 0,
+   "content": "🔷Kohler\nClick เลือกแต่ละรุ่น เลื่อนลงมาจะเจอ Cad template\n🚽ชักโครก : https://www.kohler.co.th/browse/bathroom/Categories/toilets\nก๊อกและฝักบัว : https://www.kohler.co.th/.../Categories/bathroom-faucets\nอ่างล้างหน้า : https://www.kohler.co.th/.../bathroom/Categories/lavatories\nอ่างอาบน้ำ : https://www.kohler.co.th/browse/bathroom/Categories/bathing\nอ่างอาบน้ำระบบ : https://www.kohler.co.th/.../bath.../Categories/system-baths\nตู้อาบน้ำ : https://www.kohler.co.th/.../bath.../Categories/shower-doors\nตู้อ่างล้างหน้า : https://www.kohler.co.th/.../Categories/bathroom-furniture",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2023-07-07T14:54:05.908000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1126888881397190676",
+   "channel_id": "1126888659463970936",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 2
+  },
+  {
+   "type": 0,
+   "content": "🔷ยี่ห้อ Nahm\nรวมหน้าเดียว ต้องรู้จักรุ่น รหัสก่อน แล้วกดเลือก Technical Drawing\nLink : https://www.nahm.co.th/th/downloads\n🔷Hafele\nรวมกันหมด แบะไม่ใช่ไฟล์ CAD เป็นโบรชัวร์แต่สามารถAdd แนบรุ่นมาประกอบไฟล์รูปใน CAD ได้\n🚽สุขภัณฑ์รวม : https://product.hafele.co.th/.../038d8faf-9daf-4b9c-8b27...\nก๊อก : https://product.hafele.co.th/.../06819930-f3ed-4290-82f9...\nสายชำระ,อะไหล่ : https://product.hafele.co.th/.../da3430be-822b-4f7e-8229...\nก๊อกอ่าง,ฝักบัว : https://product.hafele.co.th/.../2fe94fa1-b79f-4700-a4a9...\nAccessories : https://product.hafele.co.th/.../bc69df7c-a749-4d48-bd86...",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://www.nahm.co.th/th/downloads",
+     "title": "สุขภัณฑ์ โถสุขภัณฑ์ ซักโครก โถส้วม ก๊อกน้ำ ชุดฝึกบัว ดีไซน์สวยหรู",
+     "description": "สุขภัณฑ์ โถสุขภัณฑ์ ชักโครก โถส้วม ก็อกน้ำ ชุดฝักบัว อุปกรณ์ห้องน้ำดีไซน์สวยหรู คุณภาพสูง โดย Nahm ผลิตภัณฑ์ที่ถูกออกแบบด้วยความหลงใหล ประณีต และสร้างสรรค์"
+    }
+   ],
+   "timestamp": "2023-07-07T14:54:10.612000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1126888901127192606",
+   "channel_id": "1126888659463970936",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 3
+  },
+  {
+   "type": 0,
+   "content": "🔷TOTO\n🚽ชักโครก : https://th.toto.com/products/?category_products=toilets\nอ่างล้างหน้า : https://th.toto.com/products/?category_products=lavatories\nอ่างอาบน้ำ : https://th.toto.com/products/?category_products=bathtubs\nก๊อกน้ำ,ฝักบัว : https://th.toto.com/products/?category_products=faucets\nAccessories : https://th.toto.com/products/?category_products=accessories\nสำหรับห่องน้ำสาธารณะ : https://th.toto.com/products/?category_products=public\n🔷MOGEN\nยี่ห้อนี้เป็น File PDF ทั้งหมด\nLink รวม : https://www.mogen.co.th/all-products",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "article",
+     "url": "https://th.toto.com/products/?category_products=toilets",
+     "title": "ศูนย์รวมอุปกรณ์และชุดสุขภัณฑ์ครบวงจร | TOTO Thailand",
+     "description": "นึกถึงสุขภัณฑ์ห้องน้ำ ต้อง TOTO มีให้เลือกหลากหลาย ทั้งโถสุขภัณฑ์และฝารองนั่งชักโครก พร้อมเทคโนโลยีประหยัดน้ำ ดีไซน์สวย ตอบโจทย์ไลฟ์สไตล์ทุกเพศทุกวัย",
+     "provider": {
+      "name": "TOTO Thailand"
+     }
+    },
+    {
+     "type": "article",
+     "url": "https://th.toto.com/products/?category_products=lavatories",
+     "title": "อ่างล้างหน้า - TOTO Thailand",
+     "provider": {
+      "name": "TOTO Thailand"
+     }
+    },
+    {
+     "type": "article",
+     "url": "https://th.toto.com/products/?category_products=bathtubs",
+     "title": "อ่างอาบน้ำ อ่างแบบลอยตัวและแบบฝัง - TOTO Thailand",
+     "provider": {
+      "name": "TOTO Thailand"
+     }
+    },
+    {
+     "type": "article",
+     "url": "https://th.toto.com/products/?category_products=faucets",
+     "title": "ก๊อกน้ำ & ฝักบัว ก๊อกอ่างล้างหน้า ฝักบัวอาบน้ำ - TOTO Thailand",
+     "provider": {
+      "name": "TOTO Thailand"
+     }
+    },
+    {
+     "type": "article",
+     "url": "https://th.toto.com/products/?category_products=accessories",
+     "title": "อุปกรณ์ตกแต่งห้องน้ำ - TOTO Thailand",
+     "provider": {
+      "name": "TOTO Thailand"
+     }
+    }
+   ],
+   "timestamp": "2023-07-07T14:54:15.601000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1126888922052571157",
+   "channel_id": "1126888659463970936",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 4
+  }
+ ]
+}

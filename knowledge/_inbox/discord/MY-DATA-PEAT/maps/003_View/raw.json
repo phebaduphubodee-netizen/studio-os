@@ -1,0 +1,99 @@
+{
+ "thread": {
+  "id": "1413256957799698432",
+  "type": 11,
+  "last_message_id": "1413256957799698432",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "View",
+  "parent_id": "1363501780377534524",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2025-10-04T20:27:58.585000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2025-09-04T20:18:35.784000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://www.360cities.net/image/ao-pra-beach-thailand-2",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1413256958403674265",
+     "filename": "image.png",
+     "size": 2065402,
+     "url": "https://cdn.discordapp.com/attachments/1413256957799698432/1413256958403674265/image.png?ex=6a48c1db&is=6a47705b&hm=a09c2a081b87b161f1f0180a01f601b6d71b0618c1488aa6dbcf720256c79091&",
+     "proxy_url": "https://media.discordapp.net/attachments/1413256957799698432/1413256958403674265/image.png?ex=6a48c1db&is=6a47705b&hm=a09c2a081b87b161f1f0180a01f601b6d71b0618c1488aa6dbcf720256c79091&",
+     "width": 1920,
+     "height": 1080,
+     "content_type": "image/png",
+     "original_content_type": "image/png",
+     "content_scan_version": 2,
+     "placeholder": "4rUFPITseoiKWXigqqB5gIkHuQ==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://www.360cities.net/image/ao-pra-beach-thailand-2",
+     "title": "Ao Pra Beach 360 Panorama | 360Cities",
+     "description": "360° panorama photo from Thailand by Jan Koehn. Ao Pra Beach on Koh Mak is a tranquil, idyllic paradise that fee...",
+     "provider": {
+      "name": "360Cities"
+     },
+     "thumbnail": {
+      "url": "https://cloudflare1.360gigapixels.com/pano/jan-koehn/02032713_Koh-Mak-Beach-01-tif/equirect_crop_3_1/6.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/zaT1fE1WXnXCjzKEcMEWtG6ANNm5iCKWHODwvZ8BvZk/https/cloudflare1.360gigapixels.com/pano/jan-koehn/02032713_Koh-Mak-Beach-01-tif/equirect_crop_3_1/6.jpg",
+      "width": 1024,
+      "height": 346,
+      "content_type": "image/jpeg",
+      "placeholder": "39YNMoQJNYipaci4upCnDYk=",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 2
+    }
+   ],
+   "timestamp": "2025-09-04T20:18:35.784000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1413256957799698432",
+   "channel_id": "1413256957799698432",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

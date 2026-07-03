@@ -1,0 +1,122 @@
+{
+ "thread": {
+  "id": "1302185699092725760",
+  "type": 11,
+  "last_message_id": "1302185745842311199",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "TIPTOP",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-12-02T08:28:45.594000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2024-11-02T08:21:04.104000+00:00"
+  },
+  "message_count": 1,
+  "member_count": 1,
+  "total_message_sent": 1
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1302185699247652974",
+     "filename": "image.png",
+     "size": 423310,
+     "url": "https://cdn.discordapp.com/attachments/1302185699092725760/1302185699247652974/image.png?ex=6a48c270&is=6a4770f0&hm=6e2f8d0b00e5832f801723d9c7c41d3d6c2416eda2bf33f4762f982cf532b729&",
+     "proxy_url": "https://media.discordapp.net/attachments/1302185699092725760/1302185699247652974/image.png?ex=6a48c270&is=6a4770f0&hm=6e2f8d0b00e5832f801723d9c7c41d3d6c2416eda2bf33f4762f982cf532b729&",
+     "width": 531,
+     "height": 751,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "GggKDQCgwnaId3mpaYqGp1iDjwXY",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-11-02T08:21:04.104000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1302185699092725760",
+   "channel_id": "1302185699092725760",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "https://drive.google.com/file/d/1oVHjyvl9zTd5iYGMF8YY1D2rF5kfal8s/view",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://drive.google.com/file/d/1oVHjyvl9zTd5iYGMF8YY1D2rF5kfal8s/view",
+     "title": "TIP-TOP Catalogue V3.pdf",
+     "provider": {
+      "name": "Google Docs"
+     },
+     "content_scan_version": 0
+    }
+   ],
+   "timestamp": "2024-11-02T08:21:15.250000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1302185745842311199",
+   "channel_id": "1302185699092725760",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

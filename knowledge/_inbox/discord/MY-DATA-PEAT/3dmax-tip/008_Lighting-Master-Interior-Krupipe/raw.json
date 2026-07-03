@@ -1,0 +1,583 @@
+{
+ "thread": {
+  "id": "1334885082153877545",
+  "type": 11,
+  "last_message_id": "1334885351138791454",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Lighting Master Interior Krupipe",
+  "parent_id": "1198893170679877642",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2025-03-02T14:01:43.625000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2025-01-31T13:56:44.551000+00:00"
+  },
+  "message_count": 8,
+  "member_count": 1,
+  "total_message_sent": 8
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1334885082405539924",
+     "filename": "437923849_1319610078977865_571584316632876044_n.png",
+     "size": 101926,
+     "url": "https://cdn.discordapp.com/attachments/1334885082153877545/1334885082405539924/437923849_1319610078977865_571584316632876044_n.png?ex=6a49111c&is=6a47bf9c&hm=5dfbd0ba167f5de3bdbb4b4b52a71d7f2037bb9928d2b485937c1d7dfe400826&",
+     "proxy_url": "https://media.discordapp.net/attachments/1334885082153877545/1334885082405539924/437923849_1319610078977865_571584316632876044_n.png?ex=6a49111c&is=6a47bf9c&hm=5dfbd0ba167f5de3bdbb4b4b52a71d7f2037bb9928d2b485937c1d7dfe400826&",
+     "width": 1152,
+     "height": 1152,
+     "content_type": "image/png",
+     "placeholder": "BQgKBwAIt3eId4dwjWWHqGiJCAAAAAAA",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2025-01-31T13:56:44.551000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885082153877545",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "https://youtu.be/5UEl7Wminms",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=5UEl7Wminms",
+     "title": "EP.01 ความรู้เรื่องแสงอย่างละเอียด",
+     "color": 16711680,
+     "author": {
+      "name": "PEAT",
+      "url": "https://www.youtube.com/channel/UCNFUkt4CnH3C8xd4Vrik79Q"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/5UEl7Wminms/maxresdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/rerrR7wUrbbeXsTW2Z7WUpSzrNT7Lu7IydD0FTfSqEQ/https/i.ytimg.com/vi/5UEl7Wminms/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720,
+      "content_type": "image/jpeg",
+      "placeholder": "oOgJNIJKh5ifeYh6bGuGcEkEVA==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/5UEl7Wminms",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "oOgJNIJKh5ifeYh6bGuGcEkEVA==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2025-01-31T13:56:48.204000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885097475670046",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "https://youtu.be/H8QlrtyRg-U\nEp 2 \nset up light",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=H8QlrtyRg-U",
+     "title": "EP2 Set up light",
+     "color": 16711680,
+     "author": {
+      "name": "PEAT",
+      "url": "https://www.youtube.com/channel/UCNFUkt4CnH3C8xd4Vrik79Q"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/H8QlrtyRg-U/hqdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/XQvbWlCqtM-Cn9Exx7o4cpFeK6qy4LyRafL_1JrLdcY/https/i.ytimg.com/vi/H8QlrtyRg-U/hqdefault.jpg",
+      "width": 480,
+      "height": 360,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/H8QlrtyRg-U",
+      "width": 1280,
+      "height": 720,
+      "flags": 0
+     }
+    }
+   ],
+   "timestamp": "2025-01-31T13:56:58.178000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885139309789214",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 1
+  },
+  {
+   "type": 0,
+   "content": "https://youtu.be/MjramtC-6IQ\nEP 3",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=MjramtC-6IQ",
+     "title": "EP3",
+     "color": 16711680,
+     "author": {
+      "name": "PEAT",
+      "url": "https://www.youtube.com/channel/UCNFUkt4CnH3C8xd4Vrik79Q"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/MjramtC-6IQ/maxresdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/_o13qkBjU1zSSqYuF-feNiDdwsxZQluZPi9IN_wBGwA/https/i.ytimg.com/vi/MjramtC-6IQ/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720,
+      "content_type": "image/jpeg",
+      "placeholder": "DwgaDIAIp4h5h3h3iHgHeGgQtw==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/MjramtC-6IQ",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "DwgaDIAIp4h5h3h3iHgHeGgQtw==",
+      "placeholder_version": 1,
+      "flags": 0
+     }
+    }
+   ],
+   "timestamp": "2025-01-31T13:57:02.944000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885159299842118",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 2
+  },
+  {
+   "type": 0,
+   "content": "https://youtu.be/quKuZNJGr70\nEP 4",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=quKuZNJGr70",
+     "title": "EP4",
+     "color": 16711680,
+     "author": {
+      "name": "PEAT",
+      "url": "https://www.youtube.com/channel/UCNFUkt4CnH3C8xd4Vrik79Q"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/quKuZNJGr70/sddefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/x1BmcWQpwLI1LEgQftuPaM1jyp7hxCbP78sbSmn-Bok/https/i.ytimg.com/vi/quKuZNJGr70/sddefault.jpg",
+      "width": 640,
+      "height": 480,
+      "content_type": "image/jpeg",
+      "placeholder": "0DgSLYgIZ5iJd4d2iIh3dwiJdZBo",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/quKuZNJGr70",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "0DgSLYgIZ5iJd4d2iIh3dwiJdZBo",
+      "placeholder_version": 1,
+      "flags": 0
+     }
+    }
+   ],
+   "timestamp": "2025-01-31T13:57:08.451000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885182398009466",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 3
+  },
+  {
+   "type": 0,
+   "content": "https://youtu.be/apA6PPFFFz4\nEP5",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=apA6PPFFFz4",
+     "title": "EP5",
+     "color": 16711680,
+     "author": {
+      "name": "PEAT",
+      "url": "https://www.youtube.com/channel/UCNFUkt4CnH3C8xd4Vrik79Q"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/apA6PPFFFz4/maxresdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/tQgBBmqDMjjHcKpM_dDo42kOxIZWxyclI3MuynP_1Pw/https/i.ytimg.com/vi/apA6PPFFFz4/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720,
+      "content_type": "image/jpeg",
+      "placeholder": "RxgOHIQIt4h2iXeHeIcIh4ZweA==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/apA6PPFFFz4",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "RxgOHIQIt4h2iXeHeIcIh4ZweA==",
+      "placeholder_version": 1,
+      "flags": 0
+     }
+    }
+   ],
+   "timestamp": "2025-01-31T13:57:12.676000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885200118808619",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 4
+  },
+  {
+   "type": 0,
+   "content": "https://youtu.be/V4GGtet7-vM\nEP6",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=V4GGtet7-vM",
+     "title": "EP6",
+     "color": 16711680,
+     "author": {
+      "name": "PEAT",
+      "url": "https://www.youtube.com/channel/UCNFUkt4CnH3C8xd4Vrik79Q"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/V4GGtet7-vM/sddefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/i1HEmTGCYGpxkD_svJgs402g6UwfPDBrW99ASDGEHPs/https/i.ytimg.com/vi/V4GGtet7-vM/sddefault.jpg",
+      "width": 640,
+      "height": 480,
+      "content_type": "image/jpeg",
+      "placeholder": "h/cFFYIhC0tWmZeyZ1prhm+E/SXI",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/V4GGtet7-vM",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "h/cFFYIhC0tWmZeyZ1prhm+E/SXI",
+      "placeholder_version": 1,
+      "flags": 0
+     }
+    }
+   ],
+   "timestamp": "2025-01-31T13:57:17.428000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885220050145330",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 5
+  },
+  {
+   "type": 0,
+   "content": "https://youtu.be/T0ngud5Es2s\nEP7",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=T0ngud5Es2s",
+     "title": "EP7",
+     "color": 16711680,
+     "author": {
+      "name": "PEAT",
+      "url": "https://www.youtube.com/channel/UCNFUkt4CnH3C8xd4Vrik79Q"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/T0ngud5Es2s/maxresdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/KC-3P-IPFFCa7ZNLrLh4Gk6JjnQt8fqs_EvFDo_MWEs/https/i.ytimg.com/vi/T0ngud5Es2s/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720,
+      "content_type": "image/jpeg",
+      "placeholder": "UAgOFIIEKnp4lnmJZnkFdjhwxw==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/T0ngud5Es2s",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "UAgOFIIEKnp4lnmJZnkFdjhwxw==",
+      "placeholder_version": 1,
+      "flags": 0
+     }
+    }
+   ],
+   "timestamp": "2025-01-31T13:57:21.408000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885236743344138",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 6
+  },
+  {
+   "type": 4,
+   "content": "Lighting Master Interior Krupipe",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2025-01-31T13:57:48.682000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1334885351138791454",
+   "channel_id": "1334885082153877545",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 7
+  }
+ ]
+}

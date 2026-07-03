@@ -1,0 +1,98 @@
+{
+ "thread": {
+  "id": "1257727071392890890",
+  "type": 11,
+  "last_message_id": "1257727071392890890",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "เทคนิคการเซฟแมทไว้ใช้และแมทสำเร็จรูป",
+  "parent_id": "1198893170679877642",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-08-01T16:00:54.487000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-07-02T15:58:21.259000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://www.youtube.com/watch?v=iO3Gl4KSfHw",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=iO3Gl4KSfHw",
+     "title": "3dsMax Tips Ep.1 เทคนิคการเซฟแมทไว้ใช้และแมทสำเร็จรูป",
+     "description": "คลิบสอนการใช้งานเบื้องต้นเดี่ยวกับโปรแกรม 3dsMax สำหรับ มือใหม่และนักเรียน นักศึกษาที่ต้องการฝึกฝนการใช้งานโปรแกรมให้ชำนาญมากยิ่งขึ้น ไม่อนุญาติให้นำไปใช้ในเชิงพานิชย์ \n#3dsmax #interior",
+     "color": 16711680,
+     "author": {
+      "name": "Wuttlike2B",
+      "url": "https://www.youtube.com/channel/UCFvYE73Nyx6Jg4JmEhHGMHg"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/iO3Gl4KSfHw/maxresdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/FNHNc6-XLQ19rOsJra9EOIy-aiSltReXl1giCGb7p34/https/i.ytimg.com/vi/iO3Gl4KSfHw/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720,
+      "content_type": "image/jpeg",
+      "placeholder": "KggKBIB3ZgF8h3ZKdnv+oRUFeg==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/iO3Gl4KSfHw",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "KggKBIB3ZgF8h3ZKdnv+oRUFeg==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2024-07-02T15:58:21.259000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1257727071392890890",
+   "channel_id": "1257727071392890890",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

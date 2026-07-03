@@ -1,0 +1,86 @@
+{
+ "thread": {
+  "id": "1225668738934767636",
+  "type": 11,
+  "last_message_id": "1225668738934767636",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "อลูมิเนียมโปรไฟล์ APH",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-05-05T04:50:59.787000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-04-05T04:49:59.186000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1225668739135963178",
+     "filename": "image.png",
+     "size": 225449,
+     "url": "https://cdn.discordapp.com/attachments/1225668738934767636/1225668739135963178/image.png?ex=6a4939b7&is=6a47e837&hm=4a6c177fd9f9d108916ed6bf40184180a32ced832d0036ac1cc7081db0799eb7&",
+     "proxy_url": "https://media.discordapp.net/attachments/1225668738934767636/1225668739135963178/image.png?ex=6a4939b7&is=6a47e837&hm=4a6c177fd9f9d108916ed6bf40184180a32ced832d0036ac1cc7081db0799eb7&",
+     "width": 551,
+     "height": 787,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "CwgGBQAKd5p2CLVYtZWnlrJ/p7UI",
+     "placeholder_version": 1
+    },
+    {
+     "id": "1225668739316584449",
+     "filename": "APH.pdf",
+     "size": 3851670,
+     "url": "https://cdn.discordapp.com/attachments/1225668738934767636/1225668739316584449/APH.pdf?ex=6a4939b7&is=6a47e837&hm=cfbe924b5f58ee8ba58f436a881afd767cd1efa2b89574f6edb6c8f6a01cf126&",
+     "proxy_url": "https://media.discordapp.net/attachments/1225668738934767636/1225668739316584449/APH.pdf?ex=6a4939b7&is=6a47e837&hm=cfbe924b5f58ee8ba58f436a881afd767cd1efa2b89574f6edb6c8f6a01cf126&",
+     "content_type": "application/pdf",
+     "content_scan_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-04-05T04:49:59.186000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1225668738934767636",
+   "channel_id": "1225668738934767636",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

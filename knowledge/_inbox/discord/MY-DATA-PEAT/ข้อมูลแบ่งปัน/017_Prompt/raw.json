@@ -1,0 +1,78 @@
+{
+ "thread": {
+  "id": "1494528876909564065",
+  "type": 11,
+  "last_message_id": "1494528876909564065",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Prompt",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2026-05-17T02:49:37.604000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2026-04-17T02:44:11.259000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1494528877379457164",
+     "filename": "image.png",
+     "size": 1071184,
+     "url": "https://cdn.discordapp.com/attachments/1494528876909564065/1494528877379457164/image.png?ex=6a491c3b&is=6a47cabb&hm=f4c05b71c0cfd6a30621a4b0a8d4b42c44a4da60b4e72c978768715b9fc6a37f&",
+     "proxy_url": "https://media.discordapp.net/attachments/1494528876909564065/1494528877379457164/image.png?ex=6a491c3b&is=6a47cabb&hm=f4c05b71c0cfd6a30621a4b0a8d4b42c44a4da60b4e72c978768715b9fc6a37f&",
+     "width": 1440,
+     "height": 1798,
+     "content_type": "image/png",
+     "original_content_type": "image/png",
+     "content_scan_version": 4,
+     "placeholder": "NAgODgCAu3l4lph4h3iIm4iYb4j2xGk=",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2026-04-17T02:44:11.259000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1494528876909564065",
+   "channel_id": "1494528876909564065",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

@@ -1,0 +1,117 @@
+{
+ "thread": {
+  "id": "1430666491828633800",
+  "type": 11,
+  "last_message_id": "1430666570627158139",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Fabic",
+  "parent_id": "1363501780377534524",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2025-11-21T21:21:59.408000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2025-10-22T21:17:52.150000+00:00"
+  },
+  "message_count": 1,
+  "member_count": 1,
+  "total_message_sent": 1
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "Farbicผ้า",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2025-10-22T21:17:52.150000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1430666491828633800",
+   "channel_id": "1430666491828633800",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "(https://www.pinterest.com/pin/21955116929586306/)",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://www.pinterest.com/pin/21955116929586306/",
+     "title": "Yandex Images: search for images in 2025 | Printing on fabric, Geom...",
+     "description": "Aug 5, 2025 - This Pin was discovered by Sumit Jangra. Discover (and save!) your own Pins on Pinterest",
+     "provider": {
+      "name": "Pinterest"
+     },
+     "thumbnail": {
+      "url": "https://i.pinimg.com/736x/f8/05/6f/f8056f42f864042a59ebcb095cc680f5.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/2FoR8IEQBakuw5M8DgL58Hv7gHads_R5VLHxQrLEqYU/https/i.pinimg.com/736x/f8/05/6f/f8056f42f864042a59ebcb095cc680f5.jpg",
+      "width": 400,
+      "height": 400,
+      "content_type": "image/jpeg",
+      "flags": 0
+     },
+     "content_scan_version": 2
+    }
+   ],
+   "timestamp": "2025-10-22T21:18:10.937000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1430666570627158139",
+   "channel_id": "1430666491828633800",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

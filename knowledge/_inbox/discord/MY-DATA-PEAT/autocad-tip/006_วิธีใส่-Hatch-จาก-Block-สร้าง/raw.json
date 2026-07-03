@@ -1,0 +1,78 @@
+{
+ "thread": {
+  "id": "1296009967223963741",
+  "type": 11,
+  "last_message_id": "1296009967223963741",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "วิธีใส่ Hatch จาก Block สร้าง",
+  "parent_id": "1164132093614362746",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-11-15T07:27:39.234000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-10-16T07:20:54.887000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1296009969371582487",
+     "filename": "Desktop_2024.10.16_-_14.16.58.01.mp4",
+     "size": 35097864,
+     "url": "https://cdn.discordapp.com/attachments/1296009967223963741/1296009969371582487/Desktop_2024.10.16_-_14.16.58.01.mp4?ex=6a48b457&is=6a4762d7&hm=4507d9954260181a247f8a0e96a28468f8e69fb6d1ba9fa2b4a7484418a35e09&",
+     "proxy_url": "https://media.discordapp.net/attachments/1296009967223963741/1296009969371582487/Desktop_2024.10.16_-_14.16.58.01.mp4?ex=6a48b457&is=6a4762d7&hm=4507d9954260181a247f8a0e96a28468f8e69fb6d1ba9fa2b4a7484418a35e09&",
+     "width": 1280,
+     "height": 720,
+     "content_type": "video/mp4",
+     "content_scan_version": 1,
+     "placeholder": "jPcFBICIeHiLiIePh4nwJQsnuw==",
+     "placeholder_version": 1,
+     "title": "Desktop 2024.10.16 - 14.16.58.01"
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-10-16T07:20:54.887000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1296009967223963741",
+   "channel_id": "1296009967223963741",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

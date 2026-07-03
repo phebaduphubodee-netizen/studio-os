@@ -1,0 +1,112 @@
+{
+ "thread": {
+  "id": "1309167353178619924",
+  "type": 11,
+  "last_message_id": "1309167700215599137",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Dimension ที่ใช้ในการเขียน-อ่านแบบ",
+  "parent_id": "1163756287364972554",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-12-21T14:46:06.129000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2024-11-21T14:43:40.151000+00:00"
+  },
+  "message_count": 1,
+  "member_count": 1,
+  "total_message_sent": 1
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1309167353380081737",
+     "filename": "image.png",
+     "size": 597365,
+     "url": "https://cdn.discordapp.com/attachments/1309167353178619924/1309167353380081737/image.png?ex=6a491c1c&is=6a47ca9c&hm=3e913a08e643fd5d93205ab25b71780de6b048e4146e436110cb273dca16a36c&",
+     "proxy_url": "https://media.discordapp.net/attachments/1309167353178619924/1309167353380081737/image.png?ex=6a491c1c&is=6a47ca9c&hm=3e913a08e643fd5d93205ab25b71780de6b048e4146e436110cb273dca16a36c&",
+     "width": 1080,
+     "height": 1069,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "9+cJF4ioh4dwh4dxhzh4KHd1dQcYd4AA",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-11-21T14:43:40.151000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1309167353178619924",
+   "channel_id": "1309167353178619924",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "**Dimension ที่ใช้ในการเขียน-อ่านแบบ**\n\n---\n\n1. **1.50**  \n   **จากขอบ → ถึง → ขอบ**  \n   พบได้ในแบบแปลนทั่วไป ใช้บอกระยะจากขอบถึงขอบ หรือความสูงระหว่างชั้น เช่น ขอบหน้าต่างถึงขอบหน้าต่าง  \n\n---\n\n2. **1.50**  \n   **จากกึ่งกลาง → ถึง → ขอบ**  \n   พบได้ในแบบที่ต้องการแสดงระยะจากกึ่งกลางออกไปถึงจุดหนึ่ง เช่น กึ่งกลางเสา ถึง ขอบผนังโดดเด่นหนึ่ง  \n\n---\n\n3. **1.50**  \n   **จากกึ่งกลาง → ถึง → กึ่งกลาง**  \n   พบได้ในแบบที่ต้องการแสดงระยะจากกึ่งกลางถึงกึ่งกลาง เช่น กึ่งกลางเสาถึงกึ่งกลางเสาอีกต้นหนึ่ง  \n\n---\n\n4. **8R@0.175=1.40**  \n   **ลูกตั้ง (Riser) 8 ลูก สูงข้ันละ 0.175 เมตร รวม 1.40 เมตร**  \n   พบได้ในแบบรายละเอียดบันได เพื่อใช้แสดงระยะความสูงของแต่ละขั้นบันได  \n\n---\n\n5. **6T@0.275=1.65**  \n   **ลูกนอน (Tread) 8 ลูก กว้างขั้นละ 0.275 เมตร รวม 1.65 เมตร**  \n   พบได้ในแบบรายละเอียดบันได เพื่อใช้แสดงระยะความลึกของแต่ละขั้นบันได  \n\n---\n\n6. **VARIES**  \n   **ระยะไม่แน่นอนขึ้นอยู่กับหน้างาน**  \n   พบได้ในแบบขยายขั้นบันได เพื่อใช้แสดงระยะความสูงของแต่ละขั้นบันได  \n\n---\n\n7. **EQ**  \n   **ระยะที่เกิดจากการเฉลี่ยเท่ากัน โดยเกิดจากการเฉลี่ยหน้างาน**  \n   พบได้ในแบบที่ต้องการการเฉลี่ยและระยะทั้งหมดให้เท่ากัน โดยไม่สามารถระบุระยะที่แน่นอนในแบบได้ เนื่องจากเกิดจากสภาพหน้างาน  \n\n---",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2024-11-21T14:45:02.891000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1309167700215599137",
+   "channel_id": "1309167353178619924",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}
