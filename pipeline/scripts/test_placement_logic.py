@@ -46,6 +46,13 @@ def _living(tv=None, sofa_rot=0):
     return spec
 
 
+def _bedroom_with(*extra_items, builtins=()):
+    spec = _bedroom()
+    spec["items"].extend(extra_items)
+    spec["builtins"].extend(builtins)
+    return spec
+
+
 def _s(rep, rule):
     return next((f["status"] for f in rep["findings"] if f["rule"] == rule), None)
 
@@ -163,12 +170,54 @@ def test_real_living_condo_is_caught():
     assert rep["tv_status"] == "fused" and rep["status"] == P.FAIL   # tv_feature wall
 
 
+# ---- furniture dimensions vs ergonomic norms (GS-02/06; ergonomics_ref / NLM DR) ----
+def test_furniture_within_norms_passes():
+    spec = _bedroom_with({"name": "ct", "kind": "coffee_table", "x": 100, "y": 100,
+                          "w": 1000, "d": 500, "h": 400})
+    assert _s(P.check(spec), "furniture_dimensions") == P.PASS
+
+
+def test_oversized_bed_warns():
+    spec = _bedroom()
+    spec["items"][0]["w"], spec["items"][0]["d"] = 2500, 2500   # far off any standard mattress
+    assert _s(P.check(spec), "furniture_dimensions") == P.WARN
+
+
+def test_bad_coffee_table_height_warns():
+    spec = _bedroom_with({"name": "ct", "kind": "coffee_table", "x": 100, "y": 100,
+                          "w": 1000, "d": 500, "h": 800})   # 800mm = way too tall for a coffee table
+    assert _s(P.check(spec), "furniture_dimensions") == P.WARN
+
+
+def test_shallow_wardrobe_warns():
+    spec = _bedroom_with(builtins=[{"name": "wd", "kind": "wardrobe", "x": 0, "y": 0,
+                                    "w": 100, "d": 3000, "h": 2400}])   # 100mm can't hang clothes
+    assert _s(P.check(spec), "furniture_dimensions") == P.WARN
+
+
+def test_standard_bed_passes_within_tolerance():
+    spec = _bedroom()
+    spec["items"][0]["w"], spec["items"][0]["d"] = 1524, 2032   # exact Queen
+    assert _s(P.check(spec), "furniture_dimensions") == P.PASS
+
+
+def test_real_bedroom_furniture_flags_shallow_wardrobe():
+    spec = _spec("bedroom_suite.json")
+    if spec is None:
+        return
+    f = next((x for x in P.check(spec)["findings"] if x["rule"] == "furniture_dimensions"), None)
+    assert f is not None and f["status"] == P.WARN and "wardrobe depth 100" in f["detail"]
+
+
 TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_over_bed_fails,
          test_tv_too_close_warns, test_bed_rotated_180_flips_front, test_living_sofa_is_the_viewer,
          test_living_tv_behind_sofa_fails, test_door_on_head_wall_fails, test_door_on_other_wall_passes,
          test_door_rule_skips_without_bed_or_door, test_fused_headboard_tv_is_flagged,
          test_no_tv_room_does_not_false_fail, test_name_only_thai_tv_detected_as_fused,
-         test_real_bedroom_suite_is_caught, test_real_living_condo_is_caught]
+         test_real_bedroom_suite_is_caught, test_real_living_condo_is_caught,
+         test_furniture_within_norms_passes, test_oversized_bed_warns,
+         test_bad_coffee_table_height_warns, test_shallow_wardrobe_warns,
+         test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_flags_shallow_wardrobe]
 
 
 def main():
