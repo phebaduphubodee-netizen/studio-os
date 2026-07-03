@@ -38,6 +38,20 @@ WALKWAY_MIN_MM = 600
 WALKWAY_COMFORT_MM = (800, 900)
 DOOR_LEAF_MM = (800, 900)
 
+# --- bathroom fixture spacing (mm) — NKBA/Neufert/P&Z, from bathroom-kitchen-planning.md.
+# REFERENCE only: the clearance GATE is suite_clearance + codes-th (ฉ.39). placement_logic
+# checks the functional LOGIC (use-frequency ordering + wet/dry zoning), not these numbers. ---
+BATH_CLEAR_FRONT_MM = 762          # NKBA clear floor in front of WC/basin/shower/tub
+BATH_BASIN_TO_WC_MM = 508          # NKBA basin centreline → WC / sidewall
+BATH_WC_TO_WET_MM = 457            # NKBA WC centreline → shower/tub barrier
+BATH_BASIN_TO_BASIN_MM = 914       # NKBA centreline-to-centreline, double vanity
+
+# --- kitchen work-triangle (NKBA; no kitchen spec yet — for a future work_triangle rule) ---
+KITCHEN_TRIANGLE_LEG_MM = (1219, 2743)
+KITCHEN_TRIANGLE_PERIM_MAX_MM = 7925
+KITCHEN_AISLE_SINGLE_MM = 1067
+KITCHEN_AISLE_MULTI_MM = 1219
+
 
 def nearest_bed_size(w, d):
     """Best-matching standard mattress for a footprint (orientation-agnostic) +
