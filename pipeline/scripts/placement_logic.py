@@ -35,6 +35,8 @@ _TV_NAME_RE = re.compile(r"\b(tv|television)\b|ทีวี", re.IGNORECASE)
 
 BED_KINDS = {"bed"}
 SEAT_KINDS = {"sofa", "loveseat"}            # primary lounge seat (a living room's "viewer")
+SEATING_KINDS = {"sofa", "loveseat", "armchair", "chair", "lounge_chair", "accent_chair"}
+CONVERSATION_FOCAL_KINDS = {"coffee_table", "round_table"}   # what lounge seating orients toward
 VIEW_MIN_MM, VIEW_MAX_MM = ergo.TV_VIEW_DIST_MM   # SMPTE/THX comfort band (ergonomics_ref)
 
 # bathroom fixture families for the GS-05 use-frequency + wet/dry rule
@@ -321,9 +323,42 @@ def _rule_bathroom_logic(spec, ctx):
     return ("bathroom_logic", status, "; ".join(t for _, t in details))
 
 
+def _rule_seating_faces_focal(spec, ctx):
+    # GS-03/26 ("เก้าอี้หันหน้าเข้าไหน? ไม่มีอะไรให้มอง"): a lounge seat should orient
+    # toward a focal — a coffee/round table, a positioned TV, or another seat (a
+    # conversation group). WARN (advisory): build_room AUTO-FACES a seat that carries no
+    # `rot` to the focal, so this only flags (a) a seat with NO focal to face at all, and
+    # (b) an EXPLICIT rot that points away from every focal (the spec fighting the intent;
+    # the .rb materializer honours rot). A seat facing ANY focal passes.
+    seats = [el for el in _iter_elements(spec) if el.get("kind") in SEATING_KINDS]
+    if not seats:
+        return None
+    tables = [el for el in _iter_elements(spec) if el.get("kind") in CONVERSATION_FOCAL_KINDS]
+    base_focals = [_center(t) for t in tables]
+    if ctx["tv_status"] == "positioned":
+        base_focals.append(_center(ctx["tv"]))
+    issues = []
+    for s in seats:
+        scx, scy = _center(s)
+        focals = base_focals + [_center(o) for o in seats if o is not s]
+        if not focals:
+            issues.append(f"{s.get('kind')} faces nothing — no coffee/round table, positioned "
+                          f"TV, or other seat to orient toward")
+            continue
+        if s.get("rot") is None:
+            continue   # no explicit orientation -> build_room auto-faces it to the focal
+        fx, fy = _front_vec(s.get("rot", 0))
+        if not any((cx - scx) * fx + (cy - scy) * fy > 0 for cx, cy in focals):
+            issues.append(f"{s.get('kind')} (rot {float(s.get('rot', 0)):.0f}) faces away from every "
+                          f"focal (table/TV/other seat) — orient it toward the group")
+    if issues:
+        return ("seating_faces_focal", WARN, "; ".join(issues))
+    return ("seating_faces_focal", PASS, "lounge seating is oriented toward a focal (table/TV/other seat)")
+
+
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
          _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions,
-         _rule_bathroom_logic]
+         _rule_bathroom_logic, _rule_seating_faces_focal]
 
 
 def _worst(statuses):
