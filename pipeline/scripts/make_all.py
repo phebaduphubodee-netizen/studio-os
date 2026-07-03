@@ -5,6 +5,7 @@ make_all.py — one-button pipeline:  brief/spec -> validate -> ALL deliverables
     python pipeline/make_all.py --brief living 14 16              # brief -> auto-layout -> deliverables
     python pipeline/make_all.py --brief living 14 16 --render     # + Cycles preview embedded in the package
     python pipeline/make_all.py <spec> --no-package               # loose files only (skip the folder)
+    python pipeline/make_all.py <spec> --repair                   # + M3.3 closed-loop photoreal hero (PAID, ask-tier; implies --render)
 
 Flow (the load-bearing order — VALIDATE BEFORE BUILD):
   1. brief -> spec        (layout_gen, if --brief)
@@ -96,11 +97,14 @@ def main():
     #   --render      force a Cycles render so the package embeds the preview
     #   --no-package  emit loose files only (skip the assembled deliverable folder)
     raw = sys.argv[1:]
-    do_render = "--render" in raw
+    do_repair = "--repair" in raw or "--repair-pro" in raw
+    repair_tier = "pro" if "--repair-pro" in raw else "flash"
+    do_render = "--render" in raw or do_repair   # repair beautifies the clay PNG, so force it
     do_package = "--no-package" not in raw
     do_critique = "--critique" in raw or "--critique-pro" in raw
     crit_model = "pro" if "--critique-pro" in raw else "flash"
-    args = [a for a in raw if a not in ("--render", "--no-package", "--critique", "--critique-pro")]
+    args = [a for a in raw if a not in ("--render", "--no-package", "--critique",
+                                        "--critique-pro", "--repair", "--repair-pro")]
 
     spec_path, name = _spec_from_args(args)
     out = plan_2d._outdir()
@@ -163,6 +167,40 @@ def main():
     else:
         skipped.append("Blender render/.blend (not found; set $INTERIOR_BLENDER or install blender.org/download)")
 
+    # 4b) OPT-IN closed-loop repair (M3.3, repair_loop.py) — turn the clay CONTROL
+    #     into a photoreal hero through Gates 1-4 + critique/repair. PAID (Gemini image
+    #     + vision, ask-tier); default OFF. The winning candidate replaces the clay in
+    #     the package. NOTE: the Gate-3 judge is ADVISORY until M3.2 calibration passes
+    #     (judge_calibrate.py) — the loop runs, but trust its SHIP verdict accordingly.
+    repair_render = None
+    if do_repair:
+        clay = os.path.join(out, f"room_{name}.png")
+        if not os.path.exists(clay):
+            skipped.append("repair loop (no clay PNG — Blender missing or render failed)")
+        else:
+            # A repair failure must NEVER cost the deliverable: this runs BEFORE
+            # package assembly, and the real adapters can raise (e.g. hybrid_render
+            # SystemExit on a missing GEMINI key / registry slot). Degrade to
+            # packaging the clay so --repair never yields LESS than a plain run.
+            try:
+                import repair_loop
+                rr = repair_loop.repair_loop(
+                    name, clay, spec, spec_path, {"room_type": name},
+                    render_fn=repair_loop._real_render_fn, judge_fn=repair_loop._real_judge_fn,
+                    structure_fn=repair_loop._real_structure_fn, geometry_fn=repair_loop._real_geometry_fn,
+                    sanity_fn=repair_loop._real_sanity_fn, registry_key="@render-hybrid",
+                    outdir=out, qa_dir=os.path.join(out, "05_qa"), tier=repair_tier)
+                inbox = os.path.relpath(rr["inbox_pointer"], HERE) if rr.get("inbox_pointer") else "-"
+                if rr["outcome"] == repair_loop.RESOLVED:
+                    repair_render = rr["final_candidate"]
+                    produced.append(f"REPAIR: photoreal resolved at cycle {rr['accepted_cycle']} "
+                                    f"-> {os.path.basename(repair_render)}  (review: {inbox})")
+                else:
+                    produced.append(f"REPAIR: {rr['outcome']} after {rr['cycles_used']} cycle(s) "
+                                    f"-> packaging the clay instead  (triage: {inbox})")
+            except (SystemExit, Exception) as e:  # noqa: BLE001 — never lose the deliverable
+                skipped.append(f"repair loop failed ({type(e).__name__}: {e}) — packaging the clay instead")
+
     # 5) Native SketchUp = manual step (no SketchUp here)
     rb = os.path.join(HERE, "build_room.rb")
 
@@ -172,7 +210,8 @@ def main():
     folder = None
     if do_package:
         rp = os.path.join(out, f"room_{name}.png")
-        render_for_pkg = rp if (do_render and os.path.exists(rp)) else False
+        # a resolved repair (photoreal) wins; else the clay only if we rendered it this run
+        render_for_pkg = repair_render or (rp if (do_render and os.path.exists(rp)) else False)
         folder, pdf = package.build(spec, spec_path, name, fixtures=light_fixtures,
                                     render_png=render_for_pkg)
         produced.append(f"DELIVERABLE: {folder}")
@@ -185,7 +224,10 @@ def main():
     crit_results = []
     if do_critique:
         import critique
-        targets = [t for t in (png, os.path.join(out, f"room_{name}.png")) if t and os.path.exists(t)]
+        # score the image the package actually ships: the repaired photoreal hero if
+        # a repair resolved, otherwise the clay render (not a stale/unshipped image)
+        hero = repair_render or os.path.join(out, f"room_{name}.png")
+        targets = [t for t in (png, hero) if t and os.path.exists(t)]
         crit_results = critique.run_batch(targets, model_key=crit_model)
         if crit_results:
             md = critique.to_markdown(crit_results)
