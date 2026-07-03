@@ -65,14 +65,33 @@ Textile selection is governed by industry performance guidelines [t3-4].
 
 ### ความทนทานต่อการขัดถู / abrasion resistance — GROUNDED VALUES
 Abrasion testing: fabric pulled tight and rubbed with cotton duck / wire screen
-(Wyzenbeek) or worsted wool (Martindale) [t3-5].
+or worsted wool [t3-5]; the notebook does not assign apparatus to test — the
+which-uses-which split (Wyzenbeek = cotton duck/wire screen; Martindale =
+worsted wool, oscillating figure-eight) is grounded in Interior Design
+Knowledge Structuring.pdf pp.7-8 (REFERENCE tier, `_inbox/id-project-corpus/`).
 
-| Test มาตรฐาน | ทั่วไป General residential | งานหนัก Heavy duty | Source |
+| Test มาตรฐาน | ทั่วไป General | งานหนัก Heavy duty | Source |
 | :--- | :--- | :--- | :--- |
 | Wyzenbeek (ASTM D4157) — double rubs | ≥ 15,000 | ≥ 30,000 | [t3-5] |
 | Martindale (ISO 12947-2) — cycles | ≥ 20,000 | ≥ 40,000 | [t3-5] |
 
 Governing framework: Association for Contract Textiles (ACT) standards [t3-4].
+
+### กฎการตีความ / interpretation rule — thresholds, NOT lifespans (added 2026-07-03, id-project-corpus)
+- Wyzenbeek/Martindale values are **threshold qualifiers**, not linear lifespan
+  indicators: a fabric at 100,000 double rubs does not last twice as long as one
+  at 50,000 — exceeding the relevant minimum simply clears the fabric for that
+  duty class (Interior Design Knowledge Structuring.pdf p.8, REFERENCE tier,
+  staged `knowledge/_inbox/id-project-corpus/`). Spec-validation consequence:
+  test pass/fail against the minimums above; never rank fabrics by rub count.
+- **Second-source corroboration**: the same independent DR report gives the
+  identical four minimums — Wyzenbeek ≥ 15,000 / 30,000+ double rubs, Martindale
+  ≥ 20,000 / 40,000+ cycles (Interior Design Knowledge Structuring.pdf pp.7-8) —
+  upgrading confidence in the [t3-5] grounded values above. Values unchanged.
+  Label nuance: the DR report names its lower tier "general commercial" where
+  the notebook says "general residential"; the numbers are identical. Martindale
+  (ISO 12947-2) remains the Thailand-relevant standard — the DR report assigns
+  it as the Europe/Asia geographic standard (p.7).
 
 ### ผ้าบุ / upholstery — สภาพเขตร้อน tropical*
 Natural fibers (cotton/linen) breathe in heat but absorb moisture; solution-dyed
@@ -83,6 +102,27 @@ Regular vacuuming + occasional dry cleaning; must resist UV fading.* Unlined
 naturals can rot/mold in tropical humidity — mildew-resistant synthetics +
 UV-protective linings recommended.* Check: colorfastness to light (UV)*;
 flammability/flame-spread ratings*; dimensional stability (sag resistance) [t3-1].
+
+## นิยามค่าเสียง / acoustic metric definitions — STC · NRC (added 2026-07-03, id-project-corpus)
+Resolves the previously undefined STC/NRC mentions in the ไม้กรุผนัง wood-paneling
+and กระเบื้อง wall-tile rows above. Source: Interior Design Knowledge
+Structuring.pdf p.6 (REFERENCE tier, staged `knowledge/_inbox/id-project-corpus/`).
+
+- **STC (Sound Transmission Class)** — rates how well a building **partition
+  attenuates airborne sound** (transmission through the assembly, not surface
+  absorption). The source cites STC 45+ as mandated for demountable walls
+  enclosing private meeting spaces — **commercial-office context, REFERENCE
+  only**, not a residential target (Interior Design Knowledge Structuring.pdf p.6).
+  Applies to the wood-paneling row's "STC if demountable partition" metric.
+- **NRC (Noise Reduction Coefficient)** — scalar fraction of incident sound
+  energy **absorbed when sound strikes a surface**; high-NRC surfaces (ceiling
+  tiles, acoustic baffles, panels) reduce reverberation (Interior Design
+  Knowledge Structuring.pdf p.6). Explains the tile-row note: hard tile absorbs
+  little → reflects sound, lowering acoustic comfort.
+- GAP: no **residential** STC/NRC numeric targets are grounded anywhere in the
+  corpus (the STC 45+ figure is commercial) — the gaps section below stands.
+  Any statutory acoustic requirement, if one exists, lives only in
+  `knowledge/codes-th/` — never source it from this file.
 
 ## ช่องว่างข้อมูล / gaps — DO NOT fill from model knowledge
 The source names metrics but gives **no numeric thresholds** for: Janka values,

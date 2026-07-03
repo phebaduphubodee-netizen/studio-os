@@ -27,7 +27,7 @@ v004+ prompts and for the clay controls themselves
 | 1 | Lighting hierarchy / ลำดับชั้นแสง | no 4000 K vs 2700 K clash in one zone | fixed by prompt in registry v003 |
 | 2 | Foreground layering / ฉากหน้า | — | prompt-level, v004 candidate |
 | 3 | Material imperfection / วัสดุไม่สมบูรณ์แบบ | roughness never 0.0 or 1.0 | prompt-level, v004 candidate |
-| 4 | Physical camera optics / เลนส์กล้องจริง | 35–50 mm, ~f/2.8 | DEVIATION: `--eye` camera is 26 mm (open item) |
+| 4 | Physical camera optics / เลนส์กล้องจริง | 35–50 mm, ~f/2.8 | RESOLVED 2026-07-02: subject-size snap 26 / 28 / 35 / 50 mm; 26 mm = gate-evidenced small-room deviation (see §4) |
 | 5 | Environmental light + contact shadows / แสงบรรยากาศ + เงาสัมผัส | — | prompt-level, v004 candidate |
 | 6 | Parallel verticals / เส้นดิ่งขนาน | — | encoded: `build_room` level-camera + shift_y rule |
 
@@ -98,6 +98,25 @@ v004+ prompts and for the clay controls themselves
   documented as a deviation from the 35–50 mm source standard (studio gate
   outranks general reference for the studio's own outputs).
 
+#### §4 corroboration — 24–35 mm FOV band (REFERENCE, id-project-corpus, appended 2026-07-03)
+
+An independent DR source, written from a Vision-QA / vanishing-point-detection
+angle, states that generative interiors warp orthogonal lines "particularly at
+the periphery of an image, simulating an unnatural fisheye distortion if the
+implied field of view exceeds the standard 24–35mm equivalent" — i.e. interior
+renders read natural within a **24–35 mm**-equivalent field of view, with wider
+implied FOV producing fisheye-like edge distortion
+(Automated Vision QA for Interiors.pdf p.5). This corroborates the
+gate-evidenced **26 mm** small-room deviation above: 26 mm sits inside the
+24–35 mm band, so the wide small-room lens is not expected to trigger
+periphery fisheye warping. It does NOT change the evidence-based
+**26 / 28 / 35 / 50 mm** snap set — studio gate evidence outranks reference
+sources for the studio's own outputs. Note the two reference bands overlap
+only at 35 mm (24–35 mm here vs 35–50 mm, notebook a5a43395 turn 7) — an
+external spread mirroring the internal 28/35 spread already logged in §4;
+GAP: neither source gives per-room-size lens guidance, which only the studio's
+own A/B gate evidence currently covers.
+
 ### 5. Environmental light + contact shadows — แสงบรรยากาศ / เงาสัมผัส (golden hour, ambient occlusion)
 
 - Without contact shadows furniture appears to float — illusion destroyed
@@ -130,7 +149,7 @@ v004+ prompts and for the clay controls themselves
   excluded here; verify independently before adopting as standard.
 - The `[n]` markers in staged answers resolve only inside the notebook;
   `sources-manifest.md` pins the 118-source inventory but not per-marker
-  mapping — named attributions above (Shulman, Adams, Birn, Block) come from
+  mapping — named attributions above (Shulman, Adams) come from
   the answer text itself.
 
 ### 7. Image-model tier — gate evidence (INTERNAL provenance, own pipeline)

@@ -103,6 +103,83 @@
 - **Verticals:** camera back ตั้งฉากจริง / tilt-shift correction กันเส้นดิ่งลู่ —
   turn 7 [12, 7], turn 14 [1].
 
+## โปรโตคอลหรี่ไฟและระบบควบคุม / Dimming & control protocol taxonomy
+
+> PROVENANCE (this section only): distilled from
+> `knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf`
+> p.8 (DR report, REFERENCE tier, staged 2026-07-03) — separate from this
+> file's NLM provenance block at the top. NOT Authority; no statutory content.
+
+| โปรโตคอล / protocol | ชนิดสัญญาณ / signal | ความละเอียดการควบคุม / control granularity | การใช้งาน / typical use | source |
+|---|---|---|---|---|
+| **0-10V** | analog | หรี่แบบ logarithmic ทั้งวงจร / logarithmic dimming | งานหรี่ไฟทั่วไป / general dimming | Interior Design Knowledge Structuring.pdf p.8 |
+| **DALI / DALI-DT8** | digital addressable (Digital Addressable Lighting Interface) | ควบคุมรายโคมแม่นยำ / precise individual (per-fixture) control | ระบบที่ต้อง address โคมแยกดวง / addressable systems | Interior Design Knowledge Structuring.pdf p.8 |
+| **DMX512** | digital multiplexing | ควบคุมไดนามิกความเร็วสูง / dynamic control | แสงเชิง entertainment / dynamic, entertainment-style lighting | Interior Design Knowledge Structuring.pdf p.8 |
+
+- **กฎการจับคู่ / matching rule:** control และ dimming protocol ของโคม **ต้อง**
+  match กับ electrical/dimming infrastructure ที่มีอยู่ของอาคาร — โคมที่ระบุสเปกต้อง
+  interface กับ architectural dimming system ได้โดยไม่เกิด **voltage drops หรือ
+  flickering** / fixture control gear must match the building's existing dimming
+  infrastructure (Interior Design Knowledge Structuring.pdf p.8).
+- Corroboration: หน้าเดียวกันยืนยันค่า CCT bands ของไฟล์นี้อิสระอีกทาง —
+  warm residential **2200–3000 K** vs cool commercial **4000–5700 K** — และ
+  การใช้ TM-30 (**Rf**/**Rg**) แทน CRI พร้อม track **R9 สูง** สำหรับ reds;
+  values unchanged (Interior Design Knowledge Structuring.pdf p.8).
+- **GAP:** คำแนะนำเลือกโปรโตคอลรายประเภทห้อง/สเกลพักอาศัย (ห้องไหนควรใช้
+  0-10V vs DALI vs DMX512) — corpus ไม่ให้ / protocol-per-room-type guidance
+  absent from source.
+
+## QA ความสอดคล้องของแสงในเรนเดอร์ / Render light-coherence QA checks (photoreal review vocabulary)
+
+> PROVENANCE (this section only): distilled from
+> `knowledge/_inbox/id-project-corpus/Automated Production QA Scoring Systems.pdf`
+> pp.4–5, 12 and `knowledge/_inbox/id-project-corpus/Automated Vision QA for
+> Interiors.pdf` pp.6–7 (DR reports, REFERENCE tier, staged 2026-07-03).
+> Vocabulary สำหรับรีวิวภาพเรนเดอร์ photoreal — ไม่ใช่ gate; ดู threshold caveat ท้ายหัวข้อ.
+
+Generative artifacts ด้านแสงที่พบบ่อย: แหล่งแสงขัดแย้งกัน, เงาวิ่งทิศที่เป็นไปไม่ได้
+ทางฟิสิกส์, และการหาย contact shadows ทั้งหมด (Automated Production QA Scoring
+Systems.pdf p.4). Checks ต่อไปนี้คือคำศัพท์รีวิวมาตรฐานของสตูดิโอ:
+
+1. **การจำแนกเงา / Shadow classification** — **attached shadow** เกิดบนผิวส่วน
+   ที่หันหนีแหล่งแสง; **cast shadow** เกิดเมื่อ occluder บังแสงจากผิวอีกผืน.
+   ภายใน cast shadow: **umbra** = ถูกบังจาก direct illumination เต็มส่วน,
+   **penumbra** = โซนไล่ระดับจากการมองเห็นแหล่งแสงบางส่วน โดยความนุ่มของ
+   penumbra ถูกกำหนดโดย **spatial extent ของแหล่งแสง** (แหล่งใหญ่ → penumbra
+   กว้าง) (Automated Production QA Scoring Systems.pdf p.4).
+2. **Specular–shadow agreement / single-source convergence** — ทิศของ specular
+   highlight ต้องชี้กลับไปแหล่งแสงเดียวกับที่ cast shadow บอก: ลาก vector จากปลาย
+   เงาผ่านจุด anchor ของวัตถุ และจาก centroid ของ highlight ออกไป — ทุก vector
+   ต้องตัดกันที่พิกัด 3D เดียว (ตำแหน่งแหล่งแสงโดยนัย). ถ้า highlight บอกแหล่งแสง
+   ที่เบี่ยงจากแหล่งที่เงาบอกเกิน threshold → ภาพ **structurally incoherent** /
+   composited จาก illumination priors ที่ขัดแย้งกัน (Automated Production QA
+   Scoring Systems.pdf p.5; Automated Vision QA for Interiors.pdf p.7 — ค่า
+   ตัวอย่างเชิงสาธิต "e.g., > 2.3°" กู้จาก embedded figure, illustrative เท่านั้น
+   ไม่ใช่ gate).
+3. **ลำดับความสว่างของแหล่งแสง / Source-brightness ordering** — แหล่งแสงรอง
+   (โคมตั้งโต๊ะ, sconces) **ห้าม**สว่างกว่าแหล่งแสงหลัก (หน้าต่างบานใหญ่ในซีน
+   กลางวัน); ตรวจด้วย localized contrast analysis (Automated Vision QA for
+   Interiors.pdf p.6).
+4. **Inverse-square falloff** — cast shadows, reflections, ambient-occlusion
+   regions ต้องเป็นไปตาม **inverse-square laws** ของโลกจริง; area light ที่อยู่ชิด
+   ผิวโดยไม่มี falloff สมจริง → highlight แข็งผิดธรรมชาติ = anomaly (Automated
+   Vision QA for Interiors.pdf p.7, 3DLP benchmark).
+5. **FFT separation** — ใช้ Fast Fourier Transform แยก **low-frequency
+   illumination gradients** ออกจาก **high-frequency texture details** เพื่อแยกแยะ
+   "เงา" (shadow instances) ออกจาก "วัสดุสีเข้มโดยกำเนิด" (intrinsic material
+   darkening) โดยไม่ทำลาย semantic content (Automated Production QA Scoring
+   Systems.pdf p.5).
+
+**Threshold caveat (สำคัญ — ห้ามเติมตัวเลขเอง):** ตาราง QA gate ใน Automated
+Production QA Scoring Systems.pdf p.12 export ค่าคณิตศาสตร์เป็นภาพที่ถูก clip ขอบ
+เซลล์ — text extraction ได้เซลล์ว่าง. ตรวจระดับพิกเซล 2026-07-03: รอดมาเพียง
+**ขอบล่างของ soft band = 15°** ("15° ≤ Δ_light_angle ≤ …" ถูกตัดหลังจากนั้น);
+ค่า **hard gate** ("Δ_light_angle < …") และ **ขอบบนของ soft band**
+**กู้ไม่ได้ / unrecoverable** — ห้าม invent และห้าม backfill ด้วย pattern inference.
+ค่า "> 2.3°" ของ Vision QA p.7 เป็นเพียง "e.g." ประกอบการอธิบาย ไม่ใช่ production
+gate. Gate จริงใดๆ ต้องเสนอผ่าน **PR ต่อ `qa/thresholds.yaml` เท่านั้น** —
+ตัวเลขในหัวข้อนี้เป็น REFERENCE vocabulary.
+
 ## ช่องว่างข้อมูล / Gaps in source (ห้ามเติมเอง — ingest เพิ่มเท่านั้น)
 
 1. ค่า lux ออกแบบรายห้อง/รายงานจากตาราง IES — ไม่มีใน excerpts (turn 2).
@@ -111,3 +188,10 @@
 4. CCT รายห้องและ CCT ของ task lighting — ไม่มี (turn 2).
 5. นิยามละเอียดของ Birn "motivation" และ "exposure discipline" — excerpts มีเพียง
    high-level summaries (turn 2 / inbox lighting.md).
+6. ค่า divergence threshold เชิงตัวเลขของ light-coherence QA — hard gate ของ
+   Δ_light_angle และขอบบนของ soft band ถูก clip ใน PDF export กู้ไม่ได้
+   (รอดเพียงขอบล่าง 15°; Automated Production QA Scoring Systems.pdf p.12) —
+   ห้าม invent; gate จริงต้องผ่าน PR ต่อ `qa/thresholds.yaml`.
+7. คำแนะนำ dimming protocol รายประเภทห้อง (0-10V vs DALI vs DMX512 ต่อ
+   living / bedroom / bath ฯลฯ) — corpus ไม่ให้ (Interior Design Knowledge
+   Structuring.pdf p.8 ให้เพียง taxonomy + กฎ match infrastructure).
