@@ -12,11 +12,13 @@ DESIGN — why this is a scaffold, not a finished gate stack:
 - The CONTROL STRUCTURE is real and deterministically tested (test_repair_loop.py):
   gate ordering, fail-fast (per-check), the 3-cycle cap, repair-directive
   synthesis, escalation, per-cycle scorecards, judge-infra handling.
-- The VALIDATORS are injected. Wired for real today: Gate 0 clearance, Gate 2
+- The VALIDATORS are injected. Wired for real today: Gate 0 clearance, Gate 1
+  image sanity (image_sanity.py — deterministic blur/exposure/blank), Gate 2
   camera/structure (overlay_fidelity), Gate 3 LLM judge (critique.py) and Gate 3
   brand ΔE00 (delta_e00.py, when a brand palette is supplied). Still UNWIRED:
-  BRISQUE, Soft-TIFA, material albedo/metalness, lighting triangulation,
-  consistency warp, revision LPIPS — declared, never silent-passed.
+  Soft-TIFA, material albedo/metalness, lighting triangulation, consistency warp,
+  revision LPIPS — declared, never silent-passed. (BRISQUE deliberately deferred
+  in favour of image_sanity — see memory 'brisque-deferred'.)
 - HONESTY DOCTRINE (carried from qa-report / suite_clearance): an UNWIRED gate is
   NEVER a silent pass, and it never BLOCKS resolution either — it is simply "not
   scored". Auto-resolve rests only on the wired validators that actually RAN
@@ -74,7 +76,7 @@ RESOLVED, ESCALATED, ABORTED_GATE0 = "RESOLVED", "ESCALATED", "ABORTED_GATE0"
 # fmt: off
 GATE_STACK = [
     # gate,            check,                       wired, fail_action
-    ("gate1_execution", "image_brisque",            False, "reseed_regenerate"),
+    ("gate1_execution", "image_sanity",             True,  "reseed_regenerate"),
     ("gate1_execution", "prompt_soft_tifa",         False, "reseed_regenerate"),
     ("gate2_physics",   "camera_structure",         True,  "reject_layout_drift"),
     ("gate2_physics",   "lighting_triangulation",   False, "relight"),
@@ -119,7 +121,7 @@ def run_render_gates(candidate_png, control_png, ctx):
     design defect) — the loop escalates without burning more renders.
     """
     checks = []
-    judge = structure = brand = None
+    judge = structure = brand = sanity = None
     blocking_gate = blocking_check = None
     judge_error = False
 
@@ -129,7 +131,14 @@ def run_render_gates(candidate_png, control_png, ctx):
                 checks.append(_check(gate, name, wired, action, UNWIRED,
                                      "no validator wired (Phase 3) — not scored, not passed"))
                 continue
-            if name == "camera_structure":
+            if name == "image_sanity":
+                sanity = ctx["sanity_fn"](candidate_png) if ctx.get("sanity_fn") else None
+                if sanity is None:
+                    checks.append(_check(gate, name, wired, action, UNWIRED,
+                                         "sanity validator unavailable (Pillow missing / no fn) — not scored"))
+                else:
+                    checks.append(_check(gate, name, wired, action, sanity["status"], sanity["detail"]))
+            elif name == "camera_structure":
                 structure = ctx["structure_fn"](control_png, candidate_png)
                 if structure is None:
                     checks.append(_check(gate, name, wired, action, UNWIRED,
@@ -171,7 +180,7 @@ def run_render_gates(candidate_png, control_png, ctx):
     wired_pass = (blocking_gate is None) and bool(decisive) and all(c["status"] != FAIL for c in decisive)
     return {"checks": checks, "blocking_gate": blocking_gate, "blocking_check": blocking_check,
             "wired_pass": wired_pass, "judge": judge, "structure": structure,
-            "brand": brand, "judge_error": judge_error}
+            "brand": brand, "sanity": sanity, "judge_error": judge_error}
 
 
 def _judge_with_retry(judge_fn, candidate, tier):
@@ -199,7 +208,12 @@ def build_repair_directive(gate_result, slots, tier):
     fixes, note, new_tier = [], "", tier
     check = gate_result["blocking_check"]
 
-    if check == "camera_structure":
+    if check == "image_sanity":
+        # Gate 1 EXECUTION fail = degenerate raw output. A fresh Gemini roll on the
+        # same prompt IS the reseed (§9.5 'discard, reseed') — no slot/tier edit.
+        s = gate_result.get("sanity") or {}
+        note = f"regenerate — raw output failed image sanity ({s.get('detail', '')})"
+    elif check == "camera_structure":
         fixes.append("keep the EXACT wall and furniture layout of the control image; "
                      "do not move, resize, add, or remove anything")
         note = "structure clamp (layout drift)"
@@ -314,7 +328,7 @@ def _write_inbox(qa_dir, stem, candidate, kind, history, scorecards, geo_verdict
 # The loop                                                                     #
 # --------------------------------------------------------------------------- #
 def repair_loop(stem, control_png, spec, spec_path, base_slots, *,
-                render_fn, judge_fn, structure_fn, geometry_fn, brand_fn=None,
+                render_fn, judge_fn, structure_fn, geometry_fn, brand_fn=None, sanity_fn=None,
                 registry_key="@render-hybrid", outdir=None, qa_dir=None,
                 tier="flash", max_iterations=MAX_ITERATIONS):
     """Run the closed-loop repair on one artifact. Injected fns keep it testable.
@@ -349,7 +363,8 @@ def repair_loop(stem, control_png, spec, spec_path, base_slots, *,
         model_used = rendered if isinstance(rendered, str) else None
 
         gate_result = run_render_gates(candidate, control_png, {
-            "structure_fn": structure_fn, "judge_fn": judge_fn, "brand_fn": brand_fn, "tier": cur_tier})
+            "sanity_fn": sanity_fn, "structure_fn": structure_fn, "judge_fn": judge_fn,
+            "brand_fn": brand_fn, "tier": cur_tier})
         card_path = _write_json(os.path.join(qa_dir, f"scorecard_{stem}_roll{cycle}.json"),
                                 _scorecard(candidate, cycle, gate_result, cur_tier, model_used))
         scorecards.append(card_path)
@@ -486,6 +501,13 @@ def _real_geometry_fn(spec, spec_path):
         return [{"status": UNWIRED, "check": "gate0_routing", "detail": str(e)}], UNWIRED
 
 
+def _real_sanity_fn(candidate):
+    """Gate 1 image-execution check — deterministic, no model. image_sanity
+    returns None (UNWIRED) on missing Pillow / an unreadable candidate."""
+    import image_sanity
+    return image_sanity.sanity_of_image(candidate)
+
+
 def make_brand_fn(palette_rgb, sample_k=6):
     """Build a Gate-3 brand ΔE00 check from an approved palette (list of sRGB
     triples). Samples the candidate's dominant colours (Pillow) and scores each
@@ -524,6 +546,10 @@ def _stub_render_fn(control, prompt, out, *, tier):
     with open(out, "w", encoding="utf-8") as f:
         f.write(f"stub render tier={tier}\n")
     return f"stub-{tier}-model"
+
+
+def _stub_sanity_fn(candidate):
+    return {"status": PASS, "checks": [], "detail": "dry-run sanity PASS", "metrics": {}}
 
 
 def _stub_structure_fn(control, candidate):
@@ -578,7 +604,7 @@ def main(argv):
 
     if args.dry_run:
         fns = dict(render_fn=_stub_render_fn, structure_fn=_stub_structure_fn, geometry_fn=_stub_geometry_fn,
-                   judge_fn=_make_stub_judge([(3.5, "REWORK"), (4.0, "SHIP")]))
+                   sanity_fn=_stub_sanity_fn, judge_fn=_make_stub_judge([(3.5, "REWORK"), (4.0, "SHIP")]))
         registry_key = "literal dry-run prompt"  # bypass registry (no '@')
     else:
         print("repair_loop: PAID render/judge dispatch (ask-tier). Ctrl-C to abort.", file=sys.stderr)
@@ -587,7 +613,7 @@ def main(argv):
             palette = [_hex_to_rgb(h) for h in args.brand_palette.split(",") if h.strip()]
             brand_fn = make_brand_fn(palette)
         fns = dict(render_fn=_real_render_fn, judge_fn=_real_judge_fn, structure_fn=_real_structure_fn,
-                   geometry_fn=_real_geometry_fn, brand_fn=brand_fn)
+                   geometry_fn=_real_geometry_fn, brand_fn=brand_fn, sanity_fn=_real_sanity_fn)
         registry_key = args.registry_key
 
     result = repair_loop(stem, args.clay, spec, args.spec, base_slots,

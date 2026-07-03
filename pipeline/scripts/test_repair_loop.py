@@ -87,6 +87,15 @@ def brand_stub(status):
     return fn, calls
 
 
+def sanity_stub(status):
+    calls = {"n": 0}
+
+    def fn(candidate):
+        calls["n"] += 1
+        return {"status": status, "checks": [], "detail": f"image sanity {status}", "metrics": {}}
+    return fn, calls
+
+
 def geometry_stub(verdict=R.PASS):
     def fn(spec, spec_path):
         return [{"status": verdict, "check": "gate0_stub", "detail": "stub"}], verdict
@@ -98,16 +107,17 @@ def _dirs():
     return d, os.path.join(d, "out"), os.path.join(d, "05_qa")
 
 
-def _run(stem, judge, render=None, structure=None, brand=None, geometry=None, **kw):
+def _run(stem, judge, render=None, structure=None, brand=None, sanity=None, geometry=None, **kw):
     d, out, qa = _dirs()
     render_fn, _rc = (render if render else render_stub())
     struct_fn, _sc = (structure if structure else structure_stub())
     brand_fn = brand[0] if brand else None
+    sanity_fn = sanity[0] if sanity else None
     res = R.repair_loop(
         stem, os.path.join(out, f"room_{stem}.png"), {"room": {"type": stem}}, "spec.json",
         {"room_type": stem}, registry_key="literal test prompt",
         render_fn=render_fn, judge_fn=judge, structure_fn=struct_fn, brand_fn=brand_fn,
-        geometry_fn=(geometry or geometry_stub()), outdir=out, qa_dir=qa, **kw)
+        sanity_fn=sanity_fn, geometry_fn=(geometry or geometry_stub()), outdir=out, qa_dir=qa, **kw)
     return res, d, out, qa
 
 
@@ -265,7 +275,7 @@ def test_scorecard_is_critique_schema_no_fake_verdict():
         for k in ("_cycle", "_gates", "_tier_intended", "_model_used", "_wired_pass", "_blocking_check"):
             assert k in card, f"missing repair-extension key {k}"
         statuses = {g["check"]: g["status"] for g in card["_gates"]}
-        assert statuses["image_brisque"] == R.UNWIRED and statuses["camera_structure"] == R.PASS
+        assert statuses["image_sanity"] == R.UNWIRED and statuses["camera_structure"] == R.PASS
         assert statuses["llm_judge_rubric"] == R.PASS
     finally:
         shutil.rmtree(d, ignore_errors=True)
@@ -394,9 +404,41 @@ def _batch_items(out, n_ok, n_stuck):
     return items
 
 
+def test_sanity_fail_reseeds_before_structure_and_judge():
+    # Gate 1 is the cheapest gate: a degenerate raw output must fail-fast BEFORE
+    # the structure check and the paid judge, and route to reseed/regenerate.
+    judge, jc = judge_stub([(5.0, "SHIP")])       # would pass IF ever reached
+    struct, sc = structure_stub()
+    san, snc = sanity_stub("FAIL")
+    res, d, _o, _q = _run("san", judge, structure=(struct, sc), sanity=(san, snc))
+    try:
+        assert res["outcome"] == R.ESCALATED
+        assert jc["n"] == 0 and sc["n"] == 0, "gate1 FAIL must fail-fast before structure+judge"
+        assert snc["n"] == 3
+        for h in res["history"]:
+            assert h["blocking_check"] == "image_sanity"
+            assert "image sanity" in h.get("repair_directive", "")
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def test_sanity_pass_proceeds_to_resolve():
+    judge, _jc = judge_stub([(4.5, "SHIP")])
+    san, _snc = sanity_stub("PASS")
+    res, d, _o, _q = _run("sanp", judge, sanity=(san, None))
+    try:
+        assert res["outcome"] == R.RESOLVED
+        card = json.load(open(res["scorecards"][0], encoding="utf-8"))
+        statuses = {g["check"]: g["status"] for g in card["_gates"]}
+        assert statuses["image_sanity"] == R.PASS   # wired + ran
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+
+
 def test_gate_order_is_fail_fast_cheap_first():
     assert R.GATE_ORDER == ["gate1_execution", "gate2_physics", "gate3_client", "gate4_polish"]
     gates = {name: gate for (gate, name, *_r) in R.GATE_STACK}
+    assert gates["image_sanity"] == "gate1_execution"     # cheapest gate, runs first
     assert gates["camera_structure"] == "gate2_physics"
     assert gates["brand_delta_e00"] == "gate3_client" and gates["llm_judge_rubric"] == "gate3_client"
 
@@ -409,7 +451,8 @@ TESTS = [test_resolves_within_cap_and_tier_lever, test_escalates_after_cap_with_
          test_gate0_unwired_proceeds_but_flagged_honest, test_scorecard_is_critique_schema_no_fake_verdict,
          test_scorecard_verdict_null_when_judge_never_ran, test_no_silent_pass_structure_fail_overrides_ship_judge,
          test_repair_directive_content, test_guard_dir_refuses_knowledge_and_clients,
-         test_make_brand_fn_is_crash_safe, test_batch_80pct_resolve_meets_m33,
+         test_make_brand_fn_is_crash_safe, test_sanity_fail_reseeds_before_structure_and_judge,
+         test_sanity_pass_proceeds_to_resolve, test_batch_80pct_resolve_meets_m33,
          test_batch_below_80pct_fails_m33, test_gate_order_is_fail_fast_cheap_first]
 
 
