@@ -411,3 +411,55 @@
 - Bedroom gate evidence now sits on the Gate-0-revised layout (ensuite 2900,
   no bench) — clay re-rendered, same camera. Cost: ~6 image + 7 vision calls
   this run (image counter 19 for the day, pro tier ≈ $0.13-0.25/img).
+
+## 2026-07-03 — clay 0.5-gap: the gap is mostly NOT clay-side (gate-refuted my first fix)
+- **Goal:** the retrospective's queued quality lever — the chronic 0.5 the pro-tier
+  judge docks on "strip-light uniformity / wood-grain repetition / flat panel".
+  Rule of engagement: build_room clay change, GATE-EVIDENCED, re-gate before keeping.
+- **build_room changes shipped:** procedural non-uniformity where the clay was
+  perfectly flat — `_painted` (walls/ceiling: tonal drift + roughness breakup +
+  sub-mm roller bump), `_veneer` (millwork: procedural vertical rift grain, no UV),
+  `_pbr_material(variation=)` (feature wall: large-scale luminance drift breaks
+  tile repeats), `_det01` deterministic per-object grain offsets, and accent-light
+  SCALLOP (one wall-wash → graded 3-pool run) + ±12% deterministic per-fixture
+  output/CCT spread. All deterministic (crc32) so cameras still reproduce.
+- **Round 1 GATE-REFUTED (the discipline working):** first cut mapped the FLOOR
+  PLANK texture onto millwork. Bedroom A/B **4.75 → 4.0** — planked walls read as
+  "flooring on the walls" and fought the material_story's "greige plaster walls".
+  Reverted to procedural `_veneer` (grain direction, no plank gaps). Also hit the
+  classic **linear-vs-sRGB trap**: a "looks-right" #5F4430 walnut set as a Blender
+  `default_value` renders pale pink-beige — colours are LINEAR (#5F4430 → ~0.105,
+  0.052, 0.026).
+- **Round 2 result — KEEP, but honest:** bedroom back to **mean 4.75** (rolls
+  4.5/5.0), and photoreal_believability rose **4→5 on both rolls** (baseline was
+  4/5,5/5). Living (room_type-only slots, controlled vs same-slots old-clay 3.0):
+  **3.5**, no regression. So the clay change is a **no-regression refinement with a
+  small bedroom photoreal win** — it did NOT move the overall mean.
+- **The load-bearing finding:** the persistent "strip-light uniformity" dock
+  SURVIVES the clay change because the cove glow is **painted by Gemini from the
+  v004 prompt** ("warm cove glow"), not emitted by the clay. → the strip-light
+  0.5-gap is mostly a **PROMPT-lane (registry/PR) lever, not clay**. The clay change
+  did fix the "flat panel" datapoint (millwork now reads as real veneer) and the
+  grain-repeat; the cove uniformity needs a prompt experiment, on multi-roll means.
+- Cost: ~7 pro image + ~14 vision calls (paired A/B/control over 2 rounds).
+
+## 2026-07-03 — M3.2 judge-calibration groundwork wired (blueprint §9.4)
+- **Was:** the pipeline had a judge (critique.py) gating deliverables with ZERO
+  calibration against designer ground truth — an uncalibrated judge is a broken
+  test, not a lenient one (blueprint §9.4). Now buildable end-to-end.
+- **Wired:** `golden_set_curate.py` (harvests the pipeline's full scored render
+  history → 24 blind GS-IDs in assets/qa/golden-set/ LFS, + manifest / blind
+  machine-scores / labels.template, crc32-stable IDs so the sheet order leaks
+  neither room nor score); `judge_calibrate.py` (Spearman ρ + Cohen κ vs the
+  ≥0.8/≥0.8 bounds, pure-stdlib, `--selftest` passes, machine = mean over rolls
+  per the ±0.5 variance rule); `qa/golden-set/{LABELING,REVALIDATION}.md` (blind
+  protocol + the re-validate-on-model-change trigger list).
+- **Blocked on the owner** (correctly — this is the human ground-truth half):
+  label the 24 images blind (`labels.template.json` → `labels.json`), then
+  `judge_calibrate.py` emits the M3.2 PASS/FAIL report. Not gate-able until then.
+
+## 2026-07-03 — Stage-07 upscaler unwired-gap closed
+- `upscale.py`: Real-ESRGAN ncnn (RTX 3060 Vulkan) → torch → honest Lanczos+unsharp
+  fallback, each output tagged with its `method` in a sidecar so QA can never
+  silently claim SR it didn't do. Smoke-tested (Lanczos path, 2×). ncnn backend
+  needs a one-time owner install (documented in the script header).
