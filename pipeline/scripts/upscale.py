@@ -3,18 +3,21 @@
 unwired' disclosure from PRJ-2026-002 Stage 07).
 
 Hybrid renders come back from the image model at native ~1-2 MP; client
-deliverables want 2x/4x. Backends in preference order, auto-detected:
+deliverables want 2x/4x. Two backends, auto-detected:
 
-  1. realesrgan-ncnn-vulkan  (best: real SR, runs on the RTX 3060 via Vulkan,
-     no Python deps). Owner install (one time):
+  1. realesrgan-ncnn-vulkan  (real SR, runs on the RTX 3060 via Vulkan, no Python
+     deps). Owner install (one time):
        - download the Windows release zip of Real-ESRGAN ncnn from the official
          xinntao/Real-ESRGAN GitHub releases
        - unzip anywhere; either add the folder to PATH or set
-         REALESRGAN_BIN=<full path to realesrgan-ncnn-vulkan.exe>
-  2. Python realesrgan (torch) if the package is importable (heavy; optional).
-  3. PIL Lanczos + mild unsharp (NOT super-resolution — an honest fallback so
+         REALESRGAN_BIN to the full path of realesrgan-ncnn-vulkan.exe
+  2. PIL Lanczos + mild unsharp (NOT super-resolution — an honest fallback so
      the pipeline slot is never blocked; output is tagged `method` in the
      sidecar JSON and the QA line must disclose it).
+
+(A torch-realesrgan backend was dropped: it needs a real weights path/URL, so
+a stub with model_path=None never actually ran — it only masqueraded as an SR
+backend before falling through. ncnn is the one real SR path on this machine.)
 
 Every output writes a sidecar <out>.upscale.json {method, scale, src_sha256}
 so Stage 05/07 can state HOW the deliverable was scaled (never silently).
@@ -58,27 +61,6 @@ def _ncnn(inp, out, scale):
     return None
 
 
-def _torch(inp, out, scale):
-    try:
-        from realesrgan import RealESRGANer            # noqa: F401
-    except Exception:
-        return None
-    try:
-        import cv2
-        from basicsr.archs.rrdbnet_arch import RRDBNet
-        from realesrgan import RealESRGANer
-        model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23,
-                        num_grow_ch=32, scale=4)
-        up = RealESRGANer(scale=4, model_path=None, model=model, half=True)
-        img = cv2.imread(inp, cv2.IMREAD_COLOR)
-        sr, _ = up.enhance(img, outscale=scale)
-        cv2.imwrite(out, sr)
-        return "realesrgan-torch"
-    except Exception as e:
-        print(f"  (torch backend failed: {e})", file=sys.stderr)
-        return None
-
-
 def _lanczos(inp, out, scale):
     from PIL import Image, ImageFilter
     im = Image.open(inp).convert("RGB")
@@ -89,7 +71,7 @@ def _lanczos(inp, out, scale):
 
 
 def upscale(inp, out, scale=2):
-    method = _ncnn(inp, out, scale) or _torch(inp, out, scale) or _lanczos(inp, out, scale)
+    method = _ncnn(inp, out, scale) or _lanczos(inp, out, scale)
     side = {"method": method, "scale": scale, "src": os.path.basename(inp),
             "src_sha256": _sha256(inp)}
     with open(out + ".upscale.json", "w", encoding="utf-8") as f:

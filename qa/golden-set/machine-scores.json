@@ -186,6 +186,43 @@
    ]
   },
   "GS-09": {
+   "source_stem": "room_bedroom_suite_eye_hybrid_clayfix2_pro",
+   "rolls": [
+    {
+     "overall_0_5": 4.5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_clayfix2_pro.critique.json"
+    },
+    {
+     "overall_0_5": 5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 5,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_hybrid_clayfix2_pro.critique.roll2.json"
+    }
+   ]
+  },
+  "GS-10": {
    "source_stem": "room_living_condo_eye_hybrid",
    "rolls": [
     {
@@ -206,7 +243,7 @@
     }
    ]
   },
-  "GS-10": {
+  "GS-11": {
    "source_stem": "room_bedroom_suite_eye_hybrid_v003",
    "rolls": [
     {
@@ -227,7 +264,7 @@
     }
    ]
   },
-  "GS-11": {
+  "GS-12": {
    "source_stem": "room_living_condo_eye_hybrid_oldclay_pro",
    "rolls": [
     {
@@ -264,7 +301,7 @@
     }
    ]
   },
-  "GS-12": {
+  "GS-13": {
    "source_stem": "room_living_hybrid_v003b",
    "rolls": [
     {
@@ -285,7 +322,7 @@
     }
    ]
   },
-  "GS-13": {
+  "GS-14": {
    "source_stem": "room_bedroom_suite_eye_hybrid_v005",
    "rolls": [
     {
@@ -306,7 +343,7 @@
     }
    ]
   },
-  "GS-14": {
+  "GS-15": {
    "source_stem": "room_living_hybrid_v002",
    "rolls": [
     {
@@ -327,7 +364,7 @@
     }
    ]
   },
-  "GS-15": {
+  "GS-16": {
    "source_stem": "room_bedroom_suite_eye_hybrid_clayfix_pro",
    "rolls": [
     {
@@ -380,7 +417,7 @@
     }
    ]
   },
-  "GS-16": {
+  "GS-17": {
    "source_stem": "room_bedroom_suite_eye_hybrid_prj002_v01",
    "rolls": [
     {
@@ -417,7 +454,7 @@
     }
    ]
   },
-  "GS-17": {
+  "GS-18": {
    "source_stem": "room_living_condo_eye_hybrid_v004pro",
    "rolls": [
     {
@@ -454,7 +491,7 @@
     }
    ]
   },
-  "GS-18": {
+  "GS-19": {
    "source_stem": "room_living_hybrid_v003",
    "rolls": [
     {
@@ -475,7 +512,44 @@
     }
    ]
   },
-  "GS-19": {
+  "GS-20": {
+   "source_stem": "room_living_condo_eye_hybrid_clayfix2_pro",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 4,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 4,
+      "styling_and_life": 3,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_clayfix2_pro.critique.json"
+    },
+    {
+     "overall_0_5": 3,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 4,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 3
+     },
+     "source": "pipeline/output/room_living_condo_eye_hybrid_clayfix2_pro.critique.roll2.json"
+    }
+   ]
+  },
+  "GS-21": {
    "source_stem": "room_living_hybrid",
    "rolls": [
     {
@@ -496,7 +570,7 @@
     }
    ]
   },
-  "GS-20": {
+  "GS-22": {
    "source_stem": "room_bedroom_suite",
    "rolls": [
     {
@@ -517,7 +591,7 @@
     }
    ]
   },
-  "GS-21": {
+  "GS-23": {
    "source_stem": "room_bedroom_suite_eye_hybrid_v004",
    "rolls": [
     {
@@ -538,7 +612,7 @@
     }
    ]
   },
-  "GS-22": {
+  "GS-24": {
    "source_stem": "room_bedroom_suite_eye_hybrid_v005pro",
    "rolls": [
     {
@@ -559,7 +633,7 @@
     }
    ]
   },
-  "GS-23": {
+  "GS-25": {
    "source_stem": "room_bedroom_suite_eye_hybrid_v004b",
    "rolls": [
     {
@@ -580,7 +654,7 @@
     }
    ]
   },
-  "GS-24": {
+  "GS-26": {
    "source_stem": "room_living_condo_eye_hybrid_v004b",
    "rolls": [
     {

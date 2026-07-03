@@ -1,0 +1,31 @@
+{
+ "_note": "stable stem->GS-ID; never renumber/recycle (see script header)",
+ "map": {
+  "room_bedroom_suite_eye_hybrid": "GS-01",
+  "room_living_hybrid_v001": "GS-02",
+  "room_living_condo_eye_hybrid_v005": "GS-03",
+  "room_living": "GS-04",
+  "room_bedroom_suite_hybrid": "GS-05",
+  "room_living_condo_eye_hybrid_v004": "GS-06",
+  "room_living_condo_eye_hybrid_clayfix_pro": "GS-07",
+  "room_bedroom_suite_eye_hybrid_v004pro": "GS-08",
+  "room_bedroom_suite_eye_hybrid_clayfix2_pro": "GS-09",
+  "room_living_condo_eye_hybrid": "GS-10",
+  "room_bedroom_suite_eye_hybrid_v003": "GS-11",
+  "room_living_condo_eye_hybrid_oldclay_pro": "GS-12",
+  "room_living_hybrid_v003b": "GS-13",
+  "room_bedroom_suite_eye_hybrid_v005": "GS-14",
+  "room_living_hybrid_v002": "GS-15",
+  "room_bedroom_suite_eye_hybrid_clayfix_pro": "GS-16",
+  "room_bedroom_suite_eye_hybrid_prj002_v01": "GS-17",
+  "room_living_condo_eye_hybrid_v004pro": "GS-18",
+  "room_living_hybrid_v003": "GS-19",
+  "room_living_condo_eye_hybrid_clayfix2_pro": "GS-20",
+  "room_living_hybrid": "GS-21",
+  "room_bedroom_suite": "GS-22",
+  "room_bedroom_suite_eye_hybrid_v004": "GS-23",
+  "room_bedroom_suite_eye_hybrid_v005pro": "GS-24",
+  "room_bedroom_suite_eye_hybrid_v004b": "GS-25",
+  "room_living_condo_eye_hybrid_v004b": "GS-26"
+ }
+}
