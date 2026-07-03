@@ -1,7 +1,7 @@
 {
   "schema": "interior-ai/room-spec@0.2",
   "units": "metric",
-  "note": "EXAMPLE master-bedroom-suite spec, mm, y-up, origin SW corner. Anonymized 2026-07-03: derived from a real project's dimensioned plan; all client/firm/project identifiers and source references stripped. Room 5500x6500, ceiling 2800. Windows omitted (unknown), door+ensuite placement are draft design judgment. REVISED 2026-07-02 (Gate 0 v0.4 findings, all in the draft-judgment zone): ensuite interior 3100->2900 so the AS-BUILT east leg proves 2500 (walls extrude outward 100 per build_room; kh.55 kh.20); ensuite door moved to its south wall, out-swing (east-face door was unreachable past the bed block); headboard depth 600->574 to clear the ensuite's as-built south wall band; wardrobe 3200->2100 opening a 1000 mm walkway; entry door shifted 100 west (panel pinched entry to ~800); vanity stool moved into the ensuite as a fixture (its old coords sat on the shower); end-of-bed bench REMOVED - no position satisfies the 610 ergonomic pinch in this layout.",
+  "note": "EXAMPLE master-bedroom-suite spec, mm, y-up, origin SW corner. Anonymized 2026-07-03: derived from a real project's dimensioned plan; all client/firm/project identifiers and source references stripped. Room 5500x6500, ceiling 2800. Windows omitted (unknown), door+ensuite placement are draft design judgment. REVISED 2026-07-02 (Gate 0 v0.4 findings, all in the draft-judgment zone): ensuite interior 3100->2900 so the AS-BUILT east leg proves 2500 (walls extrude outward 100 per build_room; kh.55 kh.20); ensuite door moved to its south wall, out-swing (east-face door was unreachable past the bed block); headboard depth 600->574 to clear the ensuite's as-built south wall band; wardrobe 3200->2100 opening a 1000 mm walkway; entry door shifted 100 west (panel pinched entry to ~800); vanity stool moved into the ensuite as a fixture (its old coords sat on the shower); end-of-bed bench REMOVED - no position satisfies the 610 ergonomic pinch in this layout. REVISED 2026-07-03 (FUNCTION gate, placement_logic): the fused headboard_tv is split into a plain 'headboard' partition (same footprint, TV semantics removed) + a standalone 'tv_panel' on the SOUTH wall at the bed FOOT, rot 180 so it faces the bed - the fused TV had no controllable position and the render put the screen behind the sleeper's head (GS-24). The panel sits x2750-4150, WEST of the entry-door swing (door x4400-5300) and east of the wardrobe (x<=2100); ~2.1 m from the bed centre (within the SMPTE/THX band).",
   "room": {
     "type": "bedroom_suite",
     "outline_mm": [
@@ -109,13 +109,23 @@
   ],
   "builtins": [
     {
-      "name": "หัวเตียง/ทีวี built-in",
-      "kind": "headboard_tv",
+      "name": "หัวเตียง built-in",
+      "kind": "headboard",
       "x": 1970,
       "y": 3226,
       "w": 3330,
       "d": 574,
       "h": 2800
+    },
+    {
+      "name": "ทีวี ผนังปลายเตียง (foot-wall TV)",
+      "kind": "tv_panel",
+      "x": 2750,
+      "y": 0,
+      "w": 1400,
+      "d": 150,
+      "h": 800,
+      "rot": 180
     },
     {
       "name": "ตู้เสื้อผ้า built-in",
