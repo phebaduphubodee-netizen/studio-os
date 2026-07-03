@@ -260,6 +260,60 @@ def test_real_ensuite_follows_frequency_and_zoning():
     assert _s(P.check(spec), "bathroom_logic") == P.PASS      # basin at entry, wet deep
 
 
+# ---- seating faces a focal (GS-03/26; couples to build_room auto-face) ----
+def _living_seats(*seats, table=None, tv=None):
+    spec = {"room": {"outline_mm": [[0, 0], [6000, 0], [6000, 6000], [0, 6000]]},
+            "items": list(seats), "builtins": []}
+    if table:
+        spec["items"].append(table)
+    if tv:
+        spec["items"].append(tv)
+    return spec
+
+
+def test_seating_faces_table_passes():
+    # sofa at y4000 facing -Y (rot 0) toward a coffee table at y2500 (in front)
+    sofa = {"name": "sofa", "kind": "sofa", "x": 2000, "y": 4000, "w": 2000, "d": 900, "h": 850, "rot": 0}
+    table = {"name": "ct", "kind": "coffee_table", "x": 2500, "y": 2500, "w": 1000, "d": 600, "h": 400}
+    assert _s(P.check(_living_seats(sofa, table=table)), "seating_faces_focal") == P.PASS
+
+
+def test_seating_away_from_focal_warns():
+    # armchair faces +Y (rot 180) but the only table is at -Y (behind it)
+    chair = {"name": "arm", "kind": "armchair", "x": 2500, "y": 4000, "w": 800, "d": 800, "h": 750, "rot": 180}
+    table = {"name": "ct", "kind": "coffee_table", "x": 2500, "y": 2000, "w": 1000, "d": 600, "h": 400}
+    assert _s(P.check(_living_seats(chair, table=table)), "seating_faces_focal") == P.WARN
+
+
+def test_lone_seat_no_focal_warns():
+    chair = {"name": "arm", "kind": "armchair", "x": 2500, "y": 3000, "w": 800, "d": 800, "h": 750, "rot": 0}
+    assert _s(P.check(_living_seats(chair)), "seating_faces_focal") == P.WARN   # faces nothing
+
+
+def test_seating_without_rot_relies_on_autoface():
+    chair = {"name": "arm", "kind": "armchair", "x": 2500, "y": 3000, "w": 800, "d": 800, "h": 750}  # no rot
+    table = {"name": "ct", "kind": "coffee_table", "x": 2500, "y": 1500, "w": 1000, "d": 600, "h": 400}
+    assert _s(P.check(_living_seats(chair, table=table)), "seating_faces_focal") == P.PASS
+
+
+def test_two_seats_facing_each_other_pass():
+    # a conversation pair with no table: each seat is the other's focal
+    a = {"name": "a", "kind": "armchair", "x": 2000, "y": 2000, "w": 800, "d": 800, "h": 750, "rot": 180}  # +Y
+    b = {"name": "b", "kind": "armchair", "x": 2000, "y": 4000, "w": 800, "d": 800, "h": 750, "rot": 0}     # -Y
+    assert _s(P.check(_living_seats(a, b)), "seating_faces_focal") == P.PASS
+
+
+def test_seating_rule_skips_without_seats():
+    assert _s(P.check(_bedroom(_tv())), "seating_faces_focal") is None
+
+
+def test_real_living_condo_seating_passes():
+    spec = _spec("living_condo.json")
+    if spec is None:
+        return
+    assert _s(P.check(spec), "seating_faces_focal") == P.PASS   # sofa->table/TV, armchair->table
+
+
 # ---- report(): the (results, verdict) gate contract (drops into make_all / repair_loop / suite_package) ----
 def test_report_fail_on_fused_tv():
     spec = _bedroom()
@@ -343,6 +397,10 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_bathroom_good_ordering_passes, test_bathroom_shower_at_entry_fails,
          test_bathroom_wet_not_at_back_warns, test_bathroom_rule_skips_without_bathroom,
          test_real_ensuite_follows_frequency_and_zoning,
+         test_seating_faces_table_passes, test_seating_away_from_focal_warns,
+         test_lone_seat_no_focal_warns, test_seating_without_rot_relies_on_autoface,
+         test_two_seats_facing_each_other_pass, test_seating_rule_skips_without_seats,
+         test_real_living_condo_seating_passes,
          test_report_fail_on_fused_tv, test_report_pass_on_good_tv, test_report_review_on_warn_only,
          test_report_unwired_when_nothing_applies, test_inch_spec_normalized_to_mm,
          test_inch_spec_tv_in_front_passes, test_inch_spec_tv_behind_sofa_fails,
