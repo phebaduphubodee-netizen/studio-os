@@ -670,20 +670,32 @@ def _principled(m):
                 next((n for n in nt.nodes if n.type == "BSDF_PRINCIPLED"), None))
 
 
-def _planar_uv(obj, tile_m=2.0):
+def _det01(tag):
+    """Deterministic pseudo-random 0..1 from a string. zlib.crc32 is stable across
+    runs and processes (unlike hash(), which Python salts per process) — drives
+    per-object grain offsets and per-fixture light variation while keeping every
+    re-run byte-identical (the camera/evidence reproducibility rule)."""
+    import zlib
+    return (zlib.crc32(tag.encode("utf-8")) % 10000) / 10000.0
+
+
+def _planar_uv(obj, tile_m=2.0, u_off=0.0, v_off=0.0):
     """Top-down planar UV from local XY so tiled PBR maps land at real-world scale
     (repeat every tile_m). from_pydata meshes carry no UV, so image nodes would
-    otherwise sample a flat colour and normal maps would have no tangent."""
+    otherwise sample a flat colour and normal maps would have no tangent.
+    u_off/v_off shift the sampling window (in tiles) so two objects sharing a
+    texture don't show the SAME grain."""
     me = obj.data
     uv = me.uv_layers.get("UVMap") or me.uv_layers.new(name="UVMap")
     for loop in me.loops:
         co = me.vertices[loop.vertex_index].co
-        uv.data[loop.index].uv = (co.x / tile_m, co.y / tile_m)
+        uv.data[loop.index].uv = (co.x / tile_m + u_off, co.y / tile_m + v_off)
 
 
-def _wall_uv(obj, tile_m=2.0):
+def _wall_uv(obj, tile_m=2.0, u_off=0.0, v_off=0.0):
     """Vertical planar UV for a wall: (horizontal-run, Z) so a wood/stone texture reads
-    upright with real-world tiling. Picks the wall's long horizontal axis (X or Y)."""
+    upright with real-world tiling. Picks the wall's long horizontal axis (X or Y).
+    u_off/v_off shift the sampling window per object (see _planar_uv)."""
     me = obj.data
     xs = [v.co.x for v in me.vertices]; ys = [v.co.y for v in me.vertices]
     along_x = (max(xs) - min(xs)) >= (max(ys) - min(ys))
@@ -691,7 +703,7 @@ def _wall_uv(obj, tile_m=2.0):
     for loop in me.loops:
         co = me.vertices[loop.vertex_index].co
         u = co.x if along_x else co.y
-        uv.data[loop.index].uv = (u / tile_m, co.z / tile_m)
+        uv.data[loop.index].uv = (u / tile_m + u_off, co.z / tile_m + v_off)
 
 
 def _img_node(nt, path, non_color):
@@ -704,10 +716,14 @@ def _img_node(nt, path, non_color):
     return n
 
 
-def _pbr_material(name, slug, base_tint=None):
+def _pbr_material(name, slug, base_tint=None, variation=0.0):
     """Principled material from a cached PBR set (Diffuse/nor_gl/Rough[/Metal]) on the
     object's UV. base_tint MULTIPLIES the albedo (e.g. warm a floor / darken to walnut).
-    Falls back to a flat colour when the set is missing."""
+    Falls back to a flat colour when the set is missing.
+    variation > 0 overlays a large-scale (~2.5 m) low-contrast luminance drift in
+    WORLD space so a tiled grain never repeats identically — the judge dockets
+    'subtle uniformity in the wood grain across the wall panels' (PRJ-2026-002
+    rolls 1+2, v004pro) trace to exact texture repeats. Keep <= ~0.08."""
     ts = _texset(slug)
     m = bpy.data.materials.new(name)
     m.use_nodes = True
@@ -720,15 +736,32 @@ def _pbr_material(name, slug, base_tint=None):
         return m
     if "Diffuse" in ts:
         di = _img_node(nt, ts["Diffuse"], non_color=False)
+        col_out = di.outputs["Color"]
         if base_tint:
             mix = nt.nodes.new("ShaderNodeMixRGB")
             mix.blend_type = "MULTIPLY"
             mix.inputs["Fac"].default_value = 1.0
             mix.inputs["Color2"].default_value = base_tint
-            nt.links.new(di.outputs["Color"], mix.inputs["Color1"])
-            nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
-        else:
-            nt.links.new(di.outputs["Color"], bsdf.inputs["Base Color"])
+            nt.links.new(col_out, mix.inputs["Color1"])
+            col_out = mix.outputs["Color"]
+        if variation:
+            # Object coords: these from_pydata meshes keep origin (0,0,0) so local
+            # == world -> the drift field is CONTINUOUS across adjacent panels.
+            tc = nt.nodes.new("ShaderNodeTexCoord")
+            nz = nt.nodes.new("ShaderNodeTexNoise")
+            nz.inputs["Scale"].default_value = 0.4
+            mr = nt.nodes.new("ShaderNodeMapRange")
+            mr.inputs["To Min"].default_value = 1.0 - variation
+            mr.inputs["To Max"].default_value = 1.0
+            vmix = nt.nodes.new("ShaderNodeMixRGB")
+            vmix.blend_type = "MULTIPLY"
+            vmix.inputs["Fac"].default_value = 1.0
+            nt.links.new(tc.outputs["Object"], nz.inputs["Vector"])
+            nt.links.new(nz.outputs["Fac"], mr.inputs["Value"])
+            nt.links.new(mr.outputs["Result"], vmix.inputs["Color2"])
+            nt.links.new(col_out, vmix.inputs["Color1"])
+            col_out = vmix.outputs["Color"]
+        nt.links.new(col_out, bsdf.inputs["Base Color"])
     if "Rough" in ts:
         ri = _img_node(nt, ts["Rough"], non_color=True)
         nt.links.new(ri.outputs["Color"], bsdf.inputs["Roughness"])
@@ -764,6 +797,109 @@ def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.45, spec=
         if coat:
             _set(bsdf, "Coat Weight", coat)
             _set(bsdf, "Coat Roughness", 0.1)
+    return m
+
+
+def _veneer(name, rgba, rough):
+    """Rift-cut veneer millwork: solid base + FINE vertical grain as bump only +
+    large tonal drift. Round-1 gate evidence (2026-07-03): mapping the FLOOR
+    plank texture onto millwork tanked the bedroom A/B 4.75->4.0 — plank gaps
+    read as 'flooring on the walls' and three planked walls fought the
+    material_story ('greige plaster walls'); the paired living A/B (+0.5) shows
+    grain direction cues DO help. So: grain per se stays, plank texture goes.
+    Anisotropic noise (high XY freq, low Z) = vertical striations on any wall
+    orientation, colourless (bump+roughness only) like lacquered rift oak."""
+    m = _solid(name, rgba, rough)
+    nt, bsdf = _principled(m)
+    if not bsdf:
+        return m
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    # tonal drift (~2 m patches) — same recipe as _painted
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 0.5
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value = 0.94
+    mr.inputs["To Max"].default_value = 1.0
+    mix = nt.nodes.new("ShaderNodeMixRGB")
+    mix.blend_type = "MULTIPLY"
+    mix.inputs["Fac"].default_value = 1.0
+    mix.inputs["Color1"].default_value = rgba
+    nt.links.new(tc.outputs["Object"], nz.inputs["Vector"])
+    nt.links.new(nz.outputs["Fac"], mr.inputs["Value"])
+    nt.links.new(mr.outputs["Result"], mix.inputs["Color2"])
+    nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    # fine vertical striation: compress noise in Z only
+    mp = nt.nodes.new("ShaderNodeMapping")
+    mp.inputs["Scale"].default_value = (40.0, 40.0, 2.0)
+    gz = nt.nodes.new("ShaderNodeTexNoise")
+    gz.inputs["Scale"].default_value = 1.0
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.08
+    try:
+        bump.inputs["Distance"].default_value = 0.0003
+    except Exception:
+        pass
+    nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    nt.links.new(mp.outputs["Vector"], gz.inputs["Vector"])
+    nt.links.new(gz.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    # sheen-of-lacquer roughness breakup along the same striations
+    mr2 = nt.nodes.new("ShaderNodeMapRange")
+    mr2.inputs["To Min"].default_value = max(0.0, rough - 0.08)
+    mr2.inputs["To Max"].default_value = min(1.0, rough + 0.04)
+    nt.links.new(gz.outputs["Fac"], mr2.inputs["Value"])
+    nt.links.new(mr2.outputs["Result"], bsdf.inputs["Roughness"])
+    return m
+
+
+def _painted(name, rgba, rough):
+    """Painted plaster/paint: _solid plus the three subtle non-uniformities real
+    paint always has — large-scale tonal drift (<= 3% multiply), hand-finish
+    roughness breakup, and a sub-mm roller/plaster bump. Both v004pro judges
+    docked EXACTLY this ('left wall is quite stark', 'ceiling entirely devoid of
+    any architectural detail or subtle texture') and the repaint pass preserves a
+    flat clay surface as a flat photo surface. World-space Object coords keep the
+    field continuous across wall pieces (origins all at 0,0,0)."""
+    m = _solid(name, rgba, rough)
+    nt, bsdf = _principled(m)
+    if not bsdf:
+        return m
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    # (1) tonal drift, ~2 m patches
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 0.5
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value = 0.97
+    mr.inputs["To Max"].default_value = 1.0
+    mix = nt.nodes.new("ShaderNodeMixRGB")
+    mix.blend_type = "MULTIPLY"
+    mix.inputs["Fac"].default_value = 1.0
+    mix.inputs["Color1"].default_value = rgba
+    nt.links.new(tc.outputs["Object"], nz.inputs["Vector"])
+    nt.links.new(nz.outputs["Fac"], mr.inputs["Value"])
+    nt.links.new(mr.outputs["Result"], mix.inputs["Color2"])
+    nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    # (2) roughness breakup around the base value
+    nz2 = nt.nodes.new("ShaderNodeTexNoise")
+    nz2.inputs["Scale"].default_value = 3.0
+    mr2 = nt.nodes.new("ShaderNodeMapRange")
+    mr2.inputs["To Min"].default_value = max(0.0, rough - 0.05)
+    mr2.inputs["To Max"].default_value = min(1.0, rough + 0.03)
+    nt.links.new(tc.outputs["Object"], nz2.inputs["Vector"])
+    nt.links.new(nz2.outputs["Fac"], mr2.inputs["Value"])
+    nt.links.new(mr2.outputs["Result"], bsdf.inputs["Roughness"])
+    # (3) fine roller-coat bump (sub-mm — texture, not lumps)
+    nz3 = nt.nodes.new("ShaderNodeTexNoise")
+    nz3.inputs["Scale"].default_value = 80.0
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.05
+    try:
+        bump.inputs["Distance"].default_value = 0.0005
+    except Exception:
+        pass
+    nt.links.new(tc.outputs["Object"], nz3.inputs["Vector"])
+    nt.links.new(nz3.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return m
 
 
@@ -838,7 +974,7 @@ def _add_ceiling(outline_m, h, margin=0.18):
     for v in obj.data.vertices:
         v.co.z += h + 0.05
     obj.data.update()
-    obj.data.materials.append(_solid("ceiling_paint", (0.90, 0.89, 0.87, 1.0), 0.9))
+    obj.data.materials.append(_painted("ceiling_paint", (0.90, 0.89, 0.87, 1.0), 0.9))
     return obj
 
 
@@ -970,9 +1106,12 @@ def _suite_materials():
     (floor grain/reflection), clean physically-based solids elsewhere. Assigned by
     object-name PREFIX (tag__...). Imported furniture models keep their own PBR."""
     floor = _pbr_material("floor_pbr", FLOOR_SLUG)                                   # warm oak grain
-    wall = _solid("wall_paint", WALL_RGBA, 0.88)                                     # matte warm-white
-    feature = _pbr_material("feature_walnut", FLOOR_SLUG, base_tint=(0.40, 0.28, 0.20, 1.0))  # walnut backdrop
-    mill = _pbr_material("mill_walnut", FLOOR_SLUG, base_tint=(0.55, 0.42, 0.34, 1.0))  # darker = walnut veneer
+    wall = _painted("wall_paint", WALL_RGBA, 0.88)                                   # matte warm-white
+    feature = _pbr_material("feature_walnut", FLOOR_SLUG, base_tint=(0.40, 0.28, 0.20, 1.0),
+                            variation=0.06)  # walnut backdrop, drift breaks tile repeats
+    # LINEAR-space walnut (sRGB ~#5F4430): Blender default_value is linear — a
+    # 'looks right in sRGB' triple renders as pale pink-beige (round-2 lesson).
+    mill = _veneer("mill_walnut", (0.105, 0.052, 0.026, 1.0), 0.45)  # rift-walnut veneer, matte lacquer
     fab = _solid("fabric_boucle", (0.84, 0.79, 0.71, 1.0), 0.92, sheen=0.8)         # cream boucle (sheen)
     wood = _pbr_material("wood_oak", FLOOR_SLUG)                                     # oak on wood items
     fix = _solid("sanitary_white", (0.90, 0.91, 0.92, 1.0), 0.15, spec=0.6, coat=0.2)  # glossy sanitaryware
@@ -987,11 +1126,20 @@ def _suite_materials():
             obj.data.materials.append(floor)
             continue
         if n.startswith("wall_0"):                       # south edge = the hero backdrop
-            _wall_uv(obj, tile_m=2.2)                     # -> walnut wood feature wall (PORS-style)
+            # per-object sampling offset: neighbouring wall pieces stop showing
+            # the SAME plank sequence (judge: grain 'subtle uniformity' family)
+            _wall_uv(obj, tile_m=2.2, u_off=_det01(n) * 3.0)  # -> walnut feature wall (PORS-style)
             obj.data.materials.append(feature)
             continue
         if n.startswith("wall") and "__" not in n:
             obj.data.materials.append(wall)
+            continue
+        if n.startswith("mill__"):
+            # millwork previously had NO UV -> flat featureless slabs (the 'flat
+            # panel' judge datapoint). Round-1 lesson: do NOT map the floor plank
+            # texture here (reads as flooring-on-walls, tanked the bedroom A/B) —
+            # _veneer is procedural (world-space), no UV needed.
+            obj.data.materials.append(mill)
             continue
         if n.startswith("rug__"):                        # rug already carries its own PBR
             continue
@@ -1011,20 +1159,45 @@ def add_interior_lights(spec, h_m):
         return 0
     warm = (1.0, 0.82, 0.60)
     watt = {"ambient": 16.0, "task": 40.0, "accent": 26.0}
+    # the ACCENT wall-wash renders as ONE perfect pool -> the hybrid pass paints a
+    # 'perfectly uniform glow of the linear accent lighting' (v004pro judge, the
+    # strip-light 0.5-gap datapoint). Real wall-washers SCALLOP: split the accent
+    # into a graded 3-pool run along the feature builtin's long axis. Energy
+    # fractions sum to 1.0 so total accent output (and scene exposure) is unchanged.
+    focal = next((b for b in spec.get("builtins", [])
+                  if b.get("kind") in ("headboard_tv", "feature", "tv")), None)
+    acc_axis = None
+    if focal:
+        acc_axis = ((1.0, 0.0) if float(focal.get("w", 0)) >= float(focal.get("d", 0))
+                    else (0.0, 1.0))
+    n_placed = 0
     for i, f in enumerate(fixtures):
         # AREA (disk) facing straight DOWN (an area light emits along its local -Z, and a
         # zero-rotation light already points down) -> a real downlight POOL on the floor/
         # furniture, instead of a point light that wastes half its output up the open top.
-        ld = bpy.data.lights.new(f"light_{i}", type='AREA')
-        ld.shape = 'DISK'
-        ld.size = 0.22
-        ld.energy = watt.get(f.get("layer", "ambient"), 16.0)
-        ld.color = warm
-        lo = bpy.data.objects.new(f"light_{i}", ld)
-        lo.location = (float(f["x"]) * MM, float(f["y"]) * MM, h_m - 0.06)
-        bpy.context.scene.collection.objects.link(lo)
-    print(f"  placed {len(fixtures)} warm downlights (area, matching the RCP layout)")
-    return len(fixtures)
+        base_e = watt.get(f.get("layer", "ambient"), 16.0)
+        pools = [(0.0, 1.0)]
+        if f.get("layer") == "accent" and acc_axis:
+            pools = [(-0.45, 0.28), (0.0, 0.42), (0.45, 0.30)]   # graded scallops
+        for k, (off, frac) in enumerate(pools):
+            ld = bpy.data.lights.new(f"light_{i}_{k}", type='AREA')
+            ld.shape = 'DISK'
+            ld.size = 0.22 if len(pools) == 1 else 0.17
+            # deterministic ±12% per-fixture spread + a hint of CCT drift: a real
+            # ceiling never fires every can at one exact output/colour. RCP
+            # POSITIONS stay exact — only output varies (mean multiplier = 1.0).
+            ld.energy = base_e * frac * (0.88 + 0.24 * _det01(f"e{i}_{k}"))
+            drift = 0.985 + 0.03 * _det01(f"c{i}_{k}")
+            ld.color = (warm[0], min(1.0, warm[1] * drift), min(1.0, warm[2] * drift * drift))
+            lo = bpy.data.objects.new(f"light_{i}_{k}", ld)
+            ox = acc_axis[0] * off if (acc_axis and len(pools) > 1) else 0.0
+            oy = acc_axis[1] * off if (acc_axis and len(pools) > 1) else 0.0
+            lo.location = (float(f["x"]) * MM + ox, float(f["y"]) * MM + oy, h_m - 0.06)
+            bpy.context.scene.collection.objects.link(lo)
+            n_placed += 1
+    print(f"  placed {n_placed} warm interior lights (area, RCP positions, "
+          f"deterministic output spread{', accent scalloped' if acc_axis else ''})")
+    return n_placed
 
 
 # CC0 Poly Haven models per furniture KIND (downloaded by pipeline/assets.py, cached in
