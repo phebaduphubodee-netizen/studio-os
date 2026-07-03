@@ -1,5 +1,5 @@
 """
-suite_clearance.py — INTERIOR-AI v0.4.1 clearance engine: METRIC + POLYGON + Thai code
+suite_clearance.py — INTERIOR-AI v0.4.2 clearance engine: METRIC + POLYGON + Thai code
                      + Gate 0 geometry (blueprint §9.2, M3.1).
 
 v0.2 embedded its own DR-derived Thai rules; v0.3 (M3.1 unification slice, 2026-07-02)
@@ -39,6 +39,16 @@ v0.4.1 (adversarial scrutiny of v0.4, qa/reports/2026-07-02-gate0-full.md):
     perpendicular wall) -> WARN (cannot open 90°); furniture/sub-room walls -> FAIL.
   * rot honored for 90/270 (w/d swap about the footprint centre, matching
     build_room); non-axis rotations are disclosed per item, checked as unrotated.
+v0.4.2 (pure-geometry scrutiny lens, third run — the first two died on infra):
+  * LOS reach is now EXACT (Liang-Barsky segment-vs-rect) — 25 mm point sampling
+    stepped over blockers thinner than the step and PASSed a bed sealed behind a
+    10 mm glass partition (false-PASS, the class the LOS fix existed to kill);
+  * doorway envelope starts add the exact midpoint of every clear interval of
+    the start line — the 50 mm stride alone quantized the entry aperture and
+    under-reported bottlenecks by up to ~50 mm (false-WARN/false-FAIL flips);
+  * slide-fit tolerance (_KISS = 0.25 mm): a gap exactly equal to an ergonomic
+    floor now measures AT the floor (610 reads 610, not 609);
+  * known limit documented in _keepout_cells (reentrant-corner door strip).
 Swing convention: door (x, y) = leaf-segment start measured along +x on south/north
 walls, +y on east/west; "-left" hinges at the segment start (lower coordinate),
 "-right" at the far end; "in-" opens to the wall-owner's inside, "out-" outside.
@@ -116,7 +126,8 @@ _WET = ("bath", "ensuite", "toilet", "wc", "shower", "powder",
         "ห้องน้ำ", "ส้วม", "อาบน้ำ")
 _REACH = 300.0        # mm — arm's-reach tolerance from envelope edge to a target
 _ENVELOPE_MAX = 2400  # mm — circulation bottleneck search ceiling (reported as >=)
-_LOS_STEP = 25.0      # mm — line-of-sight sampling step for target reach
+_KISS = 0.25          # mm — slide-fit tolerance: an envelope exactly equal to a
+                      # gap counts as passing (gap == 610 reads 610, not 609)
 
 
 def _shoelace(pts):
@@ -309,6 +320,11 @@ def _keepout_cells(sr, thk, door_gap):
     the band so movement/swing checks can pass through the actual opening."""
     cells = [_rect_inflate(c, thk) for c in _subroom_cells(sr)]
     if door_gap:
+        # KNOWN LIMIT (geometry lens #5, unweaponized): a door starting exactly at
+        # a reentrant corner of an L-shaped sub-room lets the strip carve <= thk
+        # of the PERPENDICULAR leg's wall band — a dead-end alcove; no verdict
+        # flip constructible (swing still hits the remaining band). Attributing
+        # band cells to their source wall would fix it; not worth the machinery.
         sd = sr.get("door")
         seg = _door_segment(sd) if sd else None
         if seg:
@@ -389,20 +405,43 @@ def _door_segment(door):
 
 
 def _door_starts(door):
-    """Envelope start candidates sampled across the WHOLE doorway (an obstacle in
-    front of part of the opening must not zero the bottleneck — the person enters
-    through the clear part). Returns fn(W) -> list of points just inside."""
+    """Envelope start candidates across the WHOLE doorway (an obstacle in front
+    of part of the opening must not zero the bottleneck — the person enters
+    through the clear part). Returns fn(W, solids) -> points just inside: a
+    50 mm stride PLUS the exact midpoint of every clear interval of the start
+    line between the W/2-inflated solids — stride-only quantized the aperture
+    and under-reported bottlenecks by up to ~50 mm (geometry-lens finding #3)."""
     x, y, w = float(door["x"]), float(door["y"]), float(door["w"])
     wall = str(door.get("wall", "")).lower()
     axis, inw = _WALL_AXIS[wall]
 
-    def fn(W):
-        d = W / 2.0 + 2.0
+    def fn(W, solids=()):
+        h = W / 2.0
+        d = h + 2.0
+        lo, hi = (x, x + w) if axis == "x" else (y, y + w)
+        line = (y + inw * d) if axis == "x" else (x + inw * d)
         ts = {w / 2.0}
         t = 25.0
         while t < w:
             ts.add(t)
             t += 50.0
+        blocked = []
+        for s in solids:
+            i0 = (s[0] - h + _KISS, s[1] - h + _KISS, s[2] + h - _KISS, s[3] + h - _KISS)
+            if axis == "x":
+                if i0[1] < line < i0[3] and i0[2] > lo and i0[0] < hi:
+                    blocked.append((max(i0[0], lo), min(i0[2], hi)))
+            else:
+                if i0[0] < line < i0[2] and i0[3] > lo and i0[1] < hi:
+                    blocked.append((max(i0[1], lo), min(i0[3], hi)))
+        cur = lo
+        for a, b in sorted(blocked):
+            if a > cur:
+                ts.add((cur + a) / 2.0 - lo)
+            cur = max(cur, b)
+        if cur < hi:
+            ts.add((cur + hi) / 2.0 - lo)
+        ts = {t for t in ts if 0.0 < t < w}
         if axis == "x":
             return [(x + t, y + inw * d) for t in sorted(ts)]
         return [(x + inw * d, y + t) for t in sorted(ts)]
@@ -428,21 +467,41 @@ def _solid_model(outline, subrooms, obstacle_rects, room):
     return solids, (x0, y0, x1, y1)
 
 
+def _seg_hits_rect(x0, y0, x1, y1, rect, eps=0.25):
+    """Segment strictly crosses the rect INTERIOR (rect shrunk by eps so a flush
+    touch stays legal). Exact Liang-Barsky — point sampling stepped over blockers
+    thinner than the step (geometry-lens finding #4, false-PASS through a 10 mm
+    partition)."""
+    bx0, by0, bx1, by1 = rect[0] + eps, rect[1] + eps, rect[2] - eps, rect[3] - eps
+    if bx0 >= bx1 or by0 >= by1:
+        return False
+    dx, dy = x1 - x0, y1 - y0
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-dx, x0 - bx0), (dx, bx1 - x0), (-dy, y0 - by0), (dy, by1 - y0)):
+        if p == 0:
+            if q < 0:
+                return False
+            continue
+        t = q / p
+        if p < 0:
+            if t > t0:
+                t0 = t
+        else:
+            if t < t1:
+                t1 = t
+        if t0 - t1 > 1e-12:
+            return False
+    return t1 - t0 > 1e-12
+
+
 def _los_clear(from_pt, target_rect, solids):
     """Straight line from from_pt to the nearest point of target_rect crosses no
     solid (solids overlapping the target itself are ignored — e.g. the platform
     under a bed). Blocks 'reached through a thin wall' false positives."""
     tx = min(max(from_pt[0], target_rect[0]), target_rect[2])
     ty = min(max(from_pt[1], target_rect[1]), target_rect[3])
-    blockers = [s for s in solids if not _rects_overlap(s, target_rect)]
-    dx, dy = tx - from_pt[0], ty - from_pt[1]
-    dist = max(abs(dx), abs(dy))
-    n = max(int(dist / _LOS_STEP), 1)
-    for k in range(n + 1):
-        px, py = from_pt[0] + dx * k / n, from_pt[1] + dy * k / n
-        if any(_strictly_in_rect(px, py, s, eps=0.25) for s in blockers):
-            return False
-    return True
+    return not any(_seg_hits_rect(from_pt[0], from_pt[1], tx, ty, s)
+                   for s in solids if not _rects_overlap(s, target_rect))
 
 
 def _envelope_reaches(solids, bbox, W, starts, target_rect, tol):
@@ -451,7 +510,7 @@ def _envelope_reaches(solids, bbox, W, starts, target_rect, tol):
     sight to it — avoiding all solids. L∞ erosion: inflate every solid by W/2,
     multi-source BFS over the free cells of the rect arrangement. Exact for
     axis-aligned geometry."""
-    h = W / 2.0
+    h = W / 2.0 - _KISS   # slide-fit: gap == W passes (finding #2, exact-kiss)
     inf = [(s[0] - h, s[1] - h, s[2] + h, s[3] + h) for s in solids]
     tinf = (target_rect[0] - h - tol, target_rect[1] - h - tol,
             target_rect[2] + h + tol, target_rect[3] + h + tol)
@@ -511,7 +570,7 @@ def _bottleneck(solids, bbox, starts_fn, target_rect, tol=_REACH, wmax=_ENVELOPE
     """Widest envelope (mm, 1 mm resolution) that can travel door -> target.
     0 = unreachable even by a hairline envelope; wmax = 'at least wmax'."""
     def ok(W):
-        return _envelope_reaches(solids, bbox, float(W), starts_fn(float(W)),
+        return _envelope_reaches(solids, bbox, float(W), starts_fn(float(W), solids),
                                  target_rect, tol)
     if not ok(1):
         return 0

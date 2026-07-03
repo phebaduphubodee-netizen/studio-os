@@ -117,6 +117,33 @@ s["items"] = [{"name": "bed", "kind": "bed", "x": 1000, "y": 2150, "w": 2000, "d
 expect("seed2f no reach through a thin wall", sc.check(s),
        "circulation: entry -> bed", "FAIL", detail_has="no clear path")
 
+# ... and not through a 10 mm glass partition either (exact LOS, lens finding #4)
+s["builtins"][0]["d"] = 10
+expect("seed2f2 no reach through 10mm glass", sc.check(s),
+       "circulation: entry -> bed", "FAIL", detail_has="no clear path")
+
+# doorway aperture off the 50 mm start stride must measure exactly (lens #3)
+s = room(5000, 5000, rtype="living")
+s["door"] = {"x": 100, "y": 0, "w": 1800, "h": 2000, "wall": "south", "swing": "in-left"}
+s["builtins"] = [
+    {"name": "left-flush", "kind": "cabinet", "x": 0, "y": 0, "w": 980, "d": 800, "h": 1200},
+    {"name": "right-flush", "kind": "cabinet", "x": 1920, "y": 0, "w": 3080, "d": 800, "h": 1200}]
+s["items"] = [{"name": "sofa", "kind": "sofa", "x": 1500, "y": 4000, "w": 2000, "d": 900, "h": 850}]
+expect("seed2h off-stride 940 slot -> PASS at true width", sc.check(s),
+       "circulation: entry -> sofa", "PASS", detail_has="bottleneck 940")
+
+# a 40 mm slot is impassable but must be MEASURED, not reported as no-path
+s["builtins"][0]["w"] = 1000
+s["builtins"][1] = {"name": "right-flush", "kind": "cabinet", "x": 1040, "y": 0, "w": 3960, "d": 800, "h": 1200}
+expect("seed2i 40mm slot measured", sc.check(s),
+       "circulation: entry -> sofa", "FAIL", detail_has="bottleneck 40")
+
+# exact-kiss: a gap equal to a floor measures AT the floor (lens #2)
+expect("seed2j exact 610 gap -> WARN at 610", sc.check(pinched(610)),
+       "circulation: entry -> sofa", "WARN", detail_has="bottleneck 610")
+expect("seed2k exact 910 gap -> PASS at 910", sc.check(pinched(910)),
+       "circulation: entry -> sofa", "PASS", detail_has="bottleneck 910")
+
 # a bed on a wide platform ledge is reachable by stepping onto the platform
 s = room(5000, 5500, rtype="bedroom")
 s["door"] = {"x": 2000, "y": 0, "w": 900, "h": 2000, "wall": "south", "swing": "in-left"}
