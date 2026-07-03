@@ -25,6 +25,8 @@ CCW about +Z) turns it. A bed's FOOT and a sofa's SEAT both = the front.
 import math
 import re
 
+import ergonomics_ref as ergo   # cited ergonomic constants (NLM DR 5de4bb36)
+
 PASS, WARN, FAIL, UNWIRED = "PASS", "WARN", "FAIL", "UNWIRED"
 
 TV_STANDALONE_KINDS = {"tv", "tv_console", "tv_panel"}   # a real, positioned TV
@@ -33,7 +35,7 @@ _TV_NAME_RE = re.compile(r"\b(tv|television)\b|ทีวี", re.IGNORECASE)
 
 BED_KINDS = {"bed"}
 SEAT_KINDS = {"sofa", "loveseat"}            # primary lounge seat (a living room's "viewer")
-VIEW_MIN_MM, VIEW_MAX_MM = 1200.0, 5000.0    # sane TV viewing distance (heuristic)
+VIEW_MIN_MM, VIEW_MAX_MM = ergo.TV_VIEW_DIST_MM   # SMPTE/THX comfort band (ergonomics_ref)
 
 
 # ---------- geometry ----------
@@ -187,8 +189,36 @@ def _rule_door_vs_bed_head(spec, ctx):
     return ("door_vs_bed_head", PASS, f"bed head ('{head_wall}') is clear of the door wall ('{dw}')")
 
 
+def _rule_furniture_dimensions(spec, ctx):
+    # WARN (advisory, never FAIL) when a piece's size/height is outside the ergonomic
+    # norm — the GS-02/06 family ("สัดส่วนไม่ได้ / เฟอร์ฯใหญ่ไป / ที่นั่งสูงเกิน").
+    # Values from ergonomics_ref (NLM DR 5de4bb36). Overall chair/sofa `h` is the
+    # backrest not the seat, so seat-height is intentionally NOT checked here.
+    issues = []
+    for el in _iter_elements(spec):
+        k = el.get("kind")
+        if k in ergo.TABLE_H_MM:
+            lo, hi = ergo.TABLE_H_MM[k]
+            h = float(el.get("h", 0) or 0)
+            if h and not (lo <= h <= hi):
+                issues.append(f"{k} height {h:.0f}mm (norm {lo}–{hi})")
+        elif k == "wardrobe":
+            lo, hi = ergo.WARDROBE_DEPTH_MM
+            dep = min(float(el.get("w", 0) or 0), float(el.get("d", 0) or 0))
+            if dep and not (lo <= dep <= hi):
+                issues.append(f"wardrobe depth {dep:.0f}mm (norm {lo}–{hi})")
+        elif k == "bed":
+            name, (bw, bl), ok, worst = ergo.nearest_bed_size(el.get("w", 0), el.get("d", 0))
+            if not ok:
+                issues.append(f"bed {float(el['w']):.0f}×{float(el['d']):.0f}mm off standard "
+                              f"(nearest {name} {bw}×{bl}, off {worst:.0f}mm)")
+    if issues:
+        return ("furniture_dimensions", WARN, "; ".join(issues))
+    return ("furniture_dimensions", PASS, "furniture sizes/heights within ergonomic norms")
+
+
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
-         _rule_tv_viewing_distance, _rule_door_vs_bed_head]
+         _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions]
 
 
 def _worst(statuses):
