@@ -51,12 +51,12 @@ def _load_key():
 
 MODELS = ["gemini-3.1-flash-image-preview", "gemini-2.5-flash-image",
           "gemini-2.0-flash-preview-image-generation"]
-# model choice lives HERE per the registry engine_contract: GEMINI_IMAGE_MODEL
-# (env) prepends a model for tier experiments — e.g. a pro-tier image model for
-# hero shots (2026-07-02: flash tier plateaus at critique 4/5 on micro-texture
-# tells); the chain still falls back to flash on error.
-if os.environ.get("GEMINI_IMAGE_MODEL"):
-    MODELS = [os.environ["GEMINI_IMAGE_MODEL"]] + MODELS
+# Model choice is resolved at CALL time in edit(prefer=), NOT captured at import:
+# a caller (e.g. the M3.3 repair loop) escalates tier per request, and the
+# standalone CLI still honours GEMINI_IMAGE_MODEL (read inside edit()). A pro-tier
+# image model wins hero shots (flash plateaus at critique 4/5 on micro-texture
+# tells); the flash chain remains the fallback. (engine_contract: model choice
+# lives here, never in the prompt payload.)
 
 
 def _bump_usage():
@@ -81,8 +81,16 @@ def _post(url, body, ctx=None):
         return json.load(r)
 
 
-def edit(inp, prompt, out):
+def edit(inp, prompt, out, prefer=None):
+    """Repaint `inp` -> `out`. `prefer` (a model id, e.g. a pro-tier image model)
+    is tried FIRST this call, then the standard fallback chain — call-time model
+    selection so a caller can escalate tier per request without the import-time
+    GEMINI_IMAGE_MODEL capture. Returns the model id that produced the image
+    (truthy) on success, or False on failure — provenance so a caller can never
+    record a tier the render did not actually use."""
     key = _load_key()
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)   # own the output dir
+    prefer = prefer or os.environ.get("GEMINI_IMAGE_MODEL")  # call-time tier (standalone CLI too)
     b64 = base64.b64encode(open(inp, "rb").read()).decode()
     mime = "image/png" if inp.lower().endswith(".png") else "image/jpeg"
     body = {
@@ -92,8 +100,9 @@ def edit(inp, prompt, out):
         ]}],
         "generationConfig": {"responseModalities": ["IMAGE"]},
     }
+    models = MODELS if not prefer else ([prefer] + [m for m in MODELS if m != prefer])
     last = ""
-    for model in MODELS:
+    for model in models:
         url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
                f"{model}:generateContent?key={key}")
         try:
@@ -127,7 +136,7 @@ def edit(inp, prompt, out):
                 if blob and blob.get("data"):
                     open(out, "wb").write(base64.b64decode(blob["data"]))
                     print(f"OK [{model}] -> {out}")
-                    return True
+                    return model
         last = f"{model}: no image part in response ({json.dumps(data)[:300]})"
         print("  ..", last)
     print("FAILED:", last)
