@@ -437,7 +437,7 @@ def build(spec, spec_path, name=None, fixtures=None, outdir=None, render_png=Fal
     produced.append(qa_path)
 
     # 7) the sheet-set PDF (needs matplotlib + ezdxf)
-    r_room = clearance_check.Room(r["width_in"], r["depth_in"], r["ceiling_in"], door=r.get("door"))
+    r_room = clearance_check.room_from_spec(r)   # shared plumbing: rtype + f2f + door
     r_items = [clearance_check.Item(it.get("name", it.get("kind", "item")), it.get("kind", "item"),
                                     it["x"], it["y"], it["w"], it["d"]) for it in spec.get("items", [])]
     res = clearance_check.check(r_room, r_items) + list(clearance_check.check_lighting(spec, fixtures))

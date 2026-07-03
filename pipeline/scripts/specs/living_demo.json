@@ -6,6 +6,8 @@
     "width_in": 168,
     "depth_in": 192,
     "ceiling_in": 96,
+    "floor_to_floor_mm": 2700,
+    "_floor_to_floor_note": "demo value (fictional room): typical Thai condo slab-to-slab; ข้อ 22 basis is ระยะดิ่ง — clear 2438 mm alone can neither prove nor refute it",
     "wall_thk_in": 4.5,
     "floor_thk_in": 4.0,
     "door": {

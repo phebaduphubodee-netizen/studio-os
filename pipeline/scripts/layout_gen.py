@@ -51,11 +51,16 @@ def generate(brief):
 
 
 def _wrap(rt, W, D, H, door, items, brief):
+    room = {"type": rt, "width_in": W, "depth_in": D, "ceiling_in": H,
+            "wall_thk_in": 4.5, "floor_thk_in": 4.0, "door": door}
+    # ข้อ 22 basis is ระยะดิ่ง (floor-to-floor) — pass it through when the brief
+    # KNOWS it; never invent one (an absent value = an honest engine WARN).
+    if brief.get("floor_to_floor_mm") is not None:
+        room["floor_to_floor_mm"] = float(brief["floor_to_floor_mm"])
     return {
         "schema": "interior-ai/room-spec@0.1",
         "note": f"AUTO-LAYOUT DRAFT for a {rt} {brief['width_ft']}x{brief['depth_ft']}ft room - a designer refines this.",
-        "room": {"type": rt, "width_in": W, "depth_in": D, "ceiling_in": H,
-                 "wall_thk_in": 4.5, "floor_thk_in": 4.0, "door": door},
+        "room": room,
         "render": False,
         "items": items,
     }
@@ -109,7 +114,7 @@ def _generic(W, D, kinds):
 
 def _validate(spec):
     r = spec["room"]
-    room = cc.Room(r["width_in"], r["depth_in"], r["ceiling_in"], door=r.get("door"))
+    room = cc.room_from_spec(r)   # shared plumbing: rtype + floor-to-floor + door
     items = [cc.Item(it.get("name", it["kind"]), it["kind"], it["x"], it["y"], it["w"], it["d"])
              for it in spec["items"]]
     res = cc.check(room, items)

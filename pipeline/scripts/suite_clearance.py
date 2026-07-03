@@ -1,6 +1,11 @@
 """
-suite_clearance.py — INTERIOR-AI v0.4.2 clearance engine: METRIC + POLYGON + Thai code
+suite_clearance.py — INTERIOR-AI v0.4.3 clearance engine: METRIC + POLYGON + Thai code
                      + Gate 0 geometry (blueprint §9.2, M3.1).
+
+v0.4.3 (2026-07-03): dual-tier honesty hole closed in _bath_checks — fixture-unknown
+wet rooms with area in [0.9, 1.5) AND width < 900 breach EVERY ฉ.39 tier reading and
+now FAIL (was WARN). Found by the clearance_check-unification adversarial round;
+seeded in test_gate0.py.
 
 v0.2 embedded its own DR-derived Thai rules; v0.3 (M3.1 unification slice, 2026-07-02)
 loads the statutory floors from dimensional_rules.v0.2.json `thai_code_minimums` —
@@ -1107,10 +1112,19 @@ def _bath_checks(add, label, outline_poly, fixtures):
                 f"bbox {width:.0f} mm >= {w900} but the outline is not rectilinear — verify the "
                 f"internal width on plan ({cite})")
     else:
+        # v0.4.3: area in [0.9, 1.5) with width < 900 breaches EVERY tier reading
+        # (combined fails on area, separated fails on width) — previously WARN, a
+        # verified dual-tier honesty hole (2026-07-03 adversarial round). `width`
+        # is exact (legs) or a bbox UPPER bound — both prove < 900 when below.
         if area_m2 < a09:
             add("FAIL", f"bath area ({label})",
                 f"{area_m2:.2f} m² < {a09} m² — below BOTH ฉ.39 tiers (combined {a15} / "
                 f"separated {a09}) ({cite})")
+        elif area_m2 < a15 and width < w900:
+            add("FAIL", f"bath area ({label})",
+                f"{area_m2:.2f} m² < {a15} (combined floor) AND width {width:.0f} mm < {w900} "
+                f"(separated floor{'' if width_provable else '; bbox bounds width from above'}) — "
+                f"breach under EVERY tier reading ({cite})")
         elif area_m2 >= a15 and width_provable and width >= w900:
             add("PASS", f"bath area ({label})",
                 f"{area_m2:.2f} m² >= {a15} and width {width:.0f} >= {w900} — satisfies both "
