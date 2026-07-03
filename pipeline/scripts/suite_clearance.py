@@ -126,8 +126,12 @@ _WET = ("bath", "ensuite", "toilet", "wc", "shower", "powder",
         "ห้องน้ำ", "ส้วม", "อาบน้ำ")
 _REACH = 300.0        # mm — arm's-reach tolerance from envelope edge to a target
 _ENVELOPE_MAX = 2400  # mm — circulation bottleneck search ceiling (reported as >=)
-_KISS = 0.25          # mm — slide-fit tolerance: an envelope exactly equal to a
-                      # gap counts as passing (gap == 610 reads 610, not 609)
+_KISS = 0.001         # mm — slide-fit tolerance: an envelope exactly equal to a
+                      # gap counts as passing (gap == 610 reads 610, not 609).
+                      # Just above the 3-decimal grid-rounding quantum and NO
+                      # larger: 0.25 shrank both sides into a 0.5 mm grace band
+                      # where gap 609.6 read 610/WARN — a false-PERMISSIVE tier
+                      # flip (fix-verification round, qa gate0-full report §4).
 
 
 def _shoelace(pts):
