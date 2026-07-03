@@ -463,3 +463,21 @@
   fallback, each output tagged with its `method` in a sidecar so QA can never
   silently claim SR it didn't do. Smoke-tested (Lanczos path, 2×). ncnn backend
   needs a one-time owner install (documented in the script header).
+
+## 2026-07-03 — scrutiny of the same-session M3.2 code caught a ground-truth bug
+- **/scrutinize on my own fresh M3.2 groundwork found a BLOCKER before it could
+  bite:** golden_set_curate.py numbered the golden-set IDs by POSITION in the
+  crc32-sorted stem list. crc32 ORDER is stable, but a position-derived ID is
+  not stable under INSERTION — add one render and every later GS-ID shifts. Since
+  labels.json (the designer ground truth) is keyed by GS-ID, the documented
+  "grow the set" re-run would have silently re-pointed every label onto a
+  different image — calibrating the judge against corrupted truth.
+- **Fix:** persist stem→ID in `qa/golden-set/id-map.json`; a stem keeps its
+  number forever, new stems append, none recycle. Proven end-to-end (re-run =
+  0 renumbered; a fresh critique took GS-27 with all 26 prior IDs unchanged).
+- **Also fixed:** judge_calibrate silently treated a null verdict as REWORK
+  (a blank form field would read as "judge miscalibrated"); now fails loud.
+- **Lesson, same family as the code-side doctrine:** the author cannot grade
+  their own work — a stability guarantee stated in a docstring ("existing IDs
+  never change") was false in the code beneath it, and only an outside read
+  found it. Cheap insurance on anything that will accrue human labor (labels).

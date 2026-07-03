@@ -95,6 +95,20 @@ def main():
         sys.exit(2)
     labels = json.load(open(lab_path, encoding="utf-8"))["labels"]
 
+    # Fail loud on incomplete labels: a labeled score with a null/garbage verdict
+    # would silently count as human-REWORK and drag kappa down — the owner would
+    # read it as "judge miscalibrated" when it is really a missed form field.
+    # kappa compares the machine's OPERATIONAL gate (mean score >= PASS_BOUND, the
+    # thresholds.yaml client_qa rule) against the designer's holistic SHIP call —
+    # so both fields are required on every scored image.
+    bad = [gid for gid, lab in labels.items()
+           if lab.get("overall_0_5") is not None
+           and str(lab.get("verdict", "")).upper() not in ("SHIP", "REWORK")]
+    if bad:
+        print("labels.json: these scored images have a missing/invalid verdict "
+              "(must be SHIP or REWORK): " + ", ".join(sorted(bad)))
+        sys.exit(2)
+
     ids, m_means, h_scores, m_pass, h_pass, rows = [], [], [], [], [], []
     for gid, lab in sorted(labels.items()):
         if lab.get("overall_0_5") is None or gid not in machine:

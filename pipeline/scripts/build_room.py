@@ -673,8 +673,11 @@ def _principled(m):
 def _det01(tag):
     """Deterministic pseudo-random 0..1 from a string. zlib.crc32 is stable across
     runs and processes (unlike hash(), which Python salts per process) — drives
-    per-object grain offsets and per-fixture light variation while keeping every
-    re-run byte-identical (the camera/evidence reproducibility rule)."""
+    per-object grain offsets and per-fixture light variation so the SCENE is
+    reproducible run-to-run (the camera/evidence rule). NB the rendered PNG is not
+    bit-identical — Cycles GPU + adaptive sampling + OpenImageDenoise introduce
+    sub-pixel noise; determinism is at the scene-graph level, which is what the
+    gate evidence relies on."""
     import zlib
     return (zlib.crc32(tag.encode("utf-8")) % 10000) / 10000.0
 
