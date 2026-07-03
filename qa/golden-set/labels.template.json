@@ -1,0 +1,125 @@
+{
+ "_instructions": "copy to labels.json, fill every image; see LABELING.md",
+ "labels": {
+  "GS-01": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-02": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-03": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-04": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-05": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-06": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-07": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-08": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-09": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-10": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-11": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-12": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-13": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-14": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-15": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-16": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-17": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-18": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-19": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-20": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-21": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-22": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-23": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  },
+  "GS-24": {
+   "overall_0_5": null,
+   "verdict": null,
+   "note": ""
+  }
+ }
+}

@@ -1,0 +1,149 @@
+{
+ "purpose": "M3.2 judge-calibration golden set (blueprint 9.4)",
+ "images": [
+  {
+   "id": "GS-01",
+   "image": "assets/qa/golden-set/GS-01.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-02",
+   "image": "assets/qa/golden-set/GS-02.png",
+   "source_stem": "room_living_hybrid_v001",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-03",
+   "image": "assets/qa/golden-set/GS-03.png",
+   "source_stem": "room_living_condo_eye_hybrid_v005",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-04",
+   "image": "assets/qa/golden-set/GS-04.png",
+   "source_stem": "room_living",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-05",
+   "image": "assets/qa/golden-set/GS-05.png",
+   "source_stem": "room_bedroom_suite_hybrid",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-06",
+   "image": "assets/qa/golden-set/GS-06.png",
+   "source_stem": "room_living_condo_eye_hybrid_v004",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-07",
+   "image": "assets/qa/golden-set/GS-07.png",
+   "source_stem": "room_living_condo_eye_hybrid_clayfix_pro",
+   "n_machine_rolls": 2
+  },
+  {
+   "id": "GS-08",
+   "image": "assets/qa/golden-set/GS-08.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_v004pro",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-09",
+   "image": "assets/qa/golden-set/GS-09.png",
+   "source_stem": "room_living_condo_eye_hybrid",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-10",
+   "image": "assets/qa/golden-set/GS-10.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_v003",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-11",
+   "image": "assets/qa/golden-set/GS-11.png",
+   "source_stem": "room_living_condo_eye_hybrid_oldclay_pro",
+   "n_machine_rolls": 2
+  },
+  {
+   "id": "GS-12",
+   "image": "assets/qa/golden-set/GS-12.png",
+   "source_stem": "room_living_hybrid_v003b",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-13",
+   "image": "assets/qa/golden-set/GS-13.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_v005",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-14",
+   "image": "assets/qa/golden-set/GS-14.png",
+   "source_stem": "room_living_hybrid_v002",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-15",
+   "image": "assets/qa/golden-set/GS-15.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_clayfix_pro",
+   "n_machine_rolls": 3
+  },
+  {
+   "id": "GS-16",
+   "image": "assets/qa/golden-set/GS-16.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_prj002_v01",
+   "n_machine_rolls": 2
+  },
+  {
+   "id": "GS-17",
+   "image": "assets/qa/golden-set/GS-17.png",
+   "source_stem": "room_living_condo_eye_hybrid_v004pro",
+   "n_machine_rolls": 2
+  },
+  {
+   "id": "GS-18",
+   "image": "assets/qa/golden-set/GS-18.png",
+   "source_stem": "room_living_hybrid_v003",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-19",
+   "image": "assets/qa/golden-set/GS-19.png",
+   "source_stem": "room_living_hybrid",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-20",
+   "image": "assets/qa/golden-set/GS-20.png",
+   "source_stem": "room_bedroom_suite",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-21",
+   "image": "assets/qa/golden-set/GS-21.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_v004",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-22",
+   "image": "assets/qa/golden-set/GS-22.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_v005pro",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-23",
+   "image": "assets/qa/golden-set/GS-23.png",
+   "source_stem": "room_bedroom_suite_eye_hybrid_v004b",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-24",
+   "image": "assets/qa/golden-set/GS-24.png",
+   "source_stem": "room_living_condo_eye_hybrid_v004b",
+   "n_machine_rolls": 1
+  }
+ ]
+}
