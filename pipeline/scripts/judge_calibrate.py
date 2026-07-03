@@ -29,6 +29,14 @@ import os
 import sys
 from datetime import date
 
+# Windows console defaults to cp1252, which cannot encode the report's Greek/
+# math glyphs (Δ, and rho/kappa if ever symbolized) — the report file is written
+# utf-8 but the stdout summary would crash after the file is already on disk.
+# Same guard discord_ingest.py uses.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 GS = os.path.join(ROOT, "qa", "golden-set")

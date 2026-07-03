@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golden-set labeler — M3.2</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1a1d21; --muted:#6b7280; --line:#e2e5ea;
+    --accent:#2563eb; --ship:#15803d; --ship-bg:#dcfce7; --rework:#b45309; --rework-bg:#fef3c7;
+    --done:#15803d; --warn:#b91c1c;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1216; --card:#1a1e24; --ink:#e6e8eb; --muted:#9aa3af; --line:#2b313a;
+      --accent:#60a5fa; --ship:#4ade80; --ship-bg:#0f2a19; --rework:#fbbf24; --rework-bg:#2a2109;
+      --done:#4ade80; --warn:#f87171;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.5}
+  header{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--line);
+         padding:12px 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+         box-shadow:0 1px 6px rgba(0,0,0,.06)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .grow{flex:1}
+  .progress{font-size:14px;font-weight:600}
+  .progress b{color:var(--done)}
+  .save-note{font-size:12px;color:var(--muted)}
+  button{font-family:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);
+         color:var(--ink);border-radius:7px;padding:7px 12px;font-size:13px}
+  button:hover{border-color:var(--accent)}
+  .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .intro{max-width:1100px;margin:16px auto 0;padding:0 18px;font-size:13px;color:var(--muted)}
+  .intro .blind{color:var(--warn);font-weight:600}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:6px}
+  main{max-width:1100px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:16px;
+        padding:14px;display:flex;gap:16px;flex-wrap:wrap}
+  .card.done{border-color:var(--done)}
+  .card.err{border-color:var(--warn)}
+  .imgwrap{flex:1 1 420px;min-width:280px}
+  .imgwrap img{width:100%;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;background:#888}
+  .imgwrap .missing{padding:40px;text-align:center;color:var(--warn);font-size:13px;
+                    border:1px dashed var(--warn);border-radius:8px}
+  .controls{flex:1 1 300px;min-width:260px;display:flex;flex-direction:column;gap:12px}
+  .gid{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .tick{color:var(--done);font-weight:700}
+  .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+  .scores{display:flex;flex-wrap:wrap;gap:5px}
+  .scores button{padding:6px 9px;min-width:38px;font-variant-numeric:tabular-nums}
+  .scores button.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+  .verdicts{display:flex;gap:8px}
+  .verdicts button{flex:1;font-weight:650}
+  .verdicts button.ship.on{background:var(--ship-bg);color:var(--ship);border-color:var(--ship)}
+  .verdicts button.rework.on{background:var(--rework-bg);color:var(--rework);border-color:var(--rework)}
+  .note input{width:100%;padding:8px;border:1px solid var(--line);border-radius:7px;
+              background:var(--bg);color:var(--ink);font-family:inherit;font-size:13px}
+  footer{max-width:1100px;margin:0 auto 60px;padding:0 18px;color:var(--muted);font-size:13px}
+  #overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;
+           justify-content:center;z-index:100;cursor:zoom-out;padding:20px}
+  #overlay img{max-width:100%;max-height:100%;border-radius:6px}
+  dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);
+         max-width:640px;width:92%;padding:0}
+  dialog::backdrop{background:rgba(0,0,0,.5)}
+  dialog .dhead{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:650}
+  dialog textarea{width:100%;height:300px;border:0;border-bottom:1px solid var(--line);padding:14px;
+                  font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(--bg);color:var(--ink);resize:vertical}
+  dialog .dfoot{padding:12px 18px;display:flex;gap:8px;justify-content:flex-end}
+  .hidden-file{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏷️ Golden-set labeler <span class="save-note">— M3.2 judge calibration</span></h1>
+  <div class="grow"></div>
+  <div class="progress">ให้คะแนนแล้ว <b id="done-count">0</b> / <span id="total">26</span></div>
+  <button id="btn-jump">ไปใบถัดไปที่ยังว่าง</button>
+  <button id="btn-import">นำเข้า labels.json</button>
+  <button id="btn-json">ดู/คัดลอก JSON</button>
+  <button id="btn-download" class="btn-primary">ดาวน์โหลด labels.json</button>
+  <input type="file" id="file-import" accept=".json,application/json" class="hidden-file">
+</header>
+
+<div class="intro">
+  ให้คะแนนแต่ละภาพจาก <b>ตาดีไซเนอร์มืออาชีพ</b> — ไม่ใช่จากความรู้ว่าไฟล์ไหนมาจากรอบไหน
+  ลำดับ GS สุ่มไว้แล้ว (ไม่ได้เรียงตามห้อง/คุณภาพ)
+  <span class="blind">⛔ ห้ามเปิด machine-scores.json ก่อนกรอกเสร็จ</span> — เห็นคะแนนเครื่องก่อน = calibration เพี้ยนทั้งชุด
+  <div class="legend">
+    <span><b>5</b> = ลงนิตยสาร/ส่งลูกค้าได้ทันที</span>
+    <span><b>4</b> = ผ่านมาตรฐานส่งงาน</span>
+    <span><b>3</b> = ต้องแก้</span>
+    <span><b>≤2</b> = ใช้ไม่ได้</span>
+    <span><b>SHIP/REWORK</b> = ส่งให้ลูกค้าที่จ่ายเงินได้ไหม</span>
+  </div>
+  <div class="save-note" style="margin-top:6px">บันทึกอัตโนมัติในเบราว์เซอร์ตัวนี้ — ปิดแล้วเปิดใหม่งานยังอยู่ เสร็จแล้วกด “ดาวน์โหลด” แล้วเซฟทับที่ <code>qa/golden-set/labels.json</code></div>
+</div>
+
+<main id="cards"></main>
+
+<footer>
+  เสร็จครบ 26 ใบ → ดาวน์โหลด <code>labels.json</code> ไปวางที่โฟลเดอร์ <code>qa/golden-set/</code>
+  แล้วบอก Claude รัน <code>python pipeline/scripts/judge_calibrate.py</code>
+</footer>
+
+<div id="overlay"><img id="overlay-img" alt=""></div>
+
+<dialog id="json-dialog">
+  <div class="dhead">labels.json</div>
+  <textarea id="json-text" readonly></textarea>
+  <div class="dfoot">
+    <button id="json-copy">คัดลอก</button>
+    <button onclick="document.getElementById('json-dialog').close()">ปิด</button>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  "use strict";
+  var N = 26;
+  var SCORES = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5];
+  var IMG_BASE = "../../assets/qa/golden-set/";
+  var LS_KEY = "gs-labeler-v1";
+
+  function pad(i){ return (i<10? "0":"") + i; }
+  function gid(i){ return "GS-" + pad(i); }
+
+  // ---- state: { "GS-01": {score:Number|null, verdict:"SHIP"|"REWORK"|null, note:""} } ----
+  var state = {};
+  for (var i=1;i<=N;i++){ state[gid(i)] = {score:null, verdict:null, note:""}; }
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(LS_KEY);
+      if(raw){ var d = JSON.parse(raw); for(var k in d){ if(state[k]) state[k]=d[k]; } }
+    }catch(e){}
+  }
+  function save(){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  function isComplete(s){ return s.score!==null && (s.verdict==="SHIP"||s.verdict==="REWORK"); }
+  function isDangling(s){ return s.score!==null && s.verdict!==("SHIP")&&s.verdict!=="REWORK"; }
+
+  function refreshCount(){
+    var n=0; for(var k in state){ if(isComplete(state[k])) n++; }
+    document.getElementById("done-count").textContent = n;
+    return n;
+  }
+
+  function markCard(id){
+    var s = state[id];
+    var card = document.getElementById("card-"+id);
+    card.classList.toggle("done", isComplete(s));
+    card.classList.toggle("err", s.score!==null && s.verdict===null);
+    var tick = card.querySelector(".tick");
+    tick.textContent = isComplete(s) ? "✓" : "";
+  }
+
+  function buildCard(i){
+    var id = gid(i), s = state[id];
+    var card = document.createElement("div");
+    card.className = "card"; card.id = "card-"+id;
+
+    var imgwrap = document.createElement("div");
+    imgwrap.className = "imgwrap";
+    var img = document.createElement("img");
+    img.src = IMG_BASE + id + ".png";
+    img.alt = id;
+    img.addEventListener("click", function(){ showOverlay(img.src); });
+    img.addEventListener("error", function(){
+      imgwrap.innerHTML = '<div class="missing">โหลดรูป '+id+'.png ไม่ได้<br>'+
+        'เปิดไฟล์นี้จาก qa/golden-set/ ในโปรเจกต์ (ไม่ใช่ก๊อปไปที่อื่น)</div>';
+    });
+    imgwrap.appendChild(img);
+
+    var ctrl = document.createElement("div");
+    ctrl.className = "controls";
+
+    var head = document.createElement("div");
+    head.className = "gid";
+    head.innerHTML = id + ' <span class="tick"></span>';
+    ctrl.appendChild(head);
+
+    // score row
+    var sWrap = document.createElement("div");
+    sWrap.innerHTML = '<div class="lbl">คะแนน 0–5</div>';
+    var sRow = document.createElement("div"); sRow.className="scores";
+    SCORES.forEach(function(v){
+      var b = document.createElement("button");
+      b.textContent = (v % 1 === 0) ? String(v) : String(v);
+      if (s.score===v) b.classList.add("on");
+      b.addEventListener("click", function(){
+        s.score = (s.score===v) ? null : v;
+        sRow.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
+        if(s.score===v) b.classList.add("on");
+        save(); markCard(id); refreshCount();
+      });
+      sRow.appendChild(b);
+    });
+    sWrap.appendChild(sRow); ctrl.appendChild(sWrap);
+
+    // verdict row
+    var vWrap = document.createElement("div");
+    vWrap.innerHTML = '<div class="lbl">ส่งลูกค้าได้ไหม</div>';
+    var vRow = document.createElement("div"); vRow.className="verdicts";
+    [["SHIP","ship","✅ SHIP"],["REWORK","rework","🔧 REWORK"]].forEach(function(t){
+      var b = document.createElement("button");
+      b.className = t[1]; b.textContent = t[2];
+      if (s.verdict===t[0]) b.classList.add("on");
+      b.addEventListener("click", function(){
+        s.verdict = (s.verdict===t[0]) ? null : t[0];
+        vRow.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
+        if(s.verdict===t[0]) b.classList.add("on");
+        save(); markCard(id); refreshCount();
+      });
+      vRow.appendChild(b);
+    });
+    vWrap.appendChild(vRow); ctrl.appendChild(vWrap);
+
+    // note
+    var nWrap = document.createElement("div"); nWrap.className="note";
+    nWrap.innerHTML = '<div class="lbl">โน้ต (ไม่บังคับ) — defect ที่เห็น</div>';
+    var nIn = document.createElement("input");
+    nIn.type="text"; nIn.value=s.note||""; nIn.placeholder="เช่น strip-light ไม่สม่ำเสมอ, grain ซ้ำ…";
+    nIn.addEventListener("input", function(){ s.note=nIn.value; save(); });
+    nWrap.appendChild(nIn); ctrl.appendChild(nWrap);
+
+    card.appendChild(imgwrap); card.appendChild(ctrl);
+    return card;
+  }
+
+  function render(){
+    var root = document.getElementById("cards");
+    root.innerHTML="";
+    for(var i=1;i<=N;i++){ root.appendChild(buildCard(i)); }
+    for(var j=1;j<=N;j++){ markCard(gid(j)); }
+    refreshCount();
+  }
+
+  // ---- overlay zoom ----
+  var ov = document.getElementById("overlay"), ovImg = document.getElementById("overlay-img");
+  function showOverlay(src){ ovImg.src=src; ov.style.display="flex"; }
+  ov.addEventListener("click", function(){ ov.style.display="none"; ovImg.src=""; });
+
+  // ---- build export object (exact schema judge_calibrate.py reads) ----
+  function buildLabels(){
+    var labels = {};
+    for(var i=1;i<=N;i++){
+      var id=gid(i), s=state[id];
+      labels[id] = { overall_0_5: s.score, verdict: s.verdict, note: s.note||"" };
+    }
+    return { _instructions:"generated by labeler.html; see LABELING.md", labels:labels };
+  }
+  function jsonText(){ return JSON.stringify(buildLabels(), null, 1); }
+
+  function incompleteList(){
+    var miss=[], dangling=[];
+    for(var i=1;i<=N;i++){
+      var id=gid(i), s=state[id];
+      if(s.score!==null && s.verdict===null) dangling.push(id); // judge_calibrate exits 2 on this
+      else if(!isComplete(s)) miss.push(id);
+    }
+    return {miss:miss, dangling:dangling};
+  }
+
+  document.getElementById("btn-download").addEventListener("click", function(){
+    var c = incompleteList();
+    if(c.dangling.length){
+      alert("ภาพเหล่านี้ให้คะแนนแล้วแต่ยังไม่เลือก SHIP/REWORK — judge_calibrate จะไม่ยอมรัน:\n\n"+
+            c.dangling.join(", ")+"\n\nเลือก verdict ให้ครบก่อนดาวน์โหลด");
+      return;
+    }
+    if(c.miss.length){
+      if(!confirm("ยังไม่ครบ 26 ใบ (เหลือ "+c.miss.length+": "+c.miss.join(", ")+
+        ").\njudge_calibrate ต้องการอย่างน้อย 10 ใบ และควรครบ 26.\nดาวน์โหลดเท่าที่มีเลยไหม?")) return;
+    }
+    var blob = new Blob([jsonText()], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href=url; a.download="labels.json"; document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("btn-json").addEventListener("click", function(){
+    document.getElementById("json-text").value = jsonText();
+    document.getElementById("json-dialog").showModal();
+  });
+  document.getElementById("json-copy").addEventListener("click", function(){
+    var ta=document.getElementById("json-text"); ta.select();
+    try{ document.execCommand("copy"); this.textContent="คัดลอกแล้ว ✓"; }
+    catch(e){ this.textContent="กด Ctrl+C"; }
+  });
+
+  document.getElementById("btn-import").addEventListener("click", function(){
+    document.getElementById("file-import").click();
+  });
+  document.getElementById("file-import").addEventListener("change", function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var r=new FileReader();
+    r.onload=function(){
+      try{
+        var d=JSON.parse(r.result); var L=d.labels||d;
+        for(var k in L){ if(state[k]){
+          state[k].score = (L[k].overall_0_5===undefined)?null:L[k].overall_0_5;
+          state[k].verdict = L[k].verdict||null;
+          state[k].note = L[k].note||"";
+        }}
+        save(); render();
+        alert("นำเข้าเรียบร้อย");
+      }catch(err){ alert("อ่านไฟล์ไม่ได้: "+err.message); }
+    };
+    r.readAsText(f);
+    e.target.value="";
+  });
+
+  document.getElementById("btn-jump").addEventListener("click", function(){
+    for(var i=1;i<=N;i++){ if(!isComplete(state[gid(i)])){
+      document.getElementById("card-"+gid(i)).scrollIntoView({behavior:"smooth",block:"center"});
+      return;
+    }}
+    alert("ครบทั้ง 26 ใบแล้ว 🎉 กด “ดาวน์โหลด labels.json” ได้เลย");
+  });
+
+  load(); render();
+})();
+</script>
+</body>
+</html>

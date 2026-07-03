@@ -14,7 +14,9 @@
 
 ## ขั้นตอน
 1. `copy labels.template.json labels.json` (ในโฟลเดอร์นี้)
-2. เปิดภาพทีละใบจาก `assets/qa/golden-set/GS-XX.png` (24 ใบ)
+2. เปิดภาพทีละใบจาก `assets/qa/golden-set/GS-XX.png` (26 ใบ) — หรือใช้
+   `qa/golden-set/labeler.html` (เปิดในเบราว์เซอร์) ที่โชว์ทุกใบ + ปุ่มให้คะแนน
+   แล้ว export `labels.json` ให้เลย ไม่ต้องแก้ JSON มือ
 3. กรอกใน `labels.json` ต่อภาพ (**ทั้ง overall_0_5 และ verdict บังคับ** — ถ้ากรอก
    คะแนนแต่ลืม verdict, `judge_calibrate.py` จะ **หยุดพร้อมบอกรายชื่อ ID** ไม่ยอม
    คำนวณ เพราะ verdict ว่างจะถูกนับเป็น REWORK เงียบ ๆ แล้วบิดค่า κ):
