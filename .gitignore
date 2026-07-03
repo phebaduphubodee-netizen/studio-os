@@ -11,6 +11,9 @@ CLAUDE.local.md
 .perplexity_usage.json
 logs/
 pipeline/output/
+# raw client intake documents (identifying: names, addresses, plan title blocks)
+# stay LOCAL-ONLY — anonymized derivatives (brief.json, specs) are what gets committed
+projects/*/00_intake/raw-local/
 __pycache__/
 *.pyc
 .venv/
