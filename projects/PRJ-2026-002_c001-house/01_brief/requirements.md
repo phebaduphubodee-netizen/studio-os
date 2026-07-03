@@ -16,7 +16,7 @@ Priority: MUST = statutory floor · SHOULD = studio/ergonomic standard · TARGET
 | R-07 | bedroom | sleeping | 6-ft bed (2000×2160) on 150 mm platform; ≥ 1 long side ≥ 762 mm make-bed clearance | SHOULD | brief.json rooms (bed), dimensional_rules bedroom.clearance_around_bed |
 | R-08 | bedroom | client program | preserve built-in program: headboard/TV wall 3330×574 h2800, wardrobe run 2100+600 legs, double vanity 2850 | SHOULD | brief.json rooms + BF schedule (BF09-3/BF10/BF12 basis); client function, not statute |
 | R-09 | suite | daylight/vent | assumption A1: glazing band on terrace (south) wall; if built for real: openable area ≥ 10% floor area | MUST-if-real / ASSUMED | ฉ.39 ข้อ 13 via dimensional_rules; gate-override A1 |
-| R-10 | bedroom | lighting | ambient 10–20 fc maintained avg, CCT 2700–3000 K, CRI ≥ 90; legal floor 100 lux | SHOULD (design) / MUST (100 lux) | dimensional_rules lighting.* (DRAFT tier) + ฉ.39 ตาราง 3 |
+| R-10 | bedroom | lighting | ambient 10–20 fc maintained avg, CCT 2700–3000 K, CRI ≥ 90; 100-lux floor (see erratum) | SHOULD (design) / SHOULD (100 lux, studio-adopted — erratum E-r10) | dimensional_rules lighting.* (DRAFT tier) + legal_lux_floors scope_note |
 | R-11 | ensuite | lighting | 20–30 fc, CCT 3000–4000 K; mech vent 2 ACH if windowless | SHOULD / MUST(vent) | dimensional_rules lighting.* + ฉ.39 ตาราง 4 |
 | R-12 | suite | style envelope | warm contemporary, built-in-heavy (client-plan observation — NOT confirmed preference; Stage 02 to propose, human approves) | TARGET | clients/C-001/profile.md (observations, E-001) |
 | R-13 | all artifacts | privacy | zero identifying strings in any committed/generated artifact; IDs only (C-001/P-001) | MUST | .claude/rules/client-privacy.md; 00_intake/inventory.md privacy note |
@@ -24,3 +24,13 @@ Priority: MUST = statutory floor · SHOULD = studio/ergonomic standard · TARGET
 No orphan wishes: every row traces to brief.json, profile.md, gate-override.md, or a
 cited code value. Human sign-off for this stage = standing best-case override
 (00_intake/gate-override.md); re-verify rows R-03/R-09 if real client data arrives.
+
+---
+**Erratum E-r10 (2026-07-02, post-MARS re-tier — mirrors the R-06 door precedent):**
+R-10's original "MUST (100 lux)" over-claimed statute: ฉ.39 ตาราง 3 has no 100-lux
+row for a detached-house bedroom (rows = collective corridors / hotel & collective
+rooms / bathrooms). Re-tiered to SHOULD (studio-adopted floor) per
+`pipeline/scripts/dimensional_rules.v0.2.json` legal_lux_floors.scope_note.
+The ENSUITE's 100 lux remains statutory (bathroom row) — carried by R-11.
+Found by the Stage-02 MARS panel (02_concept/critique-log.md); values unchanged,
+tier label corrected. Concept §5 already carries the scoped wording.

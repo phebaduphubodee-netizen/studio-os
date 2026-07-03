@@ -302,6 +302,12 @@ s = room(4000, 4000)
 s["subrooms"] = [{"name": "bath", "ceiling_mm": 2200,
                   "outline_mm": [[0, 2600], [1000, 2600], [1000, 4000], [0, 4000]], "fixtures": []}]
 expect("bath 1.4 m2 unknown tier -> WARN", sc.check(s), "bath area", "WARN")
+# v0.4.3: no fixture data, 1.2 m² AND width 850 — combined fails on area, separated
+# fails on width: breach under EVERY tier reading -> FAIL (was the WARN hole)
+s = room(4000, 4000)
+s["subrooms"] = [{"name": "bath", "ceiling_mm": 2200,
+                  "outline_mm": [[0, 2588], [850, 2588], [850, 4000], [0, 4000]], "fixtures": []}]
+expect("bath 1.2 m2 width 850 -> FAIL every reading", sc.check(s), "bath area", "FAIL", "EVERY tier")
 # wet MAIN room: ฉ.39 rows + wet ceiling basis (2200 clear = PASS, not a ข้อ 22 WARN)
 s = room(1200, 1000, rtype="guest bath (ห้องน้ำแขก)", ceiling=2200)
 s["items"] = [{"name": "shower", "kind": "shower", "x": 100, "y": 100, "w": 900, "d": 900, "h": 2000},

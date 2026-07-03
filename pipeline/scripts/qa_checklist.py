@@ -31,7 +31,7 @@ def _clearance_results(spec, fixtures=None):
     """Run the engine on the spec and return (results, verdict). Same logic as
     clearance_check.report but returns the structured list instead of printing."""
     r = spec["room"]
-    room = clearance_check.Room(r["width_in"], r["depth_in"], r["ceiling_in"], door=r.get("door"))
+    room = clearance_check.room_from_spec(r)   # shared plumbing: rtype + f2f + door
     items = [clearance_check.Item(it.get("name", it.get("kind", "item")), it.get("kind", "item"),
                                   it["x"], it["y"], it["w"], it["d"])
              for it in spec.get("items", [])]
@@ -76,7 +76,8 @@ def build_markdown(spec, spec_path=None, fixtures=None):
     P.append(f"**Engine verdict: `{verdict}`**  ({len(fails)} FAIL · {len(warns)} WARN · DRAFT).  "
              "Sign the bottom **before any client sees this package.** The AI produced a "
              "dimensionally-checked DRAFT; a designer owns final spatial/scale/code judgment "
-             "(BUILD-PLAN.md). Rules are Panero & Zelnik DRAFT — verify vs local (Thai) code.")
+             "(BUILD-PLAN.md). Rule source: dimensional_rules.v0.2.json — Thai statutory floors "
+             "cited to knowledge/codes-th; ergonomic tier remains Panero & Zelnik DRAFT.")
     if spec_path:
         P.append("")
         P.append(f"_Spec: `{os.path.basename(spec_path)}`_")

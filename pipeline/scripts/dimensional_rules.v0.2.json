@@ -15,7 +15,8 @@
     "changelog_v0_2": [
       "hallway_width_min raised 91cm -> 100cm (ฉ.55 ข้อ 21: ทางเดินในอาคารอยู่อาศัย ≥ 1.00 ม.)",
       "added thai_code_minimums section (room areas, ระยะดิ่ง, corridors, stairs, bathroom, ventilation, legal lux floors) with per-value citations",
-      "ceiling_min_habitable annotated: Thai ข้อ 22 governs as FLOOR-TO-FLOOR 2.60 m (different measurement basis than IRC clear height — do not conflate)"
+      "ceiling_min_habitable annotated: Thai ข้อ 22 governs as FLOOR-TO-FLOOR 2.60 m (different measurement basis than IRC clear height — do not conflate)",
+      "2026-07-02 (notes only, no value changes): legal_lux_floors.residential_unit scope_note added — studio-adopted for detached-house habitable rooms, not directly statutory (MARS PRJ-2026-002 finding); clearance_check.py unified onto thai_code_minimums the same day (ข้อ 20/22, ฉ.39 wet rooms, door studio floor, lux floors — test_clearance_check.py)"
     ]
   },
 
@@ -40,7 +41,7 @@
     "house_stair_headroom_min_mm":    { "value": 1900, "cite": "ฉ.55 ข้อ 23" },
     "natural_vent_opening_min_pct":   { "value": 10,   "cite": "ฉ.39 ข้อ 13", "note": "ช่องเปิดสู่อากาศภายนอก ≥ 10% ของพื้นที่ห้อง (ไม่นับช่องติดห้องอื่น)" },
     "mech_vent_ach_min":              { "bathroom_house": 2, "kitchen_residential": 12, "cite": "ฉ.39 ตาราง 4" },
-    "legal_lux_floors":               { "corridor_collective": 100, "bathroom": 100, "residential_unit": 100, "parking": 50, "cite": "ฉ.39 ตาราง 3", "note": "floor ตามกฎหมาย — design targets ในหมวด lighting ด้านล่างสูงกว่านี้เสมอ" }
+    "legal_lux_floors":               { "corridor_collective": 100, "bathroom": 100, "residential_unit": 100, "parking": 50, "cite": "ฉ.39 ตาราง 3", "note": "floor ตามกฎหมาย — design targets ในหมวด lighting ด้านล่างสูงกว่านี้เสมอ", "scope_note": "residential_unit=100 is NOT directly statutory for detached-house habitable rooms: the ตาราง 3 100-lux rows cover collective-residential corridors, hotel/collective-residence rooms, and bathrooms — no detached-house bedroom/living row exists. Kept as a conservative STUDIO-ADOPTED floor by analogy to the collective-residence-room row; bathroom=100 and corridor_collective=100 and parking=50 remain statutory as tabled. Found by MARS review PRJ-2026-002 (codes-th outranks this file), 2026-07-02." }
   },
 
   "circulation": {
