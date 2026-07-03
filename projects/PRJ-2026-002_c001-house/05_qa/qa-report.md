@@ -40,8 +40,7 @@ None.
   artifacts share the render stem; D_/S_ not applicable on the hybrid path)
 
 ## Gate status
-**Machine gates: PASS.** → _inbox/R_PRJ002_MasterSuite_Cam01_v01.md staged.
-**AWAITING HUMAN APPROVAL PER IMAGE** (final gate — not covered by the best-case
-override; 00_intake/gate-override.md scopes itself to exclude this). On approval:
-write settings to clients/C-001 episode (registry v004@production + pro tier +
-golden-hour slot set = the approved configuration).
+**Machine gates: PASS. HUMAN APPROVED 2026-07-02 (owner, "go", no notes)** —
+pointer moved to approved_R_PRJ002_MasterSuite_Cam01_v01.md; approved settings
+written to clients/C-001/episodes/E-002 (registry v004@production + pro tier +
+golden-hour slot set). **Stage 05 gate: PASS.**

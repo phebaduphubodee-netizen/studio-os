@@ -1,4 +1,6 @@
-# AWAITING HUMAN APPROVAL — R_PRJ002_MasterSuite_Cam01_v01
+# ✅ APPROVED — R_PRJ002_MasterSuite_Cam01_v01
+**Human approval: 2026-07-02, owner, via chat ("go") — no revision notes.**
+Settings written to clients/C-001/episodes/E-002. Moved out of _inbox/ on approval.
 - Image: `assets/projects/PRJ-2026-002/renders/R_PRJ002_MasterSuite_Cam01_v01.png`
   (sha256 2c5b209ac0dbb5e9…; binary lives in assets/ per LFS discipline — this is
   the pointer file)
