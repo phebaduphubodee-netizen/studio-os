@@ -132,3 +132,17 @@ v004+ prompts and for the clay controls themselves
   `sources-manifest.md` pins the 118-source inventory but not per-marker
   mapping — named attributions above (Shulman, Adams, Birn, Block) come from
   the answer text itself.
+
+### 7. Image-model tier — gate evidence (INTERNAL provenance, own pipeline)
+
+- 2026-07-02 A/B (same clays, same v004 production prompt, critique.py flash
+  judge): flash image tier plateaus at 4/5 REWORK with recurring micro-texture
+  tells (uniform wood grain, perfectly even LED strips, "too clean");
+  `gemini-3-pro-image-preview` -> 4.5/5 SHIP on BOTH proven room types with
+  photoreal_believability 5/5 — the believability gap is the image model, not
+  the prompt (a prompt-side kill-list, registry v005, gained nothing
+  reproducible; see labels.json `_v005_evidence`).
+- Rule of thumb: client-facing hero shots dispatch on the pro tier
+  (`GEMINI_IMAGE_MODEL` env, hybrid_render.py); drafts and iteration stay on
+  flash. Single-roll critique variance is ±0.5 — compare versions on means,
+  never one roll.

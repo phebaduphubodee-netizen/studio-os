@@ -364,7 +364,7 @@
   discloses its own verdict change (bedroom PASS→REVIEW, deliberate honesty)
   in the message itself.
 
-## 2026-07-02 (latest) — Gate 0 full (M3.1): the model IS the liability surface
+## 2026-07-02 — Gate 0 full (M3.1): the model IS the liability surface
 - **Shipped:** suite_clearance v0.4→v0.4.1 (leg-proof ข้อ 20/21, circulation
   erosion+BFS, swing arcs, ฉ.39/ข้อ 22 tiers), test_gate0.py (50 seeds, M3.1
   acceptance green), bedroom_suite re-designed to PROVEN PASS 0/0 — the engine
@@ -388,3 +388,26 @@
   (session limit). The failure mode to avoid is silently treating dead-verifier
   findings as rejected — each was re-verified inline by probe; 6 of 7 were real.
   Also: zip agent results to their lens BEFORE filter(Boolean), or labels shift.
+
+## 2026-07-02 (latest) — photoreal 4→5: the lever was the model, not the prompt
+- **Outcome: first dual-room SHIP.** `gemini-3-pro-image-preview` (env override
+  `GEMINI_IMAGE_MODEL` in hybrid_render.py — model choice lives in dispatch per
+  the registry contract) took the UNCHANGED v004 production prompt to bedroom
+  4.5/5 SHIP + living 4.5/5 SHIP, photoreal_believability 5/5 on both. The
+  flash tier's chronic 4/5 docks (uniform wood grain, perfect LED strips, "too
+  clean") vanished with zero prompt changes. Production label stays v004.
+- **Negative evidence, kept on disk:** registry v005 — a kill-list targeting
+  every named critique defect (TV void, flat exterior, wood repetition, cropped
+  prop, no hero moment) — gained nothing reproducible: flash bedroom tie 4/4,
+  flash living REGRESSED 3 vs 4 (long prompt diluting the core clauses is the
+  suspect), pro bedroom 4 vs 4.5. Its one clear win: the grounded-foreground
+  clause scored the first composition 5/5. Lesson: at a quality plateau,
+  per-defect prompt patching chases judge noise (±0.5 per roll) — change the
+  MODEL variable first, and compare on multi-roll means or don't compare.
+- **Process save:** the post-Gate-0 bedroom clay framed "wrong" to the eye —
+  a pure-python replica of the camera solve proved the solve IDENTICAL to the
+  4.5/5 evidence camera (I was comparing clay to hybrid). Probe before fixing:
+  the solver did not need the fix my eyes ordered.
+- Bedroom gate evidence now sits on the Gate-0-revised layout (ensuite 2900,
+  no bench) — clay re-rendered, same camera. Cost: ~6 image + 7 vision calls
+  this run (image counter 19 for the day, pro tier ≈ $0.13-0.25/img).

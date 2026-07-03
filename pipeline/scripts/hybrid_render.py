@@ -51,6 +51,12 @@ def _load_key():
 
 MODELS = ["gemini-3.1-flash-image-preview", "gemini-2.5-flash-image",
           "gemini-2.0-flash-preview-image-generation"]
+# model choice lives HERE per the registry engine_contract: GEMINI_IMAGE_MODEL
+# (env) prepends a model for tier experiments — e.g. a pro-tier image model for
+# hero shots (2026-07-02: flash tier plateaus at critique 4/5 on micro-texture
+# tells); the chain still falls back to flash on error.
+if os.environ.get("GEMINI_IMAGE_MODEL"):
+    MODELS = [os.environ["GEMINI_IMAGE_MODEL"]] + MODELS
 
 
 def _bump_usage():
