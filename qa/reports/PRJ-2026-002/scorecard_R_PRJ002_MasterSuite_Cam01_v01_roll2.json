@@ -1,0 +1,23 @@
+{
+  "scores": {
+    "palette_coherence": 5,
+    "lighting_quality": 5,
+    "composition": 5,
+    "furniture_realism": 4,
+    "room_context": 5,
+    "styling_and_life": 5,
+    "proportion_and_scale": 5,
+    "photoreal_believability": 5
+  },
+  "overall_0_5": 5,
+  "verdict": "SHIP",
+  "top_defects": [
+    "The dark wall on the far left, while providing contrast, feels somewhat flat and lacks the textural richness seen in other parts of the room.",
+    "While the wood grain is generally good, the repetition on the wardrobe doors could benefit from slightly more variation for ultimate photorealism."
+  ],
+  "one_line": "A masterclass in warm, inviting minimalism, this render achieves exceptional photorealism through meticulous lighting and thoughtful styling.",
+  "if_client_deliverable": "Absolutely acceptable. The high level of photorealism, cohesive design, and thoughtful styling make this a professional-grade image ready for any client presentation or marketing material.",
+  "_artifact": "room_bedroom_suite_eye_hybrid_prj002_v01.png",
+  "_kind": "render",
+  "_model": "gemini-2.5-flash"
+}
