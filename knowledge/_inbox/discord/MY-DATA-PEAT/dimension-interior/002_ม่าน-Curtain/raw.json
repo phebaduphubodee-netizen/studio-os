@@ -1,0 +1,126 @@
+{
+ "thread": {
+  "id": "1164391213219205183",
+  "type": 11,
+  "last_message_id": "1164391332811382844",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "ม่าน Curtain",
+  "parent_id": "1163756287364972554",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2023-11-18T02:39:05.628000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2023-10-19T02:34:58.574000+00:00"
+  },
+  "message_count": 1,
+  "member_count": 1,
+  "total_message_sent": 1
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1164391213621841981",
+     "filename": "image.png",
+     "size": 788467,
+     "url": "https://cdn.discordapp.com/attachments/1164391213219205183/1164391213621841981/image.png?ex=6a491a12&is=6a47c892&hm=99f57ed6b54f7acca5e326d144b7eca0b9681b69b9eafe470ca2786e0e7b0fc7&",
+     "proxy_url": "https://media.discordapp.net/attachments/1164391213219205183/1164391213621841981/image.png?ex=6a491a12&is=6a47c892&hm=99f57ed6b54f7acca5e326d144b7eca0b9681b69b9eafe470ca2786e0e7b0fc7&",
+     "width": 2560,
+     "height": 2560,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "+vcFBwAFh6ipiHZvjFeWp5pZagK8WMAO",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2023-10-19T02:34:58.574000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1164391213219205183",
+   "channel_id": "1164391213219205183",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1164391332547145779",
+     "filename": "E0B881E0B8A5E0B988E0B8ADE0B887E0B89AE0B8B1E0B887E0B8A3E0B8B2E0B887-E0B894E0B8A3E0B8ADE0B89BE0B89DE0B989E0B8B24-2-scaled.png",
+     "size": 777046,
+     "url": "https://cdn.discordapp.com/attachments/1164391213219205183/1164391332547145779/E0B881E0B8A5E0B988E0B8ADE0B887E0B89AE0B8B1E0B887E0B8A3E0B8B2E0B887-E0B894E0B8A3E0B8ADE0B89BE0B89DE0B989E0B8B24-2-scaled.png?ex=6a491a2f&is=6a47c8af&hm=e9f2ca8e832a52d2af2cd4f16889c64410bcf0e90a92e014ac74e418217882ce&",
+     "proxy_url": "https://media.discordapp.net/attachments/1164391213219205183/1164391332547145779/E0B881E0B8A5E0B988E0B8ADE0B887E0B89AE0B8B1E0B887E0B8A3E0B8B2E0B887-E0B894E0B8A3E0B8ADE0B89BE0B89DE0B989E0B8B24-2-scaled.png?ex=6a491a2f&is=6a47c8af&hm=e9f2ca8e832a52d2af2cd4f16889c64410bcf0e90a92e014ac74e418217882ce&",
+     "width": 2560,
+     "height": 2560,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "+QcGBwIHiJibeXdvi1eX2JhnW3C6B4oF",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2023-10-19T02:35:27.087000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1164391332811382844",
+   "channel_id": "1164391213219205183",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

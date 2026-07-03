@@ -1,0 +1,161 @@
+{
+ "thread": {
+  "id": "1280089046047264833",
+  "type": 11,
+  "last_message_id": "1280089672277557290",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "รวมสูตรคำนวล Excel ต่าง ๆ",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-10-02T09:06:57.167000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-09-02T08:56:51.482000+00:00"
+  },
+  "message_count": 2,
+  "member_count": 1,
+  "total_message_sent": 2,
+  "applied_tags": [
+   "1280090692290613299"
+  ]
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1280089046361575425",
+     "filename": "image.png",
+     "size": 424671,
+     "url": "https://cdn.discordapp.com/attachments/1280089046047264833/1280089046361575425/image.png?ex=6a48cad3&is=6a477953&hm=2d7daaf36ab95f44e24942af2173e4237edb680a1984d5389c44d913626af81c&",
+     "proxy_url": "https://media.discordapp.net/attachments/1280089046047264833/1280089046361575425/image.png?ex=6a48cad3&is=6a477953&hm=2d7daaf36ab95f44e24942af2173e4237edb680a1984d5389c44d913626af81c&",
+     "width": 1919,
+     "height": 943,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "/PcFA4CHiWdwh0Z3VYBoBrg=",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-09-02T08:56:51.482000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1280089046047264833",
+   "channel_id": "1280089046047264833",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1280089492849688576",
+     "filename": "Excel_-20240902T085725Z-001.rar",
+     "size": 1117206,
+     "url": "https://cdn.discordapp.com/attachments/1280089046047264833/1280089492849688576/Excel_-20240902T085725Z-001.rar?ex=6a48cb3e&is=6a4779be&hm=68cf065ac7f396f4039af567da9e6a89d3d9ae2f33d3888bd06310d87d797f5b&",
+     "proxy_url": "https://media.discordapp.net/attachments/1280089046047264833/1280089492849688576/Excel_-20240902T085725Z-001.rar?ex=6a48cb3e&is=6a4779be&hm=68cf065ac7f396f4039af567da9e6a89d3d9ae2f33d3888bd06310d87d797f5b&",
+     "content_type": "application/vnd.rar",
+     "content_scan_version": 0,
+     "title": "สูตรคำนวณ Excel  สำหรับทุกงาน และทุกสายอาชีพ-20240902T085725Z-001"
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-09-02T08:58:38.090000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1280089493193359370",
+   "channel_id": "1280089046047264833",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "https://drive.google.com/drive/u/0/folders/1GNZBgOwySfP9s3_kLOZ492q8lxupn44d?fbclid=IwY2xjawE-MR1leHRuA2FlbQIxMQABHSTY6kgbaPo5oE-VHw9gPXZk_yzkoVxhuXMJAUZCiZfw3DmnXAricbYHkw_aem_JXr4XU6myIsp4FgLYo3UTA",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2024-09-02T08:59:20.787000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1280089672277557290",
+   "channel_id": "1280089046047264833",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 1
+  }
+ ]
+}

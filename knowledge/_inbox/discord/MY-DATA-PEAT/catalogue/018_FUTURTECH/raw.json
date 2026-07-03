@@ -1,0 +1,77 @@
+{
+ "thread": {
+  "id": "1303891607694741564",
+  "type": 11,
+  "last_message_id": "1303891607694741564",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "FUTURTECH",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-12-07T01:21:40.368000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2024-11-07T01:19:44.409000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://drive.google.com/drive/folders/1opNK8mfv_ghuC__Fd3yK9NxrG5nrahCv",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1303891695699492864",
+     "filename": "image.png",
+     "size": 19940,
+     "url": "https://cdn.discordapp.com/attachments/1303891607694741564/1303891695699492864/image.png?ex=6a490885&is=6a47b705&hm=68ee8ffe7d91b24dbccf10fecf44646c40aa5a92d791278e62ee672ff80b47f8&",
+     "proxy_url": "https://media.discordapp.net/attachments/1303891607694741564/1303891695699492864/image.png?ex=6a490885&is=6a47b705&hm=68ee8ffe7d91b24dbccf10fecf44646c40aa5a92d791278e62ee672ff80b47f8&",
+     "width": 676,
+     "height": 311,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "/PcBA4Bwl4lrl8aHiX+L+Lc=",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-11-07T01:19:44.409000+00:00",
+   "edited_timestamp": "2024-11-07T01:20:05.373000+00:00",
+   "flags": 0,
+   "components": [],
+   "id": "1303891607694741564",
+   "channel_id": "1303891607694741564",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

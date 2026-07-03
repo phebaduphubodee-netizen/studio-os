@@ -1,0 +1,66 @@
+{
+ "thread": {
+  "id": "1161842825311301683",
+  "type": 11,
+  "last_message_id": "1161842825311301683",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "รายการสัญลักษณ์ประกอบแบบ (ตัวย่อ List )",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2023-11-11T01:53:47.696000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2023-10-12T01:48:35.550000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0,
+  "applied_tags": [
+   "1161842982153101452"
+  ]
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "SK = บัวเชิงผนังอลูมิเนียม\nPT = Paint Finnish (ผนังทาสี)\nMR = Clear mirror, mirror (ผนังกระจก)\nLA = Lamineted panel (ลามิเนต)\nCT =  Ceramic tiles (กระเบื้องเซรามิก)\nST = (หิน)\nFB = Wall Fabric (ผ้า-หนัง)\nWC = Wall Paper Wall covenng\nML = Melamine panel\nWD = Wood\nGC = Laminated Glass , Color Glass\nGF = ผนังกราฟฟิก\nSP = Spray paint\nWV = Woodvenneer , wall veneer\nMT = กระเบื้องลอนคู่ \nSS = stainless steel",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2023-10-12T01:48:35.550000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1161842825311301683",
+   "channel_id": "1161842825311301683",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

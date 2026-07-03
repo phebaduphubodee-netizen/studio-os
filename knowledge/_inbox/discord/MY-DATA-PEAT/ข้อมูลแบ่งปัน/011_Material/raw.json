@@ -1,0 +1,90 @@
+{
+ "thread": {
+  "id": "1278616848832925800",
+  "type": 11,
+  "last_message_id": "1278616848832925800",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Material",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-09-28T07:28:35.139000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-08-29T07:26:52.314000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0,
+  "applied_tags": [
+   "1161843011660038196",
+   "1161843052260884510"
+  ]
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://www.kahrs.com/en/products/floorguide/",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1278616935164149782",
+     "filename": "image.png",
+     "size": 425101,
+     "url": "https://cdn.discordapp.com/attachments/1278616848832925800/1278616935164149782/image.png?ex=6a48b5d0&is=6a476450&hm=d26c4262aabe7bb2214f49b5aa25cca2b0750dc4254051f83aa51164120a1b33&",
+     "proxy_url": "https://media.discordapp.net/attachments/1278616848832925800/1278616935164149782/image.png?ex=6a48b5d0&is=6a476450&hm=d26c4262aabe7bb2214f49b5aa25cca2b0750dc4254051f83aa51164120a1b33&",
+     "width": 950,
+     "height": 576,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "7igKBIB3l7emeGeIiGCAxEObHw==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://www.kahrs.com/en/products/floorguide/",
+     "title": "High quality wood floors for all rooms and styles | Kährs",
+     "description": "In our floor guide we give you the opportunity to try our hardwood floors in different interiors. Filter different floors and try your way until you find your dream floor.",
+     "color": 4210752,
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2024-08-29T07:26:52.314000+00:00",
+   "edited_timestamp": "2024-08-29T07:27:12.866000+00:00",
+   "flags": 0,
+   "components": [],
+   "id": "1278616848832925800",
+   "channel_id": "1278616848832925800",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

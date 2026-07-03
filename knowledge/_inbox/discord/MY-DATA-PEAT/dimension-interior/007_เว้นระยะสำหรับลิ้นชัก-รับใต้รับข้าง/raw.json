@@ -1,0 +1,63 @@
+{
+ "thread": {
+  "id": "1329336218126909530",
+  "type": 11,
+  "last_message_id": "1329336218126909530",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "เว้นระยะสำหรับลิ้นชัก รับใต้/รับข้าง",
+  "parent_id": "1163756287364972554",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2025-02-15T06:36:32.267000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2025-01-16T06:27:32.274000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "วิธีคำนวนภายในลูกลิ้นชัก\n(.) รางรับข้าง ภายในตู้ -6.5 ซม.\n   (-) ราง2ฝั่ง 2.5 ซม    \n   (-) แผงข้างลูกลิ้นชัก 4 ซม.(18 มม.)\n(.) รางรับใต้  ภายในตู้ -4 ซม.\n   (-) ราง 1 ซม.\n   (-) แผงข้างลูกลิ้นชัก 3 ซม.(15 มม.)\n**รางรับใต้ลูกลิ้นชักจะอิงตามระยะราง แต่รางรับข้างสามารถทำลูกเกินรางได",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2025-01-16T06:27:32.274000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1329336218126909530",
+   "channel_id": "1329336218126909530",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

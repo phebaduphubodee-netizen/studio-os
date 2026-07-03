@@ -23,3 +23,15 @@ node_modules/
 Thumbs.db
 # editor state (Obsidian opened on the repo)
 .obsidian/
+# private client/business pulls (Discord: names, tax docs, pricing) — LOCAL-ONLY, never committed
+_private/
+# Discord knowledge pull: commit text + LFS-eligible binaries (pdf/skp/zip); keep raw images
+# LOCAL-ONLY — png/jpg aren't LFS-tracked (.gitattributes is frozen) and total ~200MB. Re-pull via
+# scripts/discord_ingest.py. Distilled numbers already live in the committed vault files.
+knowledge/_inbox/discord/**/*.png
+knowledge/_inbox/discord/**/*.jpg
+knowledge/_inbox/discord/**/*.jpeg
+knowledge/_inbox/discord/**/*.rar
+# two image attachments whose Thai CDN filename lost its extension (still images, keep local)
+knowledge/_inbox/discord/**/files/145779_*
+knowledge/_inbox/discord/**/files/383192_*

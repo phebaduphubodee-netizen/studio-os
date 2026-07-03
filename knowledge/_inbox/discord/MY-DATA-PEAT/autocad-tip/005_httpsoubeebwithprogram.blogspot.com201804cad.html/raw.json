@@ -1,0 +1,63 @@
+{
+ "thread": {
+  "id": "1274183881825849354",
+  "type": 11,
+  "last_message_id": "1274183881825849354",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "https://oubeebwithprogram.blogspot.com/2018/04/cad.html",
+  "parent_id": "1164132093614362746",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-09-16T02:00:22.696000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-08-17T01:51:50.619000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "คำสั่งและโค้ดที่\"เรา\"ใช้บ่อย รวมไว้เพื่อให้กลับมาหาง่ายๆหากลืม\nเสิร์ชหาเอานะ\n\nCode CAD\n\n%%189 = 1/2\n%%188 = 1/4\n%%p = +- (บวกลบ)\n%%d = ํ (องศา)\n%%c = o/ (เส้นผ่านศูนย์กลาง)\n\nคำสั่ง CAD\nTCASE = TEXTCASE = ใช้ออกคำสั่งกับอักษร เช่น ปรับทั้งหมดเป็น Capital\nFIELD = บอกเลขพื้นที่ในกรอบที่กำหนด Update ได้หากกรอบขยับ *แต่ต้องกด REA\nUCS = หมุนแกน\nXCLIPFRAME = 0,1,... = การแสดงเส้นกรอบ Xclip\nEDGEMODE = 0,1 = ใช้เวลา Extend/Trim ว่าเส้นต้องตัดกันจริงๆไหม\nTCOUNT = รันเลข 1,2,3,4,... (เลขตั้งต้น,ระยะที่เพิ่ม/ลด) *มีประโยชน์มากถ้าทำคล่องๆ\nDDA = ทำลายความสัมพันธ์ Dimension\nBO = BOUNDARY\nPSLTSCALE = 0 (เส้นใน Model กับ Paper Relateกัน), 1 (ไม่Relateกัน)\nDWGCONVERT = ปรับรุ่น AutoCAD Version ต่างๆ (ได้ทั้งปรับขึ้นและลง)\n\nอื่นๆ\n- เพิ่ม .ctb\nHome(เครื่องหมายCADมุมซ้ายบน) > Print > Manage Plotters\n(หรือเข้าทาง Control Panel > Autodesk Plot Style Manager)\n- แบ่งหน้าทำงาน\nView > Viewports\n(บางทีใช้วิธีกด Alt+V 2ครั้ง)",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2024-08-17T01:51:50.619000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1274183881825849354",
+   "channel_id": "1274183881825849354",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

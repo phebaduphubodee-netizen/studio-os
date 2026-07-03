@@ -1,0 +1,78 @@
+{
+ "thread": {
+  "id": "1522161460120260648",
+  "type": 11,
+  "last_message_id": "1522161460120260648",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "https://www.anmarbangkok.com/th/product/category/patterns-th/",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": false,
+   "archive_timestamp": "2026-07-02T08:46:12.485000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2026-07-02T08:46:12.485000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "แพนเทิลพื้น",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1522161460430508163",
+     "filename": "image.png",
+     "size": 1581510,
+     "url": "https://cdn.discordapp.com/attachments/1522161460120260648/1522161460430508163/image.png?ex=6a48c854&is=6a4776d4&hm=3ae874ad7a7d82cdff2ca73d5cde15da2b9bd13c66f9ab1512acce12b1e3567e&",
+     "proxy_url": "https://media.discordapp.net/attachments/1522161460120260648/1522161460430508163/image.png?ex=6a48c854&is=6a4776d4&hm=3ae874ad7a7d82cdff2ca73d5cde15da2b9bd13c66f9ab1512acce12b1e3567e&",
+     "width": 1909,
+     "height": 912,
+     "content_type": "image/png",
+     "original_content_type": "image/png",
+     "content_scan_version": 4,
+     "placeholder": "KAgGA4CZeJmrefdkr2SyAxM=",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2026-07-02T08:46:12.485000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1522161460120260648",
+   "channel_id": "1522161460120260648",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

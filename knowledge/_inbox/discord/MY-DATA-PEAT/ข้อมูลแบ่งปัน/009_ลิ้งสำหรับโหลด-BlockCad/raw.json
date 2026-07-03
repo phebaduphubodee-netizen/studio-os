@@ -1,0 +1,97 @@
+{
+ "thread": {
+  "id": "1167004927990706248",
+  "type": 11,
+  "last_message_id": "1167004927990706248",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "ลิ้งสำหรับโหลด BlockCad",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2023-11-25T07:42:54.371000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2023-10-26T07:40:56.736000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://www.bimobject.com/th/categories/kitchen/sinks/download/hansgrohe/43211800?software=autocad",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1167004928766640178",
+     "filename": "image.png",
+     "size": 219043,
+     "url": "https://cdn.discordapp.com/attachments/1167004927990706248/1167004928766640178/image.png?ex=6a48b908&is=6a476788&hm=05af099b45416011b279ad0e68f625e8ec47f6c334601314d25a105dcbda0641&",
+     "proxy_url": "https://media.discordapp.net/attachments/1167004927990706248/1167004928766640178/image.png?ex=6a48b908&is=6a476788&hm=05af099b45416011b279ad0e68f625e8ec47f6c334601314d25a105dcbda0641&",
+     "width": 1074,
+     "height": 627,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "N/gFBIB6iGhmmIeYd2+194uI+A==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://www.bimobject.com/th/categories/kitchen/sinks/download/hansgrohe/43211800?software=autocad",
+     "title": "BIM object - ดาวน์โหลดฟรี! AutoCAD ครัว -  อ่างล้างจาน | BIMobject",
+     "description": "AutoCAD ครัว -  อ่างล้างจาน - ดาวน์โหลด BIM Object หรือบันทึกโปรเจกต์แบบไม่มีค่าใช้จ่าย",
+     "color": 2650451,
+     "provider": {
+      "name": "BIMobject®"
+     },
+     "thumbnail": {
+      "url": "https://www.bimobject.com/assets/img/meta_image_bimobject_com-min.png",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/yLnSreezZXxlwU_a0pZbpqNTUJ5clJVaKWdAHtP8sE0/https/www.bimobject.com/assets/img/meta_image_bimobject_com-min.png",
+      "width": 1200,
+      "height": 630,
+      "content_type": "image/png",
+      "flags": 0
+     },
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2023-10-26T07:40:56.736000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1167004927990706248",
+   "channel_id": "1167004927990706248",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

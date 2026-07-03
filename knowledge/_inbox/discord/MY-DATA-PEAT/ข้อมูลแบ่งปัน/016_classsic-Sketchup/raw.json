@@ -1,0 +1,96 @@
+{
+ "thread": {
+  "id": "1460251730649288735",
+  "type": 11,
+  "last_message_id": "1460251730649288735",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "classsic Sketchup",
+  "parent_id": "1121433303174631454",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2026-02-11T12:41:06.922000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2026-01-12T12:39:02.752000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://embed-3dwarehouse-classic.sketchup.com/collection/08d8b5e7-d3a8-4b65-80fa-aa7ce8d6d323/FURNITURE-FITTING",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1460251731098341625",
+     "filename": "3d-warehouse-mobile-emblem-vector-42986867.png",
+     "size": 185254,
+     "url": "https://cdn.discordapp.com/attachments/1460251730649288735/1460251731098341625/3d-warehouse-mobile-emblem-vector-42986867.png?ex=6a48fee6&is=6a47ad66&hm=71eee9aca5fda89ad11cacf21dfba242290692f48686fdd541fda159401e0027&",
+     "proxy_url": "https://media.discordapp.net/attachments/1460251730649288735/1460251731098341625/3d-warehouse-mobile-emblem-vector-42986867.png?ex=6a48fee6&is=6a47ad66&hm=71eee9aca5fda89ad11cacf21dfba242290692f48686fdd541fda159401e0027&",
+     "width": 919,
+     "height": 1080,
+     "content_type": "image/webp",
+     "original_content_type": "image/png",
+     "content_scan_version": 3,
+     "placeholder": "JJYJHgbImKeHd7jod42KdvY3uHSPSvc=",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [
+    {
+     "type": "article",
+     "url": "https://embed-3dwarehouse-classic.sketchup.com/collection/08d8b5e7-d3a8-4b65-80fa-aa7ce8d6d323/FURNITURE-FITTING",
+     "title": "FURNITURE FITTING",
+     "color": 5067353,
+     "thumbnail": {
+      "url": "https://download-warehouse.sketchup.com/warehouse/v1.0/content/public/2d225b72-1f31-46c6-8d9e-0c5eaceeac72",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/ebU4yl8k_2u17XmUEJleS6qhZMw8XgdhOziYNvIUcAA/https/download-warehouse.sketchup.com/warehouse/v1.0/content/public/2d225b72-1f31-46c6-8d9e-0c5eaceeac72",
+      "width": 455,
+      "height": 256,
+      "content_type": "image/jpeg",
+      "placeholder": "PQgGBIDI1wh6lmaXWGQAAAAAAA==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 3
+    }
+   ],
+   "timestamp": "2026-01-12T12:39:02.752000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1460251730649288735",
+   "channel_id": "1460251730649288735",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

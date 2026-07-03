@@ -1,0 +1,97 @@
+{
+ "thread": {
+  "id": "1250499059853295729",
+  "type": 11,
+  "last_message_id": "1250499059853295729",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "เทคนิคภายนอก",
+  "parent_id": "1198893170679877642",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-07-12T17:24:35.753000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-06-12T17:16:49.018000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://youtu.be/0OoPb8QpOyQ?t=1525",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "video",
+     "url": "https://www.youtube.com/watch?v=0OoPb8QpOyQ&start=1525",
+     "title": "สอน Corona render ห้องนอน",
+     "color": 16711680,
+     "author": {
+      "name": "3Deasy krupipe",
+      "url": "https://www.youtube.com/channel/UCUCleMDM1JyVhGNKzIGMBCA"
+     },
+     "provider": {
+      "name": "YouTube",
+      "url": "https://www.youtube.com"
+     },
+     "thumbnail": {
+      "url": "https://i.ytimg.com/vi/0OoPb8QpOyQ/maxresdefault.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/HyysjYPllIQdYcOZ3_VebP6XfvIlmQMdhg8ESlpIMA8/https/i.ytimg.com/vi/0OoPb8QpOyQ/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720,
+      "content_type": "image/jpeg",
+      "placeholder": "9vcJDID4OJeMhYmIg3q4fWD6Bw==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "video": {
+      "url": "https://www.youtube.com/embed/0OoPb8QpOyQ?start=1525",
+      "width": 1280,
+      "height": 720,
+      "placeholder": "9vcJDID4OJeMhYmIg3q4fWD6Bw==",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2024-06-12T17:16:49.018000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1250499059853295729",
+   "channel_id": "1250499059853295729",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

@@ -1,0 +1,122 @@
+{
+ "thread": {
+  "id": "1238051512870240296",
+  "type": 11,
+  "last_message_id": "1238051543823945738",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Handle Futuretech",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-06-08T08:57:24.823000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-05-09T08:54:42.553000+00:00"
+  },
+  "message_count": 1,
+  "member_count": 1,
+  "total_message_sent": 1
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1238051513104994314",
+     "filename": "image.png",
+     "size": 148550,
+     "url": "https://cdn.discordapp.com/attachments/1238051512870240296/1238051513104994314/image.png?ex=6a48ca52&is=6a4778d2&hm=c1a6725b318a3fab353e4c33b9d43fafcd19ce5a1e2c1d986daaf4216005918a&",
+     "proxy_url": "https://media.discordapp.net/attachments/1238051512870240296/1238051513104994314/image.png?ex=6a48ca52&is=6a4778d2&hm=c1a6725b318a3fab353e4c33b9d43fafcd19ce5a1e2c1d986daaf4216005918a&",
+     "width": 520,
+     "height": 609,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "+fcFBgB3WYuaiAeHd4h3gRgY34L0DAk=",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-05-09T08:54:42.553000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1238051512870240296",
+   "channel_id": "1238051512870240296",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1238051543375413278",
+     "filename": "Handle_FuturetechST.pdf",
+     "size": 2233710,
+     "url": "https://cdn.discordapp.com/attachments/1238051512870240296/1238051543375413278/Handle_FuturetechST.pdf?ex=6a48ca59&is=6a4778d9&hm=d509e17252cffe2179805ea8d5fa7a315a918733b9b9ef461296ab3de4bff8cb&",
+     "proxy_url": "https://media.discordapp.net/attachments/1238051512870240296/1238051543375413278/Handle_FuturetechST.pdf?ex=6a48ca59&is=6a4778d9&hm=d509e17252cffe2179805ea8d5fa7a315a918733b9b9ef461296ab3de4bff8cb&",
+     "content_type": "application/pdf",
+     "content_scan_version": 0
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-05-09T08:54:49.933000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1238051543823945738",
+   "channel_id": "1238051512870240296",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

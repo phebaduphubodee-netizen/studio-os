@@ -1,0 +1,168 @@
+{
+ "thread": {
+  "id": "1287988348803354654",
+  "type": 11,
+  "last_message_id": "1287988735782293576",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Croma",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-10-24T04:16:25.225000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2024-09-24T04:05:52.021000+00:00"
+  },
+  "message_count": 2,
+  "member_count": 1,
+  "total_message_sent": 2,
+  "applied_tags": [
+   "1286177540846653520"
+  ]
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "แค๊ทตาล้อต  ลามิเนต รุ่น Croma หนา0.8",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1287988601317228637",
+     "filename": "image.png",
+     "size": 155963,
+     "url": "https://cdn.discordapp.com/attachments/1287988348803354654/1287988601317228637/image.png?ex=6a492f9c&is=6a47de1c&hm=8caccf43964e14e214a52d30828b0e4aabddd0b1995075ac5374008d52b6b112&",
+     "proxy_url": "https://media.discordapp.net/attachments/1287988348803354654/1287988601317228637/image.png?ex=6a492f9c&is=6a47de1c&hm=8caccf43964e14e214a52d30828b0e4aabddd0b1995075ac5374008d52b6b112&",
+     "width": 687,
+     "height": 695,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "E/cBDwIHqGd2iYdyfKV4eHd4d2AnB3YC",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-09-24T04:05:52.021000+00:00",
+   "edited_timestamp": "2024-09-24T04:06:52.208000+00:00",
+   "flags": 0,
+   "components": [],
+   "id": "1287988348803354654",
+   "channel_id": "1287988348803354654",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 4,
+   "content": "Croma",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2024-09-24T04:07:15.671000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1287988699656884305",
+   "channel_id": "1287988348803354654",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "https://online.fliphtml5.com/ajyyd/ylxq/?1672048486397#p=37",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [
+    {
+     "type": "link",
+     "url": "https://online.fliphtml5.com/ajyyd/ylxq/?1672048486397",
+     "title": "E-Catalog Croma 2023",
+     "description": "E-Catalog Croma 2023",
+     "thumbnail": {
+      "url": "https://online.fliphtml5.com/ajyyd/ylxq/files/shot.jpg",
+      "proxy_url": "https://images-ext-1.discordapp.net/external/QpvQx9GnHjF1IkZuYQronyixswAUAseoHN3gKrYk_Po/https/online.fliphtml5.com/ajyyd/ylxq/files/shot.jpg",
+      "width": 474,
+      "height": 480,
+      "content_type": "image/jpeg",
+      "placeholder": "E+cBDwIKymh3iodgfJRnd3d4eGAnB3YC",
+      "placeholder_version": 1,
+      "flags": 0
+     },
+     "content_scan_version": 1
+    }
+   ],
+   "timestamp": "2024-09-24T04:07:24.284000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1287988735782293576",
+   "channel_id": "1287988348803354654",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 1
+  }
+ ]
+}

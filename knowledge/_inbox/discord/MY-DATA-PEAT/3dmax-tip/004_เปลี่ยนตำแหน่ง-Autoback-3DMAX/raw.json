@@ -1,0 +1,126 @@
+{
+ "thread": {
+  "id": "1250714600446492682",
+  "type": 11,
+  "last_message_id": "1250715039959093249",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "เปลี่ยนตำแหน่ง Autoback 3DMAX",
+  "parent_id": "1198893170679877642",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-07-13T07:44:23.874000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-06-13T07:33:17.900000+00:00"
+  },
+  "message_count": 1,
+  "member_count": 1,
+  "total_message_sent": 1
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1250714600844820501",
+     "filename": "Untitled_video_-_Made_with_Clipchamp.mp4",
+     "size": 8064146,
+     "url": "https://cdn.discordapp.com/attachments/1250714600446492682/1250714600844820501/Untitled_video_-_Made_with_Clipchamp.mp4?ex=6a48b73d&is=6a4765bd&hm=ba3ac3c7908de36ae1f34c1dc80f7c530d2db9724736a91b9e2f4e69444c1978&",
+     "proxy_url": "https://media.discordapp.net/attachments/1250714600446492682/1250714600844820501/Untitled_video_-_Made_with_Clipchamp.mp4?ex=6a48b73d&is=6a4765bd&hm=ba3ac3c7908de36ae1f34c1dc80f7c530d2db9724736a91b9e2f4e69444c1978&",
+     "width": 1280,
+     "height": 720,
+     "content_type": "video/mp4",
+     "content_scan_version": 1,
+     "placeholder": "0/cFBIBmt5h+d3mOmo/WlG8v6A==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-06-13T07:33:17.900000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1250714600446492682",
+   "channel_id": "1250714600446492682",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1250715038633824278",
+     "filename": "Desktop_2024.06.13_-_14.34.06.02.mp4",
+     "size": 10349585,
+     "url": "https://cdn.discordapp.com/attachments/1250714600446492682/1250715038633824278/Desktop_2024.06.13_-_14.34.06.02.mp4?ex=6a48b7a6&is=6a476626&hm=e3762f04da25b1ba294fa4ddd84e35ab9998199234adc0fdd26ac69f1b8eca96&",
+     "proxy_url": "https://media.discordapp.net/attachments/1250714600446492682/1250715038633824278/Desktop_2024.06.13_-_14.34.06.02.mp4?ex=6a48b7a6&is=6a476626&hm=e3762f04da25b1ba294fa4ddd84e35ab9998199234adc0fdd26ac69f1b8eca96&",
+     "width": 1280,
+     "height": 720,
+     "content_type": "video/mp4",
+     "content_scan_version": 1,
+     "placeholder": "EQgGBICWl4d7eHiOh4+hkAoomg==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-06-13T07:35:02.688000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1250715039959093249",
+   "channel_id": "1250714600446492682",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}

@@ -1,0 +1,171 @@
+{
+ "thread": {
+  "id": "1238054176530108477",
+  "type": 11,
+  "last_message_id": "1238054933236809820",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "Stone Surface caesarstone By HAFELE",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-06-08T09:11:49.993000+00:00",
+   "auto_archive_duration": 4320,
+   "locked": false,
+   "create_timestamp": "2024-05-09T09:05:17.619000+00:00"
+  },
+  "message_count": 2,
+  "member_count": 1,
+  "total_message_sent": 2
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "วัสดุแผ่นหินปิดผิว แบรนด์ Caesarstone นำเข้าโดย HAFELE ตัวแทนจำหน่าย \ncontact : MR.Thitiphong Phungphop \n                  ธีติพงษ์ พึ่งพา (K.อาร์ต)\nPhone : +662 768-7171\nMobile : +666 1401-2327\nEmail : Thitpong@hafele.co.th\nwww.hafelethailand.com",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1238054176769048576",
+     "filename": "image.png",
+     "size": 59153,
+     "url": "https://cdn.discordapp.com/attachments/1238054176530108477/1238054176769048576/image.png?ex=6a48cccd&is=6a477b4d&hm=48b07416a68e82dc8cb4d038e5337296f945c9b72ca39ae05deb35371205d2a0&",
+     "proxy_url": "https://media.discordapp.net/attachments/1238054176530108477/1238054176769048576/image.png?ex=6a48cccd&is=6a477b4d&hm=48b07416a68e82dc8cb4d038e5337296f945c9b72ca39ae05deb35371205d2a0&",
+     "width": 671,
+     "height": 376,
+     "content_type": "image/png",
+     "content_scan_version": 1,
+     "placeholder": "0DkDFIb2qCJvanlXbGuRjwfniA==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-05-09T09:05:17.619000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1238054176530108477",
+   "channel_id": "1238054176530108477",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1238054235694694483",
+     "filename": "CS_for_Clear_Mar2024.pdf",
+     "size": 2675194,
+     "url": "https://cdn.discordapp.com/attachments/1238054176530108477/1238054235694694483/CS_for_Clear_Mar2024.pdf?ex=6a48ccdb&is=6a477b5b&hm=5e5a10232a15bd0b311688968254b9edc01d8c452a358be83b4856e0ba7151e5&",
+     "proxy_url": "https://media.discordapp.net/attachments/1238054176530108477/1238054235694694483/CS_for_Clear_Mar2024.pdf?ex=6a48ccdb&is=6a477b5b&hm=5e5a10232a15bd0b311688968254b9edc01d8c452a358be83b4856e0ba7151e5&",
+     "content_type": "application/pdf",
+     "content_scan_version": 0
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-05-09T09:05:31.829000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1238054236131168339",
+   "channel_id": "1238054176530108477",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  },
+  {
+   "type": 0,
+   "content": "",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [
+    {
+     "id": "1238054933035749416",
+     "filename": "20240509_160750.jpg",
+     "size": 47710,
+     "url": "https://cdn.discordapp.com/attachments/1238054176530108477/1238054933035749416/20240509_160750.jpg?ex=6a48cd81&is=6a477c01&hm=98fd1138f264d8f1ec58f6b2afb0d7d4585b0c5d27f039bd08c4a2ff78d225ca&",
+     "proxy_url": "https://media.discordapp.net/attachments/1238054176530108477/1238054933035749416/20240509_160750.jpg?ex=6a48cd81&is=6a477c01&hm=98fd1138f264d8f1ec58f6b2afb0d7d4585b0c5d27f039bd08c4a2ff78d225ca&",
+     "width": 1481,
+     "height": 911,
+     "content_type": "image/jpeg",
+     "content_scan_version": 1,
+     "placeholder": "8ecBBIBb9pblR2doh4qBLw3asA==",
+     "placeholder_version": 1
+    }
+   ],
+   "embeds": [],
+   "timestamp": "2024-05-09T09:08:18.032000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1238054933236809820",
+   "channel_id": "1238054176530108477",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 1
+  }
+ ]
+}

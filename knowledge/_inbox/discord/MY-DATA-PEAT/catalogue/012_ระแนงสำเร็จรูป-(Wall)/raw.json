@@ -1,0 +1,63 @@
+{
+ "thread": {
+  "id": "1282596538165755998",
+  "type": 11,
+  "last_message_id": "1282596538165755998",
+  "flags": 0,
+  "guild_id": "459722639913517067",
+  "name": "ระแนงสำเร็จรูป (Wall)",
+  "parent_id": "1225656382230106132",
+  "rate_limit_per_user": 0,
+  "bitrate": 64000,
+  "user_limit": 0,
+  "rtc_region": null,
+  "owner_id": "277070301425172480",
+  "thread_metadata": {
+   "archived": true,
+   "archive_timestamp": "2024-10-09T07:02:46.002000+00:00",
+   "auto_archive_duration": 10080,
+   "locked": false,
+   "create_timestamp": "2024-09-09T07:00:44.190000+00:00"
+  },
+  "message_count": 0,
+  "member_count": 1,
+  "total_message_sent": 0
+ },
+ "messages": [
+  {
+   "type": 0,
+   "content": "https://drive.google.com/drive/folders/1n0ySR8NFzQ4UIr8zDHOTQo1jWgS6i_uw",
+   "mentions": [],
+   "mention_roles": [],
+   "attachments": [],
+   "embeds": [],
+   "timestamp": "2024-09-09T07:00:44.190000+00:00",
+   "edited_timestamp": null,
+   "flags": 0,
+   "components": [],
+   "id": "1282596538165755998",
+   "channel_id": "1282596538165755998",
+   "author": {
+    "id": "277070301425172480",
+    "username": "peat10",
+    "avatar": "8311b57fc4e3def2da272e0d049c98c7",
+    "discriminator": "0",
+    "public_flags": 0,
+    "flags": 0,
+    "banner": null,
+    "accent_color": null,
+    "global_name": "Peat",
+    "avatar_decoration_data": null,
+    "collectibles": null,
+    "display_name_styles": null,
+    "banner_color": null,
+    "clan": null,
+    "primary_guild": null
+   },
+   "pinned": false,
+   "mention_everyone": false,
+   "tts": false,
+   "position": 0
+  }
+ ]
+}
