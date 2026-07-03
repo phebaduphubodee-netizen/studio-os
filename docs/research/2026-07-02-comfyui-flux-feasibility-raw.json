@@ -1,0 +1,919 @@
+{
+  "summary": "Research every viable path to run ComfyUI+FLUX for a studio with a 6GB-VRAM laptop, then adversarially verify the load-bearing claims",
+  "agentCount": 10,
+  "logs": [
+    "Research complete: 5/5 angles with verification"
+  ],
+  "result": [
+    {
+      "angle": "local-6gb",
+      "research": {
+        "summary": "Local FLUX on this 6 GB RTX 3060 Laptop is technically possible in 2026 but only as a dev/test lane, not production. GGUF Q4/Q5 of FLUX.1-dev physically exceeds 6 GB (Q4_0 = 6.79 GB + 4.8 GB T5-fp8), so it runs only with RAM offload; comparable-or-better cards report 60-80 s/image (3060 12 GB, Q5) to minutes/image, and the one directly-matching user report (3060 Laptop 6 GB/16 GB RAM) says Q4-class models \"work perfectly fine (if you are willing to wait a while)\". The strongest 6 GB path is Nunchaku/SVDQuant INT4: Ampere sm_86 is fully supported (W4A4 kernels), per-layer async CPU offload drops transformer VRAM to ~3-4 GiB (~6 GB total with quantized encoder), quality is near-FP16 (clearly better than NF4/GGUF-Q4), and — critically for this pipeline — Nunchaku ships svdq-int4 FLUX.1-Depth-dev (6.77 GB, depth baked into the base model, no extra ControlNet weights) plus official Redux workflows, which is exactly the depth+style stack the studio needs; a Blender-rendered true depth map even eliminates preprocessor VRAM. Realistic throughput on this laptop is still an estimated ~30 s-2 min per 1 MP image (no direct nunchaku benchmark exists for a 6 GB 3060 Laptop; a 16 GB Tesla T4 does 26 s/28 steps without any offload penalty), versus classic ControlNet+IP-Adapter stacks which reliably OOM or crawl on <8 GB. FLUX.2 does not rescue this machine: klein 4B (the only Apache-2.0 FLUX.2 weight) still wants ~8-9 GB at FP8 with 12 GB recommended, and klein 9B/dev are non-commercial. Licensing is workable but murkier than Gemini paid tier: FLUX.1-dev outputs are explicitly usable commercially under the non-commercial model license, schnell is Apache 2.0, but the Depth-dev/Redux tools inherit the dev license and the community still flags conflicting terms. Bottom line: at ~$0.04/image with clean commercial rights and no 4-bit quality risk, Gemini repaint remains the production path; local Nunchaku INT4 depth-dev+Redux is worth one weekend as a free offline dev/iteration lane and as insurance, nothing more — and any serious local production ambition really means a 16 GB+ desktop GPU, not this laptop.",
+        "findings": [
+          {
+            "claim": "GGUF Q4 of FLUX.1-dev does not actually fit in 6 GB VRAM — it runs only via ComfyUI RAM offload, and low-VRAM generation times range from ~60-80 s/image on a 12 GB desktop 3060 to multi-minute on weaker/offloaded setups",
+            "detail": "Q4_0 GGUF is 6.79 GB and the T5-XXL fp8 text encoder is another 4.8 GB, so on a 6 GB card everything must be partially offloaded to system RAM (T5 typically forced to CPU). Real user datapoints: RTX 2080 8 GB ran Q4_0 at 3.15 s/it (~1 m 25 s for 25 steps) with 6.4 GB VRAM used; a 3 GB laptop GPU hit 35-70 s per STEP; RTX 3060 12 GB with Q5_K_S reports ~60-80 s/image; a GTX 1060 6 GB (older Pascal arch, worst case) took 9 minutes for 512x512/10 steps with NF4. No published benchmark for a 3060 Laptop 6 GB specifically was found, but one HuggingFace user (Able2) with exactly that card + 16 GB RAM confirms Q4-class flux models run 'perfectly fine (if you are willing to wait a while)'. Realistic expectation on this laptop: roughly 2-5 min per 20-step 1 MP image with GGUF Q4/Q5.",
+            "sources": [
+              "https://huggingface.co/city96/FLUX.1-dev-gguf/discussions/9",
+              "https://www.helpfultiger.com/choosing-the-right-flux-model-for-your-gpu-a-comprehensive-guide-workflows/",
+              "https://huggingface.co/QuantStack/Qwen-Image-Edit-GGUF/discussions/3",
+              "https://stable-diffusion-art.com/flux-forge/"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Nunchaku (SVDQuant INT4) is the best local path for this GPU: Ampere 30-series is fully supported, per-layer CPU offload drops the transformer to ~3-4 GiB VRAM, and quality is near-FP16 rather than Q4-GGUF-degraded",
+            "detail": "Nunchaku docs confirm INT4 supports compute capability 7.5 (Turing) through 8.9 (Ada); Ampere sm_86 (RTX 30-series incl. laptop) gets 'good INT4 performance with W4A4 GEMM kernels'. v0.1.4+ added 4-bit text encoder and per-layer CPU offloading, 'reducing FLUX's minimum memory requirement to just 4 GiB'; v1.0.0 async offloading cuts transformer VRAM 'to as little as 3 GiB with no performance loss'; the hardware guide puts FLUX.1-schnell at ~6 GB total with quantized encoder + CPU offload. The INT4 checkpoint file is ~6.7 GB (3.6x smaller than the 24 GB FP16 model). Quality: SVDQuant reviews consistently rate it above NF4 and GGUF Q4 — an RTX 3080 10 GB generates 'in under 10 seconds' at 'quality comparable to FP16'. Latest release v1.2.1 (Jan 2026), actively maintained, ComfyUI plugin (ComfyUI-nunchaku) is official.",
+            "sources": [
+              "https://github.com/nunchaku-ai/nunchaku",
+              "https://deepwiki.com/mit-han-lab/nunchaku/1.2-hardware-compatibility-and-precision-selection",
+              "https://github.com/nunchaku-ai/ComfyUI-nunchaku",
+              "https://myaiforce.com/nunchaku/"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Nunchaku directly covers the studio's exact control stack — svdq-int4 FLUX.1-Depth-dev (depth baked into the base model, zero extra ControlNet VRAM) plus official Redux (style image) workflows — whereas a classic Depth-ControlNet + IP-Adapter stack reliably breaks <8 GB setups",
+            "detail": "nunchaku-flux.1-depth-dev (svdq-int4_r32, 6.77 GB — same size as the base int4 model because BFL's Depth-dev is a fine-tuned base, not an add-on ControlNet) exists on HuggingFace, and ComfyUI-nunchaku has shipped official FLUX.1-Redux workflows since v0.2.0 plus ControlNet-Union-Pro 2.0 integration. Redux only adds a small adapter + SigLIP vision encoder on top. Extra advantage for this pipeline: the control image comes from a Blender clay render, so a true depth map can be exported from Blender directly — no Depth-Anything preprocessor model in VRAM at all. By contrast, generic FLUX + separate ControlNet workflows are documented VRAM killers on low-VRAM cards (ComfyUI issue #4676 'Flux Controlnet crashes GPU'; low-VRAM guides call ControlNet 'one of the biggest VRAM consumers' and advise preprocessing separately and never stacking ControlNet + IPAdapter on 8 GB).",
+            "sources": [
+              "https://huggingface.co/nunchaku-ai/nunchaku-flux.1-depth-dev",
+              "https://huggingface.co/mit-han-lab/svdq-int4-flux.1-depth-dev",
+              "https://github.com/nunchaku-ai/ComfyUI-nunchaku",
+              "https://github.com/comfyanonymous/ComfyUI/issues/4676",
+              "https://aipixelguide.com/en/guides/controlnet-models/"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Realistic nunchaku throughput on the 3060 Laptop 6 GB is an ESTIMATED ~30 s-2 min per 1 MP image; no direct published benchmark exists for this exact card",
+            "detail": "Closest measured references: Tesla T4 16 GB (roughly 3060-laptop-class compute, but no offload needed) = 26 s at 1024x1024/28 steps, 17 s with Turbo LoRA; RTX 3080 10 GB = <10 s; sources state a 12 GB desktop 3060 should beat the T4's 26 s. The 6 GB laptop must additionally offload (6.7 GB int4 file > 6 GB VRAM), and while nunchaku claims async offload has 'no performance loss', that claim is for newer engine versions and PCIe-bandwidth-dependent — on a laptop it will cost something. Bracketing between the T4 figure and GGUF-offload behavior gives ~30 s-2 min/image at 20-28 steps. Marking low confidence because it is an inference, not a measured report — this is the number to validate in a one-day spike before believing anything else about the local lane.",
+            "sources": [
+              "https://myaiforce.com/nunchaku/",
+              "https://deepwiki.com/mit-han-lab/nunchaku/1.2-hardware-compatibility-and-precision-selection",
+              "https://huggingface.co/QuantStack/Qwen-Image-Edit-GGUF/discussions/3"
+            ],
+            "confidence": "low"
+          },
+          {
+            "claim": "Quantization quality ladder for FLUX GGUF: Q5/Q8 near-lossless, Q4 the accepted sweet spot (~2-3.5% loss), Q3 'rough but convincing', Q2 unusable for client work; SVDQuant int4 beats GGUF Q4 at the same bit-width",
+            "detail": "Community consensus from city96's quant comparisons and 2026 quantization guides: Q8_0 <0.5% degradation; Q5_K_S 'best choice for low VRAM, quality loss barely noticeable from Q8'; Q4_K_M ~3.5% loss vs FP16 (~2% vs Q8); 'below Q4, quality degrades sharply'; Q3_K with t5xxl_fp8 'can still pull off a pretty convincing image even if slightly rough'; Q2_K is 'where it really degrades to the point nobody should use this one'. For interior-design deliverables where material fidelity and clean geometry matter, Q4 is the floor and Q2/Q3 are out. SVDQuant int4's low-rank outlier absorption is why nunchaku int4 reviews as FP16-comparable while plain 4-bit (NF4/Q4) is visibly softer. FP8 note: the fp8 UNet is ~11-12 GB (far over 6 GB), and Ampere has no FP8 hardware acceleration anyway, so FP8 is the wrong format for this card on both counts.",
+            "sources": [
+              "https://huggingface.co/city96/FLUX.1-dev-gguf/discussions/15",
+              "https://willitrunai.com/blog/quantization-guide-gguf-explained",
+              "https://apatero.com/blog/gguf-quantized-models-complete-guide-2025",
+              "https://myaiforce.com/nunchaku/"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "FLUX.2 (klein) does NOT change the 6 GB picture: klein 4B — the only Apache-2.0 FLUX.2 weight — still needs ~8-9 GB at FP8 with 12 GB recommended; klein 9B and FLUX.2 [dev] are non-commercial",
+            "detail": "FLUX.2 klein 4B: ~13 GB BF16, ~8-9 GB measured at FP8, minimum recommendations start at 12 GB; 'lower GGUF (Q3/Q2) + offload works, but quality and speed drop noticeably' — i.e. the only way it touches 6 GB is at the quality tiers already ruled out for client work. Klein uses a Qwen3 text encoder (4B encoder for the 4B model), adding its own memory footprint. Klein 9B is ~29 GB BF16 / ~15 GB FP8 and non-commercial, as is FLUX.2 [dev] (32B). Nunchaku had no FLUX.2 support as of v1.2.1 (Jan 2026). Strategic note: klein 4B's Apache 2.0 license is the cleanest commercial story in the FLUX family and is step-distilled to ~4 steps (roughly a second on a capable GPU), so it becomes very interesting if the studio ever buys a 12-16 GB desktop card — just not on this laptop.",
+            "sources": [
+              "https://localaimaster.com/blog/flux-2-local-setup-guide",
+              "https://willitrunai.com/blog/how-to-run-flux-2-locally",
+              "https://github.com/nunchaku-ai/nunchaku"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "Commercial rights: FLUX.1-dev's license explicitly allows commercial use of OUTPUTS (the model itself is non-commercial); schnell is Apache 2.0 — but the dev license has documented ambiguity that makes it legally murkier than the Gemini paid tier",
+            "detail": "The FLUX.1-dev Non-Commercial License states 'You may use Output for any purpose (including for commercial purposes)' and outputs are not Derivatives — so selling renders made with dev to interior-design clients is permitted under the license text. However: (a) the model itself may only be USED for non-commercial purposes, and 'use for revenue-generating activity' is excluded from Non-Commercial — a studio running dev in its paid-deliverable pipeline sits in a gray zone the community has openly flagged ('We need actual clarification on the License, as there's conflicting terms', HF discussion #136); (b) FLUX.1-Depth-dev and Redux inherit the dev license, and SVDQuant int4 checkpoints are Derivatives of dev; (c) FLUX.1-schnell is clean Apache 2.0 but has no official Depth/Redux tool variants (those are dev-only), weakening the fully-clean-license local stack. Net: for mandatory commercial rights, Gemini paid tier ($0.04/image, contractual commercial terms) is unambiguous; local dev-based generation is defensible-but-gray.",
+            "sources": [
+              "https://huggingface.co/black-forest-labs/FLUX.1-dev/blob/main/LICENSE.md",
+              "https://huggingface.co/black-forest-labs/FLUX.1-dev/discussions/136",
+              "https://civitai.com/articles/6625/can-i-use-flux-for-commercial-use"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Verdict: local FLUX on this laptop is a dev/test lane only — Nunchaku INT4 depth-dev + Redux is the one stack worth a time-boxed spike; production stays on Gemini repaint",
+            "detail": "Production math: even at an optimistic 60 s/image locally, a 20-image client iteration batch is 20+ min of a blocked laptop (also the Blender/working machine), with 4-bit quality risk, offload fragility (16 GB system RAM is itself tight — GGUF users report ~19 GB peak RAM), and gray-zone dev licensing — versus $0.80 at Gemini's $0.04/image with clean commercial rights and the studio's already-shipped 4.5/5 photoreal gate. Local wins only on: zero marginal cost, offline/privacy (client floor-plan-derived clay renders never leave the machine — relevant given the studio's privacy rules), and seed/parameter reproducibility. Recommended posture: 1-day spike installing ComfyUI-nunchaku + svdq-int4-flux.1-depth-dev + Redux, benchmark real s/image and VRAM on this exact laptop, keep it as an offline dev/iteration lane if it lands under ~90 s/image; do NOT build the production dispatch pipeline around it. Re-evaluate only with 16 GB+ desktop hardware (where klein 4B Apache-2.0 + nunchaku-class speed genuinely competes).",
+            "sources": [
+              "https://myaiforce.com/nunchaku/",
+              "https://huggingface.co/nunchaku-ai/nunchaku-flux.1-depth-dev",
+              "https://huggingface.co/city96/FLUX.1-dev-gguf/discussions/9",
+              "https://localaimaster.com/blog/flux-2-local-setup-guide"
+            ],
+            "confidence": "medium"
+          }
+        ]
+      },
+      "verify": {
+        "verdicts": [
+          {
+            "claim": "GGUF Q4 of FLUX.1-dev does not fit in 6 GB VRAM; runs only via RAM offload; low-VRAM times range ~60-80 s/image (12 GB 3060) to multi-minute on weaker/offloaded setups",
+            "verdict": "confirmed",
+            "evidence": "File sizes verified on HuggingFace: flux1-dev-Q4_0.gguf = 6.79 GB, Q4_K_S = 6.81 GB, Q5_K_S = 8.29 GB (https://huggingface.co/city96/FLUX.1-dev-gguf/tree/main); t5xxl_fp8_e4m3fn.safetensors = 4.89 GB (https://huggingface.co/comfyanonymous/flux_text_encoders/tree/main) — so the transformer alone exceeds 6 GB and offload is mandatory. Speed datapoints verified in city96 discussion #9 (https://huggingface.co/city96/FLUX.1-dev-gguf/discussions/9): RTX 2080 8GB Q4_0 '3.15s/it', '1 min 25.5 sec for 25 steps' at 6.4 GB VRAM; 3GB-VRAM laptop '35-70sec/per iteration-step'. Able2 quote verified verbatim on https://huggingface.co/QuantStack/Qwen-Image-Edit-GGUF/discussions/3: 'Both Flux Kontext and Qwen Image Q4 quants work perfectly fine (if you are willing to wait a while)' on an RTX 3060 Laptop 6GB/16GB RAM (note: about Flux Kontext + Qwen, not FLUX.1-dev itself, but same 12B-class). GTX 1060 6GB NF4 = 9 min at 512x512/10 steps corroborated via search of stable-diffusion-art.com/flux-forge plus Forge issue #1338 ('~9min20s'). One loose attribution: helpfultiger.com reports the 12GB 3060 in s/it (Q4 3.02 s/it, Q8 2.90 s/it → ~60-75 s for 20-25 steps), not a 'Q5_K_S 60-80s' figure; the ballpark holds but the exact sub-quote wasn't found. The 2-5 min/image expectation on a 6GB laptop is a reasonable inference from these points."
+          },
+          {
+            "claim": "Nunchaku (SVDQuant INT4): Ampere 30-series fully supported, per-layer CPU offload drops transformer to ~3-4 GiB, quality near-FP16, v1.2.1 latest (Jan 2026), official ComfyUI plugin",
+            "verdict": "confirmed",
+            "evidence": "Official docs (Nunchaku 1.3.0 docs, nunchaku.tech) list INT4 support for sm_75/80/86/89 — Ampere sm_86 (RTX 30-series) included, with 'good INT4 performance with W4A4 GEMM kernels' (https://nunchaku.tech/docs/nunchaku/installation/installation.html, https://deepwiki.com/mit-han-lab/nunchaku/1.2-hardware-compatibility-and-precision-selection). GitHub README (https://github.com/nunchaku-ai/nunchaku) verbatim: per-layer CPU offloading 'reducing FLUX's minimum memory requirement to just 4 GiB'; 4-bit T5 encoder confirmed (v0.3.0: '4-bit T5 encoder now matches FP8 T5 in quality'); ComfyUI-nunchaku confirmed as the official plugin (https://github.com/nunchaku-ai/ComfyUI-nunchaku: 'This repository provides the ComfyUI plugin for Nunchaku'). Releases page confirms v1.2.1 latest stable, Jan 25 2026 (v1.3.0 pre-releases through Mar 2026) (https://github.com/nunchaku-ai/nunchaku/releases). INT4 checkpoint = 6.77 GB vs 23.8 GB FP16 (~3.5x smaller) (https://huggingface.co/nunchaku-ai/nunchaku-flux.1-dev/tree/main). TWO CAVEATS: (1) the '3 GiB with no performance loss' async-offload figure is documented for Qwen-Image (v1.0.0), NOT the FLUX transformer — FLUX's documented floor is 4 GiB; (2) Turing sm_75 INT4 support only landed in v1.2.0 (Jan 2026, 'INT4 support for 20-series GPUs'), so 'docs confirm 7.5-8.9' is true today but recent — irrelevant for this Ampere laptop. The 'RTX 3080 10GB under 10 seconds, quality comparable to FP16' line exists but traces to a community workflow/blog (https://openart.ai/workflows/blake/blakes-fast-low-vram-flux-svdquant-int4-upscale-workflow/37bFnlNFNyLOD4DcZ3qu, meimeilook.com) — promotional anecdote, not a benchmark."
+          },
+          {
+            "claim": "Nunchaku covers the exact control stack: svdq-int4 FLUX.1-Depth-dev (depth baked in, 6.77 GB) + official Redux workflows since v0.2.0 + ControlNet-Union-Pro 2.0; classic Depth-ControlNet + IP-Adapter breaks <8 GB setups",
+            "verdict": "confirmed",
+            "evidence": "Model exists: https://huggingface.co/nunchaku-ai/nunchaku-flux.1-depth-dev/tree/main — svdq-int4_r32-flux.1-depth-dev.safetensors = 6.77 GB exactly, same size as the base int4 model (consistent with Depth-dev being a fine-tuned base, not an add-on ControlNet). ComfyUI-nunchaku README verified: 'official workflows for FLUX.1-redux' since v0.2.0, and ControlNet-Union-Pro 2.0 support confirmed (https://github.com/nunchaku-ai/ComfyUI-nunchaku). ComfyUI issue #4676 exists with exact title 'Flux Controlnet crashes GPU' (Aug 29 2024) — BUT it is an AMD RX 7800 XT with 16 GB VRAM, not a <8 GB card; it shows the InstantX ControlNet adds ~3 GB and OOMs even at 16 GB (https://github.com/comfyanonymous/ComfyUI/issues/4676). So the direction (separate FLUX ControlNet is a VRAM killer) is supported, but this specific issue is not evidence about <8 GB setups. MAJOR OMISSION in the claim: the depth-dev model card carries the flux-1-dev-non-commercial-license — see corrections; this affects whether the studio can use it for client work at all."
+          },
+          {
+            "claim": "Realistic nunchaku throughput on the 3060 Laptop 6GB is ~30 s-2 min per 1 MP image (estimate; no direct published benchmark)",
+            "verdict": "confirmed",
+            "evidence": "The anchor datapoints check out: myaiforce.com/nunchaku (updated Sep 2025) reports Tesla T4: '1024x1024 images in 26 seconds' under 8GB VRAM, 17 s with Turbo LoRA, nunchaku Canny 25 s (https://myaiforce.com/nunchaku/). RTX 3080 10GB '<10 seconds' exists as a community claim (https://openart.ai/workflows/blake/blakes-fast-low-vram-flux-svdquant-int4-upscale-workflow/37bFnlNFNyLOD4DcZ3qu). I found no published benchmark for a 3060 Laptop 6GB either — the researcher correctly marks the 30s-2min bracket as an unmeasured inference; note the int4 file (6.77 GB) exceeds 6 GB VRAM so offload will be active, and the 'no performance loss' offload claim is documented for Qwen-Image, not FLUX, so the upper end of the bracket is the safer planning number until the one-day spike measures it. Verdict is 'confirmed' in the sense that the claim accurately represents the evidence and flags its own uncertainty."
+          },
+          {
+            "claim": "Quantization quality ladder: Q5/Q8 near-lossless, Q4 sweet spot (~2-3.5% loss), Q3 rough-but-convincing, Q2 unusable; SVDQuant int4 beats GGUF Q4; fp8 UNet ~11-12 GB and Ampere has no FP8 acceleration",
+            "verdict": "confirmed",
+            "evidence": "Qualitative ladder quotes verified verbatim on https://huggingface.co/city96/FLUX.1-dev-gguf/discussions/15 (community members, not city96 himself): Melyn — 'Q5_K_S is the best choice for people with low vram. Quality loss is barely noticable from Q8'; Bobp — Q3 with t5xxl_fp8 'can still pull off a pretty convincing image even if it's slightly rough looking' and Q2 'is where it really degrades to the point of nobody should use this one'. fp8 UNet size confirmed: flux1-dev-fp8.safetensors = 11.9 GB (https://huggingface.co/Kijai/flux-fp8/tree/main; the 17.2 GB Comfy-Org file is the all-in-one checkpoint). Ampere/RTX-30 has no FP8 hardware acceleration — FP8 tensor cores arrived with Hopper, limited FP8 on Ada (https://www.spheron.network/blog/fp8-quantization-inference-performance-hardware-explained/, https://acecloud.ai/blog/nvidia-ada-ampere-hopper-blackwell-comparison/). CAVEAT: the specific '~3.5% loss' / '<0.5%' percentages could NOT be verified — willitrunai.com returned 403 and no rigorous benchmark defines 'percent quality loss' for image models; treat those numbers as blog estimates (qualitative ranking is what's solid). SVDQuant-int4 > NF4/Q4-GGUF quality is the SVDQuant project's own claim echoed by community reviews, not an independent benchmark — directionally credible (low-rank outlier branch), unproven for interior-material fidelity specifically."
+          }
+        ],
+        "corrections": "THE BIG MISS — LICENSE (affects the whole local FLUX.1-dev lane, none of the 5 claims mention it): FLUX.1-dev, FLUX.1-Depth-dev, and all nunchaku int4 quants of them are under the FLUX [dev] Non-Commercial License (now v2.0, last updated 2025-11-25, https://bfl.ai/legal/non-commercial-license-terms). Verified verbatim: OUTPUTS are fine — 'You may use Output for any purpose (including for commercial purposes)' — but USE OF THE MODEL is restricted to Non-Commercial Purposes, defined as uses with 'no direct or indirect payment arising from use of the FLUX [dev] Model', and 'for a commercial activity, you must request a license from Company'. A studio generating client deliverables locally is a revenue-generating use of the model; the safe reading is that client work requires a paid BFL self-hosting license — and BFL's licensing page (https://bfl.ai/pricing/licensing) currently only shows self-serve tiers for FLUX.2 (Builder 10K images/month etc.); FLUX.1-dev pricing is contact-sales. There is acknowledged community ambiguity between the outputs clause and the model-use clause (https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev/discussions/6), but vs. the Gemini paid tier's clean commercial rights this is a material legal gap the researcher never flagged. Alternatives with clean licenses if the local lane proceeds: FLUX.1-schnell (Apache-2.0) or Qwen-Image (Apache-2.0) — nunchaku supports both. Minor factual corrections: (1) t5xxl fp8 encoder is 4.89 GB, not 4.8 GB; (2) the '3 GiB with no performance loss' async-offload figure applies to Qwen-Image (v1.0.0 release note), not the FLUX transformer — FLUX's documented offload floor is 4 GiB; (3) ComfyUI issue #4676 is a 16 GB AMD RX 7800 XT, not a <8 GB setup; (4) helpfultiger's 3060-12GB data is per-iteration (Q4_0 3.02 s/it ≈ 60-75 s at 20-25 steps), no Q5_K_S 60-80 s figure appears there; (5) Turing (sm_75) INT4 support in nunchaku only landed in v1.2.0 (Jan 2026), so older docs claiming 7.5-8.9 support were forward-looking (irrelevant to this Ampere sm_86 laptop, which is supported); (6) the int4 checkpoint is 6.77 GB vs 23.8 GB FP16 = 3.5x smaller, not 3.6x; (7) the Q4 '~2-3.5% loss' percentages are unverifiable blog numbers — keep the qualitative ladder, drop the percents.\""
+      }
+    },
+    {
+      "angle": "cloud-gpu",
+      "research": {
+        "summary": "Renting a cloud GPU for ComfyUI is cheap and technically mature in 2026: an RTX 4090 is ~$0.34/hr (RunPod community, Vast.ai ~$0.29–0.50/hr) to ~$0.69/hr (RunPod secure), one-click ComfyUI+FLUX templates exist on both platforms, and the exact dispatch pattern the studio plans (expose port 8188, POST API-format JSON to /prompt, poll /history/{id}, GET /view) is the documented standard. FLUX.1-dev at 20 steps takes ~15–30 s/image on a 4090, so raw compute is well under $0.01/image; with realistic session overhead plus a ~60–100 GB network volume ($0.07/GB/mo on RunPod) a 50–300 image/month studio lands around $5–15/month on pods, or ~$2–5/month on RunPod serverless (4090 flex $1.10/hr, FlashBoot cold starts, prebuilt worker-comfyui images with FLUX baked in). That does NOT decisively beat Gemini repaint at $0.04/image ($2–12/month, zero ops) on cost — the case for the ComfyUI path is control (Depth ControlNet geometry lock + IP-Adapter style), not savings. Official Comfy Cloud now exists ($20–100/mo credit plans on RTX 6000 Pro Blackwell 96GB, ~0.266 credits/s GPU time, API access with 1–5 concurrent workflows) but custom-node/custom-model support is curated — LoRA import needs the Creator plan and arbitrary ControlNet/IP-Adapter model uploads are not clearly supported, so it is a poor fit for this specific pipeline today. The single biggest blocker is licensing, not price: FLUX.1-dev's Non-Commercial License explicitly excludes \"revenue-generating activity\", so self-hosting dev-weights to produce client deliverables requires a paid BFL license (self-serve tiers exist, pricing undisclosed) — and BFL's own Depth ControlNet weights inherit the same restriction. The commercially-safe self-host models are FLUX.1-schnell and FLUX.2-klein-4B (both Apache 2.0), but their Depth-ControlNet ecosystems are far weaker than dev's. Lambda and Paperspace/DigitalOcean are datacenter-GPU oriented (A10/H100/A100 class, $0.69–6/hr) and are not competitive for this workload versus RunPod/Vast. Bottom line: if the studio proceeds, RunPod pod (secure 4090, network volume) or serverless worker-comfyui is the right lane at ~$5–15/month, but only after the FLUX license question is resolved — otherwise Gemini repaint remains the defensible commercial default.",
+        "findings": [
+          {
+            "claim": "RunPod RTX 4090 rents for $0.34/hr (Community Cloud) to $0.69/hr (Secure Cloud); RTX 5090 (32GB) ~$0.99/hr, L40S (48GB) ~$0.99/hr, RTX A5000 ~$0.27/hr, billed per-second",
+            "detail": "Verified directly on RunPod's own pages in July 2026. The dedicated RTX 4090 page states Secure Cloud $0.69/hr and Community Cloud $0.34/hr. The main pricing page lists RTX 5090 (32GB) $0.99/hr, L40S (48GB) $0.99/hr, RTX A5000 (24GB) $0.27/hr, L4 $0.39/hr, A40 $0.44/hr. Serverless rates: RTX 4090 $1.10/hr (flex), 48GB-class L40S/6000 Ada $1.75/hr. Vast.ai marketplace 4090s are slightly cheaper: ~$0.29–0.31/hr interruptible, $0.35–0.50/hr on-demand depending on host.",
+            "sources": [
+              "https://www.runpod.io/gpu-models/rtx-4090",
+              "https://www.runpod.io/pricing",
+              "https://vast.ai/pricing/gpu/RTX-4090",
+              "https://www.synpixcloud.com/blog/vast-ai-vs-runpod-rtx-4090-pricing"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Ready-made ComfyUI+FLUX templates exist on both RunPod and Vast.ai; first boot is ~10–15 min, subsequent boots a few minutes with a persistent volume",
+            "detail": "RunPod has an official ComfyUI pod tutorial plus one-click community templates (e.g. ValyrianTech 'ComfyUI with Flux', docker image valyriantech/comfyui-with-flux) pre-loaded with FLUX.1-dev. Vast.ai has an official 'ComfyUI + FLUX.1 [Dev/Schnell]' template with a PROVISIONING_SCRIPT parameter to auto-download exactly the models you need (ai-dock based images, service portal on port 7000). First launch downloads the >20 GB FLUX model (~10–15 min); with models cached on a persistent volume subsequent cold starts drop to pod-provision + model-load, i.e. a few minutes. Plan 30–40+ GB storage minimum for FLUX alone; more with ControlNet/IP-Adapter/text encoders.",
+            "sources": [
+              "https://docs.runpod.io/tutorials/pods/comfyui",
+              "https://github.com/ValyrianTech/ComfyUI_with_Flux",
+              "https://cloud.vast.ai/template/readme/ce96d8165963641add9be1a6c0a54e01",
+              "https://docs.vast.ai/video-generation",
+              "https://www.nextdiffusion.ai/tutorials/how-to-run-comfyui-on-runpod"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Programmatic dispatch on a rented pod works exactly as the studio's pipeline stub assumes: expose port 8188, POST API-format workflow JSON to /prompt, poll GET /history/{prompt_id} (or listen on WebSocket), fetch images via /view",
+            "detail": "This is the documented, standard ComfyUI REST pattern (aiohttp server on port 8188) and both RunPod and Vast proxy/expose HTTP ports on pods. For fully headless production, RunPod's official runpod-workers/worker-comfyui wraps the same thing as a serverless endpoint: POST the workflow JSON to /run, poll /status, receive images as base64 or S3 URLs — no pod babysitting. The studio's planned 'send API-format JSON -> poll -> fetch' code would port with minimal changes between local, pod, and serverless targets.",
+            "sources": [
+              "https://www.runflow.io/blog/comfyui-api-developer-guide",
+              "https://github.com/runpod-workers/worker-comfyui",
+              "https://docs.runpod.io/tutorials/serverless/comfyui",
+              "https://docs.runpod.io/community-solutions/comfyui-to-api/overview"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Model persistence: RunPod network volumes cost $0.07/GB/month (<1TB); a realistic 60–100 GB FLUX+ControlNet+IP-Adapter volume costs ~$4–7/month and survives pod termination",
+            "detail": "RunPod pricing page: network storage $0.07/GB/mo under 1TB ($0.05 over 1TB, $0.14 high-performance tier); container disk $0.10/GB/mo. A network volume retains the ComfyUI install, models, custom nodes, and workflows across pod stop/terminate, so you only pay GPU time when actually rendering. Note: idle volume disk on a stopped pod bills at $0.20/GB/mo, so a network volume + terminate-pod discipline is the cheap pattern. Vast.ai persistence is per-host storage; less standardized (that is a real operational minus vs RunPod for this use case).",
+            "sources": [
+              "https://www.runpod.io/pricing",
+              "https://www.nextdiffusion.ai/tutorials/how-to-run-comfyui-on-runpod"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "FLUX.1-dev generation speed on RTX 4090: ~15–30 s per 1024x1024 image at 20 steps (fp8/Q8), i.e. 120–240 images/hour; schnell at 4 steps is roughly 4-5x faster",
+            "detail": "Community benchmarks in the ComfyUI repo report 15–17 s at 20 steps Euler 1024x1024 with Q8 GGUF on a 4090; SaladCloud's production benchmark of Flux.1-dev on 4090s averaged under 18 s per 20-step 1024x1024 image (992 images per dollar on their batch tier). At RunPod's $0.34–0.69/hr that is $0.0015–0.006 per image of raw compute for dev, and well under $0.001 for schnell 4-step. Marginal image cost once a pod is warm is effectively negligible — the money goes to idle/session overhead, not steps.",
+            "sources": [
+              "https://github.com/comfyanonymous/ComfyUI/discussions/4571",
+              "https://blog.salad.com/flux-1-dev/",
+              "https://blog.salad.com/flux1-schnell/"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Monthly cost picture for 50–300 images/month: pod route ~$5–15/month all-in; serverless route ~$2–5/month; Gemini repaint baseline $2–12/month — cloud GPU does not beat Gemini on cost, only on control",
+            "detail": "Computed from verified numbers: 300 dev-quality images = 1.5–2.5 GPU-hours of pure compute ($1–2 at 4090 rates); realistic interactive sessions (boot, model load, iteration idle) inflate that ~3–5x to $2–7/month, plus $4–7/month network volume = $6–14/month. Serverless (worker-comfyui, 4090 flex $1.10/hr, per-second billing, no idle cost) lands ~$0.006–0.01/image = $2–4/month for 300 images but requires baking models into a Docker image. Gemini at $0.04/image = $2 (50 img) to $12 (300 img) with zero ops burden. Verdict: at this studio's volume the ComfyUI+FLUX cloud path is justified only by the Depth-ControlNet geometry lock and IP-Adapter style control that Gemini repaint cannot guarantee, not by savings; the crossover where GPU rental clearly wins on cost is roughly >1,000 images/month.",
+            "sources": [
+              "https://www.runpod.io/pricing",
+              "https://blog.salad.com/flux-1-dev/",
+              "https://github.com/runpod-workers/worker-comfyui"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "Serverless cold starts: RunPod FlashBoot claims 250ms–2s when warm-pooled, but true cold start of a FLUX-sized worker (20+ GB weights into VRAM) is realistically tens of seconds to minutes",
+            "detail": "RunPod's FlashBoot marketing claims sub-second (as low as 250–500 ms) cold starts at no extra cost, and 'from 20 s to under 2 s' for irregular workloads — but those figures describe container/runtime boot with warm caching, not first-load of FLUX.1-dev weights. Official worker-comfyui images ship FLUX.1 schnell and dev variants with checkpoint/text-encoders/VAE pre-included, which is the supported way to minimize load time. For a studio batching 10–50 images per session, one cold start per session is amortized to noise; for one-off single images, expect the first result in 1–3 minutes.",
+            "sources": [
+              "https://www.runpod.io/blog/introducing-flashboot-serverless-cold-start",
+              "https://github.com/runpod-workers/worker-comfyui"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "Official Comfy Cloud (comfy.org) exists as of 2026: $20/$35/$100 per month credit plans on RTX 6000 Pro Blackwell 96GB, GPU time ~0.266 credits/second, API access included — but custom-model support is curated, making it a weak fit for a Depth-ControlNet + IP-Adapter pipeline",
+            "detail": "Plans: Standard $20/mo 4,200 credits, Creator $35/mo 7,400 credits, Pro $100/mo 21,100 credits (blog shows an earlier $60 Pro tier since revised); GPU billed at ~0.266 credits/s, so Standard buys ~4.4 GPU-hours/month on a card ~2x faster than an A100 — thousands of FLUX images in raw capacity. API access allows 1/3/5 concurrent workflows by tier; 30-min (1-hr Pro) max runtime per workflow. Caveats: only 'the most-used custom nodes' (~90% coverage claimed) are available, custom LoRA import from CivitAI requires the Creator plan (HuggingFace 'coming soon'), and there is no documented way to upload arbitrary ControlNet or IP-Adapter weights — so whether the studio's exact FLUX Depth + IP-Adapter graph runs there needs a hands-on trial. GPU prices on the platform dropped 30% in Jan 2026.",
+            "sources": [
+              "https://comfy.org/cloud/pricing/",
+              "https://blog.comfy.org/p/comfy-cloud-new-features-and-pricing",
+              "https://comfyui.org/en/comfy-cloud-new-features-and-pricing"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "LICENSE BLOCKER: self-hosting FLUX.1-dev (or FLUX.2-dev) on a rented GPU to produce images for paying clients is NOT permitted under the free Non-Commercial License; a paid BFL commercial license is required and its price is not published",
+            "detail": "The FLUX [dev] Non-Commercial License states outputs may be used 'for any purpose (including for commercial purposes)' BUT defines Non-Commercial Purpose to exclude 'use (a) for revenue-generating activity, (b) in direct interactions with... end users' — running the model itself as part of paid client work fails that test, and the June 2025 v1.1 revision deliberately removed the old 'outputs can be used commercially' safe-harbor line, tightening the reading. BFL now runs a self-serve licensing portal with tiers (Builder = FLUX.2 klein models; Platform = klein 9B + FLUX.2-dev, 100K images/mo, LoRA rights; Professional = FLUX.2-dev; Enterprise = all models) but publishes no prices — dashboard purchase or contact-sales. Critically, BFL's own FLUX Depth ControlNet weights (FLUX.1-Depth-dev) are dev-derivatives under the same non-commercial license, so the studio's exact planned stack is license-encumbered end to end. This is the strongest argument for staying on Gemini paid tier (commercial rights included) or a hosted FLUX API (provider carries the license) rather than self-hosting dev weights.",
+            "sources": [
+              "https://bfl.ai/legal/non-commercial-license-terms",
+              "https://bfl.ai/licensing",
+              "https://huggingface.co/black-forest-labs/FLUX.1-dev/discussions/136",
+              "https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev/discussions/6"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Commercially-safe self-host alternatives: FLUX.1-schnell and FLUX.2-klein-4B are Apache 2.0 (full commercial use, no fee); FLUX.2-klein-9B is non-commercial",
+            "detail": "FLUX.1-schnell's model card confirms Apache 2.0 and 'personal, scientific, and commercial purposes'. FLUX.2-klein-4B (released with FLUX.2, late 2025) is Apache 2.0; the 9B klein variant is under the non-commercial license (confirmed in the official flux2 repo license-clarification issue). Trade-off for the studio: schnell is a 4-step distilled model with a much weaker Depth-ControlNet/IP-Adapter ecosystem than dev, and klein-4B's ControlNet support is still young as of mid-2026 — so the license-clean models are also the ones with the weakest geometry-lock tooling. Quality/controllability of a schnell- or klein-based depth pipeline vs the Gemini repaint baseline would need an actual bake-off before committing.",
+            "sources": [
+              "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
+              "https://www.apatero.com/blog/flux-2-klein-apache-license-commercial-use",
+              "https://github.com/black-forest-labs/flux2/issues/32",
+              "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Lambda and Paperspace (DigitalOcean) are not competitive for this workload in 2026 — datacenter-GPU focus, higher entry price, no consumer 4090/5090 class cards",
+            "detail": "Lambda's on-demand instances start at $0.69/hr for an A10 and run to ~$2.49–6.99/hr for H100-class; Paperspace (now DigitalOcean) prices H100 ~$5.95/hr with commit discounts, aimed at training workloads. Neither offers the $0.30–0.70/hr consumer-card sweet spot that RunPod/Vast own, and neither has a first-party ComfyUI story. Ecosystem note: NVIDIA is reportedly releasing no new consumer RTX GPUs in 2026 (RTX 60 series pushed to 2027–2028) and DRAM shortage is pushing consumer card prices up 30–50%, which supports renting over buying and suggests 4090/5090 rental rates are more likely to firm up than fall.",
+            "sources": [
+              "https://lambda.ai/pricing",
+              "https://docs.digitalocean.com/products/paperspace/pricing/",
+              "https://costbench.com/compare/lambda-labs-vs-paperspace/",
+              "https://www.tomshardware.com/pc-components/gpus/report-claims-nvidia-will-not-be-releasing-any-new-rtx-gaming-gpus-in-2026-rtx-60-series-likely-debuting-in-2028"
+            ],
+            "confidence": "medium"
+          }
+        ]
+      },
+      "verify": {
+        "verdicts": [
+          {
+            "claim": "RunPod RTX 4090 rents for $0.34/hr (Community) to $0.69/hr (Secure); RTX 5090 (32GB) ~$0.99/hr, L40S (48GB) ~$0.99/hr, RTX A5000 ~$0.27/hr, billed per-second; serverless 4090 $1.10/hr flex, 48GB-class up to $1.75/hr; Vast 4090 ~$0.29-0.31 interruptible / $0.35-0.50 on-demand",
+            "verdict": "confirmed",
+            "evidence": "Fetched RunPod's own pages (July 2026): https://www.runpod.io/gpu-models/rtx-4090 states Secure Cloud $0.69/hr, Community Cloud $0.34/hr, 24GB GDDR6X, 'Runpod bills by the second'. https://www.runpod.io/pricing lists RTX 5090 (32GB) $0.99/hr, L40S (48GB) $0.99/hr, RTX A5000 (24GB) $0.27/hr, L4 $0.39/hr, A40 $0.44/hr; serverless RTX 4090 $1.10/hr and 48GB tier $1.22-$1.75/hr. Vast side corroborated: vast.ai's own page title advertises 'Rent RTX 4090 GPUs on Vast.ai for $0.35/hr' (https://vast.ai/pricing/gpu/RTX-4090) and Apr-2026 tracking shows $0.29-0.31/hr interruptible, $0.35-0.50/hr on-demand (https://www.synpixcloud.com/blog/vast-ai-vs-runpod-rtx-4090-pricing). Every number in the claim matches current primary sources."
+          },
+          {
+            "claim": "Ready-made ComfyUI+FLUX templates exist on RunPod (official tutorial + ValyrianTech one-click) and Vast.ai (official ComfyUI + FLUX.1 [Dev/Schnell] template with PROVISIONING_SCRIPT); first boot ~10-15 min, subsequent boots a few minutes with persistent volume",
+            "verdict": "confirmed",
+            "evidence": "All artifacts exist: RunPod official pod tutorial at https://docs.runpod.io/tutorials/pods/comfyui (ComfyUI on port 8188 via proxy; note it focuses on SDXL-Turbo and warns initial deployment can take 'up to 30 minutes', with 'future starts... much less time'). https://github.com/ValyrianTech/ComfyUI_with_Flux is a one-click RunPod template (ID rzg5z3pls5) pre-loaded with Flux.1-dev, ~15 min deploy, 20GB+ model files, API scripts included. Vast template 'ComfyUI + FLUX.1 [Dev/Schnell]' exists at exactly the cited URL https://cloud.vast.ai/template/readme/ce96d8165963641add9be1a6c0a54e01; ai-dock base images with PROVISIONING_SCRIPT env var for model auto-download confirmed at https://github.com/ai-dock/comfyui. Caveats: the '10-15 min first boot' is optimistic — RunPod's own tutorial says budget up to 30 min; the 'service portal on port 7000' detail could not be verified (Vast console readme requires JS login)."
+          },
+          {
+            "claim": "Programmatic dispatch works as the pipeline stub assumes: port 8188, POST API-format JSON to /prompt, poll GET /history/{prompt_id} (or WebSocket), fetch via /view; RunPod worker-comfyui wraps this as serverless (POST /run, poll /status, base64/S3 output)",
+            "verdict": "confirmed",
+            "evidence": "Official ComfyUI server docs (https://docs.comfy.org/development/comfyui-server/comms_routes) document POST /prompt (returns prompt_id + queue position), GET /history/{prompt_id}, GET /view for images, and /ws WebSocket for progress. RunPod proxies pod port 8188 as https://[POD_ID]-8188.proxy.runpod.net per https://docs.runpod.io/tutorials/pods/comfyui. https://github.com/runpod-workers/worker-comfyui is in the official runpod-workers org, actively maintained (v5.8.6 released June 17 2026, 709 stars, 42 releases), supports /run (async, poll /status) and /runsync, returns images as base64 by default or S3 URLs, and ships prebuilt runpod/worker-comfyui:<version>-flux1-dev and -flux1-schnell images. The studio's send-JSON -> poll -> fetch stub maps directly onto both targets."
+          },
+          {
+            "claim": "RunPod network volumes cost $0.07/GB/month (<1TB, $0.05 over 1TB, $0.14 high-performance); 60-100 GB volume = ~$4-7/month and survives pod termination; container disk $0.10/GB/mo; idle volume disk on stopped pod $0.20/GB/mo",
+            "verdict": "confirmed",
+            "evidence": "Official docs https://docs.runpod.io/pods/pricing: network volume $0.07/GB/month under 1TB, $0.05/GB/month over 1TB, 'both rates apply whether the Pod is running or stopped'; container disk $0.10/GB/mo running, not charged when stopped. https://www.runpod.io/pricing additionally shows volume disk $0.10/GB/mo running, $0.20/GB/mo idle. The $0.14/GB/mo high-performance network storage tier is confirmed in RunPod docs but is limited to Montreal datacenters (found via docs.runpod.io search results). Math checks: 60-100 GB x $0.07 = $4.20-$7.00/month. Minor nuance: per docs, network-volume storage charges accrue hourly (per-second billing applies to compute and container/volume disks) — does not change the monthly cost claim."
+          },
+          {
+            "claim": "FLUX.1-dev on RTX 4090: ~15-30 s per 1024x1024 image at 20 steps (fp8/Q8), i.e. 120-240 images/hour; schnell at 4 steps roughly 4-5x faster; Salad benchmark <18 s avg and 992 images per dollar",
+            "verdict": "confirmed",
+            "evidence": "https://github.com/comfyanonymous/ComfyUI/discussions/4571 reports on 4090 at 1024x1024/20 steps: 15-17 s continuous generation with Q8 GGUF, 18.42 s default fp8, and 7-9 s with aggressive optimization (Triton/Sage attention, --fast + OC) — so the claimed 15-30 s band is realistic-to-conservative. SaladCloud's Flux.1-dev benchmark (https://blog.salad.com/flux-1-dev/, confirmed via search after 403 on direct fetch) reports avg response under 18 s at 20 steps 1024x1024, 99.78% success, 992 images per dollar ($0.00101/image) on 4090 batch tier. Schnell comparison: Salad's schnell benchmark (https://blog.salad.com/flux1-schnell/) delivered 5243 images/dollar vs 992 for dev, ~5.3x — consistent with the claimed 4-5x. Compute-cost math checks: 15-30 s/image at $0.34-0.69/hr = ~$0.0014-0.0058/image."
+          }
+        ],
+        "corrections": "Two small tightenings, no refutations: (1) First-boot time on RunPod — the claim's '~10-15 min' matches the ValyrianTech template (~15 min), but RunPod's own official ComfyUI tutorial says initial deployment can take up to 30 minutes; plan for a 15-30 min worst case on first launch. (2) The 'service portal on port 7000' detail for the Vast.ai template could not be verified (template readme requires console login; the ai-dock base image is what's documented) — treat that specific port as unconfirmed. Also trivially: RunPod network-volume storage bills hourly, not per-second (per-second billing applies to GPU compute); and per official docs, container disk is not charged at all when a pod is stopped — the $0.20/GB/mo idle rate applies to volume disk, which the claim stated correctly."
+      }
+    },
+    {
+      "angle": "serverless",
+      "research": {
+        "summary": "Two services fit \"send clay-render depth + style ref, get photoreal interior back\" best: fal.ai and Replicate. fal's fal-ai/flux-general endpoint is the only fixed (no-ComfyUI) API found that runs the studio's exact planned stack — FLUX.1 dev + depth ControlNet + IP-Adapter style reference in one call — at $0.075/MP with explicit commercial-use permission; its depth-only sibling (flux-control-lora-depth) is $0.04/MP, i.e., price parity with the current Gemini pass. Replicate's official black-forest-labs/flux-depth-dev is $0.025 per 1024x1024 image (the only option that clearly beats Gemini's $0.039) with explicit \"images generated on Replicate with FLUX.1 models can be used commercially,\" and Replicate also runs arbitrary ComfyUI API-format workflow JSON via fofr/any-comfyui-workflow (L40S at $0.000975/s, ~$0.014/typical run), whose supported-weights list already includes flux1-dev, flux1-depth-dev, flux1-redux-dev and the XLabs flux-ip-adapter + depth ControlNet. BFL's own API is out: flux-pro-1.0-depth/canny were sunset Oct 31 2025 and FLUX.1 Depth/Canny (pro, dev, LoRA) are deprecated in the BFL API, with FLUX.2 offering multi-reference editing but no depth-map conditioning; Together AI's FLUX.1 Depth page now 404s and its pricing table omits the Tools models. DIY serverless (RunPod worker-comfyui at ~$0.00044-0.00048/s flex on 24-48GB cards, Modal L40S at $0.000542/s) yields the lowest raw compute (~$0.01-0.03/image) but self-hosting FLUX.1 dev weights falls under BFL's non-commercial license, so client work would require a paid BFL weights license (tiered, price undisclosed) — that plus ops burden means it does not beat the $0.04 Gemini pass at small-studio volume. ComfyDeploy stopped taking new managed-cloud customers after open-sourcing in Sept 2025, and ComfyICU is a niche shared-pool per-run service whose current prices could not be retrieved. Practical recommendation: pilot Replicate flux-depth-dev (cheapest, geometry-locked, commercial-safe) and fal flux-general (adds enforced IP-Adapter style lock for ~2x Gemini's cost); keep the ComfyUI JSON plan alive via Replicate's any-comfyui-workflow rather than RunPod/Modal, since it inherits Replicate's FLUX commercial terms and needs zero GPU management.",
+        "findings": [
+          {
+            "claim": "fal.ai's flux-general endpoint runs FLUX.1 dev with depth ControlNet + IP-Adapter style reference + LoRA in a single API call at $0.075/megapixel with commercial use permitted — the only fixed endpoint found matching the studio's exact planned architecture",
+            "detail": "fal-ai/flux-general supports LoRA, ControlNet conditioning, IP-Adapter integration, and reference-only guidance simultaneously with independent strength parameters. Price: $0.075/MP, rounded up to nearest MP (a 1MP interior = $0.075, ~2x the Gemini pass). The page carries a 'Commercial use' badge. fal also hosts the dedicated depth-only endpoint fal-ai/flux-control-lora-depth at $0.04/MP (Gemini parity), base FLUX.1 dev at $0.025/MP with the statement 'suitable for personal and commercial use', plus FLUX Redux endpoints for style transfer. Python dispatch is via the fal_client SDK (queue/subscribe/webhooks). Since the control image is a Blender clay render, the studio can supply an exact Z-pass depth map as the ControlNet input.",
+            "sources": [
+              "https://fal.ai/models/fal-ai/flux-general",
+              "https://fal.ai/models/fal-ai/flux-control-lora-depth",
+              "https://fal.ai/models/fal-ai/flux/dev",
+              "https://fal.ai/flux-tools"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Replicate's official black-forest-labs/flux-depth-dev costs $0.025 per 1024x1024 image, accepts a control image + depth guidance, and Replicate explicitly grants commercial use of images generated with FLUX.1 models on its platform",
+            "detail": "This is the only investigated option that clearly beats the studio's $0.039 Gemini pass on price. The model page states: 'If you generate images on Replicate with FLUX.1 models and their fine-tunes, then you can use the images commercially' — but 'if you download the model weights and run them locally, commercial use is prohibited.' Official models are billed per output image (setup/idle free), called from Python with replicate.run() one-liners. Limitation: no IP-Adapter/style-reference in the same call — flux-redux-dev exists separately but chaining is two passes, not combined conditioning. The $0.025 figure comes from Price Per Token's model tracker plus Replicate's own pricing page listing flux-dev at $0.025/image and flux-1.1-pro at $0.04/image.",
+            "sources": [
+              "https://replicate.com/black-forest-labs/flux-depth-dev",
+              "https://pricepertoken.com/image/model/black-forest-labs-flux-depth-dev",
+              "https://replicate.com/pricing",
+              "https://replicate.com/blog/flux-tools"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Replicate can run the studio's arbitrary ComfyUI API-format workflow JSON via fofr/any-comfyui-workflow, and its supported weights already include the full planned stack: flux1-dev, flux1-depth-dev, XLabs flux-ip-adapter, flux-depth-controlnet-v3, FLUX ControlNet Union Pro, and flux1-redux-dev",
+            "detail": "The model accepts a ComfyUI workflow exported with 'Save (API format)', takes input images via URLs or uploaded/zipped files, runs on L40S ($0.000975/s), and 'costs approximately $0.014 per run' for typical (short) predictions — a FLUX-dev depth+IP-Adapter pass at 1MP will run longer, realistically ~$0.03-0.09/image time-billed. The backing repo is github.com/replicate/cog-comfyui; its supported_weights.md lists flux1-dev.safetensors, flux1-depth-dev, flux1-canny-dev, flux1-fill-dev, flux1-kontext-dev, flux1-redux-dev (style model), XLABS flux-ip-adapter and flux-depth-controlnet-v3, and FLUX.1-dev-ControlNet-Union-Pro. One caveat: whether Replicate's blanket 'FLUX.1 on Replicate = commercial OK' statement extends to dev weights run inside this community ComfyUI wrapper is not spelled out on the wrapper's page — worth a one-line support confirmation before client use.",
+            "sources": [
+              "https://replicate.com/fofr/any-comfyui-workflow",
+              "https://github.com/replicate/cog-comfyui",
+              "https://raw.githubusercontent.com/replicate/cog-comfyui/main/supported_weights.md"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "BFL's own API no longer serves depth conditioning: flux-pro-1.0-depth/canny endpoints were sunset October 31, 2025, FLUX.1 Depth/Canny (pro, dev, and LoRA variants) are deprecated in the BFL API, and the FLUX.2 family offers multi-reference editing but no depth-map control",
+            "detail": "BFL release notes (Oct 3, 2025) announce deprecation of flux-pro-1.0, flux-pro-1.0-depth, flux-pro-1.0-canny and the Finetuning API effective Oct 31, 2025, directing users to flux-pro-1.1 or flux-kontext-pro. BFL separately states FLUX.1 Depth and Canny (both pro and dev, including LoRA versions) 'will no longer be supported in the BFL API' with open-weight checkpoints remaining on Hugging Face; Fill and Redux are not affected. FLUX.2 pro/flex (Nov 25, 2025) support multi-reference editing with up to 8 input images (max: 10) and 4MP output — current BFL pricing is FLUX.2 pro from $0.03 (t2i) / $0.045 (editing), klein from $0.014-0.015, max from $0.07; FLUX.2 dev is local-weights only. So the closest BFL-API equivalent to the studio's workflow is FLUX.2 multi-reference (clay render + style board as reference images) — functionally similar to the existing Gemini repaint, not the depth-locked pipeline.",
+            "sources": [
+              "https://docs.bfl.ai/release-notes",
+              "https://docs.bfl.ml/quick_start/pricing",
+              "https://www.together.ai/blog/flux-tools-models-together-apis-canny-depth-image-generation"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Together AI effectively no longer offers FLUX.1 Depth: its dedicated model page returns 404 and its current pricing table omits the FLUX Tools (Depth/Canny/Redux) models",
+            "detail": "Together launched FLUX.1 [dev] Canny/Depth/Redux in Dec 2024 (blog still live; note their depth flow auto-generates the depth map from a reference image rather than accepting a user-supplied one). As of July 2026, https://www.together.ai/models/flux-1-depth returns HTTP 404 and the pricing page lists only FLUX.1 schnell ($0.0027/MP), FLUX.1 pro ($0.04/MP), Kontext pro/max ($0.04/$0.08 per MP), and FLUX.2 dev/pro/flex/max ($0.0154/$0.03/$0.03 per image, $0.07/MP) — consistent with the Tools models being delisted after BFL's deprecation. Together also cannot run custom ComfyUI workflows. Not a fit for this studio.",
+            "sources": [
+              "https://www.together.ai/pricing",
+              "https://www.together.ai/blog/flux-tools-models-together-apis-canny-depth-image-generation",
+              "https://www.together.ai/models/flux-1-depth"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "RunPod Serverless runs the studio's exact ComfyUI workflow via the official worker-comfyui at roughly $0.01-0.03/image raw compute, but self-hosting FLUX.1 dev weights there is NOT covered by any platform license — BFL's non-commercial dev license applies, and a paid BFL weights license (tiered, prices undisclosed) would be required for client work",
+            "detail": "runpod-workers/worker-comfyui exposes ComfyUI as a serverless endpoint: POST workflow JSON, receive base64/S3 images. Flex per-second pricing: A5000 24GB $0.00026/s, 4090 24GB $0.00044/s, A6000 48GB $0.00048/s, A100 80GB $0.0013/s (active workers ~40% cheaper). A 30-60s FLUX-dev fp8 run on a 4090/A6000 is ~$0.013-0.029 plus billed cold-start/model-load time — competitive with Gemini's $0.04 only at steady volume and after the studio builds/maintains the worker image, network volume with FLUX+ControlNet+IP-Adapter weights, and cold-start tuning. The blocker is licensing: BFL's open-weights licensing page offers Builder (klein models, 10K images/mo, 1 domain), Platform (klein 9B + FLUX.2 dev, 100K images/mo), Professional (FLUX.2 dev, 100K images/mo, 3 domains, per-client fees beyond first 3 clients) and Enterprise tiers, with no public prices (contact sales / dashboard.bfl.ai/licensing). Modal is the same story with nicer Python-native DX: L40S $0.000542/s, A100 80GB $0.000694/s, A10 $0.000306/s, $30/mo free credits on the $0 Starter plan — but identical FLUX-dev license exposure. For a small studio doing client work, both DIY paths lose to fal/Replicate once license risk and ops time are priced in.",
+            "sources": [
+              "https://github.com/runpod-workers/worker-comfyui",
+              "https://www.runpod.io/blog/serverless-pricing-update",
+              "https://modal.com/pricing",
+              "https://bfl.ai/pricing/licensing",
+              "https://replicate.com/black-forest-labs/flux-depth-dev"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "ComfyDeploy is no longer a viable hosted option for a small studio: it open-sourced its platform in September 2025 and stopped taking new managed-cloud customers; ComfyICU remains a niche shared-pool per-run service whose current pricing could not be verified",
+            "detail": "ComfyDeploy's own blog ('Re: Open-sourcing ComfyDeploy') describes open-sourcing the entire stack after reaching ~$29k MRR because it was competing with Comfy Org's official cloud; third-party coverage confirms it is not taking new customers, and its remaining pricing page shows a $998/month business tier. The OSS stack (github.com/BennyKok/comfyui-deploy) can still orchestrate self-hosted RunPod/Modal GPUs, inheriting the same FLUX-dev licensing problem. ComfyICU (comfy.icu) documents an API for running workflow JSON with per-run billing by GPU tier and execution time in a shared GPU pool (good for batch, queue waits on lower tiers), but the site blocks scraping and no current price table could be retrieved — treat any specific ComfyICU numbers as unverified. Note: ComfyICU is distinct from the official Comfy Cloud (comfy.org), which as of Jan 2026 bills 0.266 credits/s on RTX 6000 Pro 96GB GPUs under monthly credit-pool subscriptions but is aimed at interactive use.",
+            "sources": [
+              "https://www.comfydeploy.com/blog/re-open-sourcing-comfydeploy",
+              "https://app.comfydeploy.com/pricing",
+              "https://github.com/BennyKok/comfyui-deploy",
+              "https://comfy.icu/docs/api",
+              "https://www.runflow.io/blog/comfyui-cloud-online-providers",
+              "https://blog.comfy.org/p/comfy-cloud-new-features-and-pricing"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "Versus the studio's current $0.039/image Gemini repaint: only Replicate's flux-depth-dev ($0.025) clearly undercuts it; fal's depth-only endpoint matches it ($0.04/MP); fal's full depth+style endpoint costs ~2x ($0.075/MP) and must justify itself on style-lock quality, not price",
+            "detail": "Gemini 2.5 Flash Image (Nano Banana) is confirmed at $30/1M output tokens = 1290 tokens/image = $0.039/image on the paid tier. Per-1MP-image comparison: Replicate flux-depth-dev $0.025 (beats Gemini, geometry-locked, commercial-safe, no style ref); fal flux-control-lora-depth $0.04 (parity, depth-only); fal flux-general $0.075 (2x, but the only single-call depth ControlNet + IP-Adapter style path); Replicate any-comfyui-workflow ~$0.014 typical short run, realistically $0.03-0.09 for a FLUX-dev depth+IP-A workflow (time-billed on L40S); RunPod/Modal DIY ~$0.01-0.03 compute + BFL license + ops. Recommended pilot: A/B Replicate flux-depth-dev and fal flux-general against the Gemini pass on 2-3 rooms; adopt the ComfyUI-JSON plan only via Replicate's any-comfyui-workflow (zero GPU management, inherits platform FLUX terms) if the fixed endpoints prove insufficient.",
+            "sources": [
+              "https://openrouter.ai/google/gemini-2.5-flash-image",
+              "https://ai.google.dev/gemini-api/docs/image-generation",
+              "https://replicate.com/pricing",
+              "https://fal.ai/models/fal-ai/flux-general",
+              "https://replicate.com/fofr/any-comfyui-workflow"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "fal.ai also hosts fully custom ComfyUI workflows on its serverless runtime (comfy.new / ComfyUI-fal-Connector), billed per GPU-second rather than per image",
+            "detail": "fal built a serverless ComfyUI runtime: export a workflow in 'fal format' via the ComfyUI-fal-Connector node or deploy via the admin package (custom nodes + weights + Python deps, one-click deploy); execution goes through a workflows/execute endpoint with the fal SDK. Billing is serverless GPU time — fal lists H100 80GB 'as low as $1.89/h' ($0.000525/s), RTX PRO 6000 96GB 'as low as $1.10/h', H200 $2.10/h, B200 $3.49/h ('as low as' likely reflects committed rates; on-demand will be higher). A 30s FLUX-dev workflow on RTX PRO 6000 ≈ $0.009 compute. Same open-question as all bring-your-own-weights paths: fal's 'commercial use' badges apply to its own model endpoints; a self-deployed FLUX.1-dev ComfyUI graph on fal compute is running BFL open weights under BFL's license, so the studio should either stick to fal's model endpoints for client deliverables or get the BFL license question answered in writing.",
+            "sources": [
+              "https://fal.ai/docs/examples/image-generation/run-comfyui-visual",
+              "https://github.com/badayvedat/ComfyUI-fal-Connector",
+              "https://fal.ai/pricing",
+              "https://blog.fal.ai/stable-diffusion-3-on-fal-comfyui-workflows-and-more/"
+            ],
+            "confidence": "medium"
+          }
+        ]
+      },
+      "verify": {
+        "verdicts": [
+          {
+            "claim": "fal.ai flux-general runs FLUX.1 dev with depth ControlNet + IP-Adapter + LoRA in one call at $0.075/MP with commercial use permitted; fal-ai/flux-control-lora-depth at $0.04/MP; base flux/dev at $0.025/MP 'suitable for personal and commercial use'; FLUX Redux endpoints hosted",
+            "verdict": "confirmed",
+            "evidence": "Primary pages fetched 2026-07-02. https://fal.ai/models/fal-ai/flux-general states '$0.075 per megapixel', 'Images are billed by rounding up to the nearest megapixel', lists 'Control Extensions: LoRA (unlimited), Control LoRA, ControlNet, ControlNet Union, IP-Adapter, EasyControl, Reference-only guidance' (simultaneous), and carries a 'Commercial use' badge. https://fal.ai/models/fal-ai/flux-control-lora-depth: '$0.04 per megapixel', depth-map structure transfer on FLUX.1 [dev], Commercial use listed. https://fal.ai/models/fal-ai/flux/dev: '$0.025 per megapixel' and verbatim 'It is suitable for personal and commercial use.' https://fal.ai/flux-tools confirms Redux endpoints (FLUX.1 [dev] Redux etc.) plus 'FLUX.1 [dev] Depth with LoRAs'. The 'only fixed endpoint matching the exact architecture' framing is the researcher's judgment, not independently provable, but no counterexample surfaced."
+          },
+          {
+            "claim": "Replicate black-forest-labs/flux-depth-dev costs $0.025 per 1024x1024 image, accepts control image + depth guidance, and Replicate explicitly grants commercial use of FLUX.1-generated images",
+            "verdict": "confirmed",
+            "evidence": "Commercial-use statement verified verbatim on https://replicate.com/black-forest-labs/flux-depth-dev: 'If you generate images on Replicate with FLUX.1 models and their fine-tunes, then you can use the images commercially' and images from locally-downloaded weights 'can't [be] use[d]... commercially'. Depth-guided generation from a supplied image confirmed on the same page. Price caveat: the exact $0.025 does NOT appear statically on the model page or on https://replicate.com/pricing (that table lists only flux-dev $0.025/image, flux-1.1-pro $0.04/image, flux-schnell $3.00/1000 as BFL samples); the $0.025/1024x1024 figure is corroborated by the independent Price Per Token tracker (https://pricepertoken.com/image/model/black-forest-labs-flux-depth-dev, confirmed via search snippet; direct fetch 403s) and matches Replicate's primary-confirmed flux-dev price of $0.025/output image. Treat the exact depth-dev number as high-plausibility secondary-sourced, not primary-verified."
+          },
+          {
+            "claim": "Replicate fofr/any-comfyui-workflow runs arbitrary ComfyUI API-format workflow JSON on L40S ($0.000975/s, ~$0.014/typical run) and cog-comfyui's supported weights include flux1-dev, flux1-depth-dev, XLabs flux-ip-adapter, flux-depth-controlnet-v3, ControlNet Union Pro, flux1-redux-dev",
+            "verdict": "confirmed",
+            "evidence": "https://replicate.com/fofr/any-comfyui-workflow confirms it requires 'the API version of your ComfyUI workflow' (Save (API format)), runs on 'Nvidia L40S GPU hardware', states verbatim 'This model costs approximately $0.014 to run on Replicate, or 71 runs per $1, but this varies depending on your inputs', and accepts inputs via URLs, single uploaded file, or zip/tar archives. L40S rate '$0.000975/sec' confirmed on https://replicate.com/pricing. https://raw.githubusercontent.com/replicate/cog-comfyui/main/supported_weights.md lists ALL nine claimed weights: flux1-dev.safetensors, flux1-depth-dev.safetensors, flux1-canny-dev.safetensors, flux1-fill-dev.safetensors, flux1-kontext-dev.safetensors, flux1-redux-dev (style model), XLABS flux-ip-adapter.safetensors, XLABS flux-depth-controlnet-v3, and FLUX.1-dev-ControlNet-Union-Pro.safetensors. The license caveat is accurate: the wrapper page points to weights_licenses.md rather than restating Replicate's blanket FLUX commercial grant. The ~$0.03-0.09 per 1MP depth+IP-Adapter run is the researcher's extrapolation (30-90s x $0.000975/s), arithmetically sound but unverified empirically."
+          },
+          {
+            "claim": "BFL API sunset flux-pro-1.0-depth/canny effective Oct 31, 2025; FLUX.1 Depth/Canny (pro, dev, LoRA) no longer supported in BFL API (Fill/Redux unaffected); FLUX.2 (Nov 25, 2025) offers multi-reference editing (up to 8 images, max 10, 4MP) but no depth-map control; FLUX.2 pricing pro $0.03 t2i / $0.045 editing, klein $0.014-0.015, max $0.07",
+            "verdict": "confirmed",
+            "evidence": "https://docs.bfl.ml/release-notes (same content as docs.bfl.ai): Oct 3, 2025 announcement deprecates flux-pro-1.0, flux-pro-1.0-depth, flux-pro-1.0-canny and the Finetuning API effective Oct 31, 2025, directing users to 'flux-pro-1.1 or flux-kontext-pro'; FLUX.2 launched Nov 25, 2025 with 'Combine up to 8 input images (10 in playground)' for pro/flex and 'up to 10' for max, 'Up to 4MP output'; no depth/canny conditioning in FLUX.2 lineup. Search of BFL docs/announcements confirms FLUX.1 Depth and Canny (pro and dev incl. LoRA versions) 'will no longer be supported in the BFL API' with open-weight checkpoints remaining on Hugging Face, and Fill/Redux not affected. https://docs.bfl.ml/quick_start/pricing confirms FLUX.2 [pro] 'from $0.03' t2i / 'from $0.045' editing, klein 4B 'from $0.014' / 9B 'from $0.015', max 'from $0.07' (flex, omitted by researcher, is 'from $0.05'); no flux-pro-1.0-depth/canny rows remain. FLUX.2 dev absent from BFL pricing, consistent with local-weights-only (though Together hosts it at $0.0154/image)."
+          },
+          {
+            "claim": "Together AI no longer offers FLUX.1 Depth: model page returns 404 and current pricing omits FLUX Tools (Depth/Canny/Redux); remaining prices are schnell $0.0027/MP, pro $0.04/MP, Kontext pro/max $0.04/$0.08 per MP, FLUX.2 dev/pro/flex $0.0154/$0.03/$0.03 per image and max $0.07/MP; the Dec 2024 blog is live and its depth flow auto-generates the depth map from a reference image",
+            "verdict": "confirmed",
+            "evidence": "Fetched 2026-07-02: https://www.together.ai/models/flux-1-depth returns HTTP 404. https://www.together.ai/pricing lists exactly FLUX.1 [schnell] $0.0027/MP, FLUX.1 [pro] $0.04/MP, Kontext [pro] $0.04/MP, Kontext [max] $0.08/MP, FLUX.2 [dev] $0.0154/image, FLUX.2 [pro] $0.03/image, FLUX.2 [flex] $0.03/image, FLUX.2 [max] $0.070/MP — and FLUX.1 Depth/Canny/Redux do not appear anywhere on the page. https://www.together.ai/blog/flux-tools-models-together-apis-canny-depth-image-generation is live (published Nov 21, 2024, updated Feb 28, 2026) and states verbatim 'The FLUX Depth model automatically generates these maps from your reference images' — i.e., no user-supplied Z-pass depth input, matching the researcher's note. The 'cannot run custom ComfyUI workflows' point is consistent with Together's product surface (endpoint API only) but is an absence claim, not positively documented."
+          }
+        ],
+        "corrections": "No refutations — all five claims held against primary sources as of 2026-07-02. Two confidence notes: (1) Replicate flux-depth-dev's exact $0.025/1024x1024 price is not displayed on replicate.com/pricing or statically on the model page; it rests on the Price Per Token tracker plus parity with flux-dev's primary-confirmed $0.025/output image — get it from the model page UI or a $1 test run before committing budget math. (2) One inconsistency inside fal's own pages: the flux-general page text references the standard FLUX.1 [dev] endpoint at $0.055/MP, while the flux/dev endpoint page itself states $0.025/MP ('suitable for personal and commercial use'); the endpoint's own page is authoritative but worth a glance at checkout since fal bills by the endpoint. Minor addition: BFL FLUX.2 [flex] pricing is 'from $0.05' (omitted, not contradicted, by the researcher)."
+      }
+    },
+    {
+      "angle": "licensing",
+      "research": {
+        "summary": "Licensing splits the FLUX paths cleanly into safe / paid-safe / risky. SAFE with zero strings: FLUX.1 [schnell] and FLUX.2 [klein] 4B are Apache 2.0 (model AND outputs fully commercial) — but there is no Apache-licensed depth-control stack: the official FLUX.1 Depth [dev] Tool and every third-party FLUX depth ControlNet (Shakker/InstantX Union Pro, XLabs) sit under the dev Non-Commercial license, so the studio's planned clay-render→Depth pipeline cannot be assembled license-clean around schnell. SAFE via payment: any hosted API — fal.ai ($0.025/MP, \"commercial usage rights included\"), Replicate (\"if you generate images on Replicate with FLUX.1 models... you can use the images commercially\", and it hosts flux-depth-dev), and BFL's own API (\"You and your End Users may use Outputs for... personal or commercial purposes\") — because the host carries the weights license; note BFL's API terms grant BFL a perpetual right to train on your inputs/outputs, a client-privacy concern for uploaded clay renders. RISKY/NO: running [dev] weights locally for paid client work — the unified FLUX [dev] Non-Commercial License v2.0 (Nov 25, 2025; covers FLUX.1 dev, Depth/Canny/Fill/Redux [dev], Kontext [dev], FLUX.2 [dev]) says BFL claims no ownership of Outputs and \"You may use Output for any purpose (including for commercial purposes)\", but simultaneously excludes from permitted Non-Commercial Purpose any \"use (a) for revenue-generating activity, (b) in direct interactions with or that has impact on end users\" — i.e., outputs are unencumbered but USING the model inside a billed client workflow is prohibited without a paid license; Replicate's plain-English reading is that locally-generated dev images \"can't be used commercially\", and BFL monetizes exactly this gap with a Professional licensing tier explicitly for \"creative agencies and studios producing images on behalf of named clients\" (first 3 clients included, per-client fees after; prices behind dashboard/sales, not public). Local for-profit TESTING/evaluation in a non-production environment is expressly permitted, so prototyping the ComfyUI pipeline is legal — the line is crossed when an output enters a paid deliverable. Bottom line vs the $0.04 Gemini baseline: dev-locally = don't (or buy the Professional license); dev-via-fal/Replicate = do (comparable or cheaper per image, rights included); schnell/klein-4B locally = do (but no depth control, and klein 4B needs ~13GB VRAM anyway); FLUX.2 pro tiers via API (~$0.01–0.04/image) = do.",
+        "findings": [
+          {
+            "claim": "All [dev] weights — FLUX.1 [dev], the FLUX.1 Tools Depth/Canny/Fill/Redux [dev], Kontext [dev], and FLUX.2 [dev] — now sit under one unified 'FLUX [dev] Non-Commercial License' v2.0 (last revised Nov 25, 2025) that permits commercial use of OUTPUTS but prohibits commercial use of the MODEL.",
+            "detail": "The v2.0 license explicitly lists 'FLUX.1 [dev], FLUX.1 Fill [dev], FLUX.1 Depth [dev], FLUX.1 Canny [dev], FLUX.1 Redux [dev] ... FLUX.2 [dev]' as covered. Outputs section: 'We claim no ownership rights in and to the Outputs ... You may use Output for any purpose (including for commercial purposes), except as expressly prohibited herein' (only output-side prohibitions: no training/distilling a competing model, plus legally-required AI disclosure). But 'Non-Commercial Purpose' expressly EXCLUDES 'use (a) for revenue-generating activity, (b) in direct interactions with or that has impact on end users, or (c) to train, fine tune, or distill other models for commercial use' — so running the weights inside a paid client pipeline is using the model outside the license grant, regardless of the output permission. The same structure appears in the FLUX.1-dev HF LICENSE.md (v1.1.1).",
+            "sources": [
+              "https://bfl.ai/legal/non-commercial-license-terms",
+              "https://huggingface.co/black-forest-labs/FLUX.1-dev/blob/main/LICENSE.md",
+              "https://huggingface.co/black-forest-labs/FLUX.1-Depth-dev"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "For an agency billing clients, local FLUX.1-dev generation is at best legally grey and at worst prohibited — Replicate states flatly that locally-generated dev images can't be used commercially, BFL sells a license tier for exactly this use case, and the community-flagged contradiction in the license was never resolved in the permissive direction.",
+            "detail": "Replicate's model pages (flux-dev and flux-depth-dev) say: 'If you generate images on Replicate with FLUX.1 models and their fine-tunes, then you can use the images commercially. If you download the weights off Replicate and generate images on your own computer, you can't use the images commercially.' BFL's licensing portal defines the Professional tier as 'Perfect for creative agencies and studios producing images on behalf of named clients' — direct evidence BFL considers agency client work to require a paid license. History of the ambiguity: license v1.1 (June 26, 2025) briefly deleted the commercial-outputs line; after community outcry BFL's Andreas Blattmann wrote 'We did not intend to alter the spirit of the license... we have reverted Sections 2.d and 4.b', restoring output permission but leaving the model-use restriction intact; HF discussion #136 on the outputs-vs-revenue-generating-activity conflict got no official resolution. Practical reading: outputs themselves are unencumbered (BFL claims no ownership), but the act of generating them for revenue breaches the weights license — enforcement risk sits on the studio, not the images.",
+            "sources": [
+              "https://replicate.com/black-forest-labs/flux-dev",
+              "https://replicate.com/black-forest-labs/flux-depth-dev",
+              "https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev/discussions/6",
+              "https://huggingface.co/black-forest-labs/FLUX.1-dev/discussions/136",
+              "https://bfl.ai/licensing"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "FLUX.1 [schnell] (Apache 2.0) and FLUX.2 [klein] 4B (Apache 2.0) are the only fully commercial-safe local FLUX weights — but the studio's required Depth-ControlNet stack does not exist in Apache form, gutting the license-clean local path for their specific pipeline.",
+            "detail": "FLUX.1-schnell HF card: 'Released under the apache-2.0 licence, the model can be used for personal, scientific, and commercial purposes' (12B params). FLUX.2 [klein] 4B models are Apache 2.0 with built-in multi-reference editing (but need ~13GB VRAM — over this studio's 6GB); klein 9B and FLUX.2 [dev] (32B) are non-commercial. Critically for the clay-render pipeline: the official Depth Tool exists only as FLUX.1 Depth [dev] (12B, dev NC license), and the third-party depth ControlNets (Shakker-Labs/InstantX FLUX.1-dev-ControlNet-Union-Pro-2.0, FLUX.1-dev-ControlNet-Depth, XLabs) are all trained on and licensed under the flux-1-dev-non-commercial-license. No official or clean-licensed depth ControlNet for schnell was found. So 'schnell = safe' is true for the base model but does not rescue the planned FLUX+Depth+IP-Adapter architecture (XLabs IP-Adapter is likewise dev-based).",
+            "sources": [
+              "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
+              "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B",
+              "https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Union-Pro-2.0",
+              "https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Depth"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Generating through paid hosted APIs (fal.ai, Replicate, BFL API) confers full commercial rights on outputs, including for the dev-family and Depth models — this is the safe way to run the exact planned pipeline; fal.ai FLUX.1 [dev] is $0.025/megapixel, cheaper than the $0.04 Gemini baseline.",
+            "detail": "fal.ai flux/dev page: 'suitable for both personal and commercial use', 'Commercial usage rights included', '$0.025 per megapixel' (a 1MP interior render ≈ $0.025). Replicate hosts black-forest-labs/flux-depth-dev with the explicit 'generate on Replicate → use commercially' grant covering FLUX.1 models and fine-tunes. BFL's own FLUX API Service Terms: 'Black Forest Labs claims no ownership rights in and to your Output' and 'You and your End Users may use Outputs for your or their own personal or commercial purposes.' Two caveats: (1) BFL API terms grant BFL a 'fully paid, royalty-free, perpetual, irrevocable, worldwide' license to use your Inputs AND Outputs to improve and train their models — uploading clay renders derived from client floor plans may conflict with this studio's client-privacy rules (fal/Replicate data-retention terms were not audited in this pass and should be checked before sending client geometry); (2) the no-training-competing-models restriction on outputs still applies everywhere.",
+            "sources": [
+              "https://fal.ai/models/fal-ai/flux/dev",
+              "https://replicate.com/black-forest-labs/flux-depth-dev",
+              "https://bfl.ai/legal/flux-api-service-terms",
+              "https://bfl.ai/legal/developer-terms-of-service"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "BFL runs a self-serve/sales commercial licensing portal for self-hosted weights with an agency-specific tier (first 3 named clients included, per-client fees beyond), but current tiers are FLUX.2-centric and pricing is not public.",
+            "detail": "bfl.ai/licensing + help.bfl.ai tier structure: Builder (self-serve from dashboard; FLUX.2 [klein] models; 10K images/month; 1 domain; 10 users; fine-tune/LoRA rights; explicitly 'not meant for client use or downstream applications'), Platform (klein Base 9B + FLUX.2 [dev]; 100K/month; 1 domain; contact sales), Professional (FLUX.2 [dev]; 100K/month; up to 3 domains; 'Perfect for creative agencies and studios producing images on behalf of named clients. The first 3 clients are included. Beyond this, additional per-client fees apply'; contact sales), Enterprise (all models, custom). No dollar amounts are published anywhere findable — Builder pricing lives behind the dashboard login, higher tiers behind sales. Notably, FLUX.1 [dev] no longer appears on the current licensing page (portal has moved to FLUX.2-era models), and a 'Self-Hosted Commercial License Terms' legal doc governs these deals. There is also a separate Synthetic Data License for training on outputs. For this two-person-scale studio, a per-seat/per-client agency license almost certainly cannot beat $0.025–0.04/image API economics at their volumes.",
+            "sources": [
+              "https://bfl.ai/licensing",
+              "https://help.bfl.ai/articles/9272590838-self-serve-dev-license-overview-pricing",
+              "https://bfl.ai/pricing/licensing",
+              "https://bfl.ai/legal/self-hosted-commercial-license-terms"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "For-profit testing and evaluation of dev weights in a non-production environment is explicitly permitted by the non-commercial license, so the studio may legally prototype the local ComfyUI FLUX+Depth pipeline before deciding — only shipping outputs into paid deliverables requires a change of path.",
+            "detail": "The v2.0 (and v1.1.1) Non-Commercial Purpose definition includes 'use by commercial or for-profit entities for testing, evaluation, or non-commercial research and development in a non-production environment.' This means downloading FLUX.1 [dev] + Depth [dev] (or FLUX.2 [dev] GGUF) and benchmarking against their Gemini-repaint baseline is squarely licensed. Do/don't per path — DO: schnell or klein-4B locally, any dev/pro model via fal.ai/Replicate/BFL API (FLUX.2 pro ~$0.03/img, flex ~$0.01/img, Kontext pro ~$0.04/img per secondary reporting; BFL's own pricing page is a JS calculator so treat exact API prices as medium-confidence), local dev for internal prototyping only. DON'T: put locally-generated dev-family output (including via Depth [dev], Redux [dev], XLabs/Shakker ControlNets or IP-Adapters) into billed client work without a BFL commercial license; don't train competing models on any FLUX outputs; don't assume schnell solves the pipeline (no licensed depth stack).",
+            "sources": [
+              "https://bfl.ai/legal/non-commercial-license-terms",
+              "https://openrouter.ai/black-forest-labs/flux.2-pro",
+              "https://bfl.ai/pricing"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "verify": {
+        "verdicts": [
+          {
+            "claim": "All [dev] weights (FLUX.1 dev, Tools Depth/Canny/Fill/Redux dev, Kontext dev, FLUX.2 dev) sit under one unified 'FLUX [dev] Non-Commercial License' v2.0 (last revised Nov 25, 2025) permitting commercial use of OUTPUTS but prohibiting commercial use of the MODEL",
+            "verdict": "confirmed",
+            "evidence": "https://bfl.ai/legal/non-commercial-license-terms is titled 'FLUX [dev] Non-Commercial License v2.0', Last Revised November 25, 2025. Covered models listed verbatim: 'FLUX.1 [dev], FLUX.1 Fill [dev], FLUX.1 Depth [dev], FLUX.1 Canny [dev], FLUX.1 Redux [dev], FLUX.1 Canny [dev] LoRA, FLUX.1 Depth [dev] LoRA, FLUX.1 Kontext [dev], FLUX.1 Krea [dev], and FLUX.2 [dev]' (even broader than claimed — also Krea and the LoRAs). Outputs clause verbatim: 'We claim no ownership rights in and to the Outputs... You may use Output for any purpose (including for commercial purposes), except as expressly prohibited herein.' Non-Commercial Purpose exclusion verbatim: '(a) for revenue-generating activity, (b) in direct interactions with or that has impact on end users, or (c) to train, fine tune, or distill other models for commercial use.' The HF file https://huggingface.co/black-forest-labs/FLUX.1-dev/blob/main/LICENSE.md is 'FLUX.1 [dev] Non-Commercial License v1.1.1' with the same outputs-commercial / model-non-commercial structure, as claimed."
+          },
+          {
+            "claim": "For an agency billing clients, local FLUX.1-dev generation is legally grey-to-prohibited: Replicate says locally-generated dev images can't be used commercially, BFL sells an agency license tier for this exact use case, and the license contradiction was never resolved permissively",
+            "verdict": "confirmed",
+            "evidence": "Replicate quote verified verbatim on BOTH https://replicate.com/black-forest-labs/flux-dev and https://replicate.com/black-forest-labs/flux-depth-dev: 'If you generate images on Replicate with FLUX.1 models and their fine-tunes, then you can use the images commercially. If you download the weights off Replicate and generate images on your own computer, you can't use the images commercially.' BFL Professional tier text verified verbatim at https://bfl.ai/licensing: 'Perfect for creative agencies and studios producing images on behalf of named clients. The first 3 clients are included. Beyond this, additional per-client fees apply.' License-history: https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev/discussions/6 contains Andreas Blattmann's verbatim statement 'We did not intend to alter the spirit of the license concerning the issues you raised. To clarify this, we have reverted Sections 2.d and 4.b...' about the June 26, 2025 v1.1 removal of the commercial-outputs line. https://huggingface.co/black-forest-labs/FLUX.1-dev/discussions/136 confirms the outputs-vs-revenue-generating-activity conflict discussion with NO official BFL response in the thread. Note the Replicate wording is Replicate's own gloss (stricter than the license's outputs clause), but the claim quotes it accurately."
+          },
+          {
+            "claim": "FLUX.1 [schnell] (Apache 2.0) and FLUX.2 [klein] 4B (Apache 2.0) are the only commercial-safe local FLUX weights, but no Apache-licensed Depth ControlNet exists — the depth stack (official Depth dev, Shakker-Labs, XLabs IP-Adapter) is all dev-NC-licensed, gutting the license-clean local path",
+            "verdict": "confirmed",
+            "evidence": "https://huggingface.co/black-forest-labs/FLUX.1-schnell states verbatim 'Released under the apache-2.0 licence, the model can be used for personal, scientific, and commercial purposes' (12B params). https://huggingface.co/black-forest-labs/FLUX.2-klein-4B: Apache 2.0, 4B params, 'fits in ~13GB VRAM' (confirming it exceeds the studio's 6GB), multi-reference editing confirmed. https://huggingface.co/black-forest-labs/FLUX.2-klein-9B: FLUX Non-Commercial License. https://huggingface.co/black-forest-labs/FLUX.2-dev: flux-non-commercial-license, 32B params. https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Union-Pro-2.0 and https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Depth both carry the flux-1-dev-non-commercial-license tag. https://huggingface.co/XLabs-AI/flux-ip-adapter states verbatim 'Our weights fall under the FLUX.1 [dev] Non-Commercial License'. My independent search for a schnell/Apache depth ControlNet returned only dev-based options — the negative claim (none exists) is consistent with search results, though a negative cannot be proven exhaustively (confidence: moderate-high)."
+          },
+          {
+            "claim": "Paid hosted APIs (fal.ai, Replicate, BFL API) confer commercial rights on outputs including dev/Depth models; fal.ai FLUX.1 [dev] is $0.025/megapixel, undercutting the $0.04 Gemini baseline; caveat: BFL API terms grant BFL a perpetual license to train on your Inputs and Outputs",
+            "verdict": "confirmed",
+            "evidence": "https://fal.ai/models/fal-ai/flux/dev states verbatim 'Your request will cost $0.025 per megapixel', 'Commercial usage rights included', and 'suitable for personal and commercial use' — so a ~1MP render is ~$0.025, below the $0.04 Gemini baseline. https://replicate.com/black-forest-labs/flux-depth-dev carries the explicit generate-on-Replicate-use-commercially grant covering FLUX.1 models and fine-tunes. BFL side: https://bfl.ai/legal/flux-api-service-terms (Last Revised May 29, 2025) Section 2(b) verbatim: 'You grant us a fully paid, royalty-free, perpetual, irrevocable, worldwide, non-exclusive and fully sublicensable right and license to use... your Input and Output for the purpose of operating the FLUX Services, improving our products and services...' plus 'we may use Inputs and Outputs to train and improve our artificial intelligence models' — the client-privacy caveat about uploading clay renders is real and verified. The 'we claim no ownership rights in and to your Output' and 'You and your End Users may use Outputs for your or their own personal or commercial purposes' quotes are confirmed real BFL terms but surfaced in the Developer Terms of Service (https://bfl.ai/legal/developer-terms-of-service) rather than in the API Service Terms text I fetched — minor attribution nuance; both docs were in the researcher's source list."
+          },
+          {
+            "claim": "BFL runs a commercial licensing portal for self-hosted weights with an agency tier (first 3 named clients included, per-client fees beyond); current tiers are FLUX.2-centric and pricing is not public",
+            "verdict": "confirmed",
+            "evidence": "https://bfl.ai/licensing verified: Builder (FLUX.2 [klein], 10K images/month, 1 domain, 10 users, fine-tuning/LoRA rights, verbatim 'Not meant for client use or downstream applications'), Platform (FLUX.2 [klein] Base 9B + FLUX.2 [dev], 100K/month, 1 domain), Professional (FLUX.2 [dev], 100K/month, up to 3 domains, verbatim 'Perfect for creative agencies and studios producing images on behalf of named clients. The first 3 clients are included. Beyond this, additional per-client fees apply'), Enterprise (all models, custom). No dollar amounts published for any tier. FLUX.1 [dev] does not appear on the current licensing page — the portal is FLUX.2-era, as claimed. The Self-Hosted Commercial License Terms doc exists at https://bfl.ai/legal/self-hosted-commercial-license-terms (surfaced in search). Not independently re-verified: the help.bfl.ai article details and the Synthetic Data License (minor, non-load-bearing). The closing economics judgment (per-client license can't beat $0.025-0.04/image at two-person volumes) is an inference, not a checkable fact, but its inputs are all confirmed."
+          }
+        ],
+        "corrections": "One minor attribution fix in Claim 4: the quotes 'Black Forest Labs claims no ownership rights in and to your Output' (actual wording: 'we claim no ownership rights in and to your Output and the Customer Application') and 'You and your End Users may use Outputs for your or their own personal or commercial purposes' come from BFL's Developer Terms of Service (https://bfl.ai/legal/developer-terms-of-service), not the FLUX API Service Terms page as the claim's prose implied — the API Service Terms (Last Revised May 29, 2025) is where the Section 2(b) input/output training license lives. Also a harmless understatement in Claim 1: the v2.0 covered-model list additionally includes FLUX.1 Krea [dev] and the Canny/Depth [dev] LoRAs beyond the models the claim enumerated. All prices, dates, VRAM figures, parameter counts, and license terms otherwise verified as stated: v2.0 dated Nov 25 2025; HF LICENSE.md v1.1.1; fal.ai $0.025/MP; klein-4B ~13GB VRAM / Apache 2.0; klein-9B and FLUX.2-dev (32B) non-commercial; schnell Apache 2.0 12B."
+      }
+    },
+    {
+      "angle": "landscape",
+      "research": {
+        "summary": "The 2024-era stack the studio's stub assumes (FLUX.1-dev + third-party Depth ControlNet + IP-Adapter) is now two generations behind and has a licensing problem the hardware discussion has been hiding: every strong FLUX variant except FLUX.2 klein 4B (and per-image API purchases) is under BFL's Non-Commercial License, which explicitly excludes revenue-generating client work without a paid commercial license. FLUX.2 (released 25 Nov 2025) moved the ecosystem from explicit control channels to multi-reference editing (up to 10 reference images, \"style reference without finetuning\"), BFL deprecated the FLUX.1 Depth/Canny tools in its API, and no official FLUX.2 depth tool exists — depth control for FLUX.2 is community-run (Alibaba-PAI Fun ControlNet Union for dev; a May-2026 Civitai depth/openpose ControlNet for klein 9B). For FLUX.1, the de-facto depth standard remains Shakker-Labs/InstantX ControlNet-Union-Pro-2.0, and FLUX IP-Adapters (XLabs/InstantX) never became good — practitioners either use Redux, SDXL-stage IP-Adapter, or now just multi-reference editing. On a 6 GB RTX 3060 laptop, FLUX.2 klein 4B GGUF Q4 is genuinely runnable and Apache 2.0 (commercial-clean), but the stronger 2026 low-VRAM answers for depth-locked archviz are Apache-2.0 Chinese models: Z-Image Turbo (6B, ~6 GB GGUF/FP8, official Fun Union ControlNet with depth, ComfyUI template) and Qwen-Image-Edit 2509/2511 (union control LoRA incl. depth, a dedicated interior-design ComfyUI toolkit, and Nunchaku 4-bit + async offload bringing VRAM to ~3 GiB). Real 2026 practitioner archviz workflows (e.g. PH's Archviz x AI v0.43, updated Feb 2026) still stage SDXL ControlNets + SDXL IP-Adapter for structure/style and use FLUX GGUF only as a quality pass — nobody runs the studio's imagined pure FLUX.1+IPA stack. Bottom line: if they go local, the defensible 2026 stacks vs the $0.04 Gemini repaint are Z-Image Turbo + Fun Union depth ControlNet or Qwen-Image-Edit via Nunchaku (both Apache 2.0, both plausibly on 6 GB), or FLUX.2 klein 4B for its editing mode; any FLUX.1-dev/FLUX.2-dev path requires either BFL API per-image pricing or a commercial license, which must be costed against Gemini before writing a single workflow JSON.",
+        "findings": [
+          {
+            "claim": "FLUX.2 was released 25 Nov 2025 with four variants: pro and flex (API-only, proprietary), dev (32B open-weight), and klein (size-distilled, released 15-16 Jan 2026 as 4B and 9B)",
+            "detail": "BFL announced FLUX.2 on 2025-11-25 with multi-reference editing (up to 10 images), up to 4 MP output, and generation+editing unified in one model. klein shipped later (ComfyUI blog: 15 Jan 2026) in 4B and 9B sizes, each with a 4-step 'distilled' and a 50-step 'base' version. klein 4B distilled runs ~1.2 s/image on reference hardware.",
+            "sources": [
+              "https://bfl.ai/blog/flux-2",
+              "https://github.com/black-forest-labs/flux2",
+              "https://blog.comfy.org/p/flux2-klein-4b-fast-local-image-editing",
+              "https://www.marktechpost.com/2026/01/16/black-forest-labs-releases-flux-2-klein-compact-flow-models-for-interactive-visual-intelligence/"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "FLUX.2 licensing is a trap for client work: dev (32B) and klein 9B are under the FLUX Non-Commercial License; only klein 4B is Apache 2.0",
+            "detail": "BFL's Non-Commercial License terms explicitly exclude 'use for revenue-generating activity' — a studio using dev weights internally to produce paid client deliverables needs a separate paid commercial license, even though outputs themselves are commercially usable. klein 4B (and klein-base-4B) are Apache 2.0, i.e. the only fully commercial-clean local FLUX. Note: the bfl.ai blog page fetch summarized dev as 'Apache 2.0' but the HF model card and BFL legal page clearly state the FLUX Non-Commercial License — trust the latter.",
+            "sources": [
+              "https://bfl.ai/legal/non-commercial-license-terms",
+              "https://huggingface.co/black-forest-labs/FLUX.2-dev",
+              "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B",
+              "https://www.apatero.com/blog/flux-2-klein-apache-license-commercial-use"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "VRAM: FLUX.2 dev is out of reach locally (~64 GB BF16 / ~32 GB FP8 / ~19 GB GGUF Q4), but FLUX.2 klein 4B fits the studio's 6 GB RTX 3060 via GGUF Q4_K_M",
+            "detail": "klein 4B distilled needs ~8.4 GB at native precision (ComfyUI blog), and community guides plus unsloth GGUF quants put Q4_K_M on 6-8 GB cards; klein 9B distilled needs ~19.6 GB. ComfyUI has day-0 native support for both dev and klein (templates, FP8 weights made with NVIDIA), plus city96's ComfyUI-GGUF node for quantized builds. Exact 6 GB behavior (offloading, text-encoder RAM spill) comes from SEO-tier blogs, so treat runnability-at-quality as needing a local smoke test.",
+            "sources": [
+              "https://blog.comfy.org/p/flux2-klein-4b-fast-local-image-editing",
+              "https://huggingface.co/unsloth/FLUX.2-klein-4B-GGUF",
+              "https://docs.comfy.org/tutorials/flux/flux-2-klein",
+              "https://botmonster.com/ai/how-to-set-up-flux-2-dev-locally-in-2026/",
+              "https://www.stablediffusiontutorials.com/2026/01/flux2-klein.html"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "There is NO official FLUX.2 depth/structural-control tool, and BFL deprecated FLUX.1 Depth/Canny (pro, dev, and LoRA) in its API — FLUX.2 structure control is community-supplied",
+            "detail": "BFL's direction is multi-reference editing instead of explicit control channels. The gap is filled by: (a) alibaba-pai/FLUX.2-dev-Fun-Controlnet-Union (Canny/HED/Depth/Pose/MLSD/Scribble/Gray + inpaint; itself under the flux-dev non-commercial license; ComfyUI via a third-party wrapper node, not native), and (b) a Civitai community ControlNet 'depth or openpose flux2klein' (v1.2, 8 May 2026) — but it targets klein 9B, i.e. the non-commercial variant. As of early July 2026 no Apache-clean depth ControlNet for klein 4B surfaced in this research.",
+            "sources": [
+              "https://bfl.ai/flux-1-tools/",
+              "https://huggingface.co/alibaba-pai/FLUX.2-dev-Fun-Controlnet-Union",
+              "https://github.com/bryanmcguire/comfyui-flux2fun-controlnet",
+              "https://civitai.com/models/2578291/controlnet-depth-or-openpose-flux2klein"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "For FLUX.1 depth conditioning, the de-facto community standard is Shakker-Labs/InstantX FLUX.1-dev-ControlNet-Union-Pro-2.0 (Apr 2025), ahead of BFL's own FLUX.1-Depth-dev and XLabs",
+            "detail": "Union-Pro-2.0 handles canny/soft-edge/depth/pose/gray in one checkpoint (depth: depth-anything preprocessor, conditioning_scale ~0.8, guidance_end ~0.8); popular workflow authors describe InstantX Union Pro as 'the best depth ControlNet' vs XLabs. BFL's official FLUX.1-Depth-dev (a full 12B model variant, heavier) still exists as open weights but was deprecated in the BFL API, signaling end-of-line. All of these sit on FLUX.1-dev, so they inherit the non-commercial license problem for client work.",
+            "sources": [
+              "https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Union-Pro-2.0",
+              "https://comfyui-wiki.com/en/news/2025-04-19-flux-controlnet-union-pro-2",
+              "https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Depth",
+              "https://openart.ai/workflows/odam_ai/best-flux-depth-controlnet-instantx-union-pro---beginner-friendly-dev-gguf/payayOX8tlOPiWevdz8J",
+              "https://bfl.ai/flux-1-tools/"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "IP-Adapter for FLUX exists but never became good for style transfer; Redux (still API-supported) and now FLUX.2 multi-reference editing are what replaced it",
+            "detail": "XLabs shipped a beta then v2 flux-ip-adapter; InstantX shipped FLUX.1-dev-IP-Adapter (Nov 2024, SigLIP encoder) whose own card warns it is 'not for fine-grained style transfer' with content-leakage trade-offs. BFL's Redux adapter (image variation/style ref) was NOT deprecated when Depth/Canny were. FLUX.2's headline feature — 'character, object and style reference without additional training' via up to 10 reference images — is the current-generation replacement for the IP-Adapter role in the studio's stub.",
+            "sources": [
+              "https://huggingface.co/XLabs-AI/flux-ip-adapter",
+              "https://huggingface.co/InstantX/FLUX.1-dev-IP-Adapter",
+              "https://comfyui-wiki.com/en/news/2024-11-22-instantx-flux-ipadapter-release",
+              "https://bfl.ai/flux-1-tools/",
+              "https://huggingface.co/black-forest-labs/FLUX.2-dev"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Z-Image Turbo (Alibaba Tongyi, 27 Nov 2025) is the strongest commercial-safe low-VRAM alternative: 6B params, Apache 2.0, ~6 GB in GGUF/FP8, with an official Fun Union ControlNet (incl. depth) and a native ComfyUI template",
+            "detail": "Z-Image Turbo generates in 8 NFEs; community quants (GGUF ~6 GB, FP8 ~6-8 GB, SVDQuant int4) target exactly the 6-8 GB class; docs.comfy.org has a native tutorial including the Z-Image-Turbo Fun Union ControlNet workflow, and a separate Z-Image-Edit variant exists for instruction-based editing. For a depth-locked clay-to-photoreal pipeline with mandatory commercial rights on a 6 GB card, this is the most direct 2026 fit — pending the studio's own photoreal-quality bar test for interiors.",
+            "sources": [
+              "https://docs.comfy.org/tutorials/image/z-image/z-image-turbo",
+              "https://civitai.com/models/2169712/z-image-turbo-quantized-for-low-vram",
+              "https://localaimaster.com/blog/z-image-turbo-comfyui",
+              "https://www.thundercompute.com/blog/best-open-source-image-generation-models"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "Qwen-Image-Edit (2509/2511, Apache 2.0) is the other serious alternative, with a dedicated interior-design ComfyUI toolkit and depth-structure control via a union control LoRA",
+            "detail": "Qwen-Image-Edit supports structure control through qwen_image_union_diffsynth_lora (canny/depth/pose/lineart/softedge/normal); ComfyUI-ArchAi3d-Qwen is a purpose-built interior-design node pack (Text-to-Design, Mood-Board, Reference-Based Design, Room Cleaning, material presets for floor/wall/ceiling) — essentially the studio's exact use case productized. Base model is large (20B) but see the Nunchaku finding for 6 GB feasibility. Its instruction-editing mode is the closest local analogue to their current Gemini 'repaint the clay render' workflow.",
+            "sources": [
+              "https://github.com/amir84ferdos/ComfyUI-ArchAi3d-Qwen",
+              "https://comfyui-wiki.com/en/tutorial/advanced/image/qwen/qwen-image",
+              "https://docs.comfy.org/tutorials/image/qwen/qwen-image",
+              "https://comfyui.org/en/qwen-image-edit-2511-and-qwen-image"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "Nunchaku (SVDQuant 4-bit) is the 2026 low-VRAM inference lever the studio's plan ignores: ~3.6x smaller models, ~3x faster than NF4, Qwen-Image down to ~3 GiB VRAM with async offloading",
+            "detail": "ComfyUI-nunchaku v1.2.0 (12 Jan 2026) added Z-Image support (+20-30% speed), native LoRA nodes, and int4 on 20-series GPUs; 4-bit Z-Image-Turbo and 4-bit 4/8-step Qwen-Image-Edit-2509 Lightning are supported; SVDQuant 4-bit models fit in ~4 GB. This makes Qwen-Image-Edit and Z-Image realistically runnable on the studio's 6 GB RTX 3060 laptop, which plain BF16/FP8 checkpoints are not. The '~3 GiB' figure comes from the project's own README, so verify with a local benchmark.",
+            "sources": [
+              "https://github.com/nunchaku-ai/nunchaku",
+              "https://github.com/nunchaku-ai/ComfyUI-nunchaku",
+              "https://medium.com/coding-nexus/nunchaku-made-ai-image-editing-possible-on-mid-range-gpu-nvidia-rtx-3060-12gb-605589b5467c"
+            ],
+            "confidence": "medium"
+          },
+          {
+            "claim": "Real 2026 practitioner archviz workflows are hybrid SDXL+FLUX stages, not pure FLUX+ControlNet+IP-Adapter — e.g. PH's Archviz x AI v0.43 (Civitai, updated 23 Feb 2026)",
+            "detail": "PH's workflow (the most-referenced free archviz ComfyUI workflow) takes clay renders/wireframes/per-polygon-colored meshes and uses SDXL RealVisXL 4.0 with SDXL depth+canny ControlNets and SDXL IP-Adapter Plus for the structure/style stage, then FLUX.1-dev GGUF Q8 for the photoreal quality pass, upscaling to 12288x8192. The fact that a Feb-2026 workflow still uses SDXL IP-Adapter rather than any FLUX IP-Adapter confirms the FLUX IPA gap. Qwen-based interior workflows (ArchAi3d) are the emerging alternative pattern.",
+            "sources": [
+              "https://civitai.com/models/920108/phs-archviz-x-ai-comfyui-workflow-sdxl-flux",
+              "https://cgaward.com.ua/blog/news/phs-archviz-x-ai-free-comfyui-workflow.html",
+              "https://www.splinedynamics.com/blog/nextgen-cg/ai-assisted-archviz-beyond-the-hype/"
+            ],
+            "confidence": "high"
+          },
+          {
+            "claim": "Other alternatives are non-contenders in 2026: SD3.5 is fading (commercial only under $1M revenue via Community License), HiDream has dropped off tier lists, and 'Qwen-Image 2.0 (7B)' reports are thinly sourced",
+            "detail": "Thunder Compute's 2026 open-model roundup lists FLUX.2-dev, SD3.5, Qwen-Image, Z-Image Turbo, and Wan 2.2 — HiDream is absent entirely; SD3.5's remaining edge is its mature ControlNet/LoRA ecosystem. The same article claims a 7B 'Qwen-Image 2.0' under Apache 2.0, which no second source in this research confirmed — treat that specific model/size claim as unverified.",
+            "sources": [
+              "https://www.thundercompute.com/blog/best-open-source-image-generation-models"
+            ],
+            "confidence": "low"
+          },
+          {
+            "claim": "Decision frame for the studio: any FLUX.1-dev/FLUX.2-dev local path carries a commercial-license cost that must be compared against the working Gemini repaint at ~$0.04/image, not just against GPU rental",
+            "detail": "The three commercially clean local routes on their hardware are (1) Z-Image Turbo + Fun Union depth ControlNet (all Apache 2.0), (2) Qwen-Image-Edit via Nunchaku 4-bit with the ArchAi3d interior toolkit (Apache 2.0), (3) FLUX.2 klein 4B GGUF using its native image-editing mode on the clay render (Apache 2.0, but currently no commercial-clean depth ControlNet, so geometry lock relies on edit-instruction fidelity). FLUX.2 pro/flex via BFL/partner APIs is per-image paid with commercial rights and would compete with Gemini on price/quality rather than on locality; no reliable per-image price was verified in this research, so cost it from the live BFL pricing page before deciding.",
+            "sources": [
+              "https://bfl.ai/legal/non-commercial-license-terms",
+              "https://docs.comfy.org/tutorials/image/z-image/z-image-turbo",
+              "https://github.com/amir84ferdos/ComfyUI-ArchAi3d-Qwen",
+              "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B"
+            ],
+            "confidence": "medium"
+          }
+        ]
+      },
+      "verify": {
+        "verdicts": [
+          {
+            "claim": "FLUX.2 released 25 Nov 2025 with pro/flex (API, proprietary), dev (32B open-weight), klein (size-distilled, released 15-16 Jan 2026 as 4B and 9B with 4-step distilled + 50-step base; 4B distilled ~1.2 s/image); multi-reference up to 10 images, 4 MP, unified generation+editing",
+            "verdict": "confirmed",
+            "evidence": "BFL's own announcement (https://bfl.ai/blog/flux-2) confirms Nov 25 2025 release, pro/flex as API models, dev as '32B open-weight model', klein 'coming soon... size-distilled from the FLUX.2 base model', 'reference up to 10 images simultaneously', 4 MP output, and 'image editing from text and multiple references in one model' across all variants. BFL's klein post (https://bfl.ai/blog/flux2-klein-towards-interactive-visual-intelligence) is dated Jan 15 2026 and confirms 4B + 9B, each in distilled and base versions. ComfyUI's blog (https://blog.comfy.org/p/flux2-klein-4b-fast-local-image-editing, Jan 15 2026) confirms 4-step distilled vs 50-step base and '~1.2s (5090)' for 4B distilled. Precision notes: the 1.2 s figure is specifically on an RTX 5090; the release date is Jan 15 (the 16th is just Marktechpost's coverage date); BFL itself quotes 'under 0.5s on modern hardware'."
+          },
+          {
+            "claim": "FLUX.2 dev (32B) and klein 9B are under the FLUX Non-Commercial License (excluding 'revenue-generating activity'; paid commercial license needed for client work even though outputs are commercially usable); only klein 4B (incl. base) is Apache 2.0",
+            "verdict": "confirmed",
+            "evidence": "HF model card https://huggingface.co/black-forest-labs/FLUX.2-dev states license 'flux-non-commercial-license' (32B rectified flow transformer); https://huggingface.co/black-forest-labs/FLUX.2-klein-9B states 'This model falls under the FLUX Non-Commercial License'; https://huggingface.co/black-forest-labs/FLUX.2-klein-4B states Apache 2.0, and BFL's klein blog confirms Apache 2.0 for BOTH 4B versions (distilled + base) and FLUX NCL for both 9B versions. The license text itself (https://bfl.ai/legal/non-commercial-license-terms) excludes use '(a) for revenue-generating activity, (b) in direct interactions with or that has impact on end users...', explicitly lists FLUX.2 [dev] among covered models, says 'You may use Output for any purpose (including for commercial purposes)', and requires 'you must request a license from Company' for commercial activity — exactly the trap described (model-use restriction bites a paid-client-work studio regardless of the output clause). The claim's advice to trust the HF card/legal page over a blog summary that said 'Apache 2.0' for dev is correct."
+          },
+          {
+            "claim": "VRAM: FLUX.2 dev ~64 GB BF16 / ~32 GB FP8 / ~19 GB GGUF Q4 (out of local reach); klein 4B distilled ~8.4 GB native, klein 9B distilled ~19.6 GB; klein 4B fits 6 GB RTX 3060 via GGUF Q4_K_M; ComfyUI day-0 native support + NVIDIA FP8 weights + city96 GGUF node",
+            "verdict": "confirmed",
+            "evidence": "BF16: flux2-dev.safetensors is 64.4 GB on https://huggingface.co/black-forest-labs/FLUX.2-dev/tree/main — confirmed. FP8: the official Comfy-Org checkpoint flux2_dev_fp8mixed.safetensors is 35.5 GB (https://huggingface.co/Comfy-Org/flux2-dev/tree/main/split_files/diffusion_models) — claim's ~32 GB is slightly low but conclusion (unrunnable on 6 GB) unchanged; NVIDIA confirms the FP8 collab and ~40% VRAM cut (https://blogs.nvidia.com/blog/rtx-ai-garage-flux-2-comfyui/). GGUF Q4 ~19 GB corroborated only by secondary guides. klein figures 8.4 GB (4B distilled) / 19.6 GB (9B distilled) confirmed verbatim on https://blog.comfy.org/p/flux2-klein-4b-fast-local-image-editing and https://docs.comfy.org/tutorials/flux/flux-2-klein — but note BFL's own HF card says klein 4B 'fits in ~13GB VRAM (RTX 3090/4070 and above)', so official sources disagree 8.4 vs 13 GB. Q4_K_M file = 2.6 GB confirmed at https://huggingface.co/unsloth/FLUX.2-klein-4B-GGUF; actual 6 GB runnability is only evidenced by community/SEO tier (e.g. https://aistudynow.com/flux-2-klein-fix-crashes-run-9b-on-6gb-vram-workflow-download/) — the claim's own 'needs a local smoke test' caveat is warranted and should be kept. Day-0 ComfyUI support confirmed (https://blog.comfy.org/p/flux2-state-of-the-art-visual-intelligence); city96 GGUF support corroborated: city96 publishes his own FLUX.2-dev-gguf quants (https://huggingface.co/city96/FLUX.2-dev-gguf) and klein GGUF guides route through his node, though the ComfyUI-GGUF README's pre-quantized list still only names FLUX.1."
+          },
+          {
+            "claim": "No official FLUX.2 depth/structural-control tool exists; BFL deprecated FLUX.1 Depth/Canny (pro, dev, LoRA) in its API; FLUX.2 structure control is community-supplied (alibaba-pai Fun-Controlnet-Union, non-commercial, third-party ComfyUI wrapper; Civitai flux2klein depth/openpose v1.2 8 May 2026 targeting klein 9B); no Apache-clean depth ControlNet for klein 4B as of early July 2026",
+            "verdict": "confirmed",
+            "evidence": "https://bfl.ai/flux-1-tools/ carries the notice: 'The FLUX.1 Depth and FLUX.1 Canny models (both [pro] and [dev] variants, including the LoRA versions) are deprecated and will no longer be supported in the BFL API' (open checkpoints remain on HF) — deprecation confirmed verbatim. Independent searches for an official FLUX.2 ControlNet/depth tool from BFL found none (BFL's FLUX.2 messaging centers on multi-reference editing). https://huggingface.co/alibaba-pai/FLUX.2-dev-Fun-Controlnet-Union exists: Canny/HED/Depth/Pose/MLSD/Scribble/Gray + inpaint, license 'flux-dev-non-commercial-license', no native ComfyUI support on the card; the third-party wrapper https://github.com/bryanmcguire/comfyui-flux2fun-controlnet exists (monkey-patches Flux blocks, not ComfyUI core). https://civitai.com/models/2578291/controlnet-depth-or-openpose-flux2klein exists: base Flux.2 Klein 9B, depth+openpose, v1.2 published May 8 2026, non-commercial. My own searches also surfaced no Apache-licensed depth ControlNet for klein 4B — the negative claim stands as of 2026-07-02 (absence of evidence, so keep monitoring)."
+          },
+          {
+            "claim": "For FLUX.1 depth conditioning the de-facto standard is Shakker-Labs/InstantX FLUX.1-dev-ControlNet-Union-Pro-2.0 (Apr 2025; canny/soft-edge/depth/pose/gray; depth-anything, conditioning_scale ~0.8, guidance_end ~0.8), ahead of BFL FLUX.1-Depth-dev (12B full model, API-deprecated) and XLabs; all inherit FLUX.1-dev non-commercial license",
+            "verdict": "confirmed",
+            "evidence": "https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Union-Pro-2.0 confirms the five modes 'canny, soft edge, depth, pose, gray', depth recommendation 'depth-anything' with 'controlnet_conditioning_scale=0.8, control_guidance_end=0.8', base black-forest-labs/FLUX.1-dev, license flux-1-dev-non-commercial-license. Release date Apr 19 2025 confirmed by https://comfyui-wiki.com/en/news/2025-04-19-flux-controlnet-union-pro-2 (also notes 3.98 GB size). BFL FLUX.1-Depth-dev: weights remain on HF but API endpoints deprecated per https://bfl.ai/flux-1-tools/. Caveat: 'de-facto community standard' / 'best depth ControlNet ahead of XLabs' is community opinion (workflow-author testimonials, e.g. the cited OpenArt workflow), not a measurable fact — the hard sub-claims (modes, settings, dates, license) all verify."
+          }
+        ],
+        "corrections": "Two number-level corrections, neither changing any conclusion: (1) FLUX.2-dev FP8 is 35.5 GB, not ~32 GB — the official Comfy-Org file flux2_dev_fp8mixed.safetensors is 35.5 GB (huggingface.co/Comfy-Org/flux2-dev); NVIDIA's '40% VRAM reduction' off 64.4 GB BF16 also lands near ~38 GB, not 32. Still hopelessly beyond 6 GB. (2) klein 4B distilled VRAM: the 8.4 GB figure is real (ComfyUI blog + docs.comfy.org) but BFL's own HF card and klein blog state '~13 GB VRAM (RTX 3090/4070 and above)' — official sources conflict, so for the studio's 6 GB planning assume the 13 GB figure at native precision and treat GGUF Q4_K_M (2.6 GB transformer file) + offloading as the only plausible 6 GB path, pending the local smoke test the researcher already recommended. Also minor: klein released Jan 15 2026 (the Jan 16 date is just Marktechpost's next-day coverage), and the 1.2 s/image figure is specifically on an RTX 5090 — expect far slower on an RTX 3060 Laptop."
+      }
+    }
+  ],
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Research"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Verify"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "research:local-6gb",
+      "phaseIndex": 1,
+      "phaseTitle": "Research",
+      "agentId": "a5bba6336326cbbce",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044151508,
+      "queuedAt": 1783044151441,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Local FLUX on this 6 GB RTX 3060 Laptop is technically poss…",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783044623401,
+      "tokens": 47871,
+      "toolCalls": 22,
+      "durationMs": 471892,
+      "resultPreview": "{\"summary\":\"Local FLUX on this 6 GB RTX 3060 Laptop is technically possible in 2026 but only as a dev/test lane, not production. GGUF Q4/Q5 of FLUX.1-dev physically exceeds 6 GB (Q4_0 = 6.79 GB + 4.8 GB T5-fp8), so it runs only with RAM offload; comparable-or-better cards report 60-80 s/image (3060 12 GB, Q5) to minutes/image, and the one directly-matching user report (3060 Laptop 6 GB/16 GB RAM) …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "research:cloud-gpu",
+      "phaseIndex": 1,
+      "phaseTitle": "Research",
+      "agentId": "a0e95d0b541addd09",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044151511,
+      "queuedAt": 1783044151441,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Renting a cloud GPU for ComfyUI is cheap and technically ma…",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783044562961,
+      "tokens": 46336,
+      "toolCalls": 20,
+      "durationMs": 411450,
+      "resultPreview": "{\"summary\":\"Renting a cloud GPU for ComfyUI is cheap and technically mature in 2026: an RTX 4090 is ~$0.34/hr (RunPod community, Vast.ai ~$0.29–0.50/hr) to ~$0.69/hr (RunPod secure), one-click ComfyUI+FLUX templates exist on both platforms, and the exact dispatch pattern the studio plans (expose port 8188, POST API-format JSON to /prompt, poll /history/{id}, GET /view) is the documented standard. …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "research:serverless",
+      "phaseIndex": 1,
+      "phaseTitle": "Research",
+      "agentId": "ac9ac137860900746",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044151512,
+      "queuedAt": 1783044151442,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Two services fit \"send clay-render depth + style ref, get p…",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783045240313,
+      "tokens": 77578,
+      "toolCalls": 60,
+      "durationMs": 1088801,
+      "resultPreview": "{\"summary\":\"Two services fit \\\"send clay-render depth + style ref, get photoreal interior back\\\" best: fal.ai and Replicate. fal's fal-ai/flux-general endpoint is the only fixed (no-ComfyUI) API found that runs the studio's exact planned stack — FLUX.1 dev + depth ControlNet + IP-Adapter style reference in one call — at $0.075/MP with explicit commercial-use permission; its depth-only sibling (flu…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "research:licensing",
+      "phaseIndex": 1,
+      "phaseTitle": "Research",
+      "agentId": "aaf52bc9db73397cf",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044151513,
+      "queuedAt": 1783044151442,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Licensing splits the FLUX paths cleanly into safe / paid-sa…",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783044826039,
+      "tokens": 50840,
+      "toolCalls": 27,
+      "durationMs": 674526,
+      "resultPreview": "{\"summary\":\"Licensing splits the FLUX paths cleanly into safe / paid-safe / risky. SAFE with zero strings: FLUX.1 [schnell] and FLUX.2 [klein] 4B are Apache 2.0 (model AND outputs fully commercial) — but there is no Apache-licensed depth-control stack: the official FLUX.1 Depth [dev] Tool and every third-party FLUX depth ControlNet (Shakker/InstantX Union Pro, XLabs) sit under the dev Non-Commerci…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "research:landscape",
+      "phaseIndex": 1,
+      "phaseTitle": "Research",
+      "agentId": "a965b845b71c7673c",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044151514,
+      "queuedAt": 1783044151442,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "The 2024-era stack the studio's stub assumes (FLUX.1-dev + …",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783044888990,
+      "tokens": 58268,
+      "toolCalls": 27,
+      "durationMs": 737476,
+      "resultPreview": "{\"summary\":\"The 2024-era stack the studio's stub assumes (FLUX.1-dev + third-party Depth ControlNet + IP-Adapter) is now two generations behind and has a licensing problem the hardware discussion has been hiding: every strong FLUX variant except FLUX.2 klein 4B (and per-image API purchases) is under BFL's Non-Commercial License, which explicitly excludes revenue-generating client work without a pa…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "verify:cloud-gpu",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a9290d0f8f38f8fba",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044562989,
+      "queuedAt": 1783044562964,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Two small tightenings, no refutations: (1) First-boot time …",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783045244348,
+      "tokens": 37875,
+      "toolCalls": 18,
+      "durationMs": 681359,
+      "resultPreview": "{\"verdicts\":[{\"claim\":\"RunPod RTX 4090 rents for $0.34/hr (Community) to $0.69/hr (Secure); RTX 5090 (32GB) ~$0.99/hr, L40S (48GB) ~$0.99/hr, RTX A5000 ~$0.27/hr, billed per-second; serverless 4090 $1.10/hr flex, 48GB-class up to $1.75/hr; Vast 4090 ~$0.29-0.31 interruptible / $0.35-0.50 on-demand\",\"verdict\":\"confirmed\",\"evidence\":\"Fetched RunPod's own pages (July 2026): https://www.runpod.io/gpu-…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "verify:local-6gb",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "ac155f2ab14473dbb",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044623410,
+      "queuedAt": 1783044623408,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "THE BIG MISS — LICENSE (affects the whole local FLUX.1-dev …",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783045370745,
+      "tokens": 57902,
+      "toolCalls": 32,
+      "durationMs": 747335,
+      "resultPreview": "{\"verdicts\":[{\"claim\":\"GGUF Q4 of FLUX.1-dev does not fit in 6 GB VRAM; runs only via RAM offload; low-VRAM times range ~60-80 s/image (12 GB 3060) to multi-minute on weaker/offloaded setups\",\"verdict\":\"confirmed\",\"evidence\":\"File sizes verified on HuggingFace: flux1-dev-Q4_0.gguf = 6.79 GB, Q4_K_S = 6.81 GB, Q5_K_S = 8.29 GB (https://huggingface.co/city96/FLUX.1-dev-gguf/tree/main); t5xxl_fp8_e4m…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "verify:licensing",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a39e8cdd279ec82f9",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044826053,
+      "queuedAt": 1783044826043,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "One minor attribution fix in Claim 4: the quotes 'Black For…",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783045294196,
+      "tokens": 40149,
+      "toolCalls": 25,
+      "durationMs": 468142,
+      "resultPreview": "{\"verdicts\":[{\"claim\":\"All [dev] weights (FLUX.1 dev, Tools Depth/Canny/Fill/Redux dev, Kontext dev, FLUX.2 dev) sit under one unified 'FLUX [dev] Non-Commercial License' v2.0 (last revised Nov 25, 2025) permitting commercial use of OUTPUTS but prohibiting commercial use of the MODEL\",\"verdict\":\"confirmed\",\"evidence\":\"https://bfl.ai/legal/non-commercial-license-terms is titled 'FLUX [dev] Non-Comm…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "verify:landscape",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a264395bc9a8479d7",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783044889000,
+      "queuedAt": 1783044888998,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Two number-level corrections, neither changing any conclusi…",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783045523897,
+      "tokens": 56076,
+      "toolCalls": 33,
+      "durationMs": 634897,
+      "resultPreview": "{\"verdicts\":[{\"claim\":\"FLUX.2 released 25 Nov 2025 with pro/flex (API, proprietary), dev (32B open-weight), klein (size-distilled, released 15-16 Jan 2026 as 4B and 9B with 4-step distilled + 50-step base; 4B distilled ~1.2 s/image); multi-reference up to 10 images, 4 MP, unified generation+editing\",\"verdict\":\"confirmed\",\"evidence\":\"BFL's own announcement (https://bfl.ai/blog/flux-2) confirms Nov …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "verify:serverless",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "aeb7c6ad0588a500e",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783045240323,
+      "queuedAt": 1783045240321,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "No refutations — all five claims held against primary sourc…",
+      "promptPreview": "CONTEXT (do not skip): You are researching for a small Thai interior-design studio.\n- Local machine: Windows 11 laptop, RTX 3060 Laptop GPU with only 6 GB VRAM, \n  so FLUX.1-dev full-precision local is known infeasible.\n- Their pipeline plan (currently a stub) is: ComfyUI API-format workflow JSON dispatched\n  programmatically -> FLUX + Depth ControlNet + IP-Adapter(style). The control image is a\n …",
+      "lastProgressAt": 1783045641985,
+      "tokens": 43928,
+      "toolCalls": 25,
+      "durationMs": 401661,
+      "resultPreview": "{\"verdicts\":[{\"claim\":\"fal.ai flux-general runs FLUX.1 dev with depth ControlNet + IP-Adapter + LoRA in one call at $0.075/MP with commercial use permitted; fal-ai/flux-control-lora-depth at $0.04/MP; base flux/dev at $0.025/MP 'suitable for personal and commercial use'; FLUX Redux endpoints hosted\",\"verdict\":\"confirmed\",\"evidence\":\"Primary pages fetched 2026-07-02. https://fal.ai/models/fal-ai/fl…"
+    }
+  ],
+  "totalTokens": 516823,
+  "totalToolCalls": 289
+}
