@@ -38,6 +38,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals() el
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 import furniture
+import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 
 # Fallback if no spec is passed on the CLI. Mirrors pipeline/specs/living_demo.json.
 DEFAULT_SPEC = {
@@ -404,7 +405,7 @@ def add_suite_eye_camera(spec, outline_m, h):
         stand_blocks.append(bb); ray_blocks.append(bb)
     for b in spec.get("builtins", []):
         stand_blocks.append(_bbox(b))
-        if float(b.get("h", 0)) * MM >= 1.55:
+        if float(b.get("h", 0)) * MM >= camera_config.RAY_BLOCK_MIN_H_M:  # coupled to eye height
             ray_blocks.append(_bbox(b))
     for it in spec.get("items", []):
         # rugs never block standing regardless of h (rendered 14 mm thick anyway;
@@ -494,8 +495,9 @@ def add_suite_eye_camera(spec, outline_m, h):
     raw = 36.0 * standoff / req_w                # 36mm-sensor pinhole approximation
     cam_data.lens = min((26.0, 28.0, 35.0, 50.0), key=lambda f: abs(f - raw))
     cam_data.sensor_fit = 'HORIZONTAL'
-    eye = Vector((ex, ey, 1.5))
-    tgt = Vector((tx, ty, 1.5))              # LEVEL look -> two-point preserved
+    _eye_h = camera_config.EYE_CAM_HEIGHT_M  # designer 1.0–1.2 m (M3.2 GS-15; was 1.5); env EYE_CAM_HEIGHT_M for A/B
+    eye = Vector((ex, ey, _eye_h))
+    tgt = Vector((tx, ty, _eye_h))           # LEVEL look -> two-point preserved
     cam = bpy.data.objects.new("Camera", cam_data)
     bpy.context.scene.collection.objects.link(cam)
     cam.location = eye
