@@ -120,6 +120,24 @@ def main():
     if verdict == "FAIL":
         sys.exit("\n  STOP: clearance FAILED — fix the spec before generating deliverables.")
 
+    # 2b) FUNCTION GATE — human-usage placement (placement_logic, the M3.2 answer): the
+    #     LLM judge scored BEAUTY and was blind to design correctness. This deterministic
+    #     layer checks what a designer catches — a TV with no controllable position (fused
+    #     into a headboard/feature wall, so the render invents where the screen lands), a
+    #     TV behind the viewer's head, the entry door on the bed-head wall. A FUNCTION FAIL
+    #     STOPS here, same discipline as clearance — we don't render a functionally-broken
+    #     layout. WARN/REVIEW prints but does not block (a designer's call).
+    import placement_logic
+    fverdict = "UNWIRED"
+    try:
+        print(placement_logic.format_report(spec, os.path.basename(spec_path)))
+        _fres, fverdict = placement_logic.report(spec)
+    except Exception as e:  # noqa: BLE001 — a FUNCTION-layer bug must not block a valid build
+        print(f"  (!) FUNCTION check skipped ({type(e).__name__}: {e})")
+    if fverdict == "FAIL":
+        sys.exit("\n  STOP: FUNCTION check FAILED — the layout breaks a human-usage rule "
+                 "(see above). Give the TV real coordinates / move the bed head before rendering.")
+
     # 3) 2D แบบ
     doc = plan_2d.build_dxf(spec)
     dxf = os.path.join(out, f"plan_{name}.dxf")
@@ -238,6 +256,7 @@ def main():
 
     print("\n=== make_all summary ===")
     print(f"  clearance: {verdict}")
+    print(f"  function:  {fverdict}  (human-usage placement — placement_logic)")
     for p in produced:
         print(f"  PRODUCED: {p}")
     for s in skipped:

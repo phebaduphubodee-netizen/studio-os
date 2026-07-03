@@ -76,6 +76,46 @@ def _wall_in_dir(dx, dy):
     return ("east" if dx > 0 else "west") if abs(dx) >= abs(dy) else ("north" if dy > 0 else "south")
 
 
+# ---------- units ----------
+IN_TO_MM = 25.4
+
+
+def _is_inch(spec):
+    """A room-spec@0.1 (inch, rect) — clearance_check's own discriminant."""
+    return "width_in" in (spec.get("room") or {})
+
+
+def _normalize(spec):
+    """Return an mm spec the rules can consume in ONE unit. @0.2 (outline_mm) passes
+    through untouched. @0.1 (inch, width_in): scale every element ×25.4 and synthesize
+    the mm outline + the materializer's south-wall entry door (build_room/clearance_check
+    centre the entry door on the south wall), so the SAME rules — and the mm ergonomic
+    bands — apply. No mutation of the caller's spec (inch path deep-copies fields)."""
+    if not _is_inch(spec):
+        return spec
+    r = spec.get("room") or {}
+    W = float(r.get("width_in", 0) or 0) * IN_TO_MM
+    D = float(r.get("depth_in", 0) or 0) * IN_TO_MM
+
+    def scale(el):
+        e = dict(el)
+        for k in ("x", "y", "w", "d", "h"):
+            if e.get(k) is not None:
+                try:
+                    e[k] = float(e[k]) * IN_TO_MM
+                except (TypeError, ValueError):
+                    pass
+        return e
+
+    out = {"room": {"outline_mm": [[0, 0], [W, 0], [W, D], [0, D]], "type": r.get("type")},
+           "items": [scale(it) for it in spec.get("items", [])],
+           "builtins": [scale(b) for b in spec.get("builtins", [])],
+           "subrooms": spec.get("subrooms", [])}   # @0.1 has none -> bathroom rule no-ops
+    dw = float((r.get("door") or {}).get("w_in", 32) or 32) * IN_TO_MM
+    out["door"] = {"wall": "south", "x": max(0.0, (W - dw) / 2.0), "y": 0.0, "w": dw}
+    return out
+
+
 # ---------- element finders ----------
 def _iter_elements(spec):
     for grp in ("items", "builtins"):
@@ -199,27 +239,32 @@ def _rule_furniture_dimensions(spec, ctx):
     # norm — the GS-02/06 family ("สัดส่วนไม่ได้ / เฟอร์ฯใหญ่ไป / ที่นั่งสูงเกิน").
     # Values from ergonomics_ref (NLM DR 5de4bb36). Overall chair/sofa `h` is the
     # backrest not the seat, so seat-height is intentionally NOT checked here.
-    issues = []
+    issues, checked = [], False
     for el in _iter_elements(spec):
         k = el.get("kind")
         if k in ergo.TABLE_H_MM:
+            checked = True
             lo, hi = ergo.TABLE_H_MM[k]
             h = float(el.get("h", 0) or 0)
             if h and not (lo <= h <= hi):
                 issues.append(f"{k} height {h:.0f}mm (norm {lo}–{hi})")
         elif k == "wardrobe":
+            checked = True
             lo, hi = ergo.WARDROBE_DEPTH_MM
             dep = min(float(el.get("w", 0) or 0), float(el.get("d", 0) or 0))
             if dep and not (lo <= dep <= hi):
                 issues.append(f"wardrobe depth {dep:.0f}mm (norm {lo}–{hi})")
         elif k == "bed":
+            checked = True
             name, (bw, bl), ok, worst = ergo.nearest_bed_size(el.get("w", 0), el.get("d", 0))
             if not ok:
                 issues.append(f"bed {float(el['w']):.0f}×{float(el['d']):.0f}mm off standard "
                               f"(nearest {name} {bw}×{bl}, off {worst:.0f}mm)")
     if issues:
         return ("furniture_dimensions", WARN, "; ".join(issues))
-    return ("furniture_dimensions", PASS, "furniture sizes/heights within ergonomic norms")
+    if checked:
+        return ("furniture_dimensions", PASS, "furniture sizes/heights within ergonomic norms")
+    return None   # no dimensionable piece (table/wardrobe/bed) -> not a silent pass
 
 
 def _subroom_door_center(sr):
@@ -290,7 +335,9 @@ def _worst(statuses):
 
 def check(spec):
     """Run the human-usage placement rules over a room spec. Returns
-    {status, findings:[{rule,status,detail}], applicable, tv_status, viewer_kind}."""
+    {status, findings:[{rule,status,detail}], applicable, tv_status, viewer_kind}.
+    @0.1 inch specs are normalized to mm first, so one rule set serves both schemas."""
+    spec = _normalize(spec)
     bed = find_bed(spec)
     viewer, viewer_front, viewer_kind = find_primary_viewer(spec)
     tv, tv_status = find_tv(spec)
@@ -306,6 +353,29 @@ def check(spec):
     return {"status": status, "findings": findings,
             "applicable": tv_status != "absent" or bed is not None,
             "tv_status": tv_status, "viewer_kind": viewer_kind, "has_bed": bed is not None}
+
+
+def report(spec, label=""):
+    """FUNCTION-layer gate result in the SAME (results, verdict) shape as
+    suite_clearance.report / the clearance_check gate, so placement drops into the
+    existing PRE-RENDER gate machinery (make_all, repair_loop Gate 0, suite_package).
+
+    verdict: FAIL if any rule FAILs (a human-usage breach — abort before a paid
+    render), REVIEW if any WARN, PASS if rules ran clean, UNWIRED if NOTHING applied
+    (no TV and no bed — honest, never a silent pass). Each check id is prefixed
+    'function:' so it never collides with a geometry check of the same name."""
+    r = check(spec)
+    results = [{"status": f["status"], "check": f"function:{f['rule']}", "detail": f["detail"]}
+               for f in r["findings"]]
+    if not r["findings"]:
+        verdict = UNWIRED
+    elif any(f["status"] == FAIL for f in r["findings"]):
+        verdict = FAIL
+    elif any(f["status"] == WARN for f in r["findings"]):
+        verdict = "REVIEW"
+    else:
+        verdict = PASS
+    return results, verdict
 
 
 def format_report(spec, name=""):

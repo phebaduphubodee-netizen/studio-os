@@ -251,6 +251,77 @@ def test_real_ensuite_follows_frequency_and_zoning():
     assert _s(P.check(spec), "bathroom_logic") == P.PASS      # basin at entry, wet deep
 
 
+# ---- report(): the (results, verdict) gate contract (drops into make_all / repair_loop / suite_package) ----
+def test_report_fail_on_fused_tv():
+    spec = _bedroom()
+    spec["builtins"].append({"name": "hb/tv", "kind": "headboard_tv",
+                             "x": 1970, "y": 5000, "w": 3330, "d": 574, "h": 2800})
+    results, verdict = P.report(spec)
+    assert verdict == P.FAIL
+    assert results and all(r["check"].startswith("function:") for r in results)
+    assert any(r["check"] == "function:tv_positioned" and r["status"] == P.FAIL for r in results)
+
+
+def test_report_pass_on_good_tv():
+    _results, verdict = P.report(_bedroom(_tv()))
+    assert verdict == P.PASS
+
+
+def test_report_review_on_warn_only():
+    spec = _bedroom(_tv())
+    spec["items"][0]["w"], spec["items"][0]["d"] = 2500, 2500   # off-standard bed -> WARN, no FAIL
+    _results, verdict = P.report(spec)
+    assert verdict == "REVIEW"
+
+
+def test_report_unwired_when_nothing_applies():
+    spec = {"room": {"outline_mm": [[0, 0], [4000, 0], [4000, 4000], [0, 4000]]},
+            "items": [{"name": "rug", "kind": "rug", "x": 500, "y": 500, "w": 2000, "d": 2000}],
+            "builtins": []}
+    results, verdict = P.report(spec)
+    assert verdict == P.UNWIRED and results == []
+
+
+# ---- @0.1 inch specs are normalized to mm and gated by the SAME rules ----
+def _inch_living(tv_y_in):
+    # 14x16 ft living room; sofa faces -Y (rot 0); entry door auto-synthesised south.
+    return {"schema": "interior-ai/room-spec@0.1",
+            "room": {"width_in": 168, "depth_in": 192, "ceiling_in": 96, "type": "living"},
+            "items": [{"name": "sofa", "kind": "sofa", "x": 42, "y": 150, "w": 84, "d": 36, "h": 34},
+                      {"name": "tv", "kind": "tv", "x": 60, "y": tv_y_in, "w": 48, "d": 4, "h": 28}]}
+
+
+def test_inch_spec_normalized_to_mm():
+    norm = P._normalize(_inch_living(6))
+    assert "outline_mm" in norm["room"] and norm["door"]["wall"] == "south"
+    assert abs(norm["room"]["outline_mm"][1][0] - 168 * 25.4) < 1e-6      # width scaled ×25.4
+    assert abs(norm["items"][0]["w"] - 84 * 25.4) < 1e-6                  # element scaled ×25.4
+
+
+def test_inch_spec_tv_in_front_passes():
+    results, verdict = P.report(_inch_living(tv_y_in=6))                  # south side, in front
+    assert verdict in (P.PASS, "REVIEW")
+    assert next(r["status"] for r in results if r["check"] == "function:tv_faces_viewer") == P.PASS
+
+
+def test_inch_spec_tv_behind_sofa_fails():
+    results, verdict = P.report(_inch_living(tv_y_in=185))               # behind the sofa (north)
+    assert verdict == P.FAIL
+    assert next(r["status"] for r in results if r["check"] == "function:tv_faces_viewer") == P.FAIL
+
+
+# ---- integration: the FUNCTION layer is now part of the pre-render Gate 0 (repair_loop) ----
+def test_repair_loop_gate0_includes_function_and_fails_fused_tv():
+    import repair_loop
+    spec = _spec("bedroom_suite.json")
+    if spec is None:
+        return
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "specs", "bedroom_suite.json")
+    results, verdict = repair_loop._real_geometry_fn(spec, path)
+    assert verdict == P.FAIL                                              # fused TV escalates the gate
+    assert any(r["check"] == "function:tv_positioned" and r["status"] == P.FAIL for r in results)
+
+
 TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_over_bed_fails,
          test_tv_too_close_warns, test_bed_rotated_180_flips_front, test_living_sofa_is_the_viewer,
          test_living_tv_behind_sofa_fails, test_door_on_head_wall_fails, test_door_on_other_wall_passes,
@@ -262,7 +333,11 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_flags_shallow_wardrobe,
          test_bathroom_good_ordering_passes, test_bathroom_shower_at_entry_fails,
          test_bathroom_wet_not_at_back_warns, test_bathroom_rule_skips_without_bathroom,
-         test_real_ensuite_follows_frequency_and_zoning]
+         test_real_ensuite_follows_frequency_and_zoning,
+         test_report_fail_on_fused_tv, test_report_pass_on_good_tv, test_report_review_on_warn_only,
+         test_report_unwired_when_nothing_applies, test_inch_spec_normalized_to_mm,
+         test_inch_spec_tv_in_front_passes, test_inch_spec_tv_behind_sofa_fails,
+         test_repair_loop_gate0_includes_function_and_fails_fused_tv]
 
 
 def main():

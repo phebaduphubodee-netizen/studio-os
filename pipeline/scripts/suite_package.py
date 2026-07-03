@@ -149,6 +149,17 @@ def build(spec, spec_path, name=None, outdir=None, date=None, render_png=None):
           "date": date, "status": "DRAFT"}
 
     res, verdict = suite_clearance.check(spec), None
+    # FUNCTION layer (placement_logic) rides the SAME cover verdict + QA-CHECKLIST as the
+    # metric clearance gate — the M3.2 answer: the render judge scores beauty and is blind
+    # to a TV with no controllable position (fused into a headboard/feature wall) or a bed
+    # with its head on the door wall. Rows share the {status,check,detail} shape (checks
+    # prefixed 'function:'); a FUNCTION FAIL escalates the deliverable verdict. A bug in the
+    # layer must never block the deliverable -> degrade silently to clearance-only.
+    try:
+        import placement_logic
+        res = list(res) + placement_logic.report(spec)[0]
+    except Exception:  # noqa: BLE001
+        pass
     fails = sum(x["status"] == "FAIL" for x in res); warns = sum(x["status"] == "WARN" for x in res)
     verdict = "FAIL" if fails else ("REVIEW" if warns else "PASS")
 
