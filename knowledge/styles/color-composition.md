@@ -20,8 +20,10 @@ never cite this file for law.)
 ## 1. ชนิดความกลมกลืนของสี / Color harmony types (วงจรสี, Albers)
 
 Six primary harmony types for organizing an interior palette
-(source: COLOR THEORY PDF + Albers *Interaction of Color*, manifest ids
-`f6354b19-6bf`, `28fa10cb-2bd`; notebook a5a43395 turn 6):
+(notebook a5a43395 turn 6, single unmapped marker [1]; the ask was scoped to
+the COLOR THEORY PDF `f6354b19-6bf` + Albers *Interaction of Color*
+`28fa10cb-2bd` — a wheel-based harmony taxonomy is consistent with the COLOR
+THEORY source; do not attribute this list to Albers specifically):
 
 | Harmony type | โครงสี |
 |---|---|
@@ -41,6 +43,31 @@ Six primary harmony types for organizing an interior palette
 | 60% | Dominant color สีหลัก | walls, large rugs / ผนัง พรมผืนใหญ่ |
 | 30% | Secondary color สีรอง | furniture, window treatments / เฟอร์นิเจอร์ ผ้าม่าน |
 | 10% | Accent color สีเน้น | artwork, small accessories / งานศิลปะ ของตกแต่งชิ้นเล็ก |
+
+> Corroboration: independently confirmed by a second DR source with identical
+> carriers — 60% dominant (walls, large rugs), 30% secondary (furniture, window
+> treatments), 10% accent (accessories, artwork); values unchanged
+> (Interior Design Knowledge Structuring.pdf p.3, tier REFERENCE, 2026-07-03).
+
+### 2.1 กฎเลขคี่ / Odd Rule (การจัดกลุ่มของตกแต่ง / object groupings)
+
+> PROVENANCE (this subsection + the corroboration note above only): distilled
+> from `knowledge/_inbox/id-project-corpus/Interior Design Knowledge
+> Structuring.pdf` p.3 (DR report, REFERENCE tier, staged 2026-07-03) —
+> separate from this file's NLM provenance block at the top.
+
+- Grouping objects in **odd numbers** creates visual asymmetry, forcing the
+  eye to move across the composition and generating rhythm / จัดของตกแต่ง
+  เป็นกลุ่ม**จำนวนคี่** เกิดความไม่สมมาตรตามธรรมชาติ สายตาเคลื่อนผ่าน
+  องค์ประกอบ เกิดจังหวะ (Interior Design Knowledge Structuring.pdf p.3).
+- Machine-checkable: **odd-count validation on decorative arrays** (styling
+  slots) — the source describes JSON-schema furniture layouts whose decorative
+  arrays must populate with odd-numbered entity counts
+  (Interior Design Knowledge Structuring.pdf p.3).
+- GAP: single-source; corpus gives no group-size bounds (3 / 5 / 7?), no
+  exception rules for deliberately symmetrical or formal/classical styling
+  (even pairs), and no per-slot applicability list — re-source before
+  promoting odd-count from advisory check to hard QA gate.
 
 ## 3. สีข้างเคียงและ simultaneous contrast / Adjacency & perceived color shift
 
