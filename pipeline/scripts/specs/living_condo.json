@@ -1,7 +1,7 @@
 {
   "schema": "interior-ai/room-spec@0.2",
   "units": "metric",
-  "note": "EXAMPLE condo living-dining spec, mm, y-up, origin SW corner. Authored 2026-07-02 as the second room type for render-hybrid production promotion (M2.2). Typical Thai condo flow: entry (south) -> dining zone -> lounge with TV feature wall on the north wall. 4500x7200, ceiling 2700. Windows omitted (builder does not support them yet). Fictional unit - no client data.",
+  "note": "EXAMPLE condo living-dining spec, mm, y-up, origin SW corner. Authored 2026-07-02 as the second room type for render-hybrid production promotion (M2.2). Typical Thai condo flow: entry (south) -> dining zone -> lounge with TV feature wall on the north wall. 4500x7200, ceiling 2700. Windows omitted (builder does not support them yet). Fictional unit - no client data. REVISED 2026-07-04 (FUNCTION gate, placement_logic): the fused 'tv_feature' wall is split into a plain 'cabinet' media feature wall (same footprint, TV semantics removed) + a standalone 'tv_panel' mounted on that north-wall face, centred on the lounge axis (x=2600, the sofa/coffee-table/rug centreline) facing the sofa. The fused tv_feature had no controllable position, so the render pass decided where the screen landed (GS-24); giving the TV real coordinates lets build_room materialise a control mass on the RIGHT wall and clears the placement_logic FAIL. The sofa (rot 180) faces +Y/north toward the wall; the panel sits ~2865 mm from the sofa centre (within the SMPTE/THX band) and clear of the sofa, armchair, rug and feature wall footprints. Slim 50 mm panel depth (a flat screen) mounted on the wall face at y=6790; build_room renders built-ins axis-aligned from the FLOOR (no AFF mount height in @0.2), so it is a floor-standing control mass, not a true wall-mount.",
   "room": {
     "type": "living_condo",
     "outline_mm": [
@@ -23,13 +23,23 @@
   },
   "builtins": [
     {
-      "name": "ผนังทีวี built-in (TV feature wall)",
-      "kind": "tv_feature",
+      "name": "ผนัง built-in โชว์+ชั้นวาง (media feature wall)",
+      "kind": "cabinet",
       "x": 900,
       "y": 6790,
       "w": 2700,
       "d": 400,
       "h": 2700
+    },
+    {
+      "name": "ทีวี ผนังโซนนั่งเล่น (lounge-wall TV)",
+      "kind": "tv_panel",
+      "x": 1900,
+      "y": 6740,
+      "w": 1400,
+      "d": 50,
+      "h": 800,
+      "rot": 0
     },
     {
       "name": "ตู้ sideboard โซนทานข้าว",

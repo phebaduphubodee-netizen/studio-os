@@ -44,6 +44,15 @@ BATH_BASIN_KINDS = {"vanity", "vanity_double", "basin", "lavatory", "washbasin",
 BATH_WC_KINDS = {"wc", "toilet"}
 BATH_WET_KINDS = {"shower", "tub", "bathtub"}
 
+# kitchen work-triangle vertices (NKBA). NOTE: "sink" is ALSO a bath basin kind, but the
+# kitchen rule scans the MAIN room (items/builtins) while bathroom_logic scans SUBROOM
+# fixtures — location disambiguates them, so a bath basin never counts as a kitchen sink.
+KITCHEN_SINK_KINDS = {"sink", "kitchen_sink"}
+KITCHEN_COOK_KINDS = {"cooktop", "stove", "hob", "range", "hotplate", "range_cooker"}
+KITCHEN_FRIDGE_KINDS = {"refrigerator", "fridge"}
+K_LEG_MIN, K_LEG_MAX = ergo.KITCHEN_TRIANGLE_LEG_MM   # 1219–2743 mm per leg
+K_PERIM_MAX = ergo.KITCHEN_TRIANGLE_PERIM_MAX_MM      # ≤ 7925 mm total
+
 
 # ---------- geometry ----------
 def _footprint(el):
@@ -372,9 +381,47 @@ def _rule_seating_faces_focal(spec, ctx):
     return None
 
 
+def _rule_kitchen_work_triangle(spec, ctx):
+    # NKBA kitchen work-triangle: the sink, cooktop and refrigerator form a triangle whose
+    # three legs each measure 1219–2743 mm and whose perimeter is ≤ 7925 mm — a cramped
+    # triangle crowds the cook, a stretched one wastes steps. Grounded in
+    # knowledge/ergonomics/bathroom-kitchen-planning.md (NLM DR f61fded1; NKBA/Neufert/P&Z),
+    # constants in ergonomics_ref. Scans the MAIN room (an open-plan condo kitchen); a
+    # bathroom "sink" lives in a subroom (bathroom_logic's scope) so the two never collide.
+    # Checkable ONLY when all three vertices exist — else None (a kitchenette / wet-bar is
+    # not faulted for a missing vertex, and a non-kitchen room never triggers). The aisle
+    # and leg-obstruction checks (bathroom-kitchen-planning.md) need run/opposing-counter
+    # grouping the @0.2 spec lacks, so they are out of scope here. Advisory WARN, never FAIL.
+    def _biggest(kinds):
+        c = [el for el in _iter_elements(spec) if el.get("kind") in kinds]
+        return max(c, key=lambda e: float(e.get("w", 0) or 0) * float(e.get("d", 0) or 0), default=None)
+
+    sink, cook, fridge = _biggest(KITCHEN_SINK_KINDS), _biggest(KITCHEN_COOK_KINDS), _biggest(KITCHEN_FRIDGE_KINDS)
+    if not (sink and cook and fridge):
+        return None
+    s, c, f = _center(sink), _center(cook), _center(fridge)
+    legs = {"sink–cooktop": math.hypot(s[0] - c[0], s[1] - c[1]),
+            "cooktop–fridge": math.hypot(c[0] - f[0], c[1] - f[1]),
+            "fridge–sink": math.hypot(f[0] - s[0], f[1] - s[1])}
+    perim = sum(legs.values())
+    issues = []
+    for nm, d in legs.items():
+        if d < K_LEG_MIN:
+            issues.append(f"{nm} leg {d:.0f} mm < {K_LEG_MIN} (cramped)")
+        elif d > K_LEG_MAX:
+            issues.append(f"{nm} leg {d:.0f} mm > {K_LEG_MAX} (too far apart)")
+    if perim > K_PERIM_MAX:
+        issues.append(f"perimeter {perim:.0f} mm > {K_PERIM_MAX} (inefficient — extra steps)")
+    if issues:
+        return ("kitchen_work_triangle", WARN, "; ".join(issues))
+    legs_str = "/".join(f"{d:.0f}" for d in legs.values())
+    return ("kitchen_work_triangle", PASS,
+            f"work triangle within norm (legs {legs_str} mm, perimeter {perim:.0f} ≤ {K_PERIM_MAX})")
+
+
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
          _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions,
-         _rule_bathroom_logic, _rule_seating_faces_focal]
+         _rule_bathroom_logic, _rule_seating_faces_focal, _rule_kitchen_work_triangle]
 
 
 def _worst(statuses):

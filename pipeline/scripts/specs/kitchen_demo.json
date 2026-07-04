@@ -1,0 +1,54 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "note": "EXAMPLE condo kitchen spec, mm, y-up, origin SW corner. Authored 2026-07-04 as a third room type to exercise the FUNCTION-layer kitchen_work_triangle rule (placement_logic). Compact L-run: refrigerator + sink on the west wall, cooktop on the south wall, an 800 mm entry door on the south wall east of the cooktop. Work-triangle legs sink-cooktop 1460 / cooktop-fridge 2438 / fridge-sink 1250 mm, perimeter 5148 mm (all within the NKBA 1219-2743 leg / <=7925 perimeter band; knowledge/ergonomics/bathroom-kitchen-planning.md). Deliberately sparse (appliances only, no wall counter runs) - a demo to gate the triangle, like living_demo. Windows omitted. Fictional unit - no client data.",
+  "room": {
+    "type": "kitchen",
+    "outline_mm": [
+      [0, 0],
+      [3000, 0],
+      [3000, 3000],
+      [0, 3000]
+    ],
+    "ceiling_mm": 2700,
+    "wall_thk_mm": 100
+  },
+  "door": {
+    "x": 2000,
+    "y": 0,
+    "w": 800,
+    "h": 2000,
+    "wall": "south",
+    "swing": "in-left"
+  },
+  "builtins": [
+    {
+      "name": "ตู้เย็น (refrigerator)",
+      "kind": "refrigerator",
+      "x": 0,
+      "y": 2100,
+      "w": 700,
+      "d": 700,
+      "h": 1800
+    },
+    {
+      "name": "อ่างล้างจาน (kitchen sink)",
+      "kind": "sink",
+      "x": 50,
+      "y": 900,
+      "w": 600,
+      "d": 600,
+      "h": 850
+    },
+    {
+      "name": "เตาไฟฟ้า (cooktop)",
+      "kind": "cooktop",
+      "x": 1200,
+      "y": 0,
+      "w": 600,
+      "d": 600,
+      "h": 850
+    }
+  ],
+  "items": []
+}
