@@ -1,0 +1,25 @@
+{
+  "schema": "studio-os/persona@0.1",
+  "_fictional": true,
+  "_note": "FICTIONAL demo persona — NOT a real client (examples convention: shareable, labelled). Encodes the owner's canonical example (2026-07-03): a chill work-from-home person who takes morning coffee on the balcony and reads before bed. Each ritual carries a STRUCTURED `activity` id (the free-text->activity judgment, made at authoring and cited to the ritual line) so persona.py consumes it deterministically without re-inferring from prose. Pairs with specs/living_condo.json + specs/bedroom_suite.json as a two-room 'home' for the two-way coverage demo. A REAL persona is client data (local only, C-NNN not a name, band numerics before any outbound call) — see .claude/rules/client-privacy.md.",
+  "persona_id": "DEMO-condo-01",
+  "occupants": [
+    { "role": "resident", "count": 1, "note": "single professional; lives alone" }
+  ],
+  "work_pattern": { "wfh": true, "days_home_per_week": 7, "note": "works from home full-time" },
+  "values": ["calm", "uncluttered", "close to daylight and greenery"],
+  "daily_rituals": [
+    { "ritual": "makes coffee and sits on the balcony every morning", "activity": "coffee_ritual", "cite": "owner example 2026-07-03" },
+    { "ritual": "works from home at a desk through the day", "activity": "work", "cite": "owner example 2026-07-03" },
+    { "ritual": "reads a book in bed before sleeping", "activity": "read", "cite": "owner example 2026-07-03" },
+    { "ritual": "unwinds in the evening watching a film", "activity": "relax", "cite": "owner example 2026-07-03" }
+  ],
+  "entertaining": { "frequency": "occasional", "activity": "entertain", "note": "has a few friends over for dinner now and then" },
+  "hobbies": [],
+  "must_have": [
+    { "want": "a spot for morning coffee with a view", "activity": "coffee_ritual", "cite": "owner example 2026-07-03" },
+    { "want": "somewhere comfortable to read", "activity": "read", "cite": "owner example 2026-07-03" }
+  ],
+  "nice_to_have": [],
+  "deal_breakers": []
+}

@@ -179,12 +179,21 @@ def build(spec, spec_path, name=None, outdir=None, date=None, render_png=None):
         f.write(_qa_md(spec, res, verdict, spec_path))
     # DESIGN RATIONALE — the per-element cited "why here / why this placement / size /
     # material" companion to the QA checklist. Honesty-first: it labels every hardcoded
-    # material default as such. A rationale bug must NEVER block the deliverable (same
-    # discipline as the FUNCTION merge above) -> degrade to no RATIONALE.md.
+    # material default as such. If a PERSONA is discoverable for this spec, the presence
+    # axis upgrades from "declared in spec" to "serves activity X (the client does Y)" —
+    # per-element, so it is valid for a single-room deliverable (home-level GAP coverage is
+    # the project-level persona report, not a per-room one). A rationale/persona bug must
+    # NEVER block the deliverable (same discipline as the FUNCTION merge) -> degrade silently.
     try:
         import rationale
+        persona_obj = None
+        try:
+            import persona as _persona
+            persona_obj = _persona.find_persona_for(spec, spec_path) or None
+        except Exception:  # noqa: BLE001
+            persona_obj = None
         with open(os.path.join(folder, "RATIONALE.md"), "w", encoding="utf-8") as f:
-            f.write(rationale.to_markdown(spec, os.path.basename(spec_path)))
+            f.write(rationale.to_markdown(spec, os.path.basename(spec_path), persona=persona_obj))
     except Exception:  # noqa: BLE001
         pass
     # native-SketchUp generator (the editable-3D route) — the friend runs one `load` line
