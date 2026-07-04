@@ -1,0 +1,42 @@
+[
+  {
+    "label": "WDC",
+    "status": "FAIL",
+    "path": "catalogue/017_WDC",
+    "files": 52,
+    "mb": 58.33,
+    "err": "FileURLRetrievalError: Failed to retrieve file url:"
+  },
+  {
+    "label": "FUTURTECH",
+    "status": "FAIL",
+    "path": "catalogue/018_FUTURTECH",
+    "files": 54,
+    "mb": 6.95,
+    "err": "FileURLRetrievalError: Failed to retrieve file url:"
+  },
+  {
+    "label": "AELLA hardware",
+    "status": "FAIL",
+    "path": "catalogue/023_AELLA",
+    "files": 0,
+    "mb": 0.0,
+    "err": "FileURLRetrievalError: Failed to retrieve file url:"
+  },
+  {
+    "label": "IES",
+    "status": "FAIL",
+    "path": "sharing/002_IES",
+    "files": 0,
+    "mb": 0.0,
+    "err": "FileURLRetrievalError: Failed to retrieve file url:"
+  },
+  {
+    "label": "Excel take-off",
+    "status": "FAIL",
+    "path": "sharing/012_Excel",
+    "files": 0,
+    "mb": 0.0,
+    "err": "FileURLRetrievalError: Failed to retrieve file url:"
+  }
+]

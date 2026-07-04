@@ -1,0 +1,53 @@
+[
+  {
+    "kind": "file",
+    "label": "TIPTOP catalogue",
+    "status": "skip(exists)",
+    "path": "catalogue/TIPTOP_Catalogue_V3.pdf",
+    "mb": 47.64,
+    "type": "PDF"
+  },
+  {
+    "kind": "folder",
+    "label": "ระแนง Wall",
+    "status": "ok",
+    "path": "catalogue/012_ranae_wall",
+    "files": 7,
+    "mb": 228.34
+  },
+  {
+    "kind": "folder",
+    "label": "WDC",
+    "status": "FAIL",
+    "path": "catalogue/017_WDC",
+    "err": "DownloadError: Failed to retrieve folder contents for folder ID: 1snwffRkD0FCk9eOlrTi2QOk_6dFnYADk (status code 500). You may need to change the permission to 'Anyone with the link', or have had many accesses. Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq."
+  },
+  {
+    "kind": "folder",
+    "label": "FUTURTECH",
+    "status": "FAIL",
+    "path": "catalogue/018_FUTURTECH",
+    "err": "FileURLRetrievalError: Failed to retrieve file url:\n\n\tCannot retrieve the public link of the file. You may need to change\n\tthe permission to 'Anyone with the link', or have had many accesses.\n\tCheck FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.\n\nYou may still be able to access the file from the browser:\n\n\thttps://drive.google.com/uc?id=1ls4NCEFpfbiKr0_hHkUtr8vKl2vw4_YW\n\nbut Gdown can't. Please check connections and permissions."
+  },
+  {
+    "kind": "folder",
+    "label": "AELLA hardware",
+    "status": "FAIL",
+    "path": "catalogue/023_AELLA",
+    "err": "FileURLRetrievalError: Failed to retrieve file url:\n\n\tCannot retrieve the public link of the file. You may need to change\n\tthe permission to 'Anyone with the link', or have had many accesses.\n\tCheck FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.\n\nYou may still be able to access the file from the browser:\n\n\thttps://drive.google.com/uc?id=15twAKMPBwOM4k9AhBNES8sIvYbcW4M_9\n\nbut Gdown can't. Please check connections and permissions."
+  },
+  {
+    "kind": "folder",
+    "label": "ค่าแสง IES",
+    "status": "FAIL",
+    "path": "sharing/002_IES",
+    "err": "FileURLRetrievalError: Failed to retrieve file url:\n\n\tCannot retrieve the public link of the file. You may need to change\n\tthe permission to 'Anyone with the link', or have had many accesses.\n\tCheck FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.\n\nYou may still be able to access the file from the browser:\n\n\thttps://drive.google.com/uc?id=1PXRU55cdHtxje9eKeUhUYFI8-eg4CkGj\n\nbut Gdown can't. Please check connections and permissions."
+  },
+  {
+    "kind": "folder",
+    "label": "Excel take-off",
+    "status": "FAIL",
+    "path": "sharing/012_Excel",
+    "err": "FileURLRetrievalError: Failed to retrieve file url:\n\n\tCannot retrieve the public link of the file. You may need to change\n\tthe permission to 'Anyone with the link', or have had many accesses.\n\tCheck FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.\n\nYou may still be able to access the file from the browser:\n\n\thttps://drive.google.com/uc?id=1wWCkqP4nqpRWZgb0WF7xTJYTFdoYHRRs\n\nbut Gdown can't. Please check connections and permissions."
+  }
+]

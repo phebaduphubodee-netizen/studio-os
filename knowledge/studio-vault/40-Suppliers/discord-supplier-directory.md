@@ -244,6 +244,9 @@ Website www.wdc.co.th; product Drive folder https://drive.google.com/drive/folde
   `525763_Mega_tiles_Catalog_small.pdf`, `117770_Mega_tile_clearance_catalog_promotion_Big_Slab.pdf`,
   `496711_E-Catalog_Clearance_Phase_3_2024_August.pdf`, `970848_Wood_Catalog.pdf`, images `151553…jpg`, `245952…png`.
 - Too large to capture: `Selective_tiles_Catalog_2023-2024.pdf` (54 MB), `New_arrival_2024_Fall.pdf` (60 MB), `RU_RU.pdf` (29 MB).
+- **Fetched 2026-07-04** (Drive folder, 52 tile product photos → `_external-fetched/catalogue/017_WDC/`): incl.
+  wood-look **Ilan** collection, 15×60 cm, per-SKU codes (e.g. Ilan Ash Y156001R, Beech Y156004R, Brown F156005R,
+  Gold S156005R, Red C156004R, White F156002R, Beige C156001R). Product photos only — no price sheet.
 - No contact person / discount stated in thread.
 
 ---
@@ -259,9 +262,17 @@ Source thread: `011_ระแนงลายไม้-ภายนอก-BIOWOOD
 - Example profile: **LV15035 = 150 mm × 35 mm** — https://www.biowoodthailand.com/products/lv15035-150mm-x-35mm/.
 - File: `272981_image.png`.
 
-## ระแนงสำเร็จรูป (Wall) — Prefab wall battens
-Source thread: `012_ระแนงสำเร็จรูป-(Wall)/`. Only a Google Drive folder of specs (no brand/contact stated):
-https://drive.google.com/drive/folders/1n0ySR8NFzQ4UIr8zDHOTQo1jWgS6i_uw. No local files captured.
+## WALL / Wallthailand (Deardome Group) — ระแนง WPC/MDF + acoustic + faux-stone cladding
+Source thread: `012_ระแนงสำเร็จรูป-(Wall)/` (Drive folder `1n0ySR8N…`, **fetched 2026-07-04** — 6 catalogue PDFs).
+- **แบรนด์ / Brand:** WALL THAILAND (WALLTHAILAND.BKK), parent **Deardome Group**.
+- **ติดต่อ / Contact:** Tel **02-321-5599** · LINE **@WALLTHAILAND** · FB /WALLTHAILAND.BKK · www.deardomegroup.com ·
+  24 Srinakarindra 42, Soi Suphaphong 1 Yaek 3, Nong Bon, Prawet, Bangkok 10250.
+- **Product lines:** WPC wall slats, MDF/HMR/Plastwood profiles, Curve Slat & SQ-System (bendable),
+  AKUWALL acoustic panels, CO-EX/VCP veneer panels, STONE WALL PU faux-stone + SOFT PORCELAIN flexible sheets.
+- **Prices (2025-02 sheet, VAT status unstated):** WPC ≈440–2,950 .-/pc; MDF ≈80–1,000 .-/pc;
+  AKUWALL 1,280–16,470 .-/panel; CO-EX/VCP 2,700–3,900 .-/sheet.
+- **Full product/dimension/price tables → `knowledge/materials/wall-cladding-and-decorative-mouldings-th.md`.**
+- Raw PDFs: `_inbox/discord/MY-DATA-PEAT/_external-fetched/catalogue/012_ranae_wall/`.
 
 ## DEKO Wave Board — ไม้ HMR Wave Board
 Source thread: `013_ไม้-HMR-WAVE-BOARD-(DEKO)/`. Product: HMR wave board (fluted/wave MDF).
@@ -285,6 +296,7 @@ glass-front cabinet doors / wardrobes. www.aphthailand.com. Files: `963178_image
 ## AELLA Hardware — ฮาร์ดแวร์ทองเหลือง / Solid-brass architectural hardware
 Source thread: `023_AELLA-HARDWARE/`. Product: handles, pulls, hinges, escutcheons in solid brass (hammered/knurled finishes).
 Spec Drive folder: https://drive.google.com/drive/folders/1i-OcOQGxaM3QdXSwItpgRmELTgkksEKV. File: `290462_image.png`. No contact/discount stated.
+> Fetch 2026-07-04: **PENDING** — Google Drive throttled this folder (0 files). Retry after quota cooldown or pull via browser. See `_external-fetched/EXTERNAL-LINKS.md`.
 
 ## HAFELE — Drawers & Drawer Inserts
 Source thread: `010_Drawers-&-Drawer-Inserts-HAFELE/`. Häfele drawer systems & inserts.
@@ -317,7 +329,13 @@ Source thread: `020_Glass-is-good/`. Glass fabricator. From the chat screenshot 
 recessed LED aluminium channel: the red gap dimension is customer-selectable **10–45 mm**, the green **≥ 25 mm**,
 and the glass has a lip/"ปีก" of about **1–2 mm**. Logo image `181642_image.png`. No phone/discount captured (contact is a LINE chat).
 
-## TIPTOP — Creative decoration materials (wall mouldings / decorative panels)
-Source thread: `016_TIPTOP/`. Brand "TIP-TOP — Creative Decoration Materials"; product imagery shows classical
-wall-panel mouldings / trim. Catalogue V3 (Google Drive): https://drive.google.com/file/d/1oVHjyvl9zTd5iYGMF8YY1D2rF5kfal8s/view.
-File: `652974_image.png`. No contact/discount stated.
+## TIPTOP — PU decorative architectural mouldings
+Source thread: `016_TIPTOP/`. Catalogue V3 (105 p) **fetched 2026-07-04** →
+`_external-fetched/catalogue/TIPTOP_Catalogue_V3.pdf`.
+- **แบรนด์ / Brand:** TIP-TOP ("since 1993"). **Sole Thailand importer/distributor: Pan Union Import Export Co.**
+  (แพนยูเนี่ยน, exclusive Tip-Top importer since 2009).
+- **Product:** Polyurethane (PU; some GRG/FRP) mouldings — cornices, chair rails, skirting, door/window surrounds,
+  pilasters/columns, ceiling roses/medallions, domes, corbels, wall panels, mirror & fireplace frames. 300+ SKUs,
+  pre-primed off-white & paintable, interior+exterior. Miterless install via Miter Blocks.
+- **Prices:** NONE in the catalogue (it is a specs/dimension book) — request a Pan Union price sheet to cost.
+- **Full line structure + dimension ranges → `knowledge/materials/wall-cladding-and-decorative-mouldings-th.md` §2.**
