@@ -177,6 +177,16 @@ def build(spec, spec_path, name=None, outdir=None, date=None, render_png=None):
         edoc.saveas(os.path.join(folder, f"suiteelev_{name}_{ei+1}_{lab}.dxf"))
     with open(os.path.join(folder, "QA-CHECKLIST.md"), "w", encoding="utf-8") as f:
         f.write(_qa_md(spec, res, verdict, spec_path))
+    # DESIGN RATIONALE — the per-element cited "why here / why this placement / size /
+    # material" companion to the QA checklist. Honesty-first: it labels every hardcoded
+    # material default as such. A rationale bug must NEVER block the deliverable (same
+    # discipline as the FUNCTION merge above) -> degrade to no RATIONALE.md.
+    try:
+        import rationale
+        with open(os.path.join(folder, "RATIONALE.md"), "w", encoding="utf-8") as f:
+            f.write(rationale.to_markdown(spec, os.path.basename(spec_path)))
+    except Exception:  # noqa: BLE001
+        pass
     # native-SketchUp generator (the editable-3D route) — the friend runs one `load` line
     rb_src = os.path.join(HERE, "build_room.rb")
     if os.path.exists(rb_src):
@@ -190,6 +200,7 @@ def build(spec, spec_path, name=None, outdir=None, date=None, render_png=None):
                 f"- `{name}_SHEETSET.pdf` — the CD set: cover · floor plan (1:50) · RCP · {n_elev} wall elevations · schedules\n"
                 f"- `suiteplan_{name}.dxf`, `suitercp_{name}.dxf`, `suiteelev_{name}_*.dxf` — editable metric CAD masters (1:1 mm; open in any DXF app)\n"
                 f"- `{name}.spec.json` — the room-spec@0.2 everything derives from\n"
+                f"- `RATIONALE.md` — per-element cited *why* (placement / size / material); flags every hardcoded material default\n"
                 f"- `build_room.rb` — builds the **native, editable** 3D model inside SketchUp Pro "
                 f"(Window ▸ Ruby Console → `$INTERIOR_SPEC='.../{name}.spec.json'; load '.../build_room.rb'`)\n")
 
