@@ -131,12 +131,106 @@ def test_eye_aim_null_kind_not_matched_as_none_string():
         pass
 
 
+# ---------- solve_eye_camera (the extracted pure solve, shared with build_room) ----------
+
+def _load(name):
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "specs", name)
+    return json.load(open(p, encoding="utf-8"))
+
+
+def test_solve_production_specs_pinned():
+    # REGRESSION PINS on the render-affecting outputs (aim, standing spot, lens). These are
+    # the exact values the inline build_room solve produced before extraction — the guarantee
+    # the refactor is behaviour-identical. A change here means the camera MOVED and must be
+    # re-gated on a designer render, not silently accepted.
+    b = C.solve_eye_camera(_load("bedroom_suite.json"))
+    assert abs(b["ex"] - 1.2) < 1e-6 and abs(b["ey"] - 3.2) < 1e-6, (b["ex"], b["ey"])
+    assert abs(b["tx"] - 4.2) < 1e-9 and abs(b["ty"] - 2.096) < 1e-9, (b["tx"], b["ty"])
+    assert b["lens_mm"] == 26.0 and abs(b["standoff_m"] - 3.1967) < 1e-3, b
+    assert b["hero"]["kind"] == "platform"
+
+    l = C.solve_eye_camera(_load("living_condo.json"))
+    assert abs(l["ex"] - 0.8) < 1e-6 and abs(l["ey"] - 0.4) < 1e-6, (l["ex"], l["ey"])
+    assert abs(l["tx"] - 2.6) < 1e-9 and abs(l["ty"] - 4.8) < 1e-9, (l["tx"], l["ty"])
+    assert l["lens_mm"] == 35.0 and abs(l["standoff_m"] - 4.7539) < 1e-3, l
+    # largest overall = the lounge rug the sofa sits on -> aim = rug centre, hero = the sofa
+    assert l["hero"]["kind"] == "sofa" and l["main"]["kind"] == "rug"
+
+
+def test_solve_no_loose_item_raises():
+    spec = {"room": {"outline_mm": [[0, 0], [3000, 0], [3000, 3000], [0, 3000]]}, "items": []}
+    try:
+        C.solve_eye_camera(spec)
+        assert False, "expected EyeCameraError (no loose item to aim at)"
+    except C.EyeCameraError as e:
+        assert "loose item" in str(e)
+
+
+def test_solve_packed_room_raises_no_clear_spot():
+    # a full-height built-in fills the room -> every grid candidate is within 0.3 m of it,
+    # so NO clear standing spot exists. build_room would SystemExit here; the gate FAILs.
+    spec = {"room": {"outline_mm": [[0, 0], [2000, 0], [2000, 2000], [0, 2000]]},
+            "builtins": [{"kind": "wall", "x": 200, "y": 200, "w": 1600, "d": 1600, "h": 2800}],
+            "items": [{"kind": "bed", "x": 600, "y": 600, "w": 800, "d": 800, "h": 600}]}
+    try:
+        C.solve_eye_camera(spec)
+        assert False, "expected EyeCameraError (no clear standing spot)"
+    except C.EyeCameraError as e:
+        assert "no clear standing spot" in str(e)
+
+
+def test_solve_bad_eye_aim_raises():
+    spec = _load("bedroom_suite.json")
+    os.environ["EYE_AIM"] = "fireplace"
+    try:
+        C.solve_eye_camera(spec)
+        assert False, "expected EyeCameraError (EYE_AIM matches nothing)"
+    except C.EyeCameraError as e:
+        assert "matched no" in str(e)
+    finally:
+        del os.environ["EYE_AIM"]
+
+
+def test_subject_share_high_for_a_real_hero_shot():
+    # both production eye shots frame the furniture group, not a wall -> high subject share
+    for name, floor in (("bedroom_suite.json", 0.9), ("living_condo.json", 0.5)):
+        spec = _load(name)
+        sol = C.solve_eye_camera(spec)
+        share = C.frame_subject_share(spec, sol)
+        assert share >= floor, f"{name}: subject share {share:.3f} < {floor}"
+
+
+def test_frame_fov_matches_36mm_horizontal_sensor():
+    # PIN the sensor half-width (scrutiny 2026-07-04): _H_SENSOR_HALF_MM must be 18 mm (half of
+    # a 36 mm horizontal sensor). The classic mistake is using 36 (the full width) as the half,
+    # which DOUBLES the FOV (~108° at 26 mm) yet leaves the loose one-directional share floors
+    # green. Pin the actual FOV angle so that doubling is caught.
+    import math
+    for lens, expect_deg in ((26.0, 69.4), (35.0, 54.4), (50.0, 39.6)):
+        hfov = math.degrees(2 * math.atan2(C._H_SENSOR_HALF_MM, lens))
+        assert abs(hfov - expect_deg) < 0.6, (lens, hfov)
+
+
+def test_subject_share_low_for_a_dead_wall_frame():
+    # a big empty room with a lone tiny stool in a corner: the far standing spot frames
+    # almost all bare wall -> low subject share (the dead-wall signal the WARN path uses)
+    spec = {"room": {"outline_mm": [[0, 0], [8000, 0], [8000, 8000], [0, 8000]]},
+            "items": [{"kind": "stool", "x": 200, "y": 200, "w": 400, "d": 400, "h": 450}]}
+    sol = C.solve_eye_camera(spec)
+    share = C.frame_subject_share(spec, sol)
+    assert share < 0.15, f"expected a dead-wall (low) share, got {share:.3f}"
+
+
 TESTS = [test_default_height_in_designer_band, test_ray_threshold_is_coupled_to_eye_height,
          test_env_override_enables_render_ab, test_bad_env_value_falls_back_to_default,
          test_height_change_is_solve_neutral_for_production_specs,
          test_eye_aim_unset_returns_none, test_eye_aim_exact_kind_beats_substring,
          test_eye_aim_substring_when_no_exact, test_eye_aim_no_match_raises,
-         test_eye_aim_missing_bbox_raises, test_eye_aim_null_kind_not_matched_as_none_string]
+         test_eye_aim_missing_bbox_raises, test_eye_aim_null_kind_not_matched_as_none_string,
+         test_solve_production_specs_pinned, test_solve_no_loose_item_raises,
+         test_solve_packed_room_raises_no_clear_spot, test_solve_bad_eye_aim_raises,
+         test_frame_fov_matches_36mm_horizontal_sensor,
+         test_subject_share_high_for_a_real_hero_shot, test_subject_share_low_for_a_dead_wall_frame]
 
 
 def main():

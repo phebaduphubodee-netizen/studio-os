@@ -127,6 +127,27 @@
     }
    ]
   },
+  "GS-27": {
+   "source_stem": "room_bedroom_suite_eye_h150_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_h150_hybrid.critique.json"
+    }
+   ]
+  },
   "GS-07": {
    "source_stem": "room_living_condo_eye_hybrid_clayfix_pro",
    "rolls": [
@@ -182,6 +203,27 @@
       "photoreal_believability": 5
      },
      "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v004pro.critique.json"
+    }
+   ]
+  },
+  "GS-28": {
+   "source_stem": "room_bedroom_suite_eye_h115_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 3,
+     "verdict": "REWORK",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 3,
+      "composition": 3,
+      "furniture_realism": 3,
+      "room_context": 4,
+      "styling_and_life": 4,
+      "proportion_and_scale": 4,
+      "photoreal_believability": 2
+     },
+     "source": "pipeline/output/room_bedroom_suite_eye_h115_hybrid.critique.json"
     }
    ]
   },
@@ -633,6 +675,27 @@
     }
    ]
   },
+  "GS-29": {
+   "source_stem": "room_living_condo_eye_h150_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 4,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 4,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 4,
+      "room_context": 4,
+      "styling_and_life": 4,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 4
+     },
+     "source": "pipeline/output/room_living_condo_eye_h150_hybrid.critique.json"
+    }
+   ]
+  },
   "GS-25": {
    "source_stem": "room_bedroom_suite_eye_hybrid_v004b",
    "rolls": [
@@ -651,6 +714,27 @@
       "photoreal_believability": 4
      },
      "source": "pipeline/output/room_bedroom_suite_eye_hybrid_v004b.critique.json"
+    }
+   ]
+  },
+  "GS-30": {
+   "source_stem": "room_living_condo_eye_h115_hybrid",
+   "rolls": [
+    {
+     "overall_0_5": 4.5,
+     "verdict": "SHIP",
+     "model": "gemini-2.5-flash",
+     "scores": {
+      "palette_coherence": 5,
+      "lighting_quality": 5,
+      "composition": 4,
+      "furniture_realism": 5,
+      "room_context": 5,
+      "styling_and_life": 3,
+      "proportion_and_scale": 5,
+      "photoreal_believability": 5
+     },
+     "source": "pipeline/output/room_living_condo_eye_h115_hybrid.critique.json"
     }
    ]
   },

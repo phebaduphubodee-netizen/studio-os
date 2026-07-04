@@ -368,145 +368,19 @@ def add_suite_eye_camera(spec, outline_m, h):
     that has a clear eye-level line of sight past sub-room walls / full-height millwork.
     Camera kept LEVEL (§8.3 two-point: verticals stay vertical); shift_y frames down."""
     from mathutils import Vector
-    loose = spec.get("items") or []
-    if not loose:
-        raise SystemExit("--eye camera needs at least one loose item to aim at")
-    # AIM RULE (gate-evidenced, 2026-07-02 A/B/C): `hero` = largest NON-RUG piece =
-    # what the lens is sized for. If the largest item overall is a RUG **and the
-    # hero sits on it**, the rug footprint stands in for the whole furniture GROUP —
-    # aim at the rug centre (living: rug-aim 35mm scored 4/5; aiming at the sofa
-    # alone framed 28mm and scored 2.5/5 'cramped, cuts key elements'). A large rug
-    # the hero does NOT touch is scenery, not the group (a far dining rug used to
-    # steal the aim and render an empty-rug long shot): aim at the hero instead.
-    _area = lambda it: float(it["w"]) * float(it["d"])
-    # AIM OVERRIDE (env EYE_AIM): frame a specific element by kind/name — e.g. EYE_AIM=tv
-    # to shoot the foot-wall TV instead of the default largest item. Selection (exact kind
-    # -> exact name -> substring, missing-bbox guard) lives in camera_config so it is
-    # unit-testable; here we only turn its ValueError into the loud SystemExit convention.
-    # Unset -> the gate-evidenced largest-piece rule below (unchanged).
+    # The pure-geometry solve — aim (EYE_AIM override / largest non-rug / group-rug),
+    # the stand-vs-ray obstacle split, the free-floor grid + line-of-sight, the farthest
+    # clear spot and the hero-sized lens — lives in camera_config.solve_eye_camera so it
+    # has ONE definition shared with placement_logic's "camera has a reason" gate (which
+    # predicts a render-time abort BEFORE Blender launches — no split-brain). This
+    # function now only turns the solved numbers into Blender camera + fill objects.
     try:
-        _aim_el = camera_config.select_aim_element(
-            list(loose) + list(spec.get("builtins", [])), os.environ.get("EYE_AIM"))
-    except ValueError as e:
+        sol = camera_config.solve_eye_camera(spec, outline_m)
+    except camera_config.EyeCameraError as e:
         raise SystemExit(f"--eye {e}")
-    def _touches(a, b):
-        ax0, ay0 = float(a["x"]), float(a["y"])
-        ax1, ay1 = ax0 + float(a["w"]), ay0 + float(a["d"])
-        bx0, by0 = float(b["x"]), float(b["y"])
-        bx1, by1 = bx0 + float(b["w"]), by0 + float(b["d"])
-        return ax0 < bx1 and bx0 < ax1 and ay0 < by1 and by0 < ay1
-    if _aim_el is not None:
-        hero = main = _aim_el
-    else:
-        hero = max((it for it in loose if it.get("kind") != "rug"), key=_area,
-                   default=max(loose, key=_area))
-        main_all = max(loose, key=_area)
-        main = main_all if (main_all.get("kind") == "rug" and _touches(main_all, hero)) else hero
-    tx = (float(main["x"]) + float(main["w"]) / 2.0) * MM
-    ty = (float(main["y"]) + float(main["d"]) / 2.0) * MM
-
-    # two obstacle classes: where a person can't STAND (any millwork/sub-room/tall
-    # furniture) vs what BLOCKS an eye-level ray (sub-room walls + full-height millwork
-    # only — a bed is below the lens, the ray passes over it).
-    def _bbox(e):
-        return (float(e["x"]) * MM, float(e["y"]) * MM,
-                (float(e["x"]) + float(e["w"])) * MM, (float(e["y"]) + float(e["d"])) * MM)
-    stand_blocks, ray_blocks = [], []
-    for sr in spec.get("subrooms", []):
-        sx = [p[0] for p in sr["outline_mm"]]; sy = [p[1] for p in sr["outline_mm"]]
-        bb = (min(sx) * MM, min(sy) * MM, max(sx) * MM, max(sy) * MM)
-        stand_blocks.append(bb); ray_blocks.append(bb)
-    for b in spec.get("builtins", []):
-        stand_blocks.append(_bbox(b))
-        if float(b.get("h", 0)) * MM >= camera_config.RAY_BLOCK_MIN_H_M:  # coupled to eye height
-            ray_blocks.append(_bbox(b))
-    for it in spec.get("items", []):
-        # rugs never block standing regardless of h (rendered 14 mm thick anyway;
-        # an h-less rug used to inherit the 400 mm default and eat standing room)
-        if it.get("kind") != "rug" and float(it.get("h", 400)) * MM >= 0.35:
-            stand_blocks.append(_bbox(it))
-
-    def _inside_poly(px, py):                # ray cast, handles L-shaped outlines
-        n = len(outline_m); hit = False
-        for i in range(n):
-            x1, y1 = outline_m[i]; x2, y2 = outline_m[(i + 1) % n]
-            if (y1 > py) != (y2 > py) and px < x1 + (x2 - x1) * (py - y1) / (y2 - y1):
-                hit = not hit
-        return hit
-
-    def _seg_hits_box(x0, y0, x1, y1, bb):   # Liang-Barsky segment vs AABB
-        bx0, by0, bx1, by1 = bb
-        dx, dy = x1 - x0, y1 - y0
-        t0, t1 = 0.0, 1.0
-        for p, q in ((-dx, x0 - bx0), (dx, bx1 - x0), (-dy, y0 - by0), (dy, by1 - y0)):
-            if p == 0:
-                if q < 0:
-                    return False
-                continue
-            t = q / p
-            if p < 0:
-                if t > t1:
-                    return False
-                if t > t0:
-                    t0 = t
-            else:
-                if t < t0:
-                    return False
-                if t < t1:
-                    t1 = t
-        return True
-
-    def _clear(ex, ey):
-        # standing room: inside the outline with 0.3m of air on all sides, off millwork
-        for ox, oy in ((0, 0), (0.3, 0), (-0.3, 0), (0, 0.3), (0, -0.3)):
-            if not _inside_poly(ex + ox, ey + oy):
-                return False
-        if any(bx0 - 0.3 <= ex <= bx1 + 0.3 and by0 - 0.3 <= ey <= by1 + 0.3
-               for bx0, by0, bx1, by1 in stand_blocks):
-            return False
-        # EXACT line-of-sight to the target (19-point sampling stepped over blockers
-        # thinner than standoff/20 — 100 mm full-height millwork is in-distribution).
-        # Clip at t=0.95: the ray only needs to reach NEAR the target, so a subject
-        # flush against tall millwork doesn't reject every spot.
-        gx, gy = ex + (tx - ex) * 0.95, ey + (ty - ey) * 0.95
-        if any(_seg_hits_box(ex, ey, gx, gy, bb) for bb in ray_blocks):
-            return False
-        return True
-
-    # grid-sample the free floor and stand as FAR from the subject as the room allows —
-    # the 4-corner version collapsed to the bed's foot in this room (millwork on three
-    # sides + the ensuite eliminate every corner) and the frame was all feature wall.
-    xs = [p[0] for p in outline_m]; ys = [p[1] for p in outline_m]
-    cands = [(gx, gy)
-             for gx in [min(xs) + 0.4 + i * 0.4 for i in range(int((max(xs) - min(xs)) / 0.4))]
-             for gy in [min(ys) + 0.4 + j * 0.4 for j in range(int((max(ys) - min(ys)) / 0.4))]
-             if _clear(gx, gy)]
-    if not cands:
-        # the old bbox-centre fallback bypassed every _clear() validation and could
-        # ship a blocked/inside-furniture frame straight into the paid pass —
-        # loud beats garbage (scrutiny finding 12, round-2 verify)
-        raise SystemExit("--eye camera: no clear standing spot with line of sight to the "
-                         "subject — room too packed for an eye shot; adjust the spec")
-    ex, ey = max(cands, key=lambda c: (c[0] - tx) ** 2 + (c[1] - ty) ** 2)
-
-    standoff = ((ex - tx) ** 2 + (ey - ty) ** 2) ** 0.5
-    if standoff < 0.5:
-        # the empty-candidate fallback can land ON the target: zero view vector,
-        # focus_distance 0, garbage control frame silently feeding the paid pass.
-        # Loud beats garbage (scrutiny 2026-07-02 finding 12).
-        raise SystemExit(f"--eye camera: no standing spot with line of sight "
-                         f"(standoff {standoff:.2f} m) — room too packed for an eye shot")
+    ex, ey, tx, ty = sol["ex"], sol["ey"], sol["tx"], sol["ty"]
     cam_data = bpy.data.cameras.new("Camera")
-    # v0.4.1: lens sized from the HERO piece at the aim-point distance (~2x the hero
-    # in frame; when aiming at the group-rug the hero is guaranteed inside it, so the
-    # piece that sized the lens is always in frame). Snap set: 28/35/50 per
-    # knowledge/brand-standards/render-quality.md §4, PLUS 26 — kept on GATE
-    # EVIDENCE over doctrine: in tight rooms (bedroom_suite) 26mm scored 5/5 while
-    # 28mm dropped room_context to 3/5 (2026-07-02 A/B).
-    subj_dim = max(float(hero["w"]), float(hero["d"])) * MM
-    req_w = max(2.0 * subj_dim, 3.5)             # frame width wanted at the subject (m)
-    raw = 36.0 * standoff / req_w                # 36mm-sensor pinhole approximation
-    cam_data.lens = min((26.0, 28.0, 35.0, 50.0), key=lambda f: abs(f - raw))
+    cam_data.lens = sol["lens_mm"]
     cam_data.sensor_fit = 'HORIZONTAL'
     _eye_h = camera_config.EYE_CAM_HEIGHT_M  # designer 1.0–1.2 m (M3.2 GS-15; was 1.5); env EYE_CAM_HEIGHT_M for A/B
     eye = Vector((ex, ey, _eye_h))

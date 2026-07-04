@@ -26,6 +26,7 @@ import math
 import re
 
 import ergonomics_ref as ergo   # cited ergonomic constants (NLM DR 5de4bb36)
+import camera_config             # the SHARED eye-camera solve (also used by build_room)
 
 PASS, WARN, FAIL, UNWIRED = "PASS", "WARN", "FAIL", "UNWIRED"
 
@@ -419,9 +420,63 @@ def _rule_kitchen_work_triangle(spec, ctx):
             f"work triangle within norm (legs {legs_str} mm, perimeter {perim:.0f} ≤ {K_PERIM_MAX})")
 
 
+CAMERA_MIN_SUBJECT_SHARE = 0.15   # WARN when the framed FOV is >85% bare wall / void
+
+
+def _rule_camera_has_a_reason(spec, ctx):
+    # GS-04/05/22: the eye-camera's framed view must SHOW the room — a real subject, not a
+    # blank wall ("camera angles that show nothing"). The --eye camera (build_room) aims at
+    # the hero from the farthest clear standing spot; this rule runs the SAME solve
+    # (camera_config.solve_eye_camera — one definition, shared with the materializer) and:
+    #   (1) WARNs if no valid shot exists (no loose subject to aim at / no clear line of
+    #       sight) — build_room --eye would SystemExit at render time; flag it here early;
+    #   (2) WARNs if the horizontal FOV is mostly furniture-free (a dead-wall frame).
+    # ADVISORY ONLY — this rule returns WARN/PASS/None, NEVER FAIL. The eye camera is OPT-IN
+    # (build_room --eye); the automated pipeline (make_all / suite_package / repair_loop)
+    # renders the OVERVIEW camera by default, and @0.1 inch specs render via build_rect which
+    # has NO eye path at all. So a "no eye shot" must never hard-abort the shared FUNCTION gate
+    # (that false-blocked non-eye deliverables — scrutiny 2026-07-04). The HARD guard against a
+    # dead-wall eye render stays build_room's own loud SystemExit at actual --eye render time;
+    # here we only surface it as a REVIEW so a human eye-shot batch is warned before spending.
+    if ctx.get("is_inch"):                     # @0.1 -> build_rect (add_camera_and_light), no eye camera
+        return None
+    outline_m = camera_config.outline_m_of(spec)
+    # not applicable unless there is a metric room AND a non-rug LOOSE item to aim at — the
+    # --eye camera aims at the largest loose item, so a builtins-only spec (e.g. a kitchen of
+    # counters) or a rug-only room is NOT eye-camera-eligible and returns None here (same
+    # "no subject -> None" discipline as the kitchen/bathroom rules).
+    aim_items = [e for e in (spec.get("items") or []) if e.get("kind") != "rug"]
+    if not outline_m or not aim_items:
+        return None
+    try:
+        sol = camera_config.solve_eye_camera(spec, outline_m)
+    except camera_config.EyeCameraError as e:
+        return ("camera_has_a_reason", WARN,
+                f"eye camera has no valid shot: {e} — a --eye (client-facing) render would abort; "
+                f"the default overview render is unaffected")
+    except Exception:                          # malformed element (missing dims, bad outline):
+        return None                            # degrade, never throw — geometry/other rules own it
+    hero = sol.get("hero") or {}
+    hero_nm = hero.get("name") or hero.get("kind") or "subject"
+    try:
+        share = camera_config.frame_subject_share(spec, sol, outline_m)
+    except Exception:
+        return None
+    # `share` = fraction of the FOV's view directions (bearings) that land on a furniture
+    # footprint — a bearing-coverage proxy, NOT framed image area, and it ignores occlusion.
+    if share < CAMERA_MIN_SUBJECT_SHARE:
+        return ("camera_has_a_reason", WARN,
+                f"only {share * 100:.0f}% of the view directions hit furniture (mostly bare wall) — aims at "
+                f"{hero_nm} from {sol['standoff_m']:.1f} m at {sol['lens_mm']:.0f} mm; verify it shows the room")
+    return ("camera_has_a_reason", PASS,
+            f"eye camera frames {hero_nm} from {sol['standoff_m']:.1f} m "
+            f"({sol['lens_mm']:.0f} mm; {share * 100:.0f}% of view directions on a subject)")
+
+
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
          _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions,
-         _rule_bathroom_logic, _rule_seating_faces_focal, _rule_kitchen_work_triangle]
+         _rule_bathroom_logic, _rule_seating_faces_focal, _rule_kitchen_work_triangle,
+         _rule_camera_has_a_reason]
 
 
 def _worst(statuses):
@@ -435,13 +490,14 @@ def check(spec):
     """Run the human-usage placement rules over a room spec. Returns
     {status, findings:[{rule,status,detail}], applicable, tv_status, viewer_kind}.
     @0.1 inch specs are normalized to mm first, so one rule set serves both schemas."""
+    is_inch = _is_inch(spec)            # capture BEFORE _normalize erases width_in (camera rule needs it)
     spec = _normalize(spec)
     bed = find_bed(spec)
     viewer, viewer_front, viewer_kind = find_primary_viewer(spec)
     tv, tv_status = find_tv(spec)
     ctx = {"bed": bed, "viewer": viewer, "viewer_front": viewer_front,
            "viewer_kind": viewer_kind, "tv": tv, "tv_status": tv_status,
-           "door_wall": _door_wall(spec)}
+           "door_wall": _door_wall(spec), "is_inch": is_inch}
     findings = []
     for rule in RULES:
         r = rule(spec, ctx)

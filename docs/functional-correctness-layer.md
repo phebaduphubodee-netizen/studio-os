@@ -55,10 +55,14 @@ Deterministically checkable (belongs in the FUNCTION layer; build as rules):
 - [x] **Kitchen work-triangle** (NKBA; beyond the 26 notes, the kitchen extension) — sink /
       cooktop / fridge legs 1219–2743 mm, perimeter ≤ 7925 mm. Added 2026-07-04 with a
       `kitchen_demo.json` anchor; grounded in `knowledge/ergonomics/bathroom-kitchen-planning.md`.
-- [ ] **Camera has a reason** (GS-04/05/22) — the framed view must contain the subject,
-      not aim at a blank wall. (Partly geometric — the eye-camera solve already aims at
-      the hero; tighten "no dead-wall framing".) Camera height 1.0–1.2 m already landed
-      (`camera_config.py`, M3.2 GS-15).
+- [x] **Camera has a reason** (GS-04/05/22) — the framed view must contain the subject,
+      not aim at a blank wall. Closed 2026-07-04: `camera_has_a_reason` (rule 10). The whole
+      eye-camera SOLVE was extracted out of `build_room` (bpy, not importable) into
+      `camera_config.solve_eye_camera` so ONE definition is shared by the materializer (renders
+      it) and the gate (validates it) — no split-brain. The rule FAILs when no valid shot exists
+      (the `--eye` render would `SystemExit` — caught pre-render, before the paid pass), and WARNs
+      when `frame_subject_share` (level rays vs furniture footprints, a floor-plan proxy) shows the
+      FOV is mostly bare wall. Camera height 1.0–1.2 m already landed (`camera_config.py`, M3.2 GS-15).
 
 Render-domain (stays with Gemini + designer, NOT this layer):
 - Material realism / laminate seams / repetition (GS-03/25), polygon look (GS-02),
@@ -74,11 +78,15 @@ Render-domain (stays with Gemini + designer, NOT this layer):
   broken spec is caught before the paid Gemini pass — cheap failure first (blueprint §9.5).
 
 ## Status (2026-07-04)
-- `placement_logic.py` + `test_placement_logic.py` (**55/55**) now hold EIGHT rules:
+- `placement_logic.py` + `test_placement_logic.py` (**60/60**) now hold TEN rules:
   tv_positioned / tv_faces_viewer / tv_not_over_viewer / tv_viewing_distance / door_vs_bed_head /
-  furniture_dimensions / bathroom_logic / seating_faces_focal / kitchen_work_triangle. Wired as a
-  PRE-RENDER gate at all three spec→render points (make_all clearance gate, repair_loop Gate 0
-  ESCALATE-only, suite_package QA-CHECKLIST) — a FUNCTION FAIL aborts before the paid Gemini pass.
+  furniture_dimensions / bathroom_logic / seating_faces_focal / kitchen_work_triangle /
+  camera_has_a_reason. (The prior revision of this doc said "eight"; the code shipped nine at that
+  point — that stale prose is corrected here, and camera_has_a_reason is the tenth, added
+  2026-07-04.) Wired as a PRE-RENDER gate at all three spec→render points (make_all clearance gate,
+  repair_loop Gate 0 ESCALATE-only, suite_package QA-CHECKLIST) — a FUNCTION FAIL aborts before the
+  paid Gemini pass. The eye-camera solve now lives in `camera_config.solve_eye_camera`
+  (`test_camera_config.py` **17/17**), imported by both build_room and camera_has_a_reason.
 - Both production specs are now FUNCTION-clean: `bedroom_suite` (TV split onto the foot wall,
   2026-07-03) and `living_condo` (TV split onto the north media wall, 2026-07-04) — each verified
   by clearance PASS + placement PASS + a Blender clay smoke render (the TV materialises as a
@@ -88,13 +96,17 @@ Render-domain (stays with Gemini + designer, NOT this layer):
   test-coverage holes (leg-max clause + Gate-0 escalation both passing for the wrong reason) —
   fixed and proven by mutation testing, not just re-asserted.
 - HONESTY CAVEAT — the load-bearing open item: everything above is the FUNCTION layer gating the
-  *spec* against rules WE derived from Peat's 26 notes. **The loop is NOT closed.** Nothing has
-  been re-rendered through the full Gemini pipeline, re-added to the golden set, and re-labeled by
-  the designer. "Passes the FUNCTION gate" ≠ Peat's REWORK flipped to SHIP. `labels.json` is still
-  one round, 26/26 REWORK, 0 SHIP. The render/material notes (GS-01 black blob, GS-21 black beam,
+  *spec* against rules WE derived from Peat's 26 notes. **The loop is NOT closed until Peat labels.**
+  As of 2026-07-04 the causal test is STAGED but the verdict has NOT moved: `bedroom_suite` +
+  `living_condo` were re-rendered through the full pipeline (clay eye camera → Gemini pro-tier
+  hybrid → critique) at BOTH camera heights (1.15 default + 1.5 A/B, item N), curated as GS-27+,
+  and staged for a blind re-label — but `labels.json` is STILL the original one round, 26/26 REWORK,
+  0 SHIP. "Passes the FUNCTION gate" ≠ "Peat's REWORK flipped to SHIP"; only Peat's new labels +
+  `judge_calibrate.py` prove that. The render/material notes (GS-01 black blob, GS-21 black beam,
   GS-02 polygon, GS-25 repetition, GS-19 frame) are legitimately render/Gemini + designer domain,
   not this layer.
-- NEXT (real): re-render bedroom + living through the full pipeline → add as GS-27+ → blind
-  re-label by the designer; only a moved verdict proves the comments are truly addressed. Then:
-  kitchen aisle / leg-obstruction rules (need run/opposing-counter grouping the @0.2 spec lacks);
-  "camera has a reason" (no-dead-wall framing); more room types as specs arrive.
+- NEXT (real): **Peat blind-labels GS-27+ in `qa/golden-set/labeler.html`** → re-run
+  `judge_calibrate.py`; a moved verdict (some GS-27+ = SHIP) is the only proof the comments are
+  addressed. Then: kitchen aisle / leg-obstruction rules (need run/opposing-counter grouping the
+  @0.2 spec lacks); seat_h / texture_scale schema fields for the remaining GS-02/06 furniture-scale
+  checks; more room types as specs arrive.

@@ -434,6 +434,66 @@ def test_real_kitchen_demo_triangle_passes():
     assert rep["status"] == P.PASS
 
 
+# ---- camera has a reason (GS-04/05/22; shares camera_config.solve_eye_camera with build_room) ----
+def test_camera_reason_passes_real_specs():
+    for name in ("bedroom_suite.json", "living_condo.json"):
+        assert _s(P.check(_spec(name)), "camera_has_a_reason") == P.PASS, name
+
+
+def test_camera_reason_warns_when_no_shot_exists():
+    # a full-height built-in fills the room -> no clear standing spot with line of sight;
+    # build_room --eye would SystemExit at render time. This rule is ADVISORY (WARN, never
+    # FAIL): the eye camera is opt-in and the default pipeline renders the overview, so a
+    # "no eye shot" must never hard-abort the shared FUNCTION gate (scrutiny 2026-07-04).
+    spec = {"room": {"outline_mm": [[0, 0], [2000, 0], [2000, 2000], [0, 2000]]},
+            "builtins": [{"kind": "wall", "name": "block", "x": 200, "y": 200, "w": 1600, "d": 1600, "h": 2800}],
+            "items": [{"kind": "bed", "name": "bed", "x": 600, "y": 600, "w": 800, "d": 800, "h": 600}]}
+    f = next(x for x in P.check(spec)["findings"] if x["rule"] == "camera_has_a_reason")
+    assert f["status"] == P.WARN and "no valid shot" in f["detail"], f
+
+
+def test_camera_reason_never_fails_a_deliverable():
+    # SAFETY PIN (scrutiny 2026-07-04): the camera rule must NEVER contribute a FAIL — it
+    # validates the opt-in --eye camera, not what the automated pipeline renders, so a hard
+    # FAIL would false-block non-eye deliverables. The packed-room no-shot case is the only
+    # path that could FAIL; assert report() stays out of FAIL when the camera is the only issue.
+    spec = {"room": {"outline_mm": [[0, 0], [2000, 0], [2000, 2000], [0, 2000]]},
+            "builtins": [{"kind": "wall", "name": "block", "x": 200, "y": 200, "w": 1600, "d": 1600, "h": 2800}],
+            "items": [{"kind": "bed", "name": "bed", "x": 600, "y": 600, "w": 800, "d": 800, "h": 600}]}
+    cam = next(x for x in P.check(spec)["findings"] if x["rule"] == "camera_has_a_reason")
+    assert cam["status"] != P.FAIL, cam
+
+
+def test_camera_reason_none_for_inch_spec():
+    # @0.1 inch specs render via build_rect (add_camera_and_light) — NO eye camera even under
+    # --eye — so the rule must return None despite _normalize synthesising an outline_mm.
+    assert _s(P.check(_inch_living(tv_y_in=6)), "camera_has_a_reason") is None
+
+
+def test_camera_reason_warns_on_dead_wall_frame():
+    # a big empty room with one tiny stool in a corner -> the far standing spot frames
+    # almost all bare wall (low subject share) -> advisory WARN, never FAIL
+    spec = {"room": {"outline_mm": [[0, 0], [8000, 0], [8000, 8000], [0, 8000]]},
+            "items": [{"kind": "stool", "name": "stool", "x": 200, "y": 200, "w": 400, "d": 400, "h": 450}]}
+    f = next(x for x in P.check(spec)["findings"] if x["rule"] == "camera_has_a_reason")
+    assert f["status"] == P.WARN and "bare wall" in f["detail"], f
+
+
+def test_camera_reason_none_without_a_framable_subject():
+    # a rug-only room has nothing to frame -> not applicable (None), not a false WARN
+    spec = {"room": {"outline_mm": [[0, 0], [4000, 0], [4000, 4000], [0, 4000]]},
+            "items": [{"kind": "rug", "name": "rug", "x": 500, "y": 500, "w": 2000, "d": 2000}],
+            "builtins": []}
+    assert _s(P.check(spec), "camera_has_a_reason") is None
+
+
+def test_camera_reason_none_without_metric_outline():
+    # no room.outline_mm and not an inch spec -> can't solve a standing spot -> None (degrade)
+    spec = {"room": {"type": "loft"},
+            "items": [{"kind": "bed", "name": "bed", "x": 0, "y": 0, "w": 2000, "d": 2000, "h": 600}]}
+    assert _s(P.check(spec), "camera_has_a_reason") is None
+
+
 # ---- report(): the (results, verdict) gate contract (drops into make_all / repair_loop / suite_package) ----
 def test_report_fail_on_fused_tv():
     spec = _bedroom()
@@ -563,6 +623,10 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_kitchen_leg_too_tight_warns, test_kitchen_perimeter_too_large_warns,
          test_kitchen_rule_skips_without_full_triangle, test_kitchen_rule_skips_non_kitchen_rooms,
          test_bath_sink_in_subroom_is_not_a_kitchen_sink, test_real_kitchen_demo_triangle_passes,
+         test_camera_reason_passes_real_specs, test_camera_reason_warns_when_no_shot_exists,
+         test_camera_reason_never_fails_a_deliverable, test_camera_reason_none_for_inch_spec,
+         test_camera_reason_warns_on_dead_wall_frame, test_camera_reason_none_without_a_framable_subject,
+         test_camera_reason_none_without_metric_outline,
          test_report_fail_on_fused_tv, test_report_pass_on_good_tv, test_report_review_on_warn_only,
          test_report_unwired_when_nothing_applies, test_inch_spec_normalized_to_mm,
          test_inch_spec_tv_in_front_passes, test_inch_spec_tv_behind_sofa_fails,

@@ -85,3 +85,213 @@ def select_aim_element(elements, aim):
             raise ValueError(f"EYE_AIM match {name(el) or kind(el) or '?'!r} lacks '{k}' "
                              f"— cannot aim the camera at it")
     return el
+
+
+# ------------------------------------------------------------------------------
+# eye-camera SOLVE — the pure-geometry half of build_room.add_suite_eye_camera,
+# extracted so it has ONE definition shared by the materializer (which renders it)
+# and placement_logic's "camera has a reason" gate (which validates it BEFORE the
+# paid render). build_room is not importable (imports bpy); this is, so the solve is
+# unit-testable and the gate can predict a render-time abort without launching Blender.
+# Same doctrine that put select_aim_element + EYE_CAM_HEIGHT_M here — no split-brain.
+# ------------------------------------------------------------------------------
+MM = 0.001                    # millimetres -> metres (room-spec@0.2 is metric); == build_room.MM
+_LENS_SNAP = (26.0, 28.0, 35.0, 50.0)  # build_room v0.4.1 snap set (28/35/50 per render-quality §4 + 26 on gate evidence)
+_STAND_BLOCK_MIN_H_M = 0.35   # an item taller than this blocks STANDING (build_room)
+_H_SENSOR_HALF_MM = 18.0      # 36 mm horizontal sensor, half-width (build_room sensor_fit='HORIZONTAL')
+
+
+class EyeCameraError(Exception):
+    """The --eye camera cannot produce a valid shot for this spec (no loose subject to
+    aim at, no clear standing spot with line of sight, or the standoff collapses onto the
+    subject). Raised by solve_eye_camera so BOTH callers own the consequence: build_room
+    turns it into a loud SystemExit (its render-abort convention); placement_logic turns
+    it into a FUNCTION-gate FAIL that stops the paid render BEFORE Blender launches."""
+
+
+def outline_m_of(spec):
+    """Metric outline [(x_m, y_m), ...] from a room-spec@0.2, or None if absent."""
+    ol = (spec.get("room") or {}).get("outline_mm")
+    if not ol:
+        return None
+    return [(float(x) * MM, float(y) * MM) for x, y in ol]
+
+
+def _box_m(e):
+    """Axis-aligned furniture footprint (x0,y0,x1,y1) in metres from an mm element."""
+    return (float(e["x"]) * MM, float(e["y"]) * MM,
+            (float(e["x"]) + float(e["w"])) * MM, (float(e["y"]) + float(e["d"])) * MM)
+
+
+def _inside_poly(px, py, outline_m):
+    """Ray-cast point-in-polygon (handles L-shaped outlines). build_room parity."""
+    n = len(outline_m)
+    hit = False
+    for i in range(n):
+        x1, y1 = outline_m[i]
+        x2, y2 = outline_m[(i + 1) % n]
+        if (y1 > py) != (y2 > py) and px < x1 + (x2 - x1) * (py - y1) / (y2 - y1):
+            hit = not hit
+    return hit
+
+
+def _seg_hits_box(x0, y0, x1, y1, bb):
+    """Liang-Barsky: does segment (x0,y0)->(x1,y1) intersect AABB bb? build_room parity."""
+    bx0, by0, bx1, by1 = bb
+    dx, dy = x1 - x0, y1 - y0
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-dx, x0 - bx0), (dx, bx1 - x0), (-dy, y0 - by0), (dy, by1 - y0)):
+        if p == 0:
+            if q < 0:
+                return False
+            continue
+        t = q / p
+        if p < 0:
+            if t > t1:
+                return False
+            if t > t0:
+                t0 = t
+        else:
+            if t < t0:
+                return False
+            if t < t1:
+                t1 = t
+    return True
+
+
+def solve_eye_camera(spec, outline_m=None):
+    """Solve the v0.3 eye-level suite camera from spec GEOMETRY ALONE (no bpy). Returns a
+    dict {ex, ey, tx, ty, lens_mm, standoff_m, hero, main, n_clear} in METRES; the caller
+    builds the Blender camera/fill from it.
+
+    Reproduces build_room.add_suite_eye_camera EXACTLY: aim = EYE_AIM override else the
+    largest NON-RUG loose item (the group-rug centre when the largest overall is a rug the
+    hero touches); the stand-vs-ray obstacle split (a bed blocks standing but not the level
+    eye ray, tall millwork/sub-rooms block both, coupled to RAY_BLOCK_MIN_H_M); a 0.4 m
+    free-floor grid kept to spots with 0.3 m of air and a clear line of sight to 0.95x the
+    target; the FARTHEST such spot; and the hero-sized lens snapped to {26,28,35,50} mm.
+
+    Raises EyeCameraError for the three degenerate cases build_room already aborts on:
+    no loose item, no clear standing spot with LOS, standoff < 0.5 m. Also surfaces
+    select_aim_element's ValueError (bad EYE_AIM) as EyeCameraError."""
+    loose = spec.get("items") or []
+    if not loose:
+        raise EyeCameraError("camera needs at least one loose item to aim at")
+    if outline_m is None:
+        outline_m = outline_m_of(spec)
+    if not outline_m:
+        raise EyeCameraError("camera needs a room.outline_mm to solve a standing spot")
+
+    _area = lambda it: float(it["w"]) * float(it["d"])
+    try:
+        aim_el = select_aim_element(list(loose) + list(spec.get("builtins", [])),
+                                    os.environ.get("EYE_AIM"))
+    except ValueError as e:                     # bad EYE_AIM -> same abort as build_room
+        raise EyeCameraError(str(e))
+
+    def _touches(a, b):
+        ax0, ay0 = float(a["x"]), float(a["y"])
+        ax1, ay1 = ax0 + float(a["w"]), ay0 + float(a["d"])
+        bx0, by0 = float(b["x"]), float(b["y"])
+        bx1, by1 = bx0 + float(b["w"]), by0 + float(b["d"])
+        return ax0 < bx1 and bx0 < ax1 and ay0 < by1 and by0 < ay1
+
+    if aim_el is not None:
+        hero = main = aim_el
+    else:
+        hero = max((it for it in loose if it.get("kind") != "rug"), key=_area,
+                   default=max(loose, key=_area))
+        main_all = max(loose, key=_area)
+        main = main_all if (main_all.get("kind") == "rug" and _touches(main_all, hero)) else hero
+    tx = (float(main["x"]) + float(main["w"]) / 2.0) * MM
+    ty = (float(main["y"]) + float(main["d"]) / 2.0) * MM
+
+    stand_blocks, ray_blocks = [], []
+    for sr in spec.get("subrooms", []):
+        sx = [p[0] for p in sr["outline_mm"]]
+        sy = [p[1] for p in sr["outline_mm"]]
+        bb = (min(sx) * MM, min(sy) * MM, max(sx) * MM, max(sy) * MM)
+        stand_blocks.append(bb)
+        ray_blocks.append(bb)
+    for b in spec.get("builtins", []):
+        stand_blocks.append(_box_m(b))
+        if float(b.get("h", 0)) * MM >= RAY_BLOCK_MIN_H_M:     # coupled to eye height
+            ray_blocks.append(_box_m(b))
+    for it in spec.get("items", []):
+        if it.get("kind") != "rug" and float(it.get("h", 400)) * MM >= _STAND_BLOCK_MIN_H_M:
+            stand_blocks.append(_box_m(it))
+
+    def _clear(ex, ey):
+        for ox, oy in ((0, 0), (0.3, 0), (-0.3, 0), (0, 0.3), (0, -0.3)):
+            if not _inside_poly(ex + ox, ey + oy, outline_m):
+                return False
+        if any(bx0 - 0.3 <= ex <= bx1 + 0.3 and by0 - 0.3 <= ey <= by1 + 0.3
+               for bx0, by0, bx1, by1 in stand_blocks):
+            return False
+        gx, gy = ex + (tx - ex) * 0.95, ey + (ty - ey) * 0.95
+        if any(_seg_hits_box(ex, ey, gx, gy, bb) for bb in ray_blocks):
+            return False
+        return True
+
+    xs = [p[0] for p in outline_m]
+    ys = [p[1] for p in outline_m]
+    cands = [(gx, gy)
+             for gx in [min(xs) + 0.4 + i * 0.4 for i in range(int((max(xs) - min(xs)) / 0.4))]
+             for gy in [min(ys) + 0.4 + j * 0.4 for j in range(int((max(ys) - min(ys)) / 0.4))]
+             if _clear(gx, gy)]
+    if not cands:
+        raise EyeCameraError("camera: no clear standing spot with line of sight to the "
+                             "subject — room too packed for an eye shot; adjust the spec")
+    ex, ey = max(cands, key=lambda c: (c[0] - tx) ** 2 + (c[1] - ty) ** 2)
+
+    standoff = ((ex - tx) ** 2 + (ey - ty) ** 2) ** 0.5
+    if standoff < 0.5:
+        raise EyeCameraError(f"camera: no standing spot with line of sight "
+                             f"(standoff {standoff:.2f} m) — room too packed for an eye shot")
+
+    subj_dim = max(float(hero["w"]), float(hero["d"])) * MM
+    req_w = max(2.0 * subj_dim, 3.5)            # frame width wanted at the subject (m)
+    raw = 36.0 * standoff / req_w               # 36 mm-sensor pinhole approximation
+    lens = min(_LENS_SNAP, key=lambda f: abs(f - raw))
+    return {"ex": ex, "ey": ey, "tx": tx, "ty": ty, "lens_mm": lens,
+            "standoff_m": standoff, "hero": hero, "main": main, "n_clear": len(cands)}
+
+
+def frame_subject_share(spec, solve, outline_m=None, n_rays=41):
+    """Fraction of the eye-camera's HORIZONTAL field-of-view DIRECTIONS (bearings) that land
+    on a real subject (loose non-rug furniture + built-ins) rather than bare outline wall /
+    void — a deterministic "does this shot actually show the room" proxy for the dead-wall
+    check (GS-04/05/22). Casts n_rays level rays evenly across the FOV from the solved standing
+    spot and counts how many strike a furniture footprint.
+
+    HONEST SCOPE (advisory WARN only, never a statutory measure): this is bearing-coverage,
+    NOT framed image AREA (evenly-spaced angles, not pixel share), it has no vertical extent
+    (level rays, ignores shift_y framing), and it does NOT model occlusion — a subject behind
+    a wall or another mass on the same bearing is still counted. Good enough to separate a
+    furniture-filled hero shot from a frame aimed at a bare wall; not a photometric metric.
+    0.0 = every bearing misses all furniture (a dead frame)."""
+    import math
+    ex, ey = solve["ex"], solve["ey"]
+    tx, ty = solve["tx"], solve["ty"]
+    vdx, vdy = tx - ex, ty - ey
+    if math.hypot(vdx, vdy) < 1e-9:
+        return 0.0
+    va = math.atan2(vdy, vdx)
+    hfov = 2.0 * math.atan2(_H_SENSOR_HALF_MM, float(solve["lens_mm"]))
+    subs = [_box_m(e) for e in spec.get("items", []) if e.get("kind") != "rug"]
+    subs += [_box_m(e) for e in spec.get("builtins", [])]
+    if not subs:
+        return 0.0
+    if outline_m is None:
+        outline_m = outline_m_of(spec) or [(ex, ey)]
+    xs = [p[0] for p in outline_m]
+    ys = [p[1] for p in outline_m]
+    reach = math.hypot(max(xs) - min(xs), max(ys) - min(ys)) + 1.0   # room diagonal; subjects are inside
+    hit = 0
+    for i in range(n_rays):
+        frac = 0.0 if n_rays == 1 else (i / (n_rays - 1) - 0.5)
+        a = va + frac * hfov
+        gx, gy = ex + reach * math.cos(a), ey + reach * math.sin(a)
+        if any(_seg_hits_box(ex, ey, gx, gy, bb) for bb in subs):
+            hit += 1
+    return hit / n_rays

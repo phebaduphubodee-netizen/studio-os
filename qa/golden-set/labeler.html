@@ -76,7 +76,7 @@
 <header>
   <h1>🏷️ Golden-set labeler <span class="save-note">— M3.2 judge calibration</span></h1>
   <div class="grow"></div>
-  <div class="progress">ให้คะแนนแล้ว <b id="done-count">0</b> / <span id="total">26</span></div>
+  <div class="progress">ให้คะแนนแล้ว <b id="done-count">0</b> / <span id="total">30</span></div>
   <button id="btn-jump">ไปใบถัดไปที่ยังว่าง</button>
   <button id="btn-import">นำเข้า labels.json</button>
   <button id="btn-json">ดู/คัดลอก JSON</button>
@@ -101,7 +101,7 @@
 <main id="cards"></main>
 
 <footer>
-  เสร็จครบ 26 ใบ → ดาวน์โหลด <code>labels.json</code> ไปวางที่โฟลเดอร์ <code>qa/golden-set/</code>
+  เสร็จครบ 30 ใบ (ของใหม่คือ GS-27..30 = งานที่แก้ FUNCTION แล้ว) → ดาวน์โหลด <code>labels.json</code> ไปวางที่โฟลเดอร์ <code>qa/golden-set/</code>
   แล้วบอก Claude รัน <code>python pipeline/scripts/judge_calibrate.py</code>
 </footer>
 
@@ -119,7 +119,7 @@
 <script>
 (function(){
   "use strict";
-  var N = 26;
+  var N = 30;   // GS-01..26 (2026-07-03 designer round) + GS-27..30 (2026-07-04 FUNCTION-fix re-renders)
   var SCORES = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5];
   var IMG_BASE = "../../assets/qa/golden-set/";
   var LS_KEY = "gs-labeler-v1";
@@ -274,8 +274,8 @@
       return;
     }
     if(c.miss.length){
-      if(!confirm("ยังไม่ครบ 26 ใบ (เหลือ "+c.miss.length+": "+c.miss.join(", ")+
-        ").\njudge_calibrate ต้องการอย่างน้อย 10 ใบ และควรครบ 26.\nดาวน์โหลดเท่าที่มีเลยไหม?")) return;
+      if(!confirm("ยังไม่ครบ "+N+" ใบ (เหลือ "+c.miss.length+": "+c.miss.join(", ")+
+        ").\njudge_calibrate ต้องการอย่างน้อย 10 ใบ และควรครบ "+N+".\nดาวน์โหลดเท่าที่มีเลยไหม?")) return;
     }
     var blob = new Blob([jsonText()], {type:"application/json"});
     var url = URL.createObjectURL(blob);
@@ -321,7 +321,7 @@
       document.getElementById("card-"+gid(i)).scrollIntoView({behavior:"smooth",block:"center"});
       return;
     }}
-    alert("ครบทั้ง 26 ใบแล้ว 🎉 กด “ดาวน์โหลด labels.json” ได้เลย");
+    alert("ครบทั้ง "+N+" ใบแล้ว 🎉 กด “ดาวน์โหลด labels.json” ได้เลย");
   });
 
   load(); render();

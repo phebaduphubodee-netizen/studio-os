@@ -38,6 +38,12 @@
    "n_machine_rolls": 1
   },
   {
+   "id": "GS-27",
+   "image": "assets/qa/golden-set/GS-27.png",
+   "source_stem": "room_bedroom_suite_eye_h150_hybrid",
+   "n_machine_rolls": 1
+  },
+  {
    "id": "GS-07",
    "image": "assets/qa/golden-set/GS-07.png",
    "source_stem": "room_living_condo_eye_hybrid_clayfix_pro",
@@ -47,6 +53,12 @@
    "id": "GS-08",
    "image": "assets/qa/golden-set/GS-08.png",
    "source_stem": "room_bedroom_suite_eye_hybrid_v004pro",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-28",
+   "image": "assets/qa/golden-set/GS-28.png",
+   "source_stem": "room_bedroom_suite_eye_h115_hybrid",
    "n_machine_rolls": 1
   },
   {
@@ -146,9 +158,21 @@
    "n_machine_rolls": 1
   },
   {
+   "id": "GS-29",
+   "image": "assets/qa/golden-set/GS-29.png",
+   "source_stem": "room_living_condo_eye_h150_hybrid",
+   "n_machine_rolls": 1
+  },
+  {
    "id": "GS-25",
    "image": "assets/qa/golden-set/GS-25.png",
    "source_stem": "room_bedroom_suite_eye_hybrid_v004b",
+   "n_machine_rolls": 1
+  },
+  {
+   "id": "GS-30",
+   "image": "assets/qa/golden-set/GS-30.png",
+   "source_stem": "room_living_condo_eye_h115_hybrid",
    "n_machine_rolls": 1
   },
   {
