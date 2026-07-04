@@ -5,8 +5,9 @@
 Deterministic, no render/model. Proves the checker (a) PASSes correct placements,
 (b) FAILs the exact designer complaints — TV behind the viewer's head, TV over the
 bed, the entry door sharing the bed-head wall (GS-01), (c) works for a living room
-(primary viewer = the sofa), and (d) flags the REAL bug in both production specs
-(TV fused into the headboard / a feature wall -> no controllable position).
+(primary viewer = the sofa) and a kitchen (NKBA work-triangle), and (d) still CATCHES
+a fused TV (synthetic specs) now that BOTH production specs are fixed — bedroom_suite
+and living_condo split their fused TV onto a real wall and must PASS.
 
 Run: python pipeline/scripts/test_placement_logic.py
 """
@@ -186,13 +187,20 @@ def test_real_bedroom_suite_tv_now_positioned():
     assert rep["status"] == P.PASS                    # fully clean after the wardrobe re-type
 
 
-def test_real_living_condo_is_caught():
+def test_real_living_condo_tv_now_positioned():
+    # the fused tv_feature wall was SPLIT into a plain 'cabinet' media wall + a standalone
+    # 'tv_panel' facing the sofa (2026-07-04 FUNCTION-gate fix). The real spec must now PASS
+    # every TV rule. (test_fused_headboard_tv_is_flagged + test_report_fail_on_fused_tv keep
+    # proving the fused-TV CATCH capability with synthetic specs.)
     spec = _spec("living_condo.json")
-    if spec is None:
-        return
     rep = P.check(spec)
     assert rep["viewer_kind"] == "sofa"
-    assert rep["tv_status"] == "fused" and rep["status"] == P.FAIL   # tv_feature wall
+    assert rep["tv_status"] == "positioned"
+    assert _s(rep, "tv_positioned") == P.PASS
+    assert _s(rep, "tv_faces_viewer") == P.PASS
+    assert _s(rep, "tv_not_over_viewer") == P.PASS
+    assert _s(rep, "tv_viewing_distance") == P.PASS
+    assert rep["status"] == P.PASS
 
 
 # ---- furniture dimensions vs ergonomic norms (GS-02/06; ergonomics_ref / NLM DR) ----
@@ -343,6 +351,89 @@ def test_real_living_condo_seating_passes():
     assert _s(P.check(spec), "seating_faces_focal") == P.PASS   # sofa->table/TV, armchair->table
 
 
+# ---- kitchen work-triangle (NKBA; ergonomics_ref / NLM DR f61fded1) ----
+def _kitchen(*appliances, room=(3000, 3000)):
+    W, D = room
+    return {"room": {"type": "kitchen", "outline_mm": [[0, 0], [W, 0], [W, D], [0, D]]},
+            "items": [], "builtins": list(appliances)}
+
+
+def _ap(kind, x, y, w=600, d=600):
+    return {"name": kind, "kind": kind, "x": x, "y": y, "w": w, "d": d, "h": 850}
+
+
+def test_kitchen_good_triangle_passes():
+    # the kitchen_demo geometry: legs 1250/1460/2438, perimeter 5148 (all in band)
+    spec = _kitchen(_ap("refrigerator", 0, 2100, 700, 700), _ap("sink", 50, 900),
+                    _ap("cooktop", 1200, 0))
+    assert _s(P.check(spec), "kitchen_work_triangle") == P.PASS
+
+
+def test_kitchen_leg_too_far_warns():
+    # push the fridge to the far corner so a leg exceeds 2743 mm
+    spec = _kitchen(_ap("refrigerator", 5200, 5200, 700, 700), _ap("sink", 50, 900),
+                    _ap("cooktop", 1200, 0), room=(6000, 6000))
+    assert _s(P.check(spec), "kitchen_work_triangle") == P.WARN
+
+
+def test_kitchen_single_long_leg_warns():
+    # ISOLATE the leg-max clause (scrutiny 2026-07-04): one leg 2800 mm (>2743) while the
+    # perimeter stays 6800 mm (<=7925), so ONLY the 'too far apart' branch may fire — proves
+    # the upper-leg bound is pinned independently of the perimeter clause. Centres:
+    # sink(300,300) cooktop(3100,300) fridge(1700,1728) -> legs 2800/2000/2000.
+    spec = _kitchen(_ap("sink", 0, 0), _ap("cooktop", 2800, 0),
+                    _ap("refrigerator", 1400, 1428), room=(3600, 2400))
+    f = next(x for x in P.check(spec)["findings"] if x["rule"] == "kitchen_work_triangle")
+    assert f["status"] == P.WARN, f
+    assert "too far apart" in f["detail"] and "perimeter" not in f["detail"], f
+
+
+def test_kitchen_leg_too_tight_warns():
+    # all three appliances crammed together -> legs below 1219 mm
+    spec = _kitchen(_ap("refrigerator", 0, 800, 600, 600), _ap("sink", 0, 0),
+                    _ap("cooktop", 700, 0))
+    assert _s(P.check(spec), "kitchen_work_triangle") == P.WARN
+
+
+def test_kitchen_perimeter_too_large_warns():
+    # an equilateral triangle, side 2700 mm: each leg is legal (<2743) but the perimeter is
+    # 8100 mm (>7925) -> only the perimeter clause warns
+    spec = _kitchen(_ap("refrigerator", 0, 0, 600, 600),       # centre (300,300)
+                    _ap("sink", 2700, 0, 600, 600),            # centre (3000,300) -> leg 2700
+                    _ap("cooktop", 1350, 2338, 600, 600),      # centre (1650,2638) -> legs 2700
+                    room=(3600, 3600))
+    r = P.check(spec)
+    f = next(x for x in r["findings"] if x["rule"] == "kitchen_work_triangle")
+    assert f["status"] == P.WARN and "perimeter" in f["detail"], f
+
+
+def test_kitchen_rule_skips_without_full_triangle():
+    # only two vertices -> not checkable (a kitchenette is not faulted for a missing vertex)
+    spec = _kitchen(_ap("sink", 50, 900), _ap("cooktop", 1200, 0))
+    assert _s(P.check(spec), "kitchen_work_triangle") is None
+
+
+def test_kitchen_rule_skips_non_kitchen_rooms():
+    # a bedroom / living room never trips the kitchen rule
+    assert _s(P.check(_bedroom(_tv())), "kitchen_work_triangle") is None
+    assert _s(P.check(_living(_tv())), "kitchen_work_triangle") is None
+
+
+def test_bath_sink_in_subroom_is_not_a_kitchen_sink():
+    # a bathroom "sink" (subroom fixture) must NOT be read as a kitchen vertex even with a
+    # main-room cooktop+fridge present -> the rule scopes to the MAIN room, so it stays None
+    spec = _bath([_fx("sink", 100, 100), _fx("wc", 2400, 1200, 400, 650)])
+    spec.setdefault("builtins", []).extend([_ap("cooktop", 1200, 0), _ap("refrigerator", 0, 2100, 700, 700)])
+    assert _s(P.check(spec), "kitchen_work_triangle") is None    # only 2 main-room vertices
+
+
+def test_real_kitchen_demo_triangle_passes():
+    spec = _spec("kitchen_demo.json")
+    rep = P.check(spec)
+    assert _s(rep, "kitchen_work_triangle") == P.PASS
+    assert rep["status"] == P.PASS
+
+
 # ---- report(): the (results, verdict) gate contract (drops into make_all / repair_loop / suite_package) ----
 def test_report_fail_on_fused_tv():
     spec = _bedroom()
@@ -429,13 +520,23 @@ def test_normalize_depth_only_inch_not_misread():
 
 # ---- integration: the FUNCTION layer is now part of the pre-render Gate 0 (repair_loop) ----
 def test_repair_loop_gate0_includes_function_and_fails_fused_tv():
+    # The safety property: a fused TV must ABORT before a paid render EVEN WHEN the geometry
+    # gate passes — that lives in the FUNCTION-escalation branch of _real_geometry_fn. Use a
+    # WELL-FORMED spec (ceiling + a valid south door on the bed's FOOT wall) whose geometry
+    # verdict is NOT FAIL, so the gate FAIL can ONLY be the fused-TV escalation. (Scrutiny
+    # 2026-07-04: the earlier minimal spec FAILed suite_clearance on its own — missing
+    # ceiling_mm — so verdict==FAIL held even with the escalation removed. This version
+    # discriminates: delete the escalation line and geometry stays REVIEW/PASS -> test fails.)
     import repair_loop
-    spec = _spec("living_condo.json")                                     # still a fused tv_feature
-    if spec is None:
-        return
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "specs", "living_condo.json")
-    results, verdict = repair_loop._real_geometry_fn(spec, path)
-    assert verdict == P.FAIL                                              # fused TV escalates the gate
+    import suite_clearance
+    spec = _bedroom(door_wall="south")            # bed foot faces south -> door on the FOOT wall (ok)
+    spec["room"]["ceiling_mm"] = 2700
+    spec["door"] = {"wall": "south", "x": 2500, "y": 0, "w": 900, "h": 1900, "swing": "in-left"}
+    spec["builtins"].append({"name": "หัวเตียง/ทีวี built-in", "kind": "headboard_tv",
+                             "x": 1970, "y": 5000, "w": 3330, "d": 574, "h": 2800})
+    assert suite_clearance.report(spec)[1] != P.FAIL, suite_clearance.report(spec)   # geometry passes
+    results, verdict = repair_loop._real_geometry_fn(spec, "")
+    assert verdict == P.FAIL                       # fused TV ESCALATES a passing geometry to FAIL
     assert any(r["check"] == "function:tv_positioned" and r["status"] == P.FAIL for r in results)
 
 
@@ -445,7 +546,7 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_door_rule_skips_without_bed_or_door, test_fused_headboard_tv_is_flagged,
          test_no_tv_room_does_not_false_fail, test_name_only_tv_is_named_only_warn_not_fail,
          test_tv_named_console_does_not_hard_fail,
-         test_real_bedroom_suite_tv_now_positioned, test_real_living_condo_is_caught,
+         test_real_bedroom_suite_tv_now_positioned, test_real_living_condo_tv_now_positioned,
          test_furniture_within_norms_passes, test_oversized_bed_warns,
          test_bad_coffee_table_height_warns, test_shallow_wardrobe_warns,
          test_standard_bed_passes_within_tolerance, test_real_bedroom_furniture_now_within_norms,
@@ -457,6 +558,11 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_seating_perpendicular_focal_warns,
          test_two_seats_facing_each_other_pass, test_seating_rule_skips_without_seats,
          test_real_living_condo_seating_passes,
+         test_kitchen_good_triangle_passes, test_kitchen_leg_too_far_warns,
+         test_kitchen_single_long_leg_warns,
+         test_kitchen_leg_too_tight_warns, test_kitchen_perimeter_too_large_warns,
+         test_kitchen_rule_skips_without_full_triangle, test_kitchen_rule_skips_non_kitchen_rooms,
+         test_bath_sink_in_subroom_is_not_a_kitchen_sink, test_real_kitchen_demo_triangle_passes,
          test_report_fail_on_fused_tv, test_report_pass_on_good_tv, test_report_review_on_warn_only,
          test_report_unwired_when_nothing_applies, test_inch_spec_normalized_to_mm,
          test_inch_spec_tv_in_front_passes, test_inch_spec_tv_behind_sofa_fails,

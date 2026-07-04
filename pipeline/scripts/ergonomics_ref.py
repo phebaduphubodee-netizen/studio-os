@@ -46,11 +46,11 @@ BATH_BASIN_TO_WC_MM = 508          # NKBA basin centreline → WC / sidewall
 BATH_WC_TO_WET_MM = 457            # NKBA WC centreline → shower/tub barrier
 BATH_BASIN_TO_BASIN_MM = 914       # NKBA centreline-to-centreline, double vanity
 
-# --- kitchen work-triangle (NKBA; no kitchen spec yet — for a future work_triangle rule) ---
-KITCHEN_TRIANGLE_LEG_MM = (1219, 2743)
-KITCHEN_TRIANGLE_PERIM_MAX_MM = 7925
-KITCHEN_AISLE_SINGLE_MM = 1067
-KITCHEN_AISLE_MULTI_MM = 1219
+# --- kitchen work-triangle (NKBA; feeds placement_logic.kitchen_work_triangle) ---
+KITCHEN_TRIANGLE_LEG_MM = (1219, 2743)   # each sink–cooktop–fridge leg
+KITCHEN_TRIANGLE_PERIM_MAX_MM = 7925     # total perimeter
+KITCHEN_AISLE_SINGLE_MM = 1067           # single-cook aisle (needs run grouping; not yet a rule)
+KITCHEN_AISLE_MULTI_MM = 1219            # multi-cook aisle (ditto)
 
 
 def nearest_bed_size(w, d):

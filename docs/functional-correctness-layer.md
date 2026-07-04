@@ -31,13 +31,30 @@ that is genuinely usable AND beautiful — needs a layer the judge cannot provid
 ## Roadmap — the designer's 26 notes ARE the requirements
 Deterministically checkable (belongs in the FUNCTION layer; build as rules):
 - [x] **TV vs bed** — faces the bed, not behind/over the head (GS-11/23/24). `placement_logic` v1.
-- [ ] **TV vs sofa** (living) — same facing logic against the primary seat.
-- [ ] **Door vs bed head** (GS-01) — door not on the headboard wall / clear of the head.
-- [ ] **Seating faces focal** (GS-03/26) — sofa/armchairs oriented to the coffee-table/TV group.
-- [ ] **Bathroom fixture logic** (GS-05) — basin near entry (frequent use), WC/shower
-      deeper; wet/dry zoning. (`suite_clearance` already knows the fixtures.)
-- [ ] **Furniture scale vs ergonomics/room** (GS-02/06) — seat height, piece size within
-      norms and proportionate to the room. (Uses `knowledge/ergonomics/`.)
+- [x] **TV vs sofa** (living) — same facing logic against the primary seat. Closed 2026-07-04:
+      `living_condo` split its fused `tv_feature` into a `cabinet` media wall + a standalone
+      `tv_panel` facing the sofa (both real specs now PASS; a fused TV is still CAUGHT).
+- [x] **Door vs bed head** (GS-01) — door not on the headboard wall / clear of the head.
+- [~] **Seating faces focal** (GS-03/26) — PARTIAL. `seating_faces_focal` checks only a seat's
+      *orientation* (does its front half-plane contain a focal), WARN-only, and skips any seat
+      with no `rot`. So it encodes the GS-26 principle (a seat angled to receive the sofa =
+      correct) but CANNOT decide GS-03 "armchair ไม่ควรตั้งตรงนั้น" (no position/circulation
+      model) or GS-20 "armchair เอาออก" (no existence/redundancy logic). NB: the real
+      `living_condo` armchair carries no `rot`, so it is not evaluated at all — its PASS comes
+      from the sofa alone.
+- [x] **Bathroom fixture logic** (GS-05) — basin near entry (frequent use), WC/shower
+      deeper; wet/dry zoning. (`suite_clearance` already knows the fixtures.) NB: the basin-at-
+      entry ordering is a hard FAIL, but wet/dry zoning is WARN-only, and in-bath per-fixture
+      approach clearance is not checked (only aggregate ฉ.39 area/width + path-to-door).
+- [~] **Furniture scale vs ergonomics/room** (GS-02/06) — PARTIAL. `furniture_dimensions`
+      (WARN-only) checks table height, wardrobe depth and gross bed-footprint mis-scale — NOT
+      seat height (GS-02 "ที่นั่งสูงเกิน" is explicitly excluded: the spec has no `seat_h`
+      field). Material real-scale — laminate 2.40×1.20 seams (GS-03), SPC plank scale (GS-06) —
+      is checkable-in-principle but NOT built (needs a `texture_scale`/material field the spec
+      lacks); polygon/repetition (GS-02/25) is genuinely render-domain.
+- [x] **Kitchen work-triangle** (NKBA; beyond the 26 notes, the kitchen extension) — sink /
+      cooktop / fridge legs 1219–2743 mm, perimeter ≤ 7925 mm. Added 2026-07-04 with a
+      `kitchen_demo.json` anchor; grounded in `knowledge/ergonomics/bathroom-kitchen-planning.md`.
 - [ ] **Camera has a reason** (GS-04/05/22) — the framed view must contain the subject,
       not aim at a blank wall. (Partly geometric — the eye-camera solve already aims at
       the hero; tighten "no dead-wall framing".) Camera height 1.0–1.2 m already landed
@@ -56,8 +73,28 @@ Render-domain (stays with Gemini + designer, NOT this layer):
 - Wire into the pipeline as a pre-render gate (alongside Gate 0) so a functionally
   broken spec is caught before the paid Gemini pass — cheap failure first (blueprint §9.5).
 
-## Status (2026-07-03)
-- placement_logic.py + test_placement_logic.py (9/9): slice 1 = TV-vs-bed. Runs on the
-  real bedroom_suite → **FAIL (tv fused into headboard, no position)** = the real bug, caught.
-- NEXT: (a) give the bedroom TV real coordinates on the foot wall (split `headboard_tv`),
-  re-run clearance + placement_logic + a Blender smoke render; (b) add the next rules above.
+## Status (2026-07-04)
+- `placement_logic.py` + `test_placement_logic.py` (**55/55**) now hold EIGHT rules:
+  tv_positioned / tv_faces_viewer / tv_not_over_viewer / tv_viewing_distance / door_vs_bed_head /
+  furniture_dimensions / bathroom_logic / seating_faces_focal / kitchen_work_triangle. Wired as a
+  PRE-RENDER gate at all three spec→render points (make_all clearance gate, repair_loop Gate 0
+  ESCALATE-only, suite_package QA-CHECKLIST) — a FUNCTION FAIL aborts before the paid Gemini pass.
+- Both production specs are now FUNCTION-clean: `bedroom_suite` (TV split onto the foot wall,
+  2026-07-03) and `living_condo` (TV split onto the north media wall, 2026-07-04) — each verified
+  by clearance PASS + placement PASS + a Blender clay smoke render (the TV materialises as a
+  discrete control mass). A fused TV is still CAUGHT (synthetic specs + the escalation branch,
+  both mutation-pinned).
+- Scrutiny (2026-07-04, 4-lens adversarial workflow) confirmed the slice; the two findings were
+  test-coverage holes (leg-max clause + Gate-0 escalation both passing for the wrong reason) —
+  fixed and proven by mutation testing, not just re-asserted.
+- HONESTY CAVEAT — the load-bearing open item: everything above is the FUNCTION layer gating the
+  *spec* against rules WE derived from Peat's 26 notes. **The loop is NOT closed.** Nothing has
+  been re-rendered through the full Gemini pipeline, re-added to the golden set, and re-labeled by
+  the designer. "Passes the FUNCTION gate" ≠ Peat's REWORK flipped to SHIP. `labels.json` is still
+  one round, 26/26 REWORK, 0 SHIP. The render/material notes (GS-01 black blob, GS-21 black beam,
+  GS-02 polygon, GS-25 repetition, GS-19 frame) are legitimately render/Gemini + designer domain,
+  not this layer.
+- NEXT (real): re-render bedroom + living through the full pipeline → add as GS-27+ → blind
+  re-label by the designer; only a moved verdict proves the comments are truly addressed. Then:
+  kitchen aisle / leg-obstruction rules (need run/opposing-counter grouping the @0.2 spec lacks);
+  "camera has a reason" (no-dead-wall framing); more room types as specs arrive.
