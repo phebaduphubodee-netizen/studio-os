@@ -65,6 +65,33 @@ and a SketchUp scene `files/616168_c866775c3c7fc5f9.skp`.
   from the Drive pack. For actual photometric magnitudes (lumens/lux/beam angle) rely on the real
   .ies file header and `knowledge/lighting/residential-lighting.md`, not this preview.
 
+### 2a. IES pack FETCHED 2026-07-04 — file → real luminaire map
+The 30-file .ies pack is now local: `knowledge/_inbox/discord/MY-DATA-PEAT/_external-fetched/sharing/002_IES/`
+(re-pullable via `../EXTERNAL-LINKS.md`). These are **real IESNA LM-63 photometric files from named
+luminaire makers** — loadable directly by the renderer (Blender/Enscape) for accurate beam distribution.
+Filenames `1.IES`…`30.IES` assumed to match the `iesguide.jpg` preview indices 1–30 (same numbering;
+verify by eye for critical picks). Header-identified fixtures (≈half the pack):
+
+| # | maker | cat. | luminaire type | lamp |
+|---|---|---|---|---|
+| 1 | BEGA | 6339 | surface wall luminaire | 60W A-19 INC |
+| 2 | BEGA | 6340 | surface wall luminaire | 100W A-19 INC |
+| 3 | BEGA | 6690 | surface wall luminaire | 100W A-19 INC |
+| 4 | BEGA | 8701 | buried flood (uplight) | 35W GY6.35 TH |
+| 5 | Halo | H7t-301 | recessed open trim | 75W R-30 flood |
+| 7,14 | Kurt Versen | B7424 | directional | — |
+| 8,15 | Kurt Versen | (2373-5) | — | — |
+| 9 | Lithonia Architectural Outdoor | KBD8 70M LV | 8" round bollard w/ louvers | 70W clear MH |
+| 12 | Lithonia ESG | ELA CDS N0606 | specular reflector, translucent lens lamphead | incand. wedge |
+| 29 | Kurt Versen | C7302 Q150 | downlight | Q150W |
+| 30 | Kurt Versen | C7394 | downlight | 250W frost |
+| 6,10,11,13,16-28 (most) | unknown/blank header | — | (beam shape by eye from iesguide.jpg) | — |
+
+Note: makers are US architectural brands (BEGA/Kurt Versen/Lithonia/Halo) — use the **beam distribution**
+(the value of an .ies) for realism; the physical fixtures aren't a Thai-market spec. Lamp wattages are
+legacy incandescent/halogen/MH; scale intensity to the actual LED source and to the lux targets in
+`knowledge/lighting/residential-lighting.md`.
+
 ## 3. เวิร์กโฟลว์จัดแสงภายใน — Lighting Master Interior (Krupipe) / Interior lighting workflow
 Source thread: `3dmax-tip/008_Lighting-Master-Interior-Krupipe/`.
 

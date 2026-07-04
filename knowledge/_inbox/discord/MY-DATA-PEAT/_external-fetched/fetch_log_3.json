@@ -1,0 +1,26 @@
+[
+  {
+    "label": "AELLA hardware",
+    "status": "ok",
+    "path": "catalogue/023_AELLA",
+    "files": 14,
+    "mb": 157.56,
+    "err": null
+  },
+  {
+    "label": "IES photometrics",
+    "status": "ok",
+    "path": "sharing/002_IES",
+    "files": 31,
+    "mb": 0.13,
+    "err": null
+  },
+  {
+    "label": "Excel take-off",
+    "status": "partial",
+    "path": "sharing/012_Excel",
+    "files": 1,
+    "mb": 0.02,
+    "err": "FileURLRetrievalError: Failed to retrieve file url:"
+  }
+]

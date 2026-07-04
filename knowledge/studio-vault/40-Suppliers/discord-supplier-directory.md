@@ -293,10 +293,15 @@ Futuretech recurs across three threads (spelled "Futruetech / Futuretech / FUTUR
 Source thread: `002_อลูมิเนียมโปรไฟล์-APH/`. "Aluminium Profile & Handle By Futuretech" — frame aluminium for
 glass-front cabinet doors / wardrobes. www.aphthailand.com. Files: `963178_image.png`, `584449_APH.pdf`. No contact/discount stated.
 
-## AELLA Hardware — ฮาร์ดแวร์ทองเหลือง / Solid-brass architectural hardware
-Source thread: `023_AELLA-HARDWARE/`. Product: handles, pulls, hinges, escutcheons in solid brass (hammered/knurled finishes).
-Spec Drive folder: https://drive.google.com/drive/folders/1i-OcOQGxaM3QdXSwItpgRmELTgkksEKV. File: `290462_image.png`. No contact/discount stated.
-> Fetch 2026-07-04: **PENDING** — Google Drive throttled this folder (0 files). Retry after quota cooldown or pull via browser. See `_external-fetched/EXTERNAL-LINKS.md`.
+## AELLA Hardware — ฮาร์ดแวร์ทองเหลือง / Brass architectural door & furniture hardware
+Source thread: `023_AELLA-HARDWARE/`. **14 category catalogues fetched + distilled 2026-07-04.**
+- **ติดต่อ / Contact:** AELLA HARDWARE CO.,LTD. — www.aellahardware.com · LINE **@aellahardware** · Tel **092-281-9887**.
+- **Range:** door bolts, door stops, butt/parliament hinges, lever handles, door knobs, sliding-door + drawer/cabinet
+  pulls, long bar & edge pulls. Consistent finish-code system (BC/AB/SB/QBCF/SN/PVD/GP/YB/…).
+- **Price bands:** cabinet/drawer pulls 210–990 · square handles 230–650 · door bolts 1,000–3,300 ·
+  lever door sets 4,500–13,000 · door knobs 5,700–6,500 THB/pc (list, VAT unstated; some prices glyph-decoded).
+- **Full code families + dimensions + finish legend + price bands → `knowledge/materials/aella-hardware-th.md`.**
+- Raw PDFs: `_external-fetched/catalogue/023_AELLA/`. (Old thread image `290462_image.png`.)
 
 ## HAFELE — Drawers & Drawer Inserts
 Source thread: `010_Drawers-&-Drawer-Inserts-HAFELE/`. Häfele drawer systems & inserts.

@@ -67,9 +67,9 @@ Fetched into `_external-fetched/` (342 MB, 110 files). NOT yet distilled into kn
 | catalogue/ระแนง (Wall/stone) | ✅ 6 catalogue PDFs incl. 121 MB pricelist + 84 MB Wallthailand |
 | catalogue/WDC | ◑ 52 tile product JPGs (~complete; folder aborted on 1 straggler) |
 | catalogue/FUTURTECH | ◑ 54 closet/hardware JPGs (~complete; aborted on 1) |
-| catalogue/AELLA hardware | ❌ 0 — Google throttle (many-accesses) |
-| sharing/IES photometrics | ❌ 0 — throttle |
-| sharing/Excel take-off | ❌ 0 — throttle |
+| catalogue/AELLA hardware | ✅ 14 catalogue PDFs (retry 2026-07-04 after cooldown) — distilled → materials/aella-hardware-th.md |
+| sharing/IES photometrics | ✅ 30 .ies files (real BEGA/Kurt Versen/Lithonia/Halo) — mapped in lighting/ies-and-lighting-notes-discord.md §2a |
+| sharing/Excel take-off | ◑ 1 of many (`รายการราคาค่าบริการ1.xls`); rest still hit the big-file confirm page |
 | Dropbox ×7 (.max packs) | ⏸ deferred (not attempted) |
 | Sketchup share (1.4 GB RAR) | ⏸ pulled then removed — asset library, not knowledge slice |
 
@@ -91,6 +91,7 @@ PRIVACY: FUTURTECH folder held a named client's photos (คุณเมย์ข
 
 ## Still open
 
-1. **Retry AELLA / IES / Excel** after Google-quota cooldown (schedule) or manual browser pull.
+1. **Excel take-off folder** — only 1 of several `.xls` came down; the rest hit Drive's big-file
+   confirm page. Low priority (service rate cards / take-off formulas) — retry per-file or browser-pull.
 2. **Dropbox .max packs + Sketchup RAR** — DEFER to a real asset-ingestion stage
    (format-mismatched vs Blender; multi-GB into OneDrive).
