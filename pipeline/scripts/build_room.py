@@ -538,9 +538,11 @@ def add_suite_eye_camera(spec, outline_m, h):
 
 
 # material family per furniture KIND, so a sofa reads as fabric and a table as wood.
-_FABRIC = {"sofa", "loveseat", "armchair", "chair", "dining_chair", "bed", "bench"}
-_WOODEN = {"coffee_table", "dining_table", "side_table", "nightstand", "desk", "table",
-           "vanity", "platform", "tv_console", "cabinet"}
+# Sourced from material_defaults (shared with rationale.py) so the "what renders as
+# what" mapping has ONE definition and the explainability layer can never drift from it.
+import material_defaults as _matdef
+_FABRIC = _matdef.FABRIC_KINDS
+_WOODEN = _matdef.WOODEN_KINDS
 
 
 def _mat_tag(kind):
