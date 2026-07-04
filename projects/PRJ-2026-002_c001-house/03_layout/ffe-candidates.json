@@ -1,0 +1,3155 @@
+{
+  "project_id": "PRJ-2026-002",
+  "layout_reconciliation": [
+    {
+      "tag": "FFE-S01",
+      "issue": "sofa depth 860 mm vs drawn 600 mm (+43%); height 920 vs 800 (+15%). No armed Thai 3-seater is 600 deep.",
+      "action": "At verification: deepen the sitting-room sofa footprint to ~860 and re-run Gate 0 vs the 3300 depth (re-check the coffee-table gap), OR commission a custom shallow ~600-deep sofa. Trim height with lower legs."
+    },
+    {
+      "tag": "FFE-M06",
+      "issue": "WC depth 725 mm vs drawn 600 mm (+21%); every one-piece WC is ~700-740 deep.",
+      "action": "Relax the ensuite WC block depth to ~725 (height to ~648) and re-verify — 600 is not achievable by any product."
+    },
+    {
+      "tag": "FFE-M02",
+      "issue": "end-of-bed bench depth/height not published; a plush 170cm 'end-of-bed sofa' likely exceeds the slim 400x450 footprint.",
+      "action": "Pull real depth/height from the vendor; if >15% deep, relax the bench footprint or substitute a slim bench (e.g. RSB 4817 1500x450x300, non-upholstered)."
+    }
+  ],
+  "client_ref": "C-001",
+  "currency": "THB",
+  "unit_system": "mm",
+  "status": "DRAFT — back-office FF&E research; every row verified:false pending designer vendor confirmation; prices indicative/un-anchored (showcase run, no client budget). Positions owner-blocked (candidates selected by DIMENSION only). Architectural lighting (downlights/pendants) is deferred to the Stage-04 RCP — only decorative/portable lighting appears here.",
+  "provenance": {
+    "loose_furniture_sanitaryware_lighting": "researched 2026-07-04 via the ffe-research skill (18 roles, Thai-market first, WebFetch'd product pages; unverified specs flagged per candidate)",
+    "built_ins": "folded from 03_layout/ffe-finish-hardware-draft.md (vault-cited: knowledge/materials/aella-hardware-th.md + wall-cladding-and-decorative-mouldings-th.md)",
+    "dimensions_source": "pipeline/scripts/specs/{master_bedroom,sitting_room,living_room}.json (CAD-authoritative envelopes; furniture footprints = design judgement)"
+  },
+  "items": [
+    {
+      "tag": "FFE-BM01",
+      "room": "Master Bedroom",
+      "role": "Built-in wardrobe — west wall (BF11)",
+      "target_dims_mm": {
+        "w": 2300,
+        "d": 600,
+        "h": 2800
+      },
+      "candidates": [
+        {
+          "manufacturer": "Formica (via TH supplier)",
+          "model": "PROTEC+ laminate door face 1220x2440 on carcass",
+          "material_finish": "laminate door faces; AELLA H50-series hinges (pairs) + L3018 4XL long-bar pulls",
+          "csi": "06 41 00",
+          "notes": "~4 leaves -> ~9 hinge-pairs + 4 pulls. Laminate ~1,020-1,930/sheet (Formica/Lamitak/EDL); AELLA hardware 250-2,100 ea. Vault-cited.",
+          "selected": true,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2300,
+            "d": 600,
+            "h": 2800
+          },
+          "unit_price_thb": null,
+          "lead_time": "fabrication ~3-5 wk (quote)",
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        },
+        {
+          "manufacturer": "CO-EX / VCP",
+          "model": "panel 8x1220x2900 door face",
+          "material_finish": "CO-EX/VCP door face; same AELLA hardware",
+          "csi": "06 41 00",
+          "notes": "alt door face ~3,500/sheet; moisture-tolerant vs laminate.",
+          "selected": false,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2300,
+            "d": 600,
+            "h": 2800
+          },
+          "unit_price_thb": null,
+          "lead_time": "fabrication ~3-5 wk (quote)",
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        }
+      ],
+      "best_pick_reason": "Built-in millwork; finish/hardware selection is robust to exact furniture position (drafted now). Full option matrix + hardware counts in ffe-finish-hardware-draft.md."
+    },
+    {
+      "tag": "FFE-BM02",
+      "room": "Master Bedroom",
+      "role": "Built-in wardrobe/dresser — NE corner (BF09-3)",
+      "target_dims_mm": {
+        "w": 2100,
+        "d": 600,
+        "h": 2800
+      },
+      "candidates": [
+        {
+          "manufacturer": "Formica (via TH supplier)",
+          "model": "PROTEC+ laminate door face on carcass",
+          "material_finish": "laminate door faces; AELLA H50-series hinges (pairs) + pulls",
+          "csi": "06 41 00",
+          "notes": "~4 leaves -> ~8 hinge-pairs + 4 pulls. Vault-cited.",
+          "selected": true,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2100,
+            "d": 600,
+            "h": 2800
+          },
+          "unit_price_thb": null,
+          "lead_time": "fabrication ~3-5 wk (quote)",
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        }
+      ],
+      "best_pick_reason": "Built-in millwork; finish/hardware selection is robust to exact furniture position (drafted now). Full option matrix + hardware counts in ffe-finish-hardware-draft.md."
+    },
+    {
+      "tag": "FFE-BM03",
+      "room": "Master Bedroom",
+      "role": "Headboard feature wall (built-in)",
+      "target_dims_mm": {
+        "w": 2200,
+        "d": 150,
+        "h": 1400
+      },
+      "candidates": [
+        {
+          "manufacturer": "WPC slat (SQW10)",
+          "model": "10x150x2900 slat x~15, trimmed to 1400 h",
+          "material_finish": "WPC vertical slat feature wall behind the bed",
+          "csi": "09 77 00",
+          "notes": "Economical: ~15 slats x 440 = ~6,600. Alt = AKUWALL acoustic oak-veneer 1200x2900 x2 (catalogue app = 'bedroom headboards'), offcut-heavy at 1400 h (~2 x 16,470).",
+          "lead_time": "in stock (WPC) ~1-2 wk",
+          "selected": true,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2200,
+            "d": 150,
+            "h": 1400
+          },
+          "unit_price_thb": null,
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        },
+        {
+          "manufacturer": "AKUWALL",
+          "model": "acoustic oak-veneer panel 1200x2900 x2 (trim to 1400)",
+          "material_finish": "acoustic slat-veneer panel",
+          "csi": "09 77 00",
+          "notes": "premium acoustic finish; ~2 x 16,470, offcut-heavy at 1400 h.",
+          "selected": false,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2200,
+            "d": 150,
+            "h": 1400
+          },
+          "unit_price_thb": null,
+          "lead_time": "fabrication ~3-5 wk (quote)",
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        }
+      ],
+      "best_pick_reason": "Built-in millwork; finish/hardware selection is robust to exact furniture position (drafted now). Full option matrix + hardware counts in ffe-finish-hardware-draft.md."
+    },
+    {
+      "tag": "FFE-M01",
+      "room": "Master Bedroom",
+      "role": "Bed frame — oversized king (spec 7ft x 6.5ft = 2134 L x 1981 W), low-/no-headboard platform (headboard is a separate built-in wall)",
+      "target_dims_mm": {
+        "w": 1981,
+        "d": 2134,
+        "h": 1100,
+        "note": "6.5ft wide x 7ft long oversized king; H1100 is a spec placeholder — headboard is a SEPARATE built-in wall so a 300-400mm platform/no-headboard base is what is actually wanted. 6.5ft (198cm) width and 7ft (213cm) length are non-standard in TH retail (standard king = 6ft/183 x 198-200) and normally require made-to-order."
+      },
+      "candidates": [
+        {
+          "manufacturer": "KulThong Design (Thai bed factory)",
+          "model": "NBT01 upholstered no-headboard platform base (made-to-order)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1950,
+            "d": 2080,
+            "h": 300,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Upholstered fabric or PU/genuine-leather over ply + foam; no headboard; low 30cm platform base; 2 storage drawers; legless (sits flush to floor)",
+          "csi": "12 52 00",
+          "unit_price_thb": 11900,
+          "lead_time": "Made-to-order, ~2-4 weeks (custom size longer) — estimate",
+          "source_th": "KulThong Design (kulthong.com)",
+          "link": "https://kulthong.com/product/%E0%B9%80%E0%B8%95%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B8%99%E0%B8%AD%E0%B8%99%E0%B8%AA%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%97%E0%B8%B3/",
+          "notes": "Best PROFILE match: genuinely a no-headboard upholstered platform (the built-in wall is the headboard). Standard 6ft build shown = 1950 x 2080 x 300, already within ~1.5% of target width / ~2.5% of target length. Explicitly made-to-order ('ปรับขนาดได้ตามพื้นที่') so it CAN be built to 1981 x 2134 — get a written quote for the oversized size (price above is the standard 6ft; custom 6.5ft x 7ft will cost more). Upholstered ply/foam construction, not solid wood. Factory-direct (LINE @kulthong), so verify build quality + drawer side vs. the room layout.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (11,900 is standard 6ft; custom 198x213 = quote)",
+            "custom oversized dimensions",
+            "lead_time"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Serine (ซีรีน) upholstered platform bed, 6ft",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2200,
+            "d": 2088,
+            "h": 1100,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Upholstered platform; MDF curved-groove headboard with PVC coating; particle-board frame, melamine finish; integrated daylight LED strip",
+          "csi": "12 52 00",
+          "unit_price_thb": 19800,
+          "lead_time": "In-stock retail, ~3-7 days delivery (Bangkok) — estimate",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/110047607",
+          "notes": "Fully-dimensioned, in-stock retail benchmark (real page: 220 x 208.8 x 110cm, THB 19,800 promo). Two hard mismatches for THIS brief: (1) it has a fixed 110cm MDF headboard, which clashes with the separate built-in headboard wall; (2) sleep surface is only 6ft/183cm wide — the 2200 external is upholstered rail width, so it is ~15cm short of the 198cm target sleep width. Particle-board/melamine + PVC, not solid. Good value if the 6ft width and its own headboard were acceptable, but they are not here.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "SB Design Square / SB Furniture",
+          "model": "Custom Bed (Customized Series, e.g. Sofia) — upholstered, headboard style selectable",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1830,
+            "d": 2000,
+            "h": 1050,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Made-to-order upholstery — fabric / synthetic leather / genuine leather (500+ designs, 50+ colours) over E1 engineered-wood 'Firm Structure' frame",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "Custom order, ~4-8 weeks — estimate",
+          "source_th": "SB Design Square",
+          "link": "https://www.sbdesignsquare.com/furniture/custom-furniture/custom-bed",
+          "notes": "Recognised retail brand with nationwide showrooms and a real custom-bed program — can specify a low slab or no headboard and (on request) a special size, which is the realistic branded route to 198x213. Standard configurator tops out at 6ft/183, so the oversized 6.5ft x 7ft footprint is a special-size quote, not a catalogue item. No public price for the custom bed (bedroom sets start ~13,990); dims below are a representative standard 6ft — treat all as provisional pending a showroom quote.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "w",
+            "d",
+            "h",
+            "special-size (198x213) availability",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA Thailand",
+          "model": "MALM bed frame, high, 180x200 (white stained oak veneer)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1960,
+            "d": 2090,
+            "h": 1000,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "White stained oak veneer over particleboard/fibreboard; high headboard (100cm), 38cm footboard, 21cm floor clearance",
+          "csi": "12 52 00",
+          "unit_price_thb": 8090,
+          "lead_time": "In-stock flat-pack, immediate to ~1 week",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/malm-bed-frame-high-white-30249476/",
+          "notes": "Cheapest, most available, fully-dimensioned (real page: overall 196 x 209cm, THB 8,090). But wrong profile: it has a HIGH 100cm headboard (fights the built-in wall) and is only 180x200 — 18cm (~9%) under the 198 target width and 13cm under the 213 target length. Veneer/particleboard, flat-pack. Include only as a budget/placeholder reference, not the intended low-profile oversized bed.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "HomePro (Solomon / Mercury house brands)",
+          "model": "Upholstered divan bed base, no headboard, 6ft (e.g. Solomon / Mercury CHIKA)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1830,
+            "d": 1980,
+            "h": 300,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Upholstered fabric divan base, no headboard, particle-board/timber core",
+          "csi": "12 52 00",
+          "unit_price_thb": 4199,
+          "lead_time": "When in stock ~1-2 weeks; many SKUs currently out of stock",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/c/BED0305",
+          "notes": "Budget no-headboard divan base — right low-profile PROFILE for a separate built-in headboard, at ~4,199-4,319 THB. But only 6ft/183 (15cm under target width) and standard ~198-200cm length; dimensions are NOT published on the listing (values below are the standard 6ft estimate) and several colours show 'out of stock'. Fine as a cheap fallback; cannot reach 198x213 without going custom anyway.",
+          "verified": false,
+          "unverified_specs": [
+            "w",
+            "d",
+            "h (not published on listing)",
+            "exact model/stock",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "The Headboard Workshop / The English Bed Company (UK, aspirational reference)",
+          "model": "Upholstered Emperor bed, 200x200 (or 7ft) made-to-order",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2000,
+            "d": 2050,
+            "h": null,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Hand-upholstered fabric/velvet/faux-leather over hardwood frame; low-headboard options available; UK made-to-order",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "Made-to-order ~8-12+ weeks + sea freight/import clearance",
+          "source_th": "import",
+          "link": "https://www.theheadboardworkshop.co.uk/31-emperor-beds",
+          "notes": "REFERENCE ONLY (import) to show the true oversized-king / emperor category, since TH retail has no direct equivalent. UK emperors are typically SQUARE 200x200 (or 215x215) — not the 198x213 rectangle — and low-headboard variants exist. Price is POA (typ. £1,500-4,000+, roughly 70,000-190,000 THB before shipping + duty). Long lead and import cost make it impractical vs. a Thai made-to-order base; use it only to sanity-check proportions/finish.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "exact dimensions",
+            "lead_time",
+            "shipping/import cost"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "The target 1981 x 2134 (6.5ft wide x 7ft long) is a special/oversized size that no Thai retailer stocks — multiple TH sources confirm 6.5ft/7ft beds are made-to-order — and the brief wants a low-/no-headboard platform because the headboard is a separate built-in wall. KulThong Design's NBT01 hits BOTH: it is genuinely a no-headboard upholstered platform base (low 300mm profile), and it is factory made-to-order so it can be built to the exact 1981 x 2134 footprint. Its standard 6ft build (1950 x 2080) already sits within ~1.5% of target width and ~2.5% of length, so the custom stretch is small and low-risk. Every retail alternative fails on either size (Index/IKEA/HomePro cap at 6ft/183 sleep width, ~15-18cm short) or profile (Index and IKEA carry tall fixed headboards that clash with the built-in wall), and the only true-size option, an imported UK emperor, is square (200x200, not 198x213), long-lead and far more expensive. KulThong is the best fit on dimensions first, then on value (~11,900 THB standard; oversized size by quote). Caveats for the human designer: confirm the custom 6.5ft x 7ft price and lead time in writing, confirm upholstered ply/foam build quality, and confirm drawer side against the room plan; verified:false on all lines and all prices are indicative drafts."
+    },
+    {
+      "tag": "FFE-M02",
+      "room": "Master Bedroom",
+      "role": "End-of-bed bench (upholstered, ~1.6m)",
+      "target_dims_mm": {
+        "w": 1600,
+        "d": 400,
+        "h": 450,
+        "note": "prefer within +/-15% of footprint; upholstered bench ~1.6m"
+      },
+      "candidates": [
+        {
+          "manufacturer": "ZEITAKU (sold via INTERY / Intery Home Decor)",
+          "model": "CT172D073 end-of-bed sofa bench, 170cm",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1700,
+            "d": null,
+            "h": null,
+            "seat_h": null
+          },
+          "material_finish": "Fabric upholstery over solid-wood frame with high-density rebound foam",
+          "csi": "12 52 00",
+          "unit_price_thb": 10000,
+          "lead_time": "In-stock lines ship domestically; custom colour approx 15-20 days per vendor",
+          "source_th": "Intery Home Decor / NocNoc",
+          "link": "https://nocnoc.com/p/Sofas/INTERY-%E0%B9%82%E0%B8%8B%E0%B8%9F%E0%B8%B2%E0%B8%9B%E0%B8%A5%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%95%E0%B8%B5%E0%B8%A2%E0%B8%87-CT172D073-ZEITAKU-170/11007535",
+          "notes": "Closest genuine upholstered end-of-bed piece to the ~1.6m target; length 170cm is +6% over 1600mm (within tolerance). Sold as a plush 'end-of-bed sofa' so depth/height likely EXCEED the slim 400x450 target (verify against dimensioned drawings). Price is an indicative sale floor; family lists THB 10,000-23,000 by size. Depth, height and seat height NOT published - confirm with vendor.",
+          "verified": false,
+          "unverified_specs": [
+            "depth_mm",
+            "height_mm",
+            "seat_h",
+            "unit_price_thb (indicative sale floor; exact price for 170cm size not isolated)"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "ZEITAKU (sold via INTERY / Intery Home Decor)",
+          "model": "CT172D074 end-of-bed storage sofa bench (velvet)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": null,
+            "d": null,
+            "h": null,
+            "seat_h": null
+          },
+          "material_finish": "Italian velvet over solid birch frame, high-density rebound foam, lift-up storage",
+          "csi": "12 52 00",
+          "unit_price_thb": 10000,
+          "lead_time": "Custom colour approx 15-20 days per vendor",
+          "source_th": "Intery Home Decor",
+          "link": "https://www.interyhomedecor.com/en/product/7882/ct172d074-zeitaku",
+          "notes": "Storage sibling of the 170cm bench - velvet, birch frame, opens for storage. Sale THB 10,000-24,000 (reg THB 27,500-66,000) across size options; exact dimensions per size NOT published on the page. Pricier and heavier than target but the only Thai upholstered end-of-bed piece WITH storage found at this scale. Dimensions must be confirmed before use in drawings.",
+          "verified": false,
+          "unverified_specs": [
+            "w",
+            "d",
+            "h",
+            "seat_h",
+            "unit_price_thb (range only; size not isolated)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "VALTORP bench with storage",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1030,
+            "d": null,
+            "h": null,
+            "seat_h": null
+          },
+          "material_finish": "Fabric-upholstered top with lift-up storage box (particleboard/foam)",
+          "csi": "12 52 00",
+          "unit_price_thb": 3590,
+          "lead_time": "IKEA TH stock item, immediate / short",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/cat/end-of-bed-benches-59247/",
+          "notes": "Real, cheap, upholstered, with storage - but only 103cm long (-36% vs 1600mm target); would leave a visible gap on a 1.8m+ bed and breaks the dimensioned footprint. Good value/backup, not a size match. Depth/height/seat height not captured from the listing.",
+          "verified": false,
+          "unverified_specs": [
+            "depth_mm",
+            "height_mm",
+            "seat_h"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Wasabi bench (WASABI)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1200,
+            "d": null,
+            "h": null,
+            "seat_h": null
+          },
+          "material_finish": "Natural-finish wood bench (NOT upholstered)",
+          "csi": "12 52 00",
+          "unit_price_thb": 5990,
+          "lead_time": "Index TH stock item, short",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/category/furniture/beds/bench",
+          "notes": "Genuine Thai bedroom bench matched to Index's Wasabi bed, but 120cm (-25%) and a hard wood bench, not the upholstered piece the brief asks for. Include only if a natural-wood look is acceptable. Depth/height not published on the category page.",
+          "verified": false,
+          "unverified_specs": [
+            "depth_mm",
+            "height_mm",
+            "upholstery (appears to be bare wood, not upholstered)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "RSB Furniture",
+          "model": "Long bench 4817 (150cm, round steel legs)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1500,
+            "d": 450,
+            "h": 300,
+            "seat_h": 300
+          },
+          "material_finish": "Melamine-faced top (scratch/water resistant) on round steel-tube legs - NOT upholstered",
+          "csi": "12 52 00",
+          "unit_price_thb": 2190,
+          "lead_time": "Factory-direct, made-to-order (contact vendor)",
+          "source_th": "RSB Furniture (rsbfurniture.co.th)",
+          "link": "https://www.rsbfurniture.co.th/product/long-bench-chair-round-legs-size-w-150-180-cm-code-4817/",
+          "notes": "Length fits (150cm = -6%; 180cm version also exists at THB 2,290) and dims are fully verified, but it is a hard melamine/steel utility bench, not upholstered, and only 300mm high (low bench height, not 450 seat). Wrong character for a master-bedroom end-of-bed piece; listed as a cheap dimensional reference only.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "West Elm",
+          "model": "Lillie Upholstered Storage Bench (import reference)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": null,
+            "d": null,
+            "h": null,
+            "seat_h": null
+          },
+          "material_finish": "Fabric upholstery over wood frame with lift-top storage (import)",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "Import - long lead, freight + duty; typically several weeks",
+          "source_th": "import",
+          "link": "https://www.westelm.com/shop/furniture/end-of-bed+benches/",
+          "notes": "Aspirational IMPORT reference only (not a Thai-market buy). West Elm end-of-bed benches sit in the ~120-150cm range and read as the target style, but the product page blocked automated fetch (HTTP 403) so exact dimensions and THB landed cost are unverified. Use for styling intent; source a Thai equivalent for the actual spec.",
+          "verified": false,
+          "unverified_specs": [
+            "w",
+            "d",
+            "h",
+            "seat_h",
+            "unit_price_thb",
+            "exact_length"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "The ZEITAKU CT172D073 (170cm) is the only genuinely upholstered, purchasable Thai-market end-of-bed bench found at the target scale: 170cm width is just +6% over the 1600mm target (well inside +/-15%), it is fabric over a solid-wood frame with rebound foam, and it is stocked domestically via Intery Home Decor / NocNoc at an indicative THB 10,000-23,000. Every other real Thai option is off-brief: IKEA VALTORP (103cm) and Index Wasabi (120cm) are far too short, and RSB 4817 fits the length but is a hard melamine/steel bench, not upholstered. The honest caveat on the pick is that these 'end-of-bed sofa' pieces are typically deeper and taller than the slim 400x450 profile, and the vendor does not publish depth/height/seat height - so the designer must confirm the exact section against the dimensioned drawings before locking it. West Elm is carried only as an import styling reference."
+    },
+    {
+      "tag": "FFE-M03",
+      "room": "Master Bedroom",
+      "role": "Nightstand / bedside table",
+      "target_dims_mm": {
+        "w": 400,
+        "d": 380,
+        "h": 520,
+        "note": "small, ~400mm; prefer within ~+/-15% footprint"
+      },
+      "candidates": [
+        {
+          "manufacturer": "IKEA",
+          "model": "BRIMNES bedside table, white (00354063)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 390,
+            "d": 410,
+            "h": 530,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "White; particleboard + paper foil body, tempered-glass drawer front, fibreboard components",
+          "csi": "12 54 00",
+          "unit_price_thb": 1990,
+          "lead_time": "In-stock IKEA TH (Bangkrachao/Bangyai/online); check store stock",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/brimnes-bedside-table-white-00354063/",
+          "notes": "Best dimensional fit: W -2.5%, D +8%, H +2% vs target. The ONLY stocked Thai-market SKU that lands near the 520mm target height (most nightstands are 590-650). Trade-off: laminate/paper-foil, not solid wood; one drawer has a tempered-glass front. 1 drawer + open compartment.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": true
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "VIKHAMMER bedside table, white (80388974)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 400,
+            "d": 390,
+            "h": 650,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "White; fibreboard/particleboard body with acrylic paint, steel legs epoxy/polyester powder-coat",
+          "csi": "12 54 00",
+          "unit_price_thb": 2490,
+          "lead_time": "In-stock IKEA TH / online",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/vikhammer-bedside-table-white-80388974/",
+          "notes": "Footprint W/D near-perfect (400x390), 2 soft-close drawers, raised on steel legs = cleaner modern look. But H 650mm is +25% over the 520mm target — would force a change to the dimensioned elevations. Not solid wood.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "TONSTAD bedside table, off-white / brown-stained oak veneer",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 400,
+            "d": 400,
+            "h": 590,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Oak veneer (off-white or brown-stained), particleboard core",
+          "csi": "12 54 00",
+          "unit_price_thb": 2990,
+          "lead_time": "IKEA TH stocked line; confirm colour availability",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/cat/bedside-tables-20656/",
+          "notes": "Nicest material of the set (real oak veneer, warmer than laminate). W on-target, D +5%, but H 590mm is +13% over target. Priciest IKEA option. Dims/price read from IKEA TH category listing, individual product page not fetched.",
+          "verified": false,
+          "unverified_specs": [
+            "exact product page not individually fetched (dims 40x40x59 and price 2,990 from IKEA TH category listing)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "KONCEPT Furniture (SB Design Square group)",
+          "model": "MELONA bedside cabinet 45 cm, white",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 450,
+            "d": 400,
+            "h": 600,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "White melamine/laminate on particleboard (assumed)",
+          "csi": "12 54 00",
+          "unit_price_thb": 2170,
+          "lead_time": "HomePro / SB / Koncept retail; typically stocked, confirm branch",
+          "source_th": "HomePro (also SB Design Square / Koncept)",
+          "link": "https://www.homepro.co.th/p/1152792",
+          "notes": "Thai domestic brand, part of a matching MELONA bedroom set (good if the bed comes from the same line). W +12.5% (still within +/-15%), D +5%, H 600mm +15% over target. List ~3,100 / sale ~2,170. Product page returned HTTP 500 so dims are from search snippets — verify with vendor.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm depth & height (W 45cm confirmed; D 40 x H 60 from search snippet, product page 500'd)",
+            "material_finish",
+            "unit_price_thb (list ~3,100 / sale ~2,170, not confirmed on a live page)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "HAUGA bedside table, white (80488964)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 400,
+            "d": 360,
+            "h": 630,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "White; particleboard + paper foil, plastic edging, fibreboard drawer bottom",
+          "csi": "12 54 00",
+          "unit_price_thb": 990,
+          "lead_time": "In-stock IKEA TH / online",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/hauga-bedside-table-white-80488964/",
+          "notes": "Cheapest genuine option (990 THB). W on-target, D -5%. But H 630mm is +21% over target and it's a 1-drawer + open-shelf budget piece (paper-foil finish). Good value fallback if budget is tight; height breaks the drawing set.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Maxi 2-drawer night table, 40 cm",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 400,
+            "d": null,
+            "h": null,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Melamine/laminate on particleboard (unverified)",
+          "csi": "12 54 00",
+          "unit_price_thb": 4990,
+          "lead_time": "Index Living Mall retail/online; confirm stock",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/category/furniture/beds/night-table",
+          "notes": "Adds a second Thai big-box source (Index). 40cm width matches; 2 drawers. Priciest of the set and only width is known — depth/height not published in the listing I could read. Verify full dims and price before use.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm depth & height (only W 40cm from category listing)",
+            "material_finish",
+            "unit_price_thb (~4,990 from category snippet, unconfirmed)"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "IKEA BRIMNES (390x410x530mm, verified 1,990 THB, in-stock IKEA TH) is the strongest fit: it is within roughly +/-8% on every axis and, critically, is the ONLY genuinely purchasable Thai-market nightstand I found that lands near the 520mm target height (530mm, +2%) — every other real product (VIKHAMMER 650, TONSTAD 590, MELONA 600, HAUGA 630) is 13-25% taller and would force changes to the dimensioned elevations. It also gives closable storage (1 drawer) at a low, honest price. Only trade-off is laminate/paper-foil construction with a tempered-glass drawer front rather than solid wood; if the client wants a warmer material, TONSTAD (oak veneer) is the upgrade at the cost of a taller 590mm body."
+    },
+    {
+      "tag": "FFE-M04",
+      "room": "Master Bedroom",
+      "role": "Lounge armchair (bedroom reading chair)",
+      "target_dims_mm": {
+        "w": 700,
+        "d": 700,
+        "h": 750,
+        "seat_h": 430
+      },
+      "candidates": [
+        {
+          "manufacturer": "SB Design Square (Koncept Furniture)",
+          "model": "A-Chisa fabric armchair",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 720,
+            "d": 740,
+            "h": 830,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Upholstered fabric on timber/steel frame (accent armchair)",
+          "csi": "12 52 00",
+          "unit_price_thb": 8900,
+          "lead_time": "In-line stock/showroom item; confirm branch stock, allow 1-4 weeks if ordered",
+          "source_th": "SB Design Square",
+          "link": "https://www.sbdesignsquare.com/furniture/living-room/armchair",
+          "notes": "Best footprint match to the 700x700 target (W +3%, D +6%, both inside +/-15%) with a proper tall back (830mm) that supports reading. Trade-off: overall height ~80mm above the 750 target (affects elevation, not plan). Dims/price from SB's own search listing; product page would not fetch, so seat height not confirmed.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "material_finish",
+            "lead_time"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "SB Design Square",
+          "model": "You&Me armchair (black)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 710,
+            "d": 640,
+            "h": 690,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Upholstered fabric, low/compact accent tub chair",
+          "csi": "12 52 00",
+          "unit_price_thb": 3360,
+          "lead_time": "Stock item; confirm branch availability",
+          "source_th": "SB Design Square",
+          "link": "https://www.sbdesignsquare.com/furniture/living-room/armchair",
+          "notes": "Best value and a good plan footprint (W +1%, D -9%), but at 690mm overall it is a low compact tub chair with a short back - weaker back support for a reading chair. Dims/price from SB search listing; page did not fetch, seat height unknown.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "material_finish",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "SB Design Square",
+          "model": "EMVACA armchair (green)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 710,
+            "d": 790,
+            "h": 740,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Upholstered fabric/boucle designer lounge chair",
+          "csi": "12 52 00",
+          "unit_price_thb": 19900,
+          "lead_time": "Showroom/order item; confirm stock, allow up to ~4 weeks",
+          "source_th": "SB Design Square",
+          "link": "https://www.sbdesignsquare.com/furniture/living-room/armchair",
+          "notes": "Tightest overall envelope fit: W +1%, D +13% (near band edge), and height 740mm almost exactly on the 750 target - best for preserving dimensioned drawings. Trade-off: splurge price (special ~19,900, was 22,300 THB). Dims/price from SB search listing; page did not fetch.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "material_finish",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "SB Design Square",
+          "model": "Airly armchair (brown)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 760,
+            "d": 790,
+            "h": 810,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Upholstered fabric accent armchair",
+          "csi": "12 52 00",
+          "unit_price_thb": 10240,
+          "lead_time": "Showroom/order item; confirm stock",
+          "source_th": "SB Design Square",
+          "link": "https://www.sbdesignsquare.com/furniture/living-room/armchair",
+          "notes": "Within upper +/-15% band on all axes (W +9%, D +13%, H +8%) - slightly larger/bulkier than target. Special price ~10,240 (was 12,800 THB). Dims/price from SB search listing; page did not fetch, seat height unknown.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "material_finish",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA (Thailand)",
+          "model": "STRANDMON wing chair, Nordvalla dark grey",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 820,
+            "d": 960,
+            "h": 1010,
+            "seat_h": 450,
+            "dia": null
+          },
+          "material_finish": "Recycled-polyester twill on solid/engineered wood frame; high wing back",
+          "csi": "12 52 00",
+          "unit_price_thb": 6990,
+          "lead_time": "In stock at IKEA TH stores/online; near-immediate",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/strandmon-wing-chair-nordvalla-dark-grey-30359827/",
+          "notes": "Classic high-back reading wing chair, verified on the IKEA TH product page (82x96x101cm, seat 45cm, 10-yr guarantee). Honest trade-off: clearly oversized vs the 700x700x750 target (W +17%, D +37%, H +35%) - will not drop into the same footprint. Good comfort/value reference if the envelope can grow.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA (Thailand)",
+          "model": "POÄNG armchair, birch veneer + fabric cushion",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 680,
+            "d": 820,
+            "h": 1000,
+            "seat_h": 420,
+            "dia": null
+          },
+          "material_finish": "Bent birch-veneer frame with foam cushion (fabric/leather); veneer, not solid",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "In stock at IKEA TH stores/online; near-immediate",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/cat/sofas-armchairs-700640/",
+          "notes": "Iconic budget reading chair, confirmed sold at IKEA TH but the TH product page did not fetch, so THB price not captured (typically low-mid range). Width 680mm is close to target but depth 820mm and height 1000mm are well over (D +17%, H +33%) - a deep reclined-lounge posture, off the compact target. Dims/seat from IKEA/general spec.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "seat_h",
+            "material_finish"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Nitori (Thailand)",
+          "model": "ARMCHAIR ABRICO MBR",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 580,
+            "d": 640,
+            "h": 720,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Polyester upholstery, compact single armchair",
+          "csi": "12 52 00",
+          "unit_price_thb": 4999,
+          "lead_time": "In stock at Nitori TH stores/online",
+          "source_th": "Nitori Thailand",
+          "link": "https://www.nitori.co.th/collections/armchair",
+          "notes": "Compact and good value; H 720mm is close to target (-4%). Trade-off: width 580mm is ~17% under the 700 target (just outside the band) so it reads smaller in plan; depth -9%. Dims/price verified on the Nitori TH collection page; seat height not listed.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "lead_time"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "A-Chisa (SB Design Square, 720x740x830mm) gives the best combined answer for a bedroom reading chair: its plan footprint is essentially on the 700x700 target (W +3%, D +6%, both inside +/-15%), so it drops cleanly into the dimensioned drawings, and unlike the cheaper low tub chairs it has a genuine tall back (830mm) that actually supports reading. Mid-range at ~8,900 THB. The one honest trade-off is overall height ~80mm over the 750 target (elevation only, not footprint). EMVACA fits the envelope even tighter (height nearly exact) but at ~19,900 THB is a splurge; You&Me is the cheapest and a slightly better plan fit but is a low 690mm compact tub chair, weak for reading; STRANDMON/POÄNG are genuine IKEA TH reading classics but both are clearly oversized (deep/tall) versus this compact target. Seat height could not be confirmed for the SB pick (product pages block automated fetch) and must be verified with the vendor."
+    },
+    {
+      "tag": "FFE-M09",
+      "room": "Master Bedroom",
+      "role": "Bedside table lamp (decorative, portable)",
+      "target_dims_mm": {
+        "w": 300,
+        "d": 300,
+        "h": 500,
+        "tolerance": "prefer within +/-15% of 300x300 footprint; height ~500mm to sit well above a typical 550-650mm nightstand"
+      },
+      "candidates": [
+        {
+          "manufacturer": "IKEA",
+          "model": "BLIDVADER (off-white ceramic/beige, 50 cm)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 300,
+            "d": 300,
+            "h": 500,
+            "dia": null
+          },
+          "material_finish": "Off-white glazed ceramic base + fabric shade (85% recycled polyester / 15% linen); brass-colour lamp holder; E27 socket, max 16W",
+          "csi": "26 51 00",
+          "unit_price_thb": 1790,
+          "lead_time": "In stock IKEA TH (Bangna/Bangyai) / online delivery ~3-7 days",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/blidvaeder-table-lamp-off-white-ceramic-beige-80501258/",
+          "notes": "Near-exact target match: shade width 30cm = 300mm footprint, total height 50cm = 500mm. Solid ceramic base (170mm dia, 240mm base height) reads premium, not plastic. Neutral off-white/beige suits a master bedroom. Shade is a poly/linen blend, not pure linen. Bulb not included (pick warmth to match RCP). Verified dims from IKEA spec sheet via search; confirm live price + stock at store.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "SNOBYAR (grey-turquoise ceramic/grey, 52 cm)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 330,
+            "d": 330,
+            "h": 520,
+            "dia": null
+          },
+          "material_finish": "Grey-turquoise glazed ceramic foot + grey SKOTTORP fabric shade (33cm); E27 socket",
+          "csi": "26 51 00",
+          "unit_price_thb": 1990,
+          "lead_time": "IKEA TH listing (~3-7 days) - confirm stock",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/cat/table-lamps-10732/",
+          "notes": "Dimensionally on-target (330 shade x 520 tall, ~+7% wider/+4% taller). Trade-off: grey-turquoise glaze is a colour statement that may fight a neutral master-bedroom palette - fine only if the scheme leans coastal/grey. Bulb sold separately. Linked to IKEA TH category (listed there at ~1,990 THB); confirm exact product URL + price in store.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "link"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Table lamp rุ่น Edenla / เอเดนล่า",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 280,
+            "d": 280,
+            "h": 530,
+            "dia": null
+          },
+          "material_finish": "Metal/fabric-shade table lamp (finish per catalogue variant); E27 socket",
+          "csi": "26 51 00",
+          "unit_price_thb": 1190,
+          "lead_time": "Index Living Mall stock - typically same-week delivery Bangkok metro",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/category/hdi/lighting/lamp",
+          "notes": "Best local value at 1,190 THB. Catalogue lists '28 x 53 cm' - read as ~280mm across x 530mm tall, so height ~+6% over target and footprint slightly under; depth assumed equal to width (unverified). Base/shade material and exact finish need confirming on the product page. Cheaper Thai-retailer alternative to IKEA if budget-led.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm.d",
+            "material_finish",
+            "link"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "CARINI (HomePro house brand)",
+          "model": "MT5177WH classical table lamp, white/gold",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": null,
+            "d": null,
+            "h": null,
+            "dia": null
+          },
+          "material_finish": "White resin/ceramic-look body with gold-tone accents + fabric shade; E27 socket (13m cord noted on listing)",
+          "csi": "26 51 00",
+          "unit_price_thb": 1149,
+          "lead_time": "HomePro stock - online delivery ~2-5 days",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/c/LIG0303",
+          "notes": "Classical white/gold look for a more traditional master bedroom. Price 1,149 THB from category listing, but the product card gives NO dimensions - height/footprint must be confirmed on the SKU page before it can drive the dimensioned drawing. Body is likely resin, not solid ceramic (verify).",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm.w",
+            "dimensions_mm.d",
+            "dimensions_mm.h",
+            "material_finish"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "DEJSA (beige / opal white glass, 28 cm)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 260,
+            "d": 260,
+            "h": 280,
+            "dia": null
+          },
+          "material_finish": "Opal white glass shade on beige base; premium glass diffuser; E27 socket",
+          "csi": "26 51 00",
+          "unit_price_thb": 1490,
+          "lead_time": "In stock IKEA TH / online ~3-7 days",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/p/dejsa-table-lamp-beige-opal-white-glass-90404983/",
+          "notes": "Attractive glass-diffuser lamp but UNDERSIZED for this slot: 280mm tall vs 500mm target (~-44%), shade 260mm. Would break the dimensioned elevation if used as-drawn. Kept as a lower-profile reference only - good if the design later drops to a compact nightstand lamp. Dims verified from IKEA product page.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "West Elm",
+          "model": "Form Studies Ceramic Table Lamp (small ~19 in)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 355,
+            "d": 355,
+            "h": 483,
+            "dia": null
+          },
+          "material_finish": "Handcrafted ceramic base + linen shade (finish varies by colourway)",
+          "csi": "26 51 00",
+          "unit_price_thb": null,
+          "lead_time": "IMPORT - no TH store; ship/forward from US, long lead (weeks) + duty",
+          "source_th": "import",
+          "link": "https://www.westelm.com/products/form-studies-ceramic-table-lamp-h9711/",
+          "notes": "Aspirational REFERENCE only - West Elm has no Thai retail, so this is import (long lead, USD pricing + freight/duty, no local warranty). Product page returned HTTP 403 so dims are inferred from the listed 19-36 in size range (smallest ~483mm tall, ~355mm shade) - all unverified. Use to benchmark styling, not to purchase; the IKEA BLIDVADER covers the same ceramic look locally.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm.w",
+            "dimensions_mm.d",
+            "dimensions_mm.h",
+            "unit_price_thb",
+            "material_finish"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "IKEA BLIDVADER is the closest real product to the ~300x300x500mm target: its 30cm fabric shade gives an exact 300mm footprint and its 50cm total height hits 500mm on the nose, so it drops into the dimensioned drawings with essentially no fudge. It also wins on value/quality - a solid glazed-ceramic base (not plastic) in a neutral off-white/beige that suits a master bedroom, E27 socket so the owner picks bulb warmth per the RCP, in stock at IKEA Thailand at a mid-range 1,790 THB each (2 needed). Honest trade-offs: the shade is a poly/linen blend rather than pure linen, bulb is sold separately, and the price should be confirmed live. SNOBYAR matches size too but its turquoise glaze is a colour risk; Index Edenla is the budget local alt but under-specified; DEJSA and West Elm are kept only as an undersized reference and an import aspirational reference respectively."
+    },
+    {
+      "tag": "FFE-M05",
+      "room": "Master Ensuite",
+      "role": "Double-basin vanity (twin washbasin + cabinet), ~2.4 m long",
+      "target_dims_mm": {
+        "w": 2400,
+        "d": 600,
+        "h": 850
+      },
+      "candidates": [
+        {
+          "manufacturer": "Custom fabrication (COTTO countertop basins)",
+          "model": "Built-in 2400 stone-top double vanity + 2x COTTO countertop basin (BF10.250)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2400,
+            "d": 600,
+            "h": 850,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Engineered-quartz or granite top on moisture-resistant carcass (melamine/HMR ply or blockwork), two COTTO white ceramic countertop basins (e.g. C001017 Simply / C0141-family), soft-close drawers",
+          "csi": "22 41 00",
+          "unit_price_thb": null,
+          "lead_time": "3-5 weeks (fabricated to order)",
+          "source_th": "Boonthavorn / local stone fabricator + COTTO basins (Thai sanitaryware)",
+          "link": "https://www.cotto.com/th/product/basins",
+          "notes": "ONLY route that hits the 2400x600x850 drawing exactly as one continuous vanity with two basins. Not an off-the-shelf SKU - it is fabricated (stone top + carpentry carcass + 2 real COTTO basins), which is standard Thai-studio practice for a 2.4m master-ensuite double vanity and matches the BF10.250 built-in note. Indicative all-in ~THB 50,000-65,000 (top ~15-20k + 2 basins ~2x3k + carcass/labour ~25-35k) - MUST get a fabrication quote; price left null because none was seen.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "exact_top_material",
+            "basin_model_final",
+            "carcass_spec"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "Roca (Thailand)",
+          "model": "A851418402 wall-hung vanity cabinet for two above-counter basins",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1600,
+            "d": 505,
+            "h": 525,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Wall-hung furniture cabinet (finish per Roca collection); two above-counter (vessel) basins purchased separately",
+          "csi": "22 41 00",
+          "unit_price_thb": null,
+          "lead_time": "Stock/indent via Roca TH dealer (confirm)",
+          "source_th": "Roca Thailand (roca.co.th) / Boonthavorn",
+          "link": "https://www.roca.co.th/",
+          "notes": "Nearest genuine SINGLE-SKU double-basin cabinet. But 1600mm is ~800mm (33%) under the 2.4m target - below the +/-15% band, so it visibly shortens the dimensioned drawing. Cabinet only: two countertop/vessel basins are bought separately (add ~2x THB 3,000-6,000). Wall-hung. Dims from Roca TH search listing; product page did not fetch.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dimensions_from_search_snippet",
+            "finish_options",
+            "basins_not_included"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Hafele (Thailand)",
+          "model": "495.60.981 wall-hung vanity + ceramic basin (pair two units for a 2.4m run)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 1200,
+            "d": 500,
+            "h": 600,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Wall-hung, E0-rated board carcass, corrosion-resistant ceramic basin, Blum soft-close drawers (30kg), wall-mount hardware incl.",
+          "csi": "22 41 00",
+          "unit_price_thb": 26150,
+          "lead_time": "Stock at Hafele TH (confirm)",
+          "source_th": "Hafele Thailand (hafelehome.co.th)",
+          "link": "https://www.hafelehome.co.th/products/bathroom-cabinet-wall-hung",
+          "notes": "Real, currently-priced, quality SKU (Blum soft-close). Each unit is SINGLE-basin 1200mm; qty 2 side-by-side = 2400mm exact with two basins (his-and-hers). Trade-offs: a center seam between the two cabinets (not one continuous top) and 500mm deep vs 600 target. Price THB 26,150 each (down from 38,460) = ~THB 52,300 for the pair, verified from product page.",
+          "verified": false,
+          "unverified_specs": [
+            "current_stock",
+            "finish_colour"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA Thailand",
+          "model": "HAVBACK / ORRSJON wash-stand + basin + tap (pair two for a 2.44m run)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 1220,
+            "d": 490,
+            "h": 710,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Wash-stand cabinet (white) with white marble-effect top, semi-recessed ceramic basin, mixer tap + drain included",
+          "csi": "22 41 00",
+          "unit_price_thb": 22240,
+          "lead_time": "IKEA TH stock",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/p/havbaeck-orrsjoen-wash-stand-wash-basin-tap-white-white-marble-effect-s69543392/",
+          "notes": "Budget route: THB 22,240 each incl. tap+drain (verified). Each is single semi-recessed basin 1220mm; qty 2 = ~2440mm two-basin run (~THB 44,480). Trade-offs: two units = center seam, 490mm deep (shallow), floor-standing wash-stand legs, marble-EFFECT (laminate) not stone. Good value / fast, lower design tier than a fabricated stone counter.",
+          "verified": false,
+          "unverified_specs": [
+            "current_stock"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "ODENSVIK double wash-basin (30179218) on a 1200 cabinet base",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1030,
+            "d": 490,
+            "h": 60,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "White glazed ceramic twin-bowl basin (two bowls in one piece); requires a separate sink cabinet / carcass base",
+          "csi": "22 41 00",
+          "unit_price_thb": null,
+          "lead_time": "IKEA TH (confirm stock; ODENSVIK being phased in some markets)",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/cat/wash-basin-bathroom-sink-20723/",
+          "notes": "Genuine two-BOWL ceramic (real twin basin) but basin only - needs a ~1200 sink cabinet under it (add separately). 1030mm basin sits on a ~1230 base = ~57% under the 2.4m target (far short - would leave a big gap or need a custom top). TH price not confirmed (dims 103x49x6cm from IKEA MY/SG listing). List as a modular/budget component, not a 2.4m answer.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "TH_availability",
+            "requires_separate_cabinet"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "No single off-the-shelf Thai SKU reaches 2.4 m as a double-basin vanity, so ranking on dimension fit first (the brief warns a wildly different size breaks the dimensioned drawings) points to the two options that actually hit 2400x600x850: a fabricated stone-top counter or a pair of 1.2 m units. I selected the fabricated 2400 stone-top vanity with two COTTO countertop basins because it is the only choice that delivers the exact target footprint as ONE continuous twin-basin vanity, uses Thai sanitaryware (COTTO) as the brief asks, and reflects standard Thai-studio practice for a 2.4 m master-ensuite run (consistent with the BF10.250 built-in note). Honest caveat: it is fabricated, not a catalog SKU, so its price is indicative (~THB 50-65k, get a quote) and specs need vendor confirmation. Nearest ready-made alternates, both clearly noted: 2x Hafele 495.60.981 (1200 each) = 2400 exact, real and priced at ~THB 52k the pair with Blum soft-close but a center seam; and the Roca A851418402, the only single-SKU double cabinet, but at 1600 mm it is ~33% under target and would shorten the drawing."
+    },
+    {
+      "tag": "FFE-M06",
+      "room": "Master Ensuite",
+      "role": "Toilet (WC), one-piece or close-coupled",
+      "target_dims_mm": {
+        "w": 500,
+        "d": 600,
+        "h": 400,
+        "note": "h=400 is the model/CAD block height, NOT a real seat or fixture height; real one-piece WCs stand ~590-770mm tall. Depth target 600mm is unrealistically shallow - every real WC is ~700-740mm deep; recommend relaxing drawing block depth to ~720mm."
+      },
+      "candidates": [
+        {
+          "manufacturer": "KARAT (Kohler group, Thailand)",
+          "model": "K-72479X-TSL-WK \"Moonstone Two\" one-piece",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 478,
+            "d": 725,
+            "h": 648,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Vitreous china, white gloss glaze; Siphon wash-down; soft-close seat",
+          "csi": "22 41 13",
+          "unit_price_thb": 5900,
+          "lead_time": "In stock at HomePro; typ. ~3-7 days delivery + free install",
+          "source_th": "HomePro (also OneStockHome)",
+          "link": "https://www.homepro.co.th/p/1267560",
+          "notes": "Best pick. Width 478mm = only ~4% under the 500mm target and the only candidate inside the +/-15% width band. Verified dims + price from two retailers (HomePro list THB5,900 / ~THB5,238 net after discount; OneStockHome lists 725x478x647mm, 305mm rough-in). Single-flush 4.5L (not dual). Depth 725mm overshoots the 600mm target ~+21%, inherent to all one-piece WCs.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (promo/discount-dependent)"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "KARAT (Kohler group, Thailand)",
+          "model": "K-17379X \"Apollo\" one-piece (round front, siphonic)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 470,
+            "d": 700,
+            "h": 615,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Vitreous china, white gloss glaze; siphonic; seat cover included",
+          "csi": "22 41 13",
+          "unit_price_thb": null,
+          "lead_time": "UNCERTAIN - SKU flagged discontinued at Karat/Kohler tech resource center; still listed by DP Ceramic / light-and-bath / Beelievehub - verify current stock",
+          "source_th": "Karat / DP Ceramic (retail dealers)",
+          "link": "https://karatsanitaryware.com/products-detail.php?ig=1&ic=3&is=4&id=22",
+          "notes": "Closest RAW footprint (470x700, width -6%, depth +17%, 305mm rough-in, 6L) but flagged DISCONTINUED at the Kohler/Karat tech center, so it likely fails the 'currently purchasable' test - kept as a dimensional reference only. No THB price found on any fetched page. 6L flush is old (non-water-saving) vs 4.5L peers.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "current_availability_discontinued"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "COTTO (SCG, Thailand)",
+          "model": "C1015 (SOFT) \"MAC\" one-piece, comfort/chair-height",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 410,
+            "d": 740,
+            "h": 595,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Vitreous china, white gloss glaze; higher chair-height seating; dual-flush",
+          "csi": "22 41 13",
+          "unit_price_thb": 6790,
+          "lead_time": "In stock at HomePro / Thaiwatsadu; typ. few days + install",
+          "source_th": "HomePro / Thaiwatsadu",
+          "link": "https://www.homepro.co.th/p/1038133",
+          "notes": "Premium leading-Thai-brand (COTTO) one-piece; footprint AREA lands within ~1% of target (410x740) though width is -18%. Water-saving dual-flush 3/4.5L, 305mm floor rough-in, raised 'chair-height' comfort seating. Price/dims came from retailer search snippets (Thaiwatsadu product page returned HTTP 403) - list ~THB9,400, promo ~THB6,790.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dimensions_mm (from retailer listing snippet; product page not fetchable)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "COTTO (SCG, Thailand)",
+          "model": "C11000 \"WORTH\" one-piece",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 390,
+            "d": 715,
+            "h": 770,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Vitreous china, white gloss glaze; dual-flush",
+          "csi": "22 41 13",
+          "unit_price_thb": 5290,
+          "lead_time": "In stock at HomePro; ~3-7 days + free install",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1153337",
+          "notes": "Best value (list THB5,290, ~THB4,646 with store card) from the top Thai brand; dims + price verified off the fetched HomePro page. Narrow 390mm width (-22% vs target) and a tall 770mm profile (high tank). Water-saving dual-flush 3/4.8L.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "American Standard (Thailand)",
+          "model": "TF-2024SC-WT-0 one-piece, dual-flush",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 357,
+            "d": 712,
+            "h": 712,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Vitreous china, white gloss glaze; slow-close seat; dual-flush",
+          "csi": "22 41 13",
+          "unit_price_thb": 7290,
+          "lead_time": "In stock at HomePro; ~3-7 days + free install",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/284291",
+          "notes": "Well-known brand, dims + price verified off fetched HomePro page (list THB9,900, promo THB7,290). Very compact 357mm width (-29% vs target = poorest width fit) though depth 712mm is typical. Water-saving dual-flush 3/4.5L, slow-close seat. Higher price than the COTTO/Karat peers.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "Karat K-72479X-TSL-WK \"Moonstone Two\" wins on the two ranked criteria in order. (a) Dimension fit: its 478mm width is only ~4% under the 500mm target and is the ONLY candidate whose width sits comfortably inside the +/-15% band; the raw-closest match, Karat Apollo (470mm), is flagged discontinued at the Karat/Kohler tech center so it fails \"purchasable.\" (b) Value/quality: it is a current, in-stock HomePro item from a leading Thai brand with a verified indicative price (THB5,900 list / ~THB5,238 net), water-saving 4.5L flush and a soft-close seat - cheaper than the American Standard and comparable COTTO. Caveat carried across all candidates: depth on every real one-piece WC is ~700-740mm, so the 600mm target depth (and the 400mm CAD-block height) cannot be met by any genuine product - the dimensioned block should be relaxed to ~478 x 725 x 648mm to match the selected fixture."
+    },
+    {
+      "tag": "FFE-M07",
+      "room": "Master Ensuite",
+      "role": "Shower system (rain head + hand shower + mixer) for a ~1x1m wet zone",
+      "target_dims_mm": {
+        "w": 1000,
+        "d": 1000,
+        "h": 2100,
+        "note": "Target is the WET-ZONE footprint (~1000x1000mm plan, 2100mm to rain-head mount), NOT the fixture itself. A shower system is a wall-mounted riser: what matters for the dimensioned drawings is wall projection (depth ~350-465mm, comfortably inside the 1000mm zone) and rain-head mounting height (~2100-2200mm). The +/-15% footprint rule is not meaningfully applicable to a wall fixture; judged instead on projection fit + rain-head reach."
+      },
+      "candidates": [
+        {
+          "manufacturer": "COTTO",
+          "model": "CT2085W (Rain Shower Mixer set)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 200,
+            "d": 350,
+            "h": 1300,
+            "seat_h": null,
+            "dia": 200
+          },
+          "material_finish": "Exposed riser set: brass rail + brass diverter, ABS rain head + ABS hand shower, silver/chrome finish; 200mm round rain head + 3-function hand shower; ~7.05 kg",
+          "csi": "22 41 39",
+          "unit_price_thb": 22010,
+          "lead_time": "In stock at HomePro (indicative); confirm branch/online stock",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1097620",
+          "notes": "Complete rain+hand+mixer system (name = 'Rain Shower MIXER'), so it is a true set, not a bare column. Price shown is a promo ~22,010 THB, discounted from list 30,470 THB (27% off) — pricey for COTTO, near thermostatic territory, but a top Thai brand with easy service. Rain head is ABS not metal. 350mm wall projection fits the 1x1m zone; 1300mm exposed riser puts the head at ~2100mm. Dims + price read off the HomePro page; still verify with vendor.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": true
+        },
+        {
+          "manufacturer": "American Standard (TH)",
+          "model": "EasySET Exposed Shower Auto-Temperature Mixer w/ Integrated Rainshower Kit (FFAS4955-701500BT0)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 465,
+            "d": 135,
+            "h": 945,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Thermostatic (German cartridge) exposed bar mixer, ThermoSafe auto shut-off at 49C; strong brass body + premium-grade plastic Cool Touch handle; white finish; integrated rain head + hand shower",
+          "csi": "22 41 39",
+          "unit_price_thb": null,
+          "lead_time": "Stocked via American Standard TH dealers (HomePro / Thaiwatsadu / official Shopee); confirm price + lead time",
+          "source_th": "American Standard TH (HomePro / Thaiwatsadu)",
+          "link": "https://www.americanstandard.co.th/bathrooms/collections-bath-showersbath-showers/easyset-exposed-shower-auto-temperature-mixer-with-integrated-rainshower-kit/",
+          "notes": "Strongest on SAFETY for a master ensuite: true thermostatic anti-scald (auto-temp, 49C cut-off), which the COTTO/GROHE single-lever sets lack. Would be the best pick if a TH price were confirmable this session. Manufacturer lists L945 x W465 x H135 mm — that reads as the kit/packaged envelope (riser ~945mm), NOT installed geometry; rain-head diameter not published. No THB price on any page fetched.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dia (rain head diameter not published)",
+            "dimensions (maker-listed L945xW465xH135 is likely the kit envelope, not installed riser/projection)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "GROHE (TH)",
+          "model": "Tempesta Cosmopolitan System 200 w/ single-lever bath mixer (26305000)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 200,
+            "d": 420,
+            "h": 1147,
+            "seat_h": null,
+            "dia": 200
+          },
+          "material_finish": "StarLight chrome metal body, single-lever bath/shower mixer; 200mm round metal rain head + 100mm 4-spray hand shower + 1750mm Relaxaflex hose; EcoJoy 9.5 L/min flow limiter",
+          "csi": "22 41 39",
+          "unit_price_thb": null,
+          "lead_time": "Order via GROHE TH dealers (Boonthavorn / HomePro); premium import brand, allow lead time on non-stock finishes",
+          "source_th": "HomePro / Boonthavorn (GROHE TH)",
+          "link": "https://www.grohe.co.th/th_th/tempesta-cosmopolitan-system-200-shower-system-with-single-lever-bath-mixer-for-wall-mounting-26305000.html",
+          "notes": "Metal (not ABS) rain head + genuine metal body — a real quality step up over the ABS COTTO/MOYA sets, and GROHE is stocked in TH so it counts as local, not pure import. 200mm head, 100mm hand shower and 1750mm hose are verified from GROHE spec; overall height ~1147mm and ~420mm arm projection are typical System-200 published figures but were NOT read off a fetched page (grohe.co.th 403'd). No THB price obtained.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "d (arm projection ~420mm, typical figure not page-verified)",
+            "h (overall ~1147mm, typical figure not page-verified)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "COTTO",
+          "model": "CT6214SA (Rain Shower column set)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 220,
+            "d": 365,
+            "h": 1120,
+            "seat_h": null,
+            "dia": 220
+          },
+          "material_finish": "Stainless 304 riser tube + 304 hand shower + 304 diverter, ABS rain head, silver; 220mm rain head + hand shower; height-adjustable; 1-yr warranty, free install",
+          "csi": "22 41 39",
+          "unit_price_thb": 5490,
+          "lead_time": "In stock at HomePro (indicative); ~4,840 THB on current 12% promo",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1183792",
+          "notes": "Budget option and good value in SS304, BUT this is a rain column with a DIVERTER only — it has NO integral hot/cold mixer valve, so it needs a separate wall-mounted mixer tap to be a complete 'system' (adds cost + a second SKU). Include only if the wall mixer is speced separately. Dims/price verified on the HomePro page (1120 x 80mm-rail x 365mm proj, 220mm head).",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "MOYA",
+          "model": "MY-740 (single Rain Shower)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 203,
+            "d": 300,
+            "h": 900,
+            "seat_h": null,
+            "dia": 203
+          },
+          "material_finish": "ABS rain head + ABS hand shower, stainless 201 tube + hose, alloy diverter; 3-level spray; 203mm head",
+          "csi": "22 41 39",
+          "unit_price_thb": 990,
+          "lead_time": "In stock at HomePro (indicative); ~990 THB on promo from 1,750",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1079292",
+          "notes": "Cheapest bench-mark only. Rain head + hand shower with a diverter but NO mixer valve (single feed) — not a rain+hand+MIXER system as speced, would need a separate wall mixer. SS201 (lower grade than 304) + ABS throughout = entry-level; not appropriate for a master ensuite except as a price floor reference. Dims/price verified on HomePro page.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Kohler (TH)",
+          "model": "Shower Set B: Hand Shower + Rain Head (2 Functions), chrome",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": null,
+            "d": null,
+            "h": null,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Chrome; Rain head with Water Mind technology + Deep Massage hand shower (2-function set); riser/valve trim per Kohler E-shop configuration",
+          "csi": "22 41 39",
+          "unit_price_thb": null,
+          "lead_time": "Kohler TH E-shop / dealers; confirm — designer/luxury tier, likely made-to-order lead time",
+          "source_th": "Kohler TH (shop.kohler.co.th)",
+          "link": "https://shop.kohler.co.th/set-b-hand-shower-rain-head-2functions/",
+          "notes": "Aspirational premium / designer tier to bracket the top of the range. Kohler E-shop product pages are JS-rendered and returned 404/500 to the fetcher, so NO dimensions or THB price could be verified this session — treat as a lead to price with the vendor, not a spec. Confirm whether the set bundles a mixer valve or is head+hand trim over a separate valve body.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dimensions_mm (all — pages not fetchable)",
+            "whether a mixer valve is included in the set"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "COTTO CT2085W is the pick because it is the only candidate that is a COMPLETE rain-head + hand-shower + integral MIXER system with BOTH dimensions AND a real THB price verified off a live Thai-retailer page (HomePro). It fits the wet zone cleanly (350mm wall projection vs the 1000mm zone; ~1300mm exposed riser puts the 200mm head near the 2100mm target height), uses a brass mixer/diverter (quality above the ABS-bodied budget sets), and COTTO is Thailand's dominant sanitaryware brand with easy local service — good value/quality for a master ensuite at ~22,010 THB (promo from 30,470). The American Standard EasySET is arguably a better ensuite choice on safety (true thermostatic anti-scald), and would win if its TH price were confirmable, so it is the top alternate to price next; GROHE System 200 is the metal-bodied premium alternate. The two HomePro budget columns (COTTO CT6214SA, MOYA MY-740) are diverter-only with NO integral mixer and are included as price references, not as compliant 'system + mixer' picks. Note: footprint-vs-target comparison is not meaningful for a wall fixture, so selection was driven by projection fit + rain-head reach + completeness/value, not the 1x1m plan area."
+    },
+    {
+      "tag": "FFE-M08",
+      "room": "Master Ensuite",
+      "role": "Bathtub ~1.6m (freestanding or built-in/drop-in)",
+      "target_dims_mm": {
+        "w": 1600,
+        "d": 750,
+        "h": 600
+      },
+      "candidates": [
+        {
+          "manufacturer": "COTTO",
+          "model": "BT216D(H) Santa (แซนต้า) 1.6m drop-in, chain waste",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1600,
+            "d": 700,
+            "h": 390
+          },
+          "material_finish": "Acrylic, white; Hygiene (HYG) antibacterial surface option (BT216PP is the pop-up-waste sibling)",
+          "csi": "22 41 00",
+          "unit_price_thb": 8014,
+          "lead_time": "Stock item at Boonthavorn / COTTO dealers; typ. 1-2 wk",
+          "source_th": "Boonthavorn / DP Ceramic (COTTO)",
+          "link": "https://www.dpceramic.com/bt216dh/",
+          "notes": "Best length fit: 1600mm EXACT. Width 700 is 50mm (-7%) under the 750 target; drop-in shell interior depth 390mm (the 600 target height is the built platform/apron, not the tub shell). 132 L / 53 kg. Top Thai sanitaryware brand, widely stocked. Price is a dealer indicative (25% off list 10,700); Boonthavorn/COTTO.com list may differ.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (promo/discount-dependent)"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "American Standard (TH)",
+          "model": "New Codie 1.5m Drop-in TF-70280P-WT (B70280-6DACTPW)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1570,
+            "d": 750,
+            "h": 490
+          },
+          "material_finish": "High-quality acrylic, white; antibacterial coating; pop-up waste",
+          "csi": "22 41 00",
+          "unit_price_thb": 7450,
+          "lead_time": "Stock at HomePro / Thai Watsadu; typ. 1 wk",
+          "source_th": "HomePro / American Standard Thailand",
+          "link": "https://www.homepro.co.th/p/263160",
+          "notes": "Width 750 = EXACT target. Dimension source conflict: AS-Thailand official page states 1570x750x490 (outer rim), HomePro/PH list 1500x700x420 (tub body) - reported the official rim figure. Good value, mainstream brand. Price 7,450 (HomePro, off 8,070).",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions vary by source: HomePro/PH show 1500x700x420 vs AS-TH official 1570x750x490"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "American Standard (TH)",
+          "model": "Active 1.7m Drop-in TF-70270P-WT (B70270-6DACTPW)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1700,
+            "d": 750,
+            "h": 460
+          },
+          "material_finish": "Acrylic, white; pop-up waste & overflow",
+          "csi": "22 41 00",
+          "unit_price_thb": null,
+          "lead_time": "Stock at Thai Watsadu / American Standard TH; typ. 1 wk",
+          "source_th": "Thai Watsadu / American Standard Thailand",
+          "link": "https://www.americanstandard.co.th/bathrooms/bathtubs/active-1-7m-drop-in-tub-w-pop-up-wt/",
+          "notes": "1700mm = 100mm (+6%) over target, still within +/-15%. Width 750 = exact. Dims 170x75x46cm per Thai Watsadu listing. Could not read a live THB price off the retailer page (403 on fetch) - draft only, verify with vendor.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Kohler (TH)",
+          "model": "Reach 1.5m Drop-in Bath K-15847T-0",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1500,
+            "d": 700,
+            "h": 460
+          },
+          "material_finish": "Acrylic, white; integral lumbar support + integral overflow",
+          "csi": "22 41 00",
+          "unit_price_thb": null,
+          "lead_time": "Kohler TH dealer order; typ. 2-4 wk",
+          "source_th": "KOHLER Thailand",
+          "link": "https://www.kohlerasiapacific.com/productDetails/15847T",
+          "notes": "Premium tier. 1500x700x460 per Kohler spec; length -100 (-6%), width -50 (-7%) vs target. Ergonomic lumbar contour is the upsell. No live THB price found on TH retail pages - expect a premium over the AS/COTTO tier; verify with Kohler TH showroom.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "MOYA (HomePro house sanitaryware)",
+          "model": "SICO-4007 drop-in acrylic bath",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1700,
+            "d": 750,
+            "h": 380
+          },
+          "material_finish": "Acrylic, white; anti-slip base",
+          "csi": "22 41 00",
+          "unit_price_thb": 2790,
+          "lead_time": "Stock at HomePro; typ. 1 wk",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1114438",
+          "notes": "Budget benchmark. 1700x750 footprint (length +6%), width exact, but shell only 380mm deep = shallow soak. No waste/overflow bundled at this price. Good if the brief is cost-driven; not a spa-grade tub. Price 2,790 (off 4,290).",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "I-SPA",
+          "model": "BD-CEL01 freestanding bath, 1.7m",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1700,
+            "d": 800,
+            "h": 580
+          },
+          "material_finish": "Acrylic reinforced with fiberglass, white; freestanding (floor-standing); 5-yr warranty",
+          "csi": "22 41 00",
+          "unit_price_thb": 32900,
+          "lead_time": "Stock/short order at HomePro & Boonthavorn; typ. 1-2 wk",
+          "source_th": "HomePro / Boonthavorn",
+          "link": "https://www.homepro.co.th/p/1109038",
+          "notes": "The FREESTANDING option (target height 600 matches best here). 1700x800 footprint = +6% length, +50 width. HomePro lists 170x80 with 48cm internal water depth; external height ~580 estimated. Statement piece, ~4x the COTTO drop-in price. Needs floor space clear on all sides - check the ensuite plan before specifying.",
+          "verified": false,
+          "unverified_specs": [
+            "h (external height ~580 estimated; page states 480mm internal water depth)"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "COTTO BT216D(H) Santa is the tightest dimensional fit - 1600mm length is an EXACT match to the target, so the dimensioned drawings hold with zero fudging (width is 50mm / 7% narrow, acceptable). It is a drop-in (satisfies the built-in/drop-in preference), from Thailand's leading sanitaryware brand, stocked across Boonthavorn/COTTO dealers, at a sensible mid-tier ~8,000 THB. The American Standard New Codie is the runner-up on price and exact 750 width, but its length runs 1500-1570 depending on source and the dimension conflict adds risk. The I-SPA freestanding is the aspirational alt if the client wants a statement soaker and the ensuite has clearance on all four sides, at ~4x the cost."
+    },
+    {
+      "tag": "FFE-BS01",
+      "room": "Sitting Room",
+      "role": "Built-in low display console (BF12)",
+      "target_dims_mm": {
+        "w": 1100,
+        "d": 500,
+        "h": 600
+      },
+      "candidates": [
+        {
+          "manufacturer": "Formica (via TH supplier)",
+          "model": "laminate or CO-EX/VCP door face on carcass",
+          "material_finish": "laminate/CO-EX door face; AELLA square handles L1037/L1054 or edge pulls; butt hinges",
+          "csi": "06 41 00",
+          "notes": "~2 doors -> 4 hinges + 2 pulls; AELLA square handles 230-650 ea. Vault-cited.",
+          "selected": true,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1100,
+            "d": 500,
+            "h": 600
+          },
+          "unit_price_thb": null,
+          "lead_time": "fabrication ~3-5 wk (quote)",
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        }
+      ],
+      "best_pick_reason": "Built-in millwork; finish/hardware selection is robust to exact furniture position (drafted now). Full option matrix + hardware counts in ffe-finish-hardware-draft.md."
+    },
+    {
+      "tag": "FFE-S01",
+      "room": "Sitting Room",
+      "role": "Sofa — 3-seat, about 2.1m (shallow conversation lounge, not a media sofa)",
+      "target_dims_mm": {
+        "w": 2100,
+        "d": 600,
+        "h": 800,
+        "seat_h": 450
+      },
+      "candidates": [
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Lamona (ลาโมน่า) 3-Seater Fabric Sofa",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2140,
+            "d": 860,
+            "h": 920,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Polyester fabric over hardwood frame; black powder-coated steel legs; high-density foam; 120 kg/seat rating",
+          "csi": "12 52 00",
+          "unit_price_thb": 9990,
+          "lead_time": "In-line stock item; typically 7-14 days incl. delivery + assembly (confirm per branch)",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/lamona-sofa-3s",
+          "notes": "Best realistic fit: width 2140mm is within +2% of the 2100 target (the drawing-critical dimension for a 3-seat slot), and it is a PROPER FIXED sofa (not a sofabed) suiting the conversation-lounge intent. Sturdiest of the value tier (hardwood frame + steel legs + 120 kg/seat). Honest trade-off: depth 860mm and height 920mm exceed the shallow/low target — no armed Thai 3-seater hits 600mm depth; height sits at the +15% band edge and can be trimmed with lower legs. Fabric over hardwood, not solid-wood show frame.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "lead_time"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "Furinbox (Index Living Mall)",
+          "model": "Atlas (แอตลาส) 3-Seater Fabric Sofa",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2010,
+            "d": 820,
+            "h": 920,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Imported fabric over hardwood frame; plastic legs; foam fill; 80 kg/seat rating",
+          "csi": "12 52 00",
+          "unit_price_thb": 7490,
+          "lead_time": "Stock item; ~7-14 days incl. delivery (confirm per branch)",
+          "source_th": "Index Living Mall (Furinbox line)",
+          "link": "https://www.indexlivingmall.com/atlas-sofa-3s",
+          "notes": "Cheapest option and the shallowest depth (820mm) among the near-target armed sofas. But light-duty build — only 80 kg/seat and plastic legs — flag frame quality before specifying for a studio project. Width 2010mm is -4% under target. seat height not listed.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Nitori Thailand",
+          "model": "3P Sofabed N-SHIELD NOARK2S DBR",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2100,
+            "d": 840,
+            "h": 860,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "N-Shield stain-resistant fabric; reclining sofabed mechanism",
+          "csi": "12 52 00",
+          "unit_price_thb": 21990,
+          "lead_time": "Stock item; ~7-14 days (confirm per branch)",
+          "source_th": "Nitori Thailand",
+          "link": "https://www.nitori.co.th/collections/3-seater",
+          "notes": "Best PURE dimensional fit — width exactly 2100mm and height 860mm is the closest to the 800 target; N-Shield fabric is stain-resistant and it converts to a bed. Trade-offs: 2x+ the Index price, a sofabed's bulkier frame reads heavier than a slim conversation lounge, and depth 840mm still over 600. Link is the Nitori 3-seater collection page (per-SKU URL not isolated); dims/price read from the listing.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "link_is_collection_page",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Nitori Thailand",
+          "model": "3P Sofa LB01 BR",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2200,
+            "d": 880,
+            "h": 810,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Fabric upholstery, low-back lounge profile",
+          "csi": "12 52 00",
+          "unit_price_thb": 31990,
+          "lead_time": "Stock item; ~7-14 days (confirm per branch)",
+          "source_th": "Nitori Thailand",
+          "link": "https://www.nitori.co.th/collections/3-seater",
+          "notes": "Height 810mm is the single best match to the 800 target and a lower-back lounge look. But it is the most expensive here, width 2200mm is +5% over and depth 880mm is +47% over — over-scaled for a slim conversation lounge. Collection-page link; per-SKU spec sheet not isolated.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "link_is_collection_page",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "MUJI (Thailand)",
+          "model": "Spacious Armless Sofa — 3 Seater",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1790,
+            "d": 745,
+            "h": 690,
+            "seat_h": 370,
+            "dia": null
+          },
+          "material_finish": "Removable washable fabric cover over urethane/pocket build; armless low profile",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "MUJI TH stock / Central; confirm SKU availability + THB price in-store",
+          "source_th": "MUJI Thailand (via Central / MUJI stores)",
+          "link": "https://www.muji.com/th/",
+          "notes": "The ONLY real option that approaches the shallow ~600mm brief — depth 745mm — and a genuine low, armless conversation lounge. But three honest compromises: armless changes the look, width 1790mm is -15% (band edge, will under-fill a 2100 drawing slot), and seat height 370mm is far below the 450 target (very low seating). MUJI sells this line in TH but the exact THB price for this SKU was not confirmed; dimensions read from MUJI US/SG spec.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dims_from_foreign_muji_site",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Miley (ไมลีย์) 3-Seater Sofa",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2880,
+            "d": 1170,
+            "h": 820,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Imported fabric or premium PU leather over solid-wood frame; pocket-spring seat; 150 kg/seat; incl. 2 throw pillows",
+          "csi": "12 52 00",
+          "unit_price_thb": 15990,
+          "lead_time": "Stock item; ~7-14 days incl. delivery + assembly",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/miley-sofa-3s",
+          "notes": "Included as an honest REJECT / upsell reference only. Genuinely well-built (solid-wood frame, pocket-spring, 150 kg/seat, height 820mm matches 800) but the footprint 2880 x 1170mm is WILDLY over target (+37% width, +95% depth) — it would break the dimensioned drawing and is a deep media sofa, the opposite of the shallow conversation-lounge brief. Only relevant if the room can take a large sofa.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "lead_time"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "Index Lamona is the best realistic fit for a dimensioned FF&E draft. Its width (2140mm) is within +2% of the 2100 target — the drawing-critical dimension for a 3-seat slot — and it is a proper FIXED conversation sofa (not a sofabed), matching the shallow-lounge intent. It is the sturdiest of the value tier (hardwood frame, powder-coated steel legs, 120 kg/seat) at strong value (9,990 THB). Honest trade-off: like every real Thai armed 3-seater it cannot hit the 600mm shallow depth (it is 860mm); only Muji's armless model (745mm) gets close, but that costs 15% of the width, drops the seat to 370mm, goes armless, and has no confirmed THB price — worse compromises than the extra depth. Height 920mm sits at the +15% band edge and is trimmable with lower legs. Nitori NOARK2S has a marginally better raw dimensional fit (width exactly 2100, height 860) but is 2x+ the price and its sofabed bulk reads heavier than a slim lounge, so Lamona wins on the (a) dimension-fit then (b) value/quality test."
+    },
+    {
+      "tag": "FFE-S02",
+      "room": "Sitting Room",
+      "role": "Round coffee table ~700mm diameter",
+      "target_dims_mm": {
+        "w": 700,
+        "d": 700,
+        "h": 400,
+        "dia": 700,
+        "shape": "round"
+      },
+      "candidates": [
+        {
+          "manufacturer": "IKEA",
+          "model": "BORGEBY coffee table (round), birch veneer / black",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 700,
+            "d": 700,
+            "h": 420,
+            "dia": 700
+          },
+          "material_finish": "Birch veneer over plywood, clear acrylic lacquer (also sold in black stain); airy round top with open under-shelf storage",
+          "csi": "12 54 00",
+          "unit_price_thb": 2190,
+          "lead_time": "In stock at IKEA Thailand; store pickup / standard home delivery. Promo 2,190 THB (reg 2,590) valid to 31 Jul 2026",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/borgeby-coffee-table-black-10500356/",
+          "notes": "Bang-on target: exact 700mm dia, 420mm high (within +/-15% of 400mm). Birch VENEER not solid wood; 20kg top load. Best value/fit of the set.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": true
+        },
+        {
+          "manufacturer": "PROMA",
+          "model": "CTB-58 round nesting coffee table set (marble-look top, gold legs)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 700,
+            "d": 700,
+            "h": 450,
+            "dia": 700
+          },
+          "material_finish": "Marble-pattern top (faux/print, not real stone) on gold-finish metal legs; nesting pair",
+          "csi": "12 54 00",
+          "unit_price_thb": 1490,
+          "lead_time": "Pre-order, ~30-45 days production; customer self-assembly",
+          "source_th": "PROMA (proma.co.th)",
+          "link": "https://proma.co.th/en/product/coffee-table-round-table-small-side-table-proma-ctb-58/",
+          "notes": "Large table 700 dia x 450 h matches target footprint; set also includes a small 500 dia x 380 h nesting table (bonus). Cheapest option but faux-marble top + long pre-order lead. 450mm h is 50mm over target (within tolerance).",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "FURDINI (HomePro house brand)",
+          "model": "WAVE round coffee table (natural wood frame, rippled glass top)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 800,
+            "d": 800,
+            "h": null,
+            "dia": 800
+          },
+          "material_finish": "Natural-color wooden frame with wavy/rippled tempered glass top",
+          "csi": "12 54 00",
+          "unit_price_thb": 2190,
+          "lead_time": "HomePro retail; typically in stock, confirm branch (promo 2,190 THB from 2,990)",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1302816",
+          "notes": "HomePro option. Diameter only stated as ~80cm in listing (approx +14%, near upper tolerance) and HEIGHT not published — both need vendor confirmation. Rippled glass top is a styling choice, not a flat work surface. Product URL constructed from SKU 1302816, verify.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm.dia",
+            "dimensions_mm.h",
+            "link"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "KRAGSTA coffee table (round), black / white",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 900,
+            "d": 900,
+            "h": null,
+            "dia": 900
+          },
+          "material_finish": "Powder-coated steel frame, painted fibreboard round top; two-tier",
+          "csi": "12 54 00",
+          "unit_price_thb": 4290,
+          "lead_time": "In stock at IKEA Thailand",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/kragsta-coffee-table-black-30295159/",
+          "notes": "Genuine round IKEA table but 900mm dia is ~28% over the 700mm target - too big, would break the dimensioned drawings; included as a larger-round alternative only. Height not confirmed from page (KRAGSTA is typically ~450mm) and price is from category listing, not the product page.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm.h",
+            "unit_price_thb"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "GLADOM tray table (round, removable tray top)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 450,
+            "d": 450,
+            "h": 530,
+            "dia": 450
+          },
+          "material_finish": "Steel with epoxy/polyester powder coating; lift-off tray top (black / white / dark grey-green / light blue)",
+          "csi": "12 54 00",
+          "unit_price_thb": 499,
+          "lead_time": "In stock at IKEA Thailand",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/gladom-tray-table-black-00411997/",
+          "notes": "Verified 450mm dia x 530mm high - this is a small tray/side table, well UNDER the 700mm footprint and TALL for a coffee table. Budget/accent fallback only; 10kg max load. Not a real fit for the sitting-room coffee-table role.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Muuto (import)",
+          "model": "Around Coffee Table, Large (Thomas Bentzen), natural oak",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 720,
+            "d": 720,
+            "h": 360,
+            "dia": 720
+          },
+          "material_finish": "Oak plywood top with veneered edge frame, solid oak legs, water-based lacquer",
+          "csi": "12 54 00",
+          "unit_price_thb": 27000,
+          "lead_time": "Import, ~4-8+ weeks; no confirmed Thai stockist",
+          "source_th": "import",
+          "link": "https://www.muuto.com/product/around-coffee-table--p1920/p1920/",
+          "notes": "Aspirational REFERENCE only. 720mm dia x 360mm h fits the footprint beautifully and is real oak, but it is a European import - price shown (~27,000 THB) is EU retail EUR 699 converted, a landed TH price would be higher with duty/shipping. Use to justify the round-oak direction, not for procurement.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "IKEA BORGEBY is the clear best pick: its page-verified dimensions (700mm diameter x 420mm high) hit the target footprint exactly with height inside the +/-15% band, it is a real in-stock Thai-market product at a low 2,190 THB, and the birch-veneer round form with under-shelf suits a residential sitting room. PROMA CTB-58 is cheaper and also 700mm but is faux-marble on a 30-45 day pre-order; FURDINI WAVE and KRAGSTA are genuine but oversized/unconfirmed; GLADOM is too small/tall; Muuto is import reference only. BORGEBY wins on dimension fit first, then value and availability."
+    },
+    {
+      "tag": "FFE-S03",
+      "room": "Sitting Room",
+      "role": "Accent armchair (rounded / D-back) — a pair",
+      "target_dims_mm": {
+        "w": 700,
+        "d": 700,
+        "h": 750,
+        "seat_h": 430
+      },
+      "candidates": [
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Teddy Armchair (อาร์มแชร์รุ่นเท็ดดี้)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 740,
+            "d": 690,
+            "h": 750,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Imported velvet, button-tufted back; foam fill; solid-wood curved legs",
+          "csi": "12 52 00",
+          "unit_price_thb": 3990,
+          "lead_time": "In-store / online stock (Index); confirm 2 units for a pair",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/teddy-armchair",
+          "notes": "Genuine rounded/curved D-back in velvet with button tufting = exactly the requested form. Footprint 740x690x750 within ~6% on every axis (height exact). Seat height not published on page (confirm ~430-450 with vendor). Single 1-seat SKU, so verify 2 in stock. Strong value at 3,990 THB each.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "DYVLINGE swivel easy chair (Kelinge)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 630,
+            "d": 750,
+            "h": 680,
+            "seat_h": 430,
+            "dia": null
+          },
+          "material_finish": "Molded PP shell, PU-foam/polyester fill, recycled-polyester woven cover (non-removable); chrome 5-star swivel base",
+          "csi": "12 52 00",
+          "unit_price_thb": 5590,
+          "lead_time": "IKEA TH stock; 10-yr warranty",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/dyvlinge-swivel-easy-chair-kelinge-black-20570829/",
+          "notes": "True round barrel form and seat height 430 hits target exactly (all dims read off product page). BUT it SWIVELS on a 5-star chrome base, so it reads as a retro lounge/swivel rather than a classic D-back on legs; width 630 is ~10% under target. Cover is non-removable.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall (Winner Furniture)",
+          "model": "Peggy Armchair (อาร์มแชร์รุ่นเพ็กกี้)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 760,
+            "d": 690,
+            "h": 750,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Fabric or PVC-leather over hardwood frame, pocket-spring seat; wooden legs (dark brown)",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "Index stock (product page intermittently 404 — confirm availability)",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/peggy-armchair",
+          "notes": "Footprint 760x690x750 is dimensionally the closest to target (width ~9% over) and the hardwood frame + pocket-spring seat is a sturdier build. BUT the back appears more track-arm/square than rounded, and no retail price was published (a Kaidee resale showed ~9,900 THB but that is secondhand, not retail). Dimensions come from a listing snippet, not the live product page.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "seat_h",
+            "back_shape",
+            "dimensions"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Pillry Armchair (อาร์มแชร์รุ่นพิลรี่)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 580,
+            "d": 540,
+            "h": 795,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Imported fabric over high-resilience foam; powder-coated steel legs (light/dark grey)",
+          "csi": "12 52 00",
+          "unit_price_thb": 1990,
+          "lead_time": "Index / Shopee stock",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/pillry-armchair",
+          "notes": "Cheapest option (1,990 THB) with W/D/H and price verified off the product page. BUT 580x540x795 is ~17% under target width and tall-and-narrow in proportion — reads small and upright, not a rounded accent chair. Slim steel legs. Budget/backup only; would look undersized as a pair against the drawing.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Koncept Furniture",
+          "model": "AYLA Armchair (dark grey)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 750,
+            "d": 800,
+            "h": 840,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Woven fabric over foam; natural pinewood frame/splayed legs; Scandinavian (110 kg rated)",
+          "csi": "12 52 00",
+          "unit_price_thb": 6320,
+          "lead_time": "HomePro / Koncept stock (confirm — page would not load)",
+          "source_th": "HomePro (Koncept)",
+          "link": "https://www.homepro.co.th/p/1225825",
+          "notes": "Scandinavian splayed-leg style — likely square-ish rather than a true D-back. Depth 800 / height 840 run ~12-14% over target (deeper and taller than the dimensioned drawing allows). Dimensions and the 6,320 THB sale price (reg. 7,900) are from a search snippet; the HomePro product page returned server errors on fetch, so verify all fields with the vendor.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions",
+            "unit_price_thb",
+            "seat_h",
+            "back_shape"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "Index Living Mall \"Teddy\" is the best pick: it is the only candidate that is genuinely a rounded/curved D-back accent chair (velvet, button-tufted back, curved solid-wood legs) — exactly the requested silhouette — AND its footprint of 740x690x750 mm sits within ~6% of the 700x700x750 target on every axis (height is spot-on), so it won't break the dimensioned drawings. It is Thai-market (Index), readily stocked, and only 3,990 THB each = excellent value for a pair. Trade-offs: seat height is not published (confirm ~430-450 mm with the vendor) and it is a single-seat SKU so confirm 2 units. Runner-up is the IKEA DYVLINGE, whose round-barrel shape and 430 mm seat height match the target exactly, but it swivels on a chrome 5-star base (reads as a lounge/swivel, not a classic D-back) and is ~10% narrower. Peggy has the closest footprint but an unconfirmed (likely square) back and no published retail price; Pillry is too small/upright; AYLA runs oversized and is probably square-backed."
+    },
+    {
+      "tag": "FFE-BL01",
+      "room": "Living Room",
+      "role": "Built-in media console (F02)",
+      "target_dims_mm": {
+        "w": 2000,
+        "d": 400,
+        "h": 500
+      },
+      "candidates": [
+        {
+          "manufacturer": "Formica (via TH supplier)",
+          "model": "laminate or CO-EX/VCP door/drawer face on carcass",
+          "material_finish": "laminate/CO-EX face; AELLA long-bar pulls L30xx or drawer pulls L3118/L3129; hinges/slides",
+          "csi": "06 41 00",
+          "notes": "~4 doors/drawers -> 4-6 pulls (210-990 ea). Vault-cited.",
+          "selected": true,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2000,
+            "d": 400,
+            "h": 500
+          },
+          "unit_price_thb": null,
+          "lead_time": "fabrication ~3-5 wk (quote)",
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        }
+      ],
+      "best_pick_reason": "Built-in millwork; finish/hardware selection is robust to exact furniture position (drafted now). Full option matrix + hardware counts in ffe-finish-hardware-draft.md."
+    },
+    {
+      "tag": "FFE-BL02",
+      "room": "Living Room",
+      "role": "TV feature wall (built-in, behind wall-mounted TV)",
+      "target_dims_mm": {
+        "w": 2400,
+        "d": 50,
+        "h": 2800
+      },
+      "candidates": [
+        {
+          "manufacturer": "WPC slat (SQW10)",
+          "model": "10x150x2900 slat x~16",
+          "material_finish": "WPC vertical slat feature wall (TV floats on it)",
+          "csi": "09 77 00",
+          "notes": "Economical: ~16 slats x 440 = ~7,040. Alts: AKUWALL 1200x2900 x2 (~28,800) or STONE WALL PU 600x1200 (no price). Depth kept 50mm so the entry->ensuite/circulation is not pinched.",
+          "lead_time": "in stock (WPC) ~1-2 wk",
+          "selected": true,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2400,
+            "d": 50,
+            "h": 2800
+          },
+          "unit_price_thb": null,
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        },
+        {
+          "manufacturer": "AKUWALL",
+          "model": "home-theatre panel 1200x2900 x2",
+          "material_finish": "acoustic slat-veneer panel",
+          "csi": "09 77 00",
+          "notes": "premium home-theatre finish; ~2 x 14,400 = 28,800.",
+          "selected": false,
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2400,
+            "d": 50,
+            "h": 2800
+          },
+          "unit_price_thb": null,
+          "lead_time": "fabrication ~3-5 wk (quote)",
+          "source_th": "studio vault (finish/hardware draft)",
+          "link": "projects/PRJ-2026-002_c001-house/03_layout/ffe-finish-hardware-draft.md",
+          "verified": false,
+          "certifications": "",
+          "fire": "",
+          "performance": "",
+          "unverified_specs": [
+            "unit_price_thb (millwork priced by run+labor at quote)",
+            "VAT status on supplier sheets"
+          ]
+        }
+      ],
+      "best_pick_reason": "Built-in millwork; finish/hardware selection is robust to exact furniture position (drafted now). Full option matrix + hardware counts in ffe-finish-hardware-draft.md."
+    },
+    {
+      "tag": "FFE-L01",
+      "room": "Living Room",
+      "role": "3-seat sofa (deeper media sofa facing the TV), ~1.9m, deep seat ~950",
+      "target_dims_mm": {
+        "w": 1900,
+        "d": 950,
+        "h": 800,
+        "seat_h": 450
+      },
+      "candidates": [
+        {
+          "manufacturer": "IKEA",
+          "model": "SODERHAMN 3-seat sofa (fabric, e.g. Viarp beige/brown or Gunnared beige)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1980,
+            "d": 990,
+            "h": 830,
+            "seat_h": 400,
+            "dia": null
+          },
+          "material_finish": "Removable/washable fabric cover over hardwood + particleboard frame, HR foam; low deep-lounge geometry",
+          "csi": "12 52 00",
+          "unit_price_thb": 13150,
+          "lead_time": "In-stock / flat-pack; typically same-week delivery in BKK metro",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/cat/three-seat-sofas-10670/",
+          "notes": "Best footprint fit: 198x99x83 vs 190x95x80 target (all within ~4-5%). Genuinely deep, low lounge = true 'media sofa' feel facing the TV. Trade-offs: seat height 400mm is low vs 450 target (deliberate lounge posture); soft/relaxed comfort, not a firm upright sofa; particleboard content, not solid-wood. Price shown is an indicative sale figure (was ~15,590) - confirm current.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "VIMLE 3-seat sofa (fabric)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2410,
+            "d": 980,
+            "h": 830,
+            "seat_h": 480,
+            "dia": null
+          },
+          "material_finish": "Removable fabric cover, hardwood frame, HR foam; modular system",
+          "csi": "12 52 00",
+          "unit_price_thb": 16990,
+          "lead_time": "In-stock / flat-pack modular",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/cat/vimle-series-37814/",
+          "notes": "Depth 980 and seat height 480 are on-target, but width 2410 is ~27% over the 1900 target - it would break the dimensioned footprint and crowd a compact living room. Modular, so a narrower section combo could be built to spec (POA). Price is for the standard 3-seat; range seen 9,600-16,990 across configs.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Lamona (ลาโมน่า) fabric 3-seat sofa",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2140,
+            "d": 860,
+            "h": 920,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Polyester fabric over solid hardwood frame, foam padding, black powder-coated steel legs",
+          "csi": "12 52 00",
+          "unit_price_thb": 9990,
+          "lead_time": "Index retail stock; typically 3-14 days metro delivery",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/lamona-sofa-3s",
+          "notes": "Solid Thai high-street value. Width 214 (+12%) is within tolerance; depth 860 (-9%) is a bit shallow for a deep media sofa; back height 920 is tall (+15%). Batch tolerance +/-25mm stated. Good budget-mid pick if the deep-lounge geometry is relaxed. Seat height not published.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Furinbox (Index Living Mall)",
+          "model": "Atlas (แอตลาส) fabric 3-seat sofa",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2010,
+            "d": 820,
+            "h": 920,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Imported fabric over hardwood frame, foam padding, plastic legs",
+          "csi": "12 52 00",
+          "unit_price_thb": 7490,
+          "lead_time": "Index/Furinbox online stock; ~3-14 days",
+          "source_th": "Index Living Mall (Furinbox)",
+          "link": "https://www.indexlivingmall.com/atlas-sofa-3s",
+          "notes": "Cheapest genuine option. Width 201 (+6%) is fine, but depth 820 (-14%, borderline) and plastic legs mean it is a budget upright sofa, not a deep media lounger. Tall back (920). Seat height not published.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Bobby (บ็อบบี้) synthetic-leather 3-seat sofa",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1950,
+            "d": 800,
+            "h": 780,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "PU synthetic leather over hardwood frame, foam padding",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "Index retail / Lazada; ~3-14 days",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/category/furniture/sofa/sofa-3seater-and-sofa-4seater",
+          "notes": "Closest WIDTH match (195cm, +3%) and closest overall H (780). BUT depth 800 is ~16% under the 950 deep-seat target and it is PU leather - opposite of the deep fabric media-lounge brief. Dimensions are from a listing snippet, not confirmed on the product page; price not retrieved (Lazada page is JS-rendered).",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dimensions (from listing snippet, not product page)",
+            "seat_h"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "West Elm",
+          "model": "Harmony Extra Deep sofa (~82in / 3-seat)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 2085,
+            "d": 1170,
+            "h": 840,
+            "seat_h": 430,
+            "dia": null
+          },
+          "material_finish": "Fabric over engineered frame, extra-deep down-blend seat cushions",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "Import, long lead (order via West Elm / Crate & Barrel TH channel; weeks-to-months + freight)",
+          "source_th": "import",
+          "link": "https://www.westelm.com/products/harmony-extra-deep-sofa-h13061/",
+          "notes": "ASPIRATIONAL REFERENCE ONLY - this is what a true 1170mm extra-deep media lounge sofa looks like; sets the design target for depth. Import, expensive, long lead. Product page returned HTTP 403 so all dims are approximate from the model line (not read off the live page); price not captured. Depth ~1170 exceeds the 950 target.",
+          "verified": false,
+          "unverified_specs": [
+            "w",
+            "d",
+            "h",
+            "seat_h",
+            "unit_price_thb"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "IKEA Thailand SODERHAMN 3-seat is the closest real, in-market match to the target: 1980 x 990 x 830 mm vs the 1900 x 950 x 800 target - every dimension lands within ~5%, so it will not distort the dimensioned drawings. It is also the only high-street option whose geometry is genuinely a deep, low lounge (990mm deep, 400mm low seat), which is exactly the 'deeper media sofa facing the TV' brief rather than a standard upright 3-seater. Removable/washable covers, mid-tier price (~13,000 THB indicative), and stock availability make it a practical selected pick. The only concession is the low 400mm seat height (vs 450 target), which is intrinsic to the lounge posture and acceptable for a media sofa. VIMLE nails depth/seat-height but is 27% too wide; Lamona/Atlas are good Thai value but too shallow for a deep media sofa; the West Elm Harmony line is the aspirational deep-lounge reference but is import/long-lead. All prices are DRAFT/indicative and every candidate is verified:false pending vendor confirmation by the designer."
+    },
+    {
+      "tag": "FFE-L02",
+      "room": "Living Room",
+      "role": "Square coffee table (~1x1m)",
+      "target_dims_mm": {
+        "w": 1000,
+        "d": 1000,
+        "h": 450,
+        "footprint": "square, prefer within +/-15%"
+      },
+      "candidates": [
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Monolith Coffee Table 90 cm (โต๊ะกลาง รุ่นโมโนลิธ)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 900,
+            "d": 900,
+            "h": 400,
+            "dia": null,
+            "seat_h": null
+          },
+          "material_finish": "Sintered/synthetic-stone look top on MDF frame; White/Black",
+          "csi": "12 54 00",
+          "unit_price_thb": 5990,
+          "lead_time": "Typically in stock; Index delivery ~7-21 days",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/120027661",
+          "notes": "Only genuine ~1x1m SQUARE table found in mainstream Thai retail. 900x900 = ~10% under the 1000 target (inside +/-15%); H400 vs 450 target is normal coffee-table height. Stone-look top is engineered/sintered stone on MDF, not solid stone. Best combination of in-stock, true-square, and value.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (indicative; confirm current promo)",
+            "lead_time",
+            "stock availability",
+            "exact top material (sintered stone vs laminate)"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "West Elm",
+          "model": "Tiana Square Coffee Table (40\")",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1016,
+            "d": 1016,
+            "h": null,
+            "dia": null,
+            "seat_h": null
+          },
+          "material_finish": "Solid pine frame with rubberwood veneer top, Tawny finish",
+          "csi": "12 54 00",
+          "unit_price_thb": null,
+          "lead_time": "Import - long lead (order via West Elm US/regional; weeks-months + shipping & duty)",
+          "source_th": "import",
+          "link": "https://www.westelm.com/products/mp-tiana-square-coffee-table-40-mp222/",
+          "notes": "Best FOOTPRINT match: 40in = 1016x1016 (~+1.6% of target). Aspirational import reference only - not stocked in TH, veneer top (not solid), USD price plus shipping/import duty. Height not confirmed (WE 40in squares are typically ~406mm).",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "h (height)",
+            "lead_time",
+            "availability in Thailand"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "West Elm",
+          "model": "Solid Reclaimed Wood Square Coffee Table (40\")",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1016,
+            "d": 1016,
+            "h": null,
+            "dia": null,
+            "seat_h": null
+          },
+          "material_finish": "Solid reclaimed pine, natural finish",
+          "csi": "12 54 00",
+          "unit_price_thb": null,
+          "lead_time": "Import - long lead (US/regional order + shipping & duty)",
+          "source_th": "import",
+          "link": "https://www.westelm.com/products/solid-reclaimed-wood-square-coffee-table-h8904/",
+          "notes": "Solid-wood premium reference, 1016x1016 near-perfect footprint. Genuinely solid (not veneer) but heavy, import long lead, and price POA. Height unconfirmed (~406mm typical). Use only as an aspirational spec vs the in-market Monolith.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "h (height)",
+            "lead_time",
+            "availability in Thailand"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Taweesak Furniture (Thai teak workshop)",
+          "model": "Solid teak square coffee table - made-to-order ~100x100",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1000,
+            "d": 1000,
+            "h": 450,
+            "dia": null,
+            "seat_h": null
+          },
+          "material_finish": "Solid teak (ไม้สัก), kiln-dried, natural/oil finish",
+          "csi": "12 54 00",
+          "unit_price_thb": null,
+          "lead_time": "Made-to-order - several weeks",
+          "source_th": "Taweesak Furniture (also MB Teakwood / Kanyavee Furniture)",
+          "link": "https://www.taweesakfurniture.com/category/4312/887/%E0%B9%82%E0%B8%95%E0%B9%8A%E0%B8%B0%E0%B8%81%E0%B8%A5%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%89%E0%B8%AA%E0%B8%B1%E0%B8%81-coffee-table",
+          "notes": "Solid teak cut to an exact 1000x1000 - best dimensional AND material quality, but made-to-order: price by quote (catalog teak coffee tables run ~7,800-19,500 THB depending on size/thickness) and no fixed 100x100 SKU confirmed online. Choose if a solid-wood hero piece is wanted and lead time is acceptable.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (by quote)",
+            "exact dimensions (made-to-order)",
+            "confirm 100x100 is buildable",
+            "lead_time"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Aomori Coffee Table 100 cm (โต๊ะกลาง รุ่นอาโอโมริ)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1000,
+            "d": 550,
+            "h": 350,
+            "dia": null,
+            "seat_h": null
+          },
+          "material_finish": "Rubberwood + MDF veneer, tempered glass top, Warm Oak",
+          "csi": "12 54 00",
+          "unit_price_thb": 9890,
+          "lead_time": "Typically in stock; Index delivery ~7-21 days",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/120028019",
+          "notes": "REAL in-stock 100cm Index table but RECTANGULAR 100x55 - NOT square, breaks the 1x1m footprint (depth ~45% under). Included as an in-stock fallback if the square requirement is relaxed. Dimensions verified via product page.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (indicative; confirm current promo)",
+            "lead_time"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "The Index Monolith 90x90x40 is the only genuine ~1x1m SQUARE coffee table found in mainstream Thai retail with dimensions confirmed on the product page (900x900x400). At ~10% under the 1000mm target footprint it stays inside the +/-15% band, its 400mm height is a normal coffee-table height, and at 5,990 THB it is in stock and well-priced. Every 100cm Index/SB alternative I verified (Aomori, Wasabi, Miyazaki, Acadia, Timbur) is actually rectangular (~100x55), which would break the square dimensioned drawing. The two West Elm 40in squares (1016x1016) are the closest footprint match but are US imports (long lead, USD/duty, price unconfirmed), and a solid-teak made-to-order table is the quality play but priced by quote - so the Monolith wins on dimension fit x availability x value as the specifiable base, with the imports/teak as documented upgrade paths."
+    },
+    {
+      "tag": "FFE-L03",
+      "room": "Living Room",
+      "role": "Armchair — a pair flanking the sofa",
+      "target_dims_mm": {
+        "w": 750,
+        "d": 750,
+        "h": 750,
+        "seat_h": 430
+      },
+      "candidates": [
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Macie PU Armchair",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 780,
+            "d": 760,
+            "h": 720,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Imported PU synthetic leather over solid-wood frame, foam padding",
+          "csi": "12 52 00",
+          "unit_price_thb": 4990,
+          "lead_time": "In-line stock item; typically in-store / a few weeks — confirm with branch",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/macie-armchair",
+          "notes": "Best footprint match to target: 780x760x720 is within ~4% of 750x750 on all axes, so it holds the dimensioned drawing cleanly. PU (synthetic) leather, not genuine hide — can crack/peel over years in Thai heat/humidity, a real durability trade-off for a daily-use pair. Seat height not published (typical PU armchair ~420-450mm). Cheaper than the fabric alternatives.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "lead_time",
+            "unit_price_thb"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "IKEA (IKEA Thailand)",
+          "model": "VEDBO Armchair, Gunnared dark grey",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 730,
+            "d": 650,
+            "h": 750,
+            "seat_h": 440,
+            "dia": null
+          },
+          "material_finish": "100% (recycled) polyester Gunnared fabric over steel/fibreboard frame, high-resilience cold foam",
+          "csi": "12 52 00",
+          "unit_price_thb": 6990,
+          "lead_time": "Stocked at IKEA TH stores / online; flat-pack, immediate to ~1-2 wks delivery",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/p/vedbo-armchair-gunnared-dark-grey-70424128/",
+          "notes": "Strong runner-up and the higher-durability material choice. Fully verified dims 730x650x750, seat 440 (near target). Footprint good on width/height but depth 650mm is ~13% under target — the only weak axis. Woven fabric with 10-yr frame warranty is more robust than PU; pick this over Macie if the client prefers durable upholstery to a tighter footprint. Multiple cover colours available.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA (IKEA Thailand)",
+          "model": "POANG Armchair, birch veneer / Knisa light beige",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 680,
+            "d": 830,
+            "h": 1000,
+            "seat_h": 400,
+            "dia": null
+          },
+          "material_finish": "Layer-glued birch veneer frame (clear lacquer), polypropylene fabric cushion, PU foam",
+          "csi": "12 52 00",
+          "unit_price_thb": 2790,
+          "lead_time": "Stocked at IKEA TH; flat-pack, immediate to ~1-2 wks",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/poaeng-armchair-birch-veneer-knisa-light-beige-s19240798/",
+          "notes": "Iconic and by far the cheapest, but a poor fit for a sofa-flanking pair on the drawing: 830mm deep (+11%) and 1000mm tall (cantilever recliner profile, not a compact accent chair). Veneer frame, not solid wood. Include only as a budget fallback — the tall/deep silhouette will not read as the intended ~750 cube.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "HomePro (FURDINI)",
+          "model": "FURDINI SCANDI Armchair, beige",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 580,
+            "d": 640,
+            "h": 800,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Fabric upholstery, foam fill, solid-wood frame and legs",
+          "csi": "12 52 00",
+          "unit_price_thb": 1490,
+          "lead_time": "HomePro stock; flat-pack, assembly required, ~in-store to 1-2 wks",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1282143",
+          "notes": "Budget option, verified dims/price (1,490 promo, was 5,990). Despite the 'armchair' listing it is ARMLESS (no arms) and narrow at 580mm wide (~23% under target), so it won't fill a flanking slot like a true armchair. 80kg rated, solid-wood legs. Value pick only if the pair is meant to be light/slim occasional seating.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h",
+            "unit_price_thb"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Dalton Fabric/PVC Swivel Armchair",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 920,
+            "d": 1100,
+            "h": 780,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "PVC-wrapped seat + 100% polyester fabric backrest, chrome-plated steel swivel base",
+          "csi": "12 52 00",
+          "unit_price_thb": 6990,
+          "lead_time": "Index stock item; confirm with branch",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/dalton-armchair",
+          "notes": "Oversized for this slot — 920x1100mm footprint (depth +47%) is a large swivel lounge chair, not a ~750 cube; it will break the dimensioned drawing if placed as a tight sofa-flanking pair. Verified dims/price. Listed only for completeness / if the layout can absorb a bigger statement chair. 90kg rated, rotating base.",
+          "verified": false,
+          "unverified_specs": [
+            "seat_h"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Koncept (HomePro / Koncept Furniture)",
+          "model": "KONCEPT AYLA Armchair, dark grey",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": null,
+            "d": null,
+            "h": null,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Imported fabric over natural pine-wood frame, foam padding (110kg rated)",
+          "csi": "12 52 00",
+          "unit_price_thb": null,
+          "lead_time": "HomePro / Koncept stock; confirm",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1225825",
+          "notes": "Real local Scandi-style fabric armchair (pine frame) sold via HomePro and Koncept Furniture, but the product page would not load — could NOT verify any dimensions or price. Left as a local alternative for the designer to confirm on-site; do not spec until dims/price are pulled from the vendor.",
+          "verified": false,
+          "unverified_specs": [
+            "w",
+            "d",
+            "h",
+            "seat_h",
+            "unit_price_thb"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "Index Living Mall 'Macie' PU armchair is the best pick on the stated priority order. (a) Dimension fit: at 780x760x720mm it lands within ~4% of the 750x750x750 target on all three axes — the tightest footprint match in the set, so the pair holds the dimensioned drawing without adjustment (IKEA VEDBO, the runner-up, is otherwise excellent but its 650mm depth is ~13% under target). (b) Value: at 4,990 THB it is also cheaper than the two nearest-quality alternatives (VEDBO 6,990). Honest caveats carried in notes: the cover is imported PU synthetic leather over a solid-wood frame (not genuine hide — a peel/crack risk over years in Thai humidity), and the seat height is not published (typical armchair ~420-450mm, verify with vendor). If the client prioritises durable upholstery over the tighter footprint, substitute the fully-verified fabric IKEA VEDBO (730x650x750, seat 440). All prices are DRAFT/indicative and every candidate is verified:false pending designer confirmation with the vendor."
+    },
+    {
+      "tag": "FFE-L04",
+      "room": "Living Room",
+      "role": "Lamp side / occasional end table beside the sofa (small round or square)",
+      "target_dims_mm": {
+        "w": 350,
+        "d": 350,
+        "h": 450,
+        "footprint_tolerance": "+/-15%",
+        "shape": "round or square end table"
+      },
+      "candidates": [
+        {
+          "manufacturer": "IKEA",
+          "model": "BURVIK side table, white (Ø38)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 380,
+            "d": 380,
+            "h": 450,
+            "dia": 380,
+            "seat_h": null
+          },
+          "material_finish": "Ash-veneer/painted round top on powder-coated steel frame with lower shelf; white (also black, grey-green)",
+          "csi": "12 54 00",
+          "unit_price_thb": 790,
+          "lead_time": "In stock IKEA Thailand (store + online); parcel delivery ~99 THB, typically a few days",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/burvik-side-table-white-20340391/",
+          "notes": "Best fit: height 450mm is EXACT to target; round Ø380 footprint is only +8.6% (well inside +/-15%). Two identical units trivial. Lightweight (2.74 kg, one-hand lift), max top load 10 kg, so it is a light-duty lamp table not a heavy-load surface. Dia + height + price read from the IKEA TH product page.",
+          "verified": false,
+          "unverified_specs": [
+            "material_finish (top veneer/paint composition not confirmed on page)"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "LACK side table, white (35x35)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 350,
+            "d": 350,
+            "h": 450,
+            "dia": null,
+            "seat_h": null
+          },
+          "material_finish": "Particleboard + 100% recycled-paper honeycomb core, fibreboard, acrylic paint; white (square)",
+          "csi": "12 54 00",
+          "unit_price_thb": 169,
+          "lead_time": "In stock IKEA Thailand (store + online)",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/lack-side-table-white-30514791/",
+          "notes": "DEAD-EXACT dimensional match to target 350x350x450mm and the cheapest option, so ideal for the dimensioned drawings. Trade-off: hollow honeycomb-board budget build with a laminate look and 10 kg max load - reads cheap for a living-room display table, which is why it is the fallback not the pick. Price from IKEA TH category listing.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (from IKEA TH category listing, individual product page not fetched)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Proma",
+          "model": "CTB-72 small round marble side table",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 400,
+            "d": 400,
+            "h": 560,
+            "dia": 400,
+            "seat_h": null
+          },
+          "material_finish": "Round marble top (white or grey marble) + powder-coated metal frame, two-tier with lower shelf",
+          "csi": "12 54 00",
+          "unit_price_thb": 690,
+          "lead_time": "Pre-order, 30-45 day production lead + self-assembly (stated on product page)",
+          "source_th": "Proma (proma.co.th)",
+          "link": "https://www.proma.co.th/en/product/small-round-table-sofa-side-living-room-proma-ctb-72/",
+          "notes": "Nicest material for the money (real marble look) at a low price. Footprint Ø400 is +14% (just inside tolerance) but height 560mm is +110mm over target - would slightly overshoot the drawn 450mm. Long import-style lead time. All dims, price and material read directly from the product page.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Hiroshi side table (two-tone)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 430,
+            "d": 400,
+            "h": 450,
+            "dia": null,
+            "seat_h": null
+          },
+          "material_finish": "Two-tone natural wood-effect top + black metal frame",
+          "csi": "12 54 00",
+          "unit_price_thb": 1490,
+          "lead_time": "Index Living Mall stock (store + online), typically a few days to ~2 weeks",
+          "source_th": "Index Living Mall",
+          "link": "https://www.indexlivingmall.com/category/furniture/table/side-table",
+          "notes": "Thai-brand option with a more designed two-tone look; height 450mm is exact. Footprint 430x400 is +14%/+23% over target (depth a touch outside tolerance). ~2x the price of the IKEA picks. Dims + price from Index category listing, not the individual product page.",
+          "verified": false,
+          "unverified_specs": [
+            "material_finish (exact material inferred)",
+            "dimensions_mm (from category listing, product page not fetched)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "GLADOM tray table (Ø45)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 450,
+            "d": 450,
+            "h": 530,
+            "dia": 450,
+            "seat_h": null
+          },
+          "material_finish": "Powder-coated steel, removable round tray top; light blue (also black/white/dark grey)",
+          "csi": "12 54 00",
+          "unit_price_thb": 499,
+          "lead_time": "In stock IKEA Thailand (store + online)",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/gladom-tray-table-black-50411990/",
+          "notes": "Handy removable-tray steel table, cheap and in stock. Footprint Ø450 is +28.6% over target - breaks the +/-15% footprint rule and would need the drawing adjusted; height 530mm also +80mm over. Price/colour vary (light-blue listed at 499 THB; other colours higher). Dims + price from IKEA TH category listing.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (category listing; varies by colour)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "KRAGSTA nest of tables, set of 2 (round)",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 350,
+            "d": 350,
+            "h": 450,
+            "dia": 350,
+            "seat_h": null
+          },
+          "material_finish": "Powder-coated steel, round tops; black or white",
+          "csi": "12 54 00",
+          "unit_price_thb": null,
+          "lead_time": "IKEA Thailand (verify TH stock; article live on ikea.com/th)",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/en/p/kragsta-nesting-tables-set-of-2-black-00299825/",
+          "notes": "The SMALL nesting table is an exact Ø350 x H450 match. Caveat: a set contains TWO DIFFERENT sizes (small Ø350xH450 + large Ø490xH510), so one set does NOT give two identical lamp tables - you would buy two sets and use the small one from each, or accept a mismatched pair. Reference only. TH price not found; dims from IKEA US spec.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dimensions_mm (IKEA US spec; TH page not fetched)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "MONDO marble side table 45cm",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 450,
+            "d": 400,
+            "h": 500,
+            "dia": 450,
+            "seat_h": null
+          },
+          "material_finish": "Round marble / marble-effect top + metal frame, brown-natural (BN)",
+          "csi": "12 54 00",
+          "unit_price_thb": null,
+          "lead_time": "Index Living Mall (verify TH availability)",
+          "source_th": "Index Living Mall",
+          "link": "https://indexlivingmallvn.com/en/mondo-marble-side-table-45cm-bn-110025309",
+          "notes": "Thai-brand marble reference. Footprint 450 (dia) x 400 deep is +28%/+14% over target; height 500mm +50mm over. Only found on Index's Vietnam site - TH price and exact availability unconfirmed; dims from search snippet (45cm dia, 40 deep, 50 high).",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb",
+            "dimensions_mm (from VN-site snippet)",
+            "source_th (listed on Index VN site; TH availability assumed)"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "IKEA BURVIK (white, Ø38) is the best pick: its 450mm height is an exact match to the target and its round Ø380mm footprint is only +8.6% (comfortably inside the +/-15% rule), so it will not distort the dimensioned drawings, while reading as a proper round lamp/end table rather than a cheap cube. Dims and the 790 THB price were read directly from the IKEA Thailand product page, it is in stock, and two identical units are trivial to buy. Rule order applied: dimension fit first (near-exact), then value/quality (sturdier, better-looking than the exact-but-hollow LACK, and far cheaper than the Index options). LACK 35x35x45 at 169 THB is retained as the dead-exact-footprint budget fallback; the Proma CTB-72 marble is the upgrade look but overshoots height by 110mm and carries a 30-45 day lead. All candidates are verified:false - prices are indicative DRAFT for human vendor confirmation."
+    },
+    {
+      "tag": "FFE-L05",
+      "room": "Living Room",
+      "role": "Table lamp (sits on the lamp side tables) — decorative portable",
+      "target_dims_mm": {
+        "w": 300,
+        "d": 300,
+        "h": 500
+      },
+      "candidates": [
+        {
+          "manufacturer": "IKEA",
+          "model": "BLIDVÄDER (บลืดแวเดอร์) 80501258",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 300,
+            "d": 300,
+            "h": 500,
+            "dia": 300,
+            "seat_h": null
+          },
+          "material_finish": "Off-white stoneware ceramic base, brass-plated steel neck, beige shade (85% recycled polyester / 15% linen)",
+          "csi": "26 51 00",
+          "unit_price_thb": 1790,
+          "lead_time": "In stock IKEA TH (Bangna/Bangyai) / online delivery ~1-2 weeks",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/p/blidvaeder-table-lamp-off-white-ceramic-beige-80501258/",
+          "notes": "Exact target fit: 300mm shade footprint x 500mm tall, ceramic decorative body reads well on a living-room side table. Base dia 17cm, shade dia 30cm, base height 24cm. E27 bulb NOT included. Neutral off-white suits most palettes. Order 2 for the matched pair.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": true
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "SNÖBYAR (สเนอบีอาร์) 50450401",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 330,
+            "d": 330,
+            "h": 520,
+            "dia": 330,
+            "seat_h": null
+          },
+          "material_finish": "Grey-turquoise earthenware ceramic base, nickel-plated steel fittings, grey shade (90% cotton / 10% polyester)",
+          "csi": "26 51 00",
+          "unit_price_thb": 1990,
+          "lead_time": "In stock IKEA TH / online delivery ~1-2 weeks",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/p/snoebyar-table-lamp-grey-turquoise-ceramic-grey-50450401/",
+          "notes": "Very close alternative to BLIDVÄDER: 520mm h (+4%) and 330mm shade (+10%) — both inside the +/-15% band. Coloured ceramic (grey-turquoise) if a soft accent is wanted instead of neutral. Base dia 15cm. E27 bulb not included.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Carini (HomePro)",
+          "model": "CARINI CLASSIC MT66036/A CREAM/BROWN",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 300,
+            "d": 300,
+            "h": 460,
+            "dia": 300,
+            "seat_h": null
+          },
+          "material_finish": "Turned WOOD base, dark-brown gloss finish; cream conical fabric shade",
+          "csi": "26 51 00",
+          "unit_price_thb": 1197,
+          "lead_time": "HomePro stock item (promo price, was 1,690) — check branch availability",
+          "source_th": "HomePro",
+          "link": "https://homepro.co.th/p/283183",
+          "notes": "Best value at ~1,197 THB and a true Thai big-box retailer. Footprint 300x300 is on target; 460mm tall is ~8% under target height. Base is WOOD (not ceramic) with a fabric shade — warmer/classic look, not the ceramic decorative object of the IKEA picks. Bulb likely E27.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Index Living Mall",
+          "model": "Walter (วอล์เทอร์) — black/gold",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 280,
+            "d": 280,
+            "h": 530,
+            "dia": 280,
+            "seat_h": null
+          },
+          "material_finish": "Metal frame + PU, black / gold finish (contemporary-glam)",
+          "csi": "26 51 00",
+          "unit_price_thb": null,
+          "lead_time": "Index Living Mall / OfficeMate / Lazada — confirm stock",
+          "source_th": "Index Living Mall",
+          "link": "https://www.ofm.co.th/product/index-living-mall-%E0%B9%82%E0%B8%84%E0%B8%A1%E0%B9%84%E0%B8%9F%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B9%82%E0%B8%95%E0%B9%8A%E0%B8%B0-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A7%E0%B8%AD%E0%B8%A5%E0%B9%8C%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C-%E0%B8%AA%E0%B8%B5%E0%B8%94%E0%B8%B3-%E0%B8%97%E0%B8%AD%E0%B8%87-p.YA29039",
+          "notes": "Good dimensional match (28x28x53cm per listing) and a stronger black/gold statement look if the scheme wants contrast. BUT product pages would not render: dims are from a search-result snippet and price was not shown — designer must confirm both with Index before use.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm",
+            "unit_price_thb",
+            "material_finish"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "IKEA",
+          "model": "LAMPAN (ลัมปั้น) 20046988",
+          "qty": 2,
+          "dimensions_mm": {
+            "w": 190,
+            "d": 190,
+            "h": 290,
+            "dia": 190,
+            "seat_h": null
+          },
+          "material_finish": "White base, recycled polypropylene plastic shade",
+          "csi": "26 51 00",
+          "unit_price_thb": 249,
+          "lead_time": "In stock IKEA TH / online",
+          "source_th": "IKEA Thailand",
+          "link": "https://www.ikea.com/th/th/p/lampan-table-lamp-white-20046988/",
+          "notes": "Budget price-floor reference ONLY — 290mm tall is ~42% under target and plastic (not decorative ceramic). Too small/light to hold the lamp-side-table role in a living room; included so the designer sees the low end of the range.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "IKEA BLIDVÄDER is the exact dimensional fit — 300mm shade footprint x 500mm height matches the 300x300x500 target on the nose, so it won't break the dimensioned drawings. It is a genuine ceramic decorative body (off-white stoneware) that reads as a real furnishing object on a lamp side table, it is neutral enough for almost any living-room palette, it is confirmed in stock on IKEA Thailand at a verified 1,790 THB, and buying two gives a clean matched pair. SNÖBYAR is the equally-ceramic backup if a soft coloured accent is preferred; the HomePro CARINI is the value option but its base is wood, not ceramic, and it sits 8% shorter."
+    },
+    {
+      "tag": "FFE-L06",
+      "room": "Living Room",
+      "role": "Wall-mounted TV, ~65 inch (panel ~1400mm wide) — electronics, normally CLIENT-SUPPLIED; researched as a dimension + price reference only",
+      "target_dims_mm": {
+        "w": 1400,
+        "d": 80,
+        "h": 800,
+        "note": "d=80 is a wall-mount allowance (real 65in panels are 26-64mm thick without stand; add ~40-100mm for the bracket standoff). Real 65in panel footprint is ~1445-1454 W x 831-838 H, so width runs ~+3-4% over the 1400 target and height ~+4% over 800 — both well inside +/-15%."
+      },
+      "candidates": [
+        {
+          "manufacturer": "Samsung",
+          "model": "UA65DU8100KXXT (Crystal UHD DU8100, 65in 4K, 2024)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1451,
+            "d": 26,
+            "h": 832,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Crystal UHD 4K LED panel, dark slim bezel, AirSlim body (wall-mountable, VESA)",
+          "csi": "11 52 13",
+          "unit_price_thb": 19990,
+          "lead_time": "In stock, mainstream — Power Buy / Thai Watsadu / HomePro; same-day to 3-5 days delivery + free install typical",
+          "source_th": "Power Buy / Thai Watsadu",
+          "link": "https://www.samsung.com/th/tvs/uhd-4k-tv/du8100-65-inch-crystal-uhd-4k-tizen-os-smart-tv-ua65du8100kxxt/",
+          "notes": "BEST-FIT REFERENCE. Mainstream mid-range Crystal UHD, the sensible default when the client supplies their own 65in TV. Panel footprint 1451 x 832 (~+3.6% W, +4% H vs target) is the closest clean fit. Real Thai street price seen across retailers 17,259-26,990; 19,990 is the indicative mid. Panel depth only 26mm — dimensioned drawing should use the ~60-100mm wall-mount standoff, not the panel depth. Electronics = client-supplied; treat price as reference, not a studio purchase.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (indicative mid of a real 17,259-26,990 street range; not a single confirmed vendor page — retailer pages returned 403/500 to fetch)"
+          ],
+          "selected": true
+        },
+        {
+          "manufacturer": "Samsung",
+          "model": "QA65S90DAKXXT (S90D OLED, 65in 4K, 2024)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1444,
+            "d": 40,
+            "h": 832,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "OLED 4K panel, LaserSlim near-bezelless body, matte dark finish (wall-mountable, VESA)",
+          "csi": "11 52 13",
+          "unit_price_thb": 43990,
+          "lead_time": "In stock at Power Buy / Thai Watsadu; 3-7 days + free install",
+          "source_th": "Power Buy",
+          "link": "https://www.samsung.com/th/tvs/oled-tv/s90d-65-inch-oled-4k-tizen-os-smart-tv-qa65s90dakxxt/",
+          "notes": "PREMIUM / aspirational reference. OLED, best-in-class picture and the thinnest look on-wall (40mm panel). Footprint 1444 x 832 is essentially identical to the DU8100 so drawings are interchangeable. ~2.2x the price — only relevant if the client already owns a flagship. Real Thai price range seen 43,990 up to 97,900 across retailers; 43,990 is the Power Buy/entry figure.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (real range 43,990-97,900 seen; 43,990 is indicative low, not a confirmed single vendor page)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "LG",
+          "model": "65UQ8050PSB.ATM (UQ80, 65in 4K, Magic Remote, 2022)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1454,
+            "d": 58,
+            "h": 838,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "4K UHD LED (IPS-class) panel, dark bezel, plastic rear (wall-mountable, VESA)",
+          "csi": "11 52 13",
+          "unit_price_thb": 16990,
+          "lead_time": "HomePro stock (older gen, may be run-out); 3-5 days + install",
+          "source_th": "HomePro",
+          "link": "https://www.homepro.co.th/p/1207747",
+          "notes": "BUDGET reference. Entry 4K, older 2022 UQ80 line (current sibling is 65UT8050/65UA7350). Thicker 58mm panel, plainer picture. HomePro sibling 65UT7350 was seen at 15,990 (from 18,990), so ~16,990 is a fair indicative for the UQ80 — but I did not see this exact model's live price. Footprint 1454 x 838 still within target band.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (not seen for this exact model; inferred from sibling 65UT7350 @ 15,990-18,990 at HomePro)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "TCL",
+          "model": "65C6K (C6K Premium QD-Mini LED, 65in 4K Google TV, 2025)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1447,
+            "d": 56,
+            "h": 832,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "QD-Mini LED 4K panel, metal-look slim bezel, dark finish (wall-mountable, VESA)",
+          "csi": "11 52 13",
+          "unit_price_thb": 21990,
+          "lead_time": "Power Buy / Thai Watsadu stock; 3-7 days + install",
+          "source_th": "Power Buy / Thai Watsadu",
+          "link": "https://www.tcl.com/global/en/tvs/65c6k",
+          "notes": "VALUE Mini-LED reference — noticeably better contrast/brightness than the entry LEDs for a modest step up. 21,990 seen as a real Thai figure. Footprint 1447 x 832 fits the target cleanly; 56mm panel. Good middle option between DU8100 and the OLED/Sony flagships.",
+          "verified": false,
+          "unverified_specs": [],
+          "selected": false
+        },
+        {
+          "manufacturer": "Sony",
+          "model": "XR-65X90L (BRAVIA XR, Full Array LED, 65in 4K, 2023)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1448,
+            "d": 64,
+            "h": 832,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "Full Array LED 4K (XR processor) panel, aluminium-look slim bezel, dark finish (wall-mountable, VESA)",
+          "csi": "11 52 13",
+          "unit_price_thb": 42990,
+          "lead_time": "Sony Store TH / Power Buy; 3-7 days + install",
+          "source_th": "Power Buy / Sony Store TH",
+          "link": "https://www.powerbuy.co.th/th/product/sony-led-tv-65-4k-google-tv-sony-xr-65x90l-290787",
+          "notes": "PREMIUM non-OLED reference. Excellent motion/upscaling, thickest of the set at 64mm (Full Array). Footprint 1448 x 832 matches drawings. Price is indicative — I could not read the live Thai price (Power Buy page blocked fetch); ~42,990 reflects typical 2023 X90L street pricing after launch discounts.",
+          "verified": false,
+          "unverified_specs": [
+            "unit_price_thb (Power Buy page returned 403 to fetch; 42,990 is an indicative street figure, not a confirmed page value)"
+          ],
+          "selected": false
+        },
+        {
+          "manufacturer": "Hisense",
+          "model": "65U7N (U7 Series ULED Mini-LED, 65in 4K, 2024)",
+          "qty": 1,
+          "dimensions_mm": {
+            "w": 1451,
+            "d": 71,
+            "h": 838,
+            "seat_h": null,
+            "dia": null
+          },
+          "material_finish": "ULED Mini-LED (QLED) 4K panel, dark slim bezel (wall-mountable, VESA)",
+          "csi": "11 52 13",
+          "unit_price_thb": 28990,
+          "lead_time": "Power Buy stock; 3-7 days + install",
+          "source_th": "Power Buy",
+          "link": "https://www.powerbuy.co.th/th/product/HISENSE-TV-65U7N-Smart-TV-65-Inch-4K-ULED-Mini-LED-65U7N-2024-298645",
+          "notes": "Alternative value Mini-LED (competes with TCL C6K). Width/height are the standard 65in panel footprint (~1451 x 838, confirmed on the sibling 65E7K); the 71mm depth and the 28,990 price are indicative — I did not read the live Power Buy figures. Include only if the client wants Hisense specifically.",
+          "verified": false,
+          "unverified_specs": [
+            "dimensions_mm.d (depth ~71mm inferred from U7-series, not read from a spec page)",
+            "unit_price_thb (Power Buy page not fetchable; 28,990 is an indicative street figure)"
+          ],
+          "selected": false
+        }
+      ],
+      "best_pick_reason": "Electronics are client-supplied, so the pick only needs to anchor the dimensioned drawings and give a realistic price line. The Samsung UA65DU8100KXXT is the best choice: a mainstream mid-range Crystal UHD whose real without-stand footprint (1451 x 832 mm) is the closest clean fit to the 1400 x 800 target (~+3.6% W, +4% H — inside +/-15%), from the highest-volume brand in Thai retail (Power Buy / Thai Watsadu / HomePro all stock it) at a middle-of-market ~19,990 THB. All six 65in candidates share nearly the same 1445-1454 x 831-838 panel footprint, so the drawing is robust regardless of which model the client actually brings; the DU8100 simply represents the median case. Note for the drawing: real panels are only 26-64mm thick — the 80mm target depth should be read as a wall-mount standoff allowance (budget ~40-100mm for the bracket), not the panel itself."
+    }
+  ]
+}

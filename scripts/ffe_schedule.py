@@ -52,9 +52,9 @@ def _dims(c: dict) -> str:
     d = c.get("dimensions_mm") or {}
     if not d:
         return "TBD"
-    core = [str(d[k]) for k in ("w", "d", "h") if k in d]
+    core = [str(d[k]) for k in ("w", "d", "h") if d.get(k) is not None]
     base = "×".join(core) + " mm" if core else "TBD"
-    if "seat_h" in d:
+    if d.get("seat_h") is not None:
         base += f" (seat {d['seat_h']})"
     return base
 
@@ -167,6 +167,20 @@ def render(data: dict) -> str:
         out.append("")
         out.append("> ⚠ This schedule contains unverified specs. Do NOT present figures to a client "
                    "until the designer confirms them (DR-002 human-QA gate).")
+
+    recon = data.get("layout_reconciliation") or []
+    if recon:
+        out.append("")
+        out.append("## ⚠ Layout reconciliation — selected pick vs drawn footprint")
+        out.append("")
+        out.append("A selected product exceeds the layout footprint the scene-graph drew (the "
+                   "ffe-research ±15% rule). Resolve before these dims flow into Stage-03 drawings.")
+        out.append("")
+        out.append("| Tag | Fit issue | Designer action |")
+        out.append("|---|---|---|")
+        for r in recon:
+            out.append(f"| {r.get('tag','—')} | {r.get('issue','')} | {r.get('action','')} |")
+
     return "\n".join(out) + "\n"
 
 
