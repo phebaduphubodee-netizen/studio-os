@@ -22,7 +22,7 @@ This is v0.2 — still a DRAFT a designer refines; positions here are approximat
 plan image and must be confirmed against the real DWG.
 
 2026-07-01: NCS/AIA layer names + plotted LINE WEIGHTS + a metric GRAPHIC SCALE BAR
-(verified standards, research/2026-07-01-plan-read-write-tools-DR.md §7c), matching
+(verified standards, knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-DR.md §7c), matching
 plan_2d.py so the whole CD set reads as one professional drawing set.
 """
 import json

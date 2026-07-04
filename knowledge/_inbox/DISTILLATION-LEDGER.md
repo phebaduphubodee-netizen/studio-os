@@ -98,12 +98,15 @@ yet promoted.
 ## 4. Highest-leverage follow-ups (surfaced by the audit — NOT done this run)
 1. **Re-run the adversarial verify** on the 10 self-verified corpus files (see
    §warning).
-2. **Repoint 5 stale in-script citation paths** — ✅ **3 of 5 DONE 2026-07-04:**
-   the `docs/INTERIOR-DESIGN-KB.md` citers (build_room.py:27, lighting.py:5,
-   dimensional_rules.v0.1.json:89) now point at the promoted `knowledge/` files.
-   **Remaining:** dwg_ingest.py + suite_package.py:110 cite `research/...`
-   (thai-code / plan-tools DR) paths — separate follow-up. Doc-links only (not
-   imports) → low severity, but they mislead anyone following the reference.
+2. **Repoint stale in-script citation paths** — ✅ **DONE 2026-07-04.**
+   The `docs/INTERIOR-DESIGN-KB.md` citers (build_room.py:27, lighting.py:5,
+   dimensional_rules.v0.1.json:89) now point at the promoted `knowledge/` files;
+   the `research/...` DR citers (dwg_ingest.py, plan_2d.py, suite_plan.py →
+   `knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-DR.md`, and
+   suite_package.py:110 → `knowledge/codes-th/mr55-residential-dimensions.md`,
+   the Authority that supersedes the thai-building-code DR) all resolve. Grep
+   confirms zero dead `docs/INTERIOR-DESIGN-KB.md` or `research/2026-*` paths in
+   pipeline source. Doc-links only (not imports) → low severity, now consistent.
 3. **File the 2 business DRs** (feasibility-market, unit-economics) into
    `docs/strategy.md` — they have zero distillation trace and do not belong in
    `knowledge/`.

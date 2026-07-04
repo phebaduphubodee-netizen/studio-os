@@ -107,7 +107,7 @@ def _qa_md(spec, res, verdict, spec_path):
         nm = it.get("name") or it.get("kind", "item")
         P.append(f"- [ ] {nm}: {float(it['w']):.0f} x {float(it['d']):.0f} mm — position + size vs DWG?")
     P.append("")
-    P.append("## 2 · Thai code (research/2026-06-30-thai-building-code-DR.md)")
+    P.append("## 2 · Thai code (knowledge/codes-th/mr55-residential-dimensions.md — Authority; supersedes the 2026-06-30 thai-building-code DR)")
     if fails:
         P.append("**FAIL:**"); P += [f"- [ ] ❌ {x['check']}: {x['detail']}" for x in fails]
     if warns:

@@ -10,7 +10,7 @@ the exact numbers, so there is nothing to "extract" — dimensions read straight
 the coordinate deltas and are therefore correct by construction.
 
 2026-07-01: upgraded to professional drafting convention (DR + verified standards,
-research/2026-07-01-plan-read-write-tools-DR.md §7c):
+knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-DR.md §7c):
   * NCS / AIA layer names with plotted LINE WEIGHTS (walls heaviest -> dims lightest)
   * TWO-TIER bottom dimensioning (inner = wall segments + door opening, outer = overall)
   * a GRAPHIC SCALE BAR on the sheet (measurements survive photocopy / rescale)

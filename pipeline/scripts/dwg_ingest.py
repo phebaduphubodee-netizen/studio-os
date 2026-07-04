@@ -3,7 +3,7 @@ dwg_ingest.py — INTERIOR-AI DWG/DXF ingest (read the friend's real CAD files).
 
 The friend works in CAD; her deliverables arrive as DWG (AutoCAD binary). ezdxf cannot
 read DWG directly, so this tool converts DWG -> DXF. Reader hierarchy by LICENSE
-(verified — research/2026-07-01-plan-read-write-tools-DR.md §2/§7a):
+(verified — knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-DR.md §2/§7a):
   * .dxf -> ezdxf directly (MIT) — COMMERCIAL-CLEAN. Preferred input: have the friend
             export DXF from CAD and the licensing question disappears entirely.
   * .dwg -> GNU LibreDWG `dwg2dxf` (GPL-3) if installed — commercial-SAFE as a back-office
