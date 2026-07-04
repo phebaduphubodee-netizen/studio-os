@@ -24,7 +24,7 @@ import json
 
 IN = 0.0254   # inches -> metres
 
-# Render realism defaults (docs/INTERIOR-DESIGN-KB.md §8.3-§8.4). Encoded so the draft
+# Render realism defaults (knowledge/rendering/render-defaults.md §8.3-§8.4). Encoded so the draft
 # render obeys the architectural conventions instead of looking like generic CG.
 EYE_LEVEL_M = 1.6        # §8.3 camera eye level ~5'3"
 RENDER_FOCAL_MM = 28     # §8.3 interior focal length 24-50mm (low distortion)

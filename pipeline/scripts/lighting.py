@@ -2,7 +2,7 @@
 lighting.py — INTERIOR-AI lighting layer (pure Python, engine-agnostic, no deps).
 
 Derives a DRAFT lighting plan (fixtures with positions + photometrics) from a
-validated room spec, applying docs/INTERIOR-DESIGN-KB.md §6:
+validated room spec, applying knowledge/lighting/lumen-method-and-fixture-placement.md (§6):
   * ambient recessed downlights — COUNT sized by the lumen method (§6.6) to hit the
     room's IES illuminance band (§6.2), laid on an aspect-matched centred grid (§6.4)
   * a pendant centered over a dining table (if present)

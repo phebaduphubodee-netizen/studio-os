@@ -481,3 +481,38 @@
   their own work — a stability guarantee stated in a docstring ("existing IDs
   never change") was false in the code beneath it, and only an outside read
   found it. Cheap insurance on anything that will accrue human labor (labels).
+
+## 2026-07-04 — KB §6/§8 promotion + citation hygiene, FF&E round 2, clay-build proof
+- **INTERIOR-DESIGN-KB §6/§8 promoted out of `_inbox/`** into two REFERENCE-tier
+  knowledge files: `knowledge/lighting/lumen-method-and-fixture-placement.md`
+  (IES illuminance table, accent~3:1 + 3:1 ratios, per-zone CCT + CRI≥90, fixture
+  placement H/2·H/4·H/3, lumen method N=E·A/(Φ·CU·LLF) + worked example) and
+  `knowledge/rendering/render-defaults.md` (PBR/IOR, HDRI/Nishita/area+.ies/GI,
+  camera 24–50mm/eye 1.35–1.65m/two-point, bevel, engines, AOV post). They FILL
+  the exact GAPs `residential-lighting.md` self-declared. Both defer statutory
+  values to `codes-th`; a 4-agent adversarial verify confirmed every load-bearing
+  number matches the source and the κ-math/citations resolve (3 CLEAN + 1 MINOR).
+- **Citation hygiene:** 3 code sites (build_room.py:27, lighting.py:5,
+  dimensional_rules.v0.1.json:89) cited the dead `docs/INTERIOR-DESIGN-KB.md`
+  path (file had moved to `_inbox/`) — repointed to the promoted knowledge files;
+  grep confirms zero dead-path refs remain. Note the LIVE rules file is
+  `dimensional_rules.v0.2.json` (v0.1 superseded; its lighting `_ref` already
+  cited codes-th correctly).
+- **Judge-honesty diagnostic** (`qa/reports/judge-honesty-diagnostic-2026-07-04.md`):
+  put on the record that M3.2's κ=0.000 is **degenerate, not leniency** — with an
+  all-REWORK ground truth (pb=0), κ≡0 identically for any machine pass-count≥1
+  (derivation matches `judge_calibrate.py`). Leniency is real but shown by the
+  SHIP-rate gap + rank inversions, NOT κ; ρ=0.428 is the genuine improvable signal
+  (ceiling ~0.63 without a rubric extension). 5 owner-governance items queued (≥1
+  SHIP label, paid rubric re-score, no silent aggregate swap).
+- **FF&E round 2 (PRJ-2026-002, 24 picks):** 24-agent adversarial pass →
+  18 OK / 6 MINOR / **0 MAJOR**; no pick swapped. **FFE-S01 sofa RESOLVED** —
+  the shallow 600mm depth is unbuyable (no armed Thai 3-seater <745mm), so
+  deepened the spec footprint to the real 860mm (Index Lamona), kept the back on
+  the north wall, nudged the coffee table 150mm south for legroom, and re-gated:
+  suite_clearance PASS + placement_logic FUNCTION PASS. Fixed 2 honesty nits
+  (BL02 wrong-room "ensuite" note in a living room; M03 "verified"→indicative).
+- **Clay-build proof:** rendered all 3 CAD-derived rooms (master/sitting/living)
+  in Blender/Cycles clay-only (free, no Gemini) — the geometry engine materializes
+  every spec correctly; the sitting re-render visibly shows the deepened sofa.
+  Lesson: `build_room.py` writes to `pipeline/output/` (its own dir), not cwd.

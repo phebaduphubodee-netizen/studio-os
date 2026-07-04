@@ -86,7 +86,7 @@
   },
 
   "lighting": {
-    "_ref": "docs/INTERIOR-DESIGN-KB.md §6 (IES illuminance + CCT/CRI + lumen method). DRAFT — verify vs current IES Recommended Practice before any client deliverable.",
+    "_ref": "knowledge/lighting/lumen-method-and-fixture-placement.md §6 (IES illuminance + CCT/CRI + lumen method); v0.1 DRAFT — live rules = dimensional_rules.v0.2.json. Verify vs current IES Recommended Practice before any client deliverable.",
     "cu_default": 0.65,
     "llf_default": 0.80,
     "cri_min": 90,

@@ -33,21 +33,22 @@
       "name": "โซฟา 3 ที่นั่ง",
       "kind": "sofa",
       "x": 1500,
-      "y": 2600,
+      "y": 2340,
       "w": 2100,
-      "d": 600,
+      "d": 860,
       "h": 800,
       "rot": 0,
-      "note": "faces south (-Y) into the room. Plan draws it on the WEST party wall facing east; modelled on the NORTH wall facing south to keep the materializer's axis-aligned rotation convention (rot 90/270 swaps w/d about the centre and would push a west-wall 2100mm sofa out of bounds). The conversation group (sofa + round coffee table + 2 armchairs + west console) is preserved."
+      "note": "faces south (-Y) into the room. Plan draws it on the WEST party wall facing east; modelled on the NORTH wall facing south to keep the materializer's axis-aligned rotation convention (rot 90/270 swaps w/d about the centre and would push a west-wall 2100mm sofa out of bounds). DEPTH d=860 (was 600) — FF&E round-2 reconciliation (2026-07-04): the drawn 600mm shallow depth is unbuyable (no armed Thai 3-seater is <745mm; selected Index Lamona FFE-S01 = 860 deep). Back kept flush to the north-wall inner face (y_back=3200), front now y=2340. Height h=800 retained by specifying a low-leg variant (real product is 920; FF&E note 'trim with lower legs'). Coffee table nudged 150mm south to preserve sofa-front legroom (~340mm). Re-gated 2026-07-04: clearance PASS, function PASS. The conversation group (sofa + round coffee table + 2 armchairs + west console) is preserved."
     },
     {
       "name": "โต๊ะกลาง (round coffee table)",
       "kind": "coffee_table",
       "x": 2050,
-      "y": 1450,
+      "y": 1300,
       "w": 700,
       "d": 700,
-      "h": 400
+      "h": 400,
+      "note": "y nudged 1450->1300 (150mm south) in the FF&E round-2 S01 reconciliation so the deepened 860mm sofa keeps ~340mm front legroom; still ~250mm off the armchairs (both are furniture-to-furniture reach gaps, not walkways)."
     },
     {
       "name": "เก้าอี้อาร์มแชร์ 1",

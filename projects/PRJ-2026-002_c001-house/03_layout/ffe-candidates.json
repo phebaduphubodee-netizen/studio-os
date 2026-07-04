@@ -4,7 +4,8 @@
     {
       "tag": "FFE-S01",
       "issue": "sofa depth 860 mm vs drawn 600 mm (+43%); height 920 vs 800 (+15%). No armed Thai 3-seater is 600 deep.",
-      "action": "At verification: deepen the sitting-room sofa footprint to ~860 and re-run Gate 0 vs the 3300 depth (re-check the coffee-table gap), OR commission a custom shallow ~600-deep sofa. Trim height with lower legs."
+      "action": "At verification: deepen the sitting-room sofa footprint to ~860 and re-run Gate 0 vs the 3300 depth (re-check the coffee-table gap), OR commission a custom shallow ~600-deep sofa. Trim height with lower legs.",
+      "resolution": "RESOLVED 2026-07-04 (FF&E round 2): chose DEEPEN over custom (no armed Thai 3-seater <745mm; a custom shallow build is disproportionate cost/lead-time for a showcase room). Edited pipeline/scripts/specs/sitting_room.json: sofa d 600->860, back flush to the north-wall inner face (y_back 3200, front 2340); round coffee table nudged 150mm south (y 1450->1300) to preserve ~340mm sofa-front legroom. Re-ran Gate 0: suite_clearance PASS (0 fail/0 warn, all items in-bounds, entry->sofa circulation 1698mm>=910) + placement_logic FUNCTION PASS. Height stays 800 via a low-leg variant (real product 920; 'trim with lower legs'). STILL TODO for the designer at verification: the 3 Index sofa candidate links use a /lamona-sofa-3s slug pattern that differs from the numeric-SKU Index URLs elsewhere in this file (e.g. FFE-M01 /110047607) — confirm the real SKU URLs + live price (verified:false)."
     },
     {
       "tag": "FFE-M06",
@@ -20,7 +21,7 @@
   "client_ref": "C-001",
   "currency": "THB",
   "unit_system": "mm",
-  "status": "DRAFT — back-office FF&E research; every row verified:false pending designer vendor confirmation; prices indicative/un-anchored (showcase run, no client budget). Positions owner-blocked (candidates selected by DIMENSION only). Architectural lighting (downlights/pendants) is deferred to the Stage-04 RCP — only decorative/portable lighting appears here.",
+  "status": "DRAFT — back-office FF&E research; every row verified:false pending designer vendor confirmation; prices indicative/un-anchored (showcase run, no client budget). Positions owner-blocked (candidates selected by DIMENSION only). Architectural lighting (downlights/pendants) is deferred to the Stage-04 RCP — only decorative/portable lighting appears here. ROUND-2 VERIFIED 2026-07-04 (24-item adversarial pass, ffe-round2-verify workflow): 18 OK / 6 MINOR / 0 MAJOR — no pick swapped; all 24 selected picks dimensionally defensible and honestly disclosed. FFE-S01 sofa depth RESOLVED (see layout_reconciliation). Applied nits: S01 resolution, BL02 wrong-room note, M03 'verified'->indicative. Designer follow-ups still open: CSI 12 52 00/12 54 00 -> 12 58 00 residential-furniture retag (M01/M03/L02/L04, cosmetic); null seat_h on M02/M04/S03/L03; slug-URL reconcile (S01/L-series); live price/link confirmation.",
   "provenance": {
     "loose_furniture_sanitaryware_lighting": "researched 2026-07-04 via the ffe-research skill (18 roles, Thai-market first, WebFetch'd product pages; unverified specs flagged per candidate)",
     "built_ins": "folded from 03_layout/ffe-finish-hardware-draft.md (vault-cited: knowledge/materials/aella-hardware-th.md + wall-cladding-and-decorative-mouldings-th.md)",
@@ -684,7 +685,7 @@
           "selected": false
         }
       ],
-      "best_pick_reason": "IKEA BRIMNES (390x410x530mm, verified 1,990 THB, in-stock IKEA TH) is the strongest fit: it is within roughly +/-8% on every axis and, critically, is the ONLY genuinely purchasable Thai-market nightstand I found that lands near the 520mm target height (530mm, +2%) — every other real product (VIKHAMMER 650, TONSTAD 590, MELONA 600, HAUGA 630) is 13-25% taller and would force changes to the dimensioned elevations. It also gives closable storage (1 drawer) at a low, honest price. Only trade-off is laminate/paper-foil construction with a tempered-glass drawer front rather than solid wood; if the client wants a warmer material, TONSTAD (oak veneer) is the upgrade at the cost of a taller 590mm body."
+      "best_pick_reason": "IKEA BRIMNES (390x410x530mm, indicative ~1,990 THB (verified:false), in-stock IKEA TH) is the strongest fit: it is within roughly +/-8% on every axis and, critically, is the ONLY genuinely purchasable Thai-market nightstand I found that lands near the 520mm target height (530mm, +2%) — every other real product (VIKHAMMER 650, TONSTAD 590, MELONA 600, HAUGA 630) is 13-25% taller and would force changes to the dimensioned elevations. It also gives closable storage (1 drawer) at a low, honest price. Only trade-off is laminate/paper-foil construction with a tempered-glass drawer front rather than solid wood; if the client wants a warmer material, TONSTAD (oak veneer) is the upgrade at the cost of a taller 590mm body."
     },
     {
       "tag": "FFE-M04",
@@ -2160,7 +2161,7 @@
           "model": "10x150x2900 slat x~16",
           "material_finish": "WPC vertical slat feature wall (TV floats on it)",
           "csi": "09 77 00",
-          "notes": "Economical: ~16 slats x 440 = ~7,040. Alts: AKUWALL 1200x2900 x2 (~28,800) or STONE WALL PU 600x1200 (no price). Depth kept 50mm so the entry->ensuite/circulation is not pinched.",
+          "notes": "Economical: ~16 slats x 440 = ~7,040. Alts: AKUWALL 1200x2900 x2 (~28,800) or STONE WALL PU 600x1200 (no price). Depth kept 50mm so the living-room circulation is not pinched (round-2 fix: prior text said 'entry->ensuite', which was copied from the master-bedroom TV-panel context; there is no ensuite in the living room).",
           "lead_time": "in stock (WPC) ~1-2 wk",
           "selected": true,
           "qty": 1,
