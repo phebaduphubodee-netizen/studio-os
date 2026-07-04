@@ -1,0 +1,73 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "note": "REAL sitting room, Floor 2 CENTER (right bay, south portion), PRJ-2026-002 (anonymized). Derived 2026-07-04 to REPLACE the FICTIONAL living_condo.json. METHOD (same as master_bedroom.json — honesty load-bearing): WIDTH 5100 mm is AUTHORITATIVE (the drafter's written bottom dimension of the right bay; title block 'WRITTEN DIMENSIONS TAKE PRECEDENCE'). DEPTH ~3300 mm is ESTIMATED — the sitting room is an open-plan zone with no dedicated depth dimension on the sheet; it sits in the floor-2 depth structure (2850+2950+700 bands) with bedroom-2 to the north and the stair (4100) to the east, so 3300 is a plan-proportion estimate pending a cleaner CAD export. ARRANGEMENT is from the plan (page1 crop): a 3-seat sofa against the WEST party wall (shared with the master) facing EAST, a round coffee table, TWO D-shaped armchairs to the SOUTH facing the group, and a low console with decor on the west wall. Opens SOUTH to the terrace via glazing (y=0). No TV — this is a conversation lounge; the house TV is in the Floor-1 living room. The stair sits to the EAST (x>5100), not modelled. Exact furniture XY is ergonomic DESIGN JUDGEMENT within the authoritative width, gate-verified, not traced. Coord frame: mm, origin SW, x east, y north, y=0 = south glazing to terrace, front = -Y at rot 0.",
+  "room": {
+    "type": "sitting_room",
+    "outline_mm": [[0, 0], [5100, 0], [5100, 3300], [0, 3300]],
+    "ceiling_mm": 2800,
+    "wall_thk_mm": 100
+  },
+  "door": {
+    "x": 5100,
+    "y": 1200,
+    "w": 1000,
+    "h": 2000,
+    "wall": "east",
+    "swing": "in-left",
+    "note": "opening toward the stair/circulation on the east; wall+offset are design judgement"
+  },
+  "builtins": [
+    {
+      "name": "คอนโซล/ตู้โชว์เตี้ย ผนังตะวันตก (BF12)",
+      "kind": "cabinet",
+      "x": 0,
+      "y": 1100,
+      "w": 500,
+      "d": 1100,
+      "h": 600
+    }
+  ],
+  "items": [
+    {
+      "name": "โซฟา 3 ที่นั่ง",
+      "kind": "sofa",
+      "x": 1500,
+      "y": 2600,
+      "w": 2100,
+      "d": 600,
+      "h": 800,
+      "rot": 0,
+      "note": "faces south (-Y) into the room. Plan draws it on the WEST party wall facing east; modelled on the NORTH wall facing south to keep the materializer's axis-aligned rotation convention (rot 90/270 swaps w/d about the centre and would push a west-wall 2100mm sofa out of bounds). The conversation group (sofa + round coffee table + 2 armchairs + west console) is preserved."
+    },
+    {
+      "name": "โต๊ะกลาง (round coffee table)",
+      "kind": "coffee_table",
+      "x": 2050,
+      "y": 1450,
+      "w": 700,
+      "d": 700,
+      "h": 400
+    },
+    {
+      "name": "เก้าอี้อาร์มแชร์ 1",
+      "kind": "armchair",
+      "x": 1500,
+      "y": 350,
+      "w": 700,
+      "d": 700,
+      "h": 750,
+      "rot": 180
+    },
+    {
+      "name": "เก้าอี้อาร์มแชร์ 2",
+      "kind": "armchair",
+      "x": 2700,
+      "y": 350,
+      "w": 700,
+      "d": 700,
+      "h": 750,
+      "rot": 180
+    }
+  ]
+}

@@ -89,7 +89,24 @@ domain. (4) **ROOT CAUSE the owner named:** `bedroom_suite` is a LOOSE approxima
 Floor-2 master (its own note says "positions approximated from a plan image"; terrace not modelled),
 and `living_condo` is FICTIONAL — neither is a faithful client unit. DECISION: re-derive the REAL
 rooms (master + Floor-1 living + Floor-2 sitting) precisely from the DXF (`raw-local`, ezdxf), retire
-`living_condo`. That re-derivation is the open work item.
+`living_condo`.
+
+### Re-derivation status (2026-07-04)
+Done: three dimension-authoritative specs — `master_bedroom.json`, `sitting_room.json`,
+`living_room.json` — replace the loose/fictional pair (`living_condo.json` marked DEPRECATED, kept
+only as a test fixture). KEY FINDING from the CAD dig (`ezdxf`): the DXF is usable for DIMENSIONS
+(walls flatten to mm; the drafter's written dims are authoritative — bay 5500 × [2850+2950+700],
+right bay 5100, coffee-table F03 1000×1000 as a raster scale) but NOT for furniture POSITIONS —
+the interior-furniture layer sits in a mirrored, mixed-scale, SQUASHED, anonymized-block frame, and
+freehand raster tracing is exactly the drift the owner flagged. So each spec's DIMENSIONS + ZONES are
+authoritative; FURNITURE XY is ergonomic design judgement placed to pass the gates, documented per
+file. master_bedroom fixes the real dimensional error (interior 5500×5800 + 700 terrace, was 6500
+all-interior; bed 7'×6.5' was 6ft) and passes FUNCTION (clearance is tight — a 2134 mm N-S bed can't
+meet 610/910 in a 2950 mm zone, which the real drafted room also can't). sitting_room = FUNCTION+
+clearance clean; living_room = FUNCTION clean (all TV rules pass: wall-mounted mount_mm 900, faces the
+sofa, seating clear of sightline — the round-2 TV critique enforced), clearance REVIEW (advisory).
+OPEN: furniture XY + entry doors need designer confirmation or a cleaner CAD/DWG export before a
+render gates a deliverable.
 
 ## Status (2026-07-04)
 - `placement_logic.py` + `test_placement_logic.py` (**75/75**) now hold TWELVE rules:
