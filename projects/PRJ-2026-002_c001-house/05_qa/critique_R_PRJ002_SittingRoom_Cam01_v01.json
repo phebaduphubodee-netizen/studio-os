@@ -1,0 +1,25 @@
+{
+  "scores": {
+    "palette_coherence": 5,
+    "lighting_quality": 4,
+    "composition": 3,
+    "furniture_realism": 3,
+    "room_context": 4,
+    "styling_and_life": 3,
+    "proportion_and_scale": 4,
+    "photoreal_believability": 3
+  },
+  "overall_0_5": 3.5,
+  "verdict": "REWORK",
+  "top_defects": [
+    "The sofa's form is slightly amorphous and 'melty', especially the tufting and arms, lacking the crisp tailoring of high-end upholstery.",
+    "The styling is extremely generic, using the standard 'render kit' of a single book, a small tray, and a non-descript plant, which screams 'template' rather than 'designed space'.",
+    "The armchair cushions are too rigid and blocky, appearing as simple geometric shapes with a texture applied, rather than soft, pliable objects.",
+    "The overall image has a tell-tale CG smoothness; textures on the plant and furniture lack the minute imperfections, dust, and wear that would make them believable."
+  ],
+  "one_line": "The beautiful lighting is doing its best to hide a slightly lumpy sofa and styling that feels pulled from a 3D asset store's front page.",
+  "if_client_deliverable": "This is not acceptable for a discerning client. While the mood and lighting are strong, the core furniture pieces have noticeable modeling flaws and the styling is so generic it undermines any claim to a custom or thoughtful design. It's a good starting point, but finishing it requires replacing key assets.",
+  "_artifact": "R_PRJ002_SittingRoom_Cam01_v01.png",
+  "_kind": "render",
+  "_model": "gemini-2.5-pro"
+}

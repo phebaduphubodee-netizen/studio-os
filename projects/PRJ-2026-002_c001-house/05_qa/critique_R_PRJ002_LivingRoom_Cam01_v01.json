@@ -1,0 +1,25 @@
+{
+  "scores": {
+    "palette_coherence": 4,
+    "lighting_quality": 3,
+    "composition": 3,
+    "furniture_realism": 4,
+    "room_context": 1,
+    "styling_and_life": 2,
+    "proportion_and_scale": 4,
+    "photoreal_believability": 3
+  },
+  "overall_0_5": 2.5,
+  "verdict": "REWORK",
+  "top_defects": [
+    "The scene is a featureless box, not a room. The complete lack of architectural context like windows, doors, or trim makes it feel like a studio set, not a believable interior.",
+    "The main light source from the upper left is harsh and artificial, casting unnaturally sharp shadows that scream '3D render spotlight'.",
+    "The styling is minimal to the point of being sterile. The vast, blank white wall is a dead giveaway of an unfinished scene and makes the space feel cold and impersonal.",
+    "The wood accent wall, while a nice idea, has a texture that looks slightly flat and uniform, lacking the subtle variations and imperfections of real wood paneling."
+  ],
+  "one_line": "This looks less like a living room and more like a high-end furniture hostage situation in a windowless wooden box.",
+  "if_client_deliverable": "No, this is not acceptable for a paying client. A client expects to see a representation of a room, not just a catalogue shot of furniture floating in a void. The lack of context makes it impossible to evaluate the design in a real-world setting. It's a good start on the furniture models, but the environment itself is critically underdeveloped.",
+  "_artifact": "R_PRJ002_LivingRoom_Cam01_v01.png",
+  "_kind": "render",
+  "_model": "gemini-2.5-pro"
+}

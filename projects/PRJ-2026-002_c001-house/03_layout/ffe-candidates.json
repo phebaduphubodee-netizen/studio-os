@@ -5,7 +5,7 @@
       "tag": "FFE-S01",
       "issue": "sofa depth 860 mm vs drawn 600 mm (+43%); height 920 vs 800 (+15%). No armed Thai 3-seater is 600 deep.",
       "action": "At verification: deepen the sitting-room sofa footprint to ~860 and re-run Gate 0 vs the 3300 depth (re-check the coffee-table gap), OR commission a custom shallow ~600-deep sofa. Trim height with lower legs.",
-      "resolution": "RESOLVED 2026-07-04 (FF&E round 2): chose DEEPEN over custom (no armed Thai 3-seater <745mm; a custom shallow build is disproportionate cost/lead-time for a showcase room). Edited pipeline/scripts/specs/sitting_room.json: sofa d 600->860, back flush to the north-wall inner face (y_back 3200, front 2340); round coffee table nudged 150mm south (y 1450->1300) to preserve ~340mm sofa-front legroom. Re-ran Gate 0: suite_clearance PASS (0 fail/0 warn, all items in-bounds, entry->sofa circulation 1698mm>=910) + placement_logic FUNCTION PASS. Height stays 800 via a low-leg variant (real product 920; 'trim with lower legs'). STILL TODO for the designer at verification: the 3 Index sofa candidate links use a /lamona-sofa-3s slug pattern that differs from the numeric-SKU Index URLs elsewhere in this file (e.g. FFE-M01 /110047607) — confirm the real SKU URLs + live price (verified:false)."
+      "resolution": "RESOLVED 2026-07-04 (FF&E round 2): chose DEEPEN over custom (no armed Thai 3-seater <745mm; a custom shallow build is disproportionate cost/lead-time for a showcase room). Edited pipeline/scripts/specs/sitting_room.json: sofa d 600->860, back flush to the north-wall inner face (y_back 3200, front 2340); round coffee table nudged 150mm south (y 1450->1300) to preserve ~340mm sofa-front legroom. Re-ran Gate 0: suite_clearance PASS (0 fail/0 warn, all items in-bounds, entry->sofa circulation 1698mm>=910) + placement_logic FUNCTION PASS. Height stays 800 via a low-leg variant (real product 920; 'trim with lower legs'). SLUG-URL RECONCILED 2026-07-04: the Index sofa/armchair links here are bare product slugs (e.g. /lamona-sofa-3s), which differ from the numeric-SKU Index URLs elsewhere (e.g. FFE-M01 /110047607); every non-SKU Index link is now flagged in its candidate's unverified_specs. Confirming the real SKU URL + live price stays the designer's job at verification (verified:false)."
     },
     {
       "tag": "FFE-M06",
@@ -21,7 +21,7 @@
   "client_ref": "C-001",
   "currency": "THB",
   "unit_system": "mm",
-  "status": "DRAFT — back-office FF&E research; every row verified:false pending designer vendor confirmation; prices indicative/un-anchored (showcase run, no client budget). Positions owner-blocked (candidates selected by DIMENSION only). Architectural lighting (downlights/pendants) is deferred to the Stage-04 RCP — only decorative/portable lighting appears here. ROUND-2 VERIFIED 2026-07-04 (24-item adversarial pass, ffe-round2-verify workflow): 18 OK / 6 MINOR / 0 MAJOR — no pick swapped; all 24 selected picks dimensionally defensible and honestly disclosed. FFE-S01 sofa depth RESOLVED (see layout_reconciliation). Applied nits: S01 resolution, BL02 wrong-room note, M03 'verified'->indicative. Designer follow-ups still open: CSI 12 52 00/12 54 00 -> 12 58 00 residential-furniture retag (M01/M03/L02/L04, cosmetic); null seat_h on M02/M04/S03/L03; slug-URL reconcile (S01/L-series); live price/link confirmation.",
+  "status": "DRAFT — back-office FF&E research; every row verified:false pending designer vendor confirmation; prices indicative/un-anchored (showcase run, no client budget). Positions owner-blocked (candidates selected by DIMENSION only). Architectural lighting (downlights/pendants) is deferred to the Stage-04 RCP — only decorative/portable lighting appears here. ROUND-2 VERIFIED 2026-07-04 (24-item adversarial pass, ffe-round2-verify workflow): 18 OK / 6 MINOR / 0 MAJOR — no pick swapped; all 24 selected picks dimensionally defensible and honestly disclosed. FFE-S01 sofa depth RESOLVED (see layout_reconciliation). Applied nits: S01 resolution, BL02 wrong-room note, M03 'verified'->indicative. NITS CLOSED 2026-07-04: (a) residential-furniture CSI retag DONE for M01/M03/L02/L04 + S02 (same class as L02 — the round coffee table was the only other residential table still on hospitality-code 12 54 00) -> 12 58 00; seating (armchairs/sofas/benches) correctly stays 12 52 00. (b) null seat_h CLOSED on the selected pick of M02/M04/S03/L03 (430mm flagged estimate = design-target/ergonomic seat height, kept in unverified_specs). (c) Index slug/category URLs RECONCILED — every non-SKU Index link flagged in unverified_specs. Still open (designer, at verification): live price + real-SKU/link confirmation across all verified:false rows.",
   "provenance": {
     "loose_furniture_sanitaryware_lighting": "researched 2026-07-04 via the ffe-research skill (18 roles, Thai-market first, WebFetch'd product pages; unverified specs flagged per candidate)",
     "built_ins": "folded from 03_layout/ffe-finish-hardware-draft.md (vault-cited: knowledge/materials/aella-hardware-th.md + wall-cladding-and-decorative-mouldings-th.md)",
@@ -220,7 +220,7 @@
             "dia": null
           },
           "material_finish": "Upholstered fabric or PU/genuine-leather over ply + foam; no headboard; low 30cm platform base; 2 storage drawers; legless (sits flush to floor)",
-          "csi": "12 52 00",
+          "csi": "12 58 00",
           "unit_price_thb": 11900,
           "lead_time": "Made-to-order, ~2-4 weeks (custom size longer) — estimate",
           "source_th": "KulThong Design (kulthong.com)",
@@ -246,7 +246,7 @@
             "dia": null
           },
           "material_finish": "Upholstered platform; MDF curved-groove headboard with PVC coating; particle-board frame, melamine finish; integrated daylight LED strip",
-          "csi": "12 52 00",
+          "csi": "12 58 00",
           "unit_price_thb": 19800,
           "lead_time": "In-stock retail, ~3-7 days delivery (Bangkok) — estimate",
           "source_th": "Index Living Mall",
@@ -268,7 +268,7 @@
             "dia": null
           },
           "material_finish": "Made-to-order upholstery — fabric / synthetic leather / genuine leather (500+ designs, 50+ colours) over E1 engineered-wood 'Firm Structure' frame",
-          "csi": "12 52 00",
+          "csi": "12 58 00",
           "unit_price_thb": null,
           "lead_time": "Custom order, ~4-8 weeks — estimate",
           "source_th": "SB Design Square",
@@ -297,7 +297,7 @@
             "dia": null
           },
           "material_finish": "White stained oak veneer over particleboard/fibreboard; high headboard (100cm), 38cm footboard, 21cm floor clearance",
-          "csi": "12 52 00",
+          "csi": "12 58 00",
           "unit_price_thb": 8090,
           "lead_time": "In-stock flat-pack, immediate to ~1 week",
           "source_th": "IKEA Thailand",
@@ -319,7 +319,7 @@
             "dia": null
           },
           "material_finish": "Upholstered fabric divan base, no headboard, particle-board/timber core",
-          "csi": "12 52 00",
+          "csi": "12 58 00",
           "unit_price_thb": 4199,
           "lead_time": "When in stock ~1-2 weeks; many SKUs currently out of stock",
           "source_th": "HomePro",
@@ -347,7 +347,7 @@
             "dia": null
           },
           "material_finish": "Hand-upholstered fabric/velvet/faux-leather over hardwood frame; low-headboard options available; UK made-to-order",
-          "csi": "12 52 00",
+          "csi": "12 58 00",
           "unit_price_thb": null,
           "lead_time": "Made-to-order ~8-12+ weeks + sea freight/import clearance",
           "source_th": "import",
@@ -384,7 +384,7 @@
             "w": 1700,
             "d": null,
             "h": null,
-            "seat_h": null
+            "seat_h": 430
           },
           "material_finish": "Fabric upholstery over solid-wood frame with high-density rebound foam",
           "csi": "12 52 00",
@@ -397,8 +397,8 @@
           "unverified_specs": [
             "depth_mm",
             "height_mm",
-            "seat_h",
-            "unit_price_thb (indicative sale floor; exact price for 170cm size not isolated)"
+            "unit_price_thb (indicative sale floor; exact price for 170cm size not isolated)",
+            "seat_h (estimate 430mm — ergonomic bench seat height; target overall h 450, vendor depth/height/seat unpublished)"
           ],
           "selected": true
         },
@@ -475,7 +475,8 @@
           "unverified_specs": [
             "depth_mm",
             "height_mm",
-            "upholstery (appears to be bare wood, not upholstered)"
+            "upholstery (appears to be bare wood, not upholstered)",
+            "link (Index category page, not a product SKU — confirm the individual product URL at verification)"
           ],
           "selected": false
         },
@@ -554,7 +555,7 @@
             "dia": null
           },
           "material_finish": "White; particleboard + paper foil body, tempered-glass drawer front, fibreboard components",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 1990,
           "lead_time": "In-stock IKEA TH (Bangkrachao/Bangyai/online); check store stock",
           "source_th": "IKEA Thailand",
@@ -576,7 +577,7 @@
             "dia": null
           },
           "material_finish": "White; fibreboard/particleboard body with acrylic paint, steel legs epoxy/polyester powder-coat",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 2490,
           "lead_time": "In-stock IKEA TH / online",
           "source_th": "IKEA Thailand",
@@ -598,7 +599,7 @@
             "dia": null
           },
           "material_finish": "Oak veneer (off-white or brown-stained), particleboard core",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 2990,
           "lead_time": "IKEA TH stocked line; confirm colour availability",
           "source_th": "IKEA Thailand",
@@ -622,7 +623,7 @@
             "dia": null
           },
           "material_finish": "White melamine/laminate on particleboard (assumed)",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 2170,
           "lead_time": "HomePro / SB / Koncept retail; typically stocked, confirm branch",
           "source_th": "HomePro (also SB Design Square / Koncept)",
@@ -648,7 +649,7 @@
             "dia": null
           },
           "material_finish": "White; particleboard + paper foil, plastic edging, fibreboard drawer bottom",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 990,
           "lead_time": "In-stock IKEA TH / online",
           "source_th": "IKEA Thailand",
@@ -670,7 +671,7 @@
             "dia": null
           },
           "material_finish": "Melamine/laminate on particleboard (unverified)",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 4990,
           "lead_time": "Index Living Mall retail/online; confirm stock",
           "source_th": "Index Living Mall",
@@ -680,7 +681,8 @@
           "unverified_specs": [
             "dimensions_mm depth & height (only W 40cm from category listing)",
             "material_finish",
-            "unit_price_thb (~4,990 from category snippet, unconfirmed)"
+            "unit_price_thb (~4,990 from category snippet, unconfirmed)",
+            "link (Index category page, not a product SKU — confirm the individual product URL at verification)"
           ],
           "selected": false
         }
@@ -706,7 +708,7 @@
             "w": 720,
             "d": 740,
             "h": 830,
-            "seat_h": null,
+            "seat_h": 430,
             "dia": null
           },
           "material_finish": "Upholstered fabric on timber/steel frame (accent armchair)",
@@ -718,9 +720,9 @@
           "notes": "Best footprint match to the 700x700 target (W +3%, D +6%, both inside +/-15%) with a proper tall back (830mm) that supports reading. Trade-off: overall height ~80mm above the 750 target (affects elevation, not plan). Dims/price from SB's own search listing; product page would not fetch, so seat height not confirmed.",
           "verified": false,
           "unverified_specs": [
-            "seat_h",
             "material_finish",
-            "lead_time"
+            "lead_time",
+            "seat_h (estimate 430mm = design-target seat height; SB product page blocks fetch, vendor value unconfirmed)"
           ],
           "selected": true
         },
@@ -957,7 +959,7 @@
           "unverified_specs": [
             "dimensions_mm.d",
             "material_finish",
-            "link"
+            "link (Index category page, not a product SKU — confirm the individual product URL at verification)"
           ],
           "selected": false
         },
@@ -1684,7 +1686,8 @@
           "verified": false,
           "unverified_specs": [
             "seat_h",
-            "lead_time"
+            "lead_time",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": true
         },
@@ -1709,7 +1712,8 @@
           "verified": false,
           "unverified_specs": [
             "seat_h",
-            "lead_time"
+            "lead_time",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": false
         },
@@ -1812,7 +1816,8 @@
           "verified": false,
           "unverified_specs": [
             "seat_h",
-            "lead_time"
+            "lead_time",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": false
         }
@@ -1842,7 +1847,7 @@
             "dia": 700
           },
           "material_finish": "Birch veneer over plywood, clear acrylic lacquer (also sold in black stain); airy round top with open under-shelf storage",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 2190,
           "lead_time": "In stock at IKEA Thailand; store pickup / standard home delivery. Promo 2,190 THB (reg 2,590) valid to 31 Jul 2026",
           "source_th": "IKEA Thailand",
@@ -1863,7 +1868,7 @@
             "dia": 700
           },
           "material_finish": "Marble-pattern top (faux/print, not real stone) on gold-finish metal legs; nesting pair",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 1490,
           "lead_time": "Pre-order, ~30-45 days production; customer self-assembly",
           "source_th": "PROMA (proma.co.th)",
@@ -1884,7 +1889,7 @@
             "dia": 800
           },
           "material_finish": "Natural-color wooden frame with wavy/rippled tempered glass top",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 2190,
           "lead_time": "HomePro retail; typically in stock, confirm branch (promo 2,190 THB from 2,990)",
           "source_th": "HomePro",
@@ -1909,7 +1914,7 @@
             "dia": 900
           },
           "material_finish": "Powder-coated steel frame, painted fibreboard round top; two-tier",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 4290,
           "lead_time": "In stock at IKEA Thailand",
           "source_th": "IKEA Thailand",
@@ -1933,7 +1938,7 @@
             "dia": 450
           },
           "material_finish": "Steel with epoxy/polyester powder coating; lift-off tray top (black / white / dark grey-green / light blue)",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 499,
           "lead_time": "In stock at IKEA Thailand",
           "source_th": "IKEA Thailand",
@@ -1954,7 +1959,7 @@
             "dia": 720
           },
           "material_finish": "Oak plywood top with veneered edge frame, solid oak legs, water-based lacquer",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 27000,
           "lead_time": "Import, ~4-8+ weeks; no confirmed Thai stockist",
           "source_th": "import",
@@ -1988,7 +1993,7 @@
             "w": 740,
             "d": 690,
             "h": 750,
-            "seat_h": null,
+            "seat_h": 430,
             "dia": null
           },
           "material_finish": "Imported velvet, button-tufted back; foam fill; solid-wood curved legs",
@@ -2000,7 +2005,8 @@
           "notes": "Genuine rounded/curved D-back in velvet with button tufting = exactly the requested form. Footprint 740x690x750 within ~6% on every axis (height exact). Seat height not published on page (confirm ~430-450 with vendor). Single 1-seat SKU, so verify 2 in stock. Strong value at 3,990 THB each.",
           "verified": false,
           "unverified_specs": [
-            "seat_h"
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)",
+            "seat_h (estimate 430mm = design-target seat height; not published on page, confirm ~430-450 with vendor)"
           ],
           "selected": true
         },
@@ -2049,7 +2055,8 @@
             "unit_price_thb",
             "seat_h",
             "back_shape",
-            "dimensions"
+            "dimensions",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": false
         },
@@ -2073,7 +2080,8 @@
           "notes": "Cheapest option (1,990 THB) with W/D/H and price verified off the product page. BUT 580x540x795 is ~17% under target width and tall-and-narrow in proportion — reads small and upright, not a rounded accent chair. Slim steel legs. Budget/backup only; would look undersized as a pair against the drawing.",
           "verified": false,
           "unverified_specs": [
-            "seat_h"
+            "seat_h",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": false
         },
@@ -2290,7 +2298,8 @@
           "notes": "Solid Thai high-street value. Width 214 (+12%) is within tolerance; depth 860 (-9%) is a bit shallow for a deep media sofa; back height 920 is tall (+15%). Batch tolerance +/-25mm stated. Good budget-mid pick if the deep-lounge geometry is relaxed. Seat height not published.",
           "verified": false,
           "unverified_specs": [
-            "seat_h"
+            "seat_h",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": false
         },
@@ -2314,7 +2323,8 @@
           "notes": "Cheapest genuine option. Width 201 (+6%) is fine, but depth 820 (-14%, borderline) and plastic legs mean it is a budget upright sofa, not a deep media lounger. Tall back (920). Seat height not published.",
           "verified": false,
           "unverified_specs": [
-            "seat_h"
+            "seat_h",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": false
         },
@@ -2340,7 +2350,8 @@
           "unverified_specs": [
             "unit_price_thb",
             "dimensions (from listing snippet, not product page)",
-            "seat_h"
+            "seat_h",
+            "link (Index category page, not a product SKU — confirm the individual product URL at verification)"
           ],
           "selected": false
         },
@@ -2398,7 +2409,7 @@
             "seat_h": null
           },
           "material_finish": "Sintered/synthetic-stone look top on MDF frame; White/Black",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 5990,
           "lead_time": "Typically in stock; Index delivery ~7-21 days",
           "source_th": "Index Living Mall",
@@ -2425,7 +2436,7 @@
             "seat_h": null
           },
           "material_finish": "Solid pine frame with rubberwood veneer top, Tawny finish",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": null,
           "lead_time": "Import - long lead (order via West Elm US/regional; weeks-months + shipping & duty)",
           "source_th": "import",
@@ -2452,7 +2463,7 @@
             "seat_h": null
           },
           "material_finish": "Solid reclaimed pine, natural finish",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": null,
           "lead_time": "Import - long lead (US/regional order + shipping & duty)",
           "source_th": "import",
@@ -2479,7 +2490,7 @@
             "seat_h": null
           },
           "material_finish": "Solid teak (ไม้สัก), kiln-dried, natural/oil finish",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": null,
           "lead_time": "Made-to-order - several weeks",
           "source_th": "Taweesak Furniture (also MB Teakwood / Kanyavee Furniture)",
@@ -2506,7 +2517,7 @@
             "seat_h": null
           },
           "material_finish": "Rubberwood + MDF veneer, tempered glass top, Warm Oak",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 9890,
           "lead_time": "Typically in stock; Index delivery ~7-21 days",
           "source_th": "Index Living Mall",
@@ -2541,7 +2552,7 @@
             "w": 780,
             "d": 760,
             "h": 720,
-            "seat_h": null,
+            "seat_h": 430,
             "dia": null
           },
           "material_finish": "Imported PU synthetic leather over solid-wood frame, foam padding",
@@ -2553,9 +2564,10 @@
           "notes": "Best footprint match to target: 780x760x720 is within ~4% of 750x750 on all axes, so it holds the dimensioned drawing cleanly. PU (synthetic) leather, not genuine hide — can crack/peel over years in Thai heat/humidity, a real durability trade-off for a daily-use pair. Seat height not published (typical PU armchair ~420-450mm). Cheaper than the fabric alternatives.",
           "verified": false,
           "unverified_specs": [
-            "seat_h",
             "lead_time",
-            "unit_price_thb"
+            "unit_price_thb",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)",
+            "seat_h (estimate 430mm = design-target seat height; not published, typical PU armchair 420-450)"
           ],
           "selected": true
         },
@@ -2648,7 +2660,8 @@
           "notes": "Oversized for this slot — 920x1100mm footprint (depth +47%) is a large swivel lounge chair, not a ~750 cube; it will break the dimensioned drawing if placed as a tight sofa-flanking pair. Verified dims/price. Listed only for completeness / if the layout can absorb a bigger statement chair. 90kg rated, rotating base.",
           "verified": false,
           "unverified_specs": [
-            "seat_h"
+            "seat_h",
+            "link (Index product slug — constructed/unconfirmed; verify the real product URL + live SKU at verification)"
           ],
           "selected": false
         },
@@ -2707,7 +2720,7 @@
             "seat_h": null
           },
           "material_finish": "Ash-veneer/painted round top on powder-coated steel frame with lower shelf; white (also black, grey-green)",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 790,
           "lead_time": "In stock IKEA Thailand (store + online); parcel delivery ~99 THB, typically a few days",
           "source_th": "IKEA Thailand",
@@ -2731,7 +2744,7 @@
             "seat_h": null
           },
           "material_finish": "Particleboard + 100% recycled-paper honeycomb core, fibreboard, acrylic paint; white (square)",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 169,
           "lead_time": "In stock IKEA Thailand (store + online)",
           "source_th": "IKEA Thailand",
@@ -2755,7 +2768,7 @@
             "seat_h": null
           },
           "material_finish": "Round marble top (white or grey marble) + powder-coated metal frame, two-tier with lower shelf",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 690,
           "lead_time": "Pre-order, 30-45 day production lead + self-assembly (stated on product page)",
           "source_th": "Proma (proma.co.th)",
@@ -2777,7 +2790,7 @@
             "seat_h": null
           },
           "material_finish": "Two-tone natural wood-effect top + black metal frame",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 1490,
           "lead_time": "Index Living Mall stock (store + online), typically a few days to ~2 weeks",
           "source_th": "Index Living Mall",
@@ -2786,7 +2799,8 @@
           "verified": false,
           "unverified_specs": [
             "material_finish (exact material inferred)",
-            "dimensions_mm (from category listing, product page not fetched)"
+            "dimensions_mm (from category listing, product page not fetched)",
+            "link (Index category page, not a product SKU — confirm the individual product URL at verification)"
           ],
           "selected": false
         },
@@ -2802,7 +2816,7 @@
             "seat_h": null
           },
           "material_finish": "Powder-coated steel, removable round tray top; light blue (also black/white/dark grey)",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": 499,
           "lead_time": "In stock IKEA Thailand (store + online)",
           "source_th": "IKEA Thailand",
@@ -2826,7 +2840,7 @@
             "seat_h": null
           },
           "material_finish": "Powder-coated steel, round tops; black or white",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": null,
           "lead_time": "IKEA Thailand (verify TH stock; article live on ikea.com/th)",
           "source_th": "IKEA Thailand",
@@ -2851,7 +2865,7 @@
             "seat_h": null
           },
           "material_finish": "Round marble / marble-effect top + metal frame, brown-natural (BN)",
-          "csi": "12 54 00",
+          "csi": "12 58 00",
           "unit_price_thb": null,
           "lead_time": "Index Living Mall (verify TH availability)",
           "source_th": "Index Living Mall",
