@@ -32,6 +32,8 @@ import placement_logic as PL
 import suite_clearance as SC
 import ergonomics_ref as ergo
 import material_defaults as matdef
+import activity_taxonomy as AT
+import persona as PER          # persona-driven PRESENCE axis (optional; None-safe)
 
 
 def _repo_root():
@@ -52,6 +54,10 @@ C_TABLE = ("Panero table-height norm — "
 C_MAT = ("pipeline/scripts/material_defaults.py + build_room.py _suite_materials — HARDCODED studio "
          "render default, keyed by kind→name-prefix; tuned by past A/B render gates, NOT by this spec "
          "or a client concept")
+C_PERSONA = ("persona.py coverage (activity_taxonomy) — element traced to a client activity the "
+             "persona STATES; cited to the persona's own line")
+C_ACTIVITY = ("activity_taxonomy.py — element serves a BASELINE dwelling activity (a home needs it "
+              "regardless of stated lifestyle)")
 
 
 # ----------------------------------------------------------------- why-axis helper
@@ -59,7 +65,13 @@ def _axis(text, cite, grounded):
     return {"text": text, "cite": cite, "grounded": grounded}
 
 
-_REAL = {"function", "clearance", "code", "ergonomic", "concept"}   # a real design source
+_REAL = {"function", "clearance", "code", "ergonomic", "concept",
+         "persona", "activity"}   # a real design source (persona/activity = presence grounded to a client need)
+
+# Active persona presence-context (set by report() for the duration of one report; None =
+# no persona -> the presence axis behaves exactly as before). Module-scoped so the per-axis
+# helpers stay signature-compatible; report() sets it under try/finally, never leaks.
+_PCTX = None
 
 
 def _rollup(*axes):
@@ -100,6 +112,35 @@ def _fmt_rows(rows, cap=2):
 
 
 # ----------------------------------------------------------------- per-axis logic
+def _persona_presence(el):
+    """Persona-grounded PRESENCE (only reached when a persona pctx is active). Upgrades
+    'declared in spec' to 'serves activity X (the client does Y)'. Returns an axis or None
+    (None = fall through to the honest spec fallback, e.g. an ambiguous element). Never
+    throws — a persona-layer hiccup must not break rationale."""
+    try:
+        ea = AT.element_activities(el)
+        acts = ea["activities"]
+        if not acts:
+            return None                        # ambiguous -> undetermined; spec fallback stays honest
+        lifestyle = _PCTX.get("lifestyle", {}) if _PCTX else {}
+        hit = [a for a in acts if a in lifestyle]
+        if hit:
+            srcs = "; ".join(lifestyle[a] for a in hit)
+            return _axis(f"serves {', '.join(hit)} — the client {srcs} "
+                         f"(persona {_PCTX.get('persona_id', 'persona')}; activity via {ea['source']}).",
+                         C_PERSONA, "persona")
+        base = [a for a in acts if a in AT.BASELINE_ACTIVITIES]
+        if base:
+            return _axis(f"serves the baseline dwelling need '{base[0]}' — a home requires it "
+                         f"regardless of stated lifestyle (activity via {ea['source']}).",
+                         C_ACTIVITY, "activity")
+        return _axis(f"serves {acts} but the persona never states that activity — POSSIBLE ORPHAN "
+                     f"(why is this here? cut it or justify it).",
+                     "persona coverage (orphan — flagged, NOT grounded)", "spec")
+    except Exception:
+        return None
+
+
 def _presence_axis(el, group, note):
     kind = el.get("kind", "") or ""
     # statutory-implied presence (WC/basin make the room a bathroom -> mr39 governs)
@@ -107,6 +148,12 @@ def _presence_axis(el, group, note):
         return _axis(f"a {kind} is a required sanitary fixture; its presence makes the room a "
                      f"bathroom governed by ฉ.39 (area / ventilation / lux).",
                      "ฉ.39 — knowledge/codes-th/mr39-fire-sanitation-ventilation.md", "code")
+    # persona-grounded presence — the element traces to a client activity (only when a
+    # persona is active; None-safe, so this is a no-op for the default persona-less path)
+    if _PCTX is not None:
+        pax = _persona_presence(el)
+        if pax is not None:
+            return pax
     # spec author's note documents a real decision about this element (PROSE, not a rule)
     key = kind.split("_")[0]
     if note and key and key.lower() in note.lower():
@@ -176,7 +223,8 @@ def _material_axis(el, group):
     # HONESTY: today the spec carries NO material field and build_room ignores the spec
     # anyway (material_defaults describes exactly what it renders). If a future spec grows
     # a cite-resolving material field, read it here and ground it to 'concept'.
-    rat = el.get("rationale") or {}
+    rat = el.get("rationale")
+    rat = rat if isinstance(rat, dict) else {}   # a non-dict rationale (prose/list) must degrade, not crash
     mat = rat.get("material")
     cite = (rat.get("cite") or {}).get("material") if isinstance(rat.get("cite"), dict) else None
     if mat and cite and _cite_resolves(cite):
@@ -231,9 +279,24 @@ def _tag(group, i):
     return {"builtins": f"BI-{i + 1:02d}", "items": "FF&E", "fixtures": "FIX"}[group]
 
 
-def report(spec):
+def report(spec, persona=None):
     """-> {"elements":[record...], "room":[clearance rows], "summary":{...}}.
-    Never throws: any sub-failure degrades that axis to an honest 'spec/default'."""
+    Never throws: any sub-failure degrades that axis to an honest 'spec/default'.
+    When `persona` is given, an element's PRESENCE 'why' upgrades from 'declared in spec'
+    to 'serves activity X (the client does Y)' — grounded to the persona's own words."""
+    global _PCTX
+    _prev = _PCTX
+    try:
+        _PCTX = PER.presence_context(persona) if persona is not None else None
+    except Exception:
+        _PCTX = None
+    try:
+        return _report_body(spec)
+    finally:
+        _PCTX = _prev
+
+
+def _report_body(spec):
     note = spec.get("note", "") or ""
     cmap = _clearance_index(spec)
     try:
@@ -244,6 +307,8 @@ def report(spec):
     records = []
 
     def emit(el, group, i):
+        if not isinstance(el, dict):
+            return                              # a junk (non-dict) element degrades out, never crashes
         kind = el.get("kind", "?")
         presence = _presence_axis(el, group, note)
         placement = _placement_axis(el, group, kind, fmap, cmap)
@@ -260,12 +325,14 @@ def report(spec):
             "grounded": _rollup(presence, placement, dimension, material),
         })
 
-    for i, b in enumerate(spec.get("builtins", [])):
+    for i, b in enumerate(spec.get("builtins") or []):
         emit(b, "builtins", i)
-    for i, it in enumerate(spec.get("items", [])):
+    for i, it in enumerate(spec.get("items") or []):
         emit(it, "items", i)
-    for sr in spec.get("subrooms", []):
-        for i, fx in enumerate(sr.get("fixtures", [])):
+    for sr in spec.get("subrooms") or []:
+        if not isinstance(sr, dict):
+            continue
+        for i, fx in enumerate(sr.get("fixtures") or []):
             emit(fx, "fixtures", i)
 
     summary = {"true": 0, "partial": 0, "default": 0}
@@ -274,8 +341,8 @@ def report(spec):
     return {"elements": records, "room": cmap["room"], "summary": summary}
 
 
-def to_markdown(spec, name=""):
-    rep = report(spec)
+def to_markdown(spec, name="", persona=None):
+    rep = report(spec, persona)
     s = rep["summary"]
     L = [f"# DESIGN RATIONALE — {name or spec.get('room', {}).get('type', 'room')}",
          "",

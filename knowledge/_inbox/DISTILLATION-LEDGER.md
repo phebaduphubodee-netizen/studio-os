@@ -109,3 +109,20 @@ yet promoted.
 4. **Promote the remaining domain values** the audit isolated: lumen method +
    fixture spacing → `lighting/`; per-material BSDF presets + watt/Kelvin
    tables → `materials/`; `process.md` phase-effort → `classifications/`.
+
+## 5. nlm-programming (2026-07-04) — DISTILLED this session
+New stash from the persona-driven-design-layer work (this session, 2026-07-04):
+| file | status | note |
+|---|---|---|
+| `nlm-programming-2026-07-04.md` + `-qa-history.json` | **DISTILLED** | NLM DR notebook `053ff5e6` (241 sources), single-shot turn 1 (no `--iterate` drift). Promoted successor: `knowledge/programming/architectural-programming-and-activity-taxonomy.md` (new `programming/` dir). |
+| `nlm-persona-poe-2026-07-04.md` + `-qa-history.json` | **DISTILLED** | NLM DR notebook `e0eab101` (247 sources), single-shot turn 1. Promoted successor: `knowledge/programming/persona-ucd-two-way-coverage-and-poe.md`. Independently names the "Two-Way Coverage Check" + "Gaps"/"Orphans" — validates the built layer as established method. |
+
+- **Consumed by:** `pipeline/scripts/activity_taxonomy.py` (`ACTIVITIES` 12-activity set +
+  `KIND_ACTIVITY`) and `persona.py` (the persona-coverage layer). REFERENCE tier — the layer
+  it feeds is ADVISORY (verdict REVIEW, never gates a deliverable), so REFERENCE grounding is
+  sufficient by doctrine.
+- **Marker note:** `[n]` unresolved (CLI exposes no answer→title map); provenance carried at
+  the AUTHORITY level (NCIDQ/IDFX, Karlen & Fleming, Peña & Parshall, Neufert, NKBA, Space
+  Syntax — all named in the answer).
+- **Pending:** DR#2 (persona methods + POE, notebook fired 2026-07-04) → will stage as
+  `nlm-persona-poe-2026-07-04.md`, strengthening the gap/orphan grounding.
