@@ -215,7 +215,17 @@ def solve_eye_camera(spec, outline_m=None):
         ray_blocks.append(bb)
     for b in spec.get("builtins", []):
         stand_blocks.append(_box_m(b))
-        if float(b.get("h", 0)) * MM >= RAY_BLOCK_MIN_H_M:     # coupled to eye height
+        # Z-AWARE ray block: a built-in occludes the LEVEL eye ray iff its rendered box
+        # actually SPANS lens height. build_room floats built-ins from z=mount_mm to
+        # z=mount_mm+h, so `h` alone is NOT the top-of-box once mount_mm is set — a wall TV
+        # (h 800, mount 900) spans 900–1700 mm and DOES cross a 1.15 m lens even though
+        # h < the 1.20 m threshold, while a built-in floated wholly above eye level does
+        # NOT block. Keeps the RAY_BLOCK_MIN_H_M margin coupling; reduces to `h >= threshold`
+        # for a floor-standing built-in (mount 0). (Coupling bug re-opened by the mount_mm
+        # change, caught by scrutiny 2026-07-04 — see the module docstring invariant.)
+        base = float(b.get("mount_mm", 0) or 0) * MM
+        top = base + float(b.get("h", 0) or 0) * MM
+        if base <= EYE_CAM_HEIGHT_M and top >= RAY_BLOCK_MIN_H_M:
             ray_blocks.append(_box_m(b))
     for it in spec.get("items", []):
         if it.get("kind") != "rug" and float(it.get("h", 400)) * MM >= _STAND_BLOCK_MIN_H_M:

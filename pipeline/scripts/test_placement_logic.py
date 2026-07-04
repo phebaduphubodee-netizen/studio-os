@@ -200,7 +200,12 @@ def test_real_living_condo_tv_now_positioned():
     assert _s(rep, "tv_faces_viewer") == P.PASS
     assert _s(rep, "tv_not_over_viewer") == P.PASS
     assert _s(rep, "tv_viewing_distance") == P.PASS
-    assert rep["status"] == P.PASS
+    # NOTE 2026-07-04: overall is now REVIEW, not PASS — the new seating_clear_of_screen rule
+    # correctly flags living_condo's reading armchair sitting in front of the TV (the designer's
+    # GS-03 "เก้าอี้อยู่ใต้ทีวี / TV อยู่หลังคนนั่ง" comment). The TV rules above still PASS; the armchair
+    # is a real defect (living_condo is slated for retirement in favour of the Floor-1 derivation).
+    assert _s(rep, "seating_clear_of_screen") == P.WARN
+    assert rep["status"] == P.WARN                     # check() reports raw WARN (report() maps it to REVIEW)
 
 
 # ---- furniture dimensions vs ergonomic norms (GS-02/06; ergonomics_ref / NLM DR) ----
@@ -351,6 +356,60 @@ def test_real_living_condo_seating_passes():
     assert _s(P.check(spec), "seating_faces_focal") == P.PASS   # sofa->table/TV, armchair->table
 
 
+# ---- seating clear of the screen (GS-03; designer 2026-07-04 "เก้าอี้อยู่ใต้ทีวี") ----
+def _sofa(x=2000, y=1000):
+    return {"name": "sofa", "kind": "sofa", "x": x, "y": y, "w": 2000, "d": 900, "h": 850, "rot": 180}
+
+
+def _wall_tv(x=2300, y=5000):
+    return {"name": "tv", "kind": "tv_panel", "x": x, "y": y, "w": 1400, "d": 50, "h": 800, "mount_mm": 900}
+
+
+def test_seat_in_front_of_tv_warns():
+    # armchair sits in the sofa→TV corridor -> WARN (the TV would be behind whoever sits there)
+    chair = {"name": "arm", "kind": "armchair", "x": 2500, "y": 3500, "w": 800, "d": 800, "h": 750, "rot": 0}
+    spec = _living_seats(_sofa(), chair, tv=_wall_tv())
+    assert _s(P.check(spec), "seating_clear_of_screen") == P.WARN
+
+
+def test_seat_beside_tv_passes():
+    # armchair well to the side of the sightline (lateral > screen band) -> PASS
+    chair = {"name": "arm", "kind": "armchair", "x": 5000, "y": 3500, "w": 800, "d": 800, "h": 750, "rot": 0}
+    spec = _living_seats(_sofa(), chair, tv=_wall_tv())
+    assert _s(P.check(spec), "seating_clear_of_screen") == P.PASS
+
+
+def test_seat_beside_screen_within_old_band_passes():
+    # a chair 1.3 m to the SIDE: the old full-screen-width band flagged it; the narrowed
+    # screen_half+seat_half (~1.1 m) does not — it provably can't sit under the screen
+    # (scrutiny 2026-07-04, GS-26 angled-chair false-fire).
+    chair = {"name": "arm", "kind": "armchair", "x": 3900, "y": 3500, "w": 800, "d": 800, "h": 750, "rot": 0}
+    spec = _living_seats(_sofa(), chair, tv=_wall_tv())
+    assert _s(P.check(spec), "seating_clear_of_screen") == P.PASS
+
+
+def test_seat_just_in_front_of_viewer_warns():
+    # a seat close to the sofa but dead in the sightline (t ≈ 0.18*axlen): the old 0.25*axlen
+    # near bound MISSED it -> now WARNs (scrutiny 2026-07-04 false-miss).
+    chair = {"name": "arm", "kind": "armchair", "x": 2600, "y": 1700, "w": 800, "d": 800, "h": 750, "rot": 0}
+    spec = _living_seats(_sofa(), chair, tv=_wall_tv())
+    assert _s(P.check(spec), "seating_clear_of_screen") == P.WARN
+
+
+def test_seat_rule_none_without_tv():
+    chair = {"name": "arm", "kind": "armchair", "x": 2500, "y": 3500, "w": 800, "d": 800, "h": 750, "rot": 0}
+    assert _s(P.check(_living_seats(_sofa(), chair)), "seating_clear_of_screen") is None
+
+
+def test_seat_rule_none_without_secondary_seat():
+    assert _s(P.check(_living_seats(_sofa(), tv=_wall_tv())), "seating_clear_of_screen") is None
+
+
+def test_real_living_condo_armchair_flagged_under_tv():
+    # the exact defect the designer circled: the reading armchair sits in front of the TV
+    assert _s(P.check(_spec("living_condo.json")), "seating_clear_of_screen") == P.WARN
+
+
 # ---- kitchen work-triangle (NKBA; ergonomics_ref / NLM DR f61fded1) ----
 def _kitchen(*appliances, room=(3000, 3000)):
     W, D = room
@@ -432,6 +491,54 @@ def test_real_kitchen_demo_triangle_passes():
     rep = P.check(spec)
     assert _s(rep, "kitchen_work_triangle") == P.PASS
     assert rep["status"] == P.PASS
+
+
+# ---- TV wall-mount height (designer 2026-07-04: "ทำไมเอา TV ไปติดไว้ที่พื้น?") ----
+def _tv_panel(mount=None, h=800, x=2000, y=0):
+    b = {"name": "wall tv", "kind": "tv_panel", "x": x, "y": y, "w": 1400, "d": 50, "h": h, "rot": 180}
+    if mount is not None:
+        b["mount_mm"] = mount
+    return b
+
+
+def test_tv_mount_height_pass_when_mounted():
+    spec = _bedroom_with(builtins=(_tv_panel(mount=650),))
+    assert _s(P.check(spec), "tv_mount_height") == P.PASS
+
+
+def test_tv_mount_height_warns_without_mount():
+    # a wall tv_panel with no mount_mm renders as a floor block -> WARN (the designer's flag)
+    spec = _bedroom_with(builtins=(_tv_panel(mount=None),))
+    f = next(x for x in P.check(spec)["findings"] if x["rule"] == "tv_mount_height")
+    assert f["status"] == P.WARN and "floor-standing" in f["detail"], f
+
+
+def test_tv_mount_height_warns_above_ceiling():
+    # mount 2200 + h 800 = 3000 mm > 2800 ceiling -> WARN
+    spec = _bedroom_with(builtins=(_tv_panel(mount=2200),))
+    f = next(x for x in P.check(spec)["findings"] if x["rule"] == "tv_mount_height")
+    assert f["status"] == P.WARN and "ceiling" in f["detail"], f
+
+
+def test_tv_mount_height_none_for_generic_tv_or_console():
+    # a generic 'tv' item (ambiguous) and a tv_console (sits on a unit) are exempt -> None
+    assert _s(P.check(_bedroom(_tv())), "tv_mount_height") is None
+    console = {"name": "console tv", "kind": "tv_console", "x": 2000, "y": 0, "w": 1400, "d": 400, "h": 600}
+    assert _s(P.check(_bedroom_with(builtins=(console,))), "tv_mount_height") is None
+
+
+def test_tv_mount_height_warns_for_builtin_tv():
+    # a wall TV authored as a BUILTIN kind 'tv' (not tv_panel) with no mount also floor-blocks
+    # -> WARN (scrutiny 2026-07-04: the rule's own comment says tv_panel/tv). A loose 'tv' item
+    # stays exempt (test_tv_mount_height_none_for_generic_tv_or_console pins that).
+    tv = {"name": "wall tv", "kind": "tv", "x": 2000, "y": 0, "w": 1400, "d": 50, "h": 800}
+    f = next(x for x in P.check(_bedroom_with(builtins=(tv,)))["findings"] if x["rule"] == "tv_mount_height")
+    assert f["status"] == P.WARN and "floor-standing" in f["detail"], f
+
+
+def test_real_specs_tv_now_mounted():
+    for name in ("bedroom_suite.json", "living_condo.json"):
+        assert _s(P.check(_spec(name)), "tv_mount_height") == P.PASS, name
 
 
 # ---- camera has a reason (GS-04/05/22; shares camera_config.solve_eye_camera with build_room) ----
@@ -618,11 +725,17 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_seating_perpendicular_focal_warns,
          test_two_seats_facing_each_other_pass, test_seating_rule_skips_without_seats,
          test_real_living_condo_seating_passes,
+         test_seat_in_front_of_tv_warns, test_seat_beside_tv_passes, test_seat_rule_none_without_tv,
+         test_seat_beside_screen_within_old_band_passes, test_seat_just_in_front_of_viewer_warns,
+         test_seat_rule_none_without_secondary_seat, test_real_living_condo_armchair_flagged_under_tv,
          test_kitchen_good_triangle_passes, test_kitchen_leg_too_far_warns,
          test_kitchen_single_long_leg_warns,
          test_kitchen_leg_too_tight_warns, test_kitchen_perimeter_too_large_warns,
          test_kitchen_rule_skips_without_full_triangle, test_kitchen_rule_skips_non_kitchen_rooms,
          test_bath_sink_in_subroom_is_not_a_kitchen_sink, test_real_kitchen_demo_triangle_passes,
+         test_tv_mount_height_pass_when_mounted, test_tv_mount_height_warns_without_mount,
+         test_tv_mount_height_warns_above_ceiling, test_tv_mount_height_none_for_generic_tv_or_console,
+         test_tv_mount_height_warns_for_builtin_tv, test_real_specs_tv_now_mounted,
          test_camera_reason_passes_real_specs, test_camera_reason_warns_when_no_shot_exists,
          test_camera_reason_never_fails_a_deliverable, test_camera_reason_none_for_inch_spec,
          test_camera_reason_warns_on_dead_wall_frame, test_camera_reason_none_without_a_framable_subject,

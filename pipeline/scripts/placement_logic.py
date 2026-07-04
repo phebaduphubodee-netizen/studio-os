@@ -32,6 +32,9 @@ PASS, WARN, FAIL, UNWIRED = "PASS", "WARN", "FAIL", "UNWIRED"
 
 TV_STANDALONE_KINDS = {"tv", "tv_console", "tv_panel"}   # a real, positioned TV
 TV_FUSED_KINDS = {"headboard_tv", "tv_feature"}          # TV fused into a wall/headboard
+TV_WALL_MOUNT_KINDS = {"tv_panel"}                       # explicitly wall-hung (needs a mount height). A generic
+                                                         # "tv" is ambiguous (could be a console) and a "tv_console"
+                                                         # sits on a unit — neither is faulted for a missing mount.
 _TV_NAME_RE = re.compile(r"\b(tv|television)\b|ทีวี", re.IGNORECASE)
 
 BED_KINDS = {"bed"}
@@ -420,6 +423,83 @@ def _rule_kitchen_work_triangle(spec, ctx):
             f"work triangle within norm (legs {legs_str} mm, perimeter {perim:.0f} ≤ {K_PERIM_MAX})")
 
 
+def _rule_seating_clear_of_screen(spec, ctx):
+    # Designer 2026-07-04 (GS-03): an armchair placed BETWEEN the main seat and the TV, or
+    # under the screen — "เก้าอี้ยังตั้งอยู่ใต้ทีวี", "TV มันอยู่ข้างหลังคนนั่ง เค้าจะดูยังไง?".
+    # `seating_faces_focal` only judges a seat's ORIENTATION (and skips no-rot seats); this is
+    # the missing POSITION check. Deterministic + orientation-free: flag a SECONDARY lounge
+    # seat whose centre falls in the primary-viewer→TV corridor (past the viewer, before the
+    # TV, within ~the screen's width of the sightline). Advisory WARN — a seat angled toward
+    # the sofa CAN legitimately sit near the TV wall (GS-26), so this flags for the human eye,
+    # it does not hard-decide. None when there is no viewer/TV or no secondary seat to judge.
+    viewer, tv = ctx.get("viewer"), ctx.get("tv")
+    if viewer is None or tv is None:
+        return None
+    seats = [s for s in (spec.get("items") or [])
+             if s.get("kind") in SEATING_KINDS and s is not viewer]
+    if not seats:
+        return None
+    vc, tc = _center(viewer), _center(tv)
+    ax, ay = tc[0] - vc[0], tc[1] - vc[1]
+    axlen = math.hypot(ax, ay)
+    if axlen < 1e-6:
+        return None
+    ux, uy = ax / axlen, ay / axlen
+    screen_half = max(float(tv.get("w", 0) or 0), float(tv.get("d", 0) or 0)) / 2.0
+    flagged = []
+    for s in seats:
+        sc = _center(s)
+        t = (sc[0] - vc[0]) * ux + (sc[1] - vc[1]) * uy          # along viewer→TV
+        lat = abs(-(sc[0] - vc[0]) * uy + (sc[1] - vc[1]) * ux)  # perpendicular offset
+        seat_half = max(float(s.get("w", 0) or 0), float(s.get("d", 0) or 0)) / 2.0
+        # in the sightline iff the seat is past the viewer, before the TV, AND its footprint
+        # laterally OVERLAPS the screen (screen_half + seat_half) — a seat well to the side
+        # provably can't sit under/in front of the screen (GS-26 angled chair, no false WARN).
+        # The 0.05*axlen near bound only excludes a seat coincident with the viewer itself.
+        if 0.05 * axlen < t < 0.98 * axlen and lat < screen_half + seat_half:
+            flagged.append(s.get("name") or s.get("kind"))
+    if flagged:
+        return ("seating_clear_of_screen", WARN,
+                f"{', '.join(flagged)} sit(s) between the main seat and the TV / in front of the screen "
+                f"— verify the sightline (the TV must not end up behind whoever sits there; GS-03)")
+    return ("seating_clear_of_screen", PASS, "no lounge seat sits in the viewer→TV sightline")
+
+
+def _rule_tv_mount_height(spec, ctx):
+    # Designer 2026-07-04: "ทำไมเอา TV ไปติดไว้ที่พื้น?" — a WALL TV rendered as a floor block.
+    # build_room extrudes built-ins from the floor (z=0) unless the spec gives a mount height
+    # (mount_mm = base AFF); a wall-hung TV (tv_panel/tv) therefore needs mount_mm so the
+    # control mass floats on the wall and the paid render paints a mounted screen (not a slab
+    # on the floor). A tv_console (TV on a media unit) is floor-adjacent by design → exempt.
+    # WARN, never FAIL: it's a render-fidelity fix, and mount_mm is a young field many specs
+    # won't carry yet (a missing mount is a flag to set it, not a reason to block deliverables).
+    tv = ctx.get("tv")
+    if tv is None:
+        return None
+    kind = tv.get("kind")
+    # a wall-hung panel (tv_panel) always needs a mount; a generic 'tv' only when authored as
+    # a BUILT-IN — build_room floats built-ins from z=mount_mm, and a builtin TV is architectural
+    # millwork (never a loose console), so an un-mounted one renders as a floor slab. A LOOSE
+    # 'tv' (ambiguous) and any 'tv_console' (sits on a unit) stay exempt. (scrutiny 2026-07-04)
+    is_wall = (kind in TV_WALL_MOUNT_KINDS
+               or (kind == "tv" and any(tv is b for b in (spec.get("builtins") or []))))
+    if not is_wall:
+        return None
+    nm = tv.get("name") or tv.get("kind")
+    mount = float(tv.get("mount_mm", 0) or 0)
+    h = float(tv.get("h", 0) or 0)
+    if mount < 300:
+        return ("tv_mount_height", WARN,
+                f"wall TV '{nm}' has no mount height (mount_mm={mount:.0f}) — it renders as a "
+                f"floor-standing block; set mount_mm (AFF base, ~600–1100 mm for a screen)")
+    ceil = float((spec.get("room") or {}).get("ceiling_mm", 2800) or 2800)
+    if mount + h > ceil:
+        return ("tv_mount_height", WARN,
+                f"wall TV '{nm}' top {mount + h:.0f} mm exceeds ceiling {ceil:.0f} mm — lower mount_mm")
+    return ("tv_mount_height", PASS,
+            f"wall TV mounted at {mount:.0f} mm AFF (base), top {mount + h:.0f} mm — floats on the wall")
+
+
 CAMERA_MIN_SUBJECT_SHARE = 0.15   # WARN when the framed FOV is >85% bare wall / void
 
 
@@ -475,8 +555,8 @@ def _rule_camera_has_a_reason(spec, ctx):
 
 RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
          _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions,
-         _rule_bathroom_logic, _rule_seating_faces_focal, _rule_kitchen_work_triangle,
-         _rule_camera_has_a_reason]
+         _rule_bathroom_logic, _rule_seating_faces_focal, _rule_seating_clear_of_screen,
+         _rule_kitchen_work_triangle, _rule_tv_mount_height, _rule_camera_has_a_reason]
 
 
 def _worst(statuses):

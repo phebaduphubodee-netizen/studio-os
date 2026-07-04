@@ -211,6 +211,27 @@ def test_frame_fov_matches_36mm_horizontal_sensor():
         assert abs(hfov - expect_deg) < 0.6, (lens, hfov)
 
 
+def test_ray_block_is_mount_aware():
+    # PROVE the ray-block reads mount_mm, not just h (scrutiny 2026-07-04: build_room now floats
+    # built-ins from z=mount_mm, so a wall panel h=800 mount=900 spans 900–1700 mm and DOES cross
+    # a 1.15 m lens). A/B on a room split by a full-width mid partition, subject in the thin north
+    # strip: a FLOATED partition (spans the lens) occludes every south sightline -> no shot; the
+    # SAME partition on the FLOOR (0–800 mm, below the lens) does not -> a shot exists.
+    def room(mount):
+        return {"room": {"outline_mm": [[0, 0], [4000, 0], [4000, 2500], [0, 2500]]},
+                "builtins": [{"kind": "partition", "name": "panel", "x": 0, "y": 2000,
+                              "w": 4000, "d": 50, "h": 800, "mount_mm": mount}],
+                "items": [{"kind": "stool", "name": "target", "x": 1800, "y": 2250,
+                           "w": 400, "d": 200, "h": 450}]}
+    try:
+        C.solve_eye_camera(room(900))       # floated across the lens -> occludes the only sightline
+        assert False, "expected EyeCameraError (floated panel spans eye level and blocks the ray)"
+    except C.EyeCameraError:
+        pass
+    sol = C.solve_eye_camera(room(0))       # on the floor, below the lens -> transparent to the ray
+    assert sol["standoff_m"] > 0.5, sol
+
+
 def test_subject_share_low_for_a_dead_wall_frame():
     # a big empty room with a lone tiny stool in a corner: the far standing spot frames
     # almost all bare wall -> low subject share (the dead-wall signal the WARN path uses)
@@ -229,7 +250,7 @@ TESTS = [test_default_height_in_designer_band, test_ray_threshold_is_coupled_to_
          test_eye_aim_missing_bbox_raises, test_eye_aim_null_kind_not_matched_as_none_string,
          test_solve_production_specs_pinned, test_solve_no_loose_item_raises,
          test_solve_packed_room_raises_no_clear_spot, test_solve_bad_eye_aim_raises,
-         test_frame_fov_matches_36mm_horizontal_sensor,
+         test_frame_fov_matches_36mm_horizontal_sensor, test_ray_block_is_mount_aware,
          test_subject_share_high_for_a_real_hero_shot, test_subject_share_low_for_a_dead_wall_frame]
 
 

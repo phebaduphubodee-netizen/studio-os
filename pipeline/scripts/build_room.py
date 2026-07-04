@@ -1381,8 +1381,14 @@ def build_suite(spec, label="suite"):
 
     for b in spec.get("builtins", []):
         bh = float(b["h"]) * MM if b.get("h") else h
+        # mount_mm = height above the floor the element's BASE sits (AFF). Default 0 =
+        # floor-standing (wardrobes/cabinets/full-height millwork). A WALL-MOUNTED element
+        # (TV panel, floating shelf) sets it so the control mass FLOATS on the wall instead
+        # of a floor block — the designer's "ทำไมเอา TV ไปติดไว้ที่พื้น?" fix (built-ins used to
+        # always extrude from z=0, so a wall TV rendered as a slab on the floor).
+        bz = float(b.get("mount_mm", 0) or 0) * MM
         add_box("mill__" + str(b.get("name", "builtin")).replace(" ", "_"),
-                float(b["x"]) * MM, float(b["y"]) * MM, 0,
+                float(b["x"]) * MM, float(b["y"]) * MM, bz,
                 float(b["w"]) * MM, float(b["d"]) * MM, bh)
 
     # loose furniture: a REAL CC0 model (Poly Haven) when the kind is mapped + cached,

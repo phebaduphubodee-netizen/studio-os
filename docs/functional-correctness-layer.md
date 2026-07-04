@@ -77,11 +77,28 @@ Render-domain (stays with Gemini + designer, NOT this layer):
 - Wire into the pipeline as a pre-render gate (alongside Gate 0) so a functionally
   broken spec is caught before the paid Gemini pass — cheap failure first (blueprint §9.5).
 
+## Designer critique round 2 (2026-07-04, owner acting as the designer eye)
+The GS-27..30 re-renders were reviewed directly (not via labeler) and REWORKed again. Root causes,
+triaged: (1) **TV rendered on the FLOOR** (GS: "ทำไมเอา TV ไปติดไว้ที่พื้น?") — build_room extruded
+built-ins from z=0; FIXED with a `mount_mm` (AFF) field so wall elements FLOAT, + `tv_mount_height`
+rule (WARN if a wall TV lacks a mount). (2) **armchair under / in front of the TV** (GS-03, "TV อยู่หลัง
+คนนั่ง") — `seating_faces_focal` only judged orientation and skipped no-rot seats; ADDED
+`seating_clear_of_screen` (position rule: flags a secondary lounge seat in the viewer→TV corridor).
+(3) monotonous wood walls + Gemini hallucinations (a phantom handle, a stray mass) = render/prompt
+domain. (4) **ROOT CAUSE the owner named:** `bedroom_suite` is a LOOSE approximation of the real
+Floor-2 master (its own note says "positions approximated from a plan image"; terrace not modelled),
+and `living_condo` is FICTIONAL — neither is a faithful client unit. DECISION: re-derive the REAL
+rooms (master + Floor-1 living + Floor-2 sitting) precisely from the DXF (`raw-local`, ezdxf), retire
+`living_condo`. That re-derivation is the open work item.
+
 ## Status (2026-07-04)
-- `placement_logic.py` + `test_placement_logic.py` (**60/60**) now hold TEN rules:
+- `placement_logic.py` + `test_placement_logic.py` (**75/75**) now hold TWELVE rules:
   tv_positioned / tv_faces_viewer / tv_not_over_viewer / tv_viewing_distance / door_vs_bed_head /
-  furniture_dimensions / bathroom_logic / seating_faces_focal / kitchen_work_triangle /
-  camera_has_a_reason. (The prior revision of this doc said "eight"; the code shipped nine at that
+  furniture_dimensions / bathroom_logic / seating_faces_focal / **seating_clear_of_screen** /
+  kitchen_work_triangle / **tv_mount_height** / camera_has_a_reason. The two new rules answer the
+  designer's round-2 TV-on-floor + armchair-under-TV comments; both are advisory WARN. build_room now
+  floats built-ins by `mount_mm` (AFF), and `camera_config.solve_eye_camera`'s ray-block was made
+  z-aware to stay coupled to where a floated mass actually sits (scrutiny-caught regression, fixed). (The prior revision of this doc said "eight"; the code shipped nine at that
   point — that stale prose is corrected here, and camera_has_a_reason is the tenth, added
   2026-07-04.) Wired as a PRE-RENDER gate at all three spec→render points (make_all clearance gate,
   repair_loop Gate 0 ESCALATE-only, suite_package QA-CHECKLIST) — a FUNCTION FAIL aborts before the
