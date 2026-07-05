@@ -1,0 +1,25 @@
+{
+  "verdict": "REVIEW",
+  "gated_target": "floor2-manifest.json",
+  "inputs": {
+    "floor2-manifest.json": "7efafeaf02185a663053bf470d538e2dd1f1b0a8",
+    "scene-graph.master_bedroom.json": "4d53cecfbe5e47f520a98dea668bc476b68ec19c",
+    "scene-graph.sitting_room.json": "ead6c699c552675f30da57f2b85f6b7f0e6b39f3"
+  },
+  "generated_epoch": 1783257872.4454784,
+  "rooms": [
+    {
+      "room": "master_bedroom",
+      "verdict": "REVIEW",
+      "floating": [],
+      "unplaced": 3
+    },
+    {
+      "room": "sitting_room",
+      "verdict": "REVIEW",
+      "floating": [],
+      "unplaced": 0
+    }
+  ],
+  "note": "Auto-written by placement_gate.py. Do not hand-edit; re-run the gate to refresh."
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "interior-ai/floor-manifest@0.2",
+  "floor": "Floor 2 — โซนที่ owner กำหนด (blue zone): ห้องนอนใหญ่ + โซนแต่งตัว/วานิตี้ + SITTING + ระเบียง",
+  "project": "PRJ-2026-002 (anonymized)",
+  "units": "mm",
+  "basis": "FAITHFUL walls from the dimensioned PDF page 1 (pdf_extract_walls.py @ 26.45 mm/pt, verified vs written dims). SCOPE per owner 2026-07-05: build ONLY the blue-circled zone (master suite + sitting + terrace); the far-east ห้องน้ำ2/ห้องพระ (x>10800) and the 2 north bedrooms are OUT. 2026-07-05 REBUILD: furniture in scene-graph.master_bedroom.json + scene-graph.sitting_room.json now placed from MEASURED vector geometry (both furnished at offset (0,0) = absolute floor coords). Master bed OWNER-CONFIRMED E-W head EAST; sitting sofa OWNER-CONFIRMED faces EAST; tub chairs face each other.",
+  "walls_json": "projects/PRJ-2026-002_c001-house/03_layout/floor2-walls-mm.json",
+  "source_pdf": "projects/PRJ-2026-002_c001-house/00_intake/raw-local/The City สาทร - สุขสวัสดิ์_Plan funiture 02.pdf",
+  "gate": "placement_gate.py must PASS/REVIEW (writes placement-gate.json) before build_floor.py will render — page 1, close_mm 18",
+  "ceiling_mm": 2800,
+  "wall_render_thick_mm": 24,
+  "clip_zones": [
+    [-300, -900, 5650, 6300],
+    [5650, -900, 10800, 6300]
+  ],
+  "furnish": [
+    {"id": "master_bedroom", "spec": "projects/PRJ-2026-002_c001-house/03_layout/scene-graph.master_bedroom.json", "offset_mm": [0, 0]},
+    {"id": "sitting_room", "spec": "projects/PRJ-2026-002_c001-house/03_layout/scene-graph.sitting_room.json", "offset_mm": [0, 0]}
+  ],
+  "terrace": {
+    "outline_mm": [[0, -700], [10800, -700], [10800, 0], [0, 0]],
+    "slab_thk_mm": 120,
+    "planters": [
+      {"name": "กระบะต้นไม้ 1", "x": 6750, "y": -800, "w": 700, "d": 600, "h": 450},
+      {"name": "กระบะต้นไม้ 2", "x": 9500, "y": -900, "w": 800, "d": 700, "h": 450}
+    ]
+  },
+  "floor_zones": [
+    {"id": "master_sleep", "outline_mm": [[0, 0], [5500, 0], [5500, 2950], [0, 2950]], "color": [0.58, 0.71, 0.90]},
+    {"id": "master_dress", "outline_mm": [[0, 2950], [5500, 2950], [5500, 5800], [0, 5800]], "color": [0.60, 0.79, 0.80]},
+    {"id": "sitting", "outline_mm": [[5650, 0], [10750, 0], [10750, 6200], [5650, 6200]], "color": [0.66, 0.85, 0.56]}
+  ],
+  "labels": [
+    {"text": "ห้องนอนใหญ่ MASTER", "x": 2400, "y": 300, "size": 0.42},
+    {"text": "เตียง หัวชิดผนัง ตอ. (E–W)", "x": 4150, "y": 1100, "size": 0.28},
+    {"text": "โซนแต่งตัว + วานิตี้คู่ (3.05)", "x": 2500, "y": 4300, "size": 0.34},
+    {"text": "SITTING — โซฟาหันตะวันออก", "x": 8000, "y": 4650, "size": 0.4},
+    {"text": "มุมนั่งเล่น 2 เก้าอี้", "x": 7200, "y": 900, "size": 0.32},
+    {"text": "ระเบียง (700)", "x": 3200, "y": -370, "size": 0.38}
+  ],
+  "furniture_note": "2026-07-05: master + sitting furniture placed from MEASURED vector geometry (positions + facings read from the plan symbols). Master north zone = dressing + double vanity (wet WC/shower/tub location unresolved, not fabricated). Sitting = 3-seat sofa facing east + 2 tub chairs facing each other + round tables + west display built-in + central console."
+}
