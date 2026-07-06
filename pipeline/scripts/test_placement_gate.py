@@ -331,6 +331,51 @@ def test_facing_flags_surfaces_ambiguous_180():
     assert len(flags) == 1 and flags[0]["verdict"] == "ambiguous", flags
 
 
+# ---- semantic-truth ledger: owner-signed facings persist + suppress the gate flag ----
+def test_confirmed_facing_matches_by_name():
+    bed = {"name": "เตียง", "w": 1650, "d": 2090}
+    conf = [{"room": "master", "name": "เตียง", "facing": "W", "by": "owner", "date": "2026-07-06"}]
+    assert G.confirmed_facing(bed, conf) == "W"
+
+
+def test_confirmed_facing_none_when_name_differs():
+    assert G.confirmed_facing({"name": "sofa"}, [{"name": "bed", "facing": "W"}]) is None
+
+
+def test_confirmed_facing_size_guard_rejects_reused_name():
+    # a confirmed entry sized for a small stool must NOT attach to a big bed that reused the name
+    bed = {"name": "x", "w": 1650, "d": 2090}
+    assert G.confirmed_facing(bed, [{"name": "x", "facing": "W", "w": 500, "d": 500}]) is None
+
+
+def test_confirmed_facing_no_size_on_entry_still_matches():
+    assert G.confirmed_facing({"name": "x", "w": 1650, "d": 2090}, [{"name": "x", "facing": "N"}]) == "N"
+
+
+def test_load_confirmed_drops_non_dicts():
+    led = {"confirmed": [{"name": "b", "facing": "W"}, None, "oops", 7]}
+    got = G.load_confirmed(led)
+    assert len(got) == 1 and got[0]["name"] == "b", got
+
+
+def test_load_confirmed_tolerates_missing_or_malformed():
+    assert G.load_confirmed({}) == []
+    assert G.load_confirmed({"confirmed": "nope"}) == []
+    assert G.load_confirmed(None) == []
+
+
+def test_facing_flag_suppressed_once_owner_signs():
+    # the SAME fixture that flags 'ambiguous' above must go SILENT once the owner signs the facing
+    rect = [[[0, 0], [2000, 0]], [[2000, 0], [2000, 2100]],
+            [[2000, 2100], [0, 2100]], [[0, 2100], [0, 0]]]
+    strip = [[[90, 260], [1910, 260]]]
+    bed = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": 0, "name": "bed"}
+    signed = [{"room": "*", "name": "bed", "facing": "S", "w": 2000, "d": 2100, "by": "owner", "date": "2026-07-06"}]
+    assert G.facing_flags([bed], rect + strip, confirmed=signed) == []
+    # and without the signature it still flags (the suppression is what changed, not the read)
+    assert len(G.facing_flags([bed], rect + strip)) == 1
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

@@ -39,6 +39,14 @@ def test_facing_from_rot_cardinals():
     assert F.facing_from_rot(-90) == "W"      # -90 % 360 == 270
 
 
+def test_rot_from_facing_is_the_inverse():
+    for rot, letter in ((0, "S"), (90, "E"), (180, "N"), (270, "W")):
+        assert F.rot_from_facing(letter) == rot
+        assert F.facing_from_rot(F.rot_from_facing(letter)) == letter   # round-trip
+    assert F.rot_from_facing("?") is None
+    assert F.rot_from_facing(None) is None
+
+
 def test_facing_from_rot_noncardinal_is_none():
     assert F.facing_from_rot(45) is None
     assert F.facing_from_rot(1) is None

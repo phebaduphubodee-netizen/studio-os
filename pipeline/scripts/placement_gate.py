@@ -294,13 +294,60 @@ def check_wall_grid(segments, checks, default_tol=120.0, default_min_len=1500.0)
     return fails
 
 
-def facing_flags(loose, fsegs, offset=(0, 0)):
+def _size_consistent(piece, entry, tol=0.20):
+    """True if the entry carries no size, or its w/d match the piece within tol (orientation-
+    agnostic). A size guard so a confirmed-facing entry cannot silently attach to a DIFFERENT
+    piece that merely reused the same name after an edit."""
+    ew, ed = entry.get("w"), entry.get("d")
+    if ew is None or ed is None:
+        return True
+    try:
+        a = sorted((float(piece["w"]), float(piece["d"])))
+        b = sorted((float(ew), float(ed)))
+    except (KeyError, TypeError, ValueError):
+        return False
+    return all(c > 0 and abs(s - c) / c <= tol for s, c in zip(a, b))
+
+
+def confirmed_facing(piece, confirmed, size_tol=0.20):
+    """The owner-signed cardinal facing for a piece, or None. Matches a confirmed-ledger entry
+    by NAME (the generator names pieces deterministically) with a size sanity guard. This is the
+    durable, structured, owner-signed store that ends the regression memory flagged — 'facing
+    lived only as a default + a prose note, so a clean rebuild silently overwrote a correct read'.
+    BOTH consumers read it: the gate (to SUPPRESS a signed piece's REVIEW facing-flag + SIGN todo)
+    and the generator (to APPLY the signed facing OVER any geometric re-derivation, via
+    facing_reader.rot_from_facing)."""
+    name = piece.get("name")
+    if name is None:
+        return None
+    for e in confirmed or []:
+        if not isinstance(e, dict) or not e.get("facing"):
+            continue
+        if e.get("name") == name and _size_consistent(piece, e, size_tol):
+            return e["facing"]
+    return None
+
+
+def load_confirmed(led):
+    """Pull the owner-signed 'confirmed' facing entries out of a parsed placement-review ledger
+    dict (mirrors the 'dismissed' handling); drops non-dict typos. Returns [] on anything odd."""
+    if not isinstance(led, dict):
+        return []
+    conf = led.get("confirmed", [])
+    return [e for e in conf if isinstance(e, dict)] if isinstance(conf, list) else []
+
+
+def facing_flags(loose, fsegs, offset=(0, 0), confirmed=None):
     """ADVISORY facing cross-check for seating/beds: compare each piece's HAND-TYPED rot to the
     facing READ from its drawn headboard/backrest strip (facing_reader). Facing is otherwise
     100% human-authored and 0% machine-checked — a 180-deg-wrong bed still scores IoU ~1.00,
     because a cardinal rotation barely changes the axis-aligned footprint. Returns only the
     clear DISAGREEMENTS; conservative by design (an unreadable/symmetric strip -> 'unknown',
-    never a flag), so it adds signal without crying wolf. REVIEW-only, never FAIL."""
+    never a flag), so it adds signal without crying wolf. REVIEW-only, never FAIL.
+
+    A piece whose facing the OWNER has already signed off (confirmed ledger) is SKIPPED — the
+    adjudication is done, so the gate stops asking and the verdict converges toward PASS as the
+    owner signs. This is the 'gate suppresses the SIGN todo once signed' half of the ledger."""
     try:
         import facing_reader as FR
     except ImportError:
@@ -309,6 +356,8 @@ def facing_flags(loose, fsegs, offset=(0, 0)):
     for it in loose:
         if it.get("kind") not in _FACING_KINDS:
             continue                      # rot defaults to 0 (=S) when the generator omits it
+        if confirmed_facing(it, confirmed) is not None:
+            continue                      # owner already signed this facing -> suppress
         fp = footprint(it, offset)
         pad = 120.0
         bb = (fp[0] - pad, fp[1] - pad, fp[2] + pad, fp[3] + pad)
@@ -481,7 +530,7 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
                 break
 
     ledger_path = os.path.join(base, "placement-review.json")
-    dismissed_all = []
+    dismissed_all, confirmed_all = [], []
     if os.path.exists(ledger_path):
         input_paths.append(os.path.abspath(ledger_path))   # bind its hash regardless of validity
         try:
@@ -490,9 +539,11 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
             if not isinstance(dismissed_all, list):
                 dismissed_all = []
             dismissed_all = [e for e in dismissed_all if isinstance(e, dict)]   # drop null/str/num typos
-            print(f"placement-review.json: {len(dismissed_all)} human dismissal(s) on file")
+            confirmed_all = load_confirmed(_led)               # owner-signed facings (persist across rebuilds)
+            print(f"placement-review.json: {len(dismissed_all)} dismissal(s), "
+                  f"{len(confirmed_all)} signed facing(s) on file")
         except (ValueError, OSError, AttributeError, TypeError):
-            print("  [!] placement-review.json malformed -- ignoring dismissals")
+            print("  [!] placement-review.json malformed -- ignoring dismissals/confirmations")
 
     results, worst = [], "PASS"
     order = {"PASS": 0, "REVIEW": 1, "FAIL": 2}
@@ -501,11 +552,12 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
         zone = _room_zone(spec, offset)
         res = extract_clusters(pdf, page, zone, close_mm, calib=calib)
         dismissed_room = [e for e in dismissed_all if e.get("room") in (room_id, "*")]
+        confirmed_room = [e for e in confirmed_all if e.get("room") in (room_id, "*")]
         r = gate(loose, fixed, res["items"], _ink_counter(res), zone, offset,
                  dismissed=dismissed_room, dropped=res.get("dropped"))
         r["room"] = room_id
         r["dropped"] = res.get("dropped", [])
-        r["facing"] = facing_flags(loose, res["fsegs"], offset)
+        r["facing"] = facing_flags(loose, res["fsegs"], offset, confirmed=confirmed_room)
         if r["facing"] and order[r["verdict"]] < order["REVIEW"]:
             r["verdict"] = "REVIEW"        # a symbol-vs-typed facing disagreement needs a human
         results.append(r)

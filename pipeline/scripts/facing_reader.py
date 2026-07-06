@@ -63,6 +63,16 @@ def facing_from_rot(rot):
     return _FACING.get(r)
 
 
+_ROT = {v: k for k, v in _FACING.items()}   # {"S":0,"E":90,"N":180,"W":270}
+
+
+def rot_from_facing(facing):
+    """Cardinal rot for a facing letter (inverse of facing_from_rot), else None. The generator
+    uses this to APPLY an owner-signed facing over a geometric re-derivation — the durable-truth
+    fix for the 'a rebuild re-rolls the semantic dice' regression."""
+    return _ROT.get(facing)
+
+
 def opposite(edge):
     """Opposite compass letter (N<->S, E<->W); None passes through."""
     return _OPP.get(edge)
