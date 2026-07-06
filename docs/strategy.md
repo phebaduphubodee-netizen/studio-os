@@ -647,3 +647,53 @@ Three sub-lessons worth their own guardrails:
 - **The gate's honest scope held the whole time.** It never claimed identity/facing and
   never lied; it just isn't sufficient alone. Necessary-but-not-sufficient is the correct
   posture — pair it with the human loop, don't over-build it toward semantics it can't reach.
+
+## 2026-07-06 (overnight) — the sourceability GATE + the semantic-truth LEDGER got built
+
+Owner went to sleep with "อนุญาติทุกอย่าง + scrutinize + quality, don't ship broken". Turned the
+two spec'd-but-unbuilt north-star items into code, TDD throughout, adversarially scrutinized at
+the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
+
+- **Sourceability gate is real** (`pipeline/scripts/sourceability_gate.py`, +wiring): the moat
+  the 2026-07-06 DECISION spec'd. SOURCED (items[] + sanitary/appliance fixtures) vs FABRICATED
+  (builtins[] + millwork) split; four machine checks per sourced piece (binding via `ffe_tag`
+  → selected FF&E candidate; dimension parity ±15% orientation-agnostic — automates the FFE-S01
+  600-vs-860mm lesson; supplier source_th+link; verified tier). Wired into `make_all` step 2c
+  (FAIL stops the render, mirrors the FUNCTION gate) AND `suite_package` (rows ride the cover
+  verdict + a new QA-CHECKLIST §4; the deliverable now BUNDLES ffe-schedule.md + ffe-candidates.
+  json). UNWIRED-honest when no FF&E file (never a silent pass). `examples/scene-graph.example.
+  json` is the committed worked binding example. **The `ffe_tag` binding itself is additive/
+  optional on room-spec@0.2 (no version bump — routing keys on units/outline_mm); populating it
+  on the real scene-graphs + gen_floor2_specs is the remaining wiring, deferred with the project
+  data.**
+- **Semantic-truth ledger is real** (`placement-review.json` `confirmed[]` + `placement_gate`/
+  `facing_reader`): the durable, owner-signed home for facing the v4 lesson demanded. The gate
+  now SUPPRESSES a facing SIGN-todo once the owner signs (verdict converges toward PASS), and
+  `facing_reader.rot_from_facing` is the inverse the generator will use to APPLY a signed facing
+  over geometric re-derivation. **Generator-apply wiring into gen_floor2_specs.snap() is the one
+  remaining half — deferred with the project data.**
+- **The scrutiny earned its keep (20 agents, find→verify).** It confirmed 7 real defects and
+  refuted 9 false alarms. The two MAJORS were load-bearing: (1) "not yet bound" (no `ffe_tag`)
+  was FAILed identically to a WRONG binding, so every real project — FF&E file present, `ffe_tag`
+  not wired yet — had NO reachable non-FAIL verdict; the fix (no-tag → REVIEW, present-but-
+  unresolvable → FAIL) is exactly the "not-done vs done-wrong" distinction, verified turning the
+  3 real scene-graphs from FAIL→REVIEW. (2) a signed facing suppressed the flag WITHOUT checking
+  the piece's rot, so signing the OPPOSITE of the built orientation silenced the very regression
+  the ledger exists to catch — fixed to suppress only on rot==sign, else emit `contradicts_signed`.
+  Lesson re-confirmed: adversarial verify catches design-calibration errors (a gate with no
+  reachable PASS) the author is blind to, and the verifiers correctly REFUTED the scariest-
+  sounding finding ("@0.2 make_all hard-blocks the real project") because @0.2 specs bail at
+  clearance_check before step 2c — a reminder to trace the real execution path, not the summary.
+- **Also this run:** promoted the plan-reading-conventions DR → `knowledge/classifications/`
+  (the doctrine facing_reader implements); made `pdf_extract_walls`'s calibration + filters pure
+  and unit-tested (was validated only empirically at build time).
+- **Process event — a CONCURRENT committer.** Commit `9073860` (floor2 v4 project data + the
+  v3/v4 reconciliation + ~1.3MB review PNGs) was made by a concurrent agent/session mid-run, not
+  by this session; it also swept a WIP test file into itself. No work was lost. Two consequences
+  the OWNER should decide: (a) the v4 PNGs are committed as RAW git blobs, not LFS (`.gitattributes`
+  omits *.png) — against the "heavy binaries on LFS" convention; fixing needs a history rewrite
+  BEFORE the remote sees them. (b) that commit actioned the v3/v4 reconciliation this session had
+  deliberately left as an owner call. **Because pushing bakes those raw PNG blobs into permanent
+  remote history (retrievable by SHA even after a later scrub), the PUSH is DEFERRED for the owner
+  to decide the asset convention first.** Everything is committed locally + green + scrutinized;
+  `git push` sends all 11 unpushed commits once the owner OKs.
