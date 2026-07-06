@@ -316,7 +316,7 @@ ax.set_ylim(-1200, 8800)
 ax.set_aspect("equal")
 ax.grid(True, lw=0.3, alpha=0.2)
 ax.set_title("FLOOR 2 v4 KEY PLAN — footprint ทาบบนแบบจริง (เลข = ดู legend ขวา). "
-             "ขนาด/ทิศ อ่านจาก scene-graph (mm); ประตูเลื่อนกระจก+เทอเรส = owner-read (เส้นบาง)", fontsize=12)
+             "ขนาด/ทิศ อ่านจาก scene-graph (mm); ประตูเลื่อนกระจก = owner-read (เส้นบาง)", fontsize=12)
 
 # ---- legend (right margin, Thai names, grouped) ----------------------------------------
 lg.set_xlim(0, 1)

@@ -113,6 +113,53 @@ def test_v4_generator_and_gate_agree_non_cardinal():
     assert flags[0]["read"] == "rot335", flags               # non-cardinal shown as a deg label
 
 
+# ---- orphan-signature gate: a detached sign hard-FAILs instead of silently re-rolling ----
+def test_v4_orphan_gate_passes_when_signs_bind():
+    G4._REPORT.clear()
+    pieces = [G4.angled("sitting_room", "เก้าอี้ tub ซ้าย", "armchair", 6331, 949, 680, 640, 12, 750),
+              G4.angled("sitting_room", "เก้าอี้ tub ขวา", "armchair", 7630, 1405, 660, 640, 335, 750)]
+    confirmed = [{"name": "เก้าอี้ tub ซ้าย", "rot": 8, "w": 680, "d": 640},
+                 {"name": "เก้าอี้ tub ขวา", "rot": 332, "w": 660, "d": 640}]
+    assert len(G4.assert_signatures_applied(pieces, confirmed)) == 2
+
+
+def test_v4_orphan_gate_fails_on_detached_sign():
+    G4._REPORT.clear()
+    pieces = [G4.angled("sitting_room", "เก้าอี้ tub RENAMED", "armchair", 6331, 949, 680, 640, 12, 750)]
+    confirmed = [{"name": "เก้าอี้ tub ซ้าย", "rot": 8, "w": 680, "d": 640}]   # this name no longer exists
+    raised = False
+    try:
+        G4.assert_signatures_applied(pieces, confirmed, where="sitting_room")
+    except SystemExit as ex:
+        raised = True
+        assert "ORPHAN" in str(ex) and "เก้าอี้ tub ซ้าย" in str(ex), ex
+    assert raised, "a detached signature must hard-FAIL the generate, not silently re-roll the facing"
+
+
+def test_v4_orphan_gate_empty_ledger_is_noop():
+    assert G4.assert_signatures_applied([{"name": "x", "kind": "bed", "w": 1, "d": 1}], []) == []
+
+
+def test_v4_orphan_gate_wildcard_matches_union_pool():
+    # main() routes a '*' (any-room) sign against the UNION of both rooms, so it must NOT be
+    # false-orphaned merely because it doesn't live in one of them — it binds if it matches EITHER.
+    master = [{"name": "bed", "kind": "bed", "w": 2000, "d": 2100, "rot": 270}]
+    sitting = [{"name": "sofa", "kind": "sofa", "w": 1000, "d": 2200, "rot": 90}]
+    wild = [{"name": "sofa", "rot": 90, "w": 1000, "d": 2200, "room": "*"}]
+    assert len(G4.assert_signatures_applied(master + sitting, wild)) == 1     # binds in sitting, no false-block
+
+
+def test_v4_orphan_gate_unknown_room_binds_to_nothing():
+    # main() checks a sign whose room the generator never produces against an EMPTY pool -> always
+    # orphan, so a typo'd 'room' can't be silently dropped by both room filters and skipped.
+    stray = [{"name": "x", "rot": 0, "w": 1, "d": 1, "room": "kitchen"}]
+    try:
+        G4.assert_signatures_applied([], stray, where="unknown room")
+        assert False, "a sign for a room the generator never produces must orphan"
+    except SystemExit as ex:
+        assert "ORPHAN" in str(ex), ex
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

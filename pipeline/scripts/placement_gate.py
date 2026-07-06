@@ -401,6 +401,28 @@ def load_confirmed(led):
     return [e for e in conf if isinstance(e, dict)] if isinstance(conf, list) else []
 
 
+def reconcile_confirmed(pieces, confirmed, size_tol=0.20):
+    """Match every owner-signed confirmed[] entry to the placed pieces it is meant to govern, using
+    the SAME name + size join the gate (confirmed_rot) and the generators (resolve_rot) use — so all
+    three agree on which signatures are live. Returns (matched, orphaned): two lists of confirmed
+    entries. An entry is MATCHED when some placed piece shares its name AND passes the size guard;
+    ORPHANED when it matches NO piece — i.e. the owner signed a facing for a piece that no longer
+    exists under that name+size, because a rename or a size edit silently DETACHED the signature.
+
+    An orphan is the sharpest silent re-roll: resolve_rot then falls back to the hand-read facing and
+    the piece re-rolls, while a reassuring 'N signatures loaded' count hides it (this already bit once,
+    when the tub chairs were renamed off 'ระเบียง'). Callers turn a non-empty `orphaned` into a hard
+    build error so the owner is TOLD a sign no longer binds instead of trusting a facing that reverted."""
+    matched, orphaned = [], []
+    for e in confirmed or []:
+        if not isinstance(e, dict):
+            continue
+        name = e.get("name")
+        hit = any(it.get("name") == name and _size_consistent(it, e, size_tol) for it in pieces)
+        (matched if hit else orphaned).append(e)
+    return matched, orphaned
+
+
 def facing_flags(loose, fsegs, offset=(0, 0), confirmed=None):
     """ADVISORY facing cross-check for seating/beds: compare each piece's HAND-TYPED rot to the
     facing READ from its drawn headboard/backrest strip (facing_reader). Facing is otherwise

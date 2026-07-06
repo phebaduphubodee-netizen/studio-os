@@ -58,7 +58,7 @@ _REPO = os.path.abspath(os.path.join(_HERE, "..", "..", "..", ".."))
 for _p in (_HERE, os.path.join(_REPO, "pipeline", "scripts")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
-from placement_gate import resolve_rot, load_confirmed
+from placement_gate import resolve_rot, load_confirmed, reconcile_confirmed
 
 SCALE, OX, OY = 26.45, 171.2, 596.5
 CLOSE_MM = 18.0
@@ -213,6 +213,29 @@ _NOTE = ("v4 CLEAN REBUILD (gen_floor2_v4_specs.py). Dimensions/built-in sizes =
          "human calls. Absolute floor coords, offset (0,0).")
 
 
+def assert_signatures_applied(pieces, confirmed, where=""):
+    """Guard against a SILENTLY DETACHED signature. `pieces` MUST be exactly the loose pieces the
+    generator applies signs to via resolve_rot (never built-ins/fixtures — those never consult the
+    ledger, so counting a sign that merely name-matches one as 'applied' is a false pass). Every
+    owner-signed facing in confirmed[] must match one of those pieces by the gate's OWN name+size
+    join (reconcile_confirmed). A detached join means resolve_rot silently fell back to the hand-read
+    facing — the exact re-roll the ledger exists to prevent, hidden behind a reassuring COUNT. So we
+    reconcile AFTER placement and hard-FAIL on any orphan: the owner is told a sign no longer binds
+    instead of shipping a facing that reverted. Import-testable (no PDF). Returns the matched entries."""
+    matched, orphaned = reconcile_confirmed(pieces, confirmed)
+    if orphaned:
+        lines = "\n".join(
+            f"    - {e.get('name')!r}  (w={e.get('w')} d={e.get('d')} "
+            f"sign={e.get('rot', e.get('facing'))})" for e in orphaned)
+        raise SystemExit(
+            f"PLACEMENT-REVIEW ORPHAN{f' [{where}]' if where else ''}: {len(orphaned)} owner-signed "
+            f"facing(s) bind to NO loose piece the generator places — the name+size join is detached "
+            f"(a rename or resize, a piece not found in the drawing, or a sign aimed at a built-in/"
+            f"fixture the generator does not apply facings to). The facing would re-roll to the "
+            f"hand-read default. Fix the ledger name/size/room (or the generator), then regenerate:\n{lines}")
+    return matched
+
+
 def main():
     import fitz
     import matplotlib
@@ -238,8 +261,8 @@ def main():
             confirmed_all = []
     confirmed_master = [e for e in confirmed_all if e.get("room") in ("master_bedroom", "*")]
     confirmed_sitting = [e for e in confirmed_all if e.get("room") in ("sitting_room", "*")]
-    print(f"placement-review.json: {len(confirmed_all)} owner-signed facing(s) "
-          f"({len(confirmed_master)} master, {len(confirmed_sitting)} sitting)")
+    print(f"placement-review.json: {len(confirmed_all)} owner-signed facing(s) loaded "
+          f"({len(confirmed_master)} master, {len(confirmed_sitting)} sitting) — reconciled AFTER placement")
 
     master_zone = room_zone(MASTER_OUTLINE, MASTER_SUB)
     sitting_zone = room_zone(SITTING_OUTLINE, [])
@@ -359,6 +382,36 @@ def main():
     sit_items.append(_orchid)
     sit_builtins.append(bf("ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)", "BF13", "cabinet", 10500, 4100, "NS",
                            h=500, note="east wall; the sofa faces it"))
+
+    # ---------------------------------------------------------------- orphan-signature gate
+    # Reconcile the owner-signed ledger against the loose pieces the generator ACTUALLY applies signs
+    # to (resolve_rot runs on master_items / sit_items ONLY — built-ins/fixtures never consult the
+    # ledger, so they are NOT in the pool: a sign that merely name-matches one must ORPHAN, not read as
+    # applied). A detached signature (renamed/resized piece, a sign aimed at a built-in) that would
+    # silently re-roll its facing hard-FAILs here — the precondition that makes every signature
+    # trustworthy. Each sign is checked against EXACTLY the pool it can apply to: a room-scoped sign vs
+    # its room, a '*' sign vs both (so it isn't false-orphaned in the room it doesn't live in), and a
+    # sign whose room this generator never produces vs nothing (a typo'd room can't be silently skipped
+    # by both filters). No signature escapes the check.
+    _known = {"master_bedroom", "sitting_room", "*"}
+    assert_signatures_applied(master_items,
+                              [e for e in confirmed_all if e.get("room") == "master_bedroom"],
+                              where="master_bedroom")
+    assert_signatures_applied(sit_items,
+                              [e for e in confirmed_all if e.get("room") == "sitting_room"],
+                              where="sitting_room")
+    assert_signatures_applied(master_items + sit_items,
+                              [e for e in confirmed_all if e.get("room") == "*"],
+                              where="* (any room)")
+    assert_signatures_applied([], [e for e in confirmed_all if e.get("room") not in _known],
+                              where="unknown room (this generator produces only master_bedroom + sitting_room)")
+    # Report the TRUE applied count from facing_source (what resolve_rot actually set), not the join
+    # count — a sign can bind by name+size yet set no facing (a malformed/non-cardinal facing/rot
+    # value); that is not an orphan (the piece exists) but it is NOT applied, and saying so is honest.
+    applied = sum(1 for it in master_items + sit_items if it.get("facing_source") == "owner-signed")
+    inert = len(confirmed_all) - applied     # reached here => 0 orphaned, so the remainder are inert signs
+    print(f"placement-review.json: {len(confirmed_all)} loaded, {applied} APPLIED (facing set), 0 orphaned"
+          + (f"; NOTE {inert} bound a piece but set NO facing — check its facing/rot value" if inert else ""))
 
     # ---------------------------------------------------------------- write scene-graphs
     master = {

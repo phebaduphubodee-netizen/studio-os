@@ -1,7 +1,7 @@
 {
   "schema": "interior-ai/floor-manifest@0.2",
   "version": "v4",
-  "floor": "Floor 2 blue zone (owner-scoped): master bedroom suite + dressing/work + ensuite + wardrobe bay + sitting + terrace",
+  "floor": "Floor 2 blue zone (owner-scoped): master bedroom suite + dressing/work + ensuite + wardrobe bay + sitting (incl. indoor south lounge by the glass; garden is ground level below, outside)",
   "project": "PRJ-2026-002 (anonymized)",
   "units": "mm",
   "basis": "v4 CLEAN REBUILD. Built-in SIZES = OWNER-authoritative (BF label = cm, owner re-confirmed 2026-07-05: BF09-1=5200, BF09-2=1500, BF09-3=3300, BF10=2500, BF11=3200, BF12-1=1575, BF12-2=700, BF13=4100, BF14=3250). Loose-furniture position/size from deterministic clusters (plan_cluster); tub-chair ANGLE + tight size from oriented min-area boxes. Walls FAITHFUL from the dimensioned PDF (pdf_extract_walls.py @ 26.45 mm/pt). SCOPE: only the blue-circled zone; far-east rooms + north bedrooms are OUT. v3 kept unchanged as the known-flawed diff baseline.",
@@ -289,13 +289,13 @@
       "size": 0.2
     },
     {
-      "text": "ระเบียงนั่งเล่น (นอกบ้าน)",
+      "text": "เลานจ์นั่งเล่น (ในบ้าน ริมกระจก)",
       "x": 8300,
       "y": 800,
       "size": 0.3
     },
     {
-      "text": "ระเบียง",
+      "text": "พื้นหญ้าชั้นล่าง (นอกบ้าน ใต้ระดับกระจก)",
       "x": 3200,
       "y": -800,
       "size": 0.36

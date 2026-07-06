@@ -739,3 +739,51 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
   the current empty-ledger data; proven by REGENERATING both floors' scene-graphs and diffing —
   byte-identical — so all hash-pinned gate markers stay valid without re-pinning. Fix-verification =
   empirical law, again.
+
+## Session 2026-07-06c — "the read is still not good enough": the real bottleneck + the trustworthy foundation
+
+- **Owner:** "ระบบการถอดแบบ 2D→3D ยังดีไม่พอ." A 12-agent adversarial workflow (8 subsystem maps →
+  diagnose → 3 challenge lenses → synth) re-answered it against the real code and SHARPENED the
+  standing thesis. The bottleneck is **semantic, not geometric** — but the precise defect is NOT
+  "we need a bigger ledger." It is: **the owner is the sole, unaided verifier AND his corrections
+  do not durably stick.** Every rebuild he must (a) hunt each misread by eye against the sheet, and
+  (b) re-type semantic truth that silently re-rolls, detaches, or contradicts itself across prose.
+- **The diagnosis's own top pick was DOWN-RANKED by its critics** (a healthy result): a 4-class
+  `confirmed_*` schema that stays inert (the ledger sat at 2 entries) buys nothing, and indoor/outdoor
+  is *image-unrecoverable* (section knowledge — trees are ground BELOW the glass), so storing it can't
+  reduce the cost of *spotting* the misread. Reordered plan, cheapest-first: **make errors VISIBLE
+  + make corrections STICK — no VLM (policy-blocked by client-privacy + 6 GB VRAM; helps only 2 of 4
+  fields; re-rolls stochastically), no big inert schema.**
+- **Built the trustworthy FOUNDATION this session (the precondition the plan named):**
+  1. **Orphan-signature gate.** `placement_gate.reconcile_confirmed` + generator `assert_signatures_
+     applied` hard-FAIL a build when an owner sign binds to NO placed piece (rename/resize/built-in-
+     target/typo'd room). Closes the sharpest SILENT re-roll: a sign the owner believes is live but is
+     detached (this already bit once — chairs renamed off "ระเบียง"), previously hidden behind a
+     reassuring "N signatures loaded" COUNT. Reconciled against EXACTLY the resolve_rot-wired loose
+     pool (built-ins never consult the ledger); applied count reported from `facing_source` (the true
+     "did resolve_rot set it", not a name-match). Real ledger → "2 loaded, 2 APPLIED, 0 orphaned",
+     scene-graphs byte-identical.
+  2. **Wall extractor stops eating the owner's glass wall.** `pdf_extract_walls` re-run built a fresh
+     `meta` with NO `manual_additions` → silently dropped the hand-patched thin-line/glass walls (the
+     TRUE indoor/outdoor boundary the thick-stroke extractor is blind to). `merge_carried` now carries
+     the record AND **re-injects its segments into the top-level `segments` array** (the one build_floor
+     extrudes — the walls live in BOTH places, 996 = 992 + 4), undirected dedup, calibration-drift guard
+     (stale mm coords refused + warned), atomic write. Re-extract now reproduces n=996 with all 4 walls.
+  3. **Killed a LIVE prose-drift.** The last commit fixed the sitting-south ZONE to "INDOOR lounge" but
+     the manifest `labels[]` + floor description + keyplan TITLE still said "ระเบียง/เทอเรส (นอกบ้าน)" —
+     one truth, four hand-typed homes, out of sync (the "derived artifact re-authored by hand" failure).
+     Propagated the owner's correction to all of them.
+- **Scrutiny (3 lenses) earned its keep AGAIN — it caught defects in what I'd just shipped:** the
+  first `merge_carried` was INEFFECTIVE (carried the record but not the built geometry — the wall
+  still vanished, with a *false* "carried forward" reassurance); the orphan gate had a FALSE-PASS
+  (a built-in-targeted sign read as "applied"); and a stale "เทอเรส" survived in the keyplan title.
+  All fixed + pinned before reporting. Author-blind exception/coverage defects, every slice.
+- **Deferred (owner-steerable next):** (1) **wire `raster_overlay.py` as a REQUIRED pre-owner overlay
+  gate** — it already paints box+facing-arrow+kind over the TRUE sheet but is UNWIRED + hardcoded; this
+  is the VISIBLE win (owner *scans* a pre-drawn read instead of *hunting*). (2) `--emit-sign-stub`:
+  dump every hand-typed semantic literal into a ready-to-sign ledger stub (why the ledger stays inert
+  = signing costs manual key-matching, not schema size). (3) `confirmed_kind` (identity — the most
+  common fault) mirroring `confirmed_rot`. (4) reconcile inside `placement_gate.run` (backstop for
+  hand-edited scene-graphs the build trusts via the marker). (5) FLAG: the 996-vs-992 dual-storage of
+  manual walls is a latent divergence; and the master-side "พื้นหญ้าชั้นล่าง" label at x3200 is an
+  inference (owner's correction was the sitting side) — confirm. ALL LOCAL / UNPUSHED.

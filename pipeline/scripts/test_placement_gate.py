@@ -548,6 +548,47 @@ def test_facing_flags_signed_NON_facing_kind_is_verified():
     assert G.facing_flags([dict(tbl, name="unsigned")], []) == []
 
 
+# ---- reconcile_confirmed (orphan detection: the silent-detachment backstop) -----------
+def test_reconcile_all_matched():
+    pieces = [{"name": "chair L", "kind": "armchair", "w": 680, "d": 640, "rot": 8},
+              {"name": "chair R", "kind": "armchair", "w": 660, "d": 640, "rot": 332}]
+    confirmed = [{"name": "chair L", "rot": 8, "w": 680, "d": 640},
+                 {"name": "chair R", "rot": 332, "w": 660, "d": 640}]
+    matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert len(matched) == 2 and orphaned == [], (matched, orphaned)
+
+
+def test_reconcile_rename_orphans_the_sign():
+    # the owner signed 'chair L' but the generator renamed the piece -> the sign binds to nothing
+    pieces = [{"name": "lounge chair (renamed)", "kind": "armchair", "w": 680, "d": 640, "rot": 8}]
+    confirmed = [{"name": "chair L", "rot": 8, "w": 680, "d": 640}]
+    matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert matched == [] and len(orphaned) == 1 and orphaned[0]["name"] == "chair L", (matched, orphaned)
+
+
+def test_reconcile_size_edit_orphans_the_sign():
+    # same name, but the piece was resized beyond tol -> the size guard detaches the stale sign
+    pieces = [{"name": "chair L", "kind": "armchair", "w": 300, "d": 300, "rot": 8}]
+    confirmed = [{"name": "chair L", "rot": 8, "w": 680, "d": 640}]
+    _matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert len(orphaned) == 1, orphaned
+
+
+def test_reconcile_sizeless_sign_matches_on_name():
+    # a cardinal sign carrying no w/d must NOT false-orphan (the size guard is a no-op) -> name match
+    pieces = [{"name": "sofa", "kind": "sofa", "w": 1000, "d": 2200, "rot": 90}]
+    confirmed = [{"name": "sofa", "facing": "W"}]
+    matched, orphaned = G.reconcile_confirmed(pieces, confirmed)
+    assert len(matched) == 1 and orphaned == [], (matched, orphaned)
+
+
+def test_reconcile_empty_and_garbage_safe():
+    assert G.reconcile_confirmed([], []) == ([], [])
+    assert G.reconcile_confirmed([{"name": "x", "w": 1, "d": 1}], None) == ([], [])
+    m, o = G.reconcile_confirmed([{"name": "x", "w": 1, "d": 1}], ["oops", {"name": "x"}])  # non-dict skipped
+    assert len(m) == 1 and o == [], (m, o)
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0
