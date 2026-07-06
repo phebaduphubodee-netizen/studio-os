@@ -376,6 +376,28 @@ def test_facing_flag_suppressed_once_owner_signs():
     assert len(G.facing_flags([bed], rect + strip)) == 1
 
 
+def test_facing_flag_contradicting_sign_is_raised_not_suppressed():
+    # signing the OPPOSITE of the BUILT rot must NOT silence the flag — catching that regression
+    # (a rebuild re-rolled the rot away from the owner's signed truth) is the ledger's whole point.
+    rect = [[[0, 0], [2000, 0]], [[2000, 0], [2000, 2100]],
+            [[2000, 2100], [0, 2100]], [[0, 2100], [0, 0]]]
+    strip = [[[90, 260], [1910, 260]]]
+    bed = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": 0, "name": "bed"}   # rot0 -> faces S
+    signed_opp = [{"room": "*", "name": "bed", "facing": "N", "w": 2000, "d": 2100}]        # owner signed N
+    flags = G.facing_flags([bed], rect + strip, confirmed=signed_opp)
+    assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+    assert flags[0]["claimed"] == "S" and flags[0]["read"] == "N", flags
+
+
+def test_confirmed_facing_rejects_non_cardinal_typo():
+    # a truthy-but-non-cardinal sign ('south','n','N ',180,'') must NOT suppress — the generator's
+    # rot_from_facing would apply nothing, so the two ledger consumers would silently disagree.
+    bed = {"name": "bed", "w": 2000, "d": 2100}
+    for bad in ("south", "n", "N ", 180, "", None):
+        assert G.confirmed_facing(bed, [{"name": "bed", "facing": bad}]) is None, bad
+    assert G.confirmed_facing(bed, [{"name": "bed", "facing": "N"}]) == "N"   # a real cardinal matches
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

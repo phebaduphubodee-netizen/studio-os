@@ -50,6 +50,13 @@ class TestClassify(unittest.TestCase):
         for k in ("vanity", "cabinet", "wardrobe", "counter"):
             self.assertEqual(SG.classify_element({"kind": k}, "fixtures"), "fabricated", k)
 
+    def test_missing_or_empty_kind_fixture_is_sourced_to_surface_it(self):
+        # a fixture with no/blank kind must NOT silently escape into the un-gated FABRICATED
+        # bucket — route it to sourced so it surfaces a binding trace
+        self.assertEqual(SG.classify_element({"name": "mystery"}, "fixtures"), "sourced")
+        self.assertEqual(SG.classify_element({"kind": ""}, "fixtures"), "sourced")
+        self.assertEqual(SG.classify_element({"kind": "   "}, "fixtures"), "sourced")
+
 
 class TestResolve(unittest.TestCase):
     def test_resolves_selected_candidate(self):
@@ -89,6 +96,12 @@ class TestDimensionParity(unittest.TestCase):
         self.assertFalse(SG.dims_ok({"w": 2100, "d": 950}, {"w": 2100}))
         self.assertFalse(SG.dims_ok({"w": 2100, "d": 950}, None))
 
+    def test_exact_15pct_boundary_is_inclusive(self):
+        # abs(850-1000)/1000 == 0.15 exactly -> passes (inclusive); pins the >/>= boundary mutant
+        self.assertTrue(SG.dims_ok({"w": 2100, "d": 850}, {"w": 2100, "d": 1000}))
+        # just over the boundary: 849/1000 -> 0.151 -> fails
+        self.assertFalse(SG.dims_ok({"w": 2100, "d": 849}, {"w": 2100, "d": 1000}))
+
 
 class TestCheckSourced(unittest.TestCase):
     def test_bound_verified_supplier_dims_is_pass(self):
@@ -100,12 +113,15 @@ class TestCheckSourced(unittest.TestCase):
         self.assertEqual(r["status"], "REVIEW")
         self.assertIn("verified", r["failed"])
 
-    def test_no_ffe_tag_is_fail(self):
+    def test_no_ffe_tag_is_review_not_fail(self):
+        # "binding not wired yet" (no ffe_tag) is a not-done state, not a done-wrong state ->
+        # REVIEW, so an advancing deliverable is not flipped to FAIL before ffe_tag ships.
         r = SG.check_sourced(_sofa(ffe_tag=None), _ffe())
-        self.assertEqual(r["status"], "FAIL")
+        self.assertEqual(r["status"], "REVIEW")
         self.assertIn("binding", r["failed"])
 
-    def test_unresolved_tag_is_fail(self):
+    def test_present_but_unresolvable_tag_is_fail(self):
+        # a tag that IS set but resolves to no selected candidate is a LYING binding -> hard FAIL
         r = SG.check_sourced(_sofa(ffe_tag="FFE-999"), _ffe(tag="FFE-101"))
         self.assertEqual(r["status"], "FAIL")
         self.assertIn("binding", r["failed"])
@@ -143,9 +159,24 @@ class TestReport(unittest.TestCase):
         res, verdict = SG.report(self._spec(items=[_sofa()]), _ffe(verified=False))
         self.assertEqual(verdict, "REVIEW")
 
-    def test_unbound_item_is_fail(self):
+    def test_unbound_item_is_review_not_fail(self):
         res, verdict = SG.report(self._spec(items=[_sofa(ffe_tag=None)]), _ffe())
+        self.assertEqual(verdict, "REVIEW")
+
+    def test_present_but_unresolvable_tag_fails_the_report(self):
+        res, verdict = SG.report(self._spec(items=[_sofa(ffe_tag="FFE-999")]), _ffe(tag="FFE-101"))
         self.assertEqual(verdict, "FAIL")
+
+    def test_ffe_present_but_zero_sourced_is_unwired_not_pass(self):
+        # an FF&E file exists but this spec has nothing catalog-sourced (all-millwork) ->
+        # UNWIRED, never a vacuous green PASS
+        spec = self._spec(builtins=[{"name": "wardrobe", "kind": "wardrobe", "x": 0, "y": 0, "w": 2400, "d": 600}])
+        res, verdict = SG.report(spec, _ffe())
+        self.assertEqual(verdict, "UNWIRED")
+
+    def test_empty_spec_with_ffe_is_unwired(self):
+        res, verdict = SG.report(self._spec(), _ffe())
+        self.assertEqual(verdict, "UNWIRED")
 
     def test_fabricated_builtin_does_not_drive_verdict(self):
         # a built-in with no ffe_tag must NOT FAIL the gate (it is joiner-made, not sourced)
@@ -163,6 +194,23 @@ class TestReport(unittest.TestCase):
                                                    "w": 380, "d": 680, "ffe_tag": "FFE-999"}]}])
         res, verdict = SG.report(spec, _ffe(tag="FFE-101"))
         self.assertEqual(verdict, "FAIL")   # toilet is sourced, unbound -> FAIL
+
+
+class TestReportRows(unittest.TestCase):
+    def test_only_nonpass_sourced_rows_emit_with_prefix(self):
+        results = [
+            {"cls": "sourced", "name": "a", "status": "FAIL", "detail": "d1"},
+            {"cls": "sourced", "name": "b", "status": "REVIEW", "detail": "d2"},
+            {"cls": "sourced", "name": "c", "status": "PASS", "detail": "d3"},
+            {"cls": "sourced", "name": "d", "status": "UNWIRED", "detail": "d4"},
+            {"cls": "fabricated", "name": "e", "status": "FABRICATED", "detail": "d5"},
+        ]
+        rows = SG.report_rows(results)
+        self.assertEqual(len(rows), 2)                       # only the FAIL + REVIEW sourced rows
+        by = {r["check"]: r["status"] for r in rows}
+        self.assertEqual(by["sourceability: a"], "FAIL")     # FAIL -> FAIL
+        self.assertEqual(by["sourceability: b"], "WARN")     # REVIEW -> WARN (checklist vocab)
+        self.assertTrue(all(r["check"].startswith("sourceability: ") for r in rows))
 
 
 class TestBundleRows(unittest.TestCase):
@@ -219,6 +267,30 @@ class TestCheckIntegration(unittest.TestCase):
         # the media wall built-in is FABRICATED and must NOT be sourcing-gated
         fab = [r for r in res if r.get("cls") == "fabricated"]
         self.assertEqual(len(fab), 1)
+
+
+class TestSuitePackageIntegration(unittest.TestCase):
+    """The @0.2 deliverable seam: build() merges sourceability rows, writes QA section 4, and
+    bundles the FF&E schedule + candidates. Guarded — skips if ezdxf/matplotlib are absent."""
+    def test_build_bundles_ffe_and_writes_qa_section4(self):
+        try:
+            import suite_package
+        except Exception as e:  # noqa: BLE001 — missing render/CAD deps -> skip, not fail
+            self.skipTest(f"suite_package deps unavailable: {e}")
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        sp = os.path.join(root, "examples", "scene-graph.example.json")
+        self.assertTrue(os.path.exists(sp), "gold example missing")
+        spec = json.load(open(sp, encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as d:
+            try:
+                folder, _pdf = suite_package.build(spec, sp, outdir=d)
+            except Exception as e:  # noqa: BLE001 — ezdxf/matplotlib needed for the CAD sheets
+                self.skipTest(f"suite_package.build needs ezdxf/matplotlib: {e}")
+            files = set(os.listdir(folder))
+            self.assertIn("ffe-candidates.json", files)     # the bundle (invariant 6)
+            self.assertIn("ffe-schedule.md", files)
+            qa = open(os.path.join(folder, "QA-CHECKLIST.md"), encoding="utf-8").read()
+            self.assertIn("Sourceability & deliverable bundle", qa)
 
 
 if __name__ == "__main__":

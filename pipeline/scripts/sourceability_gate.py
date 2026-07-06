@@ -64,12 +64,17 @@ TOL = 0.15   # ±15% dimension parity — matches the ffe-research skill's own f
 def classify_element(el, array):
     """'sourced' (bought) or 'fabricated' (joiner-made). items[] are always loose-bought;
     builtins[] are always joiner-made; a fixture depends on its KIND (sanitary/appliance =
-    bought, millwork carcass = made)."""
+    bought, millwork carcass = made). A fixture with a MISSING/empty kind is routed to
+    'sourced' so it SURFACES (a binding REVIEW/FAIL trace) instead of silently escaping the
+    gate into the un-checked FABRICATED bucket — real millwork always carries an explicit kind."""
     if array == "items":
         return "sourced"
     if array == "builtins":
         return "fabricated"
-    return "sourced" if (el.get("kind") or "").lower() in SANITARY_APPLIANCE_KINDS else "fabricated"
+    k = (el.get("kind") or "").strip().lower()
+    if not k:
+        return "sourced"
+    return "sourced" if k in SANITARY_APPLIANCE_KINDS else "fabricated"
 
 
 def elements(spec):
@@ -128,10 +133,19 @@ def check_sourced(el, ffe_doc):
     tag = el.get("ffe_tag")
     cand = resolve_candidate(tag, ffe_doc)
     if cand is None:
+        if not tag:
+            # NO ffe_tag: the binding is not wired yet for this piece. That is a "not done"
+            # state, not a "done wrong" state -> REVIEW (concept-renderable, deliverable flagged),
+            # NOT a hard FAIL. Otherwise every real project (where ffe_tag is a documented
+            # not-yet-built feature) would have no reachable non-FAIL verdict and an advancing
+            # deliverable would flip REVIEW->FAIL purely because the binding step hasn't shipped.
+            return {"name": name, "kind": el.get("kind"), "cls": "sourced", "ffe_tag": None,
+                    "status": "REVIEW", "failed": ["binding"],
+                    "detail": "no ffe_tag — not yet bound to a sourceable product (binding pending)"}
+        # a tag IS present but resolves to no selected candidate -> a LYING binding -> hard FAIL.
         return {"name": name, "kind": el.get("kind"), "cls": "sourced", "ffe_tag": tag,
                 "status": "FAIL", "failed": ["binding"],
-                "detail": (f"tag {tag!r} has no selected FF&E candidate" if tag
-                           else "no ffe_tag — unbound to any sourceable product")}
+                "detail": f"ffe_tag {tag!r} resolves to no selected FF&E candidate"}
     failed = []
     if not dims_ok(el, cand.get("dimensions_mm")):
         failed.append("dimension")
@@ -178,6 +192,11 @@ def report(spec, ffe_doc):
     if ffe_doc is None:
         return results, "UNWIRED"
     sourced = [r for r in results if r.get("cls") == "sourced"]
+    if not sourced:
+        # an FF&E file exists but NOTHING here is catalog-sourced (all-millwork / empty /
+        # loose furniture misrouted into builtins[]) -> nothing was verified, so never emit a
+        # green PASS. UNWIRED honestly says "no sourced piece to check here".
+        return results, "UNWIRED"
     if any(r["status"] == "FAIL" for r in sourced):
         verdict = "FAIL"
     elif any(r["status"] == "REVIEW" for r in sourced):

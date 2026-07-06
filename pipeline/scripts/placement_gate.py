@@ -71,6 +71,7 @@ def _is_strict(kind):
 # Kinds whose drawn symbol carries a facing cue (a headboard / backrest strip) that facing_reader
 # can cross-check against the hand-typed rot. Everything else has no reliable facing symbol.
 _FACING_KINDS = {"bed", "sofa", "loveseat", "armchair", "chair"}
+_CARDINALS = {"N", "S", "E", "W"}      # valid owner-signed facing values (facing_reader vocab)
 
 
 # ---- pure geometry (no PDF) ----------------------------------------------------------
@@ -321,10 +322,13 @@ def confirmed_facing(piece, confirmed, size_tol=0.20):
     if name is None:
         return None
     for e in confirmed or []:
-        if not isinstance(e, dict) or not e.get("facing"):
+        if not isinstance(e, dict):
             continue
+        fac = e.get("facing")
+        if fac not in _CARDINALS:      # a truthy-but-non-cardinal typo ('south','N ',180) must NOT
+            continue                   # suppress — the generator's rot_from_facing would apply nothing
         if e.get("name") == name and _size_consistent(piece, e, size_tol):
-            return e["facing"]
+            return fac
     return None
 
 
@@ -356,8 +360,21 @@ def facing_flags(loose, fsegs, offset=(0, 0), confirmed=None):
     for it in loose:
         if it.get("kind") not in _FACING_KINDS:
             continue                      # rot defaults to 0 (=S) when the generator omits it
-        if confirmed_facing(it, confirmed) is not None:
-            continue                      # owner already signed this facing -> suppress
+        signed = confirmed_facing(it, confirmed)
+        if signed is not None:
+            # The owner signed this piece's facing. Suppress the read-vs-typed flag ONLY when the
+            # piece's BUILT orientation (its rot) matches the signature. If a rebuild re-rolled the
+            # rot so it now CONTRADICTS the owner's signed truth, that is exactly the regression the
+            # ledger exists to catch -> emit a strong flag instead of silently dropping it. (The
+            # generator-applies-the-sign wiring, rot_from_facing, is still pending, so nothing yet
+            # forces rot == sign; this makes the gate the backstop until it lands.)
+            claimed = FR.facing_from_rot(it.get("rot", 0))
+            if claimed == signed:
+                continue                  # built orientation agrees with the sign -> adjudicated
+            out.append({"name": it.get("name"), "kind": it.get("kind"),
+                        "verdict": "contradicts_signed", "claimed": claimed, "read": signed,
+                        "confidence": 1.0})
+            continue
         fp = footprint(it, offset)
         pad = 120.0
         bb = (fp[0] - pad, fp[1] - pad, fp[2] + pad, fp[3] + pad)
@@ -659,7 +676,10 @@ def _report(results, worst, calib_fails=None):
             print(f"    [DUP?]   cluster {f['cluster']} claimed by {len(f['names'])} pieces: "
                   f"{', '.join(str(x) for x in f['names'])}")
         for f in r.get("facing", []):
-            if f.get("verdict") == "ambiguous":
+            if f.get("verdict") == "contradicts_signed":
+                print(f"    [FACE!]  '{f['name']}' built facing {f['claimed']} CONTRADICTS the owner-signed "
+                      f"facing {f['read']} — a rebuild regressed a signed read; re-apply the signature")
+            elif f.get("verdict") == "ambiguous":
                 print(f"    [FACE?]  '{f['name']}' typed to face {f['claimed']}: only a FRONT-edge strip "
                       f"(footboard OR 180-flipped headboard?) — eyeball the orientation")
             else:
@@ -690,7 +710,10 @@ def _report(results, worst, calib_fails=None):
             todo.append(f"SIGN [{r['room']}] two pieces resolve to drawn cluster {f['cluster']} "
                         f"({', '.join(str(x) for x in f['names'])}) — one is misidentified")
         for f in r.get("facing", []):
-            if f.get("verdict") == "ambiguous":
+            if f.get("verdict") == "contradicts_signed":
+                todo.append(f"FIX  [{r['room']}] '{f['name']}' built facing {f['claimed']} CONTRADICTS the "
+                            f"owner-signed facing {f['read']} — the rebuild regressed the signed read; re-apply it")
+            elif f.get("verdict") == "ambiguous":
                 todo.append(f"SIGN [{r['room']}] '{f['name']}' facing: only a FRONT-edge strip (footboard or "
                             f"180-flip?) — eyeball which way it faces")
             else:
