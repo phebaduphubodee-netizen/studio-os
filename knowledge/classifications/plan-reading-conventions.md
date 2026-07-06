@@ -1,14 +1,28 @@
----
-title: Reading furniture/interior floor-plan symbols (how to interpret a 1:75 Thai furniture plan)
-tier: REFERENCE
-source: deep-research web DR (2026-07-05), 20 sources fetched, 25 claims 3-vote adversarially verified (22 confirmed / 3 refuted)
-primary_refs:
-  - Francis D.K. Ching, "Architectural Graphics" 6th ed. — line weight, dashed lines, door swing, scale (NOT furniture facing)
-  - Francis D.K. Ching, "Interior Design Illustrated" — the correct ref for furniture plan symbols/facing
-  - NKBA "Universal Drawing Standards" ch.3 — line-type hierarchy, dimensioning, overhead vs hidden dash lengths
-  - Thai practice: dsignsomething.com, miraidesignstudio.com (door/window symbols), iwadesignthailand.com
-status: PROMOTED 2026-07-06 -> knowledge/classifications/plan-reading-conventions.md (distilled into the classifications house style; this raw DR is retained as the audit trail per the _inbox convention). Filled the vault gap knowledge-manager confirmed: no furniture-plan symbol / orientation / BF-code guide existed.
-provenance_note: raw DR output at (session task) w1q6hmuzj; furniture/fixture symbol claims are blog-tier (RoomSketcher/Cedreo/PlanSnapper) multi-source unanimous; line/door/dash/scale claims have PRIMARY backing (Ching, NKBA). Imperial dash dimensions transfer as conventions; defer to the sheet's own legend/line-type key.
+# การอ่านสัญลักษณ์แปลนเฟอร์นิเจอร์ / Reading a Furniture Floor-Plan — facing + completeness (REFERENCE)
+
+> PROVENANCE: promoted 2026-07-06 from `knowledge/_inbox/plan-reading-conventions-DR-2026-07-05.md`
+> — a deep-research web DR (2026-07-05): 20 sources fetched, 25 claims 3-vote adversarially
+> verified (22 confirmed / 3 refuted). Tier **REFERENCE — strong-but-unaudited**, NOT Authority.
+> PRIMARY backing for the line/door/dash/scale claims: Francis D.K. Ching *Interior Design
+> Illustrated* (furniture symbols/facing) + *Architectural Graphics* 6th ed. (line weight, dashed
+> lines, door swing, scale) + NKBA *Universal Drawing Standards* ch.3 (line-type hierarchy, overhead
+> vs hidden dash lengths). Furniture/fixture-symbol claims are blog-tier (RoomSketcher / Cedreo /
+> PlanSnapper, multi-source unanimous) + Thai practice (dsignsomething, miraidesignstudio,
+> iwadesignthailand). Imperial dash dimensions transfer as CONVENTIONS — defer to the sheet's own
+> legend/line-type key. This file fills the vault gap knowledge-manager confirmed: no furniture-plan
+> symbol / orientation / BF-code guide existed.
+
+## ลำดับอำนาจ / Authority order + precedence
+
+- This file holds **no statutory values**; it is a *reading* convention, not a code. Any dimension
+  read off a plan is still gated by `codes-th/` (Authority) and the project's own DWG/contract.
+- It is the doctrine `pipeline/scripts/facing_reader.py` implements (backrest/headboard strip → back
+  edge → facing) and the completeness discipline `placement_gate.py` enforces (long-dash overhead /
+  short-dash hidden-below are the top cause of *missing* furniture).
+- The **machine reads the GEOMETRIC layer** (footprint / size / completeness) from this; the
+  **SEMANTIC layer** (what a footprint *is*, indoor vs outdoor, a thin-line glass envelope) stays
+  owner-verified — see `docs/strategy.md` (2026-07-06, the 2D→3D two-layer crystallization).
+
 ---
 
 # How to READ a furniture plan (stop guessing — apply two independent systems)
@@ -72,7 +86,7 @@ Two reading systems, used together. **FACING** comes from each piece's own symbo
 - Single-vs-double vanity symbol, window type symbols, and material HATCH patterns (tile/wood/
   concrete/glass fills) were not authoritatively covered — get a graphic-standards hatch key.
 
-## F. Checklist to apply to THIS project's `PLAN FURNITURE FLOOR 2`
+## F. Checklist to apply to a `PLAN FURNITURE` sheet
 1. For every bed/sofa/chair: find the headboard/backrest strip → set facing from it (not the sheet).
 2. Before declaring furniture "complete": scan for LONG-dash rectangles (overhead built-ins you'd
    otherwise miss) and SHORT-dash rectangles (things under counters). Count them in.
