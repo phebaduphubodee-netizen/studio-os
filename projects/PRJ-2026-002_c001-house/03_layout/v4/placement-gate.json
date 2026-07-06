@@ -1,14 +1,14 @@
 {
   "verdict": "REVIEW",
-  "gated_target": "floor2-manifest.json",
+  "gated_target": "floor2_v4-manifest.json",
   "inputs": {
-    "floor2-manifest.json": "65e91839990340b74a1582ddb117db69f11fef58",
-    "scene-graph.master_bedroom.json": "e3477e9b45fb22515ad7fd6e47d5e8b9afed8654",
-    "scene-graph.sitting_room.json": "81b008e68df6ca68aa4bde3a0c21126073607eef",
+    "floor2_v4-manifest.json": "be62dc3431bf090e5c434303a42bdb96dea2e023",
+    "scene-graph.master_bedroom.json": "2416474c3e98c10b392f1c0afdc9b66c1f0ec282",
+    "scene-graph.sitting_room.json": "78d16e30e0b4a4335cee563b9453c25ba6ba6ea9",
     "floor2-walls-mm.json": "89548257129e9718a9ef9a89a49ce75a04efeda2",
-    "placement-review.json": "888d67a1d1576b0fb2de65b4ee6a842117562baa"
+    "placement-review.json": "98efc3736f5a4d8d28ee82062ee5e9b11ca88ff0"
   },
-  "generated_epoch": 1783301474.0601246,
+  "generated_epoch": 1783319124.452451,
   "calibration": "PASS",
   "calibration_fails": [],
   "rooms": [
@@ -22,7 +22,7 @@
       "identity_flags": 0,
       "facing_flags": 0,
       "long_thin": 1,
-      "dropped_total": 23
+      "dropped_total": 22
     },
     {
       "room": "sitting_room",

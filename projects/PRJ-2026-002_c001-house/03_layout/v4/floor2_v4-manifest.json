@@ -1,0 +1,71 @@
+{
+  "schema": "interior-ai/floor-manifest@0.2",
+  "version": "v4",
+  "floor": "Floor 2 blue zone (owner-scoped): master bedroom suite + dressing/work + ensuite + wardrobe bay + sitting + terrace",
+  "project": "PRJ-2026-002 (anonymized)",
+  "units": "mm",
+  "basis": "v4 CLEAN REBUILD. Built-in SIZES = OWNER-authoritative (BF label = cm, owner re-confirmed 2026-07-05: BF09-1=5200, BF09-2=1500, BF09-3=3300, BF10=2500, BF11=3200, BF12-1=1575, BF12-2=700, BF13=4100, BF14=3250). Loose-furniture position/size from deterministic clusters (plan_cluster); tub-chair ANGLE + tight size from oriented min-area boxes. Walls FAITHFUL from the dimensioned PDF (pdf_extract_walls.py @ 26.45 mm/pt). SCOPE: only the blue-circled zone; far-east rooms + north bedrooms are OUT. v3 kept unchanged as the known-flawed diff baseline.",
+  "walls_json": "projects/PRJ-2026-002_c001-house/03_layout/v4/floor2-walls-mm.json",
+  "source_pdf": "projects/PRJ-2026-002_c001-house/00_intake/raw-local/The City สาทร - สุขสวัสดิ์_Plan funiture 02.pdf",
+  "page": 1,
+  "close_mm": 18,
+  "gate": "placement_gate.py must PASS/signed-REVIEW (writes placement-gate.json) before build_floor.py renders",
+  "calibration_checks": [
+    {"axis": "x", "mm": 10600, "tol_mm": 120, "min_len_mm": 1500, "desc": "sitting east wall (far-from-origin scale discriminator)"},
+    {"axis": "x", "mm": 5550, "tol_mm": 120, "min_len_mm": 1500, "desc": "master|sitting party wall"},
+    {"axis": "y", "mm": 6250, "tol_mm": 120, "min_len_mm": 1500, "desc": "sitting north wall (far-from-origin y discriminator)"},
+    {"axis": "y", "mm": 8600, "tol_mm": 150, "min_len_mm": 1500, "desc": "suite north wall (far-from-origin y discriminator)"}
+  ],
+  "ceiling_mm": 2800,
+  "wall_render_thick_mm": 24,
+  "clip_zones": [
+    [-350, -900, 5750, 6350],
+    [5650, -900, 10800, 6350],
+    [-350, 5800, 5750, 8750]
+  ],
+  "furnish": [
+    {"id": "master_bedroom", "spec": "projects/PRJ-2026-002_c001-house/03_layout/v4/scene-graph.master_bedroom.json", "offset_mm": [0, 0]},
+    {"id": "sitting_room", "spec": "projects/PRJ-2026-002_c001-house/03_layout/v4/scene-graph.sitting_room.json", "offset_mm": [0, 0]}
+  ],
+  "terrace": {
+    "outline_mm": [[0, -1150], [10650, -1150], [10650, -450], [0, -450]],
+    "slab_thk_mm": 120,
+    "planters": [
+      {"name": "ต้นไม้ 1", "x": 6350, "y": -1000, "w": 800, "d": 400, "h": 450},
+      {"name": "ต้นไม้ 2", "x": 9500, "y": -1050, "w": 900, "d": 450, "h": 450}
+    ]
+  },
+  "floor_zones": [
+    {"id": "master_sleep", "outline_mm": [[0, -450], [5500, -450], [5500, 2650], [0, 2650]], "color": [0.58, 0.71, 0.90]},
+    {"id": "master_dress", "outline_mm": [[0, 2650], [5650, 2650], [5650, 5850], [0, 5850]], "color": [0.60, 0.79, 0.80]},
+    {"id": "sitting", "outline_mm": [[5750, 2050], [10650, 2050], [10650, 6250], [5750, 6250]], "color": [0.66, 0.85, 0.56]},
+    {"id": "sitting_terrace", "outline_mm": [[5750, -450], [10650, -450], [10650, 2050], [5750, 2050]], "color": [0.74, 0.70, 0.55]},
+    {"id": "ensuite", "outline_mm": [[0, 5850], [3150, 5850], [3150, 8650], [0, 8650]], "color": [0.80, 0.83, 0.88]},
+    {"id": "wardrobe", "outline_mm": [[3150, 5850], [5650, 5850], [5650, 8650], [3150, 8650]], "color": [0.86, 0.80, 0.72]}
+  ],
+  "labels": [
+    {"text": "ห้องนอนใหญ่ MASTER", "x": 2600, "y": 900, "size": 0.42},
+    {"text": "เตียง หัวชิดผนัง ตอ.", "x": 4100, "y": 1100, "size": 0.24},
+    {"text": "โซนแต่งตัว/ทำงาน", "x": 2200, "y": 4600, "size": 0.32},
+    {"text": "ENSUITE", "x": 1400, "y": 7300, "size": 0.4},
+    {"text": "โซนตู้เสื้อผ้า", "x": 4400, "y": 6900, "size": 0.28},
+    {"text": "SITTING", "x": 8200, "y": 3800, "size": 0.4},
+    {"text": "ประตูเลื่อนกระจก", "x": 8500, "y": 2050, "size": 0.26},
+    {"text": "ผนัง+pier (L)", "x": 7100, "y": 2350, "size": 0.2},
+    {"text": "ระเบียงนั่งเล่น (นอกบ้าน)", "x": 8300, "y": 800, "size": 0.3},
+    {"text": "ระเบียง", "x": 3200, "y": -800, "size": 0.36},
+    {"text": "BF11 โต๊ะทำงาน", "x": 700, "y": 4250, "size": 0.24, "z_mm": 2850},
+    {"text": "ตู้ทีวีสูง (ผนัง ตต.)", "x": 620, "y": 1150, "size": 0.2, "z_mm": 1900},
+    {"text": "BF09-3 ตู้เหนือเตียง", "x": 3950, "y": 2950, "size": 0.22, "z_mm": 2850},
+    {"text": "BF10 ตู้/ชั้น (ในโซนแต่งตัว)", "x": 1900, "y": 5550, "size": 0.22, "z_mm": 2850},
+    {"text": "อ่างล้างหน้า", "x": 1850, "y": 6350, "size": 0.2},
+    {"text": "BF14 ระแนงหัวเตียง", "x": 5200, "y": 1350, "size": 0.2, "z_mm": 2850},
+    {"text": "BF09-1 ตู้ L 5.2m", "x": 4400, "y": 8350, "size": 0.22, "z_mm": 2850},
+    {"text": "BF09-2", "x": 3450, "y": 5930, "size": 0.2, "z_mm": 2850},
+    {"text": "BF12-1 ตู้โชว์", "x": 5950, "y": 5462, "size": 0.2, "z_mm": 2850},
+    {"text": "ตู้สูง BF12-2 (รอ owner ยืนยันจุด)", "x": 5950, "y": 3400, "size": 0.18, "z_mm": 2850},
+    {"text": "โต๊ะกล้วยไม้ (แยกจาก BF12-2)", "x": 6399, "y": 1980, "size": 0.18},
+    {"text": "BF13 ชั้นทีวี", "x": 10500, "y": 4100, "size": 0.22, "z_mm": 2850}
+  ],
+  "furniture_note": "v4: loose furniture from deterministic clusters (0-4mm snap) + tub chairs at true drawn angle/size; built-ins = OWNER BF sizes on owner-named walls. Gate verifies COMPLETENESS + NO-FLOATING + ON-INK. Owner-CONFIRMED 2026-07-06: BF09-3=3300 (earlier '150' was a slip), BF09-1=5200 L-wrap. Still human-confirm: TV/west-wall unit identity (footprint 2046x600 read; height 700 = studio default), tub-chair facings, built-in exact positions."
+}

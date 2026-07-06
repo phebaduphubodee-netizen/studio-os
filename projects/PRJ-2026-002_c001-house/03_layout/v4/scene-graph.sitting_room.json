@@ -1,0 +1,137 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "version": "v4",
+  "note": "v4 CLEAN REBUILD (gen_floor2_v4_specs.py). Dimensions/built-in sizes = OWNER-authoritative (BF label = cm, owner-confirmed 2026-07-05); loose-furniture position/size = deterministic clusters (plan_cluster); tub-chair ANGLE + tight size = oriented min-area box (not cardinal). Gate verifies COMPLETENESS + NO-FLOATING + ON-INK only; identity/facing/built-in size are human calls. Absolute floor coords, offset (0,0).",
+  "room": {
+    "type": "sitting_room",
+    "outline_mm": [
+      [
+        5750,
+        0
+      ],
+      [
+        10650,
+        0
+      ],
+      [
+        10650,
+        6250
+      ],
+      [
+        5750,
+        6250
+      ]
+    ],
+    "ceiling_mm": 2800,
+    "wall_thk_mm": 100
+  },
+  "builtins": [
+    {
+      "name": "ตู้โชว์ BF12-1 (157.5x40x280)",
+      "kind": "cabinet",
+      "x": 5750,
+      "y": 4674,
+      "w": 400,
+      "d": 1575,
+      "h": 2800,
+      "bf": "BF12-1",
+      "note": "party/west wall, NW, behind sofa, next to door"
+    },
+    {
+      "name": "ตู้สูง BF12-2 (70x40x280)",
+      "kind": "cabinet",
+      "x": 5750,
+      "y": 3050,
+      "w": 400,
+      "d": 700,
+      "h": 2800,
+      "bf": "BF12-2",
+      "note": "tall cabinet on the WEST party wall, INDOOR, north of the outer orchid table (owner 2026-07-06: BF12-2 indoor + NOT overlapping the orchid table); EXACT spot pending owner confirm"
+    },
+    {
+      "name": "ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)",
+      "kind": "cabinet",
+      "x": 10350,
+      "y": 2050,
+      "w": 300,
+      "d": 4100,
+      "h": 500,
+      "bf": "BF13",
+      "note": "east wall; the sofa faces it"
+    }
+  ],
+  "items": [
+    {
+      "name": "โซฟา 3 ที่นั่ง",
+      "kind": "sofa",
+      "x": 7061,
+      "y": 4147,
+      "w": 2202,
+      "d": 1008,
+      "h": 800,
+      "rot": 90,
+      "cluster": 5,
+      "snap_mm": 1,
+      "note": "faces EAST toward BF13/TV"
+    },
+    {
+      "name": "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)",
+      "kind": "armchair",
+      "x": 5991,
+      "y": 629,
+      "w": 680,
+      "d": 640,
+      "h": 750,
+      "rot": 12,
+      "angled": true,
+      "note": "outdoor terrace; faces the garden (S), converges outside"
+    },
+    {
+      "name": "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)",
+      "kind": "armchair",
+      "x": 7300,
+      "y": 1085,
+      "w": 660,
+      "d": 640,
+      "h": 750,
+      "rot": 335,
+      "angled": true,
+      "note": "outdoor terrace; faces the garden (S), converges outside"
+    },
+    {
+      "name": "โต๊ะกลม (ระหว่างเก้าอี้)",
+      "kind": "side_table",
+      "x": 6614,
+      "y": 1114,
+      "w": 600,
+      "d": 600,
+      "h": 450,
+      "cluster": 17,
+      "snap_mm": 2,
+      "shape": "round"
+    },
+    {
+      "name": "โต๊ะกลม (ข้างโซฟา)",
+      "kind": "side_table",
+      "x": 9164,
+      "y": 4360,
+      "w": 600,
+      "d": 600,
+      "h": 450,
+      "cluster": 7,
+      "snap_mm": 2,
+      "shape": "round"
+    },
+    {
+      "name": "โต๊ะวางกล้วยไม้ (console)",
+      "kind": "console",
+      "x": 5898,
+      "y": 2172,
+      "w": 1002,
+      "d": 402,
+      "h": 450,
+      "note": "orchid console table (drawn ~1002x402) — SEPARATE piece from BF12-2 (owner 2026-07-06)"
+    }
+  ]
+}

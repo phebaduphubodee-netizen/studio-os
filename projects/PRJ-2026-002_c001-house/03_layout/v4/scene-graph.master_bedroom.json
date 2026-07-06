@@ -1,0 +1,280 @@
+{
+  "schema": "interior-ai/room-spec@0.2",
+  "units": "metric",
+  "version": "v4",
+  "note": "v4 CLEAN REBUILD (gen_floor2_v4_specs.py). Dimensions/built-in sizes = OWNER-authoritative (BF label = cm, owner-confirmed 2026-07-05); loose-furniture position/size = deterministic clusters (plan_cluster); tub-chair ANGLE + tight size = oriented min-area box (not cardinal). Gate verifies COMPLETENESS + NO-FLOATING + ON-INK only; identity/facing/built-in size are human calls. Absolute floor coords, offset (0,0).",
+  "room": {
+    "type": "bedroom_suite",
+    "outline_mm": [
+      [
+        0,
+        -450
+      ],
+      [
+        5500,
+        -450
+      ],
+      [
+        5500,
+        2650
+      ],
+      [
+        5650,
+        2650
+      ],
+      [
+        5650,
+        8650
+      ],
+      [
+        0,
+        8650
+      ]
+    ],
+    "ceiling_mm": 2800,
+    "wall_thk_mm": 100
+  },
+  "builtins": [
+    {
+      "name": "ผนังระแนงหัวเตียง BF14 (325x10x280)",
+      "kind": "headboard",
+      "x": 5150,
+      "y": -275,
+      "w": 100,
+      "d": 3250,
+      "h": 2800,
+      "bf": "BF14"
+    },
+    {
+      "name": "ตู้เสื้อผ้าเหนือเตียง BF09-3 (330x60x280)",
+      "kind": "wardrobe",
+      "x": 2300,
+      "y": 2650,
+      "w": 3300,
+      "d": 600,
+      "h": 2800,
+      "bf": "BF09-3"
+    },
+    {
+      "name": "โต๊ะทำงาน built-in BF11 (320x60x280)",
+      "kind": "cabinet",
+      "x": 0,
+      "y": 2650,
+      "w": 600,
+      "d": 3200,
+      "h": 750,
+      "bf": "BF11"
+    },
+    {
+      "name": "ตู้/ชั้น BF10 (250x60x280)",
+      "kind": "cabinet",
+      "x": 650,
+      "y": 5250,
+      "w": 2500,
+      "d": 600,
+      "h": 2800,
+      "bf": "BF10",
+      "note": "dressing cabinet BETWEEN BF11 and BF09-2, against the ensuite south wall (NOT the vanity)"
+    }
+  ],
+  "items": [
+    {
+      "name": "เตียง 7'x6.5' หัวตะวันออก",
+      "kind": "bed",
+      "x": 3092,
+      "y": 110,
+      "w": 2134,
+      "d": 1981,
+      "h": 600,
+      "rot": 270,
+      "note": "head EAST vs BF14 slat; measured (merges with casework)"
+    },
+    {
+      "name": "ม้านั่งปลายเตียง (bench)",
+      "kind": "bench",
+      "x": 2646,
+      "y": 628,
+      "w": 504,
+      "d": 1002,
+      "h": 450,
+      "cluster": 34,
+      "snap_mm": 0,
+      "note": "foot of bed; confirm identity"
+    },
+    {
+      "name": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)",
+      "kind": "side_table",
+      "x": 4794,
+      "y": 2308,
+      "w": 300,
+      "d": 300,
+      "h": 520,
+      "cluster": 27,
+      "snap_mm": 3,
+      "note": "NE of the bed head"
+    },
+    {
+      "name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
+      "kind": "side_table",
+      "x": 4794,
+      "y": -338,
+      "w": 300,
+      "d": 294,
+      "h": 520,
+      "rot": 180,
+      "cluster": 38,
+      "snap_mm": 4,
+      "note": "SE of the bed head"
+    },
+    {
+      "name": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)",
+      "kind": "armchair",
+      "x": 870,
+      "y": 3982,
+      "w": 510,
+      "d": 546,
+      "h": 750,
+      "rot": 270,
+      "cluster": 17,
+      "snap_mm": 3,
+      "note": "pulled up to BF11 work desk; faces W"
+    },
+    {
+      "name": "ตู้ทีวีสูง ผนังตะวันตก",
+      "kind": "tv_console",
+      "x": 306,
+      "y": 130,
+      "w": 600,
+      "d": 2046,
+      "h": 1800,
+      "cluster": 31,
+      "snap_mm": 3,
+      "note": "west-wall TALL TV cabinet the bed foot faces; owner-confirmed identity + TALL (2026-07-06); footprint 2046x600 from cluster, height owner-set"
+    }
+  ],
+  "subrooms": [
+    {
+      "name": "ห้องน้ำในตัว (ensuite)",
+      "type": "bathroom",
+      "outline_mm": [
+        [
+          0,
+          5850
+        ],
+        [
+          3150,
+          5850
+        ],
+        [
+          3150,
+          8650
+        ],
+        [
+          0,
+          8650
+        ]
+      ],
+      "ceiling_mm": 2800,
+      "fixtures": [
+        {
+          "name": "อ่างล้างหน้าคู่ (ในห้องน้ำ)",
+          "kind": "vanity_double",
+          "x": 600,
+          "y": 6075,
+          "w": 2500,
+          "d": 550,
+          "h": 850,
+          "note": "ensuite double vanity (sanitaryware, NOT BF10); two basins on the south counter, run '3.05'"
+        },
+        {
+          "name": "โถสุขภัณฑ์ WC",
+          "kind": "toilet",
+          "x": 250,
+          "y": 6000,
+          "w": 400,
+          "d": 700,
+          "h": 400,
+          "note": "SW, against the west wall"
+        },
+        {
+          "name": "อ่างอาบน้ำ (bathtub)",
+          "kind": "bathtub",
+          "x": 1300,
+          "y": 7550,
+          "w": 1800,
+          "d": 900,
+          "h": 550,
+          "note": "NE, north wall"
+        },
+        {
+          "name": "ฝักบัว (shower)",
+          "kind": "shower",
+          "x": 100,
+          "y": 7350,
+          "w": 1050,
+          "d": 1150,
+          "h": 2200,
+          "note": "NW glass enclosure"
+        }
+      ]
+    },
+    {
+      "name": "โซนตู้เสื้อผ้า (wardrobe bay)",
+      "type": "wardrobe",
+      "outline_mm": [
+        [
+          3150,
+          5850
+        ],
+        [
+          5650,
+          5850
+        ],
+        [
+          5650,
+          8650
+        ],
+        [
+          3150,
+          8650
+        ]
+      ],
+      "ceiling_mm": 2800,
+      "fixtures": [
+        {
+          "name": "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)",
+          "kind": "wardrobe",
+          "x": 3150,
+          "y": 8050,
+          "w": 2500,
+          "d": 600,
+          "h": 2800,
+          "bf": "BF09-1",
+          "note": "north leg 2.5m along the bay north wall (of the 5.2m L)"
+        },
+        {
+          "name": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)",
+          "kind": "wardrobe",
+          "x": 5050,
+          "y": 5950,
+          "w": 600,
+          "d": 2100,
+          "h": 2800,
+          "bf": "BF09-1",
+          "note": "east leg ~2.7m along the bay east wall x5650 (of the 5.2m L)"
+        },
+        {
+          "name": "ตู้เสื้อผ้า BF09-2 (150x60x280)",
+          "kind": "wardrobe",
+          "x": 3150,
+          "y": 5180,
+          "w": 600,
+          "d": 1500,
+          "h": 2800,
+          "bf": "BF09-2",
+          "note": "flush to ensuite east wall; S end MEETS BF10 (~y5250), N end just below the door gap (y6698)"
+        }
+      ]
+    }
+  ]
+}
