@@ -1,6 +1,8 @@
 {
   "schema": "interior-ai/room-spec@0.2",
   "units": "metric",
+  "ffe_candidates": "ffe-candidates.json",
+  "ffe_binding_note": "2026-07-06 sourceability wiring: every loose items[] piece carries an ffe_tag joining to its ffe-candidates.json role (sofa->FFE-L01, coffee->FFE-L02, armchairs->FFE-L03, lamp tables->FFE-L04). Built-ins are FABRICATED (joiner-made, no catalog binding). sourceability_gate resolves each to its selected product, checks footprint parity (all within +/-15%) + real supplier; verdict is REVIEW because the FF&E round is DRAFT (verified:false) pending designer vendor confirmation, NOT because the binding is missing.",
   "note": "REAL living room, Floor 1 LOWER-RIGHT, PRJ-2026-002 (anonymized). Derived 2026-07-04 to REPLACE the FICTIONAL living_condo.json (which is retired). METHOD (same discipline as master_bedroom/sitting_room — honesty load-bearing): this is an OPEN-PLAN living zone (open north to the dining/kitchen) with no dedicated room dimension on the sheet, so WIDTH ~4800 x DEPTH ~4200 mm are ESTIMATED from the drafter's F03.100x100 coffee table (1000x1000, an authoritative built-in code used as the raster scale) — pending a cleaner CAD export. ARRANGEMENT is from the plan (page0 floor-1 crop): a 3-seat sofa facing the TV, a 1000x1000 coffee table (F03), a 2000x400 console (F02.200x40x50), 2 armchairs, 2 round lamp side tables, TV wall-mounted on the foyer/stair partition. This is the ROOM TYPE the designer round-2 critiqued (TV on the floor / TV behind the seated viewer) so the fixes are enforced here: TV is WALL-MOUNTED (mount_mm 900, floats — not a floor block) and FACES the sofa; the sofa faces the TV; the armchairs flank the group clear of the sofa->TV corridor (seating_clear_of_screen). ORIENTATION note: the plan puts the TV on the WEST wall (sofa faces east); modelled on the NORTH wall (sofa faces south) to keep the materializer's axis-aligned rotation convention (rot 90/270 swaps w/d about the centre) — the TV<->sofa relationship, the point of the critique, is preserved. Exact furniture XY is ergonomic DESIGN JUDGEMENT within the estimated envelope, gate-verified, not traced. Coord frame: mm, origin SW, x east, y north, front = -Y at rot 0.",
   "room": {
     "type": "living_room",
@@ -48,7 +50,8 @@
       "w": 1900,
       "d": 950,
       "h": 800,
-      "rot": 180
+      "rot": 180,
+      "ffe_tag": "FFE-L01"
     },
     {
       "name": "โต๊ะกลาง 1x1m (F03.100x100)",
@@ -57,7 +60,8 @@
       "y": 2050,
       "w": 1000,
       "d": 1000,
-      "h": 450
+      "h": 450,
+      "ffe_tag": "FFE-L02"
     },
     {
       "name": "อาร์มแชร์ ตะวันตก",
@@ -67,7 +71,8 @@
       "w": 750,
       "d": 750,
       "h": 750,
-      "rot": 90
+      "rot": 90,
+      "ffe_tag": "FFE-L03"
     },
     {
       "name": "อาร์มแชร์ ตะวันออก",
@@ -77,7 +82,8 @@
       "w": 750,
       "d": 750,
       "h": 750,
-      "rot": 270
+      "rot": 270,
+      "ffe_tag": "FFE-L03"
     },
     {
       "name": "โต๊ะข้างโคมไฟ ซ้าย",
@@ -86,7 +92,8 @@
       "y": 500,
       "w": 350,
       "d": 350,
-      "h": 450
+      "h": 450,
+      "ffe_tag": "FFE-L04"
     },
     {
       "name": "โต๊ะข้างโคมไฟ ขวา",
@@ -95,7 +102,8 @@
       "y": 500,
       "w": 350,
       "d": 350,
-      "h": 450
+      "h": 450,
+      "ffe_tag": "FFE-L04"
     }
   ]
 }
