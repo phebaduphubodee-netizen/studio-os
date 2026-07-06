@@ -19,10 +19,42 @@ So the output frame matches the room-spec@0.2 files (master SW interior ~ (0,0))
 import json
 import sys
 
-import fitz
+
+# ---- pure geometry / filters (NO fitz -> unit-testable; the calibration + screens were
+#      previously validated only empirically at build/gate time against the real PDF) --------
+def map_pt(px, py, scale, x0, y0):
+    """Paper point (page rotation already applied) -> real mm in the room-spec@0.2 frame:
+    x EAST from the origin, y NORTH (paper y is down, so it flips). The (scale,x0,y0) triple is
+    the one load-bearing constant, verified <1% vs the written dims (5500/5100/2850/2950/700)."""
+    return ((px - x0) * scale, (y0 - py) * scale)
+
+
+def is_wall_stroke(color, width, max_color_sum=0.3, min_width=0.6):
+    """True only for a THICK BLACK stroke (a wall). Furniture/fixtures/dimension lines are
+    thinner (0.12/0.48 pt) and light-grey (high sum(rgb)); a None colour (no stroke) is not a
+    wall. Mirrors the original inline `col is None or sum(col) > 0.3 or w < 0.6` skip, inverted."""
+    if color is None:
+        return False
+    return sum(color) <= max_color_sum and (width or 0) >= min_width
+
+
+def keep_segment(x1, y1, x2, y2, x_range=(-1000, 21200), y_range=(-1600, 13300),
+                 min_len=40.0, max_len=21000.0, max_off_axis=8.0):
+    """True for a segment INSIDE the drawing frame (drops the sheet border/title block), of
+    real length (drops specks + the full-page diagonal), and axis-aligned (drops slanted
+    dimension ticks/leaders). Mirrors the original inline screens exactly."""
+    if not (x_range[0] <= x1 <= x_range[1] and x_range[0] <= x2 <= x_range[1] and
+            y_range[0] <= y1 <= y_range[1] and y_range[0] <= y2 <= y_range[1]):
+        return False
+    dx, dy = x2 - x1, y2 - y1
+    L = (dx * dx + dy * dy) ** 0.5
+    if L < min_len or L > max_len:
+        return False
+    return min(abs(dx), abs(dy)) <= max_off_axis
 
 
 def extract(pdf, page, scale, x0, y0):
+    import fitz    # lazy: the pure helpers above stay importable/testable without PyMuPDF
     doc = fitz.open(pdf)
     p = doc[page]
     m = p.rotation_matrix
@@ -39,28 +71,19 @@ def extract(pdf, page, scale, x0, y0):
             return [(q.ul, q.ur), (q.ur, q.lr), (q.lr, q.ll), (q.ll, q.ul)]
         return []
 
-    def mm(P):
+    def to_mm(P):
         Q = fitz.Point(P) * m
-        return ((Q.x - x0) * scale, (y0 - Q.y) * scale)
+        return map_pt(Q.x, Q.y, scale, x0, y0)
 
     walls = []
     for d in p.get_drawings():
-        col = d.get("color")
-        w = d.get("width") or 0
-        if col is None or sum(col) > 0.3 or w < 0.6:      # thick BLACK strokes only
+        if not is_wall_stroke(d.get("color"), d.get("width") or 0):   # thick BLACK strokes only
             continue
         for it in d["items"]:
             for a, b in seglist(it):
-                (x1, y1) = mm(a)
-                (x2, y2) = mm(b)
-                if not (-1000 <= x1 <= 21200 and -1000 <= x2 <= 21200 and
-                        -1600 <= y1 <= 13300 and -1600 <= y2 <= 13300):
-                    continue                              # drop sheet border / title block
-                dx, dy = x2 - x1, y2 - y1
-                L = (dx * dx + dy * dy) ** 0.5
-                if L < 40 or L > 21000:
-                    continue
-                if min(abs(dx), abs(dy)) > 8:             # keep axis-aligned (drops dim ticks)
+                (x1, y1) = to_mm(a)
+                (x2, y2) = to_mm(b)
+                if not keep_segment(x1, y1, x2, y2):      # frame / length / axis-aligned screens
                     continue
                 walls.append([[round(x1, 1), round(y1, 1)], [round(x2, 1), round(y2, 1)]])
     return walls
