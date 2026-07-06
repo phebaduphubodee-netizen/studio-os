@@ -76,7 +76,7 @@
       "note": "faces EAST toward BF13/TV"
     },
     {
-      "name": "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)",
+      "name": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
       "kind": "armchair",
       "x": 5991,
       "y": 629,
@@ -85,11 +85,11 @@
       "h": 750,
       "rot": 8,
       "angled": true,
-      "note": "outdoor terrace; faces the garden (S), converges outside",
+      "note": "indoor floor-2 lounge by the south glass; faces the garden VIEW below",
       "facing_source": "owner-signed"
     },
     {
-      "name": "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)",
+      "name": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
       "kind": "armchair",
       "x": 7300,
       "y": 1085,
@@ -98,7 +98,7 @@
       "h": 750,
       "rot": 332,
       "angled": true,
-      "note": "outdoor terrace; faces the garden (S), converges outside",
+      "note": "indoor floor-2 lounge by the south glass; faces the garden VIEW below",
       "facing_source": "owner-signed"
     },
     {

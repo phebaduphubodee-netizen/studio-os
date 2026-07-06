@@ -27,10 +27,12 @@ v4 corrections vs v3 (kept as the known-flawed diff baseline):
     (was 2150), BF09-3=3300, BF11=3200 (v3 had 1320/3200 muddle) — all owner-confirmed cm.
   * BF09-1 5200 does not fit a straight wall in the 2500x2800 bay -> modelled as the drawn L
     wrapping the bay's north (2500) + east (2700) walls (flagged for owner confirm).
-  * Tub chairs are OUTDOOR terrace lounge chairs (owner 2026-07-06): they sit SOUTH of the
-    sitting-room sliding glass door (exterior wall at y~2050) and FACE OUT to the garden, their
-    sightlines converging on a point OUTSIDE the house (~the terrace tree). Placed at realistic
-    size + true outward facing (rot 12 / 335), not the earlier inward-to-a-table read, not cardinal.
+  * Tub chairs are INDOOR floor-2 lounge chairs (owner 2026-07-06: "the chairs ARE floor 2; there
+    is no terrace — outside the wall is grass BELOW"). They sit in the south lounge of the sitting
+    room, by the south GLASS facade, and FACE OUT toward the garden VIEW below (the trees are ground
+    level, y<0, OUTSIDE/below the glass — NOT a floor-2 terrace). The y~2050 wall is an interior
+    partition/sliding door (not the exterior facade, which is a thin-line glass wall ~y0 the wall
+    extractor drops). Placed at realistic size + true facing (drawn 12/335), not cardinal.
   * Outlines anchored to the vector wall grid (floor2-walls-mm.json).
 
     python gen_floor2_v4_specs.py <plan.pdf> <out_overlay.png> <v4_layout_dir>
@@ -318,19 +320,19 @@ def main():
     # SOFA faces EAST toward the BF13 media/TV wall (round accent table between).
     sit_items.append(snap("sitting_room", "โซฟา 3 ที่นั่ง", "sofa", sc, s_claimed,
                           (8161, 4651), "E", 800, confirmed=confirmed_sitting, note="faces EAST toward BF13/TV"))
-    # TWO TUB CHAIRS — OUTDOOR terrace lounge, SOUTH of the sliding glass door (exterior wall y~2050).
-    # Owner 2026-07-06: they FACE OUT to the garden, sightlines converging on a point OUTSIDE the house
-    # (~terrace tree at 6400,-500). Angled at realistic 680x640 (NOT the ~774 AABB, NOT cardinal, NOT the
-    # earlier inward-to-a-table read). Drawn-read angles rot 12 (left) / rot 335 (right). OWNER REFINED
-    # the aim 2026-07-06: converge JUST RIGHT OF THE LEFT garden tree (~6550,-600, was ~6670,-650) ->
+    # TWO TUB CHAIRS — INDOOR floor-2 lounge by the south GLASS facade (owner 2026-07-06: "the chairs
+    # ARE floor 2; no terrace — outside the wall is grass BELOW"). They face OUT toward the garden VIEW
+    # below (trees are ground level y<0, outside the glass). Angled at realistic 680x640 (NOT the ~774
+    # AABB, NOT cardinal). Drawn-read angles rot 12 (left) / rot 335 (right). OWNER REFINED the aim
+    # 2026-07-06: converge JUST RIGHT OF THE LEFT garden tree below (~6550,-600, was ~6670,-650) ->
     # signed in placement-review.json confirmed[] as rot 8 / 332, which resolve_rot APPLIES over these
     # drawn-read literals (the ledger's first real signatures; regen without them = drawn 12/335).
-    sit_items.append(angled("sitting_room", "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)", "armchair",
+    sit_items.append(angled("sitting_room", "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)", "armchair",
                             6331, 949, 680, 640, 12, 750, confirmed=confirmed_sitting,
-                            note="outdoor terrace; faces the garden (S), converges outside"))
-    sit_items.append(angled("sitting_room", "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)", "armchair",
+                            note="indoor floor-2 lounge by the south glass; faces the garden VIEW below"))
+    sit_items.append(angled("sitting_room", "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)", "armchair",
                             7630, 1405, 660, 640, 335, 750, confirmed=confirmed_sitting,
-                            note="outdoor terrace; faces the garden (S), converges outside"))
+                            note="indoor floor-2 lounge by the south glass; faces the garden VIEW below"))
     # ROUND TABLES (snap to their drawn circles; render round).
     sit_items.append(snap("sitting_room", "โต๊ะกลม (ระหว่างเก้าอี้)", "side_table", sc, s_claimed,
                           (6916, 1414), "S", 450, confirmed=confirmed_sitting, shape="round"))

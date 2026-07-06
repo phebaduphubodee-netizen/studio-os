@@ -300,7 +300,7 @@ for idx, (room, it, cat) in enumerate(ALL, start=1):
 _ZN = {"master_sleep": ("MASTER / ที่นอน", 850, 330),
        "master_dress": ("โซนแต่งตัว / ทำงาน", 750, 5650),
        "sitting": ("SITTING (ในบ้าน)", 8900, 5100),
-       "sitting_terrace": ("ระเบียงนั่งเล่น (นอกบ้าน)", 8300, 500),
+       "sitting_lounge": ("เลานจ์ริมกระจก (ในบ้าน ชั้น 2)", 8300, 500),
        "ensuite": ("ENSUITE ห้องน้ำในตัว", 1050, 7080),
        "wardrobe": ("โซนตู้ BF09-1 (L 5.2m)", 3300, 6550)}
 zcol = {z["id"]: z["color"] for z in zones}

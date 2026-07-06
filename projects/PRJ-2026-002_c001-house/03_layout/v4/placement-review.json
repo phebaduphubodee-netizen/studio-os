@@ -48,23 +48,23 @@
   "confirmed": [
     {
       "room": "sitting_room",
-      "name": "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)",
+      "name": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
       "rot": 8,
       "w": 680,
       "d": 640,
-      "by": "owner (2026-07-06: aim just-right-of-left-tree)",
+      "by": "owner (2026-07-06)",
       "date": "2026-07-06",
-      "note": "terrace tub chair AIMS at owner-set convergence (6550, -600) (just right of the left garden tree, into the gap toward the right tree); drawn-read angle was 12"
+      "note": "indoor floor-2 lounge chair AIMS at owner-set convergence (6550, -600) (garden view below, just right of the left tree); drawn-read angle 12"
     },
     {
       "room": "sitting_room",
-      "name": "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)",
+      "name": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
       "rot": 332,
       "w": 660,
       "d": 640,
-      "by": "owner (2026-07-06: aim just-right-of-left-tree)",
+      "by": "owner (2026-07-06)",
       "date": "2026-07-06",
-      "note": "terrace tub chair AIMS at owner-set convergence (6550, -600) (just right of the left garden tree, into the gap toward the right tree); drawn-read angle was 335"
+      "note": "indoor floor-2 lounge chair AIMS at owner-set convergence (6550, -600) (garden view below, just right of the left tree); drawn-read angle 335"
     }
   ]
 }
