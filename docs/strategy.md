@@ -697,3 +697,45 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
   remote history (retrievable by SHA even after a later scrub), the PUSH is DEFERRED for the owner
   to decide the asset convention first.** Everything is committed locally + green + scrutinized;
   `git push` sends all 11 unpushed commits once the owner OKs.
+
+## Session 2026-07-06b — the two deferred wiring halves closed + hardened
+
+- **The deferred wiring is DONE** (commits `766e175`/`a7173ae`/`d92bb2e`, local, push still
+  deferred). The prior entry left two halves open: "generator-apply wiring into
+  `gen_floor2_specs.snap()`" and "populating `ffe_tag` on the real scene-graphs". Both landed:
+  (1) `snap()`/`angled()` in both generators now APPLY an owner-signed facing over their hand-read
+  default via `placement_gate.resolve_rot`; (2) every loose piece in the REAL living room binds an
+  `ffe_tag` to its `ffe-candidates.json` role (sourceability gate REVIEW, all 4 tags resolve).
+- **The ledger went ROT-AWARE.** `confirmed_facing` (cardinal S/E/N/W only) could not express the
+  terrace tub chairs at 12°/335°, the exact non-cardinal facing the v3→v4 regression was about. New
+  `confirmed_rot` accepts a cardinal `{"facing":"W"}` OR a numeric `{"rot":335}`, and is the SINGLE
+  matcher both the gate (`facing_flags`) and the generators (`resolve_rot`) call — so they can never
+  disagree on what the owner signed. `facing_flags` now checks a signed rot for EVERY loose kind
+  (the generator applies a sign to any kind), suppressing on match, raising `contradicts_signed` on
+  drift.
+- **Scrutiny earned its keep again (6 dims → verify → completeness critic; 4 confirmed + 2 critic,
+  0 uncertain; false alarms correctly refuted).** The standout was a SELF-CONSISTENT blind spot the
+  author could not see: `to_spec`'s cardinal 90/270 pre-swap (correct for the snap path, where the
+  dims are a drawn axis-aligned cluster AABB) also fired on the ANGLED path, where the dims are the
+  piece's own oriented box — so an owner sign resolving to exactly 90/270 stored the rot=0 footprint
+  while claiming rot 90, and the gate SUPPRESSED its own flag because gate and renderer were
+  self-consistently wrong. Fixed with `swap_cardinal=False` on `angled()`; the AABB is now continuous
+  across 89/90/91. Lesson: a gate cannot catch an error it shares with the thing it checks — only an
+  independent reviewer (or a continuity/discontinuity probe) surfaces it. Also fixed: `confirmed_rot`
+  shadowing an appended correction behind an earlier typo (diverged from `confirmed_facing`); the one
+  loose piece (orchid console) not wired to `resolve_rot`; the signed backstop being disabled by an
+  unrelated `import facing_reader` guard; a non-discriminating suppress-test.
+- **Honesty over theatre — the ledger is EMPTY, so the mechanism is INERT today.** The critic's best
+  finding: both `placement-review.json confirmed[]` are empty, so the headline "owner-signed facings
+  survive a rebuild / ends the chair-facing regression" protects nothing on the real deliverable yet
+  — a rebuild CAN still re-roll the hand-typed facings until the owner signs them. The right move was
+  NOT to fabricate signatures (facing is owner-only — the north-star's hardest line) but to make the
+  prose say so plainly: the generator docstring now states the mechanism is built+wired+tested but
+  activates per piece only when the owner signs, and signing is the owner's step. **Open owner
+  decision:** populate `confirmed[]` with the facings the notes already mark owner-attested (the tub
+  chairs' 12/335 outward converge is an explicit owner call; the bed head-W is a hand-READ, so it
+  must NOT be transcribed) — this is the owner's act, offered but not taken.
+- **Empirical byte-identity as the safety proof.** Every generator/gate edit was a provable no-op on
+  the current empty-ledger data; proven by REGENERATING both floors' scene-graphs and diffing —
+  byte-identical — so all hash-pinned gate markers stay valid without re-pinning. Fix-verification =
+  empirical law, again.
