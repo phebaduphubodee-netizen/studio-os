@@ -2,13 +2,13 @@
   "verdict": "REVIEW",
   "gated_target": "floor2_v4-manifest.json",
   "inputs": {
-    "floor2_v4-manifest.json": "be62dc3431bf090e5c434303a42bdb96dea2e023",
+    "floor2_v4-manifest.json": "9f0bbf3baab1ab966967c052f677cdfe50dbd959",
     "scene-graph.master_bedroom.json": "2416474c3e98c10b392f1c0afdc9b66c1f0ec282",
-    "scene-graph.sitting_room.json": "78d16e30e0b4a4335cee563b9453c25ba6ba6ea9",
+    "scene-graph.sitting_room.json": "d5ecfddce638b358b0e2a3ad9954a9e6021c2343",
     "floor2-walls-mm.json": "89548257129e9718a9ef9a89a49ce75a04efeda2",
     "placement-review.json": "98efc3736f5a4d8d28ee82062ee5e9b11ca88ff0"
   },
-  "generated_epoch": 1783319124.452451,
+  "generated_epoch": 1783341212.8950772,
   "calibration": "PASS",
   "calibration_fails": [],
   "rooms": [

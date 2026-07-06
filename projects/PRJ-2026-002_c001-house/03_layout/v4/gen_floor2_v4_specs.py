@@ -266,8 +266,8 @@ sit_builtins.append(bf("ตู้โชว์ BF12-1 (157.5x40x280)", "BF12-1", 
 # BF12-2 = a TALL cabinet (70x40x280) and the ORCHID TABLE are SEPARATE pieces (owner 2026-07-06):
 # the drawn ~1000x400 table (cluster id2, with the orchid squiggle) is loose furniture; BF12-2 is a
 # distinct 700x400 tall cabinet against the y2600 wall behind it. (Was wrongly merged as one console.)
-sit_builtins.append(bf("ตู้สูง BF12-2 (70x40x280)", "BF12-2", "cabinet", 5950, 3400, "NS",
-                       note="tall cabinet on the WEST party wall, INDOOR, north of the outer orchid table (owner 2026-07-06: BF12-2 indoor + NOT overlapping the orchid table); EXACT spot pending owner confirm"))
+sit_builtins.append(bf("ตู้สูง BF12-2 (70x40x280)", "BF12-2", "cabinet", 5950, 3000, "NS",
+                       note="tall cabinet on the WEST party wall (x5750), INNER sitting side, just NORTH of the outer orchid table — owner-pointed spot 2026-07-06 (highlighted); 400 deep x 700 N-S"))
 # ORCHID TABLE (loose, drawn 1002x402 = cluster id2) — a separate low console the owner flagged.
 sit_items.append(to_spec("โต๊ะวางกล้วยไม้ (console)", "console", 6399, 2373, 1002, 402, 0, 450,
                          note="orchid console table (drawn ~1002x402) — SEPARATE piece from BF12-2 (owner 2026-07-06)"))
