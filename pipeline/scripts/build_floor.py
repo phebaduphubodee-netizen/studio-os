@@ -156,6 +156,24 @@ def place_massing(kind, name, sw_x, sw_y, w, d, h, rot, base_z, mat_furn, mat_bo
                          sw_x, sw_y, base_z, w, d, max(h, 0.02), rot, pivot, mat_box, coll)
 
 
+def add_cylinder(name, cx, cy, z0, r, h, mat, coll, seg=40):
+    import math as _m
+    verts = [(cx + r * _m.cos(2 * _m.pi * i / seg), cy + r * _m.sin(2 * _m.pi * i / seg), z0) for i in range(seg)]
+    verts += [(cx + r * _m.cos(2 * _m.pi * i / seg), cy + r * _m.sin(2 * _m.pi * i / seg), z0 + h) for i in range(seg)]
+    faces = [(i, (i + 1) % seg, seg + (i + 1) % seg, seg + i) for i in range(seg)]
+    faces.append(tuple(range(seg)))                          # bottom cap
+    faces.append(tuple(range(2 * seg - 1, seg - 1, -1)))     # top cap
+    return make_mesh(name, verts, faces, mat, coll)
+
+
+def place_round_table(name, cx, cy, base_z, r, h, mat, coll):
+    """A ROUND pedestal table (circular top + slim stem + foot disk) — reads round, not boxy."""
+    t = min(0.045, max(h * 0.12, 0.02))
+    add_cylinder(name + "_top", cx, cy, base_z + h - t, r, t, mat, coll)
+    add_cylinder(name + "_stem", cx, cy, base_z + 0.02, max(r * 0.14, 0.03), max(h - t - 0.02, 0.02), mat, coll)
+    add_cylinder(name + "_foot", cx, cy, base_z, max(r * 0.42, 0.05), 0.025, mat, coll)
+
+
 def build_floor_zones(zones, coll):
     """A thin colour-coded floor slab per room so the top view reads at a glance."""
     for i, z in enumerate(zones):
@@ -195,6 +213,11 @@ def build_furniture(spec, dx_mm, dy_mm, coll):
             kind = it.get("kind", "block")
             bz = (it.get("mount_mm", 0) or 0) * MM
             mat = seat if (seat_ok and kind in ("sofa", "loveseat", "armchair", "chair", "bench")) else furn
+            if it.get("shape") == "round":                 # round tables render as a cylinder, not a box
+                place_round_table(it.get("name", kind).replace(" ", "_"),
+                                  (it["x"] + dx_mm + it["w"] / 2.0) * MM, (it["y"] + dy_mm + it["d"] / 2.0) * MM,
+                                  bz, min(it["w"], it["d"]) / 2.0 * MM, max(it.get("h", 400) * MM, 0.02), mat, coll)
+                continue
             place_massing(kind, it.get("name", kind),
                           (it["x"] + dx_mm) * MM, (it["y"] + dy_mm) * MM,
                           it["w"] * MM, it["d"] * MM, max(it.get("h", 400) * MM, 0.02),
@@ -284,7 +307,10 @@ def add_cameras(bb):
 
     top = bpy.data.cameras.new("TopPlan")
     top.type = 'ORTHO'
-    top.ortho_scale = span * 1.06
+    # ortho_scale maps to the render's LONGER (horizontal) axis, so a plan taller than
+    # width*aspect gets cropped top/bottom (was clipping the ensuite tub). Fit BOTH dims.
+    aspect = 2600.0 / 1700.0                       # matches scn.render resolution in set_engine
+    top.ortho_scale = max(x1 - x0, (y1 - y0) * aspect) * 1.06
     to = bpy.data.objects.new("Top_Plan", top)
     to.location = (cx, cy, z1 + span)
     to.rotation_euler = (0.0, 0.0, 0.0)
@@ -368,6 +394,19 @@ def require_placement_gate(manifest_path, man, man_dir, repo_root, accept_review
     for rm in man.get("furnish", []):
         sp = os.path.join(repo_root, rm["spec"]) if not os.path.isabs(rm["spec"]) else rm["spec"]
         required[os.path.basename(sp)] = sp
+    # walls_json is BOTH a direct build input (walls are extruded from it) and what the gate's
+    # calibration check reads; bind it so a post-gate re-extraction with a wrong scale/origin
+    # triple refuses the build instead of quietly extruding mis-calibrated walls off a stale marker.
+    wj = man.get("walls_json")
+    if wj:
+        required[os.path.basename(wj)] = os.path.join(repo_root, wj) if not os.path.isabs(wj) else wj
+    # the dismissals ledger can SUPPRESS a drawn piece from the completeness check, so a post-gate
+    # edit -- especially DELETING a dismissal to re-open a question -- must force a re-gate. Require
+    # it when it exists now OR the marker recorded one; a ledger that appeared/vanished/changed
+    # after gating then lands in 'bad' (present-and-matching, or absent-in-both, is the only pass).
+    ledger_path = os.path.join(man_dir, "placement-review.json")
+    if os.path.exists(ledger_path) or "placement-review.json" in marker_inputs:
+        required["placement-review.json"] = ledger_path
     bad = []
     for name, path in required.items():
         have = _sha1(path) if os.path.exists(path) else None
@@ -409,9 +448,25 @@ def main():
     with open(manifest_path, encoding="utf-8") as f:
         man = json.load(f)
     man_dir = os.path.dirname(os.path.abspath(manifest_path))
-    repo_root = os.path.abspath(os.path.join(man_dir, "..", "..", ".."))
+    # Repo root is where the manifest's repo-relative spec/walls paths resolve. Do NOT assume a
+    # fixed depth (a manifest can live in a stage dir OR a deeper vN subdir): walk up until a dir
+    # holds the repo markers, and fall back to the historical 3-levels-up only if none is found.
+    def _find_repo_root(start):
+        d = start
+        for _ in range(8):
+            if os.path.isdir(os.path.join(d, "pipeline")) and os.path.isdir(os.path.join(d, "projects")):
+                return d
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        return os.path.abspath(os.path.join(start, "..", "..", ".."))
+    repo_root = _find_repo_root(man_dir)
     if not out_dir:
         out_dir = os.path.join(repo_root, "pipeline", "output", "floor2")
+    # Absolute: Blender resolves a RELATIVE render.filepath against ITS cwd (often the drive
+    # root), so a relative --out silently leaks renders to C:\pipeline\... instead of the repo.
+    out_dir = os.path.abspath(out_dir)
     os.makedirs(out_dir, exist_ok=True)
 
     # gate: a furnished floor must pass the placement reading-check before it can be built
@@ -469,7 +524,10 @@ def main():
     # 4) room labels (placed at known centres from the plan reading)
     lc = new_collection("labels")
     for lb in man.get("labels", []):
-        add_label(lb["text"], lb["x"] * MM, lb["y"] * MM, lc, size=lb.get("size", 0.5))
+        # z from manifest (mm) — BF labels float ABOVE their cabinet so the top camera isn't
+        # occluded by the box (a floor-level label under a 2.8 m box is invisible from above).
+        add_label(lb["text"], lb["x"] * MM, lb["y"] * MM, lc, size=lb.get("size", 0.5),
+                  z=lb.get("z_mm", 50) * MM)
 
     bb = scene_bbox()
     add_cameras(bb)

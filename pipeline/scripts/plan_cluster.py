@@ -75,11 +75,27 @@ def _zero_mask(arr, rects, zone, W, H):
     return arr
 
 
+def _screen_component(wmm, dmm):
+    """Size gate for a connected component -> (keep, reason). A reason other than 'kept' is
+    RECORDED by extract_clusters (not silently dropped) so the completeness scan can still
+    surface a real piece the clusterer lost:
+      merged_blob  both axes > 3600mm  — clustering fused separate pieces (retune close_mm)
+      thin         either axis < 150mm — a dimension tick / leader line (usually not furniture)
+    """
+    if wmm > 3600 and dmm > 3600:
+        return False, "merged_blob"
+    if wmm < 150 or dmm < 150:
+        return False, "thin"
+    return True, "kept"
+
+
 def extract_clusters(pdf, page, zone, close_mm, masks=None, calib=None):
     """DETERMINISTIC furniture clusters for <zone> (x0,y0,x1,y1 in mm) on <page>.
 
     Returns a dict:
       items : [ {id,x,y,w,d,area_m2,curve,fill}, ... ]  (x,y = lower-left mm corner)
+      dropped : [ {reason,x,y,w,d,area_m2}, ... ]  size-filtered components (merged/thin) —
+                surfaced so a real piece lost to a filter is NOT silently invisible
       fsegs : the furniture stroke segments (for the overlay)
       ink   : bool HxW raster of furniture ink (row0 = top = Y1) AFTER masking
       zone, res, W, H  (W,H = the ACTUAL raster shape, so consumers clamp correctly)
@@ -130,20 +146,24 @@ def extract_clusters(pdf, page, zone, close_mm, masks=None, calib=None):
     def px2mm(col, row):
         return X0 + col * RES, Y1 - row * RES          # row0 = top = Y1
 
-    comps = []
+    comps, dropped = [], []
     for i in range(1, n + 1):
         ys, xs = np.where(lab == i)
         area_px = len(xs)
         if area_px < 25:
-            continue
+            continue                                   # sub-mm speckle — too small to record
         x_lo, _ = px2mm(xs.min(), 0)
         x_hi, _ = px2mm(xs.max(), 0)
         _, y_hi = px2mm(0, ys.min())
         _, y_lo = px2mm(0, ys.max())
         wmm, dmm = x_hi - x_lo, y_hi - y_lo
-        if wmm < 150 or dmm < 150:                     # noise / dim ticks
-            continue
-        if wmm > 3600 and dmm > 3600:                  # merged blob — skip (retune close)
+        keep, reason = _screen_component(wmm, dmm)
+        if not keep:                                   # record, don't silently vanish it
+            fill = area_px / max((xs.max()-xs.min()+1) * (ys.max()-ys.min()+1), 1)
+            dropped.append({"reason": reason, "x": round(x_lo), "y": round(y_lo),
+                            "w": round(wmm), "d": round(dmm),
+                            "area_m2": round(area_px * RES * RES / 1e6, 2),
+                            "fill": round(fill, 2)})       # low fill => thin frame/boundary, not furniture
             continue
         reg = (lab == i)
         curvy = int((reg & curveink).sum())
@@ -154,7 +174,7 @@ def extract_clusters(pdf, page, zone, close_mm, masks=None, calib=None):
 
     comps.sort(key=lambda c: (-c["w"]*c["d"]))
     return {"items": comps, "fsegs": fsegs, "ink": ink, "zone": zone,
-            "res": RES, "W": W, "H": H}
+            "res": RES, "W": W, "H": H, "dropped": dropped}
 
 
 def _main(argv):

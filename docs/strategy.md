@@ -593,3 +593,57 @@
   project has no FF&E file (never silent-pass); (3) deliverable rule — a render without
   its FF&E schedule + BOM is NOT a deliverable; (4) later — asset-binding: selected
   product → low-poly proxy/photo → render conditioning, closing 5(b).
+
+## 2026-07-06 — 2D→3D plan reading splits into two layers (the floor2 v4 crystallization)
+
+Comparing `pipeline/output/floor2` (v3, pre-session) with the v4 rebuild produced the
+sharpest lesson of the whole floor2 saga, because it isolates *what the machinery
+cannot do*. **v3 already had the entire deterministic stack** — deterministic clusters,
+BF-label authoritative sizes, the hardened `placement_gate.py` (41/4/11 tests), the
+self-verify overlay — **and even the honesty lessons** ("per-piece IoU after snap is
+tautological", "the gate guarantees only completeness + no-floating"). It was not a
+primitive build. **Yet v3 still shipped several wrong/incomplete *semantic* reads** (and one
+its own rebuild later regressed) — the owner corrected them into v4:
+- BF10 read as the ensuite double vanity → it's a **dressing cabinet outside** the bath.
+- BF09: BF09-1 (L) and BF09-3 were placed, but **BF09-2 (1.5m) was omitted** ("wall not clear")
+  → v4 has all three distinct (BF09-2 meets BF10, clears the ensuite door).
+- ensuite: v3 **already had** WC + tub + shower, but the **vanity was conflated under BF10** and
+  fixtures were under-sized → v4 un-conflates BF10 and resizes the tub/shower. (v3's geometric +
+  completeness work was largely RIGHT here — the fault was identity + sizing, not a missing piece.)
+- sitting-room south boundary assumed to reach y0 → the enclosed room **stops at a sliding
+  glass door (y2050)**; the deep south strip is an **outdoor terrace**, not room floor.
+- tub chairs: v3 had them facing **out to the garden** (rot 0, correct) → the v4 rebuild
+  *regressed* this to "face an interior table", owner re-corrected to face out. (See sub-lesson 2.)
+
+**The decision/frame that follows:** the 2D→3D reading has two separable layers, and the
+project kept stalling because it implicitly tried to automate both.
+1. **Geometric layer** — footprint, size, completeness, no-floating, on-ink. *Machine-
+   solved and reliable* (clusters + BF labels + gate). This is done.
+2. **Semantic layer** — what a footprint *is* (identity/function), which way a seat
+   *faces*, whether a wall is an exterior glass envelope, indoor vs outdoor, how a "5.2m"
+   label maps to an L. **The machine cannot read this from the raster.** It guesses, and
+   the gate — correctly — never certifies it (it stays REVIEW). *Every* v3→v4 fix was here.
+
+So the product is **not** "autonomous correct reading." It is: the machine runs layer-1
+fast and honestly and **surfaces exactly the layer-2 calls**, and the owner (fluent Thai-
+plan reader) injects truth in a tight correction loop. v4 = 5 owner touches to converge —
+that is the model *working*, not failing. Optimise the render+overlay+REVIEW-checklist
+loop (latency, clarity), not a zero-touch fantasy.
+
+Three sub-lessons worth their own guardrails:
+- **Thin-line features are invisible to the thick-stroke wall extractor.** The sliding
+  glass door (thin lines) never entered `floor2-walls-mm.json`, so it rendered as an
+  accidental gap and went unmodelled/unlabelled. **A room's true boundary can be a thin-
+  line glass wall the machine cannot see** — needs owner annotation or a separate thin-
+  line reading pass. (This is *why* v3 assumed the sitting floor reached y0.)
+- **A "clean rebuild" re-rolls the semantic dice and can REGRESS a confirmed read.** v4
+  regressed the chair facing v3 had right (v3 rot 0 = south; v4 re-derived facing from the
+  oriented min-area box and picked the wrong 180° interpretation). The facing lived only as
+  a default + a prose note, so the rebuild silently overwrote it and nothing flagged it.
+  ⇒ **confirmed semantic truth must persist as durable, structured, owner-signed data the
+  rebuild reads — never re-derived each rebuild, never left in prose.** (Actionable: a
+  `confirmed: {facing|identity|...: owner+date}` block on the spec item that the generator
+  honours over any geometric re-derivation.)
+- **The gate's honest scope held the whole time.** It never claimed identity/facing and
+  never lied; it just isn't sufficient alone. Necessary-but-not-sufficient is the correct
+  posture — pair it with the human loop, don't over-build it toward semantics it can't reach.
