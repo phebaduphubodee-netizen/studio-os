@@ -83,9 +83,10 @@
       "w": 680,
       "d": 640,
       "h": 750,
-      "rot": 12,
+      "rot": 8,
       "angled": true,
-      "note": "outdoor terrace; faces the garden (S), converges outside"
+      "note": "outdoor terrace; faces the garden (S), converges outside",
+      "facing_source": "owner-signed"
     },
     {
       "name": "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)",
@@ -95,9 +96,10 @@
       "w": 660,
       "d": 640,
       "h": 750,
-      "rot": 335,
+      "rot": 332,
       "angled": true,
-      "note": "outdoor terrace; faces the garden (S), converges outside"
+      "note": "outdoor terrace; faces the garden (S), converges outside",
+      "facing_source": "owner-signed"
     },
     {
       "name": "โต๊ะกลม (ระหว่างเก้าอี้)",

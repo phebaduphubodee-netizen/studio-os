@@ -321,7 +321,10 @@ def main():
     # TWO TUB CHAIRS — OUTDOOR terrace lounge, SOUTH of the sliding glass door (exterior wall y~2050).
     # Owner 2026-07-06: they FACE OUT to the garden, sightlines converging on a point OUTSIDE the house
     # (~terrace tree at 6400,-500). Angled at realistic 680x640 (NOT the ~774 AABB, NOT cardinal, NOT the
-    # earlier inward-to-a-table read). rot 12 (left, SSE) / rot 335 (right, SSW) -> converge ~(6670,-650).
+    # earlier inward-to-a-table read). Drawn-read angles rot 12 (left) / rot 335 (right). OWNER REFINED
+    # the aim 2026-07-06: converge JUST RIGHT OF THE LEFT garden tree (~6550,-600, was ~6670,-650) ->
+    # signed in placement-review.json confirmed[] as rot 8 / 332, which resolve_rot APPLIES over these
+    # drawn-read literals (the ledger's first real signatures; regen without them = drawn 12/335).
     sit_items.append(angled("sitting_room", "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)", "armchair",
                             6331, 949, 680, 640, 12, 750, confirmed=confirmed_sitting,
                             note="outdoor terrace; faces the garden (S), converges outside"))

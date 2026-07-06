@@ -4,31 +4,67 @@
   "dismissed": [
     {
       "room": "sitting_room",
-      "x": 6254, "y": 5350, "w": 894, "d": 948, "curve": false,
+      "x": 6254,
+      "y": 5350,
+      "w": 894,
+      "d": 948,
+      "curve": false,
       "reason": "DOOR swing (gap in the NW wall + leaf + quarter-circle arc) — the clusterer reads the swing ink as a blob; verified on the plan sheet",
       "by": "owner (point A, 2026-07-05) + claude re-verified v4",
       "date": "2026-07-05"
     },
     {
       "room": "master_bedroom",
-      "x": -132, "y": -572, "w": 390, "d": 1074, "curve": true,
+      "x": -132,
+      "y": -572,
+      "w": 390,
+      "d": 1074,
+      "curve": true,
       "reason": "SW-corner WALL HATCHING (west exterior wall + south glazing lines), not furniture — verified vs the plan; all master furniture is separately clustered",
       "by": "claude (verified vs plan floor 2 v4)",
       "date": "2026-07-05"
     },
     {
       "room": "master_bedroom",
-      "x": -582, "y": -674, "w": 6306, "d": 9456,
+      "x": -582,
+      "y": -674,
+      "w": 6306,
+      "d": 9456,
       "reason": "room-spanning DIMENSION/BOUNDARY LINEWORK the clusterer could not resolve (merged_blob), NOT furniture — every master piece (bed, bench, 2 nightstands, desk chair, west-wall unit, all BF built-ins, ensuite fixtures, wardrobe) is accounted for separately",
       "by": "claude (verified vs plan floor 2 v4)",
       "date": "2026-07-05"
     },
     {
       "room": "sitting_room",
-      "x": 5618, "y": -122, "w": 5154, "d": 6504,
+      "x": 5618,
+      "y": -122,
+      "w": 5154,
+      "d": 6504,
       "reason": "room-spanning DIMENSION/BOUNDARY LINEWORK (merged_blob), NOT furniture — every sitting piece (sofa, 2 tub chairs, 2 round tables, BF12-1/BF12-2/BF13) is accounted for separately",
       "by": "claude (verified vs plan floor 2 v4)",
       "date": "2026-07-05"
+    }
+  ],
+  "confirmed": [
+    {
+      "room": "sitting_room",
+      "name": "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)",
+      "rot": 8,
+      "w": 680,
+      "d": 640,
+      "by": "owner (2026-07-06: aim just-right-of-left-tree)",
+      "date": "2026-07-06",
+      "note": "terrace tub chair AIMS at owner-set convergence (6550, -600) (just right of the left garden tree, into the gap toward the right tree); drawn-read angle was 12"
+    },
+    {
+      "room": "sitting_room",
+      "name": "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)",
+      "rot": 332,
+      "w": 660,
+      "d": 640,
+      "by": "owner (2026-07-06: aim just-right-of-left-tree)",
+      "date": "2026-07-06",
+      "note": "terrace tub chair AIMS at owner-set convergence (6550, -600) (just right of the left garden tree, into the gap toward the right tree); drawn-read angle was 335"
     }
   ]
 }

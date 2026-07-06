@@ -4,11 +4,11 @@
   "inputs": {
     "floor2_v4-manifest.json": "9f0bbf3baab1ab966967c052f677cdfe50dbd959",
     "scene-graph.master_bedroom.json": "2416474c3e98c10b392f1c0afdc9b66c1f0ec282",
-    "scene-graph.sitting_room.json": "d5ecfddce638b358b0e2a3ad9954a9e6021c2343",
+    "scene-graph.sitting_room.json": "ebe2754213cf3b42d785f8eee192f38b4d4ee16c",
     "floor2-walls-mm.json": "a5475b295ce0fedf5f7ca21fbb2fee9528f6c4f8",
-    "placement-review.json": "98efc3736f5a4d8d28ee82062ee5e9b11ca88ff0"
+    "placement-review.json": "925d7bb8948f046bc18b3726475014ee0d5bf1df"
   },
-  "generated_epoch": 1783350062.123906,
+  "generated_epoch": 1783360062.1034334,
   "calibration": "PASS",
   "calibration_fails": [],
   "rooms": [
