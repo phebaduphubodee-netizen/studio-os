@@ -436,6 +436,19 @@ def main():
           len(master_items) + len(master_builtins) + len(ensuite_fix) + len(wardrobe_fix),
           "master pieces,", len(sit_items) + len(sit_builtins), "sitting pieces")
 
+    # ---------------------------------------------------------------- REQUIRED read-vs-sheet overlay
+    # The pre-owner surfacing step (2026-07-06 diagnosis): every rebuild MUST emit the machine's
+    # read painted over the TRUE sheet (numbered pieces + provenance-coloured facing arrows +
+    # the checklist the numbers key into), so the owner SCANS a picture instead of HUNTING each
+    # misread. No try/except: if the overlay cannot be produced, the generate fails loudly — a
+    # rebuild without its overlay is a rebuild the owner cannot review.
+    from raster_overlay import render_read_overlay
+    overlay_rooms = [{"id": "master_bedroom", "spec": master, "offset": (0, 0)},
+                     {"id": "sitting_room", "spec": sitting, "offset": (0, 0)}]
+    for w in render_read_overlay(PDF, PAGE, (SCALE, OX, OY), overlay_rooms,
+                                 os.path.join(LAYOUT_DIR, "review-read-vs-sheet")):
+        print("wrote", w)
+
     # ---------------------------------------------------------------- match report
     print("\nLOOSE-FURNITURE READ (positions/angles from the drawing, not typed):")
     for room, name, kind, cid, dist, bbox, mism in _REPORT:

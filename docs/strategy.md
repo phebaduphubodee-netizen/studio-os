@@ -740,6 +740,39 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
   byte-identical — so all hash-pinned gate markers stay valid without re-pinning. Fix-verification =
   empirical law, again.
 
+## Session 2026-07-06d — the VISIBLE half shipped: read-vs-sheet overlay as a REQUIRED rebuild artifact
+
+- **Owner said "go" → built the diagnosis's top visible win:** `raster_overlay.py` fully reworked
+  from an unwired hardcoded script into the REQUIRED pre-owner surfacing step. Manifest-driven
+  (same source_pdf/page/calibration resolution as `placement_gate.run`, line-for-line), pure
+  import-testable core, and a `render_read_overlay()` the v4 generator now CALLS on every rebuild
+  (no try/except — a rebuild that can't produce its overlay fails loudly). Emits per-room +
+  full crops of the machine's read painted over the TRUE sheet + `review-read-vs-sheet.md`.
+- **The scan contract:** every piece badged `A5`/`B3` (room-letter + index, collision-free) with
+  the checklist row keyed to the badge; facing arrows are the PROVENANCE channel — GREEN =
+  owner-signed (ledger-backed, rebuild-proof), ORANGE = hand-read (what the owner's eye is for);
+  box colours deliberately contain no green/orange (guard test pins this); dashed blue = the
+  machine's ROOM-BOUNDARY read (disputable — the sliding-door lesson); header tells the owner a
+  drawn-but-unboxed piece = a machine miss (the BF09-2 class). Real floor2: 26 pieces → **3
+  orange rows** (bed, desk chair, sofa), each with a READY-TO-PASTE `confirmed[]` JSON stub
+  (name/rot/w/d join keys pre-filled) — "ถูกแล้ว" now costs one paste, so the orange count can
+  actually shrink to zero; identity honestly marked un-signable until `confirmed_kind` exists.
+- **Scrutiny (2 lenses: correctness + owner's-advocate) again found what the author missed,
+  including in the just-written code:** duplicate badge numbers across rooms in one crop (badge
+  "5" = master bed AND sitting chair — fixed: per-room crops draw only their room + letter
+  prefixes); green KIND boxes stealing the green=signed channel (recoloured); no path from
+  "correct"→"signed" so orange rows would never shrink (the stubs + one Thai line fixed it);
+  `_resolve` missing the gate's basename fallback; zero-crop silent success (now raises); and a
+  **visual self-check catch**: the arrow-length variable `L` SHADOWED the room-letter `L` after
+  the first arrowed piece → badges rendered as "794.35" — only viewing the PNG caught it
+  (render-layer bugs live below unit tests; always eyeball the artifact).
+- Tests 16 (new) + 71/18/14 green; real scene-graphs byte-identical throughout; artifacts
+  committed per the existing v4 convention (review PNGs are tracked raw). **Deferred:** overlay
+  freshness not bound into the gate marker (a hand-edited spec can leave a stale overlay);
+  `confirmed_kind`; zones drawn as translucent fills (indoor/outdoor class still not surfaced —
+  would NOT have caught terrace→lounge); off-crop piece annotation; `tv_console` has no arrow
+  (gate parity) though TV facing is FUNCTION-load-bearing.
+
 ## Session 2026-07-06c — "the read is still not good enough": the real bottleneck + the trustworthy foundation
 
 - **Owner:** "ระบบการถอดแบบ 2D→3D ยังดีไม่พอ." A 12-agent adversarial workflow (8 subsystem maps →
