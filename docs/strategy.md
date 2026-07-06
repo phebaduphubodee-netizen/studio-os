@@ -516,3 +516,80 @@
   in Blender/Cycles clay-only (free, no Gemini) — the geometry engine materializes
   every spec correctly; the sitting re-render visibly shows the deepened sofa.
   Lesson: `build_room.py` writes to `pipeline/output/` (its own dir), not cwd.
+
+## 2026-07-06 — DECISION: sourceability-first (the render VISUALIZES a sourceable spec; it does not invent furniture)
+- **Owner's framing (the load-bearing product question):** a beautiful render
+  whose furniture cannot be sourced in the real Thai market is not neutral — it
+  is NEGATIVE. The client can't buy/build it, feels misled, and the studio's
+  credibility (and repeat work) dies. *"ถ้า AI ปั้น furniture มั่ว ๆ ที่ไม่มีจริง
+  แล้วใครจะซื้อแบบของเรา?"* This is the deeper form of M3.2: **"design-correct"
+  must include SOURCEABLE + BUILDABLE**, not just photoreal and dimensionally-legal.
+- **DECISION of record — spec-first, render-second:** furniture is SELECTED from
+  real sourceable products (`03_layout/ffe-candidates.json` — real supplier / dims /
+  THB price) BEFORE rendering; the scene-graph places those specific products; the
+  render is a **visualization of a pre-committed sourceable spec, never the source
+  of truth**. Generative (Gemini) may dress ambiance/background but MUST NOT
+  introduce or restyle a hero furniture piece into something unsourceable. Every
+  client deliverable ships **render + FF&E schedule + BOM together** — the render
+  sells the vision, the schedule/BOM delivers the reality.
+- **Concrete gap that makes this un-enforced today:** the scene-graph
+  (`schema room-spec@0.2`) and the FF&E list are **structurally disconnected**.
+  scene-graph `items[]` carry `kind` + dimensions + plan-cluster provenance but
+  **no FF&E binding** (no `ffe_tag`/SKU); `ffe-candidates.json` is keyed by its own
+  `tag`+`role` with a `selected:true` candidate, separate. Nothing checks that the
+  bed `build_room` extrudes = a buyable product. So a render CAN show furniture with
+  no sourceable counterpart — the owner's exact fear. `build_room` places
+  dimensional masses; Gemini paints "a plausible bed"; `ffe-candidates.json` may
+  hold a different bed or none.
+- **SOURCEABILITY GATE (spec — sibling to Gate-0 clearance + the FUNCTION gate;
+  runs pre-render AND pre-deliverable).** Split scene-graph elements by class:
+  - **Sourced** = loose `items[]` (bed, sofa, side_table, armchair, bench,
+    tv_console…) + sanitary/appliance `fixtures` (toilet, basin, tub, shower,
+    fridge…) → bought from a catalog → subject to this gate.
+  - **Fabricated** = `builtins[]` + millwork `fixtures` (headboard slat wall,
+    over-bed wardrobe, built-in desk, vanity carcass…) → made by a joiner →
+    subject to a BUILDABILITY check against
+    `knowledge/ergonomics/casework-fixture-clearances-th-practice.md` (drawer
+    deductions, hinge count, curtain-pocket depth), NOT catalog sourcing.
+  Checks per sourced element:
+  1. **Binding parity** — item resolves (via a new `ffe_tag`) to an FF&E item with
+     a `selected:true` candidate. Unbound sourced item → FAIL.
+  2. **Dimension parity** — selected candidate `dimensions_mm` matches the
+     scene-graph footprint within tolerance (FF&E already uses ±15%); mismatch =
+     the render shows a piece the buyable product isn't → FAIL. This automates the
+     FFE-S01 lesson (2026-07-04): the 600 mm-spec sofa was unbuyable, footprint had
+     to move to the real 860 mm Index product — the gate catches that class before
+     a human notices.
+  3. **Real supplier** — selected candidate has `source_th` + `link`. Missing → FAIL.
+  4. **Verified tier** — for CLIENT DELIVERY the selected candidate must be
+     `verified:true` (not DRAFT). `verified:false` → REVIEW (renderable for concept,
+     deliverable stamped "furniture not yet sourced-confirmed").
+  5. **Render parity (generative-hallucination guard — the honest hard half):** a
+     generative render can't be pixel-forced to a SKU, so the gate binds the SPEC and
+     render discipline is layered: (a) prompt NAMES the selected real products
+     (extend the "name what the clay masses ARE" slot to "name the real product each
+     mass is"); (b) where a product 3D model/photo exists, CONDITION on it (the real
+     business case for the asset-binding layer, 2026-07-06 — render the SPECIFIED
+     sofa, not an imagined one); (c) deliverable ALWAYS bundles the schedule+BOM;
+     (d) automatable: extend `overlay_fidelity.py` to flag furniture-shaped render
+     regions not backed by a bound item.
+- **Honest scope:** DECISION + gate SPEC, no code yet. The generative render stays
+  structurally unable to guarantee a pixel-exact SKU — the gate guarantees the SPEC
+  is sourceable and the DELIVERABLE bundles the sourcing; it cannot alone stop Gemini
+  restyling a fabric. That residual is bounded by prompt-naming + always-shipping the
+  schedule, and later by conditioning on real product geometry. codes-th still
+  outranks; sourceability sits ALONGSIDE the statutory clearance gate, not above it.
+- **Why this is the moat, not a tax (answers "ใครจะซื้อแบบของเรา"):** a hallucinated
+  pretty render is a commodity — any Midjourney user makes one. A render where every
+  piece is real, priced in THB, installable, and backed by real Thai supplier
+  relationships (e.g. the Formica −35%-via-rep intel just distilled to
+  `knowledge/studio-vault/40-Suppliers/discord-supplier-directory.md`) is what a
+  client pays a studio for. Sourceability IS the product.
+- **Implementation steps (not built — ordered):** (1) add `ffe_tag` to the room-spec
+  schema (@0.2→@0.3), populate on authoring, bump examples + the gen_floor2_specs
+  cluster path; (2) `pipeline/scripts/sourceability_gate.py` — the five checks,
+  class-aware, wired into `make_all` BEFORE render (like clearance/FUNCTION) and into
+  suite_package's QA-CHECKLIST (rows prefixed `sourceability:`), UNWIRED-honest when a
+  project has no FF&E file (never silent-pass); (3) deliverable rule — a render without
+  its FF&E schedule + BOM is NOT a deliverable; (4) later — asset-binding: selected
+  product → low-poly proxy/photo → render conditioning, closing 5(b).
