@@ -11,6 +11,17 @@ Division of labor is FIXED for this project (RESTART-PROMPT-floor2-v4.md):
     tight size via an oriented (min-area) box — because the owner's feedback was explicit:
     do NOT force chairs to cardinal facings, and do NOT oversize them.
 
+FACING is owner-signable and DURABLE (placement-review.json `confirmed[]`, same dir): a signed
+facing OVERRIDES the hand-read default via placement_gate.resolve_rot — the SAME confirmed_rot
+matcher the gate uses to suppress/raise its facing flag, so generator and gate never disagree.
+A signature is a CARDINAL letter ({"facing":"W"}) OR an explicit numeric {"rot": 12} — the latter
+is what makes the NON-cardinal terrace tub chairs (rot 12/335) signable. The mechanism is BUILT +
+WIRED + TESTED but ACTIVATES PER PIECE only once the owner signs it: today `confirmed[]` is EMPTY,
+so every facing below is still just a hand-read LITERAL and a clean rebuild CAN re-roll it (the exact
+v3->v4 regression) UNTIL the owner signs the piece into the ledger — signing is the owner's step, not
+the machine's. Absent a signature the hand-read facing is used unchanged, so a regen against the
+(currently empty) ledger is byte-identical to the pre-wiring generator.
+
 v4 corrections vs v3 (kept as the known-flawed diff baseline):
   * BF label parse fixed: `BF09-1.520x60x280` = 5200x600x2800 (was mis-read 1520), BF09-2=1500
     (was 2150), BF09-3=3300, BF11=3200 (v3 had 1320/3200 muddle) — all owner-confirmed cm.
@@ -23,6 +34,10 @@ v4 corrections vs v3 (kept as the known-flawed diff baseline):
   * Outlines anchored to the vector wall grid (floor2-walls-mm.json).
 
     python gen_floor2_v4_specs.py <plan.pdf> <out_overlay.png> <v4_layout_dir>
+
+Pure logic (to_spec / match / snap / angled / bf / room_zone; facing via placement_gate.resolve_rot)
+is import-testable without a PDF (fitz/matplotlib/plan_cluster load inside main); only main() reads
+the plan.
 """
 import json
 import math
@@ -34,35 +49,33 @@ try:
 except Exception:
     pass
 
-import fitz
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
-from matplotlib.patches import FancyArrow, Polygon
-
-# import the SAME deterministic clusterer the gate uses
+# import the SAME deterministic clusterer + the gate's OWN facing matcher (single source of truth).
+# plan_cluster + fitz + matplotlib load inside main(); placement_gate's top level is stdlib-only.
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.abspath(os.path.join(_HERE, "..", "..", "..", ".."))
-sys.path.insert(0, os.path.join(_REPO, "pipeline", "scripts"))
-from plan_cluster import extract_clusters
+for _p in (_HERE, os.path.join(_REPO, "pipeline", "scripts")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+from placement_gate import resolve_rot, load_confirmed
 
-PDF = sys.argv[1]
-OUT_OVERLAY = sys.argv[2]
-LAYOUT_DIR = sys.argv[3]
 SCALE, OX, OY = 26.45, 171.2, 596.5
 CLOSE_MM = 18.0
 PAGE = 1
 FACE_ROT = {"S": 0, "E": 90, "N": 180, "W": 270}
 
 
-def to_spec(name, kind, cx, cy, wx, hy, rot, h, **extra):
+def to_spec(name, kind, cx, cy, wx, hy, rot, h, swap_cardinal=True, **extra):
     """drawn bbox (centre cx,cy; extents wx=EW, hy=NS) + rot -> spec item, matching how
     build_floor.place_massing renders (fills w x d at the lower-left corner, pivots at the
     centre, rotates by rot). For a CARDINAL 90/270 the axis-aligned footprint swaps, so we
     pre-swap to keep the footprint == (wx,hy). For a NON-cardinal rot (angled chair) we do
-    NOT swap: build_floor + the gate both compute the true rotated bbox from (w,d,rot)."""
-    if rot in (90, 270):
+    NOT swap: build_floor + the gate both compute the true rotated bbox from (w,d,rot).
+
+    swap_cardinal MUST be False on the angled() path: there (wx,hy) are the piece's OWN oriented
+    dims, not a drawn axis-aligned cluster AABB, so the pre-swap would CANCEL an owner sign that
+    happens to resolve to exactly 90/270 (storing the rot=0 footprint while claiming rot 90) — the
+    gate would then suppress its own flag because gate and renderer are self-consistently wrong."""
+    if swap_cardinal and rot in (90, 270):
         w, d = hy, wx
     else:
         w, d = wx, hy
@@ -114,27 +127,46 @@ def match(anchor, kind, shape, clusters, claimed, max_dist=1100, mismatch_penalt
     return c, true_d, _mism(c, want)
 
 
-def snap(room, name, kind, clusters, claimed, anchor, face, h, **extra):
-    """Emit a CARDINAL loose piece AT the exact drawn-cluster bbox for its anchor+kind."""
-    rot = FACE_ROT[face]
+def snap(room, name, kind, clusters, claimed, anchor, face, h, confirmed=None, **extra):
+    """Emit a CARDINAL loose piece AT the exact drawn-cluster bbox for its anchor+kind. An owner
+    signed facing (placement-review.json confirmed[], resolved via placement_gate.resolve_rot)
+    OVERRIDES the hand-typed `face`; absent one the hand-typed cardinal is used unchanged (byte-
+    identical to the pre-wiring generator). Facing is resolved AFTER the match so the size guard
+    sees the real footprint. snap is for CARDINAL pieces (an angled facing belongs on angled())."""
     cl, dist, mismatch = match(anchor, kind, extra.get("shape"), clusters, claimed)
     if cl is None:
+        rot, fsrc = resolve_rot(name, FACE_ROT[face], 500, 500, confirmed)
         it = to_spec(name, kind, anchor[0], anchor[1], 500, 500, rot, h,
                      note="NO drawn cluster within reach — hard-FAILs the gate (honest miss)", **extra)
+        if fsrc:
+            it["facing_source"] = fsrc
         _REPORT.append((room, name, kind, None, dist, (it["x"], it["y"], it["w"], it["d"]), False))
         return it
     cx, cy = cl["x"] + cl["w"] / 2.0, cl["y"] + cl["d"] / 2.0
+    rot, fsrc = resolve_rot(name, FACE_ROT[face], cl["w"], cl["d"], confirmed)
     it = to_spec(name, kind, cx, cy, cl["w"], cl["d"], rot, h,
                  cluster=cl["id"], snap_mm=round(dist), **extra)
+    if fsrc:
+        it["facing_source"] = fsrc
     _REPORT.append((room, name, kind, cl["id"], dist, (it["x"], it["y"], it["w"], it["d"]), mismatch))
     return it
 
 
-def angled(room, name, kind, cx, cy, w, d, rot, h, **extra):
+def angled(room, name, kind, cx, cy, w, d, rot, h, confirmed=None, **extra):
     """Place an ANGLED loose piece (tub chair) at an explicit centre + tight size + true angle
     read from the drawing's oriented (min-area) box. NOT snapped to a cluster AABB (an angled
-    piece's AABB overstates its size). The gate checks it ON-INK against the drawn cluster."""
-    it = to_spec(name, kind, cx, cy, w, d, rot, h, angled=True, **extra)
+    piece's AABB overstates its size). The gate checks it ON-INK against the drawn cluster.
+
+    This is the NON-cardinal path: an owner-signed rot (placement-review.json confirmed[] with a
+    numeric {"rot": ...} OR a cardinal {"facing": ...}, resolved via placement_gate.resolve_rot)
+    OVERRIDES the hand-read angle, so a rebuild re-applies the owner-adjudicated chair-facing
+    instead of re-rolling it. Absent a signature the drawn angle is used unchanged (byte-identical)."""
+    eff_rot, fsrc = resolve_rot(name, rot, w, d, confirmed)
+    # swap_cardinal=False: (w,d) are the piece's oriented dims — an owner sign landing on exactly
+    # 90/270 must ROTATE the box, never trip to_spec's cluster-AABB pre-swap (which would cancel it).
+    it = to_spec(name, kind, cx, cy, w, d, eff_rot, h, swap_cardinal=False, angled=True, **extra)
+    if fsrc:
+        it["facing_source"] = fsrc
     _REPORT.append((room, name, kind, "angled", 0, (it["x"], it["y"], it["w"], it["d"]), False))
     return it
 
@@ -172,220 +204,263 @@ WARDROBE_OUT = [[3150, 5850], [5650, 5850], [5650, 8650], [3150, 8650]]
 MASTER_SUB = [ENSUITE_OUT, WARDROBE_OUT]
 SITTING_OUTLINE = [[5750, 0], [10650, 0], [10650, 6250], [5750, 6250]]
 
-master_zone = room_zone(MASTER_OUTLINE, MASTER_SUB)
-sitting_zone = room_zone(SITTING_OUTLINE, [])
-mc = extract_clusters(PDF, PAGE, master_zone, CLOSE_MM, calib=(SCALE, OX, OY))["items"]
-sc = extract_clusters(PDF, PAGE, sitting_zone, CLOSE_MM, calib=(SCALE, OX, OY))["items"]
-m_claimed, s_claimed = set(), set()
-
-# ---------------------------------------------------------------- MASTER pieces
-master_items, master_builtins = [], []
-
-# BED — MEASURED (merges with BF14/BF09-3 casework -> no clean cluster; gate = ON_INK). 7'x6.5':
-# head-foot (E-W) = 6.5' = 1981, width (N-S) = 7' = 2134. Head EAST flush to BF14 (east face 5150),
-# foot faces the west TV. Anchored to the east wall, NOT eyeballed.
-master_items.append(to_spec("เตียง 7'x6.5' หัวตะวันออก", "bed", 4159, 1100, 1981, 2134, 270, 600,
-                            note="head EAST vs BF14 slat; measured (merges with casework)"))
-# FOOT BENCH (organic id37) at the west foot.
-master_items.append(snap("master_bedroom", "ม้านั่งปลายเตียง (bench)", "bench", mc, m_claimed,
-                         (2898, 1129), "S", 450, note="foot of bed; confirm identity"))
-# TWO lamp NIGHTSTANDS flank the head (NE + SE), owner-confirmed identical bedside tables.
-master_items.append(snap("master_bedroom", "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)", "side_table", mc, m_claimed,
-                         (4947, 2458), "S", 520, note="NE of the bed head"))
-master_items.append(snap("master_bedroom", "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)", "side_table", mc, m_claimed,
-                         (4947, -194), "N", 520, note="SE of the bed head"))
-# DESK CHAIR pulled up to BF11, faces W (near-cardinal per the oriented box 89deg).
-master_items.append(snap("master_bedroom", "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)", "armchair", mc, m_claimed,
-                         (1125, 4252), "W", 750, note="pulled up to BF11 work desk; faces W"))
-# WEST-WALL unit the bed foot faces (id34 600x2052). Identity = owner-confirm (TV console?).
-master_items.append(snap("master_bedroom", "ตู้ทีวีสูง ผนังตะวันตก", "tv_console", mc, m_claimed,
-                         (606, 1150), "S", 1800, note="west-wall TALL TV cabinet the bed foot faces; owner-confirmed identity + TALL (2026-07-06); footprint 2046x600 from cluster, height owner-set"))
-
-# BUILT-INS (owner BF sizes; positioned on the owner-named wall / drawn footprint)
-# BF14 headboard slat: east wall, N-S, 3250 long x100 deep, bed head against its west face.
-master_builtins.append(to_spec("ผนังระแนงหัวเตียง BF14 (325x10x280)", "headboard",
-                               5200, 1350, 100, 3250, 0, 2800, bf="BF14"))
-# BF09-3 over-bed wardrobe: divider N of bed, E-W, 3300x600.
-master_builtins.append(to_spec("ตู้เสื้อผ้าเหนือเตียง BF09-3 (330x60x280)", "wardrobe",
-                               3950, 2950, 3300, 600, 0, 2800, bf="BF09-3"))
-# BF11 built-in work desk: master WEST wall, N-S, 3200x600, h750. 'cabinet' (lenient) not 'desk'.
-master_builtins.append(bf("โต๊ะทำงาน built-in BF11 (320x60x280)", "BF11", "cabinet",
-                          300, 4250, "NS", h=750))
-# BF10 is a DRESSING cabinet (owner correction 2026-07-05: NOT the ensuite vanity). It sits in
-# the dressing BETWEEN BF11 and BF09-2, against the ensuite south wall (drawn front edge y5250),
-# E-W run 2500x600, facing south into the dressing. East end abuts BF09-2 (x3150).
-master_builtins.append(bf("ตู้/ชั้น BF10 (250x60x280)", "BF10", "cabinet", 1900, 5550, "EW",
-                          note="dressing cabinet BETWEEN BF11 and BF09-2, against the ensuite south wall (NOT the vanity)"))
-
-# ---- ENSUITE (walled subroom): the double vanity here is SANITARYWARE (not BF10), + WC/tub/shower
-ensuite_fix = [
-    to_spec("อ่างล้างหน้าคู่ (ในห้องน้ำ)", "vanity_double", 1850, 6350, 2500, 550, 0, 850,
-            note="ensuite double vanity (sanitaryware, NOT BF10); two basins on the south counter, run '3.05'"),
-    to_spec("โถสุขภัณฑ์ WC", "toilet", 450, 6350, 400, 700, 0, 400, note="SW, against the west wall"),
-    to_spec("อ่างอาบน้ำ (bathtub)", "bathtub", 2200, 8000, 1800, 900, 0, 550, note="NE, north wall"),
-    to_spec("ฝักบัว (shower)", "shower", 625, 7925, 1050, 1150, 0, 2200, note="NW glass enclosure"),
-]
-# ---- WARDROBE BAY (open, part of dressing): BF09-1 L (5.2m) + BF09-2 (1.5m)
-wardrobe_fix = [
-    # BF09-1 = 5200 total. Bay is 2500(x3150-5650) x 2800(y5850-8650): a 5200 run must wrap.
-    # Modelled as the drawn L: north leg 2500 along y8650 + east leg 2700 along x5650. CONFIRM.
-    to_spec("ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)", "wardrobe", 4400, 8350, 2500, 600, 0, 2800,
-            bf="BF09-1", note="north leg 2.5m along the bay north wall (of the 5.2m L)"),
-    to_spec("ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)", "wardrobe", 5350, 7000, 600, 2100, 0, 2800,
-            bf="BF09-1", note="east leg ~2.7m along the bay east wall x5650 (of the 5.2m L)"),
-    # BF09-2 = 1500, flush to the ensuite east wall (x3150). The door GAP is y6698-7596 (from the
-    # wall data); the solid wall below it is only ~850mm, too short for a 1500 run, so BF09-2 spans
-    # the ensuite-south-wall line: N end just below the door (y6680), S end DOWN to MEET BF10 (~y5250)
-    # (owner 2026-07-05: "BF09-2 and BF10 must meet exactly — move it north until they join").
-    to_spec("ตู้เสื้อผ้า BF09-2 (150x60x280)", "wardrobe", 3450, 5930, 600, 1500, 0, 2800,
-            bf="BF09-2", note="flush to ensuite east wall; S end MEETS BF10 (~y5250), N end just below the door gap (y6698)"),
-]
-
-# ---------------------------------------------------------------- SITTING pieces
-sit_items, sit_builtins = [], []
-# SOFA faces EAST toward the BF13 media/TV wall (round accent table between).
-sit_items.append(snap("sitting_room", "โซฟา 3 ที่นั่ง", "sofa", sc, s_claimed,
-                      (8161, 4651), "E", 800, note="faces EAST toward BF13/TV"))
-# TWO TUB CHAIRS — OUTDOOR terrace lounge, SOUTH of the sliding glass door (exterior wall y~2050).
-# Owner 2026-07-06: they FACE OUT to the garden, sightlines converging on a point OUTSIDE the house
-# (~terrace tree at 6400,-500). Angled at realistic 680x640 (NOT the ~774 AABB, NOT cardinal, NOT the
-# earlier inward-to-a-table read). rot 12 (left, SSE) / rot 335 (right, SSW) -> converge ~(6670,-650).
-sit_items.append(angled("sitting_room", "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)", "armchair",
-                        6331, 949, 680, 640, 12, 750, note="outdoor terrace; faces the garden (S), converges outside"))
-sit_items.append(angled("sitting_room", "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)", "armchair",
-                        7630, 1405, 660, 640, 335, 750, note="outdoor terrace; faces the garden (S), converges outside"))
-# ROUND TABLES (snap to their drawn circles; render round).
-sit_items.append(snap("sitting_room", "โต๊ะกลม (ระหว่างเก้าอี้)", "side_table", sc, s_claimed,
-                      (6916, 1414), "S", 450, shape="round"))
-sit_items.append(snap("sitting_room", "โต๊ะกลม (ข้างโซฟา)", "side_table", sc, s_claimed,
-                      (9466, 4660), "S", 450, shape="round"))
-# (NW door swing = a DOOR, dismissed in placement-review.json — not a piece.)
-# BUILT-INS
-sit_builtins.append(bf("ตู้โชว์ BF12-1 (157.5x40x280)", "BF12-1", "cabinet", 5950, 5462, "NS",
-                       note="party/west wall, NW, behind sofa, next to door"))
-# BF12-2 = a TALL cabinet (70x40x280) and the ORCHID TABLE are SEPARATE pieces (owner 2026-07-06):
-# the drawn ~1000x400 table (cluster id2, with the orchid squiggle) is loose furniture; BF12-2 is a
-# distinct 700x400 tall cabinet against the y2600 wall behind it. (Was wrongly merged as one console.)
-sit_builtins.append(bf("ตู้สูง BF12-2 (70x40x280)", "BF12-2", "cabinet", 5950, 3000, "NS",
-                       note="tall cabinet on the WEST party wall (x5750), INNER sitting side, just NORTH of the outer orchid table — owner-pointed spot 2026-07-06 (highlighted); 400 deep x 700 N-S"))
-# ORCHID TABLE (loose, drawn 1002x402 = cluster id2) — a separate low console the owner flagged.
-sit_items.append(to_spec("โต๊ะวางกล้วยไม้ (console)", "console", 6399, 2373, 1002, 402, 0, 450,
-                         note="orchid console table (drawn ~1002x402) — SEPARATE piece from BF12-2 (owner 2026-07-06)"))
-sit_builtins.append(bf("ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)", "BF13", "cabinet", 10500, 4100, "NS",
-                       h=500, note="east wall; the sofa faces it"))
-
-# ---------------------------------------------------------------- write scene-graphs
 _NOTE = ("v4 CLEAN REBUILD (gen_floor2_v4_specs.py). Dimensions/built-in sizes = OWNER-authoritative "
          "(BF label = cm, owner-confirmed 2026-07-05); loose-furniture position/size = deterministic "
          "clusters (plan_cluster); tub-chair ANGLE + tight size = oriented min-area box (not cardinal). "
          "Gate verifies COMPLETENESS + NO-FLOATING + ON-INK only; identity/facing/built-in size are "
          "human calls. Absolute floor coords, offset (0,0).")
-master = {
-    "schema": "interior-ai/room-spec@0.2", "units": "metric", "version": "v4", "note": _NOTE,
-    "room": {"type": "bedroom_suite", "outline_mm": MASTER_OUTLINE, "ceiling_mm": 2800, "wall_thk_mm": 100},
-    "builtins": master_builtins, "items": master_items,
-    "subrooms": [{"name": "ห้องน้ำในตัว (ensuite)", "type": "bathroom", "outline_mm": ENSUITE_OUT,
-                  "ceiling_mm": 2800, "fixtures": ensuite_fix},
-                 {"name": "โซนตู้เสื้อผ้า (wardrobe bay)", "type": "wardrobe", "outline_mm": WARDROBE_OUT,
-                  "ceiling_mm": 2800, "fixtures": wardrobe_fix}],
-}
-sitting = {
-    "schema": "interior-ai/room-spec@0.2", "units": "metric", "version": "v4", "note": _NOTE,
-    "room": {"type": "sitting_room", "outline_mm": SITTING_OUTLINE, "ceiling_mm": 2800, "wall_thk_mm": 100},
-    "builtins": sit_builtins, "items": sit_items,
-}
-json.dump(master, open(f"{LAYOUT_DIR}/scene-graph.master_bedroom.json", "w", encoding="utf-8"),
-          ensure_ascii=False, indent=2)
-json.dump(sitting, open(f"{LAYOUT_DIR}/scene-graph.sitting_room.json", "w", encoding="utf-8"),
-          ensure_ascii=False, indent=2)
-print("wrote v4 scene-graphs:",
-      len(master_items) + len(master_builtins) + len(ensuite_fix) + len(wardrobe_fix),
-      "master pieces,", len(sit_items) + len(sit_builtins), "sitting pieces")
-
-# ---------------------------------------------------------------- match report
-print("\nLOOSE-FURNITURE READ (positions/angles from the drawing, not typed):")
-for room, name, kind, cid, dist, bbox, mism in _REPORT:
-    tag = ("angled box" if cid == "angled" else
-           (f"cluster #{cid}" if cid is not None else "NO CLUSTER"))
-    flag = "  <-- CURVE MISMATCH" if mism else ""
-    print(f"  [{room[:7]:7}] {kind:11} <- {tag:14} d={dist:5.0f}mm  bbox={bbox}  {name[:24]}{flag}")
-for label, clusters, claimed in [("master", mc, m_claimed), ("sitting", sc, s_claimed)]:
-    left = [c for i, c in enumerate(clusters) if i not in claimed
-            and min(c["w"], c["d"]) >= 250 and c.get("area_m2", 0) >= 0.03]
-    if left:
-        print(f"  UNCLAIMED drawn clusters in {label} (gate will list for human dismiss/add):")
-        for c in left:
-            print(f"      id{c['id']} {c['w']}x{c['d']}mm at ({c['x']},{c['y']})  "
-                  f"{'organic' if c['curve'] else 'rect'}  {c['area_m2']}m2")
-
-# ---------------------------------------------------------------- self-verify overlay
-p = fitz.open(PDF)[PAGE]
-m = p.rotation_matrix
 
 
-def mm(P):
-    Q = fitz.Point(P) * m
-    return ((Q.x - OX) * SCALE, (OY - Q.y) * SCALE)
+def main():
+    import fitz
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.collections import LineCollection
+    from matplotlib.patches import FancyArrow, Polygon
+    from plan_cluster import extract_clusters
+
+    PDF = sys.argv[1]
+    OUT_OVERLAY = sys.argv[2]
+    LAYOUT_DIR = sys.argv[3]
+
+    # Owner-signed facings (placement-review.json in this v4 dir). A signature is applied OVER the
+    # hand-read default so a regeneration cannot silently re-roll an adjudicated facing. Read
+    # defensively — a missing/malformed ledger -> no signatures (byte-identical regen), never a crash.
+    led_path = os.path.join(LAYOUT_DIR, "placement-review.json")
+    confirmed_all = []
+    if os.path.exists(led_path):
+        try:
+            confirmed_all = load_confirmed(json.load(open(led_path, encoding="utf-8")))
+        except (ValueError, OSError, TypeError):
+            confirmed_all = []
+    confirmed_master = [e for e in confirmed_all if e.get("room") in ("master_bedroom", "*")]
+    confirmed_sitting = [e for e in confirmed_all if e.get("room") in ("sitting_room", "*")]
+    print(f"placement-review.json: {len(confirmed_all)} owner-signed facing(s) "
+          f"({len(confirmed_master)} master, {len(confirmed_sitting)} sitting)")
+
+    master_zone = room_zone(MASTER_OUTLINE, MASTER_SUB)
+    sitting_zone = room_zone(SITTING_OUTLINE, [])
+    mc = extract_clusters(PDF, PAGE, master_zone, CLOSE_MM, calib=(SCALE, OX, OY))["items"]
+    sc = extract_clusters(PDF, PAGE, sitting_zone, CLOSE_MM, calib=(SCALE, OX, OY))["items"]
+    m_claimed, s_claimed = set(), set()
+
+    # ---------------------------------------------------------------- MASTER pieces
+    master_items, master_builtins = [], []
+
+    # BED — MEASURED (merges with BF14/BF09-3 casework -> no clean cluster; gate = ON_INK). 7'x6.5':
+    # head-foot (E-W) = 6.5' = 1981, width (N-S) = 7' = 2134. Head EAST flush to BF14 (east face 5150),
+    # foot faces the west TV. Anchored to the east wall, NOT eyeballed. Facing hand-read W (rot 270);
+    # an owner-signed facing overrides it (the bed is placed by direct to_spec, not snap/angled).
+    _bed_rot, _bed_src = resolve_rot("เตียง 7'x6.5' หัวตะวันออก", 270, 1981, 2134, confirmed_master)
+    _bed = to_spec("เตียง 7'x6.5' หัวตะวันออก", "bed", 4159, 1100, 1981, 2134, _bed_rot, 600,
+                   note="head EAST vs BF14 slat; measured (merges with casework)")
+    if _bed_src:
+        _bed["facing_source"] = _bed_src
+    master_items.append(_bed)
+    # FOOT BENCH (organic id37) at the west foot.
+    master_items.append(snap("master_bedroom", "ม้านั่งปลายเตียง (bench)", "bench", mc, m_claimed,
+                             (2898, 1129), "S", 450, confirmed=confirmed_master, note="foot of bed; confirm identity"))
+    # TWO lamp NIGHTSTANDS flank the head (NE + SE), owner-confirmed identical bedside tables.
+    master_items.append(snap("master_bedroom", "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)", "side_table", mc, m_claimed,
+                             (4947, 2458), "S", 520, confirmed=confirmed_master, note="NE of the bed head"))
+    master_items.append(snap("master_bedroom", "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)", "side_table", mc, m_claimed,
+                             (4947, -194), "N", 520, confirmed=confirmed_master, note="SE of the bed head"))
+    # DESK CHAIR pulled up to BF11, faces W (near-cardinal per the oriented box 89deg).
+    master_items.append(snap("master_bedroom", "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)", "armchair", mc, m_claimed,
+                             (1125, 4252), "W", 750, confirmed=confirmed_master, note="pulled up to BF11 work desk; faces W"))
+    # WEST-WALL unit the bed foot faces (id34 600x2052). Identity = owner-confirm (TV console?).
+    master_items.append(snap("master_bedroom", "ตู้ทีวีสูง ผนังตะวันตก", "tv_console", mc, m_claimed,
+                             (606, 1150), "S", 1800, confirmed=confirmed_master, note="west-wall TALL TV cabinet the bed foot faces; owner-confirmed identity + TALL (2026-07-06); footprint 2046x600 from cluster, height owner-set"))
+
+    # BUILT-INS (owner BF sizes; positioned on the owner-named wall / drawn footprint)
+    # BF14 headboard slat: east wall, N-S, 3250 long x100 deep, bed head against its west face.
+    master_builtins.append(to_spec("ผนังระแนงหัวเตียง BF14 (325x10x280)", "headboard",
+                                   5200, 1350, 100, 3250, 0, 2800, bf="BF14"))
+    # BF09-3 over-bed wardrobe: divider N of bed, E-W, 3300x600.
+    master_builtins.append(to_spec("ตู้เสื้อผ้าเหนือเตียง BF09-3 (330x60x280)", "wardrobe",
+                                   3950, 2950, 3300, 600, 0, 2800, bf="BF09-3"))
+    # BF11 built-in work desk: master WEST wall, N-S, 3200x600, h750. 'cabinet' (lenient) not 'desk'.
+    master_builtins.append(bf("โต๊ะทำงาน built-in BF11 (320x60x280)", "BF11", "cabinet",
+                              300, 4250, "NS", h=750))
+    # BF10 is a DRESSING cabinet (owner correction 2026-07-05: NOT the ensuite vanity). It sits in
+    # the dressing BETWEEN BF11 and BF09-2, against the ensuite south wall (drawn front edge y5250),
+    # E-W run 2500x600, facing south into the dressing. East end abuts BF09-2 (x3150).
+    master_builtins.append(bf("ตู้/ชั้น BF10 (250x60x280)", "BF10", "cabinet", 1900, 5550, "EW",
+                              note="dressing cabinet BETWEEN BF11 and BF09-2, against the ensuite south wall (NOT the vanity)"))
+
+    # ---- ENSUITE (walled subroom): the double vanity here is SANITARYWARE (not BF10), + WC/tub/shower
+    ensuite_fix = [
+        to_spec("อ่างล้างหน้าคู่ (ในห้องน้ำ)", "vanity_double", 1850, 6350, 2500, 550, 0, 850,
+                note="ensuite double vanity (sanitaryware, NOT BF10); two basins on the south counter, run '3.05'"),
+        to_spec("โถสุขภัณฑ์ WC", "toilet", 450, 6350, 400, 700, 0, 400, note="SW, against the west wall"),
+        to_spec("อ่างอาบน้ำ (bathtub)", "bathtub", 2200, 8000, 1800, 900, 0, 550, note="NE, north wall"),
+        to_spec("ฝักบัว (shower)", "shower", 625, 7925, 1050, 1150, 0, 2200, note="NW glass enclosure"),
+    ]
+    # ---- WARDROBE BAY (open, part of dressing): BF09-1 L (5.2m) + BF09-2 (1.5m)
+    wardrobe_fix = [
+        # BF09-1 = 5200 total. Bay is 2500(x3150-5650) x 2800(y5850-8650): a 5200 run must wrap.
+        # Modelled as the drawn L: north leg 2500 along y8650 + east leg 2700 along x5650. CONFIRM.
+        to_spec("ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)", "wardrobe", 4400, 8350, 2500, 600, 0, 2800,
+                bf="BF09-1", note="north leg 2.5m along the bay north wall (of the 5.2m L)"),
+        to_spec("ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)", "wardrobe", 5350, 7000, 600, 2100, 0, 2800,
+                bf="BF09-1", note="east leg ~2.7m along the bay east wall x5650 (of the 5.2m L)"),
+        # BF09-2 = 1500, flush to the ensuite east wall (x3150). The door GAP is y6698-7596 (from the
+        # wall data); the solid wall below it is only ~850mm, too short for a 1500 run, so BF09-2 spans
+        # the ensuite-south-wall line: N end just below the door (y6680), S end DOWN to MEET BF10 (~y5250)
+        # (owner 2026-07-05: "BF09-2 and BF10 must meet exactly — move it north until they join").
+        to_spec("ตู้เสื้อผ้า BF09-2 (150x60x280)", "wardrobe", 3450, 5930, 600, 1500, 0, 2800,
+                bf="BF09-2", note="flush to ensuite east wall; S end MEETS BF10 (~y5250), N end just below the door gap (y6698)"),
+    ]
+
+    # ---------------------------------------------------------------- SITTING pieces
+    sit_items, sit_builtins = [], []
+    # SOFA faces EAST toward the BF13 media/TV wall (round accent table between).
+    sit_items.append(snap("sitting_room", "โซฟา 3 ที่นั่ง", "sofa", sc, s_claimed,
+                          (8161, 4651), "E", 800, confirmed=confirmed_sitting, note="faces EAST toward BF13/TV"))
+    # TWO TUB CHAIRS — OUTDOOR terrace lounge, SOUTH of the sliding glass door (exterior wall y~2050).
+    # Owner 2026-07-06: they FACE OUT to the garden, sightlines converging on a point OUTSIDE the house
+    # (~terrace tree at 6400,-500). Angled at realistic 680x640 (NOT the ~774 AABB, NOT cardinal, NOT the
+    # earlier inward-to-a-table read). rot 12 (left, SSE) / rot 335 (right, SSW) -> converge ~(6670,-650).
+    sit_items.append(angled("sitting_room", "เก้าอี้ tub ซ้าย (ระเบียง หันออกสวน)", "armchair",
+                            6331, 949, 680, 640, 12, 750, confirmed=confirmed_sitting,
+                            note="outdoor terrace; faces the garden (S), converges outside"))
+    sit_items.append(angled("sitting_room", "เก้าอี้ tub ขวา (ระเบียง หันออกสวน)", "armchair",
+                            7630, 1405, 660, 640, 335, 750, confirmed=confirmed_sitting,
+                            note="outdoor terrace; faces the garden (S), converges outside"))
+    # ROUND TABLES (snap to their drawn circles; render round).
+    sit_items.append(snap("sitting_room", "โต๊ะกลม (ระหว่างเก้าอี้)", "side_table", sc, s_claimed,
+                          (6916, 1414), "S", 450, confirmed=confirmed_sitting, shape="round"))
+    sit_items.append(snap("sitting_room", "โต๊ะกลม (ข้างโซฟา)", "side_table", sc, s_claimed,
+                          (9466, 4660), "S", 450, confirmed=confirmed_sitting, shape="round"))
+    # (NW door swing = a DOOR, dismissed in placement-review.json — not a piece.)
+    # BUILT-INS
+    sit_builtins.append(bf("ตู้โชว์ BF12-1 (157.5x40x280)", "BF12-1", "cabinet", 5950, 5462, "NS",
+                           note="party/west wall, NW, behind sofa, next to door"))
+    # BF12-2 = a TALL cabinet (70x40x280) and the ORCHID TABLE are SEPARATE pieces (owner 2026-07-06):
+    # the drawn ~1000x400 table (cluster id2, with the orchid squiggle) is loose furniture; BF12-2 is a
+    # distinct 700x400 tall cabinet against the y2600 wall behind it. (Was wrongly merged as one console.)
+    sit_builtins.append(bf("ตู้สูง BF12-2 (70x40x280)", "BF12-2", "cabinet", 5950, 3000, "NS",
+                           note="tall cabinet on the WEST party wall (x5750), INNER sitting side, just NORTH of the outer orchid table — owner-pointed spot 2026-07-06 (highlighted); 400 deep x 700 N-S"))
+    # ORCHID TABLE (loose, drawn 1002x402 = cluster id2) — a separate low console the owner flagged.
+    # Wired through resolve_rot like every other loose piece (cardinal: drawn AABB, default swap) so an
+    # owner-signed facing is APPLIED here too — else the gate could raise a sign the generator can't satisfy.
+    _orchid_name = "โต๊ะวางกล้วยไม้ (console)"
+    _orchid_rot, _orchid_src = resolve_rot(_orchid_name, FACE_ROT["S"], 1002, 402, confirmed_sitting)
+    _orchid = to_spec(_orchid_name, "console", 6399, 2373, 1002, 402, _orchid_rot, 450,
+                      note="orchid console table (drawn ~1002x402) — SEPARATE piece from BF12-2 (owner 2026-07-06)")
+    if _orchid_src:
+        _orchid["facing_source"] = _orchid_src
+    sit_items.append(_orchid)
+    sit_builtins.append(bf("ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)", "BF13", "cabinet", 10500, 4100, "NS",
+                           h=500, note="east wall; the sofa faces it"))
+
+    # ---------------------------------------------------------------- write scene-graphs
+    master = {
+        "schema": "interior-ai/room-spec@0.2", "units": "metric", "version": "v4", "note": _NOTE,
+        "room": {"type": "bedroom_suite", "outline_mm": MASTER_OUTLINE, "ceiling_mm": 2800, "wall_thk_mm": 100},
+        "builtins": master_builtins, "items": master_items,
+        "subrooms": [{"name": "ห้องน้ำในตัว (ensuite)", "type": "bathroom", "outline_mm": ENSUITE_OUT,
+                      "ceiling_mm": 2800, "fixtures": ensuite_fix},
+                     {"name": "โซนตู้เสื้อผ้า (wardrobe bay)", "type": "wardrobe", "outline_mm": WARDROBE_OUT,
+                      "ceiling_mm": 2800, "fixtures": wardrobe_fix}],
+    }
+    sitting = {
+        "schema": "interior-ai/room-spec@0.2", "units": "metric", "version": "v4", "note": _NOTE,
+        "room": {"type": "sitting_room", "outline_mm": SITTING_OUTLINE, "ceiling_mm": 2800, "wall_thk_mm": 100},
+        "builtins": sit_builtins, "items": sit_items,
+    }
+    json.dump(master, open(f"{LAYOUT_DIR}/scene-graph.master_bedroom.json", "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2)
+    json.dump(sitting, open(f"{LAYOUT_DIR}/scene-graph.sitting_room.json", "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2)
+    print("wrote v4 scene-graphs:",
+          len(master_items) + len(master_builtins) + len(ensuite_fix) + len(wardrobe_fix),
+          "master pieces,", len(sit_items) + len(sit_builtins), "sitting pieces")
+
+    # ---------------------------------------------------------------- match report
+    print("\nLOOSE-FURNITURE READ (positions/angles from the drawing, not typed):")
+    for room, name, kind, cid, dist, bbox, mism in _REPORT:
+        tag = ("angled box" if cid == "angled" else
+               (f"cluster #{cid}" if cid is not None else "NO CLUSTER"))
+        flag = "  <-- CURVE MISMATCH" if mism else ""
+        print(f"  [{room[:7]:7}] {kind:11} <- {tag:14} d={dist:5.0f}mm  bbox={bbox}  {name[:24]}{flag}")
+    for label, clusters, claimed in [("master", mc, m_claimed), ("sitting", sc, s_claimed)]:
+        left = [c for i, c in enumerate(clusters) if i not in claimed
+                and min(c["w"], c["d"]) >= 250 and c.get("area_m2", 0) >= 0.03]
+        if left:
+            print(f"  UNCLAIMED drawn clusters in {label} (gate will list for human dismiss/add):")
+            for c in left:
+                print(f"      id{c['id']} {c['w']}x{c['d']}mm at ({c['x']},{c['y']})  "
+                      f"{'organic' if c['curve'] else 'rect'}  {c['area_m2']}m2")
+
+    # ---------------------------------------------------------------- self-verify overlay
+    p = fitz.open(PDF)[PAGE]
+    m = p.rotation_matrix
+
+    def mm(P):
+        Q = fitz.Point(P) * m
+        return ((Q.x - OX) * SCALE, (OY - Q.y) * SCALE)
+
+    def bez(pts, n=6):
+        (x0, y0), (x1, y1), (x2, y2), (x3, y3) = pts
+        return [((1-t)**3*x0+3*(1-t)**2*t*x1+3*(1-t)*t*t*x2+t**3*x3,
+                 (1-t)**3*y0+3*(1-t)**2*t*y1+3*(1-t)*t*t*y2+t**3*y3) for t in (i/n for i in range(n+1))]
+
+    strokes = []
+    for d in p.get_drawings():
+        if (d.get("width") or 0) >= 0.6:
+            continue
+        for it in d["items"]:
+            if it[0] == "l":
+                strokes.append([mm(it[1]), mm(it[2])])
+            elif it[0] == "re":
+                r = it[1]
+                cs = [mm((r.x0, r.y0)), mm((r.x1, r.y0)), mm((r.x1, r.y1)), mm((r.x0, r.y1)), mm((r.x0, r.y0))]
+                strokes += [[a, b] for a, b in zip(cs, cs[1:])]
+            elif it[0] == "c":
+                poly = [mm(z) for z in bez([(pt.x, pt.y) for pt in it[1:5]])]
+                strokes += [[a, b] for a, b in zip(poly, poly[1:])]
+
+    fig, ax = plt.subplots(figsize=(22, 16), dpi=130)
+    ax.add_collection(LineCollection(strokes, colors="#aab8cc", linewidths=0.5))
+
+    def draw_item(it, color):
+        w, d, rot = it["w"], it["d"], it.get("rot", 0)
+        cx, cy = it["x"] + w / 2, it["y"] + d / 2
+        a = math.radians(rot)
+        ca, sa = math.cos(a), math.sin(a)
+        corners = [(-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2)]
+        pts = [(cx + u * ca - v * sa, cy + u * sa + v * ca) for u, v in corners]
+        ax.add_patch(Polygon(pts, closed=True, fill=False, edgecolor=color, lw=1.7))
+        if it["kind"] in ("sofa", "armchair", "chair", "bed"):
+            fx, fy = math.sin(a), -math.cos(a)
+            L = 0.3 * min(w, d) + 150
+            ax.add_patch(FancyArrow(cx, cy, fx * L, fy * L, width=25, head_width=170, head_length=150,
+                         color="#e07000", length_includes_head=True))
+        ax.text(cx, cy, it["name"].split()[0][:10], ha="center", va="center", fontsize=6, color=color)
+
+    for it in master_items:
+        draw_item(it, "#c02020")
+    for it in master_builtins + wardrobe_fix:
+        draw_item(it, "#106010")
+    for it in ensuite_fix:
+        draw_item(it, "#1080b0")
+    for it in sit_items:
+        draw_item(it, "#c02020")
+    for it in sit_builtins:
+        draw_item(it, "#106010")
+
+    ax.set_xlim(-800, 11000)
+    ax.set_ylim(-1200, 9000)
+    ax.set_aspect("equal")
+    ax.grid(True, lw=0.3, alpha=0.25)
+    ax.set_title("v4 SELF-VERIFY: placed footprints (red=loose green=built-in blue=fixture, "
+                 "orange=facing) over the plan strokes. Every box must land on a drawn piece.", fontsize=10)
+    plt.tight_layout()
+    plt.savefig(OUT_OVERLAY, dpi=130)
+    print("wrote", OUT_OVERLAY)
 
 
-def bez(pts, n=6):
-    (x0, y0), (x1, y1), (x2, y2), (x3, y3) = pts
-    return [((1-t)**3*x0+3*(1-t)**2*t*x1+3*(1-t)*t*t*x2+t**3*x3,
-             (1-t)**3*y0+3*(1-t)**2*t*y1+3*(1-t)*t*t*y2+t**3*y3) for t in (i/n for i in range(n+1))]
-
-
-strokes = []
-for d in p.get_drawings():
-    if (d.get("width") or 0) >= 0.6:
-        continue
-    for it in d["items"]:
-        if it[0] == "l":
-            strokes.append([mm(it[1]), mm(it[2])])
-        elif it[0] == "re":
-            r = it[1]
-            cs = [mm((r.x0, r.y0)), mm((r.x1, r.y0)), mm((r.x1, r.y1)), mm((r.x0, r.y1)), mm((r.x0, r.y0))]
-            strokes += [[a, b] for a, b in zip(cs, cs[1:])]
-        elif it[0] == "c":
-            poly = [mm(z) for z in bez([(pt.x, pt.y) for pt in it[1:5]])]
-            strokes += [[a, b] for a, b in zip(poly, poly[1:])]
-
-fig, ax = plt.subplots(figsize=(22, 16), dpi=130)
-ax.add_collection(LineCollection(strokes, colors="#aab8cc", linewidths=0.5))
-
-
-def draw_item(it, color):
-    w, d, rot = it["w"], it["d"], it.get("rot", 0)
-    cx, cy = it["x"] + w / 2, it["y"] + d / 2
-    a = math.radians(rot)
-    ca, sa = math.cos(a), math.sin(a)
-    corners = [(-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2)]
-    pts = [(cx + u * ca - v * sa, cy + u * sa + v * ca) for u, v in corners]
-    ax.add_patch(Polygon(pts, closed=True, fill=False, edgecolor=color, lw=1.7))
-    if it["kind"] in ("sofa", "armchair", "chair", "bed"):
-        fx, fy = math.sin(a), -math.cos(a)
-        L = 0.3 * min(w, d) + 150
-        ax.add_patch(FancyArrow(cx, cy, fx * L, fy * L, width=25, head_width=170, head_length=150,
-                     color="#e07000", length_includes_head=True))
-    ax.text(cx, cy, it["name"].split()[0][:10], ha="center", va="center", fontsize=6, color=color)
-
-
-for it in master_items:
-    draw_item(it, "#c02020")
-for it in master_builtins + wardrobe_fix:
-    draw_item(it, "#106010")
-for it in ensuite_fix:
-    draw_item(it, "#1080b0")
-for it in sit_items:
-    draw_item(it, "#c02020")
-for it in sit_builtins:
-    draw_item(it, "#106010")
-
-ax.set_xlim(-800, 11000)
-ax.set_ylim(-1200, 9000)
-ax.set_aspect("equal")
-ax.grid(True, lw=0.3, alpha=0.25)
-ax.set_title("v4 SELF-VERIFY: placed footprints (red=loose green=built-in blue=fixture, "
-             "orange=facing) over the plan strokes. Every box must land on a drawn piece.", fontsize=10)
-plt.tight_layout()
-plt.savefig(OUT_OVERLAY, dpi=130)
-print("wrote", OUT_OVERLAY)
+if __name__ == "__main__":
+    main()

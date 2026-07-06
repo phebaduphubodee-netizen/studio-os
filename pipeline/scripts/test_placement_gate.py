@@ -398,6 +398,156 @@ def test_confirmed_facing_rejects_non_cardinal_typo():
     assert G.confirmed_facing(bed, [{"name": "bed", "facing": "N"}]) == "N"   # a real cardinal matches
 
 
+# ---- rot-aware ledger (non-cardinal facings, e.g. angled terrace chairs) --------------
+def test_confirmed_rot_cardinal_facing_letter():
+    for letter, rot in (("S", 0), ("E", 90), ("N", 180), ("W", 270)):
+        assert G.confirmed_rot({"name": "x"}, [{"name": "x", "facing": letter}]) == rot, letter
+
+
+def test_confirmed_rot_numeric_non_cardinal():
+    # the tub chairs the cardinal ledger could NOT express (rot 12 / 335)
+    assert G.confirmed_rot({"name": "c", "w": 680, "d": 640}, [{"name": "c", "rot": 12}]) == 12
+    assert G.confirmed_rot({"name": "c", "w": 680, "d": 640}, [{"name": "c", "rot": 335}]) == 335
+
+
+def test_confirmed_rot_rounds_and_wraps():
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": 359.6}]) == 0      # rounds -> 360 -> 0
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": -25}]) == 335      # wraps
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": 11.7}]) == 12      # rounds to nearest deg
+
+
+def test_confirmed_rot_numeric_beats_facing_letter():
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "facing": "S", "rot": 12}]) == 12
+
+
+def test_confirmed_rot_malformed_rot_falls_back_to_facing():
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "facing": "E", "rot": "oops"}]) == 90
+    # ...and with no usable facing either -> None (nothing applied)
+    assert G.confirmed_rot({"name": "c"}, [{"name": "c", "rot": "oops"}]) is None
+
+
+def test_confirmed_rot_typo_facing_no_rot_is_none():
+    for bad in ("south", "n", "N ", 180, "", None):
+        assert G.confirmed_rot({"name": "c"}, [{"name": "c", "facing": bad}]) is None, bad
+
+
+def test_confirmed_rot_size_guard():
+    # a stale entry sized for a stool must NOT re-orient a big chair that reused the name
+    assert G.confirmed_rot({"name": "c", "w": 680, "d": 640},
+                           [{"name": "c", "rot": 12, "w": 300, "d": 300}]) is None
+
+
+def test_confirmed_rot_typo_then_correction_not_shadowed():
+    # the owner signs a TYPO, then APPENDS the valid correction with the same name+size. confirmed_rot
+    # must scan PAST the unusable first entry to the correction (mirrors confirmed_facing), else the
+    # signature is silently dropped in BOTH the gate and the generator — the regression the ledger exists
+    # to catch. Covers both a bad facing letter and a malformed numeric rot as the shadowing entry.
+    piece = {"name": "bed", "w": 2000, "d": 1800}
+    assert G.confirmed_rot(piece, [{"name": "bed", "facing": "bogus", "w": 2000, "d": 1800},
+                                   {"name": "bed", "facing": "N", "w": 2000, "d": 1800}]) == 180
+    assert G.confirmed_rot(piece, [{"name": "bed", "rot": "junk", "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": 335, "w": 2000, "d": 1800}]) == 335
+    # generator + gate both honour the correction (single source): resolve_rot applies it, and a build
+    # that contradicts the correction is raised rather than silently dropped.
+    conf = [{"name": "bed", "facing": "bogus", "w": 2000, "d": 1800},
+            {"name": "bed", "facing": "N", "w": 2000, "d": 1800}]
+    assert G.resolve_rot("bed", 0, 2000, 1800, conf) == (180, "owner-signed")
+    built_S = {"x": 0, "y": 0, "w": 2000, "d": 1800, "kind": "bed", "rot": 0, "name": "bed"}
+    flags = G.facing_flags([built_S], [], confirmed=conf)
+    assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+    # ...and no matching entry yields a usable rot -> None (unchanged)
+    assert G.confirmed_rot(piece, [{"name": "bed", "facing": "bogus", "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": "junk", "w": 2000, "d": 1800}]) is None
+
+
+def test_facing_flags_signed_backstop_survives_missing_facing_reader():
+    # the owner-signed contradiction backstop is pure rot arithmetic (confirmed_rot/_norm_rot) and MUST
+    # NOT be disabled when facing_reader is unimportable — only the geometric strip-read + cardinal-letter
+    # labels depend on it. Simulate the missing module (sys.modules[name]=None -> import raises).
+    import sys
+    signed = [{"name": "bed", "facing": "N", "w": 2000, "d": 2100}]   # N(180) vs built 0(S)
+    bed = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": 0, "name": "bed"}
+    saved = sys.modules.get("facing_reader")
+    sys.modules["facing_reader"] = None
+    try:
+        flags = G.facing_flags([bed], [], confirmed=signed)
+        assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+        assert flags[0]["read"] == "rot180" and flags[0]["claimed"] == "rot0", flags  # labels degrade to deg
+        # a MATCHING sign still suppresses without FR
+        ok = dict(bed, rot=180)
+        assert G.facing_flags([ok], [], confirmed=signed) == []
+    finally:
+        if saved is not None:
+            sys.modules["facing_reader"] = saved
+        else:
+            del sys.modules["facing_reader"]
+
+
+def test_resolve_rot_no_ledger_is_handrot():
+    assert G.resolve_rot("c", 90, 680, 640, []) == (90, None)
+    assert G.resolve_rot("c", 90, 680, 640, None) == (90, None)
+
+
+def test_resolve_rot_signed_overrides_incl_non_cardinal():
+    assert G.resolve_rot("c", 90, 680, 640, [{"name": "c", "facing": "W"}]) == (270, "owner-signed")
+    assert G.resolve_rot("c", 12, 680, 640, [{"name": "c", "rot": 335}]) == (335, "owner-signed")
+
+
+def test_resolve_rot_agreeing_sign_still_tagged():
+    assert G.resolve_rot("c", 12, 680, 640, [{"name": "c", "rot": 12}]) == (12, "owner-signed")
+
+
+def test_facing_flags_non_cardinal_sign_suppressed_when_built_matches():
+    # an angled armchair built at rot 12 with an owner sign of rot 12 -> no flag (adjudicated)
+    chair = {"x": 0, "y": 0, "w": 680, "d": 640, "kind": "armchair", "rot": 12, "name": "tub L"}
+    signed = [{"name": "tub L", "rot": 12, "w": 680, "d": 640}]
+    assert G.facing_flags([chair], [], confirmed=signed) == []
+    # DISCRIMINATOR: prove the suppression is because the SIGNED branch ran, not because empty fsegs
+    # mask everything for a facing kind. The SAME piece with a CONTRADICTING sign must raise; if a
+    # regression made the sign silently stop matching (confirmed_rot -> None), this would fall through
+    # to the empty-fsegs geometric read and wrongly return [] -> this assertion catches that.
+    contra = [{"name": "tub L", "rot": 90, "w": 680, "d": 640}]
+    f = G.facing_flags([chair], [], confirmed=contra)
+    assert len(f) == 1 and f[0]["verdict"] == "contradicts_signed", f
+
+
+def test_facing_flags_non_cardinal_contradiction_raised():
+    # built at rot 12 but the owner signed rot 335 -> contradicts_signed (rot-space), read shows the deg
+    chair = {"x": 0, "y": 0, "w": 680, "d": 640, "kind": "armchair", "rot": 12, "name": "tub L"}
+    signed = [{"name": "tub L", "rot": 335, "w": 680, "d": 640}]
+    flags = G.facing_flags([chair], [], confirmed=signed)
+    assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+    assert flags[0]["claimed"] == "rot12" and flags[0]["read"] == "rot335", flags
+
+
+def test_facing_flags_malformed_built_rot_never_suppresses_a_sign():
+    # a MALFORMED built rot (null/garbage) must NOT be coerced to 0(=S) and silently 'match' an S sign.
+    # A garbage orientation cannot be shown to agree with the owner's sign -> contradicts_signed.
+    signed_S = [{"name": "bed", "facing": "S", "w": 2000, "d": 2100}]
+    for bad in (None, "oops"):
+        bed = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": bad, "name": "bed"}
+        flags = G.facing_flags([bed], [], confirmed=signed_S)
+        assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", (bad, flags)
+        assert flags[0]["claimed"] is None, (bad, flags)   # honest: the built rot is unreadable
+    # a genuine rot 0 STILL suppresses on an S sign (the legit case is unaffected)
+    ok = {"x": 0, "y": 0, "w": 2000, "d": 2100, "kind": "bed", "rot": 0, "name": "bed"}
+    assert G.facing_flags([ok], [], confirmed=signed_S) == []
+
+
+def test_facing_flags_signed_NON_facing_kind_is_verified():
+    # the generator applies a sign to ANY kind, so the gate must verify ANY kind. A signed side_table
+    # (NOT a _FACING_KIND) whose built rot contradicts the sign must be flagged, not silently skipped.
+    tbl = {"x": 0, "y": 0, "w": 400, "d": 600, "kind": "side_table", "rot": 0, "name": "console"}
+    signed = [{"name": "console", "facing": "E", "w": 400, "d": 600}]   # E(90) vs built 0(S)
+    flags = G.facing_flags([tbl], [], confirmed=signed)
+    assert len(flags) == 1 and flags[0]["verdict"] == "contradicts_signed", flags
+    # ...and when the sign matches the build, it is adjudicated (suppressed)
+    tbl_ok = dict(tbl, rot=90)
+    assert G.facing_flags([tbl_ok], [], confirmed=signed) == []
+    # an UNSIGNED non-facing kind is still ignored (no geometric strip read for it)
+    assert G.facing_flags([dict(tbl, name="unsigned")], []) == []
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

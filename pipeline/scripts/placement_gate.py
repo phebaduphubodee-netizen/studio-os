@@ -71,7 +71,8 @@ def _is_strict(kind):
 # Kinds whose drawn symbol carries a facing cue (a headboard / backrest strip) that facing_reader
 # can cross-check against the hand-typed rot. Everything else has no reliable facing symbol.
 _FACING_KINDS = {"bed", "sofa", "loveseat", "armchair", "chair"}
-_CARDINALS = {"N", "S", "E", "W"}      # valid owner-signed facing values (facing_reader vocab)
+_CARDINALS = {"N", "S", "E", "W"}      # valid owner-signed CARDINAL facing values (facing_reader vocab)
+_CARD_ROT = {"S": 0, "E": 90, "N": 180, "W": 270}   # cardinal facing letter -> rotation (mirrors facing_reader)
 
 
 # ---- pure geometry (no PDF) ----------------------------------------------------------
@@ -311,13 +312,14 @@ def _size_consistent(piece, entry, tol=0.20):
 
 
 def confirmed_facing(piece, confirmed, size_tol=0.20):
-    """The owner-signed cardinal facing for a piece, or None. Matches a confirmed-ledger entry
-    by NAME (the generator names pieces deterministically) with a size sanity guard. This is the
-    durable, structured, owner-signed store that ends the regression memory flagged — 'facing
-    lived only as a default + a prose note, so a clean rebuild silently overwrote a correct read'.
-    BOTH consumers read it: the gate (to SUPPRESS a signed piece's REVIEW facing-flag + SIGN todo)
-    and the generator (to APPLY the signed facing OVER any geometric re-derivation, via
-    facing_reader.rot_from_facing)."""
+    """The owner-signed CARDINAL facing LETTER for a piece, or None. Matches a confirmed-ledger entry
+    by NAME (the generator names pieces deterministically) with a size sanity guard.
+
+    SUPERSEDED for the live suppress/apply paths by confirmed_rot (which returns a ROT and also
+    understands a non-cardinal numeric {"rot": ...}). This cardinal-LETTER accessor is retained as
+    the stable API + its focused cardinal tests; confirmed_rot is what facing_flags (gate) and
+    resolve_rot (generators) actually call, so a signature is honoured identically whether it is a
+    cardinal letter or a numeric angle."""
     name = piece.get("name")
     if name is None:
         return None
@@ -330,6 +332,64 @@ def confirmed_facing(piece, confirmed, size_tol=0.20):
         if e.get("name") == name and _size_consistent(piece, e, size_tol):
             return fac
     return None
+
+
+def _norm_rot(r):
+    """r -> int degrees in [0,360), or None if unparseable. Rounds (v4 stores rot to 1 dp)."""
+    try:
+        return int(round(float(r))) % 360
+    except (TypeError, ValueError):
+        return None
+
+
+def confirmed_rot(piece, confirmed, size_tol=0.20):
+    """The owner-signed ROTATION (int degrees, [0,360)) for a piece, or None. The rot-aware
+    generalisation of confirmed_facing: a confirmed[] entry may carry EITHER a cardinal 'facing'
+    letter (S/E/N/W) OR an explicit numeric 'rot' (ANY angle — the non-cardinal case, e.g. the
+    terrace tub chairs at 12/335 that a cardinal facing cannot express). Matched by NAME + the SAME
+    size guard as confirmed_facing. Precedence: an explicit numeric 'rot' wins over a 'facing' letter
+    when both are present (more precise); a malformed 'rot' falls back to the cardinal 'facing'. A
+    name+size match that yields NO usable rot (a typo/malformed sign) is SKIPPED so a later entry with
+    the same name+size — the owner's appended correction — is still honoured, mirroring
+    confirmed_facing's `continue`; only when NO matching entry yields a usable rot -> None. So the
+    generator and gate stay in lock-step on 'what did the owner sign'. This is the matcher BOTH the
+    gate (facing_flags, to suppress/raise) and the generators (resolve_rot, to APPLY) use."""
+    name = piece.get("name")
+    if name is None:
+        return None
+    for e in confirmed or []:
+        if not isinstance(e, dict):
+            continue
+        if e.get("name") != name or not _size_consistent(piece, e, size_tol):
+            continue
+        r = _norm_rot(e.get("rot")) if e.get("rot") is not None else None
+        if r is not None:
+            return r                       # explicit numeric rot wins (incl. non-cardinal)
+        card = _CARD_ROT.get(e.get("facing"))
+        if card is not None:
+            return card                    # else the cardinal letter -> rot
+        # this entry matched name+size but carries no usable rot (typo/malformed). Do NOT stop here:
+        # keep scanning so a later same-name+size correction is not shadowed by an earlier typo
+        # (confirmed_facing scans identically; returning here diverged the two accessors).
+    return None
+
+
+def resolve_rot(name, hand_rot, w, d, confirmed):
+    """GENERATOR helper: the effective rotation (degrees) for a facing piece. An owner-signed rot
+    (via confirmed_rot — cardinal 'facing' OR numeric 'rot', including NON-cardinal) OVERRIDES the
+    hand-typed/hand-read hand_rot. Single-source with the gate (confirmed_rot is exactly what
+    facing_flags checks), so the generator and gate can never disagree on what the owner signed.
+
+    Returns (rot, source): source is 'owner-signed' when a signature was found and applied (even if
+    it equals hand_rot — provenance for the audit trail), else None. With no matching signature the
+    hand_rot is returned unchanged and NO provenance is emitted, so a scene-graph regenerated against
+    a ledger with no confirmed[] stays byte-identical to the pre-wiring generator (backward-compatible)."""
+    if not confirmed:
+        return hand_rot, None
+    signed = confirmed_rot({"name": name, "w": w, "d": d}, confirmed)
+    if signed is None:
+        return hand_rot, None
+    return signed, "owner-signed"
 
 
 def load_confirmed(led):
@@ -349,31 +409,47 @@ def facing_flags(loose, fsegs, offset=(0, 0), confirmed=None):
     clear DISAGREEMENTS; conservative by design (an unreadable/symmetric strip -> 'unknown',
     never a flag), so it adds signal without crying wolf. REVIEW-only, never FAIL.
 
-    A piece whose facing the OWNER has already signed off (confirmed ledger) is SKIPPED — the
-    adjudication is done, so the gate stops asking and the verdict converges toward PASS as the
-    owner signs. This is the 'gate suppresses the SIGN todo once signed' half of the ledger."""
+    A piece whose facing the OWNER has already signed off (confirmed ledger) is checked in ROT space
+    for EVERY kind (the generator applies a sign to any kind, so the gate must verify any kind): the
+    flag is SUPPRESSED when the built rot matches the sign (adjudication done -> converges toward
+    PASS), else 'contradicts_signed' is raised — the regression backstop. The UNSIGNED geometric
+    strip-read is the facing-kind-only part (it needs a drawn headboard/backrest symbol)."""
+    # facing_reader is needed ONLY for the geometric strip-read (2) and the cosmetic cardinal-letter
+    # labels; the owner-signed backstop (1) is pure rot arithmetic (confirmed_rot/_norm_rot). Keep the
+    # import OPTIONAL so an unimportable facing_reader degrades gracefully to rot<deg> labels + skips
+    # the geometric read, but NEVER disables the regression backstop (which was the whole point of the
+    # ledger). _lbl gives the cardinal letter when FR is present + the rot is cardinal, else 'rot<deg>'.
     try:
         import facing_reader as FR
     except ImportError:
-        return []
+        FR = None
+
+    def _lbl(r):
+        if r is None:
+            return None
+        return (FR.facing_from_rot(r) if FR else None) or f"rot{r}"
+
     out = []
     for it in loose:
-        if it.get("kind") not in _FACING_KINDS:
-            continue                      # rot defaults to 0 (=S) when the generator omits it
-        signed = confirmed_facing(it, confirmed)
-        if signed is not None:
-            # The owner signed this piece's facing. Suppress the read-vs-typed flag ONLY when the
-            # piece's BUILT orientation (its rot) matches the signature. If a rebuild re-rolled the
-            # rot so it now CONTRADICTS the owner's signed truth, that is exactly the regression the
-            # ledger exists to catch -> emit a strong flag instead of silently dropping it. (The
-            # generator-applies-the-sign wiring, rot_from_facing, is still pending, so nothing yet
-            # forces rot == sign; this makes the gate the backstop until it lands.)
-            claimed = FR.facing_from_rot(it.get("rot", 0))
-            if claimed == signed:
+        # (1) OWNER-SIGNED check — runs for EVERY loose kind. The generator (resolve_rot) applies an
+        # owner sign to ANY kind (bench / side_table / console too), so the gate must verify ANY kind,
+        # else a re-rolled or hand-edited signed non-facing piece slips through. Compared in ROT space
+        # so a non-cardinal sign (an angled chair at 12/335) is handled; claimed/read show the cardinal
+        # letter when cardinal, else a 'rot<deg>' label. A MALFORMED built rot NEVER suppresses (it
+        # cannot be shown to match) -> a garbage orientation can't silence an owner's signature.
+        signed_rot = confirmed_rot(it, confirmed)
+        if signed_rot is not None:
+            built_rot = _norm_rot(it.get("rot", 0))
+            if built_rot is not None and built_rot == signed_rot:
                 continue                  # built orientation agrees with the sign -> adjudicated
             out.append({"name": it.get("name"), "kind": it.get("kind"),
-                        "verdict": "contradicts_signed", "claimed": claimed, "read": signed,
+                        "verdict": "contradicts_signed", "claimed": _lbl(built_rot),
+                        "read": _lbl(signed_rot),
                         "confidence": 1.0})
+            continue
+        # (2) UNSIGNED geometric cross-check — needs a drawn headboard/backrest SYMBOL (facing_reader),
+        # so facing kinds only. rot defaults to 0 (=S) when the generator omits it.
+        if FR is None or it.get("kind") not in _FACING_KINDS:
             continue
         fp = footprint(it, offset)
         pad = 120.0
