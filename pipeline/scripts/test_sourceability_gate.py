@@ -165,6 +165,23 @@ class TestReport(unittest.TestCase):
         self.assertEqual(verdict, "FAIL")   # toilet is sourced, unbound -> FAIL
 
 
+class TestBundleRows(unittest.TestCase):
+    def test_render_without_ffe_is_concept_only_warn(self):
+        rows = SG.bundle_rows("UNWIRED", ffe_present=False, has_render=True)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["status"], "WARN")
+        self.assertIn("CONCEPT ONLY", rows[0]["detail"])
+
+    def test_no_render_no_ffe_emits_nothing(self):
+        self.assertEqual(SG.bundle_rows("UNWIRED", ffe_present=False, has_render=False), [])
+
+    def test_ffe_present_emits_no_exception_row(self):
+        # with an FF&E file the standing reminder lives in the always-visible QA section,
+        # so bundle_rows stays quiet (no false WARN)
+        self.assertEqual(SG.bundle_rows("PASS", ffe_present=True, has_render=True), [])
+        self.assertEqual(SG.bundle_rows("REVIEW", ffe_present=True, has_render=True), [])
+
+
 class TestCheckIntegration(unittest.TestCase):
     def _write(self, d, name, obj):
         p = os.path.join(d, name)

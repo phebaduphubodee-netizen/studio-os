@@ -201,6 +201,20 @@ def report_rows(results):
     return rows
 
 
+def bundle_rows(verdict, ffe_present, has_render):
+    """Deliverable-bundle rule (strategy 2026-07-06): a render is NOT a deliverable without
+    its FF&E schedule + client BOM. Returns QA-CHECKLIST {status, check, detail} rows.
+    A render with NO FF&E file is concept-only (WARN — escalates the deliverable to REVIEW);
+    the always-visible checklist section carries the standing 'ship render + schedule + BOM
+    together' reminder, so this only emits the exception rows."""
+    rows = []
+    if has_render and not ffe_present:
+        rows.append({"status": "WARN", "check": "sourceability: deliverable bundle",
+                     "detail": "render present but NO FF&E file — CONCEPT ONLY, not client-sourced; "
+                               "add ffe-candidates.json (+ ffe_tag bindings) and the client BOM before delivery"})
+    return rows
+
+
 def load_ffe(spec_path, spec):
     """Locate the FF&E file: an explicit spec['ffe_candidates'] path first, else
     'ffe-candidates.json' beside the spec. Returns (ffe_doc | None, path | None); a present but

@@ -89,7 +89,7 @@ def _sched_sheet(fig, spec):
              fontsize=6.5, color="0.4")
 
 
-def _qa_md(spec, res, verdict, spec_path):
+def _qa_md(spec, res, verdict, spec_path, sourceability=None):
     r = spec["room"]; outline = [tuple(p) for p in r["outline_mm"]]
     area = suite_clearance._shoelace(outline) / 1e6
     W = max(p[0] for p in outline); D = max(p[1] for p in outline)
@@ -119,6 +119,28 @@ def _qa_md(spec, res, verdict, spec_path):
     P.append("- ✅ friend confirmed: self-modeled + 3D Warehouse (both OK to ship). Ship the ASSEMBLED SCENE only, never a standalone Warehouse model.")
     P.append("- [ ] Confirmed each component's source again for this deliverable.")
     P.append("")
+    if sourceability is not None:
+        sv = sourceability.get("verdict", "UNWIRED")
+        ffe_present = sourceability.get("ffe_present", False)
+        P.append("## 4 · Sourceability & deliverable bundle (sourceability_gate — the moat)")
+        P.append(f"- **Sourceability verdict: `{sv}`** — every rendered SOURCED piece must bind (`ffe_tag`) "
+                 "to a real, right-sized, supplied, verified Thai product. FABRICATED built-ins are joiner-made.")
+        if sv == "UNWIRED":
+            P.append("- [ ] ⚠️ No FF&E file for this project — furniture is NOT sourced-confirmed. This "
+                     "deliverable is **CONCEPT ONLY** until `ffe-candidates.json` + `ffe_tag` bindings exist.")
+        elif sv == "FAIL":
+            P.append("- [ ] ❌ A sourced piece is unbound / wrong-size / has no supplier — the render shows "
+                     "furniture the client cannot buy. Fix the binding before delivery (see rows above).")
+        elif sv == "REVIEW":
+            P.append("- [ ] ⚠️ Sourced picks are DRAFT (`verified:false`) — confirm price/lead/specs with the "
+                     "vendor, then set `verified:true`.")
+        if ffe_present:
+            P.append("- [ ] `ffe-schedule.md` + `ffe-candidates.json` are bundled in this folder "
+                     "(regenerate via `scripts/ffe_schedule.py`; the JSON is the source of truth).")
+        P.append("- [ ] Client **BOM** attached (Stage-07 `bom-generate`, human-triggered) — a render ships "
+                 "WITH its FF&E schedule + BOM, never alone.")
+        P.append("- [ ] Render prompt NAMES each selected real product (generative-hallucination guard, check-5).")
+        P.append("")
     P.append("## SIGN-OFF")
     P.append("- Reviewed by: __________  Date: ______   - [ ] APPROVED for client")
     if spec_path:
@@ -160,6 +182,21 @@ def build(spec, spec_path, name=None, outdir=None, date=None, render_png=None):
         res = list(res) + placement_logic.report(spec)[0]
     except Exception:  # noqa: BLE001
         pass
+    # SOURCEABILITY layer (sourceability_gate, the moat, strategy 2026-07-06): the render must
+    # VISUALIZE a sourceable spec. Rows ride the SAME cover verdict + QA-CHECKLIST — a sourced
+    # piece unbound / wrong-size / unsupplied FAILs the deliverable; verified:false -> WARN. Plus
+    # the deliverable-bundle rule: a render is not a deliverable without its FF&E schedule + BOM.
+    # A bug here must never block the deliverable -> degrade silently to clearance+function only.
+    s_verdict, ffe_present, ffe_doc, ffe_path = "UNWIRED", False, None, None
+    try:
+        import sourceability_gate
+        ffe_doc, ffe_path = sourceability_gate.load_ffe(spec_path, spec)
+        s_results, s_verdict = sourceability_gate.report(spec, ffe_doc)
+        ffe_present = ffe_doc is not None
+        res = list(res) + sourceability_gate.report_rows(s_results) \
+                        + sourceability_gate.bundle_rows(s_verdict, ffe_present, bool(render_png))
+    except Exception:  # noqa: BLE001
+        pass
     fails = sum(x["status"] == "FAIL" for x in res); warns = sum(x["status"] == "WARN" for x in res)
     verdict = "FAIL" if fails else ("REVIEW" if warns else "PASS")
 
@@ -176,7 +213,22 @@ def build(spec, spec_path, name=None, outdir=None, date=None, render_png=None):
     for ei, lab, edoc in elev_docs:
         edoc.saveas(os.path.join(folder, f"suiteelev_{name}_{ei+1}_{lab}.dxf"))
     with open(os.path.join(folder, "QA-CHECKLIST.md"), "w", encoding="utf-8") as f:
-        f.write(_qa_md(spec, res, verdict, spec_path))
+        f.write(_qa_md(spec, res, verdict, spec_path,
+                       sourceability={"verdict": s_verdict, "ffe_present": ffe_present}))
+    # deliverable BUNDLE (sourceability): when the project has an FF&E file, ship the FF&E
+    # schedule + candidates INSIDE the deliverable — a render is not a deliverable without its
+    # schedule + BOM. Best-effort: a generation error must never block the deliverable.
+    if ffe_present and ffe_path:
+        try:
+            shutil.copy2(ffe_path, os.path.join(folder, "ffe-candidates.json"))
+            repo_scripts = os.path.join(os.path.dirname(os.path.dirname(HERE)), "scripts")
+            if repo_scripts not in sys.path:
+                sys.path.insert(0, repo_scripts)
+            import ffe_schedule
+            with open(os.path.join(folder, "ffe-schedule.md"), "w", encoding="utf-8") as f:
+                f.write(ffe_schedule.render(ffe_doc))
+        except Exception:  # noqa: BLE001
+            pass
     # DESIGN RATIONALE — the per-element cited "why here / why this placement / size /
     # material" companion to the QA checklist. Honesty-first: it labels every hardcoded
     # material default as such. If a PERSONA is discoverable for this spec, the presence
