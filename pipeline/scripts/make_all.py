@@ -138,6 +138,25 @@ def main():
         sys.exit("\n  STOP: FUNCTION check FAILED — the layout breaks a human-usage rule "
                  "(see above). Give the TV real coordinates / move the bed head before rendering.")
 
+    # 2c) SOURCEABILITY GATE — the moat (sourceability_gate, strategy 2026-07-06): a render must
+    #     VISUALIZE a sourceable spec, never invent furniture. Every SOURCED piece (loose items +
+    #     sanitary/appliance fixtures) must bind via ffe_tag to a real, right-sized, supplied,
+    #     verified FF&E product; FABRICATED built-ins are joiner-made and not gated here. A FAIL
+    #     STOPS the render, same discipline as clearance/FUNCTION — we never render furniture the
+    #     client cannot buy. UNWIRED (no FF&E file, e.g. a demo spec) prints honestly and does NOT
+    #     block; it is never a silent pass. Sits ALONGSIDE the statutory clearance gate, not above.
+    sverdict = "UNWIRED"
+    try:
+        import sourceability_gate   # inside the guard: a load/logic error must not block a valid build
+        sverdict, sresults = sourceability_gate.check(spec_path)
+        print(sourceability_gate.format_report(sresults, sverdict, os.path.basename(spec_path)))
+    except (SystemExit, Exception) as e:  # noqa: BLE001 — a sourceability-layer bug must not block a valid build
+        print(f"  (!) SOURCEABILITY check skipped ({type(e).__name__}: {e})")
+    if sverdict == "FAIL":
+        sys.exit("\n  STOP: SOURCEABILITY FAILED — a piece the render will show has no real buyable "
+                 "product (unbound / wrong-size / no supplier). Bind ffe_tag to a selected FF&E "
+                 "candidate before rendering, or the client sees furniture they cannot buy.")
+
     # 3) 2D แบบ
     doc = plan_2d.build_dxf(spec)
     dxf = os.path.join(out, f"plan_{name}.dxf")
@@ -257,6 +276,7 @@ def main():
     print("\n=== make_all summary ===")
     print(f"  clearance: {verdict}")
     print(f"  function:  {fverdict}  (human-usage placement — placement_logic)")
+    print(f"  sourceability: {sverdict}  (every rendered piece a real buyable/buildable product — sourceability_gate)")
     for p in produced:
         print(f"  PRODUCED: {p}")
     for s in skipped:

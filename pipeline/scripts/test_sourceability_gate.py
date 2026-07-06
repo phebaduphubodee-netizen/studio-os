@@ -189,6 +189,20 @@ class TestCheckIntegration(unittest.TestCase):
             verdict, res = SG.check(sp)
             self.assertEqual(verdict, "UNWIRED")
 
+    def test_committed_gold_example_reviews(self):
+        """The committed worked example (examples/scene-graph.example.json bound to
+        ffe-candidates.example.json via spec['ffe_candidates']) must gate to REVIEW — every
+        sourced item is bound + right-sized + supplied, but the example picks are DRAFT
+        (verified:false). A regression anchor so the ffe_tag join can't silently rot."""
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        sp = os.path.join(root, "examples", "scene-graph.example.json")
+        self.assertTrue(os.path.exists(sp), "gold-standard example scene-graph is missing")
+        verdict, res = SG.check(sp)
+        self.assertEqual(verdict, "REVIEW")
+        # the media wall built-in is FABRICATED and must NOT be sourcing-gated
+        fab = [r for r in res if r.get("cls") == "fabricated"]
+        self.assertEqual(len(fab), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
