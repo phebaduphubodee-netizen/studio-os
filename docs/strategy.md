@@ -820,3 +820,42 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
   hand-edited scene-graphs the build trusts via the marker). (5) FLAG: the 996-vs-992 dual-storage of
   manual walls is a latent divergence; and the master-side "พื้นหญ้าชั้นล่าง" label at x3200 is an
   inference (owner's correction was the sitting side) — confirm. ALL LOCAL / UNPUSHED.
+
+
+## Session 2026-07-06e — backwards-learning research: paired 2D/3D corpora (the owner-free verifier lane)
+
+- **Owner directive:** "การถอดแบบยังดีไม่พอ — ไปหางานจริงในเน็ตที่มีทั้ง 2D และ 3D ของงานเดียวกัน แล้วเรียนรู้ย้อนกลับ."
+  Ran a 7-angle / 24-agent research workflow (datasets, methods, VLM benchmarks, portfolios, Thai
+  market, symbol standards, commercial tools) with an adversarial verify pass: 114 findings → 16
+  verified, 0 refuted. Full record: `docs/research/2026-07-06-paired-2d3d-backlearn.md` (+ raw JSON).
+- **The strategic finding — our ledger is the industry's converged architecture, not a stopgap.**
+  Every commercial 2D→3D vendor (RoomSketcher, CubiCasa, Planner 5D, getfloorplan, HomeByMe, Foyr)
+  independently ships *machine geometry + human semantics*: furniture identity is explicitly
+  unshipped, pure-AI vendors run 100% human QA per order, and HomeByMe asks the CUSTOMER for room
+  names + window types as intake metadata — i.e., F1/F4 are information-theoretic gaps in the
+  drawing, not vision gaps. Our two upgrades over that equilibrium: corrections PERSIST (owner-signed
+  ledger vs re-fix-per-order) and the machine PRESENTS EVIDENCE (overlay) instead of making the human hunt.
+- **The bottleneck answer: a backwards benchmark = an owner-free verifier.** Paired corpora let the
+  3D be the answer key for what the 2D symbols meant, so semantic reads become SCORABLE without the
+  owner's eyeballs (per-class metrics for F1–F5 designed in §3 of the record; matching by footprint
+  IoU so semantic scores aren't polluted by detection, which our gate already owns). KPI = signatures
+  needed to reach 100% per class ("corrections cheap" made measurable).
+- **Two failure classes got standard-citable physics:** F4 — glass is thin BY STANDARD (ASA 2554
+  A-GLAZ pen 0.25 vs wall weights; FloorPlanCAD is the only large benchmark typing sliding doors +
+  curtain wall, and even SOTA scores ~20–35 PQ there) → thin-stroke second pass promoting wall-gap /
+  loop-closing thin lines to glazing candidates is rule #1 to build. F5 — floor membership is encoded
+  in LINETYPE + LAYER DISCIPLINE, not position (dashed = above/below cut plane; L-PLNT-TREE at grade
+  vs A-FURN-PLNT on structure) → demote, flag, never auto-place. Both rest on 2 Thai PDFs still to
+  verify+distill via `_inbox/` (ASA 2554 standard, DPT permit sets) before any gate cites them.
+- **VLM evidence independently vindicates the rot ledger:** three separate benchmarks put VLMs under
+  50% on orientation and 0.40–0.55 on door/window counting while symbolic checks hit 83–94% — facing
+  stays deterministic-symbolic + owner-signed; no VLM in the gate path.
+- **Day-1 corpus (no approval friction):** CubiCasa5K (5.5 GB, Zenodo), FloorPlanCAD SVGs (only
+  sliding-door-typed set), Swiss Dwellings v3 (CC BY 4.0, railing-as-separator = our thin-boundary
+  analog), MSD; Thai owner-free pairs = BMA แบบบ้านยิ้ม 2 (~100 gov designs, plan+perspective),
+  DPT แบบบ้านสานฝัน, DEDE 24-orientation set (ready-made F2 invariance test). Approval clocks worth
+  starting: Structured3D, 3D-FRONT (facing GT at scale). Verified negatives: SUN RGB-D, HouseExpo,
+  both HF mirrors — skip.
+- **Build order recommended to owner:** (1) F4 thin-line promotion rule, (2) benchmark harness on the
+  day-1 corpora wired beside placement_gate as a regression gate, (3) F2 facing-asymmetry symbol table
+  feeding the rot ledger. Nothing downloaded yet this session — research record only, decisions owner-steerable.
