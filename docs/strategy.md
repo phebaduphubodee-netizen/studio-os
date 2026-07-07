@@ -971,3 +971,28 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
   Start-Process + Monitor-on-report.md is the right shape for >10-min corpus runs (the
   in-tool background lane hard-caps at 10 min); rows now STREAM to cards.jsonl so a
   mid-run death keeps finished work.
+
+## Session 2026-07-07a — overnight autonomous run: top-5 plans authored + oracle wall lane executed
+
+- **Owner directive (asleep, full autonomy): "explore, pick the 5 highest-leverage items, write
+  executor-ready PLAN-*.md for each, then do them all."** A 26-agent workflow (7 subsystem maps →
+  selection critic → 5 plan writers → hostile executability reviewers → fixers) produced five
+  adversarially-verified plans at repo root: PLAN-f4-wall-aware-precision (rank 1),
+  PLAN-swing-door-arc-lane (2), PLAN-f1-size-prior-identity (3), PLAN-confirmed-kind-identity-ledger
+  (4), PLAN-gate-hardening-freshness (5). The critic DEMOTED the Structured3D adapter on hard
+  evidence (bbox has no class labels; annotation_3d semantics carry no furniture kinds; F2 scoring
+  gates on GT kind ∈ FACING_KINDS; kind source = un-downloaded render zips = owner call) and
+  promoted the two production-lane items instead. Plan-doc law learned: absolute pytest totals rot
+  the moment another slice lands — every plan now records N at preflight and pins N+k plus stable
+  PER-FILE counts.
+- **PLAN A EXECUTED — the oracle wall lane is live** (`qa/reports/floorplancad-oracle-walls-2026-07-07.md`):
+  adapter v1.1 exports class-1 `wall_lines` (322,849 segs corpus-wide; 3-file equivalence EQUAL,
+  selftest 5,502/5,502), reader gained a labeled `walls oracle` lane feeding promote() its first
+  real wall set. Result: **F4 precision 2.9 % → 3.4 %** (n_pred 159,582 → 135,931), detection
+  numerically IDENTICAL (the no-leak tripwire held), sliding/window recall floors held, door +43.
+  **The ceiling finding: with mm-true walls the flood is NOT wall-face pairs** — coverage killed
+  36,203 runs but the contact term re-admitted ~12.5 k pairless score-2 runs; most flood is
+  furniture/dim pair-runs with no wall relationship. Score histogram now has tiers (4–5 =
+  wall-anchored, 41,729): tier-aware consumption or a classifier is the real precision lever,
+  not wall suppression alone. Blind headline unchanged and byte-identical (`IDENTICAL` on the
+  committed baseline pred; blind meta gains zero keys — pinned).
