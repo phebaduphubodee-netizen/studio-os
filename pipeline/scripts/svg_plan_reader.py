@@ -1,7 +1,7 @@
 """svg_plan_reader.py -- OUR reader's SVG lane + the first FloorPlanCAD baseline run.
 
     python svg_plan_reader.py --sheet <in.svg> <scale_mm_per_unit> <out.pred.json>
-    python svg_plan_reader.py --baseline <svg-dir> <gt-dir> <out-dir> [limit N] [overlays K]
+    python svg_plan_reader.py --baseline <svg-dir> <gt-dir> <out-dir> [limit N] [overlays K] [walls oracle]
 
 WHY: gt-test-00 (5,502 machine-checkable answer keys) exists but no reader has ever been
 scored against it -- the owner has still only ever seen our reads verified by eye. This
@@ -55,7 +55,7 @@ from matplotlib.collections import LineCollection
 
 import benchmark_reader as B
 from floorplancad_adapter import walk_path, shape_points, SVG_NS
-from glazing_candidates import promote, run_endpoints
+from glazing_candidates import axis_run, promote, run_endpoints
 from plan_cluster import cluster_segments
 
 READER_VERSION = "svg_plan_reader v1"
@@ -140,7 +140,8 @@ def read_ink(svg_path):
 
 
 # ---- one sheet -> pred document ----------------------------------------------------------
-def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM):
+def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
+               wall_segs=None, wall_source=None):
     """Raw SVG -> pred.json document (benchmark_reader schema, units=mm)."""
     s = float(scale_mm_per_unit)
     ink = read_ink(svg_path)
@@ -165,7 +166,21 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM):
         n_dropped = 0
 
     openings = []
-    cands, stats = promote(segs, wall_segs=[])
+    w_segs, n_diag = [], 0
+    if wall_source is not None and wall_source != "oracle":
+        raise ValueError(f"unknown wall_source {wall_source!r} -- only 'oracle' exists; "
+                         "an unknown label must never wrap a blind run")
+    if wall_segs and wall_source is None:
+        raise ValueError("wall_segs given without wall_source -- refusing an UNLABELED "
+                         "wall-aware read")
+    if wall_source == "oracle":
+        # GT-side wall geometry, ALREADY in mm (adapter scales at emission) -- never
+        # rescale here. Raw 2-point segments [[x1,y1],[x2,y2]], exactly what promote
+        # expects; diagonal segs are counted (axis_run=None -> they contribute nothing
+        # to suppression or contact) rather than silently vanishing.
+        w_segs = list(wall_segs or [])
+        n_diag = sum(1 for s2 in w_segs if axis_run(s2) is None)
+    cands, stats = promote(segs, wall_segs=w_segs)
     for k, c in enumerate(cands):
         (ax, ay), (bx, by) = c["segments"][0][0], c["segments"][0][1]
         openings.append({"id": f"g{k:03d}", "type": "candidate",
@@ -173,7 +188,7 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM):
                          "w": round(abs(bx - ax), 1), "d": round(abs(by - ay), 1),
                          "tier": c["tier"], "score": c["score"]})
 
-    return {
+    pred = {
         "meta": {
             "source": "svg-ink", "reader": READER_VERSION,
             "file": os.path.basename(svg_path), "units": "mm",
@@ -190,6 +205,13 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM):
         "elements": elements,
         "openings": openings,
     }
+    if wall_source is not None:
+        # wall keys appear ONLY in wall mode: the blind headline lane's meta must not
+        # change by one key (corpus pred byte-identity vs the committed baseline)
+        pred["meta"]["wall_source"] = wall_source
+        pred["meta"]["wall_segs_n"] = len(w_segs)
+        pred["meta"]["wall_diag_unusable"] = n_diag
+    return pred
 
 
 # ---- overlay (owner scans, not hunts) ----------------------------------------------------
@@ -224,7 +246,7 @@ def render_overlay(pred, gt, segs_mm, out_png):
 
 
 # ---- corpus baseline run -------------------------------------------------------------------
-def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0):
+def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0, walls=None):
     os.makedirs(os.path.join(out_dir, "preds"), exist_ok=True)
     if overlays:
         os.makedirs(os.path.join(out_dir, "overlays"), exist_ok=True)
@@ -233,15 +255,30 @@ def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0):
         raise SystemExit(f"no *.gt.json under {gt_dir}")
     if limit:
         gt_files = gt_files[:int(limit)]
+    if walls not in (None, "oracle"):
+        raise SystemExit(f"unknown walls lane {walls!r} -- only 'oracle' exists")
+    if walls == "oracle":
+        try:
+            first = json.load(open(gt_files[0], encoding="utf-8"))
+        except Exception as e:                 # loud refusal beats a raw traceback
+            raise SystemExit(f"walls oracle: first gt file unreadable "
+                             f"({type(e).__name__}: {e}) -- regenerate the gt dir")
+        if "wall_lines" not in first:
+            raise SystemExit("walls oracle: first gt file has no 'wall_lines' key -- "
+                             "regenerate the gt dir with floorplancad_adapter v1.1 "
+                             "--batch before running the oracle lane")
     cards = []
     skipped = {"svg-unit": 0, "svg-missing": 0, "error": 0}
     overlay_failed = 0
+    wall_stats = {"segs": 0, "diagonal": 0} if walls else None
     t0 = time.time()
     # rows stream to disk as they complete: a mid-run death keeps the finished work
     # (scrutiny 2026-07-06: gt-load crashes used to abort the run AND lose every row)
     rows_fh = open(os.path.join(out_dir, "cards.jsonl"), "w", encoding="utf-8")
 
     def row(obj):
+        if walls:
+            obj = {**obj, "wall_source": walls}
         rows_fh.write(json.dumps(obj, ensure_ascii=False) + "\n")
         rows_fh.flush()
 
@@ -258,13 +295,25 @@ def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0):
                 skipped["svg-missing"] += 1
                 row({"file": base, "skipped": "svg-missing"})
                 continue
-            pred = read_sheet(sfp, gt["meta"]["scale_mm_per_unit"])
+            if walls == "oracle":
+                # strict indexing: in a mixed old/new gt dir a missing wall_lines key
+                # must become a counted "error" row, never a silent empty-wall sheet
+                # wearing the oracle label
+                wsegs = [[[w["x1"], w["y1"]], [w["x2"], w["y2"]]]
+                         for w in gt["wall_lines"]]
+                pred = read_sheet(sfp, gt["meta"]["scale_mm_per_unit"],
+                                  wall_segs=wsegs, wall_source="oracle")
+            else:
+                pred = read_sheet(sfp, gt["meta"]["scale_mm_per_unit"])
             card = B.score_pair(gt, pred)
             with open(os.path.join(out_dir, "preds", base + ".pred.json"), "w",
                       encoding="utf-8") as fh:
                 json.dump(pred, fh, ensure_ascii=False)
             cards.append(card)
             row({"file": base, "card": card})
+            if walls:
+                wall_stats["segs"] += pred["meta"]["wall_segs_n"]
+                wall_stats["diagonal"] += pred["meta"]["wall_diag_unusable"]
             if overlays and len(cards) <= overlays:
                 try:                # a failed PICTURE must not error-count a SCORED sheet
                     s = float(gt["meta"]["scale_mm_per_unit"])
@@ -286,7 +335,8 @@ def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0):
                       f"({time.time() - t0:.0f}s)")
     rows_fh.close()
     report = render_baseline_report(cards, skipped, len(gt_files), time.time() - t0,
-                                    overlay_failed=overlay_failed)
+                                    overlay_failed=overlay_failed,
+                                    walls=walls, wall_stats=wall_stats)
     with open(os.path.join(out_dir, "report.md"), "w", encoding="utf-8") as fh:
         fh.write(report + "\n")
     print(report)
@@ -294,9 +344,12 @@ def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0):
     return cards, skipped
 
 
-def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0):
+def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0,
+                           walls=None, wall_stats=None):
     if not cards:
-        return "# FloorPlanCAD baseline\n\nno sheets scored -- " + json.dumps(skipped)
+        return ("# FloorPlanCAD baseline"
+                + (f" -- {walls.upper()}-WALL lane (wall_source={walls})" if walls else "")
+                + "\n\nno sheets scored -- " + json.dumps(skipped))
     agg = B.aggregate(cards)
     det, f1, f4 = agg["detection"], agg["F1_identity"], agg["F4_openings"]
 
@@ -309,7 +362,10 @@ def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0):
             verdicts.setdefault(m, {}).setdefault(c[m]["verdict"], 0)
             verdicts[m][c[m]["verdict"]] += 1
     L = [
-        "# FloorPlanCAD baseline -- OUR reader vs gt (first real numbers)", "",
+        ("# FloorPlanCAD baseline -- OUR reader vs gt (first real numbers)"
+         if not walls else
+         f"# FloorPlanCAD baseline -- {walls.upper()}-WALL lane "
+         f"(wall_source={walls}; NOT the blind headline)"), "",
         f"- reader: {READER_VERSION} (annotation-blind ink -> plan_cluster morphology; "
         f"openings = glazing_candidates pair-runs, untyped)",
         f"- sheets: {len(cards)} scored / {n_total} gt files "
@@ -346,8 +402,16 @@ def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0):
         "- element precision counts every non-furniture ink cluster (dim blocks, "
         "annotation symbols) as a phantom -- that is the point: the number the owner's "
         "eye used to absorb is now on paper.",
-        "", f"reader: {READER_VERSION}",
     ]
+    if walls == "oracle":
+        L += ["- WALL SOURCE = ORACLE: promote() received the GT's own wall_lines "
+              "(answer-key side). This lane measures the CEILING of wall-aware "
+              "precision and must NEVER be quoted as the blind headline "
+              "(that remains qa/reports/floorplancad-baseline-2026-07-06.md).",
+              f"- oracle wall segs fed: {wall_stats['segs']}; diagonal/unusable "
+              f"(axis_run=None -- contribute nothing to suppression or contact): "
+              f"{wall_stats['diagonal']}"]
+    L += ["", f"reader: {READER_VERSION}"]
     return "\n".join(L)
 
 
@@ -365,11 +429,13 @@ def main(argv):
         kw = {}
         rest = argv[5:]
         while rest:
-            if len(rest) < 2 or rest[0] not in ("limit", "overlays") \
-                    or not rest[1].isdigit():
+            if len(rest) >= 2 and rest[0] in ("limit", "overlays") and rest[1].isdigit():
+                kw[rest[0]] = int(rest[1])
+            elif len(rest) >= 2 and rest[0] == "walls" and rest[1] in ("oracle",):
+                kw["walls"] = rest[1]
+            else:
                 raise SystemExit(f"bad option {rest[0]!r} -- expected: "
-                                 f"[limit N] [overlays K]\n\n{__doc__}")
-            kw[rest[0]] = int(rest[1])
+                                 f"[limit N] [overlays K] [walls oracle]\n\n{__doc__}")
             rest = rest[2:]
         run_baseline(argv[2], argv[3], argv[4], **kw)
     else:

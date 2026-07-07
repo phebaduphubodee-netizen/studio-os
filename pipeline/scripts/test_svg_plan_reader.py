@@ -221,6 +221,124 @@ def test_read_sheet_empty_svg(tmp_path):
     assert pred["elements"] == [] and pred["openings"] == []
 
 
+def test_blind_lane_meta_has_no_wall_keys(tmp_path):
+    # the blind headline lane must stay byte-identical: wall keys appear ONLY when a
+    # wall_source is passed
+    pred = R.read_sheet(_sheet_svg(tmp_path), 100.0)
+    assert "wall_source" not in pred["meta"]
+    assert "wall_segs_n" not in pred["meta"]
+
+
+def test_oracle_walls_suppress_wall_face_pairs(tmp_path):
+    # the 159,582-candidate flood: double-line wall faces pair with each other; with
+    # the SAME ink handed in as oracle walls, collinear coverage (>=80%, gap_tol=0)
+    # must kill exactly those runs. Also pins: wall segs are RAW 2-point mm segments
+    # (merged-run dicts fail _valid_seg silently) and are NOT rescaled in read_sheet
+    # (a double-scale would move them 100x away and suppress nothing).
+    fp = _write(tmp_path, "w.svg", '<path d="M 20,10 L 20,40"/>\n'
+                                   '<path d="M 22,10 L 22,40"/>\n')
+    blind = R.read_sheet(fp, 100.0)
+    assert blind["openings"], "fixture rotted: blind lane should flood here"
+    walls = [[[2000.0, 1000.0], [2000.0, 4000.0]],
+             [[2200.0, 1000.0], [2200.0, 4000.0]]]
+    oracle = R.read_sheet(fp, 100.0, wall_segs=walls, wall_source="oracle")
+    assert oracle["openings"] == []
+    assert oracle["meta"]["wall_source"] == "oracle"
+    assert oracle["meta"]["wall_segs_n"] == 2
+    assert oracle["meta"]["opening_candidate_stats"]["dropped_wall_covered"] >= 2
+
+
+def test_oracle_walls_do_not_kill_gap_candidates(tmp_path):
+    # sliding-door-in-gap (the module's headline case): a thin pair INSIDE a wall gap
+    # must survive coverage (promote merges coverage walls with gap_tol=0) and now
+    # earn wall contact 2 -> strong
+    fp = _write(tmp_path, "g.svg", '<path d="M 20,21 L 20,29"/>\n'
+                                   '<path d="M 21,21 L 21,29"/>\n')
+    walls = [[[2000.0, 0.0], [2000.0, 2000.0]],
+             [[2000.0, 3000.0], [2000.0, 5000.0]]]
+    pred = R.read_sheet(fp, 100.0, wall_segs=walls, wall_source="oracle")
+    assert pred["openings"], "in-gap pair suppressed: bridged wall merging regression"
+    assert pred["openings"][0]["tier"] == "strong"
+    assert all(o["type"] == "candidate" for o in pred["openings"])
+
+
+def test_run_baseline_oracle_labels_rows_and_requires_wall_lines(tmp_path):
+    import shutil
+
+    import pytest
+    svg_dir = os.path.join(str(tmp_path), "svg")
+    gt_dir = os.path.join(str(tmp_path), "gt")
+    os.makedirs(svg_dir)
+    os.makedirs(gt_dir)
+    shutil.copy(_sheet_svg(tmp_path), os.path.join(svg_dir, "s1.svg"))
+    gt = {"meta": {"units": "mm", "scale_mm_per_unit": 100.0},
+          "elements": [], "openings": [], "wall_lines": []}
+    with open(os.path.join(gt_dir, "s1.gt.json"), "w", encoding="utf-8") as fh:
+        json.dump(gt, fh)
+    out_dir = os.path.join(str(tmp_path), "out")
+    cards, skipped = R.run_baseline(svg_dir, gt_dir, out_dir, walls="oracle")
+    rows = [json.loads(l) for l in open(os.path.join(out_dir, "cards.jsonl"),
+                                        encoding="utf-8")]
+    assert rows and all(r.get("wall_source") == "oracle" for r in rows)
+    rep = open(os.path.join(out_dir, "report.md"), encoding="utf-8").read()
+    assert "ORACLE-WALL" in rep and "NOT the blind headline" in rep
+    # a pre-wall gt dir must be refused loudly, never silently run empty-walled
+    gt2_dir = os.path.join(str(tmp_path), "gt2")
+    os.makedirs(gt2_dir)
+    with open(os.path.join(gt2_dir, "s1.gt.json"), "w", encoding="utf-8") as fh:
+        json.dump({"meta": {"units": "mm", "scale_mm_per_unit": 100.0},
+                   "elements": [], "openings": []}, fh)
+    with pytest.raises(SystemExit):
+        R.run_baseline(svg_dir, gt2_dir, os.path.join(str(tmp_path), "out2"),
+                       walls="oracle")
+
+
+def test_read_sheet_wall_args_validated(tmp_path):
+    # scrutiny 2026-07-07: an unknown wall_source must never WRAP a blind run in a
+    # wall-aware label, and wall segs without a label must never run unlabeled
+    import pytest
+    fp = _sheet_svg(tmp_path)
+    with pytest.raises(ValueError):
+        R.read_sheet(fp, 100.0, wall_segs=[[[0.0, 0.0], [0.0, 1000.0]]])
+    with pytest.raises(ValueError):
+        R.read_sheet(fp, 100.0, wall_segs=[[[0.0, 0.0], [0.0, 1000.0]]],
+                     wall_source="self")
+    with pytest.raises(SystemExit):
+        R.run_baseline(str(tmp_path), str(tmp_path), str(tmp_path), walls="self")
+
+
+def test_run_baseline_oracle_straggler_gt_is_counted_labeled_error(tmp_path):
+    # mixed old/new gt dir: preflight passes on the FIRST file, so a pre-wall
+    # straggler must become a counted error row wearing the oracle label -- pins the
+    # STRICT gt["wall_lines"] indexing (a .get(...,[]) mutant silently runs the
+    # straggler empty-walled under the oracle label) and pins labeling on
+    # non-scored rows (error + svg-missing)
+    import shutil
+    svg_dir = os.path.join(str(tmp_path), "svg")
+    gt_dir = os.path.join(str(tmp_path), "gt")
+    os.makedirs(svg_dir)
+    os.makedirs(gt_dir)
+    sheet = _sheet_svg(tmp_path)
+    shutil.copy(sheet, os.path.join(svg_dir, "a1.svg"))
+    shutil.copy(sheet, os.path.join(svg_dir, "a2.svg"))
+    meta = {"units": "mm", "scale_mm_per_unit": 100.0}
+    docs = {"a1": {"meta": meta, "elements": [], "openings": [], "wall_lines": []},
+            "a2": {"meta": meta, "elements": [], "openings": []},          # straggler
+            "a3": {"meta": meta, "elements": [], "openings": [], "wall_lines": []}}
+    for base, doc in docs.items():                                          # a3: no svg
+        with open(os.path.join(gt_dir, base + ".gt.json"), "w", encoding="utf-8") as fh:
+            json.dump(doc, fh)
+    out_dir = os.path.join(str(tmp_path), "out")
+    cards, skipped = R.run_baseline(svg_dir, gt_dir, out_dir, walls="oracle")
+    rows = {json.loads(l)["file"]: json.loads(l)
+            for l in open(os.path.join(out_dir, "cards.jsonl"), encoding="utf-8")}
+    assert "card" in rows["a1"]
+    assert rows["a2"]["skipped"] == "error" and "KeyError" in rows["a2"]["error"]
+    assert rows["a3"]["skipped"] == "svg-missing"
+    assert all(r.get("wall_source") == "oracle" for r in rows.values())
+    assert skipped == {"svg-unit": 0, "svg-missing": 1, "error": 1}
+
+
 # ---- baseline runner ---------------------------------------------------------------------
 def test_run_baseline_skips_and_scores(tmp_path):
     svg_dir = os.path.join(str(tmp_path), "svg")
