@@ -60,4 +60,68 @@
 {"room": "sitting_room", "name": "โซฟา 3 ที่นั่ง", "rot": 90, "w": 2202, "d": 1008, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
 ```
 
-หมายเหตุ identity: คอลัมน์ kind ยังเซ็นเข้า ledger ไม่ได้ (schema ยังไม่มี confirmed_kind — slice ถัดไป); แก้ identity = บอกเลข badge + ชนิดที่ถูก แล้วเราแก้ generator ให้
+## เซ็น kind (identity, แถว loose) — ถูกแล้ว = วาง stub ตามเดิม / ผิด = แก้ค่า `kind` ก่อนวาง
+
+วางลง `confirmed[]` ใน `placement-review.json` แล้ว regenerate — identity จะติดถาวร (rebuild เปลี่ยนเองไม่ได้, gate ยก contradicts_signed_kind ถ้าเบี่ยง). วางเฉพาะแถวที่ ตรวจด้วยตาแล้วจริง; แก้ทีหลัง = APPEND entry ใหม่ชื่อ+ขนาดเดิม (ตัวหลังชนะ):
+
+**A5** — เตียง 7'x6.5' หัวตะวันออก:
+```json
+{"room": "master_bedroom", "name": "เตียง 7'x6.5' หัวตะวันออก", "kind": "bed", "w": 2134, "d": 1981, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**A6** — ม้านั่งปลายเตียง (bench):
+```json
+{"room": "master_bedroom", "name": "ม้านั่งปลายเตียง (bench)", "kind": "bench", "w": 504, "d": 1002, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**A7** — โต๊ะข้างเตียง เหนือ (มีโคมไฟ):
+```json
+{"room": "master_bedroom", "name": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)", "kind": "side_table", "w": 300, "d": 300, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**A8** — โต๊ะข้างเตียง ใต้ (มีโคมไฟ):
+```json
+{"room": "master_bedroom", "name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)", "kind": "side_table", "w": 300, "d": 294, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**A9** — เก้าอี้ทำงาน (หันเข้าโต๊ะ W):
+```json
+{"room": "master_bedroom", "name": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)", "kind": "armchair", "w": 510, "d": 546, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**A10** — ตู้ทีวีสูง ผนังตะวันตก:
+```json
+{"room": "master_bedroom", "name": "ตู้ทีวีสูง ผนังตะวันตก", "kind": "tv_console", "w": 600, "d": 2046, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**B4** — โซฟา 3 ที่นั่ง:
+```json
+{"room": "sitting_room", "name": "โซฟา 3 ที่นั่ง", "kind": "sofa", "w": 2202, "d": 1008, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**B5** — เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน):
+```json
+{"room": "sitting_room", "name": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)", "kind": "armchair", "w": 680, "d": 640, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**B6** — เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน):
+```json
+{"room": "sitting_room", "name": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)", "kind": "armchair", "w": 660, "d": 640, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**B7** — โต๊ะกลม (ระหว่างเก้าอี้):
+```json
+{"room": "sitting_room", "name": "โต๊ะกลม (ระหว่างเก้าอี้)", "kind": "side_table", "w": 600, "d": 600, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**B8** — โต๊ะกลม (ข้างโซฟา):
+```json
+{"room": "sitting_room", "name": "โต๊ะกลม (ข้างโซฟา)", "kind": "side_table", "w": 600, "d": 600, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+**B9** — โต๊ะวางกล้วยไม้ (console):
+```json
+{"room": "sitting_room", "name": "โต๊ะวางกล้วยไม้ (console)", "kind": "console", "w": 1002, "d": 402, "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+```
+
+หมายเหตุ identity: คอลัมน์ kind เซ็นเข้า ledger ได้แล้ว (confirmed_kind) — วาง stub จากส่วน 'เซ็น kind' ข้างบน; แก้ทีหลัง = APPEND entry ใหม่ (ชื่อ+ขนาดเดิม, ตัวหลังชนะ). ชิ้น builtin/fixture ไม่มี stub (generator ไม่ apply sign) — แก้ identity ของพวกนั้น = บอกเลข badge + ชนิดที่ถูก แล้วเราแก้ generator ให้

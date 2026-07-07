@@ -2,13 +2,13 @@
   "verdict": "REVIEW",
   "gated_target": "floor2_v4-manifest.json",
   "inputs": {
-    "floor2_v4-manifest.json": "7737ab8989acfc9611d76cc0673ef8e27517f902",
+    "floor2_v4-manifest.json": "b6f1193dcf54c6bc0c3e3632e602fd0e8b9a02c5",
     "scene-graph.master_bedroom.json": "2416474c3e98c10b392f1c0afdc9b66c1f0ec282",
     "scene-graph.sitting_room.json": "9da29759d96d89c91053a7540ad5f266523462de",
     "floor2-walls-mm.json": "a5475b295ce0fedf5f7ca21fbb2fee9528f6c4f8",
     "placement-review.json": "0a4311bc442b7cde1460a5ecc266ee1baa6d8be5"
   },
-  "generated_epoch": 1783361213.4334626,
+  "generated_epoch": 1783430971.4406438,
   "calibration": "PASS",
   "calibration_fails": [],
   "rooms": [
@@ -21,6 +21,7 @@
       "dismissed": 2,
       "identity_flags": 0,
       "facing_flags": 0,
+      "kind_flags": 0,
       "long_thin": 1,
       "dropped_total": 22
     },
@@ -33,6 +34,7 @@
       "dismissed": 2,
       "identity_flags": 0,
       "facing_flags": 0,
+      "kind_flags": 0,
       "long_thin": 0,
       "dropped_total": 4
     }
