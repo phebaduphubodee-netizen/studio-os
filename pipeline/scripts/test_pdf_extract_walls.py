@@ -137,6 +137,22 @@ def test_merge_carried_handles_missing_or_nondict_prior():
     assert W.merge_carried({"n": 0, "segments": []}, "corrupt") == ({"n": 0, "segments": []}, [])
 
 
+def test_merge_carried_refuses_unsigned_stub():
+    # glazing_candidates emits an OWNER-CONFIRM-PENDING template; pasting it unsigned
+    # must be machine-INERT: record kept (visible, re-signable), segments NOT injected,
+    # WARNING note emitted. Otherwise "do not paste unsigned" is prose, not a gate.
+    ma = {"date": "2026-07-06", "by": "OWNER-CONFIRM-PENDING (unsigned template)",
+          "segments": [[[0, 100], [0, 1000]], [[100, 100], [100, 1000]]]}
+    merged, notes = W.merge_carried(_calibrated(), _calibrated(manual_additions=ma))
+    assert merged["segments"] == _calibrated()["segments"]     # nothing injected
+    assert merged["manual_additions"] is ma                    # record still carried
+    assert any("UNSIGNED" in n and "WARNING" in n for n in notes)
+    # the same record, owner-signed, injects normally
+    signed = dict(ma, by="owner-confirmed 2026-07-06")
+    merged2, _n2 = W.merge_carried(_calibrated(), _calibrated(manual_additions=signed))
+    assert merged2["n"] == 3 and len(merged2["segments"]) == 3
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:

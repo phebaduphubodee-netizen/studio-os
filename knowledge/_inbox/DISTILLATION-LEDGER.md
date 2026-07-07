@@ -133,3 +133,12 @@ New stash from the persona-driven-design-layer work (this session, 2026-07-04):
   Syntax — all named in the answer).
 - **Pending:** DR#2 (persona methods + POE, notebook fired 2026-07-04) → will stage as
   `nlm-persona-poe-2026-07-04.md`, strengthening the gap/orphan grounding.
+
+
+## 2026-07-06 — ASA CAD standard 2554 (single-source verification + distillation, same session)
+- `asa-cad-std-2554-verification.md` staged (raw layer-table rows quoted from the primary PDF,
+  บทที่ 6, with the correction to the web-research claim: glass 0.25 = interior wall 0.25 =
+  furniture 0.25; only exterior walls 0.35 are thicker; L-PLNT-TREE 0.5 is thicker than both)
+  → DISTILLED to `knowledge/classifications/thai-cad-layers-asa2554.md` in the same commit.
+  Verification = direct fitz text extraction from the downloaded PDF (not a web claim);
+  scope limited to layer/pen/color tables — บทที่ 8 linetype conventions NOT yet extracted.

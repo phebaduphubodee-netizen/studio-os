@@ -66,6 +66,15 @@ def merge_carried(new_meta, prior_meta):
     if not isinstance(ma, dict):
         return new_meta, notes
     new_meta["manual_additions"] = ma                       # the provenance record is always worth keeping
+    if "OWNER-CONFIRM-PENDING" in str(ma.get("by", "")):
+        # glazing_candidates emits an unsigned stub with exactly this marker in `by`.
+        # An unsigned paste must be machine-INERT: keep the record (visible, re-signable)
+        # but never extrude its segments -- otherwise "do not paste unsigned" is prose,
+        # not a gate, and one paste bulk-injects candidate ink as real walls.
+        notes.append("WARNING: manual_additions is an UNSIGNED stub (by contains "
+                     "OWNER-CONFIRM-PENDING) -- kept the record but did NOT inject its "
+                     "segments. Sign `by` with the owner's confirmation to activate it.")
+        return new_meta, notes
     drift = [k for k in _CALIB_KEYS if _calib_val(prior_meta, k) != _calib_val(new_meta, k)]
     if drift:
         notes.append(f"WARNING: kept the manual_additions record but did NOT re-inject its walls into "
