@@ -169,10 +169,50 @@ Thai pairs: **BMA แบบบ้านยิ้ม 2** (102 plan+perspective jp
 1-MiB-truncated brochures, quarantined) · **DEDE บ้านดีดี** (12-design zip, inner .rar — no
 unrar on this machine yet) · **GH Bank ecohome** (6 zips).
 
-Approval-gated (not started without owner): Structured3D ToU form, 3D-FRONT email, ZInD.
+Approval-gated (not started without owner): Structured3D ToU form, 3D-FRONT email, ZInD —
+owner checklist with e-mail template staged at `C:/Users/teza_/studio-datasets/ACCESS-REQUESTS.md`.
 
 Build order status after this session: (1) F4 thin-line rule **BUILT + proven**
 (`pipeline/scripts/glazing_candidates.py`); (2) benchmark scoring engine **BUILT**
 (`pipeline/scripts/benchmark_reader.py`) — corpus ADAPTERS (FloorPlanCAD SVG → schema,
 BMA/DPT gt.json annotation lane) are the open half; (3) F2 facing table: already existed as
 `facing_reader.py` — extend/validate against 3D-FRONT once approved.
+
+## Adapter addendum (same day, second "go" session)
+
+**FloorPlanCAD SVG adapter BUILT + corpus-run** (`pipeline/scripts/floorplancad_adapter.py`,
+41 tests): all 5,502 test-00 SVGs → `studio-datasets/floorplancad/gt-test-00/*.gt.json`
+(+ manifest.jsonl + summary.md), 0 parse failures; gt-vs-gt selftest wired as a standing
+schema gate (`--selftest`). Train sets extracted too (3,760 + 6,401 = 10,161 ✓ split).
+
+**Raw semantic-id numbering is NOT the published one.** The raw SVGs use 1=wall,
+2=curtain wall, 3..32=things, 33=railing, 34=row chairs, 35=parking spot, and swap
+air-conditioner/sink relative to CADTransformer's `anno_list` (data-grounded by a 300-file
+layer-name survey: id 21 sits on 空调/kongtiao/HVAC layers, id 23 on 厨卫/LVTRY at 50% arc
+share; id 18 medians 2.1 m × 0.56 m = wardrobe). Ids 6/7/8 (folding/revolving/rolling door)
+are order-inferred, flagged per file; corpus carries only 44 such instances and the single
+"revolving door" is visually a card-swipe turnstile row — treat those three names as
+UNVERIFIED. Anyone porting downstream code that assumes the CADTransformer numbering onto
+the raw SVGs mislabels every class.
+
+**Corpus facts (test-00):** 21k element instances (chair 3.4k, sink 3.1k, toilet 1.7k …),
+20.6k openings incl. **1,910 sliding doors** (F4), corpus median door width **997 mm**
+(id-map + calibration joint sanity anchor). Sheets are viewBox-normalised 100×100; real
+scale recovered per file from dimension-text↔dim-line ratio mode-clusters — 2,245/5,502
+files (40.8%) after hardening, up from 29.4% before it, and a physical second anchor
+REVOKES any accepted scale whose median door falls outside 500–2500 mm (22 files caught);
+corpus median door 999 mm (rest stay in flagged svg units;
+uncalibrated files are banned from mm-tolerance scoring by a benchmark_reader units guard
+that now REFUSES mixed-unit pairs / non-mm units without an explicit `open_tol`).
+gt-vs-gt selftest: 5,502/5,502 clean (det recall 1.0, F1 1.0, F4 1.0; F2/F3/F5 UNWIRED).
+
+**Scrutiny (12 confirmed / 11 rejected findings, 52-agent adversarial pass) forced 4 real
+repairs before commit:** (a) SVG arcs must be swept via W3C F.6.5 centre conversion —
+chord-only bboxes under-covered sink/toilet/urinal symbols by up to 66% and collapsed
+two-half-arc circles to zero area (~90 instances would have hard-failed IoU 0.5 against a
+CORRECT reader); (b) nearest-line dim calibration locks onto tick fragments/sheet borders
+and overprinted duplicate texts forge support — fixed by text dedup + ≥2.5×font-size line
+length + support counted in DISTINCT dim lines (6 hand-proven false scales 2.4×–37.8× all
+eliminated); (c) zero-extent elements are unmatchable BY CONSTRUCTION (IoU=0 even vs
+themselves) — dropped + counted, never emitted; (d) OPEN_TOL=300 is mm — applying it to
+100-unit sheets rubber-stamped F4 on 70% of files; unit metadata is now machine-enforced.

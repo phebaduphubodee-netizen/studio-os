@@ -285,10 +285,26 @@ def _verdict(score, n, pass_bar=PASS_BAR):
 LOW_N = 20      # below this, a verdict is statistically provisional and says so
 
 
-def score_pair(gt_doc, pred_doc, pass_bar=PASS_BAR):
+def score_pair(gt_doc, pred_doc, pass_bar=PASS_BAR, open_tol=None):
     """Full scorecard for one (gt, pred) document pair. Malformed inputs cost the
     element and are REPORTED on the card; low-n metrics carry low_n=True so a PASS
-    on two elements cannot silently read as 'verified'."""
+    on two elements cannot silently read as 'verified'.
+
+    UNITS GUARD: OPEN_TOL is millimetres. Docs may carry meta.units ('mm' or an
+    adapter's raw-unit flag such as 'svg-unit'). Mixing units across the pair raises;
+    non-mm units require the CALLER to pass an explicit open_tol in those units --
+    silently applying a 300mm tolerance to a 100-unit-normalised sheet would match
+    openings across the whole drawing (a rubber stamp, found by scrutiny 2026-07-06)."""
+    units_gt = (gt_doc.get("meta") or {}).get("units")
+    units_pred = (pred_doc.get("meta") or {}).get("units")
+    if units_gt and units_pred and units_gt != units_pred:
+        raise ValueError(f"unit mismatch: gt={units_gt} pred={units_pred} -- refusing to score")
+    if open_tol is None:
+        units = units_gt or units_pred
+        if units not in (None, "mm"):
+            raise ValueError(f"units '{units}': pass an explicit open_tol in those units "
+                             f"(the default OPEN_TOL={OPEN_TOL} is mm)")
+        open_tol = OPEN_TOL
     gt_el, gt_bad = sanitize_elements(gt_doc.get("elements", []))
     pred_el, pred_bad = sanitize_elements(pred_doc.get("elements", []))
     pairs, missed, phantom = match_elements(gt_el, pred_el)
@@ -298,7 +314,7 @@ def score_pair(gt_doc, pred_doc, pass_bar=PASS_BAR):
     f3 = _score_binary(pairs, "indoor")
     gt_op, gt_op_bad = sanitize_openings(gt_doc.get("openings", []))
     pred_op, pred_op_bad = sanitize_openings(pred_doc.get("openings", []))
-    f4 = score_openings(gt_op, pred_op)
+    f4 = score_openings(gt_op, pred_op, tol=open_tol)
     f5 = _score_binary(pairs, "floor")
 
     def row(m, score, n):

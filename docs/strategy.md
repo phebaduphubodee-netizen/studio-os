@@ -899,3 +899,42 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
   "already covered" because coverage used gap-BRIDGED wall runs (now gap_tol=0 for coverage).
   Mutation probes found silent-pass holes (F4 zero-matched → PASS survived the suite) — pinned.
 - Commits: 4dd2f43 (research record) → 9df55dc (build, scrutinized). UNPUSHED like the rest.
+
+## Session 2026-07-06g — "ลุยต่อ": the first corpus adapter lands; the scorecard has real GT under it
+
+- **FloorPlanCAD SVG adapter BUILT + corpus-run + scrutinized** (`floorplancad_adapter.py`, 41 tests):
+  5,502 test-00 drawings → gt.json in the benchmark schema, 0 parse failures, gt-vs-gt selftest
+  5,502/5,502 clean. The backwards-benchmark lane now has 21k furniture instances + 20.6k typed
+  openings (1,910 sliding doors — the F4 class) as machine ground truth. Train sets extracted
+  (10,161 ✓ split). DEDE 12 designs unpacked (portable 7-Zip via `msiexec /a`, no admin needed);
+  3D-FRONT/Structured3D application checklist staged for the owner (they need owner-signed forms).
+- **NEVER trust a published id map over the data:** the raw SVGs number classes 1=wall,
+  2=curtain-wall, 3..32 things, 33..35 stuff — NOT CADTransformer's published anno_list (wall=33),
+  AND the raw order swaps air-conditioner/sink relative to it. A 300-file layer-name survey
+  (空调/kongtiao → 21, 厨卫/LVTRY at 50% arc share → 23, 2.1m×0.56m medians → wardrobe=18)
+  settled it; blindly porting the published list would have mislabeled EVERY class silently.
+  Same lesson as ASA 2554 yesterday: primary evidence keeps correcting secondary sources.
+- **Scrutiny (52-agent, 12 confirmed / 11 rejected) caught 4 defects unit tests + a clean corpus
+  run could not:** (1) arc→chord bboxes under-covered sink/toilet symbols up to 66% and made
+  two-half-arc circles ZERO-AREA — a zero-area GT box can never IoU-match, even against itself,
+  so a PERFECT reader gets scored miss+phantom (fixed: W3C F.6.5 sweep sampling); (2) dim-text
+  calibration confidently accepted 6 wrong scales (2.4×–37.8×!) by pairing texts with tick
+  fragments/sheet borders — repeated identical WRONG pairings forge a zero-spread "mode";
+  fixed with text dedup + min-line-length + support counted in DISTINCT dim lines, then a second
+  physical anchor (median door must land in 500–2500mm, else calibration REVOKED); coverage
+  still ROSE 29.4%→40.8% because junk pre-filters cleaned the denominators (the door anchor then
+  revoked 22 more confident-wrong scales; every remaining out-of-band scale is a doorless sparse
+  sheet, visible + filterable in the manifest); (3) OPEN_TOL=300 is
+  mm — applied to 100-unit normalized sheets it rubber-stamped F4 on 70% of files; benchmark_reader
+  now RAISES on mixed units / non-mm units without an explicit tolerance (machine guard, not prose);
+  (4) four surviving mutants (transform-pooled bbox, deleted fraction guard, coarse rounding,
+  rot fabricated on openings) → all pinned. The scorer-honesty doctrine paid again: the failure
+  modes were all "flattering" ones (rubber-stamp tolerance, confident wrong mm, unmatchable GT).
+- **Calibration refusal is coverage loss, not corruption** — the verify panel rejected 11 findings
+  and the split was instructive: everything that fails SAFE+VISIBLE (svg-unit flag, support counts,
+  fail-fast batch abort) was ruled non-defect; everything that fails FLATTERING was confirmed.
+  That asymmetry is the house style now: optimize false-accepts to zero first, coverage second.
+- Deliverable state: gt-test-00 is scoring-ready for F1/F4/detection (F2/F3/F5 honestly UNWIRED —
+  this corpus has no rot/indoor/floor GT; those wait on 3D-FRONT/Structured3D approvals + the
+  BMA/DPT Thai annotation lane). Next slice: run OUR reader (pdf/svg vector lane) against
+  gt-test-00 and get the first real F1/F4 numbers.
