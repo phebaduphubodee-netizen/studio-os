@@ -1,7 +1,11 @@
 """svg_plan_reader.py -- OUR reader's SVG lane + the first FloorPlanCAD baseline run.
 
     python svg_plan_reader.py --sheet <in.svg> <scale_mm_per_unit> <out.pred.json>
-    python svg_plan_reader.py --baseline <svg-dir> <gt-dir> <out-dir> [limit N] [overlays K] [walls oracle]
+    python svg_plan_reader.py --baseline <svg-dir> <gt-dir> <out-dir> [limit N] [overlays K] [walls oracle] [priors P]
+
+priors P = kind-priors JSON (kind_priors.py); off by default -- without it elements never
+carry kind. It is a BENCHMARK/SUGGESTION lane only (unique-band membership, ambiguity stays
+unreported); production identity remains owner-signed and this path is never auto-applied.
 
 WHY: gt-test-00 (5,502 machine-checkable answer keys) exists but no reader has ever been
 scored against it -- the owner has still only ever seen our reads verified by eye. This
@@ -58,6 +62,7 @@ from floorplancad_adapter import walk_path, shape_points, SVG_NS
 from glazing_candidates import axis_run, promote, run_endpoints
 from swing_door_candidates import detect as detect_swing
 from plan_cluster import cluster_segments
+import kind_priors
 
 READER_VERSION = "svg_plan_reader v2"
 CLOSE_MM = 40.0          # bridge a symbol's internal stroke gaps; keep neighbours apart
@@ -143,8 +148,14 @@ def read_ink(svg_path):
 
 # ---- one sheet -> pred document ----------------------------------------------------------
 def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
-               wall_segs=None, wall_source=None):
-    """Raw SVG -> pred.json document (benchmark_reader schema, units=mm)."""
+               wall_segs=None, wall_source=None, kind_priors_doc=None):
+    """Raw SVG -> pred.json document (benchmark_reader schema, units=mm).
+
+    kind_priors_doc (default None) is OFF for the blind headline lane: when None the pred
+    is byte-identical to the classifier-less baseline (no kind on any element, no
+    kind_priors meta key). When a priors doc is passed (benchmark/suggestion lane only),
+    each element gets a kind ONLY on unique-band membership (kind_priors.suggest_kind);
+    ambiguity stays unreported. Suggestion reads w/d only -- geometry, never annotations."""
     s = float(scale_mm_per_unit)
     ink = read_ink(svg_path)
     segs = [[(a[0] * s, a[1] * s), (b[0] * s, b[1] * s)] for a, b in ink["segs"]]
@@ -165,9 +176,14 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
         res_eff = max(BASE_RES_MM, extent / MAX_RASTER_PX)
         clu = cluster_segments(segs, csegs, zone, close_mm, res=res_eff)
         for k, it in enumerate(clu["items"]):
-            elements.append({"id": f"c{k:03d}", "x": it["x"], "y": it["y"],
-                             "w": it["w"], "d": it["d"],
-                             "curve": it["curve"], "fill": it["fill"]})
+            el = {"id": f"c{k:03d}", "x": it["x"], "y": it["y"],
+                  "w": it["w"], "d": it["d"],
+                  "curve": it["curve"], "fill": it["fill"]}
+            if kind_priors_doc:
+                ks = kind_priors.suggest_kind(el["w"], el["d"], kind_priors_doc)
+                if ks:
+                    el["kind"] = ks
+            elements.append(el)
         n_dropped = len(clu["dropped"])
     else:
         n_dropped = 0
@@ -224,6 +240,16 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
         pred["meta"]["wall_source"] = wall_source
         pred["meta"]["wall_segs_n"] = len(w_segs)
         pred["meta"]["wall_diag_unusable"] = n_diag
+    if kind_priors_doc:
+        # priors meta appears ONLY in the suggestion lane: the blind lane's meta stays
+        # byte-for-byte identical to the committed baseline (pinned in the reader tests)
+        pred["meta"]["kind_priors"] = {
+            "schema": kind_priors_doc["schema"],
+            "derived_from": [os.path.basename(os.path.normpath(d))
+                             for d in kind_priors_doc["meta"]["derived_from"]],
+            "n_kinds": len(kind_priors_doc["kinds"]),
+            "kinds_emitted": sum(1 for e in elements if "kind" in e),
+        }
     return pred
 
 
@@ -259,10 +285,13 @@ def render_overlay(pred, gt, segs_mm, out_png):
 
 
 # ---- corpus baseline run -------------------------------------------------------------------
-def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0, walls=None):
+def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0, walls=None, priors=None):
     os.makedirs(os.path.join(out_dir, "preds"), exist_ok=True)
     if overlays:
         os.makedirs(os.path.join(out_dir, "overlays"), exist_ok=True)
+    # load ONCE, before the loop: a bad priors path must fail the whole run loudly at
+    # startup, never turn into 2,245 per-sheet "error" rows that look like corpus problems
+    pdoc = kind_priors.load(priors) if priors else None
     gt_files = sorted(glob.glob(os.path.join(gt_dir, "*.gt.json")))
     if not gt_files:
         raise SystemExit(f"no *.gt.json under {gt_dir}")
@@ -315,9 +344,11 @@ def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0, walls=None):
                 wsegs = [[[w["x1"], w["y1"]], [w["x2"], w["y2"]]]
                          for w in gt["wall_lines"]]
                 pred = read_sheet(sfp, gt["meta"]["scale_mm_per_unit"],
-                                  wall_segs=wsegs, wall_source="oracle")
+                                  wall_segs=wsegs, wall_source="oracle",
+                                  kind_priors_doc=pdoc)
             else:
-                pred = read_sheet(sfp, gt["meta"]["scale_mm_per_unit"])
+                pred = read_sheet(sfp, gt["meta"]["scale_mm_per_unit"],
+                                  kind_priors_doc=pdoc)
             card = B.score_pair(gt, pred)
             with open(os.path.join(out_dir, "preds", base + ".pred.json"), "w",
                       encoding="utf-8") as fh:
@@ -347,9 +378,12 @@ def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0, walls=None):
                 print(f"  {k + 1}/{len(gt_files)}  scored={len(cards)}  "
                       f"({time.time() - t0:.0f}s)")
     rows_fh.close()
+    priors_note = (f"{os.path.basename(priors)} ({len(pdoc['kinds'])} kinds)"
+                   if priors else None)
     report = render_baseline_report(cards, skipped, len(gt_files), time.time() - t0,
                                     overlay_failed=overlay_failed,
-                                    walls=walls, wall_stats=wall_stats)
+                                    walls=walls, wall_stats=wall_stats,
+                                    priors_note=priors_note)
     with open(os.path.join(out_dir, "report.md"), "w", encoding="utf-8") as fh:
         fh.write(report + "\n")
     print(report)
@@ -358,7 +392,7 @@ def run_baseline(svg_dir, gt_dir, out_dir, limit=None, overlays=0, walls=None):
 
 
 def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0,
-                           walls=None, wall_stats=None):
+                           walls=None, wall_stats=None, priors_note=None):
     if not cards:
         return ("# FloorPlanCAD baseline"
                 + (f" -- {walls.upper()}-WALL lane (wall_source={walls})" if walls else "")
@@ -374,6 +408,49 @@ def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0,
         for c in cards:
             verdicts.setdefault(m, {}).setdefault(c[m]["verdict"], 0)
             verdicts[m][c[m]["verdict"]] += 1
+
+    # F1 section: the no-priors lane keeps the exact classifier-less prose (report
+    # stability); the priors lane replaces it with an aggregate per-kind table summed
+    # from the cards' INTEGER per_kind counts (aggregate() drops per_kind, so this is
+    # the only corpus-level per-kind view -- never averaged from per-card accuracies).
+    if priors_note is None:
+        f1_lines = [
+            "## F1 identity",
+            f"- accuracy {pct(f1['accuracy'])} on {f1['n']} matched pairs -- the reader has "
+            f"NO symbol classifier (identity is owner-signed in production); this zero is "
+            f"the baseline to beat, not a bug",
+        ]
+    else:
+        per, unrep = {}, 0
+        for c in cards:
+            for k, r in c["F1_identity"]["per_kind"].items():
+                if k == "":
+                    unrep += r["pred"]           # norm_kind(None)->'' : the unreported counter
+                    continue
+                row = per.setdefault(k, {"gt": 0, "pred": 0, "hit": 0})
+                row["gt"] += r["gt"]
+                row["pred"] += r["pred"]
+                row["hit"] += r["hit"]
+        emitted = sum(r["pred"] for r in per.values())
+        hits = sum(r["hit"] for r in per.values())
+        f1_lines = [
+            "## F1 identity",
+            f"- kind priors: {priors_note} -- deterministic size/aspect bands from TRAIN "
+            f"gt; unique-band membership only, ambiguity stays unreported",
+            f"- accuracy {pct(f1['accuracy'])} on {f1['n']} matched pairs",
+            f"- emitted kind on {emitted}/{f1['n']} matched pairs; emitted-correct {hits} "
+            f"-> emitted precision {pct(hits / emitted) if emitted else 'n/a'}",
+            f"- unreported (no kind emitted) on {unrep} matched pairs -- counted as WRONG "
+            f"in accuracy (unreported is scored, never skipped in F1)",
+        ]
+        for k in sorted(per, key=lambda z: -per[z]["gt"]):
+            r = per[k]
+            if r["gt"] + r["pred"] == 0:
+                continue
+            f1_lines.append(
+                f"    - {k}: gt {r['gt']}, pred {r['pred']}, hit {r['hit']}, "
+                f"precision {pct(r['hit'] / r['pred']) if r['pred'] else 'n/a'}, "
+                f"recall {pct(r['hit'] / r['gt']) if r['gt'] else 'n/a'}")
     L = [
         ("# FloorPlanCAD baseline -- OUR reader vs gt (first real numbers)"
          if not walls else
@@ -392,10 +469,7 @@ def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0,
         f"recall {pct(det['recall'])}, precision {pct(det['precision'])}",
         f"- per-sheet verdicts: {verdicts['detection']}",
         "",
-        f"## F1 identity",
-        f"- accuracy {pct(f1['accuracy'])} on {f1['n']} matched pairs -- the reader has "
-        f"NO symbol classifier (identity is owner-signed in production); this zero is "
-        f"the baseline to beat, not a bug",
+        *f1_lines,
         "",
         f"## F4 openings (centre <= 300 mm)",
         f"- GT {f4['n_gt']} vs pred {f4['n_pred']} -> matched {f4['matched']}: "
@@ -448,9 +522,11 @@ def main(argv):
                 kw[rest[0]] = int(rest[1])
             elif len(rest) >= 2 and rest[0] == "walls" and rest[1] in ("oracle",):
                 kw["walls"] = rest[1]
+            elif len(rest) >= 2 and rest[0] == "priors":
+                kw["priors"] = rest[1]           # a PATH -- never passes .isdigit()
             else:
                 raise SystemExit(f"bad option {rest[0]!r} -- expected: "
-                                 f"[limit N] [overlays K] [walls oracle]\n\n{__doc__}")
+                                 f"[limit N] [overlays K] [walls oracle] [priors P]\n\n{__doc__}")
             rest = rest[2:]
         run_baseline(argv[2], argv[3], argv[4], **kw)
     else:

@@ -498,6 +498,79 @@ def test_read_sheet_blind_with_arcs(tmp_path):
     assert any(o["type"] == "door" for o in a["openings"])
 
 
+# ---- kind priors (benchmark/suggestion lane, OFF by default) ------------------------------
+# a minimal in-test priors dict: the _sheet_svg rect clusters to ~600x600 mm at scale 100
+# (pinned at lines 191/194), so a [500,700] size band with a near-square aspect emits 'table'
+_PRIORS = {"schema": "interior-ai/kind-priors@0.1",
+           "meta": {"derived_from": ["gt-train-00"], "params": {}},
+           "kinds": {"table": {"lo_mm": [500.0, 700.0], "hi_mm": [500.0, 700.0],
+                               "aspect": [1.0, 1.4]}}}
+
+
+def test_read_sheet_priors_emit_and_ambiguity(tmp_path):
+    """With priors on, the 600x600 cluster earns kind 'table'; adding a SECOND kind with
+    the identical band makes membership ambiguous -> NO kind emitted (reader-level pin of
+    the ambiguity->unreported rule)."""
+    import copy
+    sheet = _sheet_svg(tmp_path)
+    pred = R.read_sheet(sheet, 100.0, kind_priors_doc=_PRIORS)
+    assert len(pred["elements"]) == 1
+    assert pred["elements"][0].get("kind") == "table"
+    assert pred["meta"]["kind_priors"]["kinds_emitted"] == 1
+    amb = copy.deepcopy(_PRIORS)
+    amb["kinds"]["cabinet"] = copy.deepcopy(amb["kinds"]["table"])
+    pred2 = R.read_sheet(sheet, 100.0, kind_priors_doc=amb)
+    assert all("kind" not in e for e in pred2["elements"])
+    assert pred2["meta"]["kind_priors"]["kinds_emitted"] == 0
+
+
+def test_read_sheet_no_priors_meta_and_elements_unchanged(tmp_path):
+    """Default lane byte-identity: no priors -> no kind on any element and NO kind_priors
+    meta key at all (alongside the line-195 kindless pin)."""
+    pred = R.read_sheet(_sheet_svg(tmp_path), 100.0)
+    assert "kind_priors" not in pred["meta"]
+    assert all("kind" not in e for e in pred["elements"])
+
+
+def test_read_sheet_priors_stays_annotation_blind(tmp_path):
+    """Blindness must hold on the priors path too: suggestion reads only w/d, which derive
+    from geometry attributes, so an annotated sheet and its stripped twin still emit the
+    identical pred (kinds included)."""
+    a = R.read_sheet(_write(tmp_path, "pa.svg", ANNOTATED), 100.0, kind_priors_doc=_PRIORS)
+    b = R.read_sheet(_write(tmp_path, "pb.svg", STRIPPED), 100.0, kind_priors_doc=_PRIORS)
+    a["meta"].pop("file")
+    b["meta"].pop("file")
+    assert a == b, "priors-lane output changed when annotation attributes were stripped"
+
+
+def test_run_baseline_with_priors(tmp_path):
+    """End-to-end: a table-kind gt + a priors file whose band covers the pred footprint
+    -> F1 accuracy 1.0, the written pred carries kind 'table', and the report grows the
+    emitted-precision line + a per-kind table row."""
+    svg_dir = os.path.join(str(tmp_path), "svg")
+    gt_dir = os.path.join(str(tmp_path), "gt")
+    out_dir = os.path.join(str(tmp_path), "out")
+    os.makedirs(svg_dir)
+    os.makedirs(gt_dir)
+    os.replace(_sheet_svg(tmp_path), os.path.join(svg_dir, "s1.svg"))
+    gt_mm = {"meta": {"units": "mm", "scale_mm_per_unit": 100.0},
+             "elements": [{"id": "g1", "kind": "table",
+                           "x": 1000, "y": 1000, "w": 600, "d": 600}],
+             "openings": []}
+    with open(os.path.join(gt_dir, "s1.gt.json"), "w", encoding="utf-8") as fh:
+        json.dump(gt_mm, fh)
+    priors_path = os.path.join(str(tmp_path), "priors.json")
+    with open(priors_path, "w", encoding="utf-8") as fh:
+        json.dump(_PRIORS, fh)
+    cards, skipped = R.run_baseline(svg_dir, gt_dir, out_dir, priors=priors_path)
+    assert cards[0]["F1_identity"]["accuracy"] == 1.0
+    pred = json.load(open(os.path.join(out_dir, "preds", "s1.pred.json"), encoding="utf-8"))
+    assert any(e.get("kind") == "table" for e in pred["elements"])
+    rep = open(os.path.join(out_dir, "report.md"), encoding="utf-8").read()
+    assert "emitted precision" in rep
+    assert "- table:" in rep
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main([__file__, "-q"]))
