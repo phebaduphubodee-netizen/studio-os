@@ -448,15 +448,159 @@ def resolve_kind(name, hand_kind, w, d, confirmed):
     return signed, "owner-signed"
 
 
+# ---- owner-signed ZONE (indoor / outdoor_same_floor / below_grade) --------------------
+# Mirrors the confirmed_kind trio. zone is the OWNER's indoor/outdoor/below call — the two-layer
+# law's hardest semantic (identity, facing, indoor-vs-outdoor are owner truth): the machine may
+# PROPOSE a class via zone_flag.zone_proposals, but the CALL is owner-signed and durable here. It
+# closes the one owner-only field the ledger previously could not make stick (the terrace->lounge
+# correction had survived only as owner-redrawn geometry, never a re-appliable signature). TWO
+# scoping lanes: NAME-scoped (a placed piece, joined by name+size like kind/rot) and GEO-scoped
+# (an UNNAMED drawn cluster like a below-grade tree that lives only in plan_cluster output, joined
+# geometrically via _sig_dist — the same matcher the dismissed[] ledger uses). _ZONE_TO_FLAGS
+# mirrors zone_flag.ZONE_TO_FLAGS (kept local so this pure-logic layer imports without fitz).
+_ZONES = ("indoor", "outdoor_same_floor", "below_grade")
+_ZONE_TO_FLAGS = {"indoor": (True, True), "outdoor_same_floor": (False, True),
+                  "below_grade": (False, False)}
+
+
+def _norm_zone(z):
+    """z -> an exact _ZONES member (stripped) or None. Owner-signed SEMANTIC value: only a known
+    class counts; None/''/typo/number -> None so a later appended entry corrects it (mirrors
+    _norm_kind). 'outdoor'/'south'/'terrace' are typos here, not classes — they normalise to None."""
+    if isinstance(z, str):
+        z = z.strip()
+        if z in _ZONES:
+            return z
+    return None
+
+
+def zone_to_flags(zone):
+    """(indoor, floor) booleans for a zone class; unknown/silence -> (True,True) to match
+    benchmark_reader._score_binary's 'silence = ordinary this-floor-indoor' semantics."""
+    return _ZONE_TO_FLAGS.get(_norm_zone(zone), (True, True))
+
+
+def _entry_name(e):
+    """A ledger entry's name normalised to a real name or None: an empty/whitespace 'name' is NOT
+    a name (it must NOT route a geo-scoped zone entry into the name lane, where a stray '' would
+    hard-FAIL as a detached signature). Mirrors the _norm_* 'usable value or None' discipline."""
+    n = e.get("name") if isinstance(e, dict) else None
+    if isinstance(n, str):
+        n = n.strip()
+        return n or None
+    return n
+
+
+def confirmed_zone(piece, confirmed, size_tol=0.20):
+    """The owner-signed ZONE for a NAMED placed piece, or None. Matched by the SAME name+size join
+    as confirmed_kind (exact name + orientation-agnostic +/-20% size guard; a sizeless entry always
+    matches), LAST usable matching entry wins (append-a-correction workflow). Entries carrying NO
+    usable name belong to the geo lane (confirmed_zone_cluster) and are SKIPPED here so the two lanes
+    never cross-fire — a name-scoped sign can only ever bind a named piece."""
+    name = piece.get("name")
+    if name is None:
+        return None
+    best = None
+    for e in confirmed or []:
+        if not isinstance(e, dict) or _entry_name(e) is None:
+            continue
+        if _entry_name(e) != name or not _size_consistent(piece, e, size_tol):
+            continue
+        z = _norm_zone(e.get("zone"))
+        if z is not None:
+            best = z
+    return best
+
+
+def confirmed_zone_cluster(cluster, confirmed):
+    """The owner-signed ZONE for an UNNAMED drawn cluster (e.g. a below-grade tree), or None. GEO
+    join: consider ONLY entries with no usable name AND a valid zone; among those the NEAREST
+    size/shape-consistent match wins (_sig_dist — the exact matcher apply_dismissals uses). So an
+    owner can sign 'that organic blob south of the glass is below_grade' and it binds by GEOMETRY,
+    surviving the volatile plan_cluster id, and detaches (REVIEW orphan) if a re-extraction moves it."""
+    best, best_d = None, None
+    for e in confirmed or []:
+        if not isinstance(e, dict) or _entry_name(e) is not None:
+            continue
+        z = _norm_zone(e.get("zone"))
+        if z is None:
+            continue
+        d = _sig_dist(cluster, e)
+        if d is None:
+            continue
+        if best_d is None or d < best_d:
+            best, best_d = z, d
+    return best
+
+
+def resolve_zone(name, hand_zone, w, d, confirmed):
+    """GENERATOR helper mirroring resolve_kind: an owner-signed zone OVERRIDES the hand/proposed
+    zone for a NAMED piece. Returns (zone, source): source='owner-signed' when applied (even if
+    equal — provenance), else (hand_zone, None) with NOTHING emitted, so a regen against a ledger
+    with no zone signs stays byte-identical. Resolve AFTER geometry: a zone sign RE-LABELS a piece,
+    it never re-routes which drawn blob it snaps to (geometry stays machine-layer)."""
+    if not confirmed:
+        return hand_zone, None
+    signed = confirmed_zone({"name": name, "w": w, "d": d}, confirmed)
+    if signed is None:
+        return hand_zone, None
+    return signed, "owner-signed"
+
+
+def zone_flags(loose, proposals, confirmed=None):
+    """Owner-signed ZONE regression backstop — the zone analog of kind_flags. proposals =
+    {name: proposed_zone} (the machine read; default 'indoor' when a name is absent). For every
+    loose piece with a SIGNED zone: SUPPRESS when the built/proposed zone equals the sign
+    (adjudicated -> converges toward PASS), else raise 'contradicts_signed_zone'. A missing/garbage
+    proposal defaults to 'indoor', so a below_grade sign on a machine-indoor piece still surfaces —
+    silence cannot silence a sign. REVIEW-only, never FAIL (the indoor/outdoor CALL is owner truth).
+    There is NO unsigned geometric branch here (the machine read lives in zone_flag, advisory)."""
+    out = []
+    for it in loose or []:
+        signed = confirmed_zone(it, confirmed)
+        if signed is None:
+            continue
+        built = (_norm_zone(it.get("zone"))
+                 or _norm_zone((proposals or {}).get(it.get("name"))) or "indoor")
+        if built == signed:
+            continue
+        out.append({"name": it.get("name"), "kind": it.get("kind"),
+                    "verdict": "contradicts_signed_zone", "claimed": built, "read": signed,
+                    "confidence": 1.0})
+    return out
+
+
+def reconcile_zone(pieces, clusters, confirmed, size_tol=0.20):
+    """Two-lane zone-signature reconcile (mirrors reconcile_confirmed). Returns (matched,
+    name_orphaned, geo_orphaned). A NAME-scoped zone entry must bind a placed piece (name+size); a
+    name orphan is a DETACHED signature -> the hard-error path (like a detached facing sign, it
+    would silently re-roll). A GEO-scoped zone entry must bind a drawn cluster (_sig_match); a geo
+    orphan is REVIEW-only (the owner annotated a blob this extraction no longer produces — surfaced,
+    never silent). Entries with no valid zone are ignored (they are kind/rot/facing signs)."""
+    matched, name_orphaned, geo_orphaned = [], [], []
+    for e in confirmed or []:
+        if not isinstance(e, dict) or _norm_zone(e.get("zone")) is None:
+            continue
+        ename = _entry_name(e)
+        if ename is not None:
+            hit = any(it.get("name") == ename and _size_consistent(it, e, size_tol) for it in pieces)
+            (matched if hit else name_orphaned).append(e)
+        else:
+            hit = any(_sig_match(cl, e) for cl in clusters)
+            (matched if hit else geo_orphaned).append(e)
+    return matched, name_orphaned, geo_orphaned
+
+
 def entry_is_inert(e):
     """True when a confirmed[] entry carries NO usable payload (no numeric/cardinal rot AND no
-    usable kind): it can bind a piece by name+size yet apply nothing. Reported honestly by the
-    generator instead of hiding behind a reassuring 'N loaded' count."""
+    usable kind AND no usable zone): it can bind a piece by name+size yet apply nothing. Reported
+    honestly by the generator instead of hiding behind a reassuring 'N loaded' count."""
     if not isinstance(e, dict):
         return True
     return (_norm_rot(e.get("rot")) is None
             and _CARD_ROT.get(e.get("facing")) is None
-            and _norm_kind(e.get("kind")) is None)
+            and _norm_kind(e.get("kind")) is None
+            and _norm_zone(e.get("zone")) is None)
 
 
 def load_confirmed(led):
@@ -744,6 +888,79 @@ def _run_calibration_check(doc, base):
     return check_wall_grid(segs, checks)
 
 
+# ---- ZONE (indoor / outdoor / below-grade) advisory pass -----------------------------
+ZONE_SOUTH_SCAN = 2100.0       # mm; how far south of the facade datum the exterior-object pass
+#                                scans for below-grade clusters (verified to surface the garden tree)
+ZONE_OBJECT_MAX_EXT = 3500.0   # mm; a south cluster larger than this is boundary / dimension
+#                                LINEWORK, not a discrete below-grade OBJECT — counted honestly in
+#                                exterior_linework_n, never proposed as an object (mirrors the gate's
+#                                merged_blob discipline: a room-spanning blob is not a piece).
+
+
+def _zone_room(spec, offset, glazing_cands, wall_segs, confirmed_room, south_items, dismissed_room):
+    """ADVISORY zone pass for one room (PURE logic; the fitz south-band extraction is done by run()
+    and handed in as south_items). Classifies placed pieces (proves indoor / catches a signed-
+    outdoor piece) plus object-scale exterior clusters (below-grade candidates). REVIEW-only, never
+    FAIL, never auto-applied — the indoor/outdoor CALL is owner semantic truth (two-layer law); the
+    machine only PROPOSES. A south cluster the owner has already GEO-signed (confirmed_zone_cluster)
+    is adjudicated and suppressed from the open list, so one sign stops the nag (burden paid once).
+    Returns (r_zone, r_zone_flags, obj_clusters, open_proposals)."""
+    import zone_flag as ZF
+    outline = [[p[0] + offset[0], p[1] + offset[1]] for p in spec["room"]["outline_mm"]]
+    loose, fixed = _pieces(spec)
+    placed_els = [{"ref": it.get("name"), "fp": footprint(it, offset),
+                   "w": it.get("w"), "d": it.get("d"),
+                   "curve": (it.get("shape") == "round"), "unplaced": False}
+                  for it in (loose + fixed) if "w" in it and "d" in it]
+    # exterior south clusters: drop dismissed ones, then split OBJECTS from room-spanning LINEWORK
+    south_norm = [{"id": c.get("id"), "x": c["x"], "y": c["y"], "w": c["w"], "d": c["d"],
+                   "area_m2": c.get("area_m2"), "curve": c.get("curve"), "fill": c.get("fill")}
+                  for c in (south_items or [])]
+    kept_after_dismiss, _dis = apply_dismissals(south_norm, dismissed_room or [])
+    obj_clusters, linework_n = [], 0
+    for c in kept_after_dismiss:
+        if max(c["w"], c["d"]) > ZONE_OBJECT_MAX_EXT:     # boundary/dimension linework, not an object
+            linework_n += 1
+            continue
+        obj_clusters.append(c)                            # size FLOOR applied by classify_element
+    cluster_els = [{"ref": {"x": c["x"], "y": c["y"], "w": c["w"], "d": c["d"], "curve": c.get("curve")},
+                    "fp": cluster_bbox(c), "w": c["w"], "d": c["d"],
+                    "area_m2": c.get("area_m2"), "curve": c.get("curve"), "unplaced": True}
+                   for c in obj_clusters]
+    res = ZF.zone_proposals(placed_els + cluster_els, outline, glazing_cands, wall_segs)
+    proposals_by_name = {p["ref"]: p["zone"] for p in res["proposals"] if isinstance(p["ref"], str)}
+    # the zone pass classifies loose AND fixed (built-ins), so the signed-zone backstop + adjudication
+    # must see loose+fixed too — else an owner zone sign on a PRESENT builtin reads as detached and the
+    # build hard-FAILs (a two-layer-law breach: FAIL on owner adjudication of a real piece).
+    placed = loose + fixed
+    placed_by_name = {it.get("name"): it for it in placed}
+    r_zone_flags = zone_flags(placed, proposals_by_name, confirmed=confirmed_room)
+    # adjudicate: a piece/cluster the owner has already signed is settled -> off the open REVIEW list
+    open_props = []
+    for p in res["proposals"]:
+        ref = p.get("ref")
+        if isinstance(ref, dict):                       # GEO lane: an unnamed drawn cluster
+            signed = confirmed_zone_cluster(ref, confirmed_room or [])
+        else:                                           # NAME lane: a placed piece
+            signed = confirmed_zone(placed_by_name.get(ref, {"name": ref}), confirmed_room or [])
+        p["signed_zone"] = signed
+        if signed is not None:
+            continue                                    # adjudicated
+        open_props.append(p)
+    r_zone = {
+        "corroborated": res["corroborated"],
+        "facade_glazing_c": res["facade"].get("glazing_c"),
+        "proposals": res["proposals"],
+        "open_proposals_n": len(open_props),
+        "below_grade_n": sum(1 for p in res["proposals"] if p["zone"] == "below_grade"),
+        "exterior_linework_n": linework_n,
+        # corroborated facade but NOTHING surfaced south = the invisibility risk (the tree drifting
+        # out of the scan band) — surfaced as a note rather than a quiet green room.
+        "exterior_unscanned": bool(res["corroborated"] and not (south_items or [])),
+    }
+    return r_zone, r_zone_flags, obj_clusters, open_props
+
+
 def run(pdf, target, page=None, close_mm=None, calib=None):
     """Load a manifest (multi-room) or a single scene-graph, extract clusters per room,
     gate each, print a report, and return overall verdict + per-room results.
@@ -779,11 +996,31 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
     # bind walls_json (a direct build input the calibration check reads) so a post-gate
     # re-extraction with a wrong triple invalidates the marker like a spec/manifest edit.
     wj = doc.get("walls_json")
+    wall_segs = []
     if wj:
         for cand in [wj, os.path.join(base, os.path.basename(wj))]:
             if os.path.exists(cand):
                 input_paths.append(os.path.abspath(cand))
+                try:
+                    _w = json.load(open(cand, encoding="utf-8"))
+                    wall_segs = _w.get("segments", []) if isinstance(_w, dict) else []
+                except (ValueError, OSError):
+                    wall_segs = []
                 break
+
+    # bind glazing-candidates.json (the thin-line facade DETECTOR's output) so the zone-advisory
+    # pass's facade line is marker-enforced: re-deriving the facade after this gate run hash-
+    # mismatches and refuses the build, exactly like a spec/wall edit. Absent -> the zone pass
+    # simply abstains (no facade corroboration), never crashes.
+    glazing_cands = []
+    for cand in [os.path.join(base, "glazing-candidates.json")]:
+        if os.path.exists(cand):
+            input_paths.append(os.path.abspath(cand))
+            try:
+                _g = json.load(open(cand, encoding="utf-8"))
+                glazing_cands = _g.get("candidates", []) if isinstance(_g, dict) else []
+            except (ValueError, OSError):
+                glazing_cands = []
 
     # bind the REQUIRED pre-owner review overlay so overlay freshness is marker-enforced: the
     # owner signs off a REVIEW by SCANNING review-read-vs-sheet*; regenerating the overlay AFTER
@@ -814,8 +1051,12 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
             ledger_malformed = True
             print("  [!] placement-review.json malformed -- ignoring dismissals/confirmations")
 
+    import zone_flag as _ZF                 # pure module (no fitz); the south-band extraction is run() lane
     results, worst = [], "PASS"
-    rooms_loose = []                     # (room_id, loose) pools for the signature backstop
+    rooms_loose = []                     # (room_id, loose) pools for the facing/kind signature backstop
+    rooms_south = []                     # (room_id, obj_clusters) for the zone-signature GEO backstop
+    rooms_zone_pieces = []               # loose+fixed pools for the zone-signature NAME backstop (the
+    #                                      zone pass classifies built-ins too, so its reconcile must)
     order = {"PASS": 0, "REVIEW": 1, "FAIL": 2}
     for room_id, spec, offset, _sp in rooms:
         loose, fixed = _pieces(spec)
@@ -830,8 +1071,35 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
         r["dropped"] = res.get("dropped", [])
         r["facing"] = facing_flags(loose, res["fsegs"], offset, confirmed=confirmed_room)
         r["kind"] = kind_flags(loose, confirmed=confirmed_room)
-        if (r["facing"] or r["kind"]) and order[r["verdict"]] < order["REVIEW"]:
-            r["verdict"] = "REVIEW"        # a signed-semantic (facing/kind) disagreement needs a human
+        # ZONE advisory pass (indoor/outdoor/below-grade). The default room zone stops ~150mm south
+        # of the outline, so a below-grade element (the garden tree at y<0) is CLIPPED OUT and the
+        # gate would report a clean all-indoor room — the exact F3 wound looking green. So when the
+        # south edge corroborates a glazed facade, run a SEPARATE south-band extraction (never widen
+        # _room_zone — it is tuned against cluster merges) and classify what surfaces. REVIEW-only.
+        _south_kept, _open = [], []
+        try:
+            outline_abs = [[p[0] + offset[0], p[1] + offset[1]] for p in spec["room"]["outline_mm"]]
+            _ys, _xlo, _xhi = _ZF.facade_datum(outline_abs)
+            _corr, _ = _ZF.facade_corroborated(_ys, _xlo, _xhi, glazing_cands, wall_segs)
+            south_items = []
+            if _corr:
+                _band = (_xlo, _ys - ZONE_SOUTH_SCAN, _xhi, _ys + _ZF.DEFAULTS["y_below_margin"])
+                south_items = extract_clusters(pdf, page, _band, close_mm, calib=calib)["items"]
+            r["zone"], r["zone_flags"], _south_kept, _open = _zone_room(
+                spec, offset, glazing_cands, wall_segs, confirmed_room, south_items, dismissed_room)
+        except Exception as _e:
+            # ADVISORY ONLY: a zone-pass bug (or an extraction hiccup) must NEVER abort the gate or
+            # change a geometry verdict — mirrors facing_flags' try guard. Degrade to no proposals.
+            r["zone"] = {"corroborated": False, "proposals": [], "open_proposals_n": 0,
+                         "below_grade_n": 0, "exterior_linework_n": 0, "exterior_unscanned": False,
+                         "error": str(_e)}
+            r["zone_flags"] = []
+        rooms_south.append((room_id, _south_kept))
+        rooms_zone_pieces.append(loose + fixed)
+        if (r["facing"] or r["kind"] or r["zone_flags"] or _open or r["zone"]["exterior_unscanned"]) \
+                and order[r["verdict"]] < order["REVIEW"]:
+            r["verdict"] = "REVIEW"        # a signed-semantic (facing/kind/zone) disagreement or an
+            #                                open below-grade candidate needs a human — never a FAIL
         results.append(r)
         if order[r["verdict"]] > order[worst]:
             worst = r["verdict"]
@@ -872,18 +1140,49 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
             print("  [i] signature reconcile SKIPPED (single scene-graph target; ledger rooms "
                   "are manifest-scoped) -- gate the manifest to get the backstop")
 
+    # ZONE-signature reconcile (two-lane, mirrors the facing/kind backstop). Manifest lane only —
+    # same room-scoping reason as sig_reconcile. A NAME-scoped confirmed_zone binding no placed
+    # piece is a DETACHED signature -> hard error (the signed indoor/outdoor call would silently
+    # revert, exactly like a detached facing). A GEO-scoped zone sign (an unnamed cluster like the
+    # tree) binding no drawn cluster is REVIEW: the owner annotated a blob this extraction no longer
+    # produces — surfaced, never silent.
+    zone_reconcile = {"checked": False, "note": "not a manifest target or ledger unreadable"}
+    if "furnish" in doc and not ledger_malformed:
+        _union_pieces = [it for pieces in rooms_zone_pieces for it in pieces]   # loose+fixed (name lane)
+        _union_south = [c for _rid, sc in rooms_south for c in sc]              # exterior clusters (geo lane)
+        _zm, _zno, _zgo = reconcile_zone(_union_pieces, _union_south, confirmed_all)
+        zone_reconcile = {"checked": True, "matched": len(_zm),
+                          "name_orphans": [e.get("name") for e in _zno],
+                          "geo_orphans": len(_zgo)}
+        if _zno:
+            if order["FAIL"] > order[worst]:
+                worst = "FAIL"
+            print("!" * 74)
+            print("DETACHED ZONE SIGNATURE(S): a NAME-scoped confirmed_zone binds NO loose piece —")
+            print("the signed indoor/outdoor call would silently revert. Fix ledger/scene-graph:")
+            for e in _zno:
+                print(f"  - {e.get('name')!r} (room={e.get('room')!r} zone={e.get('zone')!r})")
+            print("!" * 74)
+        elif _zgo:
+            if order["REVIEW"] > order[worst]:
+                worst = "REVIEW"
+            print(f"zone reconcile: {len(_zm)} matched, {len(_zgo)} GEO-orphan (REVIEW) — an owner "
+                  f"below-grade annotation binds no drawn cluster in this extraction")
+
     calib_fails = _run_calibration_check(doc, base)
     if calib_fails and order["FAIL"] > order[worst]:
         worst = "FAIL"
 
     _report(results, worst, calib_fails)
-    marker = _write_marker(target, worst, results, input_paths, calib_fails, sig_reconcile)
+    marker = _write_marker(target, worst, results, input_paths, calib_fails, sig_reconcile,
+                           zone_reconcile)
     print(f"wrote gate marker: {marker}  (build refuses on FAIL, on un-signed REVIEW, or when an "
           f"input hash no longer matches)")
     return worst, results
 
 
-def _write_marker(target, worst, results, input_paths, calib_fails=None, sig_reconcile=None):
+def _write_marker(target, worst, results, input_paths, calib_fails=None, sig_reconcile=None,
+                  zone_reconcile=None):
     """Persist the verdict next to the target so the Blender build (which lacks fitz/scipy) can
     enforce the gate. The marker is bound to the exact files it gated by CONTENT HASH: build
     refuses unless every input it needs (manifest + each furnished scene-graph) is present in
@@ -905,6 +1204,7 @@ def _write_marker(target, worst, results, input_paths, calib_fails=None, sig_rec
         "calibration": ("FAIL" if calib_fails else "PASS"),
         "calibration_fails": calib_fails or [],
         "signature_reconcile": sig_reconcile if sig_reconcile is not None else {"checked": False},
+        "zone_reconcile": zone_reconcile if zone_reconcile is not None else {"checked": False},
         "rooms": [{"room": r["room"], "verdict": r["verdict"],
                    "floating": [x["name"] for x in (r["loose"] + r["fixed"]) if x["status"] == "floating"],
                    "unplaced": len(r["unplaced"]),
@@ -913,6 +1213,10 @@ def _write_marker(target, worst, results, input_paths, calib_fails=None, sig_rec
                    "identity_flags": len(r.get("identity", [])),
                    "facing_flags": len(r.get("facing", [])),
                    "kind_flags": len(r.get("kind", [])),
+                   "zone_flags": len(r.get("zone_flags", [])),
+                   "zone_below_grade": r.get("zone", {}).get("below_grade_n", 0),
+                   "zone_open": r.get("zone", {}).get("open_proposals_n", 0),
+                   "zone_exterior_linework": r.get("zone", {}).get("exterior_linework_n", 0),
                    "long_thin": len(_long_thin(r)), "dropped_total": len(r.get("dropped", []))}
                   for r in results],
         "note": "Auto-written by placement_gate.py. Do not hand-edit; re-run the gate to refresh.",

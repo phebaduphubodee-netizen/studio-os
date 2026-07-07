@@ -683,7 +683,109 @@ def test_entry_is_inert_classification():
     assert not G.entry_is_inert({"name": "x", "rot": 8})
     assert not G.entry_is_inert({"name": "x", "facing": "W"})
     assert not G.entry_is_inert({"name": "x", "kind": "bench"})
+    assert not G.entry_is_inert({"name": "x", "zone": "below_grade"})            # a zone sign is LIVE
+    assert G.entry_is_inert({"name": "x", "zone": "outdoor"})                    # ...but a typo isn't
     assert G.entry_is_inert("not-a-dict") and G.entry_is_inert(None)
+
+
+# ---- owner-signed ZONE (indoor / outdoor_same_floor / below_grade) --------------------
+def test_norm_zone_accepts_only_known_classes():
+    for z in ("indoor", "outdoor_same_floor", "below_grade"):
+        assert G._norm_zone(z) == z
+    for bad in ("outdoor", "south", "terrace", "", "  ", 180, None, ["below_grade"]):
+        assert G._norm_zone(bad) is None
+
+
+def test_zone_to_flags_mapping_and_silence():
+    assert G.zone_to_flags("indoor") == (True, True)
+    assert G.zone_to_flags("outdoor_same_floor") == (False, True)
+    assert G.zone_to_flags("below_grade") == (False, False)
+    assert G.zone_to_flags("junk") == (True, True)        # silence/unknown = ordinary this-floor-indoor
+    assert G.zone_to_flags(None) == (True, True)
+
+
+def test_confirmed_zone_name_join_last_usable_wins():
+    piece = {"name": "chairL", "w": 680, "d": 640}
+    conf = [{"name": "chairL", "w": 680, "d": 640, "zone": "indoor"},
+            {"name": "chairL", "w": 680, "d": 640, "zone": "below_grade"}]   # appended correction
+    assert G.confirmed_zone(piece, conf) == "below_grade"
+    # a trailing TYPO must not erase the earlier valid sign
+    conf2 = conf[:1] + [{"name": "chairL", "w": 680, "d": 640, "zone": "outdoor"}]
+    assert G.confirmed_zone(piece, conf2) == "indoor"
+
+
+def test_confirmed_zone_size_guard_and_name_lane_isolation():
+    piece = {"name": "chairL", "w": 680, "d": 640}
+    # size mismatch (>20%) rejects a reused name
+    assert G.confirmed_zone(piece, [{"name": "chairL", "w": 2000, "d": 1800, "zone": "below_grade"}]) is None
+    # a GEO entry (no name) is invisible to the name lane
+    assert G.confirmed_zone({"name": None}, [{"x": 1, "y": 1, "w": 1, "d": 1, "zone": "below_grade"}]) is None
+
+
+def test_confirmed_zone_cluster_geo_join_nearest_wins_and_ignores_named():
+    tree = {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True}
+    conf = [{"x": 6350, "y": -820, "w": 920, "d": 840, "curve": True, "zone": "below_grade"},
+            {"name": "chairL", "w": 680, "d": 640, "zone": "indoor"}]         # named -> geo lane ignores
+    assert G.confirmed_zone_cluster(tree, conf) == "below_grade"
+    # a far cluster does not bind
+    assert G.confirmed_zone_cluster({"x": 0, "y": 5000, "w": 924, "d": 846, "curve": True}, conf) is None
+
+
+def test_resolve_zone_override_and_byte_identical():
+    conf = [{"name": "c", "w": 680, "d": 640, "zone": "below_grade"}]
+    assert G.resolve_zone("c", "indoor", 680, 640, conf) == ("below_grade", "owner-signed")
+    assert G.resolve_zone("c", "indoor", 680, 640, conf) != ("indoor", None)
+    assert G.resolve_zone("c", "indoor", 680, 640, []) == ("indoor", None)      # no ledger: unchanged
+    assert G.resolve_zone("c", "indoor", 680, 640, None) == ("indoor", None)
+
+
+def test_zone_flags_contradiction_and_suppression():
+    conf = [{"name": "c", "w": 680, "d": 640, "zone": "below_grade"}]
+    # machine/proposal says indoor but owner signed below_grade -> contradiction (silence can't silence)
+    flags = G.zone_flags([{"name": "c", "kind": "armchair", "w": 680, "d": 640}], {"c": "indoor"}, conf)
+    assert [f["verdict"] for f in flags] == ["contradicts_signed_zone"]
+    # proposal agrees with the sign -> suppressed (adjudicated)
+    assert G.zone_flags([{"name": "c", "kind": "armchair", "w": 680, "d": 640}],
+                        {"c": "below_grade"}, conf) == []
+    # a built zone on the piece itself is honoured over the proposal
+    assert G.zone_flags([{"name": "c", "kind": "armchair", "w": 680, "d": 640, "zone": "below_grade"}],
+                        {}, conf) == []
+
+
+def test_reconcile_zone_two_lane_orphans():
+    conf = [{"name": "namedPiece", "w": 100, "d": 100, "zone": "indoor"},     # NAME lane
+            {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True, "zone": "below_grade"},  # GEO lane
+            {"name": "z", "rot": 8}]                                          # not a zone entry -> ignored
+    tree = {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True}
+    # both bind
+    m, no, go = G.reconcile_zone([{"name": "namedPiece", "w": 100, "d": 100}], [tree], conf)
+    assert (len(m), len(no), len(go)) == (2, 0, 0)
+    # name orphan (no matching piece) -> hard-error lane; geo still binds
+    m, no, go = G.reconcile_zone([{"name": "other", "w": 100, "d": 100}], [tree], conf)
+    assert (len(m), len(no), len(go)) == (1, 1, 0) and no[0]["name"] == "namedPiece"
+    # geo orphan (tree no longer surfaces) -> REVIEW lane; name still binds
+    m, no, go = G.reconcile_zone([{"name": "namedPiece", "w": 100, "d": 100}], [], conf)
+    assert (len(m), len(no), len(go)) == (1, 0, 1)
+
+
+def test_reconcile_zone_builtin_present_matches_not_orphan():
+    # a NAME-scoped zone sign on a PRESENT builtin/fixture must MATCH (the zone pass classifies
+    # built-ins too) — reconcile is fed loose+fixed, so a real builtin sign never hard-FAILs as detached.
+    conf = [{"name": "BF13 shelf", "w": 300, "d": 4100, "zone": "indoor"}]
+    m, no, go = G.reconcile_zone([{"name": "BF13 shelf", "w": 300, "d": 4100}], [], conf)
+    assert (len(m), len(no), len(go)) == (1, 0, 0)
+
+
+def test_reconcile_zone_empty_name_routes_to_geo_lane_not_fail():
+    # an empty-string 'name' on a GEO annotation must NOT route to the NAME lane (where a stray ''
+    # would hard-FAIL as a detached signature); it enters the geo lane and binds by geometry.
+    tree = {"x": 6344, "y": -830, "w": 924, "d": 846, "curve": True}
+    conf = [{"name": "", "x": 6344, "y": -830, "w": 924, "d": 846, "curve": True, "zone": "below_grade"}]
+    m, no, go = G.reconcile_zone([{"name": "chairL", "w": 680, "d": 640}], [tree], conf)
+    assert (len(m), len(no), len(go)) == (1, 0, 0)         # geo-matched, NOT a name-orphan FAIL
+    # and the geo accessor reads it (whitespace name also normalises away)
+    assert G.confirmed_zone_cluster(tree, [{"name": "  ", "x": 6344, "y": -830, "w": 924, "d": 846,
+                                            "curve": True, "zone": "below_grade"}]) == "below_grade"
 
 
 # ---- overlay freshness + gate-side signature reconcile (marker hardening) -------------

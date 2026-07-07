@@ -1075,3 +1075,66 @@ adversarially scrutinized (0 blocker/major across all five) before a local commi
   Two-layer law reaffirmed throughout: geometry is machine-solved and now machine-SCORED; identity/
   facing stay owner-signed. Every corpus artifact stays under studio-datasets (CC BY-NC); only code,
   tests, and aggregate qa reports are committed.
+
+### Session 2026-07-07b — F3 indoor/outdoor attacked on the PRODUCTION plan (zone_flag + confirmed_zone)
+
+Owner steer after the 2026-07-07a self-assessment: the night before "sharpened the ruler"
+(benchmark lane) but did not move the real production pipe, and the F3 wound that started the whole
+saga — a floor-2 terrace misread as a lounge — was touched ZERO. This session hit F3 directly on the
+REAL house (PRJ-2026-002), in production, not the FloorPlanCAD ruler.
+
+**The wound.** The south sitting area was machine-read as an OUTDOOR terrace with tree-planters; the
+owner corrected it to an INDOOR floor-2 lounge behind a south GLASS facade, with the garden trees
+being GROUND BELOW (y<0), seen through/below the glass — not floor-2 objects. The correction survived
+only as owner-redrawn geometry; the ledger could sign facing (`confirmed_rot`) and identity
+(`confirmed_kind`) but **had no durable signature for the hardest owner-only call — indoor/outdoor**.
+
+**What shipped (production, not ruler):**
+- **`pipeline/scripts/zone_flag.py`** — a DETERMINISTIC, pure-geometry (no fitz) flagger that PROPOSES
+  indoor / outdoor_same_floor / below_grade per element. Datum PINNED to the room's own south outline
+  edge y_s (owner-drawn, never the inferred glazing line); a room ABSTAINS unless a STRONG south
+  glazing candidate corroborates AND the edge is OPEN (no wall). INDOOR IMMUNITY (containment-only)
+  is the false-positive firewall — no datum error can demote a contained piece.
+- **`confirmed_zone` in `placement_gate.py`** — the missing durable signature, mirroring the
+  `confirmed_kind` trio, in TWO lanes: NAME-scoped (placed pieces) and GEO-scoped (unnamed clusters
+  like the tree, joined by `_sig_dist`). Full set: `_norm_zone`/`zone_to_flags`/`confirmed_zone`/
+  `confirmed_zone_cluster`/`resolve_zone`/`zone_flags`/`reconcile_zone`, `entry_is_inert` extended.
+  Maps onto the ALREADY-BUILT `benchmark_reader` (indoor, floor) F3/F5 fields.
+- **Wired into `placement_gate.run()`** — binds `glazing-candidates.json` into the marker by sha1;
+  when the facade corroborates, runs a SEPARATE south-band `extract_clusters` (the default room zone
+  stops ~150mm south, so a y<0 element is otherwise CLIPPED and the room looks green — the exact wound
+  looking correct); classifies; surfaces below-grade candidates as advisory REVIEW (NEVER FAIL, NEVER
+  auto-applied — the CALL stays owner). A GEO-signed cluster is adjudicated (one sign stops the nag).
+
+**Verified on the REAL production target (non-circular replay):** the machine reads the real PDF →
+clusters → the garden tree (x6344 y-830 924x846 curve, the exact blob the owner hand-dropped) is
+proposed `below_grade` STRONG; all 9 placed pieces (incl. the two tub chairs near the glass) stay
+INDOOR — **0 false positives**; master_bedroom (walled south) correctly ABSTAINS. Overlay:
+`03_layout/v4/review-zone-flag.png`.
+
+**Method — design panel → implement → ADVERSARIAL verify → fix (the value was the adversarial pass).**
+A 3-lens design workflow (geometry-recall / false-positive / two-layer-law) + synthesis produced the
+rule; then a 4-skeptic adversarial workflow (each self-verifying by RUNNING real code) found **1
+CRITICAL + 2 HIGH + 4 med/low**, all real: (0) reconcile fed items-only → a zone sign on a present
+BUILTIN hard-FAILed as detached (two-layer breach); (1) the edge-OPEN firewall was DEAD against real
+data (walls decompose into ~200mm segments; per-segment length gate → wall_cover always 0) so a
+walled-south room would fire; (2) a below-grade canopy lapping the glass was SILENTLY dropped by the
+70% area gate (F3 re-opened); plus empty-name→FAIL, malformed-input crashes, over-confident proud-bay,
+empty-outline. **Fixed:** reconcile/backstop feed loose+fixed; wall-open judged on UNIONED coverage;
+beyond-gate = majority-south OR centroid-below (dead zone closed); STRONG reserved for an UNPLACED,
+mostly-south cluster (a PLACED proud piece — geometrically identical to a bay-window seat — is LOW,
+owner-arbitrated); empty/whitespace name normalised to the geo lane; malformed glazing/wall/outline
+skipped not crashed; the whole zone pass try-guarded so it can never abort the gate. 563 tests pass
+(28 new: 20 `test_zone_flag.py` incl. the real-PDF replay + 8 signature + regressions for every fix).
+
+**Deferred (documented, honest):** (a) `resolve_zone` exists but the GENERATOR (gen_floor2_v4_specs)
+does not yet WRITE indoor/floor into the scene-graph — the signature machinery + gate backstop is the
+higher-leverage half (closes the durability gap); applying the sign into the rendered build is the
+follow-on. (b) `_sig_dist` can let a curve-omitting dismissal swallow an organic tree — a shared-matcher
+change, deferred (the real ledger doesn't trigger it). (c) `rect_area_frac_inside` is convex-only, so
+the AREA path of indoor-immunity under-reports for L-rooms — `point_in_poly` (correct for concave)
+carries containment, so no FP; a triangulation pass is the follow-on. (d) No F3 GT corpus is wired, so
+NO benchmark number is claimed tonight — the (indoor,floor) mapping is emitted so a future corpus can
+score it. This is production capability verified on the real house, deliberately NOT a ruler number.
+Two-layer law reaffirmed: geometry machine-solved, indoor/outdoor now machine-PROPOSED but owner-SIGNED.
+Commits local, unpushed (v4-PNG asset-convention call still owner-open; review PNGs left untracked).

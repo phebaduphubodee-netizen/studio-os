@@ -6,19 +6,26 @@
     "scene-graph.master_bedroom.json": "2416474c3e98c10b392f1c0afdc9b66c1f0ec282",
     "scene-graph.sitting_room.json": "9da29759d96d89c91053a7540ad5f266523462de",
     "floor2-walls-mm.json": "a5475b295ce0fedf5f7ca21fbb2fee9528f6c4f8",
+    "glazing-candidates.json": "e1cc0c9a2ad89fea1e9717a6be63b4709a19cf47",
     "review-read-vs-sheet.md": "74c2d31ebf9818223649614028ff75c2dbec4230",
     "review-read-vs-sheet_full.png": "e45d9994953b02da73d517da0688e8ba10961adc",
     "review-read-vs-sheet_master_bedroom.png": "575f6affb2a9d445daaa7a7ed6d624be5a0c2399",
     "review-read-vs-sheet_sitting_room.png": "63feec135ade9cf1dda6907d90eec98045c06899",
     "placement-review.json": "0a4311bc442b7cde1460a5ecc266ee1baa6d8be5"
   },
-  "generated_epoch": 1783432374.030929,
+  "generated_epoch": 1783452691.7609084,
   "calibration": "PASS",
   "calibration_fails": [],
   "signature_reconcile": {
     "checked": true,
     "matched": 2,
     "orphaned_names": []
+  },
+  "zone_reconcile": {
+    "checked": true,
+    "matched": 0,
+    "name_orphans": [],
+    "geo_orphans": 0
   },
   "rooms": [
     {
@@ -31,6 +38,10 @@
       "identity_flags": 0,
       "facing_flags": 0,
       "kind_flags": 0,
+      "zone_flags": 0,
+      "zone_below_grade": 0,
+      "zone_open": 0,
+      "zone_exterior_linework": 0,
       "long_thin": 1,
       "dropped_total": 22
     },
@@ -44,6 +55,10 @@
       "identity_flags": 0,
       "facing_flags": 0,
       "kind_flags": 0,
+      "zone_flags": 0,
+      "zone_below_grade": 1,
+      "zone_open": 1,
+      "zone_exterior_linework": 1,
       "long_thin": 0,
       "dropped_total": 4
     }
