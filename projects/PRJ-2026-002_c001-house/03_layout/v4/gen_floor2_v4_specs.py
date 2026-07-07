@@ -58,7 +58,8 @@ _REPO = os.path.abspath(os.path.join(_HERE, "..", "..", "..", ".."))
 for _p in (_HERE, os.path.join(_REPO, "pipeline", "scripts")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
-from placement_gate import resolve_rot, load_confirmed, reconcile_confirmed
+from placement_gate import (resolve_rot, resolve_kind, load_confirmed,
+                            reconcile_confirmed, entry_is_inert)
 
 SCALE, OX, OY = 26.45, 171.2, 596.5
 CLOSE_MM = 18.0
@@ -134,23 +135,31 @@ def snap(room, name, kind, clusters, claimed, anchor, face, h, confirmed=None, *
     signed facing (placement-review.json confirmed[], resolved via placement_gate.resolve_rot)
     OVERRIDES the hand-typed `face`; absent one the hand-typed cardinal is used unchanged (byte-
     identical to the pre-wiring generator). Facing is resolved AFTER the match so the size guard
-    sees the real footprint. snap is for CARDINAL pieces (an angled facing belongs on angled())."""
+    sees the real footprint. snap is for CARDINAL pieces (an angled facing belongs on angled()).
+    kind is resolved AFTER the match too — an identity sign re-labels the piece, it never
+    re-routes which cluster it snaps to."""
     cl, dist, mismatch = match(anchor, kind, extra.get("shape"), clusters, claimed)
     if cl is None:
         rot, fsrc = resolve_rot(name, FACE_ROT[face], 500, 500, confirmed)
-        it = to_spec(name, kind, anchor[0], anchor[1], 500, 500, rot, h,
+        kind_eff, ksrc = resolve_kind(name, kind, 500, 500, confirmed)
+        it = to_spec(name, kind_eff, anchor[0], anchor[1], 500, 500, rot, h,
                      note="NO drawn cluster within reach — hard-FAILs the gate (honest miss)", **extra)
         if fsrc:
             it["facing_source"] = fsrc
-        _REPORT.append((room, name, kind, None, dist, (it["x"], it["y"], it["w"], it["d"]), False))
+        if ksrc:
+            it["kind_source"] = ksrc
+        _REPORT.append((room, name, kind_eff, None, dist, (it["x"], it["y"], it["w"], it["d"]), False))
         return it
     cx, cy = cl["x"] + cl["w"] / 2.0, cl["y"] + cl["d"] / 2.0
     rot, fsrc = resolve_rot(name, FACE_ROT[face], cl["w"], cl["d"], confirmed)
-    it = to_spec(name, kind, cx, cy, cl["w"], cl["d"], rot, h,
+    kind_eff, ksrc = resolve_kind(name, kind, cl["w"], cl["d"], confirmed)
+    it = to_spec(name, kind_eff, cx, cy, cl["w"], cl["d"], rot, h,
                  cluster=cl["id"], snap_mm=round(dist), **extra)
     if fsrc:
         it["facing_source"] = fsrc
-    _REPORT.append((room, name, kind, cl["id"], dist, (it["x"], it["y"], it["w"], it["d"]), mismatch))
+    if ksrc:
+        it["kind_source"] = ksrc
+    _REPORT.append((room, name, kind_eff, cl["id"], dist, (it["x"], it["y"], it["w"], it["d"]), mismatch))
     return it
 
 
@@ -164,12 +173,15 @@ def angled(room, name, kind, cx, cy, w, d, rot, h, confirmed=None, **extra):
     OVERRIDES the hand-read angle, so a rebuild re-applies the owner-adjudicated chair-facing
     instead of re-rolling it. Absent a signature the drawn angle is used unchanged (byte-identical)."""
     eff_rot, fsrc = resolve_rot(name, rot, w, d, confirmed)
+    kind_eff, ksrc = resolve_kind(name, kind, w, d, confirmed)
     # swap_cardinal=False: (w,d) are the piece's oriented dims — an owner sign landing on exactly
     # 90/270 must ROTATE the box, never trip to_spec's cluster-AABB pre-swap (which would cancel it).
-    it = to_spec(name, kind, cx, cy, w, d, eff_rot, h, swap_cardinal=False, angled=True, **extra)
+    it = to_spec(name, kind_eff, cx, cy, w, d, eff_rot, h, swap_cardinal=False, angled=True, **extra)
     if fsrc:
         it["facing_source"] = fsrc
-    _REPORT.append((room, name, kind, "angled", 0, (it["x"], it["y"], it["w"], it["d"]), False))
+    if ksrc:
+        it["kind_source"] = ksrc
+    _REPORT.append((room, name, kind_eff, "angled", 0, (it["x"], it["y"], it["w"], it["d"]), False))
     return it
 
 
@@ -229,9 +241,10 @@ def assert_signatures_applied(pieces, confirmed, where=""):
             f"sign={e.get('rot', e.get('facing'))})" for e in orphaned)
         raise SystemExit(
             f"PLACEMENT-REVIEW ORPHAN{f' [{where}]' if where else ''}: {len(orphaned)} owner-signed "
-            f"facing(s) bind to NO loose piece the generator places — the name+size join is detached "
+            f"entr(y/ies) bind to NO loose piece the generator places — the name+size join is detached "
             f"(a rename or resize, a piece not found in the drawing, or a sign aimed at a built-in/"
-            f"fixture the generator does not apply facings to). The facing would re-roll to the "
+            f"fixture the generator does not apply facings to). The signed value (facing and/or kind) "
+            f"would re-roll to the "
             f"hand-read default. Fix the ledger name/size/room (or the generator), then regenerate:\n{lines}")
     return matched
 
@@ -261,7 +274,7 @@ def main():
             confirmed_all = []
     confirmed_master = [e for e in confirmed_all if e.get("room") in ("master_bedroom", "*")]
     confirmed_sitting = [e for e in confirmed_all if e.get("room") in ("sitting_room", "*")]
-    print(f"placement-review.json: {len(confirmed_all)} owner-signed facing(s) loaded "
+    print(f"placement-review.json: {len(confirmed_all)} owner-signed entr(y/ies) loaded "
           f"({len(confirmed_master)} master, {len(confirmed_sitting)} sitting) — reconciled AFTER placement")
 
     master_zone = room_zone(MASTER_OUTLINE, MASTER_SUB)
@@ -278,10 +291,13 @@ def main():
     # foot faces the west TV. Anchored to the east wall, NOT eyeballed. Facing hand-read W (rot 270);
     # an owner-signed facing overrides it (the bed is placed by direct to_spec, not snap/angled).
     _bed_rot, _bed_src = resolve_rot("เตียง 7'x6.5' หัวตะวันออก", 270, 1981, 2134, confirmed_master)
-    _bed = to_spec("เตียง 7'x6.5' หัวตะวันออก", "bed", 4159, 1100, 1981, 2134, _bed_rot, 600,
+    _bed_kind, _bed_ksrc = resolve_kind("เตียง 7'x6.5' หัวตะวันออก", "bed", 1981, 2134, confirmed_master)
+    _bed = to_spec("เตียง 7'x6.5' หัวตะวันออก", _bed_kind, 4159, 1100, 1981, 2134, _bed_rot, 600,
                    note="head EAST vs BF14 slat; measured (merges with casework)")
     if _bed_src:
         _bed["facing_source"] = _bed_src
+    if _bed_ksrc:
+        _bed["kind_source"] = _bed_ksrc
     master_items.append(_bed)
     # FOOT BENCH (organic id37) at the west foot.
     master_items.append(snap("master_bedroom", "ม้านั่งปลายเตียง (bench)", "bench", mc, m_claimed,
@@ -375,10 +391,13 @@ def main():
     # owner-signed facing is APPLIED here too — else the gate could raise a sign the generator can't satisfy.
     _orchid_name = "โต๊ะวางกล้วยไม้ (console)"
     _orchid_rot, _orchid_src = resolve_rot(_orchid_name, FACE_ROT["S"], 1002, 402, confirmed_sitting)
-    _orchid = to_spec(_orchid_name, "console", 6399, 2373, 1002, 402, _orchid_rot, 450,
+    _orchid_kind, _orchid_ksrc = resolve_kind(_orchid_name, "console", 1002, 402, confirmed_sitting)
+    _orchid = to_spec(_orchid_name, _orchid_kind, 6399, 2373, 1002, 402, _orchid_rot, 450,
                       note="orchid console table (drawn ~1002x402) — SEPARATE piece from BF12-2 (owner 2026-07-06)")
     if _orchid_src:
         _orchid["facing_source"] = _orchid_src
+    if _orchid_ksrc:
+        _orchid["kind_source"] = _orchid_ksrc
     sit_items.append(_orchid)
     sit_builtins.append(bf("ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)", "BF13", "cabinet", 10500, 4100, "NS",
                            h=500, note="east wall; the sofa faces it"))
@@ -408,10 +427,12 @@ def main():
     # Report the TRUE applied count from facing_source (what resolve_rot actually set), not the join
     # count — a sign can bind by name+size yet set no facing (a malformed/non-cardinal facing/rot
     # value); that is not an orphan (the piece exists) but it is NOT applied, and saying so is honest.
-    applied = sum(1 for it in master_items + sit_items if it.get("facing_source") == "owner-signed")
-    inert = len(confirmed_all) - applied     # reached here => 0 orphaned, so the remainder are inert signs
-    print(f"placement-review.json: {len(confirmed_all)} loaded, {applied} APPLIED (facing set), 0 orphaned"
-          + (f"; NOTE {inert} bound a piece but set NO facing — check its facing/rot value" if inert else ""))
+    applied_f = sum(1 for it in master_items + sit_items if it.get("facing_source") == "owner-signed")
+    applied_k = sum(1 for it in master_items + sit_items if it.get("kind_source") == "owner-signed")
+    inert = sum(1 for e in confirmed_all if entry_is_inert(e))
+    print(f"placement-review.json: {len(confirmed_all)} loaded, {applied_f} facing APPLIED, "
+          f"{applied_k} kind APPLIED, 0 orphaned"
+          + (f"; NOTE {inert} carry NO usable rot/facing/kind — fix the entry value(s)" if inert else ""))
 
     # ---------------------------------------------------------------- write scene-graphs
     master = {

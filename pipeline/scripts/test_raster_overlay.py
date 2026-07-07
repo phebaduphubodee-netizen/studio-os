@@ -125,10 +125,12 @@ def test_checklist_sign_stub_is_valid_pasteable_json():
 
 
 def test_checklist_signed_rows_get_no_stub():
+    # facing AND kind both owner-signed -> nothing left to sign, no stub of either flavour
     rooms = [{"id": "r", "spec": _spec(
-        items=[{"name": "เก้าอี้", "kind": "armchair", "rot": 8, "facing_source": "owner-signed"}])}]
+        items=[{"name": "เก้าอี้", "kind": "armchair", "rot": 8,
+                "facing_source": "owner-signed", "kind_source": "owner-signed"}])}]
     text = RO.checklist(rooms)
-    assert not any(l.startswith("{") for l in text)          # nothing to sign — no stub section
+    assert not any(l.startswith("{") for l in text)          # nothing to sign — no stub sections
 
 
 def test_box_colors_never_use_provenance_channel():
@@ -142,6 +144,40 @@ def test_box_colors_never_use_provenance_channel():
         assert not (r > 200 and 80 < g < 180 and b < 60), f"{kind} box {col} reads ORANGE (hand-read channel)"
     rs, gs, bs = rgb(RO.ARROW_SIGNED)
     assert gs > rs and gs > bs                                # the signed arrow itself IS green
+
+
+def test_checklist_kind_signed_marked_and_no_kind_stub():
+    rooms = [{"id": "r", "spec": _spec(
+        items=[{"name": "ตู้", "kind": "tv_console", "rot": 0,
+                "facing_source": "owner-signed", "kind_source": "owner-signed"}])}]
+    text = "\n".join(RO.checklist(rooms))
+    assert "tv_console (loose) ✓ owner-signed" in text        # kind cell carries provenance
+    assert "```json" not in text                              # signed both ways -> no stubs
+
+
+def test_checklist_kind_stub_is_pasteable_and_rot_free():
+    import json
+    rooms = [{"id": "sitting_room", "spec": _spec(
+        items=[{"name": "โซฟา 3 ที่นั่ง", "kind": "sofa", "rot": 90, "w": 1002, "d": 2202}])}]
+    text = RO.checklist(rooms)
+    stubs = [json.loads(l) for l in text if l.startswith("{")]
+    assert len(stubs) == 2                                    # one facing stub + one kind stub
+    fac, kin = stubs                                          # facing section is emitted FIRST
+    assert "rot" in fac and "kind" not in fac                 # a facing stub signs facing ONLY
+    assert kin["kind"] == "sofa" and "rot" not in kin         # a kind stub signs identity ONLY
+    assert kin["room"] == "sitting_room" and kin["name"] == "โซฟา 3 ที่นั่ง"
+    assert kin["w"] == 1002 and kin["d"] == 2202              # join keys pre-filled
+
+
+def test_checklist_kind_stub_only_for_loose_group():
+    rooms = [{"id": "r", "spec": _spec(
+        builtins=[{"name": "ตู้ BF", "kind": "cabinet"}],
+        subrooms=[{"name": "s", "outline_mm": [[0, 0], [1, 0], [1, 1], [0, 1]],
+                   "fixtures": [{"name": "wc", "kind": "toilet"}]}])}]
+    text = RO.checklist(rooms)
+    # builtins/fixtures never consult the ledger — a stub for them would bait the owner into a
+    # paste that hard-FAILs the generate as a PLACEMENT-REVIEW ORPHAN. No stub, no bait.
+    assert not any(l.startswith("{") for l in text)
 
 
 if __name__ == "__main__":

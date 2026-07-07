@@ -589,6 +589,103 @@ def test_reconcile_empty_and_garbage_safe():
     assert len(m) == 1 and o == [], (m, o)
 
 
+# ---- confirmed_kind: the identity ledger (mirrors confirmed_rot; shared-matcher law) ----
+def test_confirmed_kind_matches_by_name():
+    assert G.confirmed_kind({"name": "หีบ", "w": 800, "d": 800},
+                            [{"name": "หีบ", "kind": "bench"}]) == "bench"
+    assert G.confirmed_kind({"name": "other", "w": 800, "d": 800},
+                            [{"name": "หีบ", "kind": "bench"}]) is None
+
+
+def test_confirmed_kind_size_guard_rejects_reused_name():
+    # a stale sign sized for a stool must NOT re-identify a big cabinet that reused the name
+    assert G.confirmed_kind({"name": "c", "w": 2000, "d": 600},
+                            [{"name": "c", "kind": "stool", "w": 300, "d": 300}]) is None
+    # a sizeless entry still matches (cheap paste — stub pre-fills w/d but hand entries may not)
+    assert G.confirmed_kind({"name": "c", "w": 2000, "d": 600},
+                            [{"name": "c", "kind": "cabinet"}]) == "cabinet"
+
+
+def test_confirmed_kind_last_valid_entry_wins():
+    # APPEND-a-correction workflow: the owner pastes a corrected stub without deleting the old
+    # one; the LATER valid entry must win (the shadowing hole this slice closes).
+    conf = [{"name": "x", "kind": "cabinet", "w": 800, "d": 800},
+            {"name": "x", "kind": "tv_console", "w": 800, "d": 800}]
+    assert G.confirmed_kind({"name": "x", "w": 800, "d": 800}, conf) == "tv_console"
+
+
+def test_confirmed_kind_malformed_entries_skipped_not_shadowing():
+    piece = {"name": "x", "w": 800, "d": 800}
+    # malformed FIRST: the correction is still honoured
+    assert G.confirmed_kind(piece, [{"name": "x", "kind": ""},
+                                    {"name": "x", "kind": "sofa"}]) == "sofa"
+    # malformed LAST: must NOT erase the earlier valid sign (last-USABLE-wins, not last-entry)
+    assert G.confirmed_kind(piece, [{"name": "x", "kind": "sofa"},
+                                    {"name": "x", "kind": None}]) == "sofa"
+    assert G.confirmed_kind(piece, [{"name": "x", "kind": 42}]) is None
+
+
+def test_confirmed_rot_last_valid_entry_wins():
+    # the SAME ordering semantic pinned on the rot matchers in the SAME change: gate, generator
+    # and the legacy cardinal accessor must all agree on 'what did the owner sign LAST'.
+    piece = {"name": "bed", "w": 2000, "d": 1800}
+    assert G.confirmed_rot(piece, [{"name": "bed", "rot": 90, "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": 270, "w": 2000, "d": 1800}]) == 270
+    assert G.confirmed_facing(piece, [{"name": "bed", "facing": "E"},
+                                      {"name": "bed", "facing": "W"}]) == "W"
+    # a trailing MALFORMED entry does not erase the earlier valid sign
+    assert G.confirmed_rot(piece, [{"name": "bed", "rot": 90, "w": 2000, "d": 1800},
+                                   {"name": "bed", "rot": "junk", "w": 2000, "d": 1800}]) == 90
+
+
+def test_rot_and_kind_payloads_are_independent():
+    piece = {"name": "x", "w": 800, "d": 800}
+    both = [{"name": "x", "rot": 90, "kind": "sofa"}]
+    assert G.confirmed_rot(piece, both) == 90
+    assert G.confirmed_kind(piece, both) == "sofa"
+    # a kind-only sign is NOT a rot sign, and vice versa
+    assert G.confirmed_rot(piece, [{"name": "x", "kind": "sofa"}]) is None
+    assert G.confirmed_kind(piece, [{"name": "x", "rot": 90}]) is None
+
+
+def test_resolve_kind_no_ledger_and_override():
+    assert G.resolve_kind("x", "cabinet", 800, 800, []) == ("cabinet", None)
+    assert G.resolve_kind("x", "cabinet", 800, 800, None) == ("cabinet", None)
+    assert G.resolve_kind("x", "cabinet", 800, 800,
+                          [{"name": "x", "kind": "tv_console"}]) == ("tv_console", "owner-signed")
+
+
+def test_resolve_kind_agreeing_sign_still_tagged():
+    # provenance even when the sign equals the hand read (mirrors resolve_rot :383-386)
+    assert G.resolve_kind("x", "sofa", 800, 800,
+                          [{"name": "x", "kind": "sofa"}]) == ("sofa", "owner-signed")
+
+
+def test_kind_flags_suppress_and_contradict():
+    it = {"name": "x", "kind": "tv_console", "x": 0, "y": 0, "w": 800, "d": 800}
+    assert G.kind_flags([it], [{"name": "x", "kind": "tv_console"}]) == []   # adjudicated
+    f = G.kind_flags([it], [{"name": "x", "kind": "wardrobe"}])
+    assert len(f) == 1 and f[0]["verdict"] == "contradicts_signed_kind", f
+    assert f[0]["claimed"] == "tv_console" and f[0]["read"] == "wardrobe", f
+    assert G.kind_flags([it], []) == [] and G.kind_flags([it], None) == []
+
+
+def test_kind_flags_missing_built_kind_never_suppresses():
+    # a piece that LOST its kind (hand edit) can never be shown to match -> flagged, not silenced
+    it = {"name": "x", "x": 0, "y": 0, "w": 800, "d": 800}
+    f = G.kind_flags([it], [{"name": "x", "kind": "sofa"}])
+    assert len(f) == 1 and f[0]["verdict"] == "contradicts_signed_kind", f
+
+
+def test_entry_is_inert_classification():
+    assert G.entry_is_inert({"name": "x", "w": 1, "d": 1})                       # no payload
+    assert G.entry_is_inert({"name": "x", "rot": "junk", "facing": "bogus", "kind": ""})
+    assert not G.entry_is_inert({"name": "x", "rot": 8})
+    assert not G.entry_is_inert({"name": "x", "facing": "W"})
+    assert not G.entry_is_inert({"name": "x", "kind": "bench"})
+    assert G.entry_is_inert("not-a-dict") and G.entry_is_inert(None)
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

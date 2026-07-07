@@ -150,6 +150,7 @@ def checklist(rooms):
              "- ชิ้นที่**วาดในแบบแต่ไม่มีกรอบสี** = เครื่องอ่านไม่เห็น (ตกหล่น เคสแบบ BF09-2) — ชี้ตำแหน่งบอกได้เลย",
              ""]
     stubs = []
+    kind_stubs = []
     for ri, r in enumerate(rooms):
         L = room_letter(ri)
         lines.append(f"## {L} — {r['id']}")
@@ -165,7 +166,14 @@ def checklist(rooms):
                 stubs.append((f"{L}{i}", r["id"], it))
             else:
                 fac = "–"
-            lines.append(f"| {L}{i} | {it.get('name', '?')} | {it.get('kind', '?')} ({group}) "
+            kind_cell = f"{it.get('kind', '?')} ({group})"
+            if it.get("kind_source") == "owner-signed":
+                kind_cell += " ✓ owner-signed"
+            elif group == "loose":
+                # only LOOSE pieces consult the ledger (builtins/fixtures never do — a sign aimed
+                # at one ORPHANS the generate), so only loose rows get a paste-ready kind stub.
+                kind_stubs.append((f"{L}{i}", r["id"], it))
+            lines.append(f"| {L}{i} | {it.get('name', '?')} | {kind_cell} "
                          f"| {_rot_gloss(rot)} | {fac} |")
         lines.append("")
     if stubs:
@@ -183,9 +191,26 @@ def checklist(rooms):
             lines.append(json.dumps(stub, ensure_ascii=False))
             lines.append("```")
             lines.append("")
-    lines.append("หมายเหตุ identity: คอลัมน์ kind ยังเซ็นเข้า ledger ไม่ได้ (schema ยังไม่มี "
-                 "confirmed_kind — slice ถัดไป); แก้ identity = บอกเลข badge + ชนิดที่ถูก แล้วเรา"
-                 "แก้ generator ให้")
+    if kind_stubs:
+        lines.append("## เซ็น kind (identity, แถว loose) — ถูกแล้ว = วาง stub ตามเดิม / ผิด = แก้ค่า `kind` ก่อนวาง")
+        lines.append("")
+        lines.append("วางลง `confirmed[]` ใน `placement-review.json` แล้ว regenerate — identity จะติดถาวร "
+                     "(rebuild เปลี่ยนเองไม่ได้, gate ยก contradicts_signed_kind ถ้าเบี่ยง). วางเฉพาะแถวที่ "
+                     "ตรวจด้วยตาแล้วจริง; แก้ทีหลัง = APPEND entry ใหม่ชื่อ+ขนาดเดิม (ตัวหลังชนะ):")
+        lines.append("")
+        for badge, room_id, it in kind_stubs:
+            stub = {"room": room_id, "name": it.get("name"), "kind": it.get("kind"),
+                    "w": it.get("w"), "d": it.get("d"),
+                    "by": "owner (ระบุวิธียืนยัน)", "date": "YYYY-MM-DD"}
+            lines.append(f"**{badge}** — {it.get('name', '?')}:")
+            lines.append("```json")
+            lines.append(json.dumps(stub, ensure_ascii=False))
+            lines.append("```")
+            lines.append("")
+    lines.append("หมายเหตุ identity: คอลัมน์ kind เซ็นเข้า ledger ได้แล้ว (confirmed_kind) — วาง stub "
+                 "จากส่วน 'เซ็น kind' ข้างบน; แก้ทีหลัง = APPEND entry ใหม่ (ชื่อ+ขนาดเดิม, ตัวหลังชนะ). "
+                 "ชิ้น builtin/fixture ไม่มี stub (generator ไม่ apply sign) — แก้ identity ของพวกนั้น = "
+                 "บอกเลข badge + ชนิดที่ถูก แล้วเราแก้ generator ให้")
     return lines
 
 

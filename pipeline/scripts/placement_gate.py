@@ -319,19 +319,24 @@ def confirmed_facing(piece, confirmed, size_tol=0.20):
     understands a non-cardinal numeric {"rot": ...}). This cardinal-LETTER accessor is retained as
     the stable API + its focused cardinal tests; confirmed_rot is what facing_flags (gate) and
     resolve_rot (generators) actually call, so a signature is honoured identically whether it is a
-    cardinal letter or a numeric angle."""
+    cardinal letter or a numeric angle.
+
+    LAST usable matching entry wins: the owner's paste workflow APPENDS corrections, so an appended
+    correction beats every earlier entry — valid or typo — while a trailing malformed entry never
+    erases an earlier valid sign. Same ordering semantic as confirmed_kind (shared-matcher law)."""
     name = piece.get("name")
     if name is None:
         return None
+    best = None
     for e in confirmed or []:
         if not isinstance(e, dict):
             continue
         fac = e.get("facing")
         if fac not in _CARDINALS:      # a truthy-but-non-cardinal typo ('south','N ',180) must NOT
-            continue                   # suppress — the generator's rot_from_facing would apply nothing
+            continue                   # count — the generator's rot_from_facing would apply nothing
         if e.get("name") == name and _size_consistent(piece, e, size_tol):
-            return fac
-    return None
+            best = fac                 # LAST usable match wins (append-a-correction workflow)
+    return best
 
 
 def _norm_rot(r):
@@ -348,15 +353,16 @@ def confirmed_rot(piece, confirmed, size_tol=0.20):
     letter (S/E/N/W) OR an explicit numeric 'rot' (ANY angle — the non-cardinal case, e.g. the
     terrace tub chairs at 12/335 that a cardinal facing cannot express). Matched by NAME + the SAME
     size guard as confirmed_facing. Precedence: an explicit numeric 'rot' wins over a 'facing' letter
-    when both are present (more precise); a malformed 'rot' falls back to the cardinal 'facing'. A
-    name+size match that yields NO usable rot (a typo/malformed sign) is SKIPPED so a later entry with
-    the same name+size — the owner's appended correction — is still honoured, mirroring
-    confirmed_facing's `continue`; only when NO matching entry yields a usable rot -> None. So the
+    when both are present (more precise); a malformed 'rot' falls back to the cardinal 'facing'.
+    LAST usable matching entry wins: the owner's paste workflow APPENDS corrections, so an appended
+    correction beats every earlier entry — valid or typo — while a trailing malformed entry never
+    erases an earlier valid sign. Same ordering semantic as confirmed_kind (shared-matcher law). So the
     generator and gate stay in lock-step on 'what did the owner sign'. This is the matcher BOTH the
     gate (facing_flags, to suppress/raise) and the generators (resolve_rot, to APPLY) use."""
     name = piece.get("name")
     if name is None:
         return None
+    best = None
     for e in confirmed or []:
         if not isinstance(e, dict):
             continue
@@ -364,14 +370,14 @@ def confirmed_rot(piece, confirmed, size_tol=0.20):
             continue
         r = _norm_rot(e.get("rot")) if e.get("rot") is not None else None
         if r is not None:
-            return r                       # explicit numeric rot wins (incl. non-cardinal)
+            best = r                   # explicit numeric rot wins within the entry (incl. non-cardinal)
+            continue
         card = _CARD_ROT.get(e.get("facing"))
         if card is not None:
-            return card                    # else the cardinal letter -> rot
-        # this entry matched name+size but carries no usable rot (typo/malformed). Do NOT stop here:
-        # keep scanning so a later same-name+size correction is not shadowed by an earlier typo
-        # (confirmed_facing scans identically; returning here diverged the two accessors).
-    return None
+            best = card
+        # an entry that matched name+size but carries no usable value is SKIPPED — it can neither
+        # apply nor ERASE an earlier valid sign (last-USABLE-wins, not last-entry-wins)
+    return best
 
 
 def resolve_rot(name, hand_rot, w, d, confirmed):
@@ -390,6 +396,66 @@ def resolve_rot(name, hand_rot, w, d, confirmed):
     if signed is None:
         return hand_rot, None
     return signed, "owner-signed"
+
+
+def _norm_kind(k):
+    """k -> stripped kind string, or None if unusable. kind is owner-signed IDENTITY: only a
+    non-empty string counts; None/''/numbers are typos a later appended entry corrects. Exact
+    (case-sensitive) — KIND_SYNONYMS normalization is the benchmark lane's business, not the
+    ledger's."""
+    if isinstance(k, str):
+        k = k.strip()
+        if k:
+            return k
+    return None
+
+
+def confirmed_kind(piece, confirmed, size_tol=0.20):
+    """The owner-signed KIND (identity) for a piece, or None. Matched by the SAME name+size join
+    as confirmed_rot (exact name + orientation-agnostic ±20% size guard; a sizeless entry always
+    matches), LAST usable matching entry wins (append-a-correction workflow). This is the matcher
+    BOTH the gate (kind_flags, to suppress/raise) and the generators (resolve_kind, to APPLY) use
+    — they can never disagree on what the owner signed."""
+    name = piece.get("name")
+    if name is None:
+        return None
+    best = None
+    for e in confirmed or []:
+        if not isinstance(e, dict):
+            continue
+        if e.get("name") != name or not _size_consistent(piece, e, size_tol):
+            continue
+        k = _norm_kind(e.get("kind"))
+        if k is not None:
+            best = k
+    return best
+
+
+def resolve_kind(name, hand_kind, w, d, confirmed):
+    """GENERATOR helper mirroring resolve_rot: an owner-signed kind OVERRIDES the hand-read kind.
+    Returns (kind, source): source='owner-signed' when a signature was found and applied (even if
+    it equals hand_kind — provenance), else None with hand_kind unchanged and NOTHING emitted, so
+    a regen against a ledger with no kind signs stays byte-identical.
+
+    IDENTITY ONLY: callers MUST resolve kind AFTER cluster matching — a signature re-labels a
+    piece, it never re-routes which drawn blob the piece snaps to (geometry stays machine-layer)."""
+    if not confirmed:
+        return hand_kind, None
+    signed = confirmed_kind({"name": name, "w": w, "d": d}, confirmed)
+    if signed is None:
+        return hand_kind, None
+    return signed, "owner-signed"
+
+
+def entry_is_inert(e):
+    """True when a confirmed[] entry carries NO usable payload (no numeric/cardinal rot AND no
+    usable kind): it can bind a piece by name+size yet apply nothing. Reported honestly by the
+    generator instead of hiding behind a reassuring 'N loaded' count."""
+    if not isinstance(e, dict):
+        return True
+    return (_norm_rot(e.get("rot")) is None
+            and _CARD_ROT.get(e.get("facing")) is None
+            and _norm_kind(e.get("kind")) is None)
 
 
 def load_confirmed(led):
@@ -487,6 +553,26 @@ def facing_flags(loose, fsegs, offset=(0, 0), confirmed=None):
             out.append({"name": it.get("name"), "kind": it.get("kind"), "verdict": chk["verdict"],
                         "claimed": chk["claimed"], "read": chk["read"],
                         "confidence": round(chk.get("confidence", 0.0), 2)})
+    return out
+
+
+def kind_flags(loose, confirmed=None):
+    """Owner-signed IDENTITY backstop — the kind analog of facing_flags branch (1). For every
+    loose piece with a signed kind: SUPPRESS when the built kind equals the sign (adjudicated),
+    else raise 'contradicts_signed_kind' — the regression backstop. There is NO unsigned branch:
+    no geometric identity read exists (identity is owner-only semantic truth; the gate's
+    identity_check stays a double-claim detector only). A piece whose built kind is missing or
+    malformed can never be shown to match -> flagged, so silence cannot silence a signature."""
+    out = []
+    for it in loose or []:
+        signed = confirmed_kind(it, confirmed)
+        if signed is None:
+            continue
+        built = _norm_kind(it.get("kind"))
+        if built is not None and built == signed:
+            continue
+        out.append({"name": it.get("name"), "kind": built, "verdict": "contradicts_signed_kind",
+                    "claimed": built, "read": signed, "confidence": 1.0})
     return out
 
 
@@ -656,7 +742,7 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
             dismissed_all = [e for e in dismissed_all if isinstance(e, dict)]   # drop null/str/num typos
             confirmed_all = load_confirmed(_led)               # owner-signed facings (persist across rebuilds)
             print(f"placement-review.json: {len(dismissed_all)} dismissal(s), "
-                  f"{len(confirmed_all)} signed facing(s) on file")
+                  f"{len(confirmed_all)} signed entr(y/ies) on file (facing/kind)")
         except (ValueError, OSError, AttributeError, TypeError):
             print("  [!] placement-review.json malformed -- ignoring dismissals/confirmations")
 
@@ -673,8 +759,9 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
         r["room"] = room_id
         r["dropped"] = res.get("dropped", [])
         r["facing"] = facing_flags(loose, res["fsegs"], offset, confirmed=confirmed_room)
-        if r["facing"] and order[r["verdict"]] < order["REVIEW"]:
-            r["verdict"] = "REVIEW"        # a symbol-vs-typed facing disagreement needs a human
+        r["kind"] = kind_flags(loose, confirmed=confirmed_room)
+        if (r["facing"] or r["kind"]) and order[r["verdict"]] < order["REVIEW"]:
+            r["verdict"] = "REVIEW"        # a signed-semantic (facing/kind) disagreement needs a human
         results.append(r)
         if order[r["verdict"]] > order[worst]:
             worst = r["verdict"]
@@ -718,6 +805,7 @@ def _write_marker(target, worst, results, input_paths, calib_fails=None):
                    "dismissed": len(r.get("dismissed", [])),
                    "identity_flags": len(r.get("identity", [])),
                    "facing_flags": len(r.get("facing", [])),
+                   "kind_flags": len(r.get("kind", [])),
                    "long_thin": len(_long_thin(r)), "dropped_total": len(r.get("dropped", []))}
                   for r in results],
         "note": "Auto-written by placement_gate.py. Do not hand-edit; re-run the gate to refresh.",
@@ -783,6 +871,9 @@ def _report(results, worst, calib_fails=None):
             else:
                 print(f"    [FACE?]  '{f['name']}' typed to face {f['claimed']} but the drawn strip reads "
                       f"{f['read']} (conf {f['confidence']}, 90-deg off) — verify orientation")
+        for f in r.get("kind", []):
+            print(f"    [KIND!]  '{f['name']}' built kind '{f['claimed']}' CONTRADICTS the owner-signed "
+                  f"kind '{f['read']}' — a rebuild regressed a signed identity; regenerate to re-apply it")
 
     if calib_fails:
         print("\n" + "!" * 74)
@@ -817,6 +908,9 @@ def _report(results, worst, calib_fails=None):
             else:
                 todo.append(f"SIGN [{r['room']}] '{f['name']}' facing: typed {f['claimed']}, drawn symbol reads "
                             f"{f['read']} (90-deg off) — confirm which way it faces")
+        for f in r.get("kind", []):
+            todo.append(f"FIX  [{r['room']}] '{f['name']}' built kind '{f['claimed']}' CONTRADICTS the "
+                        f"owner-signed kind '{f['read']}' — regenerate so the signed identity is re-applied")
         for c in r["unplaced"]:
             todo.append(f"SIGN [{r['room']}] drawn {c['w']}x{c['d']}mm at ({c['x']},{c['y']}) has NO piece — "
                         f"is it furniture (add) or a label/door (add to placement-review.json)?")

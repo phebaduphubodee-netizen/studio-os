@@ -160,6 +160,49 @@ def test_v4_orphan_gate_unknown_room_binds_to_nothing():
         assert "ORPHAN" in str(ex), ex
 
 
+# ---- confirmed_kind wiring: identity signs stick, geometry never moves -----------------
+def test_v4_snap_kind_sign_changes_identity_not_geometry():
+    G4._REPORT.clear()
+    a = G4.snap("sitting_room", "หีบปลายเตียง", "cabinet", _cardcluster(curve=False), set(),
+                (1400, 1400), "E", 800)
+    G4._REPORT.clear()
+    b = G4.snap("sitting_room", "หีบปลายเตียง", "cabinet", _cardcluster(curve=False), set(),
+                (1400, 1400), "E", 800,
+                confirmed=[{"name": "หีบปลายเตียง", "kind": "bench"}])
+    assert b["kind"] == "bench" and b["kind_source"] == "owner-signed", b
+    ga = {k: v for k, v in a.items() if k not in ("kind", "kind_source")}
+    gb = {k: v for k, v in b.items() if k not in ("kind", "kind_source")}
+    assert ga == gb, (ga, gb)     # the sign changed IDENTITY only — nothing geometric moved
+
+
+def test_v4_kind_sign_never_changes_cluster_match():
+    # rect cluster #1 sits ON the anchor; curved #2 is farther. Hand kind 'cabinet' (rect want)
+    # matches #1 (score 0 vs 283+350). If the signed kind 'armchair' (curve want) were applied
+    # BEFORE match(), the +350 mismatch penalty would flip the snap to #2 — a signature MOVING a
+    # piece, geometry the owner never signed. Pin after-match application.
+    cls = [{"id": 1, "x": 1000, "y": 1000, "w": 800, "d": 800, "curve": False, "area_m2": 0.64},
+           {"id": 2, "x": 1200, "y": 1200, "w": 800, "d": 800, "curve": True, "area_m2": 0.64}]
+    G4._REPORT.clear()
+    it = G4.snap("sitting_room", "x", "cabinet", cls, set(), (1400, 1400), "E", 800,
+                 confirmed=[{"name": "x", "kind": "armchair"}])
+    assert it["cluster"] == 1, it
+    assert it["kind"] == "armchair" and it["kind_source"] == "owner-signed", it
+
+
+def test_v4_orphan_gate_covers_kind_only_sign():
+    # kind-only signs ride the SAME name+size join — orphan protection covers them from day one
+    G4._REPORT.clear()
+    piece = G4.angled("sitting_room", "เก้าอี้ tub ซ้าย", "armchair", 6331, 949, 680, 640, 12, 750)
+    bound = [{"name": "เก้าอี้ tub ซ้าย", "kind": "armchair", "w": 680, "d": 640}]
+    assert len(G4.assert_signatures_applied([piece], bound)) == 1
+    detached = [{"name": "ชื่อที่ไม่มีจริง", "kind": "armchair"}]
+    try:
+        G4.assert_signatures_applied([piece], detached, where="sitting_room")
+        assert False, "a detached kind sign must orphan (hard-FAIL), not be silently skipped"
+    except SystemExit as ex:
+        assert "ORPHAN" in str(ex), ex
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0
