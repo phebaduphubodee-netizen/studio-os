@@ -56,7 +56,7 @@ import sys
 import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
 
-ADAPTER_VERSION = "floorplancad_adapter v1"
+ADAPTER_VERSION = "floorplancad_adapter v1.1"
 SVG_NS = "{http://www.w3.org/2000/svg}"
 INK_NS = "{http://www.inkscape.org/namespaces/inkscape}"
 
@@ -269,7 +269,7 @@ def parse_svg(svg_path):
     root = tree.getroot()
     inst_pool = defaultdict(lambda: {"pts": [], "layers": Counter(), "n_prims": 0,
                                      "n_text": 0})
-    glazing, dim_texts, dim_segs = [], [], []
+    glazing, walls, dim_texts, dim_segs = [], [], [], []
     counts = {"stuff": Counter(), "unannotated": Counter(), "unknown_ids": Counter(),
               "transforms_skipped": 0, "malformed_prims": 0, "mixed_instances": 0,
               "instanced_stuff": 0}
@@ -326,6 +326,20 @@ def parse_svg(svg_path):
                     glazing.append({"x1": a[0], "y1": a[1], "x2": b[0], "y2": b[1],
                                     "kind": kind, "layer": layer})
                 continue
+            if kind == "wall":
+                # oracle wall channel: export geometry for BOTH stuff (-1) and
+                # instanced wall prims (excluding instanced walls leaves oracle gaps);
+                # counters preserved exactly as the count-only branch produced them.
+                # Path/line-family prims only: rect/circle/ellipse walls yield no
+                # segments through _shape_segs (same limitation as the glazing branch)
+                for (a, b) in (path_segments(el.get("d")) if tag == "path"
+                               else _shape_segs(el, tag)):
+                    walls.append({"x1": a[0], "y1": a[1], "x2": b[0], "y2": b[1],
+                                  "layer": layer})
+                counts["stuff"][kind] += 1
+                if not no_inst:
+                    counts["instanced_stuff"] += 1
+                continue
             if no_inst or kind in COUNT_ONLY_KINDS:
                 counts["stuff"][kind] += 1
                 if not no_inst:        # instanced wall/row_chairs/parking: never an element
@@ -344,7 +358,7 @@ def parse_svg(svg_path):
             row["pts"].extend(pool_pts)
             row["layers"][layer] += 1
             row["n_prims"] += 1
-    return inst_pool, glazing, dim_texts, dim_segs, counts
+    return inst_pool, glazing, walls, dim_texts, dim_segs, counts
 
 
 def _shape_segs(el, tag):
@@ -481,7 +495,7 @@ def convert(svg_path, split=None):
     outside [DOOR_MM_MIN, DOOR_MM_MAX] the calibration is REVOKED (drops to svg units,
     reason recorded in calib.rejected_by) -- scrutiny found a residual family of
     confident tick-pairing scales that only a physical cross-check catches."""
-    inst_pool, glazing, dim_texts, dim_segs, counts = parse_svg(svg_path)
+    inst_pool, glazing, walls, dim_texts, dim_segs, counts = parse_svg(svg_path)
     scale, calib = calibrate(dim_texts, dim_segs)
 
     def assemble(sc):
@@ -551,6 +565,11 @@ def convert(svg_path, split=None):
              "x2": round(g["x2"] * s, 1), "y2": round(g["y2"] * s, 1)}
             for g in glazing
         ],
+        "wall_lines": [
+            {**w, "x1": round(w["x1"] * s, 1), "y1": round(w["y1"] * s, 1),
+             "x2": round(w["x2"] * s, 1), "y2": round(w["y2"] * s, 1)}
+            for w in walls
+        ],
     }
 
 
@@ -597,6 +616,7 @@ def run_batch(svg_dir, out_dir):
                 "calib_support": m["calib"]["support"],
                 "n_elements": len(doc["elements"]), "n_openings": len(doc["openings"]),
                 "n_glazing": len(doc["glazing_lines"]),
+                "n_wall": len(doc["wall_lines"]),
                 "transforms_skipped": m["transforms_skipped"],
                 "degenerate": len(m["degenerate_dropped"]),
                 "unknown_ids": m["unknown_ids"],

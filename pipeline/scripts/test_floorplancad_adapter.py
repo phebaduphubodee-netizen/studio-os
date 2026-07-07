@@ -125,6 +125,22 @@ def test_curtain_wall_and_railing_go_to_glazing_channel():
     assert kinds == {("curtain_wall", 0.0, 60.0), ("railing", 0.0, 40.0)}
     assert doc["glazing_lines"][0]["layer"] == "A-GLAZ"
 
+def test_wall_lines_exported_including_instanced():
+    # class-1 wall geometry is exported for BOTH stuff (-1) and instanced prims;
+    # counters must stay exactly what the old count-only branch produced
+    body = layer("WALL", prim(1, -1, "M 0,0 L 99,0") + prim(1, 7, "M 0,10 L 50,10"))
+    doc = _convert(body)
+    assert doc["elements"] == [] and doc["openings"] == []
+    got = {(w["x1"], w["y1"], w["x2"], w["y2"]) for w in doc["wall_lines"]}
+    assert got == {(0.0, 0.0, 99.0, 0.0), (0.0, 10.0, 50.0, 10.0)}
+    assert doc["meta"]["stuff_counts"] == {"wall": 2}
+    assert doc["meta"]["instanced_stuff"] == 1
+
+def test_wall_lines_scaled_when_calibrated():
+    doc = _convert(CAL + layer("WALL", prim(1, -1, "M 0,50 L 60,50")))
+    w = doc["wall_lines"][0]
+    assert (w["x1"], w["x2"], w["y1"]) == (0.0, 6000.0, 5000.0)
+
 def test_unknown_semantic_id_counted_never_guessed():
     doc = _convert(layer("X", prim(99, 5, "M 0,0 L 5,0")))
     assert doc["elements"] == []
