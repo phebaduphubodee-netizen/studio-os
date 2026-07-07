@@ -1197,3 +1197,72 @@ corpus → no benchmark number claimed; this is PRODUCTION capability verified o
 End-to-end 2D→3D: the hardest SEMANTIC layer (indoor/outdoor/below-grade) now flows machine-PROPOSE →
 owner-SIGN → **3D scene** — the owner's #1 wound (terrace→below-grade) auto-heals in the render.
 Commits local, unpushed (push still gated on the v4-PNG asset-convention call).
+
+## Session 2026-07-07d — the thin-line boundary reader: a clean per-room GLAZED FACADE (298 → 1)
+
+Owner said "ลุย!" on option A (of the 07-07c wrap's three): the **thin-line boundary reader** for the
+glass edge / sliding facade — one of the two things the machine still could NOT surface for the owner
+(the other, door-openings, needs a new PDF bezier→arc stage, deferred with a named reason). Chosen for
+highest EV: the thin south-glass boundary is the wound that recurs on EVERY sheet and is exactly the
+zone the owner corrects most (south glass of sitting = the terrace→lounge→below-grade F3 origin).
+
+**The wound, measured (not assumed).** Ground-truth probe of the real sheet first: the sitting-room
+south facade is an ordinary **0.48 pt thin-stroke PAIR at y≈99 & y≈200** (~4.9 m), already inside
+`glazing_candidates.extract_thin`'s [0.05, 0.6) pt gate — so "lower the width floor" was NOT the wound
+(width-0 hairline hypothesis falsified same-session). The real wound is **precision + generality**: the
+GLOBAL glazing pass emits **298 candidates**, nearly all "strong", overwhelmingly furniture double-lines;
+the facade is in there but drowned, so the owner still hand-annotates. `zone_flag.facade_corroborated`
+worked here only on a LOW bar (any strong horizontal spanning ≥50% of the south edge) a furniture
+pair-run could also trip.
+
+**What shipped (production; code+tests committed, artifacts owner-gated):**
+- **`pipeline/scripts/facade_reader.py`** (NEW, pure core + fitz edge) — the missing PRODUCER
+  (`facade_corroborated` stays the CONSUMER, now fed a clean per-room list). Per room it SCOPES to the
+  room's own south (min-y) outline datum `y_s`, a tight band **[y_s−600, y_s+300]** (600 mm south <
+  the ~1150 mm garden slab-lip → the outer garden edge is excluded STRUCTURALLY by position, not luck-
+  of-ranking; 300 mm north catches the frame twin but < nearest indoor furniture ~585 mm). A run is a
+  `glazed_facade` iff: horizontal, in-band, edge OPEN (collinear thick wall covers <0.6 of the span —
+  the same UNIONED test zone_flag uses; a walled-south room ABSTAINS), a parallel PAIR (40–250 mm),
+  the inner member ≥2000 mm, and it spans ≥0.7 of the OPEN edge. Emits the INNER (glass) line, ranked
+  |c−y_s|, cap 2. Schema-compatible with `facade_corroborated` → a **drop-in corroboration feed**.
+- **`confirmed_facade` in `placement_gate.py`** — the durable owner signature (mirrors `confirmed_zone`):
+  `{room, facade:bool, c?, span?, by}`; refuses any entry whose `by` still carries OWNER-CONFIRM-PENDING
+  or whose `facade` is not a real bool (unsigned paste = machine-INERT). Applied as a per-room FEED
+  substitution reaching BOTH `facade_corroborated` and `_zone_room` with no zone_flag edit: signed
+  **False = kill-switch** (feed []), **True+line** = the owner's line, unsigned → the machine facade
+  cands, ABSENT `facade-candidates.json` → falls back to the global 298 (byte-identical old behavior).
+- **Proven on the REAL sheet, non-circular: 298 → 1.** The reader surfaces exactly the sitting south
+  glass at **c=98.9, full-span, pair 200.5** (NOT the garden slab-lip at c≈−1151), master_bedroom
+  (walled) ABSTAINS. Overlay `03_layout/v4/facade-candidates.png` — one green line on the glass edge.
+  End-to-end through `placement_gate.run()`: the F3 heal is STABLE (sitting corroborates via the clean
+  feed AND the 298-fallback; garden below_grade proposal preserved), the kill-switch durably zeroes
+  corroboration, the feed reaches both call sites.
+
+**Method — design panel → TDD → ADVERSARIAL verify → fix → re-verify (the adversarial pass paid off).**
+A 3-lens design workflow (minimal-reuse / generality-durability / adversarial-correctness) + judge
+locked the design (NEW module over extending glazing_candidates; band, classifier, feed-substitution
+signature). TDD (13 facade tests incl. a real-PDF replay); the very first full-pipeline test caught the
+pairing bug — `find_pair` takes the nearest-gap mate, so a furniture line 50 mm off the glass steals the
+facade's pair from its 100 mm frame twin → **fix: filter to long edge-spanning runs BEFORE pairing** (a
+stronger furniture defense than the original design). Then a **5-skeptic adversarial workflow (each RAN
+real code)** found **1 HIGH + 1 MEDIUM, both real**: (HIGH) `reconcile_rooms` — the facing/kind piece-
+signature backstop — was fed EVERY `confirmed[]` entry and matched by name; a room-scoped facade sign
+(nameless) mis-orphaned into a **DETACHED OWNER SIGNATURE → hard FAIL**, so the entire durable happy path
+(any real facade sign) would have FAILed the build (also a pre-existing latent bug for nameless geo-zone
+signs). Fix: skip `_entry_name(e) is None` in `reconcile_rooms` (mirrors `reconcile_zone`); named-orphan
+detection intact. (MEDIUM) `classify_facade` deduped on the (i,mate) index-pair, so a ≥3-run near-datum
+cluster emitted one physical line 2–3× and could EVICT the real facade under cap-2. Fix: dedupe on the
+emitted inner line's rounded-c position. A 2-skeptic re-verify (real code) confirmed BOTH **FIXED** (named
+orphans still FAIL; kill-switch still zeroes; real PDF still one clean c≈99). **584 tests pass** (+17: 14
+`test_facade_reader.py` incl. real-PDF replay + regressions for both bugs, 3 `test_placement_gate.py`).
+
+**DEFERRED (honest):** (a) door-openings → production (needs PDF bezier→arc extraction first — a new
+capability, not a proven-detector port). (b) non-south / L-shaped / clerestory facades (v1 = south min-y
+edge, matching facade_datum's scope + the verified F3 case; a return leg abstains, never misfires).
+(c) `reconcile_facade` geo-orphan REVIEW lane. (d) the render-layer glass-aperture a signed facade could
+open (the corroboration-feed slice ships now; the scene change deserves its own verify). (e) cap-2 could
+theoretically evict a farther facade behind ≥2 nearer full-span paired double-lines — physically
+implausible (furniture length+span clears the ~99 mm frame slot; the real sheet yields exactly one pair),
+documented, owner-sign is the backstop. Machine-blind list: 1 of 2 now closed (glass edge); door-opening
+remains. Commits local, unpushed (push still gated on the v4-PNG asset-convention call; the live
+`facade-candidates.json`/`.png` left in v4, JSON tracked like glazing-candidates.json, PNG untracked).

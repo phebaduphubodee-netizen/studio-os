@@ -1,0 +1,80 @@
+{
+ "schema": "interior-ai/facade-candidates@0.1",
+ "source_pdf": "The City สาทร - สุขสวัสดิ์_Plan funiture 02.pdf",
+ "page": 1,
+ "walls_json": "floor2-walls-mm.json",
+ "scale_mm_per_pt": 26.45,
+ "origin_pt": [
+  171.2,
+  596.5
+ ],
+ "params": {
+  "off_tol": 6.0,
+  "gap_tol": 160.0,
+  "pair_gap": [
+   40.0,
+   250.0
+  ],
+  "pair_overlap": 0.5,
+  "band_south": 600.0,
+  "band_north": 300.0,
+  "span_frac": 0.7,
+  "min_len": 2000.0,
+  "facade_wall_tol": 120.0,
+  "edge_cover_frac": 0.6
+ },
+ "stats": {
+  "thin_segments": 1997,
+  "rooms_scanned": 2,
+  "rooms_with_facade": 1,
+  "facade_candidates_total": 1,
+  "global_glazing_candidates": 298,
+  "per_room": {
+   "master_bedroom": 0,
+   "sitting_room": 1
+  }
+ },
+ "candidates": [
+  {
+   "axis": "h",
+   "c": 98.9,
+   "span": [
+    5752.3,
+    10649.8
+   ],
+   "length_mm": 4897.5,
+   "score": 5,
+   "tier": "glazed_facade",
+   "span_frac": 1.0,
+   "pair_c": 200.5,
+   "evidence": {
+    "walled_frac": 0.0,
+    "open_span": 4897.7,
+    "pieces": 1,
+    "coverage": 1.0
+   },
+   "segments": [
+    [
+     [
+      5752.3,
+      98.9
+     ],
+     [
+      10649.8,
+      98.9
+     ]
+    ]
+   ],
+   "room": "sitting_room"
+  }
+ ],
+ "confirm_facade_stub": {
+  "date": "2026-07-07",
+  "by": "OWNER-CONFIRM-PENDING (unsigned template; confirmed_facade refuses to activate until this names the owner)",
+  "reason": "confirm the room's south edge: set facade true (glazed) or false (no glass / kill-switch); if true, copy the candidate's c + span. Sign `by`. MERGE into placement-review.json confirmed[] -- do not replace it.",
+  "room": "",
+  "facade": null,
+  "c": null,
+  "span": []
+ }
+}

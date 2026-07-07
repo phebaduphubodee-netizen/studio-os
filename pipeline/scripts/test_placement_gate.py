@@ -731,6 +731,49 @@ def test_confirmed_zone_cluster_geo_join_nearest_wins_and_ignores_named():
     assert G.confirmed_zone_cluster({"x": 0, "y": 5000, "w": 924, "d": 846, "curve": True}, conf) is None
 
 
+def test_confirmed_facade_signed_true_false_and_line():
+    # signed True + a line -> the owner's facade line
+    conf = [{"room": "sitting_room", "facade": True, "c": 200.0, "span": [5750, 10650],
+             "by": "peat 2026-07-07"}]
+    assert G.confirmed_facade("sitting_room", conf) == {"facade": True, "c": 200.0, "span": [5750, 10650]}
+    # signed False -> the kill-switch (this room has NO glazed facade)
+    assert G.confirmed_facade("sitting_room", [{"room": "sitting_room", "facade": False,
+                                                "by": "peat 2026-07-07"}]) == {"facade": False, "c": None, "span": None}
+    # a wildcard room matches; last usable wins (append-a-correction)
+    conf2 = conf + [{"room": "*", "facade": False, "by": "peat 2026-07-07"}]
+    assert G.confirmed_facade("sitting_room", conf2)["facade"] is False
+
+
+def test_confirmed_facade_inert_until_signed():
+    # a pasted-but-unsigned stub (by still OWNER-CONFIRM-PENDING) is machine-INERT -> None, so it
+    # can never flip corroboration; mirrors merge_carried's unsigned-stub refusal.
+    stub = [{"room": "sitting_room", "facade": True, "c": 99, "span": [5750, 10650],
+             "by": "OWNER-CONFIRM-PENDING (unsigned template; confirmed_facade refuses ...)"}]
+    assert G.confirmed_facade("sitting_room", stub) is None
+    # a non-bool facade value is not a decision; a different room does not match
+    assert G.confirmed_facade("sitting_room", [{"room": "sitting_room", "facade": "yes", "by": "p"}]) is None
+    assert G.confirmed_facade("sitting_room", [{"room": "kitchen", "facade": True, "by": "p"}]) is None
+
+
+def test_reconcile_rooms_ignores_nameless_facade_and_geo_signs():
+    # the facing/kind piece-signature backstop must NOT orphan a room-scoped facade sign or a geo-
+    # scoped zone sign (they carry no name -> not piece signatures). Orphaning them = a spurious hard
+    # FAIL that would block the build on a LEGITIMATE owner facade sign (the whole durable happy path).
+    loose = [{"name": "chairL", "w": 680, "d": 640, "kind": "armchair"}]
+    room_loose = [("sitting_room", loose)]
+    facade_sign = {"room": "sitting_room", "facade": False, "by": "peat 2026-07-07"}
+    geo_zone_sign = {"x": 6344, "y": -830, "w": 924, "d": 846, "zone": "below_grade", "by": "peat"}
+    unsigned_stub = {"room": "", "facade": None, "by": "OWNER-CONFIRM-PENDING (...)"}
+    named_sign = {"name": "chairL", "room": "sitting_room", "w": 680, "d": 640, "rot": 90}
+    matched, orphaned = G.reconcile_rooms(room_loose,
+                                          [facade_sign, geo_zone_sign, unsigned_stub, named_sign])
+    assert orphaned == []                              # no nameless sign is orphaned -> no spurious FAIL
+    assert named_sign in matched                       # the real piece signature still reconciles
+    # and a GENUINELY detached NAMED sign still orphans (backstop intact)
+    _m, orphaned2 = G.reconcile_rooms(room_loose, [{"name": "ghost", "room": "sitting_room", "rot": 90}])
+    assert len(orphaned2) == 1
+
+
 def test_resolve_zone_override_and_byte_identical():
     conf = [{"name": "c", "w": 680, "d": 640, "zone": "below_grade"}]
     assert G.resolve_zone("c", "indoor", 680, 640, conf) == ("below_grade", "owner-signed")

@@ -563,6 +563,29 @@ def confirmed_zone_cluster(cluster, confirmed):
     return best
 
 
+def confirmed_facade(room_id, confirmed):
+    """The owner-signed FACADE truth for a ROOM, or None. An entry carries a boolean `facade` (is
+    the room's south edge a glazed facade) + optional `c`/`span` (the owner's facade line), matched
+    by `room` (or '*'). Mirrors confirmed_zone's discipline: DROP any entry whose `by` still contains
+    OWNER-CONFIRM-PENDING (an unsigned template paste is machine-INERT -- it must NOT flip
+    corroboration), and require `facade` to be a real bool (a typo/None is not a decision). LAST
+    usable entry wins (append-a-correction). Returns {'facade':bool,'c':?,'span':?} or None.
+
+    Two-layer law: this is the ONLY thing that STICKS across rebuilds. WHERE the thin line sits is
+    machine geometry (facade_reader); WHETHER it is glass is owner truth, signed here."""
+    best = None
+    for e in confirmed or []:
+        if not isinstance(e, dict) or e.get("room") not in (room_id, "*"):
+            continue
+        if "OWNER-CONFIRM-PENDING" in str(e.get("by", "")):
+            continue                                # unsigned template -> inert, never activates
+        fac = e.get("facade")
+        if not isinstance(fac, bool):
+            continue                                # only a real True/False is a decision
+        best = {"facade": fac, "c": e.get("c"), "span": e.get("span")}
+    return best
+
+
 def resolve_zone(name, hand_zone, w, d, confirmed):
     """GENERATOR helper mirroring resolve_kind: an owner-signed zone OVERRIDES the hand/proposed
     zone for a NAMED piece. Returns (zone, source): source='owner-signed' when applied (even if
@@ -683,6 +706,12 @@ def reconcile_rooms(room_loose, confirmed_all, size_tol=0.20):
     for e in confirmed_all or []:
         if not isinstance(e, dict):
             continue
+        if _entry_name(e) is None:
+            continue                    # a piece facing/kind/rot signature ALWAYS names its piece;
+            #                             a NAMELESS entry is a room-scoped facade sign or a geo-scoped
+            #                             zone sign (their own lanes: confirmed_facade / reconcile_zone
+            #                             geo-orphan REVIEW). Reconciling it here as a piece signature
+            #                             mis-orphans it -> a spurious hard FAIL on a legitimate sign.
         room = e.get("room")
         pool = union if room == "*" else by_room.get(room, [])
         m, _o = reconcile_confirmed(pool, [e], size_tol)
@@ -1052,6 +1081,21 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
             except (ValueError, OSError):
                 glazing_cands = []
 
+    # bind facade-candidates.json (the ZONE-SCOPED per-room facade reader's output) alongside the
+    # glazing set, sha1-marked identically so a post-gate re-derive refuses the build. PRESENT ->
+    # its clean per-room facade lines REPLACE the noisy global glazing set as the zone-corroboration
+    # feed (per room, below); ABSENT -> the feed falls back to glazing_cands, so this is a strictly
+    # additive change (byte-identical gate behavior for a target without a facade read).
+    facade_cands = []
+    for cand in [os.path.join(base, "facade-candidates.json")]:
+        if os.path.exists(cand):
+            input_paths.append(os.path.abspath(cand))
+            try:
+                _f = json.load(open(cand, encoding="utf-8"))
+                facade_cands = _f.get("candidates", []) if isinstance(_f, dict) else []
+            except (ValueError, OSError):
+                facade_cands = []
+
     # bind the REQUIRED pre-owner review overlay so overlay freshness is marker-enforced: the
     # owner signs off a REVIEW by SCANNING review-read-vs-sheet*; regenerating the overlay AFTER
     # this gate run (a generator rerun) hash-mismatches and refuses the build exactly like the
@@ -1110,13 +1154,28 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
         try:
             outline_abs = [[p[0] + offset[0], p[1] + offset[1]] for p in spec["room"]["outline_mm"]]
             _ys, _xlo, _xhi = _ZF.facade_datum(outline_abs)
-            _corr, _ = _ZF.facade_corroborated(_ys, _xlo, _xhi, glazing_cands, wall_segs)
+            # per-room facade CORROBORATION FEED (schema-compatible with facade_corroborated):
+            #   owner sign wins (durable) -> facade False = kill-switch; True + a line = that line;
+            #                                True w/o a line -> trust the machine facade read;
+            #   else the zone-scoped facade_reader lines (clean, per-room) if present;
+            #   else the global glazing set (pre-facade-reader behavior, additive-safe).
+            _fc = [c for c in facade_cands if c.get("room") in (room_id, "*")]
+            _sig = confirmed_facade(room_id, confirmed_room)
+            if _sig is not None and _sig["facade"] is False:
+                feed = []
+            elif _sig is not None and _sig.get("c") is not None and _sig.get("span"):
+                feed = [{"axis": "h", "score": 5, "c": _sig["c"], "span": _sig["span"]}]
+            elif facade_cands:
+                feed = _fc
+            else:
+                feed = glazing_cands
+            _corr, _ = _ZF.facade_corroborated(_ys, _xlo, _xhi, feed, wall_segs)
             south_items = []
             if _corr:
                 _band = (_xlo, _ys - ZONE_SOUTH_SCAN, _xhi, _ys + _ZF.DEFAULTS["y_below_margin"])
                 south_items = extract_clusters(pdf, page, _band, close_mm, calib=calib)["items"]
             r["zone"], r["zone_flags"], _south_kept, _open = _zone_room(
-                spec, offset, glazing_cands, wall_segs, confirmed_room, south_items, dismissed_room)
+                spec, offset, feed, wall_segs, confirmed_room, south_items, dismissed_room)
         except Exception as _e:
             # ADVISORY ONLY: a zone-pass bug (or an extraction hiccup) must NEVER abort the gate or
             # change a geometry verdict — mirrors facing_flags' try guard. Degrade to no proposals.
