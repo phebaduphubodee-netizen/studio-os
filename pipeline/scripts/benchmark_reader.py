@@ -242,7 +242,11 @@ def sanitize_openings(openings):
 
 
 def score_openings(gt_open, pred_open, tol=OPEN_TOL):
-    """Centre-distance matching + subtype accuracy (door/sliding/window/opening)."""
+    """Centre-distance matching + subtype accuracy (door/sliding/window/opening).
+    Also reports per-GT-type recall (`per_type_gt`): the corpus headline 'how many
+    SLIDING doors does the reader even locate' must be readable directly, not
+    reconstructed from overall recall that the (far more numerous) hinged doors
+    dominate -- same never-only-macro rule as F1's per-kind table."""
     def centre(o):
         return (o["x"] + o.get("w", 0) / 2.0, o["y"] + o.get("d", 0) / 2.0)
     cand = []
@@ -267,12 +271,19 @@ def score_openings(gt_open, pred_open, tol=OPEN_TOL):
         gt_t, pd_t = (g.get("type") or "?").lower(), (p.get("type") or "?").lower()
         if gt_t != pd_t:
             confusion[f"{gt_t}->{pd_t}"] = confusion.get(f"{gt_t}->{pd_t}", 0) + 1
+    per_type = {}
+    for i, g in enumerate(gt_open):
+        row = per_type.setdefault((g.get("type") or "?").lower(), {"n_gt": 0, "matched": 0})
+        row["n_gt"] += 1
+        row["matched"] += 1 if i in used_g else 0
+    for row in per_type.values():
+        row["recall"] = row["matched"] / row["n_gt"]
     n_gt, n_pred = len(gt_open), len(pred_open)
     return {"n_gt": n_gt, "n_pred": n_pred, "matched": len(pairs),
             "recall": len(pairs) / n_gt if n_gt else None,
             "precision": len(pairs) / n_pred if n_pred else None,
             "subtype_accuracy": sub_ok / len(pairs) if pairs else None,
-            "subtype_confusion": confusion}
+            "subtype_confusion": confusion, "per_type_gt": per_type}
 
 
 # ---- assembly ---------------------------------------------------------------------------
@@ -359,9 +370,18 @@ def aggregate(cards):
     og = sum(c["F4_openings"]["n_gt"] for c in cards)
     op = sum(c["F4_openings"]["n_pred"] for c in cards)
     om = sum(c["F4_openings"]["matched"] for c in cards)
+    per_type = {}
+    for c in cards:
+        for t, row in (c["F4_openings"].get("per_type_gt") or {}).items():
+            agg_row = per_type.setdefault(t, {"n_gt": 0, "matched": 0})
+            agg_row["n_gt"] += row["n_gt"]
+            agg_row["matched"] += row["matched"]
+    for row in per_type.values():
+        row["recall"] = row["matched"] / row["n_gt"] if row["n_gt"] else None
     agg["F4_openings"] = {"n_gt": og, "n_pred": op, "matched": om,
                           "recall": om / og if og else None,
-                          "precision": om / op if op else None}
+                          "precision": om / op if op else None,
+                          "per_type_gt": per_type}
     return agg
 
 

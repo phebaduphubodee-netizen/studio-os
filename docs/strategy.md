@@ -938,3 +938,36 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
   this corpus has no rot/indoor/floor GT; those wait on 3D-FRONT/Structured3D approvals + the
   BMA/DPT Thai annotation lane). Next slice: run OUR reader (pdf/svg vector lane) against
   gt-test-00 and get the first real F1/F4 numbers.
+
+## Session 2026-07-06h — the reader meets its answer key: first machine-scored read
+
+- **First backwards-benchmark RUN executed** (`svg_plan_reader.py` → `benchmark_reader.py`,
+  full report `qa/reports/floorplancad-baseline-2026-07-06.md`): 2,245 mm-calibrated sheets,
+  10.3k GT furniture + 10.2k GT openings, 865 s, zero errors. Headline: **sliding doors are
+  geometrically FINDABLE today — 87.8% recall (733/835) with ZERO new code** (windows 90.2%);
+  the misses are precision (2.9% — no wall set to suppress the pair-run flood), swing doors
+  (14.6% — arc symbols, lane never designed for them), and identity (F1 = 0.0 structural —
+  no classifier exists). The F4 wound is a semantic/typing problem, not a detection problem:
+  the two-layer crystallization now has NUMBERS under it.
+- **"Our reader" was ported, not improved, on purpose**: cluster morphology extracted to
+  `plan_cluster.cluster_segments` (res-parameterized, PDF lane byte-identical — verified on
+  the real production PDF), openings = `glazing_candidates.promote` with an empty wall set.
+  A baseline that quietly grows a classifier measures the benchmark, not the pipeline.
+- **Benchmark sentinels must live OUTSIDE the GT vocabulary.** The untyped-candidate lane
+  first shipped as `type="opening"` — a REAL F4 subtype — and silently collected subtype
+  credit on GT bare-opening symbols (5/15 smoke sheets, enough to flip an F4 verdict to
+  PASS). Scrutiny caught it on real cards; now `type="candidate"` + a mutation pin. Same
+  family as the OPEN_TOL rubber stamp: flattering failure modes hide in vocabulary overlaps.
+- **Static "code never mentions X" guards do not bind** — attribute names live in string
+  literals no tokenizer filter can distinguish from any other string. The binding proof is
+  BEHAVIORAL: read_sheet on an annotated sheet and its stripped twin must emit identical
+  preds. Keep the static scan as a review-time tripwire only.
+- **Annotation-blind + calib-from-manifest is the honest shape for corpus lanes**: the only
+  GT field the reader ever receives is the sheet scale (project metadata in production too),
+  and svg-unit sheets are skipped+counted, never guessed.
+- Ops: 5-hour API spend limit killed 8/14 scrutiny agents mid-workflow — findings were
+  recovered from the workflow journal (`journal.jsonl`) and verified inline; round 2
+  (mutation lens + per-fix adversarial verification) re-ran after reset. Detached
+  Start-Process + Monitor-on-report.md is the right shape for >10-min corpus runs (the
+  in-tool background lane hard-caps at 10 min); rows now STREAM to cards.jsonl so a
+  mid-run death keeps finished work.
