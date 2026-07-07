@@ -118,26 +118,32 @@ def test_read_sheet_blind_on_real_corpus_sheet(tmp_path):
 
 
 def test_reader_source_never_names_annotation_attrs():
-    """Static tripwire (secondary to the behavioral test above): the reader module must
+    """Static tripwire (secondary to the behavioral test above): the reader SURFACE must
     not name the answer-key attributes in executable code NOR in any string literal
-    except the module docstring (which documents the honesty contract). Catches the
-    obvious el.get(\"...\") leak at review time; split-string obfuscation is caught by
-    the behavioral test, not this one."""
+    except each module's own docstring (which documents the honesty contract). Catches
+    the obvious el.get(\"...\") leak at review time; split-string obfuscation is caught by
+    the behavioral test, not this one. Scans EVERY module the reader imports that shapes
+    the pred -- svg_plan_reader AND swing_door_candidates (scrutiny 2026-07-07: the swing
+    lane is a separate module the reader now calls; the static guard must span it too)."""
     import io
     import tokenize
-    src = open(R.__file__, encoding="utf-8").read()
-    toks = list(tokenize.generate_tokens(io.StringIO(src).readline))
-    strings = [t.string for t in toks if t.type == tokenize.STRING]
-    module_doc = strings[0] if strings else ""
-    code = " ".join(t.string for t in toks
-                    if t.type not in (tokenize.COMMENT, tokenize.STRING))
-    for needle in ("semantic", "inkscape", "INK_NS", "instance_id"):
-        assert needle not in code, f"reader code references {needle!r}"
-    for s in strings:
-        if s is module_doc:
-            continue
-        for needle in ("semantic-id", "instance-id", "inkscape"):
-            assert needle not in s, f"reader string literal references {needle!r}: {s[:80]}"
+
+    import swing_door_candidates as SW
+    for mod in (R, SW):
+        src = open(mod.__file__, encoding="utf-8").read()
+        toks = list(tokenize.generate_tokens(io.StringIO(src).readline))
+        strings = [t.string for t in toks if t.type == tokenize.STRING]
+        module_doc = strings[0] if strings else ""
+        code = " ".join(t.string for t in toks
+                        if t.type not in (tokenize.COMMENT, tokenize.STRING))
+        for needle in ("semantic", "inkscape", "INK_NS", "instance_id"):
+            assert needle not in code, f"{mod.__name__} code references {needle!r}"
+        for s in strings:
+            if s is module_doc:
+                continue
+            for needle in ("semantic-id", "instance-id", "inkscape"):
+                assert needle not in s, \
+                    f"{mod.__name__} string literal references {needle!r}: {s[:80]}"
 
 
 # ---- ink extraction ----------------------------------------------------------------------
@@ -446,6 +452,50 @@ def test_aggregate_sums_per_type_gt():
     agg = B.aggregate(cards)
     assert agg["F4_openings"]["per_type_gt"]["sliding"] == {
         "n_gt": 2, "matched": 1, "recall": 0.5}
+
+
+# ---- swing-door arc lane -------------------------------------------------------------------
+def test_read_sheet_swing_door_typed(tmp_path):
+    """A quarter arc (r=9.75u) + radial leaf at scale 100 -> exactly one earned
+    type='door' opening; pair-lane rows stay 'candidate'; openings never carry rot."""
+    body = ('<path d="M 75.3,85.5 L 75.8,85.5"/>\n'
+            '<path d="M 75.8,95.25 L 75.3,95.25"/>\n'
+            '<path d="M 75.8,95.25 L 75.8,85.5"/>\n'
+            '<path d="M 75.3,95.25 L 75.3,85.5"/>\n'
+            '<path d="M 75.3,85.5 A 9.75,9.75 0.0 0,0 65.8,95.25"/>\n')
+    pred = R.read_sheet(_write(tmp_path, "door.svg", body), 100.0)
+    doors = [o for o in pred["openings"] if o["type"] == "door"]
+    assert len(doors) == 1, pred["openings"]
+    assert all("rot" not in o for o in pred["openings"])
+    assert all(o["type"] in ("candidate", "door") for o in pred["openings"])
+    d = doors[0]
+    # bbox over sweep+leaf: x ~ 6580..7580, y ~ 8550..9525 (mm)
+    assert abs((d["x"] + d["w"] / 2) - 7080) < 300
+    assert abs((d["y"] + d["d"] / 2) - 9037) < 300
+    assert pred["meta"]["swing_door_stats"]["emitted_door"] == 1
+
+
+def test_read_sheet_blind_with_arcs(tmp_path):
+    """Annotated-vs-stripped twin for the swing lane: the same five paths as the
+    typed-door fixture, once with answer-key attributes + a labeled layer wrapper,
+    once bare -- read_sheet must be byte-identical (the arc accumulator and the
+    detector sit downstream of read_ink, so any annotation leak surfaces here)."""
+    paths = ('M 75.3,85.5 L 75.8,85.5',
+             'M 75.8,95.25 L 75.3,95.25',
+             'M 75.8,95.25 L 75.8,85.5',
+             'M 75.3,95.25 L 75.3,85.5',
+             'M 75.3,85.5 A 9.75,9.75 0.0 0,0 65.8,95.25')
+    ann = ('<g inkscape:label="D">\n'
+           + "\n".join(f'<path d="{d}" semantic-id="3" instance-id="5"/>'
+                       for d in paths)
+           + '\n</g>\n')
+    bare = '<g>\n' + "\n".join(f'<path d="{d}"/>' for d in paths) + '\n</g>\n'
+    a = R.read_sheet(_write(tmp_path, "arc_a.svg", ann), 100.0)
+    b = R.read_sheet(_write(tmp_path, "arc_b.svg", bare), 100.0)
+    a["meta"].pop("file")
+    b["meta"].pop("file")
+    assert a == b, "swing lane output changed when annotation attributes were stripped"
+    assert any(o["type"] == "door" for o in a["openings"])
 
 
 if __name__ == "__main__":

@@ -56,9 +56,10 @@ from matplotlib.collections import LineCollection
 import benchmark_reader as B
 from floorplancad_adapter import walk_path, shape_points, SVG_NS
 from glazing_candidates import axis_run, promote, run_endpoints
+from swing_door_candidates import detect as detect_swing
 from plan_cluster import cluster_segments
 
-READER_VERSION = "svg_plan_reader v1"
+READER_VERSION = "svg_plan_reader v2"
 CLOSE_MM = 40.0          # bridge a symbol's internal stroke gaps; keep neighbours apart
 BASE_RES_MM = 6.0        # the PDF lane's raster resolution (plan_cluster.RES)
 MAX_RASTER_PX = 3000     # cap the longest raster axis; res coarsens on huge sheets and
@@ -69,7 +70,7 @@ DRAW_TAGS = {"path", "circle", "ellipse", "rect", "line", "polyline", "polygon"}
 
 
 # ---- annotation-blind ink extraction ----------------------------------------------------
-def _path_ink(d):
+def _path_ink(d, arcs=None):
     """Path -> (segments, curve_segments) as drawn polylines. Chains pen->point through
     walk_path output; 'ctrl' points are INCLUDED in the chain (arc sweep samples lie on
     the curve; Bezier control polygons over-ink slightly inside their hull -- the same
@@ -77,7 +78,7 @@ def _path_ink(d):
     point are also returned as curve segments (feeds the cosmetic organic/curve flag)."""
     segs, csegs = [], []
     pen, pen_ctrl = None, False
-    for (pt, flag) in walk_path(d):
+    for (pt, flag) in walk_path(d, arcs):
         if flag == "move":
             pen, pen_ctrl = pt, False
             continue
@@ -97,6 +98,7 @@ def read_ink(svg_path):
     Returns {"segs", "curve_segs", counts...}; every skip is counted."""
     root = ET.parse(svg_path).getroot()
     segs, csegs = [], []
+    arcs = []
     counts = {"n_prims": 0, "transforms_skipped": 0, "text_skipped": 0}
     for el in root.iter():
         tag = el.tag.replace(SVG_NS, "")
@@ -110,7 +112,7 @@ def read_ink(svg_path):
             counts["transforms_skipped"] += 1   # same rule as the adapter: skip, count
             continue
         if tag == "path":
-            s, c = _path_ink(el.get("d"))
+            s, c = _path_ink(el.get("d"), arcs)
             segs += s
             csegs += c
         elif tag in ("circle", "ellipse"):
@@ -136,7 +138,7 @@ def read_ink(svg_path):
                 chain = pts + ([pts[0]] if tag == "polygon" else [])
                 segs += [[a, b] for a, b in zip(chain, chain[1:])]
     segs = [s for s in segs if s[0] != s[1]]
-    return {"segs": segs, "curve_segs": csegs, **counts}
+    return {"segs": segs, "curve_segs": csegs, "arcs": arcs, **counts}
 
 
 # ---- one sheet -> pred document ----------------------------------------------------------
@@ -147,6 +149,11 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
     ink = read_ink(svg_path)
     segs = [[(a[0] * s, a[1] * s), (b[0] * s, b[1] * s)] for a, b in ink["segs"]]
     csegs = [[(a[0] * s, a[1] * s), (b[0] * s, b[1] * s)] for a, b in ink["curve_segs"]]
+    arcs = [{"cx": a["cx"] * s, "cy": a["cy"] * s, "rx": a["rx"] * s, "ry": a["ry"] * s,
+             "phi_deg": a["phi_deg"], "sweep_deg": a["sweep_deg"],
+             "x1": a["x1"] * s, "y1": a["y1"] * s, "x2": a["x2"] * s, "y2": a["y2"] * s,
+             "pts": [(px * s, py * s) for px, py in a["pts"]]}
+            for a in ink["arcs"]]
 
     elements, res_eff, zone = [], None, None
     if segs:
@@ -187,6 +194,11 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
                          "x": round(min(ax, bx), 1), "y": round(min(ay, by), 1),
                          "w": round(abs(bx - ax), 1), "d": round(abs(by - ay), 1),
                          "tier": c["tier"], "score": c["score"]})
+    swing, sw_stats = detect_swing(arcs, segs)
+    for k, c in enumerate(swing):
+        openings.append({"id": f"a{k:03d}", "type": c["type"],
+                         "x": c["x"], "y": c["y"], "w": c["w"], "d": c["d"],
+                         "tier": c["tier"]})
 
     pred = {
         "meta": {
@@ -201,6 +213,7 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
             "text_skipped": ink["text_skipped"],
             "clusters_dropped": n_dropped,
             "opening_candidate_stats": stats,
+            "swing_door_stats": sw_stats,
         },
         "elements": elements,
         "openings": openings,
@@ -367,7 +380,8 @@ def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0,
          f"# FloorPlanCAD baseline -- {walls.upper()}-WALL lane "
          f"(wall_source={walls}; NOT the blind headline)"), "",
         f"- reader: {READER_VERSION} (annotation-blind ink -> plan_cluster morphology; "
-        f"openings = glazing_candidates pair-runs, untyped)",
+        f"openings = glazing_candidates pair-runs (untyped) + "
+        f"swing-door arc lane (typed 'door' on arc+leaf / mirrored-double evidence))",
         f"- sheets: {len(cards)} scored / {n_total} gt files "
         f"(skipped: {json.dumps(skipped)}); wall-clock {secs:.0f}s"
         + (f"; OVERLAY RENDER FAILED on {overlay_failed} scored sheet(s)"
@@ -395,10 +409,11 @@ def render_baseline_report(cards, skipped, n_total, secs, overlay_failed=0,
         "## honesty notes",
         "- F2 facing / F3 indoor / F5 floor: UNWIRED -- this corpus carries no such GT.",
         "- svg-unit sheets are skipped, never scored with guessed scale.",
-        "- pred openings carry type='candidate' (outside the GT vocabulary): subtype "
-        "accuracy is structurally 0, which pins every per-sheet F4 VERDICT to REVIEW "
-        "(no free PASS is reachable); the geometric signal lives in recall/precision/"
-        "per-type recall, not in the verdict column.",
+        "- pair-lane openings stay type='candidate' (outside the GT vocabulary: zero "
+        "unearned subtype credit); swing-lane openings claim type='door' ONLY on earned "
+        "arc+leaf / mirrored-double evidence, so nonzero subtype accuracy is real signal. "
+        "A per-sheet F4 PASS additionally needs recall AND precision >= 0.9 -- the "
+        "empty-wall candidate flood keeps that out of reach until the wall-aware pass.",
         "- element precision counts every non-furniture ink cluster (dim blocks, "
         "annotation symbols) as a phantom -- that is the point: the number the owner's "
         "eye used to absorb is now on paper.",
