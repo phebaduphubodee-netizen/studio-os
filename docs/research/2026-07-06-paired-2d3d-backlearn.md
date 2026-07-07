@@ -149,3 +149,30 @@ All entries in this section are UNVERIFIED-tier (tool pages + review sites, seve
 7. **Build third: the F2 facing-asymmetry table** (headboard/backrest/open-side/TV-face rules from §4) as deterministic rules feeding the rot ledger — few-shot from Cedreo/PlanSnapper pages until 3D-FRONT rotation GT enables validation at scale.
 8. **Manual-curation lane (no scraping):** human-in-browser annotation of ~30 thinkofliving รีวิวตึกเสร็จ reviews + the 5 ArchDaily Thai projects into frozen `gt.json` files (view-only compliance with both sites' ToS; internal study only, no image redistribution) — this is the Thai-dialect transfer test for everything above.
 9. **Skip list (verified negatives — do not spend time):** SUN RGB-D (no plans), HouseExpo (3D half dead), HF mirrors `Gen3DF/Structured3D` and `huanngzh/3D-Front` (derivatives, not substitutes).
+
+
+---
+
+## Acquisition addendum (same day, "go" session)
+
+Local corpus root: `C:/Users/teza_/studio-datasets/` (kept OUTSIDE the repo/OneDrive on purpose —
+~11 GB of NC-licensed third-party data does not belong in git; every subdir carries a
+SOURCE/NOTE .txt with exact URLs, resourcekeys, snapshot timestamps and license text).
+
+Acquired + integrity-verified 2026-07-06: **CubiCasa5K** (5.47 GB zip, 22,349 entries) ·
+**Swiss Dwellings v3.0.0** (932 MB, CC BY 4.0) · **FloorPlanCAD** SVG originals (all 3 tar.xz,
+~5.4 GB, xz streams complete) · **MSD** train+test (md5 EXACT match vs 4TU, CC BY 4.0) ·
+**ASA 2554 standard PDF** (verified + distilled → `knowledge/classifications/thai-cad-layers-asa2554.md`) ·
+Thai pairs: **BMA แบบบ้านยิ้ม 2** (102 plan+perspective jpgs; upstream ".rar" is actually ZIP) ·
+**DPT แบบบ้านสานฝัน** (7 FULL permit sets recovered via Wayback `Bann_Sumrejroop01-04` +
+`Bann_Araya01-03`, 64-page drawing sets — live DPT hosts are DEAD; the `house_*.pdf` names are
+1-MiB-truncated brochures, quarantined) · **DEDE บ้านดีดี** (12-design zip, inner .rar — no
+unrar on this machine yet) · **GH Bank ecohome** (6 zips).
+
+Approval-gated (not started without owner): Structured3D ToU form, 3D-FRONT email, ZInD.
+
+Build order status after this session: (1) F4 thin-line rule **BUILT + proven**
+(`pipeline/scripts/glazing_candidates.py`); (2) benchmark scoring engine **BUILT**
+(`pipeline/scripts/benchmark_reader.py`) — corpus ADAPTERS (FloorPlanCAD SVG → schema,
+BMA/DPT gt.json annotation lane) are the open half; (3) F2 facing table: already existed as
+`facing_reader.py` — extend/validate against 3D-FRONT once approved.

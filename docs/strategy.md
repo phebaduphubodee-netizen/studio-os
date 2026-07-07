@@ -859,3 +859,43 @@ the end. All local, all green (290→299 tests); PUSH DEFERRED (see below).
 - **Build order recommended to owner:** (1) F4 thin-line promotion rule, (2) benchmark harness on the
   day-1 corpora wired beside placement_gate as a regression gate, (3) F2 facing-asymmetry symbol table
   feeding the rot ledger. Nothing downloaded yet this session — research record only, decisions owner-steerable.
+
+
+## Session 2026-07-06f — "go": the backwards-learning build order executed (F4 + benchmark engine + corpus)
+
+- **F4 built and proven on the real sheet** (`glazing_candidates.py`, 27 tests): thin dark
+  strokes promoted to glazing/thin-wall CANDIDATES on STRUCTURAL evidence (parallel face pair
+  40–250 mm / perpendicular-or-collinear wall contact / length only strengthens). It re-derives
+  all 4 owner-patched SW wall faces from raw ink (green CONFIRMS-PATCH on a scan overlay painted
+  over the true sheet) — the machine now FINDS the class of wall the owner had to hand-patch,
+  and the owner's accept loop is scan → copy candidate → sign. Manifest-footprint suppression
+  strips interior furniture ink where rooms are modeled.
+- **The unsigned-stub hazard became a GATE, not prose:** scrutiny showed the ready-to-paste stub
+  was one keystroke from bulk-injecting 250 unsigned segments as extruded walls (and would have
+  overwritten the owner's existing signed record). Now the stub ships EMPTY and
+  `pdf_extract_walls.merge_carried` REFUSES to re-inject any record whose `by` carries
+  OWNER-CONFIRM-PENDING. Same shape as the orphan-signature gate: prose promises don't hold; code does.
+- **Benchmark scoring engine built** (`benchmark_reader.py`, 32 tests): owner-free per-failure-class
+  scoring of a reader vs paired GT. Honesty design carried the session: a facing-blind reader
+  CANNOT pass F2 (missing rot = counted 'unreported', never defaulted to 0 — defaulting would
+  hand it ~perfect scores since rot=0 dominates GT); malformed JSON costs the element, reported,
+  never the corpus run; n<20 verdicts are flagged provisional; aggregation sums integer counts.
+  Open half = corpus ADAPTERS (FloorPlanCAD SVG, BMA/DPT gt.json annotation lane).
+- **ASA 2554 verified from the primary PDF — and it CORRECTED the research:** glass A-GLAZ-FULL
+  0.25 = interior wall 0.25 = furniture 0.25 (only exterior walls 0.35 differ; a grade tree
+  L-PLNT-TREE is 0.5, THICKER than an interior wall). "Thin = glazing" is wrong by standard;
+  the semantic carriers are layer/color/discipline. Distilled →
+  `knowledge/classifications/thai-cad-layers-asa2554.md`. Lesson: single-source verification of
+  a web-research claim changed the rule design's justification the same day it was built.
+- **Corpus landed (~11 GB, local `C:/Users/teza_/studio-datasets/`, outside repo/OneDrive):**
+  CubiCasa5K, Swiss Dwellings v3, FloorPlanCAD SVG originals, MSD (md5 exact), BMA แบบบ้านยิ้ม 2,
+  DPT แบบบ้านสานฝัน (7 full permit sets via Wayback — live gov hosts dead; `Bann_*` files are the
+  real 64-page sets, `house_*` captures are truncated brochures), DEDE 12-design set, GH Bank 6.
+  Approval clocks NOT started (owner's call): Structured3D, 3D-FRONT, ZInD.
+- **Scrutiny earned its keep again:** 4 lenses, 33 findings (5 high). Standouts beyond the stub
+  gate: rot=null/string crashed the whole benchmark run (sanitize-at-boundary now); merge_runs
+  c-band drift could swallow two distinct faces into a phantom line (band width now capped);
+  wall-gap thin ink — the module's own headline sliding-door case — was being suppressed as
+  "already covered" because coverage used gap-BRIDGED wall runs (now gap_tol=0 for coverage).
+  Mutation probes found silent-pass holes (F4 zero-matched → PASS survived the suite) — pinned.
+- Commits: 4dd2f43 (research record) → 9df55dc (build, scrutinized). UNPUSHED like the rest.
