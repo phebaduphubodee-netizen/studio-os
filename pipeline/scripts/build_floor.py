@@ -407,6 +407,13 @@ def require_placement_gate(manifest_path, man, man_dir, repo_root, accept_review
     ledger_path = os.path.join(man_dir, "placement-review.json")
     if os.path.exists(ledger_path) or "placement-review.json" in marker_inputs:
         required["placement-review.json"] = ledger_path
+    # overlay freshness: the owner's REVIEW sign-off is made by SCANNING review-read-vs-sheet*;
+    # a marker gated before the overlay changed (or an overlay deleted/added after gating) must
+    # refuse exactly like a spec edit. Same present-and-matching-or-absent-in-both rule as the
+    # ledger above. Logic lives in placement_gate (top level is stdlib-only, safe in Blender
+    # python; HERE is already on sys.path) so this bpy module carries no decision logic.
+    from placement_gate import overlay_required
+    required.update(overlay_required(man_dir, marker_inputs))
     bad = []
     for name, path in required.items():
         have = _sha1(path) if os.path.exists(path) else None

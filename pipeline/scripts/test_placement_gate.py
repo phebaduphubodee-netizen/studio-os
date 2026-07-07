@@ -686,6 +686,185 @@ def test_entry_is_inert_classification():
     assert G.entry_is_inert("not-a-dict") and G.entry_is_inert(None)
 
 
+# ---- overlay freshness + gate-side signature reconcile (marker hardening) -------------
+import json as _json
+import os as _os
+import shutil as _shutil
+import sys as _sys
+import tempfile as _tempfile
+import types as _types
+
+
+def _tmpd():
+    return _tempfile.mkdtemp(prefix="gate-hardening-")
+
+
+def test_overlay_inputs_matches_only_the_convention_prefix():
+    d = _tmpd()
+    try:
+        for n in ("review-read-vs-sheet.md", "review-read-vs-sheet_full.png",
+                  "review-read-vs-sheet_master_bedroom.png",
+                  "review-terrace-aim.png", "scene-graph.master_bedroom.json"):
+            open(_os.path.join(d, n), "w").write("x")
+        got = [_os.path.basename(p) for p in G.overlay_inputs(d)]
+        # '.' sorts before '_', so the .md leads; ad-hoc review-*.png must NOT appear
+        assert got == ["review-read-vs-sheet.md", "review-read-vs-sheet_full.png",
+                       "review-read-vs-sheet_master_bedroom.png"], got
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_overlay_inputs_empty_when_absent():
+    d = _tmpd()
+    try:
+        assert G.overlay_inputs(d) == []
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_overlay_required_union_semantics():
+    # present-and-matching or absent-in-both is the only pass; union catches BOTH directions
+    d = _tmpd()
+    try:
+        p_now = _os.path.join(d, "review-read-vs-sheet_full.png")
+        open(p_now, "w").write("png")
+        marker_inputs = {"review-read-vs-sheet.md": "deadbeef",      # recorded, since DELETED
+                         "scene-graph.sitting_room.json": "cafe"}    # non-overlay: ignored
+        req = G.overlay_required(d, marker_inputs)
+        assert set(req) == {"review-read-vs-sheet.md", "review-read-vs-sheet_full.png"}, req
+        # the deleted-but-recorded name resolves to a MISSING path in man_dir -> build hash=None
+        # -> refuse (mutant pin: returning only currently-present files silently passes deletion)
+        assert req["review-read-vs-sheet.md"] == _os.path.join(d, "review-read-vs-sheet.md")
+        assert not _os.path.exists(req["review-read-vs-sheet.md"])
+        assert _os.path.exists(req["review-read-vs-sheet_full.png"])
+        # absent-in-both stays quiet
+        assert set(G.overlay_required(d, {})) == {"review-read-vs-sheet_full.png"}
+        assert G.overlay_required(d, None)  # None marker_inputs tolerated
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+_TUB = {"name": "tub-left", "w": 680, "d": 640}
+
+
+def test_reconcile_rooms_room_scoped_sign_binds_in_its_room():
+    sign = {"room": "sitting_room", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)]), ("master_bedroom", [])], [sign])
+    assert m == [sign] and o == [], (m, o)
+
+
+def test_reconcile_rooms_cross_room_name_match_orphans():
+    # a room-scoped sign sees ONLY its room's pool: a same-name piece in ANOTHER room must NOT
+    # satisfy it (mutant pin: pooling the union for room-scoped entries)
+    sign = {"room": "master_bedroom", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)]), ("master_bedroom", [])], [sign])
+    assert m == [] and o == [sign], (m, o)
+
+
+def test_reconcile_rooms_star_sign_is_not_false_orphaned():
+    # '*' sees the UNION: a piece present in only ONE room still satisfies it
+    sign = {"room": "*", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)]), ("master_bedroom", [])], [sign])
+    assert m == [sign] and o == [], (m, o)
+
+
+def test_reconcile_rooms_unknown_room_always_orphans():
+    # a typo'd/missing room checks an EMPTY pool even when a name+size piece exists somewhere
+    # (mutant pin: falling back to the union for unknown rooms silently passes the typo)
+    sign = {"room": "siting_room", "name": "tub-left", "rot": 8, "w": 680, "d": 640}
+    m, o = G.reconcile_rooms([("sitting_room", [dict(_TUB)])], [sign])
+    assert m == [] and o == [sign], (m, o)
+    m2, o2 = G.reconcile_rooms([("sitting_room", [dict(_TUB)])],
+                               [{"name": "tub-left", "rot": 8, "w": 680, "d": 640}])  # no room key
+    assert m2 == [] and len(o2) == 1, (m2, o2)
+
+
+def test_reconcile_rooms_garbage_and_empty_safe():
+    assert G.reconcile_rooms([], []) == ([], [])
+    m, o = G.reconcile_rooms([("a", [dict(_TUB)])], ["oops", None, 3])
+    assert m == [] and o == [], (m, o)
+    assert G.reconcile_rooms([("a", [dict(_TUB)])], None) == ([], [])
+
+
+def test_write_marker_binds_overlay_hashes():
+    d = _tmpd()
+    try:
+        tgt = _os.path.join(d, "floor2_v4-manifest.json")
+        open(tgt, "w").write("{}")
+        ov = _os.path.join(d, "review-read-vs-sheet_full.png")
+        open(ov, "wb").write(b"pngbytes")
+        G._write_marker(tgt, "PASS", [], [tgt, ov])
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        assert mk["inputs"]["review-read-vs-sheet_full.png"] == G._sha1(ov)
+        assert mk["inputs"]["floor2_v4-manifest.json"] == G._sha1(tgt)
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_write_marker_signature_reconcile_honest_default():
+    # omitted -> {'checked': False} = UNREPORTED. Mutant pin: defaulting to a zero-orphan claim
+    # ({'checked': True, 'orphaned_names': []}) would let the single-scene lane silently claim a
+    # reconcile that never ran.
+    d = _tmpd()
+    try:
+        tgt = _os.path.join(d, "t.json")
+        open(tgt, "w").write("{}")
+        G._write_marker(tgt, "PASS", [], [tgt])
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        assert mk["signature_reconcile"] == {"checked": False}, mk["signature_reconcile"]
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_write_marker_signature_reconcile_recorded():
+    d = _tmpd()
+    try:
+        tgt = _os.path.join(d, "t.json")
+        open(tgt, "w").write("{}")
+        sig = {"checked": True, "matched": 2, "orphaned_names": ["x"]}
+        G._write_marker(tgt, "FAIL", [], [tgt], None, sig)
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        assert mk["signature_reconcile"] == sig
+        assert mk["verdict"] == "FAIL"
+    finally:
+        _shutil.rmtree(d, ignore_errors=True)
+
+
+def test_run_malformed_ledger_reports_unchecked_never_zero_orphans():
+    # HONESTY PIN: a manifest gated with an UNREADABLE placement-review.json must record
+    # signature_reconcile = {'checked': False, note}, never the defaulted zero-orphan claim
+    # that reconciling the except-branch confirmed_all=[] would produce. plan_cluster is
+    # stubbed in sys.modules BEFORE run() (its import is lazy, placement_gate.py:613), so no
+    # PDF/fitz/scipy is touched.
+    d = _tmpd()
+    old_pc = _sys.modules.get("plan_cluster")
+    try:
+        spec = {"room": {"type": "r1", "outline_mm": [[0, 0], [3000, 0], [3000, 3000], [0, 3000]]},
+                "items": []}
+        sp = _os.path.join(d, "scene-graph.r1.json")
+        _json.dump(spec, open(sp, "w", encoding="utf-8"))
+        tgt = _os.path.join(d, "man.json")
+        _json.dump({"furnish": [{"id": "r1", "spec": sp}]}, open(tgt, "w", encoding="utf-8"))
+        open(_os.path.join(d, "placement-review.json"), "w").write("{not json")   # MALFORMED
+        fake = _types.ModuleType("plan_cluster")
+        fake.extract_clusters = lambda *a, **k: {"items": [], "fsegs": [], "dropped": [],
+                                                 "ink": None, "zone": (0, 0, 1, 1),
+                                                 "res": 1.0, "W": 1, "H": 1}
+        fake.SCALE, fake.OX, fake.OY = 26.45, 171.2, 596.5
+        _sys.modules["plan_cluster"] = fake
+        G.run("dummy.pdf", tgt)
+        mk = _json.load(open(_os.path.join(d, "placement-gate.json"), encoding="utf-8"))
+        sig = mk["signature_reconcile"]
+        assert sig["checked"] is False and "malformed" in sig.get("note", ""), sig
+        assert "orphaned_names" not in sig, sig    # never a defaulted zero-orphan claim
+    finally:
+        if old_pc is None:
+            _sys.modules.pop("plan_cluster", None)
+        else:
+            _sys.modules["plan_cluster"] = old_pc
+        _shutil.rmtree(d, ignore_errors=True)
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

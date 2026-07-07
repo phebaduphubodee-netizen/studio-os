@@ -34,6 +34,7 @@ made EXPLICIT and signed, instead of silently guessed or eyeballed.
 Pure logic (footprint / iou / classify / gate) is import-testable without a PDF; only run()
 touches fitz. Calibration triple mirrors plan_cluster / gen_floor2_specs (one source sheet).
 """
+import glob
 import hashlib
 import json
 import math
@@ -489,6 +490,32 @@ def reconcile_confirmed(pieces, confirmed, size_tol=0.20):
     return matched, orphaned
 
 
+def reconcile_rooms(room_loose, confirmed_all, size_tol=0.20):
+    """GATE-side signature reconcile — the run()-lane backstop. The generator already hard-FAILs
+    a detached signature at BUILD time (gen_floor2_v4_specs.assert_signatures_applied), but a
+    HAND-EDITED scene-graph the marker trusts never passes through the generator, so the gate
+    must re-derive 'does every owner sign still bind a piece' itself. room_loose = [(room_id,
+    loose_items)] — LOOSE pieces ONLY (built-ins/fixtures never consult the ledger; a sign that
+    merely name-matches one must ORPHAN, not read as live). Pool scoping mirrors the generator's
+    four-pool structure exactly (gen_floor2_v4_specs.py main): a room-scoped sign sees ONLY its
+    room's pool; a '*' sign sees the UNION (so it is not false-orphaned in the room it doesn't
+    live in); an unknown/missing room sees an EMPTY pool (a typo'd room must orphan loudly,
+    never be silently skipped by both filters). Returns (matched, orphaned) confirmed entries."""
+    union = [it for _rid, loose in room_loose for it in loose]
+    by_room = {}
+    for rid, loose in room_loose:
+        by_room.setdefault(rid, []).extend(loose)
+    matched, orphaned = [], []
+    for e in confirmed_all or []:
+        if not isinstance(e, dict):
+            continue
+        room = e.get("room")
+        pool = union if room == "*" else by_room.get(room, [])
+        m, _o = reconcile_confirmed(pool, [e], size_tol)
+        (matched if m else orphaned).append(e)
+    return matched, orphaned
+
+
 def facing_flags(loose, fsegs, offset=(0, 0), confirmed=None):
     """ADVISORY facing cross-check for seating/beds: compare each piece's HAND-TYPED rot to the
     facing READ from its drawn headboard/backrest strip (facing_reader). Facing is otherwise
@@ -666,6 +693,34 @@ def _sha1(path):
     return h.hexdigest()
 
 
+# The REQUIRED pre-owner review overlay artifacts. raster_overlay.render_read_overlay writes
+# <out_base>_<room>.png per room + <out_base>_full.png + <out_base>.md; out_base is
+# 'review-read-vs-sheet' next to the manifest (raster_overlay.main default, raster_overlay.py
+# ~line 322, AND the v4 generator's hardcoded call, gen_floor2_v4_specs.py ~line 449).
+OVERLAY_PREFIX = "review-read-vs-sheet"
+
+
+def overlay_inputs(base_dir):
+    """Overlay files present next to the gated target: sorted absolute paths. ONLY the
+    review-read-vs-sheet* convention — other review-*.png in a layout dir are ad-hoc session
+    artifacts and must NOT churn the marker."""
+    return sorted(os.path.abspath(p)
+                  for p in glob.glob(os.path.join(base_dir, OVERLAY_PREFIX + "*"))
+                  if os.path.isfile(p))
+
+
+def overlay_required(man_dir, marker_inputs):
+    """BUILD-side required-set for overlay freshness: {basename: path} of every overlay file
+    that must hash-match the marker. UNION of (files present now) and (overlay names the marker
+    recorded), so: regenerated/edited after gating -> hash mismatch -> refuse; DELETED after
+    gating -> path missing -> hash None -> refuse; appeared after gating -> no marker hash ->
+    refuse; absent-in-both -> quiet. Same present-and-matching-or-absent-in-both rule the
+    placement-review.json ledger already gets in build_floor.require_placement_gate."""
+    now = {os.path.basename(p): p for p in overlay_inputs(man_dir)}
+    names = set(now) | {n for n in (marker_inputs or {}) if n.startswith(OVERLAY_PREFIX)}
+    return {n: now.get(n, os.path.join(man_dir, n)) for n in sorted(names)}
+
+
 def _run_calibration_check(doc, base):
     """If the manifest declares 'calibration_checks', assert the extracted walls register at the
     written grid dims (see check_wall_grid). Loads the manifest's walls_json (repo-relative or in
@@ -730,8 +785,20 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
                 input_paths.append(os.path.abspath(cand))
                 break
 
+    # bind the REQUIRED pre-owner review overlay so overlay freshness is marker-enforced: the
+    # owner signs off a REVIEW by SCANNING review-read-vs-sheet*; regenerating the overlay AFTER
+    # this gate run (a generator rerun) hash-mismatches and refuses the build exactly like the
+    # spec edit that caused it. Order of operations is deliberate: overlay is a generator
+    # artifact produced BEFORE gating; a post-gate overlay is by definition un-gated.
+    ov_paths = overlay_inputs(base)
+    input_paths.extend(ov_paths)
+    if not ov_paths:
+        print("  [!] no review-read-vs-sheet* overlay next to the target -- overlay freshness "
+              "NOT bound (fine for targets without an owner-review lane)")
+
     ledger_path = os.path.join(base, "placement-review.json")
     dismissed_all, confirmed_all = [], []
+    ledger_malformed = False
     if os.path.exists(ledger_path):
         input_paths.append(os.path.abspath(ledger_path))   # bind its hash regardless of validity
         try:
@@ -744,12 +811,15 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
             print(f"placement-review.json: {len(dismissed_all)} dismissal(s), "
                   f"{len(confirmed_all)} signed entr(y/ies) on file (facing/kind)")
         except (ValueError, OSError, AttributeError, TypeError):
+            ledger_malformed = True
             print("  [!] placement-review.json malformed -- ignoring dismissals/confirmations")
 
     results, worst = [], "PASS"
+    rooms_loose = []                     # (room_id, loose) pools for the signature backstop
     order = {"PASS": 0, "REVIEW": 1, "FAIL": 2}
     for room_id, spec, offset, _sp in rooms:
         loose, fixed = _pieces(spec)
+        rooms_loose.append((room_id, loose))
         zone = _room_zone(spec, offset)
         res = extract_clusters(pdf, page, zone, close_mm, calib=calib)
         dismissed_room = [e for e in dismissed_all if e.get("room") in (room_id, "*")]
@@ -766,18 +836,54 @@ def run(pdf, target, page=None, close_mm=None, calib=None):
         if order[r["verdict"]] > order[worst]:
             worst = r["verdict"]
 
+    # signature-reconcile BACKSTOP: the generator hard-FAILs a detached sign at build time
+    # (assert_signatures_applied), but a hand-edited scene-graph never passes through the
+    # generator — re-derive it here from the specs actually gated. MANIFEST LANE ONLY: ledger
+    # 'room' values are manifest furnish ids ('sitting_room'); a single scene-graph's room type
+    # ('bedroom_suite') does not match them, so reconciling there would false-orphan every sign.
+    if "furnish" in doc and ledger_malformed:
+        # honesty: an UNREADABLE ledger is unreported -- reconciling against the defaulted
+        # confirmed_all=[] would mint a zero-orphan claim for signatures nobody could read
+        sig_reconcile = {"checked": False,
+                         "note": "placement-review.json malformed -- signatures unreadable"}
+        print("  [!] signature reconcile SKIPPED (placement-review.json malformed -- "
+              "signatures unreadable)")
+    elif "furnish" in doc:
+        _sm, _so = reconcile_rooms(rooms_loose, confirmed_all)
+        sig_reconcile = {"checked": True, "matched": len(_sm),
+                         "orphaned_names": [e.get("name") for e in _so]}
+        print(f"signature reconcile (gate backstop): {len(_sm)} matched, {len(_so)} orphaned")
+        if _so:
+            if order["FAIL"] > order[worst]:
+                worst = "FAIL"
+            print("!" * 74)
+            print("DETACHED OWNER SIGNATURE(S): these confirmed[] entries bind NO loose piece in")
+            print("the gated scene-graphs (a rename/resize/hand-edit detached them) — the signed")
+            print("value would silently re-roll. Fix the ledger or the scene-graph, then re-gate:")
+            for e in _so:
+                print(f"  - {e.get('name')!r} (room={e.get('room')!r} w={e.get('w')} "
+                      f"d={e.get('d')} sign={e.get('rot', e.get('facing'))})")
+            print("!" * 74)
+    else:
+        # honesty: unreported, never a defaulted zero-orphan claim
+        sig_reconcile = {"checked": False,
+                         "note": "single scene-graph target: ledger rooms are manifest-scoped"}
+        if confirmed_all:
+            print("  [i] signature reconcile SKIPPED (single scene-graph target; ledger rooms "
+                  "are manifest-scoped) -- gate the manifest to get the backstop")
+
     calib_fails = _run_calibration_check(doc, base)
     if calib_fails and order["FAIL"] > order[worst]:
         worst = "FAIL"
 
     _report(results, worst, calib_fails)
-    marker = _write_marker(target, worst, results, input_paths, calib_fails)
+    marker = _write_marker(target, worst, results, input_paths, calib_fails, sig_reconcile)
     print(f"wrote gate marker: {marker}  (build refuses on FAIL, on un-signed REVIEW, or when an "
           f"input hash no longer matches)")
     return worst, results
 
 
-def _write_marker(target, worst, results, input_paths, calib_fails=None):
+def _write_marker(target, worst, results, input_paths, calib_fails=None, sig_reconcile=None):
     """Persist the verdict next to the target so the Blender build (which lacks fitz/scipy) can
     enforce the gate. The marker is bound to the exact files it gated by CONTENT HASH: build
     refuses unless every input it needs (manifest + each furnished scene-graph) is present in
@@ -798,6 +904,7 @@ def _write_marker(target, worst, results, input_paths, calib_fails=None):
         "generated_epoch": time.time(),   # informational only; correctness uses hashes
         "calibration": ("FAIL" if calib_fails else "PASS"),
         "calibration_fails": calib_fails or [],
+        "signature_reconcile": sig_reconcile if sig_reconcile is not None else {"checked": False},
         "rooms": [{"room": r["room"], "verdict": r["verdict"],
                    "floating": [x["name"] for x in (r["loose"] + r["fixed"]) if x["status"] == "floating"],
                    "unplaced": len(r["unplaced"]),
