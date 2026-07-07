@@ -1138,3 +1138,62 @@ NO benchmark number is claimed tonight — the (indoor,floor) mapping is emitted
 score it. This is production capability verified on the real house, deliberately NOT a ruler number.
 Two-layer law reaffirmed: geometry machine-solved, indoor/outdoor now machine-PROPOSED but owner-SIGNED.
 Commits local, unpushed (v4-PNG asset-convention call still owner-open; review PNGs left untracked).
+
+## Session 2026-07-07c — the zone RENDER-APPLY landed (the signature now changes the 3D scene)
+
+Owner said "ลุย" on the two options the 2026-07-07b wrap offered: (1) generator writes zone into the
+render, or (2) swing-door → production gate. **Chose (1), deferred (2) with a named reason.** The 07-07b
+entry's own top deferral was *"`resolve_zone` exists but the generator doesn't yet WRITE indoor/floor into
+the scene-graph (the render-apply follow-on)"* — i.e. F3 detection+signature shipped but were **dormant**:
+the owner could sign a below-grade tree, and nothing changed the picture. This session closes that loop, so
+the owner's terrace→below-grade correction now **auto-excludes** the piece from the floor-2 scene instead of
+being hand-deleted. **Why not (2):** production reads **PDFs** and `pdf_extract_walls` keeps only straight
+strokes (curves discarded), so swing-door (which needs arcs) would need a new PDF bezier→arc extraction
+stage first — a *new capability*, not a proven-detector port; deferring it is the honest call, now named.
+
+**The change (6 files, +224/-8; all local/unpushed):**
+- **Pure bpy-free helper** `placement_gate.scene_zone_decision(item, below_grade_z_mm=None)` (next to
+  `zone_to_flags`). Returns `{action,z_mm,reason}`, action ∈ {place,skip,relocate_z}. **Gates on
+  `item['zone_source']=='owner-signed'`, never on `item.get('zone')`** — the two-layer law: a machine
+  `zone_flag` proposal (or a hand-set zone) can NEVER remove a piece. Decision key = the FLOOR flag
+  `zone_to_flags(zone)[1]`: below_grade (floor False) → skip; indoor **and** outdoor_same_floor (floor True)
+  → place (outdoor is a real same-elevation floor-2 piece, must NOT drop). Lives in placement_gate because
+  build_room/build_floor import bpy — the DECISION must be where the top level is stdlib-only + unit-testable.
+- **Generator** `gen_floor2_v4_specs.py`: snap/angled/bed/orchid now call `resolve_zone(name,"indoor",w,d,
+  confirmed)` and stamp `zone`+`zone_source` **only when a sign applies** (mirrors `facing_source`) → an empty
+  or zone-free ledger emits NO zone key = byte-identical. New `assert_zone_signatures_applied` (via
+  `reconcile_zone`): a detached NAME-scoped zone sign hard-FAILs (would silently revert a below_grade piece to
+  floor-2 placement); a geo-scoped one is REVIEW. The 4 existing facing-orphan pools filtered to NAMED entries
+  so a future nameless geo-zone entry can't false-orphan the facing gate (no-op on today's all-named ledger).
+- **Scene consumers**: `build_room.build_suite` filters `spec['items']` at **ONE point, run FIRST** (before
+  the `_hero` restage and before every consumer — the `_ct/_focal` lookup, item loop, seats bbox/rug,
+  `_dress_scene`, eye/hero camera, lighting all read `spec['items']` independently; filtering inside the loop
+  alone would leave a mis-aimed camera + oversized rug + floating vases). `build_rect` + `build_floor.
+  build_furniture.place()` get a first-statement per-loop guard (above their round-table early-continue).
+
+**PROVEN non-circular on the real plan** (fitz/mpl/scipy present → full regen runs): regen with the live
+ledger = **byte-identical** scene-graphs to committed (`0 zone APPLIED`). Sign the canonical F3 wound piece
+(left tub chair) below_grade → `1 zone APPLIED`, item gains `zone:below_grade`/`zone_source:owner-signed`,
+**geometry x/y/w/d/rot unchanged** (re-labels, never moves), `scene_zone_decision → skip`, sitting render
+**6→5 placed** (the piece excluded); revert → byte-identical again. Demo ran entirely in scratch — zero
+tracked files dirtied. **Method** = design/seam-map workflow (3 lenses + judge → the exact seam: 8 consumers
+share `spec['items']`, so ONE top filter, not a loop guard) → TDD (8 new tests red→green) → **5-skeptic
+adversarial workflow (each RAN real code) → ALL 5 properties HOLD, 0 confirmed breaks**: two-layer law
+(exhaustive source-string sweep — only exact `'owner-signed'` acts; a real `zone_flag` proposal is
+structurally incapable of stamping owner-signed — its dicts carry `ref` not `name`), seam completeness
+(build_floor has exactly ONE `spec.get('items')` read, guarded; camera aims via `scene_bbox()` over MESH
+objects so a dropped piece can't be framed), byte-identical (6 ledger variants, 0 zone keys leak), orphan
+gate (wrong-size / renamed / built-in signs all hard-FAIL; geo sign is REVIEW; no cross-fire). The one LOW
+advisory (self-retracted): the `_hero` beauty shot's `_stage_lounge` re-stages IDEALISED lounge furniture
+zone-blind → acted on it anyway (moved the filter before the restage) + documented the residual honestly.
+608→**616 tests** (+8: 4 `test_placement_gate.py` + 4 `test_gen_floor2_v4_specs.py`), zero regressions.
+
+**DEFERRED (honest, unchanged from 07-07b + one new):** (a) the below_grade GEO-lane cluster (the garden
+tree, an unnamed blob) is signed-away correctly but the generator does NOT yet EMIT a below-grade
+ground-plane element seen through the glass — the *richest* wound-heal (garden VIEW below) is a future
+terrain/backdrop pass; `scene_zone_decision` already exposes `relocate_z` per-piece so it can opt in without a
+contract change. (b) swing-door → production (needs PDF bezier→arc extraction first, see above). (c) no F3 GT
+corpus → no benchmark number claimed; this is PRODUCTION capability verified on the real house.
+End-to-end 2D→3D: the hardest SEMANTIC layer (indoor/outdoor/below-grade) now flows machine-PROPOSE →
+owner-SIGN → **3D scene** — the owner's #1 wound (terrace→below-grade) auto-heals in the render.
+Commits local, unpushed (push still gated on the v4-PNG asset-convention call).

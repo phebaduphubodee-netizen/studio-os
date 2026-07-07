@@ -203,6 +203,54 @@ def test_v4_orphan_gate_covers_kind_only_sign():
         assert "ORPHAN" in str(ex), ex
 
 
+# ---- zone wiring: an owner-signed ZONE stamps the spec item (mirrors kind), geometry never moves ----
+def test_v4_snap_zone_sign_stamps_zone_and_source():
+    G4._REPORT.clear()
+    it = G4.snap("sitting_room", "โซฟา", "sofa", _cardcluster(), set(), (1400, 1400), "E", 800,
+                 confirmed=[{"name": "โซฟา", "zone": "below_grade"}])
+    assert it["zone"] == "below_grade" and it["zone_source"] == "owner-signed", it
+
+
+def test_v4_snap_no_zone_sign_omits_zone_keys_byte_identical():
+    # no sign AND a non-zone (facing) sign both leave the item free of zone keys -> byte-identical JSON
+    G4._REPORT.clear()
+    a = G4.snap("sitting_room", "โซฟา", "sofa", _cardcluster(), set(), (1400, 1400), "E", 800)
+    G4._REPORT.clear()
+    b = G4.snap("sitting_room", "โซฟา", "sofa", _cardcluster(), set(), (1400, 1400), "E", 800,
+                confirmed=[{"name": "โซฟา", "facing": "W"}])
+    assert "zone" not in a and "zone_source" not in a, a
+    assert "zone" not in b and "zone_source" not in b, b
+
+
+def test_v4_zone_sign_relabels_never_moves_geometry():
+    G4._REPORT.clear()
+    a = G4.angled("sitting_room", "เก้าอี้ tub ซ้าย", "armchair", 6331, 949, 680, 640, 12, 750)
+    G4._REPORT.clear()
+    b = G4.angled("sitting_room", "เก้าอี้ tub ซ้าย", "armchair", 6331, 949, 680, 640, 12, 750,
+                  confirmed=[{"name": "เก้าอี้ tub ซ้าย", "zone": "below_grade", "w": 680, "d": 640}])
+    assert b["zone"] == "below_grade" and b["zone_source"] == "owner-signed", b
+    ga = {k: v for k, v in a.items() if k not in ("zone", "zone_source")}
+    gb = {k: v for k, v in b.items() if k not in ("zone", "zone_source")}
+    assert ga == gb, (ga, gb)      # the sign changed CLASS only — nothing geometric moved (mirror of kind test)
+
+
+def test_v4_orphan_gate_covers_zone_only_sign():
+    # a zone-only sign (no rot/kind/facing) must ride the SAME orphan protection: a detached one
+    # hard-FAILs instead of silently reverting a below_grade piece to floor-2 placement.
+    G4._REPORT.clear()
+    piece = G4.angled("sitting_room", "เก้าอี้ tub ซ้าย", "armchair", 6331, 949, 680, 640, 12, 750)
+    bound = [{"name": "เก้าอี้ tub ซ้าย", "zone": "below_grade", "w": 680, "d": 640}]
+    assert len(G4.assert_zone_signatures_applied([piece], [], bound)) == 1
+    detached = [{"name": "ชื่อที่ไม่มีจริง", "zone": "below_grade"}]
+    raised = False
+    try:
+        G4.assert_zone_signatures_applied([piece], [], detached, where="sitting_room")
+    except SystemExit as ex:
+        raised = True
+        assert "ORPHAN" in str(ex), ex
+    assert raised, "a detached zone sign must hard-FAIL, not silently revert to floor placement"
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

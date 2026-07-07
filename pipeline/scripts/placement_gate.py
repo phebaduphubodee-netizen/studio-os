@@ -480,6 +480,36 @@ def zone_to_flags(zone):
     return _ZONE_TO_FLAGS.get(_norm_zone(zone), (True, True))
 
 
+def scene_zone_decision(item, below_grade_z_mm=None):
+    """PURE, bpy-free scene-layer directive for a loose spec item — the GENERATOR helper that lets an
+    owner-signed zone actually change the rendered scene (build_room.build_suite / build_floor.build_furniture
+    call this; both import bpy, so the DECISION must live here where the top level is stdlib-only).
+
+    TWO-LAYER LAW: only an OWNER SIGNATURE may remove or relocate a piece — a machine-advisory zone
+    (zone_flag proposal) NEVER does. So we act ONLY when item['zone_source']=='owner-signed'; any item
+    missing that provenance -> 'place' regardless of item.get('zone'). This mirrors how the scene layer
+    consumes the already-RESOLVED it['rot']/it['kind'] rather than re-reading the ledger — the ledger
+    stays out of Blender.
+
+    The decision key is the FLOOR flag zone_to_flags(zone)[1]: floor True (indoor OR outdoor_same_floor,
+    i.e. any same-elevation piece) -> place at the authored z; floor False (below_grade, the sole
+    (False,False) class) -> skip (owner-signed 'ground below, NOT a floor-2 object'), or relocate_z if a
+    caller opts in with below_grade_z_mm (reserved for a future terrain-aware build; unused today, because
+    the enclosed floor-2 scene has no below-grade terrain — a mesh at z<0 would float invisibly under the
+    slab). Returns {'action','z_mm','reason'} with action in the closed set {'place','skip','relocate_z'};
+    callers branch only on action. `indoor` is advisory metadata (materials/enclosure) — never a directive."""
+    if not isinstance(item, dict) or item.get("zone_source") != "owner-signed":
+        return {"action": "place", "z_mm": None, "reason": "unsigned: two-layer default (place)"}
+    _ind, floor = zone_to_flags(item.get("zone"))
+    if floor:
+        return {"action": "place", "z_mm": None, "reason": "floor-2 object (same elevation)"}
+    if below_grade_z_mm is None:
+        return {"action": "skip", "z_mm": None,
+                "reason": "below_grade: owner-signed ground-below, NOT a floor-2 object"}
+    return {"action": "relocate_z", "z_mm": int(below_grade_z_mm),
+            "reason": "below_grade -> ground level (caller opted in)"}
+
+
 def _entry_name(e):
     """A ledger entry's name normalised to a real name or None: an empty/whitespace 'name' is NOT
     a name (it must NOT route a geo-scoped zone entry into the name lane, where a stray '' would

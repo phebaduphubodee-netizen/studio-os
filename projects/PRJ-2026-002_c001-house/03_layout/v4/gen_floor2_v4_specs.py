@@ -58,8 +58,8 @@ _REPO = os.path.abspath(os.path.join(_HERE, "..", "..", "..", ".."))
 for _p in (_HERE, os.path.join(_REPO, "pipeline", "scripts")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
-from placement_gate import (resolve_rot, resolve_kind, load_confirmed,
-                            reconcile_confirmed, entry_is_inert)
+from placement_gate import (resolve_rot, resolve_kind, resolve_zone, load_confirmed,
+                            reconcile_confirmed, reconcile_zone, _entry_name, entry_is_inert)
 
 SCALE, OX, OY = 26.45, 171.2, 596.5
 CLOSE_MM = 18.0
@@ -142,23 +142,31 @@ def snap(room, name, kind, clusters, claimed, anchor, face, h, confirmed=None, *
     if cl is None:
         rot, fsrc = resolve_rot(name, FACE_ROT[face], 500, 500, confirmed)
         kind_eff, ksrc = resolve_kind(name, kind, 500, 500, confirmed)
+        zone_eff, zsrc = resolve_zone(name, "indoor", 500, 500, confirmed)
         it = to_spec(name, kind_eff, anchor[0], anchor[1], 500, 500, rot, h,
                      note="NO drawn cluster within reach — hard-FAILs the gate (honest miss)", **extra)
         if fsrc:
             it["facing_source"] = fsrc
         if ksrc:
             it["kind_source"] = ksrc
+        if zsrc:
+            it["zone"] = zone_eff
+            it["zone_source"] = zsrc
         _REPORT.append((room, name, kind_eff, None, dist, (it["x"], it["y"], it["w"], it["d"]), False))
         return it
     cx, cy = cl["x"] + cl["w"] / 2.0, cl["y"] + cl["d"] / 2.0
     rot, fsrc = resolve_rot(name, FACE_ROT[face], cl["w"], cl["d"], confirmed)
     kind_eff, ksrc = resolve_kind(name, kind, cl["w"], cl["d"], confirmed)
+    zone_eff, zsrc = resolve_zone(name, "indoor", cl["w"], cl["d"], confirmed)
     it = to_spec(name, kind_eff, cx, cy, cl["w"], cl["d"], rot, h,
                  cluster=cl["id"], snap_mm=round(dist), **extra)
     if fsrc:
         it["facing_source"] = fsrc
     if ksrc:
         it["kind_source"] = ksrc
+    if zsrc:
+        it["zone"] = zone_eff
+        it["zone_source"] = zsrc
     _REPORT.append((room, name, kind_eff, cl["id"], dist, (it["x"], it["y"], it["w"], it["d"]), mismatch))
     return it
 
@@ -174,6 +182,7 @@ def angled(room, name, kind, cx, cy, w, d, rot, h, confirmed=None, **extra):
     instead of re-rolling it. Absent a signature the drawn angle is used unchanged (byte-identical)."""
     eff_rot, fsrc = resolve_rot(name, rot, w, d, confirmed)
     kind_eff, ksrc = resolve_kind(name, kind, w, d, confirmed)
+    zone_eff, zsrc = resolve_zone(name, "indoor", w, d, confirmed)
     # swap_cardinal=False: (w,d) are the piece's oriented dims — an owner sign landing on exactly
     # 90/270 must ROTATE the box, never trip to_spec's cluster-AABB pre-swap (which would cancel it).
     it = to_spec(name, kind_eff, cx, cy, w, d, eff_rot, h, swap_cardinal=False, angled=True, **extra)
@@ -181,6 +190,9 @@ def angled(room, name, kind, cx, cy, w, d, rot, h, confirmed=None, **extra):
         it["facing_source"] = fsrc
     if ksrc:
         it["kind_source"] = ksrc
+    if zsrc:
+        it["zone"] = zone_eff
+        it["zone_source"] = zsrc
     _REPORT.append((room, name, kind_eff, "angled", 0, (it["x"], it["y"], it["w"], it["d"]), False))
     return it
 
@@ -249,6 +261,33 @@ def assert_signatures_applied(pieces, confirmed, where=""):
     return matched
 
 
+def assert_zone_signatures_applied(pieces, clusters, confirmed, where=""):
+    """Zone-lane orphan gate (mirrors assert_signatures_applied). A ZONE sign carries no rot/kind/facing,
+    so reconcile_confirmed does NOT cover it — without this a renamed/resized below_grade sign detaches,
+    resolve_zone silently falls back to 'indoor', and the piece RE-RENDERS on floor 2 with no error (the
+    exact silent re-roll the ledger exists to prevent). Two lanes via placement_gate.reconcile_zone:
+      * NAME-scoped (a placed piece) that binds nothing -> DETACHED signature -> hard-FAIL (like a detached
+        facing). `pieces` MUST be the loose pieces the generator applies zone signs to (never built-ins).
+      * GEO-scoped (an unnamed drawn blob, e.g. a below-grade tree) that matches no cluster -> REVIEW-only
+        (the owner annotated a blob this extraction no longer produces — surfaced, never silent).
+    Entries with no valid zone are ignored (they are kind/rot/facing signs). Import-testable (no PDF)."""
+    matched, name_orphaned, geo_orphaned = reconcile_zone(pieces, clusters, confirmed)
+    if name_orphaned:
+        lines = "\n".join(
+            f"    - {e.get('name')!r}  (w={e.get('w')} d={e.get('d')} zone={e.get('zone')})"
+            for e in name_orphaned)
+        raise SystemExit(
+            f"PLACEMENT-REVIEW ZONE ORPHAN{f' [{where}]' if where else ''}: {len(name_orphaned)} owner-signed "
+            f"zone entr(y/ies) bind to NO loose piece (name+size detached — a rename/resize, or a sign aimed "
+            f"at a built-in/fixture the generator does not apply zones to). The below_grade/outdoor CALL would "
+            f"silently revert to floor-2 placement. Fix the ledger name/size/room, then regenerate:\n{lines}")
+    for e in geo_orphaned:
+        print(f"  ZONE REVIEW{f' [{where}]' if where else ''}: geo-scoped zone sign (zone={e.get('zone')!r}, "
+              f"~{e.get('w')}x{e.get('d')} at ({e.get('x')},{e.get('y')})) matches no drawn cluster — the "
+              f"annotated blob this extraction no longer produces (surfaced, not silently dropped).")
+    return matched
+
+
 def main():
     import fitz
     import matplotlib
@@ -292,12 +331,16 @@ def main():
     # an owner-signed facing overrides it (the bed is placed by direct to_spec, not snap/angled).
     _bed_rot, _bed_src = resolve_rot("เตียง 7'x6.5' หัวตะวันออก", 270, 1981, 2134, confirmed_master)
     _bed_kind, _bed_ksrc = resolve_kind("เตียง 7'x6.5' หัวตะวันออก", "bed", 1981, 2134, confirmed_master)
+    _bed_zone, _bed_zsrc = resolve_zone("เตียง 7'x6.5' หัวตะวันออก", "indoor", 1981, 2134, confirmed_master)
     _bed = to_spec("เตียง 7'x6.5' หัวตะวันออก", _bed_kind, 4159, 1100, 1981, 2134, _bed_rot, 600,
                    note="head EAST vs BF14 slat; measured (merges with casework)")
     if _bed_src:
         _bed["facing_source"] = _bed_src
     if _bed_ksrc:
         _bed["kind_source"] = _bed_ksrc
+    if _bed_zsrc:
+        _bed["zone"] = _bed_zone
+        _bed["zone_source"] = _bed_zsrc
     master_items.append(_bed)
     # FOOT BENCH (organic id37) at the west foot.
     master_items.append(snap("master_bedroom", "ม้านั่งปลายเตียง (bench)", "bench", mc, m_claimed,
@@ -392,12 +435,16 @@ def main():
     _orchid_name = "โต๊ะวางกล้วยไม้ (console)"
     _orchid_rot, _orchid_src = resolve_rot(_orchid_name, FACE_ROT["S"], 1002, 402, confirmed_sitting)
     _orchid_kind, _orchid_ksrc = resolve_kind(_orchid_name, "console", 1002, 402, confirmed_sitting)
+    _orchid_zone, _orchid_zsrc = resolve_zone(_orchid_name, "indoor", 1002, 402, confirmed_sitting)
     _orchid = to_spec(_orchid_name, _orchid_kind, 6399, 2373, 1002, 402, _orchid_rot, 450,
                       note="orchid console table (drawn ~1002x402) — SEPARATE piece from BF12-2 (owner 2026-07-06)")
     if _orchid_src:
         _orchid["facing_source"] = _orchid_src
     if _orchid_ksrc:
         _orchid["kind_source"] = _orchid_ksrc
+    if _orchid_zsrc:
+        _orchid["zone"] = _orchid_zone
+        _orchid["zone_source"] = _orchid_zsrc
     sit_items.append(_orchid)
     sit_builtins.append(bf("ชั้นวางทีวี ผนังตะวันออก BF13 (410x30x50)", "BF13", "cabinet", 10500, 4100, "NS",
                            h=500, note="east wall; the sofa faces it"))
@@ -413,26 +460,48 @@ def main():
     # sign whose room this generator never produces vs nothing (a typo'd room can't be silently skipped
     # by both filters). No signature escapes the check.
     _known = {"master_bedroom", "sitting_room", "*"}
+    # Pools filtered to NAMED entries (_entry_name): a nameless geo-scoped ZONE entry (an unnamed
+    # below-grade blob) has name=None and would FALSE-orphan reconcile_confirmed (which joins by name);
+    # it belongs to the zone gate's geo lane below, not here. Today's ledger has only named entries, so
+    # this is a no-op now — correct for the future.
     assert_signatures_applied(master_items,
-                              [e for e in confirmed_all if e.get("room") == "master_bedroom"],
+                              [e for e in confirmed_all if e.get("room") == "master_bedroom" and _entry_name(e)],
                               where="master_bedroom")
     assert_signatures_applied(sit_items,
-                              [e for e in confirmed_all if e.get("room") == "sitting_room"],
+                              [e for e in confirmed_all if e.get("room") == "sitting_room" and _entry_name(e)],
                               where="sitting_room")
     assert_signatures_applied(master_items + sit_items,
-                              [e for e in confirmed_all if e.get("room") == "*"],
+                              [e for e in confirmed_all if e.get("room") == "*" and _entry_name(e)],
                               where="* (any room)")
-    assert_signatures_applied([], [e for e in confirmed_all if e.get("room") not in _known],
+    assert_signatures_applied([], [e for e in confirmed_all if e.get("room") not in _known and _entry_name(e)],
                               where="unknown room (this generator produces only master_bedroom + sitting_room)")
+    # ZONE-lane orphan gate: a below_grade/outdoor sign carries no rot/kind/facing, so the facing gate
+    # above cannot see it. Reconcile zone signs with the SAME four-pool room scoping — NAME lane vs the
+    # placed pieces, GEO lane vs the drawn clusters (mc/sc). A detached NAME-scoped zone sign hard-FAILs
+    # (it would silently revert a below_grade piece to floor-2 placement); a geo-scoped one matching no
+    # cluster is REVIEW-only. Same law that makes every other signature trustworthy, extended to zone.
+    assert_zone_signatures_applied(master_items, mc,
+                                   [e for e in confirmed_all if e.get("room") == "master_bedroom"],
+                                   where="master_bedroom")
+    assert_zone_signatures_applied(sit_items, sc,
+                                   [e for e in confirmed_all if e.get("room") == "sitting_room"],
+                                   where="sitting_room")
+    assert_zone_signatures_applied(master_items + sit_items, mc + sc,
+                                   [e for e in confirmed_all if e.get("room") == "*"],
+                                   where="* (any room)")
+    assert_zone_signatures_applied([], [],
+                                   [e for e in confirmed_all if e.get("room") not in _known],
+                                   where="unknown room (this generator produces only master_bedroom + sitting_room)")
     # Report the TRUE applied count from facing_source (what resolve_rot actually set), not the join
     # count — a sign can bind by name+size yet set no facing (a malformed/non-cardinal facing/rot
     # value); that is not an orphan (the piece exists) but it is NOT applied, and saying so is honest.
     applied_f = sum(1 for it in master_items + sit_items if it.get("facing_source") == "owner-signed")
     applied_k = sum(1 for it in master_items + sit_items if it.get("kind_source") == "owner-signed")
+    applied_z = sum(1 for it in master_items + sit_items if it.get("zone_source") == "owner-signed")
     inert = sum(1 for e in confirmed_all if entry_is_inert(e))
     print(f"placement-review.json: {len(confirmed_all)} loaded, {applied_f} facing APPLIED, "
-          f"{applied_k} kind APPLIED, 0 orphaned"
-          + (f"; NOTE {inert} carry NO usable rot/facing/kind — fix the entry value(s)" if inert else ""))
+          f"{applied_k} kind APPLIED, {applied_z} zone APPLIED, 0 orphaned"
+          + (f"; NOTE {inert} carry NO usable rot/facing/kind/zone — fix the entry value(s)" if inert else ""))
 
     # ---------------------------------------------------------------- write scene-graphs
     master = {

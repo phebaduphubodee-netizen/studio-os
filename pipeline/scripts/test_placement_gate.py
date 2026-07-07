@@ -967,6 +967,52 @@ def test_run_malformed_ledger_reports_unchecked_never_zero_orphans():
         _shutil.rmtree(d, ignore_errors=True)
 
 
+# ---- scene_zone_decision: PURE bpy-free scene-layer directive (owner-signed zone -> place/skip) ----
+# The build_room / build_floor loops import this to exclude an owner-signed below_grade piece from the
+# floor-2 scene. It reads the STAMPED zone_source, NOT the ledger (the scene layer stays ledger-free,
+# exactly as it consumes resolved it['rot']/it['kind']). TWO-LAYER LAW lives here: only 'owner-signed' acts.
+def test_scene_zone_decision_below_grade_signed_skips():
+    d = G.scene_zone_decision({"name": "x", "zone": "below_grade", "zone_source": "owner-signed"})
+    assert d["action"] == "skip", d
+    assert G.zone_to_flags("below_grade") == (False, False)     # the skip depends on this FROZEN mapping
+
+
+def test_scene_zone_decision_indoor_places_outdoor_places():
+    # indoor AND outdoor_same_floor both have floor flag True -> both PLACE. outdoor is a real same-
+    # elevation floor-2 piece (just outside the glass); only below_grade (floor False) is non-placement.
+    assert G.scene_zone_decision({"zone": "indoor", "zone_source": "owner-signed"})["action"] == "place"
+    assert G.scene_zone_decision({"zone": "outdoor_same_floor", "zone_source": "owner-signed"})["action"] == "place"
+    # a caller may OPT IN to relocate a below_grade piece to a ground z (future terrain-aware build)
+    d = G.scene_zone_decision({"zone": "below_grade", "zone_source": "owner-signed"}, below_grade_z_mm=-3000)
+    assert d["action"] == "relocate_z" and d["z_mm"] == -3000, d
+
+
+def test_scene_zone_decision_unsigned_always_places_two_layer_law():
+    # TWO-LAYER LAW: only an OWNER signature may remove a piece. An advisory zone with no zone_source
+    # (or a machine-advisory source) must NEVER skip — else a machine proposal silently deletes a piece.
+    assert G.scene_zone_decision({"name": "x"})["action"] == "place"
+    assert G.scene_zone_decision({"name": "x", "zone": "below_grade"})["action"] == "place"
+    assert G.scene_zone_decision({"name": "x", "zone": "below_grade",
+                                  "zone_source": "machine-advisory"})["action"] == "place"
+    assert G.scene_zone_decision("not-a-dict")["action"] == "place"       # a malformed item never crashes/skips
+
+
+def test_reconcile_zone_name_orphan_hardfail_geo_orphan_review():
+    pieces = [{"name": "sofa", "w": 1000, "d": 800}]
+    clusters = [{"id": 1, "x": 6000, "y": -800, "w": 600, "d": 600, "curve": True, "area_m2": 0.36}]
+    confirmed = [
+        {"name": "sofa", "zone": "below_grade", "w": 1000, "d": 800},                       # name lane -> matched
+        {"name": "ghost", "zone": "below_grade", "w": 1000, "d": 800},                      # name lane -> orphan (hard-fail)
+        {"zone": "below_grade", "x": 6000, "y": -800, "w": 600, "d": 600, "curve": True},   # geo lane  -> matched
+        {"zone": "below_grade", "x": 99999, "y": 99999, "w": 600, "d": 600, "curve": True}, # geo lane  -> review orphan
+        {"name": "sofa", "rot": 90, "w": 1000, "d": 800},                                   # no zone   -> ignored
+    ]
+    matched, name_orph, geo_orph = G.reconcile_zone(pieces, clusters, confirmed)
+    assert [e["name"] for e in name_orph] == ["ghost"], name_orph          # detached NAME sign -> hard-fail lane
+    assert len(geo_orph) == 1 and geo_orph[0]["x"] == 99999, geo_orph      # unmatched GEO blob -> REVIEW lane
+    assert len(matched) == 2, matched                                      # bound name + bound geo; rot-only ignored
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

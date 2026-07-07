@@ -24,6 +24,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import furniture   # pure-python massing (INCHES)
+import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 
 MM = 0.001
 IN = 0.0254
@@ -210,6 +211,8 @@ def build_furniture(spec, dx_mm, dy_mm, coll):
 
     def place(lst, base_default=0.0, seat_ok=False):
         for it in lst or []:
+            if placement_gate.scene_zone_decision(it)["action"] == "skip":
+                continue                               # owner-signed below_grade: ground-below, not a floor-2 object
             kind = it.get("kind", "block")
             bz = (it.get("mount_mm", 0) or 0) * MM
             mat = seat if (seat_ok and kind in ("sofa", "loveseat", "armchair", "chair", "bench")) else furn

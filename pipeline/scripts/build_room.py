@@ -39,6 +39,7 @@ if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 import furniture
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
+import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 
 # Fallback if no spec is passed on the CLI. Mirrors pipeline/specs/living_demo.json.
 DEFAULT_SPEC = {
@@ -1357,6 +1358,23 @@ def build_suite(spec, label="suite"):
     clear_scene()
     _enable_gltf()
     bpy.context.scene.unit_settings.system = "METRIC"
+    # ZONE render-apply (owner-signed only): drop any piece the owner signed below_grade — the trees are
+    # ground BELOW, not floor-2 objects. ONE filter reassigning spec['items'], run FIRST — before the _hero
+    # restage AND before every consumer (the item loop, the _ct/_focal lookup, the seats bbox/rug,
+    # _dress_scene, the eye/hero camera and lighting all read spec['items'] independently); filtering inside
+    # the loop alone would leave a mis-aimed camera, an oversized rug and floating vases. scene_zone_decision
+    # gates on zone_source=='owner-signed', so with no zone signature every item returns 'place' and this is a
+    # no-op (byte-identical render). CAVEAT: the _hero beauty shot's _stage_lounge substitutes IDEALISED
+    # lounge furniture (zone-blind by design — it already discards real positions), so a below_grade LOUNGE
+    # piece is removed here yet the hero shot may still stage a generic seat in that spot. The faithful --eye
+    # and whole-floor (build_floor) renders — the plan-faithful deliverables — honor the drop exactly.
+    _kept, _dropped = [], []
+    for it in spec.get("items", []):
+        (_dropped if placement_gate.scene_zone_decision(it)["action"] == "skip" else _kept).append(it)
+    if _dropped:
+        print(f"  zone: excluded {len(_dropped)} owner-signed below_grade piece(s) "
+              f"(ground-below, NOT floor-2 objects): {[it.get('name') for it in _dropped]}")
+        spec = {**spec, "items": _kept}
     if spec.get("_hero"):                          # restage the lounge for the beauty shot
         spec = {**spec, "items": _stage_lounge(spec)}
     r = spec["room"]
@@ -1534,6 +1552,8 @@ def build_rect(spec, label="default"):
     # avoids the eager it["kind"] KeyError.)
     items = spec.get("items", [])
     for it in items:
+        if placement_gate.scene_zone_decision(it)["action"] == "skip":
+            continue                                   # owner-signed below_grade: not a floor-2 object
         kind = it.get("kind", "block")
         nm = it.get("name") or kind
         ht = max(float(it.get("h", 18)), 0.5)
