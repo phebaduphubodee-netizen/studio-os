@@ -105,16 +105,14 @@ _ARITY = {"M": 2, "L": 2, "T": 2, "H": 1, "V": 1, "C": 6, "S": 4, "Q": 4, "A": 7
 _ARC_SAMPLES = 16      # sag error <= r*(1-cos(360/16/2 deg)) ~= 1.9% of radius, worst case
 
 
-def _arc_extent_points(x1, y1, rx, ry, phi_deg, large, sweep, x2, y2):
-    """Points along an SVG elliptical arc (W3C SVG 1.1 F.6.5 endpoint->centre
-    conversion), sampled at <=_ARC_SAMPLES steps across the ACTUAL swept angle.
-    The first shipped adapter kept only the chord endpoints -- scrutiny 2026-07-06
-    proved that under-covers arc-heavy symbols (sinks/toilets/urinals) by up to 66%
-    and collapses circles drawn as two half-arcs to zero area. Sampling bounds the
-    bbox error at ~2% of radius, deterministically. Degenerate radii -> chord ([])."""
+def arc_center_params(x1, y1, rx, ry, phi_deg, large, sweep, x2, y2):
+    """W3C SVG 1.1 F.6.5 endpoint->centre conversion (shared by the bbox sampler below
+    and the swing-door lane). Returns (cx, cy, rx, ry, phi_rad, th1_rad, dth_rad) with
+    the LAMBDA-SCALED radii (spec: radii too small are scaled up), or None when the arc
+    is degenerate (zero radius / coincident endpoints / numerically flat)."""
     rx, ry = abs(rx), abs(ry)
     if rx < 1e-12 or ry < 1e-12 or (x1 == x2 and y1 == y2):
-        return []
+        return None
     phi = math.radians(phi_deg % 360.0)
     cp, sp = math.cos(phi), math.sin(phi)
     dx, dy = (x1 - x2) / 2.0, (y1 - y2) / 2.0
@@ -127,7 +125,7 @@ def _arc_extent_points(x1, y1, rx, ry, phi_deg, large, sweep, x2, y2):
     num = rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p
     den = rx * rx * y1p * y1p + ry * ry * x1p * x1p
     if den < 1e-12:
-        return []
+        return None
     coef = math.sqrt(max(0.0, num / den))
     if bool(large) == bool(sweep):
         coef = -coef
@@ -142,6 +140,21 @@ def _arc_extent_points(x1, y1, rx, ry, phi_deg, large, sweep, x2, y2):
         dth += 2 * math.pi
     elif not sweep and dth > 0:
         dth -= 2 * math.pi
+    return (cx, cy, rx, ry, phi, th1, dth)
+
+
+def _arc_extent_points(x1, y1, rx, ry, phi_deg, large, sweep, x2, y2):
+    """Points along an SVG elliptical arc (W3C SVG 1.1 F.6.5 endpoint->centre
+    conversion), sampled at <=_ARC_SAMPLES steps across the ACTUAL swept angle.
+    The first shipped adapter kept only the chord endpoints -- scrutiny 2026-07-06
+    proved that under-covers arc-heavy symbols (sinks/toilets/urinals) by up to 66%
+    and collapses circles drawn as two half-arcs to zero area. Sampling bounds the
+    bbox error at ~2% of radius, deterministically. Degenerate radii -> chord ([])."""
+    prm = arc_center_params(x1, y1, rx, ry, phi_deg, large, sweep, x2, y2)
+    if prm is None:
+        return []
+    cx, cy, rx, ry, phi, th1, dth = prm
+    cp, sp = math.cos(phi), math.sin(phi)
     pts = []
     for k in range(1, _ARC_SAMPLES):
         t = th1 + dth * k / _ARC_SAMPLES
@@ -150,7 +163,7 @@ def _arc_extent_points(x1, y1, rx, ry, phi_deg, large, sweep, x2, y2):
     return pts
 
 
-def walk_path(d):
+def walk_path(d, arcs=None):
     """Yield (point, flag) for every point a path touches, in order; flag is 'move'
     (pen-up reposition), 'draw' (drawn-to endpoint) or 'ctrl' (extent-only point:
     Bezier control points -- the curve stays inside its hull, so bbox over-covers
@@ -159,7 +172,9 @@ def walk_path(d):
     (the classic bbox corruption when naively pairing numbers); flags must be
     whitespace/comma-separated (the compact '0110'-style flag syntax never occurs in
     this corpus -- verified 0/73k paths). Z closes the subpath with a 'draw' back to
-    its start. Malformed trailing args are dropped. [] for empty/unparseable d."""
+    its start. Malformed trailing args are dropped. [] for empty/unparseable d.
+    If arcs is a list, one record per A-command is appended: {cx, cy, rx, ry, phi_deg,
+    sweep_deg, x1, y1, x2, y2, pts} (pts = start + sweep samples + end, raw path units)."""
     out = []
     toks = list(_tokens(d))
     i, cmd = 0, None
@@ -209,9 +224,20 @@ def walk_path(d):
         elif C == "A":
             ex = args[5] + (cx if rel else 0)
             ey = args[6] + (cy if rel else 0)
-            for p in _arc_extent_points(cx, cy, args[0], args[1], args[2],
-                                        args[3], args[4], ex, ey):
+            apts = _arc_extent_points(cx, cy, args[0], args[1], args[2],
+                                      args[3], args[4], ex, ey)
+            for p in apts:
                 out.append((p, "ctrl"))    # true swept extent; segments still get chord
+            if arcs is not None:
+                prm = arc_center_params(cx, cy, args[0], args[1], args[2],
+                                        args[3], args[4], ex, ey)
+                if prm is not None:
+                    acx, acy, arx, ary, aphi, ath1, adth = prm
+                    arcs.append({"cx": acx, "cy": acy, "rx": arx, "ry": ary,
+                                 "phi_deg": math.degrees(aphi),
+                                 "sweep_deg": math.degrees(adth),
+                                 "x1": cx, "y1": cy, "x2": ex, "y2": ey,
+                                 "pts": [(cx, cy)] + apts + [(ex, ey)]})
             cx, cy = ex, ey
             out.append(((cx, cy), "draw"))
     return out
