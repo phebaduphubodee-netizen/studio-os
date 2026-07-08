@@ -39,6 +39,15 @@ METRIC DESIGN (each maps to one research failure class):
                matches + subtype confusion (door vs sliding vs window vs bare opening).
   F5 floor     binary accuracy on elements where GT carries `floor` (True = belongs to
                this storey; False = drawn-through ink such as grade-level trees).
+  F6 glazing   FLAG-recall / FLAG-precision of the reader's glazed-facade / glazing-line
+               DOUBT flags against the GT `glazing_lines` channel (curtain_wall/railing).
+               Segments match by axis + perpendicular offset + on-axis span overlap (thin
+               lines, like openings, are wrong to IoU). recall = of the truly-glazed lines,
+               how many did the reader FLAG (did I doubt at the right places); precision =
+               of the lines I flagged, how many are real glass (is my doubt trustworthy).
+               Per-GT-kind recall too, so railings aren't hidden under curtain-wall volume.
+               This is the corpus half of the doubt-calibration instrument (its live-project
+               half, self_audit.py, ranks OPEN doubt where no GT exists).
 
 Scores are 0..1 fractions. `verdict` per metric: PASS >= pass_bar (default .9 -- an
 aspiration bar for regression tracking, not a shipping gate), REVIEW below it, UNWIRED
@@ -52,6 +61,9 @@ from placement_gate import footprint, iou   # the gate's own bbox + IoU math: on
 
 IOU_MATCH = 0.5
 OPEN_TOL = 300.0          # mm centre distance for opening matching
+GLAZE_PERP_TOL = 250.0    # mm perpendicular offset for glazing-line matching (~wall thick)
+GLAZE_OVERLAP = 0.5       # fraction of the shorter segment that must overlap on-axis
+GLAZE_PARALLEL_SIN = 0.342  # |sin(angle)| <= this (~20deg) for two lines to count parallel
 PASS_BAR = 0.9
 
 # facing-asymmetric kinds (F2 is only defined where the symbol HAS a front; extend as
@@ -286,6 +298,103 @@ def score_openings(gt_open, pred_open, tol=OPEN_TOL):
             "subtype_confusion": confusion, "per_type_gt": per_type}
 
 
+# ---- F6 glazing-line flag calibration --------------------------------------------------
+def sanitize_glazing(lines):
+    """(clean, malformed_count). A glazing line needs numeric x1/y1/x2/y2 to be located;
+    one without is counted malformed, never guessed. `kind` is optional (GT carries
+    curtain_wall/railing; a pred rarely knows glass-subtype -- that is an owner call, so
+    subtype is scored only where BOTH sides carry it, never defaulted)."""
+    clean, bad = [], 0
+    for s in lines or []:
+        s = dict(s)
+        try:
+            s["x1"], s["y1"] = float(s["x1"]), float(s["y1"])
+            s["x2"], s["y2"] = float(s["x2"]), float(s["y2"])
+        except (KeyError, TypeError, ValueError):
+            bad += 1
+            continue
+        clean.append(s)
+    return clean, bad
+
+
+def _seg_aos(s):
+    """(axis, offset, (lo, hi)) for a near-axis-aligned segment. Dominant axis decides
+    orientation; a diagonal is bucketed by its longer projection. This alone would let two
+    PERPENDICULAR 45deg diagonals share axis+offset+span and false-match, so score_glazing
+    ADDITIONALLY gates on direction parallelism (see _seg_unit / GLAZE_PARALLEL_SIN)."""
+    x1, y1, x2, y2 = s["x1"], s["y1"], s["x2"], s["y2"]
+    if abs(x2 - x1) >= abs(y2 - y1):
+        return "h", (y1 + y2) / 2.0, (min(x1, x2), max(x1, x2))
+    return "v", (x1 + x2) / 2.0, (min(y1, y2), max(y1, y2))
+
+
+def _seg_unit(s):
+    dx, dy = s["x2"] - s["x1"], s["y2"] - s["y1"]
+    n = math.hypot(dx, dy) or 1.0
+    return dx / n, dy / n
+
+
+def _span_overlap(a, b):
+    return max(0.0, min(a[1], b[1]) - max(a[0], b[0]))
+
+
+def score_glazing(gt_lines, pred_lines, perp_tol=GLAZE_PERP_TOL, overlap_frac=GLAZE_OVERLAP):
+    """FLAG-recall / FLAG-precision of glazing-line doubt flags vs GT. Two segments match
+    iff same axis, roughly PARALLEL direction (|sin angle| <= GLAZE_PARALLEL_SIN, so a
+    perpendicular diagonal cannot alias onto a real run), |offset difference| <= perp_tol,
+    and on-axis overlap covering >= overlap_frac of the SHORTER segment. Greedy
+    best-overlap-first, one-to-one.
+
+    recall    = matched / n_gt   (of the truly-glazed lines, how many the reader FLAGGED)
+    precision = matched / n_pred (of the flagged lines, how many are real glass)
+    per_kind  = per-GT-kind recall (curtain_wall vs railing) so the rarer kind isn't hidden
+                under the commoner one's volume -- the same never-only-macro rule as F1/F4.
+
+    KNOWN LIMIT (documented, not a bug): matching uses the SHORTER segment so that a real
+    reader emitting ONE long facade run legitimately matches a GT drawn as many short
+    railing ticks. The cost is that a degenerate 'whole wall is glass' single flag over a
+    tiny GT run also matches and reads precision 1.0. Count-based precision cannot see that
+    over-coverage; the real reader (svg_plan_reader promote runs) does not emit such flags,
+    and F6 is a regression-tracking diagnostic, never a shipping gate -- so this is an
+    accepted blind spot, called out rather than closed by a max()-gate that would wrongly
+    tank recall on the far more common long-run-vs-fragmented-GT case."""
+    g = [(_seg_aos(s), s, _seg_unit(s)) for s in gt_lines]
+    p = [(_seg_aos(s), s, _seg_unit(s)) for s in pred_lines]
+    cand = []
+    for i, ((ga, go, gs), _gs, gu) in enumerate(g):
+        glen = gs[1] - gs[0]
+        for j, ((pa, po, ps), _ps, pu) in enumerate(p):
+            cross = abs(gu[0] * pu[1] - gu[1] * pu[0])       # |sin| between the two lines
+            if pa != ga or cross > GLAZE_PARALLEL_SIN or abs(po - go) > perp_tol:
+                continue
+            ov = _span_overlap(gs, ps)
+            plen = ps[1] - ps[0]
+            need = overlap_frac * max(1.0, min(glen, plen))
+            if ov >= need:
+                cand.append((-ov, i, j))
+    cand.sort()
+    used_g, used_p, pairs = set(), set(), []
+    for nov, i, j in cand:
+        if i in used_g or j in used_p:
+            continue
+        used_g.add(i)
+        used_p.add(j)
+        pairs.append((i, j))
+    per_kind = {}
+    for i, (_aos, s, _u) in enumerate(g):
+        k = (s.get("kind") or "?").lower()
+        row = per_kind.setdefault(k, {"n_gt": 0, "matched": 0})
+        row["n_gt"] += 1
+        row["matched"] += 1 if i in used_g else 0
+    for row in per_kind.values():
+        row["recall"] = row["matched"] / row["n_gt"] if row["n_gt"] else None
+    n_gt, n_pred = len(gt_lines), len(pred_lines)
+    return {"n_gt": n_gt, "n_pred": n_pred, "matched": len(pairs),
+            "recall": len(pairs) / n_gt if n_gt else None,
+            "precision": len(pairs) / n_pred if n_pred else None,
+            "per_kind_gt": per_kind}
+
+
 # ---- assembly ---------------------------------------------------------------------------
 def _verdict(score, n, pass_bar=PASS_BAR):
     if not n:
@@ -310,8 +419,8 @@ def score_pair(gt_doc, pred_doc, pass_bar=PASS_BAR, open_tol=None):
     units_pred = (pred_doc.get("meta") or {}).get("units")
     if units_gt and units_pred and units_gt != units_pred:
         raise ValueError(f"unit mismatch: gt={units_gt} pred={units_pred} -- refusing to score")
+    units = units_gt or units_pred
     if open_tol is None:
-        units = units_gt or units_pred
         if units not in (None, "mm"):
             raise ValueError(f"units '{units}': pass an explicit open_tol in those units "
                              f"(the default OPEN_TOL={OPEN_TOL} is mm)")
@@ -327,13 +436,21 @@ def score_pair(gt_doc, pred_doc, pass_bar=PASS_BAR, open_tol=None):
     pred_op, pred_op_bad = sanitize_openings(pred_doc.get("openings", []))
     f4 = score_openings(gt_op, pred_op, tol=open_tol)
     f5 = _score_binary(pairs, "floor")
+    # F6 perp tol keys off UNITS (not off open_tol's value, which is tunable on mm sheets):
+    # mm/None -> the mm default; a non-mm sheet reuses the explicit tol the caller had to
+    # pass to clear the units guard above.
+    glaze_perp = GLAZE_PERP_TOL if units in (None, "mm") else open_tol
+    gt_gl, gt_gl_bad = sanitize_glazing(gt_doc.get("glazing_lines", []))
+    pred_gl, pred_gl_bad = sanitize_glazing(pred_doc.get("glazing_lines", []))
+    f6 = score_glazing(gt_gl, pred_gl, perp_tol=glaze_perp)
 
     def row(m, score, n):
         return {**m, "verdict": _verdict(score, n, pass_bar), "low_n": bool(n) and n < LOW_N}
 
     card = {
         "malformed": {"gt_elements": gt_bad, "pred_elements": pred_bad,
-                      "gt_openings": gt_op_bad, "pred_openings": pred_op_bad},
+                      "gt_openings": gt_op_bad, "pred_openings": pred_op_bad,
+                      "gt_glazing": gt_gl_bad, "pred_glazing": pred_gl_bad},
         "detection": row(det, min((x for x in (det["recall"], det["precision"]) if x is not None),
                                   default=None),
                          det["n_gt"] + det["n_pred"]),
@@ -345,6 +462,10 @@ def score_pair(gt_doc, pred_doc, pass_bar=PASS_BAR, open_tol=None):
                            (0.0 if (f4["n_gt"] or f4["n_pred"]) else None),
                            f4["n_gt"] + f4["n_pred"]),
         "F5_floor": row(f5, f5["accuracy"], f5["n"]),
+        "F6_glazing": row(f6, min((x for x in (f6["recall"], f6["precision"])
+                                   if x is not None), default=None) if f6["matched"] else
+                          (0.0 if (f6["n_gt"] or f6["n_pred"]) else None),
+                          f6["n_gt"] + f6["n_pred"]),
     }
     return card
 
@@ -382,6 +503,21 @@ def aggregate(cards):
                           "recall": om / og if og else None,
                           "precision": om / op if op else None,
                           "per_type_gt": per_type}
+    gg = sum(c["F6_glazing"]["n_gt"] for c in cards)
+    gp = sum(c["F6_glazing"]["n_pred"] for c in cards)
+    gm = sum(c["F6_glazing"]["matched"] for c in cards)
+    per_kind = {}
+    for c in cards:
+        for k, row in (c["F6_glazing"].get("per_kind_gt") or {}).items():
+            agg_row = per_kind.setdefault(k, {"n_gt": 0, "matched": 0})
+            agg_row["n_gt"] += row["n_gt"]
+            agg_row["matched"] += row["matched"]
+    for row in per_kind.values():
+        row["recall"] = row["matched"] / row["n_gt"] if row["n_gt"] else None
+    agg["F6_glazing"] = {"n_gt": gg, "n_pred": gp, "matched": gm,
+                         "recall": gm / gg if gg else None,
+                         "precision": gm / gp if gp else None,
+                         "per_kind_gt": per_kind}
     return agg
 
 

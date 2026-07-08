@@ -148,14 +148,21 @@ def read_ink(svg_path):
 
 # ---- one sheet -> pred document ----------------------------------------------------------
 def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
-               wall_segs=None, wall_source=None, kind_priors_doc=None):
+               wall_segs=None, wall_source=None, kind_priors_doc=None,
+               emit_glazing_lines=False):
     """Raw SVG -> pred.json document (benchmark_reader schema, units=mm).
 
     kind_priors_doc (default None) is OFF for the blind headline lane: when None the pred
     is byte-identical to the classifier-less baseline (no kind on any element, no
     kind_priors meta key). When a priors doc is passed (benchmark/suggestion lane only),
     each element gets a kind ONLY on unique-band membership (kind_priors.suggest_kind);
-    ambiguity stays unreported. Suggestion reads w/d only -- geometry, never annotations."""
+    ambiguity stays unreported. Suggestion reads w/d only -- geometry, never annotations.
+
+    emit_glazing_lines (default False) is OFF for the same byte-identity reason: only when
+    True does the pred gain a top-level `glazing_lines` channel (the promote() candidates as
+    {x1,y1,x2,y2,tier,score} segments) so benchmark_reader's F6 can score glazing FLAG
+    recall/precision vs the GT curtain_wall/railing channel. Default-off keeps the committed
+    blind baseline (and its pred byte-identity tests) unchanged."""
     s = float(scale_mm_per_unit)
     ink = read_ink(svg_path)
     segs = [[(a[0] * s, a[1] * s), (b[0] * s, b[1] * s)] for a, b in ink["segs"]]
@@ -250,6 +257,18 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
             "n_kinds": len(kind_priors_doc["kinds"]),
             "kinds_emitted": sum(1 for e in elements if "kind" in e),
         }
+    if emit_glazing_lines:
+        # glazing channel appears ONLY when opted in: the blind lane's pred stays
+        # byte-identical to the committed baseline. promote() candidates as raw segments
+        # (no glass-subtype kind -- curtain-wall-vs-railing is an owner call the reader
+        # cannot make, so F6 scores DETECTION recall/precision, not subtype).
+        gl = []
+        for c in cands:
+            (ax0, ay0), (bx0, by0) = c["segments"][0][0], c["segments"][0][1]
+            gl.append({"x1": round(ax0, 1), "y1": round(ay0, 1),
+                       "x2": round(bx0, 1), "y2": round(by0, 1),
+                       "tier": c["tier"], "score": c["score"]})
+        pred["glazing_lines"] = gl
     return pred
 
 

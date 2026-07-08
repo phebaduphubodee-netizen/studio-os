@@ -1,0 +1,204 @@
+{
+ "schema": "interior-ai/self-audit@0.1",
+ "project_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house",
+ "gate_path": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house\\03_layout\\v4\\placement-gate.json",
+ "summary": {
+  "doubt_score": 23,
+  "open": 5,
+  "resolved": 0,
+  "by_severity": {
+   "CRITICAL": 0,
+   "HIGH": 0,
+   "MEDIUM": 2,
+   "LOW": 3
+  }
+ },
+ "coverage": {
+  "placement_gate": {
+   "status": "READ",
+   "path": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house\\03_layout\\v4\\placement-gate.json",
+   "verdict": "REVIEW",
+   "calibration": "PASS"
+  },
+  "facade": {
+   "status": "READ",
+   "path": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house\\03_layout\\v4\\facade-candidates.json",
+   "candidates": 1,
+   "resolved": 0
+  },
+  "glazing": {
+   "status": "READ",
+   "path": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house\\03_layout\\v4\\glazing-candidates.json"
+  },
+  "sourceability": {
+   "status": "UNWIRED",
+   "reviewed": 2,
+   "errored": 0,
+   "fail": 0,
+   "review": 0,
+   "unwired_elements": 15,
+   "per_spec": {
+    "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house\\03_layout\\v4\\scene-graph.master_bedroom.json": "UNWIRED",
+    "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house\\03_layout\\v4\\scene-graph.sitting_room.json": "UNWIRED"
+   }
+  },
+  "persona": {
+   "status": "UNWIRED",
+   "note": "no persona.json for this project -- GAP/ORPHAN coverage cannot be computed (not a pass)"
+  }
+ },
+ "records": [
+  {
+   "source": "placement_gate",
+   "kind": "long_thin",
+   "scope": "room",
+   "room": "master_bedroom",
+   "severity": "LOW",
+   "count": 1,
+   "magnitude": 1,
+   "score": 1,
+   "resolved": false,
+   "detail": "1 long_thin flag(s) in master_bedroom",
+   "why": "a narrow dropped component that MIGHT be a slim real piece (a shelf/ledge), not a dimension tick",
+   "resolve_by": "confirm on the sheet; if a real piece, add it to the spec",
+   "source_file": "03_layout\\v4\\placement-gate.json"
+  },
+  {
+   "source": "placement_gate",
+   "kind": "zone_open",
+   "scope": "room",
+   "room": "sitting_room",
+   "severity": "MEDIUM",
+   "count": 1,
+   "magnitude": 1,
+   "score": 10,
+   "resolved": false,
+   "detail": "1 zone_open flag(s) in sitting_room",
+   "why": "an open below-grade / outdoor zone PROPOSAL the machine refuses to auto-decide -- is this element indoor-this-floor or below grade / outside?",
+   "resolve_by": "sign the zone on the piece (confirmed_zone) to resolve; STRONG/MEDIUM/LOW confidence lives in the gate stdout, not the marker",
+   "source_file": "03_layout\\v4\\placement-gate.json"
+  },
+  {
+   "source": "placement_gate",
+   "kind": "zone_exterior_linework",
+   "scope": "room",
+   "room": "sitting_room",
+   "severity": "LOW",
+   "count": 1,
+   "magnitude": 1,
+   "score": 1,
+   "resolved": false,
+   "detail": "1 zone_exterior_linework flag(s) in sitting_room",
+   "why": "a candidate that may be exterior linework drawn through the storey",
+   "resolve_by": "confirm indoor/outdoor and sign it",
+   "source_file": "03_layout\\v4\\placement-gate.json"
+  },
+  {
+   "source": "facade",
+   "kind": "facade_candidate",
+   "scope": "facade",
+   "room": "sitting_room",
+   "severity": "MEDIUM",
+   "count": 1,
+   "magnitude": 1,
+   "score": 10,
+   "resolved": false,
+   "detail": "glazed-facade candidate in sitting_room (score 5, glazed_facade, len 4898mm)",
+   "why": "a strong thin-line run along the room's south edge looks like a glazed facade / window wall, but glass-vs-wall is an owner call",
+   "resolve_by": "set facade true|false in confirm_facade_stub, sign `by`, and merge into placement-review.json confirmed[]",
+   "source_file": "03_layout\\v4\\facade-candidates.json"
+  },
+  {
+   "source": "glazing",
+   "kind": "glazing_unresolved",
+   "scope": "global",
+   "room": null,
+   "severity": "LOW",
+   "count": 1,
+   "magnitude": 294,
+   "score": 1,
+   "resolved": false,
+   "detail": "294 unresolved global glazing-line candidates (246 strong) -- the raw pile facade_reader distils per-room",
+   "why": "each is a thin-line run that MIGHT be glass; the pile is a review artifact (furniture double-lines can score 'strong'), not per-room truth",
+   "resolve_by": "confirm real glass runs and copy their segments into the walls JSON manual_additions with a signed `by`; ignore the rest",
+   "source_file": "03_layout\\v4\\glazing-candidates.json"
+  }
+ ],
+ "ranked": [
+  {
+   "source": "facade",
+   "kind": "facade_candidate",
+   "scope": "facade",
+   "room": "sitting_room",
+   "severity": "MEDIUM",
+   "count": 1,
+   "magnitude": 1,
+   "score": 10,
+   "resolved": false,
+   "detail": "glazed-facade candidate in sitting_room (score 5, glazed_facade, len 4898mm)",
+   "why": "a strong thin-line run along the room's south edge looks like a glazed facade / window wall, but glass-vs-wall is an owner call",
+   "resolve_by": "set facade true|false in confirm_facade_stub, sign `by`, and merge into placement-review.json confirmed[]",
+   "source_file": "03_layout\\v4\\facade-candidates.json"
+  },
+  {
+   "source": "placement_gate",
+   "kind": "zone_open",
+   "scope": "room",
+   "room": "sitting_room",
+   "severity": "MEDIUM",
+   "count": 1,
+   "magnitude": 1,
+   "score": 10,
+   "resolved": false,
+   "detail": "1 zone_open flag(s) in sitting_room",
+   "why": "an open below-grade / outdoor zone PROPOSAL the machine refuses to auto-decide -- is this element indoor-this-floor or below grade / outside?",
+   "resolve_by": "sign the zone on the piece (confirmed_zone) to resolve; STRONG/MEDIUM/LOW confidence lives in the gate stdout, not the marker",
+   "source_file": "03_layout\\v4\\placement-gate.json"
+  },
+  {
+   "source": "glazing",
+   "kind": "glazing_unresolved",
+   "scope": "global",
+   "room": null,
+   "severity": "LOW",
+   "count": 1,
+   "magnitude": 294,
+   "score": 1,
+   "resolved": false,
+   "detail": "294 unresolved global glazing-line candidates (246 strong) -- the raw pile facade_reader distils per-room",
+   "why": "each is a thin-line run that MIGHT be glass; the pile is a review artifact (furniture double-lines can score 'strong'), not per-room truth",
+   "resolve_by": "confirm real glass runs and copy their segments into the walls JSON manual_additions with a signed `by`; ignore the rest",
+   "source_file": "03_layout\\v4\\glazing-candidates.json"
+  },
+  {
+   "source": "placement_gate",
+   "kind": "long_thin",
+   "scope": "room",
+   "room": "master_bedroom",
+   "severity": "LOW",
+   "count": 1,
+   "magnitude": 1,
+   "score": 1,
+   "resolved": false,
+   "detail": "1 long_thin flag(s) in master_bedroom",
+   "why": "a narrow dropped component that MIGHT be a slim real piece (a shelf/ledge), not a dimension tick",
+   "resolve_by": "confirm on the sheet; if a real piece, add it to the spec",
+   "source_file": "03_layout\\v4\\placement-gate.json"
+  },
+  {
+   "source": "placement_gate",
+   "kind": "zone_exterior_linework",
+   "scope": "room",
+   "room": "sitting_room",
+   "severity": "LOW",
+   "count": 1,
+   "magnitude": 1,
+   "score": 1,
+   "resolved": false,
+   "detail": "1 zone_exterior_linework flag(s) in sitting_room",
+   "why": "a candidate that may be exterior linework drawn through the storey",
+   "resolve_by": "confirm indoor/outdoor and sign it",
+   "source_file": "03_layout\\v4\\placement-gate.json"
+  }
+ ]
+}

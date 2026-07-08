@@ -149,6 +149,88 @@ def test_openings_missed_detection_lowers_recall():
     assert f4["recall"] == 0.5 and f4["precision"] == 1.0
 
 
+# ---- F6 glazing flag-recall / flag-precision -------------------------------------------
+def gl(x1, y1, x2, y2, kind=None):
+    s = {"x1": x1, "y1": y1, "x2": x2, "y2": y2}
+    if kind is not None:
+        s["kind"] = kind
+    return s
+
+
+def test_glazing_flag_recall_and_precision():
+    # gt: two glazed runs; pred flags one correctly + one phantom far away
+    gt = [gl(0, 100, 4000, 100, "curtain_wall"), gl(0, 5000, 4000, 5000, "railing")]
+    pred = [gl(0, 100, 4000, 100), gl(0, 9000, 4000, 9000)]     # 1 hit, 1 phantom
+    f6 = B.score_glazing(gt, pred)
+    assert f6["matched"] == 1 and f6["recall"] == 0.5 and f6["precision"] == 0.5
+
+
+def test_glazing_per_kind_recall_separates_curtain_wall_and_railing():
+    gt = [gl(0, 100, 4000, 100, "curtain_wall"), gl(0, 5000, 4000, 5000, "railing")]
+    pred = [gl(0, 100, 4000, 100)]                              # only the curtain wall
+    f6 = B.score_glazing(gt, pred)
+    assert f6["per_kind_gt"]["curtain_wall"]["recall"] == 1.0
+    assert f6["per_kind_gt"]["railing"]["recall"] == 0.0        # railing not hidden
+
+
+def test_glazing_offset_beyond_perp_tol_does_not_match():
+    gt = [gl(0, 100, 4000, 100)]
+    pred = [gl(0, 500, 4000, 500)]                              # 400mm off > 250 tol
+    assert B.score_glazing(gt, pred)["matched"] == 0
+
+
+def test_glazing_insufficient_overlap_does_not_match():
+    gt = [gl(0, 100, 4000, 100)]                                # span 0..4000
+    pred = [gl(3800, 100, 5000, 100)]                           # overlaps only 200 of 1200
+    assert B.score_glazing(gt, pred)["matched"] == 0
+
+
+def test_glazing_blind_reader_reviews_never_unwired_passes():
+    # GT carries glass but the pred emits no glazing_lines -> recall 0 -> REVIEW, NOT a
+    # silent UNWIRED pass. Pins the same anti-flattery rule F2/F4 enforce.
+    gt = {"elements": [], "glazing_lines": [gl(0, 100, 4000, 100, "curtain_wall")]}
+    pred = {"elements": []}                                     # glazing-blind reader
+    f6 = B.score_pair(gt, pred)["F6_glazing"]
+    assert f6["recall"] == 0.0 and f6["verdict"] == "REVIEW"
+
+
+def test_glazing_unwired_when_neither_side_has_lines():
+    card = B.score_pair({"elements": []}, {"elements": []})
+    assert card["F6_glazing"]["verdict"] == "UNWIRED"
+
+
+def test_glazing_perpendicular_diagonals_do_not_match():
+    # two 45deg diagonals crossing only at their midpoint bucket to the same axis+offset+
+    # span; without the direction gate they'd false-match at recall/precision 1.0
+    gt = [gl(0, 0, 1000, 1000, "curtain_wall")]
+    pred = [gl(0, 1000, 1000, 0)]                               # perpendicular
+    assert B.score_glazing(gt, pred)["matched"] == 0
+
+
+def test_glazing_parallel_diagonals_still_match():
+    gt = [gl(0, 0, 1000, 1000, "curtain_wall")]
+    pred = [gl(0, 0, 1000, 1000)]                               # same direction
+    assert B.score_glazing(gt, pred)["matched"] == 1
+
+
+def test_glazing_perp_tol_independent_of_open_tol_on_mm_sheet():
+    # tightening the OPENING tolerance on an mm sheet must not move the GLAZING perp tol
+    gt = {"meta": {"units": "mm"}, "elements": [],
+          "glazing_lines": [gl(0, 100, 4000, 100, "curtain_wall")]}
+    pred = {"meta": {"units": "mm"}, "elements": [],
+            "glazing_lines": [gl(0, 300, 4000, 300)]}          # 200mm off, within 250 default
+    assert B.score_pair(gt, pred)["F6_glazing"]["matched"] == 1
+    assert B.score_pair(gt, pred, open_tol=100)["F6_glazing"]["matched"] == 1  # unchanged
+
+
+def test_glazing_malformed_line_reported_not_fatal():
+    gt = {"elements": [], "glazing_lines": [gl(0, 100, 4000, 100), {"x1": 0, "y1": 0}]}
+    pred = {"elements": [], "glazing_lines": [gl(0, 100, 4000, 100)]}
+    card = B.score_pair(gt, pred)                               # must not raise
+    assert card["malformed"]["gt_glazing"] == 1
+    assert card["F6_glazing"]["matched"] == 1
+
+
 # ---- sanitation + robustness (one malformed element must not kill a corpus run) ---------
 def test_rot_null_string_and_cardinal_survive_scoring():
     gt = {"elements": [el("g1", "bed", 0, 0, 2000, 1800, rot=0)]}
@@ -267,7 +349,8 @@ def test_kind_synonyms_and_facing_kinds_pinned():
 # ---- scorecard assembly -----------------------------------------------------------------
 def test_score_pair_unwired_when_no_eligible_data():
     card = B.score_pair({"elements": []}, {"elements": []})
-    for k in ("detection", "F1_identity", "F2_facing", "F3_indoor", "F4_openings", "F5_floor"):
+    for k in ("detection", "F1_identity", "F2_facing", "F3_indoor", "F4_openings",
+              "F5_floor", "F6_glazing"):
         assert card[k]["verdict"] == "UNWIRED", k          # empty is UNWIRED, never PASS
 
 def test_score_pair_end_to_end_verdicts():
@@ -296,6 +379,18 @@ def test_aggregate_recomputes_from_counts():
     assert agg["pairs"] == 2
     assert agg["F1_identity"] == {"n": 2, "accuracy": 0.5}
     assert agg["F2_facing"]["cardinal_correct"] == 0.5
+
+def test_aggregate_recomputes_f6_from_counts():
+    gt = {"elements": [], "glazing_lines": [gl(0, 100, 4000, 100, "curtain_wall"),
+                                            gl(0, 5000, 4000, 5000, "railing")]}
+    hit1 = {"elements": [], "glazing_lines": [gl(0, 100, 4000, 100)]}     # 1/2 recall
+    hit2 = {"elements": [], "glazing_lines": [gl(0, 100, 4000, 100),
+                                              gl(0, 5000, 4000, 5000)]}   # 2/2 recall
+    agg = B.aggregate([B.score_pair(gt, hit1), B.score_pair(gt, hit2)])
+    assert agg["F6_glazing"]["n_gt"] == 4 and agg["F6_glazing"]["matched"] == 3
+    assert agg["F6_glazing"]["recall"] == 0.75
+    assert agg["F6_glazing"]["per_kind_gt"]["railing"]["recall"] == 0.5
+
 
 def test_render_report_mentions_unwired_honesty():
     card = B.score_pair({"elements": []}, {"elements": []})
