@@ -86,3 +86,91 @@ def test_furniture_within_close_mm_merges_and_drops_from_f3():
                  {"id": "o1", "x": 3000.0, "y": 0.0, "w": 500.0, "d": 500.0, "indoor": False}])
     card_a = B.score_pair(apart, _read(S.synth_svg(apart)))
     assert card_a["F3_indoor"]["n"] == 2
+
+
+# ==== v1.1 PLAN-SYMBOL lane (the F3 slice expander) =======================================
+# ---- tracer: the fused furniture that DROPS from per-object F3 is RECOVERED as one symbol --
+def test_realistic_recovers_fused_furniture_the_per_object_lane_loses():
+    """The exact failure the per-object lane pins above (two pieces within the reader's fuse
+    distance both leave F3) is RECOVERED by --realistic: they group into ONE plan symbol whose
+    union footprint the reader's fused cluster matches -> F3 scores it. This is the whole point
+    of the slice expander, proven end-to-end (group -> draw members -> reader fuses -> score)."""
+    # 20mm gap, BOTH indoor (one room) -> per-object F3 loses both; realistic recovers one symbol
+    gt = _gt([{"id": "o0", "x": 0.0, "y": 0.0, "w": 500.0, "d": 500.0, "indoor": True},
+              {"id": "o1", "x": 520.0, "y": 0.0, "w": 500.0, "d": 500.0, "indoor": True}])
+    per_card, _p, _s = S.score_gt(gt, realistic=False)
+    assert per_card["F3_indoor"]["n"] < 2            # per-object: fused pieces leave F3
+    real_card, _pr, stat = S.score_gt(gt, realistic=True)
+    assert stat["n_symbols"] == 1 and stat["multi"] == 1
+    assert real_card["F3_indoor"]["n"] == 1          # realistic: the union symbol IS scored
+    assert real_card["F3_indoor"]["hits"] == 1       # both indoor -> reader silent=indoor correct
+
+
+# ---- anti-leakage: the realistic draw is still blind to indoor ---------------------------
+def test_realistic_draw_is_annotation_blind_to_indoor():
+    els = [{"id": "o0", "x": 0.0, "y": 0.0, "w": 600.0, "d": 400.0},
+           {"id": "o1", "x": 620.0, "y": 0.0, "w": 600.0, "d": 400.0}]
+    in_t = S.synth_svg(S._members_doc(_gt([{**e, "indoor": True} for e in els])))
+    in_f = S.synth_svg(S._members_doc(_gt([{**e, "indoor": False} for e in els])))
+    assert in_t == in_f                              # consensus indoor never reaches the drawing
+    assert "indoor" not in in_t and "<text" not in in_t
+
+
+# ---- grouping: decor filtered, co-located furniture fused, union + consensus indoor -------
+def test_group_symbols_filters_decor_and_fuses_colocated():
+    doc = _gt([{"id": "cup", "x": 100.0, "y": 100.0, "w": 90.0, "d": 90.0, "indoor": True},  # <150 decor
+               {"id": "bed", "x": 0.0, "y": 0.0, "w": 1800.0, "d": 1500.0, "indoor": True},
+               {"id": "ns", "x": 1810.0, "y": 0.0, "w": 400.0, "d": 400.0, "indoor": True}])  # 10mm gap
+    sym_doc, stat = S.group_symbols(doc)
+    assert stat["n_decor_filtered"] == 1             # the cup is not drawn
+    assert stat["n_symbols"] == 1 and stat["multi"] == 1
+    s = sym_doc["elements"][0]
+    assert s["n_members"] == 2                       # bed + nightstand, cup excluded
+    assert (s["x"], s["y"]) == (0.0, 0.0) and (s["w"], s["d"]) == (2210.0, 1500.0)  # union AABB
+    assert s["indoor"] is True                       # room consensus
+
+
+def test_group_symbols_mixed_indoor_gets_no_label_and_is_counted():
+    # two fused pieces disagree on indoor (a chair straddling a balcony threshold): no forced side
+    doc = _gt([{"id": "a", "x": 0.0, "y": 0.0, "w": 500.0, "d": 500.0, "indoor": True},
+               {"id": "b", "x": 520.0, "y": 0.0, "w": 500.0, "d": 500.0, "indoor": False}])
+    sym_doc, stat = S.group_symbols(doc)
+    assert stat["n_symbols"] == 1 and stat["mixed_indoor"] == 1
+    assert "indoor" not in sym_doc["elements"][0]    # counted, never guessed to a side
+
+
+def test_group_symbols_separates_beyond_fuse_gap():
+    # 3000mm apart -> two distinct symbols, each keeps its own indoor
+    doc = _gt([{"id": "a", "x": 0.0, "y": 0.0, "w": 500.0, "d": 500.0, "indoor": True},
+               {"id": "b", "x": 3000.0, "y": 0.0, "w": 500.0, "d": 500.0, "indoor": False}])
+    sym_doc, stat = S.group_symbols(doc)
+    assert stat["n_symbols"] == 2 and stat["singleton"] == 2
+    assert stat["indoor_true"] == 1 and stat["indoor_false"] == 1
+
+
+# ---- honesty: cross-room chaining loss is measured at MEMBER level, not hidden as 1 symbol ----
+def test_group_symbols_counts_member_level_oversize_loss():
+    """An L-chain of 3 furniture pieces fuses into ONE union >3600mm on both axes -> a dense
+    region the reader will drop. The honesty fix requires the MEMBER-level loss (3, not '1
+    symbol') and its indoor/outdoor split to be counted (adversarial review 2026-07-08)."""
+    doc = _gt([{"id": "a", "x": 0.0,    "y": 0.0,    "w": 2000.0, "d": 2000.0, "indoor": True},
+               {"id": "b", "x": 2050.0, "y": 0.0,    "w": 2000.0, "d": 2000.0, "indoor": True},   # 50mm gap
+               {"id": "c", "x": 0.0,    "y": 2050.0, "w": 2000.0, "d": 2000.0, "indoor": True}])   # 50mm gap
+    sym_doc, stat = S.group_symbols(doc)
+    assert stat["n_symbols"] == 1 and stat["union_oversize"] == 1        # union 4050x4050 both >3600
+    assert stat["members_in_oversize"] == 3                             # the honest magnitude, not "1"
+    assert stat["members_oversize_indoor_true"] == 3
+    assert stat["largest_symbol_members"] == 3
+
+
+def test_group_symbols_distinct_excluded_is_not_additive():
+    """A symbol that is BOTH union-oversize AND mixed-indoor must be counted ONCE in
+    excluded_distinct, so the report cannot double-count (union_oversize + mixed = 2 but the
+    distinct exclusion is 1)."""
+    doc = _gt([{"id": "a", "x": 0.0,    "y": 0.0,    "w": 2000.0, "d": 2000.0, "indoor": True},
+               {"id": "b", "x": 2050.0, "y": 0.0,    "w": 2000.0, "d": 2000.0, "indoor": False},  # mixed vote
+               {"id": "c", "x": 0.0,    "y": 2050.0, "w": 2000.0, "d": 2000.0, "indoor": True}])
+    sym_doc, stat = S.group_symbols(doc)
+    assert stat["union_oversize"] == 1 and stat["mixed_indoor"] == 1
+    assert stat["excluded_distinct"] == 1                              # counted once, not 2
+    assert stat["members_oversize_indoor_true"] == 2 and stat["members_oversize_indoor_false"] == 1

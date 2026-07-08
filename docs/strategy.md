@@ -1384,3 +1384,46 @@ gt-vs-gt / no-pred-rot) and emitted natively ON PURPOSE (the Structured3D y-hand
 "reconciled" value could bake a mirror error that LOOKS right). Also added `wall_lines` (14,219 segs/200
 scenes; the synthesizer's + oracle lane's plan skeleton) — changed no existing channel. 765 tests green.
 Commits local, unpushed.
+
+## 2026-07-08 — F3 scoreable slice EXPANDED: the plan-symbol lane (synth_plan_2d v1.1)
+
+The named next slice ("size-filtered realistic draw + instance separation") built and **measured**, then
+adversarially reviewed and hardened. Report refreshed at `structured3d/synth-f3-realistic/report.md`.
+
+**Why the per-object F3 was starved.** Measured, not assumed: of 26,946 GT elements, **47.7% are sub-150 mm
+decor** the reader screens as thin (a plan never draws a cup), and of the 52% drawable furniture, **81% has a
+neighbour within the reader's fuse distance**. Structured3D stores 3D SUB-objects (bed frame+mattress+duvet+
+pillows; a table with its tucked chairs) that project to overlapping 2D footprints → the reader fuses them into
+ONE cluster matching no single per-object box → every fused piece leaves F3. So the per-object slice (1,741) was
+scoring the geometric minority that happens to stand alone.
+
+**The fix is a UNIT change, not a reader change.** A 2D plan draws those sub-objects as ONE furniture SYMBOL.
+`group_symbols` filters decor (reusing the reader's own `_screen_component` → zero drift), single-linkage GROUPS
+co-located drawable objects (geometry only), and emits one **union symbol** with the **room-consensus indoor**
+label; the realistic lane draws the furniture MEMBERS and scores the reader's fused cluster against the union
+symbol. The fuse gap (**90 mm**) is EMPIRICALLY calibrated to the reader (two 500 mm rects stay one cluster to
+90 mm, split at 100 mm ≈ 2·CLOSE_MM); a 60/90/120 sweep confirmed 90 maximises symbol↔cluster agreement. Result
+on 200 scenes: **F3 slice 1,741 → 2,461 (+41%)**, and the hard half — **OUTDOOR (balcony/garden) test cases
+97 → 161 (+66%)**. Same always-indoor BASELINE (94.4%→93.5%): **NOT a reader upgrade** — the deliverable is a
+bigger, plan-faithful slice with a larger outdoor sample for a future indoor-classifier to be scored on.
+Annotation-blindness holds unchanged (grouping + consensus are geometry-only / GT-side; indoor never drawn —
+pinned). Per-object lane byte-reproduces (matched 2,856 / recall 10.6% / 1,741 / 94.4%): **zero regression**.
+
+**The instrument was adversarially reviewed (5 skeptic lenses × verify) and the honesty gaps FIXED.** One HIGH,
+two LOW confirmed; the "detection recall 10.6%→93.9% is a capability jump" framing REFUTED (the code already
+labels recall as proxy-fit, not capability). HIGH — **unbounded single-linkage chains across un-drawn walls**:
+**3,617 of 14,061 drawable members (25.7%, incl. 1,640 indoor + 232 outdoor) collapse into 134 dense regions**
+(worst: one 1,220-member, 25.8 m "symbol" over 8 rooms), disclosed as only "134 symbols (3.4%)" — a 7.5×
+understatement, and it flatters symbol-level recall by lumping. A diameter cap was **tested and REJECTED** (F3 n
+flat 959→964 across caps 8000–4000 → it does NOT recover slice, only trades recall for cosmetics; the members
+are genuinely unresolvable by a furniture-only reader — the reader blobs them too, so this SHRINKS the slice and
++41% is conservative). Fixed by DISCLOSURE, not a magic number: the report now prints the member-level chaining
+loss + its indoor/outdoor split + largest-symbol span, reframes the regions as "dense areas the furniture-only
+reader cannot resolve without walls" (the wall-aware/oracle lane is the real fix, a separate slice), and reads
+symbol recall as flattered. LOW — the representativeness check compared matched-vs-symbol (both POST-grouping,
+blind to grouping bias): added the **per-object (pre-grouping) outdoor rate** as the non-blind cross-check and
+scoped the sentence (boundary-straddling outdoor = the 52 mixed groups, excluded upstream, must be judged at
+member level). LOW — oversize+mixed exclusion buckets overlap by 35: now reports **distinct-excluded 151, not
+additive 186**. North-star check: this moved the REAL goal (a bigger, honest F3 slice + 66% more outdoor cases)
+and the residual furniture-only-reader limit is surfaced loudly, not dressed up. 63 synth/adapter/benchmark
+tests green (+2 pinning the member-level loss + distinct-exclusion accounting). Commits local, unpushed.
