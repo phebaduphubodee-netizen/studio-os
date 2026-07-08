@@ -49,12 +49,25 @@ annotations) -- a plausibility band should tolerate/flag them, never rescale the
 meta.units='mm', so benchmark_reader's default 300 mm opening tol + 250 mm glaze-perp tol
 apply directly with no caller-supplied open_tol.
 
+F2 UNBLOCK (the code-side blocker is removed; F2 is now DATA-limited, not code-limited):
+  Structured3D bbox_3d.json carries no class label, but the GT rot IS derivable (basis yaw).
+  convert(labels={obj_id: kind}) accepts an OPTIONAL caller-supplied sidecar of REAL labels
+  (from 3D-FRONT layout JSON, or render-mask pairing of the downloaded instance masks with the
+  semantic masks in the render zips) -> a labeled element emits kind + rot and F2_facing scores.
+  No sidecar (the state on disk today) -> byte-identical blocked default, F2 UNWIRED. The kind
+  is never guessed here (kind_priors-style suggestion is a PRED-side lane, never GT). The two
+  real label recipes + the rot-convention reconciliation are documented at ROT_CONVENTION.
+
+wall_lines: every WALL plane's floor-level trace is emitted as gt['wall_lines'] ([{x1,y1,x2,y2}]
+  mm) -- the plan skeleton synth_plan_2d.py draws so OUR reader can be RUN on a synthesized 2D
+  plan and scored for real (F3 pred!=gt), and the input svg_plan_reader's oracle-walls lane reads.
+
 HONESTY CONTRACT (matches benchmark_reader + floorplancad_adapter):
-  - KIND IS BLOCKED. Structured3D bbox_3d.json carries NO per-object class label -- the
-    labels live in the render zips we have not downloaded. So emitted elements carry NO
-    `kind` key and NO `rot` key (rot is informational-only without a kind to face). This
-    makes F2_facing score UNWIRED (score_facing skips every kind-less element) -- NEVER a
-    fabricated kind. meta.kind_blocked states the reason loudly. F1_identity is a SPECIAL
+  - KIND IS BLOCKED BY DEFAULT (no labels sidecar). Emitted elements then carry NO `kind` key
+    and NO `rot` key (rot is informational-only without a kind to face). This makes F2_facing
+    score UNWIRED (score_facing skips every kind-less element) -- NEVER a fabricated kind.
+    meta.kind_blocked states the reason loudly (and is null once a sidecar supplies real kinds).
+    F1_identity is a SPECIAL
     case: score_identity has no empty-kind guard, so kind-less matched pairs score as a
     single '' bucket and verdict PASS on gt-vs-gt. It is IDENTITY-BLIND, not UNWIRED; the
     selftest asserts F1's per_kind keys are a subset of {''} (no real class fabricated),
@@ -118,7 +131,37 @@ TRANSPOSE_DIVERGENCE_MM = 50.0
 
 KIND_BLOCKED_REASON = ("bbox_3d.json carries no per-object class label (labels live in the "
                        "un-downloaded render zips); kind + rot omitted -> F1 identity-blind, "
-                       "F2 UNWIRED, never fabricated")
+                       "F2 UNWIRED, never fabricated. Supply a --labels sidecar (caller's REAL "
+                       "{obj_id: kind} from 3D-FRONT or render-mask pairing) to unblock F2")
+
+# FOOTGUN, LABELLED (adversarial review 2026-07-08): the emitted rot is the adapter's NATIVE yaw
+# (see _box_footprint_xy): degrees CCW from world +X, forward = basis[0]. benchmark_reader's
+# schema docstring DECLARES the `rot` field to be build_floor's front=(sin,-cos) convention -- a
+# CONSTANT ~270deg offset from native yaw (verified: native {0,90,180,270} vs build_floor
+# {90,180,270,0}). This produces NO wrong number today: every live path is gt-vs-gt (rot cancels)
+# or has no pred rot (the synth lane emits none), so F2 only ever sees identical convention. But
+# it will silently corrupt F2 the moment a real reader emitting build_floor rot is scored against
+# this GT. It is emitted in NATIVE yaw on purpose -- converting now would be FALSE precision: the
+# Structured3D-vs-build_floor y-axis HANDEDNESS is unvalidated (no rot-emitting reader exists to
+# check against), so a "reconciled" value could bake in a mirror/180 error that LOOKS correct.
+# Reconcile (offset AND y-handedness) against a real reader before trusting F2 angular buckets.
+ROT_CONVENTION = ("native_yaw_deg_ccw_from_+x__forward=basis[0]__NOT_build_floor_front=(sin,-cos)"
+                  "__~270deg_offset__y_handedness_UNVALIDATED__reconcile_before_real_reader_F2")
+
+
+def _lookup_label(labels, obj_id):
+    """Caller-supplied per-object kind (str) for this scene, or None. Tries the int and str key
+    (JSON object keys are strings); the kind is lowercased so benchmark_reader.norm_kind's
+    synonym/casing rules apply. NEVER fabricates -- an absent id returns None and the element
+    stays kind-less (F2 UNWIRED for it). A blank/whitespace label is treated as absent."""
+    if not labels:
+        return None
+    v = labels.get(obj_id)
+    if v is None:
+        v = labels.get(str(obj_id))
+    if v is None or not str(v).strip():
+        return None
+    return str(v).strip().lower()
 
 
 # ---- geometry ----------------------------------------------------------------------------
@@ -233,11 +276,19 @@ def _resolve_paths(scene_dir):
     return anno, bbox, scene_id
 
 
-def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split=None):
+def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split=None,
+            labels=None):
     """Scene -> gt document (dict), coordinates in mm. Either pass scene_dir (paths are
     resolved against the dataset roots) or anno_path/bbox_path/scene_id directly (the unit
     tests feed synthetic dicts through the file path). A missing bbox file is NOT an error:
-    rooms/openings/glazing still emit and elements report n=0 (no bbox file)."""
+    rooms/openings/glazing still emit and elements report n=0 (no bbox file).
+
+    labels (default None) is the OPTIONAL per-object kind sidecar for THIS scene: a dict
+    {obj_id: raw_kind} of caller-supplied REAL labels (from 3D-FRONT or render-mask pairing --
+    NEVER guessed here). When an object is labeled, its element gains `kind` (lowercased) AND
+    `rot` (the native yaw, ROT_CONVENTION), which unblocks F2_facing. When labels is None (the
+    default, and the state on disk today), output is byte-identical to the blocked baseline:
+    no kind, no rot, F2 UNWIRED. This makes F2 data-limited, not code-limited."""
     if scene_dir is not None:
         anno_path, bbox_path, scene_id = _resolve_paths(scene_dir)
     scene_id = scene_id or "?"
@@ -315,17 +366,46 @@ def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split
                                 "x2": round(c1[0], 1), "y2": round(c1[1], 1),
                                 "kind": "outwall"})
 
+    # -- wall_lines: every WALL plane's floor-level trace (both junctions z~=0), deduped by
+    #    rounded endpoints. This is the plan SKELETON the 2D synthesizer (synth_plan_2d.py)
+    #    draws so OUR reader can be run on it, AND the input svg_plan_reader's oracle-walls lane
+    #    consumes (schema mirrors floorplancad_adapter: [{x1,y1,x2,y2}], mm). Distinct from
+    #    glazing_lines (the outwall F6 GT): an outwall's own trace appears in both, by design --
+    #    a real plan draws the envelope too. A shared party wall belongs to two rooms -> dedup.
+    wall_lines = []
+    seen_walls = set()
+    for pid, pl in planes.items():
+        if pl.get("type") != "wall":
+            continue
+        for li in range(len(lines)):
+            if not plm[pid][li]:
+                continue
+            js = [jj for jj in range(len(junc)) if ljm[li][jj]]
+            if len(js) != 2:
+                continue
+            c0, c1 = junc[js[0]]["coordinate"], junc[js[1]]["coordinate"]
+            if abs(c0[2]) > 1e-6 or abs(c1[2]) > 1e-6:
+                continue                   # floor-level segments only (both junctions z~=0)
+            key = tuple(sorted(((round(c0[0], 1), round(c0[1], 1)),
+                                (round(c1[0], 1), round(c1[1], 1)))))
+            if key in seen_walls:
+                continue
+            seen_walls.add(key)
+            wall_lines.append({"x1": round(c0[0], 1), "y1": round(c0[1], 1),
+                               "x2": round(c1[0], 1), "y2": round(c1[1], 1)})
+
     # -- elements from bbox -----------------------------------------------------------------
     elements = []
     no_bbox = bbox_path is None
     zero_area_dropped = 0
+    n_kinded = 0
     centroid_no_room = 0
     transpose_divergent = 0    # objects whose rows-vs-cols footprint diverges > threshold
     indoor_split = Counter()   # True / False / None
     if not no_bbox:
         boxes = json.load(open(bbox_path, encoding="utf-8"))
         for obj in sorted(boxes, key=lambda o: o["ID"]):   # deterministic order by ID
-            x, y, w, d, _rot = _box_footprint_xy(obj["basis"], obj["centroid"], obj["coeffs"])
+            x, y, w, d, rot = _box_footprint_xy(obj["basis"], obj["centroid"], obj["coeffs"])
             # honesty audit: the footprint is NOT rows-vs-cols invariant for tipped/axis-
             # swapped boxes (see _box_footprint_xy). Count -- never hide -- the divergent
             # population; counted over ALL objects (before the zero-area drop).
@@ -350,7 +430,15 @@ def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split
             if hit is not None:            # only emit a real True/False, never a guess
                 rec["indoor"] = hit
             indoor_split[hit] += 1
-            # NO kind key (blocked), NO rot key (informational only), NO floor key (single-storey)
+            # kind + rot ONLY when the caller supplied a REAL label for this object (F2 unblock).
+            # Without a label: no kind, no rot (blocked default). rot is emitted ONLY with a kind
+            # -- a rot without a kind has no facing to score and the honesty contract forbids it.
+            lab = _lookup_label(labels, obj["ID"])
+            if lab:
+                rec["kind"] = lab
+                rec["rot"] = round(rot, 1)
+                n_kinded += 1
+            # NO floor key (single-storey)
             elements.append(rec)
 
     meta = {
@@ -359,7 +447,7 @@ def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split
         "n_elements": len(elements), "n_rooms": len(rooms),
         "rooms_by_type": dict(rooms_by_type),
         "n_openings": len(openings), "openings_by_type": dict(open_counts),
-        "n_glazing": len(glazing),
+        "n_glazing": len(glazing), "n_wall_lines": len(wall_lines),
         "indoor_true": indoor_split[True], "indoor_false": indoor_split[False],
         "indoor_unknown": indoor_split[None],
         "zero_area_dropped": zero_area_dropped,
@@ -368,10 +456,15 @@ def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split
         "transpose_divergence_mm": TRANSPOSE_DIVERGENCE_MM,
         "rooms_polygon_failed": dict(poly_failed),
         "no_bbox_file": no_bbox,
-        "kind_blocked": KIND_BLOCKED_REASON,
+        "labels_supplied": labels is not None,
+        "n_kinded": n_kinded,
+        "rot_convention": ROT_CONVENTION if n_kinded else None,
+        # kind is BLOCKED only in the default (no-labels) lane; with a labels sidecar the emitted
+        # kinds are the caller's real data (F1/F2 wired for those objects), never fabricated here.
+        "kind_blocked": KIND_BLOCKED_REASON if not n_kinded else None,
     }
     return {"meta": meta, "elements": elements, "openings": openings,
-            "glazing_lines": glazing}
+            "glazing_lines": glazing, "wall_lines": wall_lines}
 
 
 # ---- batch -------------------------------------------------------------------------------
@@ -383,12 +476,22 @@ def _parse_slice(spec):
     return 0, int(spec)
 
 
-def run_batch(slice_spec, out_dir):
+def run_batch(slice_spec, out_dir, labels_path=None):
     """Convert a slice of scenes (default first 200 readable) -> one <scene>.gt.json each +
     manifest.jsonl + summary.md. Deterministic sorted scene order; NO silent cap -- the log
     states converted-vs-skipped. A scene that raises costs ONE manifest row (ok:False),
-    never the rest of the run (mirrors floorplancad_adapter.run_batch)."""
+    never the rest of the run (mirrors floorplancad_adapter.run_batch).
+
+    labels_path (optional) is a corpus labels sidecar {scene_id: {obj_id: kind}} of caller
+    REAL labels; each scene gets its own slice passed to convert() -> kind + rot emitted ->
+    F2 unblocked. A scene absent from the file is simply blind (no kinds), never guessed."""
     os.makedirs(out_dir, exist_ok=True)
+    corpus_labels = None
+    if labels_path:
+        corpus_labels = json.load(open(labels_path, encoding="utf-8"))
+        if not isinstance(corpus_labels, dict):
+            raise SystemExit(f"labels file {labels_path} must be a JSON object "
+                             "{scene_id: {obj_id: kind}}")
     lo, hi = _parse_slice(slice_spec) if slice_spec else (0, 200)
     scenes = sorted(glob.glob(os.path.join(ANNO_ROOT, "scene_*")))
     if not scenes:
@@ -397,7 +500,7 @@ def run_batch(slice_spec, out_dir):
     split = f"first{hi}" if lo == 0 else f"{lo}-{hi}"
     man_path = os.path.join(out_dir, "manifest.jsonl")
     n_ok = n_fail = n_nobbox = 0
-    el_total = op_total = gl_total = 0
+    el_total = op_total = gl_total = wl_total = kinded_total = 0
     open_by_type, rooms_by_type = Counter(), Counter()
     indoor_true = indoor_false = indoor_unknown = 0
     zero_dropped = no_room = transpose_div_total = 0
@@ -407,7 +510,8 @@ def run_batch(slice_spec, out_dir):
         for k, sd in enumerate(sel):
             base = os.path.basename(os.path.normpath(sd))
             try:
-                doc = convert(scene_dir=sd, split=split)
+                scene_labels = corpus_labels.get(base) if corpus_labels else None
+                doc = convert(scene_dir=sd, split=split, labels=scene_labels)
             except Exception as e:         # one broken scene = ONE manifest row, never the run
                 n_fail += 1
                 man.write(json.dumps({"scene": base, "ok": False,
@@ -423,6 +527,8 @@ def run_batch(slice_spec, out_dir):
             el_total += m["n_elements"]
             op_total += m["n_openings"]
             gl_total += m["n_glazing"]
+            wl_total += m["n_wall_lines"]
+            kinded_total += m["n_kinded"]
             open_by_type.update(m["openings_by_type"])
             rooms_by_type.update(m["rooms_by_type"])
             indoor_true += m["indoor_true"]
@@ -435,7 +541,8 @@ def run_batch(slice_spec, out_dir):
             man.write(json.dumps({
                 "scene": base, "ok": True, "units": m["units"],
                 "n_elements": m["n_elements"], "n_openings": m["n_openings"],
-                "n_glazing": m["n_glazing"], "n_rooms": m["n_rooms"],
+                "n_glazing": m["n_glazing"], "n_wall_lines": m["n_wall_lines"],
+                "n_kinded": m["n_kinded"], "n_rooms": m["n_rooms"],
                 "indoor_true": m["indoor_true"], "indoor_false": m["indoor_false"],
                 "indoor_unknown": m["indoor_unknown"],
                 "zero_area_dropped": m["zero_area_dropped"],
@@ -457,9 +564,12 @@ def run_batch(slice_spec, out_dir):
         f"parse-failed: {n_fail}  (no silent cap -- every selected scene is accounted for)",
         f"- scenes with no bbox file (elements n=0): {n_nobbox}",
         "",
-        f"- elements (bbox footprints): {el_total}",
+        f"- elements (bbox footprints): {el_total}"
+        + (f"  (kinded via labels sidecar: {kinded_total} -> F2 wired)" if corpus_labels
+           else "  (no labels sidecar -> kind-less, F2 UNWIRED)"),
         f"- openings: {op_total}  by type: {dict(open_by_type.most_common())}",
         f"- glazing (outwall) segments: {gl_total}",
+        f"- wall_lines (plan skeleton for the 2D synthesizer + oracle lane): {wl_total}",
         f"- rooms by type: {dict(rooms_by_type.most_common())}",
         f"- element indoor split: True={indoor_true}  False={indoor_false}  "
         f"unknown/no-key={indoor_unknown} (undefined-room or centroid-in-no-room)",
@@ -471,8 +581,12 @@ def run_batch(slice_spec, out_dir):
         f"- room polygons failed to close: {dict(poly_fail_total) or 'none'}",
         "",
         "WIRED by this corpus: F3_indoor (first time on any corpus), F4_openings, "
-        "F6_glazing. BLOCKED: F1 identity-blind + F2 UNWIRED (no bbox class label -- needs "
-        "render-zip labels or 3D-FRONT); F5 UNWIRED (single-storey, floor key omitted).",
+        "F6_glazing" + (", F2_facing (labels sidecar supplied)" if corpus_labels else "")
+        + ". " + ("F1/F2 use the caller's real labels for kinded objects; "
+                  if corpus_labels else
+                  "BLOCKED without a labels sidecar: F1 identity-blind + F2 UNWIRED (no bbox "
+                  "class label -- supply --labels from render-mask pairing or 3D-FRONT); ")
+        + "F5 UNWIRED (single-storey, floor key omitted).",
         "", f"adapter: {ADAPTER_VERSION}",
     ]
     sum_path = os.path.join(out_dir, "summary.md")
@@ -546,14 +660,24 @@ def run_selftest(out_dir):
             n_f6 += 1
             if f6["verdict"] != "PASS":
                 problems.append(f"F6_glazing={f6['verdict']}")
-        # BLOCKED channels: MUST be UNWIRED (no rot, no floor key in this corpus).
-        for metric in ("F2_facing", "F5_floor"):
-            if card[metric]["verdict"] != "UNWIRED":
-                problems.append(f"{metric}={card[metric]['verdict']} (expected UNWIRED)")
-        # F1 identity-blind: no REAL class fabricated (per_kind keys subset of {''}).
-        f1_kinds = set(card["F1_identity"]["per_kind"].keys())
-        if not (f1_kinds <= {""}):
-            problems.append(f"F1_identity fabricated classes {f1_kinds} (expected only '')")
+        # F5 is ALWAYS UNWIRED (single-storey, no floor key). F2 is UNWIRED only in the BLIND
+        # lane; a gt built WITH a labels sidecar (kinds present) must SCORE F2 on gt-vs-gt (a
+        # perfect self-match), so assert per the mode this file was built in.
+        kinded = any("kind" in e for e in doc.get("elements", []))
+        if card["F5_floor"]["verdict"] != "UNWIRED":
+            problems.append(f"F5_floor={card['F5_floor']['verdict']} (expected UNWIRED)")
+        f2 = card["F2_facing"]
+        if kinded:
+            if f2["n"] and f2["verdict"] != "PASS":
+                problems.append(f"F2_facing={f2['verdict']} (labels present -> expected PASS gt-vs-gt)")
+        elif f2["verdict"] != "UNWIRED":
+            problems.append(f"F2_facing={f2['verdict']} (expected UNWIRED, no labels)")
+        # F1 identity-blind ONLY in the blind lane: no REAL class fabricated (per_kind subset of
+        # {''}). With real caller labels, real kinds are expected and score 1.0 on gt-vs-gt.
+        if not kinded:
+            f1_kinds = set(card["F1_identity"]["per_kind"].keys())
+            if not (f1_kinds <= {""}):
+                problems.append(f"F1_identity fabricated classes {f1_kinds} (expected only '')")
         if any(card["malformed"].values()):
             problems.append(f"malformed={card['malformed']}")
         if problems:
@@ -601,11 +725,15 @@ def run_selftest(out_dir):
 
 def main(argv):
     if len(argv) >= 3 and argv[1] == "--batch":
-        run_batch(argv[2], argv[3] if len(argv) > 3 else DEFAULT_OUT)
+        # python structured3d_adapter.py --batch <slice> <out-dir> [labels.json]
+        run_batch(argv[2], argv[3] if len(argv) > 3 else DEFAULT_OUT,
+                  labels_path=argv[4] if len(argv) > 4 else None)
     elif len(argv) >= 2 and argv[1] == "--selftest":
         run_selftest(argv[2] if len(argv) > 2 else DEFAULT_OUT)
     elif len(argv) >= 3:
-        doc = convert(scene_dir=argv[1])
+        # python structured3d_adapter.py <scene_dir> <out.json> [labels.json]  (labels = {obj_id: kind})
+        scene_labels = json.load(open(argv[3], encoding="utf-8")) if len(argv) > 3 else None
+        doc = convert(scene_dir=argv[1], labels=scene_labels)
         with open(argv[2], "w", encoding="utf-8") as fh:
             json.dump(doc, fh, ensure_ascii=False, indent=1)
         m = doc["meta"]

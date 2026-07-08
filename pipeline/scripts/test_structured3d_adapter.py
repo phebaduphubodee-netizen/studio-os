@@ -178,6 +178,45 @@ def test_two_room_indoor_and_openings():
     assert m["kind_blocked"]                  # loud reason string present
 
 
+def test_labels_sidecar_wires_kind_rot_and_f2():
+    """F2 UNBLOCK. An OPTIONAL per-object labels sidecar (caller-supplied REAL kinds -- never
+    fabricated) makes the adapter emit kind + rot, lighting up F2_facing (UNWIRED -> scored)
+    for the first time. WITHOUT the sidecar the element stays kind-less and F2 stays UNWIRED:
+    the blocked default is byte-identical, so the honesty contract is unchanged when no data."""
+    with tempfile.TemporaryDirectory() as td:
+        anno_p, bbox_p = _write_scene(td, _two_room_scene(), _bbox_objs())
+        blind = A.convert(anno_path=anno_p, bbox_path=bbox_p, scene_id="s")
+        kinded = A.convert(anno_path=anno_p, bbox_path=bbox_p, scene_id="s",
+                           labels={0: "bed", 1: "sofa"})
+    # blind default unchanged: no kind/rot on any element, F2 UNWIRED, n_kinded 0
+    assert all("kind" not in e and "rot" not in e for e in blind["elements"])
+    assert B.score_pair(blind, blind)["F2_facing"]["verdict"] == "UNWIRED"
+    assert blind["meta"]["n_kinded"] == 0 and blind["meta"]["labels_supplied"] is False
+    # kinded: labeled objects carry kind + rot; an UNLABELED object stays kind-less (never guessed)
+    by = {e["id"]: e for e in kinded["elements"]}
+    assert by["o0"]["kind"] == "bed" and by["o0"]["rot"] == 0.0
+    assert by["o1"]["kind"] == "sofa" and by["o1"]["rot"] == 0.0
+    assert "kind" not in by["o2"] and "rot" not in by["o2"]   # o2 unlabeled
+    assert kinded["meta"]["n_kinded"] == 2 and kinded["meta"]["labels_supplied"] is True
+    # F2 now SCORES (both facing-kinds carry rot; gt-vs-gt => exact match => PASS)
+    card = B.score_pair(kinded, kinded)
+    assert card["F2_facing"]["verdict"] == "PASS" and card["F2_facing"]["n"] == 2
+
+
+def test_wall_lines_emitted_for_synthesizer_and_oracle_lane():
+    """The adapter emits every WALL plane's floor-level trace as gt['wall_lines'] -- the plan
+    skeleton the 2D synthesizer draws AND the input svg_plan_reader's oracle-walls lane consumes.
+    Schema mirrors floorplancad_adapter: [{x1,y1,x2,y2}] in mm."""
+    with tempfile.TemporaryDirectory() as td:
+        anno_p, bbox_p = _write_scene(td, _two_room_scene(), _bbox_objs())
+        doc = A.convert(anno_path=anno_p, bbox_path=bbox_p, scene_id="s")
+    wl = doc["wall_lines"]
+    assert doc["meta"]["n_wall_lines"] == len(wl) and len(wl) >= 1
+    for w in wl:
+        assert {"x1", "y1", "x2", "y2"} <= set(w)
+        assert all(isinstance(w[k], (int, float)) for k in ("x1", "y1", "x2", "y2"))
+
+
 def test_no_bbox_file_reports_zero_elements():
     with tempfile.TemporaryDirectory() as td:
         anno_p, _ = _write_scene(td, _two_room_scene(), bbox=None)

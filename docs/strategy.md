@@ -1340,3 +1340,47 @@ hypothesis to falsify — the payoff of building it was that it exposed its own 
 flips. Remaining 291 = console HIGH (100) + 18 unsigned-hand-typed-identity MEDIUM (180, the systemic
 no-signs/no-priors band the Structured3D-priors lane would corroborate wholesale) + 11 LOW. Commits local,
 unpushed.
+
+---
+
+## 2026-07-08 — Structured3D backwards-learning: the 2D-plan synthesizer (REAL F3) + F2 code-unblock
+
+Two advances closing named gaps in the Structured3D lane, both build → adversarial-verify (5-lens
+workflow, each skeptic required to RUN code) → fix. Report `qa/reports/structured3d-synth-f3-2026-07-08.md`.
+
+**(b) The 2D-plan synthesizer — F3 stops being a symmetric selftest.** The plan-extraction memory named the
+wound: *"reader-scores need a 2D synthesizer."* The adapter gives the indoor/outdoor ANSWER KEY, but nothing
+drew the 2D a reader would SEE, so the only score available was `benchmark_reader` **gt-vs-gt** — symmetric,
+distance-0, blind to a convention flip or an over-emitted flag. `synth_plan_2d.py` draws an **annotation-blind**
+SVG (furniture `<rect>`, optional walls/glazing) from a `gt.json`, runs `svg_plan_reader` on it, and scores
+against the same `gt.json`. **The indoor label is never drawn** — two gt docs differing only in `indoor`
+synthesize BYTE-IDENTICALLY (pinned; the f3-leakage lens found no leak through order/coords/count/viewBox/
+`--walls`). So F3 measures whether GEOMETRY recovers the room semantics. **First pred≠gt F3 on ANY corpus:
+94.4% on 1,741 matched pairs (200 scenes).** The reader has no indoor classifier → this is the ALWAYS-INDOOR
+baseline (accuracy == indoor fraction; the 97 `wrong_ids` are exactly the balcony/garden pieces). The value is
+NOT the number (the adapter meta implies it) — it is the WIRED loop: an indoor-inference upgrade (generalising
+`zone_flag` past its south-facade case) is now an immediately SCOREABLE pred≠gt delta on real outdoor GT.
+
+**The instrument's honesty was itself adversarially checked and sharpened.** The verify workflow (0 CRITICAL/
+HIGH) confirmed no leakage but flagged two MEDIUM reporting gaps: detection recall is only **10.6%** (F3 scored
+on ~a tenth of GT), because ~63% of Structured3D "objects" are sub-150 mm decor `plan_cluster` screens by
+design AND furniture drawn within `CLOSE_MM=40` (bed+flush nightstand) MERGES into one blob matching neither
+GT — so both pieces leave the F3 set. Fixed by (1) killing the "soundness check" over-claim, (2) a pinned
+merge-limit test, and (3) a REPRESENTATIVENESS line proving the small subsample is NOT biased against outdoor:
+matched-subset outdoor **5.6%** vs corpus **4.7%** (measured, close — if anything outdoor-enriched). North-star
+check: this moved the REAL goal (a wired, honest pred≠gt F3 loop) but the scoreable slice is small — said
+plainly, not dressed up; raising it (size-filtered realistic draw + instance separation) is the next slice.
+
+**(d) F2 code-unblock — data-limited, not code-limited.** Verified against the raw data (not assumed): every
+`bbox_3d.json` object is `{ID, basis, centroid, coeffs}` — no class label; category needs render-zip semantic
+masks (un-downloaded) or 3D-FRONT (owner-access-gated, only a template on disk). But the GT **rot is derivable**
+(basis yaw) — F2 was blocked in CODE, not just data. `convert(labels={obj_id:kind})` now takes an OPTIONAL
+sidecar of caller-supplied REAL labels → emits kind+rot → **F2 wires (UNWIRED→PASS, proven by unit test)**.
+No sidecar → BYTE-IDENTICAL blocked default (re-verified). **No kind fabricated** (suggestion is pred-side).
+This turns "blocked, no path" → "wired, awaiting an injectable `{ID→kind}` file"; `--selftest` now asserts F2
+UNWIRED-blind / PASS-kinded so the contract holds in both modes. **rot footgun, LABELLED (LOW):** emitted rot
+is NATIVE yaw, ~270° off `benchmark_reader`'s declared `build_floor front=(sin,-cos)` — harmless today (cancels
+gt-vs-gt / no-pred-rot) and emitted natively ON PURPOSE (the Structured3D y-handedness is unvalidated; a
+"reconciled" value could bake a mirror error that LOOKS right). Also added `wall_lines` (14,219 segs/200
+scenes; the synthesizer's + oracle lane's plan skeleton) — changed no existing channel. 765 tests green.
+Commits local, unpushed.
