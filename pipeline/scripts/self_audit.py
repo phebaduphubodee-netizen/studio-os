@@ -366,6 +366,179 @@ def collect_persona(specs):
     return out, {"status": "READ", "verdict": verdict, "gaps": n_gap, "orphans": n_orphan}
 
 
+# ---- Tier-1 self-doubt suite bridge ---------------------------------------------------
+# cross_signal / anomaly_flags / confidence / rebuild_diff each emit their OWN domain record
+# {signal:'<source>:<check>', severity, confidence, room, subjects[], detail, why, resolve_by}.
+# _wrap_domain maps ONE into the self-audit _rec taxonomy so it ranks in the same doubt list; the
+# module's own SEVERITY band drives the rank (an unsigned facing REVERSAL is CRITICAL, sitting with
+# floating/regression; a soft facing nudge is MEDIUM). count=1 (each domain record is one doubt).
+# Every collector: lazy+guarded import so a missing/broken suite module degrades to ERROR coverage,
+# never a crash of the whole audit (mirrors collect_sourceability); honest coverage so a short list
+# never silently means "clean" when it means "did not look".
+def _wrap_domain(rec, scope="room", source_file=None):
+    """Map ONE suite domain-record into the _rec taxonomy, or None if it cannot be mapped. NEVER
+    raises: a non-dict record, a non-string/absent signal, or an out-of-taxonomy severity from a
+    BUGGY module is dropped/clamped rather than allowed to abort the whole audit (the collectors'
+    guarantee is 'a broken suite module degrades to ERROR coverage, never a crash'). A clamped-band
+    record still surfaces at LOW so a real doubt is not silently lost to a typo'd severity."""
+    if not isinstance(rec, dict):
+        return None
+    signal = rec.get("signal")
+    signal = signal if isinstance(signal, str) else ":"
+    source, _, check = signal.partition(":")
+    sev = rec.get("severity")
+    if sev not in SEVERITY_WEIGHT:
+        sev = "LOW"                        # a typo'd/out-of-taxonomy band -> safe advisory, never KeyError
+    detail = rec.get("detail") or ""
+    conf = rec.get("confidence")
+    if isinstance(conf, (int, float)) and not isinstance(conf, bool):
+        detail = f"{detail}  (flag-confidence {round(float(conf), 2)})"
+    subs = rec.get("subjects") or []
+    if isinstance(subs, (list, tuple)) and subs:
+        detail = f"{detail}  [{', '.join(str(s) for s in subs)}]"
+    return _rec(source or "suite", check or "doubt", scope, sev, 1, detail,
+                rec.get("why", ""), rec.get("resolve_by", ""),
+                room=rec.get("room"), source_file=source_file)
+
+
+def _wrap_all(recs, scope="room", source_file=None):
+    """Map a suite module's records into _rec, DROPPING any _wrap_domain cannot map. This is the
+    single choke point that keeps a malformed module RETURN (not just a raised call) from crashing
+    audit_project -- the mapping is otherwise outside the per-spec try/except."""
+    out = []
+    for r in recs or []:
+        w = _wrap_domain(r, scope=scope, source_file=source_file)
+        if w is not None:
+            out.append(w)
+    return out
+
+
+def collect_cross_signal(specs, walls, glazing_cands, confirmed):
+    """Contradictions between two INDEPENDENT reads of a room (facing vs wall, function vs
+    placement, zone vs geometry, facade vs wall, fixture vs room-type). specs = [(path, spec)].
+    Returns (records, coverage). READ when >=1 check was ELIGIBLE somewhere (had the inputs it
+    needs); UNWIRED when specs existed but nothing was eligible; ABSENT when no specs."""
+    out = []
+    try:
+        import cross_signal as CS
+    except Exception as e:
+        return out, {"status": "ERROR", "note": f"import failed: {e}"}
+    if not specs:
+        return out, {"status": "ABSENT"}
+    params = {"confirmed": confirmed} if confirmed else None
+    per_spec, n_eligible, n_error = {}, 0, 0
+    for path, spec in specs:
+        sf = os.path.basename(path)
+        try:
+            recs = CS.check_room(spec, walls=walls, glazing_cands=glazing_cands, params=params)
+            cov = CS.check_coverage(spec, walls=walls, glazing_cands=glazing_cands)
+        except Exception as e:
+            per_spec[sf] = f"ERROR: {e}"
+            n_error += 1
+            continue
+        out += _wrap_all(recs, source_file=sf)
+        elig = sorted(k for k, v in cov.items() if v.get("eligible"))
+        n_eligible += len(elig)
+        per_spec[sf] = {"eligible_checks": elig, "flags": len(recs)}
+    # honest-coverage precedence: an all-errored run is a BLIND SPOT, never a clean UNWIRED
+    status = "ERROR" if (n_error and not n_eligible) else ("READ" if n_eligible else "UNWIRED")
+    return out, {"status": status, "flags": len(out), "eligible_checks": n_eligible,
+                 "errored": n_error,
+                 "per_spec": per_spec,
+                 "note": None if n_eligible else "ran, but no check had its required inputs "
+                 "(e.g. no walls/glazing for facade checks) -- not a clean pass"}
+
+
+def collect_anomaly(specs, priors, confirmed):
+    """Prior-violating reads (impossible size/aspect for a claimed kind, abnormal count). specs =
+    [(path, spec)]. priors = a kind-priors artifact or None. Returns (records, coverage). The
+    built-in gross bounds always run (READ when any measurable piece); the corpus prior-band lane
+    is UNWIRED without a priors artifact -- honestly, never a silent clean pass."""
+    out = []
+    try:
+        import anomaly_flags as AF
+    except Exception as e:
+        return out, {"status": "ERROR", "note": f"import failed: {e}"}
+    if not specs:
+        return out, {"status": "ABSENT"}
+    params = {"confirmed": confirmed} if confirmed else None
+    per_spec, measured_any, no_bound, n_error = {}, False, set(), 0
+    for path, spec in specs:
+        sf = os.path.basename(path)
+        try:
+            recs = AF.check_room(spec, priors=priors, params=params)
+            cov = AF.check_coverage(spec, priors=priors, params=params)
+        except Exception as e:
+            per_spec[sf] = f"ERROR: {e}"
+            n_error += 1
+            continue
+        out += _wrap_all(recs, source_file=sf)
+        if (cov.get("size_implausible") or {}).get("status") == "READ":
+            measured_any = True
+        no_bound |= set(cov.get("no_bound_kinds") or [])
+        per_spec[sf] = {"flags": len(recs)}
+    status = "ERROR" if (n_error and not measured_any) else ("READ" if measured_any else "UNWIRED")
+    return out, {"status": status, "flags": len(out), "errored": n_error,
+                 "prior_band": "READ" if priors else "UNWIRED (no corpus priors -- gross "
+                 "built-in bounds only)",
+                 "no_bound_kinds": sorted(no_bound), "per_spec": per_spec}
+
+
+def collect_confidence(specs, confirmed):
+    """Base-read calibration: an ASSUMED/DEFAULTED semantic field (rot omitted -> assumed south;
+    zone absent -> assumed indoor; kind hand-typed with nothing corroborating) shipped as if
+    certain, below the say-unsure threshold. specs = [(path, spec)]. Returns (records, coverage)
+    reporting how many fields were owner-signed vs flagged-unsure (the calibration STATE)."""
+    out = []
+    try:
+        import confidence as CF
+    except Exception as e:
+        return out, {"status": "ERROR", "note": f"import failed: {e}"}
+    if not specs:
+        return out, {"status": "ABSENT"}
+    per_spec, signed_tot, flagged_tot, assessed_tot, n_error = {}, 0, 0, 0, 0
+    for path, spec in specs:
+        sf = os.path.basename(path)
+        try:
+            recs = CF.assess_room(spec, confirmed)
+            cov = CF.assess_coverage(spec, confirmed)
+        except Exception as e:
+            per_spec[sf] = f"ERROR: {e}"
+            n_error += 1
+            continue
+        out += _wrap_all(recs, scope="element", source_file=sf)
+        signed_tot += cov.get("owner_signed", 0)
+        flagged_tot += cov.get("flagged_unsure", 0)
+        assessed_tot += cov.get("assessed_fields", 0)
+        per_spec[sf] = {"assessed": cov.get("assessed_fields"),
+                        "owner_signed": cov.get("owner_signed"),
+                        "flagged_unsure": cov.get("flagged_unsure")}
+    status = "ERROR" if (n_error and not assessed_tot) else ("READ" if assessed_tot else "ABSENT")
+    return out, {"status": status, "assessed_fields": assessed_tot, "owner_signed": signed_tot,
+                 "flagged_unsure": flagged_tot, "errored": n_error, "per_spec": per_spec}
+
+
+def collect_rebuild_diff(prior_specs, current_specs, confirmed):
+    """Between-rounds regression backstop: a SEMANTIC field (kind/facing/zone) that changed from the
+    prior reading round with NO owner signature covering the new value -- the v4 silent-facing-flip
+    wound. prior_specs/current_specs = [spec, ...]. Returns (records, coverage). UNWIRED (never a
+    clean pass) when there is no prior round to diff against."""
+    out = []
+    try:
+        import rebuild_diff as RD
+    except Exception as e:
+        return out, {"status": "ERROR", "note": f"import failed: {e}"}
+    try:
+        recs = RD.diff_rounds(prior_specs, current_specs, confirmed=confirmed)
+        cov = RD.diff_coverage(prior_specs, current_specs)
+    except Exception as e:
+        return out, {"status": "ERROR", "note": f"diff failed: {e}"}
+    out += _wrap_all(recs)
+    cov = dict(cov)
+    cov["flags"] = len(out)
+    return out, cov
+
+
 # ---- ranking / scoring ----------------------------------------------------------------
 def rank(records):
     """Open (unresolved) records, most-consequential-and-least-certain first. SEVERITY BAND
@@ -443,6 +616,70 @@ def _find_specs(layout_dir):
     return specs
 
 
+def _load_walls(layout_dir):
+    """The floor's extracted wall segments [[[x1,y1],[x2,y2]],...] for the cross-signal facade
+    checks, or None (UNKNOWN -> the checks that need walls ABSTAIN, never a silent pass). Takes the
+    first *walls*.json beside the gated specs that carries a 'segments' list."""
+    for p in sorted(glob.glob(os.path.join(layout_dir, "*walls*.json"))):
+        try:
+            doc = _load(p)
+        except Exception:
+            continue
+        if isinstance(doc, dict) and isinstance(doc.get("segments"), list):
+            return doc["segments"]
+    return None
+
+
+def _load_priors(project_dir):
+    """A kind-priors corpus artifact (schema interior-ai/kind-priors@0.1) if one is present under
+    qa/ or knowledge/, else None (-> anomaly's prior-band lane reports UNWIRED honestly; the gross
+    built-in bounds still run). No artifact exists locally yet, so this returns None today."""
+    for root in (os.path.join(project_dir, "..", "..", "qa"),
+                 os.path.join(project_dir, "..", "..", "knowledge")):
+        for p in sorted(glob.glob(os.path.join(root, "**", "*kind-priors*.json"), recursive=True)):
+            try:
+                doc = _load(p)
+            except Exception:
+                continue
+            if isinstance(doc, dict) and str(doc.get("schema", "")).startswith(
+                    "interior-ai/kind-priors"):
+                return doc
+    return None
+
+
+def _round_version(d):
+    """A reading-round dir's version: the vN in its path (a vN subdir), else 0 (the root round)."""
+    m = re.search(r"[\\/]v(\d+)(?:[\\/]|$)", os.path.abspath(d) + os.sep)
+    return int(m.group(1)) if m else 0
+
+
+def _find_prior_specs(project_dir, current_layout_dir):
+    """The reading round immediately BEFORE the current one, for rebuild_diff: the round dir whose
+    version is the highest STRICTLY LESS than the current dir's version (the LAYOUT stage root = 0,
+    a vN subdir = N). Returns [spec, ...] (empty when there is no prior round -> rebuild_diff reports
+    UNWIRED, never a clean pass).
+
+    SCOPED to the LAYOUT STAGE dir (the current round's own vN parent, or the round dir itself when
+    it is the un-versioned root) -- NOT the whole project. A scene-graph copied into ANOTHER stage
+    (e.g. 04_visualization/v2/) is a render artifact, not a reading round, and must never be mistaken
+    for the prior read (it would diff the layout against a foreign ghost)."""
+    current_layout_dir = os.path.abspath(current_layout_dir)
+    cur_ver = _round_version(current_layout_dir)
+    # the stage root that holds this round's sibling versions: a vN subdir's parent, else itself.
+    stage_dir = os.path.dirname(current_layout_dir) if cur_ver > 0 else current_layout_dir
+    round_dirs = {}
+    for p in glob.glob(os.path.join(stage_dir, "**", "scene-graph.*.json"), recursive=True):
+        if os.path.basename(p) == "scene-graph.json":
+            continue
+        d = os.path.dirname(os.path.abspath(p))
+        round_dirs[d] = _round_version(d)
+    below = [(v, d) for d, v in round_dirs.items() if v < cur_ver]
+    if not below:
+        return []
+    _, prior_dir = max(below)
+    return [spec for _p, spec in _find_specs(prior_dir)]
+
+
 def audit_project(project_dir, gate_path=None):
     """Full owner-free audit of one project dir. Returns the report dict (records + ranked
     list + summary + per-source coverage). Every source that is absent/unwired says so."""
@@ -483,10 +720,11 @@ def audit_project(project_dir, gate_path=None):
     else:
         coverage["facade"] = {"status": "ABSENT"}
 
+    glazing_doc = None
     glazing_path = os.path.join(layout_dir, "glazing-candidates.json")
     if os.path.exists(glazing_path):
-        gl = collect_glazing(_load(glazing_path),
-                             source_file=os.path.relpath(glazing_path, project_dir))
+        glazing_doc = _load(glazing_path)
+        gl = collect_glazing(glazing_doc, source_file=os.path.relpath(glazing_path, project_dir))
         records += gl
         coverage["glazing"] = {"status": "READ" if gl else "UNWIRED", "path": glazing_path}
     else:
@@ -499,6 +737,32 @@ def audit_project(project_dir, gate_path=None):
     per_recs, per_cov = collect_persona(specs)
     records += per_recs
     coverage["persona"] = per_cov
+
+    # ---- Tier-1 self-doubt suite: cross-signal / anomaly / confidence / rebuild-diff -----
+    # These make the machine doubt itself at the RIGHT points with NO owner in the loop: an
+    # owner sign always SUPPRESSES (two-layer law), so they converge toward quiet as the owner
+    # adjudicates. The owner ledger (confirmed[]) drives that suppression; walls + glazing feed
+    # the cross-signal facade checks; the prior reading round feeds the rebuild-diff regression
+    # backstop; corpus priors (absent today) would sharpen anomaly's size bands (UNWIRED honest).
+    confirmed = (review.get("confirmed") if isinstance(review, dict) else None) or []
+    walls = _load_walls(layout_dir)
+    glazing_cands = glazing_doc.get("candidates") if isinstance(glazing_doc, dict) else None
+    priors = _load_priors(project_dir)
+
+    cs_recs, cs_cov = collect_cross_signal(specs, walls, glazing_cands, confirmed)
+    records += cs_recs
+    coverage["cross_signal"] = cs_cov
+    an_recs, an_cov = collect_anomaly(specs, priors, confirmed)
+    records += an_recs
+    coverage["anomaly"] = an_cov
+    cf_recs, cf_cov = collect_confidence(specs, confirmed)
+    records += cf_recs
+    coverage["confidence"] = cf_cov
+    prior_specs = _find_prior_specs(project_dir, layout_dir)
+    current_specs = [spec for _p, spec in specs]
+    rd_recs, rd_cov = collect_rebuild_diff(prior_specs, current_specs, confirmed)
+    records += rd_recs
+    coverage["rebuild_diff"] = rd_cov
 
     ranked = rank(records)
     return {"schema": "interior-ai/self-audit@0.1", "project_dir": project_dir,

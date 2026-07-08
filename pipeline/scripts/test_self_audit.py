@@ -233,6 +233,127 @@ def test_resolve_out_dir_gateless_writes_into_project_not_parent():
     assert A._resolve_out_dir("/tmp/out", None, "/repo/projects/PRJ-X") == "/tmp/out"
 
 
+# ---- Tier-1 self-doubt suite bridge (cross_signal / anomaly / confidence / rebuild_diff) --
+def _rspec(rtype, items=None, builtins=None, subrooms=None, outline=None):
+    return {"schema": "interior-ai/room-spec@0.2",
+            "room": {"type": rtype, "wall_thk_mm": 100,
+                     "outline_mm": outline or [[0, 0], [4000, 0], [4000, 4000], [0, 4000]]},
+            "builtins": builtins or [], "items": items or [], "subrooms": subrooms or []}
+
+
+def test_wrap_domain_maps_signal_to_source_kind_band_and_folds_confidence():
+    rec = {"signal": "cross_signal:facing_vs_kind", "severity": "HIGH", "confidence": 0.8,
+           "room": "living_room", "subjects": ["reading chair"], "detail": "faces wall",
+           "why": "w", "resolve_by": "r"}
+    w = A._wrap_domain(rec)
+    assert w["source"] == "cross_signal" and w["kind"] == "facing_vs_kind"
+    assert w["severity"] == "HIGH" and w["room"] == "living_room" and w["count"] == 1
+    assert "reading chair" in w["detail"] and "0.8" in w["detail"]   # subjects + flag-confidence folded in
+
+
+def test_collect_cross_signal_flags_toilet_in_living_room_and_reports_read():
+    spec = _rspec("living_room", items=[{"name": "WC", "kind": "toilet", "x": 200, "y": 200,
+                                         "w": 400, "d": 700}])
+    recs, cov = A.collect_cross_signal([("s.json", spec)], None, None, [])
+    assert any(r["kind"] == "ffe_vs_room" and r["severity"] == "HIGH" for r in recs)
+    assert cov["status"] == "READ"
+
+
+def test_collect_rebuild_diff_unsigned_reversal_critical_signed_quiet():
+    prior = _rspec("bed", items=[{"name": "b", "kind": "bench", "x": 100, "y": 100,
+                                  "w": 1200, "d": 400, "rot": 180}])
+    curr = _rspec("bed", items=[{"name": "b", "kind": "bench", "x": 100, "y": 100,
+                                 "w": 1200, "d": 400, "rot": 0}])          # a 180 facing flip
+    recs, cov = A.collect_rebuild_diff([prior], [curr], confirmed=[])
+    assert any(r["kind"] == "semantic_change_unexplained" and r["severity"] == "CRITICAL"
+               for r in recs)
+    assert cov["status"] == "READ"
+    # the SAME change, owner-signed -> quiet (no CRITICAL) -- the whole asymmetry
+    signed = [{"name": "b", "rot": 0, "w": 1200, "d": 400}]
+    recs2, _ = A.collect_rebuild_diff([prior], [curr], confirmed=signed)
+    assert not any(r["severity"] == "CRITICAL" for r in recs2)
+
+
+def test_collect_rebuild_diff_no_prior_round_is_unwired_not_clean():
+    curr = _rspec("bed", items=[{"name": "b", "kind": "bench", "x": 100, "y": 100,
+                                 "w": 1200, "d": 400, "rot": 0}])
+    _recs, cov = A.collect_rebuild_diff([], [curr], confirmed=[])
+    assert cov["status"] == "UNWIRED"          # a first build has nothing to diff (never a pass)
+
+
+def test_collect_anomaly_prior_band_unwired_without_corpus():
+    spec = _rspec("bedroom", items=[{"name": "b", "kind": "bed", "x": 0, "y": 0,
+                                     "w": 1800, "d": 2000}])
+    _recs, cov = A.collect_anomaly([("s.json", spec)], None, [])
+    assert "UNWIRED" in cov["prior_band"] and cov["status"] == "READ"
+
+
+def test_collect_confidence_flags_assumed_facing_and_signature_suppresses():
+    spec = _rspec("r", items=[{"name": "ch", "kind": "chair", "x": 1800, "y": 1800,
+                               "w": 500, "d": 500}])          # rotless -> facing assumed
+    recs, cov = A.collect_confidence([("s.json", spec)], [])
+    assert any(r["kind"] == "facing" for r in recs) and cov["flagged_unsure"] >= 1
+    signed = [{"name": "ch", "rot": 180, "w": 500, "d": 500}]
+    recs2, _ = A.collect_confidence([("s.json", spec)], signed)
+    assert not any(r["kind"] == "facing" for r in recs2)      # owner sign -> 1.0 -> suppressed
+
+
+def test_round_version_parse():
+    assert A._round_version("/x/03_layout/v4") == 4
+    assert A._round_version("/x/03_layout") == 0
+    assert A._round_version("/x/03_layout/v12/") == 12
+
+
+def test_wrap_domain_is_non_raising_on_malformed_records():
+    # a BUGGY module returning a non-dict, a non-string signal, or an out-of-taxonomy severity must
+    # NOT crash the audit -- _wrap_domain drops/clamps instead of KeyError-ing self_audit to death.
+    assert A._wrap_domain("not a dict") is None
+    assert A._wrap_domain(42) is None
+    clamped = A._wrap_domain({"signal": 123, "severity": "WARN", "detail": "d"})
+    assert clamped is not None and clamped["severity"] == "LOW"       # bad band -> safe advisory
+    kept = A._wrap_all(["junk", {"signal": "cross_signal:x", "severity": "HIGH", "detail": "d"}])
+    assert len(kept) == 1 and kept[0]["severity"] == "HIGH"           # drops the junk, keeps the valid
+
+
+def test_find_prior_specs_ignores_foreign_stage_scene_graphs():
+    # rebuild_diff's prior round must be a LAYOUT reading round -- never a scene-graph copied into
+    # another stage (a 04_visualization render ghost at an in-between version) picked purely by number.
+    import os as _os
+    import json as _json
+    import tempfile
+    import shutil
+    root = tempfile.mkdtemp()
+    try:
+        proj = _os.path.join(root, "PRJ")
+        lay = _os.path.join(proj, "03_layout")
+        v4 = _os.path.join(lay, "v4")
+        viz = _os.path.join(proj, "04_visualization", "v2")
+        for d in (lay, v4, viz):
+            _os.makedirs(d)
+
+        def _sg(dirp, room, rot):
+            with open(_os.path.join(dirp, f"scene-graph.{room}.json"), "w", encoding="utf-8") as fh:
+                _json.dump({"room": {"type": room,
+                                     "outline_mm": [[0, 0], [1000, 0], [1000, 1000], [0, 1000]]},
+                            "items": [{"name": "p", "kind": "bench", "x": 0, "y": 0,
+                                       "w": 800, "d": 400, "rot": rot}]}, fh)
+        _sg(lay, "bed", 180)         # the TRUE prior: the layout root (v0)
+        _sg(v4, "bed", 0)            # the current round (v4)
+        _sg(viz, "ghostroom", 999)   # a foreign render-stage scene-graph at an in-between version
+        prior = A._find_prior_specs(proj, v4)
+        assert {s["room"]["type"] for s in prior} == {"bed"}   # layout root only, never the ghost
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def test_suite_collectors_absent_on_empty_specs():
+    cs_r, cs_c = A.collect_cross_signal([], None, None, [])
+    an_r, an_c = A.collect_anomaly([], None, [])
+    cf_r, cf_c = A.collect_confidence([], [])
+    for recs, cov in ((cs_r, cs_c), (an_r, an_c), (cf_r, cf_c)):
+        assert recs == [] and cov["status"] == "ABSENT"
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:
