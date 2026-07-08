@@ -1306,3 +1306,37 @@ corpus with injected contradictions doesn't exist locally (the same discipline t
 an adapter lands). Build it when a labeled-error corpus arrives. **Owner tuning knob:** confidence flags
 EVERY unsigned hand-typed kind at MEDIUM (16 on this project) — a deliberate "sign your identities" stance;
 bump bare-kind to provenance if hand-typing is to be treated as authoritative. Commits local, unpushed.
+
+### 2026-07-08 (later) — adjudicating that first live run: the CRITICAL was the instrument crying wolf
+
+Honest correction to the paragraph above. Working option B ("pay the tool back — adjudicate its top
+findings"), each was adversarially verified (3-agent workflow) against the **real render + ledger code**
+before acting. Result overturned the celebration:
+
+- **The flagship bench CRITICAL was a FALSE POSITIVE of severity — not a regression.** A bench is NOT in
+  `build_floor._FURN_KINDS`, so `place_massing` renders it as a single centred `add_oriented_box`, which is
+  **180-rotationally symmetric**: v3-rot-180 and v4-rot-0 are a byte-identical mesh. The 180° "flip" changes
+  nothing on screen. The tub chairs looked like the same class but are `armchair` (asymmetric backrest via
+  `furniture.parts`) where 180° truly flips — THAT is the real Row-5 wound. rebuild_diff abstained only on
+  `shape=="round"` and missed the far more common **plain-box / table symmetry**.
+- **Fix (machine layer, mine to make):** `_facing_change` now folds a non-directional piece's rot into its
+  180 render symmetry before judging (`_DIRECTIONAL_KINDS = {sofa,loveseat,chair,dining_chair,armchair,bed}`
+  — the only asymmetric `furniture.py` builders; tables fold too, being a centred top on symmetric legs). A
+  box maxes at a folded 90° → reaches MEDIUM (a visible reorient) but **never the CRITICAL reversal band**;
+  directional kinds skip the fold, so the tub-chair CRITICAL is preserved. Keyed off the renderer's own
+  directional set → self-tracking if a kind later gains a front. +6 tests (incl. a real bench v3→v4 case and
+  a furniture-sync pin); **61 green**. Live re-run: **doubt-score 1291 → 291, CRITICAL 1 → 0** — a false
+  positive removed, nothing real hidden.
+- **The one REAL regression on this project was the HIGH, not the CRITICAL:** the sitting-room orchid
+  `console` (v3 fused `cabinet` → v4 `console`, IoU-0.595 pair) is the correct result of the owner's
+  2026-07-06 un-merge that was left in a **prose note** with no `confirmed_kind` — precisely the durable-
+  signature wound. Prepared a ready-to-sign ledger entry (owner-only to apply; **not** auto-signed — owner
+  paused); ratifying it drops the HIGH to a LOW provenance trace and makes `resolve_kind` lock it every
+  rebuild. See `projects/PRJ-2026-002_c001-house/03_layout/v4/review-selfaudit-2026-07-08.md`.
+
+**Lesson (the north star sharpened):** "doubt at the RIGHT points" means calibrating severity to the
+*observable* consequence, not the raw field delta. A doubt instrument's own first loud finding is itself a
+hypothesis to falsify — the payoff of building it was that it exposed its own over-firing on render-inert
+flips. Remaining 291 = console HIGH (100) + 18 unsigned-hand-typed-identity MEDIUM (180, the systemic
+no-signs/no-priors band the Structured3D-priors lane would corroborate wholesale) + 11 LOW. Commits local,
+unpushed.

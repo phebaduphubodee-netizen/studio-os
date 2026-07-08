@@ -18,10 +18,13 @@ LAYOUT = os.path.abspath(os.path.join(
     HERE, "..", "..", "projects", "PRJ-2026-002_c001-house", "03_layout"))
 V3_SITTING = os.path.join(LAYOUT, "scene-graph.sitting_room.json")
 V4_SITTING = os.path.join(LAYOUT, "v4", "scene-graph.sitting_room.json")
+V3_MASTER = os.path.join(LAYOUT, "scene-graph.master_bedroom.json")
+V4_MASTER = os.path.join(LAYOUT, "v4", "scene-graph.master_bedroom.json")
 V4_REVIEW = os.path.join(LAYOUT, "v4", "placement-review.json")
 
 TUB_L = "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)"      # v4 (renamed) left tub chair
 TUB_R = "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)"      # v4 (renamed) right tub chair
+BENCH = "ม้านั่งปลายเตียง (bench)"                          # end-of-bed bench (a plain box)
 
 
 def _load(p):
@@ -76,6 +79,57 @@ def test_small_nudge_and_round_piece_abstain():
     cu = copy.deepcopy(pr)
     cu["items"][0]["rot"] = 200
     assert RD.diff_rounds([pr], [cu]) == []
+
+
+def test_box_kind_180_flip_is_render_inert_and_abstains():
+    # a bench is a plain box (NOT in _DIRECTIONAL_KINDS): the renderer draws it as a single centered
+    # box, so a 180 flip is a byte-identical mesh -> NO facing flag, exactly as a round piece has no
+    # facing. This is the bench-180 first-live-run false CRITICAL the render-symmetry fold closes.
+    prior = _room("den", items=[{"name": "bench", "kind": "bench", "x": 0, "y": 0,
+                                 "w": 500, "d": 1000, "rot": 180}])
+    curr = copy.deepcopy(prior)
+    curr["items"][0]["rot"] = 0                          # 180 -> 0, would be a naive CRITICAL reversal
+    assert RD.diff_rounds([prior], [curr]) == []
+    # a TABLE renders as a centered top on 4 symmetric legs -> also 180-symmetric -> abstains too,
+    # even though side_table IS in build_floor._FURN_KINDS (detailed mesh != directional mesh).
+    pr = _room("den", items=[{"name": "t", "kind": "side_table", "x": 0, "y": 0,
+                              "w": 400, "d": 600, "rot": 0}])
+    cu = copy.deepcopy(pr)
+    cu["items"][0]["rot"] = 180
+    assert RD.diff_rounds([pr], [cu]) == []
+
+
+def test_box_kind_90_turn_still_flags_medium():
+    # a 90 turn of a NON-square box reorients its footprint (visible) -> folded delta 90 -> MEDIUM;
+    # a box can never reach the reversal band, so this is the ceiling severity for a box facing move.
+    prior = _room("den", items=[{"name": "b", "kind": "bench", "x": 0, "y": 0,
+                                 "w": 500, "d": 1000, "rot": 0}])
+    curr = copy.deepcopy(prior)
+    curr["items"][0]["rot"] = 90
+    u = _unexplained(RD.diff_rounds([prior], [curr]))
+    assert len(u) == 1 and u[0]["severity"] == "MEDIUM"
+
+
+def test_directional_kind_180_flip_stays_critical():
+    # regression guard for the fold: an ASYMMETRIC render (sofa/armchair/bed carry a back/headboard)
+    # flipping 180 is a REAL visible reversal and must stay CRITICAL -- the fold must skip these.
+    for kind in ("armchair", "sofa", "bed"):
+        prior = _room("den", items=[{"name": "p", "kind": kind, "x": 0, "y": 0,
+                                     "w": 1000, "d": 600, "rot": 0}])
+        curr = copy.deepcopy(prior)
+        curr["items"][0]["rot"] = 180
+        u = _unexplained(RD.diff_rounds([prior], [curr]))
+        assert len(u) == 1 and u[0]["severity"] == "CRITICAL", kind
+
+
+def test_directional_kinds_match_furniture_asymmetric_builders():
+    # _DIRECTIONAL_KINDS drives the render-symmetry fold; pin it to furniture.py's actual
+    # 180-ASYMMETRIC builders (_sofa/_chair/_bed add a back/headboard; _table + _block are symmetric)
+    # so a newly-added furniture builder cannot silently drift the instrument's sensitivity.
+    import furniture as F
+    asym = {F._sofa, F._chair, F._bed}
+    derived = {k for k, b in F._BUILDERS.items() if b in asym}
+    assert set(RD._DIRECTIONAL_KINDS) == derived
 
 
 def test_kind_change_unsigned_is_high():
@@ -220,6 +274,16 @@ def test_real_v3_to_v4_injected_flip_is_critical_and_signable():
     assert loud and loud[0]["severity"] == "CRITICAL"
     signed = [{"name": TUB_L, "rot": 190, "w": tubL["w"], "d": tubL["d"], "by": "owner"}]
     assert _touching(_unexplained(RD.diff_rounds([v3], [regressed], confirmed=signed)), TUB_L) == []
+
+
+def test_real_bench_180_is_render_inert_not_critical():
+    # THE first-live-run false CRITICAL, on real data: v3 typed the end-of-bed bench rot 180; the v4
+    # clean rebuild dropped it to 0/south. The bench is a plain box, so a 180 flip is a byte-identical
+    # render -> it must NOT surface as the CRITICAL reversal the naive delta fired. (The bench's other
+    # doubts -- unsigned hand-typed identity -- live in a different collector, not this facing lane.)
+    v3, v4 = _load(V3_MASTER), _load(V4_MASTER)
+    recs = RD.diff_rounds([v3], [v4], confirmed=None)
+    assert _touching(_unexplained(recs), BENCH) == []
 
 
 def test_real_diff_is_deterministic():

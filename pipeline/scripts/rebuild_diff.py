@@ -30,6 +30,16 @@ DESIGN LAWS (STUDIO-OS):
     (shape round/circle) has no meaningful facing -> its rot change is never flagged. A malformed
     rot (unparseable) can neither be shown to change NOR suppressed cleanly -> we abstain rather
     than cry wolf. A false positive on the flagship tub-chair case is a hard failure.
+  * RENDER SYMMETRY. A facing change is a regression only if it is OBSERVABLE in the output. The
+    renderer (build_floor.place_massing) draws only sofa/chair/bed kinds with a DIRECTIONAL mesh
+    (a backrest/headboard on the +Y side, furniture.parts _sofa/_chair/_bed); EVERY other kind --
+    including tables (a centered top on 4 symmetric legs) and every plain box (bench/console/cabinet
+    /wardrobe/tv_console/...) -- is 180-ROTATIONALLY SYMMETRIC, so a 180 flip is a byte-identical
+    mesh. We therefore fold a non-directional piece's rot into its 180 symmetry before judging: what
+    survives maxes at 90deg, so such a piece can only ever reach MEDIUM, never the reversal band.
+    This is why the bench (a plain box) flipping 180 is NOT a CRITICAL -- the flip is invisible --
+    while the tub chairs (armchairs, asymmetric) flipping 180 genuinely IS. Keyed off the same set
+    the renderer uses, so if a kind gains a directional mesh the instrument's sensitivity follows.
   * HONEST COVERAGE. diff_coverage distinguishes READ (two rounds shared a room, diffed) from
     UNWIRED (no prior round, or no shared room.type -- a first build has NOTHING to diff, which is
     NOT a clean pass) from ABSENT (no current round). "0 flags" must never secretly mean "did not
@@ -72,6 +82,17 @@ DEFAULTS = dict(iou_match=IOU_MATCH, rot_abstain_deg=ROT_ABSTAIN_DEG, rot_flip_d
 
 _SEV_ORDER = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}
 _ROUND_SHAPES = {"round", "circle", "disc", "disk", "oval"}
+# Kinds whose RENDER mesh carries a front -- ASYMMETRIC under a 180 rotation, so a facing flip is
+# OBSERVABLE and a reversal is a real regression. build_floor.place_massing gives a directional
+# detailed mesh (furniture.parts) ONLY to these: the _sofa builder (sofa/loveseat -> backrest) and
+# the _chair builder (chair/dining_chair/armchair -> backrest) and the _bed builder (bed -> headboard
+# + pillows), all on the +Y side. EVERY other kind renders 180-symmetric: the _table builder
+# (coffee_table/dining_table/desk/side_table/nightstand = a centered top on 4 symmetric legs) and the
+# _block fallback (bench/console/cabinet/wardrobe/tv_console/headboard/toilet/... = a single centered
+# box). A facing change on a non-directional kind is render-inert (the bench-180 false CRITICAL).
+# Mirrors furniture._BUILDERS x {_sofa,_chair,_bed}; test_rebuild_diff pins the sync so a new builder
+# cannot silently drift the instrument's sensitivity.
+_DIRECTIONAL_KINDS = frozenset({"sofa", "loveseat", "chair", "dining_chair", "armchair", "bed"})
 
 
 # ---- record + normalisation ----------------------------------------------------------
@@ -137,16 +158,32 @@ def _is_round(p):
     return str((p or {}).get("shape", "")).strip().lower() in _ROUND_SHAPES
 
 
+def _is_box_render(p):
+    """True when the renderer draws this piece as a 180-rotationally-symmetric mass (its kind is NOT
+    in _DIRECTIONAL_KINDS) -- a single _block box, or a _table (centered top on 4 symmetric legs).
+    For such a piece a 180 flip is a byte-identical mesh, so its facing is not observable through a
+    reversal. Absent/blank kind -> box (the renderer's own _block fallback)."""
+    return PG._norm_kind((p or {}).get("kind")) not in _DIRECTIONAL_KINDS
+
+
 def _rot_delta(r0, r1):
     """Minimal circular distance (deg, 0..180) between two rotations, absent rot defaulting to 0
     (the renderer's default facing = south). None if EITHER rot is present-but-unparseable -- an
     unreadable orientation must not be coerced into a false 'changed' (conservative)."""
+    return _rot_delta_mod(r0, r1, 360)
+
+
+def _rot_delta_mod(r0, r1, period):
+    """Circular rot distance (deg) after folding both rotations into a `period`-deg rotational
+    symmetry: period 360 = the raw distance (a directional mesh, every orientation distinct); period
+    180 = a plain box / table (indistinguishable under a 180 flip -> a 180 delta folds to 0). Absent
+    rot defaults to 0 (renderer default = south). None if EITHER rot is present-but-unparseable."""
     a = PG._norm_rot(0 if r0 is None else r0)
     b = PG._norm_rot(0 if r1 is None else r1)
     if a is None or b is None:
         return None
-    d = abs(a - b) % 360
-    return min(d, 360 - d)
+    d = abs(a - b) % period
+    return min(d, period - d)
 
 
 # ---- piece matching ------------------------------------------------------------------
@@ -222,14 +259,24 @@ def _subjects(prior, current):
 
 def _facing_change(prior, current, room, confirmed, p):
     """rot/facing change record(s) for a matched pair, or []. ABSTAINS on: a radially-symmetric
-    piece (rot cosmetic), a sub-threshold nudge, or an unparseable rot. SUPPRESSES (LOW provenance)
-    when the CURRENT piece's owner-signed rot equals its built rot; else raises unexplained, CRITICAL
-    for a reversal (>= rot_flip_deg) and MEDIUM otherwise."""
+    piece (rot cosmetic), a non-directional (box/table) piece whose change folds away under its 180
+    render symmetry, a sub-threshold nudge, or an unparseable rot. SUPPRESSES (LOW provenance) when
+    the CURRENT piece's owner-signed rot equals its built rot; else raises unexplained, CRITICAL for
+    a reversal (>= rot_flip_deg) and MEDIUM otherwise."""
     if _is_round(prior) or _is_round(current):
         return []
     d = _rot_delta(prior.get("rot"), current.get("rot"))
     if d is None or d <= p["rot_abstain_deg"]:
         return []
+    # RENDER SYMMETRY: when BOTH rounds draw this piece as a 180-symmetric mass (a plain box or a
+    # table -- not a directional sofa/chair/bed), fold the change into that 180 symmetry. A 180 flip
+    # then collapses to 0 (byte-identical mesh -> abstain, exactly as a round piece has no facing);
+    # what survives maxes at 90, so the piece can reach MEDIUM but NEVER the reversal band. Both
+    # rounds must be box-render: if either round is directional the flip may be visible -> judge raw.
+    if _is_box_render(prior) and _is_box_render(current):
+        d = _rot_delta_mod(prior.get("rot"), current.get("rot"), 180)
+        if d is None or d <= p["rot_abstain_deg"]:
+            return []
     a = PG._norm_rot(0 if prior.get("rot") is None else prior.get("rot"))
     b = PG._norm_rot(0 if current.get("rot") is None else current.get("rot"))
     subs = _subjects(prior, current)

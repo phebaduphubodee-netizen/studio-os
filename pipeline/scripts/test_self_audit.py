@@ -260,9 +260,12 @@ def test_collect_cross_signal_flags_toilet_in_living_room_and_reports_read():
 
 
 def test_collect_rebuild_diff_unsigned_reversal_critical_signed_quiet():
-    prior = _rspec("bed", items=[{"name": "b", "kind": "bench", "x": 100, "y": 100,
+    # a DIRECTIONAL kind (sofa: asymmetric render, a real front) is required for a 180 flip to be an
+    # OBSERVABLE reversal -- a plain box (bench) folds away under 180 render symmetry (see the
+    # companion test below and test_rebuild_diff). This pins the CRITICAL-vs-signed asymmetry.
+    prior = _rspec("bed", items=[{"name": "b", "kind": "sofa", "x": 100, "y": 100,
                                   "w": 1200, "d": 400, "rot": 180}])
-    curr = _rspec("bed", items=[{"name": "b", "kind": "bench", "x": 100, "y": 100,
+    curr = _rspec("bed", items=[{"name": "b", "kind": "sofa", "x": 100, "y": 100,
                                  "w": 1200, "d": 400, "rot": 0}])          # a 180 facing flip
     recs, cov = A.collect_rebuild_diff([prior], [curr], confirmed=[])
     assert any(r["kind"] == "semantic_change_unexplained" and r["severity"] == "CRITICAL"
@@ -272,6 +275,18 @@ def test_collect_rebuild_diff_unsigned_reversal_critical_signed_quiet():
     signed = [{"name": "b", "rot": 0, "w": 1200, "d": 400}]
     recs2, _ = A.collect_rebuild_diff([prior], [curr], confirmed=signed)
     assert not any(r["severity"] == "CRITICAL" for r in recs2)
+
+
+def test_collect_rebuild_diff_box_reversal_is_not_critical():
+    # the bench-180 first-live-run false CRITICAL, through the aggregator: a plain box flipping 180
+    # is render-inert, so collect_rebuild_diff must emit NO CRITICAL for it (only the module-level
+    # facing lane is exercised here -- the box's identity doubts live in a separate collector).
+    prior = _rspec("bed", items=[{"name": "b", "kind": "bench", "x": 100, "y": 100,
+                                  "w": 1200, "d": 400, "rot": 180}])
+    curr = _rspec("bed", items=[{"name": "b", "kind": "bench", "x": 100, "y": 100,
+                                 "w": 1200, "d": 400, "rot": 0}])
+    recs, _ = A.collect_rebuild_diff([prior], [curr], confirmed=[])
+    assert not any(r["severity"] == "CRITICAL" for r in recs)
 
 
 def test_collect_rebuild_diff_no_prior_round_is_unwired_not_clean():
