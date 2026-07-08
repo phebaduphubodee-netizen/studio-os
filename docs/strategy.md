@@ -1266,3 +1266,43 @@ implausible (furniture length+span clears the ~99 mm frame slot; the real sheet 
 documented, owner-sign is the backstop. Machine-blind list: 1 of 2 now closed (glass edge); door-opening
 remains. Commits local, unpushed (push still gated on the v4-PNG asset-convention call; the live
 `facade-candidates.json`/`.png` left in v4, JSON tracked like glazing-candidates.json, PNG untracked).
+
+---
+
+## 2026-07-08 — Tier-1 self-doubt SUITE: the machine catches its own errors with no answer key
+
+Owner brief (Tier 1, "จับผิดตัวเองได้โดยไม่ต้องมีเฉลย"): 4 owner-free self-doubt instruments. Built via a
+build+adversarial-verify workflow (8 subagents), then hardened + wired into `self_audit.py` + re-scrutinized.
+All pure-logic, two-layer (an owner sign SUPPRESSES → converges to quiet), conservative (abstain, never cry
+wolf), honest-coverage. New modules in `pipeline/scripts/`, each returning a shared domain record that
+`self_audit._wrap_domain` maps into the ranked doubt list:
+
+- **cross_signal.py** — two INDEPENDENT reads contradict = a checkable error with NO GT (facing⊥wall,
+  function⊥placement, zone⊥geometry, facade⊥wall, FF&E⊥room-type). The glass-view exoneration is
+  generalised to ANY facade edge (was south-only — a latent FP the verifier found).
+- **rebuild_diff.py** — closes the v4 wound directly: an UNSIGNED semantic change between reading rounds
+  fires (facing reversal ≥135° = CRITICAL); an owner-signed change stays quiet (LOW). The asymmetry —
+  signed=quiet, unsigned=loud — IS the instrument.
+- **anomaly_flags.py** — prior violation (impossible size/aspect, abnormal count). Built-in gross bounds
+  always run (useful with no corpus); kind_priors bands sharpen when present (UNWIRED-honest without).
+- **confidence.py** — the ROOT fix for "ship a WRONG answer CONFIDENTLY": every semantic read carries a
+  calibrated confidence (owner-signed 1.0 > corroborated 0.7 > provenance 0.55 > **assumed/default 0.3**),
+  and a below-threshold (0.5) read emits a "say-unsure" record instead of shipping the assumption silently.
+
+**The instrument earned its keep on the first live run.** PRJ-2026-002 master-bedroom bench
+`ม้านั่งปลายเตียง` facing went **rot 180 (v3) → omitted=0 (v4), UNSIGNED — a 180° flip nothing ever
+flagged** (the placement gate is facing-blind, exactly as in the v4 lesson). rebuild_diff surfaced it
+CRITICAL; confidence corroborated (v4 bench rot omitted → assumed-south). The v4 tub-chair facing change,
+being owner-signed, correctly stayed quiet. cross_signal + anomaly = zero false positives on the clean rooms.
+doubt-score 23 → 1291 (dominated by the one real CRITICAL, not noise — band-first ranking holds).
+
+**Scrutiny caught two wiring gaps (both fixed, tested):** `_find_prior_specs` must scope prior-round
+discovery to the LAYOUT stage dir (a scene-graph copied into another stage would be mistaken for the prior
+read); `_wrap_domain` must be non-raising (a malformed module record must degrade to dropped, not crash the
+whole audit). 330 tests green across the suite + foundations.
+
+**Deferred, honestly:** no benchmark F7 corpus-half — the suite is owner-free/no-GT by design, and a GT
+corpus with injected contradictions doesn't exist locally (the same discipline that kept F2/F3 UNWIRED until
+an adapter lands). Build it when a labeled-error corpus arrives. **Owner tuning knob:** confidence flags
+EVERY unsigned hand-typed kind at MEDIUM (16 on this project) — a deliberate "sign your identities" stance;
+bump bare-kind to provenance if hand-typing is to be treated as authoritative. Commits local, unpushed.
