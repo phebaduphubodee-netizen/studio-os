@@ -44,7 +44,18 @@ Both traps will bite ANY future rot-emitting reader (they are properties of the 
 - Strip presence leaks WHICH elements are facing-kinds into the ink (kind itself is never drawn); F1 is not scored on this lane, and F3 blindness is untouched (indoor flip → byte-identical SVG, pinned).
 - gt-slice-labeled was REGENERATED this session so meta.rot_convention now carries the validated stamp (values unchanged; the stale pre-validation warning string is gone).
 
-## 6. Reproduce
+## 6b. SCALE-UP ADDENDUM (same day, later session): 14 → 200 scenes, n 27 → 568
+
+The tail-range timeout that had capped the labeled slice at 14 scenes was TRANSIENT: the remote zip's central directory read fine on re-probe, enabling a **surgical fetch — all 1,115 `semantic.png` of `panorama_00` (scenes 00000–00199) = 8.3 MB transferred vs the 10.78 GB zip** (per-entry range requests; paired `instance.png` from the on-disk bbox.zip; 0 failures, 0 unpaired; tools kept at `studio-datasets/structured3d/_tools/`, provenance in SOURCE.txt). Labels: 4,037 objects (3,068 facing) over 197/200 scenes → `gt-slice-labeled` regenerated at 200 scenes → adapter selftest PASS (F2 WIRED 197/200 files).
+
+| metric (200 scenes, run dir `synth-f2-200/`) | value | vs 14-scene run |
+|---|---|---|
+| **cardinal_correct, visual no-bed** | **94.9%** (n=494: exact 469 / flipped 0 / wrong 1 / unreported 24) | 100% at n=21 |
+| cardinal_correct, visual beds-in | 94.7% (n=568) | 100% at n=27 |
+| blind baseline (same detection set) | 0.0% (all unreported) | unchanged |
+| wall-prior ORACLE-WALLS band | 31.4% no-bed (unreported 203, wrong 118) | 52.4% at n=21 |
+
+Aggregate n is no longer low_n (494 ≥ 20); per-scene verdicts remain low-n. **Failure anatomy at scale (every case inspected):** all 3 wrongs are fused clusters containing TWO strips from two furniture pieces — the neighbour's strip dominates, a cluster-level ambiguity (the pred box genuinely covers both), not angular error; the 27 unreporteds are multi-strip washouts where dominance correctly refuses to pick (conservative silence working as designed). So closed-loop ink recovery at scale ≈ 99.4% when the cluster is single-piece, and the visible ceiling is set by the reader's fusion behaviour — the same wall-aware-reader gap the F3 lane already named. The oracle band's drop (52→31%) is the prior meeting reality: 41% of matched facing pairs are not wall-backed at all — quantified reach of a wall prior, exactly what the band is for.
 
 ```
 cd pipeline/scripts
