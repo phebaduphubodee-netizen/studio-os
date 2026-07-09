@@ -1427,3 +1427,37 @@ member level). LOW — oversize+mixed exclusion buckets overlap by 35: now repor
 additive 186**. North-star check: this moved the REAL goal (a bigger, honest F3 slice + 66% more outdoor cases)
 and the residual furniture-only-reader limit is surfaced loudly, not dressed up. 63 synth/adapter/benchmark
 tests green (+2 pinning the member-level loss + distinct-exclusion accounting). Commits local, unpushed.
+
+## 2026-07-09 — F2 rotation-convention reconciled (parallel session, download-free slice of track A)
+
+**The load-bearing F2 caveat both `structured3d_adapter.py` and `render_mask_labels.py` deferred is now
+resolved at the coordinate layer — no render download needed, no file another pane holds touched.** The
+adapter emits GT `rot` as native yaw (`atan2(basis[0].y, x)`); benchmark_reader scores build_floor
+`F(rot)=(sin,−cos)`. Both files punted: "reconcile the ~270° offset AND the y-handedness before trusting F2
+angular buckets." New module `pipeline/scripts/rot_reconcile.py` (+ test, 11 green) **PROVES
+`build_floor_rot = (native_yaw + 90) mod 360` is a PURE ROTATION, not a mirror** — three ways (closed-form ==
+independent vector inverse `atan2(fx,−fy)` to 5.7e-14° over 360°; a reflection `K−native` residual maxes at
+180° → rejected; the four cardinals match `facing_reader._FACING` exactly) — and reproduces the silent-F2
+corruption against the real scorer (native GT vs a build_floor reader → `cardinal_correct=0.0`; after
+`convert_gt_doc()` → 1.0). **Independently verified by a 6-agent workflow: 3 blind replicators (forbidden to
+read the module) all derived +90/rotation, 3 high-effort refuters none refuted.**
+
+**The "y-handedness UNVALIDATED" fear was resolved, not just asserted:** nothing flips Y in the *scored* data
+path (synth draws mm at scale 1.0; `svg_plan_reader:45` is handedness-blind and emits NO rot at all), and a
+reflection reverses cyclic order whereas this map preserves it. **The residual F2 caveat is NARROWED, not
+closed, to two download-gated non-code items:** (1) whether S3D `basis[0]` IS the object's semantic front
+(needs render/3D-FRONT), and (2) no rot-emitting reader exists yet — so F2's angular buckets stay
+un-exercisable end-to-end regardless of convention. Honest: this makes a future reader's F2 *trustworthy on the
+offset*; it does not make F2 pass today.
+
+**Adjacent adapter bug found + reproduced (handed off, not fixed — belongs to the adapter's geometry
+contract):** in the kinded lane, `structured3d_adapter` emits `x/y/w/d` as the already-rotated world AABB +
+separate `rot`, but `placement_gate.footprint()` RE-rotates `x/y/w/d` by `rot`. So any kinded object at
+`rot ≠ 0/180` scores a wrong footprint — **90/270 TRANSPOSED (IoU 0.25 → detection MISS; and 90/270 are among
+the commonest facings), 45/135 inflated ~2× (IoU 0.5); only 0/180 safe** — invisible to gt-vs-gt (symmetric).
+Fix = emit the object's LOCAL un-yawed w×d so `footprint()` rebuilds the true box. **The severity was corrected
+UP by the adversarial refuter** (the first pass wrongly called cardinals safe): the instrument's own finding
+was a hypothesis the panel falsified-and-sharpened — the same lesson as the tier-1 CRITICAL false positive.
+Scrutinize also caught a real robustness gap pre-commit: `convert_gt_doc` was not idempotent (a double
+application silently adds 180° = a facing reversal) → now RAISES on an already-reconciled doc. Report
+`qa/reports/f2-rot-reconcile-2026-07-09.md`. Commits local, unpushed.
