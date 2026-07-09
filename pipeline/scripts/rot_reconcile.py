@@ -58,20 +58,22 @@ WHAT STILL STAYS DOWNLOAD-GATED (semantic layer -- honestly NOT solved here):
   +90, no mirror); the residual F2 caveat is the semantic front-axis + the missing rot-reader,
   which this module names precisely instead of the vague "reconcile before real reader."
 
-ADJACENT FINDING (reported, NOT fixed here -- belongs to the adapter's geometry contract;
-severity CORRECTED UP by adversarial verification 2026-07-09):
+ADJACENT FINDING -- NOW RESOLVED (2026-07-09; was: reported, belonged to the adapter's geometry
+contract; severity CORRECTED UP by adversarial verification):
   placement_gate.footprint(x/y/w/d, rot) RE-ROTATES x/y/w/d by rot (it treats them as the
-  UN-rotated placed rect, the benchmark generator's schema). But structured3d_adapter emits
-  x/y/w/d as the ALREADY-rotated tight world AABB PLUS a separate rot. So in the KINDED lane
-  (labels supplied -> rot emitted), a box at ANY rot other than 0/180 has a WRONG scored footprint
+  UN-rotated placed rect, the benchmark generator's schema). structured3d_adapter USED to emit
+  x/y/w/d as the ALREADY-rotated tight world AABB PLUS a separate rot, so in the KINDED lane
+  (labels supplied -> rot emitted) a box at ANY rot other than 0/180 had a WRONG scored footprint
   (verified on a 1000x400 box):
       rot 0,180  -> IoU 1.0 (identical, safe)
       rot 90,270 -> TRANSPOSED (w/d swapped): IoU 0.25 vs the true AABB -> a DETECTION MISS
       rot 45,135 -> INFLATED up to ~2x area: IoU ~0.5
-  90/270 are among the MOST COMMON furniture facings (a piece square-on to a side wall), so this is
-  BROAD, not a rare diagonal tail -- and it is invisible to gt-vs-gt (symmetric). Fix belongs
-  upstream: when emitting rot, emit x/y/w/d as the object's LOCAL (un-yawed) w x d so footprint()
-  rebuilds the true oriented box. Flagged in qa/reports/ so wiring F2 for real also closes this.
+  90/270 are among the MOST COMMON furniture facings (a piece square-on to a side wall), so this
+  was BROAD, not a rare diagonal tail -- and invisible to gt-vs-gt (symmetric). FIXED in two paired
+  places: (1) the adapter's kinded lane now emits x/y/w/d as the object's LOCAL (un-yawed) w x d so
+  footprint() rebuilds the true oriented box; (2) convert_gt_doc SWAPS w<->d (centre held) alongside
+  the +90 so the footprint stays invariant across the conversion too (both pinned by non-square
+  tests: test_structured3d_adapter + test_rot_reconcile).
 
 USAGE:
   python rot_reconcile.py --prove                 # the full proof (no data), prints the checks
@@ -128,8 +130,12 @@ def convert_gt_doc(doc):
     is build_floor rot, so a future rot-EMITTING reader can be scored against it correctly.
     Pure: no I/O, original untouched. Elements without a rot key are left exactly as-is (kind-
     less / rot-less honesty contract preserved). Stamps meta so the conversion is not invisible.
-    NOTE: this fixes the ANGLE CONVENTION only; it does NOT assert basis[0] is the semantic front
-    (still download-gated) -- the meta stamp says so.
+    Also SWAPS w<->d (centre held) on each converted element: the +90 rotation transposes
+    placement_gate.footprint's AABB, so the swap keeps the SCORED footprint invariant across the
+    conversion (a non-square box would otherwise detection-miss itself post-reconcile). This closes
+    the ADJACENT FINDING in the module docstring. NOTE: this fixes the ANGLE CONVENTION + the paired
+    footprint geometry only; it does NOT assert basis[0] is the semantic front (still download-
+    gated) -- the meta stamp says so.
 
     NOT idempotent by design: applying it twice would add 180deg = a silent facing REVERSAL. A doc
     that already carries meta.rot_reconciled RAISES (loud, matching the house 'never silent-wrong'
@@ -143,11 +149,24 @@ def convert_gt_doc(doc):
     for el in out.get("elements", []):
         if el.get("rot") is not None:
             el["rot"] = round(native_yaw_to_build_floor(el["rot"]), 1)
+            # The +90 convention rotation TRANSPOSES placement_gate.footprint's AABB (extents
+            # w|cos|+d|sin| / w|sin|+d|cos|): footprint(w,d,rot) == footprint(d,w,rot+90) ONLY with
+            # w<->d swapped, centre held. The adapter emits the LOCAL un-yawed rect, so swap here to
+            # keep the SCORED footprint invariant across native->build_floor -- else a non-square box
+            # detection-misses itself after reconcile. Squares are swap-invariant (the proofs below
+            # all use squares, so they are unchanged); a missing coord is left as-is (never crash).
+            w, d, x, y = el.get("w"), el.get("d"), el.get("x"), el.get("y")
+            if None not in (w, d, x, y):
+                cx, cy = x + w / 2.0, y + d / 2.0
+                el["w"], el["d"] = d, w
+                el["x"], el["y"] = round(cx - d / 2.0, 1), round(cy - w / 2.0, 1)
             n += 1
     meta = out.setdefault("meta", {})
     meta["rot_reconciled"] = {
         "by": VERSION, "offset_deg": NATIVE_TO_BUILDFLOOR_OFFSET_DEG,
         "convention": "build_floor F(rot)=(sin,-cos)  [was: native yaw atan2(basis[0].y,x)]",
+        "wd_swapped": "w<->d swapped (centre held) so placement_gate.footprint() is invariant "
+                      "under the +90 -- the paired half of the angle conversion",
         "n_rot_converted": n,
         "still_gated": "basis[0]==semantic-front is NOT asserted (needs render/3D-FRONT); "
                        "and no rot-emitting reader exists yet -- see rot_reconcile docstring",

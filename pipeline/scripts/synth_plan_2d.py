@@ -65,6 +65,7 @@ import sys
 import time
 
 import benchmark_reader as B
+import placement_gate as PG                  # footprint(): the SAME AABB benchmark_reader scores
 import svg_plan_reader as R
 from plan_cluster import _screen_component   # the reader's OWN size screen -> zero drift
 
@@ -83,12 +84,29 @@ PAD_MM = 100.0
 FUSE_GAP_MM = 90.0
 
 
+def _as_footprint(e):
+    """An element with x/y/w/d replaced by its TRUE axis-aligned footprint (placement_gate.footprint
+    -- the same AABB benchmark_reader scores) and rot dropped. A rot-less (blind-lane) element is
+    returned UNCHANGED, byte-identical; a KINDED element (local un-yawed rect + rot, the adapter's
+    double-rotation fix) gets its rotation baked into the drawn/grouped AABB. Every geometry consumer
+    below (draw, fuse, group, size-screen) then sees what the reader will actually see + what the GT
+    scores -- without this a labelled corpus would silently draw every 90/270 piece un-rotated."""
+    if e.get("rot") in (None, 0, 0.0):
+        return e                            # blind / axis-aligned: unchanged (byte-identical)
+    x0, y0, x1, y1 = PG.footprint(e)
+    out = {k: v for k, v in e.items() if k != "rot"}
+    out["x"], out["y"] = round(x0, 1), round(y0, 1)
+    out["w"], out["d"] = round(x1 - x0, 1), round(y1 - y0, 1)
+    return out
+
+
 def synth_svg(gt_doc, include_walls=False):
     """gt.json document -> an SVG string in mm (scale 1.0), ANNOTATION-BLIND. Furniture elements
     become <rect> footprints (the reader's morphology recovers each AABB); with include_walls,
     gt['wall_lines'] + gt['glazing_lines'] are drawn as thin <line> structure. The indoor/kind
-    fields are NEVER read -- only x/y/w/d and wall endpoints reach the drawing."""
-    elements = gt_doc.get("elements", []) or []
+    fields are NEVER read -- only geometry (x/y/w/d + rot, baked into the footprint AABB via
+    _as_footprint) and wall endpoints reach the drawing, so the blindness invariant is unchanged."""
+    elements = [_as_footprint(e) for e in (gt_doc.get("elements", []) or [])]
     walls = (gt_doc.get("wall_lines", []) or []) if include_walls else []
     glaz = (gt_doc.get("glazing_lines", []) or []) if include_walls else []
 
@@ -186,7 +204,7 @@ def group_symbols(gt_doc, fuse_gap=FUSE_GAP_MM):
     indoor/outdoor split, stat.largest_symbol_*) and surface it loudly, and read symbol-level
     detection recall as FLATTERED by region-lumping (member-level coverage is the honest number).
     The real fix is a wall-aware reader (the oracle-walls lane), a separate slice."""
-    raw = gt_doc.get("elements", []) or []
+    raw = [_as_footprint(e) for e in (gt_doc.get("elements", []) or [])]
     members, n_decor, n_oversize_single = [], 0, 0
     for e in raw:
         keep, reason = _member_class(e)
@@ -281,7 +299,8 @@ def _members_doc(gt_doc):
     """gt_doc with only the DRAWABLE furniture members (decor + single-object merged_blob
     removed). This is what the realistic SVG draws -- the reader then does the fusing itself,
     so its morphology is genuinely tested (we draw members, not pre-fused union rects)."""
-    members = [e for e in (gt_doc.get("elements", []) or []) if _member_class(e)[0]]
+    members = [ne for ne in (_as_footprint(e) for e in (gt_doc.get("elements", []) or []))
+               if _member_class(ne)[0]]
     return {**gt_doc, "elements": members}
 
 

@@ -82,6 +82,28 @@ def test_convert_gt_doc_only_touches_rot_elements():
     assert out["meta"]["rot_reconciled"]["n_rot_converted"] == 1
 
 
+def test_convert_gt_doc_keeps_footprint_invariant_for_nonsquare():
+    """native->build_floor is a +90 convention rotation, and placement_gate.footprint's AABB
+    (w|cos|+d|sin| / w|sin|+d|cos|) TRANSPOSES under +90 unless w<->d are swapped (centre held).
+    Since the adapter now emits the LOCAL un-yawed rect, convert_gt_doc must swap w<->d too, else a
+    NON-square kinded box detection-misses ITSELF after reconcile. Squares (every other test here)
+    are swap-invariant and cannot catch this -- so pin a 1000x400 box's footprint before == after."""
+    import placement_gate as PG
+    doc = {"meta": {}, "elements": [{"id": "b", "kind": "bed", "x": 100.0, "y": 200.0,
+                                     "w": 1000.0, "d": 400.0, "rot": 90.0}]}
+    before = PG.footprint(doc["elements"][0])
+    out = R.convert_gt_doc(doc)
+    e = out["elements"][0]
+    after = PG.footprint(e)
+    assert e["rot"] == 180.0
+    assert (e["w"], e["d"]) == (400.0, 1000.0)                       # w<->d swapped
+    assert abs((e["x"] + e["w"] / 2.0) - 600.0) < 0.2               # centre x preserved (100+1000/2)
+    assert abs((e["y"] + e["d"] / 2.0) - 400.0) < 0.2               # centre y preserved (200+400/2)
+    for a, b in zip(before, after):
+        assert abs(a - b) < 0.2, (before, after)                    # scored footprint INVARIANT
+    assert doc["elements"][0]["w"] == 1000.0                        # original untouched (deepcopy)
+
+
 def test_convert_gt_doc_refuses_double_application():
     # applying twice would add 180deg (silent facing reversal) -> must RAISE, not re-rotate.
     doc = {"meta": {}, "elements": [{"id": "a", "kind": "bed", "x": 0, "y": 0, "w": 1, "d": 1,

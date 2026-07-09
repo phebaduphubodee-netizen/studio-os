@@ -1461,3 +1461,32 @@ was a hypothesis the panel falsified-and-sharpened — the same lesson as the ti
 Scrutinize also caught a real robustness gap pre-commit: `convert_gt_doc` was not idempotent (a double
 application silently adds 180° = a facing reversal) → now RAISES on an already-reconciled doc. Report
 `qa/reports/f2-rot-reconcile-2026-07-09.md`. Commits local, unpushed.
+
+## 2026-07-09g — kinded double-rotation fix (the handed-off adjacent bug, CLOSED)
+
+The adjacent adapter bug the rot_reconcile session reproduced-but-handed-off is now fixed end-to-end, and
+the fix is one *theme* across three coupled files, not a one-liner — because the schema `x/y/w/d = un-rotated
+placed rect + rot about centre` is shared by every consumer, and only `benchmark_reader` (via
+`placement_gate.footprint`) honoured it. **(1)** `structured3d_adapter` kinded lane now emits the LOCAL
+un-yawed rect (`2·coeffs[0]×2·coeffs[1]` centred on the centroid) so `footprint(rot)` rebuilds the true box —
+blind lane keeps the world AABB and is byte-identical. **(2)** `rot_reconcile.convert_gt_doc` now SWAPS `w↔d`
+(centre held) alongside its +90, because that convention rotation transposes `footprint`'s AABB — else a
+non-square box would detection-miss *itself* after reconcile. **(3)** `synth_plan_2d._as_footprint` bakes rot
+into the drawn/grouped AABB, so a labelled corpus is not silently drawn un-rotated (its draw/group/screen code
+had assumed `x/y/w/d` was already axis-aligned — an existing latent gap the fix would have activated).
+
+**Method note — gt-vs-gt is STRUCTURALLY blind to this class, so verification could not lean on the selftest.**
+Both sides re-rotate identically, so the bug self-matches at IoU 1.0; the correctness anchor was instead a
+direct empirical sweep (208 clean-yaw boxes 0–360° × 4 aspect ratios → `footprint(kinded)` reproduces the
+8-corner AABB to **0.0000 mm**, detection IoU **1.0000**) plus a 3-verifier adversarial workflow (verdict
+SOUND). **The workflow earned its cost:** it found a real reachable hole the sweep missed — a TIPPED labelled
+box (basis[2] tilting into XY, e.g. a bar lying flat) passes the world-AABB zero-area drop yet the local face
+is sub-visible (~1mm), so it would score a SILENT, UNCOUNTED detection miss. Fixed by a faithfulness check
+(does `footprint(2c0,2c1,yaw)` reproduce the world AABB within 1mm?): clean-yaw → local rect + rot; tipped →
+keep the world AABB + kind (detection + F1 stay correct), drop rot (F2 honestly unreported), and COUNT it in
+`meta.kinded_tipped_blinded` (house doctrine: every skip tallied). Real labelled furniture is upright, so this
+is the rare degenerate tail — but it is now counted, not assumed away. **F2's residual gates are now ONLY the
+two download-gated non-code items** (basis[0]==front unproven; no rot-emitting reader). 812 tests green; QA
+report `qa/reports/f2-rot-reconcile-2026-07-09.md` adjacent-finding → RESOLVED. Cross-lane note: `kind_priors`
+reads element `w/d` raw — unaffected today (FloorPlanCAD has no rot) but must footprint-normalise if ever
+pointed at a rotated corpus. Commits local, unpushed.

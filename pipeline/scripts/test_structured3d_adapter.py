@@ -203,6 +203,77 @@ def test_labels_sidecar_wires_kind_rot_and_f2():
     assert card["F2_facing"]["verdict"] == "PASS" and card["F2_facing"]["n"] == 2
 
 
+def test_kinded_rot90_emits_local_rect_so_footprint_rebuilds_true_aabb():
+    """THE DOUBLE-ROTATION FIX (rot_reconcile ADJACENT FINDING, 2026-07-09). A rot-carrying
+    element is scored through placement_gate.footprint(), which RE-ROTATES x/y/w/d by rot about
+    the centre. Emitting the already-rotated WORLD AABB + rot therefore rebuilds a box rotated
+    TWICE -> transposed at 90/270 (IoU 0.25 vs truth) -> a DETECTION MISS on the most common
+    furniture facings. The kinded lane must instead emit the LOCAL un-yawed rect (2*coeffs on
+    basis[0]/basis[1], centred on the centroid) so footprint(local, native_yaw) reconstructs the
+    TRUE world AABB. Invisible to gt-vs-gt (both sides re-rotate identically), so pinned here
+    against the ground-truth AABB + a real footprint round-trip."""
+    import placement_gate as PG
+    # a box facing +Y (native yaw 90): basis row0 (local x / forward) = +Y. Half-extents 500 along
+    # local-x(+Y) and 200 along local-y(-X) -> a 400mm-wide (X) x 1000mm-deep (Y) world footprint.
+    rot90 = [[0, 1, 0], [-1, 0, 0], [0, 0, 1]]
+    box = {"ID": 0, "basis": rot90, "centroid": [1000, 1000, 400], "coeffs": [500, 200, 300]}
+    gx, gy, gw, gd, gr = A._box_footprint_xy(rot90, [1000, 1000, 400], [500, 200, 300])
+    assert (round(gw), round(gd), round(gr)) == (400, 1000, 90)   # ground-truth AABB + native yaw
+    with tempfile.TemporaryDirectory() as td:
+        anno_p, bbox_p = _write_scene(td, _two_room_scene(), [box])
+        blind = A.convert(anno_path=anno_p, bbox_path=bbox_p, scene_id="s")
+        kinded = A.convert(anno_path=anno_p, bbox_path=bbox_p, scene_id="s", labels={0: "bed"})
+    # BLIND lane is unchanged: it stores the world AABB (no rot -> footprint reads it as-is)
+    be = blind["elements"][0]
+    assert (be["w"], be["d"]) == (400.0, 1000.0) and "rot" not in be
+    # KINDED lane stores the LOCAL un-yawed rect (2*coeffs), NOT the world AABB, + native rot
+    ke = kinded["elements"][0]
+    assert ke["kind"] == "bed" and ke["rot"] == 90.0
+    assert (ke["w"], ke["d"]) == (1000.0, 400.0)                  # 2*500 x 2*200, un-yawed
+    # footprint() re-rotates the local rect by rot=90 -> reconstructs the TRUE world AABB (== blind)
+    fx0, fy0, fx1, fy1 = PG.footprint(ke)
+    assert (round(fx1 - fx0), round(fy1 - fy0)) == (400, 1000)
+    assert (round((fx0 + fx1) / 2), round((fy0 + fy1) / 2)) == (1000, 1000)   # centre preserved
+    # it IoU-matches a reader that emits the true AABB (rot 0) -> NO detection miss ...
+    reader = {"x": gx, "y": gy, "w": gw, "d": gd}
+    assert PG.iou(PG.footprint(ke), PG.footprint(reader)) > 0.99
+    # ... whereas the OLD buggy emission (world AABB + rot) transposes and misses (IoU 0.25)
+    buggy = {"x": gx, "y": gy, "w": gw, "d": gd, "rot": 90.0}
+    assert PG.iou(PG.footprint(buggy), PG.footprint(reader)) < 0.3
+
+
+def test_kinded_tipped_box_keeps_aabb_drops_rot_and_is_counted():
+    """A TIPPED labeled box (basis[2] tilts into XY, so its 8-corner world AABB carries a coeffs[2]
+    contribution the local face drops) cannot be represented by any (w,d,rot) rect: the local-face
+    emission would score a sub-visible footprint that never IoU-matches a real reader -- a SILENT,
+    UNCOUNTED detection miss (adversarial verification 2026-07-09). The kinded lane must instead keep
+    the WORLD AABB (detection + F1 correct), emit NO rot (F2 honestly unreported, never a fabricated
+    facing), and COUNT it in meta.kinded_tipped_blinded. Clean-yaw furniture is unaffected."""
+    import placement_gate as PG
+    # local-y axis = world Z; the long 4000mm (coeffs[2]) axis lies in the XY plane -> world AABB
+    # ~2400x3200, but the basis[0]/basis[1] face is only 0.8x0.8mm.
+    basis = [[0.8, -0.6, 0], [0, 0, 1], [0.6, 0.8, 0]]
+    box = {"ID": 0, "basis": basis, "centroid": [5000, 5000, 400], "coeffs": [0.4, 0.4, 2000]}
+    gx, gy, gw, gd, _r = A._box_footprint_xy(basis, [5000, 5000, 400], [0.4, 0.4, 2000])
+    with tempfile.TemporaryDirectory() as td:
+        # bigger room so the centroid lands indoors (reuse the synthetic 2-room scene's coords is
+        # too small; a standalone floor plane keeps the element emitted regardless of indoor).
+        anno = _build_anno([(0, 0, 0), (10000, 0, 0), (10000, 10000, 0), (0, 10000, 0)],
+                           [(0, 1), (1, 2), (2, 3), (3, 0)],
+                           [("floor", [0, 1, 2, 3])],
+                           [{"ID": 0, "planeID": [0], "type": "bedroom"}])
+        anno_p, bbox_p = _write_scene(td, anno, [box])
+        doc = A.convert(anno_path=anno_p, bbox_path=bbox_p, scene_id="s", labels={0: "bed"})
+    e = doc["elements"][0]
+    assert e["kind"] == "bed"                          # F1 still scores
+    assert "rot" not in e                              # F2 honestly unreported (no faithful rot)
+    assert (e["w"], e["d"]) == (round(gw, 1), round(gd, 1))   # kept the WORLD AABB, not the 0.8 face
+    assert doc["meta"]["kinded_tipped_blinded"] == 1 and doc["meta"]["n_kinded"] == 1
+    # detection: the world AABB matches a real reader seeing the true ~2400x3200 region
+    reader = {"x": gx, "y": gy, "w": gw, "d": gd}
+    assert PG.iou(PG.footprint(e), PG.footprint(reader)) > 0.99
+
+
 def test_wall_lines_emitted_for_synthesizer_and_oracle_lane():
     """The adapter emits every WALL plane's floor-level trace as gt['wall_lines'] -- the plan
     skeleton the 2D synthesizer draws AND the input svg_plan_reader's oracle-walls lane consumes.

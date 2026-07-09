@@ -54,6 +54,11 @@ F2 UNBLOCK (the code-side blocker is removed; F2 is now DATA-limited, not code-l
   convert(labels={obj_id: kind}) accepts an OPTIONAL caller-supplied sidecar of REAL labels
   (from 3D-FRONT layout JSON, or render-mask pairing of the downloaded instance masks with the
   semantic masks in the render zips) -> a labeled element emits kind + rot and F2_facing scores.
+  A labeled element ALSO re-emits x/y/w/d as the LOCAL un-yawed rect (2*coeffs along basis[0]/
+  basis[1], centred on the centroid) so placement_gate.footprint() rebuilds the true oriented box
+  from (rect, rot): the blind lane's already-yawed AABB would otherwise be re-rotated a SECOND time
+  by footprint() and detection-miss at 90/270 (the double-rotation fix, 2026-07-09; blind lane
+  keeps the AABB and stays byte-identical).
   No sidecar (the state on disk today) -> byte-identical blocked default, F2 UNWIRED. The kind
   is never guessed here (kind_priors-style suggestion is a PRED-side lane, never GT). The two
   real label recipes + the rot-convention reconciliation are documented at ROT_CONVENTION.
@@ -399,6 +404,7 @@ def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split
     no_bbox = bbox_path is None
     zero_area_dropped = 0
     n_kinded = 0
+    kinded_tipped_blinded = 0  # kinded boxes too TIPPED for a (w,d,rot) rect to carry -> AABB, rot dropped
     centroid_no_room = 0
     transpose_divergent = 0    # objects whose rows-vs-cols footprint diverges > threshold
     indoor_split = Counter()   # True / False / None
@@ -436,7 +442,35 @@ def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split
             lab = _lookup_label(labels, obj["ID"])
             if lab:
                 rec["kind"] = lab
-                rec["rot"] = round(rot, 1)
+                # DOUBLE-ROTATION FIX (rot_reconcile ADJACENT FINDING, 2026-07-09). x/y/w/d above are
+                # the already-yawed WORLD AABB. But a rot-carrying element is scored through
+                # placement_gate.footprint(), which RE-ROTATES x/y/w/d by rot about the centre -- so
+                # emitting the AABB + rot rebuilds a box rotated TWICE (transposed at 90/270 -> IoU
+                # 0.25 -> DETECTION MISS on the commonest furniture facings; inflated at 45). It is
+                # invisible to gt-vs-gt (both sides re-rotate identically), which is why the selftest
+                # cannot catch it. Emit instead the LOCAL un-yawed rect -- 2*coeffs[0] along basis[0]
+                # (forward, the rot axis) x 2*coeffs[1] along basis[1], centred on the centroid -- so
+                # footprint(local, native_yaw) reconstructs the TRUE world AABB. Proven: footprint's
+                # extents w|cos|+d|sin| / w|sin|+d|cos| with (w,d,rot)=(2c0,2c1,theta_n) equal
+                # _box_footprint_xy's 8-corner AABB for a clean-yaw box.
+                a, b = obj["coeffs"][0], obj["coeffs"][1]
+                th = math.radians(rot)
+                lw = 2 * a * abs(math.cos(th)) + 2 * b * abs(math.sin(th))
+                ld = 2 * a * abs(math.sin(th)) + 2 * b * abs(math.cos(th))
+                if abs(lw - w) <= 1.0 and abs(ld - d) <= 1.0:
+                    # clean-yaw box: the local rect + rot faithfully rebuilds the world AABB.
+                    rec["rot"] = round(rot, 1)
+                    rec["x"], rec["y"] = round(cx - a, 1), round(cy - b, 1)
+                    rec["w"], rec["d"] = round(2 * a, 1), round(2 * b, 1)
+                else:
+                    # TIPPED box (basis[2] tilts into XY, so the 8-corner AABB carries a coeffs[2]
+                    # contribution the local face drops): NO (w,d,rot) rect can represent it, and the
+                    # tiny local face would score a sub-visible footprint that never IoU-matches a real
+                    # reader -- a SILENT, UNCOUNTED detection miss. Keep the WORLD AABB (x/y/w/d above)
+                    # so detection + F1 stay correct, emit NO rot (F2 honestly unreported for it, never
+                    # a fabricated facing), and COUNT it (house doctrine: every skip is tallied). Real
+                    # labelled furniture is upright (basis[2]~=Z) so this is the rare degenerate tail.
+                    kinded_tipped_blinded += 1
                 n_kinded += 1
             # NO floor key (single-storey)
             elements.append(rec)
@@ -458,6 +492,7 @@ def convert(scene_dir=None, anno_path=None, bbox_path=None, scene_id=None, split
         "no_bbox_file": no_bbox,
         "labels_supplied": labels is not None,
         "n_kinded": n_kinded,
+        "kinded_tipped_blinded": kinded_tipped_blinded,
         "rot_convention": ROT_CONVENTION if n_kinded else None,
         # kind is BLOCKED only in the default (no-labels) lane; with a labels sidecar the emitted
         # kinds are the caller's real data (F1/F2 wired for those objects), never fabricated here.
@@ -500,7 +535,7 @@ def run_batch(slice_spec, out_dir, labels_path=None):
     split = f"first{hi}" if lo == 0 else f"{lo}-{hi}"
     man_path = os.path.join(out_dir, "manifest.jsonl")
     n_ok = n_fail = n_nobbox = 0
-    el_total = op_total = gl_total = wl_total = kinded_total = 0
+    el_total = op_total = gl_total = wl_total = kinded_total = tipped_blinded_total = 0
     open_by_type, rooms_by_type = Counter(), Counter()
     indoor_true = indoor_false = indoor_unknown = 0
     zero_dropped = no_room = transpose_div_total = 0
@@ -529,6 +564,7 @@ def run_batch(slice_spec, out_dir, labels_path=None):
             gl_total += m["n_glazing"]
             wl_total += m["n_wall_lines"]
             kinded_total += m["n_kinded"]
+            tipped_blinded_total += m.get("kinded_tipped_blinded", 0)
             open_by_type.update(m["openings_by_type"])
             rooms_by_type.update(m["rooms_by_type"])
             indoor_true += m["indoor_true"]
@@ -542,7 +578,9 @@ def run_batch(slice_spec, out_dir, labels_path=None):
                 "scene": base, "ok": True, "units": m["units"],
                 "n_elements": m["n_elements"], "n_openings": m["n_openings"],
                 "n_glazing": m["n_glazing"], "n_wall_lines": m["n_wall_lines"],
-                "n_kinded": m["n_kinded"], "n_rooms": m["n_rooms"],
+                "n_kinded": m["n_kinded"],
+                "kinded_tipped_blinded": m.get("kinded_tipped_blinded", 0),
+                "n_rooms": m["n_rooms"],
                 "indoor_true": m["indoor_true"], "indoor_false": m["indoor_false"],
                 "indoor_unknown": m["indoor_unknown"],
                 "zero_area_dropped": m["zero_area_dropped"],
@@ -565,7 +603,9 @@ def run_batch(slice_spec, out_dir, labels_path=None):
         f"- scenes with no bbox file (elements n=0): {n_nobbox}",
         "",
         f"- elements (bbox footprints): {el_total}"
-        + (f"  (kinded via labels sidecar: {kinded_total} -> F2 wired)" if corpus_labels
+        + (f"  (kinded via labels sidecar: {kinded_total} -> F2 wired"
+           + (f"; of those {tipped_blinded_total} TIPPED -> AABB+kind, rot dropped (F2 unreported, "
+              f"detection kept)" if tipped_blinded_total else "") + ")" if corpus_labels
            else "  (no labels sidecar -> kind-less, F2 UNWIRED)"),
         f"- openings: {op_total}  by type: {dict(open_by_type.most_common())}",
         f"- glazing (outwall) segments: {gl_total}",

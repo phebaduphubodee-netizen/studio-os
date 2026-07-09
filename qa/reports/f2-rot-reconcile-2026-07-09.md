@@ -77,7 +77,7 @@ needs the render masks / 3D-FRONT layout (the same owner download). So after thi
 named precisely instead of the vague "reconcile before real reader." This narrows — not closes —
 the F2 lane, and says so plainly.
 
-## Adjacent finding (reproduced; NOT fixed — belongs to the adapter's geometry contract)
+## Adjacent finding (reproduced → **NOW FIXED** 2026-07-09, adapter/main session)
 
 `placement_gate.footprint(x/y/w/d, rot)` **re-rotates** `x/y/w/d` by `rot` (it treats them as the
 *un-rotated* placed rect — the benchmark generator's schema). But `structured3d_adapter` emits
@@ -100,8 +100,23 @@ this is **broad, not a rare diagonal tail**. Only 0°/180° survive untouched.
 
 **Recommended fix (upstream, adapter owner):** when emitting `rot`, emit `x/y/w/d` as the object's
 **local (un-yawed) `w×d`** so `footprint()` rebuilds the true oriented box — instead of the pre-baked
-world AABB. Scope: kinded lane only, non-cardinal objects only. Left for the adapter/main session so
-that wiring F2 for real also closes this.
+world AABB. Scope: kinded lane only, non-cardinal objects only.
+
+**RESOLUTION (2026-07-09).** Fixed in two paired places so the scored footprint is correct AND stays
+invariant through the rot conversion:
+1. `structured3d_adapter.convert()` kinded branch now overrides `x/y/w/d` with the local un-yawed rect
+   (`x=cx−coeffs[0]`, `y=cy−coeffs[1]`, `w=2·coeffs[0]`, `d=2·coeffs[1]`) alongside `rot=native yaw`.
+   The blind lane still emits the 8-corner world AABB and is **byte-identical**.
+2. `rot_reconcile.convert_gt_doc()` now **swaps `w↔d`** (centre held) when it adds +90, because that
+   convention rotation transposes `footprint()`'s AABB — so a non-square box no longer detection-misses
+   itself after reconcile.
+3. `synth_plan_2d` (`_as_footprint`) bakes each element's `rot` into the drawn/grouped `footprint()` AABB,
+   so a labelled corpus is not silently drawn un-rotated.
+
+Verified: over **208 clean-yaw boxes** (0–360° × 4 aspect ratios) `footprint(kinded)` reproduces the
+8-corner AABB to **0.0000 mm** and detection IoU vs a true-AABB reader is **1.0000**; the three failure
+rows above are pinned as regression tests (`test_structured3d_adapter`, `test_rot_reconcile`,
+`test_synth_plan_2d`); full suite **811 pass**.
 
 ## Deliverables
 

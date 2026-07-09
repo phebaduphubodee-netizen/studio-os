@@ -46,6 +46,27 @@ def test_roundtrip_single_box_is_recovered_and_scored():
     assert card["F3_indoor"]["n"] == 1              # F3 scores on the matched pair (real, not meta)
 
 
+# ---- kinded (rotated) gt: draw the TRUE footprint, not the un-rotated local rect ---------
+def test_kinded_rotated_element_is_drawn_at_its_true_footprint():
+    """After the adapter double-rotation fix, a kinded element carries the LOCAL un-yawed rect +
+    rot. synth_svg must draw the TRUE world footprint (placement_gate.footprint AABB -- what the
+    reader sees AND what benchmark_reader scores through footprint()), NOT the raw local rect;
+    otherwise a labelled corpus is silently drawn with every 90/270 piece un-rotated. rot-less
+    (blind) elements are untouched (byte-identical), pinned by the anti-leakage tests below."""
+    import placement_gate as PG
+    # local 1000x400 rect facing +Y (rot 90) -> true footprint AABB is 400 wide x 1000 deep
+    el = {"id": "o0", "x": 500.0, "y": 800.0, "w": 1000.0, "d": 400.0, "rot": 90.0, "indoor": True}
+    fx0, fy0, fx1, fy1 = PG.footprint(el)
+    assert (round(fx1 - fx0), round(fy1 - fy0)) == (400, 1000)
+    svg = S.synth_svg(_gt([el]))
+    # the drawn rect is the footprint AABB (400 x 1000), not the local 1000 x 400 (would un-rotate)
+    assert 'width="400.0"' in svg and 'height="1000.0"' in svg
+    assert 'width="1000.0"' not in svg
+    # round-trip: the reader recovers it and it matches the GT scored footprint (no detection miss)
+    card = B.score_pair(_gt([el]), _read(svg))
+    assert card["detection"]["matched"] == 1
+
+
 # ---- anti-leakage: indoor is never drawn -------------------------------------------------
 def test_synth_is_annotation_blind_to_indoor():
     el = {"id": "o0", "x": 0.0, "y": 0.0, "w": 600.0, "d": 400.0}
