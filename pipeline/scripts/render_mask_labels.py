@@ -14,12 +14,17 @@ WHY THIS EXISTS (the data path, verified 2026-07-09 on scene_00000, NO render do
                     VERIFIED: the instance ID == bbox_3d.json "ID", 1:1. scene_00000 union of
                     4 panorama rooms = 127 instance values, EVERY one inside bbox IDs 0..140,
                     zero out-of-range; sentinel 65535 = void. So the mask pixel IS the obj_id.
-    - semantic.png  uint8,  pixel = NYU-40 CLASS ID (1..40; 0 = void).  Single channel, NOT a
-                    colormap (S3D data_organization.md: "unsigned 8-bit ... NYUv2 40-label
-                    set"). Lives in the panorama/perspective render zips (NOT downloaded --
-                    the one owner action this lane still needs; a network sandbox blocks the
-                    pull from an agent session, exactly as the annotation/bbox zips were pulled
-                    by the owner via the licence form).
+    - semantic.png  pixel = NYU-40 CLASS ID (1..40; 0 = void). VERIFIED 2026-07-09 on
+                    Structured3D_panorama_00 (65 masks): it is a PALETTED PNG (PIL mode 'P')
+                    whose palette is a DISPLAY colormap and whose INDEX is the class id -- every
+                    index in 0..40, standard NYU colormap. read_mask() decodes the index directly
+                    (see read_mask). Lives in the panorama render zips; PULLED 2026-07-09 with
+                    HTTP range requests straight off the licensed README host (Bash egress works
+                    -- the earlier "network sandbox blocks the pull" note was stale). Only the
+                    first ~900 MB (14 scenes) of the 10.78 GB panorama_00.zip was fetched: the
+                    zip is STORED/flags=0 in scene order, so a byte prefix yields whole early
+                    scenes' semantic.png (the rgb/depth bulk is skipped). The instance.png sibling
+                    each pairs against is extracted from the on-disk bbox.zip.
   For each object: overlay the two masks, take the MAJORITY NYU class over that instance's
   pixels (summed across every view the object appears in), map NYU-name -> the benchmark's kind
   vocab, and emit {obj_id: kind}. The kind is NEVER guessed from geometry -- an object with no
@@ -39,19 +44,25 @@ F2 IS *WIRED*, NOT YET *ANGLE-VALIDATED* (the load-bearing caveat -- adversarial
 CLASS MAP PROVENANCE + WHAT IS STILL UNVERIFIED (read before trusting F2 numbers):
   NYU40_TO_BENCH below is transcribed from the S3D repo's metadata/labelids.txt (the canonical
   NYUv2-40 numbering; S3D does NOT renumber) cross-checked against data_organization.md. The
-  numbering is authoritative. What is NOT yet empirically verified (no semantic.png on disk):
-    (a) semantic.png's PIL encoding on THIS studio's parts. read_mask() keys on PIL MODE (rejects
-        'P'/RGB, not just ndim!=2): a PALETTED label PNG passes an ndim==2 check but yields palette
-        INDICES not class ids -> a colormap/palette surprise now fails HARD, never silent-wrong.
-    (b) the class INDEXING: the map assumes NYU ids 1..40 with 0=void (documented, not checked). A
-        0-indexed variant, or a 255 'ignore' void, would shift/mis-drop labels. The batch report
-        prints observed_nyu_classes so an off-by-one or odd-void distribution is VISIBLE on run 1.
+  numbering is authoritative. Empirically VERIFIED 2026-07-09 on panorama_00 (was: unverified):
+    (a) semantic.png's PIL encoding -- CONFIRMED mode 'P' (paletted), INDEX == class id, palette is
+        a display colormap. read_mask() decodes the index and STILL fails hard if any index exceeds
+        the NYU ceiling (an unexpected colormap), so a real surprise on another part is never silent.
+    (b) the class INDEXING -- CONFIRMED NYU 1..40 with 0=void: the observed winners across 14 scenes
+        (ceiling/wall/floor/window/door/chair/sofa/bed/table/cabinet) match the NYU names with NO
+        off-by-one and no odd-void; the batch report still prints observed_nyu_classes each run.
     (c) the two JUDGEMENT calls in the map: NYU 25 'television' -> 'tv_panel' (the screen, not
         the media console 'tv_console'), and that S3D wardrobes fall under NYU 3 'cabinet' /
         39 'otherfurniture' (no distinct wardrobe class) -- both FLAGGED inline.
     (d) PANORAMA views only by default: the instance-id==bbox-id 1:1 fact was verified on panorama
-        masks; perspective renders MAY use a per-view local id space (would corrupt the merged
-        majority), so they are SKIPPED unless --perspective is passed after you confirm their ids.
+        masks -- CONFIRMED AT SCALE 2026-07-09 straight from the on-disk bbox.zip, NO render download
+        (50 scenes / 6,273 panorama instances, 0 out-of-range, 50/50 fully within the scene's bbox
+        IDs). Perspective was FEARED to use a per-view local (0..k) id space; the same 50-scene scan
+        REFUTES that -- perspective ids are ALSO 0-out-of-range and reach the LARGE global bbox ids
+        (max 397 seen, >> any local 0..k), so the id space is GLOBAL, not per-view local. The default
+        STAYS panorama-only pending the stronger per-object cross-view identity check (that a given id
+        paints the SAME physical object in both views -- that one wants the semantic/geo grounding),
+        but --perspective is now evidence-supported and would ~4x the pixels-per-object majority.
   A coin-flip / occlusion-noise majority is NOT emitted (MIN_CONF_EMIT + MIN_PIXELS floors) -- an
   ambiguous object is reported unlabelled, never given a guessed kind F2 would then score as truth.
   When a real panorama part lands, run --selftest, eyeball observed_nyu_classes, AND spot-check a
@@ -88,9 +99,14 @@ MIN_PIXELS = 30          # an object with fewer total classified pixels than thi
                          # stays conservative: an ambiguous object is reported unlabelled, never
                          # given a majority-of-noise kind that F2 would then score as truth.
 # safe PIL modes: single-channel intensity ('L'=uint8 semantic) or integer ('I*'=uint16 instance).
-# A paletted ('P') or RGB image would make np.asarray return palette INDICES / channels, NOT class
-# ids -> silent per-class corruption; read_mask REJECTS those loudly (adversarial finding 2026-07-09).
+# An RGB image would make np.asarray return channels, NOT class ids -> read_mask REJECTS it. A
+# paletted ('P') image is the ACTUAL Structured3D semantic.png encoding: its palette is a display
+# colormap and its INDEX is the NYU class id (VERIFIED 2026-07-09, see read_mask) -> 'P' is decoded,
+# not rejected, after a class-ceiling check (the original blanket-reject-'P' guard was conservative).
 _SAFE_MASK_MODES = ("L", "I", "I;16", "I;16B", "I;16L")
+# NYU-40 label set: valid class ids are 0(void)..40. A paletted mask whose index exceeds this is NOT
+# a class-id-as-index encoding (a genuinely different colormap) -> read_mask fails hard on it.
+_NYU_MAX_CLASS = 40
 
 # NYU-40 class id -> benchmark_reader kind string. Source: github.com/bertjiazheng/Structured3D
 # metadata/labelids.txt (canonical NYUv2-40; S3D does not renumber) + data_organization.md.
@@ -143,18 +159,33 @@ def _facing_kinds():
 
 # ---- mask I/O + core pairing (pair_arrays is pure: the unit tests drive it directly) --------
 def read_mask(path):
-    """Load a class-id/instance-id mask PNG -> 2D int ndarray. RAISES on a paletted ('P') or
-    multi-channel (RGB/RGBA) image rather than silently reading palette indices / a channel:
-    semantic.png MUST be class-id single-channel for the class map to mean anything; a colormap
-    surprise on a real download is a HARD error, never a quiet corruption. A mode-'P' PNG is the
-    classic colormapped-label encoding and passes an ndim==2 check with the wrong values -- so the
-    guard keys on PIL MODE, not just ndim (adversarial finding 2026-07-09)."""
+    """Load a class-id/instance-id mask PNG -> 2D int ndarray.
+
+    Structured3D's semantic.png is a PALETTED ('P') PNG whose palette is a DISPLAY colormap and whose
+    INDEX is the NYU class id (VERIFIED 2026-07-09 on Structured3D_panorama_00, 65 masks: every index
+    in 0..40, standard NYU colormap -- index 1=wall (174,199,232), 2=floor (152,223,138), 22=ceiling;
+    ceiling/wall/floor/window/door dominate every room render). np.asarray on mode 'P' returns those
+    INDICES, which ARE the class ids -> 'P' is DECODED here, guarded by the NYU class ceiling: if any
+    index exceeds _NYU_MAX_CLASS the palette is NOT class-id-as-index (a genuinely different colormap)
+    and read_mask fails HARD (the original blanket-reject-'P' guard's intent, kept for the surprise
+    case). RGB/RGBA is still rejected (a real colour->class map would be needed). An instance.png is
+    uint16 ('I;16', ids seen up to ~400) so it is never 'P' -- the branches don't collide."""
     img = Image.open(path)
+    if img.mode == "P":
+        arr = np.asarray(img)
+        if arr.ndim != 2:
+            raise ValueError(f"{path}: paletted mask is not 2D (shape {arr.shape})")
+        mx = int(arr.max()) if arr.size else 0
+        if mx > _NYU_MAX_CLASS:
+            raise ValueError(f"{path}: paletted mask index {mx} > NYU-40 ceiling {_NYU_MAX_CLASS} -- "
+                             f"palette is NOT class-id-as-index (an unexpected colormap); decode via "
+                             f"the palette->class map before pairing, or it mislabels every object.")
+        return arr.astype(np.int64)
     if img.mode not in _SAFE_MASK_MODES:
-        raise ValueError(f"{path}: PIL mode {img.mode!r} is not a raw class-id mask "
-                         f"(safe modes {_SAFE_MASK_MODES}). A paletted 'P' or RGB semantic mask "
-                         f"yields palette indices/channels, NOT NYU class ids -- decode to class "
-                         f"ids upstream before pairing, or this silently mislabels every object.")
+        raise ValueError(f"{path}: PIL mode {img.mode!r} is not a raw class-id mask (safe modes "
+                         f"{_SAFE_MASK_MODES} or a class-id-as-index paletted 'P'). An RGB semantic "
+                         f"mask yields channels, NOT NYU class ids -- decode to class ids upstream "
+                         f"before pairing, or this silently mislabels every object.")
     arr = np.asarray(img)
     if arr.ndim != 2:
         raise ValueError(f"{path}: expected single-channel mask, got shape {arr.shape}")

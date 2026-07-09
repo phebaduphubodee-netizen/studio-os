@@ -87,14 +87,34 @@ def test_read_mask_rejects_3channel_rgb():
         R.read_mask(p)
 
 
-def test_read_mask_rejects_paletted_mode_P():
-    # the classic colormapped-label encoding: 2D but pixels are PALETTE INDICES, not class ids.
-    # ndim==2 would pass -- the MODE guard must catch it (adversarial finding 2026-07-09).
-    d = tempfile.mkdtemp(prefix="rml_pal_")
+def test_read_mask_decodes_paletted_class_id_as_index():
+    # Structured3D semantic.png is mode 'P' whose palette is a DISPLAY colormap and whose INDEX is
+    # the NYU class id (verified 2026-07-09 on panorama_00: indices all in 0..40). read_mask must
+    # DECODE it -- return the indices AS class ids -- not reject it. The palette (colormap) must not
+    # change the returned values.
+    d = tempfile.mkdtemp(prefix="rml_pal_ok_")
     p = os.path.join(d, "semantic.png")
-    Image.fromarray(np.zeros((4, 4), dtype=np.uint8)).convert("P").save(p)
+    arr = np.array([[0, 4], [22, 40]], dtype=np.uint8)          # void, bed, ceiling, otherprop
+    im = Image.frombytes("P", (2, 2), arr.tobytes())
+    im.putpalette([(i * 7) % 256 for i in range(768)])         # arbitrary display colormap
+    im.save(p)
     assert Image.open(p).mode == "P"
-    with pytest.raises(ValueError, match="raw class-id"):
+    got = R.read_mask(p)
+    assert got.tolist() == arr.tolist()                        # indices returned AS class ids
+
+
+def test_read_mask_rejects_paletted_out_of_nyu_range():
+    # a paletted mask whose index exceeds the NYU-40 ceiling is NOT class-id-as-index (a genuinely
+    # different colormap) -> the guard STILL fires hard, never mislabelling (adversarial finding
+    # 2026-07-09 intent preserved for the surprise case).
+    d = tempfile.mkdtemp(prefix="rml_pal_bad_")
+    p = os.path.join(d, "semantic.png")
+    arr = np.array([[0, 200], [5, 6]], dtype=np.uint8)         # 200 > 40 -> not a class id
+    im = Image.frombytes("P", (2, 2), arr.tobytes())
+    im.putpalette([(i * 7) % 256 for i in range(768)])         # full palette -> index 200 survives
+    im.save(p)
+    assert int(np.asarray(Image.open(p)).max()) == 200         # guard the fixture itself
+    with pytest.raises(ValueError, match="NYU-40 ceiling"):
         R.read_mask(p)
 
 
