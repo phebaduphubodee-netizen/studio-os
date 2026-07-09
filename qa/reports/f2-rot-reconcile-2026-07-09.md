@@ -2,6 +2,17 @@
 
 **2026-07-09 · branch `tier1-self-doubt-suite` · parallel session (track A, download-free slice)**
 
+> **⚠ SUPERSEDED / PREMISE REFUTED — same day, see
+> [`f2-facing-convention-validated-2026-07-09.md`](f2-facing-convention-validated-2026-07-09.md).**
+> This report's `+90` reconciliation is correct algebra *under the premise `forward = basis[0]`*,
+> which it flagged as "download-gated" (its own §"WHAT STILL STAYS DOWNLOAD-GATED"). A geometric
+> oracle (4 independent methods, unanimous) then **answered that question: basis[0] is the object's
+> SIDE axis, not its front.** So the emitted **native yaw is ALREADY the build_floor front rot**,
+> **no conversion is needed**, and applying the +90 (`convert_gt_doc`) **corrupts F2 by 90°** —
+> `convert_gt_doc` is now WITHDRAWN (raises). The `+90` *algebra* below still holds; it simply
+> computes the build_floor rot of the **side** axis, the wrong quantity for facing. Read the
+> validated report for the live convention.
+
 ## Why this exists
 
 `structured3d_adapter.py` and `render_mask_labels.py` both carry the **same** load-bearing

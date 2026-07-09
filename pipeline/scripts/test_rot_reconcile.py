@@ -70,13 +70,27 @@ def test_none_passes_through():
     assert R.forward_to_build_floor_rot(0.0, 0.0) is None   # zero vector = no facing
 
 
+def test_convert_gt_doc_withdrawn_raises_by_default():
+    # PREMISE REFUTED 2026-07-09: applying the +90 to GT facing encodes basis[0] (the SIDE) as the
+    # front and corrupts F2 by 90deg. convert_gt_doc must RAISE unless the algebra-only escape is set.
+    doc = {"meta": {}, "elements": [{"id": "a", "kind": "bed", "x": 0, "y": 0, "w": 1, "d": 1,
+                                     "rot": 90.0}]}
+    try:
+        R.convert_gt_doc(doc)
+    except ValueError as e:
+        assert "WITHDRAWN" in str(e)
+        return
+    raise AssertionError("convert_gt_doc must RAISE by default (the +90 corrupts F2)")
+
+
 def test_convert_gt_doc_only_touches_rot_elements():
+    # _conditional_math_only exercises the +90 ALGEBRA only (never applied to live GT).
     doc = {"meta": {}, "elements": [
         {"id": "a", "kind": "bed", "x": 0, "y": 0, "w": 1, "d": 1, "rot": 90.0},
         {"id": "b", "x": 0, "y": 0, "w": 1, "d": 1},                 # rot-less -> untouched
     ]}
-    out = R.convert_gt_doc(doc)
-    assert out["elements"][0]["rot"] == 180.0                        # 90 native -> 180 build
+    out = R.convert_gt_doc(doc, _conditional_math_only=True)
+    assert out["elements"][0]["rot"] == 180.0                        # 90 native +90 = 180 (basis[0]-as-front, NOT for live use)
     assert "rot" not in out["elements"][1]                          # honesty contract preserved
     assert doc["elements"][0]["rot"] == 90.0                        # original not mutated
     assert out["meta"]["rot_reconciled"]["n_rot_converted"] == 1
@@ -92,7 +106,7 @@ def test_convert_gt_doc_keeps_footprint_invariant_for_nonsquare():
     doc = {"meta": {}, "elements": [{"id": "b", "kind": "bed", "x": 100.0, "y": 200.0,
                                      "w": 1000.0, "d": 400.0, "rot": 90.0}]}
     before = PG.footprint(doc["elements"][0])
-    out = R.convert_gt_doc(doc)
+    out = R.convert_gt_doc(doc, _conditional_math_only=True)
     e = out["elements"][0]
     after = PG.footprint(e)
     assert e["rot"] == 180.0
@@ -105,29 +119,31 @@ def test_convert_gt_doc_keeps_footprint_invariant_for_nonsquare():
 
 
 def test_convert_gt_doc_refuses_double_application():
-    # applying twice would add 180deg (silent facing reversal) -> must RAISE, not re-rotate.
+    # even in algebra-only mode, applying twice would add 180deg (silent facing reversal) -> RAISE.
     doc = {"meta": {}, "elements": [{"id": "a", "kind": "bed", "x": 0, "y": 0, "w": 1, "d": 1,
                                      "rot": 90.0}]}
-    once = R.convert_gt_doc(doc)
+    once = R.convert_gt_doc(doc, _conditional_math_only=True)
     try:
-        R.convert_gt_doc(once)
+        R.convert_gt_doc(once, _conditional_math_only=True)
     except ValueError:
         return
     raise AssertionError("convert_gt_doc must raise on an already-reconciled doc")
 
 
-def test_score_facing_consequence_with_real_scorer():
+def test_score_facing_consequence_the_plus90_corrupts_not_fixes():
+    # CORRECTED 2026-07-09 (was: asserted the +90 'fixes' F2). A real reader reads the object's true
+    # FRONT (into-room = (sinR,-cosR) for native yaw R) and encodes it in build_floor -> emits rot=R.
+    # So native GT MATCHES a correct reader with NO conversion; the withdrawn +90 is what corrupts it.
     import benchmark_reader as B
-    # square + cardinal rot: footprint() re-rotates x/y/w/d, so a square keeps the AABB rot-
-    # invariant and the pair IoU-matches -- isolating the convention effect on the bucket.
     native_gt = {"elements": [{"id": "b", "kind": "bed", "x": 0, "y": 0, "w": 1500, "d": 1500,
                                "rot": 90.0}]}
-    reader_pred = {"elements": [{"id": "b", "kind": "bed", "x": 0, "y": 0, "w": 1500, "d": 1500,
-                                 "rot": 180.0}]}
-    raw = B.score_pair(native_gt, reader_pred)["F2_facing"]
-    assert raw["n"] == 1 and raw["hits"] == 0                        # convention mismatch = wrong
-    fixed = B.score_pair(R.convert_gt_doc(native_gt), reader_pred)["F2_facing"]
-    assert fixed["cardinal_correct"] == 1.0                          # reconciled = exact
+    correct_reader = {"elements": [{"id": "b", "kind": "bed", "x": 0, "y": 0, "w": 1500, "d": 1500,
+                                    "rot": 90.0}]}                    # build_floor rot of the TRUE front
+    good = B.score_pair(native_gt, correct_reader)["F2_facing"]
+    assert good["n"] == 1 and good["hits"] == 1 and good["cardinal_correct"] == 1.0  # native==correct, NO conversion
+    corrupted_gt = R.convert_gt_doc(native_gt, _conditional_math_only=True)          # apply the withdrawn +90
+    corrupted = B.score_pair(corrupted_gt, correct_reader)["F2_facing"]
+    assert corrupted["n"] == 1 and corrupted["hits"] == 0            # +90 makes a correct reader 'wrong'
 
 
 def test_prove_runs_clean():

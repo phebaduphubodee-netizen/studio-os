@@ -32,14 +32,18 @@ WHY THIS EXISTS (the data path, verified 2026-07-09 on scene_00000, NO render do
   (reported, never fabricated). This keeps the adapter's honesty contract: a labelled element's
   kind is real data; an unlabelled one stays F2-UNWIRED.
 
-F2 IS *WIRED*, NOT YET *ANGLE-VALIDATED* (the load-bearing caveat -- adversarial review 2026-07-09):
-  This lane makes score_facing SCORE (n>0) with REAL kinds instead of UNWIRED. It does NOT make
-  F2's angular buckets trustworthy against a real reader yet. The adapter emits GT rot as NATIVE
-  yaw, which structured3d_adapter.ROT_CONVENTION documents as ~270deg offset from benchmark_reader's
-  build_floor front=(sin,-cos) schema, with y-handedness UNVALIDATED. gt-vs-gt (the selftest) cancels
-  rot and passes -- but a real reader (svg_plan_reader) emitting build_floor rot would land every
-  facing object in the 'wrong' bucket and score ~0 while being perfect. RECONCILE that offset +
-  handedness against a real rot-emitting reader before reporting F2 cardinal_correct as truth.
+F2 IS *WIRED*; the ANGLE CONVENTION is now *VALIDATED* (geometric oracle 2026-07-09, 4 independent
+methods -- qa/reports/f2-facing-convention-validated-2026-07-09.md):
+  This lane makes score_facing SCORE (n>0) with REAL kinds instead of UNWIRED. The prior caveat here
+  warned GT rot needed a ~270deg/+90 reconcile before a real reader could be scored -- that is now
+  REFUTED. The adapter emits GT rot as NATIVE yaw, and that value is ALREADY the build_floor front
+  rot: basis[0] is the object's SIDE axis (perpendicular to the true front, exact identity), and the
+  real (into-room) front = (sin R,-cos R) = build_floor front(R). So a correct build_floor reader
+  emits rot=R and scores EXACT with NO conversion (see structured3d_adapter.ROT_CONVENTION); the +90
+  reconcile is WITHDRAWN (applying it CORRUPTS F2). What genuinely remains: (a) a real rot-EMITTING
+  reader (svg_plan_reader is facing-blind, emits none), and (b) the ~5% left-handed tail + semantic
+  front-vs-mirror, which sit in non-wall-backed/bed objects and stay render-gated. Angular buckets
+  against a real reader are still un-exercised end-to-end until an oriented-symbol rot reader lands.
 
 CLASS MAP PROVENANCE + WHAT IS STILL UNVERIFIED (read before trusting F2 numbers):
   NYU40_TO_BENCH below is transcribed from the S3D repo's metadata/labelids.txt (the canonical
@@ -409,11 +413,11 @@ def run_selftest():
     print(f"  adapter handshake OK: F2 UNWIRED(n=0) -> WIRED(n={f2['n']}, "
           f"cardinal_correct={f2['cardinal_correct']}, verdict={f2['verdict']})")
     print("selftest PASS: render-mask pairing WIRES F2 end-to-end (synthetic, no download).")
-    print("  CAVEAT (not tested here): gt-vs-gt cancels rot, so this proves F2 is WIRED with "
-          "real kinds -- NOT that its ANGULAR buckets are correct against a real reader. The GT "
-          "rot is NATIVE yaw (~270deg off benchmark's build_floor schema, y-handedness "
-          "UNVALIDATED -- see structured3d_adapter.ROT_CONVENTION); reconcile that offset before "
-          "trusting F2's cardinal_correct against svg_plan_reader or any build_floor-rot reader.")
+    print("  NOTE (not tested here): gt-vs-gt cancels rot, so this proves F2 is WIRED with real "
+          "kinds -- not that its ANGULAR buckets are exercised. The GT rot is NATIVE yaw, which is "
+          "ALREADY the build_floor front rot (basis[0]=side; front=(sin,-cos)(R), VALIDATED "
+          "2026-07-09 -- see structured3d_adapter.ROT_CONVENTION); do NOT apply the withdrawn +90. "
+          "Cardinal_correct is only un-exercised because svg_plan_reader emits no rot yet.")
 
 
 def main(argv):

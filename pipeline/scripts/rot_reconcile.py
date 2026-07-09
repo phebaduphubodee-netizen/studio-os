@@ -1,5 +1,24 @@
 """
-rot_reconcile.py -- resolve the ONE load-bearing caveat both structured3d_adapter.py and
+rot_reconcile.py
+
+*** PREMISE REFUTED 2026-07-09 -- convert_gt_doc is WITHDRAWN (it RAISES). READ THIS FIRST. ***
+  This module was built on the premise `forward = basis[0]` and concluded a +90deg native->
+  build_floor conversion was needed before scoring F2. A geometric oracle (4 independent methods,
+  unanimous -- qa/reports/f2-facing-convention-validated-2026-07-09.md) then ANSWERED the very
+  question this module flagged as download-gated ("is basis[0] the semantic front?", see below):
+  NO. basis[0] is the object's SIDE axis (it runs parallel to the backing wall; basis[0]_xy is
+  perpendicular to the true front to 0.00deg on 117/117 real objects -- an exact identity). The
+  real (into-room) front = (sin R, -cos R) = build_floor front applied to the emitted NATIVE yaw R
+  itself. So the emitted GT rot is ALREADY in build_floor convention; NO conversion is needed, and
+  the +90 this module computes encodes basis[0] (the side) AS the front -- applying it to GT facing
+  CORRUPTS F2 by 90deg (a correct reader scores 'wrong'). convert_gt_doc therefore RAISES by
+  default. The pure-vector algebra below (build_floor rot OF a given forward) remains valid as the
+  conditional record; it is simply the wrong quantity for S3D facing. The LIVE convention is pinned
+  in structured3d_adapter.ROT_CONVENTION + test_structured3d_adapter's convention-pin test.
+  Everything under the ORIGINAL DOCSTRING line below is the pre-refutation reasoning, retained for
+  the record but SUPERSEDED where it recommends applying the +90.
+--- ORIGINAL DOCSTRING (SUPERSEDED where it recommends converting) --------------------------------
+resolve the ONE load-bearing caveat both structured3d_adapter.py and
 render_mask_labels.py flag on F2_facing: the adapter emits GT `rot` as NATIVE YAW
 (atan2(basis[0].y, basis[0].x), CCW from world +X, forward = basis[0]) while benchmark_reader
 scores `rot` in build_floor's F(rot)=(sin rot, -cos rot) convention. Both files defer to a
@@ -125,21 +144,26 @@ def native_yaw_of_forward(fx, fy):
     return math.degrees(math.atan2(fy, fx)) % 360.0
 
 
-def convert_gt_doc(doc):
-    """A structured3d_adapter gt document (native-yaw rot) -> a COPY whose every element `rot`
-    is build_floor rot, so a future rot-EMITTING reader can be scored against it correctly.
-    Pure: no I/O, original untouched. Elements without a rot key are left exactly as-is (kind-
-    less / rot-less honesty contract preserved). Stamps meta so the conversion is not invisible.
-    Also SWAPS w<->d (centre held) on each converted element: the +90 rotation transposes
-    placement_gate.footprint's AABB, so the swap keeps the SCORED footprint invariant across the
-    conversion (a non-square box would otherwise detection-miss itself post-reconcile). This closes
-    the ADJACENT FINDING in the module docstring. NOTE: this fixes the ANGLE CONVENTION + the paired
-    footprint geometry only; it does NOT assert basis[0] is the semantic front (still download-
-    gated) -- the meta stamp says so.
+def convert_gt_doc(doc, _conditional_math_only=False):
+    """WITHDRAWN 2026-07-09 -- RAISES by default (see the top-of-file refutation banner).
 
-    NOT idempotent by design: applying it twice would add 180deg = a silent facing REVERSAL. A doc
-    that already carries meta.rot_reconciled RAISES (loud, matching the house 'never silent-wrong'
-    doctrine -- cf. render_mask_labels.read_mask) rather than re-rotate."""
+    This applied the +90 native->build_floor conversion to a gt document's rot. That conversion was
+    correct ONLY under the refuted premise `forward = basis[0]`. basis[0] is the object's SIDE axis
+    (validated: perpendicular to the true front to 0.00deg), so the emitted NATIVE yaw is ALREADY
+    the build_floor front rot -- converting rotates the declared front onto the side axis and scores
+    a correct reader as 'wrong' (F2 corrupted by 90deg). Do NOT apply it to GT facing.
+
+    `_conditional_math_only=True` is used ONLY by _prove()/the regression to exercise the +90
+    ALGEBRA (never on live GT). Even then it keeps the original guards: it swaps w<->d (centre held)
+    so placement_gate.footprint stays invariant under the +90, and RAISES on a doc already carrying
+    meta.rot_reconciled (double application would add 180deg = a silent facing reversal)."""
+    if not _conditional_math_only:
+        raise ValueError(
+            "convert_gt_doc is WITHDRAWN. Its +90 native->build_floor was derived under "
+            "'forward=basis[0]', REFUTED 2026-07-09 (basis[0] is the SIDE axis, front=basis[1]; see "
+            "qa/reports/f2-facing-convention-validated-2026-07-09.md). The emitted native yaw is "
+            "ALREADY build_floor-correct -- applying the +90 rotates the front onto the side axis "
+            "and corrupts F2 by 90deg. Do NOT convert GT facing; leave rot native.")
     if doc.get("meta", {}).get("rot_reconciled") is not None:
         raise ValueError("convert_gt_doc: doc already has meta.rot_reconciled -- rot is already "
                          "build_floor; converting again would add 180deg (a silent facing "
@@ -242,21 +266,27 @@ def _prove(verbose=True):
     #    cardinal keeps the AABB rot-invariant, isolating the convention's effect on the BUCKET.
     #    (That footprint() re-rotation vs the adapter's already-AABB x/y/w/d is a SEPARATE adapter
     #    schema issue this module reports but does not fix -- see the QA report.)
+    #    CORRECTED 2026-07-09: a real reader reads the object's actual FRONT (basis[1] = into-room =
+    #    (sin R,-cos R) for native yaw R) and encodes it in build_floor -> it emits rot = R (native).
+    #    So native GT MATCHES a correct reader with NO conversion; applying convert_gt_doc's +90 to
+    #    GT is what MISSCORES that reader. (The pre-refutation version asserted the opposite.)
     import benchmark_reader as B
-    # a bed at native yaw 90 (forward +Y). A correct reader emits build_floor rot = 180 (North).
+    # object at native yaw 90; its true front is the into-room (sin90,-cos90)=(1,0) direction, which
+    # a correct build_floor reader encodes as rot = 90 (NOT 180 -- 180 would read basis[0], the side).
     native_gt = {"elements": [{"id": "b", "kind": "bed", "x": 0, "y": 0, "w": 1500, "d": 1500,
                                "rot": 90.0}]}
-    reader_pred = {"elements": [{"id": "b", "kind": "bed", "x": 0, "y": 0, "w": 1500, "d": 1500,
-                                 "rot": 180.0}]}                      # build_floor rot of +Y
-    raw = B.score_pair(native_gt, reader_pred)["F2_facing"]
-    assert raw["n"] == 1 and raw["hits"] == 0, raw          # 90 vs 180 -> 90deg off -> not correct
-    fixed_gt = convert_gt_doc(native_gt)
-    assert fixed_gt["elements"][0]["rot"] == 180.0, fixed_gt["elements"][0]["rot"]
-    fixed = B.score_pair(fixed_gt, reader_pred)["F2_facing"]
-    assert fixed["n"] == 1 and fixed["hits"] == 1 and fixed["cardinal_correct"] == 1.0, fixed
-    say(f"  [4] score_facing consequence: native GT vs build_floor reader -> "
-        f"cardinal_correct={raw['cardinal_correct']} (n={raw['n']}); after convert_gt_doc -> "
-        f"cardinal_correct={fixed['cardinal_correct']} -- the exact silent-F2 corruption, fixed")
+    correct_reader = {"elements": [{"id": "b", "kind": "bed", "x": 0, "y": 0, "w": 1500, "d": 1500,
+                                    "rot": 90.0}]}                    # build_floor rot of the TRUE front
+    good = B.score_pair(native_gt, correct_reader)["F2_facing"]
+    assert good["n"] == 1 and good["hits"] == 1 and good["cardinal_correct"] == 1.0, good  # native==correct, NO conversion
+    # applying the WITHDRAWN +90 to GT is what breaks it: GT->180 vs correct reader 90 = 90deg off.
+    corrupted_gt = convert_gt_doc(native_gt, _conditional_math_only=True)
+    assert corrupted_gt["elements"][0]["rot"] == 180.0, corrupted_gt["elements"][0]["rot"]
+    corrupted = B.score_pair(corrupted_gt, correct_reader)["F2_facing"]
+    assert corrupted["n"] == 1 and corrupted["hits"] == 0, corrupted  # the +90 CORRUPTS a correct reader
+    say(f"  [4] score_facing consequence (CORRECTED): native GT vs correct build_floor reader -> "
+        f"cardinal_correct={good['cardinal_correct']} with NO conversion; applying the withdrawn +90 "
+        f"-> cardinal_correct={corrupted['cardinal_correct']} (that +90 is the F2 corruption, not the fix)")
 
     # 5. round-trip inverse is clean.
     for deg in (0.0, 37.0, 90.0, 213.4, 359.9):
@@ -266,10 +296,16 @@ def _prove(verbose=True):
     facts = {"offset_deg": NATIVE_TO_BUILDFLOOR_OFFSET_DEG, "is_rotation_not_reflection": True,
              "rotation_residual_deg": rot_res, "reflection_residual_deg": refl_res,
              "vector_vs_closed_max_diff_deg": max_err_vec,
-             "coordinate_layer": "SOLVED", "semantic_front_axis": "download-gated (basis[0]==front unproven)",
+             "coordinate_layer": "SOLVED",
+             "semantic_front_axis": "ANSWERED 2026-07-09 by geometric oracle: basis[0] is the SIDE "
+                                    "(NOT front); front=basis[1]=(sin,-cos) of the emitted native yaw "
+                                    "-> emitted rot is ALREADY build_floor-correct, +90 is WITHDRAWN",
+             "convert_gt_doc": "WITHDRAWN (raises) -- applying the +90 corrupts F2 by 90deg",
              "rot_emitting_reader": "none exists (svg_plan_reader facing-blind)"}
-    say(f"{VERSION}: PROOF PASS -- build_floor_rot = (native_yaw + 90) mod 360, pure rotation. "
-        f"Residual F2 caveat is SEMANTIC (basis[0]==front) + no rot-reader, both download-gated.")
+    say(f"{VERSION}: PROOF PASS -- the +90 ALGEBRA holds (build_floor rot OF basis[0] = native+90, "
+        f"pure rotation), but basis[0] is the SIDE axis: the emitted native yaw is ALREADY the "
+        f"build_floor FRONT rot, so convert_gt_doc is WITHDRAWN. Residual: a real rot-emitting reader "
+        f"(svg_plan_reader facing-blind) + semantic front-vs-mirror, render-gated.")
     return facts
 
 
