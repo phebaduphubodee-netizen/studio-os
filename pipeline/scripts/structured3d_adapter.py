@@ -659,6 +659,7 @@ def run_selftest(out_dir):
     bad = 0
     cards = []
     n_f3 = n_f4 = n_f6 = 0     # how many files CARRIED each WIRED channel (corpus-level proof)
+    n_kinded_files = 0         # files carrying real labels -> F2 SCORED (not UNWIRED) for the headline
     elig_f3 = elig_f4 = elig_f6 = 0   # how many files were ELIGIBLE to carry it (upstream
                                       # signal present) -> denominator for the coverage floor
     for fp in files:
@@ -704,6 +705,8 @@ def run_selftest(out_dir):
         # lane; a gt built WITH a labels sidecar (kinds present) must SCORE F2 on gt-vs-gt (a
         # perfect self-match), so assert per the mode this file was built in.
         kinded = any("kind" in e for e in doc.get("elements", []))
+        if kinded:
+            n_kinded_files += 1
         if card["F5_floor"]["verdict"] != "UNWIRED":
             problems.append(f"F5_floor={card['F5_floor']['verdict']} (expected UNWIRED)")
         f2 = card["F2_facing"]
@@ -755,12 +758,22 @@ def run_selftest(out_dir):
     # identity score (the silent-pass surface the house doctrine forbids). Surface the
     # blindness loudly instead of printing the flattering number as if it were real.
     f1 = agg["F1_identity"]
-    print(f"F1 identity-blind: aggregate would read n={f1['n']} acc={f1['accuracy']}, but that "
-          f"is the kind-less '' bucket ONLY -- NOT a real identity score; do not roll up as solved")
+    if n_kinded_files:
+        # real caller labels present -> F1 carries real classes, NOT the '' bucket. But keep the
+        # house honesty: gt-vs-gt acc is a SELF-match (labels fed in come back out) -- it proves the
+        # adapter preserves labels, it is NOT a blind-reader-vs-truth identity score.
+        print(f"F1 identity: {n_kinded_files}/{len(files)} files carry REAL caller labels "
+              f"(aggregate n={f1['n']} acc={f1['accuracy']} is a gt-vs-gt self-match -- proves labels "
+              f"survive the adapter, NOT a blind-reader identity score; do not roll up as solved)")
+    else:
+        print(f"F1 identity-blind: aggregate would read n={f1['n']} acc={f1['accuracy']}, but that "
+              f"is the kind-less '' bucket ONLY -- NOT a real identity score; do not roll up as solved")
     if bad:
         raise SystemExit(f"{bad} selftest failures")
+    f2_state = (f"F2_facing WIRED on {n_kinded_files}/{len(files)} labelled files, F5 UNWIRED, "
+                f"F1 labels real" if n_kinded_files else "F2/F5 UNWIRED, F1 identity-blind")
     print("selftest PASS: adapter output is benchmark_reader-clean "
-          "(F3/F4/F6 WIRED, F2/F5 UNWIRED, F1 identity-blind)")
+          f"(F3/F4/F6 WIRED, {f2_state})")
 
 
 def main(argv):
