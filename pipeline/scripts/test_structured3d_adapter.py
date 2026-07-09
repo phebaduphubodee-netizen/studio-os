@@ -274,6 +274,35 @@ def test_kinded_tipped_box_keeps_aabb_drops_rot_and_is_counted():
     assert PG.iou(PG.footprint(e), PG.footprint(reader)) > 0.99
 
 
+def test_emitted_rot_is_native_yaw_not_plus90_and_build_floor_front_is_perp_to_basis0():
+    """CONVENTION PIN (validated 2026-07-09, qa/reports/f2-facing-convention-validated-2026-07-09.md;
+    4 independent geometric oracles, unanimous). The emitted rot IS the native yaw of basis[0] and is
+    ALREADY the build_floor facing rot -- do NOT 'reconcile' it with a +90 to make basis[0] the front.
+    basis[0] is the SIDE axis: benchmark_reader's build_floor front(rot)=(sin,-cos) is PERPENDICULAR to
+    basis[0] (an EXACT identity, holds on 117/117 real objects), and THAT perpendicular is the true
+    into-room front. A future edit that re-adds the retracted +90 ('forward=basis[0]' remedy) would
+    rotate the declared front onto the side axis and score a correct build_floor reader as 'wrong'
+    (angle_diff 90). This test fails the moment that regression is introduced."""
+    import math
+    # basis[0] (local x) = +Y  ->  native yaw 90. The emit MUST be 90, never 180 (=90 + the bad +90).
+    rot90 = [[0, 1, 0], [-1, 0, 0], [0, 0, 1]]
+    box = {"ID": 0, "basis": rot90, "centroid": [1000, 1000, 400], "coeffs": [500, 200, 300]}
+    with tempfile.TemporaryDirectory() as td:
+        anno_p, bbox_p = _write_scene(td, _two_room_scene(), [box])
+        doc = A.convert(anno_path=anno_p, bbox_path=bbox_p, scene_id="s", labels={0: "sofa"})
+    e = doc["elements"][0]
+    assert e["rot"] == 90.0                                     # native yaw emitted AS-IS, no +90
+    R = math.radians(e["rot"])
+    front = (math.sin(R), -math.cos(R))                         # benchmark_reader build_floor front(rot)
+    b0 = (rot90[0][0], rot90[0][1])                             # basis[0] xy = (0, 1) = +Y
+    assert abs(front[0] * b0[0] + front[1] * b0[1]) < 1e-9      # front _|_ basis[0] (side axis), exact
+    assert (round(front[0]), round(front[1])) == (1, 0)         # front = +X, basis[0] = +Y (the side)
+    # score_facing consequence: a correct build_floor reader emits this same rot -> angle_diff 0 (exact).
+    assert B.angle_diff(e["rot"], e["rot"]) == 0.0
+    # had the retracted +90 been baked into the GT, that SAME correct reader would score 'wrong':
+    assert B.angle_diff(e["rot"] + 90, e["rot"]) == 90.0
+
+
 def test_wall_lines_emitted_for_synthesizer_and_oracle_lane():
     """The adapter emits every WALL plane's floor-level trace as gt['wall_lines'] -- the plan
     skeleton the 2D synthesizer draws AND the input svg_plan_reader's oracle-walls lane consumes.

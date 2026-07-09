@@ -61,7 +61,8 @@ F2 UNBLOCK (the code-side blocker is removed; F2 is now DATA-limited, not code-l
   keeps the AABB and stays byte-identical).
   No sidecar (the state on disk today) -> byte-identical blocked default, F2 UNWIRED. The kind
   is never guessed here (kind_priors-style suggestion is a PRED-side lane, never GT). The two
-  real label recipes + the rot-convention reconciliation are documented at ROT_CONVENTION.
+  real label recipes + the (now VALIDATED, no-conversion) rot convention are documented at
+  ROT_CONVENTION.
 
 wall_lines: every WALL plane's floor-level trace is emitted as gt['wall_lines'] ([{x1,y1,x2,y2}]
   mm) -- the plan skeleton synth_plan_2d.py draws so OUR reader can be RUN on a synthesized 2D
@@ -139,19 +140,33 @@ KIND_BLOCKED_REASON = ("bbox_3d.json carries no per-object class label (labels l
                        "F2 UNWIRED, never fabricated. Supply a --labels sidecar (caller's REAL "
                        "{obj_id: kind} from 3D-FRONT or render-mask pairing) to unblock F2")
 
-# FOOTGUN, LABELLED (adversarial review 2026-07-08): the emitted rot is the adapter's NATIVE yaw
-# (see _box_footprint_xy): degrees CCW from world +X, forward = basis[0]. benchmark_reader's
-# schema docstring DECLARES the `rot` field to be build_floor's front=(sin,-cos) convention -- a
-# CONSTANT ~270deg offset from native yaw (verified: native {0,90,180,270} vs build_floor
-# {90,180,270,0}). This produces NO wrong number today: every live path is gt-vs-gt (rot cancels)
-# or has no pred rot (the synth lane emits none), so F2 only ever sees identical convention. But
-# it will silently corrupt F2 the moment a real reader emitting build_floor rot is scored against
-# this GT. It is emitted in NATIVE yaw on purpose -- converting now would be FALSE precision: the
-# Structured3D-vs-build_floor y-axis HANDEDNESS is unvalidated (no rot-emitting reader exists to
-# check against), so a "reconciled" value could bake in a mirror/180 error that LOOKS correct.
-# Reconcile (offset AND y-handedness) against a real reader before trusting F2 angular buckets.
-ROT_CONVENTION = ("native_yaw_deg_ccw_from_+x__forward=basis[0]__NOT_build_floor_front=(sin,-cos)"
-                  "__~270deg_offset__y_handedness_UNVALIDATED__reconcile_before_real_reader_F2")
+# ROT CONVENTION -- VALIDATED (geometric oracle 2026-07-09, 4 independent methods unanimous; see
+# qa/reports/f2-facing-convention-validated-2026-07-09.md). The emitted rot is the adapter's NATIVE
+# yaw (see _box_footprint_xy): degrees CCW from world +X = the yaw of basis[0]. The PRIOR note here
+# asserted "forward = basis[0]" and warned a ~+90 conversion was needed before a real reader could
+# be scored -- BOTH are now REFUTED:
+#   - basis[0] is the object's SIDE axis, not its front. It runs PARALLEL to the backing wall, and
+#     basis[0]_xy is perpendicular to the true front to 0.00deg on 117/117 sampled objects (an EXACT
+#     identity: (sin R,-cos R) is by construction basis[0] rotated -90deg, so basis[0] can NEVER be
+#     the front). basis[0] is the longer/width axis in ~87%.
+#   - the object's real (into-room) FRONT = (sin R, -cos R) = EXACTLY benchmark_reader's build_floor
+#     front(R) applied to the SAME emitted R. So the emitted native-yaw VALUE is ALREADY in
+#     build_floor convention: a perfect build_floor reader inverts front=(sin,-cos) to recover rot=R
+#     and scores EXACT. There is NO offset to apply. Into-room agreement 94.5% (median 0deg) over 73
+#     wall-backed strong-front objects; 100% for cabinets and tv_panels.
+#   - the old "~+90 / native{0,90,180,270} vs build_floor{90,180,270,0}" arithmetic is real but it
+#     re-encodes basis[0]-AS-front (the SIDE axis). Applying it to FACING would drive a correct
+#     reader to angle_diff=90 -> the 'wrong' bucket: it CORRUPTS F2 -- the inverse of the old fear.
+# RESIDUALS (documented; do NOT "fix" blindly): a ~5% left-handed (det(basis)<0) tail has
+# front=+basis[1] and reads 180-flipped, but it sits in non-wall-backed / bed objects (0 in the
+# scored wall-backed set) -> an empirical det<0 rot+180 flip gave 0 measured gain, so it is NOT
+# applied. BEDS encode length in basis[0]-yaw, not facing -> exclude from strong-front facing.
+# Near-square objects have an ambiguous side/front axis. STILL render-gated: that basis[1] is the
+# SEMANTIC front (vs a mirror-symmetric side) -- wall geometry proves (sin,-cos) points INTO the room
+# but cannot rule out a further fixed 90 for a symmetric symbol. LEAVE rot NATIVE; do NOT apply +90.
+ROT_CONVENTION = ("native_yaw_deg_ccw_from_+x__==__build_floor_front=(sin,-cos)_rot__VALIDATED_"
+                  "2026-07-09__basis[0]=SIDE(parallel_wall,perp_front_exact)__front=(sin,-cos)__"
+                  "NO_offset_apply__~5pct_det<0_tail_180flip__beds_excluded")
 
 
 def _lookup_label(labels, obj_id):
@@ -252,9 +267,12 @@ def _box_footprint_xy(basis, centroid, coeffs):
     population per scene into meta.transpose_divergent (threshold TRANSPOSE_DIVERGENCE_MM)
     rather than claiming invariance.
 
-    rot (yaw, deg, CCW from world +X) is computed for provenance only and is NOT emitted:
-    without a kind there is no facing to score, and score_facing skips kind-less elements
-    regardless. forward = basis[0,:] (local x)."""
+    rot (yaw, deg, CCW from world +X) = atan2(basis[0].y, basis[0].x), the yaw of local-x = basis[0].
+    In the kind-less lane it is provenance only (score_facing skips kind-less elements). With a label
+    it IS the facing GT -- and it is emitted AS-IS: this native yaw already equals the build_floor
+    front rot (front(rot)=(sin,-cos) = the into-room front), VALIDATED 2026-07-09 (see ROT_CONVENTION
+    above). basis[0] is the SIDE axis (parallel to the backing wall), NOT the front -- do NOT apply a
+    +90 'reconcile' to make basis[0] the front; that would corrupt F2."""
     cx, cy, cz = centroid
     xs, ys = [], []
     for sx in (-1.0, 1.0):
