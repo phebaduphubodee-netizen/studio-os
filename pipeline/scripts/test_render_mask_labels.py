@@ -132,6 +132,27 @@ def test_majority_summed_across_views():
     assert rep["views_paired"] == 2
 
 
+def test_shape_mismatched_view_skipped_reported_not_fatal():
+    # scene_00706 view 141 (real corpus, 2026-07-09): bbox.zip ships a 1600x1200
+    # perspective-shaped instance.png at a panorama path -> that VIEW must be reported +
+    # skipped; the scene's other views must still label (a crash here killed a 3,500-scene
+    # corpus run at scene 706)
+    d = tempfile.mkdtemp(prefix="rml_mm_")
+    ia, sa = _paint((10, 10), {0: (4, (slice(0, 10), slice(0, 10)))})   # good view: bed
+    _write_view(os.path.join(d, "roomA", "panorama", "full"), ia, sa)
+    bad = os.path.join(d, "roomB", "panorama", "full")
+    os.makedirs(bad, exist_ok=True)
+    Image.fromarray(np.zeros((12, 16), dtype=np.uint16)).save(
+        os.path.join(bad, "instance.png"))                              # perspective-shaped
+    Image.fromarray(np.full((10, 10), 4, dtype=np.uint8)).save(
+        os.path.join(bad, "semantic.png"))                              # panorama-shaped
+    labels, rep = R.scene_labels(d)
+    assert labels[0] == "bed"                          # good view still labels
+    assert rep["views_paired"] == 1
+    assert len(rep["views_unpairable"]) == 1
+    assert "shape mismatch" in rep["views_unpairable"][0]["error"]
+
+
 def _one_object_two_classes(bed_px, sofa_px):
     """A 1x(bed+sofa) single-object view: obj 0 with bed_px pixels of bed(4) then sofa_px sofa(6)."""
     n = bed_px + sofa_px

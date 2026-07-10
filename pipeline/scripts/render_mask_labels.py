@@ -258,8 +258,18 @@ def scene_labels(scene_dir, include_perspective=False):
     facing, norm = _facing_kinds()
     view_pairs, unpaired, persp_skip = _find_view_pairs(scene_dir, include_perspective)
     merged = defaultdict(Counter)
+    unpairable = []
     for inst_path, sem_path in view_pairs:
-        for oid, ctr in pair_view(inst_path, sem_path).items():
+        try:
+            view = pair_view(inst_path, sem_path)
+        except ValueError as e:
+            # upstream dataset defect (e.g. scene_00706 view 141 ships a 1600x1200
+            # perspective-shaped instance.png at a panorama path): one view reported +
+            # skipped, never the scene/corpus -- and never a cross-shape guess
+            unpairable.append({"view": os.path.dirname(inst_path).replace("\\", "/"),
+                               "error": str(e)})
+            continue
+        for oid, ctr in view.items():
             merged[oid].update(ctr)
 
     labels = {}
@@ -294,7 +304,9 @@ def scene_labels(scene_dir, include_perspective=False):
     n_facing = sum(1 for k in labels.values() if norm(k) in facing)
     report = {
         "scene": os.path.basename(os.path.normpath(scene_dir)),
-        "views_paired": len(view_pairs), "views_unpaired_no_semantic": unpaired,
+        "views_paired": len(view_pairs) - len(unpairable),
+        "views_unpaired_no_semantic": unpaired,
+        "views_unpairable": unpairable,
         "perspective_views_skipped": persp_skip,
         "instances_seen": len(merged), "labelled": len(labels), "facing_wired": n_facing,
         "void_only_instances": n_void, "ambiguous_unlabelled": ambiguous,
@@ -331,9 +343,16 @@ def _print_reports(reports):
     for r in reports:
         unmapped.update(r["unmapped_by_class"])
         observed.update(r.get("observed_nyu_classes", {}))
+    tot_unpairable = sum(len(r.get("views_unpairable", [])) for r in reports)
     print(f"{VERSION}: {len(reports)} scenes; labelled objects={tot_lab}; "
           f"facing objects (F2-wired)={tot_fac}; views missing semantic.png={tot_unpaired}; "
           f"perspective views skipped={tot_persp}; ambiguous (below emit floor)={tot_ambig}")
+    if tot_unpairable:
+        print(f"  UNPAIRABLE views skipped (shape mismatch etc. -- upstream defects, "
+              f"reported per scene): {tot_unpairable}")
+        for r in reports:
+            for u in r.get("views_unpairable", []):
+                print(f"    {r['scene']}: {u['view']}: {u['error']}")
     if observed:
         print(f"  observed semantic classes (winner per object) -- eyeball for an OFF-BY-ONE / "
               f"void surprise on the first real run: {dict(observed.most_common(12))}")

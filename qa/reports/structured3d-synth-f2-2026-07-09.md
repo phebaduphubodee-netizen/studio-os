@@ -65,3 +65,26 @@ python -m pytest pipeline/scripts -q          # 835 green
 ```
 
 *Built from a 6-reader adversarial scout workflow over the F2 lane (zero edits to the parallel session's owned files); failures diagnosed live per-element before each fix; 835 tests green.*
+
+## 6c. FULL-CORPUS ADDENDUM (same day, third session): 200 -> 3,500 scenes, n 568 -> 9,326
+
+Same surgical recipe, whole corpus: `fetch_semantic_all.py` (generalized pano00 fetcher) pulled **all 21,834 panorama `semantic.png` across parts 01-17 (~150 MB transferred vs ~190 GB of zips)**; paired `instance.png` from the on-disk bbox.zip; **3,500/3,500 scenes, pairing 0 unpaired**. Two new server pathologies handled: (a) central-directory (tail-range) reads RATE-LIMIT in bursts and recover -- parts 03-16 all read "not a zip" right after parts 01-02 hammered ~2,700 range GETs, then read fine minutes later (backoff+retry now built in; 09j's "re-probe beats assume" held a third time); (b) part 17's tail ranges stayed dead ALL session -> `fetch_semantic_walk.py` walks LOCAL file headers from byte 0 (sizes live in each header; part 17 is DEFLATE method-8, inflated locally, usize-verified) -- central directory never touched. 6 entries (0.03% of views) are persistently corrupt server-side (`Bad magic number` at the local header across sessions/retries) -- skipped, scenes still labeled from their other views. One upstream dataset defect found: scene_00706 view 141 ships a 1600x1200 perspective-shaped `instance.png` at a panorama path -- it crashed the whole 3,500-scene labels batch; `scene_labels` now reports+skips an unpairable VIEW (never the scene, never a cross-shape guess) -- pinned: `test_shape_mismatched_view_skipped_reported_not_fatal`.
+
+Labels: **73,348 objects (54,712 facing) over 3,482/3,500 scenes**; observed NYU winners sane (no off-by-one). GT: `gt-corpus-labeled/` = 3,500/3,500 converted, 0 parse-fails; selftest PASS -- **F2 WIRED on 3,481/3,500 files**; F3-carrying 3,306/3,496. Lane wall-clock 4,608 s.
+
+| metric (3,500 scenes, run dir `synth-f2-3500/`) | value | vs 200-scene run |
+|---|---|---|
+| **cardinal_correct, visual no-bed** | **95.3%** (n=7,795: exact 7,431 / flipped 3 / wrong 9 / unreported 352) | 94.9% (n=494) |
+| cardinal_correct, visual beds-in | 94.1% (n=9,326) | 94.7% (n=568) |
+| blind baseline (same detection set) | 0.0% (all unreported) | unchanged |
+| wall-prior ORACLE-WALLS band | 35.9% no-bed (unreported 2,557, wrong 2,068) | 31.4% |
+| detection recall (context) | 10.7% (47,437 / 444,405 matched) | 10.5% |
+
+**Failure anatomy (all 12 emitted-rot misses re-run + inspected, not sampled):** the bucket-diff distribution alone rules out angular noise -- `cardinal` (6-45 deg) = **0 of 7,795**; every miss is 90.0 / 180.0 / 156.5 = foreign-ink signatures. Forensics per case: **10/12 have a facing-kind neighbour inside fuse range whose rot equals the mis-read exactly** -- the cleanest: scene_02301 o78, GT rot **-156.5 deg** (non-cardinal -> its own strip was never drawn), pred read **0.0 deg** = the fused neighbour chair's strip verbatim. The remaining 2 (both cabinets, diff=90, no facing neighbour in range) are foreign ink with NO strip source -- consistent with a partially-clipped neighbour outline surviving the ring filter as an open polyline; **OPEN (0.03% of n), not yet pinned**. The 352 unreporteds stay multi-strip washouts (spread thin: 298 scenes, max 5/scene). So emitted-rot accuracy = 7,431/7,443 ~= **99.84%**, stable from 200 -> 3,500 scenes: the ceiling is the reader's FUSION (10.7% recall), not facing -- now measured at n=7.8k instead of asserted at n=494. Oracle band 31->36% with 33% of matched facing pairs off-wall: the wall prior's reach is now corpus-calibrated.
+
+```
+cd pipeline/scripts
+python render_mask_labels.py --batch C:/Users/teza_/studio-datasets/structured3d/mask-slice/Structured3D C:/Users/teza_/studio-datasets/structured3d/corpus_labels_all.json
+python structured3d_adapter.py --batch 0:3500 C:/Users/teza_/studio-datasets/structured3d/gt-corpus-labeled C:/Users/teza_/studio-datasets/structured3d/corpus_labels_all.json
+python f2_facing_lane.py --score C:/Users/teza_/studio-datasets/structured3d/gt-corpus-labeled C:/Users/teza_/studio-datasets/structured3d/synth-f2-3500
+```
