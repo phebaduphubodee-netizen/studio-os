@@ -48,6 +48,27 @@ try:
 except Exception:
     pass
 
+# The owner-sign gate (docs/research/2026-07-11-furniture-sourcing-DR.md): a `sourcing-signoff.json`
+# ledger can turn a verified:false pick into verified WITHOUT editing the ffe JSON. Optional import so
+# this gate still loads if the sibling module is absent (then only the inline `verified` boolean counts).
+try:
+    import ffe_signoff_gate as _SIGNOFF
+except Exception:
+    _SIGNOFF = None
+
+
+def _verified_with_prov(cand, signoff):
+    """(verified_bool, provenance|None). A VALID ledger signature (prov source='ledger', carrying
+    by/date) OR the inline verified boolean (source='inline'). With no ledger (signoff falsy) this is
+    exactly (bool(cand['verified']), …) — backward-compatible. The provenance is threaded into the
+    result detail so a ledger-DRIVEN pass is visibly distinct from an inline verified:true pass (a
+    signature must SURFACE, never silently flip the verdict) — this gate's report is what make_all
+    prints, and it does not run the dedicated sign gate."""
+    if signoff and _SIGNOFF is not None:
+        return _SIGNOFF.resolve_verified(cand, signoff)
+    v = bool(cand.get("verified"))
+    return v, ({"source": "inline"} if v else None)
+
 # Fixtures that are BOUGHT (sanitaryware + appliances) rather than joiner-made. A fixture whose
 # kind is NOT in this set (vanity carcass, built-in wardrobe, counter) is millwork -> fabricated.
 SANITARY_APPLIANCE_KINDS = {
@@ -124,11 +145,14 @@ def _supplier_ok(cand):
     return bool((cand.get("source_th") or "").strip()) and bool((cand.get("link") or "").strip())
 
 
-def check_sourced(el, ffe_doc):
+def check_sourced(el, ffe_doc, signoff=None):
     """The four machine checks on one SOURCED element. binding/dimension/supplier failing ->
     FAIL (hard: the render would show a piece no buyable product backs, or the wrong size, or
     from no real supplier). verified:false ALONE -> REVIEW (renderable concept, deliverable
-    stamped). Returns {name, kind, cls, ffe_tag, status, failed[], detail}."""
+    stamped). Returns {name, kind, cls, ffe_tag, status, failed[], detail}.
+
+    `signoff` (the sourcing-signoff ledger, optional) lets an owner signature satisfy the verified
+    tier without editing the ffe JSON; with no ledger the inline verified boolean is used as before."""
     name = el.get("name", el.get("kind", "?"))
     tag = el.get("ffe_tag")
     cand = resolve_candidate(tag, ffe_doc)
@@ -151,12 +175,15 @@ def check_sourced(el, ffe_doc):
         failed.append("dimension")
     if not _supplier_ok(cand):
         failed.append("supplier")
-    if not cand.get("verified"):
+    verified, prov = _verified_with_prov(cand, signoff)
+    if not verified:
         failed.append("verified")
     hard = [f for f in failed if f != "verified"]
     status = "FAIL" if hard else ("REVIEW" if failed else "PASS")
     cd = cand.get("dimensions_mm") or {}
     detail = f"{tag} -> {cand.get('manufacturer', '?')} {cand.get('model', '?')} ({cd.get('w')}x{cd.get('d')}mm)"
+    if prov and prov.get("source") == "ledger":
+        detail += f"  [owner-signed by {prov.get('by')} on {prov.get('date')}]"   # surface the ledger flip
     if failed:
         detail += "  [" + ", ".join(failed) + "]"
     return {"name": name, "kind": el.get("kind"), "cls": "sourced", "ffe_tag": tag,
@@ -173,11 +200,12 @@ def check_fabricated(el):
             "detail": "joiner-made — buildability check UNWIRED (not catalog-sourced)"}
 
 
-def report(spec, ffe_doc):
+def report(spec, ffe_doc, signoff=None):
     """(results, verdict). UNWIRED when no FF&E file (sourcing cannot be checked — never a
     silent PASS). Else FAIL if any SOURCED element hard-fails, REVIEW if any is REVIEW, PASS if
     every sourced element is bound+sized+supplied+verified. Fabricated elements are listed but
-    never drive the verdict."""
+    never drive the verdict. `signoff` (optional sourcing-signoff ledger) lets an owner signature
+    satisfy the verified tier; None -> the inline verified boolean, backward-compatible."""
     results = []
     for el, array in elements(spec):
         if classify_element(el, array) == "fabricated":
@@ -187,7 +215,7 @@ def report(spec, ffe_doc):
                             "cls": "sourced", "ffe_tag": el.get("ffe_tag"), "status": "UNWIRED",
                             "failed": [], "detail": "no FF&E file — sourcing unverified"})
         else:
-            results.append(check_sourced(el, ffe_doc))
+            results.append(check_sourced(el, ffe_doc, signoff))
 
     if ffe_doc is None:
         return results, "UNWIRED"
@@ -253,12 +281,22 @@ def load_ffe(spec_path, spec):
     return None, None
 
 
+def signoff_beside(ffe_path):
+    """The sourcing-signoff ledger beside an ffe file, or [] (no ledger / sign module absent). Shared
+    by check() and suite_package so the deliverable seam consults an owner signature IDENTICALLY to
+    the CLI — a valid ledger must not be honoured in one entry point and silently ignored in another."""
+    if ffe_path and _SIGNOFF is not None:
+        return _SIGNOFF.load_signoff_beside(ffe_path)
+    return None
+
+
 def check(spec_path):
     """Load a raw scene-graph + its FF&E file and gate it. Returns (verdict, results) — note
     the order is (verdict, results) to match how make_all consumes the gate."""
     spec = json.load(open(spec_path, encoding="utf-8"))
-    ffe_doc, _ = load_ffe(spec_path, spec)
-    results, verdict = report(spec, ffe_doc)
+    ffe_doc, ffe_path = load_ffe(spec_path, spec)
+    signoff = signoff_beside(ffe_path)
+    results, verdict = report(spec, ffe_doc, signoff)
     return verdict, results
 
 

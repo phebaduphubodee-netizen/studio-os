@@ -1,0 +1,44 @@
+{
+  "_note": "GOLD-STANDARD TEMPLATE for the owner sign-off ledger consumed by pipeline/scripts/ffe_signoff_gate.py (and honoured by sourceability_gate). Place a real one as `sourcing-signoff.json` beside a project's 03_layout/ffe-candidates.json. It records that a TRAINED human confirmed each sourced pick's LIVE SKU + price (the DR's owner-signed law: sourcing is candidate-generation + owner signature, never auto-pick). A ledger sign flips a verified:false pick to effective-verified WITHOUT editing the ffe JSON, and STICKS across a re-research (it is keyed to the durable canonical key, not the ffe row). Run `python pipeline/scripts/ffe_signoff_gate.py <ffe-candidates.json> --keys` to print each sourceable pick's canonical key, then copy it here.",
+  "_how_to_sign": {
+    "retailer-SKU pick (IKEA article / Index SKU)": "add {sku, by, date} — the sku is matched globally-unique and dot/case/source-tolerant, so '003.540.63' or '00354063' and source 'IKEA' or 'IKEA Thailand' all bind. price_thb is recommended (freshness re-validates it) but not required.",
+    "SKU-less / made-to-order pick (composite key)": "run --keys, copy the printed composite key verbatim into `key`, add {by, date}.",
+    "a VALID sign requires": "a real `by` (NOT the OWNER-CONFIRM-PENDING template) + a `date` + an id anchor (`sku`/`article`/`key`). Missing the anchor or date => the gate surfaces it as MALFORMED (never silently dropped).",
+    "correcting a sign": "APPEND a new entry for the same key — last usable entry wins; a trailing typo never erases an earlier valid sign."
+  },
+  "project_id": "PRJ-2026-001",
+  "signed": [
+    {
+      "tag": "FFE-201",
+      "sku": "302.494.76",
+      "source": "IKEA Thailand",
+      "price_thb": 8090,
+      "by": "designer-name",
+      "date": "2026-07-11",
+      "note": "confirmed live at IKEA TH product page; dotted article — binds the undotted URL form too"
+    },
+    {
+      "tag": "FFE-101",
+      "key": "index-living-mall:110047607",
+      "price_thb": 24900,
+      "by": "designer-name",
+      "date": "2026-07-11",
+      "note": "retailer SKU pick — `key` copied from --keys; could equivalently be {sku: 110047607}"
+    },
+    {
+      "tag": "FFE-EXAMPLE-COMPOSITE",
+      "key": "kulthong-design|kulthong-design|nbt01-platform|1950x2080x300",
+      "price_thb": 13500,
+      "by": "designer-name",
+      "date": "2026-07-11",
+      "note": "SKU-less made-to-order pick — the composite `key` copied verbatim from --keys"
+    },
+    {
+      "tag": "FFE-UNSIGNED-TEMPLATE",
+      "key": "",
+      "by": "OWNER-CONFIRM-PENDING",
+      "date": "",
+      "note": "an unsigned template row is machine-INERT (never binds) — fill in by/date/sku to activate"
+    }
+  ]
+}

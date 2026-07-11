@@ -191,7 +191,7 @@ def build(spec, spec_path, name=None, outdir=None, date=None, render_png=None):
     try:
         import sourceability_gate
         ffe_doc, ffe_path = sourceability_gate.load_ffe(spec_path, spec)
-        s_results, s_verdict = sourceability_gate.report(spec, ffe_doc)
+        s_results, s_verdict = sourceability_gate.report(spec, ffe_doc, sourceability_gate.signoff_beside(ffe_path))
         ffe_present = ffe_doc is not None
         res = list(res) + sourceability_gate.report_rows(s_results) \
                         + sourceability_gate.bundle_rows(s_verdict, ffe_present, bool(render_png))
