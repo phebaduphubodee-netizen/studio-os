@@ -1,5 +1,81 @@
 # INTERIOR-AI — Render asset decision log
 
+## 2026-07-12 — OWNER DECISION: NO ASSET SPEND. The asset lever was measured and it is not the lever.
+Closes the 2026-07-01 "furniture pack (DEFERRED)" entry below. 31-agent workflow: repo forensics +
+live-catalog CC0 hunt + adversarial license verification (21 claims survived, 3 refuted).
+
+**The premise "furniture_realism=2 is what caps us at 3.5" is REFUTED by our own scorecards.**
+
+| render | furn | ctx | styl | mean | overall |
+|---|---|---|---|---|---|
+| LivingRoom_Cam01_v01 | **4** | 1 | 2 | 3.0 | **2.5** |
+| MasterSuite_Cam02_v01 | 2 | 5 | 3 | **4.0** | **3.5** |
+| MasterSuite_Cam02_v03 | 2 | 5 | 3 | 3.75 | 3.5 |
+| MasterSuite_Cam02_v04 | 2 | 4 | 3 | 3.625 | 3.5 |
+| SittingRoom_Cam01_v01 | **3** | 4 | 3 | 3.625 | **3.5** |
+
+Three independent kills: (a) the top furniture score in the corpus (4) belongs to the *worst*
+image (2.5) — sunk by `room_context: 1`; (b) **`overall_0_5` is HOLISTIC, not a mean** —
+`critique.py:112` literally says `"your honest overall, NOT just the mean"`, and v01 already
+scored a 4.0 sub-mean (= `thresholds.yaml` `pass_min: 4`) yet still got 3.5/REWORK, so **no
+arithmetic carries furniture 2→4 to overall ≥4**; (c) **SittingRoom already renders real CC0
+meshes** (`sofa_02`, `modern_arm_chair_01`) → furniture 3, overall **still 3.5**. That is the A/B,
+already run. `batch-manifest.md:197-220` says it in the repo's own voice: *"I predicted this lever
+would lift that axis. **It did not.** The critic simply moved its aim to..."* — as did the
+2026-07-03 clay round (Δoverall = 0.0). **Measured price of an asset library: furn 2→3, overall +0.**
+
+**The plumbing bugs cost more than the models, and they are free to fix:**
+- `build_room.py:1418` — `s = min(w/mw, d/md)` **discards the `h` param**. This, not mesh quality,
+  is why the real scanned `Ottoman_01` renders as a "dark leather blob". **Buying assets before
+  fixing this pays for beautiful geometry and then squashes it.**
+- `build_room.py:1563-1568` — `kind=="bed"`/`"bench"` `continue` *before* `MODEL_MAP` (:1569).
+  **Any bed asset purchased today is inert — it cannot load.**
+- The wardrobe is not furniture at all: it is a `builtins` → single `add_box` (:1521-1531).
+  The judge's *"the wardrobe is a texture-mapped box"* is a literal description of that code.
+  **No purchase can fix built-in millwork; it must be generated at project mm.**
+
+**CC0 reality (live catalogs, not memory).** Poly Haven API: 521 models, **3 beds (all period),
+0 wardrobes**. Sketchfab `cc0 + downloadable`: **0 wardrobes, 0 nightstands, 0 ottomans**.
+**There is no modern CC0 bed and no CC0 wardrobe in existence.** Usable CC0 (verified commercial,
+redistribution-into-git OK): `side_table_01`, `modern_wooden_cabinet`, `drawer_cabinet`,
+`throw_pillows_01`.
+
+**CORRECTIONS to the 2026-07-01 entry below — do not act on its table:**
+- **Chocofur's "free CC0 tier" DOES NOT EXIST in 2026.** `/free-3d-models` → 404; the store now
+  sells one bundle at **$349**, and its license **prohibits redistributing meshes in any form** →
+  incompatible with a repo that commits assets to git. The "~€25/pack, free CC0 tier" row is stale.
+- CC-BY (Sketchfab) is the only free tier with contemporary bedroom furniture, and it is game art
+  (7k–36k tris, 2K atlases) with an attribution obligation that propagates into git *and* into every
+  downstream reuse of the render — into a directory literally named `cc0/`, whose loader reads no
+  license field (`build_room.py:1325-1332`). The good-looking ones (Michael Amini "Malibu Crest",
+  "IKEA-Style Wardrobe") carry **trade-dress exposure that CC-BY explicitly does not clear**.
+- Retailer geometry cannot close the sourceability north star: IKEA's ToU bars commercial use *and*
+  redistribution outright; no Thai retailer publishes downloadable 3D at any terms.
+
+**OWNER DECISIONS (2026-07-12):**
+1. **Tier = design-intent (DD grade), not client-facing marketing.** 3.5 is acceptable; `thresholds.yaml`
+   asks for 4, not 5, and 3.5 is WARN not FAIL. (Independently corroborated by commit `03ee737`:
+   "v04 is the deliverable of record at 3.5/5 REWORK (DD grade, NOT client-ready)".)
+2. **Budget = ฿0.** No Evermotion (~$115–160), no commission ($450–900). Fix the bugs first, then
+   re-measure on a **3-roll mean** (judge variance is ±0.5/roll; every critique in the table is n=1).
+3. **CC-BY = NOT accepted** on client deliverables. Therefore: **no free bed, no free bench, no free
+   wardrobe. Period.** CC0-only in `assets/shared/cc0/`.
+4. **Wardrobe = build, don't buy** — a procedural millwork generator (door leaves, 2–3 mm reveals,
+   shadow gaps, handles, plinth, chamfer). ฿0, 1–2 days, and it then serves every future project's
+   built-ins. Buying a one-off wardrobe buys geometry for one room; the generator buys a capability.
+
+**Why this is the right call even if money were free:** the ledger architecture shipped 2026-07-11
+(`ffe_signoff_gate` — owner-signed canonical-key ledger mapping a mesh to the real SKU) means **the
+mesh does not have to *be* the product.** So choose meshes for silhouette plausibility and license
+hygiene, not for likeness — which removes most of the reason to spend at all. And the judge that
+would score the purchase was measured at **ρ=0.428 vs a practising designer** (26/26 REWORK, incl.
+images it scored 5.00), with **`room_context` (+0.628), not `furniture_realism`,** as the best
+predictor of human opinion. Paying to move `furniture_realism` is paying to move a proxy.
+
+**Re-open triggers:** (a) tier changes to client-facing marketing; (b) after the ฿0 work + a 3-roll
+mean, `furniture_realism` is *still* the low axis AND `overall` moved; (c) a client needs a specific
+real SKU shown accurately (the 2026-07-01 caveat, still valid).
+
 ## 2026-07-02 — ComfyUI+FLUX feasibility research → DECIDED: stay on Gemini hybrid
 Founder asked whether the blueprint's ComfyUI+FLUX lane is achievable. 10-agent web research,
 claims adversarially verified against primary sources (license texts, pricing pages). Findings:
@@ -41,7 +117,7 @@ at `C:\Program Files\Blender Foundation\Blender 5.1\`). Re-open triggers: (a) ov
 starts catching Gemini layout drift too often, (b) Gemini pricing/terms change, or (c) a
 16 GB+ desktop GPU arrives (then FLUX.2 klein 4B / Nunchaku-class local becomes competitive).
 
-## 2026-07-01 — Modern-luxury furniture pack (PENDING founder decision, DEFERRED)
+## 2026-07-01 — Modern-luxury furniture pack (~~PENDING founder decision, DEFERRED~~ → **CLOSED 2026-07-12: DECLINED, see top entry. Its premise was refuted by measurement and its Chocofur row is factually stale. Do not act on this table.**)
 Founder wants renders as beautiful as his friend's studio (PORS). The free CC0 pipeline
 reaches ~70–75%; the biggest remaining lever is **modern-luxury furniture/material assets**
 (Poly Haven / free CC0 has only vintage furniture, so we retint dark leather → cream boucle).

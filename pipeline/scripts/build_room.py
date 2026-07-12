@@ -38,6 +38,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals() el
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 import furniture
+import millwork       # bpy-free pure logic: built-in joinery layout (METRES) + the model-fit gate
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 
@@ -238,15 +239,25 @@ def _environment(warm=False):
         pass
 
 
+MILL_BEVEL_M = 0.0012   # joinery arris: a cabinet edge is nearly sharp, not a 5mm round-over
+
+
 def _bevel_edges(width_m=BEVEL_WIDTH_M, segments=2):
     """KB §8.4: no real edge is perfectly sharp — a ~1mm bevel lets every edge catch a
     highlight, which is one of the biggest 'CG vs photoreal' tells. Non-destructive
-    Bevel modifier, so the geometry stays editable."""
+    Bevel modifier, so the geometry stays editable.
+
+    PER-OBJECT OVERRIDE (`mill_bevel`): the suite pass runs this at 5 mm, which is *wider than the
+    3 mm joinery reveal* millwork.py exists to cast. The reveals do survive it (verified in a
+    render crop) but come out mushy, and a 5 mm round-over on a cabinet door is not a thing that
+    exists. Millwork parts therefore carry their own arris. NOTE: we deliberately do NOT tag them
+    `ph_model` to escape the wide bevel — that key ALSO makes paint_materials skip the object, so
+    the wardrobe would lose its walnut and render as bare grey."""
     for obj in bpy.data.objects:
         if obj.type != 'MESH' or obj.get("ph_model"):   # don't bevel imported detailed models
             continue
         mod = obj.modifiers.new(name="edge_bevel", type='BEVEL')
-        mod.width = width_m
+        mod.width = obj.get("mill_bevel", width_m)
         mod.segments = segments
         mod.limit_method = 'ANGLE'
         mod.angle_limit = 0.5236   # ~30deg: only bevel sharp-ish edges
@@ -979,12 +990,31 @@ def _dress_scene(spec):
             bz += 0.036
             placed += 1
     # (dropped the foreground pouf — it read as a clumsy white box overlapping the table)
-    # a small potted plant on the centre table for a touch of green
+    # a small potted plant on the centre table for a touch of green.
+    #
+    # `calathea_orbifolia_01` is a 2492 x 1194 mm FLOOR plant. Squeezed into this 220 mm tabletop
+    # slot it used to render as a 37 mm-tall green smear — the same pancake bug as the side tables,
+    # just in the decor lane. model_fit now REFUSES it (aspect 48%), and this call site had no
+    # fallback, so the styling cue vanished silently. Styling is a SCORED axis; a decor piece must
+    # never disappear because a gate said no. Procedural pot + foliage carries it instead.
     if tbl:
+        pz = max(float(tbl.get("h", 350)) * MM, 0.05)
+        px, py = tx + 0.15 * tw, ty + 0.12 * td
         p = _model_path("calathea_orbifolia_01")
-        if p and place_model(p, tx + 0.15 * tw, ty + 0.12 * td, 0.22, 0.22, 0.3,
-                             z0=max(float(tbl.get("h", 350)) * MM, 0.05)):
+        if p and place_model(p, px, py, 0.22, 0.22, 0.3, z0=pz):
             placed += 1
+        else:
+            pot_m = _solid("deco_pot", (0.78, 0.75, 0.70, 1.0), rough=0.85, spec=0.35)
+            lef_m = _solid("deco_leaf", (0.24, 0.36, 0.22, 1.0), rough=0.75, sheen=0.3, spec=0.4)
+            _rbox("deco__pot", px + 0.045, py + 0.045, pz, 0.13, 0.13, 0.11, pot_m, bevw=0.02, seg=3)
+            for li, (lx, ly, lw, ld, lh) in enumerate((
+                    (0.075, 0.085, 0.05, 0.03, 0.20), (0.100, 0.070, 0.03, 0.05, 0.16),
+                    (0.055, 0.062, 0.04, 0.04, 0.13))):
+                _rbox(f"deco__leaf{li}", px + lx, py + ly, pz + 0.09, lw, ld, lh, lef_m,
+                      bevw=0.014, seg=3)
+            placed += 1
+            print("  (decor plant: procedural pot+foliage — the CC0 calathea is a FLOOR plant "
+                  "and does not fit a 220mm tabletop slot)")
     if placed:
         print(f"  dressed scene with {placed} decor pieces")
     return placed
@@ -1114,17 +1144,74 @@ MODEL_MAP = {
     "round_table": "coffee_table_round_01",
     "side_table": "coffee_table_round_01",
     "nightstand": "ClassicNightstand_01",
-    "bench": "Ottoman_01",
+    # NO "bench" entry. It used to map to Ottoman_01 and was DEAD CODE: the item loop intercepts
+    # kind=="bench" into _build_bench BEFORE MODEL_MAP is consulted, so the ottoman has not been
+    # placed since 2026-07-11. Leaving the mapping in was a lie about what the renderer does — and
+    # it let me tell that lie in a commit message (the "model_fit refuses the Ottoman blob" story:
+    # true of the ALGEBRA and of the v01/v03 renders, but the gate is not what stops it today).
 }
 
-# Native facing of each model AFTER glTF import: the compass azimuth (deg; +X=0, +Y=90)
-# the piece's FRONT points at rot=0. Calibrated by inspecting a render. Auto-face rotates
-# a seating item so its front points at the conversation focal point (the centre table).
+# THE ONE FACING CONVENTION (2026-07-12: measured, then pinned — see test_facing_convention.py).
+#
+#   spec `rot`  ->  the piece's FRONT points  (sin rot, -cos rot)   [rot 0 = -Y = SOUTH, CCW]
+#   front azimuth (deg, +X=0, +Y=90)  =  rot - 90
+#
+# Stated identically in facing_reader._FACING {0:S, 90:E, 180:N, 270:W}, placement_logic._front_vec,
+# cross_signal, build_floor.add_oriented_box and _head_dir below (which spells the same thing on the
+# BACK vector: head = -front, so the v4 bed at rot 270 has its head EAST and faces WEST). There is
+# only ONE convention; an earlier note in millwork.py claiming two contradictory ones was wrong and
+# is retracted.
+#
+# MODEL_FRONT_DEG = the azimuth each imported glTF's FRONT points at when place_model is passed 0.
+# It was "calibrated by inspecting a render" and half the table was MISSING, which made the plain
+# path fail-OPEN (an un-listed model got raw rot with no declared front at all). Now MEASURED, not
+# asserted: every mesh was imported headless and shot in orthographic elevation from the SOUTH —
+# all nine present their FRONT to that camera, so every native front is -Y = -90 deg.
+#
+# THE LAW (one line, used by BOTH the plain and the auto-face paths below):
+#       place_model.rot  =  (desired world FRONT azimuth)  -  MODEL_FRONT_DEG[slug]
+#                        =  spec_rot - 90 - MODEL_FRONT_DEG[slug]
+# It collapses to the raw spec `rot` only BECAUSE every entry here is -90. Written out explicitly so
+# that adding a model whose front is not -Y cannot silently rotate a room's furniture.
 MODEL_FRONT_DEG = {
-    "modern_arm_chair_01": -90.0,     # faces -Y (south) as imported
+    # measured: FRONT faced the south camera in the ortho probe
+    "modern_arm_chair_01": -90.0,
     "mid_century_lounge_chair": -90.0,
-    "sofa_02": -90.0,                 # faces -Y as imported -> auto-face flips it to the room
+    "sofa_02": -90.0,
+    "sofa_03": -90.0,
+    "Sofa_01": -90.0,
+    "ArmChair_01": -90.0,
+    "ClassicNightstand_01": -90.0,     # open-front cabinet; its opening faced the south camera
+    # no meaningful front (rotation-invariant); listed so the completeness check cannot fail open
+    "Ottoman_01": -90.0,               # upholstered box
+    "coffee_table_round_01": -90.0,    # round
 }
+# Every MODEL_MAP slug MUST have an entry (test_facing_convention pins this). A missing entry used
+# to mean "raw rot, native front unknown" — a silent, unbounded rotation error.
+assert set(MODEL_MAP.values()) <= set(MODEL_FRONT_DEG), \
+    f"MODEL_MAP slugs missing a measured native front: {set(MODEL_MAP.values()) - set(MODEL_FRONT_DEG)}"
+
+
+def model_rot(spec_rot, slug):
+    """The Z-rotation place_model must apply, from the spec's facing and the mesh's native front.
+    PURE. See THE LAW above. Returns spec_rot unchanged while every native front is -90."""
+    return float(spec_rot) - 90.0 - MODEL_FRONT_DEG.get(slug, -90.0)
+
+
+def _rotate_about_z(objs, cx, cy, deg):
+    """Rotate objects CCW by `deg` about the world-Z axis through (cx, cy) — the SAME sense and the
+    SAME pivot as build_floor.add_oriented_box and place_model. Metres. No-op at deg 0."""
+    if not objs or not deg:
+        return
+    import math
+    from mathutils import Matrix, Vector
+    piv = Vector((cx, cy, 0.0))
+    T = (Matrix.Translation(piv) @ Matrix.Rotation(math.radians(float(deg)), 4, 'Z')
+         @ Matrix.Translation(-piv))
+    bpy.context.view_layer.update()
+    for o in objs:
+        o.matrix_world = T @ o.matrix_world
+    bpy.context.view_layer.update()
 
 
 def _rbox(name, x0, y0, z0, w, d, hgt, mat, bevw=0.02, seg=3):
@@ -1302,6 +1389,37 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     return True
 
 
+def _build_millwork(name, kind, x0, y0, z0, W, D, H, room_ctr, item_ctrs=(), face=None):
+    """Emit a DETAILED built-in (door leaves + reveals + toe-kick + pull-gap, or slat battens for
+    a headboard wall) instead of the single `add_box` that made the pro critic write "the wardrobe
+    is a texture-mapped box with basic hardware". Layout is millwork.py — pure, metres, and its
+    CAD invariant (parts never leave the plan bbox) is unit-tested without Blender.
+
+    Returns True if it built one; False -> the caller keeps the plain box.
+    Parts are named `mill__*` so paint_materials gives them the rift-walnut veneer (see :1033)."""
+    axis, sign, src = millwork.mill_axis(x0, y0, W, D, room_ctr, item_ctrs, face)
+    if axis is None:
+        return False
+    parts = millwork.millwork_parts(kind, W, D, H, axis, sign, floor_standing=(z0 <= 1e-6))
+    if not parts:
+        return False                                 # panel / wall-hung low piece -> flush box
+    for pn, px, py, pz, dx, dy, dz in parts:
+        o = add_box(f"mill__{name}__{pn}", x0 + px, y0 + py, z0 + pz, dx, dy, dz)
+        o["mill_bevel"] = MILL_BEVEL_M               # a near-sharp arris, not the suite's 5mm round
+    faces = {("x", 1): "E", ("x", -1): "W", ("y", 1): "N", ("y", -1): "S"}
+    if src == "declared-cross-run":
+        # The owner still WINS (we never override a signature) — but a wardrobe opened along its
+        # long axis is worth saying out loud, not building silently.
+        print(f"  REVIEW millwork '{name}': owner-declared face {faces[(axis, sign)]} opens this "
+              f"{max(W, D) * 1000:.0f}mm run from its {min(W, D) * 1000:.0f}mm END. Confirm.")
+    elif src != "declared":
+        # TWO-LAYER LAW: facing is the owner's to declare. An inferred facing is a STANDING REVIEW,
+        # never a silent pass — a wardrobe that opens into the wall mis-teaches the repaint.
+        print(f"  REVIEW millwork facing INFERRED ({src}) for '{name}': front = "
+              f"{faces[(axis, sign)]}. Declare `face` in the spec to make it owner-signed.")
+    return True
+
+
 def _stage_lounge(spec):
     """Restage the lounge into a photogenic U-grouping against the SOUTH feature wall for the
     HERO beauty shot: the sofa's back to the walnut wall FACING THE ROOM (so it's the hero with
@@ -1395,7 +1513,11 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False):
     table for decor), then rotate it `rot` degrees about world Z (so a chair can face the
     conversation group — fixes the 'all chairs face the wrong way' bug). Keeps the model's
     own PBR materials (retint_fabric recolours dark upholstery to cream boucle). Coords
-    metres. Returns True on success."""
+    metres.
+
+    Returns True on success; False if the import failed OR the mesh does not FIT the slot
+    (see model_fit) — in which case the caller falls back to a procedural primitive, which is
+    the right answer: a squashed real mesh looks worse than an honest box."""
     import math
     from mathutils import Matrix, Vector
     before = set(bpy.data.objects)
@@ -1413,9 +1535,26 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False):
     roots = [o for o in news if o.parent is None] or news
     mn, mx = _world_bbox(meshes)
     mw, md = mx[0] - mn[0], mx[1] - mn[1]
-    if mw <= 1e-6 or md <= 1e-6:
+    s, ok, why = millwork.model_fit(mw, md, mx[2] - mn[2], w, d, h)
+    if not ok:
+        # LOUD, not silent: this is the failure mode that produced a judged 2/5 and was read as a
+        # mesh-quality problem for a week. It is a SOURCING signal — the slot wants a different mesh.
+        print(f"  MODEL-FIT REJECT {os.path.basename(path)}: {why} -> procedural fallback")
+        # Free the DATA too, not just the objects. Removing an object orphans its mesh, materials
+        # and — for a Poly Haven asset — its whole 1k/2k PBR image set, which then rides along in
+        # the saved .blend forever. A gate that rejects models must not fatten the file each time.
+        meshes_d = {o.data for o in news if o.type == 'MESH' and o.data}
+        mats = {sl.material for o in news for sl in getattr(o, "material_slots", []) if sl.material}
+        imgs = {n.image for m in mats if m.use_nodes for n in m.node_tree.nodes
+                if n.type == 'TEX_IMAGE' and n.image}
+        for o in news:
+            bpy.data.objects.remove(o, do_unlink=True)
+        for coll, items in ((bpy.data.meshes, meshes_d), (bpy.data.materials, mats),
+                            (bpy.data.images, imgs)):
+            for it in items:
+                if it.users == 0:
+                    coll.remove(it)
         return False
-    s = min(w / mw, d / md)                      # uniform footprint fit (no distortion)
     for o in roots:
         o.scale = tuple(v * s for v in o.scale)
     bpy.context.view_layer.update()
@@ -1518,6 +1657,14 @@ def build_suite(spec, label="suite"):
                     float(fx["x"]) * MM, float(fx["y"]) * MM, 0,
                     float(fx["w"]) * MM, float(fx["d"]) * MM, max(float(fx.get("h", 400)) * MM, 0.02))
 
+    # A built-in faces the side of the room it SERVES — read that off the furniture, not off the
+    # outline's centroid (in an L-shaped SUITE the centroid lands in the wrong zone: see
+    # millwork.mill_axis). Item centres in metres; the centroid is only the no-items fallback.
+    _rc = (sum(p[0] for p in outline_m) / len(outline_m),
+           sum(p[1] for p in outline_m) / len(outline_m))
+    _ic = [((float(it["x"]) + float(it["w"]) / 2.0) * MM,
+            (float(it["y"]) + float(it["d"]) / 2.0) * MM) for it in spec.get("items", [])]
+    n_mill = 0
     for b in spec.get("builtins", []):
         bh = float(b["h"]) * MM if b.get("h") else h
         # mount_mm = height above the floor the element's BASE sits (AFF). Default 0 =
@@ -1526,9 +1673,19 @@ def build_suite(spec, label="suite"):
         # of a floor block — the designer's "ทำไมเอา TV ไปติดไว้ที่พื้น?" fix (built-ins used to
         # always extrude from z=0, so a wall TV rendered as a slab on the floor).
         bz = float(b.get("mount_mm", 0) or 0) * MM
-        add_box("mill__" + str(b.get("name", "builtin")).replace(" ", "_"),
-                float(b["x"]) * MM, float(b["y"]) * MM, bz,
-                float(b["w"]) * MM, float(b["d"]) * MM, bh)
+        nm = str(b.get("name", "builtin")).replace(" ", "_")
+        bx, by = float(b["x"]) * MM, float(b["y"]) * MM
+        bw, bd = float(b["w"]) * MM, float(b["d"]) * MM
+        # PROCEDURAL MILLWORK (2026-07-12): door leaves + reveals + toe-kick + pull-gap (or slat
+        # battens for a headboard wall). Falls back to the plain box for shapes that are not runs.
+        if _build_millwork(nm, str(b.get("kind", "")), bx, by, bz, bw, bd, bh, _rc, _ic,
+                           b.get("face")):
+            n_mill += 1
+            continue
+        add_box("mill__" + nm, bx, by, bz, bw, bd, bh)
+    if n_mill:
+        print(f"  millwork: {n_mill} built-in(s) generated with real joinery "
+              f"(leaves/reveals/toe-kick/pull-gap or slats)")
 
     # loose furniture: a REAL CC0 model (Poly Haven) when the kind is mapped + cached,
     # else furniture.py primitives (which work in INCHES). Models are fit to the footprint.
@@ -1556,36 +1713,56 @@ def build_suite(spec, label="suite"):
             _build_modern_sofa(xm, ym, wm, dm)
             n_model += 1
             continue
-        # ROT-AWARE procedural massing (2026-07-11). These MUST come before MODEL_MAP /
-        # furniture.parts: that fallback is called without `rot`, so it massed the bed's head
-        # on the wrong side (see _build_bed) — and the clay is the beauty pass's structural
-        # control, so a wrong-way bed mis-teaches the repaint which wall is the feature wall.
+        # Procedural massing (2026-07-11), intercepted BEFORE MODEL_MAP / furniture.parts.
+        # _build_bed IS rot-aware (via _head_dir, so the pillows land at the head).
+        # _build_bench IS NOT: it accepts `rot` and never reads it (its body is a symmetric
+        # seat-on-four-legs, so today that is invisible — but the parameter is a promise the
+        # function does not keep, and the moment the bench gains a back or an asymmetric arm it
+        # becomes the same wrong-way bug _build_bed exists to fix). Named, not silently "fixed":
+        # rotating it now would change a shipped render for no verified gain.
         if kind == "bed":
             _build_bed(xm, ym, wm, dm, hm, rot)
             continue
         if kind == "bench":
-            _build_bench(xm, ym, wm, dm, hm, rot)
+            _build_bench(xm, ym, wm, dm, hm, rot)   # rot accepted, NOT applied — see above
             continue
         slug = MODEL_MAP.get(kind)
+        # BOTH rotation paths now go through THE LAW (see MODEL_FRONT_DEG): place_model is handed
+        # (desired FRONT azimuth - the mesh's native front), never a raw angle. The auto-face branch
+        # already did this and is the render-calibrated anchor; the plain path used to pass the spec
+        # rot straight through, which is right ONLY while every native front is -90 (it is, measured
+        # — but that was luck, not construction, and a new model would have silently broken it).
+        mrot = model_rot(rot, slug)                      # == rot today; explicit so it stays true
         # auto-face lounge seating toward the centre table (fixes 'all chairs face the wrong way')
         if (slug in MODEL_FRONT_DEG and _focal and "rot" not in it
                 and kind in ("armchair", "chair", "lounge_chair", "sofa", "loveseat")
                 and float(it["x"]) > 4000 and float(it["y"]) < 3000):
             icx = float(it["x"]) + float(it["w"]) / 2.0
             icy = float(it["y"]) + float(it["d"]) / 2.0
-            rot = math.degrees(math.atan2(_focal[1] - icy, _focal[0] - icx)) - MODEL_FRONT_DEG[slug]
+            front_az = math.degrees(math.atan2(_focal[1] - icy, _focal[0] - icx))
+            mrot = front_az - MODEL_FRONT_DEG[slug]      # same law, front azimuth read off the table
+            rot = front_az + 90.0                        # keep the SPEC-convention angle in sync
         mpath = _model_path(slug) if slug else None
         retint = kind in ("sofa", "loveseat", "armchair", "chair", "lounge_chair")
-        if mpath and place_model(mpath, xm, ym, wm, dm, hm, rot=rot, retint_fabric=retint):
+        if mpath and place_model(mpath, xm, ym, wm, dm, hm, rot=mrot, retint_fabric=retint):
             n_model += 1
             continue
+        # PRIMITIVE FALLBACK. It used to be built AXIS-ALIGNED and rot was DROPPED on the floor —
+        # while build_floor rotates the very same parts (add_oriented_box, centre pivot). That
+        # split-brain is what massed the v4 bed's head on the wrong side (see _build_bed); bed and
+        # bench got bespoke rot-aware builders, and everything else stayed broken. It matters more
+        # now: model_fit (2026-07-12) deliberately routes a badly-fitting mesh HERE, so this path is
+        # no longer the rare one. Rotate the parts about the footprint centre, exactly as build_floor
+        # does — one convention, one pivot, both renderers.
         tag = _mat_tag(kind)
         xi, yi = float(it["x"]) * MM_IN, float(it["y"]) * MM_IN
         wi, di = float(it["w"]) * MM_IN, float(it["d"]) * MM_IN
         hi = max(float(it.get("h", 400)) * MM_IN, 0.5)
-        for (pname, px, py, pz, pdx, pdy, pdz) in furniture.parts(kind, nm, xi, yi, wi, di, hi):
-            add_box(f"{tag}__{pname}".replace(" ", "_"),
-                    px * IN, py * IN, pz * IN, pdx * IN, pdy * IN, pdz * IN)
+        prims = [add_box(f"{tag}__{pname}".replace(" ", "_"),
+                         px * IN, py * IN, pz * IN, pdx * IN, pdy * IN, pdz * IN)
+                 for (pname, px, py, pz, pdx, pdy, pdz)
+                 in furniture.parts(kind, nm, xi, yi, wi, di, hi)]
+        _rotate_about_z(prims, xm + wm / 2.0, ym + dm / 2.0, rot)
     if n_model:
         print(f"  placed {n_model} real CC0 furniture models (Poly Haven)")
 
@@ -1728,7 +1905,11 @@ def _force_render_from_argv():
     return "--render" in _post_dashdash()
 
 
-if __name__ == "__main__" or True:
+# `or True` used to defeat this guard, so merely IMPORTING build_room built and rendered a scene —
+# which is why the facing convention (MODEL_FRONT_DEG, model_rot, _head_dir) had no unit tests: it
+# was untestable. Blender runs a `--python` script as __main__, so the guard is enough; verified by
+# re-running the v4 hero render after the change (2026-07-12).
+if __name__ == "__main__":
     _p = _spec_path_from_argv()
     _spec = load_spec(_p) if _p else DEFAULT_SPEC
     if _force_render_from_argv():
