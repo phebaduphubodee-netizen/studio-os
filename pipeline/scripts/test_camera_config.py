@@ -242,6 +242,89 @@ def test_subject_share_low_for_a_dead_wall_frame():
     assert share < 0.15, f"expected a dead-wall (low) share, got {share:.3f}"
 
 
+# ---------- manual eye_camera override (spec["eye_camera"], for L-shaped suites) ----------
+
+def _manual_room():
+    """A 5x5 m room, a low bed in the east half, a full-height wardrobe on the north wall —
+    an open floor with one tall ray-blocker, enough to exercise place + validate."""
+    return {"room": {"outline_mm": [[0, 0], [5000, 0], [5000, 5000], [0, 5000]]},
+            "builtins": [{"kind": "wardrobe", "name": "wd", "x": 0, "y": 0, "w": 5000, "d": 600, "h": 2800}],
+            "items": [{"kind": "bed", "name": "bed", "x": 3000, "y": 2000, "w": 1800, "d": 2000, "h": 600}]}
+
+
+def test_manual_override_places_exact_camera():
+    # stand_mm + aim_mm + lens_mm are honoured verbatim (mm -> m); manual flag set; auto grid skipped
+    spec = _manual_room()
+    spec["eye_camera"] = {"stand_mm": [1000, 3000], "aim_mm": [3900, 3000], "lens_mm": 28}
+    sol = C.solve_eye_camera(spec)
+    assert sol["manual"] is True
+    assert abs(sol["ex"] - 1.0) < 1e-9 and abs(sol["ey"] - 3.0) < 1e-9, (sol["ex"], sol["ey"])
+    assert abs(sol["tx"] - 3.9) < 1e-9 and abs(sol["ty"] - 3.0) < 1e-9, (sol["tx"], sol["ty"])
+    assert sol["lens_mm"] == 28 and abs(sol["standoff_m"] - 2.9) < 1e-9, sol
+
+
+def test_manual_override_shift_y_passthrough():
+    # shift_y is carried on the solve for build_room to apply; absent -> None (build_room's default)
+    spec = _manual_room()
+    spec["eye_camera"] = {"stand_mm": [1000, 3000], "aim_mm": [3900, 3000], "shift_y": -0.20}
+    assert abs(C.solve_eye_camera(spec)["shift_y"] + 0.20) < 1e-9
+    spec["eye_camera"] = {"stand_mm": [1000, 3000], "aim_mm": [3900, 3000]}
+    assert C.solve_eye_camera(spec)["shift_y"] is None
+
+
+def test_manual_override_aim_by_substring():
+    # "aim" names the subject by kind/name; tx,ty become its centre and hero follows
+    spec = _manual_room()
+    spec["eye_camera"] = {"stand_mm": [1000, 3000], "aim": "bed"}
+    sol = C.solve_eye_camera(spec)
+    assert sol["hero"]["kind"] == "bed"
+    assert abs(sol["tx"] - 3.9) < 1e-9 and abs(sol["ty"] - 3.0) < 1e-9, (sol["tx"], sol["ty"])
+    # no lens_mm given -> hero-sized snap from _LENS_SNAP
+    assert sol["lens_mm"] in C._LENS_SNAP
+
+
+def test_manual_override_inert_without_key():
+    # no eye_camera key -> the auto grid solve runs unchanged, manual flag False
+    b = C.solve_eye_camera(_load("bedroom_suite.json"))
+    assert b.get("manual") is False
+    assert abs(b["ex"] - 1.2) < 1e-6 and abs(b["ey"] - 3.2) < 1e-6   # same pin as the auto test
+
+
+def test_manual_override_rejects_no_line_of_sight():
+    # a full-height partition splits the room; stand on the far side of the subject -> the level
+    # ray crosses the partition (a ray-block) -> the SAME safety net the auto solve uses fires
+    spec = {"room": {"outline_mm": [[0, 0], [4000, 0], [4000, 3000], [0, 3000]]},
+            "builtins": [{"kind": "partition", "name": "p", "x": 2000, "y": 0, "w": 100, "d": 3000, "h": 2800}],
+            "items": [{"kind": "stool", "name": "s", "x": 3000, "y": 1400, "w": 400, "d": 200, "h": 450}]}
+    spec["eye_camera"] = {"stand_mm": [1000, 1500], "aim": "stool"}   # west of the wall, subject east
+    try:
+        C.solve_eye_camera(spec)
+        assert False, "expected EyeCameraError (manual spot has no line of sight past the partition)"
+    except C.EyeCameraError as e:
+        assert "line of sight" in str(e)
+
+
+def test_manual_override_rejects_too_close():
+    spec = {"room": {"outline_mm": [[0, 0], [4000, 0], [4000, 4000], [0, 4000]]},
+            "items": [{"kind": "stool", "name": "s", "x": 100, "y": 100, "w": 300, "d": 300, "h": 450}]}
+    spec["eye_camera"] = {"stand_mm": [2000, 2000], "aim_mm": [2300, 2000]}   # 0.3 m standoff
+    try:
+        C.solve_eye_camera(spec)
+        assert False, "expected EyeCameraError (standoff < 0.5 m)"
+    except C.EyeCameraError as e:
+        assert "standoff" in str(e)
+
+
+def test_manual_override_rejects_bad_lens():
+    spec = _manual_room()
+    spec["eye_camera"] = {"stand_mm": [1000, 3000], "aim_mm": [3900, 3000], "lens_mm": 0}
+    try:
+        C.solve_eye_camera(spec)
+        assert False, "expected EyeCameraError (lens_mm must be > 0)"
+    except C.EyeCameraError as e:
+        assert "lens_mm" in str(e)
+
+
 TESTS = [test_default_height_in_designer_band, test_ray_threshold_is_coupled_to_eye_height,
          test_env_override_enables_render_ab, test_bad_env_value_falls_back_to_default,
          test_height_change_is_solve_neutral_for_production_specs,
@@ -251,7 +334,11 @@ TESTS = [test_default_height_in_designer_band, test_ray_threshold_is_coupled_to_
          test_solve_production_specs_pinned, test_solve_no_loose_item_raises,
          test_solve_packed_room_raises_no_clear_spot, test_solve_bad_eye_aim_raises,
          test_frame_fov_matches_36mm_horizontal_sensor, test_ray_block_is_mount_aware,
-         test_subject_share_high_for_a_real_hero_shot, test_subject_share_low_for_a_dead_wall_frame]
+         test_subject_share_high_for_a_real_hero_shot, test_subject_share_low_for_a_dead_wall_frame,
+         test_manual_override_places_exact_camera, test_manual_override_shift_y_passthrough,
+         test_manual_override_aim_by_substring,
+         test_manual_override_inert_without_key, test_manual_override_rejects_no_line_of_sight,
+         test_manual_override_rejects_too_close, test_manual_override_rejects_bad_lens]
 
 
 def main():

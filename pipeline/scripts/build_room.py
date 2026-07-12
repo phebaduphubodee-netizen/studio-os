@@ -390,7 +390,8 @@ def add_suite_eye_camera(spec, outline_m, h):
     bpy.context.scene.collection.objects.link(cam)
     cam.location = eye
     cam.rotation_euler = (tgt - eye).to_track_quat('-Z', 'Y').to_euler()
-    cam_data.shift_y = RENDER_SHIFT_Y        # frame down to the furniture without tilting
+    _sv = sol.get("shift_y")                 # manual eye_camera.shift_y override (camera_config)
+    cam_data.shift_y = RENDER_SHIFT_Y if _sv is None else float(_sv)  # frame down without tilting (two-point kept)
     try:
         cam_data.dof.use_dof = True
         cam_data.dof.focus_distance = (tgt - eye).length
@@ -1181,6 +1182,126 @@ def _build_modern_sofa(x0, y0, W, D):
     return True
 
 
+def _head_dir(rot):
+    """Unit vector the bed's HEAD points along, snapped to the dominant cardinal.
+
+    furniture.py's convention (its module docstring): at rot=0 a headboard sits on the +Y
+    (far) side. `rot` rotates the piece CCW, so the head direction is R(rot)·(0,1) =
+    (-sin rot, cos rot) — rot 270 -> (+1, 0) = head EAST, which is exactly the v4 master bed
+    ("head EAST vs the BF14 slat wall", rot 270). Returns ('x'|'y', +1|-1)."""
+    import math                      # module-local, matching this file's import style
+    a = math.radians(float(rot or 0.0))
+    hx, hy = -math.sin(a), math.cos(a)
+    if abs(hx) >= abs(hy):
+        return "x", (1 if hx > 0 else -1)
+    return "y", (1 if hy > 0 else -1)
+
+
+def _build_bed(x0, y0, W, D, H, rot=0.0):
+    """A real platform bed massed from beveled primitives, ROT-AWARE — base + inset mattress +
+    draped duvet + two pillows at the HEAD.
+
+    WHY THIS EXISTS (2026-07-11): the primitive fallback path (`furniture.parts`) is called
+    WITHOUT `rot` — build_room only ever passed rot to `place_model`. furniture._bed hardcodes
+    the headboard/pillows on the +Y side, so the v4 master bed (rot 270 = head EAST, against the
+    BF14 slat wall) was massed with its HEAD ON THE WRONG SIDE. That is not just cosmetic: the
+    clay is the STRUCTURAL CONTROL for the Gemini pass, so a head-on-the-wrong-side bed told the
+    beauty pass the feature wall was on the left — which is exactly what it painted (v01
+    rendered the left-hand wardrobe BF09-3 as the headboard wall and lost BF14). Fixing the
+    massing fixes the render's millwork identity at the source.
+
+    CAD-SAFE: every part is built INSIDE the spec's authoritative footprint (x, y, w, d) — the
+    plan-measured bbox never moves. Only pillows rise a few cm above the declared massing height
+    (they sit ON the mattress, as real pillows do). NO separate tall headboard is modelled: in
+    this suite the headboard IS the wall (BF14 = "ผนังระแนงหัวเตียง", the bed-head slat wall), so
+    adding one would duplicate owner-confirmed millwork."""
+    axis, sign = _head_dir(rot)
+    along = W if axis == "x" else D          # head->foot length
+    across = D if axis == "x" else W
+
+    def box(from_head, across_off, a_size, c_size):
+        """Place a part `from_head` metres back from the HEAD edge, `across_off` from the
+        near side — in bbox coords, whichever way the bed faces. Returns (x, y, dx, dy)."""
+        if axis == "x":
+            x = (x0 + W - from_head - a_size) if sign > 0 else (x0 + from_head)
+            return x, y0 + across_off, a_size, c_size
+        y = (y0 + D - from_head - a_size) if sign > 0 else (y0 + from_head)
+        return x0 + across_off, y, c_size, a_size
+
+    def emit(name, from_head, across_off, a_size, c_size, z, dz, mat, bevw, seg=3):
+        """Emit a bedding part ONLY if it lies wholly inside the bbox.
+
+        The CAD-safety invariant ("the plan-measured footprint never moves") is enforced HERE,
+        by construction — not assumed. An earlier cut sized these parts with `max(..., floor)`
+        clamps; on a small bed those floors pushed a pillow OUTSIDE the footprint (a 0.35 m-wide
+        bed put pillow1 clear of the bbox). Unreachable on today's specs, but a clamp that can
+        silently break the one invariant this whole builder rests on is not something to ship.
+        A degenerate/tiny bed now simply gets FEWER parts (base + mattress always survive)."""
+        if a_size <= 0.01 or c_size <= 0.01:
+            return
+        if from_head < -1e-9 or from_head + a_size > along + 1e-9:
+            return
+        if across_off < -1e-9 or across_off + c_size > across + 1e-9:
+            return
+        bx, by, bdx, bdy = box(from_head, across_off, a_size, c_size)
+        _rbox(name, bx, by, z, bdx, bdy, dz, mat, bevw=bevw, seg=seg)
+
+    base_m = _solid("bed_base",     (0.40, 0.36, 0.32, 1.0), rough=0.70, sheen=0.15, spec=0.4)
+    matt_m = _solid("bed_mattress", (0.87, 0.85, 0.81, 1.0), rough=0.92, sheen=0.5, spec=0.35)
+    duvt_m = _solid("bed_duvet",    (0.80, 0.77, 0.71, 1.0), rough=0.95, sheen=0.7, spec=0.35)
+    pill_m = _solid("bed_pillow",   (0.90, 0.88, 0.84, 1.0), rough=0.95, sheen=0.8, spec=0.35)
+
+    # Proportions matter as much as parts: a 50/50 base-to-mattress split reads as a platform
+    # bed. (First pass used a 0.34 base + a 0.40 m mattress + a 0.10 m duvet — three fat slabs
+    # stacked, which still cued "cube tool". Thin the cloth, thicken nothing.)
+    base_h = H * 0.50                                   # platform plinth: grounds the piece
+    _rbox("bed__base", x0, y0, 0.0, W, D, base_h, base_m, bevw=0.012)
+    ins = 0.035                                         # mattress sits proud of the base
+    _rbox("bed__mattress", x0 + ins, y0 + ins, base_h, W - 2 * ins, D - 2 * ins,
+          H - base_h, matt_m, bevw=0.03)
+
+    # duvet: a THIN cloth layer over the foot ~2/3, inset so the mattress edge still shows, and
+    # dipping slightly INTO the mattress top so it reads as cloth lying on it, not a second slab.
+    # NOTE: sizes below are computed, never floor-clamped — `emit` drops any part that would not
+    # fit, so the footprint invariant holds for any bed size (see emit's docstring).
+    pz = min(0.42, along * 0.26)                        # pillow zone, measured from the head
+    dv_from = pz + 0.14
+    ci = 0.015
+    emit("bed__duvet", dv_from, ci, along - dv_from - 0.02, across - 2 * ci,
+         H - 0.02, 0.07, duvt_m, 0.032, seg=4)
+    # turned-back fold at the duvet's head edge — the single most legible "this is a made bed"
+    # cue, and it gives the repaint an edge to hang linen folds on.
+    emit("bed__duvet_fold", dv_from - 0.13, ci, 0.15, across - 2 * ci,
+         H - 0.01, 0.09, pill_m, 0.04, seg=4)
+
+    # two plump pillows at the HEAD, gapped (a plausible bed silhouette is what the beauty pass
+    # needs in order to paint linen; a bare slab is what made the critic reach for "cube tool").
+    gap = min(0.07, across * 0.06)
+    pw = (across - 3 * gap) / 2.0
+    for i in range(2):
+        emit(f"bed__pillow{i}", 0.08, gap + i * (pw + gap), pz - 0.08, pw,
+             H - 0.005, 0.16, pill_m, 0.07, seg=5)
+    return True
+
+
+def _build_bench(x0, y0, W, D, H, rot=0.0):
+    """A formed upholstered bench: a beveled cushion on four slim tapered legs, inside the spec
+    footprint. Replaces the CC0 `Ottoman_01` fallback, which — stretched to a 0.5 x 1.0 m bench
+    footprint — renders as a dark leather blob the pro critic called "a simple box shape on
+    legs". A real seat-on-legs silhouette (with air under it) is what reads as furniture."""
+    seat_m = _solid("bench_seat", (0.84, 0.80, 0.74, 1.0), rough=0.92, sheen=0.9, spec=0.4)
+    leg_m  = _solid("bench_leg",  (0.26, 0.21, 0.16, 1.0), rough=0.45, sheen=0.1, spec=0.5)
+    leg_h = H * 0.62                                    # tall legs + a SLIM cushion = a bench;
+    seat_h = H - leg_h                                  # a fat pad on stubs is just a box again
+    lt = min(0.05, W * 0.12, D * 0.12)                  # leg thickness
+    inset = 0.035
+    for i, (ox, oy) in enumerate(((inset, inset), (W - inset - lt, inset),
+                                  (inset, D - inset - lt), (W - inset - lt, D - inset - lt))):
+        _rbox(f"bench__leg{i}", x0 + ox, y0 + oy, 0.0, lt, lt, leg_h, leg_m, bevw=0.006)
+    _rbox("bench__seat", x0, y0, leg_h, W, D, seat_h, seat_m, bevw=0.045, seg=4)
+    return True
+
+
 def _stage_lounge(spec):
     """Restage the lounge into a photogenic U-grouping against the SOUTH feature wall for the
     HERO beauty shot: the sofa's back to the walnut wall FACING THE ROOM (so it's the hero with
@@ -1434,6 +1555,16 @@ def build_suite(spec, label="suite"):
         if kind == "sofa" and spec.get("_hero"):
             _build_modern_sofa(xm, ym, wm, dm)
             n_model += 1
+            continue
+        # ROT-AWARE procedural massing (2026-07-11). These MUST come before MODEL_MAP /
+        # furniture.parts: that fallback is called without `rot`, so it massed the bed's head
+        # on the wrong side (see _build_bed) — and the clay is the beauty pass's structural
+        # control, so a wrong-way bed mis-teaches the repaint which wall is the feature wall.
+        if kind == "bed":
+            _build_bed(xm, ym, wm, dm, hm, rot)
+            continue
+        if kind == "bench":
+            _build_bench(xm, ym, wm, dm, hm, rot)
             continue
         slug = MODEL_MAP.get(kind)
         # auto-face lounge seating toward the centre table (fixes 'all chairs face the wrong way')

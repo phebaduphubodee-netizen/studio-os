@@ -159,10 +159,65 @@ def _seg_hits_box(x0, y0, x1, y1, bb):
     return True
 
 
+def _build_obstacles(spec, outline_m):
+    """The stand-vs-ray obstacle split, factored out so the AUTO grid solve and the MANUAL
+    eye_camera override validate against the SAME geometry (no split-brain). Returns
+    (stand_blocks, ray_blocks) as lists of (x0,y0,x1,y1) AABBs in metres.
+
+    stand_blocks — a person cannot stand here: every sub-room, every built-in, and any loose
+      item taller than _STAND_BLOCK_MIN_H_M (a bed blocks standing but, being low, NOT the
+      level eye ray).
+    ray_blocks — occludes the LEVEL eye ray at lens height: sub-rooms + only those built-ins
+      whose rendered box actually SPANS the lens. build_room floats a built-in from z=mount_mm
+      to mount_mm+h, so the box crosses the lens iff base <= EYE_CAM_HEIGHT_M <= top (coupled to
+      RAY_BLOCK_MIN_H_M): a wall TV floated at 900 mm blocks a 1.15 m lens though h<threshold; a
+      built-in floated wholly above eye level does not. Reduces to `h >= threshold` at mount 0."""
+    stand_blocks, ray_blocks = [], []
+    for sr in spec.get("subrooms", []):
+        sx = [p[0] for p in sr["outline_mm"]]
+        sy = [p[1] for p in sr["outline_mm"]]
+        bb = (min(sx) * MM, min(sy) * MM, max(sx) * MM, max(sy) * MM)
+        stand_blocks.append(bb)
+        ray_blocks.append(bb)
+    for b in spec.get("builtins", []):
+        stand_blocks.append(_box_m(b))
+        base = float(b.get("mount_mm", 0) or 0) * MM
+        top = base + float(b.get("h", 0) or 0) * MM
+        if base <= EYE_CAM_HEIGHT_M and top >= RAY_BLOCK_MIN_H_M:
+            ray_blocks.append(_box_m(b))
+    for it in spec.get("items", []):
+        if it.get("kind") != "rug" and float(it.get("h", 400)) * MM >= _STAND_BLOCK_MIN_H_M:
+            stand_blocks.append(_box_m(it))
+    return stand_blocks, ray_blocks
+
+
+def _spot_is_clear(ex, ey, tx, ty, outline_m, stand_blocks, ray_blocks):
+    """True if a person may stand at (ex,ey) [metres] and see the aim point (tx,ty): the spot
+    plus a 0.3 m cross around it is inside the room outline, it is >=0.3 m clear of every
+    stand-block, and the level ray to 0.95x the target hits no ray-block. ONE definition shared
+    by the auto grid search and the manual override, so a hand-set camera gets the exact same
+    wall-clip / line-of-sight safety net as the solved one."""
+    for ox, oy in ((0, 0), (0.3, 0), (-0.3, 0), (0, 0.3), (0, -0.3)):
+        if not _inside_poly(ex + ox, ey + oy, outline_m):
+            return False
+    if any(bx0 - 0.3 <= ex <= bx1 + 0.3 and by0 - 0.3 <= ey <= by1 + 0.3
+           for bx0, by0, bx1, by1 in stand_blocks):
+        return False
+    gx, gy = ex + (tx - ex) * 0.95, ey + (ty - ey) * 0.95
+    if any(_seg_hits_box(ex, ey, gx, gy, bb) for bb in ray_blocks):
+        return False
+    return True
+
+
 def solve_eye_camera(spec, outline_m=None):
     """Solve the v0.3 eye-level suite camera from spec GEOMETRY ALONE (no bpy). Returns a
-    dict {ex, ey, tx, ty, lens_mm, standoff_m, hero, main, n_clear} in METRES; the caller
-    builds the Blender camera/fill from it.
+    dict {ex, ey, tx, ty, lens_mm, standoff_m, hero, main, n_clear, manual} in METRES; the
+    caller builds the Blender camera/fill from it.
+
+    A spec["eye_camera"] block (stand_mm required; aim_mm/aim + lens_mm optional) HAND-PLACES
+    the camera and short-circuits the grid search — for L-shaped / multi-zone suites where the
+    farthest-clear-spot heuristic frames a corner or a wall. The manual spot is still validated
+    against the same obstacles (returns manual=True). See the MANUAL OVERRIDE block below.
 
     Reproduces build_room.add_suite_eye_camera EXACTLY: aim = EYE_AIM override else the
     largest NON-RUG loose item (the group-rug centre when the largest overall is a rug the
@@ -206,49 +261,64 @@ def solve_eye_camera(spec, outline_m=None):
     tx = (float(main["x"]) + float(main["w"]) / 2.0) * MM
     ty = (float(main["y"]) + float(main["d"]) / 2.0) * MM
 
-    stand_blocks, ray_blocks = [], []
-    for sr in spec.get("subrooms", []):
-        sx = [p[0] for p in sr["outline_mm"]]
-        sy = [p[1] for p in sr["outline_mm"]]
-        bb = (min(sx) * MM, min(sy) * MM, max(sx) * MM, max(sy) * MM)
-        stand_blocks.append(bb)
-        ray_blocks.append(bb)
-    for b in spec.get("builtins", []):
-        stand_blocks.append(_box_m(b))
-        # Z-AWARE ray block: a built-in occludes the LEVEL eye ray iff its rendered box
-        # actually SPANS lens height. build_room floats built-ins from z=mount_mm to
-        # z=mount_mm+h, so `h` alone is NOT the top-of-box once mount_mm is set — a wall TV
-        # (h 800, mount 900) spans 900–1700 mm and DOES cross a 1.15 m lens even though
-        # h < the 1.20 m threshold, while a built-in floated wholly above eye level does
-        # NOT block. Keeps the RAY_BLOCK_MIN_H_M margin coupling; reduces to `h >= threshold`
-        # for a floor-standing built-in (mount 0). (Coupling bug re-opened by the mount_mm
-        # change, caught by scrutiny 2026-07-04 — see the module docstring invariant.)
-        base = float(b.get("mount_mm", 0) or 0) * MM
-        top = base + float(b.get("h", 0) or 0) * MM
-        if base <= EYE_CAM_HEIGHT_M and top >= RAY_BLOCK_MIN_H_M:
-            ray_blocks.append(_box_m(b))
-    for it in spec.get("items", []):
-        if it.get("kind") != "rug" and float(it.get("h", 400)) * MM >= _STAND_BLOCK_MIN_H_M:
-            stand_blocks.append(_box_m(it))
+    stand_blocks, ray_blocks = _build_obstacles(spec, outline_m)
 
-    def _clear(ex, ey):
-        for ox, oy in ((0, 0), (0.3, 0), (-0.3, 0), (0, 0.3), (0, -0.3)):
-            if not _inside_poly(ex + ox, ey + oy, outline_m):
-                return False
-        if any(bx0 - 0.3 <= ex <= bx1 + 0.3 and by0 - 0.3 <= ey <= by1 + 0.3
-               for bx0, by0, bx1, by1 in stand_blocks):
-            return False
-        gx, gy = ex + (tx - ex) * 0.95, ey + (ty - ey) * 0.95
-        if any(_seg_hits_box(ex, ey, gx, gy, bb) for bb in ray_blocks):
-            return False
-        return True
+    # ---- MANUAL OVERRIDE: spec["eye_camera"] places the standing spot by hand -----------
+    # The auto solve below takes the FARTHEST clear grid spot — great for a plain box, but for
+    # an L-shaped / multi-zone suite that heuristic can back the lens into a far corner behind
+    # a full-height feature wall or wardrobe bay (bedroom_suite v4: auto stands SW, grazing the
+    # wardrobe that spans the room, and reads the bed small & cluttered). A designer sets the
+    # shot by hand:
+    #   "eye_camera": {"stand_mm": [x, y],            # REQUIRED — activates the override
+    #                  "aim_mm": [x, y] | "aim": "<kind/name substr>",   # default = auto subject centre
+    #                  "lens_mm": <focal length>,     # default = auto hero-sized snap
+    #                  "shift_y": <vertical lens shift>}  # default = build_room RENDER_SHIFT_Y (-0.10);
+    #                                                     # more negative frames DOWN (kills empty upper wall)
+    # The hand-set spot is validated by the SAME _spot_is_clear (outline + wall-clip + line of
+    # sight) as the auto grid, so a bad manual camera aborts as loudly as a packed auto solve —
+    # "manual" means you PLACE the camera, not that you skip the safety net. hero/main (for lens
+    # sizing, DoF focus and the gate's "camera has a reason") stay the auto subject unless "aim"
+    # names a different element.
+    ov = spec.get("eye_camera") or {}
+    manual = ov.get("stand_mm")
+    if manual:
+        ex, ey = float(manual[0]) * MM, float(manual[1]) * MM
+        if ov.get("aim_mm"):
+            tx, ty = float(ov["aim_mm"][0]) * MM, float(ov["aim_mm"][1]) * MM
+        elif ov.get("aim"):
+            try:
+                ae = select_aim_element(list(loose) + list(spec.get("builtins", [])), ov["aim"])
+            except ValueError as e:
+                raise EyeCameraError(str(e))
+            hero = main = ae
+            tx = (float(ae["x"]) + float(ae["w"]) / 2.0) * MM
+            ty = (float(ae["y"]) + float(ae["d"]) / 2.0) * MM
+        if not _spot_is_clear(ex, ey, tx, ty, outline_m, stand_blocks, ray_blocks):
+            raise EyeCameraError(
+                f"manual eye_camera.stand_mm {list(manual)} is not a clear standing spot with a "
+                f"line of sight to the aim — it lands outside the outline / within 0.3 m of a "
+                f"built-in, or a mass blocks the view; move the spot or re-aim")
+        standoff = ((ex - tx) ** 2 + (ey - ty) ** 2) ** 0.5
+        if standoff < 0.5:
+            raise EyeCameraError(f"manual eye_camera: standoff {standoff:.2f} m < 0.5 m — camera on top of the subject")
+        if ov.get("lens_mm") is not None:
+            lens = float(ov["lens_mm"])
+            if lens <= 0:
+                raise EyeCameraError(f"manual eye_camera.lens_mm {lens} must be > 0")
+        else:
+            subj_dim = max(float(hero["w"]), float(hero["d"])) * MM
+            lens = min(_LENS_SNAP, key=lambda f: abs(f - 36.0 * standoff / max(2.0 * subj_dim, 3.5)))
+        shift_y = float(ov["shift_y"]) if ov.get("shift_y") is not None else None
+        return {"ex": ex, "ey": ey, "tx": tx, "ty": ty, "lens_mm": lens, "shift_y": shift_y,
+                "standoff_m": standoff, "hero": hero, "main": main, "n_clear": 1, "manual": True}
 
+    # ---- AUTO: farthest clear grid spot with a line of sight ----------------------------
     xs = [p[0] for p in outline_m]
     ys = [p[1] for p in outline_m]
     cands = [(gx, gy)
              for gx in [min(xs) + 0.4 + i * 0.4 for i in range(int((max(xs) - min(xs)) / 0.4))]
              for gy in [min(ys) + 0.4 + j * 0.4 for j in range(int((max(ys) - min(ys)) / 0.4))]
-             if _clear(gx, gy)]
+             if _spot_is_clear(gx, gy, tx, ty, outline_m, stand_blocks, ray_blocks)]
     if not cands:
         raise EyeCameraError("camera: no clear standing spot with line of sight to the "
                              "subject — room too packed for an eye shot; adjust the spec")
@@ -264,7 +334,7 @@ def solve_eye_camera(spec, outline_m=None):
     raw = 36.0 * standoff / req_w               # 36 mm-sensor pinhole approximation
     lens = min(_LENS_SNAP, key=lambda f: abs(f - raw))
     return {"ex": ex, "ey": ey, "tx": tx, "ty": ty, "lens_mm": lens,
-            "standoff_m": standoff, "hero": hero, "main": main, "n_clear": len(cands)}
+            "standoff_m": standoff, "hero": hero, "main": main, "n_clear": len(cands), "manual": False}
 
 
 def frame_subject_share(spec, solve, outline_m=None, n_rays=41):
