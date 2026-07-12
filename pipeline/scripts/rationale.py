@@ -271,6 +271,18 @@ def _function_map(spec):
             for el in PL._iter_elements(nspec):
                 if el.get("kind") in PL.SEATING_KINDS:
                     push(el, f)
+        elif rid == "bed_has_nightstand":
+            push(bed, f)          # the finding is about the bed's (missing) bedside table
+        elif rid == "dining_table_pendant":
+            for el in (nspec.get("items") or []):
+                if el.get("kind") in PL.DINING_MISKIND_KINDS and PL._DINING_NAME_RE.search(
+                        str(el.get("name") or "")):
+                    push(el, f)   # the mis-kinded table that loses its pendant
+        elif rid == "basin_has_storage":
+            for sr in nspec.get("subrooms", []):
+                for fx in sr.get("fixtures", []):
+                    if fx.get("kind") in PL.BARE_BASIN_KINDS:
+                        push(fx, f)
     return fmap
 
 

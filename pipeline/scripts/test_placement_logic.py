@@ -19,12 +19,18 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import placement_logic as P  # noqa: E402
 
 
-def _bedroom(tv=None, bed_rot=0, door_wall=None):
-    # bed centred at (3000,4000), 2000x2000, foot faces -Y (rot 0) -> head wall = north
+def _bedroom(tv=None, bed_rot=0, door_wall=None, nightstand=True):
+    # bed centred at (3000,4000), 2000x2000, foot faces -Y (rot 0) -> head wall = north.
+    # A COMPLETE bedroom carries a bedside table (bed_has_nightstand, 2026-07-12) — the TV/door
+    # tests assert an overall PASS, so the scaffold must not be furnishing-incomplete. Pass
+    # nightstand=False for the specs that exercise the nightstand rule itself.
     spec = {"room": {"outline_mm": [[0, 0], [6000, 0], [6000, 6000], [0, 6000]]},
             "items": [{"name": "bed", "kind": "bed", "x": 2000, "y": 3000,
                        "w": 2000, "d": 2000, "h": 600}],
             "builtins": []}
+    if nightstand:
+        spec["items"].append({"name": "โต๊ะข้างเตียง", "kind": "side_table",
+                              "x": 1500, "y": 4500, "w": 400, "d": 500, "h": 550})
     if bed_rot:
         spec["items"][0]["rot"] = bed_rot
     if door_wall:
@@ -47,8 +53,8 @@ def _living(tv=None, sofa_rot=0):
     return spec
 
 
-def _bedroom_with(*extra_items, builtins=()):
-    spec = _bedroom()
+def _bedroom_with(*extra_items, builtins=(), nightstand=True):
+    spec = _bedroom(nightstand=nightstand)
     spec["items"].extend(extra_items)
     spec["builtins"].extend(builtins)
     return spec
@@ -184,7 +190,14 @@ def test_real_bedroom_suite_tv_now_positioned():
     assert _s(rep, "tv_not_over_viewer") == P.PASS
     assert _s(rep, "tv_viewing_distance") == P.PASS
     assert _s(rep, "door_vs_bed_head") == P.PASS      # head north, door south -> ok
-    assert rep["status"] == P.PASS                    # fully clean after the wardrobe re-type
+    # 2026-07-12 — bed_has_nightstand now REVIEWs this spec, and that is a TRUE finding, not a
+    # regression: bedroom_suite has a 100 mm-deep "ตู้โชว์บาง built-in ข้างเตียง" but NO bedside
+    # table — you cannot set down a glass of water. That is verbatim the omission a real paying
+    # client sent back for rework. The spec is NOT edited to make this green: the gate is right
+    # and the reference spec is furnishing-incomplete. Pin it, surface it, let the owner decide.
+    assert _s(rep, "bed_has_nightstand") == P.WARN
+    assert rep["status"] == P.WARN                    # TV/door/geometry clean; furnishing gap open
+    assert [f["rule"] for f in rep["findings"] if f["status"] != P.PASS] == ["bed_has_nightstand"]
 
 
 def test_real_living_condo_tv_now_positioned():
@@ -746,6 +759,178 @@ TESTS = [test_good_tv_on_foot_wall_passes, test_tv_behind_head_fails, test_tv_ov
          test_malformed_item_missing_dims_does_not_crash, test_find_tv_prefers_positioned_over_named,
          test_normalize_depth_only_inch_not_misread,
          test_repair_loop_gate0_includes_function_and_fails_fused_tv]
+
+
+# ---- FURNISHING COMPLETENESS (client-revision rules, 2026-07-12) ----
+# _bedroom()'s bed: x2000-4000, y3000-5000, rot 0 -> foot faces -Y, so the HEAD is the +Y (north) end.
+def _nightstand(x=1500, y=4500, w=400, d=500, h=450):
+    return {"name": "โต๊ะข้างเตียง", "kind": "side_table", "x": x, "y": y, "w": w, "d": d, "h": h}
+
+
+def test_bed_without_nightstand_warns():
+    assert _s(P.check(_bedroom(nightstand=False)), "bed_has_nightstand") == P.WARN
+
+
+def test_bed_with_nightstand_at_head_passes():
+    assert _s(P.check(_bedroom_with(_nightstand(), nightstand=False)), "bed_has_nightstand") == P.PASS
+
+
+def test_nightstand_at_the_foot_does_not_count():
+    # same table, parked at the FOOT end (y1200 -> centre y1450 < bed centre 4000): not a nightstand
+    assert _s(P.check(_bedroom_with(_nightstand(y=1200), nightstand=False)),
+              "bed_has_nightstand") == P.WARN
+
+
+def test_nightstand_across_the_room_does_not_count():
+    # at the head end but 2.6 m away from the bed's west edge — out of arm's reach (>900mm)
+    assert _s(P.check(_bedroom_with(_nightstand(x=-1200), nightstand=False)),
+              "bed_has_nightstand") == P.WARN
+
+
+def test_rotated_bed_tracks_its_head():
+    # rot 0 -> head is the +Y (north) end: a table at y4500 IS beside the head
+    assert _s(P.check(_bedroom_with(_nightstand(y=4500), nightstand=False)),
+              "bed_has_nightstand") == P.PASS
+    # rot 180 -> foot faces +Y, so the head swaps to the SOUTH (y3000) end: the SAME table is
+    # now at the foot (WARN), and only a table at the south end counts (PASS)
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][0]["rot"] = 180
+    assert _s(P.check(spec), "bed_has_nightstand") == P.WARN
+    spec2 = _bedroom_with(_nightstand(y=2500), nightstand=False)
+    spec2["items"][0]["rot"] = 180
+    assert _s(P.check(spec2), "bed_has_nightstand") == P.PASS
+
+
+def test_no_bed_no_nightstand_rule():
+    assert _s(P.check(_living()), "bed_has_nightstand") is None
+
+
+def test_bedside_table_judged_on_the_nightstand_band_not_the_lounge_band():
+    # a bedside table must reach mattress height (~520-650). Judged as a LOUNGE side_table
+    # (380-480) it false-WARNs — which is what PRJ-2026-002's real 520 mm ones were doing.
+    tall = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    tall["items"][-1]["h"] = 550
+    assert _s(P.check(tall), "furniture_dimensions") == P.PASS
+    # ...but the SAME kind away from the bed is still a lounge table and still gets the lounge band
+    lounge = _bedroom_with(_nightstand(x=5000, y=300), nightstand=False)
+    lounge["items"][-1]["h"] = 550
+    assert _s(P.check(lounge), "furniture_dimensions") == P.WARN
+    # and a bedside table that is genuinely absurd (a 900 mm chest) still WARNs on its own band
+    absurd = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    absurd["items"][-1]["h"] = 900
+    assert _s(P.check(absurd), "furniture_dimensions") == P.WARN
+
+
+def _dining(kind="dining_table", name="โต๊ะกินข้าว 6 ที่นั่ง"):
+    return {"name": name, "kind": kind, "x": 1000, "y": 1000, "w": 1800, "d": 900, "h": 750}
+
+
+def test_dining_table_correct_kind_passes():
+    assert _s(P.check(_bedroom_with(_dining())), "dining_table_pendant") == P.PASS
+
+
+def test_dining_table_miskinded_warns():
+    # authored as a generic 'table' -> lighting.py hangs NO pendant over it (the client's complaint)
+    assert _s(P.check(_bedroom_with(_dining(kind="table"))), "dining_table_pendant") == P.WARN
+    assert _s(P.check(_bedroom_with(_dining(kind="round_table"))), "dining_table_pendant") == P.WARN
+
+
+def test_english_dining_name_also_caught():
+    assert _s(P.check(_bedroom_with(_dining(kind="table", name="Dining table (6 seat)"))),
+              "dining_table_pendant") == P.WARN
+
+
+def test_non_dining_table_not_flagged():
+    # a coffee table / console must NOT be mistaken for a dining table
+    assert _s(P.check(_bedroom_with(_dining(kind="coffee_table", name="โต๊ะกลาง"))),
+              "dining_table_pendant") is None
+
+
+def test_formal_thai_dining_name_caught():
+    # โต๊ะรับประทานอาหาร = the formal Thai for dining table; the รับประทาน infix must not hide it
+    assert _s(P.check(_bedroom_with(_dining(kind="table", name="โต๊ะรับประทานอาหาร"))),
+              "dining_table_pendant") == P.WARN
+
+
+def test_seat_count_table_name_caught():
+    # the studio's house style names by seat count (cf. living_condo 'โต๊ะทานข้าว 4 ที่')
+    assert _s(P.check(_bedroom_with(_dining(kind="table", name="โต๊ะ 6 ที่นั่ง"))),
+              "dining_table_pendant") == P.WARN
+
+
+def test_dining_named_chairs_do_not_false_warn():
+    # a CORRECT dining room: a real dining_table + chairs named 'Dining Chair N'. The chairs are
+    # not table-family kinds, so the rule must PASS on the table and never WARN on the chairs
+    # (the old \bdining\b regex WARNed all four and told the user to re-kind a chair as a table).
+    spec = _bedroom_with(
+        _dining(kind="dining_table", name="Dining Table"),
+        {"name": "Dining Chair 1", "kind": "chair", "x": 900, "y": 500, "w": 450, "d": 450, "h": 900},
+        {"name": "Dining Chair 2", "kind": "dining_chair", "x": 1400, "y": 500, "w": 450, "d": 450, "h": 900},
+        {"name": "Dining Pendant", "kind": "pendant", "x": 1200, "y": 1200, "w": 300, "d": 300, "h": 400},
+        {"name": "Dining area rug", "kind": "rug", "x": 800, "y": 800, "w": 2000, "d": 1400, "h": 5})
+    assert _s(P.check(spec), "dining_table_pendant") == P.PASS
+
+
+def test_dining_chair_alone_is_not_a_slipped_table():
+    # a bare 'Dining Chair' (no table in the room) must not itself trigger the rule
+    assert _s(P.check(_bedroom_with(
+        {"name": "Dining Chair", "kind": "chair", "x": 900, "y": 500, "w": 450, "d": 450, "h": 900})),
+        "dining_table_pendant") is None
+
+
+def _bath_sub(*fixtures):     # NOT _bath — that name is already taken at the top of this file
+    return {"room": {"outline_mm": [[0, 0], [6000, 0], [6000, 6000], [0, 6000]]},
+            "items": [], "builtins": [],
+            "subrooms": [{"name": "ห้องน้ำ", "type": "bathroom",
+                          "outline_mm": [[0, 0], [2400, 0], [2400, 2400], [0, 2400]],
+                          "door": {"wall": "south", "x": 900, "y": 0, "w": 800},
+                          "fixtures": list(fixtures)}]}
+
+
+def _basin(kind="basin", x=200, y=1800):
+    return {"name": "อ่างล้างหน้า", "kind": kind, "x": x, "y": y, "w": 600, "d": 450, "h": 850}
+
+
+def _cab(x=200, y=1800):
+    return {"name": "ตู้ใต้อ่าง", "kind": "cabinet", "x": x, "y": y, "w": 600, "d": 450, "h": 800}
+
+
+def test_bare_basin_without_storage_warns():
+    assert _s(P.check(_bath_sub(_basin())), "basin_has_storage") == P.WARN
+
+
+def test_basin_with_cabinet_under_it_passes():
+    assert _s(P.check(_bath_sub(_basin(), _cab())), "basin_has_storage") == P.PASS
+
+
+def test_cabinet_across_the_room_does_not_count():
+    assert _s(P.check(_bath_sub(_basin(), _cab(x=1900, y=200))), "basin_has_storage") == P.WARN
+
+
+def test_vanity_is_not_a_bare_basin():
+    # a 'vanity' IS basin+cabinet -> the rule must not apply at all (no finding, no silent PASS)
+    assert _s(P.check(_bath_sub(_basin(kind="vanity"))), "basin_has_storage") is None
+
+
+def test_kitchen_sink_is_not_a_bathroom_basin():
+    # a main-room kitchen sink lives in a counter run and is the work-triangle rule's business;
+    # basin_has_storage scans SUBROOMS only and must stay silent here
+    spec = _bedroom_with({"name": "ซิงค์ครัว", "kind": "sink", "x": 500, "y": 500,
+                          "w": 800, "d": 600, "h": 900})
+    assert _s(P.check(spec), "basin_has_storage") is None
+
+
+TESTS += [test_bed_without_nightstand_warns, test_bed_with_nightstand_at_head_passes,
+          test_nightstand_at_the_foot_does_not_count, test_nightstand_across_the_room_does_not_count,
+          test_rotated_bed_tracks_its_head, test_no_bed_no_nightstand_rule,
+          test_bedside_table_judged_on_the_nightstand_band_not_the_lounge_band,
+          test_dining_table_correct_kind_passes, test_dining_table_miskinded_warns,
+          test_english_dining_name_also_caught, test_non_dining_table_not_flagged,
+          test_formal_thai_dining_name_caught, test_seat_count_table_name_caught,
+          test_dining_named_chairs_do_not_false_warn, test_dining_chair_alone_is_not_a_slipped_table,
+          test_bare_basin_without_storage_warns, test_basin_with_cabinet_under_it_passes,
+          test_cabinet_across_the_room_does_not_count, test_vanity_is_not_a_bare_basin,
+          test_kitchen_sink_is_not_a_bathroom_basin]
 
 
 def main():
