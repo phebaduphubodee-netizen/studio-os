@@ -23,8 +23,18 @@ Setup (one time, by the server owner/admin):
 
 Run:
   $env:DISCORD_BOT_TOKEN = "<token>"           (PowerShell)
-  python3 scripts/discord_ingest.py --guild <SERVER_ID>
-  python3 scripts/discord_ingest.py --guild <SERVER_ID> --dry-run   # list only
+  python3 scripts/discord_ingest.py --guild <SERVER_ID> --types all --dry-run
+      -> prints the FULL channel inventory (type + selected/skipped). Do this first.
+  python3 scripts/discord_ingest.py --guild <SERVER_ID> --types all --no-download
+      -> pulls text, sizes every attachment, downloads nothing.
+  python3 scripts/discord_ingest.py --guild <SERVER_ID> --types all --max-file-mb 100
+
+COVERAGE NOTE (2026-07-12): --types defaulted to forum-only, so the 2026-07-03 ingest
+silently skipped every GUILD_TEXT channel on the server (the #3dskymodel category —
+furniture-2022/2024, prop-2022/23/24, lighting-2024, tree-2024 and their -preview
+twins — plus #lookingfor-work). It also never walked threads hanging off text
+channels. Both are fixed; a re-run needs a fresh bot token (Discord CDN URLs in the
+old raw.json expired ~24 h after the pull, so nothing is re-fetchable from disk).
 """
 
 import argparse
@@ -42,6 +52,8 @@ from pathlib import Path
 API = "https://discord.com/api/v10"
 FORUM_TYPES = {15, 16}          # GUILD_FORUM, GUILD_MEDIA
 TEXT_TYPES = {0, 5}             # GUILD_TEXT, GUILD_ANNOUNCEMENT
+TYPE_NAMES = {0: "text", 2: "voice", 4: "category", 5: "announcement",
+              13: "stage", 15: "forum", 16: "media"}
 DEFAULT_OUT = Path(__file__).resolve().parent.parent / "knowledge" / "_inbox" / "discord"
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -214,11 +226,17 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--guild", required=True, help="Discord server ID")
     ap.add_argument("--channels", help="comma-separated channel IDs (default: all forum/media channels)")
+    ap.add_argument("--types", default="forum",
+                    help="channel kinds to pull: forum | text | all (default forum). "
+                         "The 2026-07-03 run was forum-only and MISSED every text channel.")
     ap.add_argument("--include", help="only channels whose name contains one of these comma-separated substrings")
     ap.add_argument("--exclude", help="skip channels whose name contains one of these comma-separated substrings")
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT, help=f"output root (default {DEFAULT_OUT})")
     ap.add_argument("--max-file-mb", type=float, default=25.0, help="max attachment size to download (default 25)")
     ap.add_argument("--videos", action="store_true", help="also download video attachments")
+    ap.add_argument("--no-download", action="store_true",
+                    help="manifest mode: write thread.md/raw.json and LIST every attachment with size, "
+                         "but download nothing (use to size a channel before pulling GBs)")
     ap.add_argument("--dry-run", action="store_true", help="list channels/threads only, write nothing")
     args = ap.parse_args()
 
@@ -237,13 +255,27 @@ def main() -> None:
     inc = [s.strip().lower() for s in args.include.split(",")] if args.include else None
     exc = [s.strip().lower() for s in args.exclude.split(",")] if args.exclude else None
 
+    kinds = {k.strip().lower() for k in args.types.split(",")}
+    if "all" in kinds:
+        pull_types = FORUM_TYPES | TEXT_TYPES
+    else:
+        pull_types = set()
+        if "forum" in kinds:
+            pull_types |= FORUM_TYPES
+        if "text" in kinds:
+            pull_types |= TEXT_TYPES
+    if not pull_types and wanted_ids is None:
+        die(f"--types {args.types}: nothing to pull (use forum | text | all)")
+
+    cat_names = {c["id"]: c["name"] for c in channels if c.get("type") == 4}
+
     targets = []
     for ch in channels:
         if wanted_ids is not None:
             if ch["id"] in wanted_ids:
                 targets.append(ch)
             continue
-        if ch.get("type") not in FORUM_TYPES:
+        if ch.get("type") not in pull_types:
             continue
         name = ch.get("name", "").lower()
         if inc and not any(s in name for s in inc):
@@ -252,23 +284,38 @@ def main() -> None:
             continue
         targets.append(ch)
 
-    if not targets:
-        die("no matching channels found (forum/media channels only unless --channels is given)")
-    print(f"Channels: {', '.join(c['name'] for c in targets)}")
+    # Full server inventory — the ONLY way to know what a run did not see.
+    sel = {c["id"] for c in targets}
+    print("\nServer channel inventory (type / selected / category / name):")
+    for ch in sorted(channels, key=lambda c: (cat_names.get(c.get("parent_id"), ""), c.get("position", 0))):
+        if ch.get("type") == 4:
+            continue
+        tname = TYPE_NAMES.get(ch.get("type"), str(ch.get("type")))
+        mark = "PULL" if ch["id"] in sel else "skip"
+        cat = cat_names.get(ch.get("parent_id"), "-")
+        print(f"  [{mark}] {tname:12s} {cat:24s} #{ch['name']}  ({ch['id']})")
+    n_unseen = sum(1 for c in channels
+                   if c.get("type") in (FORUM_TYPES | TEXT_TYPES) and c["id"] not in sel)
+    if n_unseen:
+        print(f"  !! {n_unseen} readable channel(s) NOT selected by this run — widen --types/--include")
 
-    forum_targets = [c for c in targets if c.get("type") in FORUM_TYPES]
+    if not targets:
+        die("no matching channels found")
+    print(f"\nChannels: {', '.join(c['name'] for c in targets)}")
+
     text_targets = [c for c in targets if c.get("type") in TEXT_TYPES]
-    threads_by_parent = fetch_threads(token, args.guild, {c["id"] for c in forum_targets})
+    # Text channels can carry threads too — the forum-only 2026-07-03 run never looked.
+    threads_by_parent = fetch_threads(token, args.guild, {c["id"] for c in targets})
 
     run_stats, skipped_files = [], []
     guild_dir = args.out / slug(guild_name)
 
     for ch in targets:
         tag_map = {t["id"]: t["name"] for t in ch.get("available_tags", [])}
+        units = sorted(threads_by_parent.get(ch["id"], []), key=lambda t: int(t["id"]))
         if ch in text_targets:
-            units = [{"id": ch["id"], "name": ch["name"], "thread_metadata": {}, "applied_tags": []}]
-        else:
-            units = sorted(threads_by_parent.get(ch["id"], []), key=lambda t: int(t["id"]))
+            # the channel's own message stream is a unit, plus any threads hanging off it
+            units = [{"id": ch["id"], "name": ch["name"], "thread_metadata": {}, "applied_tags": []}] + units
         print(f"\n#{ch['name']}: {len(units)} thread(s)")
         if args.dry_run:
             for t in units:
@@ -289,7 +336,10 @@ def main() -> None:
                     fname = slug(a.get("filename", "file"), 80)
                     dest = t_dir / "files" / f"{a['id'][-6:]}_{fname}"
                     is_video = ctype.startswith("video/")
-                    if (is_video and not args.videos) or size_mb > args.max_file_mb:
+                    if args.no_download:
+                        attach_log.append(f"- [ ] {a.get('filename')} ({ctype}, {size_mb:.1f}MB) — MANIFEST ONLY")
+                        skipped_files.append(f"{ch['name']}/{t['name']}: {a.get('filename')} ({size_mb:.1f}MB, manifest)")
+                    elif (is_video and not args.videos) or size_mb > args.max_file_mb:
                         why = "video, use --videos" if is_video and not args.videos else f"{size_mb:.0f}MB > cap"
                         attach_log.append(f"- [ ] {a.get('filename')} ({ctype}, {size_mb:.1f}MB) — SKIPPED ({why})")
                         skipped_files.append(f"{ch['name']}/{t['name']}: {a.get('filename')} ({why})")
