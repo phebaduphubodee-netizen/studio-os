@@ -1,0 +1,25 @@
+{
+  "scores": {
+    "palette_coherence": 5,
+    "lighting_quality": 5,
+    "composition": 4,
+    "furniture_realism": 2,
+    "room_context": 5,
+    "styling_and_life": 3,
+    "proportion_and_scale": 4,
+    "photoreal_believability": 4
+  },
+  "overall_0_5": 3.5,
+  "verdict": "REWORK",
+  "top_defects": [
+    "The bed frame is a primitive, upholstered block. It lacks the structural nuance, seams, and subtle softness of a real piece of furniture, looking more like a default cube with a fabric map.",
+    "The pillows are too stiff, uniform, and perfectly arranged. They look like duplicated 3D assets rather than pillows that have been slept on.",
+    "The styling is aggressively generic. The framed art is non-descript filler, and the perfectly placed book and tea feel like catalogue staging, not life.",
+    "The bench at the foot of the bed is another simple box shape on legs, reinforcing the feeling of low-effort furniture modeling."
+  ],
+  "one_line": "This is a beautifully lit but soulless hotel room where the furniture was modeled by someone who only had access to the cube tool.",
+  "if_client_deliverable": "This is not client-ready for any project where the furniture itself is the focus. While the lighting and atmosphere are excellent, the core furniture pieces are unacceptably simplistic and read as placeholder geometry. For a high-end client, this would be an immediate red flag about the artist's attention to detail. It's a great mood piece, but a poor product visualization.",
+  "_artifact": "R_PRJ002_MasterSuite_Cam02_v01.png",
+  "_kind": "render",
+  "_model": "gemini-2.5-pro"
+}

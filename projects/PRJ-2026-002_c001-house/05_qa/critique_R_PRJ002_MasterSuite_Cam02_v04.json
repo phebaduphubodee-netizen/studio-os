@@ -1,0 +1,25 @@
+{
+  "scores": {
+    "palette_coherence": 4,
+    "lighting_quality": 5,
+    "composition": 4,
+    "furniture_realism": 2,
+    "room_context": 4,
+    "styling_and_life": 3,
+    "proportion_and_scale": 4,
+    "photoreal_believability": 3
+  },
+  "overall_0_5": 3.5,
+  "verdict": "REWORK",
+  "top_defects": [
+    "The furniture models are overly simplistic and lack realism. The bench is a primitive block with cylinder legs, and the wardrobe is a texture-mapped box with basic hardware.",
+    "The textiles, particularly the bedding and the bench upholstery, look stiff and unnaturally draped, a common giveaway of mediocre CG physics.",
+    "The styling is sterile and generic. The single small art piece and the cliché tray with a book feel like low-effort asset placement rather than thoughtful decoration.",
+    "The wood grain texture on the large wardrobe doors is repetitive and lacks the natural variation and imperfections of real wood."
+  ],
+  "one_line": "The phenomenal lighting is doing all the heavy lifting to distract from the cheap, blocky furniture and sterile styling.",
+  "if_client_deliverable": "NOT_CLIENT_READY. This is acceptable as a design visualization to convey a concept, but it is not a final, photorealistic marketing image. The low-quality furniture models and lack of convincing detail would be embarrassing to present to a paying client as a finished product.",
+  "_artifact": "R_PRJ002_MasterSuite_Cam02_v04.png",
+  "_kind": "render",
+  "_model": "gemini-2.5-pro"
+}

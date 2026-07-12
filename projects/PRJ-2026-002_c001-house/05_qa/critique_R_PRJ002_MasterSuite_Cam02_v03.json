@@ -1,0 +1,25 @@
+{
+  "scores": {
+    "palette_coherence": 5,
+    "lighting_quality": 4,
+    "composition": 4,
+    "furniture_realism": 2,
+    "room_context": 5,
+    "styling_and_life": 3,
+    "proportion_and_scale": 4,
+    "photoreal_believability": 3
+  },
+  "overall_0_5": 3.5,
+  "verdict": "REWORK",
+  "top_defects": [
+    "The fabric simulation on the bedding and pillows is unconvincing; the folds are too soft and uniform, lacking the crispness and randomness of real linen, making it look like lumpy, simulated clay.",
+    "The draped throw on the bench suffers from the same poor cloth simulation, appearing artificially stiff and placed.",
+    "The cove lighting above the headboard is perfectly even, lacking the subtle imperfections, hotspots, or falloff that would be present in a real installation.",
+    "The furniture, particularly the floating nightstands, are overly simplistic geometric primitives that lack detailing or character."
+  ],
+  "one_line": "A beautifully lit but sterile scene let down by bedding that looks more like melted plastic than fabric.",
+  "if_client_deliverable": "This is not acceptable for a final client deliverable intended for marketing. While the lighting and architectural shell are strong, the unrealistic textiles are a major flaw that immediately identifies it as a mid-tier render, undermining the photorealism and cheapening the overall impression. It's suitable for design intent but not for public-facing use.",
+  "_artifact": "R_PRJ002_MasterSuite_Cam02_v03.png",
+  "_kind": "render",
+  "_model": "gemini-2.5-pro"
+}
