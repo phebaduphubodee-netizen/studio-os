@@ -49,8 +49,14 @@ def _load_key():
     raise SystemExit("GEMINI_API_KEY not found (env or repo .env)")
 
 
-MODELS = ["gemini-3.1-flash-image-preview", "gemini-2.5-flash-image",
-          "gemini-2.0-flash-preview-image-generation"]
+MODELS = ["gemini-3.1-flash-image-preview", "gemini-3.1-flash-image",
+          "gemini-2.5-flash-image"]
+# Chain re-verified against ListModels 2026-07-11: gemini-2.0-flash-preview-image-generation
+# is GONE (404 NOT_FOUND) and was replaced by the GA gemini-3.1-flash-image. A dead tail model
+# is not harmless — it turns the LAST line of a failed run into a confusing "NOT_FOUND", which
+# masks the real error from the models that actually answered (a depleted-credits 429, in the
+# run that caught this). Keep this list live; the pro tier is opted in via GEMINI_IMAGE_MODEL
+# (gemini-3-pro-image-preview / gemini-3-pro-image), never hardcoded here.
 # Model choice is resolved at CALL time in edit(prefer=), NOT captured at import:
 # a caller (e.g. the M3.3 repair loop) escalates tier per request, and the
 # standalone CLI still honours GEMINI_IMAGE_MODEL (read inside edit()). A pro-tier
