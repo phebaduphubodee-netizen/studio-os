@@ -39,15 +39,56 @@ BLOCKED = [
     (r"(?i)\bnotebooklm\b[^\"'|;&]*\bshare\b",
      "notebooklm share (external exposure — no studio use case; unblock via PR)"),
     (r"(?i)\bnotebooklm\b(?=.*(--prompt-file|source\s+add|add-research))"
-     r"(?=.*(clients[/\\]|projects[/\\]|00_intake|01_brief))",
+     r"(?=.*(clients[/\\]|projects[/\\]|_private[/\\]|00_intake|01_brief))",
      "uploading client/project files to NotebookLM"),
-    (r"(?i)(clients[/\\]|projects[/\\])[^|;&]*\|[^|;&]*\bnotebooklm\b",
+    (r"(?i)(clients[/\\]|projects[/\\]|_private[/\\])[^|;&]*\|[^|;&]*\bnotebooklm\b",
      "piping client/project file content into NotebookLM"),
     (r"(?i)\bnotebooklm\b[^|;&]*(\$\(|`)",
      "command substitution into a NotebookLM query (unreviewable content)"),
     (r"(?i)\bnotebooklm\b.*\b(PRJ-\d{4}-\d{3}|C-\d{3})\b",
      "client/project identifier in a NotebookLM command"),
+    # NotebookLM was never the only way out. Every EXTERNAL SINK below ships bytes off this
+    # machine (cloud judge, image API, DR tools, raw HTTP), and _private/ holds a real
+    # designer's CLIENT work (2026-07-12 owner call: local-only, never leaves the machine).
+    # The old rules guarded clients/|projects/ against notebooklm ONLY — so `critique.py
+    # _private/<client render>.png` or `curl -F file=@clients/...` walked straight through.
+    # This closes sink x path for ALL of them. Reading these paths LOCALLY stays free.
+    # UPLOAD forms only — `curl -o projects/x.zip` (a download INTO the repo) is legitimate and
+    # must keep working; `curl -F file=@_private/...` (a client file going OUT) must not.
+    # Each pattern demands a REAL path (a separator + at least one path character) after the
+    # directory name: without that, a mere mention of the word `_private` next to a `|` in a
+    # grep/sed script false-blocks — which it did, on the first command run after this landed.
+    (r"(?i)\b(curl|wget|invoke-webrequest|invoke-restmethod|iwr)\b[^|;&]*"
+     r"(-F\b|--form\b|-d\b|--data(-binary|-raw)?\b|-T\b|--upload-file\b|-(In)?File\b|-Body\b|@)"
+     r"[^|;&]*(clients|projects|_private)[/\\][\w.\-/\\]+",
+     "uploading a client/private file to an external endpoint"),
+    (r"(?i)\b(critique|hybrid_render|gemini_\w+|chatgpt_\w+|perplexity_\w+)\.py\b"
+     r"[^|;&]*(clients|_private)[/\\][\w.\-/\\]+",
+     "passing client/private files to a cloud-model script (critique/render/DR call an API)"),
+    (r"(?i)(clients|_private)[/\\][\w.\-/\\]+[^|;&]*\|[^|;&]*"
+     r"\b(curl|wget|invoke-webrequest|invoke-restmethod|iwr)\b",
+     "piping client/private file content into an HTTP request"),
+    # python IS this pipeline's own language (critique.py, hybrid_render, the DR tools are all
+    # python, and python3 is partly allow-listed) — so an inline interpreter reading a client file
+    # AND opening a network connection is the MOST realistic accidental exfil, not curl. Requires
+    # BOTH a client/private path and a network indicator, so `python -c "json.load(open('_private/
+    # x'))"` (a legitimate LOCAL read) stays allowed.
+    (r"(?i)\b(python3?|node|ruby|perl)\b[^|;&]*\s-(c|e)\b"
+     r"(?=[^|;&]*(clients|_private)[/\\])"
+     r"(?=[^|;&]*(urlopen|urllib|requests|httpx?|socket|smtplib|ftplib|https?://|\.post\(|upload))",
+     "inline interpreter reading a client/private file and opening a network connection"),
+    # file-copy / raw-socket sinks that are not HTTP at all
+    (r"(?i)\b(scp|rsync|rclone|sftp|nc|ncat|netcat)\b[^|;&]*(clients|_private)[/\\][\w.\-/\\]+",
+     "copying a client/private file to a remote host (scp/rsync/rclone/nc)"),
 ]
+
+# HONEST SCOPE (2026-07-12 review): this is a best-effort TRIPWIRE against the agent naively or
+# accidentally shipping client/_private data off the machine — it catches the sinks a helpful
+# assistant actually reaches for. It is NOT a boundary against a determined adversary: an
+# allowlist of sink commands cannot be completed by hand (base64-then-paste, a python module that
+# reads its path from a variable, an MCP/WebFetch tool outside Bash scope, etc. all remain).
+# The real control is network-egress denial at the sandbox layer; treat these patterns as
+# defence-in-depth, not a guarantee.
 
 # Paths that must never be touched via shell redirection/moves either.
 PROTECTED_PATH_HINTS = [
