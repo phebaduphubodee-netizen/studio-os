@@ -13,11 +13,17 @@ BENCHMARK / SUGGESTION LANE ONLY: identity in owner projects is owner-signed sem
 truth. This module must never be imported by placement_gate, gen_floor2_v4_specs,
 raster_overlay, or build_floor.
 
-SCOPE (v1): bands are SIZE/ASPECT only. The item spec mentions curve-signature bands,
-but gt.json elements carry no curve field (only id/x/y/w/d/layer/n_prims/kind) -- a
-grounded curve prior needs a train-side reader run to pair pred curve flags with GT
-kinds, a follow-up slice, not fabricated here. The pred-side curve/fill fields stay
-unused by v1 suggestion.
+SCOPE (v2): SIZE/ASPECT bands, PLUS an optional per-kind CURVE signature that only
+DISAMBIGUATES a size tie -- it never overrides a unique size hit and never guesses. gt.json
+elements carry no curve field, so a grounded curve signature is derived from a TRAIN-side
+reader run (derive_curve_priors.py) that pairs each pred element's `curve` bool with its
+IoU-matched GT kind; merge_curve_signatures() folds the per-kind curve fraction into a
+size-priors doc. A kind with < MIN_CURVE_SUPPORT matched train pairs gets NO signature
+(curve stays unusable for it -- honest, never fabricated). suggest_kind(curve=...) then drops
+a size-candidate ONLY when its train curve class is CONFIDENTLY OPPOSITE the element's curve
+flag; a tie resolves to a kind only when that leaves exactly one candidate (else unreported).
+The probe finding this implements: chair/toilet are ~100% curved, elevator ~0% -- so curve
+breaks the small-furniture size overlap (chair vs table) that left F1 at 0.4% on size alone.
 """
 import glob
 import json
@@ -27,12 +33,19 @@ from datetime import date
 
 from floorplancad_adapter import ADAPTER_VERSION
 
-SCHEMA = "interior-ai/kind-priors@0.1"
+SCHEMA = "interior-ai/kind-priors@0.2"       # @0.2 adds the optional per-kind curve signature
+KNOWN_SCHEMAS = {"interior-ai/kind-priors@0.1", SCHEMA}   # @0.1 (size-only) still loads
 Q_LO, Q_HI = 0.10, 0.90
 PAD_MM = 50.0            # covers cluster-AABB dilation: pred dims are morphology bboxes
                         # rounded to int mm, +-2*res ~ +-12 mm typical
 ASPECT_PAD = 1.15
 MIN_SUPPORT = 50
+# curve signature (v2): thresholds are on a kind's TRAIN curve fraction (matched pred `curve`
+# bool vs GT kind). A kind counts as CURVED >= HI, BOXY <= LO, else AMBIGUOUS (never used to
+# disambiguate). Conservative gap between LO and HI so a marginal kind stays out of the decision.
+CURVE_HI = 0.60
+CURVE_LO = 0.20
+MIN_CURVE_SUPPORT = 20  # matched train pairs a kind needs before its curve signature is trusted
 
 
 def _quantile(sorted_vals, q):
@@ -118,10 +131,30 @@ def derive(gt_dirs, min_support=MIN_SUPPORT):
     }
 
 
-def suggest_kind(w_mm, d_mm, priors):
-    """Emit a kind ONLY when the footprint falls inside exactly ONE kind's band. Any
-    ambiguity (0 or >=2 candidates) or a non-positive/non-numeric dim returns None; the
-    element then stays kind-less (scored WRONG, never skipped -- the honest failure)."""
+def _curve_class(band):
+    """CURVED / BOXY from a kind's train curve signature, or None (ambiguous / absent /
+    under-supported). None means curve gives no confident evidence for this kind."""
+    c = band.get("curve")
+    if not c or c.get("n", 0) < MIN_CURVE_SUPPORT:
+        return None
+    f = c.get("frac")
+    if f is None:
+        return None
+    if f >= CURVE_HI:
+        return "curved"
+    if f <= CURVE_LO:
+        return "boxy"
+    return None
+
+
+def suggest_kind(w_mm, d_mm, priors, curve=None):
+    """Emit a kind ONLY when size+curve resolve to exactly ONE. A UNIQUE size-band hit emits
+    directly (curve never overrides it -- back-compatible with the size-only lane). On a size
+    TIE (>=2 candidates), if the element's `curve` bool is known, drop every candidate whose
+    train curve class is CONFIDENTLY OPPOSITE (a curved element drops BOXY kinds, a boxy element
+    drops CURVED kinds); if that leaves exactly one, emit it, else None. Any residual ambiguity,
+    or a non-positive/non-numeric dim, returns None -- the element stays kind-less (scored WRONG,
+    never a guess). curve=None (no curve info) reproduces the size-only behaviour exactly."""
     try:
         w, dd = float(w_mm), float(d_mm)
     except (TypeError, ValueError):
@@ -134,16 +167,62 @@ def suggest_kind(w_mm, d_mm, priors):
              if b["lo_mm"][0] <= lo <= b["lo_mm"][1]
              and b["hi_mm"][0] <= hi <= b["hi_mm"][1]
              and b["aspect"][0] <= aspect <= b["aspect"][1]]
-    return cands[0] if len(cands) == 1 else None      # unique membership IS the confidence rule
+    if len(cands) == 1:
+        return cands[0]                               # unique size membership IS the confidence rule
+    if len(cands) >= 2 and curve is not None:
+        opposite = "boxy" if curve else "curved"      # a curved element cannot be a BOXY kind
+        kept = [k for k in cands if _curve_class(priors["kinds"][k]) != opposite]
+        if len(kept) == 1:
+            return kept[0]                            # curve UNIQUELY resolved the size tie
+    return None
+
+
+def accumulate_curve(pairs):
+    """(gt_kind, pred_curve_bool) iterable -> {kind: {"n": int, "curve": int}}. Pure; the
+    reader-run/matching that produces the pairs lives in derive_curve_priors.py (no reader
+    import here -- svg_plan_reader imports THIS module)."""
+    stats = {}
+    for k, cv in pairs:
+        if not k:
+            continue
+        row = stats.setdefault(k, {"n": 0, "curve": 0})
+        row["n"] += 1
+        if cv:
+            row["curve"] += 1
+    return stats
+
+
+def merge_curve_signatures(priors, curve_stats, min_support=MIN_CURVE_SUPPORT, source=None):
+    """Return a NEW priors doc (schema @0.2) with a per-kind curve signature added wherever
+    train support clears min_support. Kinds below support get NO signature -- curve stays
+    unusable for them (honest, never fabricated). Pure: no reader run, no I/O."""
+    doc = json.loads(json.dumps(priors))              # deep copy, no aliasing into the input
+    doc["schema"] = SCHEMA
+    added = 0
+    for k, band in doc["kinds"].items():
+        st = curve_stats.get(k)
+        if st and st["n"] >= min_support and st["n"] > 0:
+            band["curve"] = {"frac": round(st["curve"] / st["n"], 3), "n": st["n"],
+                             "curve_n": st["curve"]}
+            added += 1
+        else:
+            band.pop("curve", None)                   # re-merge must not keep a stale signature
+    doc.setdefault("meta", {})["curve"] = {
+        "source": source, "min_support": min_support, "curve_hi": CURVE_HI, "curve_lo": CURVE_LO,
+        "kinds_with_signature": added,
+        "kinds_curve_supported": sorted(k for k, st in curve_stats.items() if st["n"] >= min_support),
+        "n_pairs": sum(st["n"] for st in curve_stats.values()),
+    }
+    return doc
 
 
 def load(path):
     """Load a priors doc, failing LOUDLY at startup (never a per-sheet error row) if the
-    file is not a kind-priors artifact."""
+    file is not a kind-priors artifact. Accepts @0.1 (size-only) and @0.2 (curve-capable)."""
     with open(path, encoding="utf-8") as fh:
         doc = json.load(fh)
-    if doc.get("schema") != SCHEMA:
-        raise SystemExit(f"not a kind-priors file: {path}")
+    if doc.get("schema") not in KNOWN_SCHEMAS:
+        raise SystemExit(f"not a kind-priors file: {path} (schema {doc.get('schema')!r})")
     return doc
 
 

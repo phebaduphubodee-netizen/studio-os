@@ -187,7 +187,8 @@ def read_sheet(svg_path, scale_mm_per_unit, close_mm=CLOSE_MM,
                   "w": it["w"], "d": it["d"],
                   "curve": it["curve"], "fill": it["fill"]}
             if kind_priors_doc:
-                ks = kind_priors.suggest_kind(el["w"], el["d"], kind_priors_doc)
+                ks = kind_priors.suggest_kind(el["w"], el["d"], kind_priors_doc,
+                                              curve=el["curve"])
                 if ks:
                     el["kind"] = ks
             elements.append(el)

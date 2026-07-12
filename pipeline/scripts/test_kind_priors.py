@@ -111,10 +111,90 @@ def test_suggest_outside_all_bands_is_none():
 def test_provenance_recorded_per_band(tmp_path):
     d = _gt(tmp_path, "s", "mm", _tables())
     pr = kind_priors.derive([d], min_support=50)
-    assert pr["schema"] == "interior-ai/kind-priors@0.1"
+    assert pr["schema"] == kind_priors.SCHEMA == "interior-ai/kind-priors@0.2"
     for row in pr["kinds"].values():
         assert isinstance(row["provenance"], str) and row["provenance"]
         assert isinstance(row["n"], int)
+
+
+# ---- curve signature (v2) ----------------------------------------------------------------
+def _pc(kinds):
+    """priors doc with kinds that may carry a `curve` signature."""
+    return {"schema": kind_priors.SCHEMA, "meta": {"params": {}}, "kinds": kinds}
+
+
+# two bands that OVERLAP on size (a chair-vs-table style tie), split only by curve class
+_TIE_BAND = {"lo_mm": [400.0, 700.0], "hi_mm": [400.0, 700.0], "aspect": [1.0, 1.5]}
+_CURVED = {"n": 100, "frac": 0.95, "curve_n": 95}     # >= CURVE_HI
+_BOXY = {"n": 100, "frac": 0.03, "curve_n": 3}        # <= CURVE_LO
+
+
+def test_curve_breaks_a_size_tie_both_directions():
+    p = _pc({"chair": {**_TIE_BAND, "curve": _CURVED},
+             "table": {**_TIE_BAND, "curve": _BOXY}})
+    assert kind_priors.suggest_kind(500, 550, p, curve=True) == "chair"   # curved -> not the BOXY table
+    assert kind_priors.suggest_kind(500, 550, p, curve=False) == "table"  # boxy   -> not the CURVED chair
+    assert kind_priors.suggest_kind(500, 550, p, curve=None) is None      # no curve info -> unreported
+
+
+def test_curve_never_overrides_a_unique_size_hit():
+    """A unique size membership must emit regardless of curve -- back-compat with the
+    size-only lane (the 0.4% baseline must be reproducible)."""
+    p = _pc({"bed": {"lo_mm": [800.0, 1000.0], "hi_mm": [1800.0, 2000.0],
+                     "aspect": [1.5, 2.5], "curve": _BOXY}})
+    assert kind_priors.suggest_kind(1900, 900, p, curve=True) == "bed"    # curve does NOT veto
+    assert kind_priors.suggest_kind(1900, 900, p, curve=False) == "bed"
+
+
+def test_curve_two_curved_kinds_stay_ambiguous():
+    """Curve resolves a tie only when it leaves exactly one -- two curved kinds -> None."""
+    p = _pc({"chair": {**_TIE_BAND, "curve": _CURVED},
+             "toilet": {**_TIE_BAND, "curve": _CURVED}})
+    assert kind_priors.suggest_kind(500, 550, p, curve=True) is None
+
+
+def test_curve_under_support_signature_is_ignored():
+    """A kind with < MIN_CURVE_SUPPORT pairs has an UNTRUSTED signature -> class None -> it is
+    never DROPPED on curve, so a tie it is part of stays unresolved. Contrast: were its (boxy)
+    signature trusted, a curved element would drop it and resolve to chair -- here it does not."""
+    thin_boxy = {"n": kind_priors.MIN_CURVE_SUPPORT - 1, "frac": 0.0, "curve_n": 0}
+    p = _pc({"chair": {**_TIE_BAND, "curve": _CURVED},        # trusted curved
+             "table": {**_TIE_BAND, "curve": thin_boxy}})     # boxy but UNDER support -> untrusted
+    assert kind_priors.suggest_kind(500, 550, p, curve=True) is None      # table not dropped -> 2 left
+    # sanity: promote table's support over the bar and the SAME query now resolves to chair
+    p["kinds"]["table"]["curve"] = {"n": 100, "frac": 0.0, "curve_n": 0}
+    assert kind_priors.suggest_kind(500, 550, p, curve=True) == "chair"
+
+
+def test_curve_default_arg_reproduces_size_only():
+    p = _pc({"table": {"lo_mm": [700.0, 900.0], "hi_mm": [1500.0, 1700.0], "aspect": [1.5, 2.5]}})
+    assert kind_priors.suggest_kind(1600, 800, p) == kind_priors.suggest_kind(1600, 800, p, curve=None)
+
+
+def test_accumulate_curve_counts():
+    pairs = [("chair", True), ("chair", True), ("chair", False), ("table", False),
+             (None, True), ("table", False)]
+    st = kind_priors.accumulate_curve(pairs)
+    assert st == {"chair": {"n": 3, "curve": 2}, "table": {"n": 2, "curve": 0}}   # None kind dropped
+
+
+def test_merge_curve_signatures_supports_and_bumps_schema():
+    size = {"schema": "interior-ai/kind-priors@0.1", "meta": {},
+            "kinds": {"chair": dict(_TIE_BAND), "sofa": dict(_TIE_BAND)}}
+    stats = {"chair": {"n": 100, "curve": 88}, "sofa": {"n": 5, "curve": 5}}   # sofa under support
+    aug = kind_priors.merge_curve_signatures(size, stats, source="gt-train-00")
+    assert aug["schema"] == "interior-ai/kind-priors@0.2"
+    assert aug["kinds"]["chair"]["curve"]["frac"] == 0.88 and aug["kinds"]["chair"]["curve"]["n"] == 100
+    assert "curve" not in aug["kinds"]["sofa"]                 # under support -> no signature
+    assert aug["meta"]["curve"]["kinds_with_signature"] == 1
+    assert size["kinds"]["chair"].get("curve") is None         # input not mutated (deep copy)
+
+
+def test_load_accepts_v01_and_v02(tmp_path):
+    for schema in ("interior-ai/kind-priors@0.1", "interior-ai/kind-priors@0.2"):
+        fp = os.path.join(str(tmp_path), schema.replace("/", "_") + ".json")
+        json.dump({"schema": schema, "kinds": {}}, open(fp, "w"))
+        assert kind_priors.load(fp)["schema"] == schema
 
 
 if __name__ == "__main__":

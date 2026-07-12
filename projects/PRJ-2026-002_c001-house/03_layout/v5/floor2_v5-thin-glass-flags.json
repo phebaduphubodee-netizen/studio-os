@@ -1,0 +1,29 @@
+{
+  "schema": "interior-ai/thin-glass-flags@0.1",
+  "of": "floor2 v5 (BLIND re-derivation)",
+  "frame": "mm; x east from master west wall, y north from master south glazing (same frame as floor2-walls-mm.json)",
+  "derived": "INDEPENDENT visual read of the source PDF (page 1 = PLAN FURNITURE FLOOR 2); v4 NOT consulted",
+  "law": "TWO-LAYER: pdf_extract_walls keeps only thick black strokes (>=0.6pt) = structural walls (machine). Thin/dashed glazing (sliding facades, glass balustrades) are drawn <0.6pt and are BELOW the wall gate -- they are the owner-signed indoor/outdoor boundary. These flags are the candidates a wall-unaware extract SILENTLY DROPS; they are the owner's to confirm + place precisely.",
+  "status_note": "Every candidate is OWNER-CONFIRM-PENDING => machine-INERT: it is NOT injected into floor2-walls-mm.json segments (merge_carried refuses unsigned stubs), so build_floor never extrudes an unconfirmed wall. Sign `by` with the owner's confirmation + correct the coordinates to activate.",
+  "candidates": [
+    {
+      "id": "tg1",
+      "kind": "sliding_glass_facade",
+      "location": "MASTER BEDROOM south edge -> terrace/balcony. The dashed thin-line boundary under the bed (7'x6.5'), inboard of the two potted trees, is the TRUE indoor/outdoor line. The thick-stroke extract left this open (a gap, not a wall).",
+      "approx_span_mm": {"note": "APPROXIMATE from visual read at 1:75 -- owner to set exact coords", "y_approx": 0, "x_from_approx": -345, "x_to_approx": 2700, "axis": "horizontal (east-west run)"},
+      "indoor_side": "north (bedroom)",
+      "outdoor_side": "south (terrace with L-PLNT trees)",
+      "by": "OWNER-CONFIRM-PENDING",
+      "reason": "blind visual read; sliding-glass facade below 0.6pt wall gate"
+    },
+    {
+      "id": "tg2",
+      "kind": "terrace_outline",
+      "location": "Terrace/balcony perimeter (the two dashed rectangles at the south-west and south-centre corners below the bedroom). Dashed = a different plane / low balustrade, not a full-height wall -- flagged for owner classification (glass balustrade vs parapet vs open edge), never auto-placed.",
+      "approx_span_mm": {"note": "APPROXIMATE -- owner to classify + set coords", "y_approx": -1152, "axis": "perimeter"},
+      "by": "OWNER-CONFIRM-PENDING",
+      "reason": "blind visual read; dashed thin-line perimeter (F5 plane-membership call is owner's)"
+    }
+  ],
+  "residual_note": "This is a PHASE-1 read (visual). A phase-2 thin-stroke extraction (glazing_candidates-style, keep strokes < the wall gate that close a room loop) would locate these to mm and may surface windows drawn as thin glazing inside thick-wall gaps. Not run here to keep the blind lane wrapper-clean."
+}

@@ -25,6 +25,7 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import furniture   # pure-python massing (INCHES)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
+import floor_openings  # bpy-free pure logic: doors/windows/glass wall-cuts + boxes
 
 MM = 0.001
 IN = 0.0254
@@ -43,6 +44,14 @@ def _mat(name, rgba, rough=0.85):
     if b:
         b.inputs["Base Color"].default_value = rgba
         b.inputs["Roughness"].default_value = rough
+        if rgba[3] < 1.0:                     # translucent (glass panes)
+            b.inputs["Alpha"].default_value = rgba[3]
+            for attr, val in (("blend_method", "BLEND"),
+                              ("surface_render_method", "BLENDED")):
+                try:                          # EEVEE legacy vs Next: set whichever exists
+                    setattr(m, attr, val)
+                except (AttributeError, TypeError):
+                    pass
     m.diffuse_color = rgba
     _MATS[name] = m
     return m
@@ -50,6 +59,7 @@ def _mat(name, rgba, rough=0.85):
 
 PALETTE = {
     "wall":  ((0.88, 0.86, 0.82, 1.0), 0.9),    # walls – warm off-white plaster
+    "glass": ((0.60, 0.76, 0.80, 0.30), 0.05),  # window/facade panes – translucent
     "floor": ((0.72, 0.69, 0.64, 1.0), 0.9),    # groundplane
     "wood":  ((0.74, 0.65, 0.53, 1.0), 0.7),    # furniture
     "seat":  ((0.80, 0.75, 0.67, 1.0), 0.75),   # upholstery
@@ -140,6 +150,23 @@ def build_walls(segments, h_m, thick_m, coll, zones=None):
         n += 1
     print(f"  walls: extruded {n} segments to {h_m:.2f} m")
     return n
+
+
+def build_openings(openings, ceiling_mm, coll):
+    """Windows/doors/glass as REAL geometry. floor_openings.opening_boxes computes the
+    boxes (glass pane, sill wall, lintel); this only extrudes them -- no decision logic
+    in the bpy layer. Bare 'opening' type contributes nothing (an honest passage)."""
+    n = 0
+    for o in openings:
+        for b in floor_openings.opening_boxes(o, ceiling_mm):
+            r = b["rect"]
+            add_box(f"open_{o.get('id', '?')}_{b['kind']}_{n}",
+                    r[0] * MM, r[1] * MM, b["z0_mm"] * MM,
+                    (r[2] - r[0]) * MM, (r[3] - r[1]) * MM,
+                    (b["z1_mm"] - b["z0_mm"]) * MM,
+                    matp("glass" if b["kind"] == "glass" else "wall"), coll)
+            n += 1
+    print(f"  openings: {n} boxes (glass/sill/lintel)")
 
 
 # --------------------------------------------------------------------- furniture overlay
@@ -505,7 +532,20 @@ def main():
     with open(walls_path, encoding="utf-8") as f:
         wj = json.load(f)
     segs = wj["segments"] if isinstance(wj, dict) else wj
+    # 1b) doors/windows/glass (owner 2026-07-10: "ถ้าไม่ใส่เข้า model เวลา render ออกมามันก็ว่าง"):
+    # cut the walls at each declared opening, then contribute glass panes / sills /
+    # lintels back (floor_openings computes; heights are DISCLOSED render defaults)
+    openings = []
+    if man.get("openings_json"):
+        op_path = man["openings_json"] if os.path.isabs(man["openings_json"]) \
+            else os.path.join(repo_root, man["openings_json"])
+        with open(op_path, encoding="utf-8") as f:
+            openings = json.load(f).get("openings", [])
+        segs, n_cut = floor_openings.clip_wall_segments(segs, openings)
+        print(f"  openings: {len(openings)} declared, {n_cut} wall segments cut")
     nwall = build_walls(segs, h_m, thick_m, new_collection("WALLS_from_PDF"), man.get("clip_zones"))
+    if openings:
+        build_openings(openings, man.get("ceiling_mm", 2800), new_collection("OPENINGS"))
 
     if man.get("floor_zones"):
         build_floor_zones(man["floor_zones"], new_collection("floor_zones"))

@@ -1,0 +1,122 @@
+{
+ "schema": "studio-os/floor-openings@0.1",
+ "meta": {
+  "note": "sill/head = RENDER DEFAULTS (visual communication), NOT measured from elevations -- owner adjusts per opening. Plan rects = deterministic PDF ink; provenance per entry.",
+  "created": "2026-07-10",
+  "by": "floor2 defect-gate session (owner-directed)"
+ },
+ "openings": [
+  {
+   "id": "w1",
+   "type": "window",
+   "rect": [
+    3978,
+    -799,
+    4565,
+    -698
+   ],
+   "provenance": "0.24pt window-symbol module on sheet (x3978..4565 @ master south wall band); owner 2026-07-10: หลายที่เป็นหน้าต่าง ไม่ใช่กำแพงเว้นว่าง"
+  },
+  {
+   "id": "w2",
+   "type": "window",
+   "rect": [
+    4638,
+    -799,
+    5225,
+    -698
+   ],
+   "provenance": "0.24pt window-symbol module on sheet (x4638..5225 @ master south wall band); same owner statement"
+  },
+  {
+   "id": "d1",
+   "type": "door",
+   "rect": [
+    3152,
+    6698,
+    3254,
+    7596
+   ],
+   "provenance": "ensuite<->bay door gap y6698-7596 in x3152/3254 wall faces (owner-confirmed in READING-NOTES); lintel above head 2000 render default"
+  },
+  {
+   "id": "r1",
+   "type": "railing",
+   "rect": [
+    5752,
+    99,
+    10650,
+    200
+   ],
+   "provenance": "owner markup 2026-07-10: \"ในแบบไม่มีกระจกแต่เป็นระเบียง\" -- ขอบระเบียงใต้ lounge (0.48pt pair y99/200); ราวสูง 1000 = render default; SUPERSEDES 07-06 indoor-lounge read"
+  },
+  {
+   "id": "s1",
+   "type": "sliding",
+   "rect": [
+    7150,
+    2000,
+    9900,
+    2100
+   ],
+   "provenance": "ประตูเลื่อนกระจก 2 บาน x7150-9900 @y2050 (READING-NOTES + owner markup 2026-07-10: \"ประตูเลื่อน ไม่ใช่แผ่นกระจก\") -- envelope จริงของ sitting; 2 panels ซ้อนราง, head 2400 render default"
+  },
+  {
+   "id": "w3",
+   "type": "window",
+   "rect": [
+    -47,
+    2898,
+    55,
+    3498
+   ],
+   "provenance": "owner markup 2026-07-10: ลูกศร \"หน้าต่าง\" ที่ผนังตะวันตก -- ช่อง 600mm ใน wall band v@-47 (BF11 อยู่หน้าหน้าต่าง ไม่ใช่บังประตู)"
+  },
+  {
+   "id": "w4",
+   "type": "window",
+   "rect": [
+    -47,
+    4999,
+    55,
+    5599
+   ],
+   "provenance": "owner markup 2026-07-10: ลูกศร \"หน้าต่าง\" จุดที่สอง ผนังตะวันตก -- ช่อง 600mm ใน wall band v@-47"
+  },
+  {
+   "id": "s2",
+   "type": "opening",
+   "rect": [
+    5654,
+    3400,
+    5752,
+    4622
+   ],
+   "head_mm": 2400,
+   "owner_confirmed": "2026-07-11",
+   "provenance": "ช่องทางเดิน dressing<->sitting ในแนว party wall. owner 2026-07-11: 's2 ไม่ใช่บานเลื่อน' + markup รอบ 2 'ไม่มีประตู' ชี้แถวนี้ -> reclassify sliding->opening (ช่องเปิดเปล่า ไม่มีบาน; head 2400 = lintel เหนือช่อง render default). หมึกเดิม 0.6pt 'ใบบาน 2 ใบ' x5657-5727 y[3400,4612] อ่านใหม่เป็นกรอบ/ขอบตู้ขนาบ (BF12-2 จบ 3350 / BF12-1 เริ่ม 4674) ไม่ใช่ใบบานเลื่อน. CONFIRMED: owner 2026-07-11 'ตอนนี้ตั้งเป็นช่องเปิด' = ยืนยันเป็นช่องเปิดเปล่า (ไม่มีบาน) สำหรับตอนนี้ -- 'ตอนนี้' = revisit ได้ภายหลังถ้าจะเติมบาน; ไม่มี swing"
+  },
+  {
+   "id": "w5",
+   "type": "window",
+   "rect": [
+    6254,
+    6199,
+    7152,
+    6298
+   ],
+   "provenance": "ช่องผนังเหนือ sitting -- markup รอบ 2 'ไม่มีประตู' + หมึกสัญลักษณ์หน้าต่าง 0.48pt (เส้นคู่ 6199/6298 + เส้นกระจกกลาง y6244, กรอบใน x6301..7101); rect ใช้ระยะ jamb นอก 6254..7152 กันเศษ void ข้างวงกบ; sill/head = render default"
+  },
+  {
+   "id": "w6",
+   "type": "window",
+   "rect": [
+    -47,
+    7319.8,
+    55,
+    8471.9
+   ],
+   "provenance": "owner 2026-07-11 ตอบ 'ก' (หน้าต่างห้องน้ำ): ช่องกว้าง 1152mm ที่ผนังตะวันตกห้องน้ำใหญ่ (ensuite) v@-47 y[7319.8,8471.9] -- ผนังเส้นเดียวกับ w3/w4 ที่ owner เคย declare เป็นหน้าต่าง; declare เป็น window -> เคลียร์ทั้ง C3_undeclared_doorway (6ab908d19743) + C3_swing_obstructed ฝักบัว (6bbc01f99270) เพราะหน้าต่างไม่มีวงสวิง. sill 900/head 2200 = render default (window DEFAULTS, ไม่ได้วัดจาก elevation); ฝักบัวอยู่หน้าหน้าต่าง = ปกติ. ถ้าจริงเป็นบานเล็ก/sill สูงกว่านี้ owner ปรับ rect/sill ได้"
+  }
+ ]
+}
