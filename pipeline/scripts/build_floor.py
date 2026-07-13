@@ -474,12 +474,18 @@ def require_placement_gate(manifest_path, man, man_dir, repo_root, accept_review
         print("  [OK] placement gate: PASS (machine-verified reading)")
 
 
+RENDER_VIRTUAL = False
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     manifest_path = next((a for a in argv if not a.startswith("-")), None)
     if not manifest_path:
         raise SystemExit("usage: build_floor.py -- <floor-manifest.json> [--render] [--out DIR] [--no-gate]")
     do_render = "--render" in argv
+    global RENDER_VIRTUAL
+    RENDER_VIRTUAL = "--render-virtual" in argv   # D4: opt-in, and it lands in its
+    #   own clearly-named collection so it can never be mistaken for the sheet.
     out_dir = argv[argv.index("--out") + 1] if "--out" in argv else None
 
     with open(manifest_path, encoding="utf-8") as f:
@@ -532,6 +538,42 @@ def main():
     with open(walls_path, encoding="utf-8") as f:
         wj = json.load(f)
     segs = wj["segments"] if isinstance(wj, dict) else wj
+
+    # ---------------------------------------------------------------- D4: THE PHANTOM WALL
+    # MEASURED 2026-07-12: the whole-floor shell was extruding a 4600 mm wall across the living
+    # room that the plan DOES NOT DRAW, plus three more stubs. Source: bluehouse_plan_reader
+    # appends its VIRTUAL edges (the owner-signed north zoning line + the agent-provisional BF01
+    # extension and SW corner stubs) to `segments`, tagged in the parallel `segment_classes` list
+    # -- and this loader took `wj["segments"]` wholesale and never looked at the classes. 8 of the
+    # 98 segments were `signed_virtual`. A zoning line in an OPEN PLAN is not a wall; the room
+    # polygon needs it to close, the FLOOR SHELL must not build it.
+    #
+    # Only INK classes are extruded. Everything else is DECLARED and skipped, loudly.
+    INK_CLASSES = {"wall_poche", "wall_step"}
+    classes = wj.get("segment_classes") if isinstance(wj, dict) else None
+    if classes and len(classes) == len(segs):
+        keep = [s for s, c in zip(segs, classes) if c in INK_CLASSES]
+        dropped = {}
+        for s, c in zip(segs, classes):
+            if c not in INK_CLASSES:
+                dropped[c] = dropped.get(c, 0) + 1
+        if dropped:
+            print(f"  D4 GUARD: {len(segs) - len(keep)} of {len(segs)} segments are NOT INK and "
+                  f"are NOT extruded into the floor shell: "
+                  + ", ".join(f"{n} x {c}" for c, n in sorted(dropped.items())))
+            print("    (a virtual/zoning edge closes a ROOM POLYGON; it is not a wall on the "
+                  "sheet and the floor shell may not invent it. Pass --render-virtual to see "
+                  "them, and they render as a declared, separate collection.)")
+        if RENDER_VIRTUAL:
+            print("    --render-virtual: extruding them anyway, into VIRTUAL_not_on_the_sheet")
+            build_walls([s for s, c in zip(segs, classes) if c not in INK_CLASSES],
+                        h_m, thick_m, new_collection("VIRTUAL_not_on_the_sheet"))
+        segs = keep
+    elif isinstance(wj, dict) and "segment_classes" not in wj:
+        print("  D4 GUARD: this walls-json carries NO segment_classes -- every segment is being "
+              "extruded. If it came from bluehouse_plan_reader, that is a BUG (it always emits "
+              "classes); if it is a legacy pdf_extract_walls file, all of its segments are ink.")
+
     # 1b) doors/windows/glass (owner 2026-07-10: "ถ้าไม่ใส่เข้า model เวลา render ออกมามันก็ว่าง"):
     # cut the walls at each declared opening, then contribute glass panes / sills /
     # lintels back (floor_openings computes; heights are DISCLOSED render defaults)

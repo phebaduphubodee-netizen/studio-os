@@ -80,6 +80,29 @@ BLOCKED = [
     # file-copy / raw-socket sinks that are not HTTP at all
     (r"(?i)\b(scp|rsync|rclone|sftp|nc|ncat|netcat)\b[^|;&]*(clients|_private)[/\\][\w.\-/\\]+",
      "copying a client/private file to a remote host (scp/rsync/rclone/nc)"),
+    # OWNER-AUTHORED SIGN-OFF LEDGERS (2026-07-12) — the shell half of the guard_paths rule.
+    # SEMANTIC facts (where a zoning line goes; which SKU is really being bought) are OWNER-ONLY, and
+    # the owner's signature is what makes the call STICK. Round 4 of the plan reader proved a
+    # signature the AGENT composes at run time is worthless: it authored both sides of the check and
+    # wrote a 17.5 m² "owner-signed" room off a line the owner never saw. So the signature moved into
+    # a ledger the OWNER writes — and blocking Write/Edit alone would be pointless while `echo ... >
+    # zoning-signoff.json` or `python -c "open(led,'w')"` walked straight through.
+    # READING is untouched (`cat`/`python reader.py --owner-ledger led.json` must keep working); only
+    # a ledger appearing as the TARGET of a mutation is blocked.
+    (r"(?i)(>>?|\b(tee|mv|move-item|cp|copy-item|rm|remove-item|del|new-item|rename-item|"
+     r"set-content|add-content|out-file|clear-content)\b)[^|;&]*"
+     r"\b(zoning|sourcing)-signoff\.json\b",
+     "writing an OWNER-AUTHORED sign-off ledger (*-signoff.json). The owner signs; the agent reads. "
+     "Print the canonical key and ask the owner to add the entry"),
+    # An inline interpreter's INTENT is not statically decidable (`open(p)` vs `open(p,'w')` is one
+    # character), so any `python -c` naming a ledger is refused outright — fail-safe, and cheap:
+    # read it with `cat` or the Read tool, which cannot mutate anything.
+    # NB the tail is `.*`, not `[^|;&]*`: the FIRST version of this rule used the no-separator class
+    # copied from the exfil patterns and a real forgery walked straight through it, because inline
+    # python is FULL of semicolons (`import json;d=json.load(...)`). Caught by test_guards.sh.
+    (r"(?i)\b(python3?|node|ruby|perl)\b[^|&]*\s-(c|e)\b.*\b(zoning|sourcing)-signoff\.json\b",
+     "inline interpreter naming an OWNER-AUTHORED sign-off ledger (its write-intent is undecidable "
+     "from the command string). Read it with `cat`; only the owner appends to it"),
 ]
 
 # HONEST SCOPE (2026-07-12 review): this is a best-effort TRIPWIRE against the agent naively or

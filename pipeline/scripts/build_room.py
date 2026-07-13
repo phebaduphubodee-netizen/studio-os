@@ -41,6 +41,9 @@ import furniture
 import millwork       # bpy-free pure logic: built-in joinery layout (METRES) + the model-fit gate
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
+import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
+#   sliding two-leaf rule. ONE schema for openings across build_floor (plan slabs) and build_room
+#   (polygon edges); build_room used to know only a single `door` key and rendered a sealed box.
 
 # Fallback if no spec is passed on the CLI. Mirrors pipeline/specs/living_demo.json.
 DEFAULT_SPEC = {
@@ -319,11 +322,69 @@ def _door_on_edge_m(door, p1, adir, L):
     return (u0, u1, dh) if (u1 - u0) > 1e-4 else None
 
 
-def poly_walls_bpy(prefix, outline_m, thk, h, door):
-    """Build every wall of a polygon (outward normals from the winding), door gap+header."""
+def _openings_on_edge_m(openings, p1, adir, L, h, tol=0.06):
+    """The room-spec@0.2 `room.openings` that lie ON this polygon edge.
+
+    WHY THIS EXISTS (2026-07-12, adversarial review). build_room only ever honoured a single
+    `door` key, so a room-spec carrying the openings its plan actually draws rendered as a
+    SEALED SHOEBOX -- floor + 4 blank walls. bluehouse_plan_reader found the living zone's
+    3200 mm south slider and 2900 mm east slider from the ink and then DROPPED them on the way
+    into the spec. A room you cannot see out of is not the room the plan draws.
+
+    An opening is `{"id","type","rect":[x0,y0,x1,y1] mm, "sill_mm"?, "head_mm"?}` -- the same
+    record floor_openings.py consumes, so ONE schema drives both the whole-floor build
+    (build_floor, plan-rect slabs) and this polygon-edge build. sill/head come from
+    floor_openings.DEFAULTS: they are DISCLOSED RENDER DEFAULTS, not measurements (no plan
+    sheet carries a sill height).
+
+    Returns [(u0, u1, sill_m, head_m, type, id)] in edge-parameter metres, sorted by u0."""
+    out = []
+    for o in openings or ():
+        r = [float(v) * MM for v in o["rect"]]
+        x0, y0 = min(r[0], r[2]), min(r[1], r[3])
+        x1, y1 = max(r[0], r[2]), max(r[1], r[3])
+        horiz = abs(adir[1]) < 1e-6
+        if horiz:                                  # edge runs along x, at y = p1[1]
+            if not (y0 - tol <= p1[1] <= y1 + tol):
+                continue
+            ua = (x0 - p1[0]) * adir[0]
+            ub = (x1 - p1[0]) * adir[0]
+        else:                                      # edge runs along y, at x = p1[0]
+            if not (x0 - tol <= p1[0] <= x1 + tol):
+                continue
+            ua = (y0 - p1[1]) * adir[1]
+            ub = (y1 - p1[1]) * adir[1]
+        u0, u1 = max(0.0, min(ua, ub)), min(L, max(ua, ub))
+        if u1 - u0 <= 1e-4:
+            continue
+        t = o.get("type", "opening")
+        d = floor_openings.DEFAULTS.get(t, floor_openings.DEFAULTS["opening"])
+        sill = float(o.get("sill_mm", d["sill_mm"]) or 0.0) * MM
+        head = o.get("head_mm", d["head_mm"])
+        head = float(head) * MM if head is not None else h
+        out.append((u0, u1, sill, min(head, h), t, o.get("id", t)))
+    return sorted(out)
+
+
+def _glaze_edge(name, p1, a, out, thk, u0, u1, z0, z1):
+    """The pane that fills an opening: a slab across the WHOLE wall thickness, sill..head."""
+    s = lambda u: (p1[0] + a[0] * u, p1[1] + a[1] * u)
+    return add_wall(name, s(u0), s(u1), out, thk, z1 - z0, z0=z0)
+
+
+def poly_walls_bpy(prefix, outline_m, thk, h, door, openings=None):
+    """Build every wall of a polygon (outward normals from the winding), with the door gap +
+    header AND every declared opening CUT into the wall and GLAZED.
+
+    Per edge: the openings on it are cut out; the wall is built as the pieces BETWEEN them,
+    plus a sill band (0..sill) and a lintel (head..ceiling) per opening, plus the pane itself.
+    `sliding` gets two overlapping panes on two tracks (owner 2026-07-10: a monolithic sheet of
+    glass reads as a fixed wall, not an operable door) -- the same rule floor_openings applies.
+    `door` / `opening` contribute no pane: an honest hole."""
     import math
     ccw = _signed_area(outline_m) > 0
     n = len(outline_m)
+    n_cut = n_pane = 0
     for i in range(n):
         p1 = outline_m[i]; p2 = outline_m[(i + 1) % n]
         dx = p2[0] - p1[0]; dy = p2[1] - p1[1]
@@ -332,18 +393,47 @@ def poly_walls_bpy(prefix, outline_m, thk, h, door):
             continue
         a = (dx / L, dy / L)
         out = (a[1], -a[0]) if ccw else (-a[1], a[0])
-        gap = _door_on_edge_m(door, p1, a, L)
-        if gap:
-            u0, u1, dh = gap
-            s = lambda u: (p1[0] + a[0] * u, p1[1] + a[1] * u)
-            if u0 > 1e-4:
-                add_wall(f"wall_{prefix}{i}a", p1, s(u0), out, thk, h)
-            if L - u1 > 1e-4:
-                add_wall(f"wall_{prefix}{i}b", s(u1), p2, out, thk, h)
-            if h - dh > 1e-4:
-                add_wall(f"wall_{prefix}{i}h", s(u0), s(u1), out, thk, h - dh, z0=dh)
-        else:
+        s = lambda u: (p1[0] + a[0] * u, p1[1] + a[1] * u)
+        gaps = _openings_on_edge_m(openings, p1, a, L, h)
+        d = _door_on_edge_m(door, p1, a, L)
+        if d:                                       # the legacy `door` key: a full-height hole
+            gaps = sorted(gaps + [(d[0], d[1], 0.0, min(d[2], h), "door", "door")])
+        if not gaps:
             add_wall(f"wall_{prefix}{i}", p1, p2, out, thk, h)
+            continue
+        cursor = 0.0
+        for k, (u0, u1, sill, head, typ, oid) in enumerate(gaps):
+            u0, u1 = max(u0, cursor), max(u1, cursor)
+            if u1 - u0 <= 1e-4:
+                continue
+            if u0 - cursor > 1e-4:                                    # solid pier before it
+                add_wall(f"wall_{prefix}{i}p{k}", s(cursor), s(u0), out, thk, h)
+            if sill > 1e-4:                                           # sill band under it
+                add_wall(f"wall_{prefix}{i}s{k}", s(u0), s(u1), out, thk, sill)
+            if h - head > 1e-4:                                       # lintel over it
+                add_wall(f"wall_{prefix}{i}l{k}", s(u0), s(u1), out, thk, h - head, z0=head)
+            if typ in ("window", "glass", "sliding"):
+                if typ == "sliding":                                  # two leaves, two tracks
+                    ov = floor_openings.SLIDING_OVERLAP_MM * MM
+                    mid = (u0 + u1) / 2.0
+                    _glaze_edge(f"glass__{prefix}{i}_{k}a", p1, a, out, thk / 2.0,
+                                u0, min(u1, mid + ov), sill, head)
+                    b1 = (p1[0] + out[0] * thk / 2.0, p1[1] + out[1] * thk / 2.0)
+                    _glaze_edge(f"glass__{prefix}{i}_{k}b", b1, a, out, thk / 2.0,
+                                max(u0, mid - ov), u1, sill, head)
+                    n_pane += 2
+                else:
+                    _glaze_edge(f"glass__{prefix}{i}_{k}", p1, a, out, thk, u0, u1, sill, head)
+                    n_pane += 1
+            elif typ == "railing":
+                add_wall(f"wall_{prefix}{i}r{k}", s(u0), s(u1), out, thk, head - sill, z0=sill)
+            n_cut += 1
+            cursor = u1
+        if L - cursor > 1e-4:
+            add_wall(f"wall_{prefix}{i}z", s(cursor), p2, out, thk, h)
+    if n_cut:
+        print(f"  openings: {n_cut} cut into the walls, {n_pane} glass pane(s) glazed back in")
+    return n_cut, n_pane
 
 
 def add_suite_camera(x0, x1, y0, y1, h):
@@ -1042,7 +1132,16 @@ def _suite_materials():
     wood = _pbr_material("wood_oak", FLOOR_SLUG)                                     # oak on wood items
     fix = _solid("sanitary_white", (0.90, 0.91, 0.92, 1.0), 0.15, spec=0.6, coat=0.2)  # glossy sanitaryware
     furn = _solid("furn_neutral", (0.52, 0.50, 0.48, 1.0), 0.55)
-    M = {"wall": wall, "mill": mill, "fab": fab, "wood": wood, "fix": fix, "furn": furn}
+    # glazing (2026-07-12): the panes poly_walls_bpy glazes back into the openings it cut. Named
+    # glass__* so they route here and NOT to the opaque wall paint -- a sliding glass door that
+    # renders as a painted wall is the exact bug the openings work exists to kill.
+    glass = _solid("glazing", (0.60, 0.76, 0.80, 1.0), 0.05, ior=1.45, spec=0.5)
+    _gb = _principled(glass)[1]
+    if _gb:
+        _set(_gb, "Transmission Weight", 0.95)
+        _set(_gb, "Base Color", (0.86, 0.92, 0.93, 1.0))
+    M = {"wall": wall, "mill": mill, "fab": fab, "wood": wood, "fix": fix, "furn": furn,
+         "glass": glass}
     for obj in bpy.data.objects:
         if obj.type != 'MESH' or obj.get("ph_model"):   # imported models keep their own PBR
             continue
@@ -1645,13 +1744,16 @@ def build_suite(spec, label="suite"):
 
     add_poly_floor("floor", outline_m, fth)
     # the hero is an enclosed beauty shot -> solid walls (a doorway gap leaks the HDRI in as a
-    # bright slit) + a ceiling below; the overview keeps the real door opening.
-    poly_walls_bpy("", outline_m, thk, h, None if spec.get("_hero") else spec.get("door"))
+    # bright slit) + a ceiling below; the overview keeps the real door opening AND the plan's
+    # real openings (glazed, so they are windows, not raw holes -- no HDRI slit).
+    poly_walls_bpy("", outline_m, thk, h,
+                   None if spec.get("_hero") else spec.get("door"),
+                   None if spec.get("_hero") else r.get("openings"))
 
     for si, sr in enumerate(spec.get("subrooms", [])):
         so = [(float(x) * MM, float(y) * MM) for x, y in sr["outline_mm"]]
         sh = float(sr.get("ceiling_mm", 2000)) * MM
-        poly_walls_bpy(f"s{si}_", so, thk, sh, sr.get("door"))
+        poly_walls_bpy(f"s{si}_", so, thk, sh, sr.get("door"), sr.get("openings"))
         for fx in sr.get("fixtures", []):
             add_box("fix__" + str(fx.get("name", "fixture")).replace(" ", "_"),
                     float(fx["x"]) * MM, float(fx["y"]) * MM, 0,
@@ -1886,7 +1988,25 @@ def build_rect(spec, label="default"):
 
 def load_spec(path):
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        spec = json.load(f)
+    # D2: a room-spec can now say, in a field, that the owner has NOT adopted it -- part of its
+    # perimeter is agent-provisional geometry nobody signed. Rendering it is allowed (it is a
+    # measurement artefact and it must stay inspectable), rendering it SILENTLY is not: that is
+    # exactly how an unsigned guess becomes an "owner-approved" room one stage downstream.
+    ip = spec.get("ink_provenance") or {}
+    if ip.get("adopted") is False:
+        print("=" * 78)
+        print("  WARNING: THIS ROOM IS NOT OWNER-ADOPTED.")
+        print("  %s mm of its perimeter is covered by NO signature."
+              % ip.get("NOT_covered_by_any_signature_mm"))
+        for v in ip.get("virtual_walls", []):
+            if v.get("provenance") != "owner-signed":
+                print("    UNSIGNED  %s  %s  %s mm" % (v.get("id"), v.get("spec"),
+                                                       v.get("length_mm")))
+        print("  The walls it extrudes for those edges are NOT on the sheet. Do not present this")
+        print("  render as an approved design, and do not score anything against its geometry.")
+        print("=" * 78)
+    return spec
 
 
 def _post_dashdash():

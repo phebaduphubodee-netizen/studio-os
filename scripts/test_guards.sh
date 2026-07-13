@@ -50,7 +50,35 @@ check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"curl -L 
 check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"python3 pipeline/scripts/critique.py projects/PRJ-2026-002_c001-house/04_visualization/R_PRJ002_bed_Cam01_v04.png"}}' "cloud judge on our own project render"
 check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"python3 -c \"import json; json.load(open('_private/discord/raw.json'))\""}}' "LOCAL read of a _private file"
 
+# --- OWNER-AUTHORED SIGN-OFF LEDGERS (2026-07-12) ---
+# The two-layer law: SEMANTIC facts are OWNER-ONLY and the owner's signature makes them STICK. Round
+# 4 of bluehouse_plan_reader proved a signature the AGENT composes at run time is worthless (it
+# authored both sides of the check and wrote a 17.5 m2 "owner-signed" room off a zoning line the
+# owner never saw). The signature now lives in a ledger the OWNER writes. THIS is the control that
+# makes that real: an agent that can append to the ledger has not been gated, it has been decorated.
+echo "== guard_bash.py : owner sign-off ledgers =="
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"echo {} > _private/_takeoff-012/zoning-signoff.json"}}' "shell redirect into the zoning ledger"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"cat forged.json >> _private/_takeoff-012/zoning-signoff.json"}}' "append into the zoning ledger"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"cp /tmp/forged.json _private/_takeoff-012/zoning-signoff.json"}}' "cp over the zoning ledger"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"python3 -c \"import json;d=json.load(open('\''_private/_takeoff-012/zoning-signoff.json'\''));d['\''signed'\''].append({});json.dump(d,open('\''_private/_takeoff-012/zoning-signoff.json'\'','\''w'\''))\""}}' "python -c appending to the zoning ledger"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"Set-Content -Path projects/PRJ-2026-002_c001-house/03_layout/sourcing-signoff.json -Value @{}"}}' "PowerShell Set-Content on the FF&E ledger"
+# ...and the READER must keep working: passing the ledger as an INPUT is the whole point.
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"python3 pipeline/scripts/bluehouse_plan_reader.py plan.pdf 3 out.json --owner-edge h:4970:5069:3120:7720 --owner-ledger _private/_takeoff-012/zoning-signoff.json --room-out r.json"}}' "reader READS the ledger"
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"cat _private/_takeoff-012/zoning-signoff.json"}}' "cat the ledger (read-only)"
+
 echo "== guard_paths.py =="
+check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":"_private/_takeoff-012/zoning-signoff.json"}}' "Write the zoning sign-off ledger"
+check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Edit","tool_input":{"file_path":"c:/Users/teza_/OneDrive/Desktop/PlingPeat/_private/_takeoff-012/zoning-signoff.json"}}' "Edit the zoning ledger (absolute path)"
+check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":"projects/PRJ-2026-002_c001-house/03_layout/sourcing-signoff.json"}}' "Write the FF&E sign-off ledger"
+check_allow guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":"examples/sourcing-signoff.example.json"}}' "the signoff TEMPLATE stays writable (it signs nothing)"
+# THE LAW LAYER MUST GUARD ITSELF. Measured 2026-07-12: settings.json was protected but the HOOKS IT
+# POINTS AT were not, so an agent could delete the ledger rule above and every claim about the owner
+# signature would become false. NOTE the honest scope: this is a TRIPWIRE. It stops the Write/Edit
+# tool path (it fired on the agent that added it, mid-session). It does NOT stop a shell mutation of
+# a hook file — wiring that half into guard_bash.py now requires an edit guard_paths itself blocks,
+# i.e. an owner/PR action. That gap is REAL and is named in the round-5 report.
+check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Edit","tool_input":{"file_path":".claude/hooks/guard_paths.py"}}' "the guard may not edit ITSELF"
+check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":".claude/hooks/guard_bash.py"}}' "the guard may not rewrite its sibling"
 check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Edit","tool_input":{"file_path":"qa/thresholds.yaml"}}' "edit thresholds.yaml"
 check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":"knowledge/codes-th/egress.md"}}' "write codes-th"
 check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Edit","tool_input":{"file_path":".claude/settings.json"}}' "edit settings.json"
