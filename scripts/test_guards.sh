@@ -5,12 +5,30 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export CLAUDE_PROJECT_DIR="$ROOT"
 PASS=0; FAIL=0
 
+hook_path () { # all three guards live in .claude/hooks/ (guard_web was promoted there 2026-07-13;
+               # the scripts/ fallback stays so the suite still runs on a tree that predates it).
+  if   [ -f "$ROOT/.claude/hooks/$1" ]; then echo "$ROOT/.claude/hooks/$1"
+  elif [ -f "$ROOT/scripts/$1" ];       then echo "$ROOT/scripts/$1"
+  else echo "$ROOT/.MISSING-GUARD-$1"   # deliberately nonexistent: a BLOCK case then fails the
+  fi                                    # marker assertion below (python's exit-2 on a missing file
+}                                       # no longer counts as a real block). See the round note.
+
+# A real BLOCK is exit 2 AND our "BLOCKED by <guard>:" marker on stderr. Requiring the marker
+# closes a hole the whole suite shared: `python3 <missing-or-broken.py>` also exits 2, so a
+# deleted/renamed guard would have printed "BLOCK ok" for every check_block. All three guards use
+# the same marker, so this strengthens the entire suite, not just guard_web.
 check_block () { # $1=hook  $2=json  $3=label
-  echo "$2" | python3 "$ROOT/.claude/hooks/$1" >/dev/null 2>&1
-  if [ $? -eq 2 ]; then echo "  BLOCK ok   : $3"; PASS=$((PASS+1)); else echo "  !! NOT BLOCKED: $3"; FAIL=$((FAIL+1)); fi
+  local hp err rc
+  hp="$(hook_path "$1")"
+  err="$(echo "$2" | python3 "$hp" 2>&1 >/dev/null)"; rc=$?
+  if [ "$rc" -eq 2 ] && printf '%s' "$err" | grep -q "BLOCKED by"; then
+    echo "  BLOCK ok   : $3"; PASS=$((PASS+1))
+  else
+    echo "  !! NOT BLOCKED: $3 (rc=$rc)"; FAIL=$((FAIL+1))
+  fi
 }
 check_allow () {
-  echo "$2" | python3 "$ROOT/.claude/hooks/$1" >/dev/null 2>&1
+  echo "$2" | python3 "$(hook_path "$1")" >/dev/null 2>&1
   if [ $? -eq 0 ]; then echo "  ALLOW ok   : $3"; PASS=$((PASS+1)); else echo "  !! WRONG BLOCK: $3"; FAIL=$((FAIL+1)); fi
 }
 
@@ -83,6 +101,76 @@ check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Edit","tool_input":{
 check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":"knowledge/codes-th/egress.md"}}' "write codes-th"
 check_block guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Edit","tool_input":{"file_path":".claude/settings.json"}}' "edit settings.json"
 check_allow guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":{"file_path":"projects/PRJ-2026-001_test/02_concept/concept.md"}}' "write stage output"
+
+# --- WEB EGRESS (2026-07-13) ---
+# The committed settings.json gates WebFetch/WebSearch behind `ask`, which outranks every allow
+# rule, so a deep-research run stopped at EVERY source and waited for a click. The user-level
+# allowlist grew 300+ WebFetch(domain:...) entries that could never fire: the "review" that gate
+# bought was a rubber stamp. guard_web replaces the bored human with a machine that reads the URL,
+# prompt and query first. Promoted into .claude/hooks/ 2026-07-13, so it is now self-guarded by
+# guard_paths (an agent cannot rewrite these patterns) and travels with the repo.
+# A check_allow here means "exit 0" = the hook emitted permissionDecision:allow (no prompt).
+echo "== guard_web.py : web egress =="
+check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://api.example.com/read","prompt":"summarize clients/C-001/profile.md"}}' "client folder path in a fetch prompt"
+check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/u","prompt":"compare with _private/discord/plan.png"}}' "_private path in a fetch prompt"
+check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"file:///c:/Users/teza_/OneDrive/Desktop/PlingPeat/_private/plan.pdf","prompt":"read"}}' "file:// URL (local file shipped to a remote reader)"
+check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/projects/PRJ-2026-002_c001-house/03_layout","prompt":"x"}}' "project path in the URL"
+check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"sofa options for PRJ-2026-002 living room"}}' "project ID in a search query"
+check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"floor plan c:/Users/teza_/OneDrive/Desktop/PlingPeat/clients"}}' "local absolute path in a search query"
+check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com","prompt":"the brief in 00_intake/client-brief.pdf says"}}' "intake stage path in a fetch prompt"
+# evasion forms the first cut missed (adversarial review 2026-07-13, each verified live):
+check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/read?doc=clients%2FC-001%2Fprofile.md","prompt":"summarize"}}' "URL-encoded clients%2FC-001 (decoded before scan)"
+check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"sofa options for PRJ 2026 002 living room"}}' "space-separated project id (PRJ 2026 002)"
+check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"budget for client C-001 master bedroom"}}' "client id next to the word client (C-001)"
+check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com","prompt":"see path {\"p\":\"C:\\\\Users\\\\teza_\\\\clients\"}"}}' "doubled-backslash local Windows path"
+check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"where does chrome store data in /c/Users/appdata"}}' "MSYS /c/Users local path in a query"
+# Thai client word next to the id -- ALSO regression-guards the stdin UTF-8 decode: json.load(stdin)
+# uses the Windows locale codec and mangled this to mojibake, silently defeating the rule.
+check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"งบประมาณ ลูกค้า C-001 ห้องนอน"}}' "Thai word for client next to C-001"
+# ...and a real DR run must fan out UNATTENDED: these are the calls the ask-gate used to stop.
+check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://www.hafelethailand.com/en/product/x","prompt":"Extract dimensions and price"}}' "clean supplier fetch (DR)"
+check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"Thai condo 2-seater sofa typical depth mm"}}' "clean generic search (DR)"
+# the whole reason the bare C-NNN rule was dropped: FF&E research on furniture SKUs / model codes
+# is the core DR use case and product codes look exactly like a client id.
+check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"armchair model C-203 dimensions and price"}}' "furniture SKU C-203 is NOT a client-data block"
+check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://www.hafelethailand.com/th/category/C-100/hinge","prompt":"specs"}}' "supplier URL segment C-100 is NOT a client-data block"
+check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"discontinued chair C-001 replacement"}}' "bare opaque C-001 (no client word / path) intentionally allowed"
+check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"เก้าอี้ รุ่น C-203 ราคา"}}' "Thai furniture SKU C-203 is NOT a client-data block"
+check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://studio.example.com/clients/testimonials","prompt":"what do they say"}}' "the WORD clients on a public page is not a leak"
+check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://github.com/org/repo/projects/1","prompt":"read the board"}}' "the WORD projects on a public page is not a leak"
+check_allow guard_web.py '{"tool_name":"Bash","tool_input":{"command":"ls"}}' "guard_web has no opinion on non-web tools"
+
+# On ANY internal failure the hook must fail CLOSED (explicit ask), never a silent allow, so it stays
+# correct even after the committed `ask` fallback is someday removed.
+echo "== guard_web.py : fails CLOSED on bad input =="
+GW="$(hook_path guard_web.py)"
+gw_out="$(echo 'this is not json' | python3 "$GW" 2>/dev/null)"; gw_rc=$?
+if [ "$gw_rc" -eq 0 ] && printf '%s' "$gw_out" | grep -q '"permissionDecision": "ask"'; then
+  echo "  ASK ok     : malformed stdin -> explicit ask (not a silent allow)"; PASS=$((PASS+1))
+else
+  echo "  !! FAIL    : malformed stdin did not emit an explicit ask (rc=$gw_rc)"; FAIL=$((FAIL+1))
+fi
+
+# WIRING: the checks above prove the SCRIPT's behavior; this proves it is actually REGISTERED as a
+# hook. It now lives in the COMMITTED settings.json, so this is a repo invariant and a hard FAIL --
+# if it ever stops matching, every web call silently falls back to the `ask` prompt (or worse, if the
+# ask rule was also removed, to nothing).
+echo "== guard_web wiring =="
+COMMITTED="$ROOT/.claude/settings.json"
+if grep -q 'guard_web.py' "$COMMITTED" && grep -q 'WebFetch|WebSearch' "$COMMITTED"; then
+  echo "  WIRING ok  : guard_web registered as a WebFetch|WebSearch PreToolUse hook (committed)"; PASS=$((PASS+1))
+else
+  echo "  !! WIRING FAIL: guard_web.py is not registered in the committed .claude/settings.json"; FAIL=$((FAIL+1))
+fi
+# The `ask: [WebSearch, WebFetch]` entries are the LOAD-BEARING FALLBACK for a hook that fails to run.
+# They look dead (the hook auto-allows) and a future cleanup will want to delete them. This is the
+# tripwire that catches that.
+if grep -q '"WebFetch"' "$COMMITTED" && grep -q '"WebSearch"' "$COMMITTED"; then
+  echo "  FALLBACK ok: the ask: [WebSearch, WebFetch] entries are still present"; PASS=$((PASS+1))
+else
+  echo "  !! FALLBACK GONE: ask: [WebSearch, WebFetch] was removed from settings.json. A guard_web"
+  echo "                   failure is now a SILENT UNSCREENED ALLOW. Restore it."; FAIL=$((FAIL+1))
+fi
 
 echo; echo "PASS=$PASS FAIL=$FAIL"
 [ $FAIL -eq 0 ] && echo "M0.1 guard test: ALL GREEN" || { echo "M0.1 guard test: FAILURES PRESENT"; exit 1; }

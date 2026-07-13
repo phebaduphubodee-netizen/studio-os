@@ -56,6 +56,17 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_paths.py\""
           }
         ]
+      },
+      {
+        "matcher": "WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_web.py\"",
+            "timeout": 10,
+            "statusMessage": "guard_web: screening the web call for client data"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -69,5 +80,6 @@
         ]
       }
     ]
-  }
+  },
+  "_comment_web_egress": "2026-07-13: permissions.ask still lists WebSearch/WebFetch ON PURPOSE. It is the fallback for when the guard_web PreToolUse hook below does not run (missing python3, bad edit, settings source not loaded) -- without it, a hook failure would be a silent unscreened allow. guard_web auto-allows clean web calls (so a deep-research run fans out unattended) and hard-blocks any URL/prompt/query carrying client/project identifiers. A permission rule cannot content-screen a query; only a hook can. Do not delete either half."
 }
