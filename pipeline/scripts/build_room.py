@@ -518,6 +518,9 @@ def add_suite_eye_camera(spec, outline_m, h):
 # Sourced from material_defaults (shared with rationale.py) so the "what renders as
 # what" mapping has ONE definition and the explainability layer can never drift from it.
 import material_defaults as _matdef
+# spec-selectable presets (owner's hand on materials; pure stdlib, testable outside bpy).
+# NO materials block in the spec == every legacy hardcoded default below, unchanged.
+import material_presets as _matpre
 _FABRIC = _matdef.FABRIC_KINDS
 _WOODEN = _matdef.WOODEN_KINDS
 
@@ -1117,31 +1120,122 @@ WALL_RGBA = (0.83, 0.80, 0.75, 1.0)    # matte warm-white paint
 RUG_SLUG = "poly_wool_herringbone"
 
 
-def _suite_materials():
+def _material_from_preset(mat_name, preset_key):
+    """Build ONE material from a spec-selected preset via the SAME factories the legacy
+    palette uses. All authoring bounds (albedo band clamp, roughness floor/ceil, binary
+    metalness, sRGB->linear) are enforced inside material_presets.factory_args — nothing
+    implausible can arrive here."""
+    a = _matpre.factory_args(preset_key)
+    f = a["factory"]
+    if f == "pbr":
+        return _pbr_material(mat_name, a.get("slug") or FLOOR_SLUG,
+                             base_tint=a.get("tint"), variation=a.get("variation", 0.0))
+    if f == "painted":
+        return _painted(mat_name, a["rgba"], a["rough"])
+    if f == "veneer":
+        return _veneer(mat_name, a["rgba"], a["rough"])
+    if f == "proc_wood":
+        return _proc_wood(mat_name, base=a["rgba"], dark=a.get("dark", a["rgba"]),
+                          rough=a["rough"])
+    if f == "glass":
+        # built WITHOUT _solid: a glass Base Color is a TRANSMISSION TINT, not a
+        # dielectric albedo — routing it through _solid fires a false '!! albedo WARN'
+        # on every build for legal presets like clear_glass (review finding 2026-07-14).
+        g = bpy.data.materials.new(mat_name)
+        g.use_nodes = True
+        _gb = _principled(g)[1]
+        if _gb:
+            _set(_gb, "Base Color", a.get("trans_tint", a["rgba"]))
+            _set(_gb, "Roughness", a["rough"])
+            _set(_gb, "IOR", a.get("ior", 1.45))
+            _set(_gb, "Specular IOR Level", a.get("spec", 0.5))
+            _set(_gb, "Transmission Weight", a.get("transmission", 0.95))
+        return g
+    return _solid(mat_name, a["rgba"], a["rough"], metallic=a.get("metallic", 0.0),
+                  sheen=a.get("sheen", 0.0), coat=a.get("coat", 0.0),
+                  ior=a.get("ior", 1.45), spec=a.get("spec", 0.5))
+
+
+def _suite_materials(spec=None):
     """Warm luxury interior palette using REAL CC0 PBR textures where they help
     (floor grain/reflection), clean physically-based solids elsewhere. Assigned by
-    object-name PREFIX (tag__...). Imported furniture models keep their own PBR."""
-    floor = _pbr_material("floor_pbr", FLOOR_SLUG)                                   # warm oak grain
-    wall = _painted("wall_paint", WALL_RGBA, 0.88)                                   # matte warm-white
-    feature = _pbr_material("feature_walnut", FLOOR_SLUG, base_tint=(0.40, 0.28, 0.20, 1.0),
-                            variation=0.06)  # walnut backdrop, drift breaks tile repeats
+    object-name PREFIX (tag__...). Imported furniture models keep their own PBR.
+
+    2026-07-14 (owner direction — materials into the spec's hands): each role first
+    consults the spec's optional `materials` block (material_presets.resolve_materials);
+    a selected preset builds through the same factories, a missing one falls back to the
+    EXACT legacy hardcode below, so a spec without the block renders today's palette
+    unchanged. An invalid block raises (fail LOUD — a typo must never silently render
+    the default palette)."""
+    sel = _matpre.resolve_materials(spec)
+    _sur = (sel or {}).get("surfaces", {})
+    _fam = (sel or {}).get("families", {})
+
+    def _pick(preset_key, role, legacy):
+        if preset_key:
+            return _material_from_preset(f"m_{role}_{preset_key}", preset_key)
+        return legacy()
+
+    floor = _pick(_sur.get("floor"), "floor",
+                  lambda: _pbr_material("floor_pbr", FLOOR_SLUG))                    # warm oak grain
+    wall = _pick(_sur.get("walls"), "walls",
+                 lambda: _painted("wall_paint", WALL_RGBA, 0.88))                    # matte warm-white
+    feature = _pick(_sur.get("feature_wall"), "feature",
+                    lambda: _pbr_material("feature_walnut", FLOOR_SLUG,
+                                          base_tint=(0.40, 0.28, 0.20, 1.0),
+                                          variation=0.06))  # walnut backdrop, drift breaks tile repeats
     # LINEAR-space walnut (sRGB ~#5F4430): Blender default_value is linear — a
     # 'looks right in sRGB' triple renders as pale pink-beige (round-2 lesson).
-    mill = _veneer("mill_walnut", (0.105, 0.052, 0.026, 1.0), 0.45)  # rift-walnut veneer, matte lacquer
-    fab = _solid("fabric_boucle", (0.84, 0.79, 0.71, 1.0), 0.92, sheen=0.8)         # cream boucle (sheen)
-    wood = _pbr_material("wood_oak", FLOOR_SLUG)                                     # oak on wood items
-    fix = _solid("sanitary_white", (0.90, 0.91, 0.92, 1.0), 0.15, spec=0.6, coat=0.2)  # glossy sanitaryware
-    furn = _solid("furn_neutral", (0.52, 0.50, 0.48, 1.0), 0.55)
-    # glazing (2026-07-12): the panes poly_walls_bpy glazes back into the openings it cut. Named
-    # glass__* so they route here and NOT to the opaque wall paint -- a sliding glass door that
-    # renders as a painted wall is the exact bug the openings work exists to kill.
-    glass = _solid("glazing", (0.60, 0.76, 0.80, 1.0), 0.05, ior=1.45, spec=0.5)
-    _gb = _principled(glass)[1]
-    if _gb:
-        _set(_gb, "Transmission Weight", 0.95)
-        _set(_gb, "Base Color", (0.86, 0.92, 0.93, 1.0))
+    mill = _pick(_sur.get("millwork"), "millwork",
+                 lambda: _veneer("mill_walnut", (0.105, 0.052, 0.026, 1.0), 0.45))  # rift-walnut veneer
+    fab = _pick(_fam.get("fabric"), "fabric",
+                lambda: _solid("fabric_boucle", (0.84, 0.79, 0.71, 1.0), 0.92, sheen=0.8))  # cream boucle
+    wood = _pick(_fam.get("wood"), "wood",
+                 lambda: _pbr_material("wood_oak", FLOOR_SLUG))                      # oak on wood items
+    fix = _pick(_sur.get("fixtures"), "fixtures",
+                lambda: _solid("sanitary_white", (0.90, 0.91, 0.92, 1.0), 0.15,
+                               spec=0.6, coat=0.2))  # glossy sanitaryware
+    furn = _pick(_fam.get("neutral"), "neutral",
+                 lambda: _solid("furn_neutral", (0.52, 0.50, 0.48, 1.0), 0.55))
+
+    def _legacy_glass():
+        # glazing (2026-07-12): the panes poly_walls_bpy glazes back into the openings it cut. Named
+        # glass__* so they route here and NOT to the opaque wall paint -- a sliding glass door that
+        # renders as a painted wall is the exact bug the openings work exists to kill.
+        g = _solid("glazing", (0.60, 0.76, 0.80, 1.0), 0.05, ior=1.45, spec=0.5)
+        _gb = _principled(g)[1]
+        if _gb:
+            _set(_gb, "Transmission Weight", 0.95)
+            _set(_gb, "Base Color", (0.86, 0.92, 0.93, 1.0))
+        return g
+
+    glass = _pick(_sur.get("glazing"), "glazing", _legacy_glass)
+
+    # pbr (texture-set) presets need UV. Walls get one on the fly (same recipe as the
+    # feature wall); roles whose objects have no UV and whose LEGACY factory was not
+    # already pbr warn LOUDLY — a texture sampling one flat texel must not pass silently
+    # (review finding 2026-07-14). (The legacy wood family is pbr-on-UV-less already —
+    # long-standing behaviour, not a new lie, so it does not warn.)
+    def _fac(k):
+        return _matpre.factory_args(k)["factory"] if k else None
+
+    _wall_pbr = _fac(_sur.get("walls")) == "pbr"
+    for _role, _key in (("millwork", _sur.get("millwork")), ("fixtures", _sur.get("fixtures")),
+                        ("fabric", _fam.get("fabric")), ("neutral", _fam.get("neutral"))):
+        if _fac(_key) == "pbr":
+            print(f"  !! materials WARN: pbr preset '{_key}' on '{_role}' — these objects "
+                  f"carry no UV, the texture samples ONE flat texel; pick a solid/painted/"
+                  f"veneer/proc_wood preset unless the flat read is intended")
+
     M = {"wall": wall, "mill": mill, "fab": fab, "wood": wood, "fix": fix, "furn": furn,
          "glass": glass}
+    # per-ELEMENT presets: the item loop tags primitive-fallback parts `em-<preset>__part`;
+    # build one material per preset used and route the prefix here (imported models are
+    # handled by the retint path in place_model instead — they keep their own maps).
+    for _ep in sorted(set(((sel or {}).get("elements") or {}).values())):
+        M[f"em-{_ep}"] = _material_from_preset(f"m_el_{_ep}", _ep)
+    if sel:
+        print(f"  materials: spec-selected presets -> {_matpre.material_story(sel)}")
     for obj in bpy.data.objects:
         if obj.type != 'MESH' or obj.get("ph_model"):   # imported models keep their own PBR
             continue
@@ -1157,6 +1251,8 @@ def _suite_materials():
             obj.data.materials.append(feature)
             continue
         if n.startswith("wall") and "__" not in n:
+            if _wall_pbr:   # texture preset on walls: give them the feature-wall UV recipe
+                _wall_uv(obj, tile_m=2.2, u_off=_det01(n) * 3.0)
             obj.data.materials.append(wall)
             continue
         if n.startswith("mill__"):
@@ -1575,12 +1671,15 @@ _UPHOLSTERY_KW = ("pillow", "cushion", "fabric", "upholst", "leather", "seat",
                   "sofa", "couch", "boucle", "textile")
 
 
-def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all=False):
+def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all=False,
+                       rough=0.9):
     """Recolour a model's UPHOLSTERY to cream boucle (DR: #F5F0E9, rough 0.8-0.9, Sheen 0.7-1.0)
     while leaving wood frames and metal legs alone. Because CC0 models drive Base Color from a
     DIFFUSE TEXTURE, we DISCONNECT that texture and set a flat cream, KEEPING the roughness +
     normal maps so the tufting/weave relief survives. Targets materials by name; force_all
-    retints every non-metal material (for single-material models like sofa_02)."""
+    retints every non-metal material (for single-material models like sofa_02). rgba/sheen/
+    rough are overridable so a spec-selected fabric preset (material_presets) can recolour
+    per piece — defaults reproduce the legacy cream boucle exactly."""
     for m in mats:
         if not m or not getattr(m, "use_nodes", False):
             continue
@@ -1603,16 +1702,18 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
         _set(b, "Sheen Roughness", 0.35)
         rg = b.inputs.get("Roughness")
         if rg is not None and not rg.is_linked:
-            rg.default_value = 0.9
+            rg.default_value = rough
 
 
-def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False):
+def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
+                retint_rgba=None, retint_sheen=None, retint_rough=None, retint_force=None):
     """Import a gltf, UNIFORMLY scale it to fit the item footprint (undistorted), set it
     footprint-centred at (x,y) with its base at height z0 (0 = on the floor; >0 = on a
     table for decor), then rotate it `rot` degrees about world Z (so a chair can face the
     conversation group — fixes the 'all chairs face the wrong way' bug). Keeps the model's
-    own PBR materials (retint_fabric recolours dark upholstery to cream boucle). Coords
-    metres.
+    own PBR materials (retint_fabric recolours dark upholstery to cream boucle; the
+    retint_* overrides let a spec-selected element preset recolour THIS piece — None
+    means the legacy behaviour, exactly). Coords metres.
 
     Returns True on success; False if the import failed OR the mesh does not FIT the slot
     (see model_fit) — in which case the caller falls back to a procedural primitive, which is
@@ -1678,7 +1779,10 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False):
         o["ph_model"] = True                     # keep its own materials / skip bevel
     if retint_fabric:
         mats = {slot.material for o in meshes for slot in o.material_slots if slot.material}
-        _retint_upholstery(mats, force_all=(len(mats) == 1))   # single-mat model = all cream
+        kw = {k: v for k, v in (("rgba", retint_rgba), ("sheen", retint_sheen),
+                                ("rough", retint_rough)) if v is not None}
+        force = retint_force if retint_force is not None else (len(mats) == 1)
+        _retint_upholstery(mats, force_all=force, **kw)        # single-mat model = all one fabric
     return True
 
 
@@ -1793,6 +1897,21 @@ def build_suite(spec, label="suite"):
     # else furniture.py primitives (which work in INCHES). Models are fit to the footprint.
     MM_IN = 1.0 / 25.4
     n_model = 0
+    # spec-selected per-element material presets (owner's hand on THIS piece): resolved
+    # once for the retint/primitive paths below; _suite_materials(spec) re-resolves for
+    # the surface/family roles. An invalid block raises here, before any geometry lies.
+    _mat_sel = _matpre.resolve_materials(spec)
+    if _mat_sel and _mat_sel.get("elements"):
+        # anti-silent-drop gate (review 2026-07-14): every element key must provably bind
+        # and be appliable BEFORE building — material_story() reports each selection as
+        # the render's truth, so a selection that cannot land aborts instead of lying.
+        if spec.get("_hero"):
+            raise ValueError("materials.elements is not supported with --hero: the hero "
+                             "shot restages/renames the lounge furniture (_stage_lounge) "
+                             "so element keys cannot bind — drop --hero or the elements")
+        _bound = _matpre.reconcile_elements(_mat_sel, spec)
+        print(f"  materials: element presets bound -> "
+              f"{ {k: v for k, v in sorted(_bound.items())} }")
     # conversation focal point = the lounge centre table; lounge seating auto-faces it.
     _ct = next((it for it in spec.get("items", [])
                 if it.get("kind") in ("coffee_table", "round_table")
@@ -1846,7 +1965,23 @@ def build_suite(spec, label="suite"):
             rot = front_az + 90.0                        # keep the SPEC-convention angle in sync
         mpath = _model_path(slug) if slug else None
         retint = kind in ("sofa", "loveseat", "armchair", "chair", "lounge_chair")
-        if mpath and place_model(mpath, xm, ym, wm, dm, hm, rot=mrot, retint_fabric=retint):
+        # per-element preset (materials block): flat-colour presets recolour the imported
+        # mesh via the retint path (keeping its rough/normal maps); texture-set presets
+        # cannot be applied to a model that keeps its own PBR — say so, never silently.
+        ep = _matpre.element_preset(_mat_sel, nm, kind)
+        ekw = {}
+        if ep:
+            _ea = _matpre.factory_args(ep)
+            if "rgba" in _ea:
+                ekw = {"retint_rgba": _ea["rgba"], "retint_sheen": _ea.get("sheen", 0.0),
+                       "retint_rough": _ea["rough"],
+                       # non-upholstery kinds carry no fabric name keywords — recolour all
+                       "retint_force": True if not retint else None}
+            elif mpath:
+                print(f"  (element preset '{ep}' on '{nm}': texture-set preset — the "
+                      f"imported model keeps its own PBR; noted, not applied)")
+        if mpath and place_model(mpath, xm, ym, wm, dm, hm, rot=mrot,
+                                 retint_fabric=retint or bool(ekw), **ekw):
             n_model += 1
             continue
         # PRIMITIVE FALLBACK. It used to be built AXIS-ALIGNED and rot was DROPPED on the floor —
@@ -1856,7 +1991,7 @@ def build_suite(spec, label="suite"):
         # now: model_fit (2026-07-12) deliberately routes a badly-fitting mesh HERE, so this path is
         # no longer the rare one. Rotate the parts about the footprint centre, exactly as build_floor
         # does — one convention, one pivot, both renderers.
-        tag = _mat_tag(kind)
+        tag = f"em-{ep}" if ep else _mat_tag(kind)   # element preset routes the primitive too
         xi, yi = float(it["x"]) * MM_IN, float(it["y"]) * MM_IN
         wi, di = float(it["w"]) * MM_IN, float(it["d"]) * MM_IN
         hi = max(float(it.get("h", 400)) * MM_IN, 0.5)
@@ -1883,7 +2018,7 @@ def build_suite(spec, label="suite"):
         gy1 = max(float(it["y"]) + float(it["d"]) for it in seats) * MM
         _add_rug("rug__lounge", gx0 - 0.55, gy0 - 0.35, (gx1 - gx0) + 1.1, (gy1 - gy0) + 0.7)
 
-    _suite_materials()
+    _suite_materials(spec)
     _dress_scene(spec)                         # vases on the centre table + a floor plant
     _bevel_edges(width_m=0.005, segments=3)   # softer edges read as real furniture/millwork
 
@@ -1909,6 +2044,11 @@ def build_suite(spec, label="suite"):
         _hdri_world("brown_photostudio_02", strength=1.0, rot_deg=30.0, exposure=-0.1)
     name = r.get("type", "suite") + ("_hero" if spec.get("_hero") else
                                      ("_eye" if spec.get("_eye") else ""))
+    # --suffix=<tag>: render/save under a distinct name. The repair loop and make_all
+    # consume output/room_<name>.png as the hybrid CONTROL — an experimental variant
+    # (e.g. spec-materialized) must never overwrite that leg silently.
+    if spec.get("_suffix"):
+        name += "_" + str(spec["_suffix"])
     save(name)
     if spec.get("render"):
         render(name, samples=(400 if hero else 256), res=((2400, 1500) if hero else (2000, 1400)))
@@ -1925,6 +2065,12 @@ def build(spec, label="default"):
 
 
 def build_rect(spec, label="default"):
+    # the rect path knows nothing of the suite-era features: refuse rather than silently
+    # overwrite the control leg (--suffix) or ignore a materials block (review 2026-07-14)
+    if spec.get("_suffix") or spec.get("materials"):
+        raise ValueError("--suffix and the materials block are suite-path features "
+                         "(room.outline_mm specs); the rect path would silently ignore "
+                         "them — remove them or use a suite spec")
     clear_scene()
     bpy.context.scene.unit_settings.system = "METRIC"
 
@@ -2038,4 +2184,20 @@ if __name__ == "__main__":
         _spec["_hero"] = True
     if "--eye" in _post_dashdash():       # eye-level interior shot aimed at the main piece
         _spec["_eye"] = True
-    print(build(_spec, label=os.path.basename(_p) if _p else "DEFAULT_SPEC"))
+    _sfx = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--suffix=")), None)
+    if _sfx:                              # distinct output name for experimental variants
+        _spec["_suffix"] = _sfx
+    try:
+        print(build(_spec, label=os.path.basename(_p) if _p else "DEFAULT_SPEC"))
+    except BaseException as _e:  # noqa: BLE001 — incl. SystemExit (the --eye solver)
+        # Headless Blender swallows script exceptions and EXITS 0 — a caller (make_all,
+        # the experiment driver, a gate) would read an invalid materials block or a
+        # failed camera solve as SUCCESS (review finding 2026-07-14). os._exit sidesteps
+        # Blender's handler so a failed build is a failed process.
+        import traceback
+        traceback.print_exc()
+        print(f"BUILD FAILED: {_e}")
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(1)
