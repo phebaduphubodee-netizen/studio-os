@@ -1,0 +1,22 @@
+{
+  "id": "render-polish",
+  "version": "v001",
+  "intent": "Finishing pass over an ALREADY-MATERIALIZED physically-based Cycles render: photographic micro-realism only. The materials and lighting are spec-chosen and correct — this intent exists so the image model can no longer redesign them (owner direction 2026-07-14: design authority lives in the spec; Gemini closes the shot). A different intent than render-hybrid (whose template head instructs replacing clay materials — actively wrong for this input), per registry law: one directory per intent.",
+  "engine_contract": "Single-track image-edit instruction + one control image. Model choice/fallback lives in the dispatch script (pipeline/scripts/hybrid_render.py), never here.",
+  "template": "This is a physically-based Cycles render of a {room_type} with a dimensionally accurate layout and deliberately chosen, correct materials and lighting. Refine it into a professional interior photograph. CRITICAL: keep the exact room geometry, camera angle, wall/window/door positions, and the position, size and proportions of every furniture piece and built-in unchanged — the layout is dimensionally accurate and must not move or be redrawn. EQUALLY CRITICAL: keep every material, colour and finish exactly as shown — these are specified real products ({material_story}); do not restyle, recolour, replace or reinterpret any surface, fabric or object, and do not add or remove any object, decor or light source. Your licence is PHOTOGRAPHIC FINISHING ONLY: deepen the realism of surfaces that already exist — visible weave and natural slouch in the existing fabrics, natural per-plank and per-panel variation in the existing wood, subtle wear and micro-imperfection on existing finishes; refine the existing illumination into believable photography — gentler falloff, believable contact shadows under every object, mild atmospheric depth — keeping the existing light directions and the existing warm colour-temperature family exactly as they are; finish with a hint of lens vignetting and very fine photographic grain. Render as a professional interior photograph, NOT a perfect CG image. No people, no text, no watermarks, no borders.",
+  "slots": {
+    "room_type": "REQUIRED — e.g. 'sitting room', 'master bedroom suite'",
+    "material_story": "the TRUE materials the spec selected (material_presets.material_story(resolved) — never aspirational prose; the prompt must not describe materials the render does not show)"
+  },
+  "defaults": {
+    "material_story": "the exact materials shown in the input render"
+  },
+  "provenance": "Authored 2026-07-14 from the owner's direction: all design (layout=spec+gates, materials=spec materials block via material_presets.py, lighting=RCP lumen-method rig) stays deterministic; the image pass is narrowed from repaint to finishing. Layout-lock clause carried VERBATIM-strength from render-hybrid v001-v005 (load-bearing there, load-bearing here). Materials-lock + no-add/no-remove are THE clauses of this intent. Deliberately absent vs render-hybrid v004: the relight licence ('RELIGHT THE SCENE COMPLETELY'), the decor licence ('you MAY add small decor'), and the foreground plane-break — each would contradict the lock.",
+  "notes": [
+    "Client work must run on the PAID Gemini tier (free tier = no commercial rights).",
+    "Output is DRAFT until it passes critique.py + human QA.",
+    "Layout-lock AND materials-lock are load-bearing — do not weaken either in future versions.",
+    "Because this intent adds no decor and keeps lighting direction, overlay_fidelity should read STRICTER than render-hybrid: judge lone-green (invented edges) as failure signal too, and pair it with a call-site ΔE00 dominant-colour comparison candidate-vs-control (both directions) as the material-preservation instrument.",
+    "Promotion to a production label requires critique gate >=4/5 on at least two distinct room types, on MULTI-ROLL MEANS (judge single-roll variance ±0.5 — render-hybrid labels.json _v005_evidence)."
+  ]
+}
