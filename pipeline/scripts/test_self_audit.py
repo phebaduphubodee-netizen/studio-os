@@ -351,12 +351,89 @@ def test_load_priors_discovers_an_artifact_under_qa(tmp_path):
         {"schema": "interior-ai/kind-priors@0.2", "kinds": {}}), encoding="utf-8")
     proj = tmp_path / "projects" / "PRJ-X"
     proj.mkdir(parents=True)
-    doc = A._load_priors(str(proj))
-    assert doc is not None and doc["schema"].startswith("interior-ai/kind-priors")
+    docs = A._load_priors(str(proj))
+    assert (isinstance(docs, list) and len(docs) == 1
+            and docs[0]["schema"].startswith("interior-ai/kind-priors"))
     # a non-priors json with a matching filename must NOT load
     (qa / "my-kind-priors.json").write_text(json.dumps({"schema": "other/thing"}),
                                             encoding="utf-8")
     assert A._load_priors(str(proj)) is None
+
+
+def test_load_priors_returns_EVERY_artifact_never_first_match_wins(tmp_path):
+    # the multi-corpus landmine (2026-07-14): the old return-on-first-match meant a second
+    # artifact was silently ignored -- or, if its name sorted EARLIER, silently REPLACED the
+    # first. Landing a corpus must never be a no-op: ALL valid docs come back, in sorted-path
+    # order, with invalid ones skipped.
+    import json
+    qa = tmp_path / "qa" / "priors"
+    qa.mkdir(parents=True)
+    (qa / "kind-priors-bbb.json").write_text(json.dumps(
+        {"schema": "interior-ai/kind-priors@0.2", "kinds": {}, "tag": "bbb"}), encoding="utf-8")
+    (qa / "kind-priors-aaa.json").write_text(json.dumps(
+        {"schema": "interior-ai/kind-priors@0.2", "kinds": {}, "tag": "aaa"}), encoding="utf-8")
+    (qa / "kind-priors-junk.json").write_text("{not json", encoding="utf-8")
+    proj = tmp_path / "projects" / "PRJ-X"
+    proj.mkdir(parents=True)
+    docs = A._load_priors(str(proj))
+    assert [d["tag"] for d in docs] == ["aaa", "bbb"]
+
+
+def test_live_repo_priors_doc_set_is_pinned():
+    # THE monotone-loosening tripwire (review finding 2026-07-14): _load_priors admits ANY
+    # schema-matching *kind-priors*.json under qa/ or knowledge/, and under the outside-ALL
+    # anomaly rule an added doc can only SUPPRESS flags for kinds already carried. This pin
+    # freezes the LIVE doc set of the real repo -- a stray artifact landing (e.g. a re-derive
+    # without --max-dispersion parked in qa/priors) turns the suite red instead of silently
+    # joining the veto. Adopting a third corpus is a deliberate act: update this pin with it.
+    import os
+    repo_proj = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                             "projects", "PRJ-2026-002_c001-house")
+    docs = A._load_priors(repo_proj)
+    sources = sorted(str((d.get("meta") or {}).get("source") or "floorplancad") for d in docs)
+    assert sources == ["floorplancad", "structured3d"], sources
+
+
+def test_collect_anomaly_dead_artifact_reads_unwired_not_read():
+    # review finding 2026-07-14: bare truthiness claimed READ off a discovered-but-dead doc
+    spec = _rspec("bedroom", items=[{"name": "b", "kind": "bed", "x": 0, "y": 0,
+                                     "w": 1800, "d": 2000}])
+    _recs, cov = A.collect_anomaly([("s.json", spec)], [{"schema": "interior-ai/kind-priors@0.2"}], [])
+    assert cov["prior_band"].startswith("UNWIRED")
+    # ...and the wired line names its doc sources (identity, not just a count)
+    good = {"schema": "interior-ai/kind-priors@0.2", "kinds": {},
+            "meta": {"source": "structured3d"}}
+    _recs2, cov2 = A.collect_anomaly([("s.json", spec)], [good], [])
+    assert cov2["prior_band"].startswith("READ") and "structured3d" in cov2["prior_band"]
+
+
+def test_collect_confidence_empty_doc_list_is_unwired_not_wired():
+    # review finding 2026-07-14: priors=[] corroborates nothing -- 'WIRED (0 corpus docs)'
+    # would claim a dead lane is wired
+    spec = _rspec("living", items=[{"name": "x", "kind": "sofa", "x": 1500, "y": 1500,
+                                    "w": 2202, "d": 1008}])
+    _recs, cov = A.collect_confidence([("s.json", spec)], [], [])
+    assert cov["prior_corroboration"].startswith("UNWIRED")
+
+
+def test_collect_confidence_two_docs_second_corroborates_the_bed():
+    # the Structured3D wiring's live shape: doc 1 (drawn symbols) is ambiguous on the bed
+    # footprint, doc 2 (real furniture) uniquely agrees -> the kind doubt drops, and the
+    # coverage line says 2 docs are consulted under the strict cross-doc rule.
+    spec = _rspec("bedroom", items=[{"name": "เตียง", "kind": "bed", "x": 2000, "y": 2000,
+                                     "w": 2134, "d": 1981, "rot": 90,
+                                     "facing_source": "sheet note"}])
+    band = {"lo_mm": [1400, 2600], "hi_mm": [1900, 3100], "aspect": [1.0, 1.7]}
+    ambiguous = {"schema": "interior-ai/kind-priors@0.2",
+                 "kinds": {"bed": dict(band), "rug": dict(band)}}
+    real = {"schema": "interior-ai/kind-priors@0.2",
+            "kinds": {"bed": {"lo_mm": [1444, 2512], "hi_mm": [1950, 3016],
+                              "aspect": [1.0, 1.7]}}}
+    recs, cov = A.collect_confidence([("s.json", spec)], [], [ambiguous])
+    assert any(r["kind"] == "kind" for r in recs)              # doc 1 alone: still uncorroborated
+    recs2, cov2 = A.collect_confidence([("s.json", spec)], [], [ambiguous, real])
+    assert not any(r["kind"] == "kind" for r in recs2)         # doc 2 corroborates -> doubt drops
+    assert cov2["prior_corroboration"].startswith("WIRED (2 corpus docs")
 
 
 def test_round_version_parse():

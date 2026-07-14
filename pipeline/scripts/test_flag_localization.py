@@ -297,6 +297,56 @@ def test_garbage_priors_doc_reports_prior_band_unwired_not_read():
     assert rep["per_class"]["size_off_prior_band"]["n_mutations"] == 0
 
 
+def test_size_off_prior_band_multi_doc_targets_beyond_every_band():
+    # multi-corpus (2026-07-14): anomaly fires only FAR outside EVERY carrying doc, so the
+    # planted long side must clear the WIDEST doc's far-edge -- a mutation sized off doc 1
+    # alone would sit inside doc 2's band and be (correctly) vetoed, scoring a fake MISS.
+    doc2 = {"schema": "interior-ai/kind-priors@0.2",
+            "kinds": {"sofa": {"lo_mm": [600.0, 1100.0], "hi_mm": [699.7, 2590.0],
+                               "aspect": [1.0, 3.7], "n": 100}}}
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["size_off_prior_band"], priors=[_sofa_priors(), doc2])
+    a = rep["per_class"]["size_off_prior_band"]
+    assert a["n_mutations"] == 1 and F._ratio(a["n_hit"], a["n_mutations"]) == 1.0
+    h = a["hits"][0]
+    assert h["caught_by_expected"] and "MEDIUM" in h["got_severity"]
+    assert rep["coverage"]["prior_band"]["status"] == "READ"
+    assert "2 kind-priors docs" in rep["coverage"]["prior_band"]["note"]
+
+
+def test_size_off_prior_band_skips_when_short_bands_do_not_intersect():
+    # docs whose in-band short ranges are disjoint leave NO single-axis window: skip (counted),
+    # never a mutation that plants a second (short-side) error and muddies the answer key.
+    doc2 = {"schema": "interior-ai/kind-priors@0.2",
+            "kinds": {"sofa": {"lo_mm": [1200.0, 1400.0], "hi_mm": [699.7, 2545.3],
+                               "aspect": [1.0, 3.7], "n": 100}}}
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["size_off_prior_band"], priors=[_sofa_priors(), doc2])
+    a = rep["per_class"]["size_off_prior_band"]
+    assert a["n_mutations"] == 0 and a["n_skipped"] == 2
+
+
+def test_report_stem_is_identity_keyed_never_count_keyed():
+    # review finding 2026-07-14 (3 lenses independently): a count-keyed stem let an S3D-solo
+    # run overwrite the committed FloorPlanCAD record, and a kinds-less doc that passes
+    # KP.load overwrite it with an unwired run. Frozen stems fire ONLY for their exact
+    # committed configuration; everything else gets a sources-keyed adhoc stem.
+    fpc = {"schema": "interior-ai/kind-priors@0.2", "kinds": {}}                # no meta.source
+    s3d = {"schema": "interior-ai/kind-priors@0.2", "kinds": {},
+           "meta": {"source": "structured3d"}}
+    dead = {"schema": "interior-ai/kind-priors@0.1"}                            # passes KP.load
+    assert F._report_stem(None) == "flag-localization-2026-07-08"
+    assert F._report_stem(fpc) == "flag-localization-priors-2026-07-13"
+    assert F._report_stem([fpc]) == "flag-localization-priors-2026-07-13"
+    assert F._report_stem([fpc, s3d]) == "flag-localization-priors-multi-2026-07-14"
+    assert F._report_stem(s3d) == "flag-localization-priors-structured3d-adhoc"
+    assert F._report_stem(dead) == "flag-localization-priors-nodocs-degraded-adhoc"
+    # a set with ANY unusable member runs degraded -> never a frozen clean-config stem
+    assert F._report_stem([dead, fpc]) == "flag-localization-priors-floorplancad-degraded-adhoc"
+    assert F._report_stem([fpc, s3d, s3d]) == \
+        "flag-localization-priors-floorplancad+structured3d+structured3d-adhoc"
+
+
 def test_base_builtin_violation_skips_instead_of_faking_a_miss():
     # review finding 2026-07-13: a base piece that already gross-violates its built-in bound
     # carries a base HIGH size record whose _flag_key (severity excluded) equals the mutation's

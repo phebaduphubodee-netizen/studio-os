@@ -334,6 +334,80 @@ def test_output_is_sorted_and_deterministic():
         _assert_schema(r)
 
 
+# ---- multi-corpus prior lane (2026-07-14) --------------------------------------------------------
+def _two_docs():
+    # doc A: a tight drawn-symbol-ish side_table band (far-out below 500*0.6 = 300); doc B: a
+    # wider real-furniture-ish one (far-out below 400*0.6 = 240)
+    a = {"schema": "interior-ai/kind-priors@0.2",
+         "kinds": {"side_table": {"lo_mm": [500, 700], "hi_mm": [500, 700],
+                                  "aspect": [1.0, 1.3]}}}
+    b = {"schema": "interior-ai/kind-priors@0.2",
+         "kinds": {"side_table": {"lo_mm": [400, 700], "hi_mm": [400, 700],
+                                  "aspect": [1.0, 1.7]}}}
+    return a, b
+
+
+def test_prior_band_multi_doc_needs_far_outside_EVERY_doc():
+    # THE loosening-direction pin, both ways: a footprint far outside doc A but INSIDE doc B's
+    # far-margin must NOT flag (a size one corpus vouches for is not anomalous); a footprint
+    # far outside BOTH must still flag.
+    a, b = _two_docs()
+    inside_b = _room_spec("living", [_piece("st", "side_table", 250, 250)])
+    recs = AF.check_room(inside_b, priors=[a, b])
+    assert not [r for r in recs if r["signal"] == "anomaly_flags:size_implausible"]
+    # ...but single-doc behaviour is unchanged (same piece, doc A alone flags)
+    recs_a = AF.check_room(inside_b, priors=a)
+    assert [r for r in recs_a if r["signal"] == "anomaly_flags:size_implausible"]
+    outside_both = _room_spec("living", [_piece("st", "side_table", 200, 200)])
+    recs2 = AF.check_room(outside_both, priors=[a, b])
+    flagged = [r for r in recs2 if r["signal"] == "anomaly_flags:size_implausible"]
+    assert len(flagged) == 1 and flagged[0]["severity"] == "MEDIUM"
+    assert "all 2 corpus bands" in flagged[0]["detail"]
+
+
+def test_prior_band_kind_carried_by_only_one_doc_is_judged_by_it():
+    # doc B does not know 'side_table' at all -> doc A alone governs, exactly as before
+    a, _b = _two_docs()
+    other = {"schema": "interior-ai/kind-priors@0.2",
+             "kinds": {"bed": {"lo_mm": [1400, 2600], "hi_mm": [1900, 3100],
+                               "aspect": [1.0, 1.7]}}}
+    spec = _room_spec("living", [_piece("st", "side_table", 250, 250)])
+    recs = AF.check_room(spec, priors=[a, other])
+    assert [r for r in recs if r["signal"] == "anomaly_flags:size_implausible"]
+
+
+def test_unjudgeable_band_neither_flags_nor_vetoes():
+    # review finding 2026-07-14: a carrying doc whose band is {} (no judgeable axis) must not
+    # gain cross-doc SILENCING power over another corpus's real doubt -- and must still not
+    # flag anything by itself.
+    a, _b = _two_docs()
+    empty_band = {"schema": "interior-ai/kind-priors@0.2", "kinds": {"side_table": {}}}
+    spec = _room_spec("living", [_piece("st", "side_table", 250, 250)])
+    recs = AF.check_room(spec, priors=[a, empty_band])
+    assert [r for r in recs if r["signal"] == "anomaly_flags:size_implausible"]  # A still heard
+    recs2 = AF.check_room(spec, priors=[empty_band])
+    assert not [r for r in recs2 if r["signal"] == "anomaly_flags:size_implausible"]
+    # a doc the footprint sits INSIDE still vetoes exactly as before
+    _a2, b = _two_docs()
+    recs3 = AF.check_room(spec, priors=[a, b, empty_band])
+    assert not [r for r in recs3 if r["signal"] == "anomaly_flags:size_implausible"]
+
+
+def test_priors_docs_tolerant_normalization_and_coverage():
+    a, b = _two_docs()
+    assert AF._priors_docs(None) == []
+    assert AF._priors_docs(a) == [a]
+    assert AF._priors_docs([a, b]) == [a, b]
+    # tolerant: a garbage entry is dropped here (the doubt sweep must not crash) -- the STRICT
+    # normalizer that surfaces garbage as ERROR is kind_priors.as_docs on the confidence path
+    assert AF._priors_docs([a, {"schema": "x"}, "junk"]) == [a]
+    spec = _room_spec("bedroom", [_piece("b", "bed", 1800, 2000)])
+    cov = AF.check_coverage(spec, priors=[a, b])
+    assert cov["prior_band"]["status"] == "READ"
+    assert "2 docs" in cov["prior_band"]["note"]
+    assert AF.check_coverage(spec, priors=[])["prior_band"]["status"] == "UNWIRED"
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:

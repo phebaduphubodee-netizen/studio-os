@@ -451,7 +451,8 @@ def collect_cross_signal(specs, walls, glazing_cands, confirmed):
 
 def collect_anomaly(specs, priors, confirmed):
     """Prior-violating reads (impossible size/aspect for a claimed kind, abnormal count). specs =
-    [(path, spec)]. priors = a kind-priors artifact or None. Returns (records, coverage). The
+    [(path, spec)]. priors = a kind-priors artifact, a LIST of them, or None. Returns
+    (records, coverage). The
     built-in gross bounds always run (READ when any measurable piece); the corpus prior-band lane
     is UNWIRED without a priors artifact -- honestly, never a silent clean pass."""
     out = []
@@ -478,9 +479,17 @@ def collect_anomaly(specs, priors, confirmed):
         no_bound |= set(cov.get("no_bound_kinds") or [])
         per_spec[sf] = {"flags": len(recs)}
     status = "ERROR" if (n_error and not measured_any) else ("READ" if measured_any else "UNWIRED")
+    # USABLE docs decide READ, never bare truthiness (review finding 2026-07-14: a discovered-
+    # but-dead artifact must not read READ while zero corpus bands ran), and the line names the
+    # doc sources so an audited doc set is distinguishable from one a stray file quietly joined.
+    usable = AF._priors_docs(priors)
+    sources = "+".join(str((d.get("meta") or {}).get("source") or "floorplancad")
+                       for d in usable)
     return out, {"status": status, "flags": len(out), "errored": n_error,
-                 "prior_band": "READ" if priors else "UNWIRED (no corpus priors -- gross "
-                 "built-in bounds only)",
+                 "prior_band": (f"READ ({len(usable)} doc{'s' if len(usable) != 1 else ''}: "
+                                f"{sources})" if usable else
+                                "UNWIRED (no usable corpus priors -- gross built-in bounds "
+                                "only)"),
                  "no_bound_kinds": sorted(no_bound), "per_spec": per_spec}
 
 
@@ -490,7 +499,8 @@ def collect_confidence(specs, confirmed, priors=None):
     certain, below the say-unsure threshold. specs = [(path, spec)]. Returns (records, coverage)
     reporting how many fields were owner-signed vs flagged-unsure (the calibration STATE).
 
-    `priors` (a kind-priors artifact or None) feeds the prior_kind CORROBORATION context
+    `priors` (a kind-priors artifact, a LIST of them, or None) feeds the prior_kind
+    CORROBORATION context
     (kind_priors.build_prior_context): a piece whose footprint uniquely hits its claimed kind's
     corpus band reads CORROBORATED (0.70) instead of ASSUMED (0.30). priors=None reproduces the
     context-less behaviour exactly; a context-build failure degrades to context-less and is
@@ -531,14 +541,21 @@ def collect_confidence(specs, confirmed, priors=None):
                         "owner_signed": cov.get("owner_signed"),
                         "flagged_unsure": cov.get("flagged_unsure")}
     status = "ERROR" if (n_error and not assessed_tot) else ("READ" if assessed_tot else "ABSENT")
-    if priors is None:
+    if not priors:
+        # None AND [] (review finding 2026-07-14: an empty doc list can corroborate nothing --
+        # 'WIRED (0 corpus docs)' would claim a dead lane is wired)
         pc = "UNWIRED (no corpus priors -- kind reads cannot be band-corroborated)"
     elif n_ctx_ok == 0:
         # an artifact was supplied but the context failed on EVERY spec -- claiming WIRED here
         # would be a silent pass over a dead corroboration lane (review finding, 2026-07-13)
         pc = "ERROR (prior context failed on every spec)"
     else:
-        pc = "WIRED"
+        docs = list(priors) if isinstance(priors, (list, tuple)) else [priors]
+        sources = "+".join(str((d.get("meta") or {}).get("source") or "floorplancad")
+                           for d in docs if isinstance(d, dict))
+        pc = ("WIRED" if len(docs) == 1 else
+              f"WIRED ({len(docs)} corpus docs: {sources} -- corroboration needs a unique "
+              "agree and NO unique disagree across docs)")
     cov_out = {"status": status, "assessed_fields": assessed_tot, "owner_signed": signed_tot,
                "flagged_unsure": flagged_tot, "errored": n_error,
                "prior_corroboration": pc,
@@ -661,21 +678,30 @@ def _load_walls(layout_dir):
 
 
 def _load_priors(project_dir):
-    """A kind-priors corpus artifact (schema interior-ai/kind-priors@0.1 or @0.2) if one is
-    present under qa/ or knowledge/, else None (-> anomaly's prior-band lane reports UNWIRED
-    honestly; the gross built-in bounds still run). The FloorPlanCAD train artifact lives at
-    qa/priors/kind-priors-floorplancad-train.json (landed 2026-07-13; see qa/priors/README.md)."""
+    """EVERY kind-priors corpus artifact (schema interior-ai/kind-priors@0.1 or @0.2) present
+    under qa/ or knowledge/, as a list in sorted-path order, else None (-> anomaly's prior-band
+    lane reports UNWIRED honestly; the gross built-in bounds still run). ALL discovered docs are
+    returned -- the old first-match-wins return silently ignored (or, sorting earlier, silently
+    REPLACED) every artifact after the first, so landing a second corpus was a no-op landmine.
+    Committed artifacts: qa/priors/kind-priors-floorplancad-train.json (drawn-symbol bands,
+    2026-07-13) + qa/priors/kind-priors-structured3d-first3500.json (real-furniture bands,
+    2026-07-14); see qa/priors/README.md."""
+    docs, seen = [], set()
     for root in (os.path.join(project_dir, "..", "..", "qa"),
                  os.path.join(project_dir, "..", "..", "knowledge")):
         for p in sorted(glob.glob(os.path.join(root, "**", "*kind-priors*.json"), recursive=True)):
+            ap = os.path.normcase(os.path.abspath(p))
+            if ap in seen:
+                continue
+            seen.add(ap)
             try:
                 doc = _load(p)
             except Exception:
                 continue
             if isinstance(doc, dict) and str(doc.get("schema", "")).startswith(
                     "interior-ai/kind-priors"):
-                return doc
-    return None
+                docs.append(doc)
+    return docs or None
 
 
 def _round_version(d):

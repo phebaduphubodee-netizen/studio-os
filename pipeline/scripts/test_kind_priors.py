@@ -267,6 +267,175 @@ def test_context_case_variant_agreement_still_corroborates():
     assert ctx == {"s": {"prior_kind": "Sofa"}}
 
 
+# ---- multi-corpus (2026-07-14 wiring: FloorPlanCAD + Structured3D live together) ----------
+def test_as_docs_normalizes_none_dict_and_list():
+    doc = _p({"sofa": _band((514, 1122), (700, 2546), (1.0, 3.6))})
+    assert kind_priors.as_docs(None) == []
+    assert kind_priors.as_docs(doc) == [doc]
+    assert kind_priors.as_docs([doc, doc]) == [doc, doc]
+
+
+def test_as_docs_raises_on_a_garbage_entry_never_shrinks_silently():
+    # a dead doc must surface as an ERROR in the caller's coverage (the 2026-07-13 dead-lane
+    # finding) -- silently dropping it would let a broken artifact read as WIRED-and-clean.
+    doc = _p({"sofa": _band((514, 1122), (700, 2546), (1.0, 3.6))})
+    for garbage in ({"schema": "interior-ai/kind-priors@0.2"}, "not-a-doc", 42):
+        try:
+            kind_priors.as_docs([doc, garbage])
+            raise AssertionError(f"as_docs accepted {garbage!r}")
+        except ValueError:
+            pass
+
+
+def test_context_single_doc_list_reproduces_dict_behaviour():
+    priors = _p({"sofa": _band((514, 1122), (700, 2546), (1.0, 3.6)),
+                 "urinal": _band((220, 451), (290, 496), (1.0, 1.56))})
+    pieces = [{"name": "โซฟา", "kind": "sofa", "w": 2202, "d": 1008},
+              {"name": "st", "kind": "side_table", "w": 300, "d": 300}]
+    assert (kind_priors.build_prior_context(pieces, [priors])
+            == kind_priors.build_prior_context(pieces, priors))
+
+
+def test_context_second_doc_corroborates_when_first_is_ambiguous():
+    # the Structured3D bed case: the drawn-symbol doc is ambiguous on the footprint, the
+    # real-furniture doc uniquely agrees -- corroboration must fire (agree + no disagree).
+    band = _band((1400, 2100), (1900, 2400), (1.0, 1.7))
+    ambiguous = _p({"bed": dict(band), "rug": dict(band)})     # 2 candidates -> None
+    real = _p({"bed": _band((1444, 2512), (1950, 3016), (1.0, 1.7))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "เตียง", "kind": "bed", "w": 2134, "d": 1981}], [ambiguous, real])
+    assert ctx == {"เตียง": {"prior_kind": "bed"}}
+
+
+def test_context_any_unique_disagreement_blocks_corroboration():
+    # THE multi-corpus anti-flattering pin: one doc uniquely agreeing must NOT outvote another
+    # doc uniquely suggesting a DIFFERENT kind -- counter-evidence from an independent corpus
+    # blocks the 0.70 and stays visible (the disagreeing suggestion is what gets injected).
+    agreeing = _p({"bed": _band((1444, 2512), (1950, 3016), (1.0, 1.7))})
+    disagreeing = _p({"altar": _band((1900, 2300), (1950, 2200), (1.0, 1.2))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "เตียง", "kind": "bed", "w": 2134, "d": 1981}], [agreeing, disagreeing])
+    assert ctx == {"เตียง": {"prior_kind": "altar"}}
+
+
+def test_context_alias_SOURCE_keyed_doc_agrees_never_fake_disagrees():
+    # review finding 2026-07-14: a doc whose own vocabulary carries the claimed kind (keyed
+    # 'armchair', not the alias target 'chair') suggested 'armchair', landed in the
+    # DISAGREEMENT branch, and the injected string lowercase-equalled the claim -> read as
+    # CORROBORATED through the wrong door. Saying the claim's own name IS agreement.
+    armchair_doc = _p({"armchair": _band((500, 800), (600, 1000), (1.0, 1.6))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "ch", "kind": "armchair", "w": 700, "d": 900}], [armchair_doc])
+    assert ctx == {"ch": {"prior_kind": "armchair"}}       # agreement branch (claimed string)
+    # ...and a GENUINE unique disagreement from a second doc still blocks the 0.70 and is
+    # what gets injected -- it can never be outvoted by the agreement:
+    table_doc = _p({"altar": _band((650, 750), (850, 950), (1.0, 1.5))})
+    ctx2 = kind_priors.build_prior_context(
+        [{"name": "ch", "kind": "armchair", "w": 700, "d": 900}], [armchair_doc, table_doc])
+    assert ctx2 == {"ch": {"prior_kind": "altar"}}
+    # invariant restored: a disagreement injection never lowercase-equals the claim
+    assert ctx2["ch"]["prior_kind"].lower() != "armchair"
+
+
+def test_context_ambiguity_in_every_doc_still_injects_nothing():
+    band = _band((1400, 2600), (1900, 3100), (1.0, 1.7))
+    doc1 = _p({"bed": dict(band), "rug": dict(band)})
+    doc2 = _p({"bed": dict(band), "mat": dict(band)})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "เตียง", "kind": "bed", "w": 2134, "d": 1981}], [doc1, doc2])
+    assert ctx == {}
+
+
+# ---- derive: source + max_dispersion (Structured3D derivation, 2026-07-14) ----------------
+def test_derive_source_prefixes_provenance_and_records_meta(tmp_path):
+    d = _gt(tmp_path, "s", "mm", _tables())
+    pr = kind_priors.derive([d], min_support=50, source="structured3d")
+    assert pr["kinds"]["table"]["provenance"].startswith("structured3d ")
+    assert pr["meta"]["source"] == "structured3d"
+
+
+def test_derive_default_output_is_byte_compatible(tmp_path):
+    # the committed FloorPlanCAD artifact must stay reproducible: default derive() output
+    # carries NO new keys -- no meta.source, no excluded_degenerate, no params.max_dispersion.
+    d = _gt(tmp_path, "s", "mm", _tables())
+    pr = kind_priors.derive([d], min_support=50)
+    assert "source" not in pr["meta"]
+    assert "excluded_degenerate" not in pr
+    assert "max_dispersion" not in pr["meta"]["params"]
+    assert pr["kinds"]["table"]["provenance"].startswith("floorplancad ")
+
+
+def test_derive_max_dispersion_refuses_a_mixed_population(tmp_path):
+    # a 'sofa' class whose labels mix cushion fragments (~100x150) with real sofas
+    # (~900x2000) is NOT one size population: 10-90 short-side ratio ~9x. It must land in
+    # excluded_degenerate WITH its measured ratios (dropped-and-counted), while a tight kind
+    # in the same corpus keeps its band.
+    els = (_tables(n=30, w0=150, d0=100, spread=5.0, kind="sofa")
+           + _tables(n=30, w0=2000, d0=900, spread=50.0, kind="sofa")
+           + _tables(n=60, w0=2000, d0=1500, spread=100.0, kind="bed"))
+    d = _gt(tmp_path, "mix", "mm", els)
+    pr = kind_priors.derive([d], min_support=50, max_dispersion=3.0)
+    assert "sofa" not in pr["kinds"] and "bed" in pr["kinds"]
+    deg = pr["excluded_degenerate"]["sofa"]
+    assert deg["n"] == 60 and deg["lo_disp"] > 3.0
+    assert pr["meta"]["params"]["max_dispersion"] == 3.0
+    # without the gate the same corpus keeps the degenerate band -- the flag is opt-in
+    pr2 = kind_priors.derive([d], min_support=50)
+    assert "sofa" in pr2["kinds"] and "excluded_degenerate" not in pr2
+
+
+def test_derive_counts_unlabelled_separately_from_malformed(tmp_path):
+    # review finding 2026-07-14: 371k unlabelled Structured3D decor objects were counted as
+    # 'malformed', misstating corpus health. Kindless -> unlabelled; bad dims -> malformed;
+    # a fully-labelled corpus (FloorPlanCAD shape) emits NO unlabelled key (byte-compat).
+    els = _tables() + [{"id": "u1", "x": 0, "y": 0, "w": 500, "d": 500},          # no kind
+                       {"id": "m1", "kind": "table", "x": 0, "y": 0, "w": -5, "d": 500}]
+    d = _gt(tmp_path, "mix", "mm", els)
+    pr = kind_priors.derive([d], min_support=50)
+    assert pr["meta"]["n_elements_unlabelled"] == 1
+    assert pr["meta"]["n_elements_malformed"] == 1
+    (tmp_path / "clean").mkdir()
+    d2 = _gt(tmp_path / "clean", "s", "mm", _tables())
+    pr2 = kind_priors.derive([d2], min_support=50)
+    assert "n_elements_unlabelled" not in pr2["meta"]
+
+
+def test_cli_flag_without_value_exits_with_usage_not_traceback(tmp_path):
+    import pytest
+    out = str(tmp_path / "out.json")
+    d = _gt(tmp_path, "s", "mm", _tables())
+    for argv in (["kind_priors.py", "--derive", out, d, "--source"],
+                 ["kind_priors.py", "--derive", out, d, "--max-dispersion"],
+                 ["kind_priors.py", "--derive", out, d, "--max-dispersion", "not-a-float"]):
+        with pytest.raises(SystemExit):
+            kind_priors.main(list(argv))
+
+
+def test_committed_structured3d_artifact_frozen_constants():
+    # frozen pin on the LANDED artifact (mirrors the unit-adoption U7 pattern): the 8 kept
+    # kinds, the 5 dispersion-refused kinds, and the bed band that corroborates the v4 read.
+    # A silent re-derive that changes any of these must fail the suite, not drift quietly.
+    fp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                      "qa", "priors", "kind-priors-structured3d-first3500.json")
+    with open(fp, encoding="utf-8") as fh:
+        doc = json.load(fh)
+    assert doc["schema"] == "interior-ai/kind-priors@0.2"
+    assert doc["meta"]["source"] == "structured3d"
+    assert sorted(doc["kinds"]) == ["bathtub", "bed", "chair", "desk", "dresser",
+                                    "nightstand", "refrigerator", "sink"]
+    assert sorted(doc["excluded_degenerate"]) == ["cabinet", "sofa", "table",
+                                                  "toilet", "tv_panel"]
+    bed = doc["kinds"]["bed"]
+    assert bed["n"] == 5481
+    assert bed["lo_mm"] == [1444.5, 2511.8] and bed["hi_mm"] == [1950.0, 3015.5]
+    # no curve signatures: Structured3D bands are size-only (no reader curve lane ran)
+    assert not any("curve" in b for b in doc["kinds"].values())
+    # corpus health stated honestly: 371k decor objects are UNLABELLED (by design), 0 malformed
+    assert doc["meta"]["n_elements_unlabelled"] == 371059
+    assert doc["meta"]["n_elements_malformed"] == 0
+    assert doc["meta"]["n_elements_sampled"] == 73346
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main([__file__, "-q"]))

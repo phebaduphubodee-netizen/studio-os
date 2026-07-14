@@ -323,8 +323,8 @@ def mut_size_off_prior_band(spec, loc, confirmed=None, priors=None):
     if orig is None:
         return None
     band_kind = AF.prior_band_kind(orig)
-    band = AF._prior_band(priors, band_kind) if band_kind else None
-    if band is None:
+    bands = AF._prior_bands(priors, band_kind) if band_kind else []
+    if not bands:
         return None
     name = it.get("name")
     if name is None:
@@ -335,20 +335,32 @@ def mut_size_off_prior_band(spec, loc, confirmed=None, priors=None):
         signed = None
     if signed is not None and signed == orig:
         return None                          # owner-signed identity -> anomaly suppresses; not eligible
-    lo_band, hi_band = band.get("lo_mm"), band.get("hi_mm")
-    if not (isinstance(lo_band, (list, tuple)) and isinstance(hi_band, (list, tuple))
-            and len(lo_band) == 2 and len(hi_band) == 2):
-        return None
-    try:                                     # hostile band edges (strings/None) must SKIP this
-        lo0, lo1 = float(lo_band[0]), float(lo_band[1])   # item, never crash the whole F7 run --
-        hi1 = float(hi_band[1])              # the generator runs OUTSIDE the guarded collectors
-    except (TypeError, ValueError):
-        return None
+    # MULTI-CORPUS: the anomaly lane fires only FAR outside EVERY carrying doc, so the planted
+    # long side must clear EVERY doc's far-edge (max of hi edges) and the in-band short side
+    # must sit in the INTERSECTION of the docs' short bands. No intersection -> skip (counted,
+    # never a fake catch). One doc reproduces the old arithmetic exactly.
+    lo0 = lo1 = hi1 = None
+    for band in bands:
+        lo_band, hi_band = band.get("lo_mm"), band.get("hi_mm")
+        if not (isinstance(lo_band, (list, tuple)) and isinstance(hi_band, (list, tuple))
+                and len(lo_band) == 2 and len(hi_band) == 2):
+            return None
+        try:                                 # hostile band edges (strings/None) must SKIP this
+            b_lo0, b_lo1 = float(lo_band[0]), float(lo_band[1])   # item, never crash the run --
+            b_hi1 = float(hi_band[1])        # the generator runs OUTSIDE the guarded collectors
+        except (TypeError, ValueError):
+            return None
+        lo0 = b_lo0 if lo0 is None else max(lo0, b_lo0)
+        lo1 = b_lo1 if lo1 is None else min(lo1, b_lo1)
+        hi1 = b_hi1 if hi1 is None else max(hi1, b_hi1)
     dims = AF._dims(it)
     if dims is None:
         return None
-    if AF._far_outside(dims[0], lo_band) or AF._far_outside(dims[1], hi_band):
-        return None                          # already far-out -> the base flag exists; not a NEW catch
+    if all((AF._far_outside(dims[0], b.get("lo_mm")) or AF._far_outside(dims[1], b.get("hi_mm")))
+           for b in bands):
+        return None                          # already far-out of EVERY doc -> base flag exists; not a NEW catch
+    if lo0 > lo1:
+        return None                          # docs' short bands do not intersect -> no window
     target_long = hi1 * (1.0 + AF.PRIOR_FAR) * 1.10
     target_short = max(lo0, min(target_long / 2.0, lo1))
     b = AF.BUILTIN_BOUNDS.get(orig)
@@ -513,12 +525,18 @@ def _coverage(base_specs, confirmed, walls, glazing_cands, priors=None):
         cov[collector] = {"status": _fold_status(statuses), "per_spec": statuses, "note": note}
     # READ requires a USABLE artifact shape (same probe anomaly_flags.check_coverage applies) --
     # `priors is not None` alone would claim READ off a garbage doc while every mutation skips.
-    prior_usable = isinstance(priors, dict) and isinstance(priors.get("kinds"), dict)
+    usable_docs = AF._priors_docs(priors)
     cov["prior_band"] = {
-        "status": "READ" if prior_usable else "UNWIRED",
-        "note": ("a kind-priors artifact feeds anomaly's corpus band + confidence's prior_kind "
-                 "corroboration (and the size_off_prior_band class)" if prior_usable else
-                 ("a priors value was supplied but is NOT a usable kind-priors doc (no kinds "
+        "status": "READ" if usable_docs else "UNWIRED",
+        # the 1-doc string is FROZEN verbatim: the committed 2026-07-13 single-corpus report
+        # regenerates byte-identically under this stem (same rule as the frozen stems below)
+        "note": (("a kind-priors artifact feeds anomaly's corpus band + confidence's "
+                  "prior_kind corroboration (and the size_off_prior_band class)")
+                 if len(usable_docs) == 1 else
+                 (f"{len(usable_docs)} kind-priors docs feed anomaly's corpus band + "
+                  "confidence's prior_kind corroboration (and the size_off_prior_band class)")
+                 if usable_docs else
+                 ("a priors value was supplied but holds NO usable kind-priors doc (no kinds "
                   "dict) -- the corpus tier did not run" if priors is not None else
                   "no kind-priors artifact -- the corpus tier is unwired; size_off_prior_band "
                   "skips every item (reported unwired, never a silent pass)"))}
@@ -556,9 +574,9 @@ def run_localization(base_specs, confirmed, classes=None, walls=None, glazing_ca
     base_specs = [(name, spec_dict)] (name is display-only; rebuild matches by room.type). confirmed
     = the owner confirmed[] ledger list. classes = which mutation classes to run (default ALL).
     walls/glazing_cands feed cross_signal's facade checks (optional; absent -> those checks abstain).
-    priors = a kind-priors artifact or None: wired into anomaly + confidence exactly as self_audit
-    wires it (so F7 measures the live-suite configuration) and into the size_off_prior_band
-    generator; None reproduces the priors-less suite bit-for-bit.
+    priors = a kind-priors artifact, a LIST of them, or None: wired into anomaly + confidence
+    exactly as self_audit wires it (so F7 measures the live-suite configuration) and into the
+    size_off_prior_band generator; None reproduces the priors-less suite bit-for-bit.
 
     DELTA: base_flags per spec computed once (static collectors on the unmutated spec + a base-vs-base
     rebuild, which is empty). For each (spec, item, class): build the one-field mutation, run the SAME
@@ -879,6 +897,35 @@ def _print_table(report):
               f"{n_mut:>4} {n_skip:>5}")
 
 
+def _report_stem(priors):
+    """STEM = CONFIG, keyed by doc IDENTITY (meta.source), never by count (review finding
+    2026-07-14: count-keyed stems let an S3D-solo run overwrite the committed FloorPlanCAD
+    record, and a kinds-less doc that passes KP.load overwrite it with an unwired run).
+    Frozen stems exist ONLY for the exact configurations whose records are committed:
+      None                          -> flag-localization-2026-07-08          (baseline)
+      [floorplancad]                -> flag-localization-priors-2026-07-13   (FPC wiring)
+      [floorplancad, structured3d]  -> flag-localization-priors-multi-2026-07-14
+    Any other configuration (a different doc, a doc set with a stray/unusable member, a
+    future third corpus) gets its own sources-keyed adhoc stem and can never clobber a
+    frozen record."""
+    if priors is None:
+        return "flag-localization-2026-07-08"
+    entries = list(priors) if isinstance(priors, (list, tuple)) else [priors]
+    usable = AF._priors_docs(priors)
+    sources = sorted(str((d.get("meta") or {}).get("source") or "floorplancad")
+                     for d in usable)
+    if len(usable) != len(entries):
+        # a supplied set with ANY unusable member runs degraded (the confidence context path
+        # errors on it) -- its report must never claim a frozen clean-config stem
+        return ("flag-localization-priors-" + ("+".join(sources) if sources else "nodocs")
+                + "-degraded-adhoc")
+    if sources == ["floorplancad"]:
+        return "flag-localization-priors-2026-07-13"
+    if sources == ["floorplancad", "structured3d"]:
+        return "flag-localization-priors-multi-2026-07-14"
+    return "flag-localization-priors-" + "+".join(sources) + "-adhoc"
+
+
 def main():
     args = sys.argv[1:]
     if not args or args[0] in ("-h", "--help"):
@@ -912,11 +959,7 @@ def main():
     repo_root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     out_dir = os.path.join(repo_root, "qa", "reports")
     os.makedirs(out_dir, exist_ok=True)
-    # priors-less runs keep the original frozen stem (the 2026-07-08 baseline record stays
-    # reproducible + byte-comparable); priors-wired runs get their own stem so wiring the corpus
-    # tier can never silently overwrite the baseline report.
-    stem = ("flag-localization-2026-07-08" if priors is None
-            else "flag-localization-priors-2026-07-13")
+    stem = _report_stem(priors)
     md_path = os.path.join(out_dir, stem + ".md")
     json_path = os.path.join(out_dir, stem + ".json")
     with open(md_path, "w", encoding="utf-8") as fh:

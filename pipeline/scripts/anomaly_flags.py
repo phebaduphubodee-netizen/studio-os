@@ -194,16 +194,33 @@ def _is_kind_signed(piece, confirmed):
 
 
 # ---- prior-band (corpus) helpers -------------------------------------------------------------
+def _priors_docs(priors):
+    """Normalize a priors argument (None | one doc | list of docs) to a list of USABLE docs.
+    TOLERANT (unlike kind_priors.as_docs, which raises): an oddly shaped entry is dropped,
+    matching this module's long-standing contract that a malformed priors value makes the
+    prior lane not fire rather than crash a doubt sweep."""
+    if priors is None:
+        return []
+    entries = list(priors) if isinstance(priors, (list, tuple)) else [priors]
+    return [d for d in entries
+            if isinstance(d, dict) and isinstance(d.get("kinds"), dict)]
+
+
+def _prior_bands(priors, kind):
+    """The kind's band dict from EVERY usable doc that carries it (possibly empty). Order =
+    the caller's doc order (self_audit discovery sorts paths, so it is deterministic)."""
+    out = []
+    for doc in _priors_docs(priors):
+        b = doc["kinds"].get(kind)
+        if isinstance(b, dict):
+            out.append(b)
+    return out
+
+
 def _prior_band(priors, kind):
-    """The kind's band dict from a kind_priors artifact, or None.  Tolerant of a missing/oddly
-    shaped priors doc (returns None -> the prior lane simply does not fire)."""
-    if not isinstance(priors, dict):
-        return None
-    kinds = priors.get("kinds")
-    if not isinstance(kinds, dict):
-        return None
-    b = kinds.get(kind)
-    return b if isinstance(b, dict) else None
+    """Back-compat single-band view: the FIRST carrying doc's band, or None."""
+    bands = _prior_bands(priors, kind)
+    return bands[0] if bands else None
 
 
 def _far_outside(val, band):
@@ -245,21 +262,40 @@ def _check_size(room, piece, kind, lo, hi, priors):
                 "kind -- the module never re-labels it for you")
     # prior-band (corpus) lane -- only if built-in bounds passed / kind has no built-in bound.
     # Band key goes through the vocabulary policy: exempt kinds abstain, aliases re-key.
+    # MULTI-CORPUS rule: fire only when the footprint is FAR outside EVERY carrying doc's
+    # band -- a size that a real-furniture corpus vouches for is not anomalous just because
+    # a drawn-symbol corpus draws that kind differently (and vice versa). A band with NO
+    # judgeable axis neither flags nor vetoes (review finding 2026-07-14: an empty {} band
+    # in one doc must not gain cross-doc silencing power over another corpus's real doubt).
     band_kind = prior_band_kind(kind)
-    band = _prior_band(priors, band_kind) if band_kind else None
-    if band is not None:
+    bands = _prior_bands(priors, band_kind) if band_kind else []
+    if bands:
         as_alias = f" (checked against the corpus '{band_kind}' band)" if band_kind != kind else ""
-        lo_band, hi_band = band.get("lo_mm"), band.get("hi_mm")
-        far = []
-        if isinstance(lo_band, (list, tuple)) and _far_outside(lo, lo_band):
-            far.append(f"short {lo:.0f}mm outside band {lo_band}")
-        if isinstance(hi_band, (list, tuple)) and _far_outside(hi, hi_band):
-            far.append(f"long {hi:.0f}mm outside band {hi_band}")
-        if far:
+        per_doc_far = []
+        for band in bands:
+            lo_band, hi_band = band.get("lo_mm"), band.get("hi_mm")
+            far, judged = [], False
+            if isinstance(lo_band, (list, tuple)):
+                judged = True
+                if _far_outside(lo, lo_band):
+                    far.append(f"short {lo:.0f}mm outside band {lo_band}")
+            if isinstance(hi_band, (list, tuple)):
+                judged = True
+                if _far_outside(hi, hi_band):
+                    far.append(f"long {hi:.0f}mm outside band {hi_band}")
+            if not judged:
+                continue                    # unjudgeable band: no voice either way
+            if not far:
+                per_doc_far = []
+                break                       # inside this corpus -> no doubt
+            per_doc_far.append(far)
+        if per_doc_far:
+            n_docs = len(per_doc_far)
+            all_docs = (f"; far outside all {n_docs} corpus bands" if n_docs > 1 else "")
             return _rec(
                 "size_implausible", "MEDIUM", 0.55, room, [_name(piece)],
                 f"'{_name(piece)}' typed '{kind}' is far outside the corpus size band for a "
-                f"{kind} ({'; '.join(far)}){as_alias}",
+                f"{kind} ({'; '.join(per_doc_far[0])}){as_alias}{all_docs}",
                 "the footprint sits well beyond the tight corpus quantile band for this claimed "
                 "kind -- a softer identity/dimension doubt than a gross-bounds violation",
                 "confirm the dimensions or the identity against the sheet")
@@ -282,16 +318,27 @@ def _check_aspect(room, piece, kind, lo, hi, aspect, priors):
                 "elongated for the claimed kind".format(k=kind),
                 "confirm the dimensions, or re-identify the piece -- a long-thin blob may be "
                 "linework mis-clustered as furniture, not a real {k}".format(k=kind))
+    # MULTI-CORPUS rule mirrors _check_size: fire only when far outside EVERY JUDGING doc's
+    # aspect band; a doc whose aspect band is missing/unjudgeable has no voice either way
+    # (review finding 2026-07-14 -- an unjudgeable band must not veto another corpus).
     band_kind = prior_band_kind(kind)
-    band = _prior_band(priors, band_kind) if band_kind else None
-    if band is not None:
+    bands = _prior_bands(priors, band_kind) if band_kind else []
+    if bands:
         as_alias = f" (corpus '{band_kind}' band)" if band_kind != kind else ""
-        asp_band = band.get("aspect")
-        if isinstance(asp_band, (list, tuple)) and _far_outside(aspect, asp_band):
+        judged_bands = [b for b in bands if isinstance(b.get("aspect"), (list, tuple))]
+        outside_all = bool(judged_bands)
+        for band in judged_bands:
+            if not _far_outside(aspect, band["aspect"]):
+                outside_all = False
+                break
+        if outside_all:
+            n_docs = len(judged_bands)
+            all_docs = (f" -- far outside all {n_docs} corpus bands" if n_docs > 1 else "")
             return _rec(
                 "aspect_implausible", "MEDIUM", 0.55, room, [_name(piece)],
                 f"'{_name(piece)}' typed '{kind}' has aspect {aspect:.1f}:1, far outside the "
-                f"corpus aspect band {asp_band} for a {kind}{as_alias}",
+                f"corpus aspect band {judged_bands[0].get('aspect')} for a {kind}"
+                f"{as_alias}{all_docs}",
                 "the proportion sits well beyond the corpus aspect band for this claimed kind",
                 "confirm the dimensions or the identity against the sheet")
     return None
@@ -386,8 +433,11 @@ def check_coverage(spec, priors=None, params=None):
             if kind not in BUILTIN_BOUNDS:
                 no_bound.add(kind)
     builtin_status = "READ" if measured else "ABSENT"
-    prior_wired = _prior_band(priors, "__probe__") is not None or (
-        isinstance(priors, dict) and isinstance(priors.get("kinds"), dict))
+    docs = _priors_docs(priors)
+    prior_wired = bool(docs)
+    # doc IDENTITY, not just count (review finding 2026-07-14: a count alone cannot tell an
+    # audited doc set from one a stray artifact quietly joined)
+    doc_sources = [str((d.get("meta") or {}).get("source") or "floorplancad") for d in docs]
     return {
         "schema": SCHEMA,
         "size_implausible": {"status": builtin_status, "measured_pieces": measured},
@@ -396,7 +446,10 @@ def check_coverage(spec, priors=None, params=None):
                           "containers": counted_containers},
         "prior_band": {
             "status": "READ" if prior_wired else "UNWIRED",
-            "note": (("corpus priors wired -- band-precision READ; exempt (repo class broader "
+            "note": ((f"corpus priors wired ({len(docs)} doc{'s' if len(docs) != 1 else ''}: "
+                      f"{'+'.join(doc_sources)}"
+                      f"{'; a flag needs FAR-outside on EVERY carrying doc' if len(docs) > 1 else ''}"
+                      ") -- band-precision READ; exempt (repo class broader "
                       f"than corpus symbol class, skipped-not-passed): {sorted(PRIOR_EXEMPT_KINDS)}; "
                       f"aliases: {PRIOR_KIND_ALIASES}") if prior_wired else
                      "corpus priors absent -- gross built-in bounds only, band-precision unwired")},
