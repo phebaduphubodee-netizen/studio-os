@@ -35,3 +35,6 @@ knowledge/_inbox/discord/**/*.rar
 # two image attachments whose Thai CDN filename lost its extension (still images, keep local)
 knowledge/_inbox/discord/**/files/145779_*
 knowledge/_inbox/discord/**/files/383192_*
+# mutation_probe.py parks the reader's pre-probe bytes here while it mutates; a killed probe
+# leaves it behind ON PURPOSE (hand-restore evidence) — it must never be sweepable into a commit
+*.probe-backup
