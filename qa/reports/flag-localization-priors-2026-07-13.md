@@ -1,6 +1,6 @@
 # flag-localization (benchmark F7) -- PRJ-2026-002_c001-house
 
-**macro localization-recall 1.0** (by-expected 1.0; 6/7 should-flag lanes exercised)  ·  on-target precision 0.949  ·  overfire mutations 0  ·  blind classes: none  ·  unwired (never-exercised) classes: size_off_prior_band  ·  backstopped-only classes: none
+**macro localization-recall 1.0** (by-expected 1.0; 7/7 should-flag lanes exercised)  ·  on-target precision 0.952  ·  overfire mutations 0  ·  blind classes: none  ·  unwired (never-exercised) classes: none  ·  backstopped-only classes: none
 
 > Synthetic-answer-key lane: the 'truth' is MINTED by injecting one deliberate error into one item of an otherwise-good read, so recall/precision measure whether the tier-1 self-doubt suite FINGERS the broken item on THIS project. This is NOT a corpus benchmark and does not measure generalisation -- its sibling `benchmark_reader.py` is the have-ground-truth corpus lane (annotated Structured3D / FloorPlanCAD).
 
@@ -9,10 +9,10 @@
 | class | recall | precision | caught-by-expected | severity-match | n_mut | n_skip |
 |---|---|---|---|---|---|---|
 | facing_flip_directional | 1.0 | 0.714 | 1.0 | 1.0 | 5 | 21 |
-| kind_change_unsigned | 1.0 | 0.929 | 1.0 | 1.0 | 26 | 0 |
+| kind_change_unsigned | 1.0 | 0.931 | 1.0 | 1.0 | 26 | 0 |
 | kind_change_vs_signature | 1.0 | 0.929 | 1.0 | 0.0 | 26 | 0 |
 | size_implausible | 1.0 | 1.0 | 1.0 | 1.0 | 20 | 6 |
-| size_off_prior_band | None | None | None | n/a | 0 | 26 |
+| size_off_prior_band | 1.0 | 1.0 | 1.0 | 1.0 | 4 | 22 |
 | rot_stripped_directional | 1.0 | 0.667 | 1.0 | n/a | 1 | 25 |
 | zone_below_grade_unsigned | 1.0 | 1.0 | 1.0 | 1.0 | 26 | 0 |
 | facing_flip_box expect NO flag | n/a (nonflag) | n/a | overfire 0/19 | - | 19 | 7 |
@@ -57,7 +57,7 @@ recall = mutations whose planted error raised a NEW on-target flag by ANY collec
 - **cross_signal**: READ
 - **anomaly**: READ
 - **confidence**: READ
-- **prior_band**: UNWIRED — no kind-priors artifact -- the corpus tier is unwired; size_off_prior_band skips every item (reported unwired, never a silent pass)
+- **prior_band**: READ — a kind-priors artifact feeds anomaly's corpus band + confidence's prior_kind corroboration (and the size_off_prior_band class)
 - **rebuild_diff**: READ — F7 supplies the prior round synthetically (unmutated base) per mutation; a REAL prior reading round is absent on this single-round project -- the diff lane is exercised, not idle
 
 READ = the lane had eligible inputs; UNWIRED = ran but nothing eligible (never a pass); ABSENT = no input; ERROR = the lane raised (a blind spot in the harness itself). A low recall under UNWIRED/ERROR coverage means *did not look*, not *clean*.

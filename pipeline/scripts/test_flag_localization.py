@@ -220,3 +220,91 @@ def test_by_expected_recall_is_surfaced():
     assert a["n_caught_by_expected"] == a["n_hit"]
     assert s["macro_recall_by_expected"] == s["macro_recall"]
     assert "zone_below_grade_unsigned" not in s["backstopped_classes"]
+
+
+# ---- size_off_prior_band: the corpus tier's ADDED catching power (2026-07-13 wiring) ----
+def _sofa_priors():
+    # a corpus band the base sofa (2000x900) sits comfortably INSIDE; the mutation must push the
+    # long side FAR out of it (>2546*1.4) while staying inside the built-in sofa bound (<=4000).
+    return {"schema": "interior-ai/kind-priors@0.1",
+            "kinds": {"sofa": {"lo_mm": [514.1, 1121.9], "hi_mm": [699.7, 2545.3],
+                               "aspect": [1.0, 3.5612903225806454], "n": 310}}}
+
+
+def test_size_off_prior_band_caught_by_anomaly_at_medium():
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["size_off_prior_band"], priors=_sofa_priors())
+    a = rep["per_class"]["size_off_prior_band"]
+    assert a["n_mutations"] == 1                       # sofa banded; coffee_table has no band
+    assert a["n_skipped"] == 1
+    assert F._ratio(a["n_hit"], a["n_mutations"]) == 1.0
+    h = a["hits"][0]
+    assert h["caught_by_expected"] and "anomaly" in h["caught_by"]
+    assert "MEDIUM" in h["got_severity"]
+    assert rep["coverage"]["prior_band"]["status"] == "READ"
+
+
+def test_size_off_prior_band_without_priors_is_unwired_never_a_pass():
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["size_off_prior_band"])   # priors=None
+    a = rep["per_class"]["size_off_prior_band"]
+    assert a["n_mutations"] == 0 and a["n_skipped"] == 2         # every item skips
+    s = rep["summary"]
+    assert "size_off_prior_band" in s["unwired_classes"]         # honest 'did not look'
+    assert "size_off_prior_band" not in s["blind_classes"]
+    assert rep["coverage"]["prior_band"]["status"] == "UNWIRED"
+
+
+def test_size_off_prior_band_skips_kinds_with_no_builtin_silent_window():
+    # a band whose far-edge exceeds the built-in max_long leaves NO window where only the corpus
+    # tier fires -- the item must SKIP (counted), never mint a mutation the built-in bound would
+    # catch anyway (that would double-measure size_implausible, not the corpus tier).
+    priors = {"schema": "interior-ai/kind-priors@0.1",
+              "kinds": {"sofa": {"lo_mm": [514.1, 1121.9], "hi_mm": [699.7, 3200.0],
+                                 "aspect": [1.0, 3.56], "n": 310}}}   # 3200*1.4*1.1 > builtin 4000
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["size_off_prior_band"], priors=priors)
+    a = rep["per_class"]["size_off_prior_band"]
+    assert a["n_mutations"] == 0 and a["n_skipped"] == 2
+
+
+def test_box_flip_stays_silent_with_priors_wired():
+    # the over-fire probe survives the corpus tier: wiring priors must not make the render-inert
+    # box-180 flip raise anything (the base table sits INSIDE its band both before and after).
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["facing_flip_box"], priors=_sofa_priors())
+    assert rep["summary"]["overfire_mutations"] == 0
+
+
+def test_hostile_band_edges_skip_the_item_never_crash_the_run():
+    # review finding 2026-07-13: the generator runs OUTSIDE the guarded collector calls, so a
+    # hostile artifact (string band edges) must SKIP the item, not TypeError the whole F7 run.
+    hostile = {"schema": "interior-ai/kind-priors@0.1",
+               "kinds": {"sofa": {"lo_mm": ["x", None], "hi_mm": [700, "?"],
+                                  "aspect": [1.0, 3.6], "n": 310}}}
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["size_off_prior_band"], priors=hostile)
+    a = rep["per_class"]["size_off_prior_band"]
+    assert a["n_mutations"] == 0 and a["n_skipped"] == 2
+
+
+def test_garbage_priors_doc_reports_prior_band_unwired_not_read():
+    # review finding 2026-07-13: coverage must not claim READ off `priors is not None` alone --
+    # a doc with no usable kinds dict means the corpus tier DID NOT RUN.
+    rep = F.run_localization([("sitting_room", base_spec())], [],
+                             classes=["size_off_prior_band"], priors={"schema": "junk"})
+    assert rep["coverage"]["prior_band"]["status"] == "UNWIRED"
+    assert rep["per_class"]["size_off_prior_band"]["n_mutations"] == 0
+
+
+def test_base_builtin_violation_skips_instead_of_faking_a_miss():
+    # review finding 2026-07-13: a base piece that already gross-violates its built-in bound
+    # carries a base HIGH size record whose _flag_key (severity excluded) equals the mutation's
+    # MEDIUM prior record -- the delta filter would score a fake MISS. The generator must skip.
+    spec = base_spec()
+    spec["items"][0]["w"], spec["items"][0]["d"] = 550, 2000    # sofa short 550 < builtin min 600
+    rep = F.run_localization([("sitting_room", spec)], [],
+                             classes=["size_off_prior_band"], priors=_sofa_priors())
+    a = rep["per_class"]["size_off_prior_band"]
+    assert a["n_mutations"] == 0 and a["n_skipped"] == 2
+    assert a["misses"] == []                                    # no harness-artifact blind spot

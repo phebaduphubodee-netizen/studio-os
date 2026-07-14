@@ -484,11 +484,17 @@ def collect_anomaly(specs, priors, confirmed):
                  "no_bound_kinds": sorted(no_bound), "per_spec": per_spec}
 
 
-def collect_confidence(specs, confirmed):
+def collect_confidence(specs, confirmed, priors=None):
     """Base-read calibration: an ASSUMED/DEFAULTED semantic field (rot omitted -> assumed south;
     zone absent -> assumed indoor; kind hand-typed with nothing corroborating) shipped as if
     certain, below the say-unsure threshold. specs = [(path, spec)]. Returns (records, coverage)
-    reporting how many fields were owner-signed vs flagged-unsure (the calibration STATE)."""
+    reporting how many fields were owner-signed vs flagged-unsure (the calibration STATE).
+
+    `priors` (a kind-priors artifact or None) feeds the prior_kind CORROBORATION context
+    (kind_priors.build_prior_context): a piece whose footprint uniquely hits its claimed kind's
+    corpus band reads CORROBORATED (0.70) instead of ASSUMED (0.30). priors=None reproduces the
+    context-less behaviour exactly; a context-build failure degrades to context-less and is
+    REPORTED in coverage (never a silent pass)."""
     out = []
     try:
         import confidence as CF
@@ -496,12 +502,23 @@ def collect_confidence(specs, confirmed):
         return out, {"status": "ERROR", "note": f"import failed: {e}"}
     if not specs:
         return out, {"status": "ABSENT"}
+    ctx_note = None
+    n_ctx_ok = 0
     per_spec, signed_tot, flagged_tot, assessed_tot, n_error = {}, 0, 0, 0, 0
     for path, spec in specs:
         sf = os.path.basename(path)
+        ctx = None
+        if priors is not None:
+            try:
+                import kind_priors as KP
+                ctx = KP.build_prior_context([p for p, _sub in CF._all_pieces(spec)], priors)
+                n_ctx_ok += 1
+            except Exception as e:
+                ctx = None
+                ctx_note = f"prior_kind context degraded to none: {e}"
         try:
-            recs = CF.assess_room(spec, confirmed)
-            cov = CF.assess_coverage(spec, confirmed)
+            recs = CF.assess_room(spec, confirmed, context=ctx)
+            cov = CF.assess_coverage(spec, confirmed, context=ctx)
         except Exception as e:
             per_spec[sf] = f"ERROR: {e}"
             n_error += 1
@@ -514,8 +531,21 @@ def collect_confidence(specs, confirmed):
                         "owner_signed": cov.get("owner_signed"),
                         "flagged_unsure": cov.get("flagged_unsure")}
     status = "ERROR" if (n_error and not assessed_tot) else ("READ" if assessed_tot else "ABSENT")
-    return out, {"status": status, "assessed_fields": assessed_tot, "owner_signed": signed_tot,
-                 "flagged_unsure": flagged_tot, "errored": n_error, "per_spec": per_spec}
+    if priors is None:
+        pc = "UNWIRED (no corpus priors -- kind reads cannot be band-corroborated)"
+    elif n_ctx_ok == 0:
+        # an artifact was supplied but the context failed on EVERY spec -- claiming WIRED here
+        # would be a silent pass over a dead corroboration lane (review finding, 2026-07-13)
+        pc = "ERROR (prior context failed on every spec)"
+    else:
+        pc = "WIRED"
+    cov_out = {"status": status, "assessed_fields": assessed_tot, "owner_signed": signed_tot,
+               "flagged_unsure": flagged_tot, "errored": n_error,
+               "prior_corroboration": pc,
+               "per_spec": per_spec}
+    if ctx_note:
+        cov_out["note"] = ctx_note
+    return out, cov_out
 
 
 def collect_rebuild_diff(prior_specs, current_specs, confirmed):
@@ -631,9 +661,10 @@ def _load_walls(layout_dir):
 
 
 def _load_priors(project_dir):
-    """A kind-priors corpus artifact (schema interior-ai/kind-priors@0.1) if one is present under
-    qa/ or knowledge/, else None (-> anomaly's prior-band lane reports UNWIRED honestly; the gross
-    built-in bounds still run). No artifact exists locally yet, so this returns None today."""
+    """A kind-priors corpus artifact (schema interior-ai/kind-priors@0.1 or @0.2) if one is
+    present under qa/ or knowledge/, else None (-> anomaly's prior-band lane reports UNWIRED
+    honestly; the gross built-in bounds still run). The FloorPlanCAD train artifact lives at
+    qa/priors/kind-priors-floorplancad-train.json (landed 2026-07-13; see qa/priors/README.md)."""
     for root in (os.path.join(project_dir, "..", "..", "qa"),
                  os.path.join(project_dir, "..", "..", "knowledge")):
         for p in sorted(glob.glob(os.path.join(root, "**", "*kind-priors*.json"), recursive=True)):
@@ -743,7 +774,9 @@ def audit_project(project_dir, gate_path=None):
     # owner sign always SUPPRESSES (two-layer law), so they converge toward quiet as the owner
     # adjudicates. The owner ledger (confirmed[]) drives that suppression; walls + glazing feed
     # the cross-signal facade checks; the prior reading round feeds the rebuild-diff regression
-    # backstop; corpus priors (absent today) would sharpen anomaly's size bands (UNWIRED honest).
+    # backstop; corpus priors (auto-discovered under qa/ or knowledge/ -- see _load_priors)
+    # sharpen anomaly's size bands AND corroborate kind reads via confidence's prior_kind
+    # context; with no artifact both lanes report UNWIRED honestly.
     confirmed = (review.get("confirmed") if isinstance(review, dict) else None) or []
     walls = _load_walls(layout_dir)
     glazing_cands = glazing_doc.get("candidates") if isinstance(glazing_doc, dict) else None
@@ -755,7 +788,7 @@ def audit_project(project_dir, gate_path=None):
     an_recs, an_cov = collect_anomaly(specs, priors, confirmed)
     records += an_recs
     coverage["anomaly"] = an_cov
-    cf_recs, cf_cov = collect_confidence(specs, confirmed)
+    cf_recs, cf_cov = collect_confidence(specs, confirmed, priors)
     records += cf_recs
     coverage["confidence"] = cf_cov
     prior_specs = _find_prior_specs(project_dir, layout_dir)

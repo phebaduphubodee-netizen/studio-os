@@ -2,7 +2,7 @@
 flag_localization.py -- benchmark F7: does the tier-1 self-doubt suite's flag LAND ON THE
 ACTUALLY-WRONG ITEM? -- measured with a MUTATION-MINTED ANSWER KEY (no external corpus, no owner).
 
-    python flag_localization.py <project_dir>
+    python flag_localization.py <project_dir> [--priors auto|none|PATH]   (default: auto)
 
 WHY (the north star: make the machine "doubt itself at the RIGHT points", not merely "flag
 more"). self_audit.py aggregates every scattered doubt into ONE ranked list; its docstring names
@@ -64,6 +64,14 @@ MUTATION CLASSES (each keyed to a real suite behaviour; see the collector map in
                            is emitted by placement_gate -> self_audit.collect_gate, which F7 does
                            not run. The keyentry expects CRITICAL so the report SHOWS the gap.
   size_implausible         w,d -> impossible-for-kind. anomaly_flags HIGH.
+  size_off_prior_band      w,d -> FAR outside the claimed kind's corpus quantile band while
+                           INSIDE every built-in gross bound, so WITHOUT a kind-priors artifact
+                           nothing fires: the class measures exactly the corpus tier's ADDED
+                           catching power. anomaly_flags MEDIUM. Eligible only where that window
+                           exists (sofa / armchair-via-chair on v4; bed/toilet/bathtub/wardrobe
+                           have none -- their built-in bounds already sit at the corpus far-edge)
+                           and only when `priors` is supplied; otherwise every item skips and the
+                           lane reports unwired (the honest 'did not look').
   rot_stripped_directional rot removed from a directional piece (shipped as assumed-south).
                            confidence:facing say-unsure. expect FLAG.
   zone_below_grade_unsigned zone -> below_grade on an inside-drawn piece, unsigned. cross_signal
@@ -107,6 +115,7 @@ _NO_BOUND_TARGETS = ("cabinet", "headboard")
 
 SHOULD_FLAG_CLASSES = ("facing_flip_directional", "kind_change_unsigned",
                        "kind_change_vs_signature", "size_implausible",
+                       "size_off_prior_band",
                        "rot_stripped_directional", "zone_below_grade_unsigned")
 NONFLAG_CLASSES = ("facing_flip_box",)
 ALL_CLASSES = SHOULD_FLAG_CLASSES + NONFLAG_CLASSES
@@ -298,6 +307,72 @@ def mut_size_implausible(spec, loc, confirmed=None):
     return out, _keyentry(name, "size_implausible", "flag", ["anomaly"], "HIGH")
 
 
+def mut_size_off_prior_band(spec, loc, confirmed=None, priors=None):
+    """Corpus-band catching power the coarse built-in bounds DON'T have: re-dimension the piece to
+    sit FAR outside its claimed kind's corpus quantile band (anomaly's PRIOR_FAR margin, +10%)
+    while staying INSIDE every built-in gross bound -- so with priors=None NOTHING fires and the
+    class honestly reports unwired instead of pretending coverage. Kind goes through the prior
+    lane's own vocabulary (AF.prior_band_kind): exempt kinds and unmapped kinds skip; a kind whose
+    built-in bound already sits at/below the corpus far-edge (bed: 3023 > builtin 3000) has NO
+    builtin-silent window and skips -- counted, never silently thinned. The short side is kept
+    INSIDE the corpus band so exactly ONE axis carries the planted error."""
+    if priors is None:
+        return None                          # no corpus tier wired -> lane reports unwired
+    it = _get(spec, loc)
+    orig = _kind(it)
+    if orig is None:
+        return None
+    band_kind = AF.prior_band_kind(orig)
+    band = AF._prior_band(priors, band_kind) if band_kind else None
+    if band is None:
+        return None
+    name = it.get("name")
+    if name is None:
+        return None
+    try:
+        signed = PG.confirmed_kind(it, confirmed or [])
+    except Exception:
+        signed = None
+    if signed is not None and signed == orig:
+        return None                          # owner-signed identity -> anomaly suppresses; not eligible
+    lo_band, hi_band = band.get("lo_mm"), band.get("hi_mm")
+    if not (isinstance(lo_band, (list, tuple)) and isinstance(hi_band, (list, tuple))
+            and len(lo_band) == 2 and len(hi_band) == 2):
+        return None
+    try:                                     # hostile band edges (strings/None) must SKIP this
+        lo0, lo1 = float(lo_band[0]), float(lo_band[1])   # item, never crash the whole F7 run --
+        hi1 = float(hi_band[1])              # the generator runs OUTSIDE the guarded collectors
+    except (TypeError, ValueError):
+        return None
+    dims = AF._dims(it)
+    if dims is None:
+        return None
+    if AF._far_outside(dims[0], lo_band) or AF._far_outside(dims[1], hi_band):
+        return None                          # already far-out -> the base flag exists; not a NEW catch
+    target_long = hi1 * (1.0 + AF.PRIOR_FAR) * 1.10
+    target_short = max(lo0, min(target_long / 2.0, lo1))
+    b = AF.BUILTIN_BOUNDS.get(orig)
+    if b is not None:
+        min_s, max_s, min_l, max_l, max_a = b
+        if not (min_s <= dims[0] <= max_s and min_l <= dims[1] <= max_l and dims[2] <= max_a):
+            # base piece ALREADY gross-violates its built-in bound -> a base HIGH size record
+            # exists whose _flag_key (severity excluded) equals the mutation's MEDIUM record, so
+            # the delta filter would score a fake MISS. Skip -- counted, a harness artifact must
+            # never masquerade as a suite blind spot.
+            return None
+        if not (min_l <= target_long <= max_l):
+            return None                      # no builtin-silent window for this kind
+        target_short = min(max(target_short, min_s), max_s)
+        if target_short <= 0 or target_long / target_short > max_a:
+            return None
+    if not (lo0 <= target_short <= lo1):
+        return None                          # short must stay inside the band (single-axis error)
+    out = copy.deepcopy(spec)
+    nit = _get(out, loc)
+    nit["w"], nit["d"] = round(target_short), round(target_long)
+    return out, _keyentry(name, "size_off_prior_band", "flag", ["anomaly"], "MEDIUM")
+
+
 def mut_rot_stripped_directional(spec, loc, confirmed=None):
     it = _get(spec, loc)
     if it.get("kind") not in FACING_KINDS:    # confidence keys facing off the RAW kind (see _eligible_fields)
@@ -353,6 +428,7 @@ _GENERATORS = {
     "kind_change_unsigned": mut_kind_change_unsigned,
     "kind_change_vs_signature": mut_kind_change_vs_signature,
     "size_implausible": mut_size_implausible,
+    "size_off_prior_band": mut_size_off_prior_band,   # the only generator that needs `priors`
     "rot_stripped_directional": mut_rot_stripped_directional,
     "zone_below_grade_unsigned": mut_zone_below_grade_unsigned,
 }
@@ -368,18 +444,27 @@ def _flag_key(collector, rec):
     return (collector, rec.get("signal"), rec.get("room"), subs)
 
 
-def _collect_static(spec, confirmed, walls, glazing_cands, errors):
+def _collect_static(spec, confirmed, walls, glazing_cands, errors, priors=None):
     """cross_signal + anomaly + confidence records for ONE spec, tagged with their collector. Each
-    call is guarded; a raising module records into `errors` and contributes no flags (never aborts)."""
+    call is guarded; a raising module records into `errors` and contributes no flags (never aborts).
+    `priors` feeds anomaly's corpus band lane AND confidence's prior_kind corroboration context --
+    the SAME wiring self_audit.collect_* uses, so F7 measures the suite as it actually runs."""
     out = []
     params = {"confirmed": confirmed} if confirmed else None
+    ctx = None
+    if priors is not None:
+        try:
+            import kind_priors as KP
+            ctx = KP.build_prior_context([p for p, _sub in CF._all_pieces(spec)], priors)
+        except Exception as e:
+            errors.setdefault("prior_context", str(e))
     for collector, fn in (("cross_signal",
                            lambda: CS.check_room(spec, walls=walls, glazing_cands=glazing_cands,
                                                  params=params)),
                           ("anomaly",
-                           lambda: AF.check_room(spec, priors=None, params=params)),
+                           lambda: AF.check_room(spec, priors=priors, params=params)),
                           ("confidence",
-                           lambda: CF.assess_room(spec, confirmed))):
+                           lambda: CF.assess_room(spec, confirmed, context=ctx))):
         try:
             for rec in fn() or []:
                 out.append((collector, rec))
@@ -399,7 +484,7 @@ def _collect_rebuild(prior_spec, current_spec, confirmed, errors):
     return out
 
 
-def _coverage(base_specs, confirmed, walls, glazing_cands):
+def _coverage(base_specs, confirmed, walls, glazing_cands, priors=None):
     """Per-collector honest coverage over the UNMUTATED specs (READ/UNWIRED/ABSENT/ERROR), so a
     recall number is never read without the state of the collector that produced it. rebuild_diff is
     reported as base-vs-base (structurally UNWIRED -- no prior round on a live single-round project);
@@ -408,7 +493,7 @@ def _coverage(base_specs, confirmed, walls, glazing_cands):
     cov = {}
     for collector, covfn in (
             ("cross_signal", lambda s: CS.check_coverage(s, walls=walls, glazing_cands=glazing_cands)),
-            ("anomaly", lambda s: AF.check_coverage(s, priors=None,
+            ("anomaly", lambda s: AF.check_coverage(s, priors=priors,
                                                     params={"confirmed": confirmed} if confirmed else None)),
             ("confidence", lambda s: CF.assess_coverage(s, confirmed))):
         statuses, note = [], None
@@ -426,6 +511,17 @@ def _coverage(base_specs, confirmed, walls, glazing_cands):
             else:
                 statuses.append(c.get("status", "ABSENT"))
         cov[collector] = {"status": _fold_status(statuses), "per_spec": statuses, "note": note}
+    # READ requires a USABLE artifact shape (same probe anomaly_flags.check_coverage applies) --
+    # `priors is not None` alone would claim READ off a garbage doc while every mutation skips.
+    prior_usable = isinstance(priors, dict) and isinstance(priors.get("kinds"), dict)
+    cov["prior_band"] = {
+        "status": "READ" if prior_usable else "UNWIRED",
+        "note": ("a kind-priors artifact feeds anomaly's corpus band + confidence's prior_kind "
+                 "corroboration (and the size_off_prior_band class)" if prior_usable else
+                 ("a priors value was supplied but is NOT a usable kind-priors doc (no kinds "
+                  "dict) -- the corpus tier did not run" if priors is not None else
+                  "no kind-priors artifact -- the corpus tier is unwired; size_off_prior_band "
+                  "skips every item (reported unwired, never a silent pass)"))}
     # rebuild_diff: the real diff_coverage of base-vs-base + the F7 note that F7 injects the prior.
     try:
         rc = RD.diff_coverage([s for _n, s in base_specs], [s for _n, s in base_specs])
@@ -452,13 +548,17 @@ def _fold_status(statuses):
 
 
 # ---- the harness ----------------------------------------------------------------------
-def run_localization(base_specs, confirmed, classes=None, walls=None, glazing_cands=None):
+def run_localization(base_specs, confirmed, classes=None, walls=None, glazing_cands=None,
+                     priors=None):
     """Mutate EVERY eligible item of every spec, once per class, and measure whether a NEW flag
     lands on the mutated item. Returns a report dict.
 
     base_specs = [(name, spec_dict)] (name is display-only; rebuild matches by room.type). confirmed
     = the owner confirmed[] ledger list. classes = which mutation classes to run (default ALL).
     walls/glazing_cands feed cross_signal's facade checks (optional; absent -> those checks abstain).
+    priors = a kind-priors artifact or None: wired into anomaly + confidence exactly as self_audit
+    wires it (so F7 measures the live-suite configuration) and into the size_off_prior_band
+    generator; None reproduces the priors-less suite bit-for-bit.
 
     DELTA: base_flags per spec computed once (static collectors on the unmutated spec + a base-vs-base
     rebuild, which is empty). For each (spec, item, class): build the one-field mutation, run the SAME
@@ -469,13 +569,16 @@ def run_localization(base_specs, confirmed, classes=None, walls=None, glazing_ca
     per_class = {c: _empty_class() for c in classes}
 
     for spec_name, spec in base_specs:
-        base = (_collect_static(spec, confirmed, walls, glazing_cands, errors)
+        base = (_collect_static(spec, confirmed, walls, glazing_cands, errors, priors=priors)
                 + _collect_rebuild(spec, spec, confirmed, errors))
         base_keys = {_flag_key(col, rec) for col, rec in base}
         for loc, _it in _iter_items(spec):
             for cls in classes:
                 gen = _GENERATORS[cls]
-                res = gen(spec, loc, confirmed)
+                # only the prior-band generator consumes `priors`; the rest keep the uniform
+                # (spec, loc, confirmed) signature untouched.
+                res = (gen(spec, loc, confirmed, priors=priors)
+                       if cls == "size_off_prior_band" else gen(spec, loc, confirmed))
                 acc = per_class[cls]
                 if res is None:
                     acc["n_skipped"] += 1
@@ -483,13 +586,14 @@ def run_localization(base_specs, confirmed, classes=None, walls=None, glazing_ca
                 mutated, ke = res
                 extra = ke.pop("_extra_confirmed", None)
                 eff_conf = (list(confirmed) + extra) if extra else confirmed
-                cur = (_collect_static(mutated, eff_conf, walls, glazing_cands, errors)
+                cur = (_collect_static(mutated, eff_conf, walls, glazing_cands, errors,
+                                       priors=priors)
                        + _collect_rebuild(spec, mutated, eff_conf, errors))
                 new = [(col, rec) for col, rec in cur if _flag_key(col, rec) not in base_keys]
                 _score_mutation(acc, ke, new, spec_name)
 
     summary = _summarise(per_class, classes)
-    coverage = _coverage(base_specs, confirmed, walls, glazing_cands)
+    coverage = _coverage(base_specs, confirmed, walls, glazing_cands, priors=priors)
     if errors:
         coverage["_collector_errors"] = errors
     return {"schema": SCHEMA, "n_specs": len(base_specs),
@@ -780,10 +884,27 @@ def main():
     if not args or args[0] in ("-h", "--help"):
         raise SystemExit(__doc__)
     project_dir = args[0]
+    # --priors auto|none|PATH (default auto): auto = the SAME qa//knowledge/ discovery
+    # self_audit uses, so F7 measures the configuration the live suite actually runs;
+    # none = the frozen priors-less baseline (writes the original 2026-07-08 stem, byte-compat).
+    priors_arg = "auto"
+    if "--priors" in args:
+        i = args.index("--priors")
+        if i + 1 >= len(args):
+            raise SystemExit("--priors needs a value: auto | none | <path>")
+        priors_arg = args[i + 1]
+    if priors_arg == "none":
+        priors = None
+    elif priors_arg == "auto":
+        priors = A._load_priors(os.path.abspath(project_dir))
+    else:
+        import kind_priors as KP
+        priors = KP.load(priors_arg)         # schema-checked, fails LOUDLY on a non-priors file
     base_specs, confirmed, walls, glazing_cands, _layout = _load_project(project_dir)
     if not base_specs:
         raise SystemExit(f"no scene-graph.*.json specs found under {project_dir}")
-    report = run_localization(base_specs, confirmed, walls=walls, glazing_cands=glazing_cands)
+    report = run_localization(base_specs, confirmed, walls=walls, glazing_cands=glazing_cands,
+                              priors=priors)
 
     _print_table(report)
     md = render_md(report, project_dir)
@@ -791,8 +912,13 @@ def main():
     repo_root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
     out_dir = os.path.join(repo_root, "qa", "reports")
     os.makedirs(out_dir, exist_ok=True)
-    md_path = os.path.join(out_dir, "flag-localization-2026-07-08.md")
-    json_path = os.path.join(out_dir, "flag-localization-2026-07-08.json")
+    # priors-less runs keep the original frozen stem (the 2026-07-08 baseline record stays
+    # reproducible + byte-comparable); priors-wired runs get their own stem so wiring the corpus
+    # tier can never silently overwrite the baseline report.
+    stem = ("flag-localization-2026-07-08" if priors is None
+            else "flag-localization-priors-2026-07-13")
+    md_path = os.path.join(out_dir, stem + ".md")
+    json_path = os.path.join(out_dir, stem + ".json")
     with open(md_path, "w", encoding="utf-8") as fh:
         fh.write(md + "\n")
     with open(json_path, "w", encoding="utf-8") as fh:

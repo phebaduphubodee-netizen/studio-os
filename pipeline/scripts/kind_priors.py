@@ -177,6 +177,56 @@ def suggest_kind(w_mm, d_mm, priors, curve=None):
     return None
 
 
+def build_prior_context(pieces, priors):
+    """CORROBORATION-lane injector: {piece_name: {"prior_kind": <suggestion>}} for
+    confidence.assess_room(context=...) -- the "kind matching a UNIQUE prior band" corroboration
+    tier (0.70) documented there, now actually fed.
+
+    Semantics per piece (conservative -- ambiguity injects NOTHING, and there is no downgrade
+    path: a disagreeing suggestion is injected raw and visible, but confidence's equality check
+    simply reads it as not-corroborating):
+      * suggestion = suggest_kind(w, d, priors) -- the CORPUS-vocabulary unique-band hit, or None.
+      * vocabulary bridge: agreement is judged through the PRIOR lane's map
+        (anomaly_flags.PRIOR_KIND_ALIASES), so a claimed 'armchair' whose footprint uniquely hits
+        the corpus 'chair' band IS agreement -> the CLAIMED string is injected (confidence
+        compares by equality and must read this as corroboration).
+      * a claimed kind in anomaly_flags.PRIOR_EXEMPT_KINDS is NEVER corroborated (repo semantics
+        broader than the corpus symbol class -- corroborating repo 'cabinet' off the freestanding
+        corpus cabinet band is the same population error as false-flagging it): no injection.
+      * CASE: decisions here are made on the LOWERCASED claimed kind, because the downstream
+        equality check (confidence._kind_confidence) lowercases both sides -- deciding
+        case-sensitively would let a hand-typed 'Cabinet' slip past the exemption as a
+        "disagreement" injection and still read as corroborated downstream (review finding,
+        2026-07-13). In the disagreement branch the lowercased claim provably differs from the
+        (lowercase) suggestion, so the raw injection can never lowercase-equal the claim.
+      * unnamed pieces are skipped (context is keyed by name); duplicate names collapse to the
+        LAST piece walked (callers keep names unique -- flag_localization relies on that already).
+
+    Pure: dicts in -> dict out; no disk, no owner. `pieces` = iterable of piece dicts (callers
+    typically pass [p for p, _sub in confidence._all_pieces(spec)])."""
+    import anomaly_flags as AF     # lazy: keeps this module import-light for the reader lane
+
+    ctx = {}
+    for piece in pieces:
+        if not isinstance(piece, dict):
+            continue
+        name = piece.get("name")
+        if name is None:
+            continue
+        sug = suggest_kind(piece.get("w"), piece.get("d"), priors)
+        if sug is None:
+            continue
+        kind = piece.get("kind")
+        k_low = kind.strip().lower() if isinstance(kind, str) else None
+        if k_low and k_low in AF.PRIOR_EXEMPT_KINDS:
+            continue                                   # exempt: never corroborate, never inject
+        if k_low and AF.prior_band_kind(k_low) == sug:
+            ctx[str(name)] = {"prior_kind": kind.strip()}   # agreement (exact or via alias)
+        else:
+            ctx[str(name)] = {"prior_kind": sug}       # visible disagreement -- equality fails
+    return ctx
+
+
 def accumulate_curve(pairs):
     """(gt_kind, pred_curve_bool) iterable -> {kind: {"n": int, "curve": int}}. Pure; the
     reader-run/matching that produces the pairs lives in derive_curve_priors.py (no reader

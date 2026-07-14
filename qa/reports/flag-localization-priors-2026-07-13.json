@@ -106,8 +106,8 @@
    "n_hit": 26,
    "n_caught_by_expected": 26,
    "n_severity_match": 26,
-   "n_new_flags_total": 28,
-   "n_new_flags_on_target": 26,
+   "n_new_flags_total": 29,
+   "n_new_flags_on_target": 27,
    "misses": [],
    "overfires": [],
    "hits": [
@@ -415,6 +415,7 @@
      "item": "โซฟา 3 ที่นั่ง",
      "spec": "scene-graph.sitting_room.json",
      "caught_by": [
+      "confidence",
       "rebuild_diff"
      ],
      "expected": [
@@ -912,8 +913,8 @@
    "n_hit": 20,
    "n_caught_by_expected": 20,
    "n_severity_match": 20,
-   "n_new_flags_total": 20,
-   "n_new_flags_on_target": 20,
+   "n_new_flags_total": 21,
+   "n_new_flags_on_target": 21,
    "misses": [],
    "overfires": [],
    "hits": [
@@ -1131,7 +1132,8 @@
      "item": "โซฟา 3 ที่นั่ง",
      "spec": "scene-graph.sitting_room.json",
      "caught_by": [
-      "anomaly"
+      "anomaly",
+      "confidence"
      ],
      "expected": [
       "anomaly"
@@ -1220,16 +1222,78 @@
    ]
   },
   "size_off_prior_band": {
-   "n_mutations": 0,
-   "n_skipped": 26,
-   "n_hit": 0,
-   "n_caught_by_expected": 0,
-   "n_severity_match": 0,
-   "n_new_flags_total": 0,
-   "n_new_flags_on_target": 0,
+   "n_mutations": 4,
+   "n_skipped": 22,
+   "n_hit": 4,
+   "n_caught_by_expected": 4,
+   "n_severity_match": 4,
+   "n_new_flags_total": 5,
+   "n_new_flags_on_target": 5,
    "misses": [],
    "overfires": [],
-   "hits": []
+   "hits": [
+    {
+     "item": "เก้าอี้ทำงาน (หันเข้าโต๊ะ W)",
+     "spec": "scene-graph.master_bedroom.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "MEDIUM",
+     "got_severity": [
+      "MEDIUM"
+     ]
+    },
+    {
+     "item": "โซฟา 3 ที่นั่ง",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly",
+      "confidence"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "MEDIUM",
+     "got_severity": [
+      "MEDIUM"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "MEDIUM",
+     "got_severity": [
+      "MEDIUM"
+     ]
+    },
+    {
+     "item": "เก้าอี้ tub ขวา (เลานจ์ริมกระจก หันชมสวน)",
+     "spec": "scene-graph.sitting_room.json",
+     "caught_by": [
+      "anomaly"
+     ],
+     "expected": [
+      "anomaly"
+     ],
+     "caught_by_expected": true,
+     "expected_severity": "MEDIUM",
+     "got_severity": [
+      "MEDIUM"
+     ]
+    }
+   ]
   },
   "rot_stripped_directional": {
    "n_mutations": 1,
@@ -1705,14 +1769,12 @@
  "summary": {
   "macro_recall": 1.0,
   "macro_recall_by_expected": 1.0,
-  "precision_on_target": 0.949,
+  "precision_on_target": 0.952,
   "blind_classes": [],
-  "unwired_classes": [
-   "size_off_prior_band"
-  ],
+  "unwired_classes": [],
   "backstopped_classes": [],
   "n_should_flag_classes": 7,
-  "n_exercised_classes": 6,
+  "n_exercised_classes": 7,
   "overfire_mutations": 0
  },
  "coverage": {
@@ -1741,8 +1803,8 @@
    "note": null
   },
   "prior_band": {
-   "status": "UNWIRED",
-   "note": "no kind-priors artifact -- the corpus tier is unwired; size_off_prior_band skips every item (reported unwired, never a silent pass)"
+   "status": "READ",
+   "note": "a kind-priors artifact feeds anomaly's corpus band + confidence's prior_kind corroboration (and the size_off_prior_band class)"
   },
   "rebuild_diff": {
    "status": "READ",

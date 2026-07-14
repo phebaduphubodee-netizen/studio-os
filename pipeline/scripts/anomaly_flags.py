@@ -11,7 +11,8 @@ identity is owner truth; the machine may only point at a contradiction between t
     check_room(spec, priors=None, params=None) -> list[record]     (pure: loaded dict -> records)
     check_coverage(spec, priors=None, params=None) -> coverage dict (honest READ/UNWIRED/ABSENT)
 
-TWO evidence sources, so the module is USEFUL with NO corpus artifact (there is none locally yet):
+TWO evidence sources, so the module is USEFUL with NO corpus artifact (one now lives at
+qa/priors/kind-priors-floorplancad-train.json -- self_audit auto-discovers it):
 
   * BUILT-IN sane bounds (BUILTIN_BOUNDS, COUNT_MAX below) -- coarse, documented, ergonomics-
     derived per-kind mm ranges + per-kind expected-max counts. Deliberately GENEROUS: a violation
@@ -98,6 +99,34 @@ COUNT_MAX = {
 # 10-90 quantile bands already exclude ~20% of legit pieces, so being just-outside is NOT alarming;
 # we require a wide margin beyond the band edge before crying wolf.
 PRIOR_FAR = 0.40   # flag only if below band_lo*(1-PRIOR_FAR) or above band_hi*(1+PRIOR_FAR)
+
+# ---- corpus-band VOCABULARY policy (probed against the KNOWN-CORRECT PRJ-2026-002 v4 reads;
+#      see qa/reports/kind-priors-wiring-2026-07-13.md) -----------------------------------------
+# PRIOR_EXEMPT_KINDS: kinds whose REPO semantics are BROADER than the corpus symbol class, so the
+# corpus band is the wrong population to doubt them against. Repo 'cabinet' includes built-in
+# millwork runs (a 4.1 m TV-shelf at 300 deep, a 3.2 m built-in desk -- real, correct pieces on
+# v4) while the FloorPlanCAD 'cabinet' class is freestanding symbols <= ~1.3 m long: wiring that
+# band unexempted false-flagged 5 correct built-ins on the probe. This mirrors the DELIBERATE
+# omission of cabinet/headboard from BUILTIN_BOUNDS above, and preserves flag_localization's
+# _NO_BOUND_TARGETS invariant (its kind_change mutations re-kind INTO these two so that probe
+# stays single-collector). Exempt kinds are reported in coverage -- skipped, never a silent pass.
+PRIOR_EXEMPT_KINDS = frozenset({"cabinet", "headboard"})
+# PRIOR_KIND_ALIASES: repo kind -> corpus band key, ONLY where the corpus class is a true
+# SUPERSET population of the repo kind (an armchair is one of the corpus 'chair' symbols).
+# tv_console -> tv_cabinet is REFUSED: the corpus tv_cabinet band is a thin wall-strip TV symbol
+# (short side 27-450 mm, aspect 2.98-17.1) -- a real deep TV console (say 600x800, aspect 1.3)
+# sits FAR below that aspect band and would false-flag. This map is the PRIOR lane's vocabulary
+# only; benchmark scoring keeps its own benchmark_reader.KIND_SYNONYMS (test-pinned to never
+# contradict this one).
+PRIOR_KIND_ALIASES = {"armchair": "chair"}
+
+
+def prior_band_kind(kind):
+    """The corpus band key this claimed kind may be checked against, or None (exempt kind /
+    nothing to map -- the caller's prior lane then abstains for this piece)."""
+    if kind in PRIOR_EXEMPT_KINDS:
+        return None
+    return PRIOR_KIND_ALIASES.get(kind, kind)
 
 
 # ---- record + helpers ------------------------------------------------------------------------
@@ -214,9 +243,12 @@ def _check_size(room, piece, kind, lo, hi, priors):
                 "mis-read/mis-typed",
                 "check the piece on the sheet: re-read its dimensions, or owner-sign the correct "
                 "kind -- the module never re-labels it for you")
-    # prior-band (corpus) lane -- only if built-in bounds passed / kind has no built-in bound
-    band = _prior_band(priors, kind)
+    # prior-band (corpus) lane -- only if built-in bounds passed / kind has no built-in bound.
+    # Band key goes through the vocabulary policy: exempt kinds abstain, aliases re-key.
+    band_kind = prior_band_kind(kind)
+    band = _prior_band(priors, band_kind) if band_kind else None
     if band is not None:
+        as_alias = f" (checked against the corpus '{band_kind}' band)" if band_kind != kind else ""
         lo_band, hi_band = band.get("lo_mm"), band.get("hi_mm")
         far = []
         if isinstance(lo_band, (list, tuple)) and _far_outside(lo, lo_band):
@@ -227,7 +259,7 @@ def _check_size(room, piece, kind, lo, hi, priors):
             return _rec(
                 "size_implausible", "MEDIUM", 0.55, room, [_name(piece)],
                 f"'{_name(piece)}' typed '{kind}' is far outside the corpus size band for a "
-                f"{kind} ({'; '.join(far)})",
+                f"{kind} ({'; '.join(far)}){as_alias}",
                 "the footprint sits well beyond the tight corpus quantile band for this claimed "
                 "kind -- a softer identity/dimension doubt than a gross-bounds violation",
                 "confirm the dimensions or the identity against the sheet")
@@ -250,14 +282,16 @@ def _check_aspect(room, piece, kind, lo, hi, aspect, priors):
                 "elongated for the claimed kind".format(k=kind),
                 "confirm the dimensions, or re-identify the piece -- a long-thin blob may be "
                 "linework mis-clustered as furniture, not a real {k}".format(k=kind))
-    band = _prior_band(priors, kind)
+    band_kind = prior_band_kind(kind)
+    band = _prior_band(priors, band_kind) if band_kind else None
     if band is not None:
+        as_alias = f" (corpus '{band_kind}' band)" if band_kind != kind else ""
         asp_band = band.get("aspect")
         if isinstance(asp_band, (list, tuple)) and _far_outside(aspect, asp_band):
             return _rec(
                 "aspect_implausible", "MEDIUM", 0.55, room, [_name(piece)],
                 f"'{_name(piece)}' typed '{kind}' has aspect {aspect:.1f}:1, far outside the "
-                f"corpus aspect band {asp_band} for a {kind}",
+                f"corpus aspect band {asp_band} for a {kind}{as_alias}",
                 "the proportion sits well beyond the corpus aspect band for this claimed kind",
                 "confirm the dimensions or the identity against the sheet")
     return None
@@ -362,7 +396,9 @@ def check_coverage(spec, priors=None, params=None):
                           "containers": counted_containers},
         "prior_band": {
             "status": "READ" if prior_wired else "UNWIRED",
-            "note": ("corpus priors wired -- band-precision READ" if prior_wired else
+            "note": (("corpus priors wired -- band-precision READ; exempt (repo class broader "
+                      f"than corpus symbol class, skipped-not-passed): {sorted(PRIOR_EXEMPT_KINDS)}; "
+                      f"aliases: {PRIOR_KIND_ALIASES}") if prior_wired else
                      "corpus priors absent -- gross built-in bounds only, band-precision unwired")},
         "no_bound_kinds": sorted(no_bound),
         "no_bound_note": ("these kinds have NO built-in bound (checked-nothing, not a clean pass); "

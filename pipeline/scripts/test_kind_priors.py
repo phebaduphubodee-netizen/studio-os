@@ -197,6 +197,76 @@ def test_load_accepts_v01_and_v02(tmp_path):
         assert kind_priors.load(fp)["schema"] == schema
 
 
+# ---- build_prior_context (confidence corroboration injector, 2026-07-13 wiring) ----------
+def _band(lo, hi, asp, n=60):
+    return {"lo_mm": list(lo), "hi_mm": list(hi), "aspect": list(asp), "n": n}
+
+
+def test_context_exact_agreement_injects_the_claimed_kind():
+    priors = _p({"sofa": _band((514, 1122), (700, 2546), (1.0, 3.6))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "โซฟา", "kind": "sofa", "w": 2202, "d": 1008}], priors)
+    assert ctx == {"โซฟา": {"prior_kind": "sofa"}}
+
+
+def test_context_alias_agreement_injects_the_CLAIMED_string():
+    # claimed 'armchair' uniquely hitting the corpus 'chair' band IS agreement -- the injected
+    # value must equal the claimed string so confidence's equality check reads corroboration.
+    priors = _p({"chair": _band((250, 615), (310, 688), (1.0, 1.55))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "tub", "kind": "armchair", "w": 510, "d": 546}], priors)
+    assert ctx == {"tub": {"prior_kind": "armchair"}}
+
+
+def test_context_disagreement_is_injected_raw_and_visible():
+    # a 300x300 'side_table' uniquely fitting the urinal band must NOT corroborate -- the raw
+    # suggestion is injected (visible), equality fails, and there is no downgrade path.
+    priors = _p({"urinal": _band((220, 451), (290, 496), (1.0, 1.56))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "st", "kind": "side_table", "w": 300, "d": 300}], priors)
+    assert ctx == {"st": {"prior_kind": "urinal"}}
+
+
+def test_context_ambiguity_and_unnamed_inject_nothing():
+    priors = _p({"chair": _band((250, 615), (310, 688), (1.0, 1.6)),
+                 "stoolish": _band((250, 615), (310, 688), (1.0, 1.6))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "a", "kind": "chair", "w": 500, "d": 550},      # 2 candidates -> None
+         {"kind": "chair", "w": 500, "d": 550}], priors)          # unnamed -> skipped
+    assert ctx == {}
+
+
+def test_context_never_corroborates_an_exempt_kind():
+    # the load-bearing pin: claimed 'cabinet' uniquely hitting the corpus freestanding-cabinet
+    # band must NOT be injected at all -- corroborating repo 'cabinet' off that band is the same
+    # population error as false-flagging it (repo cabinet includes built-in millwork runs).
+    priors = _p({"cabinet": _band((250, 650), (355, 1280), (1.0, 3.45))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "ตู้", "kind": "cabinet", "w": 400, "d": 700}], priors)
+    assert ctx == {}
+
+
+def test_context_exemption_is_case_insensitive_like_confidence():
+    # review finding 2026-07-13: confidence's equality LOWERCASES both sides, so a hand-typed
+    # 'Cabinet' injected as a "disagreement" ({'prior_kind': 'cabinet'}) would still read as
+    # CORROBORATED downstream -- the exemption (and agreement) decisions must therefore be made
+    # on the lowercased claim. 'Cabinet'/'CABINET' must inject NOTHING.
+    priors = _p({"cabinet": _band((250, 650), (355, 1280), (1.0, 3.45))})
+    for claimed in ("Cabinet", "CABINET", " cabinet "):
+        ctx = kind_priors.build_prior_context(
+            [{"name": "ตู้", "kind": claimed, "w": 400, "d": 700}], priors)
+        assert ctx == {}, claimed
+
+
+def test_context_case_variant_agreement_still_corroborates():
+    # ...and the flip side: a case-variant 'Sofa' IS the same identity under the codebase's own
+    # equivalence (confidence lowercases), so agreement must still inject the claimed string.
+    priors = _p({"sofa": _band((514, 1122), (700, 2546), (1.0, 3.6))})
+    ctx = kind_priors.build_prior_context(
+        [{"name": "s", "kind": "Sofa", "w": 2202, "d": 1008}], priors)
+    assert ctx == {"s": {"prior_kind": "Sofa"}}
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main([__file__, "-q"]))

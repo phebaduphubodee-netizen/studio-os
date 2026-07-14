@@ -313,6 +313,52 @@ def test_collect_confidence_flags_assumed_facing_and_signature_suppresses():
     assert not any(r["kind"] == "facing" for r in recs2)      # owner sign -> 1.0 -> suppressed
 
 
+def test_collect_confidence_prior_corroboration_drops_the_kind_doubt():
+    # a hand-typed 'sofa' with nothing corroborating is ASSUMED (0.30 -> say-unsure record);
+    # a priors artifact whose sofa band the footprint UNIQUELY hits corroborates it (0.70) and
+    # the record disappears -- the exact v4 delta (doubt-score 291 -> 281, sofa item dropped).
+    spec = _rspec("living", items=[{"name": "โซฟา", "kind": "sofa", "x": 1500, "y": 1500,
+                                    "w": 2202, "d": 1008, "rot": 90,
+                                    "facing_source": "sheet note"}])
+    priors = {"schema": "interior-ai/kind-priors@0.1",
+              "kinds": {"sofa": {"lo_mm": [514.1, 1121.9], "hi_mm": [699.7, 2545.3],
+                                 "aspect": [1.0, 3.5612903225806454], "n": 310}}}
+    recs, cov = A.collect_confidence([("s.json", spec)], [])
+    assert any(r["kind"] == "kind" for r in recs)             # uncorroborated -> say-unsure
+    assert cov["prior_corroboration"].startswith("UNWIRED")
+    recs2, cov2 = A.collect_confidence([("s.json", spec)], [], priors)
+    assert not any(r["kind"] == "kind" for r in recs2)        # band-corroborated -> silent-OK
+    assert cov2["prior_corroboration"] == "WIRED"
+
+
+def test_collect_confidence_dead_context_lane_reports_error_not_wired():
+    # review finding 2026-07-13: an artifact whose context build raises on EVERY spec must not
+    # be reported WIRED -- that would be a silent pass over a dead corroboration lane.
+    spec = _rspec("living", items=[{"name": "x", "kind": "sofa", "x": 1500, "y": 1500,
+                                    "w": 2202, "d": 1008}])
+    broken = {"schema": "interior-ai/kind-priors@0.1"}         # no 'kinds' -> suggest_kind raises
+    recs, cov = A.collect_confidence([("s.json", spec)], [], broken)
+    assert cov["prior_corroboration"].startswith("ERROR")
+    assert "degraded" in cov.get("note", "")
+    assert any(r["kind"] == "kind" for r in recs)              # doubt STAYS open (no corroboration)
+
+
+def test_load_priors_discovers_an_artifact_under_qa(tmp_path):
+    import json
+    qa = tmp_path / "qa" / "priors"
+    qa.mkdir(parents=True)
+    (qa / "my-kind-priors.json").write_text(json.dumps(
+        {"schema": "interior-ai/kind-priors@0.2", "kinds": {}}), encoding="utf-8")
+    proj = tmp_path / "projects" / "PRJ-X"
+    proj.mkdir(parents=True)
+    doc = A._load_priors(str(proj))
+    assert doc is not None and doc["schema"].startswith("interior-ai/kind-priors")
+    # a non-priors json with a matching filename must NOT load
+    (qa / "my-kind-priors.json").write_text(json.dumps({"schema": "other/thing"}),
+                                            encoding="utf-8")
+    assert A._load_priors(str(proj)) is None
+
+
 def test_round_version_parse():
     assert A._round_version("/x/03_layout/v4") == 4
     assert A._round_version("/x/03_layout") == 0

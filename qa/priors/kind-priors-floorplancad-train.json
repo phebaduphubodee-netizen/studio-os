@@ -1,0 +1,559 @@
+{
+ "schema": "interior-ai/kind-priors@0.2",
+ "meta": {
+  "derived_from": [
+   "C:\\Users\\teza_\\studio-datasets\\floorplancad\\gt-train-00",
+   "C:\\Users\\teza_\\studio-datasets\\floorplancad\\gt-train-01"
+  ],
+  "date": "2026-07-07",
+  "n_files_total": 10161,
+  "n_files_mm": 3525,
+  "n_files_skipped_units": 6636,
+  "n_elements_sampled": 17973,
+  "n_elements_malformed": 0,
+  "params": {
+   "q_lo": 0.1,
+   "q_hi": 0.9,
+   "pad_mm": 50.0,
+   "aspect_pad": 1.15,
+   "min_support": 50
+  },
+  "curve": {
+   "source": "gt-train-00+gt-train-01",
+   "min_support": 20,
+   "curve_hi": 0.6,
+   "curve_lo": 0.2,
+   "kinds_with_signature": 11,
+   "kinds_curve_supported": [
+    "air_conditioner",
+    "bed",
+    "cabinet",
+    "chair",
+    "elevator",
+    "refrigerator",
+    "sink",
+    "sofa",
+    "squat_toilet",
+    "table",
+    "toilet"
+   ],
+   "n_pairs": 1500
+  }
+ },
+ "kinds": {
+  "air_conditioner": {
+   "n": 732,
+   "lo_mm": [
+    200.3,
+    629.8
+   ],
+   "hi_mm": [
+    529.8,
+    1047.6
+   ],
+   "aspect": [
+    1.2422360248447206,
+    3.22741935483871
+   ],
+   "raw": {
+    "lo_q10": 250.3,
+    "lo_q90": 579.8,
+    "hi_q10": 579.8,
+    "hi_q90": 997.6,
+    "aspect_q10": 1.4285714285714286,
+    "aspect_q90": 2.806451612903226
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=732 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.009,
+    "n": 117,
+    "curve_n": 1
+   }
+  },
+  "bath": {
+   "n": 571,
+   "lo_mm": [
+    474.9,
+    1050.0
+   ],
+   "hi_mm": [
+    751.6,
+    1660.0
+   ],
+   "aspect": [
+    1.0,
+    2.6371904127829557
+   ],
+   "raw": {
+    "lo_q10": 524.9,
+    "lo_q90": 1000.0,
+    "hi_q10": 801.6,
+    "hi_q90": 1610.0,
+    "aspect_q10": 1.0,
+    "aspect_q90": 2.293209054593875
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=571 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  },
+  "bathtub": {
+   "n": 180,
+   "lo_mm": [
+    700.0,
+    940.6
+   ],
+   "hi_mm": [
+    1162.0,
+    1890.2
+   ],
+   "aspect": [
+    1.2276214833759593,
+    2.8157232285562066
+   ],
+   "raw": {
+    "lo_q10": 750.0,
+    "lo_q90": 890.6,
+    "hi_q10": 1212.0,
+    "hi_q90": 1840.2,
+    "aspect_q10": 1.411764705882353,
+    "aspect_q90": 2.4484549813532235
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=180 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  },
+  "bed": {
+   "n": 1513,
+   "lo_mm": [
+    850.0,
+    1850.0
+   ],
+   "hi_mm": [
+    1850.0,
+    2159.1
+   ],
+   "aspect": [
+    1.0,
+    2.5555555555555554
+   ],
+   "raw": {
+    "lo_q10": 900.0,
+    "lo_q90": 1800.0,
+    "hi_q10": 1900.0,
+    "hi_q90": 2109.1,
+    "aspect_q10": 1.1111111111111112,
+    "aspect_q90": 2.2222222222222223
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=1513 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 1.0,
+    "n": 32,
+    "curve_n": 32
+   }
+  },
+  "cabinet": {
+   "n": 2032,
+   "lo_mm": [
+    250.0,
+    650.0
+   ],
+   "hi_mm": [
+    355.0,
+    1280.0
+   ],
+   "aspect": [
+    1.0,
+    3.4499999999999997
+   ],
+   "raw": {
+    "lo_q10": 300.0,
+    "lo_q90": 600.0,
+    "hi_q10": 405.0,
+    "hi_q90": 1230.0,
+    "aspect_q10": 1.0,
+    "aspect_q90": 3.0
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=2032 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.3,
+    "n": 20,
+    "curve_n": 6
+   }
+  },
+  "chair": {
+   "n": 2133,
+   "lo_mm": [
+    250.0,
+    614.5
+   ],
+   "hi_mm": [
+    310.0,
+    687.8
+   ],
+   "aspect": [
+    1.0,
+    1.5498652291105122
+   ],
+   "raw": {
+    "lo_q10": 300.0,
+    "lo_q90": 564.5,
+    "hi_q10": 360.0,
+    "hi_q90": 637.8,
+    "aspect_q10": 1.0,
+    "aspect_q90": 1.3477088948787064
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=2133 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.219,
+    "n": 389,
+    "curve_n": 85
+   }
+  },
+  "elevator": {
+   "n": 1072,
+   "lo_mm": [
+    1232.8,
+    2200.7
+   ],
+   "hi_mm": [
+    1600.0,
+    2792.0
+   ],
+   "aspect": [
+    1.0,
+    1.8314814814814813
+   ],
+   "raw": {
+    "lo_q10": 1282.8,
+    "lo_q90": 2150.7,
+    "hi_q10": 1650.0,
+    "hi_q90": 2742.0,
+    "aspect_q10": 1.0263157894736843,
+    "aspect_q90": 1.5925925925925926
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=1072 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.071,
+    "n": 340,
+    "curve_n": 24
+   }
+  },
+  "gas_stove": {
+   "n": 436,
+   "lo_mm": [
+    450.0,
+    700.0
+   ],
+   "hi_mm": [
+    499.6,
+    811.1
+   ],
+   "aspect": [
+    1.0,
+    1.447676149520344
+   ],
+   "raw": {
+    "lo_q10": 500.0,
+    "lo_q90": 650.0,
+    "hi_q10": 549.6,
+    "hi_q90": 761.1,
+    "aspect_q10": 1.0080515297906603,
+    "aspect_q90": 1.2588488256698644
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=436 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  },
+  "refrigerator": {
+   "n": 528,
+   "lo_mm": [
+    330.3,
+    650.0
+   ],
+   "hi_mm": [
+    626.1,
+    1000.0
+   ],
+   "aspect": [
+    1.0315942028985507,
+    2.1186119873817035
+   ],
+   "raw": {
+    "lo_q10": 380.3,
+    "lo_q90": 600.0,
+    "hi_q10": 676.1,
+    "hi_q90": 950.0,
+    "aspect_q10": 1.1863333333333332,
+    "aspect_q90": 1.8422712933753944
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=528 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 1.0,
+    "n": 41,
+    "curve_n": 41
+   }
+  },
+  "sink": {
+   "n": 2221,
+   "lo_mm": [
+    323.8,
+    650.0
+   ],
+   "hi_mm": [
+    407.2,
+    1050.0
+   ],
+   "aspect": [
+    1.0,
+    2.299770275669197
+   ],
+   "raw": {
+    "lo_q10": 373.8,
+    "lo_q90": 600.0,
+    "hi_q10": 457.2,
+    "hi_q90": 1000.0,
+    "aspect_q10": 1.0451767786992578,
+    "aspect_q90": 1.999800239712345
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=2221 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.983,
+    "n": 58,
+    "curve_n": 57
+   }
+  },
+  "sofa": {
+   "n": 310,
+   "lo_mm": [
+    514.1,
+    1121.9
+   ],
+   "hi_mm": [
+    699.7,
+    2545.3
+   ],
+   "aspect": [
+    1.0,
+    3.5612903225806454
+   ],
+   "raw": {
+    "lo_q10": 564.1,
+    "lo_q90": 1071.9,
+    "hi_q10": 749.7,
+    "hi_q90": 2495.3,
+    "aspect_q10": 1.0001159420289856,
+    "aspect_q90": 3.0967741935483875
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=310 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.536,
+    "n": 28,
+    "curve_n": 15
+   }
+  },
+  "squat_toilet": {
+   "n": 698,
+   "lo_mm": [
+    212.0,
+    480.7
+   ],
+   "hi_mm": [
+    449.3,
+    675.0
+   ],
+   "aspect": [
+    1.0973084886128366,
+    2.6823091603053437
+   ],
+   "raw": {
+    "lo_q10": 262.0,
+    "lo_q90": 430.7,
+    "hi_q10": 499.3,
+    "hi_q90": 625.0,
+    "aspect_q10": 1.2619047619047619,
+    "aspect_q90": 2.3324427480916032
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=698 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 1.0,
+    "n": 297,
+    "curve_n": 297
+   }
+  },
+  "stairs": {
+   "n": 1153,
+   "lo_mm": [
+    1030.0,
+    3450.0
+   ],
+   "hi_mm": [
+    1454.7,
+    5896.1
+   ],
+   "aspect": [
+    1.0,
+    3.146429955810527
+   ],
+   "raw": {
+    "lo_q10": 1080.0,
+    "lo_q90": 3400.0,
+    "hi_q10": 1504.7,
+    "hi_q90": 5846.1,
+    "aspect_q10": 1.0755721625408687,
+    "aspect_q90": 2.7360260485308934
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=1153 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  },
+  "table": {
+   "n": 1414,
+   "lo_mm": [
+    350.0,
+    850.0
+   ],
+   "hi_mm": [
+    550.0,
+    1450.0
+   ],
+   "aspect": [
+    1.0,
+    3.4499999999999997
+   ],
+   "raw": {
+    "lo_q10": 400.0,
+    "lo_q90": 800.0,
+    "hi_q10": 600.0,
+    "hi_q90": 1400.0,
+    "aspect_q10": 1.0080685829551186,
+    "aspect_q90": 3.0
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=1414 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.427,
+    "n": 124,
+    "curve_n": 53
+   }
+  },
+  "toilet": {
+   "n": 1415,
+   "lo_mm": [
+    350.0,
+    578.0
+   ],
+   "hi_mm": [
+    600.0,
+    888.2
+   ],
+   "aspect": [
+    1.1430746353207761,
+    2.0124999999999997
+   ],
+   "raw": {
+    "lo_q10": 400.0,
+    "lo_q90": 528.0,
+    "hi_q10": 650.0,
+    "hi_q90": 838.2,
+    "aspect_q10": 1.3145358306188926,
+    "aspect_q90": 1.75
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=1415 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07",
+   "curve": {
+    "frac": 0.943,
+    "n": 35,
+    "curve_n": 33
+   }
+  },
+  "tv_cabinet": {
+   "n": 316,
+   "lo_mm": [
+    27.200000000000003,
+    450.0
+   ],
+   "hi_mm": [
+    1100.7,
+    2149.8
+   ],
+   "aspect": [
+    2.981366459627329,
+    17.14125647668394
+   ],
+   "raw": {
+    "lo_q10": 77.2,
+    "lo_q90": 400.0,
+    "hi_q10": 1150.7,
+    "hi_q90": 2099.8,
+    "aspect_q10": 3.4285714285714284,
+    "aspect_q90": 14.905440414507773
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=316 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  },
+  "urinal": {
+   "n": 489,
+   "lo_mm": [
+    219.89999999999998,
+    450.9
+   ],
+   "hi_mm": [
+    290.0,
+    496.0
+   ],
+   "aspect": [
+    1.0,
+    1.5621254494606471
+   ],
+   "raw": {
+    "lo_q10": 269.9,
+    "lo_q90": 400.9,
+    "hi_q10": 340.0,
+    "hi_q90": 446.0,
+    "aspect_q10": 1.0249563264287498,
+    "aspect_q90": 1.3583699560527367
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=489 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  },
+  "wardrobe": {
+   "n": 349,
+   "lo_mm": [
+    450.0,
+    677.7
+   ],
+   "hi_mm": [
+    850.0,
+    2810.0
+   ],
+   "aspect": [
+    1.5217391304347827,
+    5.452343186733959
+   ],
+   "raw": {
+    "lo_q10": 500.0,
+    "lo_q90": 627.7,
+    "hi_q10": 900.0,
+    "hi_q90": 2760.0,
+    "aspect_q10": 1.75,
+    "aspect_q90": 4.741167988464312
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=349 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  },
+  "washing_machine": {
+   "n": 380,
+   "lo_mm": [
+    450.0,
+    741.4
+   ],
+   "hi_mm": [
+    530.0,
+    850.0
+   ],
+   "aspect": [
+    1.0,
+    1.4035897435897435
+   ],
+   "raw": {
+    "lo_q10": 500.0,
+    "lo_q90": 691.4,
+    "hi_q10": 580.0,
+    "hi_q90": 800.0,
+    "aspect_q10": 1.0,
+    "aspect_q90": 1.2205128205128206
+   },
+   "provenance": "floorplancad gt-train-00+gt-train-01, units=mm gt.json, n=380 instances, adapter floorplancad_adapter v1.1, derived 2026-07-07"
+  }
+ },
+ "excluded_low_support": {
+  "escalator": 31
+ }
+}

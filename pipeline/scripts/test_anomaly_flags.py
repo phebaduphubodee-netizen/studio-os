@@ -245,6 +245,82 @@ def test_coverage_distinguishes_looked_from_did_not_look():
     assert cov["no_bound_kinds"] == ["cabinet"]             # ...but this kind had no bound
 
 
+# ---- corpus-band vocabulary policy (2026-07-13 wiring; probed on the v4 correct reads) ----------
+QA_PRIORS = os.path.join(HERE, "..", "..", "qa", "priors", "kind-priors-floorplancad-train.json")
+
+
+def _real_priors():
+    with open(QA_PRIORS, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def test_vocabulary_policy_frozen():
+    # drift pin: this exact policy was probed against the KNOWN-CORRECT v4 reads -- widening the
+    # aliases or shrinking the exemptions is a re-probe, not a tweak.
+    assert AF.PRIOR_EXEMPT_KINDS == frozenset({"cabinet", "headboard"})
+    assert AF.PRIOR_KIND_ALIASES == {"armchair": "chair"}
+    # the refusal is load-bearing: corpus tv_cabinet is a thin wall-strip symbol (aspect 2.98-17.1)
+    # and would false-flag a real deep TV console on aspect.
+    assert "tv_console" not in AF.PRIOR_KIND_ALIASES
+    assert not (set(AF.PRIOR_KIND_ALIASES) & AF.PRIOR_EXEMPT_KINDS)
+    assert AF.prior_band_kind("cabinet") is None
+    assert AF.prior_band_kind("armchair") == "chair"
+    assert AF.prior_band_kind("sofa") == "sofa"
+
+
+def test_alias_targets_are_canonical_in_the_benchmark_vocab():
+    # the PRIOR lane's alias map must never contradict the benchmark scoring vocabulary: every
+    # alias TARGET must be a canonical benchmark kind (not itself remapped away by KIND_SYNONYMS).
+    import benchmark_reader as BR
+    for _repo_kind, corpus_kind in AF.PRIOR_KIND_ALIASES.items():
+        assert BR.KIND_SYNONYMS.get(corpus_kind, corpus_kind) == corpus_kind
+
+
+def test_prior_exempt_cabinet_builtin_run_not_flagged():
+    # the probe's exact false-positive: a 3.2 m built-in desk run typed 'cabinet' sits far outside
+    # the corpus freestanding-cabinet band -- the exemption must keep it SILENT.
+    recs = AF.check_room(_room_spec("bedroom", [_piece("bf11", "cabinet", 600, 3200)]),
+                         priors=_real_priors())
+    assert recs == [], [r["detail"] for r in recs]
+
+
+def test_prior_exempt_holds_even_if_an_artifact_grows_a_headboard_band():
+    priors = {"schema": "interior-ai/kind-priors@0.1",
+              "kinds": {"headboard": {"lo_mm": [50, 80], "hi_mm": [900, 1800],
+                                      "aspect": [10.0, 30.0], "n": 60}}}
+    recs = AF.check_room(_room_spec("bedroom", [_piece("slat", "headboard", 100, 2925)]),
+                         priors=priors)
+    assert recs == []
+
+
+def test_prior_alias_armchair_is_checked_against_the_chair_band():
+    # an 'armchair' at 530x1059 is INSIDE its generous built-in bound (max long 1300) but FAR
+    # outside the corpus chair band (long far-edge ~963) -- exactly the corpus tier's added power.
+    recs = AF.check_room(_room_spec("living", [_piece("tub", "armchair", 530, 1059)]),
+                         priors=_real_priors())
+    sizes = [r for r in recs if r["signal"] == "anomaly_flags:size_implausible"]
+    assert len(sizes) == 1 and sizes[0]["severity"] == "MEDIUM"
+    assert "'chair' band" in sizes[0]["detail"]              # the alias is DISCLOSED in the record
+
+
+def test_real_v4_rooms_emit_nothing_with_the_landed_artifact():
+    # flagship no-false-positive guarantee EXTENDED to the wired corpus tier: both v4 correct
+    # reads stay silent with the real qa/priors artifact (the probe caught 5 false cabinet flags
+    # pre-exemption; this pins the fix).
+    priors = _real_priors()
+    for name in ("scene-graph.sitting_room.json", "scene-graph.master_bedroom.json"):
+        recs = AF.check_room(_load(name), priors=priors)
+        assert recs == [], f"{name} false-flagged: {[r['detail'] for r in recs]}"
+
+
+def test_coverage_note_discloses_exemptions_when_wired():
+    cov = AF.check_coverage(_room_spec("living", [_piece("s", "sofa", 1000, 2200)]),
+                            priors=_real_priors())
+    assert cov["prior_band"]["status"] == "READ"
+    assert "cabinet" in cov["prior_band"]["note"]
+    assert "armchair" in cov["prior_band"]["note"]
+
+
 # ---- determinism -------------------------------------------------------------------------------
 def test_output_is_sorted_and_deterministic():
     pieces = [_piece("bed", "bed", 400, 400), _piece("ns", "nightstand", 140, 840)]

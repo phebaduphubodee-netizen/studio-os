@@ -3,13 +3,13 @@
  "project_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house",
  "gate_path": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\projects\\PRJ-2026-002_c001-house\\03_layout\\v4\\placement-gate.json",
  "summary": {
-  "doubt_score": 291,
-  "open": 30,
+  "doubt_score": 281,
+  "open": 29,
   "resolved": 0,
   "by_severity": {
    "CRITICAL": 0,
    "HIGH": 1,
-   "MEDIUM": 18,
+   "MEDIUM": 17,
    "LOW": 11
   }
  },
@@ -77,7 +77,7 @@
    "status": "READ",
    "flags": 0,
    "errored": 0,
-   "prior_band": "UNWIRED (no corpus priors -- gross built-in bounds only)",
+   "prior_band": "READ",
    "no_bound_kinds": [
     "cabinet",
     "headboard"
@@ -95,8 +95,9 @@
    "status": "READ",
    "assessed_fields": 57,
    "owner_signed": 2,
-   "flagged_unsure": 16,
+   "flagged_unsure": 15,
    "errored": 0,
+   "prior_corroboration": "WIRED",
    "per_spec": {
     "scene-graph.master_bedroom.json": {
      "assessed": 36,
@@ -106,7 +107,7 @@
     "scene-graph.sitting_room.json": {
      "assessed": 21,
      "owner_signed": 2,
-     "flagged_unsure": 6
+     "flagged_unsure": 5
     }
    }
   },
@@ -385,21 +386,6 @@
    "score": 10,
    "resolved": false,
    "detail": "kind='armchair' on 'เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)' shipped as certain, but hand-typed identity, no owner sign + no prior-band corroboration  (flag-confidence 0.7)  [เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)]",
-   "why": "identity is owner-only semantic truth and there is NO machine identity read; a hand-typed kind with no owner signature and no unique prior-band match is an unverified guess dressed as certainty",
-   "resolve_by": "confirm the piece identity on the sheet and sign confirmed_kind (or bind a kind-priors band); silence is not verification",
-   "source_file": "scene-graph.sitting_room.json"
-  },
-  {
-   "source": "confidence",
-   "kind": "kind",
-   "scope": "element",
-   "room": "sitting_room",
-   "severity": "MEDIUM",
-   "count": 1,
-   "magnitude": 1,
-   "score": 10,
-   "resolved": false,
-   "detail": "kind='sofa' on 'โซฟา 3 ที่นั่ง' shipped as certain, but hand-typed identity, no owner sign + no prior-band corroboration  (flag-confidence 0.7)  [โซฟา 3 ที่นั่ง]",
    "why": "identity is owner-only semantic truth and there is NO machine identity read; a hand-typed kind with no owner signature and no unique prior-band match is an unverified guess dressed as certainty",
    "resolve_by": "confirm the piece identity on the sheet and sign confirmed_kind (or bind a kind-priors band); silence is not verification",
    "source_file": "scene-graph.sitting_room.json"
@@ -777,21 +763,6 @@
    "score": 10,
    "resolved": false,
    "detail": "kind='armchair' on 'เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)' shipped as certain, but hand-typed identity, no owner sign + no prior-band corroboration  (flag-confidence 0.7)  [เก้าอี้ tub ซ้าย (เลานจ์ริมกระจก หันชมสวน)]",
-   "why": "identity is owner-only semantic truth and there is NO machine identity read; a hand-typed kind with no owner signature and no unique prior-band match is an unverified guess dressed as certainty",
-   "resolve_by": "confirm the piece identity on the sheet and sign confirmed_kind (or bind a kind-priors band); silence is not verification",
-   "source_file": "scene-graph.sitting_room.json"
-  },
-  {
-   "source": "confidence",
-   "kind": "kind",
-   "scope": "element",
-   "room": "sitting_room",
-   "severity": "MEDIUM",
-   "count": 1,
-   "magnitude": 1,
-   "score": 10,
-   "resolved": false,
-   "detail": "kind='sofa' on 'โซฟา 3 ที่นั่ง' shipped as certain, but hand-typed identity, no owner sign + no prior-band corroboration  (flag-confidence 0.7)  [โซฟา 3 ที่นั่ง]",
    "why": "identity is owner-only semantic truth and there is NO machine identity read; a hand-typed kind with no owner signature and no unique prior-band match is an unverified guess dressed as certainty",
    "resolve_by": "confirm the piece identity on the sheet and sign confirmed_kind (or bind a kind-priors band); silence is not verification",
    "source_file": "scene-graph.sitting_room.json"
