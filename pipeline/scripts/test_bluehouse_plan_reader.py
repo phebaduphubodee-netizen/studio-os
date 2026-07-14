@@ -34,12 +34,14 @@ import pytest
 from bluehouse_plan_reader import (
     GLAZING_COVER_FRAC, GRID_MM, PT_MM, RefuseSheet, SNAP_TOL_MM, THAI_FLOORPLAN_SKEL,
     audit_sides, band_aligned, band_axis, band_long_edges, classify_panels, derive_room_polygon,
-    envelope_checks, find_gaps, flood_region, gap_coverage, gap_ink_rects, gap_rect, gap_segments,
-    geometry_snap, is_dimension_tick, is_wall_band, is_wall_step, merge_runs, openings_on_outline,
-    outline_from_seed, parse_scale_field, parse_titleblock_denom, parse_virtual_edge, resolve_gaps,
-    resolve_scale, snap_polygon, thai_skeleton, thickness_ok, titleblock_field, title_is_floor_plan,
-    trace_contours, type_openings,
+    envelope_checks, extent_is_a_storey, find_gaps, flood_region, gap_coverage, gap_ink_rects,
+    gap_rect, gap_segments, geometry_snap, is_dimension_tick, is_wall_band, is_wall_step, merge_runs,
+    openings_on_outline, outline_from_seed, parse_scale_field, parse_titleblock_denom,
+    parse_virtual_edge, plan_extent, plan_gate, read_bands, resolve_gaps, resolve_scale,
+    sheet_shrink, snap_polygon, thai_skeleton, thickness_ok, titleblock_field, title_is_floor_plan,
+    to_mm_bands, trace_contours, type_openings, CANDIDATE_DENOMS, WALL_MM_LO, WALL_MM_HI,
 )
+import math
 from floor_openings import clip_wall_segments, opening_boxes
 from pdf_extract_walls import _seg_key, merge_carried
 
@@ -167,25 +169,108 @@ def test_title_is_floor_plan_vetoes_the_joinery_sheets():
     assert not ok and "detail/elevation/section" in why
 
 
-def test_bare_THAI_plan_word_is_NOT_evidence():
-    """THE TRAP, measured: bare แปลน ('plan') appears in the BODY of 6 of the 7 joinery sheets
-    (the joinery's own plan view). A matcher keyed on แปลน fails open on exactly the pages the
-    gate exists to refuse. Only แปลนพื้น (FLOOR plan) counts."""
-    ok, _ = title_is_floor_plan("แบบขยาย BF-02", "แปลน  รูปด้าน  1:25")
-    assert not ok
+def test_bare_THAI_plan_word_IS_evidence_in_the_TITLE_but_the_veto_runs_first():
+    """ROUND 3. The old test here asserted bare แปลน is NEVER evidence, citing "แปลน appears in the
+    BODY of 6 of the 7 joinery sheets". That trap is real but it is a PAGE_TEXT trap, and the gate
+    was applying it to the positional TITLE field -- where, measured over 898 corpus pages, แปลน
+    appears in 62 plan titles and 0 non-plan titles once the แบบขยาย veto has run.
+
+    So bare แปลน in the DRAWING TITLE now ACCEPTS -- and this test pins the only thing that makes
+    that safe: the veto runs FIRST. Reorder title_is_floor_plan so the accept precedes the veto and
+    the second assertion goes red, because 'แบบขยายแปลนห้องน้ำ' (the enlarged bathroom plan) would
+    be emitted to build_floor as a storey."""
+    ok, why = title_is_floor_plan("แปลนเฟอร์นิเจอร์ ชั้น 1", "")
+    assert ok, "a Thai furniture plan is a plan; the office does not title its plans แปลนพื้น"
+
+    ok, why = title_is_floor_plan("แบบขยายแปลนห้องน้ำ", "")
+    assert not ok, "VETO-FIRST: an ENLARGED plan of one bathroom must never reach build_floor"
+    assert "detail/elevation/section" in why
 
 
-def test_thai_skeleton_survives_split_combining_marks():
-    """The PDF text layer CAN split a vowel/tone mark off its consonant. (On this particular
-    sheet it does NOT -- the literal string comes out composed, see the real-PDF pin below --
-    but the skeleton matcher is what makes that irrelevant either way.)"""
+def test_the_page_text_fallback_is_GONE_and_cannot_resurrect():
+    """It FAILED OPEN. `if THAI_FLOORPLAN_SKEL in thai_skeleton(page_text)` passed T1 on 3
+    'รายการประกอบแบบ' (specification-index) sheets, whose BODY quotes every sheet title in the set
+    -- including แปลนพื้น -- while the sheet itself is a text page. A page-wide keyword search cannot
+    say what a SHEET IS.
+
+    NOTE the test this replaces asserted `title_is_floor_plan("NOT A PLAN TITLE", split)[0]` with the
+    message "the Thai fallback must fire". It never fired: "NOT A PLAN TITLE" contains the substring
+    PLAN, so the LATIN branch returned True and the assertion passed for a reason it did not name.
+    It stayed green after the fallback was deleted. That is a test that could not fail -- the exact
+    shape this repo keeps re-inventing. Use a title with NO plan word in it, so only the fallback
+    could ever satisfy the assertion."""
+    ok, why = title_is_floor_plan("รายการประกอบแบบ", "แปลนพื้นชั้น 1   แปลนพื้นชั้น 2")
+    assert not ok, "the sheet's BODY quoting แปลนพื้น must NOT make the sheet a floor plan"
+    assert "not a plan title" in why
+
+
+def test_thai_skeleton_survives_split_combining_marks_AND_font_private_marks():
+    """The PDF text layer splits vowel/tone marks off their consonants -- and this office's CAD font
+    emits them into the Unicode PRIVATE USE AREA (U+F70E = thanthakhat, U+F70B = mai tho) instead of
+    U+0E47-0E4E, where the old _THAI_MARKS range could not see them.
+
+    That was NOT cosmetic. skeleton('รูปด้าน') left the PUA mark wedged between ด and า, so the
+    ELEVATION veto skeleton 'รปดาน' did not match and THE VETO SILENTLY DID NOT FIRE on 5 elevation
+    sheets -- while the gate reported the veto as working. Drop U+F700-F71F from _THAI_MARKS and the
+    last assertion goes red."""
     composed = "แปลนพื้นชั้น 1"
     split = "แปลนพ" + "ื้" + "น"      # marks adrift
-    assert thai_skeleton(composed) == thai_skeleton(split + "ชั้น 1")[:len(thai_skeleton(split))] \
-        or THAI_FLOORPLAN_SKEL in thai_skeleton(split)
     assert THAI_FLOORPLAN_SKEL in thai_skeleton(composed)
     assert THAI_FLOORPLAN_SKEL in thai_skeleton(split)
-    assert title_is_floor_plan("NOT A PLAN TITLE", split)[0], "the Thai fallback must fire"
+
+    pua_elev = "รูปดาน"          # 'รูปด้าน' as the real title block emits it
+    assert thai_skeleton("รปดาน") in thai_skeleton(pua_elev), "PUA marks must not break the skeleton"
+    ok, why = title_is_floor_plan(pua_elev, "")
+    assert not ok and "detail/elevation/section" in why, "the ELEVATION veto must fire through PUA"
+
+
+def test_T3_a_plan_of_ONE_ROOM_is_not_a_FLOOR_and_is_refused():
+    """THE CLASS A TITLE-BASED ANSWER KEY CANNOT SEE. This module emits wall-segments for
+    build_floor: its product is a FLOOR. 9 corpus sheets are titled แปลนเฟอร์นิเจอร์ <ROOM> -- a
+    per-room ENLARGEMENT under a title the designer spelled differently from แบบขยาย.
+
+    They are not caught by geometry: the live one (a 12.0 x 4.8 m strip = two bedrooms and their
+    baths) has walls, a stated 1:50, a 57.6 m2 footprint and ink on four sides, so G0/T1/T2/S1/E ALL
+    PASS on it. Its PDF contains no whole-storey plan at all, so without T3 that bedroom becomes THE
+    floor of that project. Delete T3 and this goes red; scoring the gate on "does the title say
+    แปลน" cannot go red at all, which is why the check exists and the metric did not find it."""
+    for room_title in ("แปลนเฟอร์นิเจอร์ ห้องนอน 3,4", "แปลนเฟอร์นิเจอร์ ห้องรับแขก",
+                       "แปลนเฟอร์นิเจอร์ห้องพระ"):
+        ok_t, _ = title_is_floor_plan(room_title, "")
+        assert ok_t, "T1 is RIGHT to call it a plan -- it is one. T3 is what says it is not a FLOOR."
+        assert plan_extent(room_title) == "room"
+        ok_x, why = extent_is_a_storey(room_title, ok_t)
+        assert not ok_x and "per-room ENLARGEMENT" in why
+
+    for storey_title in ("แปลนเฟอร์นิเจอร์ ชั้น 1", "แปลนพื้น", "FURNITURE PLAN 1", "แปลนผนัง"):
+        ok_t, _ = title_is_floor_plan(storey_title, "")
+        assert plan_extent(storey_title) == "storey"
+        assert extent_is_a_storey(storey_title, ok_t)[0], f"{storey_title} is a storey, not a room"
+
+
+def test_T3_is_wired_into_the_gate_that_the_corpus_actually_runs():
+    """read_bands() builds its OWN check list; plan_gate() is not called by it. A T3 added to only
+    one of them would be a check that never executes on a real page. Pin both lists carrying it."""
+    src = inspect.getsource(read_bands)
+    assert '"id": "T3"' in src, "T3 must be in read_bands' own check list, not just plan_gate's"
+    ids = [c["id"] for c in plan_gate("แปลนเฟอร์นิเจอร์ ห้องนอน 1", "", 50, [])]
+    assert "T3" in ids
+    t3 = next(c for c in plan_gate("แปลนเฟอร์นิเจอร์ ห้องนอน 1", "", 50, []) if c["id"] == "T3")
+    assert t3["ok"] is False
+
+
+def test_the_reflected_ceiling_plan_is_refused_because_it_has_no_WALL_POCHE():
+    """แปลนฝ้าเพดาน is a real plan, and the reader must still refuse it: MEASURED, 6 of its 7 pages
+    carry ZERO 0.84 pt wall quads (every other plan class has a median of 31-117). An RCP draws the
+    ceiling grid, not the poche, and shows no openings -- build_floor would emit a sealed box.
+
+    The counterexample that keeps this from becoming "veto anything unfamiliar": แปลนไฟฟ้า
+    (electrical) IS accepted -- 4/4 of its pages DO carry the poche (median 31 wall quads), so it is
+    a structurally valid source of the same walls."""
+    ok, why = title_is_floor_plan("แปลนฝ้าเพดาน", "")
+    assert not ok and "reflected ceiling plan" in why
+    assert title_is_floor_plan("แปลนไฟฟ้าแสงสว่าง", "")[0], \
+        "electrical plans DO carry the wall poche -- do not veto what you have not measured"
 
 
 def test_envelope_checks_refuse_a_cabinet_elevation():
@@ -649,6 +734,92 @@ def test_the_reader_refuses_to_be_handed_a_scale(synth):
         build(synth["good"], 0, scale_override=17.63889)
 
 
+def test_synthetic_A4_EXPORT_reads_the_SAME_building_as_the_A3(synth):
+    """THE ANTI-HALF-SIZE TRIPWIRE, in a form that can be committed (no client geometry).
+
+    a4export.pdf is good.pdf photographically reduced by 1/sqrt(2) -- the whole page, TITLE BLOCK
+    INCLUDED -- while the title block goes on printing the A3 original's '1 : 50'. That is exactly
+    what the office's exporter does to 116 of the corpus's 898 pages.
+
+    Both sheets are the SAME 8000 x 6000 mm building. If the sheet shrink is not read off the border,
+    the A4 one reads 5657 x 4243 mm and the gate's own scoreboard CANNOT TELL: measured, a wrong fix
+    (widen WALL_MM_LO so 70.9 mm counts as a wall) scores identically on accepted-count, recall and
+    false-accepts while emitting the building at 0.7071x. Recall and false-accepts are blind to a
+    scale error. Only an ABSOLUTE dimension is not. This is that dimension."""
+    def extent_mm(path):
+        bands_pt, _st, scale, denom, _m, _tb, _c, _n = read_bands(path, 0)
+        bands = to_mm_bands(bands_pt, scale, 0.0, 0.0)
+        return (max(b[2] for b in bands) - min(b[0] for b in bands),
+                max(b[3] for b in bands) - min(b[1] for b in bands), scale, denom)
+
+    w3, h3, sc3, d3 = extent_mm(synth["good"])
+    w4, h4, sc4, d4 = extent_mm(synth["a4export"])
+    assert d3 == d4 == 50, "both title blocks state 1:50 -- the denominator is NOT what changes"
+    assert abs(sc4 / sc3 - math.sqrt(2)) < 0.01, (
+        "mm-per-PAGE-pt must be sqrt(2)x larger on the A4 export: same building, smaller paper")
+    assert abs(w3 - 8000) < 15 and abs(h3 - 6000) < 15, f"A3 reads {w3:.0f}x{h3:.0f}, want 8000x6000"
+    assert abs(w4 - 8000) < 15 and abs(h4 - 6000) < 15, (
+        f"the A4 export reads {w4:.0f}x{h4:.0f} mm -- the same building the A3 reads as "
+        f"{w3:.0f}x{h3:.0f}. A ratio near 0.7071 means the sheet shrink was never applied.")
+
+
+# ============================================================== THE PAPER (A3 art exported to A4)
+def test_sheet_shrink_recognises_the_two_paper_steps():
+    """The office DRAWS on A3 and sometimes EXPORTS at A4 -- the whole page, title block included,
+    shrinks 1/sqrt(2) while the title block goes on printing the A3 original's scale. 116 of the
+    corpus's 898 pages are such exports, and S1 was refusing all of them for the RIGHT reason: at the
+    stated scale their 100 mm walls read 70.9 mm. The wall was never wrong. The PAPER was."""
+    s, why = sheet_shrink((1122.45, 773.85))
+    assert s == 1.0 and "1.0000x the A3 design sheet" in why
+    s, why = sheet_shrink((793.7, 547.2))                    # the measured A4 export
+    assert abs(s - 1 / math.sqrt(2)) < 1e-6 and "A3 ART EXPORTED TO A4" in why
+
+
+def test_sheet_shrink_is_FAIL_CLOSED_and_never_interpolates():
+    """"The wall came out plausible" is NOT evidence: WALL_MM_PLAUSIBLE spans 80-260 mm, and a 15%
+    scale error hides inside that window comfortably. So an unknown reduction REFUSES."""
+    with pytest.raises(RefuseSheet, match="no sheet border"):
+        sheet_shrink(None)
+    with pytest.raises(RefuseSheet, match="not a known paper step"):
+        sheet_shrink((950.0, 655.0))          # 0.846x -- a real reduction, but not a paper step
+    with pytest.raises(RefuseSheet, match="ANISOTROPIC"):
+        sheet_shrink((793.7, 700.0))          # stretched: mm-per-pt is not one number
+
+
+def test_resolve_scale_needs_the_shrink_and_a_dropped_arg_is_caught():
+    """A 100 mm wall on an A4 export is 4.02 pt. At the title block's stated 1:50 that is 70.9 mm --
+    not a wall -- so the un-shrunk call must REFUSE. Pass the shrink and the same ink calibrates."""
+    with pytest.raises(RefuseSheet):
+        resolve_scale([4.02] * 20, 50, 1.0)
+    scale, denom, modal, note = resolve_scale([4.02] * 20, 50, 1 / math.sqrt(2))
+    assert denom == 50 and abs(scale - 24.945) < 0.01, "mm per PAGE pt, not per design pt"
+    assert abs(modal * scale - 100.3) < 1.0, "the wall is 100 mm once the paper is accounted for"
+
+
+def test_widening_the_wall_family_would_DISARM_the_half_size_veto():
+    """THE FIX THAT LOOKS RIGHT AND IS NOT. It is tempting to answer 'the wall might be 200 mm' by
+    widening the hypothesis set to {100,150,200,250}. MEASURED: that MANUFACTURES the ambiguity that
+    disarms this veto. 11.34 pt with a stated 1:50 is SIMULTANEOUSLY a 200 mm wall at a true 1:50 and
+    a 100 mm wall at a true 1:25 -- the ink is identical, and nothing in it can tell them apart.
+
+    Under the single-100 hypothesis the snap says "1:25 only", disagrees with the title block, and
+    REFUSES -- which is exactly right, because this is the half-size trap round 1 fell into. Under
+    the widened family the snap says "1:25 or 1:50", the title block's 50 is IN the set, and the
+    sheet is ACCEPTED. It buys 1 corpus page and sells the veto. (Also: there IS no 200 mm wall in
+    this corpus -- 85.7% of 3,006 wall quads are 100 mm, and the suspected 200 mm hospital party wall
+    measures 98.4-101.6 mm at 1:150.)"""
+    assert geometry_snap([11.34] * 20)[1] == [25], "single-100: this ink is a wall ONLY at 1:25"
+    with pytest.raises(RefuseSheet, match="SCALE DISAGREEMENT"):
+        resolve_scale([11.34] * 20, 50, 1.0)
+
+    widened = [d for d in CANDIDATE_DENOMS
+               if any(WALL_MM_LO <= 11.34 * PT_MM * d / (t / 100.0) <= WALL_MM_HI
+                      for t in (100, 150, 200, 250))]
+    assert 50 in widened and 25 in widened, (
+        "the widened family admits BOTH -- so the title block's 50 would pass the veto and the "
+        "half-size sheet would build. This assertion documents WHY the family stays at 100.")
+
+
 # ================================================================= ACCEPTANCE PINS (real sheet)
 PDF = ("_private/discord/MY-DATA-PEAT/โปรเจ็ก/012_I-24-004-Kนุช-บ้าน-Villa-Valley-สุระ-2/"
        "files/654446_I-24-004-K._VillaValley_2-_-01.pdf")
@@ -656,6 +827,39 @@ _REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 _PDF_ABS = os.path.join(_REPO, PDF)
 real_pdf = pytest.mark.skipif(not os.path.exists(_PDF_ABS),
                               reason="client PDF not present (gitignored)")
+
+# --- THE ANTI-HALF-SIZE TRIPWIRE. The SAME condo unit, drawn once, exported twice: A3 and A4.
+# THIS IS THE ONLY TEST IN THE SUITE THAT CAN CATCH A SCALE ERROR, and the gate's own scoreboard
+# provably cannot. MEASURED: a WRONG fix (widen WALL_MM_LO 95->65 so 70.9 mm counts as a wall)
+# scores IDENTICALLY on every number the gate reports -- 27 accepted, STOREY recall 50.9%,
+# false-accepts 0 -- while emitting this 8.0 x 8.0 m unit as 5657 x 5656 mm. Recall and
+# false-accepts are BLIND to a building at 1/sqrt(2) size. Only an ABSOLUTE dimension is not.
+A3_TWIN = ("_private/discord/MY-DATA-PEAT/update/004_I-24-043-Pandora-Condo/"
+           "files/519482_I-24-043-Pandora-PDF-_11.pdf", 5)
+A4_TWIN = ("_private/discord/MY-DATA-PEAT/โปรเจ็ก/024_I-24-043-PandoraCondo/"
+           "files/679283_I-24-043-pandora-A1--01.pdf", 20)
+_twins_here = all(os.path.exists(os.path.join(_REPO, p)) for p, _ in (A3_TWIN, A4_TWIN))
+twin_pdfs = pytest.mark.skipif(not _twins_here, reason="client PDFs not present (gitignored)")
+
+
+@twin_pdfs
+def test_the_A4_export_and_the_A3_original_agree_on_the_SAME_unit():
+    """Same project, same unit, two exports. If the paper is handled right they are the same
+    building; if it is not, one of them is 0.7071x the other and nothing else in the suite notices.
+
+    Measured: PASS at delta 1 mm / 3 mm. On the wrong fix: FAILS at delta 2342 mm / 2345 mm."""
+    def extent_mm(pdf, page):
+        bands_pt, _steps, scale, _d, _m, _tb, _c, _n = read_bands(os.path.join(_REPO, pdf), page)
+        bands = to_mm_bands(bands_pt, scale, 0.0, 0.0)
+        return (max(b[2] for b in bands) - min(b[0] for b in bands),
+                max(b[3] for b in bands) - min(b[1] for b in bands))
+
+    w3, h3 = extent_mm(*A3_TWIN)
+    w4, h4 = extent_mm(*A4_TWIN)
+    assert abs(w4 - w3) <= 5.0 and abs(h4 - h3) <= 5.0, (
+        f"the A4 export reads {w4:.0f}x{h4:.0f} mm but the A3 original reads {w3:.0f}x{h3:.0f} mm. "
+        f"A ratio near {1 / math.sqrt(2):.4f} means the sheet shrink was not applied.")
+    assert 7000 < w3 < 9000, "sanity: this unit is ~8 m across; if it is not, BOTH sheets are wrong"
 
 # the living zone, from the ink. Used only to SEED and to SIGN -- never to build.
 LIVING_SEED = (6000.0, 2000.0)

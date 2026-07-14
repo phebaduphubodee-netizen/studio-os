@@ -23,20 +23,28 @@ import sys
 PT_MM = 25.4 / 72.0
 
 
-def _sheet(doc, wall_mm, denom, title="FLOOR PLAN", scale_field=True):
-    page = doc.new_page(width=1191, height=842)          # A3 landscape, as the real sheets are
+def _sheet(doc, wall_mm, denom, title="FLOOR PLAN", scale_field=True, shrink=1.0):
+    """`shrink` = the A3->A4 photographic reduction (1/sqrt(2)) the office's exporter applies to the
+    WHOLE page, title block included, while the title block goes on printing the A3 scale. The reader
+    reads it back off the BORDER, so the border must be the office's real one -- see SHEET_BORDER_PT.
+    An arbitrary border (this was fitz.Rect(20,20,1171,822) = 1151x802 pt) is not a stand-in for the
+    office's sheet, it is a different sheet, and a synthetic fixture that lies about the paper cannot
+    defend the code that reads the paper."""
+    page = doc.new_page(width=1191 * shrink, height=842 * shrink)   # A3 landscape (or its A4 export)
     import fitz
-    sc = PT_MM * denom                                   # mm per pt at this plot scale
-    t = wall_mm / sc                                     # the wall's PLOTTED thickness, in points
+    sc = PT_MM * denom                                   # mm per pt at DESIGN size (what the TB says)
+    t = wall_mm / sc * shrink                            # the wall's PLOTTED thickness, in PAGE points
 
-    shp = page.new_shape()                               # the 1.44-pt sheet border
-    shp.draw_rect(fitz.Rect(20, 20, 1171, 822))
+    shp = page.new_shape()                               # the 1.44-pt sheet border == SHEET_BORDER_PT
+    shp.draw_rect(fitz.Rect(34.275 * shrink, 34.075 * shrink,
+                            1156.725 * shrink, 807.925 * shrink))   # 1122.45 x 773.85 pt at shrink=1
     shp.finish(color=(0, 0, 0), width=1.44, fill=None)
     shp.commit()
 
     # An 8000 x 6000 mm envelope, each side broken into 4 abutting quads (as the exporter does).
-    W, H = 8000.0 / sc, 6000.0 / sc
-    ox, oy = 200.0, 200.0
+    # In PAGE points: the reduction is photographic, so the ink shrinks with the paper.
+    W, H = 8000.0 / sc * shrink, 6000.0 / sc * shrink
+    ox, oy = 200.0 * shrink, 200.0 * shrink
     bands = []
     for k in range(4):
         bands.append((ox + k * W / 4, oy, ox + (k + 1) * W / 4, oy + t))            # south
@@ -49,12 +57,14 @@ def _sheet(doc, wall_mm, denom, title="FLOOR PLAN", scale_field=True):
         s.finish(color=(0, 0, 0), width=0.84, fill=None)                 # stroke-only, wall pen
         s.commit()
 
-    # the title block, in the same LABEL-above-VALUE layout the real sheets use
-    page.insert_text((1028.5, 612), "DRAWING TITLE : ", fontsize=6)
-    page.insert_text((1028.5, 627), title, fontsize=6)
+    # The title block, in the same LABEL-above-VALUE layout the real sheets use. NOTE it prints the
+    # DESIGN scale (`denom`) even when the page is an A4 export -- that is the whole bug being
+    # modelled: the exporter shrinks the paper and the title block does not notice.
+    page.insert_text((1028.5 * shrink, 612 * shrink), "DRAWING TITLE : ", fontsize=6 * shrink)
+    page.insert_text((1028.5 * shrink, 627 * shrink), title, fontsize=6 * shrink)
     if scale_field:
-        page.insert_text((1028.5, 640), "SCALE :", fontsize=6)
-        page.insert_text((1028.5, 650), f"1 : {denom}  ", fontsize=6)
+        page.insert_text((1028.5 * shrink, 640 * shrink), "SCALE :", fontsize=6 * shrink)
+        page.insert_text((1028.5 * shrink, 650 * shrink), f"1 : {denom}  ", fontsize=6 * shrink)
     return page
 
 
@@ -62,9 +72,12 @@ def write_all(outdir):
     import fitz
     os.makedirs(outdir, exist_ok=True)
     paths = {}
+    import math
     for name, kw in (("good", dict(wall_mm=100.0, denom=50)),
                      ("halfscale", dict(wall_mm=200.0, denom=50)),
-                     ("noscale", dict(wall_mm=100.0, denom=50, scale_field=False))):
+                     ("noscale", dict(wall_mm=100.0, denom=50, scale_field=False)),
+                     # A3 art exported to A4: same building, same title block, 0.7071x the paper.
+                     ("a4export", dict(wall_mm=100.0, denom=50, shrink=1 / math.sqrt(2)))):
         doc = fitz.open()
         _sheet(doc, **kw)
         p = os.path.join(outdir, name + ".pdf")

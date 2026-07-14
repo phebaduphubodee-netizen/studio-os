@@ -53,7 +53,21 @@ WALL_PEN_PT = 0.84                       # the wall-outline lineweight
 BORDER_PEN_PT = 1.44                     # the sheet border; its absence means "not this exporter"
 MAX_COLOR_SUM = 0.05                     # pure black
 WALL_MM_LO, WALL_MM_HI = 95.0, 106.0     # the drawn 100 mm wall, screened in MM
-AXIS_TOL_PT = 0.05
+AXIS_TOL_PT = 0.15
+# Was 0.05, and it hard-REFUSED 16 real plan pages before a single gate check ran. That is not a
+# rotated-wall problem, it is EXPORTER FLOATING-POINT NOISE. Skew distribution over all 4,865
+# wall-pen quads in the corpus (post rotation_matrix, per-quad max over its 4 edges) is BIMODAL with
+# an EMPTY BAND between the modes:
+#     < 0.001 pt .... 4,758 quads   (axis-aligned)
+#     0.05-0.15 pt ...... 13 quads  (only the values {0.0599, 0.06, 0.0601, 0.12, 0.1201})
+#     0.15-1.32 pt ....... 0 quads  <- the gap is REAL, not a threshold artefact
+#     >= 1.32 pt ........ 94 quads  (genuine diagonals: 87 at 45.000 deg, 6 at 44.464, 1 at 44.956)
+# Worst noise 0.120056 pt; smallest genuine rotation 1.320007 pt. 0.15 sits 1.25x above the noise and
+# 8.8x below the smallest real rotation. The hard refuse is KEPT -- rotated walls really are
+# unsupported; it now fires on rotation instead of on round-off.
+# BLAST RADIUS IS STRUCTURAL, not a corpus coincidence: only a page carrying a quad with skew in
+# (0.05, 0.15] can change verdict. Exactly 9 pages qualify -- 4 true plans (newly accepted) and 5
+# แบบขยาย BF-10..BF-15 sheets, which now REACH the gate and are refused by it (T1+T2+S1+E, depth 4).
 SQUARE_ASPECT = 1.15                     # below this a band is a corner block: belongs to both axes
 DEFAULT_MIN_GAP_MM = 400.0               # smaller than any door leaf; below this a gap is noise
 
@@ -94,6 +108,15 @@ LEAF_MIN_PATHS = 2                       # >=2 leaf-pen paths inside an opening 
 # Scales a Thai residential sheet is plausibly plotted at. Physics: mm_per_pt = PT_MM * denom.
 CANDIDATE_DENOMS = (20, 25, 30, 40, 50, 75, 100, 125, 150, 200)
 
+# --- THE PAPER (see sheet_shrink). The office DRAWS on A3 and sometimes EXPORTS at A4 -- the whole
+# page, title block included, shrinks by 1/sqrt(2) while the title block goes on printing the A3
+# original's scale. 116 of 898 corpus pages are such exports.
+SHEET_BORDER_PT = (1122.45, 773.85)             # the A3 design sheet's 1.44 pt border, MEASURED
+SHEET_SHRINK_STEPS = (1.0, 1.0 / math.sqrt(2))  # A3->A3, A3->A4. Nothing else is exported.
+SHEET_SHRINK_TOL = 0.004    # observed spread WITHIN a step: 0.006%. Nearest other step: 29% away.
+SHEET_ANISO_TOL = 0.004     # x and y must shrink TOGETHER, or the page was stretched, not reduced.
+SHEET_BORDER_TOL_PT = 2.0   # how close a 1.44 pt rect must be to the page's biggest to BE the border
+
 # --- WALL STEP (round 2). Two 40 mm wall-pen quads at the building's NW outer corner wrap the
 # 100 mm wall into a ~140 mm column/step. Round 1's 95-106 window dropped them SILENTLY. They are
 # real ink, so they are now CLASSIFIED (segment class "wall_step"), not widened into the wall
@@ -114,11 +137,38 @@ PLAN_TITLE_WORD = re.compile(r"\bPLAN\b", re.I)
 NOT_PLAN_WORD = re.compile(r"\b(DETAIL|ELEVATION|SECTION)\b", re.I)
 # Thai, matched on the CONSONANT SKELETON (see thai_skeleton): this PDF's text layer splits
 # combining vowels/tone marks off their consonants, so a literal string compare is unreliable.
-THAI_FLOORPLAN_SKEL = "แปลนพน"      # แปลนพื้น  "floor plan"  (NOT bare แปลน -- see below)
+# ROUND 3 -- measured over the whole 898-page studio corpus (20 PDFs / 15 projects), not one PDF.
+# THE OFFICE DOES NOT TITLE ITS PLANS "แปลนพื้น". It titles them แปลนเฟอร์นิเจอร์ (furniture),
+# แปลนผนัง (wall), แปลนไฟฟ้า (electrical), "PLAN เฟอร์นิเจอร์", "FURNITURE PLAN 1". Requiring the
+# FLOOR-plan skeleton แปลนพน admitted only the 3 sheets whose title happens to be in LATIN -- so the
+# reader had never once been RUN on a Thai-titled sheet, and every downstream number it has ever
+# reported (F1, "closes a room") was measured on a sample the gate itself selected.
+THAI_PLAN_SKEL = "แปลน"            # "plan" -- ANY plan sheet. The VETO below is what makes this safe.
+THAI_FLOORPLAN_SKEL = "แปลนพน"     # แปลนพื้น "floor plan": a strict subset, kept for callers/tests.
 THAI_NOT_PLAN_SKELS = ("แบบขยาย", "รปดาน", "รปตด")  # enlarged detail / elevation / section
-#   TRAP, measured: bare แปลน ("plan") appears in the BODY of 6 of the 7 joinery sheets (the
-#   joinery's own plan view). Matching แปลน would fail open on exactly the pages this gate exists
-#   to refuse. Only แปลนพื้น (FLOOR plan) is evidence.
+#   The OLD comment here said: "bare แปลน appears in the BODY of 6 of the 7 joinery sheets, so
+#   matching แปลน would fail open". That is a PAGE_TEXT trap, and it was mis-applied to the TITLE.
+#   MEASURED on the corpus's positional DRAWING TITLE field: bare แปลน appears in 62 PLAN titles and
+#   37 DETAIL titles -- and ALL 37 are "แบบขยายแปลน<room>" (an ENLARGED plan of one room). After the
+#   แบบขยาย veto: 62 plan / 0 non-plan. ORDER IS LOAD-BEARING: veto first, then accept.
+THAI_NOT_BUILDABLE_SKELS = ("ฝาเพดาน",)   # ฝ้าเพดาน = reflected ceiling plan.
+#   Argued from what build_floor CONSUMES (0.84 pt wall poche -> bands -> rooms): MEASURED, 6 of the
+#   7 RCP pages carry ZERO 0.84 pt wall quads (every other plan class has a median of 31-117). An RCP
+#   draws the ceiling grid, not the poche, and shows no openings -- build_floor would emit a sealed
+#   box. Vetoed as a PAGE TYPE. แปลนไฟฟ้า (electrical) is NOT vetoed: 4/4 of its pages DO carry the
+#   poche (median 31), so it is a structurally valid source of the same walls.
+
+# --- EXTENT (T3). THE CLASS AN ANSWER KEY BUILT ON "does the title say แปลน" CANNOT SEE. ---------
+# This module emits wall-segments-mm for build_floor: its product is a FLOOR. But 9 corpus sheets are
+# titled แปลนเฟอร์นิเจอร์ <ROOM NAME> -- a per-room ENLARGEMENT, the same thing the 374 แบบขยาย sheets
+# are, under a title the designer spelled differently. 934076 p7 'แปลนเฟอร์นิเจอร์ ห้องนอน 3,4' is a
+# 12.0 x 4.8 m strip: two bedrooms and their baths, clipped at a party wall. It has walls, a stated
+# 1:50, a 57.6 m2 footprint and ink on four sides -- SO EVERY GEOMETRIC GATE CHECK PASSES ON IT.
+# Only the title can tell a room from a storey, and its PDF contains no whole-storey plan at all, so
+# without this check that bedroom becomes THE floor of that project. This is round 1's failure at a
+# smaller radius: round 1 emitted a floor for a cabinet; round 3 would emit one for a bedroom.
+# MEASURED: the single skeleton token หอง selects exactly those 9 and none of the 53 storey plans.
+ROOM_EXTENT_SKEL = "หอง"             # ห้อง "room"
 MIN_PLAN_BANDS = 12                  # p3=45, p4=17; the joinery sheets top out at 8
 FOOTPRINT_MIN_SIDE_MM, FOOTPRINT_MAX_SIDE_MM = 2500.0, 60000.0
 FOOTPRINT_MIN_AREA_M2 = 10.0
@@ -126,7 +176,15 @@ SIDE_INK_MIN_FRAC = 0.05             # each side of the footprint must carry SOM
 WALL_MM_PLAUSIBLE_LO, WALL_MM_PLAUSIBLE_HI = 80.0, 260.0   # 100/150/200/250 mm walls
 
 _THAI_MARKS = (set(range(0x0E31, 0x0E32)) | set(range(0x0E34, 0x0E3B))
-               | set(range(0x0E47, 0x0E4F)))
+               | set(range(0x0E47, 0x0E4F))
+               # FONT-PRIVATE Thai marks. The office's CAD font emits tone marks into the Unicode
+               # PRIVATE USE AREA instead of U+0E47-0E4E, so the range above never saw them.
+               # MEASURED in the corpus's drawing titles: U+F70E = ์ (thanthakhat, 98 hits, e.g.
+               # เฟอร์นิเจอร์) and U+F70B = ้ (mai tho, 12 hits, e.g. รูปด้าน). NOT cosmetic:
+               # skeleton('รูปด้าน') left the PUA mark wedged between ด and า, so the ELEVATION veto
+               # skeleton 'รปดาน' never matched and THE VETO SILENTLY DID NOT FIRE on 5 elevation
+               # sheets. Stripping the PUA range REPAIRS a veto that was reported as working.
+               | set(range(0xF700, 0xF720)))
 
 
 class RefuseSheet(Exception):
@@ -212,9 +270,19 @@ def parse_scale_field(text):
     return int(m.group(1)) if m else None
 
 
-def title_is_floor_plan(drawing_title, page_text):
-    """(ok, why). POSITIVE evidence only: the title-block DRAWING TITLE names a PLAN, or the sheet
-    carries the Thai FLOOR-plan title แปลนพื้น. An explicit detail/elevation/section title vetoes."""
+def title_is_floor_plan(drawing_title, page_text=None):
+    """(ok, why). POSITIVE evidence, read ONLY from the title-block DRAWING TITLE field.
+
+    `page_text` is accepted and IGNORED (both call sites still pass it). It used to be a fallback --
+    `if THAI_FLOORPLAN_SKEL in thai_skeleton(page_text): return True` -- and it FAILED OPEN, so it is
+    DELETED, not deprecated. MEASURED: it passed T1 on 3 'รายการประกอบแบบ' (specification-index)
+    sheets, whose BODY quotes แปลนพื้น while the sheet is not a plan at all; only the geometry checks
+    downstream stopped them. A page-wide keyword search cannot say what a SHEET IS. Deleting it costs
+    ZERO recall (measured: no plan page depended on it).
+
+    ORDER IS LOAD-BEARING: veto, then accept. The accept skeleton is bare แปลน, which also matches
+    the joinery blow-ups 'แบบขยายแปลน<room>' -- the แบบขยาย veto is the ONLY thing between them and
+    emission, so it must run first, and it must be PUA-robust (see _THAI_MARKS)."""
     dt = (drawing_title or "").strip()
     if not dt:
         return False, "no DRAWING TITLE field in the title block"
@@ -224,15 +292,90 @@ def title_is_floor_plan(drawing_title, page_text):
             return False, f"DRAWING TITLE {dt!r} is a detail/elevation/section sheet, not a plan"
     if NOT_PLAN_WORD.search(dt):
         return False, f"DRAWING TITLE {dt!r} names a detail/elevation/section"
+    for bad in THAI_NOT_BUILDABLE_SKELS:
+        if thai_skeleton(bad) in skel:
+            return False, (f"DRAWING TITLE {dt!r} is a reflected ceiling plan: it carries no wall "
+                           f"poche and no openings, so there is nothing for build_floor to build")
     if PLAN_TITLE_WORD.search(dt):
         return True, f"DRAWING TITLE {dt!r} names a PLAN"
-    if THAI_FLOORPLAN_SKEL in thai_skeleton(page_text):
-        return True, "the sheet carries the Thai floor-plan title แปลนพื้น"
-    return False, (f"DRAWING TITLE {dt!r} is not a plan title and no แปลนพื้น (floor plan) "
-                   f"appears on the sheet")
+    if THAI_PLAN_SKEL in skel:
+        return True, f"DRAWING TITLE {dt!r} names a Thai plan (แปลน) and no veto matched"
+    return False, f"DRAWING TITLE {dt!r} is not a plan title (no PLAN / แปลน)"
 
 
-def resolve_scale(thin_dims_pt, tb_denom, denoms=CANDIDATE_DENOMS):
+def plan_extent(drawing_title):
+    """'storey' | 'room'. WHAT the plan is a plan OF -- see ROOM_EXTENT_SKEL.
+
+    Deliberately separate from title_is_floor_plan: a room enlargement IS a plan (T1 is right to say
+    yes), it is just not a FLOOR, which is the only thing this module knows how to emit. Keeping the
+    two apart keeps the per-check kill counts honest -- a room refusal names itself instead of hiding
+    inside 'not a plan title'."""
+    return "room" if ROOM_EXTENT_SKEL in thai_skeleton(drawing_title or "") else "storey"
+
+
+def extent_is_a_storey(drawing_title, title_ok):
+    """(ok, why) for gate check T3. Only has an opinion once T1 has said 'this is a plan at all'."""
+    if not title_ok:
+        return True, "not evaluated (T1 already refused this page)"
+    if plan_extent(drawing_title) == "room":
+        return False, (f"DRAWING TITLE {drawing_title!r} names a ROOM: this is a per-room "
+                       f"ENLARGEMENT, not a storey. This reader emits a FLOOR for build_floor, and "
+                       f"a bedroom is not a floor. REFUSING as a floor source.")
+    return True, f"DRAWING TITLE {drawing_title!r} is a plan of a storey, not of one room"
+
+
+def sheet_shrink(border_wh):
+    """(shrink, why). How much SMALLER the exported page is than the A3 sheet the office DRAWS on.
+    Raises RefuseSheet rather than inventing a factor.
+
+    THE BUG THIS CLOSES, measured over 898 pages: the office draws on A3 and sometimes exports the
+    PDF at A4 -- a uniform 1/sqrt(2) photographic reduction of the whole page, TITLE BLOCK INCLUDED.
+    The title block therefore still prints the A3 original's scale while the ink is 0.7071x smaller,
+    so a real 100 mm wall reads 70.9 mm and S1 refused the page. S1 WAS NOT BROKEN: it was correctly
+    refusing a sheet whose title block was lying to it. The missing piece was the paper, not the wall.
+    (`parse_titleblock_denom`'s docstring has warned about exactly this since round 1. Nobody acted.)
+
+    Border geometry, all 898 pages -- three values, no continuum:
+        1122.4-1122.5 x 773.8-773.9 pt   662 pages   A3, the design sheet
+                793.7 x 547.2 pt         116 pages   sx=0.707115 sy=0.707113  anisotropy 0.000002
+                absent                   120 pages   G0 refuses these anyway
+
+    WHY THIS IS NOT ROUND 1 WEARING A HAT. Round 1's deleted detect_scale() read a BUILDING dimension
+    whose true value is the very thing the reader is trying to learn. This reads a DRAFTING FRAME of
+    fixed, known, building-INDEPENDENT size -- the same 1122.45 x 773.85 pt on every A3 sheet this
+    office exports, whatever is drawn inside it. The title block still names the denominator; the
+    shrink only says how much smaller the paper got. And the wall veto still vetoes a WRONG shrink: a
+    mis-read border moves the modal wall off 100 mm and S1 refuses.
+
+    FAIL-CLOSED THREE WAYS: no border -> refuse. Anisotropic -> refuse (the page was STRETCHED, so
+    mm-per-pt is not one number). A reduction that is not a known paper step -> refuse, DO NOT
+    INTERPOLATE. "The wall came out plausible" is not evidence: WALL_MM_PLAUSIBLE spans 80-260 mm and
+    a 15% scale error hides inside it comfortably."""
+    if not border_wh:
+        raise RefuseSheet("no sheet border found: the page's paper size cannot be established, so "
+                          "the title block's scale cannot be trusted (an A4 export of A3 art still "
+                          "prints the A3 scale). REFUSING.")
+    w, h = border_wh
+    sx, sy = w / SHEET_BORDER_PT[0], h / SHEET_BORDER_PT[1]
+    if abs(sx - sy) > SHEET_ANISO_TOL:
+        raise RefuseSheet(f"the sheet border is ANISOTROPIC (x {sx:.4f}x, y {sy:.4f}x): the page was "
+                          f"stretched, not photographically reduced, so mm-per-pt is not one number. "
+                          f"REFUSING.")
+    s = (sx + sy) / 2.0
+    for step in SHEET_SHRINK_STEPS:
+        if abs(s - step) <= SHEET_SHRINK_TOL:
+            return step, (f"sheet border {w:.1f}x{h:.1f} pt = {step:.4f}x the A3 design sheet "
+                          f"({SHEET_BORDER_PT[0]:.1f}x{SHEET_BORDER_PT[1]:.1f} pt)"
+                          + ("" if step == 1.0 else " -- A3 ART EXPORTED TO A4: the title block "
+                                                     "states the A3 scale, so it must be corrected"))
+    raise RefuseSheet(
+        f"the sheet border is {s:.4f}x the A3 design sheet -- not a known paper step "
+        f"{[round(x, 4) for x in SHEET_SHRINK_STEPS]}. REFUSING to interpolate a shrink: an unknown "
+        f"reduction means an unknown scale, and a 15% scale error hides inside the "
+        f"{WALL_MM_PLAUSIBLE_LO:.0f}-{WALL_MM_PLAUSIBLE_HI:.0f} mm plausible-wall window.")
+
+
+def resolve_scale(thin_dims_pt, tb_denom, shrink=1.0, denoms=CANDIDATE_DENOMS):
     """FAIL-CLOSED scale. Round 1 inferred the scale from an ASSUMED 100 mm wall thickness, so a
     200 mm wall at 1:50 snapped to '1:25' and the building was silently emitted at half size; a
     disagreeing title block only appended a note and fell through to the write.
@@ -242,6 +385,21 @@ def resolve_scale(thin_dims_pt, tb_denom, denoms=CANDIDATE_DENOMS):
       * stated scale is not a plan scale      -> REFUSE
       * geometry snaps to a DIFFERENT denom   -> REFUSE (do not pick a winner)
       * geometry snaps to nothing AND the wall would be implausible at the stated scale -> REFUSE
+
+    `shrink` (from sheet_shrink) is how much smaller the PAGE is than the A3 sheet the title block's
+    denominator refers to. The snap is done in DESIGN-sheet points so the 100 mm hypothesis stays
+    exact; the returned scale is mm per PAGE point, which is what the geometry is measured in.
+
+    WHY THE 100 mm HYPOTHESIS IS NOT WIDENED (measured, and the opposite of what it looks like it
+    should be): 3,006 wall quads over the 53 storey plans are 85.7% 100 mm, modal 98.4-101.6 mm on 51
+    of 53 pages. There is no 150 mm class and no 250 mm class; the suspected "200 mm hospital party
+    wall" DOES NOT EXIST -- the hospital's walls measure 98.4-101.6 mm at 1:150. And widening the
+    family MANUFACTURES the ambiguity that disarms this veto: 11.34 pt with a stated 1:50 snaps to
+    hits=[25] under the single-100 hypothesis (tb not in hits -> REFUSED, correctly, as the half-size
+    trap it is), but to hits=[25, 50] under {100,150,200,250} -- tb IS in hits -> ACCEPTED. The same
+    ink is simultaneously a 200 mm wall at a true 1:50 and a 100 mm wall at a true 1:25, and nothing
+    in the ink can tell them apart. Widening the family buys 1 page and sells the veto.
+
     Returns (scale_mm_per_pt, denom, modal_thin_pt, note)."""
     if not thin_dims_pt:
         raise RefuseSheet("no wall-pen quads to check a scale against")
@@ -252,8 +410,12 @@ def resolve_scale(thin_dims_pt, tb_denom, denoms=CANDIDATE_DENOMS):
     if tb_denom not in PLAN_DENOMS:
         raise RefuseSheet(f"the title block says 1:{tb_denom}, which is not a floor-plan scale "
                           f"(plan scales: {list(PLAN_DENOMS)}). This is a detail/joinery sheet.")
-    modal, hits = geometry_snap(thin_dims_pt, denoms)
-    scale = PT_MM * tb_denom
+    if not shrink:
+        raise RefuseSheet("no sheet shrink resolved; refusing to assume the page is at design size")
+    # Snap in DESIGN-sheet points; report mm per PAGE point.
+    modal, hits = geometry_snap([t / shrink for t in thin_dims_pt], denoms)
+    modal = modal * shrink if modal is not None else None      # back to PAGE pt, the caller's unit
+    scale = PT_MM * tb_denom / shrink
     if hits and tb_denom not in hits:
         raise RefuseSheet(
             f"SCALE DISAGREEMENT: the title block says 1:{tb_denom}, but the modal wall-pen "
@@ -348,10 +510,16 @@ def envelope_checks(bands):
 
 
 def plan_gate(drawing_title, page_text, tb_denom, bands):
-    """The PAGE-TYPE GATE. Returns the full check list; the caller REFUSES if any check fails."""
+    """The PAGE-TYPE GATE. Returns the full check list; the caller REFUSES if any check fails.
+
+    NOTE read_bands() builds its OWN copy of T1/T2/T3 (it needs the page's spans and geometry). The
+    two lists must stay in step -- a check added here alone would never execute on the corpus."""
     ok_t, why_t = title_is_floor_plan(drawing_title, page_text)
+    ok_x, why_x = extent_is_a_storey(drawing_title, ok_t)
     checks = [
-        {"id": "T1", "name": "title block names a FLOOR PLAN", "ok": ok_t, "detail": why_t},
+        {"id": "T1", "name": "title block names a PLAN", "ok": ok_t, "detail": why_t},
+        {"id": "T3", "name": "the plan is of a STOREY, not of one room", "ok": ok_x,
+         "detail": why_x},
         {"id": "T2", "name": "stated scale is a plan scale",
          "ok": tb_denom in PLAN_DENOMS,
          "detail": (f"title block says 1:{tb_denom}" if tb_denom else "no scale stated")
@@ -1122,7 +1290,20 @@ def read_bands(pdf, page_no):
     m = page.rotation_matrix
     drawings = page.get_drawings()
 
-    have_border = any(round(d.get("width") or 0, 2) == BORDER_PEN_PT for d in drawings)
+    # The sheet border: the page's LARGEST w=1.44 rect. Already scanned for G0; now also MEASURED,
+    # because its size is what says whether this page is the A3 the title block's scale refers to or
+    # a 0.7071x A4 export of it (see sheet_shrink).
+    border_wh = None
+    for d in drawings:
+        if round(d.get("width") or 0, 2) != BORDER_PEN_PT:
+            continue
+        r = d.get("rect")
+        if r is None:
+            continue
+        wh = (abs(r.x1 - r.x0), abs(r.y1 - r.y0))
+        if border_wh is None or wh[0] * wh[1] > border_wh[0] * border_wh[1]:
+            border_wh = wh
+    have_border = border_wh is not None
     candidates = []          # (rect_pt, thin_pt) for every wall-PEN quad, pre-thickness screen
     for d in drawings:
         items = d.get("items") or []
@@ -1149,27 +1330,44 @@ def read_bands(pdf, page_no):
     tb, tb_why = titleblock_scale_denom(spans, page_text)
 
     ok_t, why_t = title_is_floor_plan(drawing_title, page_text)
+    ok_x, why_x = extent_is_a_storey(drawing_title, ok_t)
     checks = [
         {"id": "G0", "name": "Bluehouse vector CAD sheet (wall pen + sheet border present)",
          "ok": bool(candidates) and have_border,
          "detail": f"{len(candidates)} black w={WALL_PEN_PT} lone-quad path(s); "
-                   f"w={BORDER_PEN_PT} sheet border {'found' if have_border else 'MISSING'}"},
-        {"id": "T1", "name": "title block names a FLOOR PLAN", "ok": ok_t, "detail": why_t},
+                   f"w={BORDER_PEN_PT} sheet border "
+                   + (f"{border_wh[0]:.1f}x{border_wh[1]:.1f} pt" if have_border else "MISSING")},
+        {"id": "T1", "name": "title block names a PLAN", "ok": ok_t, "detail": why_t},
+        {"id": "T3", "name": "the plan is of a STOREY, not of one room", "ok": ok_x,
+         "detail": why_x},
         {"id": "T2", "name": "the title block STATES a plan scale",
          "ok": tb in PLAN_DENOMS,
          "detail": (f"1:{tb} from the {tb_why}" if tb else tb_why)
                    + f"  (plan scales {list(PLAN_DENOMS)})"},
     ]
 
+    # --- THE PAPER. Which sheet size is the title block's scale actually stated FOR? (sheet_shrink)
+    shrink = None
+    try:
+        shrink, shrink_why = sheet_shrink(border_wh)
+        checks.append({"id": "P1", "name": "the page is a known paper step off the A3 design sheet",
+                       "ok": True, "detail": shrink_why})
+    except RefuseSheet as e:
+        checks.append({"id": "P1", "name": "the page is a known paper step off the A3 design sheet",
+                       "ok": False, "detail": str(e)})
+
     # --- SCALE. Title block wins; geometry is a VETO. A disagreement REFUSES; it does not note.
     scale = denom = modal = None
     try:
-        scale, denom, modal, snote = resolve_scale([t for _, t in candidates], tb)
+        scale, denom, modal, snote = resolve_scale([t for _, t in candidates], tb, shrink or 1.0)
         checks.append({"id": "S1", "name": "scale is stated AND not contradicted by the geometry",
-                       "ok": True, "detail": snote})
+                       "ok": shrink is not None, "detail": snote if shrink is not None else
+                       "not evaluated: the page's paper size is unresolved (see P1)"})
     except RefuseSheet as e:
         checks.append({"id": "S1", "name": "scale is stated AND not contradicted by the geometry",
                        "ok": False, "detail": str(e)})
+    if shrink is None:
+        scale = denom = modal = None      # never build on a scale whose paper is unknown
 
     bands_pt, steps_pt, off = [], [], []
     if scale is not None:
