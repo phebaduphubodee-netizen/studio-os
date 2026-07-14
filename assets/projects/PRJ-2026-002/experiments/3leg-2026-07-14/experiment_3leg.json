@@ -1,0 +1,491 @@
+{
+  "date": "2026-07-14 13:29",
+  "spec": "../../projects/PRJ-2026-002_c001-house/04_visualization/experiments/3leg-2026-07-14/sitting_room.materialized.spec.json",
+  "room_type": "sitting_room",
+  "material_story": "floor: warm oak plank PBR (CC0 texture set), polyurethane sheen; walls: matte warm-white interior wall paint (never pure white); feature wall: walnut feature wall (tinted oak PBR, drift breaks repeats); millwork: woodgrain laminate door face, slight sheen (FFE-BS01 console; Formica-class); glazing: the live glass__ glazing (Transmission 0.95); upholstery: warm off-white polyester weave (FFE-S01 Index Lamona sofa; colorway unconfirmed); wood furniture: warm oak plank PBR (CC0 texture set), polyurethane sheen; other furniture: neutral grey-beige solid (furn__ default); เก้าอี้อาร์มแชร์ 1: warm sand velvet, directional sheen (FFE-S03 Index Teddy pair; colorway unconfirmed); เก้าอี้อาร์มแชร์ 2: warm sand velvet, directional sheen (FFE-S03 Index Teddy pair; colorway unconfirmed); โซฟา 3 ที่นั่ง: warm off-white polyester weave (FFE-S01 Index Lamona sofa; colorway unconfirmed); โต๊ะกลาง (round coffee table): light birch veneer, clear acrylic lacquer (FFE-S02 IKEA BORGEBY)",
+  "leg_b_model_used": "gemini-3-pro-image-preview",
+  "legs": {
+    "A": {
+      "image": "../../assets/projects/PRJ-2026-002/renders/R_PRJ002_SittingRoom_Cam01_v01.png",
+      "what": "baseline: hardcoded-palette control + render-hybrid@v004 full repaint",
+      "sanity": {
+        "status": "PASS",
+        "checks": [
+          {
+            "check": "blur",
+            "status": "PASS",
+            "detail": "laplacian_var 828.0 std 54.6 (fail = lv<8.0 AND std<8.0; warn lv<25.0)"
+          },
+          {
+            "check": "exposure",
+            "status": "PASS",
+            "detail": "clip 0% mean 108 (fail clip>45% or mean<12.0/>243.0)"
+          },
+          {
+            "check": "blank",
+            "status": "PASS",
+            "detail": "std 54.6 (fail<3.0, warn<8.0)"
+          }
+        ],
+        "detail": "image sanity PASS",
+        "metrics": {
+          "laplacian_var": 828.03,
+          "clipped": 0.001,
+          "mean": 108.1,
+          "std": 54.55
+        }
+      },
+      "critique_rolls": [
+        {
+          "scores": {
+            "palette_coherence": 4,
+            "lighting_quality": 5,
+            "composition": 4,
+            "furniture_realism": 4,
+            "room_context": 5,
+            "styling_and_life": 3,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 4
+          },
+          "overall_0_5": 4.1,
+          "verdict": "SHIP",
+          "top_defects": [
+            "The styling is sterile and cliché; the perfectly stacked books and 'artfully draped' throw blanket feel like default assets rather than personal effects.",
+            "The plant in the corner, while a good addition for composition, has a uniform, slightly plastic quality to its leaves that betrays its digital origin.",
+            "The single piece of framed art on the wall is so minimalist it's practically a blank texture, adding no character or focal point to the large, empty wall.",
+            "The shadow cast on the wall is a large, featureless blob; a real sunbeam would have more texture and variation from passing through a window frame or foliage."
+          ],
+          "one_line": "It's a technically proficient render that nails the 'warm minimalist' brief, but its soul was apparently left out of the scene file.",
+          "if_client_deliverable": "Yes, this is acceptable to hand to a paying client. It's a high-quality, professional render that effectively communicates the mood, materials, and layout of the space. While the styling could be more personal and less generic, it meets a high technical and aesthetic standard for architectural visualization and is free of major technical flaws.",
+          "_artifact": "R_PRJ002_SittingRoom_Cam01_v01.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 1
+        },
+        {
+          "scores": {
+            "palette_coherence": 5,
+            "lighting_quality": 4,
+            "composition": 4,
+            "furniture_realism": 3,
+            "room_context": 4,
+            "styling_and_life": 3,
+            "proportion_and_scale": 5,
+            "photoreal_believability": 3
+          },
+          "overall_0_5": 3.5,
+          "verdict": "REWORK",
+          "top_defects": [
+            "The overall image has a tell-tale 'CG sheen' of being too clean and perfect, lacking the micro-imperfections of a real photograph.",
+            "The fabric texture on the loveseat is too uniform and procedural, missing the subtle variations, wrinkles, and softness of real boucle or textured upholstery.",
+            "Styling is minimal and sterile; the art is generic, the books are perfectly stacked, and the throw is artfully draped, making the scene feel like an uninhabited showroom.",
+            "The pillows appear rigid and unnaturally posed, lacking the soft compression and casualness of real cushions."
+          ],
+          "one_line": "A technically proficient but soulless render that mistakes a beige palette for a personality.",
+          "if_client_deliverable": "This is NOT_CLIENT_READY for a high-end campaign. While the composition and lighting are strong, it fails to cross the uncanny valley into true photorealism. The textures are too perfect, the styling is generic, and it lacks the lived-in quality that would make it believable. It's a solid draft, but it needs a final pass on texturing and styling to feel authentic and not just like a good 3D model.",
+          "_artifact": "R_PRJ002_SittingRoom_Cam01_v01.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 2
+        },
+        {
+          "scores": {
+            "palette_coherence": 5,
+            "lighting_quality": 5,
+            "composition": 4,
+            "furniture_realism": 3,
+            "room_context": 4,
+            "styling_and_life": 3,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 3
+          },
+          "overall_0_5": 3.5,
+          "verdict": "REWORK",
+          "top_defects": [
+            "The cushions on the armchair are perfectly rigid and smooth, a dead giveaway of basic 3D modeling.",
+            "The styling is generic and sterile; the coffee table objects and wall art feel like default assets rather than curated items.",
+            "The knitted throw blanket is draped with unnatural stiffness, particularly where it hangs over the sofa arm, betraying its digital origin.",
+            "The potted plant in the corner has a waxy, uniform appearance that reads as plastic, not living foliage."
+          ],
+          "one_line": "The beautiful lighting is doing all the heavy lifting to distract from the fact that the furniture looks like it came from a starter-pack asset library.",
+          "if_client_deliverable": "This is not acceptable for a paying client. While the mood and lighting are excellent, the unconvincing armchair, stiff textiles, and sterile styling make the space feel lifeless and obviously computer-generated. It needs another pass on key assets and styling details to feel authentic and justify a professional fee.",
+          "_artifact": "R_PRJ002_SittingRoom_Cam01_v01.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 3
+        }
+      ],
+      "critique_summary": {
+        "n_rolls": 3,
+        "n_scored": 3,
+        "verdicts": {
+          "SHIP": 1,
+          "REWORK": 2
+        },
+        "mean_overall": 3.7,
+        "mean_scores": {
+          "composition": 4.0,
+          "furniture_realism": 3.333,
+          "lighting_quality": 4.667,
+          "palette_coherence": 4.667,
+          "photoreal_believability": 3.333,
+          "proportion_and_scale": 4.333,
+          "room_context": 4.333,
+          "styling_and_life": 3.0
+        }
+      },
+      "baseline_critique": {
+        "scores": {
+          "palette_coherence": 5,
+          "lighting_quality": 4,
+          "composition": 3,
+          "furniture_realism": 3,
+          "room_context": 4,
+          "styling_and_life": 3,
+          "proportion_and_scale": 4,
+          "photoreal_believability": 3
+        },
+        "overall_0_5": 3.5,
+        "verdict": "REWORK",
+        "top_defects": [
+          "The sofa's form is slightly amorphous and 'melty', especially the tufting and arms, lacking the crisp tailoring of high-end upholstery.",
+          "The styling is extremely generic, using the standard 'render kit' of a single book, a small tray, and a non-descript plant, which screams 'template' rather than 'designed space'.",
+          "The armchair cushions are too rigid and blocky, appearing as simple geometric shapes with a texture applied, rather than soft, pliable objects.",
+          "The overall image has a tell-tale CG smoothness; textures on the plant and furniture lack the minute imperfections, dust, and wear that would make them believable."
+        ],
+        "one_line": "The beautiful lighting is doing its best to hide a slightly lumpy sofa and styling that feels pulled from a 3D asset store's front page.",
+        "if_client_deliverable": "This is not acceptable for a discerning client. While the mood and lighting are strong, the core furniture pieces have noticeable modeling flaws and the styling is so generic it undermines any claim to a custom or thoughtful design. It's a good starting point, but finishing it requires replacing key assets.",
+        "_artifact": "R_PRJ002_SittingRoom_Cam01_v01.png",
+        "_kind": "render",
+        "_model": "gemini-2.5-pro"
+      }
+    },
+    "B": {
+      "image": "../../assets/projects/PRJ-2026-002/experiments/3leg-2026-07-14\\leg_b_polish.png",
+      "what": "spec-materialized Cycles + render-polish@v001 finishing pass",
+      "sanity": {
+        "status": "PASS",
+        "checks": [
+          {
+            "check": "blur",
+            "status": "PASS",
+            "detail": "laplacian_var 443.2 std 56.7 (fail = lv<8.0 AND std<8.0; warn lv<25.0)"
+          },
+          {
+            "check": "exposure",
+            "status": "PASS",
+            "detail": "clip 0% mean 149 (fail clip>45% or mean<12.0/>243.0)"
+          },
+          {
+            "check": "blank",
+            "status": "PASS",
+            "detail": "std 56.7 (fail<3.0, warn<8.0)"
+          }
+        ],
+        "detail": "image sanity PASS",
+        "metrics": {
+          "laplacian_var": 443.15,
+          "clipped": 0.0,
+          "mean": 148.7,
+          "std": 56.71
+        }
+      },
+      "critique_rolls": [
+        {
+          "scores": {
+            "palette_coherence": 4,
+            "lighting_quality": 2,
+            "composition": 2,
+            "furniture_realism": 4,
+            "room_context": 2,
+            "styling_and_life": 0,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 2
+          },
+          "overall_0_5": 2.5,
+          "verdict": "REWORK",
+          "top_defects": [
+            "The scene is utterly devoid of styling; no rug, pillows, art, or accessories makes it feel sterile and lifeless.",
+            "The lighting is flat, overly diffuse, and lacks any discernible source or mood, resembling a product studio, not a living space.",
+            "The room context is weak and unconvincing, feeling more like a trade show booth than a real room with no visible ceiling, baseboards, or architectural details.",
+            "The composition is unbalanced, with all the furniture clustered to one side, leaving a vast, empty expanse of blank wall that feels awkward and unconsidered."
+          ],
+          "one_line": "This isn't an interior; it's a furniture lineup in a sterile, featureless box.",
+          "if_client_deliverable": "No, this is not acceptable to hand a paying client. It functions as a basic furniture visualization but completely fails to convey a sense of atmosphere, lifestyle, or completed design. A client pays for a vision of a home, not a sterile catalogue shot from a beige void.",
+          "_artifact": "leg_b_polish.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 1
+        },
+        {
+          "scores": {
+            "palette_coherence": 4,
+            "lighting_quality": 2,
+            "composition": 2,
+            "furniture_realism": 4,
+            "room_context": 2,
+            "styling_and_life": 0,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 3
+          },
+          "overall_0_5": 2.5,
+          "verdict": "REWORK",
+          "top_defects": [
+            "The complete and utter lack of styling—no rug, art, plants, or accessories—makes the scene feel sterile and dead.",
+            "The 'room' is a featureless void, particularly the vast, empty beige wall that dominates the composition.",
+            "The lighting is flat, overly diffuse, and lacks any direction or mood, contributing to the sterile, 'CG' look.",
+            "The composition is static and uninspired, resembling a simple furniture catalogue shot rather than a thoughtfully framed interior photograph."
+          ],
+          "one_line": "This isn't an interior; it's a furniture lineup in a beige witness protection room.",
+          "if_client_deliverable": "No, this is not acceptable for a paying client. It presents furniture in a sterile vacuum, failing to sell a lifestyle, atmosphere, or a cohesive design vision. It lacks the context, styling, and photorealism required for a professional deliverable and looks more like a furniture modeling test than a finished architectural visualization.",
+          "_artifact": "leg_b_polish.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 2
+        },
+        {
+          "scores": {
+            "palette_coherence": 4,
+            "lighting_quality": 2,
+            "composition": 3,
+            "furniture_realism": 4,
+            "room_context": 1,
+            "styling_and_life": 0,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 3
+          },
+          "overall_0_5": 2.5,
+          "verdict": "PLACEHOLDER_ONLY",
+          "top_defects": [
+            "The scene is completely devoid of styling, accessories, or any sign of life, making it feel sterile and unfinished.",
+            "The environment is a contextual void; it's just two walls and a floor, lacking any architectural details like a ceiling, baseboards, or meaningful windows.",
+            "The lighting is flat, overly diffuse, and lacks direction or mood, which contributes heavily to the artificial, 'rendered' look."
+          ],
+          "one_line": "This looks less like a designed interior and more like a furniture catalogue shot set up in a featureless beige void.",
+          "if_client_deliverable": "This is not acceptable to hand to a paying client for an interior design project. It's a competent visualization of furniture models, but it is not a visualization of an *interior*. It fails to communicate any sense of atmosphere, lifestyle, or how the space will actually feel, showing a lack of vision and completeness.",
+          "_artifact": "leg_b_polish.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 3
+        }
+      ],
+      "critique_summary": {
+        "n_rolls": 3,
+        "n_scored": 3,
+        "verdicts": {
+          "REWORK": 2,
+          "PLACEHOLDER_ONLY": 1
+        },
+        "mean_overall": 2.5,
+        "mean_scores": {
+          "composition": 2.333,
+          "furniture_realism": 4.0,
+          "lighting_quality": 2.0,
+          "palette_coherence": 4.0,
+          "photoreal_believability": 2.667,
+          "proportion_and_scale": 4.0,
+          "room_context": 1.667,
+          "styling_and_life": 0.0
+        }
+      }
+    },
+    "C": {
+      "image": "../output/room_sitting_room_eye_mat.png",
+      "what": "spec-materialized Cycles, no Gemini",
+      "sanity": {
+        "status": "PASS",
+        "checks": [
+          {
+            "check": "blur",
+            "status": "PASS",
+            "detail": "laplacian_var 368.8 std 48.8 (fail = lv<8.0 AND std<8.0; warn lv<25.0)"
+          },
+          {
+            "check": "exposure",
+            "status": "PASS",
+            "detail": "clip 0% mean 172 (fail clip>45% or mean<12.0/>243.0)"
+          },
+          {
+            "check": "blank",
+            "status": "PASS",
+            "detail": "std 48.8 (fail<3.0, warn<8.0)"
+          }
+        ],
+        "detail": "image sanity PASS",
+        "metrics": {
+          "laplacian_var": 368.81,
+          "clipped": 0.0,
+          "mean": 172.1,
+          "std": 48.76
+        }
+      },
+      "critique_rolls": [
+        {
+          "scores": {
+            "palette_coherence": 4,
+            "lighting_quality": 1,
+            "composition": 2,
+            "furniture_realism": 3,
+            "room_context": 1,
+            "styling_and_life": 0,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 1
+          },
+          "overall_0_5": 1.5,
+          "verdict": "NOT_CLIENT_READY",
+          "top_defects": [
+            "The scene is completely sterile and devoid of any styling, accessories, or signs of life, making it feel like an empty catalogue.",
+            "The lighting is flat, diffuse, and lacks any defined source, shadows, or depth, which is the primary reason it fails to look photorealistic.",
+            "The 'room' is just a corner in a void, with no visible ceiling, baseboards, trim, or architectural details to make it a believable space.",
+            "The composition is awkward and uninspired, focusing on empty wall and floor space rather than creating an inviting scene.",
+            "The materials, especially the wall paint and the finish on the furniture, are too perfect and uniform, lacking the subtle textures and imperfections of real-world surfaces."
+          ],
+          "one_line": "This looks less like an interior design concept and more like furniture models waiting for a scene to be built around them.",
+          "if_client_deliverable": "This is not acceptable for a paying client. It's a raw export of 3D models in a test box, not a finished render. It lacks the fundamental elements of professional visualization: intentional lighting, environmental context, and styling. Delivering this would signal a lack of skill and effort.",
+          "_artifact": "room_sitting_room_eye_mat.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 1
+        },
+        {
+          "scores": {
+            "palette_coherence": 4,
+            "lighting_quality": 1,
+            "composition": 2,
+            "furniture_realism": 2,
+            "room_context": 1,
+            "styling_and_life": 0,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 1
+          },
+          "overall_0_5": 1.5,
+          "verdict": "NOT_CLIENT_READY",
+          "top_defects": [
+            "The complete lack of styling (no art, rugs, pillows, or accessories) makes the scene sterile and lifeless.",
+            "The lighting is extremely flat, diffuse, and devoid of convincing shadows, which immediately exposes this as a low-quality render.",
+            "The room is a featureless box. The absence of architectural details like baseboards, trim, or even a visible ceiling makes it feel like a void, not a real space.",
+            "Furniture materials look like plastic. The sofa and table lack the subtle surface imperfections, textures, and light play of real-world materials."
+          ],
+          "one_line": "This looks less like a designed interior and more like a witness protection safe house furnished with 3D warehouse models.",
+          "if_client_deliverable": "This is not acceptable for a paying client. It lacks the fundamental qualities of a professional render: believable lighting, realistic materials, thoughtful composition, and context. Presenting this would demonstrate a lack of technical skill and artistic vision.",
+          "_artifact": "room_sitting_room_eye_mat.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 2
+        },
+        {
+          "scores": {
+            "palette_coherence": 3,
+            "lighting_quality": 1,
+            "composition": 2,
+            "furniture_realism": 3,
+            "room_context": 2,
+            "styling_and_life": 0,
+            "proportion_and_scale": 4,
+            "photoreal_believability": 1
+          },
+          "overall_0_5": 1.5,
+          "verdict": "NOT_CLIENT_READY",
+          "top_defects": [
+            "The lighting is completely flat, diffuse, and unrealistic, lacking any defined light source, directionality, or convincing shadows.",
+            "The scene is utterly sterile and devoid of any styling or personality; it's an empty box with furniture, not a room.",
+            "The materials are unconvincing and look like plastic CG defaults, especially the sofa upholstery and table finish, which lack any fine texture or imperfections.",
+            "The room context is a featureless void. There is no ceiling, no architectural detail beyond a baseboard, and an ambiguous, dark opening that breaks the illusion of a real space."
+          ],
+          "one_line": "This looks less like a designed interior and more like witness protection furniture dropped into a brightly lit, featureless box.",
+          "if_client_deliverable": "This is absolutely not acceptable to hand to a paying client. It looks like a low-effort, unfinished draft from a beginner's software tutorial. The flat lighting, lack of styling, and unconvincing materials make the space feel sterile and fake, failing to sell any kind of vision or atmosphere. A client would rightfully question the quality of the work and the designer's capabilities.",
+          "_artifact": "room_sitting_room_eye_mat.png",
+          "_kind": "render",
+          "_model": "gemini-2.5-pro",
+          "_roll": 3
+        }
+      ],
+      "critique_summary": {
+        "n_rolls": 3,
+        "n_scored": 3,
+        "verdicts": {
+          "NOT_CLIENT_READY": 3
+        },
+        "mean_overall": 1.5,
+        "mean_scores": {
+          "composition": 2.0,
+          "furniture_realism": 2.667,
+          "lighting_quality": 1.0,
+          "palette_coherence": 3.667,
+          "photoreal_believability": 1.0,
+          "proportion_and_scale": 4.0,
+          "room_context": 1.333,
+          "styling_and_life": 0.0
+        }
+      }
+    }
+  },
+  "overlay_b_vs_c": {
+    "recall": 0.8423418636286346,
+    "precision": 0.7442742286346932,
+    "wired_verdict_0.80": "PASS",
+    "recall_min": null,
+    "overlay_png": "../../assets/projects/PRJ-2026-002/experiments/3leg-2026-07-14\\leg_b_vs_c.overlay.png",
+    "experiment_verdict": "REPORT-ONLY (no bound set — recall is scene-dependent; eyeball the RED overlay channel)"
+  },
+  "de_b_vs_c": {
+    "a_vs_b": {
+      "status": "FAIL",
+      "worst_delta": 10.402,
+      "per_color": [
+        3.6432,
+        10.402,
+        3.9943,
+        2.4336,
+        2.8227,
+        3.4578
+      ],
+      "detail": "worst ΔE00 10.402 vs palette (pass < 1.0, warn 1.0-2.0, > 2.0 non-compliant)"
+    },
+    "b_vs_a": {
+      "status": "FAIL",
+      "worst_delta": 3.9943,
+      "per_color": [
+        3.9943,
+        3.104,
+        2.4336,
+        3.4397,
+        3.339,
+        3.4578
+      ],
+      "detail": "worst ΔE00 3.994 vs palette (pass < 1.0, warn 1.0-2.0, > 2.0 non-compliant)"
+    },
+    "worst_both": 10.402,
+    "note": "dominant-colour shift >2.0 — a large-area material/colour changed; inspect"
+  },
+  "de_c_vs_a": {
+    "a_vs_b": {
+      "status": "FAIL",
+      "worst_delta": 9.2469,
+      "per_color": [
+        6.4184,
+        8.6428,
+        7.2019,
+        6.7311,
+        9.2469,
+        2.5031
+      ],
+      "detail": "worst ΔE00 9.247 vs palette (pass < 1.0, warn 1.0-2.0, > 2.0 non-compliant)"
+    },
+    "b_vs_a": {
+      "status": "FAIL",
+      "worst_delta": 20.42,
+      "per_color": [
+        20.42,
+        6.4184,
+        8.8453,
+        6.7311,
+        8.9821,
+        2.5031
+      ],
+      "detail": "worst ΔE00 20.420 vs palette (pass < 1.0, warn 1.0-2.0, > 2.0 non-compliant)"
+    },
+    "worst_both": 20.42,
+    "note": "dominant-colour shift >2.0 — a large-area material/colour changed; inspect"
+  }
+}
