@@ -82,3 +82,30 @@ machine judge before its verdicts count.
   `room_type` for the richest projects until **2-3 room types each have ≥2 delivered anchors** →
   designer-grade a 10-pair pilot (tripwires above run first) → only then wire beauty-parity as
   advisory REVIEW, promote to FAIL after κ re-measurement (this time with real SHIP anchors).
+- 2026-07-15 (pair step BUILT + review-hardened): `pipeline/scripts/precut_pair.py` turns the
+  labeled worksheet into the pilot: designer-labeled delivered anchors × our render lane (room
+  from OUR filenames = provenance; anchor room ONLY from designer text — the two refusals hold) →
+  `_private/benchmark/pilot-pairs.{md,json}` + `pilot-anchor-paths.json`. Every pair in BOTH
+  orders; tripwires ride along (known-REWORK leg C must LOSE, anchor-vs-itself must TIE —
+  expectations below the table, never on it); dups + photo-suspects never pair; a sheet carrying
+  verdicts/notes is never overwritten, and `benchmark_precut.py` refuses to regenerate over a
+  labeled worksheet (`--force-worksheet` to override). Label grammar (either surface): project-row
+  `| Y | bedroom |`, or per-anchor `=> Y bedroom` / `=> N` (per-anchor wins; a bare `=> Y`
+  inherits the row's room). Real-data state: WAITING — 560 pairable anchors, 0 labeled; the sheet
+  ships the how-to. Honest gaps surfaced, not guessed: kitchen has no render lane yet; sitting has
+  1 render; rooms with <2 anchors flagged `below_parity_minimum`.
+  - A 7-lens adversarial review (privacy/refusals/parsing/determinism/data-loss/test-honesty/
+    protocol) hardened it before commit. Fixes that landed: (PRIVACY) the md shows anchors by
+    I-coded **ref**, never the Discord basename — uploader-controlled filenames can carry a client
+    name; stdout surfaces unusable labels by ref/count only, never raw label text; anchor paths
+    moved to a spoiler-free `pilot-anchor-paths.json` so resolving a path no longer walks the
+    designer through the tripwire answers. (REFUSAL) the ambiguous Thai word `นั่งเล่น`/
+    `ห้องนั่งเล่น` (covers both sitting AND living, and we run both lanes) is now SURFACED for
+    disambiguation, never silently routed; a project-row label on the machine-made `UNCODED`
+    bucket (unrelated clients) is refused → label those individually. (DATA-LOSS) both overwrite
+    guards tolerate a dropped leading/trailing pipe + BOM (GFM-legal shapes that the exact
+    cell-count checks were blind to, and would have erased a judged sheet / labeled worksheet);
+    the benchmark guard fails **safe** (refuse) on an unreadable/locked/placeholder worksheet
+    instead of treating it as empty. Tests: 37 in `test_precut_pair.py` incl. mutation probes for
+    the ambiguity guard and the stdout privacy guard (the old stdout test was a tautology that
+    could not fail — now it plants a client name and asserts absence).

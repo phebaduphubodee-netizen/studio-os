@@ -353,8 +353,47 @@ def build_precut(candidates):
 # ---------------------------------------------------------------------------
 # Writers + CLI
 # ---------------------------------------------------------------------------
-def write_outputs(pc, out_dir):
+def worksheet_has_designer_fill(text):
+    """True iff the worksheet already carries DESIGNER labels: a filled DELIVERED?/ROOM_TYPE
+    cell in the project table, or a '=>' arrow label anywhere. Re-generating over those would
+    erase hand labor -- the one thing this pipeline cannot re-derive. Tolerant of a dropped
+    leading/trailing pipe and a BOM: the old exact 9-cell check was blind to a labeled row
+    without a trailing pipe (GFM-legal) and REGENERATED right over it (review MAJOR)."""
+    for raw in text.splitlines():
+        s = raw.lstrip("﻿").strip()
+        if "=>" in s:                 # any arrow anywhere is a designer label (dashless too)
+            return True
+        if re.match(r"^\|?\s*([A-Z]+-\d{2}-\d{3}|UNCODED)\s*\|", s):
+            inner = s[1:] if s.startswith("|") else s
+            inner = inner[:-1] if inner.endswith("|") else inner
+            cells = [c.strip() for c in inner.split("|")]
+            # [icode, distinct, dups, slugs, room_hint, DELIVERED, ROOM_TYPE] -- any cell at or
+            # past DELIVERED (idx 5) that carries text is a fill. Tail check, not fixed idx.
+            if any(cells[5:]):
+                return True
+    return False
+
+
+def write_outputs(pc, out_dir, force=False):
     os.makedirs(out_dir, exist_ok=True)
+    ws_path = os.path.join(out_dir, "precut-worksheet.md")
+    if not force and os.path.exists(ws_path):
+        try:
+            existing = open(ws_path, encoding="utf-8").read()
+        except Exception as e:
+            # FAIL-SAFE: an unreadable worksheet (OneDrive placeholder, lock, wrong encoding)
+            # must REFUSE, never proceed -- proceeding treats it as unlabeled and overwrites
+            # the hand labor this guard exists to protect (review MAJOR, fail-open).
+            sys.exit(
+                f"REFUSED: cannot read the existing precut-worksheet.md ({type(e).__name__}: "
+                f"{e}) to check for designer labels. Refusing to overwrite what may be labeled "
+                "work. Ensure the file is readable (hydrated/unlocked/UTF-8), then re-run.")
+        if worksheet_has_designer_fill(existing):
+            sys.exit(
+                "REFUSED: the existing precut-worksheet.md already carries DESIGNER labels "
+                "(delivered/room_type fills). Re-running would erase hand labor the machine "
+                "cannot re-derive. Move the labeled worksheet aside (precut_pair.py consumes "
+                "it) or pass --force-worksheet to overwrite DELIBERATELY.")
     # Machine-readable (real paths retained for the designer to open images locally; gitignored).
     js = {
         "generated_by": "benchmark_precut.py",
@@ -475,6 +514,9 @@ def main(argv=None):
     ap.add_argument("--out-dir", default=os.path.join(REPO, "_private", "benchmark"))
     ap.add_argument("--self-check", action="store_true",
                     help="assert frozen constants and exit 0 (CI smoke)")
+    ap.add_argument("--force-worksheet", action="store_true",
+                    help="overwrite a worksheet that already carries designer labels "
+                         "(DELIBERATE data loss -- normally refused)")
     args = ap.parse_args(argv)
 
     _assert_frozen()
@@ -491,7 +533,7 @@ def main(argv=None):
         sys.exit("candidates manifest is empty; refusing to write an empty pre-cut.")
 
     pc = build_precut(candidates)
-    write_outputs(pc, args.out_dir)
+    write_outputs(pc, args.out_dir, force=args.force_worksheet)
     print_summary(pc)
     return 0
 
