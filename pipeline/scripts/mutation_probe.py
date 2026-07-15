@@ -80,6 +80,46 @@ MUTATIONS = [
     ("wall family widened to 100/150/200/250", "DISARM_the_half_size_veto",
      "WALL_MM_LO, WALL_MM_HI = 95.0, 106.0",
      "WALL_MM_LO, WALL_MM_HI = 95.0, 260.0"),
+
+    # --- the geometric boundary-ink class (the 0.42 lesson). Four ways to quietly break it:
+    ("wall pen loses its exclusion from boundary ink", "GEOMETRIC_class",
+     "    return round(width or 0, 2) != WALL_PEN_PT",
+     "    return True"),
+
+    ("composite cavity tol bridges a corridor", "cavity_not_a_corridor",
+     "WALL_CAVITY_TOL_MM = 60.0",
+     "WALL_CAVITY_TOL_MM = 1000.0"),
+
+    ("run-backs-gap containment becomes same-axis-anything", "not_the_far_wall",
+     "    return prun[1] <= key[1] + 0.11 and key[2] <= prun[2] + 0.11",
+     "    return True"),
+
+    ("pen evidence silently dropped from openings", "REPORTS_the_pens",
+     '            rec["ink_pens"] = gap_pen_mm(g, boundary)',
+     "            pass"),
+
+    # --- the 2026-07-14 review round (2 MAJOR + hardening). Each mutation re-opens one hole.
+    # NOTE the tol mutation above (60->1000) now goes RED via the 90mm-coextensive case, not the
+    # corridor: the corridor is ALSO blocked by MAX_COMPOSITE_MM, and two vetoes mask each other.
+    ("composite merge goes extent-blind again", "NEVER_COEXIST",
+     "            if not _ivs_overlap(iva, ivb):\n                continue",
+     "            if False:\n                continue"),
+
+    ("composite width cap removed", "cavity_not_a_corridor",
+     "MAX_COMPOSITE_MM = 300.0",
+     "MAX_COMPOSITE_MM = 10000.0"),
+
+    ("crossing ink admitted as stub backing", "crossing_line_cannot_cut_a_stub",
+     "STUB_BACKER_OVERSHOOT_MM = 100.0",
+     "STUB_BACKER_OVERSHOOT_MM = 1e9"),
+
+    ("composite evidence zeroed", "only_through_a_COMPOSITE",
+     "            mm += b - a",
+     "            pass"),
+
+    ("pen evidence loses its largest-first ordering", "REPORTS_the_pens",
+     "sorted(out.items(), key=lambda kv: -kv[1])",
+     "list(out.items())"),
 ]
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -108,7 +148,22 @@ if pre.returncode != 0 or "no tests ran" in (pre.stdout or ""):
     os.remove(BACKUP)
     sys.exit("preflight FAILED -- the guarding tests are not GREEN on the UNMUTATED reader, so a "
              "RED verdict would prove nothing. pytest said:\n" + (pre.stdout or "")[-2000:])
-print("preflight: guarding tests GREEN on the unmutated reader\n")
+# PREFLIGHT 2: every selector must MATCH, individually. The OR-join above hides ONE renamed
+# guarded test among live ones, and the per-mutation run then read the rename as RED (pytest
+# exits 5 on all-deselected, 5 != 0 -- the probe's own flattering-scorer shape; review
+# 2026-07-14, MAJOR). --collect-only is cheap; exit 5 here = a dead selector, named.
+dead = []
+for _, k, _, _ in MUTATIONS:
+    col = subprocess.run([sys.executable, "-m", "pytest", TESTS, "-q", "--collect-only", "-k", k],
+                         capture_output=True, text=True, encoding="utf-8", errors="replace",
+                         env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    if col.returncode == 5:
+        dead.append(k)
+if dead:
+    os.remove(BACKUP)
+    sys.exit(f"preflight FAILED -- selector(s) match NO test: {dead}. A guarded test was renamed "
+             "or deleted; the probe would have reported a FALSE RED for it forever.")
+print("preflight: guarding tests GREEN and every selector matches on the unmutated reader\n")
 
 print(f"{'MUTATION':<40} {'GUARDED BY':<26} VERDICT")
 print("-" * 84)
@@ -127,8 +182,12 @@ try:
                            capture_output=True, text=True, encoding="utf-8", errors="replace",
                            env={**os.environ, "PYTHONIOENCODING": "utf-8"})
         r.stdout = r.stdout or ""
-        collected = "no tests ran" not in r.stdout
-        red = r.returncode != 0
+        # pytest's exit-code contract: 5 = nothing collected/selected. The old sniff for the
+        # STDOUT PHRASE 'no tests ran' never fired here -- with a collectible file and a dead -k,
+        # pytest prints 'N deselected' and exits 5, which `!= 0` scored as RED: a renamed guarded
+        # test would have earned a permanent FALSE RED (review 2026-07-14, MAJOR).
+        collected = r.returncode != 5
+        red = r.returncode not in (0, 5)
         verdict = ("RED (test earns its keep)" if red and collected
                    else "!!! STILL GREEN -- THE TEST CANNOT FAIL" if collected
                    else "!!! -k MATCHED NOTHING")

@@ -33,9 +33,11 @@ import pytest
 
 from bluehouse_plan_reader import (
     GLAZING_COVER_FRAC, GRID_MM, PT_MM, RefuseSheet, SNAP_TOL_MM, THAI_FLOORPLAN_SKEL,
-    audit_sides, band_aligned, band_axis, band_long_edges, classify_panels, derive_room_polygon,
-    envelope_checks, extent_is_a_storey, find_gaps, flood_region, gap_coverage, gap_ink_rects,
-    gap_rect, gap_segments, geometry_snap, is_dimension_tick, is_wall_band, is_wall_step, merge_runs,
+    audit_sides, band_aligned, band_axis, band_long_edges, classify_panels, composite_run_keys,
+    derive_room_polygon, envelope_checks, extent_is_a_storey, find_gaps, flood_region,
+    gap_composite_mm, gap_coverage, gap_ink_rects, gap_pen_mm,
+    gap_rect, gap_segments, geometry_snap, is_boundary_ink, is_dimension_tick, is_wall_band,
+    is_wall_step, merge_runs, run_keys, type_openings,
     openings_on_outline, outline_from_seed, parse_scale_field, parse_titleblock_denom,
     parse_virtual_edge, plan_extent, plan_gate, read_bands, resolve_gaps, resolve_scale,
     sheet_shrink, snap_polygon, thai_skeleton, thickness_ok, titleblock_field, title_is_floor_plan,
@@ -397,7 +399,7 @@ def test_band_aligned_keeps_glazing_and_rejects_a_swinging_door_leaf():
 
 def test_classify_panels_splits_ink_from_ticks_and_frame():
     env = (-500.0, -500.0, 8500.0, 10000.0)
-    runs = [("h", 0.0, 100.0)]
+    runs = {("h", 0.0, 100.0): [(0.0, 8000.0)]}   # the merge_runs DICT: composites need extents
     paths = [{"rect": (3570.0, 0.0, 6770.0, 100.0), "n_items": 4, "op": "l"},   # glazing
              {"rect": (2000.0, -60.0, 2000.0, 62.0), "n_items": 1, "op": "l"},  # dim tick
              {"rect": (-900.0, -900.0, 9000.0, 11000.0), "n_items": 1, "op": "re"},  # frame
@@ -442,6 +444,176 @@ def test_the_O01_threshold_is_fragile_and_this_test_says_so():
     assert GLAZING_COVER_FRAC == 0.60
     assert resolve_gaps([g], boundary)[1], "at 0.60 it is an opening"
     assert not resolve_gaps([g], boundary, cover=0.65)[1], "at 0.65 it is not"
+
+
+def test_boundary_ink_is_a_GEOMETRIC_class_not_012s_pen_table():
+    """THE 0.42 LESSON. PANEL_PEN_PT = 0.42 was sheet 012's pen table: the Pandora sheets have
+    NO 0.42 ink anywhere (their boundary pens are 0.38/0.48), I-24-056 draws its openings at
+    0.12, and so 22 of 27 gate-accepted corpus pages closed NOTHING -- every opening read as an
+    ink-less void. The class is black-stroke + NOT-the-wall-pen; width is reported evidence,
+    never a filter."""
+    for w in (0.12, 0.38, 0.42, 0.48, 0.54, 1.44):
+        assert is_boundary_ink("s", (0, 0, 0), w), f"a {w}-pt black stroke is boundary ink"
+    assert not is_boundary_ink("s", (0, 0, 0), 0.84), "the wall pen keeps its own class"
+    assert not is_boundary_ink("s", (1.0, 0.2, 0.2), 0.42), "colored ink is not (yet) in class"
+    assert not is_boundary_ink("f", (0, 0, 0), 0.42), "a fill is not stroke ink"
+    assert not is_boundary_ink("s", None, 0.42), "no color record, no class"
+    import bluehouse_plan_reader as R
+    assert not hasattr(R, "PANEL_PEN_PT") and not hasattr(R, "is_panel_pen"), \
+        "the 0.42 pen table must not resurrect under its old name"
+
+
+def test_a_window_spanning_BOTH_leaves_of_a_double_leaf_wall_is_boundary_ink():
+    """Pandora draws a 200 mm wall as two abutting 100 mm leaves. The window rect spans both,
+    so it fits NEITHER leaf's face pair alone -- before composite pairs existed it was rejected
+    as 'not band-aligned' and the opening read as a hole the flood escaped through."""
+    runs = {("h", 0.0, 100.0): [(0.0, 8000.0)], ("h", 100.0, 199.0): [(0.0, 8000.0)]}
+    comp = composite_run_keys(runs)
+    assert comp == [(("h", 0.0, 199.0), (0.0, 8000.0))]
+    keys = run_keys(runs)
+    win = (3570.0, 0.0, 6770.0, 199.0)
+    assert band_aligned(win, keys) is None, "no single leaf fits -- this is the old miss"
+    assert band_aligned(win, keys, composite=comp) == ("h", 0.0, 199.0)
+    leaf = (3570.0, 0.0, 4440.0, 870.0)
+    assert band_aligned(leaf, keys, composite=comp) is None, \
+        "a swinging door leaf still sticks out perpendicular and is still rejected"
+
+
+def test_composite_pairs_need_a_cavity_not_a_corridor():
+    """60 mm merges the leaves of one wall (Pandora abuts at 0 mm; 304149's cavity is wider
+    than 2 mm). It must NOT merge two rooms' walls across a corridor, must NOT mint a band
+    wider than a real wall, and a lone leaf is no composite."""
+    ext = [(0.0, 8000.0)]
+    runs = {("h", 0.0, 100.0): ext, ("h", 150.0, 250.0): ext,
+            ("h", 1200.0, 1300.0): ext, ("v", 0.0, 100.0): ext}
+    assert composite_run_keys(runs) == [(("h", 0.0, 250.0), (0.0, 8000.0))], \
+        "a 50 mm cavity is one wall; a 950 mm corridor is two; a lone leaf is no composite"
+    fat = {("h", 0.0, 100.0): ext, ("h", 150.0, 400.0): ext}
+    assert composite_run_keys(fat) == [], \
+        "a 400 mm 'wall' is wider than MAX_COMPOSITE_MM: a band furniture can hide in is not a wall"
+    # this case is blocked by the TOL alone (width 290 clears the cap): it is the one that goes
+    # RED when WALL_CAVITY_TOL_MM is widened -- the corridor case above is ALSO cap-blocked, so
+    # without this a tol mutation would be invisible (two vetoes masking each other)
+    near = {("h", 0.0, 100.0): ext, ("h", 190.0, 290.0): ext}
+    assert composite_run_keys(near) == [], "a 90 mm gap between coextensive leaves is not a cavity"
+
+
+def test_two_walls_that_NEVER_COEXIST_along_the_axis_are_not_one_wall():
+    """THE EXTENT CLAUSE (review 2026-07-14, MAJOR x2 -- found independently by two lenses).
+    The first composite merge used face coordinates alone; on the real corpus that chained
+    unrelated parallel walls (51 mm face-steps between different rooms' walls) into 301-701 mm
+    pseudo-wall bands, inside which ANY black ink -- furniture edges, counters -- became
+    boundary ink for EVERY chained leaf's gaps. Real double-leaf walls are COEXTENSIVE; walls
+    with disjoint long extents are strangers however close their thin coordinates land."""
+    disjoint = {("h", 0.0, 100.0): [(0.0, 4000.0)], ("h", 150.0, 250.0): [(6000.0, 9000.0)]}
+    assert composite_run_keys(disjoint) == [], \
+        "west-wing wall + east-wing wall at a 50 mm face-step are NOT one double-leaf wall"
+    # and no transitive chaining: three coextensive leaves make TWO adjacent pairs, never one
+    # triple-width band (the old chain reached 701 mm on the corpus)
+    triple = {("h", 0.0, 100.0): [(0.0, 5000.0)], ("h", 130.0, 230.0): [(0.0, 5000.0)],
+              ("h", 260.0, 360.0): [(0.0, 5000.0)]}
+    assert composite_run_keys(triple) == \
+        [(("h", 0.0, 230.0), (0.0, 5000.0)), (("h", 130.0, 360.0), (0.0, 5000.0))]
+    # a composite that duplicates an EXISTING plain key is dropped: the plain run already
+    # aligns everything the pair would, and the duplicate made via_composite LIE (168
+    # mislabeled panels on 6 corpus pages before this)
+    nested = {("h", 0.0, 100.0): [(0.0, 5000.0)], ("h", 0.0, 200.0): [(0.0, 5000.0)]}
+    assert composite_run_keys(nested) == []
+    # ink OUTSIDE the overlap span does not ride the composite: one leaf there is just a wall
+    part = {("h", 0.0, 100.0): [(0.0, 9000.0)], ("h", 100.0, 199.0): [(0.0, 3000.0)]}
+    comp = composite_run_keys(part)
+    assert comp == [(("h", 0.0, 199.0), (0.0, 3000.0))]
+    keys = run_keys(part)
+    inside = (1000.0, 0.0, 2000.0, 199.0)
+    outside = (5000.0, 0.0, 6000.0, 199.0)
+    assert band_aligned(inside, keys, composite=comp) == ("h", 0.0, 199.0)
+    assert band_aligned(outside, keys, composite=comp) is None, \
+        "at x=5000 only ONE leaf exists: 199 mm-deep ink there is furniture, not a window"
+
+
+def test_composite_ink_backs_BOTH_leaves_gaps_but_not_the_far_wall():
+    """One window rect aligned to the composite pair must back the gap in EACH leaf's run
+    (each leaf has its own hole where the wall pen stopped), and must still back nothing on a
+    different wall -- containment, not proximity."""
+    span = {"gap_lo": 0.0, "gap_hi": 1000.0, "length_mm": 1000.0}
+    g_left = {"axis": "h", "face_lo": 0.0, "face_hi": 100.0, **span}
+    g_right = {"axis": "h", "face_lo": 100.0, "face_hi": 199.0, **span}
+    g_far = {"axis": "h", "face_lo": 9620.0, "face_hi": 9720.0, **span}
+    g_vert = {"axis": "v", "face_lo": 0.0, "face_hi": 100.0, **span}
+    ink = [{"rect": (0.0, 0.0, 800.0, 199.0), "run": ("h", 0.0, 199.0), "w": 0.48}]
+    assert gap_coverage(g_left, ink) == pytest.approx(0.8)
+    assert gap_coverage(g_right, ink) == pytest.approx(0.8)
+    assert gap_coverage(g_far, ink) == 0.0, "ink on the far wall must not back this gap"
+    assert gap_coverage(g_vert, ink) == 0.0, "an h-run's ink must not back a v gap"
+
+
+def test_an_opening_REPORTS_the_pens_that_back_it():
+    """The class no longer filters on width, so the width evidence must be VISIBLE: an opening
+    whose only backing is 0.12-pt hairline must say so in its own record, largest ink first.
+    The hairline is deliberately FIRST in the fixture: with the sort deleted, insertion order
+    would win and the 'largest first' half of this test could never fail (review 2026-07-14)."""
+    g = {"axis": "h", "face_lo": 0.0, "face_hi": 100.0, "gap_lo": 5000.0, "gap_hi": 5900.0,
+         "length_mm": 900.0}
+    boundary = [{"rect": (5000.0, 0.0, 5450.0, 100.0), "run": ("h", 0.0, 100.0), "w": 0.12},
+                {"rect": (5000.0, 0.0, 5900.0, 100.0), "run": ("h", 0.0, 100.0), "w": 0.48}]
+    _infill, openings, _voids = resolve_gaps([g], boundary)
+    assert openings and list(openings[0]["ink_pens"].items()) == \
+        [("0.48", 900.0), ("0.12", 450.0)], "largest ink FIRST, as an ordered fact"
+    assert list(gap_pen_mm(g, boundary).items()) == [("0.48", 900.0), ("0.12", 450.0)]
+    assert openings[0]["composite_backed_mm"] == 0.0, \
+        "plain-run backing reports zero composite mm -- the field exists either way"
+    # and the honest channel is untouched: no ink of any pen still means VOID
+    bare = {"axis": "h", "face_lo": 0.0, "face_hi": 100.0, "gap_lo": 0.0, "gap_hi": 3200.0,
+            "length_mm": 3200.0}
+    _i, o, v = resolve_gaps([bare], boundary)
+    assert not o and v and "ink_pens" not in v[0], "a void reports no pens -- it has none"
+
+
+def test_a_crossing_line_cannot_cut_a_stub_open():
+    """THE PANDORA p8 FABRICATION (review 2026-07-14, MAJOR, measured live). A 99 mm wall stub
+    was 'backed' at coverage 1.0 by a single 2551 mm polyline that CROSSES it -- dimension/grid
+    ink, not a drawn opening -- and the coverage branch ran before the stub branch, so the wall
+    was cut open. Corpus truth: 59 honest sub-400 mm openings all have jamb-terminated backers
+    (overshoot <= 4.2 mm); the one crossing backer overshoots 2451 mm. A stub opens only on ink
+    that terminates at its jambs; refused crossing ink is LOGGED, never silently dropped."""
+    stub = {"axis": "v", "face_lo": 0.0, "face_hi": 100.0, "gap_lo": 5000.0, "gap_hi": 5099.4,
+            "length_mm": 99.4}
+    crossing = [{"rect": (0.0, 3800.0, 0.0, 6350.6), "run": ("v", 0.0, 100.0), "w": 0.38}]
+    infill, openings, voids = resolve_gaps([stub], crossing)
+    assert not openings and not voids and len(infill) == 1, \
+        "a stub crossed by a long line is a BRIDGED stub, not a cut"
+    assert infill[0]["crossing_ink_refused"] is True
+    assert infill[0]["crossing_ink_pens"] == {"0.38": 99.4}, \
+        "the refusal carries its evidence: what crossed, clipped to the gap"
+    # the SAME stub with a jamb-terminated backer is a real opening (frame member / threshold)
+    jamb = [{"rect": (0.0, 4999.0, 0.0, 5100.0), "run": ("v", 0.0, 100.0), "w": 0.38}]
+    infill2, openings2, _v2 = resolve_gaps([stub], jamb)
+    assert not infill2 and len(openings2) == 1 and openings2[0]["ink_pens"] == {"0.38": 99.4}, \
+        "corpus: 59 of 60 sub-400mm openings are real -- jamb-terminated ink still cuts"
+    # gaps at/above CLOSE_TOL are untouched by the stub rule: the golden sheet's 1110 mm stair
+    # gap is backed by a full-length edge line (overshoot 0) and long-gap coverage still rules
+    door = {"axis": "v", "face_lo": 0.0, "face_hi": 100.0, "gap_lo": 5000.0, "gap_hi": 5900.0,
+            "length_mm": 900.0}
+    _i3, openings3, _v3 = resolve_gaps([door], crossing)
+    assert len(openings3) == 1, "long gaps keep the plain >=60% coverage rule"
+
+
+def test_an_opening_that_exists_only_through_a_COMPOSITE_pair_says_so():
+    """The composite mechanism is the newest, most permissive door into the boundary class --
+    so its share of every opening's backing must be VISIBLE downstream (review 2026-07-14:
+    via_composite used to die at a sheet-level note; 50 of 256 corpus openings exist only
+    through it and were indistinguishable from plain-backed ones)."""
+    g = {"axis": "h", "face_lo": 0.0, "face_hi": 100.0, "gap_lo": 3570.0, "gap_hi": 6770.0,
+         "length_mm": 3200.0}
+    win = [{"rect": (3570.0, 0.0, 6770.0, 199.0), "run": ("h", 0.0, 199.0), "w": 0.48,
+            "via_composite": True}]
+    _i, openings, _v = resolve_gaps([g], win)
+    assert len(openings) == 1
+    assert openings[0]["composite_backed_mm"] == 3200.0
+    assert gap_composite_mm(g, win) == 3200.0
+    ops = type_openings(openings, set(), (0.0, 0.0), [])
+    assert ops[0]["composite_backed_mm"] == 3200.0, "the evidence rides INTO the emitted record"
+    assert "composite double-leaf pair" in ops[0]["provenance"]
 
 
 def test_flood_region_LEAKS_through_a_hole_and_says_so():
@@ -1119,8 +1291,12 @@ def test_the_room_spec_CARRIES_ITS_OPENINGS_it_is_not_a_sealed_shoebox(tmp_path)
                       "--owner-ledger", LIVING_LEDGER, "--write-provisional",
                       *sum([["--virtual-edge", v] for v in LIVING_VIRTUAL], [])])
     ops = json.load(open(out, encoding="utf-8"))["room"]["openings"]
+    # O09 -> O10 (2026-07-14): the geometric boundary-ink class finds an 11th opening on the
+    # sheet (the stair gap, backed by its full-length 0.72-pt edge line -- see
+    # test_every_gap_on_the_sheet_is_explained), so every id after O07 shifts by one. The
+    # room's OWN three openings are geometrically identical to the old pin.
     assert [(o["id"], o["type"], round(o["length_mm"])) for o in ops] == \
-        [("O00", "sliding", 3199), ("O01", "window", 650), ("O09", "sliding", 2900)]
+        [("O00", "sliding", 3199), ("O01", "window", 650), ("O10", "sliding", 2900)]
     # the same records floor_openings consumes -> real cut geometry, not a decoration
     boxes = [b for o in ops for b in opening_boxes(o, ceiling_mm=3000.0)]
     assert sum(1 for b in boxes if b["kind"] == "glass") == 5, "2+2 slider leaves + 1 window pane"
@@ -1145,13 +1321,24 @@ def test_every_room_vertex_lands_on_a_real_wall_FACE(sheet):
 @real_pdf
 def test_every_gap_on_the_sheet_is_explained(sheet):
     """No gap may be quietly ignored. Each is an OPENING (backed by ink), a logged INFILL (short
-    and unbacked) or a reported VOID (long and unbacked -- left OPEN, which is the honest one)."""
+    and unbacked) or a reported VOID (long and unbacked -- left OPEN, which is the honest one).
+
+    RE-PINNED under the geometric boundary-ink class (2026-07-14). This sheet used to report
+    TWO 1110 mm stair holes; the 0.42-pt pen table was blind to the 0.72-pt stair-edge line the
+    designer drew across the interior one (x=1300.7, the run's face is 1301.0 -- full-length,
+    coverage 1.0; inspected on the rendered sheet, it is the stair's boundary against the hall).
+    That gap is now an OPENING carrying its pen evidence. The WEST stair hole has no ink of any
+    pen and STAYS a void: the honest-failure channel did not get widened away, it is exercised
+    one line down."""
     rc = sheet["room_closure"]
-    assert len(sheet["openings_typed"]) == 10
+    assert len(sheet["openings_typed"]) == 11
     assert len(rc["closure_infills"]) == 0
-    assert [v["length_mm"] for v in rc["unbacked_voids"]] == [1110.2, 1110.2], \
-        "the 2 x 1110 mm stair holes are LEFT OPEN, not bridged"
+    assert [v["length_mm"] for v in rc["unbacked_voids"]] == [1110.2], \
+        "the WEST 1110 mm stair hole carries no ink of ANY pen: LEFT OPEN, not bridged"
     assert all(v["ink_coverage"] == 0.0 for v in rc["unbacked_voids"])
+    stair = [o for o in sheet["openings_typed"] if abs(o["length_mm"] - 1110.2) < 0.1]
+    assert len(stair) == 1 and stair[0]["ink_pens"] == {"0.72": 1110.2}, \
+        "the flipped stair gap must SHOW its evidence: one full-length 0.72-pt edge line"
 
 
 @real_pdf
@@ -1161,13 +1348,20 @@ def test_the_real_openings_json_feeds_floor_openings(sheet):
     assert {o["type"] for o in ops} == {"sliding", "window", "door"}
     assert all({"id", "type", "rect"} <= set(o) for o in ops)
     kept, n_cuts = clip_wall_segments(sheet["segments"], ops)   # KeyError on the round-1 schema
-    assert n_cuts == 10, f"the openings must CUT the walls; cut {n_cuts}"
+    # 10 -> 14 (2026-07-14): all four extra cuts belong to the new stair-gap opening O08 -- and
+    # that decomposition is PINNED, not prose (review: a redistribution where O08 cuts nothing
+    # and another opening double-cuts passed the bare n_cuts==14).
+    assert n_cuts == 14, f"the openings must CUT the walls; cut {n_cuts}"
+    stair_less = [o for o in ops if abs(o["length_mm"] - 1110.2) >= 0.1]
+    assert len(stair_less) == len(ops) - 1, "exactly one stair-gap opening to attribute"
+    _, n10 = clip_wall_segments(sheet["segments"], stair_less)
+    assert n10 == 10, "the 4 extra cuts must ALL belong to the stair-gap O08"
     boxes = [b for o in ops for b in opening_boxes(o, ceiling_mm=3000.0)]
-    assert len(boxes) == 16
+    assert len(boxes) == 17
     # 4 sliders x 2 leaves = 8 panes, + 1 window pane; the window also gets a sill and a lintel,
-    # and each of the 5 doors gets a lintel.
+    # and each of the 6 doors (incl. the stair-gap O08) gets a lintel.
     assert sum(1 for b in boxes if b["kind"] == "glass") == 9
-    assert sum(1 for b in boxes if b["kind"] == "wall") == 7
+    assert sum(1 for b in boxes if b["kind"] == "wall") == 8
 
 
 # ====== ROUND 5, D1: the signature was FORGEABLE BY THE AGENT (it was bound to ARGV, not the OWNER)

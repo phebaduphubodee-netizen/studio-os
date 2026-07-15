@@ -72,9 +72,44 @@ SQUARE_ASPECT = 1.15                     # below this a band is a corner block: 
 DEFAULT_MIN_GAP_MM = 400.0               # smaller than any door leaf; below this a gap is noise
 
 # --- BOUNDARY-INK (part C) constants. The wall pen STOPS at every opening on this convention;
-# the enclosure's long runs (sliding glass, windows, door infills) are on a SECOND, thinner pen.
-PANEL_PEN_PT = 0.42                      # the glazing / door-infill pen  <- the missing half
+# the enclosure's runs there (sliding glass, windows, door infills) are on OTHER pens.
+# THE 0.42 LESSON (2026-07-14). This block used to declare PANEL_PEN_PT = 0.42 and match it
+# EXACTLY. That was sheet 012's pen table wearing the costume of a convention: across the 27
+# gate-accepted corpus pages the boundary ink is drawn at 0.12 (I-24-056), 0.38/0.48 (Pandora,
+# whose sheets contain NO 0.42 ink at all), 0.54, 0.6, 0.72, even 1.44 threshold strokes --
+# measured, _private/plan-gate/pen-forensics.json. Every opening on those offices' sheets read
+# as an ink-less VOID, and 22 of 27 accepted pages closed nothing. Pen WIDTH is not the class.
+# The class is GEOMETRIC: pure-black stroke ink, inside a wall run's face pair, not a dimension
+# tick, not the sheet frame. Only the wall pen itself is excluded (it already has its own
+# class), and the pens that actually back each opening are REPORTED -- per sheet in the notes,
+# per opening in `ink_pens` -- so a wrong pen can be SEEN downstream, never silently assumed.
 LEAF_PEN_PT = 0.30                       # sliding-LEAF detail lines drawn INSIDE a slider
+#   (still 012's pen table, deliberately: the leaf pen only TYPES a slider vs a window. A wrong
+#    leaf pen mistypes an opening; it cannot fabricate closure. Generalize it the day a second
+#    office's slider is actually measured, not before.)
+WALL_CAVITY_TOL_MM = 60.0                # two parallel runs whose FACING faces are this close
+#   AND whose long extents OVERLAP are the LEAVES of ONE composite wall. Pandora draws a 200 mm
+#   wall as two abutting 100 mm leaves (gap 0 mm); 304149's cavity wall needs > 2 mm. A window
+#   there is ONE rect spanning both leaves: it aligns to NEITHER leaf alone, so before composite
+#   pairs existed every such opening read as a hole.
+#   THE EXTENT CLAUSE IS LOAD-BEARING (2026-07-14 review, MAJOR x2 confirmed). The first version
+#   merged on face COORDINATES alone and argued "the nearest two real walls are a corridor
+#   >= 800 mm apart" -- FALSE on the very corpus it cited: unrelated parallel walls in different
+#   parts of a plan land within 60 mm in the THIN coordinate by coincidence (51 mm face-steps,
+#   jogged walls), and transitive chaining minted 301-701 mm pseudo-wall bands whose "leaves"
+#   never coexist anywhere along the axis. Real double-leaf walls are COEXTENSIVE; requiring the
+#   leaves' long intervals to actually overlap keeps every honest composite on the corpus
+#   (27/27 pages emit identical opening sets) and refuses the coincidence chains.
+MAX_COMPOSITE_MM = 300.0                 # widest honest composite measured: ~201 mm + leaf. The
+#   coincidence chains reached 701 mm. Same ceiling as MAX_BACKING_THICK_MM, same law: a band a
+#   rect could hide 3 rooms of furniture in is not a wall.
+STUB_BACKER_OVERSHOOT_MM = 100.0         # a gap SHORTER than CLOSE_TOL_MM (no door leaf is that
+#   narrow) may be cut open only by ink that TERMINATES at its jambs. Measured corpus band: the
+#   59 honest stub openings' backers overshoot <= 4.2 mm (frame members, thresholds); the one
+#   dishonest backer -- a 2551 mm crossing polyline over a 99 mm stub on Pandora p8, dimension/
+#   grid-shaped ink -- overshoots 2451 mm. 100 mm sits 24x above the honest worst and 24x below
+#   the fabrication. Crossing ink over a stub is NOT an opening; the stub stays a bridged,
+#   LOGGED infill (fail toward wall, disclosed), never a fabricated cut.
 TICK_MAX_MM = 200.0                      # a lone 'l' shorter than this is a dimension tick
 #   (the sheet's ticks are 122 mm; nothing else in the class is under 300 mm -> 3x margin)
 ENV_MARGIN_MM = 1000.0                   # envelope inflate; rejects the sheet/clip frame
@@ -621,11 +656,14 @@ def gap_segments(gap):
 # =====================================================================================
 # PART C — BOUNDARY INK: the second pen, the openings, and the CLOSED polygon
 # =====================================================================================
-def is_panel_pen(dtype, color, width):
-    """Class test for the boundary/glazing pen (criteria 1-2 of the boundary predicate)."""
+def is_boundary_ink(dtype, color, width):
+    """Class test for boundary ink (criteria 1-2 of the boundary predicate): a pure-black
+    STROKE on any pen EXCEPT the wall pen. Width is carried and reported, never matched
+    against a pen table -- see the 0.42 lesson at the constants block. The geometric half of
+    the predicate (ticks, envelope, band alignment) lives in classify_panels."""
     if dtype != "s" or color is None or sum(color) > MAX_COLOR_SUM:
         return False
-    return round(width or 0, 2) == PANEL_PEN_PT
+    return round(width or 0, 2) != WALL_PEN_PT
 
 
 def is_dimension_tick(n_items, item_op, long_mm):
@@ -645,21 +683,99 @@ def run_keys(runs):
     return sorted(runs.keys())
 
 
-def band_aligned(rect, runs, tol=BAND_ALIGN_TOL_MM):
+def _ivs_overlap(a, b):
+    """True iff two sorted interval lists share at least one point of positive length."""
+    i = j = 0
+    while i < len(a) and j < len(b):
+        lo, hi = max(a[i][0], b[j][0]), min(a[i][1], b[j][1])
+        if hi > lo:
+            return True
+        if a[i][1] < b[j][1]:
+            i += 1
+        else:
+            j += 1
+    return False
+
+
+def _ivs_overlap_span(a, b):
+    """Bounding span (lo, hi) of the overlap between two sorted interval lists."""
+    lo = hi = None
+    i = j = 0
+    while i < len(a) and j < len(b):
+        s, e = max(a[i][0], b[j][0]), min(a[i][1], b[j][1])
+        if e > s:
+            lo = s if lo is None else min(lo, s)
+            hi = e if hi is None else max(hi, e)
+        if a[i][1] < b[j][1]:
+            i += 1
+        else:
+            j += 1
+    return (lo, hi)
+
+
+def composite_run_keys(runs, cavity_tol=WALL_CAVITY_TOL_MM):
+    """Face pairs of COMPOSITE walls, from ADJACENT parallel leaf PAIRS that (1) face each other
+    within `cavity_tol`, (2) actually COEXIST somewhere along the axis (long extents overlap),
+    and (3) stay within MAX_COMPOSITE_MM. Takes the runs DICT (key -> long intervals) because
+    the extent test is load-bearing -- see WALL_CAVITY_TOL_MM. Pairs only, no transitive chains:
+    a triple-leaf wall emits its two adjacent pairs, each honest on its own. A merged pair that
+    duplicates an EXISTING plain key is dropped (the plain run already aligns everything the
+    pair would, and the duplicate made via_composite lie -- review 2026-07-14, MINOR).
+
+    Returns [((axis, face_lo, face_hi), (overlap_lo, overlap_hi)), ...]: the face pair PLUS the
+    span where the leaves actually stack, which band_aligned uses to refuse ink that sits on
+    the pair's axis but where only one (or neither) leaf exists."""
+    plain = set(runs)
+    out = []
+    for axis in ("h", "v"):
+        pairs = sorted((flo, fhi) for a, flo, fhi in runs if a == axis)
+        for (alo, ahi), (blo, bhi) in zip(pairs, pairs[1:]):
+            if blo - ahi > cavity_tol:
+                continue
+            if bhi - alo > MAX_COMPOSITE_MM:
+                continue
+            iva = runs[(axis, alo, ahi)]
+            ivb = runs[(axis, blo, bhi)]
+            if not _ivs_overlap(iva, ivb):
+                continue
+            key = (axis, alo, max(ahi, bhi))
+            if key in plain:
+                continue
+            out.append((key, _ivs_overlap_span(iva, ivb)))
+    return out
+
+
+def band_aligned(rect, runs, tol=BAND_ALIGN_TOL_MM, composite=()):
     """Criterion 5: the path's span on some run's THIN axis lies inside that run's face pair.
     Keeps glazing/jamb/stile ink (it lives IN a wall run's gap, collinear with the wall);
-    rejects the swinging door leaves, which stick out PERPENDICULAR to their wall."""
+    rejects the swinging door leaves, which stick out PERPENDICULAR to their wall.
+    A path that fits NO single leaf is tried against the COMPOSITE pairs (double-leaf walls):
+    Pandora's window rects span both 100 mm leaves of a 200 mm wall and fit neither alone.
+    A composite match additionally requires the path to touch the span where the two leaves
+    actually COEXIST -- ink elsewhere on the pair's axis is over one leaf at most and must
+    earn plain alignment or be rejected (the extent clause, see WALL_CAVITY_TOL_MM)."""
     x0, y0, x1, y1 = rect
     for (axis, flo, fhi) in runs:
         lo, hi = (y0, y1) if axis == "h" else (x0, x1)
         if lo >= flo - tol and hi <= fhi + tol:
             return (axis, flo, fhi)
+    for (axis, flo, fhi), (elo, ehi) in composite:
+        lo, hi = (y0, y1) if axis == "h" else (x0, x1)
+        llo, lhi = (x0, x1) if axis == "h" else (y0, y1)
+        if (lo >= flo - tol and hi <= fhi + tol
+                and elo is not None and lhi >= elo - tol and llo <= ehi + tol):
+            return (axis, flo, fhi)
     return None
 
 
 def classify_panels(paths, runs, env):
-    """paths: [{"rect": (x0,y0,x1,y1) mm, "n_items", "op"}] of the PANEL_PEN class.
-    Returns (boundary, rejected) — boundary entries carry the run they align to."""
+    """paths: [{"rect": (x0,y0,x1,y1) mm, "n_items", "op", "w"}] of the BOUNDARY-INK class.
+    `runs` is the merge_runs DICT (composite pairing needs the long extents).
+    Returns (boundary, rejected) — boundary entries carry the run they align to (a COMPOSITE
+    pair when no single leaf fits, flagged via_composite) and their pen width `w`."""
+    comp = composite_run_keys(runs)
+    comp_set = {k for k, _ext in comp}
+    keys = run_keys(runs)
     boundary, rejected = [], []
     for p in paths:
         r = p["rect"]
@@ -670,11 +786,11 @@ def classify_panels(paths, runs, env):
         if not rect_in(r, env):
             rejected.append({**p, "why": "outside envelope (sheet/clip frame)"})
             continue
-        run = band_aligned(r, runs)
+        run = band_aligned(r, keys, composite=comp)
         if run is None:
             rejected.append({**p, "why": "not band-aligned (perpendicular door leaf)"})
             continue
-        boundary.append({**p, "run": run})
+        boundary.append({**p, "run": run, "via_composite": run in comp_set})
     return boundary, rejected
 
 
@@ -713,15 +829,26 @@ def _union_len(ivs):
     return tot + (ce - cs)
 
 
+def _run_backs_gap(prun, key):
+    """True iff the run a path aligned to CONTAINS the gap's face pair (same axis).
+    Equality for a plain run; a COMPOSITE pair (the outermost faces of a double-leaf wall)
+    contains each leaf's own gaps, so ink spanning the wall backs both leaves' holes.
+    Ink on a DIFFERENT wall still backs nothing -- containment, not proximity."""
+    if not prun or prun[0] != key[0]:
+        return False
+    return prun[1] <= key[1] + 0.11 and key[2] <= prun[2] + 0.11
+
+
 def gap_coverage(g, boundary):
-    """Fraction of a gap's long-axis span covered by band-aligned panel ink on the SAME run."""
+    """Fraction of a gap's long-axis span covered by band-aligned boundary ink whose run
+    BACKS this gap (the same wall, or the composite wall this gap's leaf belongs to)."""
     key = (g["axis"], g["face_lo"], g["face_hi"])
     L = g["length_mm"]
     if L <= 0:
         return 0.0
     ivs = []
     for p in boundary:
-        if tuple(round(v, 1) if isinstance(v, float) else v for v in p["run"]) != key:
+        if not _run_backs_gap(p["run"], key):
             continue
         r = p["rect"]
         lo, hi = (r[0], r[2]) if g["axis"] == "h" else (r[1], r[3])
@@ -731,13 +858,51 @@ def gap_coverage(g, boundary):
     return _union_len(ivs) / L
 
 
+def gap_pen_mm(g, boundary):
+    """{pen_pt: mm-of-ink} backing this gap, largest first. The class no longer filters on
+    width (the 0.42 lesson), so the width EVIDENCE must stay visible: an opening backed only
+    by 0.12-pt hairline reads differently to a reviewer than one backed by a glazing pen.
+    Overlapping paths are summed as drawn -- this is ink mm, not coverage."""
+    key = (g["axis"], g["face_lo"], g["face_hi"])
+    out = {}
+    for p in boundary:
+        if not _run_backs_gap(p["run"], key):
+            continue
+        r = p["rect"]
+        lo, hi = (r[0], r[2]) if g["axis"] == "h" else (r[1], r[3])
+        a, b = max(lo, g["gap_lo"]), min(hi, g["gap_hi"])
+        if b > a:
+            w = p.get("w")
+            out[w] = out.get(w, 0.0) + (b - a)
+    return {str(w): round(mm, 1)
+            for w, mm in sorted(out.items(), key=lambda kv: -kv[1])}
+
+
+def gap_composite_mm(g, boundary):
+    """mm of this gap's backing that arrived through a COMPOSITE pair (via_composite paths).
+    The composite mechanism is the newest and most permissive door into the boundary class, so
+    an opening that exists ONLY through it must say so downstream -- same evidence law as
+    gap_pen_mm (review 2026-07-14: the flag used to die at the sheet-level note)."""
+    key = (g["axis"], g["face_lo"], g["face_hi"])
+    mm = 0.0
+    for p in boundary:
+        if not p.get("via_composite") or not _run_backs_gap(p["run"], key):
+            continue
+        r = p["rect"]
+        lo, hi = (r[0], r[2]) if g["axis"] == "h" else (r[1], r[3])
+        a, b = max(lo, g["gap_lo"]), min(hi, g["gap_hi"])
+        if b > a:
+            mm += b - a
+    return round(mm, 1)
+
+
 def gap_ink_intervals(g, boundary):
     """The intervals of a gap's long axis that panel ink ACTUALLY covers (union, clipped to the
     gap). `gap_coverage` is exactly union_len(these) / g.length_mm -- this returns WHERE."""
     key = (g["axis"], g["face_lo"], g["face_hi"])
     ivs = []
     for p in boundary:
-        if tuple(round(v, 1) if isinstance(v, float) else v for v in p["run"]) != key:
+        if not _run_backs_gap(p["run"], key):
             continue
         r = p["rect"]
         lo, hi = (r[0], r[2]) if g["axis"] == "h" else (r[1], r[3])
@@ -1000,24 +1165,65 @@ def edge_key(ve):
             round(ve["gap_lo"], 1), round(ve["gap_hi"], 1))
 
 
+def _stub_backers(g, boundary, tol=None):
+    """The boundary paths allowed to back a SUB-CLOSE_TOL gap: same-run (or composite) ink whose
+    span TERMINATES within `tol` of the gap's jambs. A 2551 mm polyline crossing a 99 mm stub is
+    dimension/grid-shaped ink, not a drawn opening -- it backs nothing here (Pandora p8, the one
+    measured fabrication; see STUB_BACKER_OVERSHOOT_MM for the 24x margins)."""
+    if tol is None:
+        tol = STUB_BACKER_OVERSHOOT_MM
+    key = (g["axis"], g["face_lo"], g["face_hi"])
+    out = []
+    for p in boundary:
+        if not _run_backs_gap(p["run"], key):
+            continue
+        r = p["rect"]
+        lo, hi = (r[0], r[2]) if g["axis"] == "h" else (r[1], r[3])
+        if min(hi, g["gap_hi"]) <= max(lo, g["gap_lo"]):
+            continue
+        if max(0.0, g["gap_lo"] - lo) + max(0.0, hi - g["gap_hi"]) <= tol:
+            out.append(p)
+    return out
+
+
 def resolve_gaps(gaps, boundary, close_tol=CLOSE_TOL_MM, cover=GLAZING_COVER_FRAC):
     """Every gap becomes exactly one of:
-       INFILL  — shorter than the DECLARED closure tolerance and carrying no ink: an undrawn
-                 stub. Bridged with wall, and LOGGED with its size.
-       OPENING — panel ink backs >= `cover` of its span: a real door/window/glass. NEVER
-                 bridged as wall; emitted for floor_openings so it is CUT and re-glazed.
+       OPENING — ink backs >= `cover` of its span: a real door/window/glass. NEVER bridged as
+                 wall; emitted for floor_openings so it is CUT and re-glazed. A gap SHORTER
+                 than `close_tol` (no door leaf is that narrow — frame members, thresholds)
+                 opens only on JAMB-TERMINATED ink: since the class widened to every non-wall
+                 pen, a long line CROSSING a stub could otherwise cut a wall open (review
+                 2026-07-14, MAJOR, measured live on Pandora p8).
+       INFILL  — shorter than the DECLARED closure tolerance, no (jamb-terminated) ink: an
+                 undrawn stub. Bridged with wall, and LOGGED with its size — and when crossing
+                 ink was REFUSED above, logged with that evidence too.
        VOID    — long, and no ink of any class. NOT an opening and NOT a wall. It stays open,
                  and the room does not close through it. This is the honest failure channel."""
     infill, openings, voids = [], [], []
     for g in gaps:
         c = gap_coverage(g, boundary)
         rec = {**g, "ink_coverage": round(c, 3)}
-        if c >= cover:
+        if g["length_mm"] >= close_tol:
+            if c >= cover:
+                rec["ink_pens"] = gap_pen_mm(g, boundary)
+                rec["composite_backed_mm"] = gap_composite_mm(g, boundary)
+                openings.append(rec)
+            else:
+                voids.append(rec)
+            continue
+        jamb = _stub_backers(g, boundary)
+        cj = gap_coverage(g, jamb)
+        if cj >= cover:
+            rec["ink_coverage"] = round(cj, 3)
+            rec["ink_pens"] = gap_pen_mm(g, jamb)
+            rec["composite_backed_mm"] = gap_composite_mm(g, jamb)
             openings.append(rec)
-        elif g["length_mm"] < close_tol:
-            infill.append(rec)
         else:
-            voids.append(rec)
+            if c > 0 and cj < c:
+                # the refusal is EVIDENCE, not a silent drop: what crossed, and how much
+                rec["crossing_ink_refused"] = True
+                rec["crossing_ink_pens"] = gap_pen_mm(g, boundary)
+            infill.append(rec)
     return infill, openings, voids
 
 
@@ -1209,11 +1415,16 @@ def type_openings(openings, filled, origin, leaf_rects, step=GRID_MM, probe=200.
             side = "off-room (neither side is this room's floor)"
         out.append({"id": f"O{i:02d}", "type": t, "rect": [round(v, 1) for v in r],
                     "length_mm": g["length_mm"], "axis": g["axis"],
-                    "ink_coverage": g["ink_coverage"], "leaf_pen_paths": n_leaf,
+                    "ink_coverage": g["ink_coverage"], "ink_pens": g.get("ink_pens"),
+                    "composite_backed_mm": g.get("composite_backed_mm", 0.0),
+                    "leaf_pen_paths": n_leaf,
                     "context": side, "signed": False,
                     "provenance": "bluehouse_plan_reader part C: gap in the wall-poche run, "
-                                  "backed by >=%.0f%% band-aligned %.2f-pt panel ink"
-                                  % (GLAZING_COVER_FRAC * 100, PANEL_PEN_PT)})
+                                  "backed by >=%.0f%% band-aligned boundary ink (pens/mm: %s%s)"
+                                  % (GLAZING_COVER_FRAC * 100, g.get("ink_pens"),
+                                     "; %.1f mm via a composite double-leaf pair"
+                                     % g["composite_backed_mm"]
+                                     if g.get("composite_backed_mm") else "")})
     return out
 
 
@@ -1412,10 +1623,12 @@ def read_bands(pdf, page_no):
     return bands_pt, steps_pt, scale, denom, modal, tb, checks, notes
 
 
-def read_pen_paths(pdf, page_no, pen_pt):
-    """Every pure-black stroked path drawn with `pen_pt`, as (rect_pt, n_items, first_op).
-    Used for the PANEL pen (the boundary/glazing ink) and the LEAF pen (slider detail lines).
-    No screening here — the geometric sub-classifier is pure and lives above."""
+def read_pen_paths(pdf, page_no, pen_pt=None):
+    """Pure-black stroked paths as {"rect_pt", "n_items", "op", "w"}.
+    pen_pt=None -> the BOUNDARY-INK class: every black stroke EXCEPT the wall pen (the pen
+    table varies per office -- the 0.42 lesson -- so width is carried, not matched).
+    pen_pt=<pt> -> exactly that pen (the LEAF pen, typing only).
+    No geometric screening here — the geometric sub-classifier is pure and lives above."""
     import fitz
     doc = fitz.open(pdf)
     page = doc[page_no]
@@ -1423,14 +1636,19 @@ def read_pen_paths(pdf, page_no, pen_pt):
     out = []
     for d in page.get_drawings():
         c = d.get("color")
-        if d.get("type") != "s" or c is None or sum(c) > MAX_COLOR_SUM:
-            continue
-        if round(d.get("width") or 0, 2) != round(pen_pt, 2):
-            continue
+        w = round(d.get("width") or 0, 2)
+        if pen_pt is None:
+            if not is_boundary_ink(d.get("type"), c, w):
+                continue
+        else:
+            if d.get("type") != "s" or c is None or sum(c) > MAX_COLOR_SUM:
+                continue
+            if w != round(pen_pt, 2):
+                continue
         r = d["rect"] * m
         items = d.get("items") or []
         out.append({"rect_pt": (min(r.x0, r.x1), min(r.y0, r.y1), max(r.x0, r.x1), max(r.y0, r.y1)),
-                    "n_items": len(items), "op": items[0][0] if items else None})
+                    "n_items": len(items), "op": items[0][0] if items else None, "w": w})
     return out
 
 
@@ -1487,14 +1705,18 @@ def build(pdf, page_no, scale_override=None, seed=None, zone_name=None,
     env = (min(b[0] for b in bands) - ENV_MARGIN_MM, min(b[1] for b in bands) - ENV_MARGIN_MM,
            max(b[2] for b in bands) + ENV_MARGIN_MM, max(b[3] for b in bands) + ENV_MARGIN_MM)
     panels = [{"rect": to_mm_rect(p["rect_pt"], scale, x0, y0),
-               "n_items": p["n_items"], "op": p["op"]}
-              for p in read_pen_paths(pdf, page_no, PANEL_PEN_PT)]
+               "n_items": p["n_items"], "op": p["op"], "w": p["w"]}
+              for p in read_pen_paths(pdf, page_no)]
     leaf_rects = [to_mm_rect(p["rect_pt"], scale, x0, y0)
                   for p in read_pen_paths(pdf, page_no, LEAF_PEN_PT)]
-    boundary, rejected = classify_panels(panels, run_keys(runs), env)
-    notes.append(f"boundary ink: {len(panels)} black {PANEL_PEN_PT}-pt paths -> {len(boundary)} "
-                 f"band-aligned enclosure paths ({len(rejected)} rejected: ticks / sheet frame / "
-                 f"perpendicular door leaves); {len(leaf_rects)} {LEAF_PEN_PT}-pt leaf paths.")
+    boundary, rejected = classify_panels(panels, runs, env)
+    pen_hist = collections.Counter(p["w"] for p in boundary)
+    n_comp = sum(1 for p in boundary if p.get("via_composite"))
+    notes.append(f"boundary ink: {len(panels)} black non-wall-pen paths -> {len(boundary)} "
+                 f"band-aligned enclosure paths, pens {dict(sorted(pen_hist.items()))}"
+                 + (f", {n_comp} aligned to a composite double-leaf wall" if n_comp else "")
+                 + f" ({len(rejected)} rejected: ticks / sheet frame / perpendicular door "
+                 f"leaves); {len(leaf_rects)} {LEAF_PEN_PT}-pt leaf paths.")
 
     infill, opening_gaps, voids = resolve_gaps(all_gaps(runs), boundary)
     # VOIDS get stable ids. An owner may SIGN one -- "yes, the wall continues behind the stair,
@@ -1626,8 +1848,16 @@ def build(pdf, page_no, scale_override=None, seed=None, zone_name=None,
     seg_class += ["signed_virtual"] * len(virtual_segments)
     closure_log = [{"axis": g["axis"], "rect": [round(v, 1) for v in gap_rect(g)],
                     "length_mm": g["length_mm"], "ink_coverage": g["ink_coverage"],
-                    "action": "BRIDGED as wall (below the declared %.0f mm closure tolerance, "
-                              "and carrying no ink of any class)" % CLOSE_TOL_MM}
+                    **({"crossing_ink_refused": True,
+                        "crossing_ink_pens": g["crossing_ink_pens"]}
+                       if g.get("crossing_ink_refused") else {}),
+                    "action": ("BRIDGED as wall (below the declared %.0f mm closure tolerance; "
+                               "its only ink CROSSES the stub without terminating at the jambs "
+                               "-- refused as backing, pens/mm: %s)"
+                               % (CLOSE_TOL_MM, g["crossing_ink_pens"]))
+                              if g.get("crossing_ink_refused") else
+                              ("BRIDGED as wall (below the declared %.0f mm closure tolerance, "
+                               "and carrying no jamb-terminated ink of any class)" % CLOSE_TOL_MM)}
                    for g in sorted(infill, key=lambda g: -g["length_mm"])]
 
     gaps = find_gaps(runs, min_gap)
@@ -2096,9 +2326,14 @@ def main(argv=None):
                      % (os.path.basename(a.pdf), a.page)),
             # room.openings travels WITH the outline: build_room cuts + glazes them. Without this
             # the room renders as a floor and four blank walls (round 3, FATAL 1).
+            # ink_pens/composite_backed_mm ride along (o.get: a future signed-void record may
+            # lack them): the reviewer auditing ONE room must see a hairline-backed or
+            # composite-only opening IN room.openings, not only in the provenance block.
             "room": {"outline_mm": rc["outline_mm"], "ceiling_mm": a.ceiling_mm,
-                     "openings": [{k: o[k] for k in ("id", "type", "rect", "length_mm", "axis",
-                                                     "ink_coverage", "signed")} for o in room_ops]},
+                     "openings": [{k: o.get(k) for k in ("id", "type", "rect", "length_mm",
+                                                         "axis", "ink_coverage", "ink_pens",
+                                                         "composite_backed_mm", "signed")}
+                                  for o in room_ops]},
             "builtins": [], "items": [],
             "ink_provenance": {
                 "ink_backed": rc.get("ink_backed"),
