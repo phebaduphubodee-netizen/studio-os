@@ -58,10 +58,19 @@ MODELS = {"flash": "gemini-2.5-flash", "pro": "gemini-2.5-pro"}
 # Fixed rubrics. Each dimension scored 0-5 (0 = broken, 5 = genuinely publishable /
 # a professional would sign it). The critic is told to be STINGY — 5 is rare.
 RUBRIC = {
+    # material_variety + architectural_plausibility added 2026-07-15 from the interior-render
+    # critique DR (knowledge/_inbox/interior-render-critique-DR-2026-07-15.md). They close a
+    # measured blind spot: on R_PRJ002_MasterSuite_Cam01_v01 the old rubric scored
+    # palette_coherence 5/5 and proportion_and_scale 5/5, MISSING both the mono-timber palette
+    # and the black-hole headboard cavity that the designer AND the DR rubric flagged. Coherence
+    # and variety are DISTINCT axes (coherent-but-monotonous is the exact failure), and scale is
+    # not plausibility (a correctly-sized wall can still terminate into an impossible void).
     "render": [
         ("palette_coherence",      "One controlled colour/material story, or does it clash?"),
+        ("material_variety",       "A dominant/secondary/accent material hierarchy (the 60-30-10 rule), or a MONO-MATERIAL trap (e.g. timber on floor + walls + millwork + cabinetry) that flattens depth and gives the eye no rest -- EVEN IF the palette is coherent?"),
         ("lighting_quality",       "Layered/intentional light with mood + shadow, or flat & evenly lit?"),
         ("composition",            "Framed inside a believable space, or floating / dead-centre catalogue shot?"),
+        ("architectural_plausibility","Do claddings/feature walls TERMINATE logically (mitered return or metal trim, never a raw abrupt edge)? Do recesses/cavities read as LIT space, or as absolute-black 'holes' (a global-illumination / unclosed-geometry failure)? Are shelves/plinths supported (recessed 10-15mm zocalo or shadow gap, not a paper-thin box)? Is anything floating or impossibly cantilevered? Are wall/ceiling junctions detailed (shadow gap/cove), not razor 0mm intersections with light leaks?"),
         ("furniture_realism",      "Real, believable furniture, or PRIMITIVE boxes/blocks (the AI-geometry tell)?"),
         ("room_context",           "A real room (walls, window, ceiling, context), or a subject in an empty VOID?"),
         ("styling_and_life",       "Layered styling that feels lived-in (art, plants, textiles), or sterile & bare?"),
