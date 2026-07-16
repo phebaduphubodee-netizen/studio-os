@@ -1,0 +1,74 @@
+{
+  "schema": "interior-ai/room-spec@0.2+ext",
+  "units": "metric",
+  "version": "canonical-2026-07-16",
+  "note": "MASTER SUITE — THE CANONICAL corrected spec. Coords absolute, origin (0,0), y-up, mm. SUPERSEDES for PRJ-2026-002 rendering: (a) 03_layout/v4/scene-graph.master_bedroom.json (owner-authoritative base this was built from), (b) pipeline/scripts/specs/bedroom_suite.json, (c) pipeline/output/deliverable_bedroom_suite/bedroom_suite.spec.json, (d) 04_visualization/cd-set_v01/bedroom_suite.spec.json — (b)(c)(d) are STALE anonymized EXAMPLES/fixtures, DO NOT render them for this project. Folds owner ground-truth corrections 2026-07-16 (see 03_layout/v4/OWNER-CORRECTIONS-2026-07-16.md). '+ext' = adds glazing[]/openings[]/curtain_track beyond base @0.2; build_room must be upgraded to consume them (tracked under correction #5, build layer). [est] = Claude estimate, owner to nudge.",
+  "corrections_applied": [
+    "1 curtain_track (was mis-read AC duct) — recorded as ceiling pelmet path",
+    "2 sliding pocket door bedroom<->sitting, 2 panels, pockets behind BF09-1 E leg",
+    "3 L-glass: south wall full x0-5500 + east return x5500 y-450->110 (behind BF14)",
+    "4 BF09-3 = OPEN wardrobe, no doors (oak veneer + brass rails + floating drawers + open shelves)",
+    "5 walls not sealing in Blender — outline kept closed here; BUILD-LAYER miter/close fix still pending",
+    "6 foot-of-bed unit RE-TYPED tv_console -> bookshelf (client barely watches TV)",
+    "7 BF11 RE-TYPED work-desk -> makeup/dressing vanity; its chair = vanity stool"
+  ],
+  "room": {
+    "type": "bedroom_suite",
+    "outline_mm": [[0, -450], [5500, -450], [5500, 2650], [5650, 2650], [5650, 8650], [0, 8650]],
+    "ceiling_mm": 2800,
+    "wall_thk_mm": 100,
+    "wall_note": "correction #5: build must close corners watertight — worst offenders = the concave L-jog (5500,2650)->(5650,2650) and the two south corners SW(0,-450)/SE(5500,-450).",
+    "openings": [
+      {"id": "glz-south", "type": "glass", "rect": [0, -450, 5500, -450], "sill_mm": 0, "head_mm": 2800, "name": "กระจก L — ผนังใต้ (south facade, full)", "note": "floor-to-ceiling; garden at grade outside/below (no floor-2 terrace)"},
+      {"id": "glz-east", "type": "glass", "rect": [5500, -450, 5500, 110], "sill_mm": 0, "head_mm": 2800, "name": "กระจก L — วกขึ้นตะวันออก (SE return)", "note": "east return up to ~south edge of bed; BF14 stands IN FRONT of this glass"},
+      {"id": "door-sitting", "type": "door", "head_mm": 2400, "rect": [5650, 6250, 5650, 7850], "name": "ประตูเลื่อนซ่อน ห้องนอน↔นั่งเล่น [est]", "note": "[est] 2-panel WOOD pocket slider stacking behind BF09-1 E leg (owner 07-16). Modelled as a doorway hole; the sliding leaf is a millwork detail build_room does not render. Width+y ESTIMATED — nudge to sheet."}
+    ]
+  },
+  "curtain_track": {
+    "type": "ceiling_pelmet",
+    "path_mm": [[0, 2650], [0, -450], [5500, -450], [5500, 110]],
+    "note": "owner-traced red line 2026-07-16: NW corner -> down west wall -> across south -> up east behind BF14. Runs onto SOLID west + east walls so curtains PARK off the glass — track length > glass length. West wall (bookshelf/BF11) + east wall (BF14) are SOLID."
+  },
+  "builtins": [
+    {"name": "ผนังระแนงหัวเตียง BF14", "kind": "headboard", "x": 5150, "y": 110, "w": 100, "d": 2540, "h": 2800, "bf": "BF14", "style": "vertical oak slats/battens", "note": "east-wall slat headboard; N end meets BF09-3 @y2650, S end meets curtain track @~y110 (owner 07-16; TRIMMED S from y-275). Stands in front of the east glass return; bed head pins to this SOLID wall, not glass."},
+    {"name": "ตู้เสื้อผ้าเหนือเตียง BF09-3", "kind": "wardrobe", "open": true, "x": 2300, "y": 2650, "w": 3300, "d": 600, "h": 2800, "bf": "BF09-3", "style": "OPEN dressing (owner 07-16, ref image #3): oak veneer carcass, brass hang rails, floating drawers, open shelves — NO doors", "note": "SIGNATURE piece; Div 06 detail design pending (element 1/2)"},
+    {"name": "โต๊ะเครื่องแป้ง BF11", "kind": "vanity", "x": 0, "y": 2650, "w": 600, "d": 3200, "h": 750, "bf": "BF11", "note": "MAKEUP/dressing vanity (owner 07-16, NOT a work desk); west wall, N-S; the stool at x870 pulls up to it; mirror + drawers to design"},
+    {"name": "ตู้/ชั้น BF10 (dressing)", "kind": "cabinet", "x": 650, "y": 5250, "w": 2500, "d": 600, "h": 2800, "bf": "BF10", "note": "dressing cabinet between BF11 and BF09-2, against ensuite south wall (NOT the ensuite vanity)"},
+    {"name": "ชั้นหนังสือ/โชว์ ผนังตะวันตก (ex-TV)", "kind": "bookshelf", "x": 306, "y": 130, "w": 600, "d": 2046, "h": 1800, "note": "OPEN book/display shelving (owner 07-16: NOT a TV — client rarely watches). The bed FOOT faces this shelf wall. Div 06 detail design pending."}
+  ],
+  "items": [
+    {"name": "เตียง 7'x6.5' หัวตะวันออก", "kind": "bed", "x": 3092, "y": 110, "w": 2134, "d": 1981, "h": 600, "rot": 270, "note": "head EAST against BF14; foot faces WEST toward bookshelf"},
+    {"name": "ม้านั่งปลายเตียง (bench)", "kind": "bench", "x": 2646, "y": 628, "w": 504, "d": 1002, "h": 450, "note": "foot of bed; confirm identity"},
+    {"name": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)", "kind": "side_table", "x": 4794, "y": 2308, "w": 300, "d": 300, "h": 520, "note": "NE of bed head; mushroom lamp mood per ref image #3"},
+    {"name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)", "kind": "side_table", "x": 4794, "y": -338, "w": 300, "d": 294, "h": 520, "rot": 180, "note": "SE of bed head, in front of the glass return"},
+    {"name": "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)", "kind": "stool", "x": 870, "y": 3982, "w": 510, "d": 546, "h": 750, "rot": 270, "note": "vanity stool at the BF11 makeup table (owner 07-16, ex 'desk chair')"}
+  ],
+  "subrooms": [
+    {
+      "name": "ห้องน้ำในตัว (ensuite)",
+      "type": "bathroom",
+      "outline_mm": [[0, 5850], [3150, 5850], [3150, 8650], [0, 8650]],
+      "ceiling_mm": 2800,
+      "openings": [
+        {"id": "door-ensuite", "type": "door", "head_mm": 2000, "rect": [3150, 6698, 3150, 7498], "name": "ประตูห้องน้ำ", "note": "gap y6698–7596 per v4 (BF09-2 clears it); w~800"}
+      ],
+      "fixtures": [
+        {"name": "อ่างล้างหน้าคู่", "kind": "vanity_double", "x": 650, "y": 6075, "w": 2450, "d": 550, "h": 850, "note": "south counter, run ~3.05; sanitaryware, NOT BF10"},
+        {"name": "โถสุขภัณฑ์ WC", "kind": "toilet", "x": 250, "y": 6000, "w": 400, "d": 700, "h": 400, "note": "SW against west wall"},
+        {"name": "อ่างอาบน้ำ (bathtub)", "kind": "bathtub", "x": 1300, "y": 7550, "w": 1800, "d": 900, "h": 550, "note": "NE north wall"},
+        {"name": "ฝักบัว (shower)", "kind": "shower", "x": 100, "y": 7350, "w": 1050, "d": 1150, "h": 2200, "note": "NW glass enclosure"}
+      ]
+    },
+    {
+      "name": "โซนตู้เสื้อผ้า (wardrobe bay)",
+      "type": "wardrobe",
+      "outline_mm": [[3150, 5850], [5650, 5850], [5650, 8650], [3150, 8650]],
+      "ceiling_mm": 2800,
+      "fixtures": [
+        {"name": "ตู้เสื้อผ้า BF09-1 ขาเหนือ (L 5.2m)", "kind": "wardrobe", "x": 3150, "y": 8050, "w": 2500, "d": 600, "h": 2800, "bf": "BF09-1", "note": "north leg of the L"},
+        {"name": "ตู้เสื้อผ้า BF09-1 ขาตะวันออก (L 5.2m)", "kind": "wardrobe", "x": 5050, "y": 4674, "w": 600, "d": 3376, "h": 2800, "bf": "BF09-1", "note": "east leg; the sliding pocket door stacks BEHIND this leg (owner 07-16)"},
+        {"name": "ตู้เสื้อผ้า BF09-2", "kind": "wardrobe", "x": 3150, "y": 5180, "w": 600, "d": 1500, "h": 2800, "bf": "BF09-2", "note": "flush to ensuite east wall; S end meets BF10 (~y5250), N end below the door gap (y6698)"}
+      ]
+    }
+  ]
+}
