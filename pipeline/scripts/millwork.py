@@ -33,11 +33,22 @@ PLINTH_H = 0.080    # toe-kick height
 PLINTH_R = 0.018    # toe-kick set-back from the door face
 PULL_H   = 0.030    # handleless top pull-gap — this IS the hardware (warm-minimal brief)
 LEAF_W   = 0.550    # target door-leaf width; the leaf COUNT is derived from the run
-SLAT_W   = 0.045    # batten width (headboard slat wall)
+SLAT_W   = 0.045    # batten width (headboard slat wall) — DEFAULT; a builtin's design block overrides
 SLAT_GAP = 0.022    # batten gap
 SLAT_PR  = 0.018    # batten proudness off the backer
 TOP_T    = 0.040    # worktop thickness (low / desk millwork)
 TOP_REC  = 0.030    # carcass set-back under the worktop lip
+
+# --- open dressing-wall constants (an OPEN wardrobe: NO leaves, you see INTO it) -----------------
+# element-1 (PRJ-2026-002 BF09-3, owner-signed D3/D4/D6 2026-07-16). Same shadow-line law as the
+# door run: every cue is a real recess/proudness that casts, never a fattened dimension.
+CARC_T    = 0.018   # carcass panel thickness (back / gables / shelves / top)
+RAIL_D    = 0.030   # brass hang-rail section (round rail modelled square; Ø25-28 D4-A)
+SHELF_LIFT = 0.102  # rod-to-shelf-above clearance (hanger lift-off; Ask1 ergonomics)
+DRAWER_H  = 0.240   # floating-drawer face height
+DRAWER_REV = 0.006  # reveal between stacked drawer faces
+FLOAT_Z   = 0.450   # the drawer stack FLOATS — air/shadow reveal below it (D3-A)
+MAX_SPAN  = 0.900   # open-shelf span before a divider is needed (Ask1/NLM load rule)
 
 TALL_H     = 1.6    # >= this is a door run; below it is a worktop piece
 RUN_RATIO  = 1.6    # long:short below this is a squat block, not a run -> stays a plain box
@@ -115,13 +126,19 @@ def mill_axis(x0, y0, W, D, room_ctr, item_ctrs=(), face=None):
     return axis, (1 if room >= ctr else -1), "centroid"
 
 
-def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True):
+def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=False, design=None):
     """PURE. Lay out a built-in's parts in bbox-LOCAL metres. Returns a list of
     (part_name, x, y, z, dx, dy, dz) with 0 <= x and x+dx <= W (likewise y/D and z/H).
 
     `axis` is the DEPTH axis ('x' or 'y') — the run is along the other one. `sign` is +1 if the
     FRONT (the face the room sees) is at the HIGH end of the depth axis. Returns [] when the shape
     is not millwork-like, and the caller keeps the plain box.
+
+    `open_front=True` (a builtin's `open` flag) builds an OPEN dressing wall — brass hang-rail,
+    floating microcement-front drawers, open oak shelves, NO door leaves — instead of the closed
+    door run. `design` (a builtin's `design` block) overrides the slat rhythm on a headboard
+    (slat_face_mm / slat_gap_mm / slat_depth_mm). Both are OPT-IN: the default call renders exactly
+    what it did before (closed leaves, DEFAULT slat constants) — the pinned tests depend on it.
 
     CAD-SAFE BY CONSTRUCTION: `part()` DROPS any box that would leave the bbox, so a degenerate
     built-in gets FEWER parts — never a part outside its plan-measured footprint. This is the same
@@ -161,14 +178,110 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True):
     # repaint reads as a slat wall; a flat box reads as a painted wall, which is exactly what the
     # beauty pass kept giving back.
     if kind == "headboard":
-        pr = min(SLAT_PR, depth * 0.5)
-        part("backer", 0.0, run, pr, depth - pr, 0.0, H)
-        n = int(run // (SLAT_W + SLAT_GAP))
+        # the design block sets the rhythm (BF14 D2-A = 40 mm face / 20 mm gap / 22 mm deep, 66%
+        # solid); absent one, the DEFAULT constants. A present-but-IMPLAUSIBLE value (<=0 or > a
+        # sane 500 mm — a sign-flip or metre/mm slip) RAISES rather than silently rendering wrong
+        # geometry (42k slivers, an overlapping ribbed slab, or a silent box). Same discipline as
+        # normalize_face: a bad declaration must fail loud, not degrade to a guess (review 2026-07-16).
+        d = design or {}
+
+        def _slat_mm(key, default_m):
+            v = d.get(key)
+            if v is None:
+                return default_m
+            v = float(v)
+            if not (3.0 <= v <= 500.0):
+                raise ValueError(f"millwork: {key}={v} mm is not a plausible slat dimension "
+                                 f"(expected 3 <= mm <= 500) — a metre/mm slip (0.04), a sign-flip "
+                                 f"(-40) or an extra zero (4000) must fail loud, not render a wrong "
+                                 f"slat wall")
+            return v / 1000.0
+        sw  = _slat_mm("slat_face_mm",  SLAT_W)
+        sg  = _slat_mm("slat_gap_mm",   SLAT_GAP)
+        spr = _slat_mm("slat_depth_mm", SLAT_PR)
+        pr = min(spr, depth * 0.5)
+        part("backer", 0.0, run, pr, depth - pr, 0.0, H)     # matte-black ply backer (D2-A)
+        n = int(run // (sw + sg))                            # sw+sg > 0 (validated) -> no zero-div
         if n < 2:
             return []                                    # too short to read as slats — keep the box
         pitch = run / n                                  # redistribute so the battens end flush
         for i in range(n):
-            part(f"slat{i}", i * pitch + (pitch - SLAT_W) / 2.0, SLAT_W, 0.0, pr, 0.0, H)
+            part(f"slat{i}", i * pitch + (pitch - sw) / 2.0, sw, 0.0, pr, 0.0, H)
+        return out
+
+    # AN OPEN DRESSING WALL (BF09-3): NO leaves — a 3-mass asymmetric composition you see INTO.
+    # [1] a brass hang-rail bay · [2] a floating-drawer + open-shelf TOWER (the divider that keeps
+    # every shelf span <= MAX_SPAN) · [3] a display niche wrapping the corner. The GAPS + the
+    # microcement drawer fronts + the brass rail are what a repaint reads as "open, sourceable
+    # joinery", where a door run reads as a closed box. Part NAMES carry material intent to
+    # build_room (_suite_materials routes 'rail*' -> brass, '*front*'/'towerback' -> microcement,
+    # the rest -> oak). Owner-signed D3-A/D4-A/D6-A, element1-oak-signature-wall_DD-2026-07-16.md.
+    if open_front:
+        if run < 3 * CARC_T or depth <= 1e-6:
+            return []                                    # too small to compose — keep the box
+        tower_w = min(MAX_SPAN, run * 0.28)              # the drawer/shelf divider tower
+        niche_w = min(MAX_SPAN, run * 0.28)              # the corner display niche (span <= MAX_SPAN)
+        bay_w = run - tower_w - niche_w                  # the hang bay takes the rest (asymmetric)
+        if bay_w < 0.40:                                 # not enough run for 3 masses -> one open bay
+            tower_w = niche_w = 0.0
+            bay_w = run
+        # structure (oak): a recessed toe-kick, a top, the vertical gables, and an oak back over
+        # every bay EXCEPT the tower (the tower gets a microcement back, D6-A — drawn side-by-side
+        # so the two materials never interpenetrate or share a coincident face; review 2026-07-16).
+        z_lo = 0.0
+        if floor_standing:
+            plr = min(PLINTH_R, depth * 0.5)
+            part("plinth", 0.0, run, plr, depth - plr, 0.0, min(PLINTH_H, H))
+            z_lo = PLINTH_H
+        part("top", 0.0, run, 0.0, depth, H - CARC_T, CARC_T)
+        if tower_w:
+            part("back", 0.0, bay_w, depth - CARC_T, CARC_T, 0.0, H)                      # bay back
+            part("back_niche", bay_w + tower_w, niche_w, depth - CARC_T, CARC_T, 0.0, H)  # niche back
+            gpos = [0.0, bay_w, bay_w + tower_w, run - CARC_T]
+        else:
+            part("back", 0.0, run, depth - CARC_T, CARC_T, 0.0, H)
+            gpos = [0.0, run - CARC_T]
+        for gi, gx in enumerate(gpos):
+            part(f"gable{gi}", min(gx, run - CARC_T), CARC_T, 0.0, depth, 0.0, H)
+
+        # [1] hang-rail bay — split by a mid-gable into a DOUBLE short-hang zone (two stacked rails,
+        # shirts/short garments) + a SINGLE full-hang zone (one lower rail, long garments), each with
+        # a top shelf. Two zones ENCODE the signed short-hang(1000-1150)+full-hang(1600-1750) (D4-A)
+        # AND keep every bay shelf span <= MAX_SPAN. Rails ~mid-depth so garments hang into the open.
+        z_shelf = H - 0.30
+        bay_mid = bay_w * 0.5
+        part("gable_bay", min(bay_mid, run - CARC_T), CARC_T, 0.0, depth, 0.0, H)   # splits the bay
+        # left sub-bay = double short-hang
+        l0, lw = CARC_T, max(bay_mid - 2 * CARC_T, 0.0)
+        part("shelf_sh", l0, lw, 0.0, depth, z_shelf, CARC_T)
+        for i, rz in enumerate((1.05, 2.05)):
+            part(f"rail_short{i}", l0 + 0.04, max(lw - 0.08, 0.0), depth * 0.45, RAIL_D, rz, RAIL_D)
+        # right sub-bay = single full-hang (rail at 1.85 m -> ~1.75 m clear drop)
+        r0 = bay_mid + CARC_T
+        rw = max(bay_w - (CARC_T if tower_w else 0.0) - r0, 0.0)
+        part("shelf_fh", r0, rw, 0.0, depth, z_shelf, CARC_T)
+        part("rail_full", r0 + 0.04, max(rw - 0.08, 0.0), depth * 0.45, RAIL_D, 1.85, RAIL_D)
+
+        if tower_w:
+            # [2] floating-drawer + open-shelf tower — microcement fronts + a microcement back,
+            # both INSET between the two gables (t_off/t_w) so no cross-material face coincides.
+            t_off = bay_w + CARC_T
+            t_w = tower_w - 2 * CARC_T
+            part("towerback", t_off, t_w, depth - CARC_T, CARC_T, z_lo, (H - CARC_T) - z_lo)
+            n_dr = 3
+            for i in range(n_dr):
+                z_i = FLOAT_Z + i * DRAWER_H
+                part(f"drawer_box{i}", t_off, t_w, 0.02, depth - 0.04, z_i + 0.01, DRAWER_H - 0.02)
+                part(f"drawer_front{i}", t_off, t_w, 0.0, 0.02, z_i, DRAWER_H - DRAWER_REV)
+            for i, z in enumerate((FLOAT_Z + n_dr * DRAWER_H + 0.10,
+                                   FLOAT_Z + n_dr * DRAWER_H + 0.60)):
+                part(f"shelf_tw{i}", t_off, t_w, 0.0, depth, z, CARC_T)
+
+            # [3] corner display niche — open oak shelves
+            n_off = bay_w + tower_w + CARC_T
+            n_w = niche_w - 2 * CARC_T
+            for i, z in enumerate((0.40, 1.05, 1.70)):
+                part(f"shelf_ni{i}", n_off, max(n_w, 0.0), 0.0, depth, z, CARC_T)
         return out
 
     # A TALL DOOR RUN (wardrobe / full-height cabinet): leaves proud of a set-back carcass, a

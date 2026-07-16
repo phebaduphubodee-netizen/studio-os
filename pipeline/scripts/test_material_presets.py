@@ -230,5 +230,104 @@ def test_material_story_names_only_what_the_spec_chose():
     assert "walnut" in mp.material_story(None)
 
 
+# ---------------------------------------------------------------------------
+# element-1 palette (PRJ-2026-002 master suite, owner-signed 2026-07-16)
+# ---------------------------------------------------------------------------
+
+def test_element1_presets_resolve_through_their_factories():
+    """The four build-layer presets must resolve to real factory args without raising —
+    a typo here would only surface as a mid-render crash inside Blender."""
+    expect = {"oak_veneer": "proc_wood", "cool_plaster": "painted",
+              "microcement_cool": "painted", "satin_brass": "solid"}
+    for name, fac in expect.items():
+        a = mp.factory_args(name)
+        assert a["factory"] == fac, f"{name} -> {a['factory']}, wanted {fac}"
+
+
+def test_satin_brass_is_a_real_metal():
+    """The hang-rail accent must stay Metallic 1.0 — the binary-metalness gate would raise
+    on anything else, and a dielectric 'brass' renders as yellow paint, not metal."""
+    a = mp.factory_args("satin_brass")
+    assert a["metallic"] == 1.0
+    assert mp.PRESETS["satin_brass"]["tier"] == "DESIGN-INTENT"
+
+
+def test_oak_is_LIGHT_not_the_walnut_it_replaces():
+    """The whole anti-monopoly lever is that oak_veneer is LIGHTER than the walnut mass the
+    eye-render exposed. Pin luminance ordering so a retune can't quietly darken it back."""
+    oak = mp.factory_args("oak_veneer")["rgba"]
+    walnut = mp.factory_args("walnut_veneer")["rgba"]
+    lum = lambda c: 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    assert lum(oak) > lum(walnut) * 1.5, "oak must read clearly lighter than walnut"
+
+
+def test_cool_surfaces_are_actually_cool():
+    """Albers D1-A: the 60% wall ground must be COOL so it doesn't wash the oak out. Cool =
+    blue channel >= red. Contrast this with the WARM legacy warm_white_paint it replaces —
+    if a retune warms cool_plaster past warm_white, the lever is silently gone."""
+    for name in ("cool_plaster", "microcement_cool"):
+        r, g, b = mp.factory_args(name)["rgba"][:3]
+        assert b >= r, f"{name} must be cool (blue {b:.3f} >= red {r:.3f})"
+    warm = mp.factory_args("warm_white_paint")["rgba"]
+    assert warm[0] > warm[2], "the legacy wall it replaces really is warm (red > blue)"
+
+
+def test_element1_preset_values_are_pinned_exactly():
+    """U7 frozen-constants discipline: the client render's palette VALUES are pinned, so a silent
+    retune (e.g. re-darkening the oak, warming the plaster) fails the suite instead of quietly
+    changing what the owner signed off on."""
+    P = mp.PRESETS
+    assert (P["oak_veneer"]["hex"], P["oak_veneer"]["dark_hex"], P["oak_veneer"]["rough"]) == ("#C7B896", "#A5926B", 0.38)
+    assert (P["cool_plaster"]["hex"], P["cool_plaster"]["rough"]) == ("#EAEDEF", 0.85)
+    assert (P["microcement_cool"]["hex"], P["microcement_cool"]["rough"]) == ("#AEB2B2", 0.90)
+    assert (P["satin_brass"]["hex"], P["satin_brass"]["rough"], P["satin_brass"]["metallic"]) == ("#C4A45C", 0.35, 1.0)
+    assert (P["matte_black_ply"]["hex"], P["matte_black_ply"]["rough"]) == ("#1A1A1A", 0.88)
+
+
+# ---------------------------------------------------------------------------
+# build-layer helpers (pure): mill_object_role + parse_light_warm
+# ---------------------------------------------------------------------------
+
+def test_mill_object_role_routes_structured_parts():
+    """The open-wall + slat parts route by their trailing PART TOKEN."""
+    assert mp.mill_object_role("mill__ตู้__rail_full") == "brass"
+    assert mp.mill_object_role("mill__ตู้__rail_short0") == "brass"
+    assert mp.mill_object_role("mill__ตู้__drawer_front1") == "microcement"
+    assert mp.mill_object_role("mill__ตู้__towerback") == "microcement"
+    assert mp.mill_object_role("mill__BF14__backer") == "backing"
+    assert mp.mill_object_role("mill__ตู้__back") == "oak"          # oak back panel, NOT microcement
+    assert mp.mill_object_role("mill__ตู้__back_niche") == "oak"
+    assert mp.mill_object_role("mill__ตู้__drawer_box0") == "oak"   # the box is oak; only the FRONT is cement
+    assert mp.mill_object_role("mill__ตู้__gable0") == "oak"
+
+
+def test_mill_object_role_does_NOT_paint_a_fallback_box_by_its_name():
+    """THE ROUTER BUG (review 2026-07-16): a plain-box fallback is `mill__<free-text name>` with no
+    part token. Its name must NEVER be pattern-matched, or a cabinet literally named 'front console'
+    gets painted cool microcement, and a 'rail' or 'towerback' name gets brass/microcement."""
+    assert mp.mill_object_role("mill__front_console") == "oak"
+    assert mp.mill_object_role("mill__rail_shelf_unit") == "oak"
+    assert mp.mill_object_role("mill__towerback_cabinet") == "oak"
+    assert mp.mill_object_role("mill__wardrobe") == "oak"
+    assert mp.mill_object_role("floor") == "oak"                     # not even a mill object
+
+
+def test_parse_light_warm_default_and_valid():
+    """No block -> the legacy 2400 K amber (byte-identical to before). A valid 3-tuple passes."""
+    assert mp.parse_light_warm({}) == (1.0, 0.82, 0.60)
+    assert mp.parse_light_warm({"light_warm": [1.0, 0.9, 0.8]}) == (1.0, 0.9, 0.8)
+    assert mp.parse_light_warm(None) == (1.0, 0.82, 0.60)
+
+
+@pytest.mark.parametrize("bad", [[1.0, 0.9], [1.0, 0.9, 0.8, 0.7], [2.0, 0.9, 0.8],
+                                 [-0.1, 0.9, 0.8], "warm", 0.9, [1.0, "x", 0.8]])
+def test_parse_light_warm_fails_loud_on_malformed(bad):
+    """Review 2026-07-16: a wrong-length / out-of-range / non-numeric light_warm used to be
+    silently truncated, unclamped, or crash with a cryptic IndexError deep in the light loop. It
+    must RAISE at parse time so build()'s top-level guard fails the render loudly."""
+    with pytest.raises((ValueError, TypeError)):
+        mp.parse_light_warm({"light_warm": bad})
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

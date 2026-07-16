@@ -162,3 +162,65 @@
   (detailing) + Ask 3 (material) honestly outside-sources → convention tier.
 - Vault recon: 6 knowledge-manager agents, cited have/gap maps (workflow `wf_921373d1-f0f`).
 - Base geometry: `../master-suite.CANONICAL.spec.json`; corrections `v4/OWNER-CORRECTIONS-2026-07-16.md`.
+
+---
+
+## 7. BUILD-LAYER LOG — the render that SHOWS the design (2026-07-16, after sign-off)
+
+The proof render (`pipeline/output/room_bedroom_suite_eye_e1palette.png`) proved the *palette* lever
+(de-wood), but `build_room` still drew BF09-3 as a **closed box** and could not show the slat rhythm,
+the open joinery, the brass, or the microcement. This session taught the materializer to render the
+signed design. **Deliverable render: `pipeline/output/room_bedroom_suite_eye_e1build.png`.** All by
+LOOKING (owner's law), not by trusting a score.
+
+**What the build layer added (design-visualization, NOT a new instrument):**
+- `millwork.millwork_parts` gained an **open dressing-wall branch** (opt-in `open:true`): a 3-mass
+  asymmetric composition (D3-A) — a brass hang-rail bay · a floating-drawer + open-shelf **tower**
+  (the divider that keeps every display-shelf span ≤ 900, Ask1) · a corner display niche. NO leaves.
+  Same CAD invariant as the door run (a part may never leave the plan bbox; unit-tested).
+- The headboard slat branch now reads the **design block** → BF14's signed **40 face / 20 gap / 22
+  deep** (D2-A, 66 % solid, 42 battens over 2540). Absent a design block it keeps the old defaults.
+- Four **material presets** carry the signed palette: `oak_veneer` (light oak, D5-A) · `cool_plaster`
+  (D1-A cool ground) · `microcement_cool` (D6-A drawer fronts / tower back) · `satin_brass` (D4-A
+  rail). `_suite_materials` routes the open-wall sub-parts by name (rail→brass, front/towerback→
+  microcement, else oak).
+- An `eye_camera` block frames the NE corner (BF14 meets BF09-3); a `light_warm` spec override cools
+  the ceiling CCT (defaults untouched → every other render is byte-identical).
+
+**What LOOKING caught that numbers didn't (3 render passes):**
+1. **Pass 1 → the room rendered ORANGE.** The signed cool plaster read as saturated amber. Cause was
+   NOT the wall albedo — it was the default **2400 K amber downlights** (1.0,0.82,0.60) flooding an
+   enclosed, saturated-oak room, plus warm oak bounce. The mono-timber failure returned in *light*
+   form. Fix: a 3000 K warm-**white** `light_warm` for this shot + a **desaturated** oak preset.
+2. **Pass 2 → oak now reads light honey; slats, open joinery, brass, cool drawers all show.** But the
+   plaster still read warm-beige (oak floor-bounce).
+3. **Pass 3 → added the D1-A rug** (the signed floor-demotion lever). The neutral herringbone grounds
+   the foreground and cuts floor-bounce; palette now clearly **oak + cool grey + white + brass** —
+   the monopoly is broken. **Honest residual:** the upper plaster still reads warm-neutral, not
+   cold-cool (enclosed bounce; the only cached HDRI is a warm brown studio — a cool daylight HDRI or
+   a cool garden key through the south glass is the next lever, deferred, owner-directable).
+
+**Review-hardening (pass 4).** A 5-lens / 22-agent adversarial review (workflow `wf_ebee49f7-b43`)
+returned 14 confirmed findings; ALL fixed — and two were design-fidelity fixes that materially
+improved the render, not just bugs:
+- **The slat BACKER was rendering oak**, silently contradicting the signed **matte-black ply** (D2-A).
+  Added a `matte_black_ply` preset + routed the backer to it. The black ground behind the battens is
+  what makes the 40/20 rhythm *read as slats* — pass 4's wall is crisp where pass 3's was soft.
+- **The hang bay had ONE rail at 2.37 m**; the signed **two-zone** arrangement (double short-hang +
+  single full-hang, D4-A) was dropped. Added a mid-gable splitting the bay into a double short-hang
+  zone + a full-hang zone — which ALSO fixed a real 1.46 m unsupported bay-shelf span (the span test
+  had *hidden* it by excluding that shelf; the exclusion is now gone).
+- Robustness: slat-design typos (metre/mm slip, sign-flip, extra zero) now **RAISE** instead of
+  emitting 42 k slivers or a silent box; `light_warm` is shape/range-validated (fail loud); the
+  material router is a pure `mill_object_role()` that no longer mis-paints a fallback box whose spec
+  NAME contains 'front'/'rail'; the microcement tower back is drawn side-by-side with the oak backs
+  (no cross-material z-fight).
+
+**Coverage / status:** tests 167 in millwork+presets (open branch, slat override + validation, two-zone
+rails, span rule, routing incl. fallback-safety, presets exact-pinned, light_warm); full pipeline suite
+**1581 green**. Opt-in throughout — no existing render changes (proven by the light_warm/open/design
+default-preservation pins). Deliverable render regenerated: `room_bedroom_suite_eye_e1build.png`.
+Owner numbers still open (do NOT block this render): BF14 south end `y110`; sliding pocket door
+`1600 (2×800)` @ `y≈6250`. Residual (owner-directable): the cool-plaster ground still reads
+warm-neutral in the enclosed oak room — a cool daylight HDRI / cool garden key through the south glass
+is the next lever (deferred; the only cached HDRI is a warm brown studio).

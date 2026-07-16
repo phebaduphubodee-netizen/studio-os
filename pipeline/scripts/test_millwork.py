@@ -192,6 +192,126 @@ def test_slat_wall_too_short_falls_back_to_a_box():
     assert M.millwork_parts("headboard", 0.100, 0.090, 2.8, "x", 1) == []
 
 
+# ---- the slat wall: a design block overrides the rhythm -----------------------------------------
+def test_a_headboard_design_block_sets_the_slat_rhythm():
+    """BF14 D2-A = 40 mm face / 20 mm gap (2:1, 66% solid). The design block must drive the pitch;
+    absent one, the DEFAULT constants render — the pinned test above depends on that fallback."""
+    d = {"slat_face_mm": 40, "slat_gap_mm": 20, "slat_depth_mm": 22}
+    parts = M.millwork_parts("headboard", 0.100, 2.540, 2.800, "x", -1, design=d)
+    slats = [p for p in parts if p[0].startswith("slat")]
+    # depth axis is X here, so the along-run FACE width is dy (p[5]); dx (p[4]) is the proudness
+    assert all(abs(p[5] - 0.040) < 1e-9 for p in slats), "every batten face is the design's 40 mm"
+    assert all(abs(p[4] - 0.022) < 1e-9 for p in slats), "and it stands 22 mm proud (slat_depth_mm)"
+    # 2540 mm / (40+20) pitch -> ~42 battens, redistributed to end flush
+    assert len(slats) == int(2.540 // 0.060)
+    # a design block with no slat keys falls back to the module defaults (no crash, no zero-div)
+    dflt = M.millwork_parts("headboard", 0.100, 2.540, 2.800, "x", -1, design={"element": 1})
+    assert any(abs(p[5] - M.SLAT_W) < 1e-9 for p in dflt if p[0].startswith("slat"))
+
+
+# ---- the OPEN dressing wall: no leaves, you see INTO it ------------------------------------------
+OPEN = dict(kind="wardrobe", W=3.300, D=0.600, H=2.800)   # BF09-3 as an open:true dressing wall
+
+
+def test_open_wardrobe_has_NO_leaves_and_you_see_into_it():
+    """`open_front=True` builds an open dressing wall: a brass rail, floating drawers, open shelves,
+    and NO door leaves — the exact opposite of the closed run. The gaps + the microcement fronts are
+    what a repaint reads as open sourceable joinery where a door run reads as a shut box."""
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
+    names = [p[0] for p in parts]
+    assert not any(n.startswith("door") for n in names), "an OPEN wall has no leaves"
+    assert any(n.startswith("rail") for n in names), "a brass hang-rail"
+    assert any("front" in n for n in names), "floating drawer fronts"
+    assert any(n.startswith("shelf") for n in names), "open shelves"
+    assert "back" in names and "top" in names, "a carcass you see into"
+
+
+def test_open_is_OPT_IN_the_default_call_still_builds_a_door_run():
+    """The flag is opt-in: the SAME piece without it must still produce the closed leaves the
+    pinned wardrobe test depends on. A silent switch would rebuild every shipped wardrobe."""
+    closed = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1)
+    assert any(p[0].startswith("door") for p in closed)
+    opened = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
+    assert not any(p[0].startswith("door") for p in opened)
+
+
+@pytest.mark.parametrize("sign", [1, -1])
+@pytest.mark.parametrize("W,D,H", [(3.300, 0.600, 2.800), (2.000, 0.550, 2.400),
+                                   (1.200, 0.600, 2.700), (0.040, 0.600, 2.800)])
+def test_open_wall_never_leaves_its_plan_bbox(W, D, H, sign):
+    """The CAD invariant again: an open wall's rail/drawers/shelves may never grow the footprint.
+    The last shape is a 40 mm-DEEP shallow wall (not a tiny run) — it still composes, and every
+    part must stay inside. part() drops any box that would overflow, so this can never fail loudly
+    but a code bug that mis-computes an offset would."""
+    axis = "x" if W < D else "y"
+    parts = M.millwork_parts("wardrobe", W, D, H, axis, sign, open_front=True)
+    _assert_inside(parts, dict(W=W, D=D, H=H))
+
+
+def test_open_hang_bay_has_BOTH_signed_zones():
+    """D4-A signed a two-zone bay: a DOUBLE short-hang (two stacked rails) + a SINGLE full-hang
+    (one lower rail). The first cut emitted one rail at 2.37 m — above the signed full-hang height
+    and dropping the short-hang zone. Pin both zones and a plausible full-hang height."""
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
+    rails = [p for p in parts if p[0].startswith("rail")]
+    assert any(p[0].startswith("rail_short") for p in rails), "the double short-hang zone"
+    assert sum(p[0].startswith("rail_short") for p in rails) == 2, "short-hang is DOUBLE (two rails)"
+    assert any(p[0] == "rail_full" for p in rails), "the single full-hang rail"
+    full = next(p for p in rails if p[0] == "rail_full")
+    assert 1.6 <= full[3] <= 2.1, f"full-hang rail at a plausible height, got z={full[3]:.2f}"
+
+
+def test_open_part_names_route_brass_and_microcement():
+    """build_room paints mill__ parts by the trailing name: 'rail*' -> satin brass, '*front*' and
+    'towerback' -> cool microcement, the rest -> oak. Pin the names the router keys on."""
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
+    names = [p[0] for p in parts]
+    assert any(n.startswith("rail") for n in names)                   # -> brass
+    assert any("front" in n or n.startswith("towerback") for n in names)  # -> microcement
+
+
+def test_open_drawers_actually_FLOAT():
+    """D3-A: the drawer stack floats — a real air/shadow reveal below it, not a stack sitting on
+    the floor. The lowest drawer front must start well above the plinth."""
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
+    fronts = [p for p in parts if "front" in p[0]]
+    assert fronts, "there are drawer fronts"
+    assert min(p[3] for p in fronts) >= M.FLOAT_Z - 1e-9, "the stack floats above the floor"
+
+
+def test_open_display_shelves_respect_the_span_rule():
+    """Ask1/NLM load rule: an open shelf spans <= MAX_SPAN before it needs a divider — that is WHY
+    the tower AND the mid-bay gable exist. EVERY shelf (bay short/full-hang, tower, niche) must
+    stay within it — no exclusions. (Review 2026-07-16: the first cut had a single 1.46 m
+    unsupported bay shelf and the test HID it by excluding shelf_bay; the mid-gable split fixed
+    the geometry, so the exclusion is gone and the test is honest.)"""
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
+    shelves = [p for p in parts if p[0].startswith("shelf")]
+    assert len(shelves) >= 4, "bay (x2) + tower + niche shelves"
+    for p in shelves:
+        span = p[4] if OPEN["W"] > OPEN["D"] else p[5]   # along-run dimension (axis y -> dx=p[4])
+        assert span <= M.MAX_SPAN + 1e-9, f"{p[0]} span {span:.3f} exceeds MAX_SPAN {M.MAX_SPAN}"
+
+
+def test_a_typo_in_a_slat_design_block_FAILS_LOUD():
+    """Review 2026-07-16: the slat overrides guarded only truthiness, so a metre/mm slip
+    (slat_face_mm=0.04 -> 42k slivers), a sign-flip (-40), or an extra zero (4000) rendered wrong
+    geometry or a silent box. An implausible value must RAISE — same discipline as normalize_face."""
+    good = dict(slat_face_mm=40, slat_gap_mm=20, slat_depth_mm=22)
+    assert M.millwork_parts("headboard", 0.100, 2.540, 2.800, "x", -1, design=good), "the signed values still build"
+    for bad in (dict(slat_face_mm=0.04), dict(slat_gap_mm=-20), dict(slat_face_mm=4000),
+                dict(slat_depth_mm=0), dict(slat_face_mm="oops")):
+        with pytest.raises((ValueError, TypeError)):
+            M.millwork_parts("headboard", 0.100, 2.540, 2.800, "x", -1, design=bad)
+
+
+def test_a_tiny_open_run_falls_back_to_a_box():
+    """Too short a RUN to seat even the gables -> return [] and the caller keeps the plain box,
+    never a pile of degenerate slivers. (axis 'x' => the run is the D dimension, so D is the tiny
+    one here.)"""
+    assert M.millwork_parts("wardrobe", 0.600, 0.040, 2.800, "x", -1, open_front=True) == []
+
+
 # ---- the low run --------------------------------------------------------------------------------
 def test_desk_gets_an_overhanging_worktop():
     parts, _, _, _ = _parts(BF11)

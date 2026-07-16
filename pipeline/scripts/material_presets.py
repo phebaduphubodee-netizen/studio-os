@@ -173,7 +173,93 @@ PRESETS = {
         factory="solid", space="srgb", hex="#262626", rough=0.45, tier="DESIGN-INTENT",
         desc="black powder-coated steel (paint film -> dielectric, Metallic 0)",
         source="ffe-schedule.md FFE-S01 legs + pbr-material-behavior.md:57"),
+
+    # -- ELEMENT-1 palette (PRJ-2026-002 master suite, owner-signed D1/D2/D4/D6 2026-07-16). -
+    # -- The de-wood anti-monopoly lever: LIGHT oak reads as the 30% secondary; a COOL wall +-
+    # -- COOL microcement contrast keep Albers' warm-ground from washing the oak out; satin --
+    # -- brass is the 10% accent. Source: 03_layout/element1-oak-signature-wall_DD-2026-07-16.md
+    "oak_veneer": dict(
+        factory="proc_wood", space="srgb", hex="#C7B896", dark_hex="#A5926B", rough=0.38,
+        tier="DESIGN-INTENT",
+        desc="light warm-oak veneer over MR core, satin film finish (D5-A; replaces the "
+             "dark-walnut mono-timber the eye-render exposed). DESATURATED off the first "
+             "build render, where a saturated amber flooded the enclosed room orange (LOOK 2026-07-16)",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D2/D3/D5"),
+    "cool_plaster": dict(
+        factory="painted", space="srgb", hex="#EAEDEF", rough=0.85, tier="DESIGN-INTENT",
+        desc="matte COOL off-white limewash/plaster wall — the 60% ground kept cool so a "
+             "warm wall doesn't wash the oak out (Albers, D1-A)",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D1-A"),
+    "microcement_cool": dict(
+        factory="painted", space="srgb", hex="#AEB2B2", rough=0.90, tier="DESIGN-INTENT",
+        desc="cool matte microcement contrast (drawer fronts / dressing-tower back) — reads "
+             "intentional against oak + black-alu glass (D6-A)",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D6-A"),
+    "satin_brass": dict(
+        factory="solid", space="srgb", hex="#C4A45C", rough=0.35, metallic=1.0,
+        tier="DESIGN-INTENT",
+        desc="satin/brushed brass hang-rail + hardware — satin hides humidity marks (D4-A; "
+             "AELLA SB line, solid-vs-plated is a supplier query)",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D4-A"),
+    "matte_black_ply": dict(
+        factory="solid", space="srgb", hex="#1A1A1A", rough=0.88, tier="DESIGN-INTENT",
+        desc="matte-black ply backer behind the slat battens — the dark ground the shadow-gaps "
+             "read against, so the 40/20 rhythm reads as slats not a panel (D2-A backing)",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D2-A backing"),
 }
+
+
+# ---------------------------------------------------------------------------
+# build-layer helpers (pure) — routing + the ceiling-CCT override
+# ---------------------------------------------------------------------------
+# build_room lives in the bpy layer and cannot be imported under plain python, so the two bits
+# of build-layer LOGIC that are worth pinning live here (pure, testable): the mill__ object ->
+# material role router, and the light_warm parse+validate. build_room calls both.
+
+def mill_object_role(objname):
+    """Which material a `mill__*` object gets: 'brass' | 'microcement' | 'backing' | 'oak'.
+
+    A millwork PART is named `mill__<name>__<pn>` and routes on its trailing part token <pn>. The
+    plain-box FALLBACK is `mill__<name>` with NO second '__' — its remainder is the builtin's
+    free-text (space-normalized) name, which must NOT be pattern-matched (a cabinet literally named
+    'front console' would otherwise be painted microcement). So a name with no part token is oak.
+    (Review 2026-07-16: the earlier `rsplit('__',1)[-1]` router mis-painted such fallback boxes.)"""
+    if not objname.startswith("mill__"):
+        return "oak"
+    rest = objname[len("mill__"):]
+    if "__" not in rest:
+        return "oak"                                   # plain fallback box: name is not a part token
+    pn = rest.rsplit("__", 1)[-1]
+    if pn.startswith("rail"):
+        return "brass"
+    if "front" in pn or pn.startswith("towerback"):
+        return "microcement"
+    if pn.startswith("backer"):
+        return "backing"                               # matte-black ply behind the slats (D2-A)
+    return "oak"
+
+
+_DEFAULT_LIGHT_WARM = (1.0, 0.82, 0.60)                 # gate-proven 2400 K amber (build_room legacy)
+
+
+def parse_light_warm(spec):
+    """spec['light_warm'] -> a validated (r,g,b) tuple in [0,1], or the DEFAULT amber when absent.
+
+    A PRESENT value must be a 3-sequence of numbers each in [0,1] — anything else RAISES (fail loud
+    at parse time, not a cryptic IndexError deep in the light loop, nor a silently truncated 4-tuple,
+    nor an unclamped 2.0 channel; review 2026-07-16). No block -> the legacy amber, byte-identical."""
+    lw = (spec or {}).get("light_warm")
+    if lw is None:
+        return _DEFAULT_LIGHT_WARM
+    try:
+        vals = [float(c) for c in lw]
+    except (TypeError, ValueError):
+        raise ValueError(f"light_warm must be a 3-number [r,g,b] sequence, got {lw!r}")
+    if len(vals) != 3:
+        raise ValueError(f"light_warm must have exactly 3 channels, got {len(vals)}: {lw!r}")
+    if not all(0.0 <= c <= 1.0 for c in vals):
+        raise ValueError(f"light_warm channels must be in [0,1], got {vals}")
+    return tuple(vals)
 
 ALLOWED_SURFACES = ("floor", "walls", "feature_wall", "millwork", "glazing", "fixtures")
 ALLOWED_FAMILIES = ("fabric", "wood", "neutral")

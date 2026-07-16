@@ -1197,6 +1197,14 @@ def _suite_materials(spec=None):
                                spec=0.6, coat=0.2))  # glossy sanitaryware
     furn = _pick(_fam.get("neutral"), "neutral",
                  lambda: _solid("furn_neutral", (0.52, 0.50, 0.48, 1.0), 0.55))
+    # Sub-part materials for the slat/open-wall millwork (element-1 D2-A/D4-A/D6-A, owner-signed):
+    # the matte-black ply BACKER behind the slats, the satin-brass hang-rail, and the cool
+    # microcement drawer fronts / tower back. Routed to mill__ parts by role below (see
+    # material_presets.mill_object_role); a closed door run references none of them. Built from the
+    # signed presets so the render's material story stays true to the decision record.
+    brass = _material_from_preset("m_mill_brass", "satin_brass")
+    cement = _material_from_preset("m_mill_cement", "microcement_cool")
+    backing = _material_from_preset("m_mill_backing", "matte_black_ply")
 
     def _legacy_glass():
         # glazing (2026-07-12): the panes poly_walls_bpy glazes back into the openings it cut. Named
@@ -1260,7 +1268,13 @@ def _suite_materials(spec=None):
             # panel' judge datapoint). Round-1 lesson: do NOT map the floor plank
             # texture here (reads as flooring-on-walls, tanked the bedroom A/B) —
             # _veneer is procedural (world-space), no UV needed.
-            obj.data.materials.append(mill)
+            # OPEN dressing wall + slat backer: the PART TOKEN carries the material (brass rail,
+            # cool microcement fronts/tower back, matte-black slat backer); everything else is the
+            # oak carcass. mill_object_role is pure (material_presets) so a plain-box fallback whose
+            # spec name happens to contain 'front' is NOT mis-painted (it has no part token).
+            _role = _matpre.mill_object_role(n)
+            obj.data.materials.append(
+                {"brass": brass, "microcement": cement, "backing": backing}.get(_role, mill))
             continue
         if n.startswith("rug__"):                        # rug already carries its own PBR
             continue
@@ -1278,7 +1292,12 @@ def add_interior_lights(spec, h_m):
     except Exception as e:
         print(f"  (interior lights skipped: {e})")
         return 0
-    warm = (1.0, 0.82, 0.60)
+    # ceiling-fixture CCT. Default = the gate-proven 2400 K amber. A spec MAY cool it
+    # (`light_warm`: [r,g,b]) when a warm cast fights the design — element-1's cool-ground
+    # palette (D1-A) needs a 3000 K warm-white, not amber, or the oak-bounce drowns the cool
+    # plaster (proven by LOOK, 2026-07-16). No block -> the amber, byte-identical. A malformed
+    # block RAISES (parse_light_warm) -> fail loud via build()'s top-level guard, not a silent lie.
+    warm = _matpre.parse_light_warm(spec)
     watt = {"ambient": 16.0, "task": 40.0, "accent": 26.0}
     # the ACCENT wall-wash renders as ONE perfect pool -> the hybrid pass paints a
     # 'perfectly uniform glow of the linear accent lighting' (v004pro judge, the
@@ -1584,18 +1603,23 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     return True
 
 
-def _build_millwork(name, kind, x0, y0, z0, W, D, H, room_ctr, item_ctrs=(), face=None):
+def _build_millwork(name, kind, x0, y0, z0, W, D, H, room_ctr, item_ctrs=(), face=None,
+                    open_front=False, design=None):
     """Emit a DETAILED built-in (door leaves + reveals + toe-kick + pull-gap, or slat battens for
-    a headboard wall) instead of the single `add_box` that made the pro critic write "the wardrobe
-    is a texture-mapped box with basic hardware". Layout is millwork.py — pure, metres, and its
+    a headboard wall, or an OPEN dressing wall: brass rail + floating drawers + open shelves)
+    instead of the single `add_box` that made the pro critic write "the wardrobe is a
+    texture-mapped box with basic hardware". Layout is millwork.py — pure, metres, and its
     CAD invariant (parts never leave the plan bbox) is unit-tested without Blender.
 
-    Returns True if it built one; False -> the caller keeps the plain box.
-    Parts are named `mill__*` so paint_materials gives them the rift-walnut veneer (see :1033)."""
+    `open_front` (builtin `open`) picks the open dressing wall; `design` (builtin `design`) sets
+    the slat rhythm. Returns True if it built one; False -> the caller keeps the plain box.
+    Parts are named `mill__*` so _suite_materials paints them (oak, with 'rail*' -> brass and
+    '*front*'/'towerback' -> cool microcement for an open wall)."""
     axis, sign, src = millwork.mill_axis(x0, y0, W, D, room_ctr, item_ctrs, face)
     if axis is None:
         return False
-    parts = millwork.millwork_parts(kind, W, D, H, axis, sign, floor_standing=(z0 <= 1e-6))
+    parts = millwork.millwork_parts(kind, W, D, H, axis, sign, floor_standing=(z0 <= 1e-6),
+                                    open_front=bool(open_front), design=design)
     if not parts:
         return False                                 # panel / wall-hung low piece -> flush box
     for pn, px, py, pz, dx, dy, dz in parts:
@@ -1885,7 +1909,7 @@ def build_suite(spec, label="suite"):
         # PROCEDURAL MILLWORK (2026-07-12): door leaves + reveals + toe-kick + pull-gap (or slat
         # battens for a headboard wall). Falls back to the plain box for shapes that are not runs.
         if _build_millwork(nm, str(b.get("kind", "")), bx, by, bz, bw, bd, bh, _rc, _ic,
-                           b.get("face")):
+                           b.get("face"), open_front=b.get("open"), design=b.get("design")):
             n_mill += 1
             continue
         add_box("mill__" + nm, bx, by, bz, bw, bd, bh)
