@@ -14,15 +14,72 @@
 
 ---
 
-## 0. The two pieces (from the canonical spec — geometry is fixed, this designs the FACE)
+## 0. The two pieces — ⚠️ GEOMETRY CORRECTED 2026-07-16b, THIS DD WAS DESIGNED ON WRONG NUMBERS
 
-- **BF14 — vertical-slat headboard.** East wall, `x5150`, `y110→2650` (**length 2540 mm**),
-  `h2800` full-height, 100 mm thick. Stands IN FRONT of the black-alu glass return
-  (`glz-east`); the bed head pins to this SOLID wall. N end meets BF09-3 @ y2650; S end meets
-  the curtain track @ ~y110 `[est — owner to confirm]`.
-- **BF09-3 — open dressing wall.** Runs along `y2650`, `x2300→5600` (**length 3300 mm**),
+> **Read this before trusting any dimension below.** The owner's 2026-07-16b markup sent me back
+> to the sheet ink, and the `[est]` numbers this DD was built on were not merely loose — they were
+> wrong. Scale first proven against the designer's OWN printed dim (sheet prints "3.05" for the
+> ensuite counter; the ink measures **3047.0**, 0.1%). Then 6 independent readers + adversarial
+> refuters (94 claims, 50 refuted) re-read the band. What changed:
+>
+> | | this DD designed against | drawn ink | impact |
+> |---|---|---|---|
+> | **BF14 length** | 2540 (`y110→2650`) | **3250.2** (`y-450.2→2800.0`) | **+710 mm = +28%** — the signature wall is over a quarter longer than designed |
+> | BF14 x (west face) | 5150 | **5203.2** | +53 |
+> | **BF09-3 position** | `y2650` | **`y2800.0→3399.9`** | +150 north (rigid pair with BF14's N end) |
+> | BF09-3 run | `x2300→5600` = 3300 | **`x2353.0→5654.0` = 3301.0** | closes on the party wall |
+> | BF09-3 internal | "3-mass **asymmetric**" (D3-A) | drawn in **3 EQUAL bays**, dividers at x3454.4 / x4552.6 (1101.4 / 1098.2 / 1101.4) | ~~contradicts the signed layout~~ **RETRACTED** — carcass/module lines, not a design instruction (see §0b) |
+>
+> `3250.2` and `3301.0` reproduce the pieces' OWN printed labels (`BF14.325x10x280CM`,
+> `BF09-3.330x60x280CM`) to 0.2 mm and 1 mm — the strongest evidence class this project has.
+> The `y110` trim was MY conflation, not the owner's error: y110 carries **zero horizontal strokes
+> anywhere on the floor**; the owner's "~y110" is the **curtain slot's** north cap (`y=149.7`,
+> x5301.6→5552.4) in the 250.8 mm void east of BF14, where the sheet draws a real **2-layer curtain
+> symbol** (serpentine + south-pointing draw arrows at x5406.4/x5473.0). Owner right, me wrong.
+> Spec + this table are now ink-true. **Slat arithmetic: RE-RUN and CLOSED — see D2-A-MODULE
+> (AKUWALL 27/13, 77 slats, Σ 3250.2 exact).** The "3-bay conflict" was **RETRACTED** — those are
+> carcass/module lines, not a design instruction (§0b). **§2–§4 below are the ORIGINAL reasoning trail
+> and still quote the dead 2540/40-20 numbers; D2-A-MODULE supersedes them.**
+
+- **BF14 — vertical-slat headboard.** East side, `x5203→5303`, `y-450→2800` (**length 3250 mm**),
+  `h2800` full-height, 100 mm thick (drawn 98.4 = a 100 nominal on the sheet's ~3.174 mm grid —
+  do NOT "correct" it). Stands IN FRONT of the black-alu glass return (`glz-east`); the bed head
+  pins to this SOLID wall. N end meets BF09-3 @ y2800 (**rigid pair**). S end = a drawn cap at
+  y-450.2, flush with the south nightstand — it does **not** stop at the curtain track.
+- **BF09-3 — open dressing wall.** Runs along `y2800→3400`, `x2353→5654` (**length 3301 mm**),
   **600 mm deep**, `h2800`, `open:true` — oak carcass, brass hang-rails, floating drawers,
-  open shelves, **NO doors**. The signature piece.
+  open shelves, **NO doors**. The signature piece. Its north face `y3399.9` is the sliding
+  door's south jamb.
+
+### §0b · WHAT THIS SHEET CAN AND CANNOT BE ASKED — the law that produced the errors above
+
+> **Owner, 2026-07-16c: "แบบมันไม่ได้ผิด แต่เครื่องมืออ่านแบบของเราห่วย." He was right.**
+>
+> **The test.** Every BF piece's drawn extent vs its OWN printed label: BF14 3250.2/3250 (+0.2) ·
+> BF13 4100.8/4100 (+0.8) · BF09-3 3301.0/3300 (+1.0) · BF12-2 701.5/700 (+1.5) ·
+> BF09-2 1498.1/1500 (−1.9) · BF10 2497.9/2500 (−2.1) · BF12-1 1577.5/1575 (+2.5) ·
+> ensuite counter 3047.0 vs printed "3.05" (−3.0).
+> **The sheet agrees with itself to ≤2.5 mm (0.16 %). Our spec disagreed with it by up to 2850 mm.**
+> ~1000×. Every discrepancy this session resolved to OUR reader — never once to the drawing.
+>
+> **The resolution limit.** At 1:75 a **0.6pt pen covers 15.87 mm of real space**; the coordinate
+> snap is 3.17 mm. So the leaf lane gap (9.5 = **0.60 pen widths**) and the leaf y-lap
+> (12.7 = **0.80 pen widths**) are *inside the ink* — I reported them as findings. That precision
+> does not exist. A 101.6 mm notch is 1.3 mm on paper; a pocket cage is not on a furniture plan at all.
+>
+> **WITHDRAWN as "designer errors"** (all mine, not the drawing's): the BF09-1/column "build clash"
+> (furniture plans don't draw notches — wrong tier); "the sheet REFUSES to draw a pocket" (it never
+> carries one); "3 equal bays contradict the signed layout" (module lines); "BF09-1 is 26.4 short of
+> its label" (1.7 pen widths + an unknown corner convention); "nothing explains the wall step"
+> (structural wall meeting a partition — only a tool with no concept of buildings calls that a mystery).
+> Also: I instructed the adversarial refuters to *"default to refuted unless reproducible from a dump"*,
+> which auto-kills every non-stroke claim — the 50/94 refutation rate was **that bias, not rigour**,
+> and it is what "refuted" the owner's pocket.
+>
+> **THE RULE.** This sheet answers **where / how big / what it is called**, to ~2.5 mm — more than
+> enough for us. **Notches, pocket cages, head heights and joinery are not in it, and their absence is
+> not a gap, a conflict, or anyone's error** — they are ours to DESIGN, or the owner's/designer's to
+> answer. Never generate a "designer error" list from a document that was never asked the question.
 - They meet at the **NE inside corner** → must read as ONE oak system turning the corner.
 - **The load-bearing risk (already proven):** oak floor + oak BF14 + oak BF09-3 =
   the *mono-timber "wood monopoly"* the interior-render-critique DR caught scoring 5/5-blind
@@ -117,6 +174,239 @@
   calm continuous field (Albers stripes), resolved terminations, robust; ≈42 slats over 2540 mm.
 - B. Fine 20×20 (1:1, 50 % solid) → more delicate, busier, ~63 slats.
 - C. Wide 60 mm reveal → reads "panelled," heavier.
+
+### ⚠️ AUTHORITY NOTE — 2026-07-16c, read before citing any "owner-signed" decision below
+
+The owner stated, unprompted: **"ผมไม่ใช่ interior designer ตัวจริง ไม่มีความรู้เรื่องนี้เลย แต่จบวิศวกรเลย
+พอจะอ่านแบบออกอยู่บ้าง."** I had been running on the opposite premise (a workflow prompt this session
+literally read *"He is a working interior designer; he signs, we build"*).
+
+**Consequence for this document: D1–D6 are NOT design authority.** They were authored by Claude
+(vault + NLM, CONVENTION tier) and countersigned by someone who has now said he cannot evaluate them.
+Do not wield them as constraints against new evidence — this session did exactly that ("D5-A already
+signed NOT solid oak") and it was a circular argument.
+
+**What the owner IS authority on, and has been right about every single time:** reading the sheet ·
+what the client and the partner-designer meant · engineering, tolerance, constructability · money ·
+and **"does this look right"** on a RENDER. See memory `owner-is-an-engineer-not-a-designer`.
+
+**Method change:** stop issuing A/B/C menus of taste for signature. Decide, build it, render it, and
+put the picture in front of him — the render is the decision instrument, not the decision memo.
+
+#### Owner answers 2026-07-16c (engineering + client + money only)
+
+| # | Question | Answer | Consequence |
+|---|---|---|---|
+| 1 | Can a 100 mm wall carry the 2-leaf telescopic pocket (69.9 of leaf in 98.3, ~14/skin)? | **"น่าจะไหว"** | Engineering call taken. Pocket proceeds; flag to the fabricator, do not re-open. |
+| 2 | Reveal 15 (zero tolerance) or 12 (mid-window, ±3)? | **12 / posts 63** | Reveal **12.0**; terminal posts grow **60.0→63.0 / 60.2→63.2**. Field stays 3100.0 / 52 slats at 40-20. Close: 63.0+12+3100+12+63.2 = 3250.2 ✓ |
+| 3 | North corner post solid oak (D2-A's word) or veneer (D5-A's word)? | **"ไม่น่าใช่เสาไม้"** → **VENEER** | The D2-A/D5-A contradiction is resolved on the owner's own materials judgement, not by citing a soft signature. Post = oak veneer over MR core. |
+| 4 | Call AKUWALL re a 40/20 run on their acoustic base? Budget ~฿43–48k? | **"ลุยเลย แบบไม่ต้องโทร"** | No supplier call. **Claude decides the module** — see D2-A-MODULE below. |
+| 5 | Does the client actually need 2 curtain layers? | **ชั้นเดียว / single layer** | ⭐ **THE POCKET LOCK IS DEAD.** Single S-fold needs ≥150, single 3-pleat ≥100; the slot clears ~220–240. Both make-ups fit with room to spare. Q4's "3-pleat + 3-pleat, no S-fold ever" is WITHDRAWN — S-fold is available. |
+| 6 | Acoustic requirement for this room? | **yes** | Bespoke 40/20's signed **matte-black PLY backer is a REFLECTOR** — slats + gaps absorb nothing against solid ply. "Yes" therefore forces either a porous backer we have no data for, or the stock acoustic panel. Drives D2-A-MODULE. |
+
+---
+
+### D2-A · **ISSUED SLAT SCHEDULE** — 2026-07-16c, on the ink-proven 3250.2 × 2800
+
+> **"≈42 slats over 2540" is DEAD.** 2540 was a wrong *input*, not a wrong rhythm — the old
+> arithmetic was self-consistent (42×40 + 41×20 = 2500 in 2540). **D2-A's 40/20 survives untouched
+> and is delivered pure.** Only the count changes.
+
+> ⛔ **THIS SCHEDULE IS SUPERSEDED — see D2-A-MODULE below.** The owner (a) chose reveal **12**, not 15,
+> and (b) then chose the **AKUWALL 27/13 product** over the bespoke 40/20 by LOOKING at an A/B render
+> pair. Both the module and the reveal below are dead. The reasoning is kept because the *method* —
+> sink the remainder into timber, make the end members whole beats of the field's rhythm — carried
+> straight over to the AKUWALL schedule and is the reason it closes.
+
+Setting out from the **SOUTH datum** (y-450.2), running south → north:
+
+| # | Part | Width (y) | From → to |
+|---|---|---|---|
+| 1 | ~~South mouth-jamb~~ | ~~60.0~~ | ~~y-450.2 → y-390.2~~ |
+| 2 | ~~Shadow reveal (15.0)~~ | ~~15.0~~ | ~~owner chose 12~~ |
+| 3 | ~~FIELD — 52 slats · 40/20 · pitch 60 · depth 22~~ | ~~3100.0~~ | ~~owner chose AKUWALL 27/13~~ |
+| 4 | ~~Shadow reveal (15.0)~~ | ~~15.0~~ | |
+| 5 | ~~North corner post~~ | ~~60.2~~ | |
+
+~~Σ = 60.0 + 15.0 + 3100.0 + 15.0 + 60.2 = 3250.2~~ — arithmetically correct, **but on inputs the owner
+has since replaced.**
+
+**How the remainder is absorbed — into TIMBER, not into air.** Pure 40/20 cannot close: n=54 → 3220.0
+(rem +30.2); n=55 overshoots 29.8; the wall lands almost exactly half a module out
+((3250.2+20)/60 = 54.5033). So the two end members are made **exactly one pitch each** (60.0 / 60.2)
+and the terminus reads as a member of the rhythm rather than as leftover.
+*Rejected, for the record:* tuning the face to 40.56 (silently un-signs D2-A's 40 and poisons every
+future studio slat wall) · tuning the gap to 20.19–20.57 (free to machine, but 51–53 spacer-stacks
+compound ±0.5 into ~26 mm of creep that lands **at the curtain mouth**) · two 15.1 end reveals with no
+posts (a "reveal" at a free end is just the wall stopping short — and 15.1 misses D2-A's signed 10–15
+window by 0.1).
+
+**Datum south, scribe north.** The south is the functional end — the curtain must clear the mouth
+dead-on beside a hairline black-alu frame in daylight. The **+0.2 asymmetry and all accumulated build
+error die in the north scribe** against BF09-3, an already-built face.
+
+**Solid %** — D2-A's "~66%" delivered, not drifted: repeat ratio 40/60 = **66.67 %** (this is what
+D2-A names) · field 2080/3100 = 67.10 % · whole wall, oak members only = 65.85 %.
+**Cut length** = 2800 − 15 (floor) − 15 (ceiling) = **2770**.
+
+⚠️ **BUILD-LAYER GAP:** `millwork.py` currently does `n = int(run // pitch)` then `pitch = run/n` over
+the WHOLE run → it renders **54 slats @ gap 20.19, end margins 10.09**. That is a *defensible* auto-fit
+but it is **not this schedule** (52 + two terminal members). The current render
+`room_bedroom_suite_eye_doorfix2.png` shows 54. The terminal members must become real parts before the
+render matches the issue.
+
+---
+
+### D2-A-MODULE · ⭐ **AKUWALL 27/13 — DECIDED 2026-07-16c, BY LOOKING**
+
+The owner was shown two renders on the same camera, same light, same materials — **A** bespoke 40/20
+(54 slats, depth 22) vs **B** the stock AKUWALL 27/13 (81 slats, depth 12) — and answered
+**"ผมชอบ akuwall"**. That is the whole decision, and it is the right *kind* of decision: he cannot read
+a slat rhythm off a table, he can read it off a picture. **The render is the decision instrument.**
+
+**What won and why it was mine to put in front of him.** His answer (6) = *yes, acoustics*. The bespoke
+40/20's signed **matte-black PLY backer is a REFLECTOR** — slats and gaps absorb nothing against solid
+ply — so "yes" forced a choice between inventing a felt spec the vault has **zero** data for, or a
+product with real numbers. AKUWALL carries: **NRC 0.8** · fire **EN13501 Class B / ASTM E84 Class A**
+(the only fire data anywhere in `knowledge/` for a 9 m² full-height combustible wall in a bedroom) ·
+**black backing** (D2-A's backer, as a product) · imported natural-oak veneer over its own engineered
+build (D5-A's intent, as a product) · **21 mm total** (thinner than our 22 + backer) · **~฿43–48k** ·
+~15-day lead — which serves the sourceability north-star.
+Source: `knowledge/materials/wall-cladding-and-decorative-mouldings-th.md:65-77` (VERIFIED by coverage
+math). **Price caveat: catalogue 2023, VAT unstated, the vault flags its pricing stale — not a quote.**
+
+**What it cost, stated honestly:** 27/13 is the ubiquitous acoustic-panel look; 40/20 was more
+distinctive. And at depth 12 vs 22 the reveals are shallower, so the field reads as *texture* rather
+than as *battens*. The owner saw exactly that in the render and picked it anyway.
+**Solid % survives: 67.5 % vs 40/20's 66.7 %** — the *weight* D2-A actually argued for is intact; only
+the grain is finer. And the rhythm it replaced was a Claude+NLM CONVENTION-tier proposal countersigned
+under a premise the owner has since denied — **it had no authority to defend.**
+
+#### ISSUED SCHEDULE — AKUWALL, on the ink-proven 3250.2 × 2800
+
+| # | Part | Width (y) | From → to |
+|---|---|---|---|
+| 1 | **South mouth-jamb** (D7 — the curtain mouth's west shoulder) | **79.6** | y-450.2 → y-370.6 |
+| 2 | Shadow reveal | **12.0** | y-370.6 → y-358.6 |
+| 3 | **FIELD — 77 slats · face 27 · gap 13 · pitch 40 · depth 12** | **3067.0** | y-358.6 → y2708.4 |
+| 4 | Shadow reveal | **12.0** | y2708.4 → y2720.4 |
+| 5 | **North terminus**, SCRIBED to BF09-3 | **79.6** | y2720.4 → y2800.0 |
+
+**Σ = 79.6 + 12.0 + 3067.0 + 12.0 + 79.6 = 3250.2 EXACT.** Field = 77×27 + 76×13 = 3067.0 exact.
+**No part-slat, no cut module.** Each end member is **79.6 = 1.99 × the 40 pitch** → the terminus reads
+as *two beats of the field's own rhythm*, not as leftover. Cut length **2776** (2800 − 12 − 12); panel
+height 2900 covers it ✓. Solid: repeat **67.5 %**, field 67.8 %.
+
+**Reveal 12 is the OWNER'S engineering call** ("12 / เสา 63"): 15 sat at the very top of the 10–15
+window with zero site tolerance, so a wavy plastered ceiling pushes it out of window; 12 is mid-window
+with ±3. He answered the *post* number against the 40/20 field; the module change recomputes it to 79.6.
+**His decision was the reveal — the post is its consequence.**
+
+**Dead schedules, for the record:** 42 @2540 (wrong input) → 54 @40/20 (millwork.py auto-fit) →
+52 @40/20 + 15 reveals → 52 @40/20 + 12 reveals + 63 posts → **77 @27/13 + 12 reveals + 79.6 posts**.
+
+⚠️ **BUILD-LAYER GAP (unchanged, now sharper).** `millwork.py` auto-fits `n = int(run // (face+gap))`
+then `pitch = run/n` over the WHOLE run → at 27/13 it renders **81 slats @ pitch 40.12, 10.06 end
+margins**. **The render the owner chose from is that 81-slat auto-fit, not this 77 + 2 × 79.6 issue.**
+The terminal members must become real parts before any render matches the schedule. Nobody has been
+misled — the *module* is what he judged, and the module is right — but do not claim the render shows
+the issued wall.
+
+---
+
+### D7 · **BF14's SOUTH TERMINATION** — the free end at y-450.2 · ⏳ open (see the note below)
+
+> **⚠️ THIS MENU'S PREMISE IS HALF DEAD — 2026-07-16c.** It was written for "a working interior designer
+> who signs" (false — see the AUTHORITY NOTE) and it was built on a pocket clearance crisis that the
+> owner's answer (5) **dissolved**: the client needs only a **SINGLE curtain layer**. Single 3-pleat
+> needs ≥100, single S-fold ≥150, and the slot clears ~220–240 — **both fit with room to spare**. The
+> "3-pleat + 3-pleat, no S-fold ever, no cove light" lock is **WITHDRAWN**; S-fold is back on the table
+> and probably suits an oak-and-glass room better. **The clearance argument that made B's "adds 0.0 to
+> the pocket" decisive is therefore much weaker than written below.** Do not sign this as-is; it is
+> kept as the reasoning trail. Next pass: re-decide it as a design (mine), and put it in front of the
+> owner as a RENDER, not as an A/B/C menu.
+
+**The framing.** The north end is oak into oak — a **joint**, correct there because BF09-3 receives it.
+The south end has nothing to receive it: 248 of air, then black alu, then garden. It does not need to be
+*received*; it needs to be **released**. And it is one member with two jobs: BF14's terminus **and the
+west jamb of the curtain stack pocket**. *(As written, the pocket governed:* raw slot 250.8, clear inside
+~220–240 after finishes, 2-layer 3-pleat needing ≥200 per
+`knowledge/ergonomics/casework-fixture-clearances-th-practice.md:186-195` — REFERENCE tier, one
+practitioner's notes, not a standard — leaving only ~20–40 spare. **Answer (5) removed that squeeze.**)
+
+- **A. Solid oak post 60.0 — mirror the north.** The symmetric answer everyone expects. *Against:* the
+  vault rates ไม้จริง **Poor — severe dimensional movement under humidity/temperature swings**
+  (`knowledge/materials/residential-materials.md:43-44`), and **D5-A already signed "NOT solid oak"**.
+  This is the room's sunniest, wettest, most thermally cycled point. It also stands 0.27 m² of warm oak
+  in the room's only cool aperture, bouncing warm GI into the 60 % plaster ground exactly where D1-A
+  must prove itself. *Not recommended — but it is the honest fallback; arithmetic identical.*
+- **B. ★ MINERAL RELEASE — a 60.0 × 98.4 × 2770 cool-microcement jamb, shop-finished, zero proud.**
+  ★ **RECOMMENDED.** The oak field dies at a 12.0 shadow reveal (owner 2026-07-16c; written as 15.0) into a mineral shaft that reads from
+  the garden as a **98.4-wide pale vertical stroke** — the last thing between the wood and the glass —
+  and is simultaneously the smooth hard cheek the curtain slides past. **No oak in it. It adds 0.0 to
+  the pocket.** Serves D1-A (the cool ground releases the oak) and D6-A (mineral contrast) at once.
+- **C. Black-anodised aluminium jamb — join the window-frame family.** Clever: the terminus takes the
+  material of what it *meets* rather than what it *ends*, and as a metal it cannot be a 0,0,0 black hole.
+  *Fatal:* the jamb would be folded sheet (5005/5052) while the frames are extruded 6063 — **black
+  anodic film does not match across alloy families and no anodiser warrants it**. A near-miss black
+  standing 292 from the frames it was built to join = a *third* black, i.e. **D1-C, which the DD marks
+  not-recommended and the owner did not sign**, smuggled in through a detail. *Not recommended.*
+
+**★ B as issued (runners-up grafted in):**
+1. **The element.** 60.0 (y) × 98.4 (x = BF14's full thickness) × 2770 (z); x5203.2→5301.6,
+   y-450.2→-390.2. Its south face **IS** the mouth plane y-450.2 — **0.0 projection south**, flush with
+   the south nightstand's own south line. Its east face is **FLUSH at x5301.6, zero proud** — the 2–3 mm
+   mineral build is taken **out of the carcass, never added to the face**. Hardest rule in the detail.
+2. **The east face is the pocket's cheek, and it keeps going.** The same mineral continues north as the
+   slot's entire west lining, flush at x5301.6, y-450.2→149.7 (599.9), full height. One hard smooth cheek
+   from the parked stack right out of the mouth: **52 open 20 mm gaps at a curtain mouth is a fabric
+   hazard**, and this is also the answer to the black hole (`interior-render-critique-DR-2026-07-15.md:38`
+   — a 0,0,0 recess = GI misconfigured; **this is the same cavity class as the "รู" the designer circled
+   on our own render**).
+3. **"Seamless" is killed — the graft that makes B buildable.** You cannot hand-trowel and burnish a
+   jointless 3-coat mineral system inside a 250.8 × 599.9 × 2800 blind letterbox — a float will not turn
+   in a 250 slot. **Every mineral surface is a SHOP-PRE-FINISHED PANEL, face-up on trestles, installed
+   with BF14.** A **deliberate 12 reveal is declared at the jamb/lining junction** (owner's number; written as 15) instead of pretending
+   to a joint that will not happen. **Nothing wet happens inside the slot** — put that in bold on the
+   drawing, or site will try it, the throat will ship as raw ply, and we will have rebuilt our own scored
+   defect in the brightest corner of the room.
+4. **Arrises.** Solid hardwood lipping at each external arris, **R6–R10**, mesh carried round, mineral
+   over — *not* R3 (a 2–3 mm build cannot form a 3 mm radius; it thins to zero at the tangents and the
+   substrate telegraphs). The 52 slats get a hard **1.5–2.0 chamfer**: 52 crisp lines against one soft
+   one; matte mineral absorbing against satin timber taking a directional sheen.
+5. **One reveal number — 12, all round** (owner 2026-07-16c; this item was written as 15). Floor, ceiling, both ends, running continuously up the field's
+   south edge, around the jamb's base, up its west face, across its south cap, down its east face. BF14
+   becomes one 2770 shaft floating on a single dark line. **Formed as a rebate in the millwork, never
+   bought** — no shadow-gap/Z-reveal/L-bead SKU exists in our Thai catalogue of record. Reveal interiors
+   get the dark backer, **not** trowelled mineral (a 15 × 22 slot will not take a burnished coat).
+6. **The backer gets a number: #2A2C2E–#3A3C3E** (42–58 sRGB, slightly cool, B>G>R, roughness 0.75–0.85)
+   — clears both live bands (>30 sRGB per `pbr-material-behavior.md:55`, and >0.04 linear per
+   build_room's `albedo_plausible`), so "matte black" ships **without a thresholds PR**. It reads black
+   against oak; the darkening is done by GI/AO, which is the point.
+7. **Curtain lock, issued as DATA not prose: 3-pinch-pleat + 3-pinch-pleat ONLY. No S-fold in this
+   pocket. No cove light** (+50–100 — the budget is already spent). Clear inside ~220–240 passes ≥200 with
+   ~20–40 spare; S-fold + 3-pleat needs ≥250 = **FAIL**; both S-fold = **FAIL outright**. Must live in the
+   spec JSON *and* on the mouth elevation — the blade is built months before any soft-furnishing supplier
+   measures the most S-fold-inviting opening in the house.
+8. **Track centres are NOT pinned from the arrows.** x5406.4 / x5473.0 are **draw-direction arrows, not
+   track centrelines**; their 66.6 separation cannot carry two 85-deep bundles. Centre the pair on the
+   **as-built** slot after surveying the east cheek → ~28 residual both sides, costs nothing.
+9. **Brass is refused here.** D1-A's 10 % stays at BF09-3's rails and the mushroom lamp — the room's dim
+   half, where an accent can be an accent. A specular pier at the room's highest-luminance point would
+   out-read the south glazing and trip **PH-02** (`knowledge/classifications/render-defects.md:51`).
+
+**⛔ ONE CLAIM FROM THE PANEL REJECTED (2026-07-16c).** A proposal argued *"this end is NOT raked, it is
+BACKLIT — the south wall is solid from x3901.9 to x5301.6, so a west-facing plane needs an east-facing
+aperture"*, and made a grazing accent a *required* element-6 item. **Rejected on three grounds:**
+(1) it **re-litigates owner correction #3**, signed 2026-07-16 and eye-verified on the render
+(south glazed full width x0–5500, floor-to-ceiling) — the tier law forbids going back to the ink for
+what the owner has settled; (2) its ink read is **wrong on its own terms** — the 0.48 band it called
+solid has 0.24pt **window-symbol modules inside it** (x4638.3→5225.5, triple line y-793.0/-773.9/-758.1),
+which v4 itself declared as w1/w2; (3) the ray geometry is **simply wrong** — afternoon sun from the
+**south-WEST** enters south glazing and rakes a west-facing plane; no east aperture is needed. The
+grazing-accent question stays OPEN as a design option, not a forced consequence.
+
+---
 
 ### D3 · BF09-3 composition — 4 functions → 3 masses (3300 mm run)
 - **⭐ A. Asymmetric 3-mass:** [1] open **hang-rail bay** (brass rail, ≥914 clear) · [2] unified

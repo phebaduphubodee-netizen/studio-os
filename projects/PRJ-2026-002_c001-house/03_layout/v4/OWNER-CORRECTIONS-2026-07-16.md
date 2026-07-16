@@ -66,6 +66,111 @@ Folded all 7 into ONE canonical spec: **`../master-suite.CANONICAL.spec.json`**
   confirmed panels(2)+pocket(behind BF09-1 E leg) but NOT the numbers.
 - BF14 south end trimmed from y-275 → **y110** to meet the track "~south-of-bed" (owner phrase "แถว ๆ").
 
+---
+
+## ⭐ THE `[est]` NUDGE — RESOLVED 2026-07-16b (owner: "ดูตามรูปที่แนบ")
+
+Owner sent the plan crop with the pocket **shaded red + a north arrow**: "บานเลื่อนเข้าไปเก็บใน
+ช่องที่ระบายสีแดง". That sent me to the sheet ink. **Both `[est]` numbers were WRONG — not loose.**
+
+**Method + calibration.** Transform = the repo's committed one (26.45 mm/pt, origin 171.2/596.5,
+page 1). Proven against the designer's OWN printed dimension: the sheet prints **"3.05"** for the
+ensuite counter and the ink measures **3047.0** (0.1%). Then 6 independent readers, every claim
+adversarially refuted (**94 claims, 50 refuted, 44 survived**). Tooling: `ink.py` (scratchpad).
+
+| | `[est]` I recorded | drawn ink | delta |
+|---|---|---|---|
+| Door opening | w1600 @ y6250–7850 | **y3399.9→4621.9, w1222** in x5654.0–5752.3 | **2850 south, 378 narrower** |
+| BF14 | x5150, y110→2650, d2540 | **x5203.2–5301.6, y-450.2→2800.0, d3250.2** | **+710 (+28%)** |
+| BF09-3 | y2650 | **y2800.0→3399.9** | +150 (rigid pair) |
+
+- **The door was punched through a SOLID WALL.** y6250–7850 dumps as `x5654.0/x5752.3
+  y6297.7→8097.4 w=0.84` + 0.12 skins + 44 hatch diagonals = hatched masonry. There is no opening there.
+- **The real opening is the gap between the two wardrobes**: BF09-3's north face (y3399.9) and
+  BF09-1 E leg's south end (y4621.9), closed by full-thickness jamb caps at both ends.
+- **Two leaves are drawn CLOSED**, each 612.6 long, in two lanes inside the wall (leaf-S
+  x5698.4–5727.0 y3399.9–4012.5; leaf-N x5657.1–5688.9 y3999.8–4612.4; lane gap 9.5, lap 12.7).
+  This **retracts the 2026-07-11 re-read** ("s2 = ช่องเปิดเปล่า ไม่มีบาน; the leaf ink is really
+  cabinet frames"): the cabinets BF12-1/BF12-2 are at x5752.3–6152.3, a different x band entirely.
+- **THE POCKET.** Owner-declared (the red markup) and recorded at top-level `door_sitting_pocket`.
+  ⚠️ My first write-up said "the sheet REFUSES to draw a pocket" and that "the adversarial pass refuted
+  it and was right" — **BOTH RETRACTED, see §RETRACTION below**. A 1:75 furniture plan never carries a
+  pocket cage; the refutation was a harness bias I built. The pocket is also **corroborated by
+  arithmetic**: a single leaf would need a 1222.0 pocket and only 1076.0 exists (short 146.0), so TWO
+  leaves are FORCED; opening north gives leaf-N 622.1 / leaf-S 1222.0 travel = **ratio 1.964 ≈ 2.000**,
+  the telescopic fast:slow signature; the stacked pair needs 612.6 of 1076.0. The owner's slot is also
+  the only viable run — the south run (599.9) is 12.7 SHORTER than one leaf.
+- **"~y110" — OWNER RIGHT, CLAUDE WRONG.** y110 carries **zero horizontal strokes floor-wide**
+  (`ink.py -500 11000 105 120 0`). The owner was reading the **curtain**, not BF14: east of BF14 is a
+  **250.8 mm void** (x5301.6–5552.4) capped at `y=149.7` (x5301.6→5552.4, len 250.7), holding a real
+  **2-layer curtain symbol** — serpentine fabric + **south-pointing draw arrows** at x5406.4/x5473.0,
+  y-377.2..~90. y110 sits between the symbol's top (~y89) and the cap (y149.7). I applied the track's
+  end to a different object 560 mm further south and cut 710 mm off the signature wall.
+
+**Done:** spec ink-trued (BF14, BF09-3 rigid pair, door rect), rebuilt + rendered + LOOKED
+(`pipeline/output/room_bedroom_suite_doorfix_dh.png` dollhouse, `..._eye_doorfix2.png` hero —
+BF14 now visibly runs past the bed foot; hero camera re-nudged because the subject moved).
+
+**KNOWN RESIDUAL — deliberately NOT fixed** (see spec `corrections_applied` #9): the party wall is
+**band-scoped** (199.9 thick, west face x5552.4 across the sleeping band, with 200×200 columns
+embedded; 98.3, west face x5654.0 north of ~y2800 — a structural wall line meeting a lighter
+partition, which is ordinary); the outline still reads x0..5500 / jog y2650 vs ink x55.0..5552.4 /
+jog y2800 (the *width* is right — 5497.4 = the designer's printed "5500" — so it is a ~52 translation).
+Per-piece offsets are NOT constant (BF14 was 53.2, BF10 ~154, BF11 ~306).
+**RULE ADOPTED: the element under design gets its geometry ink-trued; the rest waits its turn** —
+otherwise this becomes another takeoff re-measure instead of a design.
+
+---
+
+## ⛔ RETRACTION 2026-07-16c — "แบบมันไม่ได้ผิด แต่เครื่องมืออ่านแบบของเราห่วย" (owner). He was right.
+
+**THE TEST.** Each BF piece's drawn extent vs its OWN printed label:
+
+| piece | printed | drawn | Δ |
+|---|---|---|---|
+| BF14 | 3250 | 3250.2 | **+0.2** |
+| BF13 | 4100 | 4100.8 | +0.8 |
+| BF09-3 | 3300 | 3301.0 | +1.0 |
+| BF12-2 | 700 | 701.5 | +1.5 |
+| BF09-2 | 1500 | 1498.1 | −1.9 |
+| BF10 | 2500 | 2497.9 | −2.1 |
+| BF12-1 | 1575 | 1577.5 | +2.5 |
+| ensuite counter | "3.05" | 3047.0 | −3.0 |
+
+**The sheet agrees with itself to ≤2.5 mm (0.16 %). Our spec disagreed with the sheet by up to
+2850 mm — ~1000×.** Every discrepancy this session resolved to OUR reader; not once to the drawing.
+
+**THE RESOLUTION LIMIT I IGNORED.** At 1:75 a **0.6pt pen covers 15.87 mm of real space** (snap grid
+3.17 mm). I reported the leaf lane gap (**9.5 = 0.60 pen widths**) and the leaf y-lap
+(**12.7 = 0.80 pen widths**) as findings. They are *inside the ink*. I invented precision.
+
+**WITHDRAWN — every "designer error" I raised was mine:**
+1. *"BF09-1's east leg runs through the y5697.9 column with no notch = a real build clash."* A 1:75
+   FURNITURE plan does not draw notches (101.6 mm = 1.3 mm on paper). Joinery drawings do. Wrong tier.
+2. *"The sheet REFUSES to draw a pocket."* It never carries a pocket cage. Not a refusal — not that
+   kind of document.
+3. *"BF09-3's 3 equal bays contradict the signed asymmetric layout."* Carcass/module lines. I turned
+   a fabrication split into a design instruction.
+4. *"BF09-1 is 26.4 short of its 5200 label."* 1.7 pen widths, and dependent on a corner-counting
+   convention the reader does not know.
+5. *"Nothing on the sheet explains why the wall steps 199.9→98.3."* Structural wall meeting a
+   partition. Only a tool with no concept of buildings calls that a mystery.
+
+**ROOT CAUSE — and it is in the harness, not the sheet.** The reader has no notion of DRAWING TIER or
+PEN RESOLUTION: it treats every stroke as a dimension and every absence as a contradiction. Worse, I
+instructed the adversarial refuters to *"default to refuted unless you can reproduce it from a dump"* —
+which **auto-kills every claim that is not a stroke**. The 50/94 refutation rate I presented as rigour
+was that bias, and it is what "refuted" the owner's pocket. Same disease again minutes later: the
+label-check tool reported BF09-3 as "not found" because it hunted for one long stroke while the
+designer had drawn it, normally, as three bays.
+
+**THE RULE (also in memory `drawing-tier-law`).** This sheet answers **where / how big / what it is
+called**, to ~2.5 mm — more than enough for us. **Notches, pocket cages, head heights and joinery are
+not in it, and their absence is not a gap, a conflict, or anyone's error** — they are ours to DESIGN,
+or the owner's/designer's to answer. Never generate a "designer error" list from a document that was
+never asked the question. The fix is NOT a better reader — that is the referee-factory trap the
+direction reset exists to stop.
+
 **Still pending (build layer, correction #5):** the L-glass + doors already render via native
 `room.openings` (verified — see below); STILL TODO = build_room to render BF09-3 as OPEN
 (`open:true` unconsumed) + the `curtain_track`, and confirm the L-jog corner seals on the
