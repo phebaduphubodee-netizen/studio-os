@@ -1243,7 +1243,7 @@ def _suite_materials(spec=None):
     for _ep in sorted(set(((sel or {}).get("elements") or {}).values())):
         M[f"em-{_ep}"] = _material_from_preset(f"m_el_{_ep}", _ep)
     if sel:
-        print(f"  materials: spec-selected presets -> {_matpre.material_story(sel)}")
+        print(f"  materials: spec-selected presets -> {_matpre.material_story(sel, spec)}")
     for obj in bpy.data.objects:
         if obj.type != 'MESH' or obj.get("ph_model"):   # imported models keep their own PBR
             continue

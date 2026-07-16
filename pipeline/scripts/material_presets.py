@@ -201,11 +201,33 @@ PRESETS = {
         desc="satin/brushed brass hang-rail + hardware — satin hides humidity marks (D4-A; "
              "AELLA SB line, solid-vs-plated is a supplier query)",
         source="element1-oak-signature-wall_DD-2026-07-16.md D4-A"),
+    # WHY #3A3C3E AND NOT "BLACK" (2026-07-16c) — kept here, NOT in `desc`: desc is fed verbatim to
+    # the render-polish prompt via material_story(), so it must describe the MATERIAL, not our
+    # reasoning about it. D7-B item 6 issued a BAND (#2A2C2E-#3A3C3E) precisely so "matte black"
+    # could ship without a thresholds PR. Two things were wrong with what actually shipped (#1A1A1A):
+    #   1. 26 sRGB is UNDER the 30-sRGB texel floor, so factory_args clamped it up to 30 — the
+    #      authored number never reached a render, and a value-pin could not see that.
+    #   2. The studio has TWO live albedo bands IN DIFFERENT UNITS, and item 6's arithmetic crossed
+    #      them: >=30 sRGB (pbr-material-behavior.md:55) vs >=0.04 LINEAR (build_room's
+    #      albedo_plausible). 0.04 linear is ~56.3 sRGB, so the issued band's LOW end (#2A2C2E = 42
+    #      sRGB = 0.023 linear) does not clear both — item 6's "clears both live bands" is wrong
+    #      there. Only >=57 sRGB satisfies both, i.e. the TOP of the issued band.
+    # PRECISION ABOUT "clears": neither band FAILS a build. albedo_plausible only PRINTS
+    # "!! albedo WARN" (the backer reaches it via the `solid` factory -> _solid), and the sRGB band
+    # has no scorer wired. pbr-material-behavior.md:176-182 already logs this two-band mismatch as
+    # OPEN. So the old value was not "illegal" — it warned on every render that used it, and sat
+    # outside both bands while being silently clamped. This value simply needs no excuse.
+    # ROUGHNESS 0.88 -> 0.82: 0.88 was the one authored number that DID reach every render. The DD
+    # issued 0.75-0.85 (item 6) and 0.88 is outside it; 0.82 is mid-window. A backer this matte
+    # kills the grazing sheen that separates a recess from a painted line.
+    # It still READS black against oak: the darkening is done by GI/AO, which is the point — and a
+    # 0,0,0 recess is the same black-hole defect the designer circled on our own render.
     "matte_black_ply": dict(
-        factory="solid", space="srgb", hex="#1A1A1A", rough=0.88, tier="DESIGN-INTENT",
-        desc="matte-black ply backer behind the slat battens — the dark ground the shadow-gaps "
-             "read against, so the 40/20 rhythm reads as slats not a panel (D2-A backing)",
-        source="element1-oak-signature-wall_DD-2026-07-16.md D2-A backing"),
+        factory="solid", space="srgb", hex="#3A3C3E", rough=0.82, tier="DESIGN-INTENT",
+        desc="near-black slightly-cool matte backer behind the slat battens — the dark ground the "
+             "shadow-gaps read against, so the module reads as slats and not as a flat panel "
+             "(D2-A backing, delivered by AKUWALL's own black backing)",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D2-A backing + D7-B item 6"),
 }
 
 
@@ -234,8 +256,16 @@ def mill_object_role(objname):
         return "brass"
     if "front" in pn or pn.startswith("towerback"):
         return "microcement"
+    if pn.endswith("mineral"):
+        # A terminal member that DECLARES mineral intent (millwork.terminal_part_name, named from
+        # the spec's schedule). PRJ-2026-002 D7 = MINERAL RELEASE: BF14's south end is cool
+        # microcement, the north end is oak into oak — a JOINT, because BF09-3 receives it — so
+        # `postoak` falls through to oak below. The asymmetry IS the decision: one end is received,
+        # the other released. This router is GLOBAL, so it must never read "a jamb is mineral" out
+        # of a part's FUNCTION — only out of what the project's spec asked for.
+        return "microcement"
     if pn.startswith("backer"):
-        return "backing"                               # matte-black ply behind the slats (D2-A)
+        return "backing"                               # dark backer behind the slats (D2-A)
     return "oak"
 
 
@@ -408,6 +438,36 @@ def factory_args(preset_name):
     return a
 
 
+# What build_room._suite_materials hardcodes for millwork SUB-PARTS and routes by part token
+# (mill_object_role). No `surfaces` key selects these, so `resolved` never mentions them.
+_MILL_SUBPART = (
+    ("brass", "satin_brass", "millwork hardware"),
+    ("microcement", "microcement_cool", "millwork mineral accents"),
+    ("backing", "matte_black_ply", "slat backer"),
+)
+
+
+def millwork_subpart_presets(spec):
+    """Which sub-part presets a spec's BUILT-INS actually put on screen. Returns [(label, preset)].
+
+    Without this, material_story tells the polish pass "millwork: oak" while the render shows brass
+    hang-rails, cool-microcement drawer fronts and a mineral terminal jamb — and a repaint told the
+    millwork is oak will happily 'correct' them to oak. The render's stated truth must not contradict
+    the render: that is the same failure class as the slat backer that once rendered oak against a
+    signed matte-black ply, one step downstream."""
+    roles = set()
+    for b in (spec or {}).get("builtins") or []:
+        if b.get("open"):
+            roles.update(("brass", "microcement"))      # hang-rails + drawer fronts / tower back
+        if b.get("kind") == "headboard":
+            roles.add("backing")                        # the battens' dark ground
+        sched = ((b.get("design") or {}).get("schedule")) or {}
+        for k in ("post_south_material", "post_north_material"):
+            if str(sched.get(k, "")).strip().lower() == "microcement":
+                roles.add("microcement")                # e.g. PRJ-2026-002 D7's mineral release
+    return [(label, preset) for role, preset, label in _MILL_SUBPART if role in roles]
+
+
 def material_story(resolved, spec=None):
     """One prose sentence naming the ACTUAL selected materials — the truth the render
     shows, for the render-polish prompt's {material_story} slot (and rationale). Built
@@ -430,4 +490,6 @@ def material_story(resolved, spec=None):
             bits.append(f"{label}: {PRESETS[pn]['desc']}")
     for el, pn in sorted((resolved.get("elements") or {}).items()):
         bits.append(f"{el}: {PRESETS[pn]['desc']}")
+    for label, pn in millwork_subpart_presets(spec):
+        bits.append(f"{label}: {PRESETS[pn]['desc']}")
     return "; ".join(bits) if bits else material_story(None)

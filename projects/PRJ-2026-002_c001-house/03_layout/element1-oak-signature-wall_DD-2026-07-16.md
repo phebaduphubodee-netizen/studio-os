@@ -305,26 +305,118 @@ with ±3. He answered the *post* number against the 40/20 field; the module chan
 **Dead schedules, for the record:** 42 @2540 (wrong input) → 54 @40/20 (millwork.py auto-fit) →
 52 @40/20 + 15 reveals → 52 @40/20 + 12 reveals + 63 posts → **77 @27/13 + 12 reveals + 79.6 posts**.
 
-⚠️ **BUILD-LAYER GAP (unchanged, now sharper).** `millwork.py` auto-fits `n = int(run // (face+gap))`
-then `pitch = run/n` over the WHOLE run → at 27/13 it renders **81 slats @ pitch 40.12, 10.06 end
-margins**. **The render the owner chose from is that 81-slat auto-fit, not this 77 + 2 × 79.6 issue.**
-The terminal members must become real parts before any render matches the schedule. Nobody has been
-misled — the *module* is what he judged, and the module is right — but do not claim the render shows
-the issued wall.
+✅ **BUILD-LAYER GAP — CLOSED 2026-07-16c.** `millwork.py` used to auto-fit `n = int(run // (face+gap))`
+then `pitch = run/n` over the WHOLE run → at 27/13 it rendered **81 slats @ pitch 40.123 with 6.56 mm
+end margins**. *(Both this DD and the spec note previously said **10.06** — wrong. 10.06 is
+`(40.12 − 20)/2`, the **dead 40/20 gap** arithmetic carried over by hand; at face 27 the real margin is
+`(40.123 − 27)/2 = 6.56`. Corrected here rather than quietly.)* **The A/B render the owner chose the
+module from (`room_bedroom_suite_eye_akuwall.png`) WAS that 81-slat auto-fit** — nobody was misled, the
+*module* is what he judged and the module is right, but no render had ever shown the issued wall.
+
+`millwork.slat_schedule_setout()` now reads the spec's `design.schedule` and emits it:
+**77 slats at a TRUE 40 pitch** (the field butted — 77 × 27 + 76 × 13 = 3067.0 exact — so it starts and
+ends flush on a slat face, not centred in a pitch), a **79.6 microcement south jamb** (D7), a north
+terminus **SCRIBED** to whatever run remains, and the **12 reveals at floor + ceiling** that give the
+2776 cut length. Verified in the rendered scene, not just in the arithmetic:
+`jambmineral` y[−0.450, −0.370] `m_mill_cement` · `postoak` y[2.721, **2.800**] oak · `backer`
+y[−0.370, 2.721] z[0, 2.800] · 77 slats x[5.203, 5.215] z[**0.012, 2.788**].
+
+**Why the terminus is SCRIBED and not a literal 79.6 — the trap that would have shipped.** The spec's
+`d` is a nominal integer **3250** while this schedule closes on the ink's **3250.2**. A literal 79.6
+north post ends at 3250.2, overruns the bbox by 0.2, and millwork's `part()` guard **silently drops**
+it — a render quietly missing a member, that still looks completely fine. Scribing is also exactly what
+the DD already instructed ("datum south, scribe north… all accumulated build error dies in the north
+scribe against BF09-3, an already-built face"), so the code now does what the document always said:
+the terminus renders **79.4**, and the 0.2 dies where it was told to. Every number the schedule *states*
+(`field_mm`, `cut_length_mm`, `post_north_mm`) is **re-derived and must agree or the build RAISES** —
+a spec edited without re-issuing the schedule fails loud instead of rendering a different wall.
+
+**Deliverable renders:** `room_bedroom_suite_eye_e1sched.png` (element-1 hero, the NE corner) and
+`room_bedroom_suite_eye_e1d7b.png` (**the D7 view**). The hero **cannot** show D7 — it stands at y−120
+and the south termination is at y−450, i.e. *behind the camera* — so D7 got a camera that can see it:
+stand `[2300, 400]`, aim `[5253, −410]`, 35 mm, `shift_y −0.04`, which looks east along the mouth ~15°
+off the jamb's west-face normal so the 79.6 mineral shaft reads at near-full width instead of edge-on.
 
 ---
 
-### D7 · **BF14's SOUTH TERMINATION** — the free end at y-450.2 · ⏳ open (see the note below)
+### D7 · **BF14's SOUTH TERMINATION** — the free end at y-450.2 · ⭐ **DECIDED 2026-07-16c: B, MINERAL RELEASE**
 
-> **⚠️ THIS MENU'S PREMISE IS HALF DEAD — 2026-07-16c.** It was written for "a working interior designer
-> who signs" (false — see the AUTHORITY NOTE) and it was built on a pocket clearance crisis that the
-> owner's answer (5) **dissolved**: the client needs only a **SINGLE curtain layer**. Single 3-pleat
-> needs ≥100, single S-fold ≥150, and the slot clears ~220–240 — **both fit with room to spare**. The
-> "3-pleat + 3-pleat, no S-fold ever, no cove light" lock is **WITHDRAWN**; S-fold is back on the table
-> and probably suits an oak-and-glass room better. **The clearance argument that made B's "adds 0.0 to
-> the pocket" decisive is therefore much weaker than written below.** Do not sign this as-is; it is
-> kept as the reasoning trail. Next pass: re-decide it as a design (mine), and put it in front of the
-> owner as a RENDER, not as an A/B/C menu.
+> **DECIDED BY CLAUDE, NOT BY MENU — and that is the method change, not a shortcut.** The owner is an
+> engineer, not an interior designer (AUTHORITY NOTE above; memory `owner-is-an-engineer-not-a-designer`).
+> Handing him A/B/C on a *taste* question is me hiding behind a signature he has told us he cannot give.
+> So: decided, built, rendered — **`pipeline/output/room_bedroom_suite_eye_e1d7b.png`**. The picture is
+> what goes in front of him, and "does this look right" is a question he IS authority on.
+>
+> **⚠️ HALF THIS MENU'S PREMISE DIED FIRST, AND B HAD TO SURVIVE WITHOUT IT.** The menu was built on a
+> pocket clearance crisis that owner answer (5) **dissolved** (single curtain layer: the slot clears
+> ~220–240, single 3-pleat needs ≥100 and single S-fold ≥150 — both fit with room to spare). So **B's
+> "it adds 0.0 to the pocket" is GONE and is not cited in the decision.** The "3-pleat + 3-pleat, no
+> S-fold ever, no cove light" lock (item 7 below) is **WITHDRAWN** and is deliberately **NOT** encoded
+> in the spec. B is issued on the legs that never depended on clearance — see *Why B still wins* below.
+
+**⭐ ISSUED: B — mineral release.** The south jamb is **cool microcement**, 79.6 (y) × 100 (x, the wall's
+full thickness) × 2776 (z), shop-pre-finished, at the south datum y-450.2→-370.6. The north terminus is
+**oak**. Encoded as spec DATA — `design.schedule.post_south_material: "microcement"` /
+`post_north_material: "oak"` + `d7_decision` — not as a rule in the build code.
+
+**⚠️ FIRST, THE HONEST SCOPE OF THE OWNER'S AUTHORITY HERE — because I got this wrong on the first
+pass and it is the exact failure the AUTHORITY NOTE exists to stop.** I originally headed a leg *"the
+vault, not taste"* and cited his **"ไม่น่าใช่เสาไม้"** as engineering ground for a *mineral* jamb.
+**That quote does not reach this decision.** It answered *"north corner post — solid oak or veneer?"*,
+and the DD itself resolved it to **VENEER** ("Post = oak veneer over MR core"). The shipped render
+builds exactly that (`postoak` → `m_millwork_oak_veneer`). **So it rules out SOLID oak. Nothing more.**
+Re-using it to exclude *wood entirely* at the south end is borrowing his authority for a call he never
+made — the same circular move this DD already caught itself making once ("D5-A already signed NOT solid
+oak"). **The wood-vs-mineral choice is a Claude DESIGN call and is owned as one below.**
+
+**Why B wins — with its headline argument dead and the owner's quote scoped out.**
+1. **The asymmetry IS the design.** The north end is oak into oak — a **joint**, correct there *because
+   BF09-3 receives it*. The south end has nothing to receive it: 248 of air, then black alu, then garden.
+   It does not need to be *received*; it needs to be **released**. One end received, one released.
+2. **D1-A anti-monopoly — the load-bearing call of the whole element.** An oak jamb stands 0.27 m² of
+   warm oak in the room's *only cool aperture*, bouncing warm GI into the 60 % plaster ground exactly
+   where D1-A must prove itself — and the render already shows that ground reading warm-neutral rather
+   than cool. A cool mineral shaft releases the oak instead of extending it. **This is a taste call. It
+   is mine, and legs 1–2 are sufficient on their own.**
+3. **What the vault DOES say, scoped honestly:** ไม้จริง is **Poor — severe dimensional movement** under
+   humidity/temperature swings (`knowledge/materials/residential-materials.md:43-44`), and this is the
+   room's sunniest, wettest, most thermally cycled point. **That kills SOLID oak — it says nothing about
+   veneer**, which the same table rates *Moderate*. It is why option A is dead; it is **not** why B beats A′.
+4. **It is still the smooth hard cheek the curtain slides past.** 77 open 13 mm gaps at a curtain mouth
+   is a fabric snag. (Weaker than at 40/20's 20 mm gaps and 22 mm depth — stated, not leaned on.)
+
+**Rejected, for the record — including the one I had straw-manned.**
+- **A. Solid oak post.** Dead on the vault (3) *and* on the owner's own materials judgement. Note the
+  earlier draft called this "the mirror of the north" — **false**: the north post is oak **veneer**, not
+  solid. A had no defenders and never did.
+- **A′. Oak-VENEER jamb — the REAL mirror, and the option the first draft never offered.** This is the
+  honest competitor: it satisfies D5-A, matches the north terminus exactly, is *Moderate* in the vault's
+  humidity table, and is what "mirror the north" actually means. **It loses to B on legs 1 and 2 alone —
+  a design judgement, not an engineering one, and reversible if the owner looks at the render and
+  disagrees.** If B ever fails on site, **A′ is the fallback — not A.**
+- **C. Black-anodised aluminium jamb.** Clever (the terminus takes the material of what it *meets*), but
+  **fatal**: it would be folded 5005/5052 sheet while the frames are extruded 6063, and black anodic film
+  **does not match across alloy families — no anodiser warrants it**. A near-miss third black standing
+  292 mm from the frames it was built to join = **D1-C smuggled in through a detail**.
+
+> **The reasoning trail below is kept, but its NUMBERS are dead.** Item 1's `60.0 × 98.4 × 2770` is the
+> **40/20 schedule's** geometry: the issued member is **79.6** (the AKUWALL module's terminal), **2776**
+> (reveal 12, not 15), and **100** deep — the spec already decided *98.4 IS a drawn 100*. Items 2/4/5's
+> "52 slats", "20 mm gaps" and "15" are likewise dead. **D2-A-MODULE + the spec's `schedule` block are
+> the issue; this section is why.**
+>
+> **⛔ ITEM 6 IS NOT MERELY DEAD — IT IS WRONG, AND THE CODE CITES IT.** Its `#2A2C2E–#3A3C3E` band is
+> live (`material_presets.matte_black_ply` names item 6 as its source), but its claim that 42–58 sRGB
+> *"clears both live bands (>30 sRGB … and >0.04 linear …)"* is **arithmetically false at the low end**:
+> the two bands are in **different units**, 0.04 linear ≈ **56.3 sRGB**, and #2A2C2E = 42 sRGB = **0.023**
+> linear. **Only ≈the top of that band (#3A3C3E) clears both** — which is what ships. Its roughness
+> window (0.75–0.85) is good and is now pinned; the shipped 0.88 was outside it.
+>
+> **STILL LIVE from B and NOT built** (recorded so nobody reads the render as complete): the mineral
+> lining continuing north as the curtain slot's **west cheek** (y-450.2→149.7, 599.9 — behind BF14, no
+> camera can see it); the **R6–R10** arris on the mineral vs **1.5–2.0** chamfer on the slats
+> (`build_room` gives every mill part the same 1.2 mm arris); and *"nothing wet happens inside the slot"*,
+> which is a drawing note, not geometry.
 
 **The framing.** The north end is oak into oak — a **joint**, correct there because BF09-3 receives it.
 The south end has nothing to receive it: 248 of air, then black alu, then garden. It does not need to be
@@ -435,9 +527,18 @@ grazing-accent question stays OPEN as a design option, not a forced consequence.
 
 ---
 
-## 5. Owner numbers still needed (blocks geometry, not this DR)
-- **BF14 south end** — trimmed to `y110` `[est]` to meet the track "แถว ๆ south-of-bed". Confirm.
-- Sliding pocket door — width **1600 (2×800)** and **y≈6250** `[est]`; panels+pocket confirmed, numbers not.
+## 5. ~~Owner numbers still needed~~ — **BOTH RETIRED 2026-07-16b. Do not re-ask.**
+
+> Kept struck-through, not deleted: these two `[est]` guesses are the reason the whole element was
+> designed on a wrong length, and a reader who sees them as "still needed" will re-open a closed wound.
+
+- ~~**BF14 south end** — trimmed to `y110` `[est]`. Confirm.~~ → **ANSWERED BY THE INK.** BF14 is
+  `y-450.2 → 2800.0`, len **3250.2** = its own printed label to 0.2 mm. `y110` carries **zero**
+  horizontal strokes floor-wide; the owner's "~y110" was RIGHT but about the **curtain slot's** north
+  cap (`y=149.7`) — a different object. The trim had deleted 710 mm (28 %) of the signature wall.
+- ~~Sliding pocket door — width **1600 (2×800)** @ **y≈6250** `[est]`.~~ → **BOTH WRONG.** The real
+  opening is `y3399.9–4621.9`, **w1222** — 2850 south and 378 narrower; the old band is **solid hatched
+  masonry** (I had punched a door through a wall).
 
 ## 6. After owner sign-off
 1. Fold D1–D6 picks into `../master-suite.CANONICAL.spec.json` (BF14 slat params; BF09-3
@@ -514,3 +615,113 @@ Owner numbers still open (do NOT block this render): BF14 south end `y110`; slid
 `1600 (2×800)` @ `y≈6250`. Residual (owner-directable): the cool-plaster ground still reads
 warm-neutral in the enclosed oak room — a cool daylight HDRI / cool garden key through the south glass
 is the next lever (deferred; the only cached HDRI is a warm brown studio).
+
+> ⚠️ **§7 ABOVE IS THE 2026-07-16 LOG AND ITS NUMBERS ARE DEAD** — it describes the *40/20, 42-batten,
+> 2540* wall and lists two `[est]` owner questions that §5 has since retired. Kept as the trail. **§8 is
+> the current build.**
+
+---
+
+## 8. BUILD-LAYER LOG — the render finally shows the ISSUED wall (2026-07-16c)
+
+**What was still open when this session started, honestly:** D7 was an unanswered menu, and
+`millwork.py` **auto-fit 81 slats** where the issue says **77 + two terminal members** — so *no render
+had ever shown the wall we designed*. Both are now closed.
+
+**1. D7 decided — by deciding, not by asking.** ⭐ **B, mineral release** (see D7 above). The owner is
+an engineer; a taste menu was me hiding behind a signature he told us he cannot give. Decided → built →
+rendered → the picture goes to him. Encoded as spec **data** (`post_south_material`), not as a rule in
+the build code.
+
+**2. The issued schedule is now what renders.** `slat_schedule_setout()` reads `design.schedule` — which
+**the spec already carried; the build layer was simply ignoring it**. 77 slats @ a true 40 pitch,
+79.6 microcement jamb, scribed oak terminus, 12 reveals top and bottom. **Opt-in**: absent a `schedule`
+the auto-fit is byte-identical (pinned).
+
+**3. Three traps that would have shipped silently**, all found *before* the render looked wrong:
+- **The scribe.** A literal 79.6 north post ends at 3250.2 against a nominal `d`=3250 → `part()`
+  **silently drops it**. A render missing a member, still looking fine. Now scribed (79.4) and the
+  schedule's own stated numbers are **re-derived or the build RAISES**.
+- **The router.** `mill_object_role` is **global and project-agnostic**, so a rule "a jamb is
+  microcement" would repaint *every future project's jamb* with PRJ-2026-002's D7. The part name now
+  carries **declared intent from the spec** (`jambmineral` / `postoak`), so only a spec that asks for
+  mineral gets it. Both directions pinned — the **oak** pin is load-bearing, because it passes today
+  only by falling through, which nothing else distinguishes from an accidental miss.
+- **The backer was outside both bands, and invisible.** It shipped **#1A1A1A (26 sRGB)**, *under* the
+  30-sRGB texel floor → `factory_args` **clamped it up** and the authored number never reached a render
+  (so a value-pin could not see it). Worse, the studio has **two live albedo bands in different units**
+  and D7-B item 6's own arithmetic crossed them: ≥30 **sRGB** (`pbr-material-behavior.md:55`) vs ≥0.04
+  **LINEAR** (`build_room.albedo_plausible`) — and 0.04 linear is ≈**56.3 sRGB**, so the issued band's
+  low end (#2A2C2E = 42 sRGB = **0.023** linear) does *not* clear both. Only the **top** clears both →
+  **#3A3C3E**; the test now pins the *property* (survives its own clamp unchanged, inside both bands,
+  cool B>G>R), not the number. **Precision:** neither band fails a build — `albedo_plausible` only
+  *prints* `!! albedo WARN`, and `pbr-material-behavior.md:176-182` already logs the two-band mismatch
+  as OPEN. So "illegal" would overclaim: the old value **warned on every render that used it** while
+  being silently clamped. Roughness **0.88 → 0.82** too: item 6 issued 0.75–0.85, and 0.88 was the one
+  authored number that *did* reach every render.
+
+**4. What LOOKING caught that the numbers could not.** The element-1 hero **physically cannot see D7**:
+it stands at y−120 and the termination is at y−450 — *behind the camera*. The one render that would
+verify the session's main decision was blind to it. D7 got its own view (stand `[2300, 400]`, aim
+`[5253, −410]`, 35 mm) looking east along the mouth ~15° off the jamb's west-face normal.
+
+**5. ⚠️ AND THEN THE D7 VIEW REFUSED TO VERIFY D7. Reported, not buried.**
+The first pass through this log claimed the shaft "reads exactly as D7-B described: the last pale thing
+between the wood and the glass." **Measured, that is false.** Ray-scanning the camera across the band
+(`e1d7b.blend`) and sampling the pixels:
+
+| | px | reads |
+|---|---|---|
+| south glazing, grazing | 877–967 | `rgb(184,169,146)` lum **173** — warm |
+| **the D7 jamb** | 968–1033 (**66 px**) | `rgb(170,169,166)` lum **169** — neutral |
+| the 12 mm reveal → field | 1034+ | dark backer, then slats |
+
+- **The jamb's NORTH edge reads** — the 12 mm reveal puts a dark line between it and the oak. Good.
+- **The jamb's SOUTH arris does not exist to the eye.** The luminance step against the glass is
+  **173 → 169 ≈ 2 %**. The whole separation is **chromatic** (R−B: 38 → 4). So D7 currently reads as a
+  **hue shift, warm→neutral — not as a pale stroke.** The "last pale thing between the wood and the
+  glass" is **NOT verified**, and an owner shown this picture would be judging a band that is ~90 px
+  window and ~66 px jamb.
+- **No camera fixes it, and that is the finding.** The jamb sits in the SE corner *inside the south
+  wall plane*, so every inside view of its west face is near-parallel to the south glazing; and the
+  glass then either mirrors the warm-beige room or transmits the warm-brown studio HDRI. Pale-on-warm
+  either way. (D7-B's own words were "reads **from the garden**" — from *outside*, against a dark
+  interior. That is a different picture, and nobody has shot it.)
+
+**So: D7's GEOMETRY and MATERIAL are verified (raycast + object probe, below). D7's READ is not, and
+must not be reported as eye-verified.** It is blocked on the *same* cool-daylight-HDRI lever §7 logged
+as a cosmetic residual — which this measurement promotes: **that lever is no longer cosmetic, it is
+now what stands between us and verifying a design decision.** That is the honest next move on element
+1, and it is owner-directable.
+
+**Verified in the rendered scene, not the arithmetic** (`room_bedroom_suite_eye_e1d7b.blend`):
+`jambmineral` → `m_mill_cement` y[−0.450, −0.370] × full 100 depth · `postoak` → oak y[2.721, **2.800**]
+· `backer` → `m_mill_backing` y[−0.370, 2.721] z[0, 2.800] (field only — it stops short of both
+full-depth terminal members, so no cross-material z-fight) · 77 slats z[**0.012, 2.788**].
+
+**Coverage:** +15 tests (issued schedule, scribe, reveals/cut length, backer span, fail-loud on an
+inconsistent schedule or a run that disagrees with it, default-preservation, the router in both
+directions, the real canonical spec end-to-end). Full pipeline suite **1596 green**.
+
+**Scope of the blast radius, stated rather than claimed.** The **schedule** is opt-in and
+`master-suite.CANONICAL.spec.json` is the **only** spec in the repo carrying one — every other
+headboard (`specs/bedroom_suite.json`, `specs/master_bedroom.json`, the dewood experiment, the v4
+scene-graphs) keeps the auto-fit, byte-identical, pinned. But the **backer colour is NOT opt-in**:
+`matte_black_ply` feeds `m_mill_backing` for *any* slat wall, so every headboard render's backer moves
+26→58 sRGB. That is a **deliberate correction of a value that was illegal and silently clamped**, not a
+retune of something signed — and LOOKING confirms it still reads black between the battens, because the
+darkening is GI/AO's job. Saying "no existing render changes" here would have been false.
+
+**Deliverables:** `room_bedroom_suite_eye_e1sched.png` (hero) · `room_bedroom_suite_eye_e1d7b.png` (D7).
+(`..._e1d7.png` is the FIRST D7 pass, kept as the evidence of the daylight-slot leak: its jamb reveal
+renders bright. `e1d7b` is the fixed one. Both live in gitignored `pipeline/output/`.)
+
+**Honest residual — element 1 is closed, the ROOM is not.**
+- The room still reads **warm-beige**: oak, plaster and ceiling all land warm-neutral, so the *cool*
+  mineral jamb reads only slightly cooler than the oak it is supposed to release. D1-A is legible but
+  not yet proven. **The cool-daylight HDRI / cool garden key through the south glass is the next lever**
+  (the only cached HDRI is a warm brown studio) — and it is the same residual §7 logged, unmoved.
+- Still unbuilt from D7-B: the mineral **slot lining** (599.9, behind BF14 — no camera sees it), the
+  **R6–R10 vs 1.5–2.0 arris** contrast (every mill part gets the same 1.2 mm arris).
+- The **bed, bench and pillows render as featureless white slabs** — not element 1, but it is what the
+  eye goes to first in the hero, and no amount of slat fidelity will out-argue it.

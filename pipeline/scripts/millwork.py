@@ -54,6 +54,11 @@ TALL_H     = 1.6    # >= this is a door run; below it is a worktop piece
 RUN_RATIO  = 1.6    # long:short below this is a squat block, not a run -> stays a plain box
 MIN_LEAF_W = 0.18   # never emit sliver leaves
 
+SCRIBE_TOL = 0.005  # how far the SCRIBED north terminus may drift from its issued nominal (see
+                    # slat_schedule_setout). 5 mm: a real scribe eats the sub-mm difference between
+                    # a nominal plan dim and the ink; a bigger drift means the spec's run and the
+                    # issued schedule are two different walls, and that must fail loud.
+
 
 FACE_AXIS = {"N": ("y", 1), "S": ("y", -1), "E": ("x", 1), "W": ("x", -1)}
 _FACE_ALIAS = {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W"}
@@ -126,6 +131,131 @@ def mill_axis(x0, y0, W, D, room_ctr, item_ctrs=(), face=None):
     return axis, (1 if room >= ctr else -1), "centroid"
 
 
+TERMINAL_MATERIALS = ("oak", "microcement")   # the vocabulary a schedule may name for a terminal
+                                              # member; the router understands exactly these
+
+
+def terminal_part_name(stem, material):
+    """A terminal member's part NAME carries its MATERIAL intent, because the object name is the only
+    channel the material router reads (material_presets.mill_object_role).
+
+    Taken from the SPEC, never decided here. The router is GLOBAL and project-agnostic, so a rule
+    like "a jamb is microcement" would silently repaint every future project's jamb with
+    PRJ-2026-002's D7 decision — the same class of bug as the fallback box a name-pattern router
+    mis-painted (review 2026-07-16). Naming the INTENT instead of the FUNCTION keeps the decision in
+    the project's spec: `postoak` and `jamboak` fall through to oak like any other carcass part, and
+    only a schedule that ASKS for mineral gets it.
+
+    EXPLICIT OR NOTHING — there is deliberately no default. `material or "oak"` would mean a schedule
+    that merely FORGETS the key renders PRJ-2026-002's D7 as an oak jamb: option A, the one the DD
+    rejected, silently, with no error and a render that looks entirely plausible. A design decision
+    must not be revertible by an omission (review 2026-07-16c)."""
+    if material is None or (isinstance(material, str) and not material.strip()):
+        raise ValueError(f"millwork: an issued schedule must DECLARE each terminal member's material "
+                         f"({stem}) as one of {TERMINAL_MATERIALS} — omitting it would silently "
+                         f"render oak, which is a DESIGN decision reverting by accident")
+    m = str(material).strip().lower()
+    if m not in TERMINAL_MATERIALS:
+        raise ValueError(f"millwork: terminal member material {material!r} is not one of "
+                         f"{TERMINAL_MATERIALS} — a typo must fail loud, not silently render oak")
+    return stem + ("mineral" if m == "microcement" else "oak")
+
+
+def slat_schedule_setout(sched, run, H, sw, sg):
+    """PURE. An ISSUED slat schedule -> the set-out along the run, in metres. No Blender, no bbox.
+
+    A slat wall can be built two ways and they are NOT the same wall. The AUTO-FIT (millwork_parts'
+    default) divides the run by the module and redistributes the remainder into every gap: it always
+    closes, but the gap is then whatever the arithmetic says, and both ends die in a half-gap of air.
+    An ISSUED SCHEDULE is a joiner's cutting list — a fixed slat COUNT at the true module, bracketed
+    by real terminal members, closing on the wall. PRJ-2026-002 BF14 is the second kind, and the
+    difference is not academic: auto-fit renders 81 slats at pitch 40.12 where the issue says 77 at
+    a true 40 with two 79.6 posts (element1-oak-signature-wall_DD-2026-07-16.md, D2-A-MODULE).
+
+    DATUM = THE LOW END OF THE RUN AXIS. "South" and "north" are the SCHEDULE's words, true for BF14
+    because its run goes along +y from y-450 (south) to y2800 (north). This function has no compass —
+    it sets out from along_off 0, which `part()` maps to the builtin's y0 for a depth-on-x piece. A
+    schedule attached to a wall whose low end is not its south would be mis-named, not mis-built.
+
+    Returns (members, backer_off, backer_len, z0, dz):
+      members    [(name, along_off, along_len)] low -> high: the south jamb, slat0..n-1, the terminus
+      backer_*   the FIELD backer's span — the field ONLY, so it never interpenetrates the
+                 full-depth terminal members (the cross-material z-fight caught in review 2026-07-16).
+                 The caller backs each TERMINAL's reveal separately; see millwork_parts.
+      z0, dz     the members' floor reveal and cut length (D7-B item 5: the shaft floats on one
+                 dark line). The field backer runs FULL height behind the battens
+
+    DATUM SOUTH, SCRIBE NORTH (the DD's own instruction). The south is the functional end — the
+    curtain must clear the mouth dead-on. So the schedule sets out from y0 and the north terminus is
+    whatever run REMAINS: "the +0.2 asymmetry and all accumulated build error die in the north
+    scribe against BF09-3, an already-built face." This is also what keeps the build honest against
+    the spec, whose `d` is a nominal integer (3250) while the schedule closes on the ink (3250.2) —
+    a literal 79.6 north post would overrun the bbox by 0.2 mm and `part()` would SILENTLY DROP it,
+    i.e. the render would lose a member and look fine.
+
+    Every number the schedule STATES is checked, not trusted: field_mm, cut_length_mm and
+    post_north_mm are re-derived and must agree, so a spec edited without re-issuing the schedule
+    RAISES instead of quietly rendering a different wall. All of them are REQUIRED — an optional
+    cross-check is not a safety net, it is a safety net a schedule can decline (review 2026-07-16c):
+    the numbers that would catch the mistake are exactly the ones a careless edit drops."""
+    def _num(key, lo, hi):
+        if key not in sched:
+            raise ValueError(f"millwork: slat schedule is missing '{key}' — an issued schedule "
+                             f"must state it; there is no safe default for a cutting list")
+        v = float(sched[key])
+        if not (lo <= v <= hi):
+            raise ValueError(f"millwork: slat schedule {key}={v} mm is out of range [{lo}, {hi}]")
+        return v / 1000.0
+
+    if "slats" not in sched:
+        raise ValueError("millwork: slat schedule is missing 'slats'")
+    n_raw = sched["slats"]
+    n = int(n_raw)
+    if n != n_raw or isinstance(n_raw, bool):    # 77.9 -> int() would TRUNCATE to 77 and the
+        raise ValueError(f"millwork: slat schedule slats={n_raw!r} must be a whole number — "
+                         f"int() would silently truncate it and field_mm, re-derived from the "
+                         f"truncated count, would agree with itself and pass")
+    if n < 2:
+        raise ValueError(f"millwork: slat schedule needs >= 2 slats, got {n!r}")
+    rev = _num("reveal_mm", 1.0, 100.0)
+    jamb = _num("post_south_mm", 5.0, 500.0)
+
+    field = n * sw + (n - 1) * sg            # 77 x 27 + 76 x 13 = 3067.0 — butted, NOT centred in a
+    want = _num("field_mm", 10.0, 100000.0) * 1000.0   # pitch: it starts AND ends flush on a slat face
+    if abs(field * 1000.0 - want) > 0.05:
+        raise ValueError(f"millwork: slat schedule field_mm={want} disagrees with its own module "
+                         f"({n} x {sw * 1000:.1f} + {n - 1} x {sg * 1000:.1f} = {field * 1000:.1f} mm). "
+                         f"Re-issue the schedule; do not render a wall nobody specified")
+
+    dz = H - 2.0 * rev                       # cut length: the shaft floats on one dark line, top+bottom
+    if dz <= 1e-6:
+        raise ValueError(f"millwork: slat reveal {rev * 1000:.1f} mm leaves no cut length in H={H}")
+    want = _num("cut_length_mm", 10.0, 100000.0) * 1000.0
+    if abs(dz * 1000.0 - want) > 0.05:
+        raise ValueError(f"millwork: slat schedule cut_length_mm={want} disagrees with "
+                         f"H - 2 x reveal = {dz * 1000:.1f} mm")
+
+    term = run - (jamb + rev + field + rev)  # SCRIBED — never a literal, see the docstring
+    if term <= 1e-6:
+        raise ValueError(f"millwork: the issued slat schedule needs "
+                         f"{(jamb + rev + field + rev) * 1000:.1f} mm but the wall run is only "
+                         f"{run * 1000:.1f} mm — nothing is left to scribe the north terminus into")
+    want = _num("post_north_mm", 5.0, 500.0) * 1000.0
+    if abs(term * 1000.0 - want) > SCRIBE_TOL * 1000.0:
+        raise ValueError(f"millwork: the north terminus scribes to {term * 1000:.1f} mm but the "
+                         f"schedule issues {want} mm ({abs(term * 1000.0 - want):.1f} mm out, "
+                         f"tolerance {SCRIBE_TOL * 1000:.0f}). The wall run ({run * 1000:.1f} mm) "
+                         f"and the schedule are two different walls — re-issue one of them")
+
+    members = [(terminal_part_name("jamb", sched.get("post_south_material")), 0.0, jamb)]
+    f0 = jamb + rev
+    for i in range(n):
+        members.append((f"slat{i}", f0 + i * (sw + sg), sw))
+    members.append((terminal_part_name("post", sched.get("post_north_material")),
+                    f0 + field + rev, term))
+    return members, jamb, rev + field + rev, rev, dz
+
+
 def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=False, design=None):
     """PURE. Lay out a built-in's parts in bbox-LOCAL metres. Returns a list of
     (part_name, x, y, z, dx, dy, dz) with 0 <= x and x+dx <= W (likewise y/D and z/H).
@@ -144,6 +274,14 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
     built-in gets FEWER parts — never a part outside its plan-measured footprint. This is the same
     invariant, enforced the same way, as _build_bed.emit() in build_room.py: the plan footprint is
     authoritative and geometry may not silently grow it."""
+    # FIRST statement on purpose: only the headboard branch reads `schedule`, so on any other kind an
+    # issued cutting list — slat count, field, the D7 terminal materials — was silently DISCARDED and
+    # a different wall rendered, with no warning (review 2026-07-16c). Ahead of the degenerate-bbox
+    # and PANEL_KINDS screens too, both of which return early and would swallow it just as quietly.
+    if (design or {}).get("schedule") is not None and kind != "headboard":
+        raise ValueError(f"millwork: a slat schedule is only meaningful on a headboard slat wall, "
+                         f"not on kind={kind!r} — an issued cutting list must never be silently "
+                         f"discarded")
     depth = W if axis == "x" else D
     run = D if axis == "x" else W
     out = []
@@ -200,6 +338,39 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         sg  = _slat_mm("slat_gap_mm",   SLAT_GAP)
         spr = _slat_mm("slat_depth_mm", SLAT_PR)
         pr = min(spr, depth * 0.5)
+
+        # An ISSUED SCHEDULE (a joiner's cutting list) OUTRANKS the auto-fit — it is the difference
+        # between the wall we designed and a wall the arithmetic happened to land on. Opt-in: absent
+        # a `schedule` block this falls through to the auto-fit below, byte-identical (pinned).
+        sched = d.get("schedule")
+        if sched is not None:
+            members, bk_off, bk_len, z0, dz = slat_schedule_setout(sched, run, H, sw, sg)
+            # the FIELD's backer runs full height behind the battens: it is what shows in their reveal.
+            part("backer", bk_off, bk_len, pr, depth - pr, 0.0, H)
+            for nm, off, ln in members:
+                if nm.startswith("slat"):
+                    part(nm, off, ln, 0.0, pr, z0, dz)       # battens stand proud of the backer
+                else:
+                    # TERMINAL MEMBERS are the wall's full thickness, not proud battens: the south
+                    # jamb is the curtain mouth's west shoulder and the north terminus is scribed
+                    # into BF09-3 (D7 / D2-A-MODULE). Full depth is why the field backer stops short.
+                    part(nm, off, ln, 0.0, depth, z0, dz)
+                    # ...and stopping short left each terminal's floor/ceiling reveal as a HOLE
+                    # THROUGH THE WALL. Raycast in the first shipped render: under the jamb the
+                    # "shadow gap" looked straight out to the full-height east glass and rendered as
+                    # a DAYLIGHT slot; under the post it read as lit plaster 347 mm behind. So the
+                    # single dark line BF14 floats on broke bright at exactly the two ends D7 is
+                    # about (review 2026-07-16c). Back them with the same dark backer at the same
+                    # set-back, so every reveal reads identically. These ABUT the member in z (never
+                    # overlap it) so the cross-material z-fight stays avoided. Names are ROUTER-SAFE
+                    # and run-positional, not compass: `backer*` -> backing, and nothing here may end
+                    # in "mineral" or it would route to microcement — which the DD forbids in a
+                    # reveal ("reveal interiors get the dark backer, NOT trowelled mineral").
+                    end = "lo" if off < run * 0.5 else "hi"
+                    part(f"backer_{end}_base", off, ln, pr, depth - pr, 0.0, z0)
+                    part(f"backer_{end}_head", off, ln, pr, depth - pr, z0 + dz, H - (z0 + dz))
+            return out
+
         part("backer", 0.0, run, pr, depth - pr, 0.0, H)     # matte-black ply backer (D2-A)
         n = int(run // (sw + sg))                            # sw+sg > 0 (validated) -> no zero-div
         if n < 2:

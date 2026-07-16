@@ -209,6 +209,197 @@ def test_a_headboard_design_block_sets_the_slat_rhythm():
     assert any(abs(p[5] - M.SLAT_W) < 1e-9 for p in dflt if p[0].startswith("slat"))
 
 
+# ---- the slat wall: an ISSUED SCHEDULE outranks the auto-fit -------------------------------------
+# BF14 as ISSUED 2026-07-16c (element1-oak-signature-wall_DD-2026-07-16.md, D2-A-MODULE): AKUWALL
+# 27/13 on the ink-proven 3250.2 x 2800. Numbers are the DD's, not the code's — if the code and this
+# table ever disagree, the code is wrong.
+ISSUED = dict(slats=77, field_mm=3067.0, reveal_mm=12.0,
+              post_south_mm=79.6, post_north_mm=79.6, cut_length_mm=2776,
+              post_south_material="microcement", post_north_material="oak")
+AKUWALL = {"slat_face_mm": 27, "slat_gap_mm": 13, "slat_depth_mm": 12}
+BF14_RUN, BF14_H, BF14_W = 3.250, 2.800, 0.100      # spec `d` is a NOMINAL integer; ink = 3250.2
+
+
+def _bf14_issued():
+    return M.millwork_parts("headboard", BF14_W, BF14_RUN, BF14_H, "x", -1,
+                            design=dict(AKUWALL, schedule=ISSUED))
+
+
+def test_the_issued_schedule_renders_77_slats_not_the_81_the_autofit_wants():
+    """THE POINT OF THE WHOLE BRANCH. The auto-fit divides the run by the module and redistributes
+    the remainder into every gap: 81 slats at pitch 40.12, both ends dying in a half-gap of air.
+    The ISSUE is 77 at a TRUE 40 pitch bracketed by two real terminal members. The owner chose the
+    AKUWALL module by LOOKING at a render of the 81-slat auto-fit — the module was his to judge and
+    he judged it right, but the render was never the issued wall. This is that gap, closed."""
+    parts = _bf14_issued()
+    slats = [p for p in parts if p[0].startswith("slat")]
+    assert len(slats) == 77, f"the issued schedule is 77 slats, got {len(slats)}"
+    assert len([p for p in parts if p[0] == "jambmineral"]) == 1
+    assert len([p for p in parts if p[0] == "postoak"]) == 1
+    # the field is BUTTED (starts and ends flush on a slat face), not centred in a pitch
+    ys = sorted(p[2] for p in slats)
+    assert all(abs(p[5] - 0.027) < 1e-9 for p in slats), "every batten face is the issued 27 mm"
+    pitches = [b - a for a, b in zip(ys, ys[1:])]
+    assert all(abs(q - 0.040) < 1e-9 for q in pitches), "a TRUE 40 pitch — not 40.12 redistributed"
+    gaps = [b - a - 0.027 for a, b in zip(ys, ys[1:])]
+    assert all(abs(g - 0.013) < 1e-9 for g in gaps), "the issued 13 mm gap, undrifted"
+    field = (ys[-1] + 0.027) - ys[0]
+    assert field * 1000 == pytest.approx(3067.0, abs=0.05), "77 x 27 + 76 x 13 = 3067.0 exact"
+
+
+def test_the_north_terminus_is_SCRIBED_so_the_02_never_drops_a_member():
+    """Datum south, scribe north (the DD's instruction). The spec's `d` is a nominal 3250 while the
+    schedule closes on the ink's 3250.2 — a LITERAL 79.6 north post would end at 3250.2, overrun the
+    bbox, and `part()` would SILENTLY DROP it: a render missing a member that still looks fine. The
+    terminus is therefore whatever run REMAINS, and the 0.2 dies exactly where the DD says it dies."""
+    parts = _bf14_issued()
+    jamb = next(p for p in parts if p[0] == "jambmineral")
+    post = next(p for p in parts if p[0] == "postoak")
+    assert jamb[2] == pytest.approx(0.0), "the SOUTH is the datum — the jamb starts on it"
+    assert jamb[5] * 1000 == pytest.approx(79.6, abs=0.01), "the south jamb is issued at a literal 79.6"
+    assert post[5] * 1000 == pytest.approx(79.4, abs=0.01), "the north terminus SCRIBES to 79.4"
+    assert (post[2] + post[5]) == pytest.approx(BF14_RUN, abs=1e-9), "and it closes ON the wall"
+    # the member is REAL, not dropped
+    assert post[5] > 0.070, "a dropped terminus is the failure this test exists to catch"
+
+
+def test_the_shaft_floats_on_a_12mm_reveal_and_the_backer_is_what_shows_in_it():
+    """D7-B item 5: one reveal number, 12, all round -> BF14 reads as one 2776 shaft floating on a
+    single dark line. The auto-fit ran the battens FULL height (0 -> 2800): no reveal existed at all,
+    so the issued cut length was a number in a document that no render had ever obeyed."""
+    parts = _bf14_issued()
+    members = [p for p in parts if not p[0].startswith("backer")]
+    backer = next(p for p in parts if p[0] == "backer")
+    assert all(p[3] * 1000 == pytest.approx(12.0, abs=0.01) for p in members), "12 mm floor reveal"
+    assert all(p[6] * 1000 == pytest.approx(2776.0, abs=0.05) for p in members), "cut length 2776"
+    assert all(p[3] + p[6] == pytest.approx(BF14_H - 0.012) for p in members), "12 mm ceiling reveal"
+    assert backer[3] == pytest.approx(0.0) and backer[6] == pytest.approx(BF14_H), \
+        "the backer runs FULL height — what shows in the reveal is the dark backer, not a void"
+
+
+def test_EVERY_reveal_is_backed_dark_including_the_terminals():
+    """THE BUG THE FIRST RENDER SHIPPED WITH (review 2026-07-16c). The field backer must stop short
+    of the full-depth terminal members (z-fight) — but stopping short left each terminal's 12 mm
+    floor/ceiling reveal as a HOLE STRAIGHT THROUGH THE WALL. A raycast in the shipped .blend proved
+    it: under the jamb the 'shadow gap' looked out to the full-height east glass and rendered as a
+    DAYLIGHT slot; under the post it read as lit plaster 347 mm behind. The single dark line BF14
+    floats on broke BRIGHT at exactly the two ends D7 exists to show.
+
+    So: sweep the whole run at floor and ceiling level, and assert something dark backs it EVERYWHERE."""
+    parts = _bf14_issued()
+    backers = [p for p in parts if p[0].startswith("backer")]
+    for z_probe, where in ((0.006, "floor reveal"), (2.794, "ceiling reveal")):
+        for y_probe, what in ((0.040, "under the JAMB"), (1.600, "under the field"),
+                              (3.210, "under the POST")):
+            hit = [p for p in backers
+                   if p[2] - 1e-9 <= y_probe <= p[2] + p[5] + 1e-9
+                   and p[3] - 1e-9 <= z_probe <= p[3] + p[6] + 1e-9]
+            assert hit, f"{what}, the {where} is UNBACKED — it renders as a hole through the wall"
+    # and the backing sits at the SAME set-back everywhere, so the dark line reads as one line
+    assert len({round(p[1], 6) for p in backers}) == 1, "every reveal is backed at the same depth"
+
+
+def test_the_reveal_backing_never_routes_to_mineral():
+    """The names are a contract with a router that checks `endswith('mineral')` BEFORE
+    `startswith('backer')`. A filler named `backer_jambmineral` would paint MICROCEMENT — which the
+    DD explicitly forbids in a reveal ("reveal interiors get the dark backer, NOT trowelled mineral —
+    a 15 x 22 slot will not take a burnished coat"). Pin the routing, not just the name."""
+    import material_presets as mp
+    for p in _bf14_issued():
+        if p[0].startswith("backer"):
+            assert mp.mill_object_role(f"mill__BF14__{p[0]}") == "backing", \
+                f"{p[0]} routes to the wrong material — a reveal must never be trowelled mineral"
+
+
+def test_the_backer_stops_short_of_the_full_depth_terminal_members():
+    """The terminal members are the wall's full 100 mm thickness (the south jamb is the curtain
+    mouth's west shoulder; the north terminus scribes into BF09-3). A backer spanning the whole run
+    would interpenetrate both — the cross-material z-fight review 2026-07-16 caught on the tower."""
+    parts = _bf14_issued()
+    backer = next(p for p in parts if p[0] == "backer")
+    jamb = next(p for p in parts if p[0] == "jambmineral")
+    post = next(p for p in parts if p[0] == "postoak")
+    assert backer[2] >= jamb[2] + jamb[5] - 1e-9, "backer starts at/after the jamb's north face"
+    assert backer[2] + backer[5] <= post[2] + 1e-9, "and stops at/before the terminus' south face"
+    assert jamb[4] == pytest.approx(BF14_W), "the jamb is the wall's FULL depth"
+    assert post[4] == pytest.approx(BF14_W), "so is the terminus"
+    slats = [p for p in parts if p[0].startswith("slat")]
+    assert all(p[4] == pytest.approx(0.012) for p in slats), "battens stand 12 proud of the backer"
+
+
+@pytest.mark.parametrize("bad,why", [
+    (dict(ISSUED, slats=78), "a slat count edited without re-deriving field_mm"),
+    (dict(ISSUED, cut_length_mm=2770), "a cut length that disagrees with H - 2 x reveal"),
+    (dict(ISSUED, slats=1), "a degenerate slat count"),
+    (dict(ISSUED, slats=77.9), "a fractional count int() would silently TRUNCATE to 77 — and then "
+                               "field_mm, re-derived from the truncated count, agrees with itself"),
+    # EVERY cross-check is REQUIRED. An optional one is a safety net the schedule can decline, and
+    # the number that would catch the mistake is exactly the one a careless edit drops.
+    ({k: v for k, v in ISSUED.items() if k != "reveal_mm"}, "a cutting list missing a number"),
+    ({k: v for k, v in ISSUED.items() if k != "field_mm"}, "no field_mm = no module cross-check"),
+    ({k: v for k, v in ISSUED.items() if k != "cut_length_mm"}, "no cut length to check against"),
+    ({k: v for k, v in ISSUED.items() if k != "post_north_mm"}, "an UNBOUNDED scribe"),
+    # A DESIGN decision must not be revertible by an omission: no terminal material -> no oak default
+    ({k: v for k, v in ISSUED.items() if k != "post_south_material"}, "D7 reverting to oak silently"),
+    ({k: v for k, v in ISSUED.items() if k != "post_north_material"}, "an undeclared terminal"),
+    (dict(ISSUED, post_south_material="walnut"), "a material typo"),
+])
+def test_an_inconsistent_schedule_FAILS_LOUD_it_never_renders_a_wall_nobody_issued(bad, why):
+    with pytest.raises(ValueError):
+        M.millwork_parts("headboard", BF14_W, BF14_RUN, BF14_H, "x", -1,
+                         design=dict(AKUWALL, schedule=bad))
+
+
+@pytest.mark.parametrize("run,why", [
+    (3.180, "a run too short for the schedule"),
+    (3.500, "a run the schedule no longer describes"),
+])
+def test_a_run_that_disagrees_with_its_schedule_FAILS_LOUD(run, why):
+    """The scribe absorbs the ink's sub-mm, NOT a different wall. If `d` is edited without
+    re-issuing the schedule, that is two walls and it must raise — not silently scribe a 329 mm
+    'terminus' or drop the member off the end."""
+    with pytest.raises(ValueError, match="scribe|terminus"):
+        M.millwork_parts("headboard", BF14_W, run, BF14_H, "x", -1,
+                         design=dict(AKUWALL, schedule=ISSUED))
+
+
+@pytest.mark.parametrize("kind", ["wardrobe", "cabinet", "panel", "tv_panel"])
+def test_a_schedule_on_the_WRONG_KIND_is_never_silently_discarded(kind):
+    """Only the headboard branch reads `schedule`, so on any other kind an issued cutting list — the
+    slat count, the field, D7's terminal materials — evaporated with no warning and a different piece
+    rendered. Screened FIRST, ahead of the degenerate-bbox and PANEL_KINDS early returns, which would
+    otherwise swallow it just as quietly."""
+    with pytest.raises(ValueError, match="headboard"):
+        M.millwork_parts(kind, 0.600, 3.300, 2.800, "y", -1, design=dict(AKUWALL, schedule=ISSUED))
+    # even a degenerate bbox must not swallow it
+    with pytest.raises(ValueError, match="headboard"):
+        M.millwork_parts(kind, 0.0, 0.0, 0.0, "y", -1, design=dict(AKUWALL, schedule=ISSUED))
+
+
+def test_no_schedule_block_keeps_the_autofit_byte_identical():
+    """OPT-IN, like `open` and `design` before it: every other slat wall in the repo must render
+    exactly what it rendered yesterday."""
+    auto = M.millwork_parts("headboard", BF14_W, BF14_RUN, BF14_H, "x", -1, design=AKUWALL)
+    assert len([p for p in auto if p[0].startswith("slat")]) == 81, "the auto-fit still auto-fits"
+    assert not any(p[0] in ("jambmineral", "postoak") for p in auto), "no terminal members uninvited"
+    assert all(p[6] == pytest.approx(BF14_H) for p in auto), "and no reveal uninvited"
+
+
+def test_the_canonical_spec_builds_its_own_issued_schedule():
+    """END-TO-END on the real artifact: the spec ALREADY carried design.schedule — the build layer
+    was simply ignoring it. Reads the shipped JSON so a spec edit that breaks the issue fails HERE."""
+    import io
+    import json
+    import os
+    p = os.path.join(os.path.dirname(__file__), "..", "..", "projects",
+                     "PRJ-2026-002_c001-house", "03_layout", "master-suite.CANONICAL.spec.json")
+    b = next(x for x in json.load(io.open(p, encoding="utf-8"))["builtins"] if x.get("bf") == "BF14")
+    parts = M.millwork_parts(b["kind"], b["w"] / 1000, b["d"] / 1000, b["h"] / 1000, "x", -1,
+                             design=b.get("design"))
+    assert len([x for x in parts if x[0].startswith("slat")]) == 77
+    assert {"jambmineral", "postoak", "backer"} <= {x[0] for x in parts}
+
+
 # ---- the OPEN dressing wall: no leaves, you see INTO it ------------------------------------------
 OPEN = dict(kind="wardrobe", W=3.300, D=0.600, H=2.800)   # BF09-3 as an open:true dressing wall
 

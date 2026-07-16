@@ -281,7 +281,40 @@ def test_element1_preset_values_are_pinned_exactly():
     assert (P["cool_plaster"]["hex"], P["cool_plaster"]["rough"]) == ("#EAEDEF", 0.85)
     assert (P["microcement_cool"]["hex"], P["microcement_cool"]["rough"]) == ("#AEB2B2", 0.90)
     assert (P["satin_brass"]["hex"], P["satin_brass"]["rough"], P["satin_brass"]["metallic"]) == ("#C4A45C", 0.35, 1.0)
-    assert (P["matte_black_ply"]["hex"], P["matte_black_ply"]["rough"]) == ("#1A1A1A", 0.88)
+    assert (P["matte_black_ply"]["hex"], P["matte_black_ply"]["rough"]) == ("#3A3C3E", 0.82)
+
+
+def test_the_slat_backer_is_LEGAL_in_both_live_bands_not_merely_pinned():
+    """The backer shipped #1A1A1A (26 sRGB) while the DD had issued a BAND (#2A2C2E-#3A3C3E)
+    specifically so 'matte black' could ship without a thresholds PR. Two things were wrong and a
+    value-pin could see neither:
+
+    1. 26 sRGB is under the 30-sRGB texel floor, so factory_args CLAMPED it up — the authored number
+       never reached a render, and the pin above was pinning a value the pipeline discarded.
+    2. The studio has TWO live albedo bands IN DIFFERENT UNITS and the DD's arithmetic crossed them:
+       >=30 sRGB (pbr-material-behavior.md:55) vs >=0.04 LINEAR (build_room.albedo_plausible). 0.04
+       linear is ~56.3 sRGB, so the issued band's low end (#2A2C2E = 42 sRGB = 0.023 linear) does NOT
+       clear both, and the clamp floor of 30 sRGB (0.013 linear) does not either. Only the TOP of the
+       issued band clears both. (Neither band FAILS a build — albedo_plausible only prints
+       "!! albedo WARN"; pbr-material-behavior.md:176-182 logs the mismatch as OPEN. The old value
+       warned on every render that used it. "Warned", not "illegal".)
+
+    So pin the PROPERTY, not the number: whatever the backer is, it must survive its own pipeline
+    unclamped and sit inside both bands. A 0,0,0 recess is the same black-hole defect the designer
+    circled on our own render — the darkening is GI/AO's job, which is the point."""
+    a = mp.factory_args("matte_black_ply")
+    raw = mp.srgb_hex_to_linear_rgba(mp.PRESETS["matte_black_ply"]["hex"], clamp_band=False)
+    assert tuple(a["rgba"]) == pytest.approx(tuple(raw)), \
+        "the authored backer must survive the band clamp UNCHANGED, or the render shows a colour " \
+        "nobody chose"
+    for c in a["rgba"][:3]:
+        assert c >= 0.04, f"backer linear {c:.4f} trips build_room.albedo_plausible's 0.04 floor"
+    r, g, b = (int(mp.PRESETS["matte_black_ply"]["hex"][i:i + 2], 16) for i in (1, 3, 5))
+    assert min(r, g, b) >= 30, "and it must clear the 30-sRGB texel floor without being clamped there"
+    assert b > g > r, "slightly COOL (B>G>R) — it is the ground the warm oak reads against (D7-B item 6)"
+    assert 0.75 <= a["rough"] <= 0.85, \
+        "D7-B item 6 issued roughness 0.75-0.85. 0.88 shipped — outside it, and unlike the hex it " \
+        "was NOT clamped, so it is the one authored value that DID reach every render"
 
 
 # ---------------------------------------------------------------------------
@@ -299,6 +332,78 @@ def test_mill_object_role_routes_structured_parts():
     assert mp.mill_object_role("mill__ตู้__back_niche") == "oak"
     assert mp.mill_object_role("mill__ตู้__drawer_box0") == "oak"   # the box is oak; only the FRONT is cement
     assert mp.mill_object_role("mill__ตู้__gable0") == "oak"
+
+
+def test_material_story_names_the_subpart_materials_the_render_actually_shows():
+    """The polish prompt's {material_story} is the render's STATED truth. It read `surfaces` only, so
+    it said "millwork: oak" while the render showed brass hang-rails, cool-microcement drawer fronts
+    and D7's mineral jamb — and a repaint told the millwork is oak will 'correct' them BACK to oak.
+    Same failure class as the backer that once rendered oak against a signed matte-black ply, one step
+    downstream: the prompt must not contradict the picture."""
+    resolved = {"surfaces": {"millwork": "oak_veneer"}, "families": {}, "elements": {}}
+    spec = {"builtins": [
+        {"kind": "headboard", "design": {"schedule": {"post_south_material": "microcement",
+                                                      "post_north_material": "oak"}}},
+        {"kind": "wardrobe", "open": True},
+    ]}
+    story = mp.material_story(resolved, spec)
+    assert "brass" in story.lower(), "the hang-rails are ON SCREEN and unmentioned"
+    assert "microcement" in story.lower(), "so are the mineral accents / the D7 jamb"
+    assert "backer" in story.lower(), "so is the slat backer"
+    # a spec with no built-ins says nothing extra — this stays truthful, not chatty
+    plain = mp.material_story(resolved, {"builtins": []})
+    assert "brass" not in plain.lower() and "backer" not in plain.lower()
+    # and no spec at all behaves exactly as before (every existing caller)
+    assert mp.material_story(resolved) == mp.material_story(resolved, None)
+
+
+def test_millwork_subpart_presets_only_reports_what_is_on_screen():
+    assert mp.millwork_subpart_presets(None) == []
+    assert mp.millwork_subpart_presets({"builtins": [{"kind": "cabinet"}]}) == []
+    # a CLOSED door run puts no brass/microcement on screen — only an open:true wall does
+    assert mp.millwork_subpart_presets({"builtins": [{"kind": "wardrobe"}]}) == []
+    got = dict((p, l) for l, p in mp.millwork_subpart_presets({"builtins": [{"kind": "headboard"}]}))
+    assert got == {"matte_black_ply": "slat backer"}, "a plain slat wall has a backer and nothing else"
+    # an OAK-terminated schedule must NOT claim mineral accents
+    oak_only = mp.millwork_subpart_presets({"builtins": [
+        {"kind": "headboard", "design": {"schedule": {"post_south_material": "oak",
+                                                      "post_north_material": "oak"}}}]})
+    assert all(p != "microcement_cool" for _, p in oak_only)
+
+
+def test_a_terminal_member_routes_on_DECLARED_INTENT_not_on_being_a_jamb():
+    """D7 = the mineral release: BF14's SOUTH end is cool microcement, its NORTH end is oak into oak
+    (a joint — BF09-3 receives it). Both directions are pinned, and the OAK one is the load-bearing
+    pin: it passes today only by FALLING THROUGH, which nothing else distinguishes from an accidental
+    miss — and a silent miss is exactly how the slat backer once rendered oak against a signed
+    matte-black ply.
+
+    The token says `mineral`, not `jamb`, ON PURPOSE. This router is GLOBAL and project-agnostic, so
+    a rule reading 'a jamb is microcement' would repaint every future project's jamb with
+    PRJ-2026-002's D7 decision. millwork.terminal_part_name builds the token from the SPEC, so the
+    project's decision stays in the project's spec."""
+    assert mp.mill_object_role("mill__BF14__jambmineral") == "microcement"
+    assert mp.mill_object_role("mill__BF14__postoak") == "oak"
+    # ...and with the REAL 75-byte Thai object name build_room actually emits (Blender does not
+    # truncate it, so the route is reachable — verified headless 2026-07-16c)
+    assert mp.mill_object_role("mill__ผนังระแนงหัวเตียง_BF14__jambmineral") == "microcement"
+    assert mp.mill_object_role("mill__ผนังระแนงหัวเตียง_BF14__postoak") == "oak"
+    # a future project's OAK jamb must NOT inherit D7
+    assert mp.mill_object_role("mill__BF99__jamboak") == "oak"
+    assert mp.mill_object_role("mill__BF99__postmineral") == "microcement"
+
+
+def test_millwork_and_the_router_agree_on_the_terminal_vocabulary():
+    """The part token is an implicit contract across two files. Pin it from BOTH ends so a rename in
+    millwork.py cannot silently revert D7 to oak."""
+    import millwork as mw
+    for material, want in (("microcement", "microcement"), ("oak", "oak")):
+        for stem in ("jamb", "post"):
+            token = mw.terminal_part_name(stem, material)
+            assert mp.mill_object_role(f"mill__BF14__{token}") == want, \
+                f"millwork emits {token!r} for {material} but the router paints it something else"
+    with pytest.raises(ValueError):
+        mw.terminal_part_name("jamb", "walnut")      # a typo must fail loud, never silently oak
 
 
 def test_mill_object_role_does_NOT_paint_a_fallback_box_by_its_name():
