@@ -39,6 +39,9 @@ if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 import furniture
 import millwork       # bpy-free pure logic: built-in joinery layout (METRES) + the model-fit gate
+import curtains       # bpy-free pure logic: fabric ribbons from curtain_track/curtains spec data —
+#   data the canonical spec carried since 2026-07-16 with NO consumer, so every render showed bare
+#   glass where the owner decided fabric (3ce5f5e measured that omission as a "pale band" finding)
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
@@ -960,6 +963,87 @@ def _add_rug(name, x, y, w, d, thick=0.014):
     _planar_uv(obj, tile_m=1.3)
     obj.data.materials.append(_pbr_material("rug_" + name, RUG_SLUG))
     return obj
+
+
+def _curtain_sheer(name, rgba, alpha):
+    """Sheer voile: Principled with partial Alpha (Cycles renders it as stochastic
+    transparency — headless-safe). Full sheen so the fabric edge catches light."""
+    m = _solid(name, rgba, 0.6, sheen=1.0)
+    _nt, bsdf = _principled(m)
+    if bsdf:
+        _set(bsdf, "Alpha", alpha)
+    return m
+
+
+def _add_curtains(spec, h):
+    """Materialize the spec's curtain_track + curtains blocks. ALL layout (leg matching,
+    pocket containment, drawn/parked states, wave polylines) is pure and unit-tested in
+    curtains.py; here each ribbon is only extruded floor-to-ceiling and given fabric.
+
+    Colour: the opaque layer JOINS the plaster ground (Albers grounding, DR 3ce5f5e —
+    a light curtain on a light ground stops fighting the oak for its 30%). That is a
+    COMPOSITION decision recorded in the spec's render_state; the fabric SKU stays
+    owner/supplier tier (curtains.still_owner)."""
+    ribbons = curtains.curtain_ribbons(spec)
+    if not ribbons:
+        return 0
+    rs = (spec.get("curtains") or {}).get("render_state") or {}
+    # every render_state field fails LOUD (review 2026-07-17: a mistyped tint key or a
+    # percent-valued alpha silently rendered default colours / an invisible sheer)
+    tint = rs.get("fabric_rgba_linear") or {}
+    bad = set(tint) - {"opaque", "sheer"} - {k for k in tint if k.startswith("_")}
+    if bad:
+        raise ValueError(f"curtains.render_state.fabric_rgba_linear: unknown key(s) "
+                         f"{sorted(bad)} — expected 'opaque'/'sheer'")
+    def _rgba(key, default):
+        v = tint.get(key, default)
+        if len(tuple(v)) != 4 or not all(0.0 <= float(cch) <= 1.0 for cch in v):
+            raise ValueError(f"curtains fabric_rgba_linear.{key}: need 4 floats in "
+                             f"0..1 (LINEAR + alpha), got {v!r}")
+        return tuple(float(cch) for cch in v)
+    opaque_rgba = _rgba("opaque", (0.48, 0.44, 0.38, 1.0))
+    sheer_rgba = _rgba("sheer", (0.85, 0.84, 0.82, 1.0))
+    alpha = float(rs.get("sheer_alpha", 0.38))
+    if not 0.05 <= alpha <= 0.9:
+        raise ValueError(f"curtains.render_state.sheer_alpha={alpha}: outside 0.05-0.9 "
+                         "— below is an invisible sheer, above is a solid (a percent "
+                         "value like 38 belongs here as 0.38)")
+    mats = {"sheer": _curtain_sheer("curtain_sheer", sheer_rgba, alpha),
+            "opaque": _solid("curtain_opaque", opaque_rgba, 0.9, sheen=0.9)}
+    # top edge: hide inside the ceiling slab when one exists (--eye builds it at
+    # h..h+0.05); the plain overview has NO ceiling, so stop just under the wall top —
+    # a top 30mm proud of the walls reads as a fence in the dollhouse view
+    z_top = h + 0.03 if spec.get("_eye") else h - 0.002
+    for rb in ribbons:
+        pts, z0, z1 = rb["pts"], rb["z0"], min(rb["z1"], z_top)
+        n = len(pts)
+        verts = [(x, y, z0) for x, y in pts] + [(x, y, z1) for x, y in pts]
+        faces = [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]
+        me = bpy.data.meshes.new(rb["name"])
+        me.from_pydata(verts, [], faces)
+        me.validate()
+        me.update()
+        for poly in me.polygons:
+            poly.use_smooth = True   # a faceted wave reads as a polygonal zigzag fan
+        obj = bpy.data.objects.new(rb["name"], me)
+        bpy.context.scene.collection.objects.link(obj)
+        obj.data.materials.append(mats[rb["type"]])   # type validated in curtains.py
+        # an open ribbon surface: the wide suite bevel would shred its border edges, and
+        # its fabric is assigned right here — ph_model opts out of both passes (same
+        # escape imported models use; unlike millwork it LOSES nothing by skipping)
+        obj["ph_model"] = True
+        if rb.get("over_glass_park"):
+            print(f"  curtains: {rb['name']} parks OVER glass — its leg's track has no "
+                  f"off-glass run (corner-to-corner glazing); disclosed, owner may re-park")
+        if rb.get("squeezed_by"):
+            print(f"  curtains: {rb['name']} envelope compressed to "
+                  f"{rb['pocket_used_mm']:.0f} mm (x{rb['depth_scale']:.2f}) by "
+                  f"'{rb['squeezed_by']}' standing in the pocket band — a known spec "
+                  f"residual, the INK pocket stays the build truth")
+    legs = len({r['leg'] for r in ribbons})
+    print(f"  curtains: {len(ribbons)} fabric ribbon(s) hung on {legs} leg(s) "
+          f"(curtain_track+curtains spec data -> curtains.py layout)")
+    return len(ribbons)
 
 
 def _add_ceiling(outline_m, h, margin=0.18):
@@ -1917,6 +2001,11 @@ def build_suite(spec, label="suite"):
         print(f"  millwork: {n_mill} built-in(s) generated with real joinery "
               f"(leaves/reveals/toe-kick/pull-gap or slats)")
 
+    # CURTAINS — skipped only for --hero (it restages the lounge behind SOLID walls: no
+    # glazing exists there to dress, and fabric floating on a blank wall would be a lie).
+    if not spec.get("_hero"):
+        _add_curtains(spec, h)
+
     # loose furniture: a REAL CC0 model (Poly Haven) when the kind is mapped + cached,
     # else furniture.py primitives (which work in INCHES). Models are fit to the footprint.
     MM_IN = 1.0 / 25.4
@@ -2212,6 +2301,24 @@ if __name__ == "__main__":
                  if a.startswith("--suffix=")), None)
     if _sfx:                              # distinct output name for experimental variants
         _spec["_suffix"] = _sfx
+    _ecam = next((a.split("=", 1)[1] for a in _post_dashdash()
+                  if a.startswith("--eyecam=")), None)
+    if _ecam:
+        # named eye-camera VARIANT from spec data (review 2026-07-17: the canonical
+        # hero eye view is blind to the curtain decision — 0 curtain pixels — so the
+        # verify views must be reproducible DATA, not ad-hoc scratch specs). Fails
+        # loud on an unknown name; implies --eye (a variant IS an eye view).
+        _vars = _spec.get("eye_camera_variants") or {}
+        if _ecam not in _vars:
+            # print + hard-exit (the try below only guards build(); headless Blender
+            # swallows an exception here and would exit 0 on a typo'd variant name)
+            print(f"BUILD FAILED: --eyecam={_ecam}: spec has no eye_camera_variants"
+                  f"[{_ecam!r}] (known: {sorted(_vars)})")
+            sys.stdout.flush()
+            os._exit(1)
+        _spec["eye_camera"] = _vars[_ecam]
+        _spec["_eye"] = True
+        _spec["_suffix"] = _spec.get("_suffix") or _ecam
     try:
         print(build(_spec, label=os.path.basename(_p) if _p else "DEFAULT_SPEC"))
     except BaseException as _e:  # noqa: BLE001 — incl. SystemExit (the --eye solver)
