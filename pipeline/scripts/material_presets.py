@@ -228,6 +228,23 @@ PRESETS = {
              "shadow-gaps read against, so the module reads as slats and not as a flat panel "
              "(D2-A backing, delivered by AKUWALL's own black backing)",
         source="element1-oak-signature-wall_DD-2026-07-16.md D2-A backing + D7-B item 6"),
+
+    # -- ELEMENT-2 palette (PRJ-2026-002 master suite WEST wall, 2026-07-17). The west wall is the
+    # -- COOL counterpoint to the warm oak signature: a Caesarstone vanity counter + a frameless
+    # -- makeup mirror (NO brass frame — PH-02, the two flanking windows are the luminance point).
+    # -- Source: element2-west-wall_DD-2026-07-17.md.
+    "caesarstone_quartz": dict(
+        factory="solid", space="srgb", hex="#BFC3C4", rough=0.28, spec=0.5, coat=0.08,
+        tier="DESIGN-INTENT",
+        desc="cool engineered-quartz vanity counter (Caesarstone honed cool grey, Alpine Mist / "
+             "Symphony Grey family) — durable, non-porous, the cool contrast under the makeup station",
+        source="element2-west-wall_DD-2026-07-17.md D2-4 + caesarstone-engineered-stone-th.md"),
+    "mirror_silver": dict(
+        factory="solid", space="srgb", hex="#EAEDEE", rough=0.03, metallic=1.0,
+        tier="DESIGN-INTENT",
+        desc="frameless silvered makeup mirror (metallic near-mirror) — NO brass frame, the two "
+             "flanking windows are the luminance point (PH-02 brightness-ordering)",
+        source="element2-west-wall_DD-2026-07-17.md D2-3 + render-defects.md#L51"),
 }
 
 
@@ -254,6 +271,12 @@ def mill_object_role(objname):
     pn = rest.rsplit("__", 1)[-1]
     if pn.startswith("rail"):
         return "brass"
+    if pn.startswith("counter"):
+        return "caesarstone"                           # element-2 Caesarstone vanity top (D2-4)
+    if pn.startswith("mirror"):
+        return "mirror"                                # element-2 frameless makeup mirror (D2-3)
+    if pn.startswith("cool"):
+        return "microcement"                           # element-2 cool carcass/gables/toe (anti-monopoly)
     if "front" in pn or pn.startswith("towerback"):
         return "microcement"
     if pn.endswith("mineral"):
@@ -444,6 +467,8 @@ _MILL_SUBPART = (
     ("brass", "satin_brass", "millwork hardware"),
     ("microcement", "microcement_cool", "millwork mineral accents"),
     ("backing", "matte_black_ply", "slat backer"),
+    ("caesarstone", "caesarstone_quartz", "vanity counter"),   # ELEMENT 2 (west vanity top)
+    ("mirror", "mirror_silver", "makeup mirror"),              # ELEMENT 2 (frameless mirror)
 )
 
 
@@ -454,13 +479,21 @@ def millwork_subpart_presets(spec):
     hang-rails, cool-microcement drawer fronts and a mineral terminal jamb — and a repaint told the
     millwork is oak will happily 'correct' them to oak. The render's stated truth must not contradict
     the render: that is the same failure class as the slat backer that once rendered oak against a
-    signed matte-black ply, one step downstream."""
+    signed matte-black ply, one step downstream. ELEMENT 2 (2026-07-17): a `vanity` builtin puts a
+    Caesarstone counter on screen (and, when its design carries a `mirror` block, a silver frameless
+    mirror) — both mill__ objects the polish pass would otherwise warm/repaint (the review caught the
+    cool counterpoint reverting to oak)."""
     roles = set()
     for b in (spec or {}).get("builtins") or []:
         if b.get("open"):
             roles.update(("brass", "microcement"))      # hang-rails + drawer fronts / tower back
         if b.get("kind") == "headboard":
             roles.add("backing")                        # the battens' dark ground
+        if b.get("kind") == "vanity":
+            roles.add("caesarstone")                    # the cool quartz counter (element 2 D2-4)
+            roles.add("microcement")                    # cool drawer fronts + body/toe
+            if (b.get("design") or {}).get("mirror"):
+                roles.add("mirror")                     # the frameless makeup mirror (element 2 D2-3)
         sched = ((b.get("design") or {}).get("schedule")) or {}
         for k in ("post_south_material", "post_north_material"):
             if str(sched.get(k, "")).strip().lower() == "microcement":

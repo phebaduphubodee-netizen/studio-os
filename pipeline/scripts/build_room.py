@@ -1113,6 +1113,23 @@ def _add_juliet_rail(spec):
     return len(parts)
 
 
+def _add_vanity_mirror(spec):
+    """Materialize the frameless makeup mirror (ELEMENT 2 D2-3) on the wall between the two west
+    casement windows, behind the BF11 kneehole. DATA from the vanity builtin's `design.mirror` — a
+    DECIDED element, so it lives in the spec and cannot revert by an omission of build code (the D7
+    lesson). Named `mill__..__mirror` so _suite_materials routes it to the silver mirror material;
+    a malformed block RAISES rather than silently skipping (fail loud). Opt-in like curtains: no
+    mirror block -> nothing built."""
+    box = millwork.vanity_mirror_box(spec)   # PURE + unit-tested; raises on a malformed block
+    if not box:
+        return 0
+    name, x_mm, y_mm, sill_mm, w_mm, d_mm, h_mm = box
+    add_box(name, x_mm * MM, y_mm * MM, sill_mm * MM, w_mm * MM, d_mm * MM, h_mm * MM)
+    print(f"  vanity mirror: frameless {d_mm:.0f}x{h_mm:.0f} mm on the wall between the west "
+          f"windows (sill {sill_mm:.0f} mm) -> silver mirror")
+    return 1
+
+
 def _add_ceiling(outline_m, h, margin=0.18):
     """Close the top so an eye-level hero reads as an enclosed room (the open top otherwise
     shows the HDRI/void). Built as the outline's BOUNDING BOX grown by `margin` so it always
@@ -1356,6 +1373,11 @@ def _suite_materials(spec=None):
     brass = _material_from_preset("m_mill_brass", "satin_brass")
     cement = _material_from_preset("m_mill_cement", "microcement_cool")
     backing = _material_from_preset("m_mill_backing", "matte_black_ply")
+    # ELEMENT 2 (west wall): the Caesarstone vanity counter + the frameless makeup mirror.
+    # Routed to mill__ parts by 'counter*' -> caesarstone, 'mirror*' -> mirror (material_presets
+    # .mill_object_role). Built from the signed presets like the element-1 sub-part materials.
+    caesar = _material_from_preset("m_mill_caesar", "caesarstone_quartz")
+    mirror = _material_from_preset("m_mill_mirror", "mirror_silver")
 
     def _legacy_glass():
         # glazing (2026-07-12): the panes poly_walls_bpy glazes back into the openings it cut. Named
@@ -1425,7 +1447,8 @@ def _suite_materials(spec=None):
             # spec name happens to contain 'front' is NOT mis-painted (it has no part token).
             _role = _matpre.mill_object_role(n)
             obj.data.materials.append(
-                {"brass": brass, "microcement": cement, "backing": backing}.get(_role, mill))
+                {"brass": brass, "microcement": cement, "backing": backing,
+                 "caesarstone": caesar, "mirror": mirror}.get(_role, mill))
             continue
         if n.startswith("rug__"):                        # rug already carries its own PBR
             continue
@@ -2073,6 +2096,7 @@ def build_suite(spec, label="suite"):
     if not spec.get("_hero"):
         _add_curtains(spec, h)
         _add_juliet_rail(spec)   # outside the glass — same solid-wall reason for the skip
+        _add_vanity_mirror(spec)  # ELEMENT 2: frameless mirror on the wall between the west windows
 
     # loose furniture: a REAL CC0 model (Poly Haven) when the kind is mapped + cached,
     # else furniture.py primitives (which work in INCHES). Models are fit to the footprint.

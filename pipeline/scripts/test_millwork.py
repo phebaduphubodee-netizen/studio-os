@@ -712,3 +712,148 @@ def test_the_gate_never_lets_a_mesh_exceed_its_plan_footprint():
             continue
         assert mw * s <= w + 1e-9, f"scaled mesh {mw*s} exceeds slot {w}"
         assert md * s <= d + 1e-9, f"scaled mesh {md*s} exceeds slot {d}"
+
+
+# ---------------------------------------------------------------------------
+# ELEMENT 2 — west wall: OPEN display bookshelf + LOW makeup vanity (2026-07-17)
+# ink-trued footprints (mm -> m); both face EAST into the room (depth axis x, sign +1).
+# ---------------------------------------------------------------------------
+BOOKSHELF = dict(kind="bookshelf", W=0.600, D=1.800, H=1.800)   # freestanding open grid, tall
+VANITY    = dict(kind="vanity",    W=0.498, D=3.199, H=0.750)   # low seated makeup vanity
+
+
+def _e2(b, design=None):
+    return M.millwork_parts(b["kind"], b["W"], b["D"], b["H"], "x", 1, design=design)
+
+
+def _inside(parts, W, D, H):
+    for nm, x, y, z, dx, dy, dz in parts:
+        assert -1e-9 <= x and x + dx <= W + 1e-9, f"{nm} x out of bbox"
+        assert -1e-9 <= y and y + dy <= D + 1e-9, f"{nm} y out of bbox"
+        assert -1e-9 <= z and z + dz <= H + 1e-9, f"{nm} z out of bbox"
+
+
+def test_bookshelf_is_an_open_grid_not_a_closed_door_run():
+    """h1800 >= TALL_H would otherwise build door leaves; the bookshelf branch must intercept and
+    emit an OPEN grid: oak shelves + cool verticals, and (decision B) NO back panel."""
+    parts = _e2(BOOKSHELF)
+    names = [p[0] for p in parts]
+    assert parts, "bookshelf produced no parts"
+    assert not any(n.startswith(("door", "carcass", "plinth")) for n in names), \
+        "an open bookshelf must NOT get closed door leaves / a set-back carcass"
+    assert not any(n.startswith("back") for n in names), "decision B: NO back panel (see-through)"
+    assert any(n.startswith("shelf") for n in names), "no oak shelf boards"
+    assert any(n.startswith("cool_vert") for n in names), "no cool gables/dividers"
+    _inside(parts, **{"W": 0.600, "D": 1.800, "H": 1.800})
+
+
+def test_bookshelf_bays_never_exceed_the_open_shelf_load_span():
+    """Every open-shelf bay span (a shelf's along-run length) must stay <= MAX_SPAN, or the shelf
+    sags. The divider count is derived, not hardcoded — this is the assert that catches a regression
+    if the derivation changes."""
+    for run in (1.2, 1.8, 2.4, 3.0):
+        parts = M.millwork_parts("bookshelf", 0.600, run, 1.800, "x", 1)
+        shelf_spans = [p[5] for p in parts if p[0].startswith("shelf")]   # dy = along-run length
+        assert shelf_spans, f"run {run}: no shelves"
+        assert max(shelf_spans) <= M.MAX_SPAN + 1e-6, \
+            f"run {run}: a bay span {max(shelf_spans):.3f} exceeds MAX_SPAN {M.MAX_SPAN}"
+
+
+def test_vanity_has_a_kneehole_between_two_drawer_banks():
+    """The LOW vanity must read as a seated makeup station: a counter over two drawer banks that
+    FLANK an open kneehole the seat pulls into (not a solid sideboard)."""
+    parts = _e2(VANITY)
+    assert any(p[0] == "counter" for p in parts), "no Caesarstone counter"
+    bodies = [p for p in parts if p[0].startswith("cool_body")]
+    assert len(bodies) == 2, f"expected two flanking drawer banks, got {len(bodies)}"
+    spans = sorted((p[2], p[2] + p[5]) for p in bodies)   # along_off..+along_len along the run
+    gap = spans[1][0] - spans[0][1]                        # the kneehole void between them
+    assert gap > 0.5, f"kneehole gap {gap:.3f} m too small — the seat must fit"
+    assert any("drawer_front" in p[0] for p in parts), "no drawer fronts under the counter"
+    _inside(parts, 0.498, 3.199, 0.750)
+
+
+def test_vanity_counter_spans_the_full_run_over_the_kneehole():
+    """Knees go UNDER the counter in the kneehole, so the counter must span the whole run and sit at
+    the top of the low box."""
+    parts = _e2(VANITY)
+    c = next(p for p in parts if p[0] == "counter")
+    assert abs(c[5] - VANITY["D"]) < 1e-6, "counter must span the full run (knees pass under it)"
+    assert c[3] > VANITY["H"] * 0.5 and c[3] + c[6] <= VANITY["H"] + 1e-9, \
+        "counter must sit at the top of the low vanity"
+
+
+def test_kneehole_width_is_design_driven_not_hardcoded():
+    d = {"element": 2, "kneehole_width_m": 1.40, "kneehole_center_frac": 0.5155}
+    parts = _e2(VANITY, design=d)
+    bodies = sorted((p[2], p[2] + p[5]) for p in parts if p[0].startswith("cool_body"))
+    kh = bodies[1][0] - bodies[0][1]
+    assert abs(kh - 1.40) < 0.02, f"kneehole {kh:.3f} should follow the design value 1.40"
+
+
+def test_canonical_spec_west_wall_builds_element2_joinery():
+    """The file build_room consumes: its bookshelf + BF11 vanity builtins must build their element-2
+    branches (a stale spec that reverts to a plain box would pass a fixture test but fail here)."""
+    import json, os
+    p = os.path.join(os.path.dirname(__file__), "..", "..", "projects",
+                     "PRJ-2026-002_c001-house", "03_layout", "master-suite.CANONICAL.spec.json")
+    with open(p, encoding="utf-8") as fh:
+        spec = json.load(fh)
+    book = next(b for b in spec["builtins"] if b["kind"] == "bookshelf")
+    van = next(b for b in spec["builtins"] if b["kind"] == "vanity")
+    bp = M.millwork_parts("bookshelf", book["w"] / 1000, book["d"] / 1000, book["h"] / 1000,
+                          "x", 1, design=book.get("design"))
+    vp = M.millwork_parts("vanity", van["w"] / 1000, van["d"] / 1000, van["h"] / 1000,
+                          "x", 1, design=van.get("design"))
+    assert any(p[0].startswith("shelf") for p in bp) and any(p[0].startswith("cool_vert") for p in bp)
+    assert any(p[0] == "counter" for p in vp)
+    assert sum(1 for p in vp if p[0].startswith("cool_body")) == 2
+    _inside(bp, book["w"] / 1000, book["d"] / 1000, book["h"] / 1000)
+    _inside(vp, van["w"] / 1000, van["d"] / 1000, van["h"] / 1000)
+
+
+def test_vanity_mirror_box_resolves_well_formed_from_the_canonical_spec():
+    """The frameless mirror is a DECIDED element (D2-3). A spec edit that drops/mistypes its block
+    silently renders no mirror (build_room returns 0 at exit 0), so THIS test — not the render — is
+    the omission guard. Also pins the review fix: field height ~700 (ergonomic 610-762) + centre
+    ~1200 AFF, NOT the kneehole's 900/1250 the placeholder had copied."""
+    import json, os
+    p = os.path.join(os.path.dirname(__file__), "..", "..", "projects",
+                     "PRJ-2026-002_c001-house", "03_layout", "master-suite.CANONICAL.spec.json")
+    with open(p, encoding="utf-8") as fh:
+        spec = json.load(fh)
+    box = M.vanity_mirror_box(spec)
+    assert box is not None, "the canonical BF11 vanity must carry a frameless mirror (D2-3)"
+    name, x_mm, y_mm, sill_mm, w_mm, d_mm, h_mm = box
+    assert name.endswith("__mirror")
+    assert 610 <= h_mm <= 762, f"mirror field height {h_mm} must sit in the ergonomic 610-762"
+    assert 1120 <= sill_mm + h_mm / 2 <= 1267, \
+        f"mirror centre {sill_mm + h_mm/2} must be at the seated eye level 1120-1267"
+
+
+def test_vanity_mirror_box_is_opt_in_and_fails_loud():
+    assert M.vanity_mirror_box({"builtins": [{"kind": "vanity", "design": {"element": 2}}]}) is None
+    assert M.vanity_mirror_box({"builtins": []}) is None
+    assert M.vanity_mirror_box({}) is None
+    for bad in ({"x_mm": 0},   # missing keys
+                {"x_mm": 0, "y_mm": 1, "sill_mm": 1, "w_mm": 1, "d_mm": 1, "h_mm": -5}):  # non-positive
+        with pytest.raises(ValueError):
+            M.vanity_mirror_box({"builtins": [{"kind": "vanity", "design": {"mirror": bad}}]})
+
+
+def test_vanity_kneehole_fails_loud_on_implausible_values():
+    """The vanity branch must RAISE on a metre/mm slip (1400 vs 1.40) or a frac-vs-mm confusion
+    (3549 vs 0.51), like the headboard branch does — not silently build a seat-less sideboard or a
+    counter floating with no drawer banks (review 2026-07-17)."""
+    for bad in ({"kneehole_width_m": 1400},                 # mm-as-metres slip
+                {"kneehole_width_m": VANITY["D"] + 0.1},    # wider than the run
+                {"kneehole_width_m": -0.5},                 # sign flip
+                {"kneehole_center_frac": 3549},             # mm-as-fraction slip
+                {"kneehole_center_frac": 1.6}):             # off-run centre
+        with pytest.raises(ValueError):
+            M.millwork_parts("vanity", VANITY["W"], VANITY["D"], VANITY["H"], "x", 1,
+                             design={"element": 2, **bad})
+    # the shipped canonical values still build (no false positive)
+    ok = M.millwork_parts("vanity", VANITY["W"], VANITY["D"], VANITY["H"], "x", 1,
+                          design={"element": 2, "kneehole_width_m": 1.40, "kneehole_center_frac": 0.5155})
+    assert any(p[0] == "counter" for p in ok)

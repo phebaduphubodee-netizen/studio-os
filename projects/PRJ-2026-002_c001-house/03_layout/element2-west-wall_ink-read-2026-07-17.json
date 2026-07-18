@@ -1,0 +1,53 @@
+{
+  "_provenance": "Adversarial west-wall ink read, workflow west-wall-ink-read (5 independent readers each dumping ink via scratchpad ink.py against the designer furniture-plan PDF, reconcile, 3-lens adversarial verify per load-bearing value, high-effort synthesize). 30/31 agents (one verify:glz-west:stroke lens hit the schema retry cap; glz-west was independently confirmed by its other 2 lenses + the printed '700'). Run wf_f01c59ee-8d0, 2026-07-17. Calibration = repo committed floor2-walls-mm.json (26.45 mm/pt). Frame = room mm, x EAST from master west wall, y NORTH from south glazing, y-up (same as the spec).",
+  "_status": "INK-TRUED GEOMETRY LOCKED (reproduced 0-1mm, not refuted by the printed 700/2950/2850 ladder). MEANING (window vs door, BF11 height/depth) QUARANTINED to owner/designer — see inference_tier_questions. Do NOT fold the inference items into the canonical spec until signed.",
+  "ink_trued": {
+    "glz_west": {"x_face": 55, "y_south": -697.8, "y_north": 451.2, "length": 1149, "pen_w": 0.48, "transition": "47.6mm 0.48pt jog y451.2->498.8, then 0.84pt masonry begins y498.8", "printed_dim_check": "printed '700'@(-903.3,-347.1) spans y-697.8->0 = 697.8 (delta 2.2mm). Full leg 1149.0 = spec exact.", "status": "ROCK-SOLID", "note": "x55 room-side face; outer x-46.6 -> ~101.6mm assembly. Geometry is ink; 'glass' rides the 0.48pt convention (owner already confirmed SW glass)."},
+    "bookshelf": {"x_back": 305.8, "x_front": 905.6, "y_south": 248.1, "y_north": 2047.8, "depth_x": 599.9, "length_y": 1799.7, "pen_w": 0.6, "inner_panel_line_x": 324.8, "freestanding_gap_to_wall": 250.8, "status": "ROCK-SOLID (geometry)", "note": "depth 600 nominal, length 1800 nominal. Sits wholly inside printed '2950'. Only its south end y248.1..451.2 (~203mm) overlaps glz-west; the rest (y498..2048) is solid masonry. open/ex-TV/freestanding identity = inference."},
+    "bf11": {"x_back": 305.8, "x_front": 804.1, "y_south": 2600, "y_north": 5799.4, "length_y": 3199.4, "drawn_depth_x": 498.3, "pen_w": 0.6, "south_base_step": "y2600-2800 base widens WEST to column x153.4 (over the 200x200 pier)", "kneehole_bay": "inner face x353.4, y3549.1->4948.8 (len 1399.7) — the seated makeup station, mid y4249", "status": "ROCK-SOLID (footprint) / DEPTH CONTESTED / HEIGHT owner-only", "note": "spec 'x0 against wall' REFUTED: real back x305.8 (freestanding, 250.8 off wall) = the ~306mm the spec flagged. length 3199.4 = label '320'. Drawn depth 498.3 conflicts with label '60'(600) by ~102mm. Label '280'(2800) height is label-only, not plan-measurable."},
+    "west_face_map": {
+      "interior_face_plane_x": 55,
+      "wall_thickness": "~101.6mm (x-46.6..55.0)",
+      "runs_south_to_north": [
+        {"y_lo": -697.8, "y_hi": 451.2, "w": 0.48, "read": "SW glass leg (glz-west)"},
+        {"y_lo": 451.2, "y_hi": 498.8, "w": 0.48, "read": "47.6 transition jog"},
+        {"y_lo": 498.8, "y_hi": 2600, "w": 0.84, "read": "solid masonry south run (~2101; bed foot faces this)"},
+        {"y_lo": 2600, "y_hi": 2800, "w": "0.84 pier", "read": "200x200 structural pier, projects EAST to x153.4"},
+        {"y_lo": 2800, "y_hi": 2898.4, "w": 0.84, "read": "masonry jamb south of opening 1 (98.4)"},
+        {"y_lo": 2898.4, "y_hi": 3498.3, "w": 0.48, "read": "OPENING 1: jamb-to-jamb 599.9; clear glazed core 498.3 at y2949.2-3447.5; 0.12 pane mirror x1.1; 0.48 leaf projects WEST to x-595.7 + 0.12 quarter-arc = opens WEST"},
+        {"y_lo": 3498.3, "y_hi": 4999.6, "w": 0.84, "read": "solid masonry mid run (~1501; behind BF11 kneehole/mid-section)"},
+        {"y_lo": 4999.6, "y_hi": 5599.5, "w": 0.48, "read": "OPENING 2: jamb-to-jamb 599.9; clear glazed core 501.5 at y5047.2-5548.7; 0.12 pane mirror; 0.48 leaf projects WEST + arc = opens WEST"},
+        {"y_lo": 5599.5, "y_hi": 5697.9, "w": 0.84, "read": "masonry jamb north of opening 2 (98.4)"},
+        {"y_lo": 5697.9, "y_hi": 5897.8, "w": "0.84 pier", "read": "200x200 structural pier (NW corner), projects EAST to x153.4; straddles north-wall line y5799.4"},
+        {"y_lo": 5897.8, "y_hi": 7221.4, "w": 0.84, "read": "wall continues NORTH beyond master suite (out of element-2 scope)"}
+      ],
+      "status": "ROCK-SOLID (strokes) — REFUTES spec 'masonry north of ~y451'",
+      "note": "two ~600mm rough openings (599.9 jamb-to-jamb / ~500 clear) are reproducible glass-weight strokes with west swing arcs. STROKES=ink; WINDOW-vs-DOOR/operability=inference."
+    },
+    "furniture_face_x306": {"x": 305.8, "runs": [{"y_lo": 248.1, "y_hi": 2047.8, "src": "bookshelf back"}, {"y_lo": 2800, "y_hi": 5799.4, "src": "BF11 back (4 collinear 0.6pt sub-segments)"}], "gap": "y2047.8->2800 carries only 0.12 shelf ticks + a 76.2 nib y2523.9->2600", "status": "ROCK-SOLID", "note": "shared 0.6pt furniture BACK plane 250.8 east of wall face x55. No 0.84pt here (not a wall); straight not serpentine (not the curtain line)."},
+    "stool": {"envelope": "x854.9..1400.8 (0.12 skin to x1408.0) by y3993.4..4494.5", "center_y": 4248.9, "west_edge_offset": "~51mm east of vanity front x804.1", "center_check": "y4248.9 = exact midpoint of BF11 kneehole bay (mid 4249.0)", "status": "ROCK-SOLID (position) / TYPE inference", "note": "one connected 0.6pt object; east side is a curved band (backrest convention -> maybe an armchair/tub chair, not a backless stool). Seed hint (870,3982) was a loose bbox label."},
+    "curtain_pocket_gap": {"value_mm": 250.8, "derivation": "x305.8 (furniture back) - x55.0 (wall inner face), continuous behind both builtins", "status": "ROCK-SOLID (dimension) — REFUTES spec slot 197mm", "note": "serpentine 0.12 strokes drawn inside it at the SW glass, BOTH openings, and the bookshelf/BF11 gap -> the curtain runs the whole west wall. 'curtain pocket' FUNCTION is inference (owner already decided 3-panel curtains)."}
+  },
+  "inference_tier_questions": [
+    {"question": "Are the two 0.48pt west-wall openings (rough y2898.4-3498.3 and y4999.6-5599.5, ~600mm each) WINDOWS, exterior DOORS, or fixed glazed panels, and do they open WEST as the swing geometry suggests?", "why_it_matters": "The exact masonry-vs-glass class that produced the prior confidently-wrong wall. The bed FOOT faces this plane; both openings sit BEHIND BF11. Changes the whole west elevation, glazing schedule, curtain, and render.", "what_evidence": "INK: 0.48pt jamb-to-jamb 599.9 both, clear core 498.3/501.5, 0.12 inner pane-mirror x1.1, two 0.48pt leaves projecting ~558.6 WEST to x-595.7, 0.12 quarter-arc swings. No printed text names them. INFERENCE: 0.48=glass, arc=swing, projecting leaf=operable sash opening west.", "who_answers": "owner_or_designer"},
+    {"question": "Is BF11 a FULL-HEIGHT dressing wall (its own drawn label 320x60x280CM = 2800 tall, matching every other BF built-in at 280) or a ~750 SEATED makeup vanity (owner's re-type)?", "why_it_matters": "Height is not plan-measurable; the two readings are ~2m apart. Interacts with the openings: a LOW vanity lets the two windows show above it (flanking the seated kneehole); a full-height wall blocks them. Decides the entire west elevation, lighting, mirror.", "what_evidence": "Label '280' is drawn as vector outlines (crop-visible, not --text). Owner re-typed to a 750 seated vanity. Stool centered in the kneehole (y4249) is consistent with a seated station. The kneehole (y3549-4949) sits in the SOLID masonry gap BETWEEN the two openings.", "who_answers": "owner"},
+    {"question": "BF11 real DEPTH — drawn footprint 498.3 (~500) or the label's 600?", "why_it_matters": "~102mm, beyond pen resolution (15.87), a genuine drawing-vs-schedule discrepancy. Gates the furniture back plane and the curtain-pocket width.", "what_evidence": "INK: back x305.8 -> front x804.1 = 498.3 (0.0mm, four 498.3 horizontals). South base step is 650.7 deep. Label '60'=600 sits between the two drawn depths; length matched the label to 0.6mm so the depth mismatch is a real nominal, not scaling.", "who_answers": "designer"}
+  ],
+  "spec_diff": [
+    "bookshelf.y (y_south): 130 -> 248.1  [ink 0.6pt y248.1 x305.8->905.6; spec off ~118]",
+    "bookshelf.d (y-length): 2046 -> 1800 (ink 1799.7)  [spec too long ~246 — looks swapped with an 1800 height]",
+    "bookshelf.x: 306 -> 305.8 (CONFIRMED); bookshelf.w depth: 600 -> 599.9 (CONFIRMED)",
+    "bf11.x (against-wall): 0 -> 305.8 (FREESTANDING, back 250.8 off wall face x55) [this IS the ~306 the spec flagged]",
+    "bf11.y (y_south): 2650 -> 2600.0  [front south end y2600, base step y2600-2800 onto column x153.4]",
+    "bf11.d (y-length): 3200 -> 3199.4 (CONFIRMED, = label '320')",
+    "bf11.w (depth): 600 -> drawn 498.3 BUT FLAG unresolved vs label 600 (~102) — carry as designer question, do NOT silently pick",
+    "bf11.h: 750 (owner re-type) vs label 2800 -> owner question, not plan-measurable",
+    "room.openings: ADD two west openings (glass-weight, west-swing): op1 rough y2898.4-3498.3 clear y2949.2-3447.5; op2 rough y4999.6-5599.5 clear y5047.2-5548.7; both at face x55 -> window/door identity owner-signed",
+    "west_wall.description: 'solid masonry north of ~y451' -> 'masonry PUNCTUATED by two ~600mm openings + two 200x200 piers at y2600-2800 & y5697.9-5897.8 projecting EAST to x153.4'",
+    "curtain_pocket / west leg slot: 197 -> 250.8  [x305.8 - x55.0]",
+    "glz_west: keep x55, y-697.8..451.2, len 1149 (CONFIRMED vs printed '700' to 2.2mm)",
+    "furniture_back_plane: shared x=305.8 for bookshelf (y248-2048) + BF11 (y2800-5799), gap y2048-2800",
+    "stool: seat x854.9..1400.8 / y3993.4..4494.5, center y4249, in BF11 kneehole; type=owner question"
+  ],
+  "confidence": "ROCK-SOLID (stroke lens reproduced 0-1mm, not refuted by the 700/2950/2850 ladder): glz_west; bookshelf rectangle; BF11 footprint + kneehole + south step; the west_face_map stroke geometry (two 599.9 openings + two 200x200 piers + masonry runs); furniture_face_x306; curtain_pocket 250.8; stool envelope. SOFT / OWNER-DESIGNER-ONLY (meaning, not stroke): windows vs doors vs fixed panels + opens-west; BF11 full-height vs seated vanity; BF11 depth 498 vs 600; open-vs-closed bookshelf; serpentine=curtain; stool-vs-armchair. The spec is materially WRONG and element 2 must change (BF11 freestanding at x305.8 not x0; west wall NOT solid; bookshelf 1800 not 2046; pocket 250.8 not 197). One residual convention even on the rock-solid set: 0.48=glass / 0.84=masonry is itself a pen-width convention (the prior-wall trap) — the stroke POSITIONS are ink, the material NAMES ride a convention the owner already partly confirmed (SW glass)."
+}

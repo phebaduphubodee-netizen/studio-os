@@ -434,5 +434,68 @@ def test_parse_light_warm_fails_loud_on_malformed(bad):
         mp.parse_light_warm({"light_warm": bad})
 
 
+# ---------------------------------------------------------------------------
+# ELEMENT 2 — west wall materials: Caesarstone counter + frameless mirror (2026-07-17)
+# ---------------------------------------------------------------------------
+
+def test_mill_object_role_routes_element2_parts():
+    """The vanity/bookshelf parts route by their trailing PART TOKEN, same as element 1."""
+    assert mp.mill_object_role("mill__vanity__counter") == "caesarstone"   # Caesarstone top
+    assert mp.mill_object_role("mill__bf11vanity__mirror") == "mirror"     # frameless mirror
+    assert mp.mill_object_role("mill__book__cool_vert0") == "microcement"  # cool bookshelf gables
+    assert mp.mill_object_role("mill__vanity__cool_body0") == "microcement"
+    assert mp.mill_object_role("mill__vanity__cool_toe1") == "microcement"
+    assert mp.mill_object_role("mill__vanity__drawer_front0_2") == "microcement"
+    assert mp.mill_object_role("mill__book__shelf3_2") == "oak"            # OAK shelf boards
+    # a plain fallback box whose free-text name merely CONTAINS these words is NOT mis-painted
+    assert mp.mill_object_role("mill__cool mirror console") == "oak"
+
+
+def test_element2_presets_resolve_through_their_factories():
+    for name, fac in (("caesarstone_quartz", "solid"), ("mirror_silver", "solid")):
+        a = mp.factory_args(name)
+        assert a["factory"] == fac, f"{name} -> {a['factory']}, wanted {fac}"
+
+
+def test_the_makeup_mirror_is_a_real_metal_and_the_counter_is_a_cool_dielectric():
+    """The mirror must stay Metallic 1.0 (a dielectric 'mirror' renders as grey paint, not a
+    reflection). The Caesarstone counter is a COOL dielectric stone (blue >= red) — the west wall's
+    cool counterpoint to the warm oak, and it must NOT read metallic."""
+    mir = mp.factory_args("mirror_silver")
+    assert mir["metallic"] == 1.0
+    caesar = mp.factory_args("caesarstone_quartz")
+    assert caesar.get("metallic", 0.0) in (0.0, 0)
+    r, g, b = caesar["rgba"][:3]
+    assert b >= r, f"Caesarstone must read cool (blue {b:.3f} >= red {r:.3f})"
+
+
+def test_element2_preset_values_are_pinned_exactly():
+    """Freeze the west-wall material VALUES so a retune can't silently warm the counter or dull the
+    mirror away from what the DD decided."""
+    P = mp.PRESETS
+    assert (P["caesarstone_quartz"]["hex"], P["caesarstone_quartz"]["rough"]) == ("#BFC3C4", 0.28)
+    assert (P["mirror_silver"]["hex"], P["mirror_silver"]["rough"], P["mirror_silver"]["metallic"]) \
+        == ("#EAEDEE", 0.03, 1.0)
+
+
+def test_material_story_names_the_vanity_caesarstone_and_mirror():
+    """The render-polish {material_story} prompt says 'these are real specified products — do NOT
+    restyle/recolour'. If it omits the on-screen Caesarstone counter + silver mirror, the polish pass
+    warms the cool counter (killing element 2's cool counterpoint) or repaints the frameless mirror
+    into a wood panel — the cardinal revert-by-omission the function exists to prevent (review
+    2026-07-17). Pin that BOTH are named for the canonical spec."""
+    import json, os
+    p = os.path.join(os.path.dirname(__file__), "..", "..", "projects",
+                     "PRJ-2026-002_c001-house", "03_layout", "master-suite.CANONICAL.spec.json")
+    with open(p, encoding="utf-8") as fh:
+        spec = json.load(fh)
+    story = mp.material_story(mp.resolve_materials(spec), spec).lower()
+    assert "caesarstone" in story or "quartz" in story, f"material_story omits the counter: {story!r}"
+    assert "mirror" in story, f"material_story omits the makeup mirror: {story!r}"
+    # and the subpart helper fires the vanity roles directly
+    labels = {lab for lab, _ in mp.millwork_subpart_presets(spec)}
+    assert {"vanity counter", "makeup mirror"} <= labels, f"vanity subparts missing: {labels}"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])

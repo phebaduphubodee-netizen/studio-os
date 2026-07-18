@@ -312,6 +312,74 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         else:
             out.append((nm, along_off, near, z, along_len, depth_len, dz))
 
+    # ELEMENT 2 — OPEN DISPLAY BOOKSHELF (PRJ-2026-002 west wall, ex-TV, owner decision B
+    # 2026-07-17). NOT a wardrobe (open:true would build the dressing-wall joinery) and NOT a
+    # closed tall run: a FREESTANDING open grid you see THROUGH — oak shelf boards on a COOL
+    # (microcement) carcass, NO back panel, so the wall/curtain/garden read behind it and the
+    # south bay stands its display against the SW glass. Vertical dividers keep every bay span
+    # <= MAX_SPAN; the gaps + the cool-vs-oak split are what a repaint reads as "open display".
+    if kind == "bookshelf":
+        if run < 2 * CARC_T or depth <= 1e-6 or H <= 3 * CARC_T:
+            return []                                    # too small to compose — keep the box
+        n_bay = max(1, int(round(run / 0.60)))           # ~600 bays (-> 3 across an 1800 run)
+        while (run - CARC_T) / n_bay > MAX_SPAN + 1e-9 and n_bay < 20:
+            n_bay += 1                                    # never exceed the open-shelf load span
+        pitch_v = (run - CARC_T) / n_bay                  # gable/divider centre spacing
+        for i in range(n_bay + 1):                        # 2 gables + (n_bay-1) dividers, COOL
+            part(f"cool_vert{i}", min(i * pitch_v, run - CARC_T), CARC_T, 0.0, depth, 0.0, H)
+        n_shelf = max(2, int(round(H / 0.345)))           # ~345 clear (books + display mix)
+        dz_shelf = (H - CARC_T) / n_shelf
+        for j in range(n_shelf + 1):                      # incl. base + top; OAK boards -> oak
+            sz = min(j * dz_shelf, H - CARC_T)
+            for b in range(n_bay):
+                part(f"shelf{j}_{b}", b * pitch_v + CARC_T, pitch_v - CARC_T, 0.0, depth, sz, CARC_T)
+        return out
+
+    # ELEMENT 2 — LOW MAKEUP VANITY (PRJ-2026-002 BF11, owner-confirmed LOW seated vanity
+    # 2026-07-17). A Caesarstone COUNTER over two drawer banks that FLANK a seated kneehole (the
+    # void the tub-chair pulls into). counter -> caesarstone, drawer fronts -> microcement,
+    # body/toe -> cool; the frameless mirror is a SEPARATE wall panel between the two windows
+    # (build_room._add_vanity_mirror, from this builtin's design.mirror). Owner premise: the two
+    # west casement windows sit ABOVE this low counter.
+    if kind == "vanity":
+        if run < 3 * CARC_T or depth <= 1e-6 or H < 0.40:
+            return []
+        ct = min(TOP_T, H * 0.25)                         # Caesarstone counter slab
+        part("counter", 0.0, run, 0.0, depth, H - ct, ct)
+        d = design or {}
+        khw = float(d.get("kneehole_width_m", min(1.40, run * 0.44)))
+        khc = float(d.get("kneehole_center_frac", 0.5))
+        # FAIL LOUD on implausible kneehole values, like the headboard branch (_slat_mm/_num): a
+        # metre/mm slip (1400 vs 1.40 m), a frac-vs-mm confusion (3549 vs 0.51), or a sign-flip must
+        # not silently build a seat-less sideboard or a counter floating with no drawer banks to
+        # carry it (review 2026-07-17: the vanity branch was the only new design-block reader that
+        # violated the module's fail-loud contract).
+        if not (0.0 < khw < run):
+            raise ValueError(f"millwork vanity: kneehole_width_m={khw} must be 0 < w < run "
+                             f"({run:.3f} m) — an oversize/negative kneehole leaves the counter "
+                             f"with no drawer banks to support it")
+        if not (0.05 <= khc <= 0.95):
+            raise ValueError(f"millwork vanity: kneehole_center_frac={khc} must be in [0.05, 0.95] "
+                             f"— an off-run centre builds a seat-less sideboard")
+        kh_lo = min(max(0.0, khc * run - khw / 2.0), run)
+        kh_hi = min(kh_lo + khw, run)
+        if not (kh_hi - kh_lo > 2 * CARC_T):
+            raise ValueError(f"millwork vanity: the kneehole collapsed to {kh_hi - kh_lo:.3f} m — "
+                             f"no seat fits; check kneehole_width_m / kneehole_center_frac")
+        toe = 0.06                                        # recessed toe-kick
+        rec = min(0.04, depth * 0.3)                      # counter overhang / body set-back
+        for bi, (b0, b1) in enumerate(((0.0, kh_lo), (kh_hi, run))):
+            bw = b1 - b0
+            if bw <= 2 * CARC_T:
+                continue                                  # the kneehole eats this side -> no bank
+            part(f"cool_body{bi}", b0, bw, rec, depth - rec, toe, (H - ct) - toe)
+            part(f"cool_toe{bi}", b0, bw, rec, depth - rec, 0.0, toe)
+            n_dr = max(2, int(round((H - ct - toe) / 0.22)))   # ~220 drawer faces
+            fh = (H - ct - toe) / n_dr
+            for i in range(n_dr):
+                part(f"drawer_front{bi}_{i}", b0, bw, 0.0, 0.02, toe + i * fh, fh - DRAWER_REV)
+        return out
+
     # A SLAT WALL (bed-head battens, "ผนังระแนงหัวเตียง"). The GAPS between battens are what a
     # repaint reads as a slat wall; a flat box reads as a painted wall, which is exactly what the
     # beauty pass kept giving back.
@@ -492,6 +560,29 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
     part("top", 0.0, run, 0.0, depth, H - tt, tt)
     part("carcass", 0.0, run, rec, depth - rec, 0.0, H - tt)
     return out
+
+
+def vanity_mirror_box(spec):
+    """PURE. The frameless makeup mirror (ELEMENT 2 D2-3) for the FIRST vanity builtin whose `design`
+    carries a `mirror` block. Returns (object_name, x_mm, y_mm, sill_mm, w_mm, d_mm, h_mm) or None
+    (opt-in: no block -> no mirror). RAISES on a malformed block (a decided element must not render a
+    guess). Kept PURE + here (build_room is bpy-only) so the canonical spec's mirror is unit-testable
+    and a spec edit that drops/mistypes it is caught by a test, not only silently at render."""
+    v = next((b for b in (spec or {}).get("builtins") or ()
+              if b.get("kind") == "vanity" and (b.get("design") or {}).get("mirror")), None)
+    if not v:
+        return None
+    m = v["design"]["mirror"]
+    try:
+        x_mm, y_mm, sill_mm, w_mm, d_mm, h_mm = (
+            float(m[k]) for k in ("x_mm", "y_mm", "sill_mm", "w_mm", "d_mm", "h_mm"))
+    except (KeyError, TypeError, ValueError) as e:
+        raise ValueError(f"vanity design.mirror is malformed ({e}) — a decided element must not "
+                         "render a guess; fix the spec block") from e
+    if w_mm <= 0 or d_mm <= 0 or h_mm <= 0:
+        raise ValueError(f"vanity design.mirror has a non-positive dimension "
+                         f"(w={w_mm}, d={d_mm}, h={h_mm})")
+    return ("mill__bf11vanity__mirror", x_mm, y_mm, sill_mm, w_mm, d_mm, h_mm)
 
 
 # --- the model-fit gate --------------------------------------------------------------------------
