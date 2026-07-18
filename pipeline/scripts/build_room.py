@@ -42,6 +42,9 @@ import millwork       # bpy-free pure logic: built-in joinery layout (METRES) + 
 import curtains       # bpy-free pure logic: fabric ribbons from curtain_track/curtains spec data —
 #   data the canonical spec carried since 2026-07-16 with NO consumer, so every render showed bare
 #   glass where the owner decided fabric (3ce5f5e measured that omission as a "pale band" finding)
+import exterior       # bpy-free pure logic: the view OUT of the glass — spec-declared garden HDRI
+#   + the Juliet rail the owner's photo shows outside the slider (option B, 2026-07-17b). Same law:
+#   the studio-HDRI default must not be able to silently override a decided exterior.
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
@@ -955,6 +958,46 @@ def _hdri_world(slug, strength=1.0, rot_deg=0.0, exposure=0.0, look=""):
             pass
 
 
+def _exterior_world_args(spec, slug, strength, rot_deg, exposure, look=""):
+    """The studio-default HDRI args (call-site defaults) — unless spec.exterior.hdri
+    declares the view (owner-vetoable DATA, validated fail-loud in
+    exterior.resolve_hdri). Called ONLY from the eye path (the client-facing window
+    view); hero/overview keep their tuned studio env by design.
+
+    A DECLARED environment RAISES rather than silently falling back to the studio
+    default over a decided view (revert-by-omission, the exterior block's charter).
+    Two failure modes both raise: (a) no cached file globs the slug; (b) the file
+    globs but does NOT load — a truncated download or an unhydrated OneDrive
+    Files-On-Demand placeholder (this repo lives in OneDrive) reads as a magenta
+    void world at exit 0 otherwise (review 2026-07-17b). check_existing=True means
+    _hdri_world reuses this same datablock — no double I/O. The build() try in
+    __main__ turns either raise into os._exit(1). (Fetch a slug with:
+    python pipeline/scripts/assets.py <slug> --type hdris --res 4k)"""
+    env = exterior.resolve_hdri(spec)
+    if not env:
+        return slug, strength, rot_deg, exposure, look
+    path = _hdri_file(env["slug"])
+    if not path:
+        raise ValueError(f"spec.exterior.hdri declares '{env['slug']}' but no cached "
+                         f"hdris/{env['slug']}_*.hdr exists in assets/shared/cc0 — "
+                         "fetch it or fix the slug; refusing to silently render the "
+                         "studio default over a decided view")
+    try:
+        img = bpy.data.images.load(path, check_existing=True)
+        loaded = bool(img.has_data) or tuple(img.size) != (0, 0)
+    except Exception as e:
+        raise ValueError(f"spec.exterior.hdri '{env['slug']}' file {path} failed to "
+                         f"load ({e}) — refusing a magenta-void world over a decided "
+                         "view (truncated file or an unhydrated OneDrive placeholder? "
+                         "re-fetch the HDRI)")
+    if not loaded:
+        raise ValueError(f"spec.exterior.hdri '{env['slug']}' file {path} loaded with "
+                         "no pixels (0x0 / dehydrated) — refusing a magenta-void world "
+                         "over a decided view; re-fetch the HDRI")
+    return (env["slug"], env["strength"], env["rot_deg"], env["exposure"],
+            env["look"] or look)
+
+
 def _add_rug(name, x, y, w, d, thick=0.014):
     """A thin textured rug slab under a seating group (own planar UV + wool/herringbone
     PBR). Sits just above the floor to avoid z-fighting. Anchors the furniture group so the
@@ -1044,6 +1087,30 @@ def _add_curtains(spec, h):
     print(f"  curtains: {len(ribbons)} fabric ribbon(s) hung on {legs} leg(s) "
           f"(curtain_track+curtains spec data -> curtains.py layout)")
     return len(ribbons)
+
+
+def _add_juliet_rail(spec):
+    """Materialize exterior.juliet_rail (ALL layout pure + unit-tested in exterior.py;
+    here each member is only a box + black metal). The rail is DEPICTED from the
+    owner's photo — an existing element outside the slider — never designed here;
+    dims are [est] spec data. ph_model opts out of the wide suite bevel (it would
+    swallow a 14 mm bar) and of the prefix material pass (assigned right here,
+    same escape the curtain fabric uses)."""
+    parts, meta = exterior.juliet_rail_parts(spec)
+    if not parts:
+        return 0
+    # black POWDER-COAT: a dielectric paint film over steel, not bare metal —
+    # metallic 0 + near-black albedo (>=0.04, the PBR albedo floor; 0.03 tripped
+    # the albedo WARN on first build) + a light coat for the sprayed-satin sheen
+    mat = _solid("juliet_black_steel", (0.045, 0.045, 0.048, 1.0), 0.5, coat=0.2)
+    for (name, x, y, z, dx, dy, dz) in parts:
+        o = add_box(name, x, y, z, dx, dy, dz)
+        o.data.materials.append(mat)
+        o["ph_model"] = True
+    print(f"  juliet rail: {meta['n_bars']} bars @ gap {meta['gap_mm']:.0f} mm outside "
+          f"'{meta['opening']}' (span {meta['span_mm']:.0f} mm, centreline "
+          f"{meta['centreline_mm']:.0f} mm) — depicted from the owner's photo, dims [est]")
+    return len(parts)
 
 
 def _add_ceiling(outline_m, h, margin=0.18):
@@ -2005,6 +2072,7 @@ def build_suite(spec, label="suite"):
     # glazing exists there to dress, and fabric floating on a blank wall would be a lie).
     if not spec.get("_hero"):
         _add_curtains(spec, h)
+        _add_juliet_rail(spec)   # outside the glass — same solid-wall reason for the skip
 
     # loose furniture: a REAL CC0 model (Poly Haven) when the kind is mapped + cached,
     # else furniture.py primitives (which work in INCHES). Models are fit to the footprint.
@@ -2143,15 +2211,26 @@ def build_suite(spec, label="suite"):
         _add_ceiling(outline_m, h)                    # enclose -> no HDRI leak over the walls
         _add_feature_slats(min(xs), max(xs), min(ys), h)  # fluted slat wall (kills the 'dumb blank wood wall')
         _hero_lighting(min(xs), min(ys), max(xs), max(ys), h, cx, cy, gx0, gx1)  # layered luxury light
+        # HERO keeps its tuned STUDIO env — like curtains, the exterior garden is
+        # skipped here: the hero restages behind SOLID walls (no glazing to see the
+        # garden through) and its whole light is tuned for brown_photostudio_07 @ 0.2
+        # (review 2026-07-17b: routing the override through hero swaps a glassless
+        # studio composition onto a garden it cannot show).
         _hdri_world("brown_photostudio_07", strength=0.2, rot_deg=30.0, exposure=0.0,
                     look="AgX - Medium High Contrast")
     elif spec.get("_eye") and spec.get("items"):
         add_interior_lights(spec, h)
         _add_ceiling(outline_m, h)                    # enclose -> no HDRI leak over the walls
         add_suite_eye_camera(spec, outline_m, h)
-        _hdri_world("brown_photostudio_02", strength=0.3, rot_deg=30.0, exposure=-0.1,
-                    look="AgX - Medium High Contrast")
+        # EYE is the client-facing window view — the ONLY path a spec.exterior garden
+        # + Juliet rail belongs on (an eye-level look OUT through the glass-L).
+        _hdri_world(*_exterior_world_args(spec, "brown_photostudio_02", 0.3, 30.0, -0.1,
+                                          "AgX - Medium High Contrast"))
     else:
+        # OVERVIEW = the open-top dollhouse QA / hybrid CONTROL leg (make_all): kept on
+        # the studio env so the exterior override never silently shifts the control
+        # (review 2026-07-17b). A garden HDRI flooding the open top is a QA-view change
+        # nobody asked for; the decided garden lives on the eye deliverable.
         add_interior_lights(spec, h)
         add_suite_camera(min(xs), max(xs), min(ys), max(ys), h)
         _hdri_world("brown_photostudio_02", strength=1.0, rot_deg=30.0, exposure=-0.1)
@@ -2179,11 +2258,17 @@ def build(spec, label="default"):
 
 def build_rect(spec, label="default"):
     # the rect path knows nothing of the suite-era features: refuse rather than silently
-    # overwrite the control leg (--suffix) or ignore a materials block (review 2026-07-14)
-    if spec.get("_suffix") or spec.get("materials"):
-        raise ValueError("--suffix and the materials block are suite-path features "
-                         "(room.outline_mm specs); the rect path would silently ignore "
-                         "them — remove them or use a suite spec")
+    # overwrite the control leg (--suffix) or ignore a materials block (review 2026-07-14).
+    # exterior (garden HDRI + Juliet rail) and the curtain blocks join that guard
+    # (review 2026-07-17b): each is consumed only in build_suite, so a rect spec
+    # carrying one would render the studio default / bare glass with the decided
+    # element silently dropped — the exact revert-by-omission those blocks exist to kill.
+    _suite_only = [k for k in ("_suffix", "materials", "exterior",
+                               "curtains", "curtain_track") if spec.get(k)]
+    if _suite_only:
+        raise ValueError(f"{_suite_only} are suite-path features (room.outline_mm "
+                         "specs); the rect path would silently ignore them — remove "
+                         "them or use a suite spec")
     clear_scene()
     bpy.context.scene.unit_settings.system = "METRIC"
 
