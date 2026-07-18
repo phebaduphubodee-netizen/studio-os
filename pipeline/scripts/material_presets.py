@@ -501,6 +501,27 @@ def millwork_subpart_presets(spec):
     return [(label, preset) for role, preset, label in _MILL_SUBPART if role in roles]
 
 
+def furniture_material_story_bits(spec):
+    """The DECIDED FF&E materials that bespoke builders (_build_bed / _build_nightstand / _add_rug)
+    put on screen but the preset families do NOT name — so material_story can STATE them and the
+    Gemini polish pass cannot repaint them (the recurring element-2 trap: a cool counter reverting
+    to oak; here the bed base repainted oak, the brass lamps dropped). DATA-driven from the spec
+    items (D7: a decided element must not be revertible by an omission). Returns [str]."""
+    bits = []
+    items = (spec or {}).get("items") or []
+    bed = next((it for it in items if it.get("kind") == "bed"), None)
+    if bed and (bed.get("design") or {}).get("base_material") == "upholstered_greige_linen":
+        bits.append("bed base + foot bench: upholstered greige stonewashed linen — matte, a mid-"
+                    "greige plinth below the crisp bedding; NOT oak (D1-A anti-monopoly)")
+    if any(it.get("kind") == "side_table" and it.get("lamp") for it in items):
+        bits.append("nightstands: matte-dark low cabinets, each with a brass dome/'mushroom' table "
+                    "lamp — the 10% brass accent, dim vs the garden windows (PH-02)")
+    if any(it.get("kind") == "rug" for it in items):
+        bits.append("rug: soft neutral poly-wool herringbone under the bed (demotes the oak floor "
+                    "to the 30% layer, D1-A)")
+    return bits
+
+
 def material_story(resolved, spec=None):
     """One prose sentence naming the ACTUAL selected materials — the truth the render
     shows, for the render-polish prompt's {material_story} slot (and rationale). Built
@@ -525,4 +546,5 @@ def material_story(resolved, spec=None):
         bits.append(f"{el}: {PRESETS[pn]['desc']}")
     for label, pn in millwork_subpart_presets(spec):
         bits.append(f"{label}: {PRESETS[pn]['desc']}")
+    bits.extend(furniture_material_story_bits(spec))   # ELEMENT 3: bed base / lamps / rug (D7)
     return "; ".join(bits) if bits else material_story(None)

@@ -857,3 +857,54 @@ def test_vanity_kneehole_fails_loud_on_implausible_values():
     ok = M.millwork_parts("vanity", VANITY["W"], VANITY["D"], VANITY["H"], "x", 1,
                           design={"element": 2, "kneehole_width_m": 1.40, "kneehole_center_frac": 0.5155})
     assert any(p[0] == "counter" for p in ok)
+
+
+# --- ELEMENT 3: bedside nightstand + dome lamp (nightstand_lamp_parts) ----------------------------
+# The real PRJ-2026-002 nightstands: ink ~501x498/501 mm, h520, a brass dome lamp on top.
+NS = dict(w_m=0.501, d_m=0.498, h_m=0.520)
+
+
+def test_nightstand_body_fills_the_whole_footprint_from_the_floor():
+    parts = M.nightstand_lamp_parts(**NS)
+    body = next(p for p in parts if p[0] == "body")
+    _, ox, oy, oz, dx, dy, dz = body
+    assert (ox, oy, oz) == (0.0, 0.0, 0.0), "cabinet must sit on the floor at the SW corner"
+    assert (dx, dy, dz) == (NS["w_m"], NS["d_m"], NS["h_m"]), \
+        "cabinet must be a SOLID box filling the whole footprint (not a spindly table)"
+
+
+def test_nightstand_lamp_sits_on_top_and_inside_the_footprint():
+    parts = M.nightstand_lamp_parts(**NS)
+    lamp = [p for p in parts if p[0].startswith("lamp_")]
+    assert {p[0] for p in lamp} == {"lamp_base", "lamp_stem", "lamp_shade"}, "brass base+stem+dome shade"
+    for name, ox, oy, oz, dx, dy, dz in lamp:
+        assert oz >= NS["h_m"] - 1e-9, f"{name} must sit ON TOP of the cabinet (z>=H)"
+        assert ox >= -1e-9 and ox + dx <= NS["w_m"] + 1e-9, f"{name} overhangs in x (a render lie)"
+        assert oy >= -1e-9 and oy + dy <= NS["d_m"] + 1e-9, f"{name} overhangs in y (a render lie)"
+    shade = next(p for p in lamp if p[0] == "lamp_shade")
+    base = next(p for p in lamp if p[0] == "lamp_base")
+    assert shade[6] > 0 and shade[3] > base[3], "the dome shade must be wider than the brass base"
+
+
+def test_nightstand_lamp_opt_out():
+    parts = M.nightstand_lamp_parts(0.5, 0.5, 0.5, lamp=False)
+    assert [p[0] for p in parts] == ["body"], "lamp=False yields just the cabinet"
+
+
+def test_nightstand_lamp_never_overhangs_for_any_aspect_ratio():
+    # containment is a sizing invariant (EVERY lamp part's half-width scales with min(w,d): base
+    # 0.15, stem 0.028, shade 0.27 — all <= 0.5*min <= half of either axis), not a runtime guard.
+    # Includes TINY dims (0.02) that a fixed-width stem used to overhang — the regime the earlier
+    # test never reached (review 2026-07-18).
+    for w, d in ((0.5, 0.5), (0.9, 0.3), (0.3, 0.9), (1.2, 0.15), (0.15, 1.2),
+                 (0.02, 0.5), (0.5, 0.02), (0.001, 0.001)):
+        for name, ox, oy, oz, dx, dy, dz in M.nightstand_lamp_parts(w, d, 0.5):
+            assert -1e-9 <= ox and ox + dx <= w + 1e-9, f"{name} overhangs x at {w}x{d}"
+            assert -1e-9 <= oy and oy + dy <= d + 1e-9, f"{name} overhangs y at {w}x{d}"
+
+
+def test_nightstand_fails_loud_on_non_positive_dims():
+    for bad in (dict(w_m=0, d_m=0.5, h_m=0.5), dict(w_m=0.5, d_m=-0.1, h_m=0.5),
+                dict(w_m=0.5, d_m=0.5, h_m=0.0)):
+        with pytest.raises(ValueError):
+            M.nightstand_lamp_parts(**bad)

@@ -585,6 +585,39 @@ def vanity_mirror_box(spec):
     return ("mill__bf11vanity__mirror", x_mm, y_mm, sill_mm, w_mm, d_mm, h_mm)
 
 
+def nightstand_lamp_parts(w_m, d_m, h_m, lamp=True):
+    """PURE (metres, footprint-LOCAL: origin at the cabinet's SW-bottom corner). The part boxes
+    for an ELEMENT-3 bedside nightstand + an optional dome/'mushroom' table lamp, for
+    build_room._build_nightstand to bevel + material. Returns [(part, ox, oy, oz, dx, dy, dz)].
+
+    Kept PURE + here (the curtains.py / vanity_mirror_box law: build_room is bpy-only) so the
+    geometry is unit-tested and the footprint invariant is PROVEN, not assumed:
+      - the CABINET fills the whole (w, d) footprint from the floor (a solid low box, NOT the
+        spindly `_table` primitive the side tables used to get — which read as a flimsy console,
+        not a ~500 mm-square bedside cabinet with a lamp);
+      - the LAMP (brass base + stem + dome shade) sits ON TOP (oz >= h_m), centred, and every
+        lamp part stays WITHIN the footprint in x/y (a lamp wider than its stand is a render lie).
+    Containment is not a runtime guard but a sizing INVARIANT: the widest lamp part (the shade)
+    has half-width 0.27*min(w,d), which is <= 0.5*min(w,d) <= half of EITHER axis — so a centred
+    shade cannot overhang, for ANY positive aspect ratio (proven in test_millwork over extremes).
+    Only a non-positive dimension is a real error, and that fails loud below."""
+    if w_m <= 0 or d_m <= 0 or h_m <= 0:
+        raise ValueError(f"nightstand has a non-positive dim (w={w_m}, d={d_m}, h={h_m})")
+    parts = [("body", 0.0, 0.0, 0.0, w_m, d_m, h_m)]
+    if lamp:
+        cx, cy = w_m / 2.0, d_m / 2.0
+        br = min(w_m, d_m) * 0.15                       # brass base half-width
+        tr = min(w_m, d_m) * 0.028                      # stem half-width — SCALED (a fixed 0.028 m
+        #                                                 stem overhangs a sub-28 mm top; review 07-18)
+        sr = min(w_m, d_m) * 0.27                       # dome shade half-width (the widest part)
+        base_h, stem_h, shade_h = 0.035, 0.17, 0.15
+        parts.append(("lamp_base",  cx - br, cy - br, h_m,                2 * br, 2 * br, base_h))
+        parts.append(("lamp_stem",  cx - tr, cy - tr, h_m + base_h,       2 * tr, 2 * tr, stem_h))
+        parts.append(("lamp_shade", cx - sr, cy - sr, h_m + base_h + stem_h - 0.02,
+                      2 * sr, 2 * sr, shade_h))
+    return parts
+
+
 # --- the model-fit gate --------------------------------------------------------------------------
 # A uniform scale CANNOT honour w, d AND h at once unless the mesh's aspect already matches the
 # slot's. build_room.place_model fitted the FOOTPRINT and let height fall where it may, SILENTLY —

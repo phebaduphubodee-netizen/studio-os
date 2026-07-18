@@ -1721,19 +1721,38 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
         bx, by, bdx, bdy = box(from_head, across_off, a_size, c_size)
         _rbox(name, bx, by, z, bdx, bdy, dz, mat, bevw=bevw, seg=seg)
 
-    base_m = _solid("bed_base",     (0.40, 0.36, 0.32, 1.0), rough=0.70, sheen=0.15, spec=0.4)
+    # ELEMENT 3 D3-1 (2026-07-18): the base is UPHOLSTERED GREIGE STONEWASHED LINEN, not the old
+    # dark (0.40,0.36,0.32) that read wood-brown — and deliberately NOT oak (D1-A anti-monopoly:
+    # four oak masses already; a fifth on the hero bed breaks 60-30-10). A LIGHT greige linen joins
+    # the ~60% plaster ground (Albers: a light element on a light ground recedes — the curtain-DR
+    # grounding, 3ce5f5e), so the warm oak slat headboard wall + the crisp bedding carry the eye.
+    # High roughness + LOW sheen = matte linen weave, a mid-GREIGE that reads clearly BELOW the
+    # crisp cream bedding (v1 at 0.58/sheen0.6 washed to the same white as the mattress under the
+    # 3000 K key — the bed read as one pale blob; LOOK 2026-07-18). Darkened + de-sheened so the
+    # platform plinth grounds the bed and stays a neutral (never a fifth warm oak mass, D1-A).
+    base_m = _solid("bed_base",     (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.2, spec=0.25)
     matt_m = _solid("bed_mattress", (0.87, 0.85, 0.81, 1.0), rough=0.92, sheen=0.5, spec=0.35)
     duvt_m = _solid("bed_duvet",    (0.80, 0.77, 0.71, 1.0), rough=0.95, sheen=0.7, spec=0.35)
     pill_m = _solid("bed_pillow",   (0.90, 0.88, 0.84, 1.0), rough=0.95, sheen=0.8, spec=0.35)
 
-    # Proportions matter as much as parts: a 50/50 base-to-mattress split reads as a platform
-    # bed. (First pass used a 0.34 base + a 0.40 m mattress + a 0.10 m duvet — three fat slabs
-    # stacked, which still cued "cube tool". Thin the cloth, thicken nothing.)
-    base_h = H * 0.50                                   # platform plinth: grounds the piece
-    _rbox("bed__base", x0, y0, 0.0, W, D, base_h, base_m, bevw=0.012)
-    ins = 0.035                                         # mattress sits proud of the base
-    _rbox("bed__mattress", x0 + ins, y0 + ins, base_h, W - 2 * ins, D - 2 * ins,
-          H - base_h, matt_m, bevw=0.03)
+    # SOFT, LOW-DRAPED MASSING (owner LOOK 2026-07-18 "ยังเหลี่ยม" ×2 — bevels alone did NOT break the
+    # box; a bed reads as a bed when CLOTH DRAPES over the edges, not when a slab has round corners).
+    # (1) a LOW recessed plinth (pulled in 100 mm, a hidden toe) minimises the solid mass; (2) the
+    # mattress insets UNDER (3) a full-width COVERLET that overhangs the mattress and FALLS down its
+    # sides to just above the plinth — breaking the hard vertical faces into draped fabric and leaving
+    # a shadow reveal beneath. That silhouette reads "a made bed", not "a foam cube".
+    cov_m = _solid("bed_coverlet", (0.80, 0.77, 0.72, 1.0), rough=0.96, sheen=0.3, spec=0.3)
+    base_h = H * 0.34                                   # a LOW recessed plinth (a hidden toe)
+    binset = 0.10                                       # pulled well IN — the coverlet drapes PAST it
+    _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset, base_h,
+          base_m, bevw=0.03, seg=4)
+    mins = 0.09                                         # mattress inset — hides UNDER the coverlet
+    _rbox("bed__mattress", x0 + mins, y0 + mins, base_h, W - 2 * mins, D - 2 * mins,
+          H - base_h, matt_m, bevw=0.05, seg=4)
+    cins = 0.006                                        # coverlet drapes to the bbox edge…
+    cov_bot = base_h + 0.03                             # …and hangs DOWN to just above the plinth
+    _rbox("bed__coverlet", x0 + cins, y0 + cins, cov_bot, W - 2 * cins, D - 2 * cins,
+          H - cov_bot + 0.006, cov_m, bevw=0.07, seg=5)  # the fabric FALL that kills the box
 
     # duvet: a THIN cloth layer over the foot ~2/3, inset so the mattress edge still shows, and
     # dipping slightly INTO the mattress top so it reads as cloth lying on it, not a second slab.
@@ -1743,11 +1762,12 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     dv_from = pz + 0.14
     ci = 0.015
     emit("bed__duvet", dv_from, ci, along - dv_from - 0.02, across - 2 * ci,
-         H - 0.02, 0.07, duvt_m, 0.032, seg=4)
+         H - 0.02, 0.09, duvt_m, 0.04, seg=5)           # thicker + rounder = draped cloth, not a slab
+    #                                                     (bevw < half the 0.09 dz or the bevel collapses)
     # turned-back fold at the duvet's head edge — the single most legible "this is a made bed"
     # cue, and it gives the repaint an edge to hang linen folds on.
     emit("bed__duvet_fold", dv_from - 0.13, ci, 0.15, across - 2 * ci,
-         H - 0.01, 0.09, pill_m, 0.04, seg=4)
+         H - 0.01, 0.10, pill_m, 0.045, seg=5)          # bevw < half the 0.10 dz
 
     # two plump pillows at the HEAD, gapped (a plausible bed silhouette is what the beauty pass
     # needs in order to paint linen; a bare slab is what made the critic reach for "cube tool").
@@ -1755,7 +1775,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     pw = (across - 3 * gap) / 2.0
     for i in range(2):
         emit(f"bed__pillow{i}", 0.08, gap + i * (pw + gap), pz - 0.08, pw,
-             H - 0.005, 0.16, pill_m, 0.07, seg=5)
+             H - 0.005, 0.19, pill_m, 0.085, seg=6)     # plumper + rounder (bevw < half the 0.19 h)
     return True
 
 
@@ -1764,7 +1784,11 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     footprint. Replaces the CC0 `Ottoman_01` fallback, which — stretched to a 0.5 x 1.0 m bench
     footprint — renders as a dark leather blob the pro critic called "a simple box shape on
     legs". A real seat-on-legs silhouette (with air under it) is what reads as furniture."""
-    seat_m = _solid("bench_seat", (0.84, 0.80, 0.74, 1.0), rough=0.92, sheen=0.9, spec=0.4)
+    # ELEMENT 3 D3-4 (2026-07-18): the foot bench is UPHOLSTERED GREIGE LINEN that MATCHES the bed
+    # base — the spec's bench note and material_story both bundle them ("bed base + foot bench"), so
+    # the render must not show a pale cream satin bench under that stated truth (the element-2
+    # revert-by-omission the story bits exist to kill; review 2026-07-18). Same values as bed_base.
+    seat_m = _solid("bench_seat", (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.25, spec=0.3)
     leg_m  = _solid("bench_leg",  (0.26, 0.21, 0.16, 1.0), rough=0.45, sheen=0.1, spec=0.5)
     leg_h = H * 0.62                                    # tall legs + a SLIM cushion = a bench;
     seat_h = H - leg_h                                  # a fat pad on stubs is just a box again
@@ -1773,7 +1797,27 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     for i, (ox, oy) in enumerate(((inset, inset), (W - inset - lt, inset),
                                   (inset, D - inset - lt), (W - inset - lt, D - inset - lt))):
         _rbox(f"bench__leg{i}", x0 + ox, y0 + oy, 0.0, lt, lt, leg_h, leg_m, bevw=0.006)
-    _rbox("bench__seat", x0, y0, leg_h, W, D, seat_h, seat_m, bevw=0.045, seg=4)
+    _rbox("bench__seat", x0, y0, leg_h, W, D, seat_h, seat_m, bevw=0.065, seg=5)  # rounder cushion (07-18)
+    return True
+
+
+def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None):
+    """A solid low bedside cabinet + a brass dome lamp (ELEMENT 3 D3-3). Replaces the spindly
+    `_table` primitive (a top on four thin legs) the side tables used to fall through to — which
+    read as a flimsy console, not the ~500 mm-square bedside cabinet with a lamp the plan draws.
+    A matte-DARK cabinet pops against the warm oak slat headboard wall and is NOT a fifth oak mass
+    (D1-A); the brass base carries the room's 10% accent (PH-02: the lamp is dim vs the garden
+    windows, so its warm metal never out-reads the daylight). Geometry from the PURE, unit-tested
+    `millwork.nightstand_lamp_parts` (footprint invariant proven there). `rot` is accepted but not
+    applied — the piece is symmetric about both axes (same honesty as _build_bench)."""
+    body_m  = _solid("nightstand_body", (0.13, 0.12, 0.11, 1.0), rough=0.55, sheen=0.1, spec=0.4)
+    brass_m = _solid("lamp_brass",      (0.60, 0.44, 0.20, 1.0), rough=0.32, metallic=1.0, spec=0.6)
+    shade_m = _solid("lamp_shade",      (0.93, 0.86, 0.72, 1.0), rough=0.85, sheen=0.4, spec=0.3)
+    mats = {"body": body_m, "lamp_base": brass_m, "lamp_stem": brass_m, "lamp_shade": shade_m}
+    bevs = {"body": 0.008, "lamp_base": 0.010, "lamp_stem": 0.006, "lamp_shade": 0.060}
+    for name, ox, oy, oz, dx, dy, dz in millwork.nightstand_lamp_parts(W, D, H, lamp=bool(lamp)):
+        _rbox(f"nightstand__{name}", x0 + ox, y0 + oy, oz, dx, dy, dz, mats[name],
+              bevw=bevs[name], seg=5 if name == "lamp_shade" else 3)
     return True
 
 
@@ -2151,6 +2195,12 @@ def build_suite(spec, label="suite"):
             continue
         if kind == "bench":
             _build_bench(xm, ym, wm, dm, hm, rot)   # rot accepted, NOT applied — see above
+            continue
+        # ELEMENT 3: a side_table carrying a `lamp` block IS a bedside nightstand — a solid cabinet
+        # + a brass dome lamp, not the spindly `_table` primitive. Opt-in on the flag so the sitting
+        # room's plain side tables keep the model/primitive path.
+        if kind == "side_table" and it.get("lamp"):
+            _build_nightstand(xm, ym, wm, dm, hm, rot, it.get("lamp"))
             continue
         slug = MODEL_MAP.get(kind)
         # BOTH rotation paths now go through THE LAW (see MODEL_FRONT_DEG): place_model is handed

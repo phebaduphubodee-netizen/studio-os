@@ -499,3 +499,26 @@ def test_material_story_names_the_vanity_caesarstone_and_mirror():
 
 if __name__ == "__main__":
     pytest.main([__file__, "-q"])
+
+
+# --- ELEMENT 3: the bed base / lamps / rug must be NAMED in material_story (D7 anti-revert) -------
+def test_furniture_material_story_names_the_decided_ffe():
+    """The bespoke-built FF&E (upholstered bed base, brass lamps, rug) must be STATED so the polish
+    pass cannot repaint the base oak or drop the lamps — the recurring element-2 revert-by-omission."""
+    import json, os
+    spec = json.load(open(os.path.join(os.path.dirname(__file__),
+        "../../projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json"),
+        encoding="utf-8"))
+    story = mp.material_story(mp.resolve_materials(spec), spec)
+    assert "bed base" in story and "greige" in story, "bed base linen must be named (not repaintable to oak)"
+    assert ("mushroom" in story or "dome" in story) and "brass" in story, "brass dome lamps must be named"
+    assert "poly-wool" in story, "the rug must be named"
+
+
+def test_furniture_bits_are_opt_in_per_item():
+    assert mp.furniture_material_story_bits({}) == []
+    assert mp.furniture_material_story_bits({"items": []}) == []
+    # a bed WITHOUT the upholstered base_material flag contributes no base bit
+    assert mp.furniture_material_story_bits({"items": [{"kind": "bed"}]}) == []
+    # a plain side_table (no lamp) is not a nightstand
+    assert mp.furniture_material_story_bits({"items": [{"kind": "side_table"}]}) == []
