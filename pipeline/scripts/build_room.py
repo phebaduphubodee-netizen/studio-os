@@ -45,6 +45,9 @@ import curtains       # bpy-free pure logic: fabric ribbons from curtain_track/c
 import exterior       # bpy-free pure logic: the view OUT of the glass — spec-declared garden HDRI
 #   + the Juliet rail the owner's photo shows outside the slider (option B, 2026-07-17b). Same law:
 #   the studio-HDRI default must not be able to silently override a decided exterior.
+import bathroom       # bpy-free pure logic: ensuite sanitaryware massing (element 4). Subroom
+#   fixtures used to render as ONE plain box each (the crude v4); this emits per-part boxes with
+#   material ROLES that route to the SAME suite materials (oak/caesarstone/brass/glass) by name.
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
@@ -93,6 +96,28 @@ def add_box(name, x, y, z, dx, dy, dz):
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.scene.collection.objects.link(obj)
     return obj
+
+
+def _fixture_part_name(mat, base):
+    """Route an ensuite fixture part (bathroom.py) to a SUITE material by NAME, so it
+    reuses the exact oak / caesarstone / brass / sanitary / clear-glass materials instead
+    of inventing a new tone (coherence). See _suite_materials + material_presets
+    .mill_object_role: `mill__x`=oak, `mill__x__counter`=caesarstone, `mill__x__brass`=
+    brass, `mill__x__cool`=microcement, `glass__x`=glazing, `fix__x`=sanitary white."""
+    b = str(base).replace(" ", "_")
+    if mat == "porcelain":
+        return f"fix__{b}"
+    if mat == "glass":
+        return f"glass__{b}"
+    if mat == "stone":
+        return f"mill__{b}__counter"
+    if mat == "brass":
+        return f"mill__{b}__brass"
+    if mat == "mirror":
+        return f"mill__{b}__mirror"
+    if mat == "tray":
+        return f"mill__{b}__cool"
+    return f"mill__{b}"          # oak (default mill role = the spec's oak_veneer)
 
 
 def add_camera_and_light(w, d, h):
@@ -2096,14 +2121,30 @@ def build_suite(spec, label="suite"):
                    None if spec.get("_hero") else spec.get("door"),
                    None if spec.get("_hero") else r.get("openings"))
 
+    n_fix = 0
     for si, sr in enumerate(spec.get("subrooms", [])):
         so = [(float(x) * MM, float(y) * MM) for x, y in sr["outline_mm"]]
         sh = float(sr.get("ceiling_mm", 2000)) * MM
         poly_walls_bpy(f"s{si}_", so, thk, sh, sr.get("door"), sr.get("openings"))
         for fx in sr.get("fixtures", []):
-            add_box("fix__" + str(fx.get("name", "fixture")).replace(" ", "_"),
-                    float(fx["x"]) * MM, float(fx["y"]) * MM, 0,
-                    float(fx["w"]) * MM, float(fx["d"]) * MM, max(float(fx.get("h", 400)) * MM, 0.02))
+            # ELEMENT 4: ensuite fixtures get real per-part massing (bathroom.py, PURE) whose
+            # material ROLE routes to the SAME suite materials by NAME (oak vanity, caesarstone
+            # counter, porcelain sanitaryware, brass fittings, clear glass). Unmapped kinds fall
+            # back to the plain sanitary box — same escape _build_millwork uses.
+            _parts = bathroom.fixture_parts(fx)
+            if _parts:
+                for _p in _parts:
+                    add_box(_fixture_part_name(_p["mat"], _p["name"]),
+                            _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
+                            _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
+                n_fix += 1
+            else:
+                add_box("fix__" + str(fx.get("name", "fixture")).replace(" ", "_"),
+                        float(fx["x"]) * MM, float(fx["y"]) * MM, 0,
+                        float(fx["w"]) * MM, float(fx["d"]) * MM, max(float(fx.get("h", 400)) * MM, 0.02))
+    if n_fix:
+        print(f"  fixtures: {n_fix} ensuite fixture(s) materialized with per-part roles "
+              f"(oak vanity / caesarstone / porcelain / brass / clear glass)")
 
     # A built-in faces the side of the room it SERVES — read that off the furniture, not off the
     # outline's centroid (in an L-shaped SUITE the centroid lands in the wrong zone: see

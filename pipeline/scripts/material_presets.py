@@ -269,8 +269,8 @@ def mill_object_role(objname):
     if "__" not in rest:
         return "oak"                                   # plain fallback box: name is not a part token
     pn = rest.rsplit("__", 1)[-1]
-    if pn.startswith("rail"):
-        return "brass"
+    if pn.startswith("rail") or pn.startswith("brass"):
+        return "brass"                                 # brass rail (el-1) + el-4 ensuite tapware/fittings
     if pn.startswith("counter"):
         return "caesarstone"                           # element-2 Caesarstone vanity top (D2-4)
     if pn.startswith("mirror"):

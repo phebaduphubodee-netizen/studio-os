@@ -159,7 +159,7 @@ def _seg_hits_box(x0, y0, x1, y1, bb):
     return True
 
 
-def _build_obstacles(spec, outline_m):
+def _build_obstacles(spec, outline_m, exclude_subroom=None):
     """The stand-vs-ray obstacle split, factored out so the AUTO grid solve and the MANUAL
     eye_camera override validate against the SAME geometry (no split-brain). Returns
     (stand_blocks, ray_blocks) as lists of (x0,y0,x1,y1) AABBs in metres.
@@ -171,9 +171,18 @@ def _build_obstacles(spec, outline_m):
       whose rendered box actually SPANS the lens. build_room floats a built-in from z=mount_mm
       to mount_mm+h, so the box crosses the lens iff base <= EYE_CAM_HEIGHT_M <= top (coupled to
       RAY_BLOCK_MIN_H_M): a wall TV floated at 900 mm blocks a 1.15 m lens though h<threshold; a
-      built-in floated wholly above eye level does not. Reduces to `h >= threshold` at mount 0."""
+      built-in floated wholly above eye level does not. Reduces to `h >= threshold` at mount 0.
+
+    exclude_subroom (name substring, case-insensitive) — the ONE subroom the camera is standing
+      INSIDE for an interior shot (eye_camera.in_subroom). A subroom is an opaque box to the MAIN
+      room, so it is normally both a stand- and ray-block; to shoot a subroom's own interior the
+      camera must be allowed to stand within it (element 4 ensuite). Only the focused subroom is
+      dropped — every OTHER subroom + all built-ins still occlude, so the shot cannot see through
+      a wall into a different zone."""
     stand_blocks, ray_blocks = [], []
     for sr in spec.get("subrooms", []):
+        if exclude_subroom and str(exclude_subroom).lower() in str(sr.get("name", "")).lower():
+            continue
         sx = [p[0] for p in sr["outline_mm"]]
         sy = [p[1] for p in sr["outline_mm"]]
         bb = (min(sx) * MM, min(sy) * MM, max(sx) * MM, max(sy) * MM)
@@ -261,7 +270,8 @@ def solve_eye_camera(spec, outline_m=None):
     tx = (float(main["x"]) + float(main["w"]) / 2.0) * MM
     ty = (float(main["y"]) + float(main["d"]) / 2.0) * MM
 
-    stand_blocks, ray_blocks = _build_obstacles(spec, outline_m)
+    stand_blocks, ray_blocks = _build_obstacles(
+        spec, outline_m, (spec.get("eye_camera") or {}).get("in_subroom"))
 
     # ---- MANUAL OVERRIDE: spec["eye_camera"] places the standing spot by hand -----------
     # The auto solve below takes the FARTHEST clear grid spot — great for a plain box, but for
