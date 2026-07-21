@@ -1,4 +1,19 @@
 # STUDIO-OS Strategy Document (human-curated — the WHY layer)
+
+> **Business-doctrine provenance (added 2026-07-13).** The entry *"BUSINESS DOCTRINE — the founding
+> NO-GO, the unit economics, the Thai licensing constraint, the tool-license record"* at the end of
+> this file is promoted from these staged sources (REFERENCE tier — deep-research output, not
+> Authority; per-claim `file:line` citations sit in the entry itself):
+> `knowledge/_inbox/interior-ai/2026-06-30-feasibility-market-DR.md` ·
+> `knowledge/_inbox/interior-ai/2026-06-30-unit-economics-DR-002.md` ·
+> `knowledge/_inbox/interior-ai/2026-06-30-thai-building-code-DR.md` ·
+> `knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-DR.md` ·
+> `knowledge/_inbox/interior-ai/2026-07-01-asset-sourcing-DR.md`
+> One further staged file is referenced but is **NOT a promotion source** — it is the refuted audit
+> anchor the entry names in order to record what was overturned, and the entry says never to cite it:
+> `knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-gemini-DR.md` (see §D).
+> Statutory values are NOT promoted from any of them — `knowledge/codes-th/` is the sole Authority.
+
 ## Architecture decisions
 - 2026-07: Adopted STUDIO-OS blueprint v1.0. Hybrid monorepo + ICM stages.
 ## Known technical debt
@@ -1526,3 +1541,401 @@ pointed at a rotated corpus. Commits local, unpushed.
 **2026-07-12b — THE ROT CONVENTION: I WAS WRONG. There is ONE convention, it was always right, and the real bug was that it had no test — so `place_model` was correct BY LUCK.** Yesterday's entry claimed build_room "carries two contradictory angle conventions" and left `model_fit` rot-blind rather than ship a guess. The restraint was right; **the claim was false and is retracted** (`millwork.py` corrected, the strikethrough is above). Five modules state the SAME convention — `facing_reader._FACING {0:S, 90:E, 180:N, 270:W}`, `placement_logic._front_vec = (sin rot, −cos rot)`, `cross_signal`, `build_floor.add_oriented_box`, and `build_room._head_dir` (which spells it on the BACK vector: head = −front). **`MODEL_FRONT_DEG = −90` is that same rot-0 front (−Y), written as an azimuth, not a rival convention.** What made the two owner notes look contradictory — bed `rot 270 = "head EAST"` vs armchair `rot 270 = "faces W"` — is that one is a BACK and the other a FRONT: **both are satisfied by the single convention, and that pair is now the acceptance test.** **MEASURED, NOT ARGUED:** MODEL_FRONT_DEG's own comment said "calibrated by inspecting a render", so I re-measured it — imported all nine CC0 meshes headless and shot an orthographic elevation from the SOUTH. **All nine present their FRONT to that camera: every native front is −Y.** That is why `place_model` handing the RAW spec rot to `Matrix.Rotation` produces the correct facing **for the glTF path**. Scoped honestly (the probe measured MESH fronts, not spec rots): I checked each shipped render's MODEL_MAP items against the plan geometry and found no wrong-way piece — but that is a reading of the specs, not an inspection of the pixels, and it says nothing about the primitive path, which until today ignored `rot` entirely. **THE ACTUAL DEFECTS (all now closed):** **(1) It was right by luck, not by construction.** The general law is `place_model.rot = spec_rot − 90 − MODEL_FRONT_DEG[slug]` (the auto-face branch — the only rotation maths ever calibrated against a real render, hence ground truth — already computed exactly this). It collapses to `spec_rot` ONLY because every native front is −90. Both paths now go through `model_rot()`, so a model whose front is not −Y cannot silently rotate a room's furniture. Behaviour-identical today, and `test_facing_convention` pins that identity so it fails loudly the day it stops being true. **(2) MODEL_FRONT_DEG was FAIL-OPEN** — three MODEL_MAP slugs (`coffee_table_round_01`, `ClassicNightstand_01`, `Ottoman_01`) had no entry, so they got raw rot with their native front simply *unknown*. Table completed from the probe; a completeness assert + test now makes a missing entry impossible. **(3) The primitive fallback DROPPED rot on the floor** — `furniture.parts` items were massed axis-aligned while `build_floor` rotates the very same parts (`add_oriented_box`, centre pivot). A genuine split-brain: it is the bug that put the v4 bed's head on the wrong side, and `_build_bed`/`_build_bench` were bespoke patches for two kinds while every other kind stayed broken. **It got hotter yesterday, because `model_fit` deliberately routes badly-fitting meshes into exactly this path.** Fixed: `_rotate_about_z(prims, footprint centre, rot)` — same sense, same pivot, both renderers. **(4) `build_room` built and rendered a scene ON IMPORT** (`if __name__ == "__main__" or True:` — the guard was explicitly defeated). *That* is why the convention had five statements and zero tests: it was untestable. Guard restored; Blender runs `--python` as `__main__` — verified by re-running the v4 hero render (it still builds and renders; it did not silently no-op). **AND `model_fit` STAYS rot-free — but for the real reason, which is a schema fact I had backwards:** `gen_floor2_v4_specs.to_spec` **PRE-SWAPS w/d for a cardinal quarter-turn** (*"For a CARDINAL 90/270 the axis-aligned footprint swaps, so we pre-swap to keep the footprint == (wx,hy)"*), so **a spec item's `w`/`d` are its OWN LOCAL un-rotated dims**, and fit-then-rotate lands the world AABB back on the drawn cluster bbox. Worked on the v4 sitting-room sofa (rot 90, spec 2202×1008): drawn bbox 1008 EW × 2202 NS → fit `sofa_02` into the *local* 2202×1008 → rotate 90° → final AABB 997 × 2202 = **the drawn bbox. Nothing overflows.** Adding the axis swap I nearly shipped would have DOUBLE-APPLIED the generator's pre-swap and started rejecting correctly-placed furniture. **THE DOCTRINE (and it is not the one I expected): a convention asserted in five places and tested in none is not a convention, it is five rumours — and the danger is not that it is wrong, it is that when it is RIGHT you cannot tell whether it is right by construction or by luck.** Both of my confident readings of it — "contradictory" yesterday, "the sofa overflows" this morning — were wrong, and each would have caused real damage had I acted on it. What broke the tie was not more reasoning: it was **importing the meshes and looking at them**, and reading the code that GENERATES the spec instead of only the code that consumes it. New: `test_facing_convention.py` (39 pins), `model_rot()`, `_rotate_about_z()`, completed MODEL_FRONT_DEG. 1151/1151 green. **Render equivalence — stated precisely, because I nearly overclaimed it:** the re-render is VISUALLY identical and the delta is provably geometry-invariant (`model_rot` is the identity while every native front is -90, and the one item newly rotated by the fallback fix is a 180-deg-symmetric side table), but I did NOT hash-compare against a pre-change render and do not claim byte-identity. **Still open, deliberately:** `_add_rug` and the hero `_build_modern_sofa` ignore `rot` (the latter is intentional staging), and non-cardinal rots inflate the world AABB past the drawn bbox — which `to_spec` says is BY DESIGN ("build_floor + the gate both compute the true rotated bbox from (w,d,rot)"), so it is a documented schema property, not a leak.
 
 **2026-07-12c — THE PRE-COMMIT REVIEW EARNED ITS KEEP: a 5-lens adversarial pass on my own diff surfaced 16 verified defects, SIX of them regressions I had introduced and was about to commit behind 1151 green tests and a render I had looked at.** Green tests + a good-looking render are not a review; they only prove the paths you thought of. **Fixed before commit: (1) the wall TV became a shelf.** Every built-in was routed through the new joinery generator with no kind screen, so `specs/living_room`'s 1400×100 mm `tv_panel` took the LOW-RUN branch: capped by a 40 mm worktop lip with its **SCREEN set 30 mm behind the plan face**. The clay is the beauty pass's structural control — that teaches the repaint a floating shelf where the plan says a television. A panel's face IS the plan face (`PANEL_KINDS` → flush box; a wall-hung *tall* cabinet still keeps its leaves, it just loses the toe-kick). **(2) The decor plant vanished.** `model_fit` correctly refused `calathea_orbifolia_01` — a **2492 mm FLOOR plant** that `_dress_scene` was dropping into a 220 mm tabletop slot, where it had been rendering as a **37 mm-tall green smear** (the pancake bug's third lane, after the side tables and the ottoman). But the decor call site had **no fallback**, so the styling cue simply disappeared — and `styling_and_life` is a SCORED axis. A gate may refuse an asset; it may never silently delete a design element. Procedural pot + foliage now carries it. **(3) A rejected import leaked its whole PBR texture set** into the saved `.blend` forever (objects were removed, datablocks orphaned). **(4) The 5 mm suite bevel is wider than the 3 mm reveal** the millwork module exists to cast — the reveals survive it (verified in a render crop, so this was not fatal) but come out mushy, and a 5 mm round-over on a cabinet door is not a thing that exists; millwork parts now carry a 1.2 mm arris. *(The obvious fix — tagging them `ph_model` to escape the wide bevel — is a trap the reviewer named: that key ALSO makes `paint_materials` skip the object, so the wardrobe would have lost its walnut and rendered bare grey.)* **(5) An owner's `face` declaration was an exact-string match**, so `south` silently fell through to the heuristic — while build_room then printed *"declare a `face`"* at an owner who had just declared one. Demoting a signature to a guess is precisely what the two-layer law exists to prevent; it now normalizes, RAISES on garbage, and flags a declaration that opens a run from its end (the owner still wins — we never override a signature — but it gets said out loud). **(6) `MODEL_MAP["bench"] → Ottoman_01` was dead code** (the bench is intercepted before MODEL_MAP is read) and I had used it to tell a flattering story in prose. Deleted. **Also pinned, not fixed:** `specs/sitting_room`'s 700×700×400 coffee table clears `H_LO` by **one percent** (0.6605 vs 0.65) — the only knife-edge pair in the corpus, now a test, so nobody "cleans up" the threshold and silently turns a working table into a box. **THE ONE I DID NOT FIX, AND IT IS THE BIGGEST: `_build_bed` reads `w`/`d` as WORLD extents while the entire rest of the pipeline reads them as LOCAL.** `to_spec` pre-swaps them for a cardinal quarter-turn, so `placement_gate.footprint` computes the v4 master bed's world AABB as 1981 EW × 2134 NS, while `_build_bed` renders 2134 EW × 1981 NS — **a 90° disagreement between the renderer and the gate that is supposed to guard it**, putting the bed base ~76 mm east of its plan bbox, into BF14. It is not my code (it landed 2026-07-11 with the rot-aware bed) and the render *looks* right, so a silent "fix" is exactly the move that has burned me twice this week. **It needs the owner's plan, not my inference** — is the drawn cluster 1981 EW or 2134 EW? Queued, named, with the arithmetic. **THE DOCTRINE: the value of a review is not the bugs it finds in code you doubted — it is the bugs it finds in the code you were proud of.** Five of the six regressions were in paths I never rendered (a TV panel, a decor plant, a .blend I never re-opened): I verified the room I was looking at. New: `audit_model_fit.py` (the re-runnable artifact behind the "zero passing pairs lost" claim, which previously had none). 1187/1187 green; living-room + master-bedroom clay re-rendered and inspected.
+
+## 2026-07-13 — BUSINESS DOCTRINE: the founding NO-GO, the unit economics, the Thai licensing constraint, the tool-license record
+
+Promotion of staged deep-research docs whose **business-verdict / unit-economics / Thai-licensing
+content had no trace in this file** (two fragments were already carried: the ODA non-commercial-EULA
+landmine at :50 and the Combined-Work licensing rule at :39) — including the verdict that is arguably
+the founding WHY of the whole studio. **Tier: REFERENCE** (deep-research engine output;
+blog / survey / primary-web sources). This is *decision context*, not domain truth and not Authority:
+**no value below may gate a deliverable**, and `knowledge/codes-th/` remains the sole Thai legal
+Authority. Where a source hedged, the hedge is carried; where a source is refuted, it is named.
+
+**Source keys** (exact staged paths — cited per claim below as `[key]:line`):
+- **[F]** `knowledge/_inbox/interior-ai/2026-06-30-feasibility-market-DR.md`
+- **[U]** `knowledge/_inbox/interior-ai/2026-06-30-unit-economics-DR-002.md`
+- **[T]** `knowledge/_inbox/interior-ai/2026-06-30-thai-building-code-DR.md`
+- **[A]** `knowledge/_inbox/interior-ai/2026-07-01-asset-sourcing-DR.md` — fabrication-flagged, see §F
+- **[G]** `knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-gemini-DR.md` — raw engine output, **never cite it**, see §D
+- **[S]** `knowledge/_inbox/interior-ai/2026-07-01-plan-read-write-tools-DR.md` — the primary-source-VERIFIED synthesis that overturned 4 of [G]'s verdicts; §D and §E are promoted from **[S]**, not [G]
+
+### A. The founding verdict — NO-GO on the grand thesis, QUALIFIED-GO on a human-in-the-loop wedge
+
+[F] is DR workflow `wf_9b185755-fe3`: 24 sources, 112 claims → 25 verified (3-vote adversarial) →
+19 confirmed / 6 killed → 9 synthesized ([F]:3-4). That pipeline stat is provenance only — it does
+**not** map onto the six items below.
+
+**VERDICT ([F]:7-13): NO-GO** on "build a Claude-Code→SketchUp pipeline that auto-produces sellable
+production-grade deliverables, with a token-rich moat." **QUALIFIED-GO** only on a narrow
+human-in-the-loop wedge: AI-accelerated **rough** 3D massing/concept modeling that an actual designer
+reviews, corrects and sells — *the AI amplifies an existing practitioner; it is not a machine that
+earns without one.*
+
+The six mechanisms [F] gives under *"Why the grand thesis is dead"* ([F]:17-38), each carrying a 3-0
+verification vote, verbatim in substance:
+1. **The platform owner already shipped it** ([F]:17-19). Trimble launched the official **"SketchUp
+   Connector for Claude" (Apr 28 2026)** — native, per-subscriber, MCP-based, produces editable
+   `.skp`. The exact pipeline the founder would build now exists first-party.
+2. **Capability ceiling** ([F]:20-23). Every shipping tool makes either rough editable 3D massing OR a
+   flat 2D concept render — **not** dimensioned floor plans, LayOut construction docs, or shop
+   drawings. The official Connector explicitly does *not* do 2D plans / dimensioning / LayOut /
+   Ruby-API, and **cannot edit an existing `.skp`** (create-new only).
+3. **Silent intent failure** ([F]:24-26). Generated apartments with missing doors, unusable kitchens,
+   wrong proportions; a GPT-4+LangChain CAD benchmark had **5 of 10 "successes" silently deviate from
+   the prompt with no error** (arXiv 2508.00843) → **a human must verify every deliverable.**
+4. **Token-moat REFUTED** ([F]:27-29). Connector access is a native per-subscriber feature, not
+   token-metered — "token-rich runs what token-poor can't" is false at the access layer; and LLM
+   inference prices fall **~50–200×/yr** (epoch.ai), so any compute edge erodes fast.
+5. **License blocker on white-label** ([F]:30-34). Trimble's offering terms restrict the subscription
+   to the customer's *own internal business* and prohibit use "**on behalf of, or to provide any
+   product or service to, third parties**" → white-label drafting-as-a-service is non-compliant
+   **unless the designer-client holds the license** and the operator works under it (lawyer question,
+   unresolved).
+6. **The value sits in the human** ([F]:35-38). Independent reviews + CAD literature converge that raw
+   LLM CAD output needs iterative human correction — "the tool amplifies skill, it doesn't replace
+   it." The "AI does the labor, founder just directs (zero time)" model **does not hold in this
+   domain.**
+
+**Favorable, but they do not rescue the thesis** ([F]:46-51): (a) 3D Warehouse furniture *may* be
+embedded in commercial work-for-hire as a **"Combined Work"** with substantial original content, and
+may not be resold standalone — this is carried independently, from other research, as the binding rule
+in `docs/LICENSING.md` (the "one rule that protects us"); (b) the outsourced/white-label drafting
+market **exists** (e.g. BluEntCAD). Its rates are **flagged UNVERIFIED by the DR itself** ("did not
+survive to the verified set; treat as ballpark", [F]:49-51) and are recorded here **with that flag
+attached**: 2D plans ~$100–500 · 3D plans ~$200–800 · full 3D ~$800–2,500+ · ~$75–200/hr · turnaround
+24–48 h simple, days for full sets. **Do not quote these as market facts.**
+
+**Four open questions the DR could NOT close** ([F]:53-61): (1) a heavily-custom Claude-Code + Ruby-API
+pipeline — *the actual premise* — was **never directly benchmarked**; the kill is mechanism-level
+inference, not a test; (2) real **token + human-QA cost per finished deliverable** vs a freelance
+drafter is unquantified; (3) does designer-holds-the-license actually cure the Trimble third-party
+prohibition, or does the non-transferable grant still bite; (4) the founder's state of operation.
+
+**Residual options as the DR framed them** ([F]:63-71): **(A)** help the designer partner adopt the
+now-free native Connector (his business, not a founder income engine); **(B)** redirect to a domain
+where the AI output *is* the final sellable product; **(C)** accept NO-GO. The DR's own closing note:
+the $0 research "likely saved weeks of build on something Trimble ships natively with no moat"
+([F]:73-74).
+
+### B. Unit economics — the decisive number, and the two operating rules
+
+[U] was run as 3 controlled parallel research agents + synthesis after the packaged workflow flaked
+([U]:3-4). Confidence is the DR's own: **MEDIUM** — "studio blogs + 1 survey; no raw freelancer
+time-tracking dataset. Directionally robust." ([U]:20)
+
+- **AI accelerates the archviz workflow ~20–35% overall, NOT 80–90%** ([U]:9-12) — two independent
+  sources (Ravelin3D; Spline Dynamics). Gains concentrate in the **front end** (concept 65–75%,
+  materials 60–70%); QA/artifact-correction eats most of the rest.
+- **Revisions are the trap** ([U]:13-15). Client revisions = **0% AI savings** (4–8 hrs/round either
+  way), and AI can be **3–5× MORE expensive to revise** because you regenerate instead of tweaking a
+  controllable 3D scene (e.g. "brick→limestone" ≈ **$2–4k AI vs $400–800 traditional**).
+- **AI image→3D model needs 2–4 hrs manual retopology cleanup** before production use ([U]:16-17;
+  vendor-sourced ⇒ **a floor, not a ceiling**).
+- **Practitioner survey, n≈800** (Chaos/Architizer, [U]:18-19): 85% report gains but **"incremental"**;
+  **48% cite poor output quality as the #1 obstacle**; gains concentrate in concept/ideation, not
+  final deliverables.
+- **Marketplace floor** — we do not sell here, but it sets the ceiling on commoditized work
+  ([U]:24-29): Fiverr **$10–40 per deliverable** (HIGH confidence, first-party listing prices) ·
+  Upwork medians ~**$25/hr** 3D modeling, ~**$30/hr** rendering · regional spread ~2–3× (Asia
+  $15–35/hr vs West $40–90/hr; **Thailand ≈ SE-Asia band — the DR marks this "inferred"**) · studio
+  rate-cards ($249–2,500/image) are **not** the market · platform fees: **Fiverr flat 20%**, **Upwork
+  0–15%, ~10% typical** since May 2025.
+- **Price erosion is real but bottom-concentrated** ([U]:33-39): 3D-modeling job posts fell **~17%**
+  after AI image generators (Demirci/Hannane/Zhu, SSRN 4602944, ~2M postings) — *note: the DR's second
+  wave restates the same finding as **−15.6%** ([U]:72-73); carry the range, not a single figure* ·
+  AI-exposed freelancers ~2% fewer contracts and **~5% lower monthly earnings**, with declines growing
+  (Brookings/Upwork data) — and **quality does NOT insulate** (Hui 2024, [U]:73) · virtual staging
+  collapsed to **~$0.23/photo** vs $25–75 human.
+  **Counter-evidence in the same source:** established archviz rates are **not** substantially cut and
+  AI-adapted freelancers reportedly earn more; the squeeze is at the junior/low-end tier.
+- **"I use AI to go faster" is already commoditized** ([U]:66-70): **84% of freelancers already use AI
+  (41% in 2023)**, and the ones whose edge WAS execution-speed got hurt most. → The founder's
+  token+pipeline layer is the **commodity**; clients + spatial judgment + relationships are the
+  durable value.
+
+**Sizing the founder's take** ([U]:47-51), at +27% uplift and a ~20% founder share of the incremental:
+
+| Designer partner's revenue/mo | +27% uplift | Founder share (~20%) |
+|---|---|---|
+| $2,000 | +$540 | ~$110/mo |
+| $5,000 | +$1,375 | ~$275/mo |
+| $10,000 | +$2,750 | ~$550/mo |
+
+**VERDICT ([U]:53-56):** a low-cost, near-zero-founder-time **OPTION worth ~$100–400/mo** — *"not a
+wealth engine."* Good per hour of founder time, bad in absolute $. Worth doing because it is cheap and
+builds an AI-pipeline skill, **not** because it is big.
+
+**OPERATING RULE 1 — keep AI BACK-OFFICE; never market "AI-made"** ([U]:78-80). Peer-reviewed
+disclosure paradox: disclosing AI use **lowers trust** (Schilke & Reimann 2025); ~70% of consumers are
+uncomfortable with AI media; there is an authenticity premium for human-made. The designer delivers
+his normal finished work; AI is an invisible throughput tool.
+
+**OPERATING RULE 2 — interior viz carries a spatial-QA burden that CAPS the uplift** ([U]:81-85). A
+render is a **"soft contract" of a REAL space**; AI invents geometry and drifts styling (the sofa
+changes between angles) → unbuildable client expectations that the designer *"pays for at install."*
+Therefore interior throughput uplift **may run BELOW** the generic 20–35% (the source's word is *may*),
+and **the $ table above is an UPPER bound for interior specifically.** *(Our reading, not the DR's: this is the business case
+behind the dimensional gates this studio runs — the DR itself only says the designer must verify
+spatial truth on every deliverable.)*
+
+**The two swing questions that size the whole thesis, still unanswered** ([U]:58-62, :91-96): (1) is
+the designer partner **capacity-constrained** (uplift = real incremental revenue) or
+**demand-constrained** (uplift = finishing earlier for $0)? (2) what % of a typical project is
+SketchUp modeling/drafting (the AI-accelerable part) vs design judgment + client work (which it does
+not touch)?
+
+**Pipeline note** ([U]:97-99): Trimble's native SketchUp Connector for Claude is free-with-subscription
+⇒ "the pipeline" is setup + a funded token budget + prompt templates around *his* actual workflow —
+**not a proprietary build.**
+
+### C. Thai professional licensing — the constraint that kills the US assumption
+
+From [T]:29-33. **These are the DR's own confidence tags, and they are legal-citation claims, not
+codes-th values** — [T]'s header ([T]:5-7) itself says to treat its content as
+UNVERIFIED-until-cross-checked against the ratchakitcha text before it gates a client deliverable.
+Confirm before relying commercially.
+
+- Interior design (**สถาปัตยกรรมภายในและมัณฑนศิลป์**) is a **controlled profession** under the
+  Architects Act **พ.ร.บ.สถาปนิก พ.ศ. 2543 §4** (สภาสถาปนิก). *DR tag: FIRM.* ([T]:30)
+- **Permit-required interior drawings must carry a licensed architect's seal** (Building Control Act
+  §23). *DR tag: FIRM.* ([T]:31)
+- **OPEN / UNVERIFIED:** whether purely non-structural / decorative **FF&E-only** work needs a seal —
+  the DR could not settle it ("not in public English sources"). Must be confirmed with the designer
+  partner / สภาสถาปนิก. ([T]:32)
+- **Business-model consequence** ([T]:33): the US assumption *"an unstamped interior แบบ is sellable"*
+  is **CONSTRAINED in Thailand.** This reinforces the shape the studio already runs on: **the designer
+  partner = the licensed practitioner who signs and provides professional cover; founder + AI =
+  back-office production.** It is the same conclusion §A reached from the market side, arrived at from
+  the legal side.
+
+### D. Tool & library licensing record (promoted from the VERIFIED synthesis [S] — never from [G])
+
+Why the distinction matters: [S] re-checked **every** license verdict against the primary source (PyPI
+classifier, the GitHub `LICENSE` file, or the vendor's own EULA/pricing page) rather than the engine's
+wording — and that pass **overturned 4 of [G]'s claims** ([S]:12-14, :38). **[G] reads as standalone
+authoritative advice and is wrong on money/legal points; cite [S].**
+
+| Tool | License (primary-source verified) | Verdict / note |
+|---|---|---|
+| **ezdxf** | MIT | **ADOPT** — the DXF spine, already in `plan_2d.py` ([S]:47, :60, :74) |
+| **IfcOpenShell** | LGPL-3.0 | **ADOPT** for IFC read if IFC input appears; write = EVALUATE ([S]:47, :62, :76) |
+| **Shapely** | BSD-3-Clause (GEOS engine is LGPL-2.1 — keep the default dynamically-linked wheel) | **ADOPT** — "the one unambiguous clean permissive add" ([S]:154-156) |
+| **OR-Tools** | Apache-2.0 | EVALUATE — constraint/MILP auto-layout engine, not the architecture logic ([S]:49, :78) |
+| **pdfplumber** | MIT | EVALUATE — vector-PDF lines/text ([S]:47-48, :63) |
+| **svgwrite / drawsvg** | MIT | previews only — **never the final CD** ([S]:49, :77) |
+| **PyMuPDF** | **AGPL** → needs a **paid Artifex license if our shipped product is closed-source** | AVOID if closed-source ([S]:47-48, :64) |
+| **ODA File Converter** | Freeware, but the ODA Community User Agreement limits non-members to **non-commercial applications only** | **RESOLVE** — we depend on it today ([S]:42, :61) |
+| **GNU LibreDWG** | GPL-3.0-or-later; **reader is mature** (reads all DWG versions; some advanced R2010+ objects skipped), writer partial | The **$0 ODA escape hatch for INGEST**, run as a back-office CLI ([S]:136-140) |
+| **libdxfrw** | GPL-2.0-or-later | **Do NOT rely on for DWG** — its DWG reading is *"rudimentary"* (the project's own word) ([S]:141-142) |
+| **R2V** (`art-programmer/FloorplanTransformation`) | **MIT** — [G] wrongly called it CC BY-NC | EVALUATE (research-grade) — "a usable raster→vector starting point (license-wise); accuracy is research-level" ([S]:43, :65) |
+| **DeepFloorplan** | GPL-3.0 | AVOID (copyleft; source-disclosure risk on distribution) ([S]:43, :66) |
+| **House-GAN/++** | GPLv3; **Graph2Plan = no license file at all** (= all rights reserved) | AVOID ([S]:44, :79) |
+| **CubiCasa** | Paid, per-scan **A$15/30/99**; **DXF export is NOT documented**; its free `CubiCasa5k` repo is **CC BY-NC** (barred from commercial use) | BUY-only, scope carefully — less of a drop-in than the raw DR implied ([S]:45, :67) |
+| **pstoedit** (vector PDF) | GPL-2.0; depends on **Ghostscript (AGPL)** — same back-office logic | Usable as a **back-office CLI**; its **DXF + SVG drivers are FREE built-ins** — the "paid plugin" worry was **REFUTED** ([S]:143-145) |
+
+**The load-bearing legal distinction** ([S]:128-134): we are a **back-office drawing factory** — GPL
+copyleft attaches to *redistributing the software*, not to the drawings it outputs (a floor plan is
+our data, not a derivative of the tool's code — the standard FSF position). The "NO for closed-source
+distribution" verdicts above assume the **worst case** (linking the code into a shipped binary), which
+is **not our model**. The synthesis states this plainly and hedges it: *"Not legal advice; confirm the
+no-redistribution posture before relying."* Carry the hedge.
+
+**ODA resolution, best-first** ([S]:198-202) — this is the resolution PATH for the landmine already
+flagged in the 2026-07-03 salvage entry above (item 4); it is **NOT yet closed**. [S] calls the
+question only *"largely resolved"* and leaves a capability test as the remaining action ([S]:214-216)
+— the LibreDWG capability test in §H(5) is the gate. **(a)** swap DWG *ingest* to **GNU LibreDWG**, pending a
+capability test against the current ODA output on a real `.dwg`; **(b)** standardize on **DXF** (which
+`plan_2d.py` already emits) and skip DWG conversion entirely; **(c)** buy an ODA membership *only* if a
+client hard-requires native DWG **output**.
+
+### E. Dimension chain-of-custody — rule of record (home = pipeline, not knowledge/)
+
+The one original idea worth keeping out of the [G] lane, adopted by the verified synthesis
+([S]:190-192): **tag every coordinate with its `source`** —
+
+- `as-built` — read from a real DWG/DXF input
+- `generated` — produced by our own layout engine
+- `unreliable_annotation` — anything a vision-LLM tagged
+
+— and **block `unreliable_annotation` geometry from ever entering a construction document.** This
+operationalizes the *verified* finding ([S]:95-97) that off-the-shelf vision-LLMs (Claude/GPT-4V/
+Gemini) **fabricate plausible-but-wrong coordinates** ("geometric hallucination") and may be used only
+to *tag* rooms already found geometrically — **never** to extract geometry or dimensions. Recorded here
+as a standing engineering decision; the implementation home is a pipeline spec field + a gate, **not**
+`knowledge/`.
+
+### F. Asset-provenance schema — OPEN proposal, LOW priority, NOT adopted
+
+The **only** item in [A] that is safe to carry, because it is an engineering proposal rather than a
+fact claim ([A]:129-134): every library asset would carry `asset_ID`, `asset_Source` (vendor),
+`asset_License` (e.g. `CC0`, `Royalty-Free Commercial Use`), `asset_Category` (hierarchical, e.g.
+`FURNITURE > SEATING > SOFA`), and `asset_Style` tags. That is the natural hook for the
+sourceability / FF&E-signoff gates. **Priority is LOW and it is not adopted**: the owner's standing
+position is ฿0 on assets / CC0-only, and the paid-asset lane is **CLOSED-DECLINED**
+(`docs/DECISIONS-render-assets.md`, the 2026-07-12 owner decision at the top of that file).
+
+⚠️ **Nothing else in [A] may be promoted, anywhere.** Our own authority document states that this DR
+**fabricates its prices and licenses**: *"(DR fabricates these; real money at stake)"* —
+`docs/DECISIONS-render-assets.md:126`. [A]'s own banner ([A]:1-4) asserts "The source list + licenses
+below stay valid", which **directly contradicts that authority**. Treat [A] as provenance for the
+DECLINED decision and nothing more.
+
+### G. Consciously DROPPED — written down so they cannot be re-imported
+
+1. **[T]'s statutory table** ([T]:9-27) — ceiling heights, room areas, corridor/door widths, stair
+   dimensions, ventilation openings. **Not promoted.** A DR is never a sufficient source for a
+   statutory number; `knowledge/codes-th/` is the sole Authority (populated from the primary
+   ratchakitcha PDFs — see the 2026-07-03 M1.2 entry above), and [T]'s own header ([T]:5-7) says to
+   treat every one of its numbers as UNVERIFIED-until-cross-checked.
+2. **ASEAN public-toilet fallback** ([T]:37) — 0.90 m cubicle width / 1.52 m depth / 0.90 m front
+   clearance. **DECISION: do not use for residential fixture clearances.** The DR reached for a
+   *public-toilet* standard when it could not find a residential one and flags it "NOT confirmed for
+   residential". It is written down here **only** so that a future reader who finds the tempting number
+   in the staged file knows it was seen, considered, and refused.
+3. **California BPC 5538 / 5536.1** ([F]:42-45) — unlicensed persons may design and sign
+   **nonstructural** interior alterations / fixtures / cabinetwork / FF&E without an architect stamp;
+   the exemption voids on structure, egress, occupancy, or size (>3,000 sq ft). **FOREIGN REFERENCE
+   ONLY — US, state-specific, and the DR notes the founder's operating state is unconfirmed.** It has
+   **no force in Thailand**; §C is the governing constraint. Recorded solely so nobody re-derives the
+   (wrong) "unstamped interior แบบ is sellable" assumption from it.
+4. **[G]'s `dining_chair_pullout_space: 760`** ([G]:252) — **dropped.** It contradicts the value
+   already carried from the same authority (Panero & Zelnik) in the ergonomics tier:
+   `knowledge/ergonomics/residential-clearances.md:38` gives a **914 mm** chair pull-back zone. [G] is
+   the refuted-tier file; the ergonomics tier wins.
+5. **[A]'s ergonomic and lighting numbers** (e.g. seat height "400–460 mm", [A]:139) — **dropped as
+   fabrication-tier.** They must not be used to overwrite better-sourced values in `knowledge/`.
+6. **Thai bed sizes** ([T]:27, 5 ft / 6 ft) — **not promoted HERE.** It is a furniture dimension, not a
+   business decision; strategy.md is the WHY layer, and a dimension belongs in the ergonomics tier.
+7. **[A]'s library-curation prose** (§3, [A]:80-88 — one format, uber-shader node group,
+   `/CATEGORY/Sub/Object` folders, a license spreadsheet) — **dropped**: it is generic studio practice
+   with no values attached, and its concrete half is already superseded by our own asset decisions.
+   Promoting it would be padding.
+
+### H. Open questions this entry leaves standing (do not silently close them)
+
+1. Is the designer partner **capacity-** or **demand-constrained**? ([U]:58-62) — sizes the entire
+   thesis.
+2. What % of a project is modeling/drafting vs design judgment + client work? ([U]:95-96)
+3. Does the **FF&E-only / non-structural** carve-out exist under Thai law — does such work need a
+   seal? ([T]:32) — ask the designer partner / สภาสถาปนิก.
+4. Does **designer-holds-the-license** cure Trimble's third-party prohibition, or does the
+   non-transferable grant still bite? ([F]:59-60) — lawyer question.
+5. **LibreDWG capability test** on a real `.dwg` vs the current ODA output ([S]:214-216) — the gate on
+   retiring ODA from `dwg_ingest.py`.
+6. Real **token + human-QA cost per finished deliverable** vs a freelance drafter ([F]:58) —
+   unquantified.
+7. The **custom Claude-Code + Ruby-API pipeline was never benchmarked** ([F]:55-57) — the NO-GO is a
+   mechanism-level inference, not a test. If it is ever re-opened, that is the experiment to run.
+
+## 2026-07-13 — THE INBOX DEBT CLOSED BY MEASUREMENT: 114 staged units audited against what actually landed, 26 files distilled/citation-fixed under a verify phase that finally COMPLETED, and the debt instrument rebuilt so the ledger can never again grade its own homework
+
+**The trigger was one line of the session brief: "640 files staged, oldest 2475d." Both numbers were the instrument lying** — 509 of the 640 were attachment binaries (a JPEG of a curtain counted as distillation debt) and the 2475d was a light manufacturer's 2019 timestamp inside a vendor ZIP (git first saw the file 2026-07-03; the true oldest unit was 11 days). The real unit of debt is the staged KNOWLEDGE UNIT (a thread dir / DR / NLM answer / corpus PDF): **114 of them, and the honest audit said 21 PARTIAL + 4 NOT-DISTILLED + 8 "already distilled" verdicts REFUTED by an adversary.**
+
+**What ran (three workflows + a review, ~13M subagent tokens):** (1) 62-agent audit — one auditor per unit, then a refuter attacking every "nothing owed" verdict; the ledger's own self-report was excluded as evidence, and measured coverage of the old prose ledger was 30/114 units (all 79 Discord threads unledgered). (2) 76-agent author→verify→fix fleet over 26 target files: 283 values promoted, and the independent verify phase — the phase that DIED on a spend limit on 2026-07-03 and left 11 unverified files behind — this time finished and caught **161 defects before commit: 77 OVERSTATED / 30 MISCITED / 9 FABRICATED / 10 dangling-provenance / 7 stale cross-refs**, all applied. The 2026-07-03 corpus files themselves came back NEEDS-FIX 10/10 — the lesson is now structural: **a parallel-authoring run without its verify phase completing is not a distillation, it is a liability with citations.** (3) ledger rebuild — one row per unit, pins CHOSEN FROM THE SOURCE BEFORE OPENING THE SUCCESSOR (the anti-pin-swapping rule), then measured: final bands DISTILLED 74 / PARTIAL 22 / OWED 2 / DROPPED 14 / PROVENANCE-KEEP 2, UNTOUCHED **0**.
+
+**The instrument (scripts/inbox_audit.py, rewritten + 46 test pins, wired into test_guards.sh):** counts units not files; age from git first-add (never mtime; `-c core.quotepath=false` because git octal-quotes Thai paths — without it all 43 Thai-named anchors silently read UNCOMMITTED, measured live); and the ledger is CHECKED not trusted: DANGLING/UNCITED-SUCCESSOR (bidirectional links), **PIN-MISS (the anti-flattering core: DISTILLED requires the declared value literally greppable in the named successor)**, GHOST/NOT-A-UNIT/DUPLICATE rows, ILLEGAL-SUCCESSOR homes, PROVENANCE-UNGRANTED (the verdict is honoured only for a hard-coded 2-unit allowlist), GENERIC-PIN stopword floor, ORPHANED-PAYLOAD (a thread dir minus its thread.md must not vanish as "attachments"), THIN-RATIONALE, HTML-comment-blind matching. Exit 1 = bookkeeping lies (fails the suite); exit 2 = aging debt (advisory — debt stays a human decision, doctrine preserved).
+
+**The review earned its keep AGAIN (4 lenses + refutation panel: 28 confirmed / 3 refuted):** the two worst holes were in the freshly-written instrument itself — the PROVENANCE-KEEP verdict was an unchecked one-line debt-exit (precisely the tag-your-way-out the file-level doctrine forbids), and successor location was never validated (a DISTILLED row could name a file inside _inbox or scripts/ and go green). Both the shape of the 10th flattering-scorer recurrence: **the anti-flattering instrument's own escape hatches are where the next flattering scorer grows.** Also caught: a ledger row claiming "exit-code semantics never landed" that HAD landed as a phrasing variant (Blueprint:487), a DISTILLED verdict on a 52-page price list of which only the pointer landed (→ PARTIAL, owed), and supplier-rep phone numbers used as grep pins (swapped for brand tokens).
+
+**PRIVACY, the finding that outranked everything:** the 2026-07-05 plan-reading DR promotion had carried a client's drawing-office name and a worked BF-code example with the client's own built-in dimensions into committed `knowledge/` — scrubbed from BOTH the promoted file and the staged copy (redaction notes in place), and the DR itself was a web run framed around that client's sheet: flagged to the owner as a possible historical egress, not asserted. Statutory discipline held everywhere: the thai-building-code DR's entire FIRM table was REFUSED promotion (recorded as a decision in strategy.md §C — a DR is never a source for a Thai statutory value), and the ASEAN public-toilet fallback + California BPC exemption were recorded as foreign-reference-only.
+
+**Standing tail (all declared in the ledger, none hidden):** OWED = APH aluminium profiles (catalogue/002, gates glass-front joinery) + TEXTFILL one-liner; PARTIAL tail incl. the Futuretech 52-page handle price list, the 139-file Excel costing archive (→ QS lane), the Commercial-Workflow licensing checklist, INTERIOR-DESIGN-KB §5 FF&E fields, and two WC-compartment rows for bathroom-kitchen-planning.md. Supplier-rep PII in the studio rolodex (discord-supplier-directory.md) is pre-existing and useful — kept, with the standing rule that contacts never enter pins or external calls; owner may choose to redact mobiles.
+
+## 2026-07-14 — materials into the spec's hands (3-leg experiment)
+
+- Owner direction: design authority (materials+lighting) lives in the SPEC; Gemini narrowed
+  from repaint to finishing. Counter accepted: lighting belongs to Cycles/lumen-method;
+  Gemini's residual mandate = micro-realism only.
+- PROVEN: spec `materials` block end-to-end (19 presets, FF&E-grounded; .blend probe exact
+  per piece; absence = legacy palette byte-exact; invalid spec now exits 1 from headless
+  blender — it used to exit 0 with the error swallowed).
+- MEASURED (sitting room, 3-roll pro-critic means): clay+v004 repaint 3.7 > materialized+
+  render-polish 2.5 > raw Cycles 1.5. The gap is NOT materials — furniture_realism 4.0
+  under the materials-lock vs 3.3 under full repaint. B/C die on styling_and_life 0.0 +
+  room_context + flat lighting = content the room does not have; leg A's edge is
+  hallucinated decor the judge itself dockets as "cliché/plastic". Do NOT hand materials
+  back to Gemini to close this gap.
+- Dead end pinned: prompt-only "keep lighting exactly" is not honoured — polish pass did a
+  strong warm relight (ΔE00 dominant-colour 10.4 vs control). v002 must pair tighter
+  language WITH a scene that carries its own lighting story (daylight aperture).
+- Next levers (ordered): deterministic scene dressing (rug/curtains/art/plant — the UNWIRED
+  WARN list in cycles-lighting-camera-presets.md:262-282; dressing carries ffe_tag) →
+  model the sitting room's real south glazing + daylight key → polish v002 → re-run
+  experiment_3leg (one command). Full report: qa/reports/materialized-render-3leg-2026-07-14.md
+
+## 2026-07-18 — Element 4 (master ensuite) designed + built + rendered
+
+- **DR-cascade held (anti-referee-factory).** Ink-read RIGHT-SIZED (deterministic ink.py +
+  visual crop, like element 3) — the room is clean furniture symbols in a rectangle, so the
+  DEPTH went into DESIGN research (a 14-agent grounded→verify→synth→critique workflow), NOT
+  into re-measuring geometry. The v4 fixtures were wrong + MISSING the 2 west casements and
+  the wet/dry glass partition; door reads sliding; the "3.05" counter splits into a deep
+  2-basin oak cabinet (east) + a shallow stone ledge over the SW WC.
+- **Signature D-E4-1 (reverse-Albers):** ONE warm-oak floating vanity as the lone ~30% gesture
+  (a LOW 850 cabinet ≈ 6% of surfaces) on a fully cool ~60% ground — the cool ground amplifies
+  the oak AND protects D1-A (4 oak masses already; no 5th dominant block). Garden through the
+  west casements = the wet-side coherence carrier. Caesarstone + satin brass + frameless glass
+  + full-width frameless mirror. Grounded in bathroom-kitchen-planning.md (GS-05, clearances),
+  mr39 (1:100 fall, area, vent, 100 lux), lumen-method (lux/CRI/CCT).
+- **Reusable engine:** bathroom.py (pure fixture massing) + build_room per-part material
+  routing BY NAME (reuses the suite oak/caesarstone/brass/glass/mirror — coherence, no new
+  tones) + `eye_camera.in_subroom` (a subroom was an opaque obstacle to the eye solver → now
+  the camera can stand inside one; reusable for any subroom interior hero).
+- **Revert-by-omission recurred 6th element running** — the DD-decided mirror (D-E4-2) was
+  omitted from the first build pass; caught in self-review, built + pinned with a test
+  invariant. Rule reaffirmed: before closing, ask "what did the DD decide that the render
+  doesn't show?"
+- **Known render stand-in (not a spec claim):** the shower tray/curb render via the cool-grey
+  microcement material as a porcelain-TILE stand-in; the DD/spec says the wet floor is
+  porcelain (microcement is barred from wet on a durability GAP). The single Gemini beauty
+  pass paints the real tile. Also unresolved (owner/statutory): wet-luminaire IP rating +
+  IEC 60364-7-701 zones + RCD are STATUTORY but not ingested — never invented.
+- Full suite 1730 green (+11 bathroom). Renders (Cycles, gitignored/regenerable):
+  room_bedroom_suite_eye_ensuite_{vanity,wet}.png. Clay/structural, awaits the hero beauty pass.
+- Next: lighting (3 real layers, assembly stage) · textiles → assemble hero suite → one Gemini
+  beauty pass (billing top-up).
+
+## 2026-07-21 — Director five-lens review: the direction HOLDS; the DR debt on the project path cleared to zero
+
+- **Owner asked "เรามาถูกทางแล้วหรือยัง".** Five parallel audit lenses (alignment / repo-risk /
+  test-health / process-pattern / critical-path), all repo-verified, answered: **the 2026-07-16
+  direction reset is holding decisively** — 14/14 post-reset commits are design output (vs 5/5
+  instrument commits the two days before it); suite verified live 1,760 green in pipeline/scripts.
+  The drift risk is record-keeping, not referee-factory relapse: this entry and this commit are
+  part of closing that gap.
+- **Ranked adjustments from the review:** (1) Gemini top-up = the single highest-leverage unblock
+  (blocked since 07-11; every deferred cosmetic funnels into the one beauty pass, and element 5
+  satisfied the v002 "scene carries its own lighting story" precondition). (2) Commit the 61-file
+  tree per-lane, stale-first — the privacy redaction (client drawing-office name) had sat
+  uncommitted 8 days with HEAD still serving the leak. (3) Revert-by-omission is NOT structural:
+  every guard checks the WIRED set, nothing enumerates the DECIDED set — smallest fix = a
+  dd-decisions manifest (transcribe each DD's own §11 checklist into a fenced JSON block) + ONE
+  pure pytest gate with identity-only probes (never dimensions — derive-not-entrench), plus two
+  5-minute pre-e6 fixes: close `_fixture_part_name`'s silent-oak vocabulary (build_room.py —
+  element 6 introduces textile roles = the predictable 7th occurrence) and add the missing
+  ensuite porcelain-tile material_story bit (the 7th occurrence's other opening, via the polish
+  prompt). (4) Write the direction into the repo — this entry starts that; the branch topology
+  (64 commits on tier1-self-doubt-suite, main 28 unpushed) remains an owner decision.
+- **DR debt cleared (owner: "ลุยได้เลย"):** all three project-path DRs distilled under the full
+  ritual — pins chosen from the source BEFORE opening the successor, then an independent
+  adversarial verify per distillation (the 07-13 law: a distillation without its verify phase is
+  a liability with citations). (a) Curtain DR → color-composition §12 (Albers ground-subtraction;
+  7/7 SHIP — and the DR's "slot 220–240 forecloses blackout" warning, RETRACTED by ink-read
+  9339f2f, was correctly NOT carried: a naive copy would have smuggled a dead warning into the
+  vault). (b) Dressing-wall DR → residential-clearances dressing-wall section (P&Z, mm-only,
+  the 914-not-enough → 1067–1168 correction) + color-composition §13 (mono-material escape);
+  CONVENTION asks held un-promoted. (c) Render-critique DR → qa-dimensions §8 (the 1–5 rubric,
+  every number REFERENCE-never-a-gate per that file's HARD RULE; studio gate-proven camera
+  1.15 m recorded as OUTRANKING the DR's 1.2–1.6 m band) + render-defaults §4 junction/
+  termination conventions. The verifier REFUTED one clause — my ledger row claimed "both
+  successors" carried the outrank note where only one did — fixed; the flattering impulse shows
+  up even in bookkeeping prose. Notebook 639575c3 is DO-NOT-PRUNE: no marker→source map is
+  exportable, so it is the only place its [n] citations could ever resolve.
+- **Ledger state after:** DISTILLED 77 · PARTIAL 22 · OWED 2 (TEXTFILL + APH — both declared,
+  neither on the hero path) · LEDGER-GAP 0 · UNTOUCHED 0. Standing red owned by the inbox-audit
+  lane (not this one): PROVENANCE-DRIFT 12 vs hard-coded 9 + 2 pinned tests in
+  scripts/test_inbox_audit.py — fix is a deliberate EXPECTED_PROVENANCE/PATTERNS edit in that
+  lane's commit.
+- Next: element 6 textiles (SMALL — curtains/rug/coverlet already built; remaining = west
+  casement sheers + ensuite towels + short DD) → assemble → hero → one Gemini beauty pass.
