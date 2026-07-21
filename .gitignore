@@ -38,3 +38,7 @@ knowledge/_inbox/discord/**/files/383192_*
 # mutation_probe.py parks the reader's pre-probe bytes here while it mutates; a killed probe
 # leaves it behind ON PURPOSE (hand-restore evidence) — it must never be sweepable into a commit
 *.probe-backup
+
+# client-derived CLIP embedding banks (Stage B2) -- never commit
+*embed-bank*.npz
+*.embedbank.npz

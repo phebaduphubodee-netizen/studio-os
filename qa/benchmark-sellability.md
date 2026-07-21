@@ -109,3 +109,35 @@ machine judge before its verdicts count.
     instead of treating it as empty. Tests: 37 in `test_precut_pair.py` incl. mutation probes for
     the ambiguity guard and the stdout privacy guard (the old stdout test was a tautology that
     could not fail — now it plants a client name and asserts absence).
+- 2026-07-15 (BLIND re-curation BUILT + review-hardened): a census of the raw pilot found the
+  forced-choice was measuring ARTEFACTS, not sellability — our renders are ~1 MP, the delivered
+  anchors 4K–22 MP; one anchor was a **portrait vanity DETAIL** vignette (shot-type mismatch); one
+  carried a **burned-in studio watermark + room caption** (un-blindable by pixels); and the raw
+  judging HTML embedded full `file://` paths (client name + ours-vs-delivered role one hover away).
+  `pipeline/scripts/pilot_blindpack.py` (+ `test_pilot_blindpack.py`, 22 tests) re-curates it:
+  EXCLUDE the watermark + portrait anchors; resolution-normalise every image to ≤1280 px opaque
+  JPEG copies (`imgs/imgNNN.jpg`); real mapping lives ONLY in the spoiler `pilot-blind-key.json`;
+  **two-phase gate** — the finished pairs (both A/B orders) are judged & LOCKED before the phase-2
+  tripwires (a **clay massing of our own bedroom** must LOSE — a FLOOR-only proxy, NOT protocol
+  tripwire #1 which stays OUTSTANDING until a leg-C/sitting anchor exists; anchor-vs-itself must
+  TIE) unlock. Outputs under `_private/benchmark/pilot-blind/` (gitignored, I-coded).
+  - Effect on scope: **excluding the watermarked living anchor dropped living from 2 clean anchors
+    to 1 (below parity_minimum=2) → BEDROOM is the only gate-eligible room type; living is
+    advisory.** Real state: 14 phase-1 rows (12 bedroom meet-parity, 2 living advisory) + 4 tripwire.
+  - HONEST LIMITS recorded in the key, not hidden: (1) phase-1 is NOT role-blind to an *analyst* —
+    every row is one-ours-one-anchor, so co-occurrence forms a complete bipartite graph that
+    separates the sets; our two MasterSuite shots are the same bedroom + a shared warm-wood look +
+    a 6×-vs-4× frequency tell. Blindness here neutralises the LAZY tells (resolution / watermark /
+    path / filename), not active inference. (2) If the **author judges their own renders**, phase-1
+    is not blind at all — value is then artifact-neutralisation + the forced-choice format. (3)
+    Display SIZE is equalised, perceived SHARPNESS is not fully (4K→1280 keeps more true detail
+    than a native 1 MP render). (4) Every anchor's `delivery_signal` is still 'proposed,
+    unconfirmed' — `meets_anchor_parity` means enough anchors EXIST, not confirmed DELIVERED.
+  - 6-lens adversarial review (blindness/determinism/data-integrity/tripwire-honesty/protocol/
+    test-honesty) → 17 findings (2 HIGH, 8 MED, 7 LOW); the honesty/disclosure/hardening findings
+    landed: exclusion now FAILS LOUD on an unmatched ref (no silent no-op admitting a watermark);
+    the guard gained an allowlist over the injected data + letter-bearing sub-word denylist; the md
+    dropped its ref→opaque map (it de-blinded ours by elimination); the two-phase lock + clay
+    phase-2 isolation are now pinned by tests. **OPEN (owner decision, not auto-fixed): WHO judges**
+    — an independent designer (phase-1 blindness meaningful, modulo the bipartite residual) vs the
+    owner-author (phase-1 blindness moot; the pilot then measures self-honest forced-choice).
