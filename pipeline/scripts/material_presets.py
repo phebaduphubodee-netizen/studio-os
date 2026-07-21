@@ -296,6 +296,42 @@ def mill_object_role(objname):
     return "oak"
 
 
+# The CLOSED mat->object-name vocabulary for ensuite fixture parts (bathroom.py `mat`
+# roles -> the SAME suite materials by NAME; consumed by build_room._add_ensuite via
+# fixture_part_name). Every mat a massing module may emit MUST have a row here — the
+# router refuses the rest. Until 2026-07-21 the router ended in a silent oak default:
+# that default is how the e5 task bar rendered OAK (blackalu/opal had no branch, LOOK
+# caught it 2026-07-20), and the director review predicted the e6 textile roles would
+# repeat it as the 7th revert-by-omission. A new mat now RAISES at build time instead
+# of quietly wearing oak.
+FIXTURE_MAT_OBJECT = {
+    "porcelain": "fix__{b}",              # cool white sanitaryware
+    "glass":     "glass__{b}",            # frameless clear glass -> glazing material
+    "stone":     "mill__{b}__counter",    # Caesarstone counter / tub deck
+    "brass":     "mill__{b}__brass",      # satin-brass tapware/fittings
+    "mirror":    "mill__{b}__mirror",     # silver frameless mirror
+    "blackalu":  "mill__{b}__blackalu",   # element-5 luminaire body (task bar)
+    "opal":      "mill__{b}__opal",       # element-5 luminous opal face
+    "tray":      "mill__{b}__cool",       # shower tray/curb -> cool microcement
+    "oak":       "mill__{b}",             # the ONE warm-oak gesture (default mill role)
+}
+
+
+def fixture_part_name(mat, base):
+    """Object name for an ensuite fixture part, routing its `mat` role to a suite
+    material by NAME (coherence: the render reuses the exact oak / caesarstone / brass /
+    sanitary / glass materials instead of inventing a tone). CLOSED vocabulary — an
+    unknown mat raises, because the silent fallback is precisely the revert-by-omission
+    channel (see FIXTURE_MAT_OBJECT)."""
+    fmt = FIXTURE_MAT_OBJECT.get(str(mat))
+    if fmt is None:
+        raise ValueError(
+            f"fixture part {base!r}: unknown mat role {mat!r} — not in the closed "
+            f"vocabulary {sorted(FIXTURE_MAT_OBJECT)}. Add a FIXTURE_MAT_OBJECT row "
+            f"(and a suite material branch) instead of letting it default to oak.")
+    return fmt.format(b=str(base).replace(" ", "_"))
+
+
 _DEFAULT_LIGHT_WARM = (1.0, 0.82, 0.60)                 # gate-proven 2400 K amber (build_room legacy)
 
 
@@ -548,6 +584,43 @@ def furniture_material_story_bits(spec):
     return bits
 
 
+def ensuite_material_story_bits(spec):
+    """ELEMENT 4 (D-E4-1, element4-ensuite_DD-2026-07-18.md): the ensuite's decided
+    materials, NAMED. Until 2026-07-21 the ensuite contributed NOTHING to material_story
+    — its fixtures are subroom fixtures, not builtins, so no existing helper saw them —
+    and the polish pass would read a room of unexplained white/grey/oak boxes and unify
+    it toward the bedroom's warmth (the director review flagged this hole as the 7th
+    revert-by-omission, aimed through the polish prompt). DATA-driven on the bathroom
+    subroom + its fixture kinds. The GROUND bit discloses honestly that the clay control
+    does NOT show the decided porcelain (the shell renders the bedroom's wall/floor
+    materials); the finish lives here and in the Gemini pass, per the hybrid law."""
+    bath = next((s for s in (spec or {}).get("subrooms") or []
+                 if s.get("type") == "bathroom"), None)
+    if not bath:
+        return []
+    kinds = {str(f.get("kind", "")) for f in bath.get("fixtures") or []}
+    bits = ["ensuite ground (D-E4-1 reverse-Albers): large-format cool-grey porcelain "
+            "tile on the wet floor + wet walls, cool microcement on dry walls — the clay "
+            "control still shows the bedroom's plaster walls and oak floor running "
+            "through the ensuite; FINISH that ground as cool porcelain, never warm/oak "
+            "it (the vanity must stay the room's only warmth)"]
+    frags = []
+    if kinds & {"vanity_double", "vanity"}:
+        frags.append("ONE low floating warm light-oak vanity (the ensuite's only oak, "
+                     "~6%) under a cool Caesarstone counter + west ledge, twin white "
+                     "porcelain vessel basins, satin-brass taps, full-width frameless "
+                     "mirror above")
+    if kinds & {"toilet", "bathtub"}:
+        frags.append("white porcelain sanitaryware (WC; deck tub shell under a cool "
+                     "stone deck with a satin-brass deck filler)")
+    if kinds & {"shower", "glass_partition"}:
+        frags.append("frameless clear-glass shower screen + wet/dry partition, cool "
+                     "microcement tray/curb, satin-brass shower fittings")
+    if frags:
+        bits.append("ensuite fixtures: " + ", ".join(frags))
+    return bits
+
+
 def lighting_story_bits(spec):
     """ELEMENT 5 (D-E5-9, element5-lighting_DD-2026-07-20.md §9): the DELIBERATE lit
     state, NAMED so the Gemini polish pass cannot repaint, flatten, or 'unify' it away
@@ -590,5 +663,6 @@ def material_story(resolved, spec=None):
     for label, pn in millwork_subpart_presets(spec):
         bits.append(f"{label}: {PRESETS[pn]['desc']}")
     bits.extend(furniture_material_story_bits(spec))   # ELEMENT 3: bed base / lamps / rug (D7)
+    bits.extend(ensuite_material_story_bits(spec))     # ELEMENT 4: the ensuite's decided palette
     bits.extend(lighting_story_bits(spec))             # ELEMENT 5: the deliberate 3-layer light
     return "; ".join(bits) if bits else material_story(None)

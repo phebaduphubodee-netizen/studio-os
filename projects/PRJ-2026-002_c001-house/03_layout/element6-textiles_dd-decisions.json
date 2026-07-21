@@ -1,0 +1,64 @@
+{
+  "schema": "dd-decisions@0.1",
+  "element": 6,
+  "dd": "element6-textiles_DD-2026-07-21.md",
+  "date": "2026-07-21",
+  "note": "Identity-only probes (director review 2026-07-21 fix b): each probe names a DECIDED thing that must EXIST in the wired set — never a dimension (derive-not-entrench). First DD to carry a manifest; the pure pytest gate that walks these is a follow-on, after which per-catch hand invariants retire. Probes are stated as checkable predicates over repo artifacts.",
+  "decisions": [
+    {
+      "id": "D-E6-1",
+      "title": "Bedroom casement sheers: inside-reveal, curtain_sheer by name, alpha from spec.curtains.render_state, sill-length, drawn-only",
+      "probes": [
+        "spec.casement_sheers block exists and covers exactly glz-west-win1 + glz-west-win2",
+        "a pure module (casement_sheers.py) owns the layout; curtains.py is byte-untouched",
+        "build_room has a consumer (_add_casement_sheers) invoked from build_suite; runs after _add_curtains; RAISES if material 'curtain_sheer' is absent",
+        "every sheer ribbon object carries ph_model=True",
+        "sheer z derives from opening sill_mm/head_mm, not floor-to-ceiling",
+        "state 'parked' RAISES (drawn-only until a park is designed)",
+        "material_story(canonical spec) contains a casement-sheers bit naming alpha-0.38 sheers, unoccluded opal strips, and the bare mirror pier",
+        "no blackout data exists at glz-west-win1/2 (recorded absence)"
+      ]
+    },
+    {
+      "id": "D-E6-2",
+      "title": "Ensuite casements BARE",
+      "probes": [
+        "both spec copies of glz-ensuite-win1/2 (envelope openings AND subrooms[ensuite].openings) carry a 'D-E6-2 DECIDED BARE' note",
+        "no build lane creates fabric at the ensuite casements",
+        "ensuite_material_story_bits output contains a BARE-casements / no-curtain-blind-fabric line, gated on the ensuite subroom + its openings existing"
+      ]
+    },
+    {
+      "id": "D-E6-3",
+      "title": "Towels on the locked Purist set: bar (WC-to-curb west segment), south jamb hook = hand towel, north jamb hook = robes x2, paper holder re-sited north of the cistern; greige-oatmeal terry census",
+      "probes": [
+        "bathroom.py emits towel_bar + robe_hook x2 + paper_holder parts, every hardware part mat='brass'",
+        "paper holder position is NORTH of the WC cistern band (not inside the built wc_tank massing)",
+        "towel census lives in spec data (bath x2 bar, hand x1 south hook + x1 counter, robe x2 north hook, mat x1) and the emitters build a soft mass for every census entry (hardware succeeding with zero textiles must fail a test)",
+        "textile parts use the single shared mat token 'towel'",
+        "the Purist schedule FILE is byte-untouched (18in fallback, if taken, is spec data)",
+        "material_story names the towels, their ONLY locations, and 'no towel over the glass or tub edge'"
+      ]
+    },
+    {
+      "id": "D-E6-4",
+      "title": "Bath mat at the shower entry gap in the drawn dry strip; centre DERIVED from built shower geometry; no tub-wash pooling claim",
+      "probes": [
+        "a bath-mat part exists with mat token 'towel'",
+        "the mat centre derives from shower_parts' built entry gap (screen end to shower east edge), not a hardcoded x",
+        "no artifact claims the mat sits under the tub wash (the claim was refuted: element5_lighting aims both cones into the tub)",
+        "the mat is the suite's only ensuite floor textile (mat-not-rug; bedroom rug untouched)"
+      ]
+    },
+    {
+      "id": "D-E6-5",
+      "title": "Wet/dry textile law: no textile enters the wet zone",
+      "probes": [
+        "no textile-mat part lies inside the shower enclosure or on the tub deck/glass",
+        "the ensuite story bit carries the no-towel-over-glass-or-tub-edge wording"
+      ]
+    }
+  ],
+  "router_closure_dependency": "The 'towel' token requires ALL THREE branches: FIXTURE_MAT_OBJECT row + a mill_object_role branch (that router still ends in return 'oak' — the closed fixture_part_name gate is one layer up and does NOT protect this) + the build_room role-dict entry with the terry material built in _suite_materials. A row alone renders every towel in walnut with no raise.",
+  "provenance": "workflow wf_565485c7-985 (4 ground / 1 decide / 3 verify / 1 critique; 0 core REFUTED; all AMENDs applied in the DD)"
+}

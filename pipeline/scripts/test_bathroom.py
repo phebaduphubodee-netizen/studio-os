@@ -4,6 +4,16 @@ import bathroom as B
 KNOWN_MATS = {"porcelain", "stone", "oak", "brass", "glass", "tray", "mirror",
               "blackalu", "opal"}   # element-5 task-bar roles (D-E5-5)
 
+
+def test_every_emittable_mat_has_a_router_row():
+    """The consumer's mat->object router is a CLOSED vocabulary that RAISES on unknowns
+    (material_presets.FIXTURE_MAT_OBJECT, director review 2026-07-21). Every mat this
+    module may emit must therefore hold a row there — otherwise a fixture that renders
+    fine today explodes at build time the day its branch is exercised."""
+    import material_presets as mp
+    assert KNOWN_MATS <= set(mp.FIXTURE_MAT_OBJECT), \
+        f"mats without a router row: {KNOWN_MATS - set(mp.FIXTURE_MAT_OBJECT)}"
+
 # ink-true footprints from element4-ensuite_ink-read-2026-07-18.json
 VANITY = {"kind": "vanity_double", "name": "vanity", "x": 1077, "y": 5923, "w": 2047, "d": 654, "h": 850,
           "design": {"counter_x0_mm": 77, "counter_len_mm": 3047, "basin_ctr_x_mm": [1576.9, 2627.5]}}

@@ -543,3 +543,52 @@ def test_bespoke_built_refuses_intercepted_items():
     assert mp.bespoke_built({"kind": "stool", "style": "tub_chair"})
     assert not mp.bespoke_built({"kind": "stool"})
     assert not mp.bespoke_built({"kind": "side_table"})
+
+
+# --- fixture_part_name: the CLOSED mat vocabulary (director review 2026-07-21 fix a) --------------
+
+def test_fixture_part_name_routes_the_whole_closed_vocabulary():
+    """Every row of FIXTURE_MAT_OBJECT routes to a name whose prefix/part-token lands on the
+    intended suite material (via mill_object_role for the mill__ rows)."""
+    assert mp.fixture_part_name("porcelain", "wc bowl") == "fix__wc_bowl"
+    assert mp.fixture_part_name("glass", "shower_screen") == "glass__shower_screen"
+    assert mp.fixture_part_name("oak", "vanity_cabinet") == "mill__vanity_cabinet"
+    for mat, role in (("stone", "caesarstone"), ("brass", "brass"), ("mirror", "mirror"),
+                      ("blackalu", "blackalu"), ("opal", "opal"), ("tray", "microcement")):
+        name = mp.fixture_part_name(mat, "p")
+        assert mp.mill_object_role(name) == role, f"{mat} -> {name} -> {mp.mill_object_role(name)}"
+
+
+def test_fixture_part_name_raises_on_unknown_mat():
+    """The silent oak default was the revert-by-omission channel: blackalu/opal fell through it
+    2026-07-20 (the task bar rendered OAK) and the e6 textile roles were predicted to be the 7th.
+    An unknown mat must fail LOUD at build time, never quietly wear oak."""
+    for bad in ("linen", "towel", "fabric", "", None, "OAK"):
+        with pytest.raises(ValueError, match="closed"):
+            mp.fixture_part_name(bad, "towel_stack")
+
+
+# --- ELEMENT 4: the ensuite must be NAMED in material_story (director review 2026-07-21 fix c) ----
+
+def test_material_story_names_the_ensuite_palette():
+    """The ensuite contributed NOTHING to material_story (its fixtures are subroom fixtures, not
+    builtins) — the polish pass would unify the cool room toward the bedroom's warmth. Pin that the
+    canonical spec's story now carries the D-E4-1 ground + the fixture palette."""
+    import json, os
+    spec = json.load(open(os.path.join(os.path.dirname(__file__),
+        "../../projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json"),
+        encoding="utf-8"))
+    story = mp.material_story(mp.resolve_materials(spec), spec).lower()
+    assert "porcelain" in story, "ensuite porcelain ground/sanitaryware must be named"
+    assert "ensuite" in story and "only oak" in story, "the vanity-as-only-oak rule must be stated"
+    assert "wet/dry partition" in story, "the frameless glass must be named"
+
+
+def test_ensuite_bits_are_data_driven_on_the_bathroom_subroom():
+    assert mp.ensuite_material_story_bits({}) == []
+    assert mp.ensuite_material_story_bits({"subrooms": [{"type": "wardrobe"}]}) == []
+    ground_only = mp.ensuite_material_story_bits({"subrooms": [{"type": "bathroom"}]})
+    assert len(ground_only) == 1 and "porcelain" in ground_only[0]
+    full = mp.ensuite_material_story_bits({"subrooms": [{"type": "bathroom", "fixtures": [
+        {"kind": "vanity_double"}, {"kind": "toilet"}, {"kind": "shower"}]}]})
+    assert len(full) == 2 and "only oak" in full[1] and "shower" in full[1]

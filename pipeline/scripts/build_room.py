@@ -102,32 +102,6 @@ def add_box(name, x, y, z, dx, dy, dz):
     return obj
 
 
-def _fixture_part_name(mat, base):
-    """Route an ensuite fixture part (bathroom.py) to a SUITE material by NAME, so it
-    reuses the exact oak / caesarstone / brass / sanitary / clear-glass materials instead
-    of inventing a new tone (coherence). See _suite_materials + material_presets
-    .mill_object_role: `mill__x`=oak, `mill__x__counter`=caesarstone, `mill__x__brass`=
-    brass, `mill__x__cool`=microcement, `glass__x`=glazing, `fix__x`=sanitary white."""
-    b = str(base).replace(" ", "_")
-    if mat == "porcelain":
-        return f"fix__{b}"
-    if mat == "glass":
-        return f"glass__{b}"
-    if mat == "stone":
-        return f"mill__{b}__counter"
-    if mat == "brass":
-        return f"mill__{b}__brass"
-    if mat == "mirror":
-        return f"mill__{b}__mirror"
-    if mat == "blackalu":
-        return f"mill__{b}__blackalu"   # element-5 luminaire body (task bar) — without this
-    if mat == "opal":                   # branch the parts fell to the oak default SILENTLY
-        return f"mill__{b}__opal"       # (LOOK caught the bar rendering as oak, 2026-07-20)
-    if mat == "tray":
-        return f"mill__{b}__cool"
-    return f"mill__{b}"          # oak (default mill role = the spec's oak_veneer)
-
-
 def add_camera_and_light(w, d, h):
     """Draft camera + sun following the KB §8.3 architectural-render rules: a
     TWO-POINT-perspective camera (kept LEVEL so verticals stay vertical) at ~1.6m eye
@@ -2379,11 +2353,14 @@ def build_suite(spec, label="suite"):
             # ELEMENT 4: ensuite fixtures get real per-part massing (bathroom.py, PURE) whose
             # material ROLE routes to the SAME suite materials by NAME (oak vanity, caesarstone
             # counter, porcelain sanitaryware, brass fittings, clear glass). Unmapped kinds fall
-            # back to the plain sanitary box — same escape _build_millwork uses.
+            # back to the plain sanitary box — same escape _build_millwork uses. The mat->name
+            # router is a CLOSED vocabulary in the pure layer (material_presets.fixture_part_name)
+            # and RAISES on a mat it doesn't know — the silent oak default it replaced is how the
+            # e5 task bar rendered oak (LOOK 2026-07-20).
             _parts = bathroom.fixture_parts(fx, taskbar=_e5.applies(spec))
             if _parts:
                 for _p in _parts:
-                    add_box(_fixture_part_name(_p["mat"], _p["name"]),
+                    add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
                             _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
                             _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
                 n_fix += 1
