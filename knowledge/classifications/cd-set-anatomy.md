@@ -6,6 +6,16 @@
 > This is the *completeness checklist* the phase-4 construction-document set is
 > measured against (see `design-process-and-deliverables.md` §1 phase 4).
 > It defines structure, not statutory content.
+>
+> UPSTREAM SOURCE — named 2026-07-13 to make the provenance bidirectional. Until
+> now this file cited only the KB, so no reader could tell which Deep-Research run
+> a given row came from. §1 and §2 below trace to a staged run that is on disk and
+> readable: `knowledge/_inbox/interior-ai/2026-06-30-gemini-DR-design-components.md`
+> (cited below as `DR:<line>`). Same **REFERENCE** tier — single-model, and framed
+> throughout on North-American convention (its code frame is IBC/ADA, `DR:64`); it
+> carries no statutory value and may not supply one. The phase/deliverable half of
+> that same DR was promoted separately into
+> `knowledge/classifications/design-process-and-deliverables.md` §§5–8.
 
 ## ลำดับอำนาจ / Authority order + precedence
 
@@ -23,7 +33,10 @@
 ## 1. องค์ประกอบของชุด CD / What a "complete" CD set contains
 
 A complete construction-document set is a **cross-referenced relational whole**,
-not a pile of loose drawings:
+not a pile of loose drawings. *(Component list from
+`knowledge/_inbox/interior-ai/2026-06-30-gemini-DR-design-components.md`, "Phase 4:
+Construction Documentation" — `DR:65-76`; the specifications-outrank-drawings rule
+at the end of this list is that DR's `DR:121`.)*
 
 - **Cover sheet** — project info, drawing index, code data.
 - **Construction / floor plans** — dimensioned; partitions, doors, power/data,
@@ -43,7 +56,11 @@ not a pile of loose drawings:
 ## 2. กฎเชิงสัมพันธ์ / The relational rule (the key law for an AI generator)
 
 Every element on one sheet must have its partner rows/views, generated **from the
-model** so they cannot drift out of sync:
+model** so they cannot drift out of sync. *(The four pairings below are the staged
+DR's own completeness checklist —
+`knowledge/_inbox/interior-ai/2026-06-30-gemini-DR-design-components.md` `DR:157-162`,
+where the generator is framed as "building a relational database of the project",
+`DR:155`.)*
 
 | On the model / plan | Must produce |
 |---|---|
@@ -79,4 +96,5 @@ present — flag, do not silently ship a partial set as complete.
 - `knowledge/classifications/design-process-and-deliverables.md` — phase 4 that produces this set.
 - `pipeline/scripts/{plan_2d,rcp,elevations,schedules,suite_package,qa_checklist}.py` — the code that emits it.
 - `knowledge/classifications/design-domain-taxonomies.md` — CSI MasterFormat / documentation vocabulary.
-- `knowledge/_inbox/interior-ai/INTERIOR-DESIGN-KB.md` §3 — source.
+- `knowledge/_inbox/interior-ai/INTERIOR-DESIGN-KB.md` §3 — source (the promoted-from file).
+- `knowledge/_inbox/interior-ai/2026-06-30-gemini-DR-design-components.md` — upstream Deep-Research run behind §1 (`DR:65-76`, `DR:121`) and §2 (`DR:155-162`).

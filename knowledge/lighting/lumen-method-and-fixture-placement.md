@@ -5,7 +5,7 @@
 > §6 (Lighting design). That KB was itself built 2026-06-30 by cross-checking **two
 > independent Deep-Research runs** — Gemini 2.5 Pro + Google Search, and a NotebookLM
 > DR over ~290 web sources (raw audit trail:
-> `knowledge/_inbox/interior-ai/research/2026-06-30-gemini-DR-lighting.md` +
+> `knowledge/_inbox/interior-ai/2026-06-30-gemini-DR-lighting.md` +
 > the nlm-DR history). Tier: **REFERENCE — strong-but-unaudited**, NOT Authority.
 > Confidence is marked per value below (cross-vendor-confirmed vs single-source)
 > from the KB's §9 verification ledger.

@@ -122,7 +122,9 @@ Founder wants renders as beautiful as his friend's studio (PORS). The free CC0 p
 reaches ~70–75%; the biggest remaining lever is **modern-luxury furniture/material assets**
 (Poly Haven / free CC0 has only vintage furniture, so we retint dark leather → cream boucle).
 
-Fired Gemini DR (`research/2026-07-01-asset-sourcing-DR.md`) + **web-verified real prices/licenses**
+Fired Gemini DR (`research/2026-07-01-asset-sourcing-DR.md` — **dead path; the run is staged at
+`knowledge/_inbox/interior-ai/2026-07-01-asset-sourcing-DR.md`**, verbatim citation added 2026-07-13)
++ **web-verified real prices/licenses**
 (DR fabricates these; real money at stake). Verified options:
 
 | Option | Price (verified) | License (verified) | Pipeline fit |
@@ -130,6 +132,15 @@ Fired Gemini DR (`research/2026-07-01-asset-sourcing-DR.md`) + **web-verified re
 | **BlenderKit Full** ⭐ | $118.80/yr ($17.90/mo) | RF + CC0; **client-delivered renders = allowed commercial use** (selling the image, not the model — matches our LICENSING.md); can't resell raw models | BEST: 48k assets built into Blender as an add-on → automatable download+placement |
 | **Chocofur** | ~€25/pack one-time (€8.90/model); free CC0 tier | commercial renders OK | Blender-native Cycles shaders, modern; best if one-time preferred over subscription |
 | 3dsky / Dimensiva | $5–15/model (3dsky); Dimensiva ~€29/mo | royalty-free commercial | huge selection incl. exact boucle/marble/brass, but manual per-model |
+
+*Provenance of the rows above (added 2026-07-13 — which fact came from which thread):* the free-CC0
+line and the `3dsky / Dimensiva` row trace to the staged run
+`knowledge/_inbox/interior-ai/2026-07-01-asset-sourcing-DR.md` — its §1 (free / CC0 sources) and §2
+(paid marketplaces). **Chocofur appears nowhere in that DR**; it was added here. The price and
+license columns are web-verified *overrides* of that DR, which fabricates both. Not carried by this
+file at all: the DR's headline recommendation of a paid **PBR-material-library subscription** as the
+primary investment (its §2 first entry + SYNTHESIS) — no successor anywhere in the repo carries that
+lane, and this note is the first place its absence is written down.
 
 **Recommendation:** BlenderKit Full ($118.80/yr) — only option that plugs into Blender (automatable).
 One-time alternative: Chocofur packs (~$27).

@@ -1,7 +1,8 @@
 # AELLA Hardware — brass architectural door & furniture hardware (Thai catalogue)
 
 > PROVENANCE: distilled 2026-07-04 from 14 AELLA Hardware catalogue PDFs fetched out of the Discord
-> "MY DATA PEAT" #catalogue Drive link (thread `023_AELLA-HARDWARE`). Raw PDFs at
+> "MY DATA PEAT" #catalogue Drive link (source thread:
+> `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/023_AELLA-HARDWARE`). Raw PDFs at
 > `knowledge/_inbox/discord/MY-DATA-PEAT/_external-fetched/catalogue/023_AELLA/` (link map:
 > `../EXTERNAL-LINKS.md`). Extracted by workflow wf_06c51244 (one agent per category catalogue).
 > TIER: REFERENCE — supplier list prices; **VAT status NOT stated on the sheets; treat as list prices.**

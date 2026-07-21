@@ -2,7 +2,7 @@
 
 > PROVENANCE: distilled from
 > `knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf`
-> pp.5–6 (DR report, REFERENCE tier), date 2026-07-03.
+> pp.5–6, 9 (DR report, REFERENCE tier), date 2026-07-03.
 > Citation convention: (Interior Design Knowledge Structuring.pdf p.N).
 > `*` = general woodwork reference NOT present in the corpus PDF — carried for
 > utility, verify before it drives a client spec (same convention as
@@ -17,20 +17,36 @@ from DR reports.
 
 ## 1. ขอบเขตงาน: Division 06 กับ Division 12 / Scope split — built-in vs manufactured
 
-The technical language of high-customization residential work revolves around
-three terms: **architectural woodwork, millwork, casework** (Interior Design
-Knowledge Structuring.pdf p.5). Specification must differentiate two divisions
-within standard construction classifications (p.5):
+The technical language of **luxury residential** work revolves around three
+terms: **architectural woodwork, millwork, casework** (Interior Design
+Knowledge Structuring.pdf p.5 — the source's own sector framing: "Luxury
+residential design operates on the principles of extreme customization…
+The technical language required for **this sector** revolves around
+architectural woodwork, millwork, and casework", one of its
+occupancy-classification contexts). Specification must differentiate two
+divisions within standard construction classifications (p.5):
 
 | Division | ขอบเขต / Scope | Governance |
 |---|---|---|
 | **Division 06** — Wood, Plastics, and Composites | Custom, **site-specific fabrication** — architectural woodwork / งานบิวท์อินสั่งทำเฉพาะหน้างาน | Architectural Woodwork Institute (**AWI**) standards (p.5) |
 | **Division 12** — Furnishings | Furnishings (p.5 names only "Furnishings"; the manufactured/freestanding เฟอร์นิเจอร์ลอยตัว-ผลิตสำเร็จ gloss is inferred from the contrast with Div 06's "custom, site-specific fabrication"*) | — (source names no governing body) |
 
-Practical rule for the studio: a wardrobe built into the wall of a Thai condo
-is Division 06 scope (AWI vocabulary applies); a purchased freestanding
-wardrobe is Division 12 scope (FF&E lane — see `ffe-research` outputs).
+**Practical rule for the studio — studio-standards tier (studio-authored
+inference, NOT a corpus claim; the source applies the Div 06 / Div 12 split to
+"luxury residential design" generally (p.5) and says nothing about Thailand):**
+a wardrobe built into the wall of a Thai condo is Division 06 scope (AWI
+vocabulary applies); a purchased freestanding wardrobe is Division 12 scope
+(FF&E lane — see `ffe-research` outputs).
 
+- **Foreign-standard caveat.** AWI (Architectural Woodwork Institute) and CSI
+  are US bodies*; the source itself says **CSI's** classification systems are
+  "the primary classification systems used in **North America**" (p.9) — that
+  phrase is predicated of CSI's systems, not of AWI, whose geography the corpus
+  never states. They are a commercial specification convention with **no Thai
+  statutory force**, and no มอก./TIS analogue is named anywhere in the corpus
+  (studio-standards tier* — the corpus never mentions Thailand at all; see
+  ข้อ 8). Use AWI/Division vocabulary as spec language only — on any overlap
+  with a legal dimension or requirement, `knowledge/codes-th/` wins.
 - p.5 calls these "standard construction classifications" without naming the
   system, but the corpus itself names it elsewhere: CSI **MasterFormat**
   (50 divisions, Work Results) at Interior Design Knowledge Structuring.pdf
@@ -42,10 +58,12 @@ wardrobe is Division 12 scope (FF&E lane — see `ffe-research` outputs).
 
 ## 2. การผ่าวีเนียร์ / Veneer cuts
 
-Source names four cuts as the specification variables (Interior Design
-Knowledge Structuring.pdf p.5): **rotary, plain sliced, quarter sliced, rift
-cut** — chosen because they dictate "material performance and aesthetic
-sequencing" (p.5).
+Source names four cuts (Interior Design Knowledge Structuring.pdf p.5):
+**rotary, plain sliced, quarter sliced, rift cut**. The source lists them as
+"variables" of the detailed construction terminology that, in its words,
+"dictates material performance and aesthetic sequencing" (p.5) — that phrase is
+predicated of the terminology, not of the cuts; the source gives no reason why
+these four were named.
 
 | Cut / วิธีผ่า | ลายที่ได้ / Typical appearance* |
 |---|---|
@@ -74,14 +92,24 @@ Two matching techniques named (Interior Design Knowledge Structuring.pdf p.5):
 
 ## 4. วิธีเข้าไม้ / Joinery methods
 
-Structural parameters are defined by joinery method (Interior Design Knowledge
+"Structural parameters require defining joinery methods **such as** dovetail,
+mortise and tenon, **or** biscuit joints" (Interior Design Knowledge
 Structuring.pdf p.5): **dovetail** เดือยหางเหยี่ยว, **mortise and tenon**
 เดือยและรูเดือย (การเข้าเดือย), **biscuit joints** เดือยบิสกิต.
 
+- The source's "such as" makes this an **illustrative, open list**, not a closed
+  enumeration. The corpus hedges every list in this domain — it introduces the
+  veneer/matching set with "**Variables include**" and the joinery set with
+  "**such as**" (both p.5) — so **no list in ข้อ 2–4 is declared exhaustive by
+  the corpus**; ข้อ 3 and ข้อ 6 are corpus-**silent** on further members, not
+  corpus-**closed**. Do not treat these three joints as the corpus's complete
+  set, and do not add others as if they were corpus-grounded.
 - AWI-grade specification cross-references the required grade **against the
-  specified joinery and substrate types** to keep structural integrity and
-  aesthetic cohesion across bespoke elements (p.6) — i.e. joinery choice is a
-  grade-compliance variable, not a style preference.
+  specified joinery and substrate types**, "ensuring that structural integrity
+  and **aesthetic cohesion** are maintained across bespoke elements" (p.6) — so
+  joinery is audited against the grade (a grade-compliance variable). The source
+  keeps structural integrity and aesthetic cohesion jointly in scope; any
+  compliance-**versus**-style contrast is studio-authored*, not corpus.
 - GAP: the corpus ranks no joint over another and gives no load or drawer-box
   guidance (e.g. "dovetail for drawers" is convention*, not corpus).
 
@@ -134,7 +162,15 @@ restate values here:
   moisture-content targets, or hardware cycle ratings.
 - No appearance/yield data for veneer cuts or matches (ข้อ 2–3 tables are `*`).
 - No Thai-market equivalents: มอก. (TIS) panel standards, Thai hardwood
-  species suitability, local edge-banding gauges — all absent.
+  species suitability, local edge-banding gauges — all absent. The standards
+  this file does carry (AWI grades, CSI Divisions) are **foreign reference**.
+  CSI Divisions come from a system the source calls "the primary classification
+  systems used in **North America**" (p.9) — that quote is predicated of CSI's
+  systems only. AWI is a US body* — **not** corpus-stated: the corpus never
+  locates AWI geographically, naming it as the body governing Div 06 woodwork
+  (p.5), its Custom/Premium grades (p.6), and an ANSI/AWI standard in its
+  reference list (p.14). Neither carries Thai statutory force
+  (studio-standards tier*) — see the foreign-standard caveat in ข้อ 1.
 - No AWI grade definitions (what Custom vs Premium actually requires) — only
   the grade names and the cross-referencing duty (p.6).
 - Fire/safety or formaldehyde-emission classes (E0/E1*) not in corpus; if any

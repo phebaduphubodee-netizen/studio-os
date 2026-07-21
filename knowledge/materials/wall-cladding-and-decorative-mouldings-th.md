@@ -18,6 +18,8 @@ Companion supplier-contact directory: `knowledge/studio-vault/40-Suppliers/disco
 
 ## 1. WALL / Wallthailand (Deardome Group) — WPC & MDF wall slat / panel systems
 
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/012_ระแนงสำเร็จรูป-(Wall)`
+(its Drive link is where the PDFs below were fetched from).
 One manufacturer, brand "WALL THAILAND" (WALLTHAILAND.BKK), parent Deardome Group.
 Contact: Tel 02-321-5599 · LINE @WALLTHAILAND · FB /WALLTHAILAND.BKK · www.deardomegroup.com ·
 24 Srinakarindra 42, Soi Suphaphong 1 Yaek 3, Nong Bon, Prawet, Bangkok 10250.
@@ -103,6 +105,8 @@ Milky/Volcanic/Cloud Oak, Charcoal Grey). Install: finished goods, no wall sandi
 
 ## 2. TIP-TOP — PU decorative architectural mouldings (importer: Pan Union Import Export)
 
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/016_TIPTOP`
+(its Drive link is where the catalogue below was fetched from).
 Source: `TIPTOP_Catalogue_V3.pdf` ("Materials & Specs V.3", 105 p) — **spec/dimension catalogue, NO prices**
 (need a separate Tip-Top/Pan Union price sheet to cost). Material: Polyurethane (PU); some ceiling roses/domes
 in GRG or FRP; statues in E.R.P. Ships pre-primed off-white, paintable. Interior + exterior rated (fire-retardant,

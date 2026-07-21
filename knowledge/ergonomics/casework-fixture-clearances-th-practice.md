@@ -2,8 +2,12 @@
 
 > PROVENANCE: distilled from Discord "MY DATA PEAT" (forum channel #dimension-interior), threads:
 > `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/001_KITCHEN-ROOM/thread.md` (+ images in `files/`),
-> `.../002_ม่าน-Curtain/`, `.../003_การเลือกจำนวนบานพับกับความสูงตู้/`, `.../004_ปูกระเบื้อง-spc/`,
-> `.../005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ/`, `.../006_ตู้เสื้อผ้า/`, `.../007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง/`.
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/002_ม่าน-Curtain` (→ §5),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/003_การเลือกจำนวนบานพับกับความสูงตู้` (→ §3),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/004_ปูกระเบื้อง-spc` (→ §6),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ` (→ §7),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/006_ตู้เสื้อผ้า` (→ §2),
+> `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง` (→ §1).
 > Pulled 2026-07-03, tier REFERENCE. Source = studio practitioner notes ("Peat"), not a published standard.
 > AUTHORITY: statutory Thai minimums in `knowledge/codes-th/` OUTRANK every value here; where a value
 > overlaps a legal floor, the law wins and this file defers to it.
@@ -19,7 +23,8 @@ Units are kept EXACTLY as the source gave them (cm / ซม. / มม. / inches)
 ---
 
 ## 1. เว้นระยะลิ้นชัก รับใต้ / รับข้าง / Drawer-box vs cabinet-opening deductions
-Source: thread `007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง/thread.md` (text only, no image). "วิธีคำนวนภายในลูกลิ้นชัก" —
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง`
+(`thread.md`, text only, no image). "วิธีคำนวนภายในลูกลิ้นชัก" —
 how to size the drawer box from the clear cabinet opening, by slide type.
 
 | รางลิ้นชัก / Slide type | หักจากช่องตู้ (กว้างลูกลิ้นชัก) / Deduct from clear opening | องค์ประกอบที่หัก / Made up of |
@@ -35,7 +40,7 @@ how to size the drawer box from the clear cabinet opening, by slide type.
 ---
 
 ## 2. ตู้เสื้อผ้า / Wardrobe internals
-Source: thread `006_ตู้เสื้อผ้า/` (images in `files/`).
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/006_ตู้เสื้อผ้า` (images in `files/`).
 
 ### 2.1 ขนาดของเสื้อผ้า / Garment sizes (for sizing hanging & shelf zones)
 Source image `files/417394_image.png` (PAPERROOM chart "ขนาดของเสื้อผ้า"). Height × footprint as drawn.
@@ -98,7 +103,8 @@ adjust to the user's stature).
 ---
 
 ## 3. จำนวนบานพับกับความสูงตู้ / Cabinet-door hinge count vs door height & weight
-Source: thread `003_การเลือกจำนวนบานพับกับความสูงตู้/files/659530_image.png` (Futuretech chart
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/003_การเลือกจำนวนบานพับกับความสูงตู้`
+— image `files/659530_image.png` (Futuretech chart
 "เทคนิคการเลือกจำนวนบานพับให้เหมาะสมกับความสูงของตู้").
 
 | จำนวนบานพับ / No. of hinges | ความสูงตู้/บาน / Door height | น้ำหนักบาน / Door weight |
@@ -172,7 +178,8 @@ Source image `206174_standard-fridge-sizes.png` (Angi). Source values are in **i
 ---
 
 ## 5. ม่าน / Curtain — การเว้นระยะกล่องบังราง & ดรอปฝ้าซ่อนราง / Valance-box & recessed-pocket allowances
-Source: thread `002_ม่าน-Curtain/` — images `841981_image.png` (**เสริมกล่องบังราง / add-on valance box**) and
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/002_ม่าน-Curtain`
+— images `841981_image.png` (**เสริมกล่องบังราง / add-on valance box**) and
 `145779_...scaled.png` (**ดรอปฝ้าซ่อนราง / recessed drop-ceiling curtain pocket**), NITAS TESSILE.
 "เว้นเคลียร์ใน" = clear inside depth the box/pocket must give the fabric stack.
 
@@ -193,7 +200,8 @@ Both boxes/pockets are drawn at ระดับฝ้าเพดาน / ceilin
 ---
 
 ## 6. ปูพื้นไม้/กระเบื้อง — รูปแบบการปู / Wood-plank (SPC) laying patterns
-Source: thread `004_ปูกระเบื้อง-spc/files/483028_FB_IMG_1705886812907.jpg` ("เรื่องพื้นๆ ปูพื้นไม้แบบนี้เรียกว่าอะไร",
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/004_ปูกระเบื้อง-spc`
+— image `files/483028_FB_IMG_1705886812907.jpg` ("เรื่องพื้นๆ ปูพื้นไม้แบบนี้เรียกว่าอะไร",
 elements & decors). This card names layout PATTERNS only — **no numeric dimensions are given**, so nothing to
 transcribe as measurements. Pattern glossary (for spec/tagging):
 
@@ -209,7 +217,8 @@ transcribe as measurements. Pattern glossary (for spec/tagging):
 ---
 
 ## 7. Dimension ที่ใช้ในการเขียน–อ่านแบบ / Drawing dimension-string conventions
-Source: thread `005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ/thread.md` (msg [2]) + image `files/081737_image.png`
+Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/005_Dimension-ที่ใช้ในการเขียน-อ่านแบบ`
+(`thread.md` msg [2]) + image `files/081737_image.png`
 (both agree). How dimension strings are written/read on drawings; the "1.50" values are illustrative examples.
 
 | สัญกรณ์ / Notation | ความหมาย / Meaning |

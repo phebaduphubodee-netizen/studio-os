@@ -33,7 +33,7 @@ contact before quoting a client. Each entry cites its source thread folder under
 ---
 
 ## FORMICA — ลามิเนต / High-pressure & compact laminate
-Source thread: `008_FORMICA/`. Brand: Formica (Thailand) Co., Ltd — Sales office 216/65 LPN Tower 15th Fl.,
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/008_FORMICA`. Brand: Formica (Thailand) Co., Ltd — Sales office 216/65 LPN Tower 15th Fl.,
 Nanglinchee Rd., Chongnonsee, Yannawa, Bangkok 10120, T +662 2854473-74, www.formica.com.
 
 - **ติดต่อ / Contact:** คุณคเณศ (ภาคอีสาน / Formica NE-region rep).
@@ -90,14 +90,14 @@ TD 9200 / 9201 (ผิว PL,M,G, 0.6 มม.) = **430** บาท/แผ่น.
 ---
 
 ## LAMITAK — ลามิเนต / Laminate (import, TAK Group)
-Source thread: `007_LAMITAK/`. eCatalogue: *Lamitak: Intervention Vol. 1* —
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/007_LAMITAK`. eCatalogue: *Lamitak: Intervention Vol. 1* —
 https://issuu.com/crm.tak.wg/docs/lamitak_catalog_2023-24_vol1 (issuu). Product image `924240_image.png`.
 Full catalog PDF (Vol.1, 51 MB) was too large to capture in the thread. No contact/discount stated.
 
 ---
 
 ## VIRGO — ลามิเนต / Laminate (Virgo Pacific Thailand)
-Source thread: `019_VIRGO/`. Brand: Virgo Pacific (Thailand) Co., Ltd — 110/1 Moo 7, Lahan, Bang Bua Thong,
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/019_VIRGO`. Brand: Virgo Pacific (Thailand) Co., Ltd — 110/1 Moo 7, Lahan, Bang Bua Thong,
 Nonthaburi 11110; th@virgoasia.com; +66 2017 4111 / fax +66 2017 4119; www.virgolam.com.
 
 - **ติดต่อ / Contact:** คุณแจ๊ค **099-348-2222** (msg [3]).
@@ -126,14 +126,14 @@ Nonthaburi 11110; th@virgoasia.com; +66 2017 4111 / fax +66 2017 4119; www.virgo
 ---
 
 ## Croma — ลามิเนต / Laminate 0.8 mm
-Source thread: `015_Croma/`. Product: ลามิเนตรุ่น Croma หนา 0.8 มม.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/015_Croma`. Product: ลามิเนตรุ่น Croma หนา 0.8 มม.
 eCatalogue: *E-Catalog Croma 2023* — https://online.fliphtml5.com/ajyyd/ylxq/?1672048486397#p=37.
 Product image `228637_image.png`. No contact/discount stated.
 
 ---
 
 ## EDL — ลามิเนต / Laminate (EDL Euro, import)
-Source thread: `022_EDL/`. Brand: EDL Laminates Co., Ltd — 46/287, 46/288 Soi Nawamin 74 Yaek 1,
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/022_EDL`. Brand: EDL Laminates Co., Ltd — 46/287, 46/288 Soi Nawamin 74 Yaek 1,
 Klongkum, Buengkum, Bangkok 10230; T +66 (0)2508 3993 / fax +66 (0)2508 3995; enquiries@th.edleuro.com;
 www.edleuro.com. (HQ: EDL Pte Ltd, 17 Woodlands Terrace, Singapore 738442.)
 
@@ -168,7 +168,8 @@ www.edleuro.com. (HQ: EDL Pte Ltd, 17 Woodlands Terrace, Singapore 738442.)
 ---
 
 ## Caesarstone (by HAFELE) — หินปิดผิว / Engineered stone surface
-Source thread: `005_Stone-Surface-caesarstone-By-HAFELE/`. Caesarstone slabs imported/distributed by Häfele.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/005_Stone-Surface-caesarstone-By-HAFELE/`. Caesarstone slabs imported/distributed by Häfele.
+Material/spec substance distilled to `knowledge/materials/caesarstone-engineered-stone-th.md`; this entry keeps the supplier relationship.
 
 - **ติดต่อ / Contact:** MR. Thitiphong Phungphop — ธีติพงษ์ พึ่งพา (K. อาร์ต / "K.Art"), Key Account Executive,
   Häfele (Thailand) Ltd, 57 Soi Sukhumvit 64, Phrakhanong Tai, Phrakhanong, Bangkok 10260.
@@ -179,7 +180,7 @@ Source thread: `005_Stone-Surface-caesarstone-By-HAFELE/`. Caesarstone slabs imp
 ---
 
 ## Golhem / Stonesurface (MAT DEPT) — แผ่นปิดผิวดินเหนียว + วีเนียร์หิน / MCM clay veneer + stone veneer
-Source thread: `003_MAT-DEPT/`. Distributor: Mat Dept Co., Ltd — 20 RamaIX Soi 41, Suan Luang, Bangkok 10250;
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/003_MAT-DEPT`. Distributor: Mat Dept Co., Ltd — 20 RamaIX Soi 41, Suan Luang, Bangkok 10250;
 **095 547 0329** (office), info@matdept.com, www.matdept.com. This thread covers **two product families**:
 **Golhem** (MCM = Modified Clay Material, ดินเหนียวดัดแปลง, แผ่นบางปิดผิวใน/นอกได้, Class A fire) and
 **Stonesurface** (flexible stone veneer series).
@@ -216,7 +217,7 @@ Properties (icons): Low VOCs, extra grinding & grounding, Layer Plus+, Premium C
 ---
 
 ## TODA Surface — ฟิล์มตกแต่งภายใน / Interior decorative film (PVC)
-Source thread: `021_TODA-Interior-Film/` (contributor Cho_Ae). Full roll 1.22 × 50 m; prices shown **include VAT**.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/021_TODA-Interior-Film` (contributor Cho_Ae). Full roll 1.22 × 50 m; prices shown **include VAT**.
 
 - **ติดต่อ / Contact:** FB "TODA Surface", LINE @TODASurface, www.todapvc.com, sales@toda.co.th.
 - **eCatalogue:** https://heyzine.com/flip-book/df185ae0c1.html (Heyzine flipbook).
@@ -237,7 +238,7 @@ Source thread: `021_TODA-Interior-Film/` (contributor Cho_Ae). Full roll 1.22 ×
 ---
 
 ## WDC — กระเบื้อง / Ceramic & porcelain tile, big slab
-Source thread: `017_WDC/`. Products: กระเบื้อง incl. Big Slab, ลายไม้ (wood-look), สีสัน Solid, Microtec, Mega tile.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/017_WDC`. Products: กระเบื้อง incl. Big Slab, ลายไม้ (wood-look), สีสัน Solid, Microtec, Mega tile.
 Website www.wdc.co.th; product Drive folder https://drive.google.com/drive/folders/1-RFvLFw-bFHxD4brfs79DLclJyfyPPHe.
 
 - Files (catalogues captured): `018320_WDC_Presentation_2024.pdf`, `812929_Microtec_Catalog_01.pdf`,
@@ -252,18 +253,18 @@ Website www.wdc.co.th; product Drive folder https://drive.google.com/drive/folde
 ---
 
 ## Treeconcept — ระแนงไม้เทียมภายนอก / Exterior faux-wood battens
-Source thread: `006_Treeconcept/`. Leaflet PDF: https://treeconcept.com/wp-content/uploads/2024/03/Leaflet-2024.pdf.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/006_Treeconcept`. Leaflet PDF: https://treeconcept.com/wp-content/uploads/2024/03/Leaflet-2024.pdf.
 Files: `232818_image.png`, `619738_Threeconcept-Leaflet-2024.pdf`. No contact/discount stated.
 
 ## BIOWOOD — ระแนงลายไม้ภายนอก / Exterior wood-grain battens (WPC)
-Source thread: `011_ระแนงลายไม้-ภายนอก-BIOWOOD/`.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/011_ระแนงลายไม้-ภายนอก-BIOWOOD`.
 - **ติดต่อ / Contact:** ระแนงคุณปอนด์ ("K. Pond", batten rep — msg [2]).
 - **Catalogue:** *Biowood Catalogue 2023* — https://online.fliphtml5.com/galex/cibh/#p=34 (300+ profiles, 18 textures, 24 colours).
 - Example profile: **LV15035 = 150 mm × 35 mm** — https://www.biowoodthailand.com/products/lv15035-150mm-x-35mm/.
 - File: `272981_image.png`.
 
 ## WALL / Wallthailand (Deardome Group) — ระแนง WPC/MDF + acoustic + faux-stone cladding
-Source thread: `012_ระแนงสำเร็จรูป-(Wall)/` (Drive folder `1n0ySR8N…`, **fetched 2026-07-04** — 6 catalogue PDFs).
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/012_ระแนงสำเร็จรูป-(Wall)` (Drive folder `1n0ySR8N…`, **fetched 2026-07-04** — 6 catalogue PDFs).
 - **แบรนด์ / Brand:** WALL THAILAND (WALLTHAILAND.BKK), parent **Deardome Group**.
 - **ติดต่อ / Contact:** Tel **02-321-5599** · LINE **@WALLTHAILAND** · FB /WALLTHAILAND.BKK · www.deardomegroup.com ·
   24 Srinakarindra 42, Soi Suphaphong 1 Yaek 3, Nong Bon, Prawet, Bangkok 10250.
@@ -275,18 +276,18 @@ Source thread: `012_ระแนงสำเร็จรูป-(Wall)/` (Drive f
 - Raw PDFs: `_inbox/discord/MY-DATA-PEAT/_external-fetched/catalogue/012_ranae_wall/`.
 
 ## DEKO Wave Board — ไม้ HMR Wave Board
-Source thread: `013_ไม้-HMR-WAVE-BOARD-(DEKO)/`. Product: HMR wave board (fluted/wave MDF).
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/013_ไม้-HMR-WAVE-BOARD-(DEKO)`. Product: HMR wave board (fluted/wave MDF).
 Catalogue (AnyFlip): https://online.anyflip.com/jjoph/augd/mobile/index.html. No local files / contact stated.
 
 ---
 
 ## Futuretech — มือจับ + โปรไฟล์อลูมิเนียม / Handles & aluminium profiles
 Futuretech recurs across three threads (spelled "Futruetech / Futuretech / FUTURTECH" in source):
-- `001_มือจับเฟอร์นิเจอร์-Futruetech/` — มือจับอลูมิเนียม (aluminium furniture handle). Profile **No.1AL70, H24 × L12 mm**,
+- `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/001_มือจับเฟอร์นิเจอร์-Futruetech` — มือจับอลูมิเนียม (aluminium furniture handle). Profile **No.1AL70, H24 × L12 mm**,
   finishes BL1 (black) / PG1 (rose-gold) / CH1 (chrome) / DG1 (gold), **made to order**. LINE @Future-tech,
   FB futuretechinter, www.future-tech.co.th. Files: `997200_image.png`, spec `952296_1_ST.pdf`.
-- `004_Handle-Futuretech/` — handle range PDF `413278_Handle_FuturetechST.pdf`, image `994314_image.png`.
-- `018_FUTURTECH/` — Google Drive spec folder: https://drive.google.com/drive/folders/1opNK8mfv_ghuC__Fd3yK9NxrG5nrahCv.
+- `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/004_Handle-Futuretech` — handle range PDF `413278_Handle_FuturetechST.pdf`, image `994314_image.png`.
+- `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/018_FUTURTECH` — Google Drive spec folder: https://drive.google.com/drive/folders/1opNK8mfv_ghuC__Fd3yK9NxrG5nrahCv.
   Image `492864_image.png`.
 
 ## APH — โปรไฟล์อลูมิเนียม (frame & handle, by Futuretech)
@@ -294,7 +295,7 @@ Source thread: `002_อลูมิเนียมโปรไฟล์-APH/`. "
 glass-front cabinet doors / wardrobes. www.aphthailand.com. Files: `963178_image.png`, `584449_APH.pdf`. No contact/discount stated.
 
 ## AELLA Hardware — ฮาร์ดแวร์ทองเหลือง / Brass architectural door & furniture hardware
-Source thread: `023_AELLA-HARDWARE/`. **14 category catalogues fetched + distilled 2026-07-04.**
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/023_AELLA-HARDWARE`. **14 category catalogues fetched + distilled 2026-07-04.**
 - **ติดต่อ / Contact:** AELLA HARDWARE CO.,LTD. — www.aellahardware.com · LINE **@aellahardware** · Tel **092-281-9887**.
 - **Range:** door bolts, door stops, butt/parliament hinges, lever handles, door knobs, sliding-door + drawer/cabinet
   pulls, long bar & edge pulls. Consistent finish-code system (BC/AB/SB/QBCF/SN/PVD/GP/YB/…).
@@ -304,14 +305,14 @@ Source thread: `023_AELLA-HARDWARE/`. **14 category catalogues fetched + distill
 - Raw PDFs: `_external-fetched/catalogue/023_AELLA/`. (Old thread image `290462_image.png`.)
 
 ## HAFELE — Drawers & Drawer Inserts
-Source thread: `010_Drawers-&-Drawer-Inserts-HAFELE/`. Häfele drawer systems & inserts.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/010_Drawers-&-Drawer-Inserts-HAFELE`. Häfele drawer systems & inserts.
 Spec PDF: https://image.makewebeasy.net/makeweb/0/u5QBfcnUw/Document/Section_2_Drawers_Inserts.pdf. File: `849341_image.png`.
 (For Häfele contact person, see the Caesarstone/HAFELE entry above.)
 
 ---
 
 ## L&E (Lighting & Equipment) — ไฟเส้น LED / Linear LED strip & profiles
-Source thread: `009_L&E/`.
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/009_L&E`.
 - **ติดต่อ / Contact:** **065-205-9606** (msg [6]).
 - **COB Linear Flex (SLX81), บาท/ม้วน 5 เมตร, ก่อน VAT:**
   - `SLX81-3.5W/m-3000K-110D-24Vdc-5000mm-IP20` — **875** บาท/ม้วน (5 m).
@@ -330,12 +331,12 @@ Files: pricelist+stock spreadsheet `196518_Pricelist_and_stock_May2024.xlsx` (Ma
 image `932157_AluSplash-Ebony3-.png`. No contact/discount stated.
 
 ## Glass is Good — กระจก / Glass (LED channel glass, etc.)
-Source thread: `020_Glass-is-good/`. Glass fabricator. From the chat screenshot `940187_image.png`, for a glass panel with
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/020_Glass-is-good`. Glass fabricator. From the chat screenshot `940187_image.png`, for a glass panel with
 recessed LED aluminium channel: the red gap dimension is customer-selectable **10–45 mm**, the green **≥ 25 mm**,
 and the glass has a lip/"ปีก" of about **1–2 mm**. Logo image `181642_image.png`. No phone/discount captured (contact is a LINE chat).
 
 ## TIPTOP — PU decorative architectural mouldings
-Source thread: `016_TIPTOP/`. Catalogue V3 (105 p) **fetched 2026-07-04** →
+Source thread: `knowledge/_inbox/discord/MY-DATA-PEAT/catalogue/016_TIPTOP`. Catalogue V3 (105 p) **fetched 2026-07-04** →
 `_external-fetched/catalogue/TIPTOP_Catalogue_V3.pdf`.
 - **แบรนด์ / Brand:** TIP-TOP ("since 1993"). **Sole Thailand importer/distributor: Pan Union Import Export Co.**
   (แพนยูเนี่ยน, exclusive Tip-Top importer since 2009).

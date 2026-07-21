@@ -65,10 +65,17 @@ Two reading systems, used together. **FACING** comes from each piece's own symbo
    arc is airtight; don't over-read window type without the sheet legend.
 
 ## E. Open gaps (still unsourced — flag, don't fabricate)
-- The **BF (built-in furniture) code scheme** used by Thai design-build firms (incl. this project's
-  RAAR sheet) — no public source documents it. Treat BF#### as *this firm's built-in millwork tag*
-  (code + the cm size in the label, e.g. `BF10.250x60x280CM` = item BF10, 2500×600×2800 mm) and,
-  where the meaning matters, **ASK the designer** rather than guess.
+- The **BF (built-in furniture) code scheme** used by Thai design-build firms — no public source
+  documents it, and each drawing office runs its own. Treat `BF##` as *that firm's built-in
+  millwork tag*, read the size off the label (form: `BF<nn>.<W>x<D>x<H>CM`), and where the meaning
+  matters, **ASK the designer** rather than guess.
+  <!-- REDACTED 2026-07-13 (client-privacy): the originating firm's name and the worked BF example
+       lifted from that client's sheet were removed from this staged copy AND from the promoted
+       successor. A client's drawing office and a client's furniture dimensions are project data
+       (`projects/<PRJ>/`), not shared knowledge — see .claude/rules/client-privacy.md. -->
+- **Owner check owed:** this DR was a WEB deep-research run (see `source:` above) and its framing
+  named the client's sheet. Whether the firm name / sheet title actually left the machine in a
+  search query cannot be recovered from this artifact. Flagged for the owner; no leak asserted.
 - Single-vs-double vanity symbol, window type symbols, and material HATCH patterns (tile/wood/
   concrete/glass fills) were not authoritatively covered — get a graphic-standards hatch key.
 

@@ -14,11 +14,11 @@ This blueprint defines a single, coherent operating system — **STUDIO-OS** —
 Seven principles govern every decision in this document. They are the reconciled consensus of the eleven reports:
 
 1. **Deterministic guardrails for non-deterministic agents.** Security and physics are never enforced by prompts. Natural-language rules in CLAUDE.md are advisory; hooks, permission arrays, schema validation, and geometric/colorimetric math are law. Prompt-based security is an anti-pattern that fails under context pressure and injection.
-2. **The context window is RAM, not a database.** The LLM is a stateless CPU; the window is scarce, volatile working memory subject to lost-in-the-middle recall decay and context rot. Everything is engineered around progressive disclosure, layered memory, compaction, and subagent isolation.
-3. **The filesystem is the architecture.** Numbered stage directories with local contracts (Interpretable Context Methodology) replace framework-level orchestration for sequential design work. One stage, one job, one auditable artifact. Every intermediate output is a human-editable surface.
+2. **The context window is RAM, not a database.** The LLM is a stateless CPU; the window is scarce, volatile working memory subject to lost-in-the-middle recall decay and context rot. Everything is engineered around progressive disclosure, layered memory, compaction, and subagent isolation. [src: `knowledge/_inbox/id-project-corpus/AI Context Engineering Architecture.pdf`]
+3. **The filesystem is the architecture.** Numbered stage directories with local contracts (Interpretable Context Methodology) replace framework-level orchestration for sequential design work. One stage, one job, one auditable artifact. Every intermediate output is a human-editable surface. [src: `knowledge/_inbox/id-project-corpus/AI Context Engineering Architecture.pdf`]
 4. **Semantics reason, symbols verify.** The LLM handles creative intent; deterministic engines (scene-graph clearance checks, PBR range validation, homography factorization, ΔE00 colorimetry) verify physical and brand reality. AI never "guesses" whether a sofa fits — geometry answers that.
 5. **Generation is cheap; evaluation is the bottleneck.** The studio's throughput is gated by QA, so QA is automated first-class infrastructure: a nine-pillar scoring system with hard/soft gates wired into the pipeline, and a closed vision-feedback loop that repairs failures before humans review anything.
-6. **Match the tool to the phase.** No single image model wins. Midjourney/Gemini for emotional concept work, CAD + ComfyUI + FLUX + ControlNet for structurally faithful production, Ideogram/Recraft for typography and brand, Magnific/SUPIR for delivery-grade resolution. V-Ray remains the ground-truth renderer for construction-document-grade finals.
+6. **Match the tool to the phase.** No single image model wins. Midjourney/Gemini for emotional concept work, CAD + ComfyUI + FLUX + ControlNet for structurally faithful production, Ideogram/Recraft for typography and brand, Magnific/SUPIR for delivery-grade resolution. V-Ray remains the ground-truth renderer for construction-document-grade finals. [src: `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf`]
 7. **Everything is versioned like code.** Prompts, agents, skills, QA thresholds, ComfyUI graphs, MaterialX definitions, and USD scenes live in Git (with LFS for binaries), promoted through dev → staging → production labels, and rolled back like software.
 
 ---
@@ -29,7 +29,7 @@ Seven principles govern every decision in this document. They are the reconciled
 
 Of the three deployment paradigms evaluated (decentralized CLI, centralized Agent SDK, hybrid monorepo), STUDIO-OS adopts the **Hybrid Hierarchical Monorepo**: a single repository combining Claude Code CLI operation for the designer with SDK-embedded automation for headless routines, organized so the agent discovers configuration, rules, skills, and knowledge exactly when needed rather than at session start.
 
-Layered on top is the **Interpretable Context Methodology (ICM)**: each client project is a directory of numbered pipeline stages, each stage carrying a local `_contract.md` that defines inputs, process, and required outputs. The agent's "geographic location" in the tree determines its context. This physically eliminates cross-stage context poisoning and makes every intermediate artifact reviewable and editable by the human designer before the next stage runs.
+Layered on top is the **Interpretable Context Methodology (ICM)**: each client project is a directory of numbered pipeline stages, each stage carrying a local `_contract.md` that defines inputs, process, and required outputs. The agent's "geographic location" in the tree determines its context. This physically eliminates cross-stage context poisoning and makes every intermediate artifact reviewable and editable by the human designer before the next stage runs. [src: `knowledge/_inbox/id-project-corpus/AI Context Engineering Architecture.pdf`]
 
 ### 1.2 System context diagram (logical)
 
@@ -61,16 +61,16 @@ Layered on top is the **Interpretable Context Methodology (ICM)**: each client p
 | Plane | Responsibility | Primary technology (per corpus) |
 |---|---|---|
 | **Orchestration** | Task decomposition, agent routing, loop control, failure recovery | Claude Code CLI + subagents; dynamic workflows for bulk jobs; (LangGraph + Temporal reserved for scale-out, §16) |
-| **Knowledge** | Domain truth: codes, materials, ergonomics, styles, catalogs, brand standards | Hybrid RAG (BM25 + dense, RRF, cross-encoder rerank) + Spatial Knowledge Graph + multimodal indices |
-| **Memory** | Client continuity across months/years | Mem0-style passive extraction with conflict resolution + Ebbinghaus decay + temporal consolidation, stored as versioned markdown + vector index |
-| **Generation** | Concept and production imagery | Model-routed stack: Midjourney/Gemini → ComfyUI + FLUX + Depth ControlNet + IP-Adapter → Ideogram/Recraft → Magnific/SUPIR |
+| **Knowledge** | Domain truth: codes, materials, ergonomics, styles, catalogs, brand standards | Hybrid RAG (BM25 + dense, RRF, cross-encoder rerank) + Spatial Knowledge Graph + multimodal indices [src: `knowledge/_inbox/id-project-corpus/AI Design Knowledge Systems.pdf`] |
+| **Memory** | Client continuity across months/years | Mem0-style passive extraction with conflict resolution + Ebbinghaus decay + temporal consolidation, stored as versioned markdown + vector index [src: `knowledge/_inbox/id-project-corpus/AI Design Knowledge Systems.pdf`] |
+| **Generation** | Concept and production imagery | Model-routed stack: Midjourney/Gemini → ComfyUI + FLUX + Depth ControlNet + IP-Adapter → Ideogram/Recraft → Magnific/SUPIR [src: `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf`] |
 | **Verification** | Physics, perception, brand, client compliance | Nine-pillar QA scoring matrix + dependency-structured VLM judging + deterministic geometry/colorimetry, wired as CI-style gates |
 
 ### 1.4 Two operating surfaces
 
-**Surface A — Designer cockpit (now).** Claude Code CLI inside the monorepo. The designer issues stage-level commands (`/intake`, `/concept`, `/render-pass`, `/qa-report`, `/deliver`), reviews artifacts in the filesystem, and approves gate promotions. Permission mode `acceptEdits` inside project working directories; `ask` for renders that consume paid API credits; hard `deny` for destructive operations.
+**Surface A — Designer cockpit (now).** Claude Code CLI inside the monorepo. The designer issues stage-level commands (`/intake`, `/concept`, `/render-pass`, `/qa-report`, `/deliver`), reviews artifacts in the filesystem, and approves gate promotions. Permission mode `acceptEdits` inside project working directories; `ask` for renders that consume paid API credits; hard `deny` for destructive operations. [src: `knowledge/_inbox/id-project-corpus/Claude Code Architecture Design.pdf`]
 
-**Surface B — Headless automation (progressive).** The Claude Agent SDK embedded in scheduled routines and webhook handlers: nightly knowledge audits, documentation-drift repair, batch render queues, QA re-scoring after threshold changes. All SDK outputs are schema-validated (structured outputs with Zod/Pydantic) so downstream code never parses free text. Surface B is also the seam where a future client-facing product attaches (§16) without touching Surface A.
+**Surface B — Headless automation (progressive).** The Claude Agent SDK embedded in scheduled routines and webhook handlers: nightly knowledge audits, documentation-drift repair, batch render queues, QA re-scoring after threshold changes. All SDK outputs are schema-validated (structured outputs with Zod/Pydantic) so downstream code never parses free text. Surface B is also the seam where a future client-facing product attaches (§16) without touching Surface A. [src: `knowledge/_inbox/id-project-corpus/Claude Code Architecture Design.pdf`]
 
 ### 1.5 Model routing policy (token economics)
 
@@ -93,8 +93,8 @@ The corpus converges on four patterns, composed rather than chosen exclusively:
 
 - **Supervisor pattern** for delegation: a project-manager agent owns global state; specialist subagents are stateless workers in isolated context windows that return dense summaries only. This preserves the master context and enables parallel fan-out.
 - **Planner pattern** for long-horizon stages: a planner emits a directed acyclic graph of steps before execution, decoupling strategy from action. Plans are written to the stage directory as `_plan.md` so the human can amend before execution (mixed-initiative).
-- **MARS reviewer pattern** for evaluation: independent parallel reviewers (no lateral cross-talk) plus one meta-reviewer synthesizing verdicts — matching multi-agent-debate accuracy at roughly half the token cost and latency.
-- **Bounded Reflexion** for self-correction: linguistic critique stored to episodic memory and injected into the retry, **capped at 3 iterations**, and **triggered only in the Green Zone** (complex tasks with low initial confidence, or when a deterministic validator flags a failure). Never invoked on tasks the base model already performs above ~75% accuracy — the self-critique paradox shows the critic will hallucinate flaws and degrade correct output.
+- **MARS reviewer pattern** for evaluation: independent parallel reviewers (no lateral cross-talk) plus one meta-reviewer synthesizing verdicts — matching multi-agent-debate accuracy at roughly half the token cost and latency. [src: `knowledge/_inbox/id-project-corpus/AI Design Studio Architecture.pdf`]
+- **Bounded Reflexion** for self-correction: linguistic critique stored to episodic memory and injected into the retry, **capped at 3 iterations**, and **triggered only in the Green Zone** (complex tasks with low initial confidence, or when a deterministic validator flags a failure). Never invoked on tasks the base model already performs above ~75% accuracy — the self-critique paradox shows the critic will hallucinate flaws and degrade correct output. [src: `knowledge/_inbox/id-project-corpus/AI Design Studio Architecture.pdf`]
 
 ### 2.2 The twelve-agent roster
 
@@ -141,9 +141,9 @@ The knowledge layer answers a different question at every altitude — *what is 
 
 ### 3.2 Retrieval pipeline (L5) — the reference design
 
-1. **Ingestion.** Documents are chunked with structure awareness; drawings, mood boards, and spec sheets are indexed twice: (a) unified text–image embeddings (CLIP/SigLIP-class) for cross-modal search, and (b) a late-interaction index (ColPali-class) for visually dense pages — blueprints, dimension sheets, brand-standard tables — where OCR-and-caption pipelines silently destroy signal. Caption-and-index alone is prohibited for technical drawings: caption hallucination becomes permanent index pollution.
+1. **Ingestion.** Documents are chunked with structure awareness; drawings, mood boards, and spec sheets are indexed twice: (a) unified text–image embeddings (CLIP/SigLIP-class) for cross-modal search, and (b) a late-interaction index (ColPali-class) for visually dense pages — blueprints, dimension sheets, brand-standard tables — where OCR-and-caption pipelines silently destroy signal. Caption-and-index alone is prohibited for technical drawings: caption hallucination becomes permanent index pollution. [src: `knowledge/_inbox/id-project-corpus/AI Design Knowledge Systems.pdf`]
 2. **Candidate generation.** Hybrid search — dense vectors fused with sparse BM25 via Reciprocal Rank Fusion — plus metadata filters (project, room type, standard, recency). Returns 50–100 candidates.
-3. **Precision reranking.** A cross-encoder scores query+document pairs jointly, capturing multi-conditional nuance ("mid-century chair, client hates leather, bad back") that bi-encoders compress away. Only the reranked top-k enters context.
+3. **Precision reranking.** A cross-encoder scores query+document pairs jointly, capturing multi-conditional nuance ("mid-century chair, client hates leather, bad back") that bi-encoders compress away. Only the reranked top-k enters context. [src: `knowledge/_inbox/id-project-corpus/AI Design Knowledge Systems.pdf`]
 4. **Grounded synthesis.** The knowledge-manager returns snippets **with citations to vault paths**; the consuming agent may not assert a code value without a retrievable source, mirroring the studio-vault Source-and-Truth Hierarchy.
 
 ### 3.3 The Spatial Knowledge Graph (L3)
@@ -190,7 +190,7 @@ Memory answers *what has happened between this studio and this client* — disti
 
 ### 4.2 Write path: passive extraction with conflict resolution
 
-Following the Mem0 paradigm (chosen over MemGPT-style agent-managed paging for predictability and inference-budget separation): a post-session routine — not the live agent — extracts salient facts from the transcript, links entities, and merges into the profile. **Conflict resolution is timestamp-aware and latest-wins with provenance retained** ("client now prefers minimal; previously maximal — changed 2026-05-14, see episode E-041"). Benchmarks in the corpus justify the choice: ~66.9% recall accuracy at 0.71 s median latency and ~1.8k tokens per conversation versus a full-context baseline at 72.9% but 9.87 s and 26k+ tokens — the marginal accuracy is not worth 14× tokens on every turn.
+Following the Mem0 paradigm (chosen over MemGPT-style agent-managed paging for predictability and inference-budget separation) [src: `knowledge/_inbox/id-project-corpus/AI Design Knowledge Systems.pdf`]: a post-session routine — not the live agent — extracts salient facts from the transcript, links entities, and merges into the profile. **Conflict resolution is timestamp-aware and latest-wins with provenance retained** ("client now prefers minimal; previously maximal — changed 2026-05-14, see episode E-041"). Benchmarks in the corpus justify the choice: ~66.9% recall accuracy at 0.71 s median latency and ~1.8k tokens per conversation versus a full-context baseline at 72.9% but 9.87 s and 26k+ tokens — the marginal accuracy is not worth 14× tokens on every turn.
 
 ### 4.3 Consolidation and forgetting
 
@@ -334,13 +334,13 @@ studio-os/
 
 ### 7.2 Asset and naming conventions
 
-Universal `Prefix_BaseName_Variant_Suffix` scheme so type/origin/function are inferable without opening files: `SM_Sofa_Sectional_01`, `M_Oak_Fumed_02_Inst`, `T_Terrazzo_White_01_ORM`, `HDRI_BangkokDusk_01`. Renders: `R_PRJ014_Living_Cam02_v07.png`; ControlNet maps: `D_…` (depth) / `S_…` (segmentation). Prompts and skills follow the same lexical rigidity (`skill_render-pass_v04`). Renames happen only through scripts that update references — never raw file-explorer moves.
+Universal `Prefix_BaseName_Variant_Suffix` scheme so type/origin/function are inferable without opening files: `SM_Sofa_Sectional_01`, `M_Oak_Fumed_02_Inst`, `T_Terrazzo_White_01_ORM`, `HDRI_BangkokDusk_01`. Renders: `R_PRJ014_Living_Cam02_v07.png`; ControlNet maps: `D_…` (depth) / `S_…` (segmentation). Prompts and skills follow the same lexical rigidity (`skill_render-pass_v04`). Renames happen only through scripts that update references — never raw file-explorer moves. [src: `knowledge/_inbox/id-project-corpus/Large Scale Project Organization.pdf`]
 
-Materials use **MaterialX** (open, text-parseable, agent-auditable) packaged in the zipped-container convention: one root `.mtlx`, a `/textures/` subfolder, stored **uncompressed** so renderers can memory-map textures; the agent can audit or batch-adjust PBR values across the library programmatically. Scene assembly uses **USD composition arcs** with strict payload boundaries: geometry stays behind payloads (not loaded until needed); lighting rigs are sublayers; variants carry style options — so lighting edits never touch mesh files and even a studio-of-one avoids merge disasters. ASCII `.usda` is preferred where feasible so the agent can parse scene graphs directly.
+Materials use **MaterialX** (open, text-parseable, agent-auditable) packaged in the zipped-container convention: one root `.mtlx`, a `/textures/` subfolder, stored **uncompressed** so renderers can memory-map textures; the agent can audit or batch-adjust PBR values across the library programmatically. Scene assembly uses **USD composition arcs** with strict payload boundaries: geometry stays behind payloads (not loaded until needed); lighting rigs are sublayers; variants carry style options — so lighting edits never touch mesh files and even a studio-of-one avoids merge disasters. ASCII `.usda` is preferred where feasible so the agent can parse scene graphs directly. [src: `knowledge/_inbox/id-project-corpus/Large Scale Project Organization.pdf`]
 
 ### 7.3 Version control mechanics
 
-Git LFS from day one for every binary class (retrofitting is disruptive); the agent sees only kilobyte pointer files, protecting the token window from binary garbage. Sparse-checkout profiles per role; subagent worktrees use precise sparse paths plus symlinked shared-asset caches to avoid disk duplication. Hosting on GitHub-class infrastructure for the 5 GB per-file ceiling, generous included LFS bandwidth, and the first-party GitHub MCP server that lets the agent read issues, open PRs, and drive CI under least-privilege OAuth scopes.
+Git LFS from day one for every binary class (retrofitting is disruptive); the agent sees only kilobyte pointer files, protecting the token window from binary garbage. Sparse-checkout profiles per role; subagent worktrees use precise sparse paths plus symlinked shared-asset caches to avoid disk duplication. Hosting on GitHub-class infrastructure for the 5 GB per-file ceiling, generous included LFS bandwidth, and the first-party GitHub MCP server that lets the agent read issues, open PRs, and drive CI under least-privilege OAuth scopes. [src: `knowledge/_inbox/id-project-corpus/Large Scale Project Organization.pdf`]
 
 ---
 
@@ -368,7 +368,7 @@ Scaffolds (R.C.T.F., 5Ws, TRACI) are embedded in skill templates so no required 
 
 ### 8.2 Encoder-aware compilation (the dual-track rule)
 
-Modern diffusion stacks (FLUX, SD3-class) parse text through **two encoders with different strengths**, and feeding both the identical paragraph measurably degrades output (reported 50–75% competence loss on Flux-dev with duplicated long prompts). The `prompt-engineer` agent therefore always emits a bifurcated payload:
+Modern diffusion stacks (FLUX, SD3-class) parse text through **two encoders with different strengths**, and feeding both the identical paragraph measurably degrades output (reported 50–75% competence loss on Flux-dev with duplicated long prompts) [src: `knowledge/_inbox/id-project-corpus/AI Image Prompt Engineering.pdf`]. The `prompt-engineer` agent therefore always emits a bifurcated payload:
 
 - **T5 track (up to ~512 tokens):** narrative prose carrying structure — spatial relationships, scene logic, camera geometry, lighting story.
 - **CLIP track (short):** comma-separated high-salience tags — materials, style tokens, finish qualities.
@@ -377,7 +377,7 @@ Modern diffusion stacks (FLUX, SD3-class) parse text through **two encoders with
 
 ### 8.3 Domain lexicons (the vocabulary that unlocks latent physics)
 
-The registry ships three controlled vocabularies, curated in `knowledge/` and injected by the compiler; generic words ("modern materials", "big window") are lint-flagged:
+The registry ships three controlled vocabularies, curated in `knowledge/` and injected by the compiler; generic words ("modern materials", "big window") are lint-flagged [src: `knowledge/_inbox/id-project-corpus/AI Image Prompt Engineering.pdf`, `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf`]:
 
 | Lexicon | Purpose | Example tokens |
 |---|---|---|
@@ -391,7 +391,7 @@ Every production prompt lives in `pipeline/prompts/registry/` with **immutable v
 
 ### 8.5 Automatic prompt optimization (APO) — the improvement flywheel
 
-Prompt refinement is closed-loop, not manual: a VLM critique of a failed generation becomes a **textual gradient** (ProTeGi-style) that a meta-optimizer uses to rewrite the failing schema element; a requirement checklist derived from the prompt (RAISE-style) gates completion — unmet items trigger targeted rewriting or localized resampling rather than full regeneration; and successful strategies (prompt fragments, ControlNet weights, seeds) are stored to memory (MemoGen-style) and retrieved for similar future briefs. Head-to-head comparisons (Maestro-style tournaments) settle A/B versions before promotion to `production`.
+Prompt refinement is closed-loop, not manual: a VLM critique of a failed generation becomes a **textual gradient** (ProTeGi-style) that a meta-optimizer uses to rewrite the failing schema element; a requirement checklist derived from the prompt (RAISE-style) gates completion — unmet items trigger targeted rewriting or localized resampling rather than full regeneration; and successful strategies (prompt fragments, ControlNet weights, seeds) are stored to memory (MemoGen-style) and retrieved for similar future briefs. Head-to-head comparisons (Maestro-style tournaments) settle A/B versions before promotion to `production`. [src: `knowledge/_inbox/id-project-corpus/AI Image Prompt Engineering.pdf`]
 
 ---
 
@@ -484,21 +484,21 @@ Client floor plans and site photos are proprietary. Default judging runs on loca
 | Hook event | Fires when | STUDIO-OS enforcement |
 |---|---|---|
 | `SessionStart` | Session begins/resumes | Inject active branch, open project stage, pending QA queue into context |
-| `PreToolUse` | Before any tool executes | Block destructive bash (`rm -rf`, force-push), writes to `qa/thresholds.yaml`, `knowledge/codes-th/**`, `.env`, client-privacy violations → JSON `{"permissionDecision":"deny"}` + exit 2, reason fed back to the model |
+| `PreToolUse` | Before any tool executes | Block destructive bash (`rm -rf`, force-push), writes to `qa/thresholds.yaml`, `knowledge/codes-th/**`, `.env`, client-privacy violations → JSON `{"permissionDecision":"deny"}` + exit 2, reason fed back to the model [src: `knowledge/_inbox/id-project-corpus/Claude Code Architecture Design.pdf`] |
 | `PostToolUse` | After successful tool call | Auto-format edited files (prettier/ruff), lint MaterialX/USD on matching writes, validate workflow JSON against schema |
 | `SubagentStop` | Subagent finishes | Run code-simplifier on generated code; enforce summary-size cap |
 | `ConfigChange` | Settings/permissions edited | Append immutable audit-log entry |
 | `Stop` | Agent ends its turn | Verification loop: run the stage's test/QA script; blocking signal forces the agent to read failures and fix before the turn may end; final memory-write step |
 
-Permissions follow the strict `deny → ask → allow` evaluation order in `settings.json`: deny is absolute (production data, secrets, catalog mutations); ask covers paid render dispatch and anything touching `clients/`; allow silently approves reads and test runs. `acceptEdits` inside project stage dirs keeps daily friction low; CI contexts run `dontAsk` (zero-trust whitelist-only). Security is never a CLAUDE.md sentence.
+Permissions follow the strict `deny → ask → allow` evaluation order in `settings.json`: deny is absolute (production data, secrets, catalog mutations); ask covers paid render dispatch and anything touching `clients/`; allow silently approves reads and test runs. `acceptEdits` inside project stage dirs keeps daily friction low; CI contexts run `dontAsk` (zero-trust whitelist-only). Security is never a CLAUDE.md sentence. [src: `knowledge/_inbox/id-project-corpus/Claude Code Architecture Design.pdf`; the settings/hook rules landed in `.claude/settings.json` + `.claude/hooks/guard_bash.py`]
 
 ### 11.2 Headless render orchestration
 
-ComfyUI runs as a backend server (REST on 8188); visual graphs are exported as API-format JSON and dispatched programmatically: POST workflow+variables → receive `prompt_id` → poll history / WebSocket-subscribe → fetch outputs. The wrapper handles the ugly parts automatically: OOM detection → `/free` to unload models → retry; prompt-cache anomalies → forced fresh execution; batch fan-out with concurrency limits sized to VRAM (FLUX.1-dev wants 16–24 GB). For multi-step chains (generate → QA → upscale → notify), an n8n-class orchestrator or plain Python pipeline scripts provide the connective tissue — webhook trigger → vector-DB style lookup → payload injection → poll loop → route artifact to storage/QA/inbox.
+ComfyUI runs as a backend server (REST on 8188); visual graphs are exported as API-format JSON and dispatched programmatically: POST workflow+variables → receive `prompt_id` → poll history / WebSocket-subscribe → fetch outputs. The wrapper handles the ugly parts automatically: OOM detection → `/free` to unload models → retry; prompt-cache anomalies → forced fresh execution; batch fan-out with concurrency limits sized to VRAM (FLUX.1-dev wants 16–24 GB). For multi-step chains (generate → QA → upscale → notify), an n8n-class orchestrator or plain Python pipeline scripts provide the connective tissue — webhook trigger → vector-DB style lookup → payload injection → poll loop → route artifact to storage/QA/inbox. [src: `knowledge/_inbox/id-project-corpus/AI Studio Workflow Automation.pdf`]
 
 ### 11.3 Review, approval, and delivery routing
 
-Only artifacts that clear Gates 1–4 reach the human. The review inbox is a filesystem convention (`05_qa/_inbox/` with scorecards) surfaced through the designer's normal flow; at multi-reviewer scale it upgrades to a proofing platform (Frame.io/Ziflow-class) with sequential paths (creative → client) and audit trails. All inbound webhooks verify HMAC-SHA256 signatures and use exponential-backoff retries; an approval event triggers the delivery chain (final upscale if not yet run → watermark/manifest → `07_deliverables/` → client notification), and a change-request event routes the annotation into `06_revisions/` as a structured repair ticket for the §10 loop.
+Only artifacts that clear Gates 1–4 reach the human. The review inbox is a filesystem convention (`05_qa/_inbox/` with scorecards) surfaced through the designer's normal flow; at multi-reviewer scale it upgrades to a proofing platform (Frame.io/Ziflow-class) with sequential paths (creative → client) and audit trails [src: `knowledge/_inbox/id-project-corpus/AI Studio Workflow Automation.pdf`]. All inbound webhooks verify HMAC-SHA256 signatures and use exponential-backoff retries; an approval event triggers the delivery chain (final upscale if not yet run → watermark/manifest → `07_deliverables/` → client notification), and a change-request event routes the annotation into `06_revisions/` as a structured repair ticket for the §10 loop.
 
 ### 11.4 Scheduled routines (the studio that maintains itself)
 
@@ -516,13 +516,13 @@ No single model is sufficient; the pipeline routes each phase to the architectur
 
 ### 12.1 The five-phase commercial flow
 
-**Phase 1 — Concept & client buy-in (speed + emotion).** Midjourney V7 for dramatic, art-directed concept frames and mood boards (`--sref` locks the aesthetic across a campaign; Draft Mode for cheap ideation); Gemini-class (Nano-Banana lineage) for conversational multi-reference staging — up to 14 reference images, e.g., compositing the client's existing furniture photos into candidate styles. Output: an approved direction, not construction truth.
+**Phase 1 — Concept & client buy-in (speed + emotion).** Midjourney V7 for dramatic, art-directed concept frames and mood boards (`--sref` locks the aesthetic across a campaign; Draft Mode for cheap ideation); Gemini-class (Nano-Banana lineage) for conversational multi-reference staging — up to 14 reference images, e.g., compositing the client's existing furniture photos into candidate styles. Output: an approved direction, not construction truth. [src: `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf`]
 
-**Phase 2 — Structural production (determinism).** Geometry authored where it already lives — SketchUp/AutoCAD (3ds Max for complex sets). Export clay render / line view per approved camera. In ComfyUI: **Depth ControlNet** (Zoe-class preprocessor) locks volumetric layout, walls, openings, vanishing points; **IP-Adapter** injects the Phase-1 approved style via decoupled cross-attention; **FLUX.1-dev, run locally**, generates — chosen for best-in-class material physics (grain directionality, marble veining continuity, glass/metal refraction), open weights (LoRA fine-tuning on the studio's portfolio later), and absolute data privacy for client plans. Canny edge maps are reserved for strict-preservation cases; segmentation maps deployed when texture bleeding appears. Semantic segmentation enables element-isolated variants (swap sofa fabric, hold the room).
+**Phase 2 — Structural production (determinism).** Geometry authored where it already lives — SketchUp/AutoCAD (3ds Max for complex sets). Export clay render / line view per approved camera. In ComfyUI: **Depth ControlNet** (Zoe-class preprocessor) locks volumetric layout, walls, openings, vanishing points; **IP-Adapter** injects the Phase-1 approved style via decoupled cross-attention; **FLUX.1-dev, run locally**, generates — chosen for best-in-class material physics (grain directionality, marble veining continuity, glass/metal refraction), open weights (LoRA fine-tuning on the studio's portfolio later), and absolute data privacy for client plans. Canny edge maps are reserved for strict-preservation cases; segmentation maps deployed when texture bleeding appears. Semantic segmentation enables element-isolated variants (swap sofa fabric, hold the room). [src: `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf`]
 
 **Phase 3 — Graphics & branding (when applicable).** Ideogram-class for legible in-scene typography (signage, menus, wayfinding in commercial/hospitality work); Recraft-class for art-directed presentation boards, brand-kit palette locking, and native SVG when vector deliverables are needed.
 
-**Phase 4 — Delivery-grade polish.** Base 1024-class outputs are upscaled to 4K: **Magnific-class creative upscale at Creativity ≈ 0.3 / Resemblance ≈ 85%** enriches micro-texture (fabric pilling, grout, veining) without inventing geometry; **SUPIR-class precision restoration** for images whose geometry must not change (including V-Ray outputs being sharpened). Revision QA (Gate 4) confirms the upscale didn't drift.
+**Phase 4 — Delivery-grade polish.** Base 1024-class outputs are upscaled to 4K: **Magnific-class creative upscale at Creativity ≈ 0.3 / Resemblance ≈ 85%** enriches micro-texture (fabric pilling, grout, veining) without inventing geometry; **SUPIR-class precision restoration** for images whose geometry must not change (including V-Ray outputs being sharpened). Revision QA (Gate 4) confirms the upscale didn't drift. [src: `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf`]
 
 **Phase 5 — Deliverables assembly.** `07_deliverables/` compiles the presentation set, spec book (auto-generated from the scene graph + catalog: dimensions, finishes, ACT/TM-30 data, MasterFormat sections), and BOM with live pricing via the catalog MCP Resource — executed only through the human-triggered `bom-generate` skill.
 
@@ -532,7 +532,7 @@ No single model is sufficient; the pipeline routes each phase to the architectur
 
 | Platform | Commercial use | Key condition to track |
 |---|---|---|
-| Midjourney | Paid plans only | > $1 M gross revenue ⇒ Pro/Mega required; images public unless Stealth (Pro/Mega); no rights on free/trial |
+| Midjourney | Paid plans only | > $1 M gross revenue ⇒ Pro/Mega required; images public unless Stealth (Pro/Mega); no rights on free/trial [src: `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf`] |
 | FLUX.1-dev | Outputs: yes, freely | Model **weights** non-commercial — never sell API access to the hosted model; outputs belong to the studio |
 | Stable Diffusion 3.5 | Yes under Community License | < $1 M revenue; Enterprise license beyond |
 | Adobe Firefly | Yes | Safest harbor — trained on licensed stock, enterprise IP indemnification; use for risk-averse corporate clients |
@@ -657,5 +657,25 @@ The architecture is deliberately over-specified at the seams so growth is additi
 | §12 Commercial | AI Interior Design Commercial Workflow (phased model stack, upscaling, licensing) |
 | §13–15 Roadmap/Risks | Synthesis: roadmaps and anti-pattern/failure-mode sections across all reports |
 | §16 Scalability | AI Design Studio Architecture (LangGraph+Temporal) · AI Context Engineering (OpenUSD) · Vision QA (DPO/SPO) · Knowledge Systems (3D memory) |
+
+**Staged-source key (verbatim paths of the report titles used above).** Added 2026-07-13 so the
+short titles in this table resolve to a file on disk and the provenance is checkable, not merely
+asserted. Only the units whose content was traced into this blueprint are keyed here; the remaining
+corpus reports (Automated Vision QA for Interiors · Automated Production QA Scoring Systems) are
+cited by their own distilled `knowledge/` files, not by this appendix. (AI Image Prompt Engineering
+and AI Interior Design Commercial Workflow were keyed 2026-07-13: their content IS traced into
+§0/§1/§8/§12, so they belong in this key like the other seven.)
+
+| Short title used above | Staged unit (verbatim path) |
+|---|---|
+| AI Context Engineering Architecture | `knowledge/_inbox/id-project-corpus/AI Context Engineering Architecture.pdf` |
+| AI Design Knowledge Systems | `knowledge/_inbox/id-project-corpus/AI Design Knowledge Systems.pdf` |
+| AI Design Studio Architecture | `knowledge/_inbox/id-project-corpus/AI Design Studio Architecture.pdf` |
+| AI Image Prompt Engineering | `knowledge/_inbox/id-project-corpus/AI Image Prompt Engineering.pdf` |
+| AI Interior Design Commercial Workflow | `knowledge/_inbox/id-project-corpus/AI Interior Design Commercial Workflow.pdf` |
+| AI Studio Workflow Automation | `knowledge/_inbox/id-project-corpus/AI Studio Workflow Automation.pdf` |
+| Claude Code Architecture Design | `knowledge/_inbox/id-project-corpus/Claude Code Architecture Design.pdf` |
+| Interior Design Knowledge Structuring | `knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf` |
+| Large Scale Project Organization | `knowledge/_inbox/id-project-corpus/Large Scale Project Organization.pdf` |
 
 *End of blueprint.*

@@ -1,12 +1,15 @@
 # อนุกรมวิธานข้อบกพร่องภาพเรนเดอร์ / Render Defect Taxonomy (defect codes for QA scorecards)
 
-> PROVENANCE: compiled from `knowledge/_inbox/id-project-corpus/Automated Vision
-> QA for Interiors.pdf` (primary) and `Automated Production QA Scoring
-> Systems.pdf` pp.4–5 (shadow-geometry cross-ref), date 2026-07-03,
+> PROVENANCE: compiled from
+> `knowledge/_inbox/id-project-corpus/Automated Vision QA for Interiors.pdf`
+> (primary) and
+> `knowledge/_inbox/id-project-corpus/Automated Production QA Scoring Systems.pdf`
+> pp.4–5 (shadow-geometry cross-ref), date 2026-07-03, citations re-verified
+> against the source PDFs 2026-07-13,
 > tier REFERENCE. This is a **compiled list, not one verbatim source table** —
 > the source PDFs describe these failure modes in prose across multiple
 > sections; per-defect page citations are kept so each claim can be re-checked.
-> The one verbatim table (§4.6) is reproduced as printed on pp.8–9.
+> The one verbatim table (§3.6) is reproduced as printed on pp.8–9.
 
 ## ลำดับอำนาจ / Authority order & scope
 
@@ -29,12 +32,12 @@ default failure family (Automated Vision QA for Interiors.pdf pp.4–5).
 
 | Code | Defect / ข้อบกพร่อง | Detection heuristic |
 |---|---|---|
-| SP-01 | Floating furniture / เฟอร์นิเจอร์ลอย — object not grounded on floor | Monocular metric depth (MMDE, e.g. ZoeDepth / Depth Anything V2): sharp, unexplainable **depth discontinuity between the object's base and the floor directly beneath it** (p.6) |
+| SP-01 | Floating furniture / เฟอร์นิเจอร์ลอย — object not grounded on floor | Monocular metric depth (MMDE, e.g. ZoeDepth / Depth Anything V2): sharp, unexplainable **depth discontinuity between the object's base and the floor directly beneath it** (p.6 — the source's concrete instance is "the base of a heavy credenza") |
 | SP-02 | Scale violation / สัดส่วนผิด — furniture "too tall"/"too miniature" vs neighbors | Lift objects to metric 3D bounding boxes (3DBB); compare the spatial-scale parameter of each object against adjacent objects (e.g. armchair vs sofa, seat vs table) (pp.1, 5–6) |
 | SP-03 | 3DBB collision / วัตถุทะลุกัน — volumes physically intersect | Monocular 3D detection (Boxer, Cube R-CNN, OmniNOCS): flag when one object's 3D bounding box intersects another's (dining chair through dining table) (p.5) |
 | SP-04 | Perspective anomaly / เส้นเปอร์สเปคทีฟผิด — non-parallel verticals, conflicting horizon points | Recurrence-based Vanishing Point Detection (R-VPD) over explicit lines (baseboards, ceiling joints) + implicit lines (tile grids); flag if verticals fail to stay parallel or horizontal depth lines converge at wildly conflicting horizon points (p.5) |
 | SP-05 | Fisheye / excessive implied FOV / ภาพบิดขอบเลนส์กว้างเกิน | Peripheral line-warp analysis; source norm: unnatural fisheye distortion appears when implied FOV exceeds a standard **24–35 mm equivalent** (p.5) — source-stated norm, not a studio threshold; camera discipline: `knowledge/styles/color-composition.md` §5 |
-| SP-06 | Hazardous / implausible adjacency / การวางชิดที่อันตรายหรือเป็นไปไม่ได้ | Semantic adjacency check on detected object pairs — corpus example: fireplace situated dangerously beneath wooden shelves (p.1). Statutory clearances are NOT this code — those come from `knowledge/codes-th/` |
+| SP-06 | Hazardous / implausible adjacency / การวางชิดที่อันตรายหรือเป็นไปไม่ได้ | Semantic adjacency check on detected object pairs — **STUDIO-AUTHORED heuristic, not a corpus method**: the corpus supplies only the failure example ("fireplaces situated dangerously beneath wooden shelves", Automated Vision QA for Interiors.pdf p.1, verbatim), not a detector. Statutory clearances are NOT this code — those come from `knowledge/codes-th/` |
 
 ## 2. PHOTOMETRIC — แสงและเงา / Lighting & shadow realism
 
@@ -69,7 +72,7 @@ Interiors.pdf p.7).
 
 Reproduced verbatim from Automated Vision QA for Interiors.pdf pp.8–9:
 
-| Material Property QA | Evaluation Metric | Target Outcome for Realism |
+| Material Property | QA Evaluation Metric | Target Outcome for Realism |
 |---|---|---|
 | Roughness / Specularity | Hi3DEval Reflectance Cues | Matte surfaces absorb light; metals/glass exhibit crisp, localized highlights. |
 | Texture Scale | Spatial Frequency vs. 3DBB | Pattern sizes (e.g., wood grain, tiles) match the metric scale of the object. |
@@ -80,8 +83,8 @@ Reproduced verbatim from Automated Vision QA for Interiors.pdf pp.8–9:
 
 | Code | Defect / ข้อบกพร่อง | Detection heuristic |
 |---|---|---|
-| CO-01 | Anatomical distortion / สัดส่วนกายวิภาคผิด | Universal diagnostic VQA query injected into every evaluation pass regardless of prompt (p.3) |
-| CO-02 | Illegible embedded text / ตัวอักษรในภาพอ่านไม่ออก | Universal diagnostic query: is text on signage/labels legible? (p.3) |
+| CO-01 | Anatomical distortion / สัดส่วนกายวิภาคผิด | Universal diagnostic VQA query: "in addition to prompt-specific questions, the system injects universal diagnostic queries… checking for overarching visual glitches and anatomical distortions" (p.3) |
+| CO-02 | Illegible embedded text / ตัวอักษรในภาพอ่านไม่ออก | Universal diagnostic query: is text on signage legible? (p.3) |
 | CO-03 | Generative artifacts / noise / structural blur / เนื้อภาพเสีย | Technical-quality dimension (AESBench / Aesthetic-Scorer style): absence of generative artifacts, noise, structural blurring, pixelation; NR-IQA statistics (BRISQUE, NIQE, NIMA) score naturalness without a reference image (p.9) |
 
 ## 5. GAP: ช่องว่างของ corpus / Where the corpus is thin
@@ -96,19 +99,25 @@ Reproduced verbatim from Automated Vision QA for Interiors.pdf pp.8–9:
 - GAP: no Thai-market or statutory defect classes (clearance violations,
   ventilation openings). Those are enforced from `knowledge/codes-th/` and are
   intentionally outside this taxonomy.
-- GAP: cross-ref targets `knowledge/materials/pbr-material-behavior.md` and
-  `knowledge/classifications/qa-dimensions.md` are not yet authored; until
-  then use `knowledge/materials/residential-materials.md` for material truth.
+- GAP: SP-06's detector is studio-authored (see the code's own note) — the
+  corpus gives the failure example but no detection method for it. Verified by
+  full-text search of both source PDFs: "adjacency"/"hazard" return zero hits in
+  either PDF; "fireplace" occurs only on Automated Vision QA for Interiors.pdf
+  p.1 (the failure example itself).
 
 ## Cross-references
 
 - `knowledge/lighting/residential-lighting.md` — light-coherence checks behind
   PH-01…PH-06 (layering, CCT zones).
-- `knowledge/materials/residential-materials.md` (current) →
-  `knowledge/materials/pbr-material-behavior.md` (pending) — expected material
-  light response behind MA-01/MA-05.
-- `knowledge/classifications/qa-dimensions.md` (pending) — dimension
-  definitions these codes group under.
+- `knowledge/materials/pbr-material-behavior.md` — expected material light
+  response behind MA-01/MA-05 (§3 light response by material family, §4
+  emissives & realism cues); it back-references these MA- codes.
+- `knowledge/materials/residential-materials.md` — general residential material
+  reference (finishes, applications), not the PBR light-response source.
+- `knowledge/classifications/qa-dimensions.md` §2 — the QA dimensions these
+  SP-/PH-/MA-/CO- codes group under: "spatial, photometric, material, and
+  compositional dimensions" (Automated Vision QA for Interiors.pdf p.1) mapped
+  onto the nine QA pillars.
 - `knowledge/styles/color-composition.md` §5, §7–9 — camera/perspective and
   CCT staging rules that prevent SP-04/SP-05/PH-03 upstream.
 - `qa/thresholds.yaml` — the only place numeric gates live (PR-only).
