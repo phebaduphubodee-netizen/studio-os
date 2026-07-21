@@ -12,6 +12,8 @@ DD's 60-30-10 palette (element4-ensuite_DD-2026-07-18.md):
   brass      satin-brass tapware/fittings              (the ~10% accent)
   glass      frameless clear glass                      (shower screen + wet/dry partition)
   tray       shower tray/tile                           (cool ground, slip-rated [GAP])
+  blackalu   black-alu luminaire body (element-5 task bar, coheres w/ window frames)
+  opal       luminous opal diffuser face (element-5; consumer renders it EMISSIVE)
 
 Footprints are the OWNER-AUTHORED ink (element4-ensuite_ink-read-2026-07-18.json); this
 module only MASSES them for a structural decision-instrument render (the Gemini beauty
@@ -54,9 +56,16 @@ LEDGE_D = 260.0     # shallow stone ledge where the counter runs over the WC (we
 MIRROR_SILL = 1100.0   # mirror bottom AFF (above the 850 counter + backsplash) [est]
 MIRROR_H    = 1000.0   # mirror field height [est]
 MIRROR_T    = 25.0
+# ELEMENT 5 (D-E5-5, element5-lighting_DD-2026-07-20.md §5): the task BAR above the
+# mirror — black-alu body + opal luminous face, NO brass (keeps mass off the mirror
+# plane, D-E4-2). Lives HERE beside the mirror constants so one nudge of
+# MIRROR_SILL/MIRROR_H moves mirror AND bar together (derive-not-entrench).
+BAR_REVEAL = 10.0   # gap above the mirror top [est]
+BAR_H      = 40.0   # bar profile height [est]
+BAR_D      = 50.0   # bar projection off the wall [est]; the north ~40% is the opal face
 
 
-def vanity_parts(fx):
+def vanity_parts(fx, taskbar=False):
     """Double-basin vanity. fx (x,y,w,d,h) = the DEEP oak cabinet footprint (the east
     ~2047 mm of the ink run, x1077->3124), NOT the whole 3.05 m counter — the west ~1000
     mm is a SHALLOW stone ledge over the WC cistern (critique 2026-07-18: a solid cabinet
@@ -90,6 +99,18 @@ def vanity_parts(fx):
     # DECIDED element, so it is BUILT here with a consumer — never left to a note that a render
     # or the Gemini polish silently drops (the revert-by-omission trap that has recurred 5x).
     parts.append(_box(f"{nm}_mirror", x0, y0 - MIRROR_T, MIRROR_SILL, W, MIRROR_T, MIRROR_H, "mirror"))
+    # ELEMENT 5 (D-E5-5): the task BAR above the mirror — mirror-width, black-alu body
+    # against the wall + the opal luminous face on the room side. The wash LIGHT itself is
+    # emitted by element5_lighting.ensuite_bar_wash from these same constants. GATED on
+    # `taskbar` (the consumer passes element5_lighting.applies(spec)) — scrutiny
+    # 2026-07-21: un-gated, every future NON-e5 bathroom spec grew an emissive bar,
+    # bypassing the schema opt-in the whole element rides on.
+    if taskbar:
+        bar_z = MIRROR_SILL + MIRROR_H + BAR_REVEAL
+        body_d = BAR_D * 0.6
+        parts.append(_box(f"{nm}_taskbar_body", x0, y0 - MIRROR_T, bar_z, W, body_d, BAR_H, "blackalu"))
+        parts.append(_box(f"{nm}_taskbar_opal", x0, y0 - MIRROR_T + body_d, bar_z,
+                          W, BAR_D - body_d, BAR_H, "opal"))
     return parts
 
 
@@ -165,15 +186,18 @@ DISPATCH = {
 }
 
 
-def fixture_parts(fx):
+def fixture_parts(fx, taskbar=False):
     """Route a subroom fixture to its massing fn by `kind`; return [] for unmapped kinds
-    (the consumer then falls back to the plain box, like _build_millwork)."""
+    (the consumer then falls back to the plain box, like _build_millwork). `taskbar`
+    reaches only the vanity branch (the element-5 mirror bar opt-in)."""
     fn = DISPATCH.get(str(fx.get("kind", "")))
+    if fn is vanity_parts:
+        return fn(fx, taskbar=taskbar)
     return fn(fx) if fn else []
 
 
-def all_fixture_parts(fixtures):
+def all_fixture_parts(fixtures, taskbar=False):
     out = []
     for fx in fixtures or ():
-        out.extend(fixture_parts(fx))
+        out.extend(fixture_parts(fx, taskbar=taskbar))
     return out

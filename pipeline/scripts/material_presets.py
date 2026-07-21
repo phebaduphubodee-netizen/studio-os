@@ -275,6 +275,10 @@ def mill_object_role(objname):
         return "caesarstone"                           # element-2 Caesarstone vanity top (D2-4)
     if pn.startswith("mirror"):
         return "mirror"                                # element-2 frameless makeup mirror (D2-3)
+    if pn == "opal":
+        return "opal"                                  # element-5 luminous opal face (task strips/bar)
+    if pn == "blackalu":
+        return "blackalu"                              # element-5 black-alu luminaire body (D-E5-4/-5)
     if pn.startswith("cool"):
         return "microcement"                           # element-2 cool carcass/gables/toe (anti-monopoly)
     if "front" in pn or pn.startswith("towerback"):
@@ -375,6 +379,23 @@ def element_preset(resolved, name, kind):
 UNAPPLIABLE_KINDS = ("bed", "bench", "rug")
 
 
+def bespoke_built(it):
+    """True when build_room hands this ITEM to a bespoke builder the per-element preset
+    path can never reach: the UNAPPLIABLE kinds (_build_bed/_build_bench/_add_rug), a
+    lamped side_table (_build_nightstand — the element-3 latent flag), and the
+    tub-chair stool (_build_tub_chair, whose parts carry ph_model and skip the material
+    pass entirely). reconcile_elements refuses these so a materials.elements key can
+    never silently no-op (scrutiny 2026-07-21 closed the two intercepted shapes)."""
+    k = str(it.get("kind", ""))
+    if k in UNAPPLIABLE_KINDS:
+        return True
+    if k == "side_table" and it.get("lamp"):
+        return True
+    if k == "stool" and it.get("style") == "tub_chair":
+        return True
+    return False
+
+
 def element_appliable(preset_name):
     """(ok, why) — can this preset be applied PER-ELEMENT? Element application goes
     through the flat-colour retint path (imported models) or an em- solid material
@@ -417,11 +438,12 @@ def reconcile_elements(resolved, spec):
             raise ValueError(f"materials.elements key {key!r} matches NO item by name or "
                              f"kind (items: {names}) — a selection that cannot bind must "
                              f"fail loud, not silently render the default palette")
-        bad = [it for it in hits if str(it.get("kind", "")) in UNAPPLIABLE_KINDS]
+        bad = [it for it in hits if bespoke_built(it)]
         if bad:
-            raise ValueError(f"materials.elements key {key!r} targets kind "
-                             f"'{bad[0].get('kind')}' — built by a bespoke builder the "
-                             f"preset cannot reach (UNAPPLIABLE_KINDS={UNAPPLIABLE_KINDS})")
+            raise ValueError(f"materials.elements key {key!r} targets "
+                             f"'{bad[0].get('kind')}' (lamp={bool(bad[0].get('lamp'))}, "
+                             f"style={bad[0].get('style')!r}) — built by a bespoke builder "
+                             f"the preset cannot reach (see bespoke_built)")
         ok, why = element_appliable(els[key])
         if not ok:
             raise ValueError(f"materials.elements[{key!r}]: {why}")
@@ -519,7 +541,28 @@ def furniture_material_story_bits(spec):
     if any(it.get("kind") == "rug" for it in items):
         bits.append("rug: soft neutral poly-wool herringbone under the bed (demotes the oak floor "
                     "to the 30% layer, D1-A)")
+    if any(it.get("kind") == "stool" and it.get("style") == "tub_chair" for it in items):
+        bits.append("vanity tub-chair: upholstered greige stonewashed linen wrap-back seat "
+                    "(SAME textile family as the bed base + bench) on slim dark legs — "
+                    "NOT oak, NOT cream")
     return bits
+
+
+def lighting_story_bits(spec):
+    """ELEMENT 5 (D-E5-9, element5-lighting_DD-2026-07-20.md §9): the DELIBERATE lit
+    state, NAMED so the Gemini polish pass cannot repaint, flatten, or 'unify' it away
+    (the repair prompt's palette_coherence would otherwise read the opal strips / lamp
+    glow / graded wash as noise to clean — the recurring revert-by-omission class,
+    this time aimed at LIGHT instead of a material). DATA-driven on the e5 block."""
+    if ((spec or {}).get("lighting") or {}).get("schema") != "e5-layers@0.1":
+        return []
+    return ["lighting is DELIBERATE 3-layer (keep every pool and glow, do not flatten "
+            "or unify): warm-white recessed pools; vertical opal task strips flanking "
+            "the makeup mirror and a full-width opal task bar above the ensuite mirror "
+            "(black-alu bodies, no brass at any mirror); a graded warm wash raking the "
+            "oak slat headboard wall; a soft tub wash; the two brass dome table lamps "
+            "GLOW warm (2850K) with a cast pool on each nightstand — dimmer than the "
+            "garden windows, which stay the brightest source"]
 
 
 def material_story(resolved, spec=None):
@@ -547,4 +590,5 @@ def material_story(resolved, spec=None):
     for label, pn in millwork_subpart_presets(spec):
         bits.append(f"{label}: {PRESETS[pn]['desc']}")
     bits.extend(furniture_material_story_bits(spec))   # ELEMENT 3: bed base / lamps / rug (D7)
+    bits.extend(lighting_story_bits(spec))             # ELEMENT 5: the deliberate 3-layer light
     return "; ".join(bits) if bits else material_story(None)

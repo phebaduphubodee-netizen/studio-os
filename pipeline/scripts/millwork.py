@@ -25,6 +25,7 @@ pull-gap, battens on a backer. We never fatten a dimension to make it visible; w
 it casts. (That is also why hardware is NOT modelled protruding: a bar handle would stick out past
 the plan-measured bbox, and the pull-gap is both the honest warm-minimal detail and bbox-safe.)
 """
+import math
 
 # --- joinery constants (metres) -----------------------------------------------------------------
 T_DOOR   = 0.020    # door-leaf thickness: leaves stand proud of the carcass by this
@@ -616,6 +617,48 @@ def nightstand_lamp_parts(w_m, d_m, h_m, lamp=True):
         parts.append(("lamp_shade", cx - sr, cy - sr, h_m + base_h + stem_h - 0.02,
                       2 * sr, 2 * sr, shade_h))
     return parts
+
+
+def tub_chair_curved(w_m, d_m, h_m, seat_h_m=0.43, rot_deg=0.0, opening_deg=110.0):
+    """PURE (metres): the CURVED tub-chair layout — centre/radii/arc-span/legs as DATA for
+    build_room's from_pydata materializer (the curtain-wave law: when a piece's identity IS
+    a curve, the mesh must be the curve, not boxes — owner 2026-07-20 'ยังไม่ค่อยสวย' on the
+    boxy first pass; the box massing was the WRONG PRIMITIVE, superseding it, not layering
+    bevels on it, is the fix that stays inside the element-3 clay-ceiling ruling).
+
+    Geometry: an annular wrap SHELL (one continuous arc, ONE rim height = the tub
+    signature) opening toward the spec FRONT (THE ONE FACING CONVENTION: front azimuth =
+    rot−90°, so ANY rot now works — the cardinal-only limit died with the boxes), a round
+    seat cushion inside it, 4 tapered round legs under the shell ring. Containment: the
+    circle is inscribed in min(w,d) and centred in the footprint. seat_h 0.43 [est
+    studio render-tier] (no vault row; h = the drawn label's overall rim height)."""
+    if w_m <= 0 or d_m <= 0 or h_m <= 0 or seat_h_m <= 0:
+        raise ValueError(f"tub_chair: non-positive dim (w={w_m}, d={d_m}, h={h_m}, seat={seat_h_m})")
+    if seat_h_m >= h_m:
+        raise ValueError(f"tub_chair: seat {seat_h_m} must sit below the rim h {h_m}")
+    if not (30.0 <= opening_deg <= 180.0):
+        raise ValueError(f"tub_chair: opening {opening_deg}° outside 30-180 — not a tub")
+    R = min(w_m, d_m) / 2.0 - 0.005
+    shell_t = min(0.045, R * 0.18)
+    leg_h = max(0.05, seat_h_m - 0.15)                   # shell drops just below the cushion
+    alpha = math.radians(rot_deg - 90.0)                 # front azimuth (+X=0, CCW)
+    half = math.radians(opening_deg) / 2.0
+    th0 = alpha + half                                   # shell wraps the complement CCW
+    th1 = alpha + 2.0 * math.pi - half
+    wrap = th1 - th0
+    legs = []
+    for i in range(4):
+        th = th0 + wrap * (i + 0.5) / 4.0
+        lr = R - shell_t / 2.0
+        legs.append({"x": lr * math.cos(th), "y": lr * math.sin(th),
+                     "r_top": 0.017, "r_bot": 0.012, "h": leg_h})
+    return {
+        "cx": w_m / 2.0, "cy": d_m / 2.0, "R": R,
+        "shell": {"r_out": R, "r_in": R - shell_t, "z0": leg_h - 0.02, "z1": h_m,
+                  "th0": th0, "th1": th1},
+        "seat": {"r": R - shell_t - 0.004, "z0": leg_h - 0.02, "z1": seat_h_m},
+        "legs": legs,
+    }
 
 
 # --- the model-fit gate --------------------------------------------------------------------------

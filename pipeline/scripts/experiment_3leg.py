@@ -191,7 +191,10 @@ def make_leg_b(control_png, spec, out_png, model_pref):
     the SPEC (the truth), not hand-typed prose. PAID. Returns the model id used or None."""
     import hybrid_render
     resolved = material_presets.resolve_materials(spec)
-    story = material_presets.material_story(resolved)
+    # spec passed (scrutiny 2026-07-21): without it the story drops EVERY data-driven
+    # bit — millwork subparts, linen base/bench/tub-chair, the e5 lighting sentence —
+    # so the paid polish pass would repaint decided materials + flatten decided light
+    story = material_presets.material_story(resolved, spec)
     room_type = str(spec.get("room", {}).get("type", "room")).replace("_", " ")
     prompt = hybrid_render.resolve_prompt(
         "@render-polish@dev", {"room_type": room_type, "material_story": story})
@@ -296,7 +299,7 @@ def main(argv=None):
 
     res = {"date": time.strftime("%Y-%m-%d %H:%M"), "spec": args.spec,
            "room_type": str(spec.get("room", {}).get("type", "room")),
-           "material_story": material_presets.material_story(resolved),
+           "material_story": material_presets.material_story(resolved, spec),
            "leg_b_model_used": model_used, "legs": {}}
 
     for leg, img in (("A", args.leg_a), ("B", leg_b), ("C", args.leg_c)):

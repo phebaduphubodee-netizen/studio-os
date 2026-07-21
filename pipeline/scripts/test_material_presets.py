@@ -522,3 +522,24 @@ def test_furniture_bits_are_opt_in_per_item():
     assert mp.furniture_material_story_bits({"items": [{"kind": "bed"}]}) == []
     # a plain side_table (no lamp) is not a nightstand
     assert mp.furniture_material_story_bits({"items": [{"kind": "side_table"}]}) == []
+
+
+# ---------------------------------------------------------------- element-5 seams (scrutiny 2026-07-21)
+
+def test_mill_object_role_e5_luminaire_tokens():
+    assert mp.mill_object_role("mill__vanity_taskbar_opal__opal") == "opal"
+    assert mp.mill_object_role("mill__vanity_taskbar_body__blackalu") == "blackalu"
+
+
+def test_lighting_story_bits_schema_gated():
+    assert mp.lighting_story_bits({}) == []
+    assert mp.lighting_story_bits({"lighting": {"schema": "other"}}) == []
+    bits = mp.lighting_story_bits({"lighting": {"schema": "e5-layers@0.1"}})
+    assert bits and "opal task bar" in bits[0] and "do not flatten" in bits[0]
+
+
+def test_bespoke_built_refuses_intercepted_items():
+    assert mp.bespoke_built({"kind": "side_table", "lamp": {"kind": "dome"}})
+    assert mp.bespoke_built({"kind": "stool", "style": "tub_chair"})
+    assert not mp.bespoke_built({"kind": "stool"})
+    assert not mp.bespoke_built({"kind": "side_table"})

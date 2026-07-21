@@ -45,6 +45,10 @@ import curtains       # bpy-free pure logic: fabric ribbons from curtain_track/c
 import exterior       # bpy-free pure logic: the view OUT of the glass — spec-declared garden HDRI
 #   + the Juliet rail the owner's photo shows outside the slider (option B, 2026-07-17b). Same law:
 #   the studio-HDRI default must not be able to silently override a decided exterior.
+import element5_lighting as _e5   # bpy-free pure logic: the 3 real light layers (element 5) —
+                       # ambient grids clipped out of full-height masses + mirror task strips/bar
+                       # + BF14/tub accent spots + lamp glow, all DERIVED from spec.lighting
+                       # (schema e5-layers@0.1); malformed/missing referents RAISE (831fc1b law).
 import bathroom       # bpy-free pure logic: ensuite sanitaryware massing (element 4). Subroom
 #   fixtures used to render as ONE plain box each (the crude v4); this emits per-part boxes with
 #   material ROLES that route to the SAME suite materials (oak/caesarstone/brass/glass) by name.
@@ -115,6 +119,10 @@ def _fixture_part_name(mat, base):
         return f"mill__{b}__brass"
     if mat == "mirror":
         return f"mill__{b}__mirror"
+    if mat == "blackalu":
+        return f"mill__{b}__blackalu"   # element-5 luminaire body (task bar) — without this
+    if mat == "opal":                   # branch the parts fell to the oak default SILENTLY
+        return f"mill__{b}__opal"       # (LOOK caught the bar rendering as oak, 2026-07-20)
     if mat == "tray":
         return f"mill__{b}__cool"
     return f"mill__{b}"          # oak (default mill role = the spec's oak_veneer)
@@ -1403,6 +1411,16 @@ def _suite_materials(spec=None):
     # .mill_object_role). Built from the signed presets like the element-1 sub-part materials.
     caesar = _material_from_preset("m_mill_caesar", "caesarstone_quartz")
     mirror = _material_from_preset("m_mill_mirror", "mirror_silver")
+    # ELEMENT 5 (D-E5-4/-5): luminaire surfaces. The opal diffuser face EMITS (a lit
+    # task bar/strip is a light, not a white slab — MA-04's glow half); black-alu
+    # bodies cohere with the suite's black-alu window frames. Strength [est] LOOK-tier.
+    blackalu = _solid("m_mill_blackalu", (0.045, 0.045, 0.05, 1.0), rough=0.45,
+                      metallic=0.9, spec=0.5)
+    opal = _solid("m_mill_opal", (0.90, 0.90, 0.88, 1.0), rough=0.4)
+    _opb = _principled(opal)[1]
+    if _opb:
+        _set(_opb, "Emission Color", (1.0, 0.97, 0.92, 1.0))
+        _set(_opb, "Emission Strength", 3.0)
 
     def _legacy_glass():
         # glazing (2026-07-12): the panes poly_walls_bpy glazes back into the openings it cut. Named
@@ -1473,7 +1491,8 @@ def _suite_materials(spec=None):
             _role = _matpre.mill_object_role(n)
             obj.data.materials.append(
                 {"brass": brass, "microcement": cement, "backing": backing,
-                 "caesarstone": caesar, "mirror": mirror}.get(_role, mill))
+                 "caesarstone": caesar, "mirror": mirror,
+                 "opal": opal, "blackalu": blackalu}.get(_role, mill))
             continue
         if n.startswith("rug__"):                        # rug already carries its own PBR
             continue
@@ -1481,10 +1500,122 @@ def _suite_materials(spec=None):
         obj.data.materials.append(M.get(key, furn))
 
 
+def _aimed_light(name, ld, pos_m, aim_m):
+    """Link a light datablock at pos_m aimed at aim_m (data-API, headless-safe —
+    the _add_window_light track-quat pattern)."""
+    from mathutils import Vector
+    o = bpy.data.objects.new(name, ld)
+    o.location = pos_m
+    d = Vector(aim_m) - Vector(pos_m)
+    if d.length > 1e-9:
+        o.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
+    bpy.context.scene.collection.objects.link(o)
+    return o
+
+
+def _add_emissive_box(name, x, y, z, dx, dy, dz, color=(1.0, 0.97, 0.92), strength=3.0):
+    """A small glowing BOX (visible luminaire body that also lights) — the 6-face
+    sibling of _add_emissive's quad, for the element-5 opal task strips."""
+    v = [(x, y, z), (x + dx, y, z), (x + dx, y + dy, z), (x, y + dy, z),
+         (x, y, z + dz), (x + dx, y, z + dz), (x + dx, y + dy, z + dz), (x, y + dy, z + dz)]
+    f = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(v, [], f)
+    me.update()
+    o = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(o)
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = (*color, 1.0)
+    em.inputs["Strength"].default_value = strength
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    o.data.materials.append(m)
+    o["ph_model"] = True
+    return o
+
+
+def _add_e5_lights(spec, h_m):
+    """ELEMENT 5 (element5-lighting_DD-2026-07-20.md): materialize the pure plan —
+    ambient disks (mass-clipped grids), BF11 opal task strips (emissive mesh + aimed
+    area), the ensuite bar wash, BF14/tub accent SPOTs, all in the one warm family.
+    plan() RAISES on a malformed block -> build()'s top-level guard fails the process
+    (never a silent revert). The dome-lamp emitters live in _build_nightstand."""
+    from math import radians
+    plan = _e5.plan(spec)
+    warm = _matpre.parse_light_warm(spec)
+    n = 0
+    for i, f in enumerate(plan["downlights"]):
+        # the proven downlight style: AREA disk facing down, deterministic ±12%
+        # output spread + a hint of CCT drift (a real ceiling never fires every
+        # can at one exact output/colour); positions come mass-clipped from the plan
+        ld = bpy.data.lights.new(f"e5_dl_{i}", type='AREA')
+        ld.shape = 'DISK'
+        ld.size = 0.22
+        ld.energy = f["watts"] * (0.88 + 0.24 * _det01(f"e5a{i}"))
+        drift = 0.985 + 0.03 * _det01(f"e5c{i}")
+        ld.color = (warm[0], min(1.0, warm[1] * drift), min(1.0, warm[2] * drift * drift))
+        lo = bpy.data.objects.new(f"e5_dl_{i}", ld)
+        lo.location = (f["x"] * MM, f["y"] * MM, f["z"] * MM)
+        bpy.context.scene.collection.objects.link(lo)
+        n += 1
+    for s in plan["strips"]:
+        bx, by, bz, dx, dy, dz = s["box"]
+        _add_emissive_box(s["name"], bx * MM, by * MM, bz * MM, dx * MM, dy * MM, dz * MM)
+        L = s["light"]
+        ld = bpy.data.lights.new(f"{s['name']}_L", type='AREA')
+        ld.shape = 'RECTANGLE'
+        ld.size = L["size"][0] * MM          # strip width
+        ld.size_y = L["size"][1] * MM        # luminous length (the mirror field)
+        ld.energy = L["watts"]
+        ld.color = warm
+        _aimed_light(f"{s['name']}_L", ld,
+                     (L["x"] * MM, L["y"] * MM, L["z"] * MM),
+                     (L["aim"][0] * MM, L["aim"][1] * MM, L["aim"][2] * MM))
+        n += 1
+    b = plan["bar"]
+    ld = bpy.data.lights.new("e5_bar_wash", type='AREA')
+    ld.shape = 'RECTANGLE'
+    ld.size = b["size"][0] * MM              # the 2m bar length IS the softness (PH-05)
+    ld.size_y = b["size"][1] * MM
+    ld.energy = b["watts"]
+    ld.color = warm
+    _aimed_light("e5_bar_wash", ld, (b["x"] * MM, b["y"] * MM, b["z"] * MM),
+                 (b["aim"][0] * MM, b["aim"][1] * MM, b["aim"][2] * MM))
+    n += 1
+    for s in plan["spots"]:
+        ld = bpy.data.lights.new(s["name"], type='SPOT')
+        ld.energy = s["watts"]
+        ld.color = warm
+        ld.spot_size = radians(s["cone_deg"])
+        ld.spot_blend = s["blend"]
+        ld.shadow_soft_size = 0.03           # physical emitter radius -> real penumbra (PH-05)
+        _aimed_light(s["name"], ld, (s["x"] * MM, s["y"] * MM, s["z"] * MM),
+                     (s["aim"][0] * MM, s["aim"][1] * MM, s["aim"][2] * MM))
+        n += 1
+    c = plan["meta"]["counts"]
+    drops = plan["meta"]["dropped"]
+    print(f"  e5 lights: {c['downlights']} ambient + {c['strips']} strips + bar + "
+          f"{c['spots']} spots placed ({n} sources; lamps glow via _build_nightstand); "
+          f"clipped {len(drops)} grid can(s) inside full-height masses: "
+          f"{sorted({d['mass'] for d in drops})}")
+    return n
+
+
 def add_interior_lights(spec, h_m):
     """Place warm ceiling lights at the SAME positions as the RCP lighting layout
     (suite_lighting), so the render is lit like the room's real fixture plan — the
-    single biggest lift from 'grey massing' to 'a lit room'."""
+    single biggest lift from 'grey massing' to 'a lit room'.
+    ELEMENT 5: a spec carrying lighting schema e5-layers@0.1 gets the DESIGNED
+    3-layer plan instead (_add_e5_lights). Every other spec keeps this legacy path
+    UNCHANGED except one disclosed delta: suite_lighting.TARGET_LUX['wet'] 200->270
+    (D-E5-2, the wired-band fix) re-sizes legacy wet-zone grids too — scrutiny
+    2026-07-21 corrected the earlier 'byte-identical' overclaim."""
+    if _e5.applies(spec):
+        return _add_e5_lights(spec, h_m)
     try:
         import suite_lighting
         fixtures, _ = suite_lighting.plan_lighting(spec)
@@ -1826,7 +1957,89 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     return True
 
 
-def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None):
+def _smooth_mesh_obj(name, verts, faces, mat):
+    """from_pydata + smooth shading (data API, headless-safe) — curved furniture pieces."""
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts, [], faces)
+    me.update()
+    for p in me.polygons:
+        p.use_smooth = True
+    o = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(o)
+    o.data.materials.append(mat)
+    o["ph_model"] = True                                  # keep its own material + no bevel pass
+    return o
+
+
+def _cyl_frustum(name, cx, cy, r_bot, r_top, z0, z1, mat, seg=24, cap=True):
+    """A (tapered) cylinder via from_pydata — legs / round cushions."""
+    from math import cos, sin, tau
+    verts, faces = [], []
+    for j, (r, z) in enumerate(((r_bot, z0), (r_top, z1))):
+        for i in range(seg):
+            a = tau * i / seg
+            verts.append((cx + r * cos(a), cy + r * sin(a), z))
+    for i in range(seg):
+        k = (i + 1) % seg
+        faces.append((i, k, seg + k, seg + i))
+    if cap:
+        verts.append((cx, cy, z1))                        # top fan centre
+        top = len(verts) - 1
+        for i in range(seg):
+            faces.append((seg + i, seg + (i + 1) % seg, top))
+    return _smooth_mesh_obj(name, verts, faces, mat)
+
+
+def _arc_shell(name, cx, cy, r_out, r_in, z0, z1, th0, th1, mat, seg=48):
+    """An annular ARC WALL (the tub-chair wrap): outer + inner skins, rim cap, end caps."""
+    from math import cos, sin
+    verts, faces = [], []
+    n = seg + 1
+    for r in (r_out, r_in):
+        for z in (z0, z1):
+            for i in range(n):
+                a = th0 + (th1 - th0) * i / seg
+                verts.append((cx + r * cos(a), cy + r * sin(a), z))
+    O0, O1, I0, I1 = 0, n, 2 * n, 3 * n                  # outer z0/z1, inner z0/z1 rows
+    for i in range(seg):
+        faces.append((O0 + i, O0 + i + 1, O1 + i + 1, O1 + i))          # outer skin
+        faces.append((I1 + i, I1 + i + 1, I0 + i + 1, I0 + i))          # inner skin
+        faces.append((O1 + i, O1 + i + 1, I1 + i + 1, I1 + i))          # rim cap
+        faces.append((I0 + i, I0 + i + 1, O0 + i + 1, O0 + i))          # bottom cap
+    # end caps at the opening — WOUND OPPOSITELY (scrutiny 2026-07-21: the identical
+    # tuple made the th1 cap inside-out; with use_smooth the inverted normal smears
+    # the shared vertex normals into an asymmetric dark band at one rim end)
+    for a, flip in ((0, False), (seg, True)):
+        quad = (O0 + a, O1 + a, I1 + a, I0 + a)
+        faces.append(quad[::-1] if flip else quad)
+    return _smooth_mesh_obj(name, verts, faces, mat)
+
+
+def _build_tub_chair(x0, y0, W, D, H, rot=0.0):
+    """The BF11 vanity seat as a CURVED tub chair (spec kind='stool' style='tub_chair'):
+    a continuous annular wrap at ONE rim height opening toward the spec front (any rot —
+    THE ONE FACING CONVENTION, front azimuth = rot−90°), a round linen cushion inside,
+    4 tapered round legs. Upholstery = the bed-base/bench greige linen EXACTLY (one
+    textile family, D1-A); legs = the bench leg tone. Geometry DATA from the PURE
+    millwork.tub_chair_curved (containment/opening/rim invariants unit-tested); meshes
+    are real curves via from_pydata (the curtain-wave law — the first boxy pass read as
+    a box because the primitive was wrong, owner 2026-07-20)."""
+    lay = millwork.tub_chair_curved(W, D, H, rot_deg=rot)
+    uph_m = _solid("stool_uph", (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.25, spec=0.3)
+    leg_m = _solid("stool_leg", (0.26, 0.21, 0.16, 1.0), rough=0.45, sheen=0.1, spec=0.5)
+    cx, cy = x0 + lay["cx"], y0 + lay["cy"]
+    sh = lay["shell"]
+    _arc_shell("stool__shell", cx, cy, sh["r_out"], sh["r_in"], sh["z0"], sh["z1"],
+               sh["th0"], sh["th1"], uph_m)
+    st = lay["seat"]
+    _cyl_frustum("stool__seat", cx, cy, st["r"], st["r"], st["z0"], st["z1"], uph_m, seg=32)
+    for i, lg in enumerate(lay["legs"]):
+        _cyl_frustum(f"stool__leg{i}", cx + lg["x"], cy + lg["y"], lg["r_bot"], lg["r_top"],
+                     0.0, lg["h"], leg_m, seg=12, cap=False)
+    return True
+
+
+def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
     """A solid low bedside cabinet + a brass dome lamp (ELEMENT 3 D3-3). Replaces the spindly
     `_table` primitive (a top on four thin legs) the side tables used to fall through to — which
     read as a flimsy console, not the ~500 mm-square bedside cabinet with a lamp the plan draws.
@@ -1834,15 +2047,51 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None):
     (D1-A); the brass base carries the room's 10% accent (PH-02: the lamp is dim vs the garden
     windows, so its warm metal never out-reads the daylight). Geometry from the PURE, unit-tested
     `millwork.nightstand_lamp_parts` (footprint invariant proven there). `rot` is accepted but not
-    applied — the piece is symmetric about both axes (same honesty as _build_bench)."""
+    applied — the piece is symmetric about both axes (same honesty as _build_bench).
+
+    ELEMENT 5 (D-E5-6): `glow` = {watts, z_off_m, rgb} makes the lamp EMIT — the shade
+    becomes an OPEN-BOTTOMED shell (from_pydata, headless-safe) with a faint warm emission
+    (the visible glow) and a small POINT light inside pools DOWN through the mouth onto the
+    nightstand top (MA-04 needs glow AND a cast pool; PH-05 real falloff). Without glow the
+    element-3 solid-box shade renders byte-identical (E3's built-but-dark state, for specs
+    that have not decided lighting)."""
     body_m  = _solid("nightstand_body", (0.13, 0.12, 0.11, 1.0), rough=0.55, sheen=0.1, spec=0.4)
     brass_m = _solid("lamp_brass",      (0.60, 0.44, 0.20, 1.0), rough=0.32, metallic=1.0, spec=0.6)
     shade_m = _solid("lamp_shade",      (0.93, 0.86, 0.72, 1.0), rough=0.85, sheen=0.4, spec=0.3)
+    if glow:
+        _sb = _principled(shade_m)[1]
+        if _sb:
+            _set(_sb, "Emission Color", (*glow["rgb"], 1.0))
+            _set(_sb, "Emission Strength", 1.2)          # the GLOW half of MA-04 [est]
     mats = {"body": body_m, "lamp_base": brass_m, "lamp_stem": brass_m, "lamp_shade": shade_m}
     bevs = {"body": 0.008, "lamp_base": 0.010, "lamp_stem": 0.006, "lamp_shade": 0.060}
     for name, ox, oy, oz, dx, dy, dz in millwork.nightstand_lamp_parts(W, D, H, lamp=bool(lamp)):
+        if glow and name == "lamp_shade":
+            # open-bottom 5-face shell: the inner point light must escape DOWN through
+            # the mouth (a closed beveled box swallows the pool — verify-lens catch)
+            x, y, z = x0 + ox, y0 + oy, oz
+            v = [(x, y, z), (x + dx, y, z), (x + dx, y + dy, z), (x, y + dy, z),
+                 (x, y, z + dz), (x + dx, y, z + dz), (x + dx, y + dy, z + dz),
+                 (x, y + dy, z + dz)]
+            f = [(4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+            me = bpy.data.meshes.new("nightstand__lamp_shade")
+            me.from_pydata(v, [], f)
+            me.update()
+            o = bpy.data.objects.new("nightstand__lamp_shade", me)
+            bpy.context.scene.collection.objects.link(o)
+            o.data.materials.append(shade_m)
+            o["ph_model"] = True
+            continue
         _rbox(f"nightstand__{name}", x0 + ox, y0 + oy, oz, dx, dy, dz, mats[name],
               bevw=bevs[name], seg=5 if name == "lamp_shade" else 3)
+    if glow and lamp:
+        ld = bpy.data.lights.new("lamp_glow", type='POINT')
+        ld.energy = glow["watts"]
+        ld.color = tuple(glow["rgb"])
+        ld.shadow_soft_size = 0.025                      # a real bulb, not a point singularity
+        lo = bpy.data.objects.new("lamp_glow", ld)
+        lo.location = (x0 + W / 2.0, y0 + D / 2.0, H + glow["z_off_m"])
+        bpy.context.scene.collection.objects.link(lo)
     return True
 
 
@@ -2131,7 +2380,7 @@ def build_suite(spec, label="suite"):
             # material ROLE routes to the SAME suite materials by NAME (oak vanity, caesarstone
             # counter, porcelain sanitaryware, brass fittings, clear glass). Unmapped kinds fall
             # back to the plain sanitary box — same escape _build_millwork uses.
-            _parts = bathroom.fixture_parts(fx)
+            _parts = bathroom.fixture_parts(fx, taskbar=_e5.applies(spec))
             if _parts:
                 for _p in _parts:
                     add_box(_fixture_part_name(_p["mat"], _p["name"]),
@@ -2145,6 +2394,19 @@ def build_suite(spec, label="suite"):
     if n_fix:
         print(f"  fixtures: {n_fix} ensuite fixture(s) materialized with per-part roles "
               f"(oak vanity / caesarstone / porcelain / brass / clear glass)")
+    # COPLANAR-BACKER SKINS (element-5 LOOK catch 2026-07-20): where a full-height
+    # builtin's face lies EXACTLY on a subroom edge (BF10's north face on the ensuite's
+    # y5850), Cycles' coplanar tie renders the builtin's material as the subroom's wall
+    # — the ensuite plaster wore BF10's wavy oak until the task-bar wash lit it. The
+    # PREDICATE is pure (element5_lighting.coplanar_backer_skins, LAYER LAW — scrutiny
+    # 2026-07-21 moved it out of this layer); this loop only materializes + discloses.
+    for _sk in _e5.coplanar_backer_skins(spec):
+        _nm = f"wall_skin_{_sk['edge'].replace('=', '')}_{str(_sk['backer']).replace(' ', '-').replace('__', '-')}"
+        add_box(_nm, _sk["x"] * MM, _sk["y"] * MM, _sk["z"] * MM,
+                _sk["dx"] * MM, _sk["dy"] * MM, _sk["dz"] * MM)
+        print(f"  wall skin: subroom edge {_sk['edge']} backed coplanar by '{_sk['backer']}' "
+              f"(h>=ceiling) -> 4mm plaster skin ({max(_sk['dx'], _sk['dy']) * MM:.2f}m run) "
+              f"hides the tie-win")
 
     # A built-in faces the side of the room it SERVES — read that off the furniture, not off the
     # outline's centroid (in an L-shaped SUITE the centroid lands in the wrong zone: see
@@ -2240,8 +2502,27 @@ def build_suite(spec, label="suite"):
         # ELEMENT 3: a side_table carrying a `lamp` block IS a bedside nightstand — a solid cabinet
         # + a brass dome lamp, not the spindly `_table` primitive. Opt-in on the flag so the sitting
         # room's plain side tables keep the model/primitive path.
+        # The vanity seat: a stool that DECLARES style='tub_chair' gets the real curved
+        # chair (spec DATA opt-in — a bar stool in another spec keeps its primitive).
+        # An UNKNOWN non-empty style RAISES (scrutiny 2026-07-21: a typo'd style would
+        # silently revert the owner-decided chair to the primitive box AND drop its
+        # anti-repaint story bit — the 831fc1b swallow class); style-absent stays legal.
+        if kind == "stool":
+            _style = it.get("style")
+            if _style == "tub_chair":
+                _build_tub_chair(xm, ym, wm, dm, hm, rot)
+                continue
+            if _style:
+                raise ValueError(f"stool style {_style!r} unknown (known: 'tub_chair'); "
+                                 f"a typo must fail loud, not render the primitive box")
         if kind == "side_table" and it.get("lamp"):
-            _build_nightstand(xm, ym, wm, dm, hm, rot, it.get("lamp"))
+            # ELEMENT 5 (D-E5-6): a spec that decided lighting makes the lamp EMIT —
+            # glow config derives from the validated block + this item's own cct_k
+            # (out-of-family CCT RAISES: PH-03 by construction). No block -> dark, E3-identical.
+            _g5 = _e5.lamp_glow(spec)
+            _glow = (dict(_g5, rgb=_e5.lamp_rgb((it.get("lamp") or {}).get("cct_k", 2850)))
+                     if _g5 else None)
+            _build_nightstand(xm, ym, wm, dm, hm, rot, it.get("lamp"), glow=_glow)
             continue
         slug = MODEL_MAP.get(kind)
         # BOTH rotation paths now go through THE LAW (see MODEL_FRONT_DEG): place_model is handed
@@ -2379,7 +2660,7 @@ def build_rect(spec, label="default"):
     # carrying one would render the studio default / bare glass with the decided
     # element silently dropped — the exact revert-by-omission those blocks exist to kill.
     _suite_only = [k for k in ("_suffix", "materials", "exterior",
-                               "curtains", "curtain_track") if spec.get(k)]
+                               "curtains", "curtain_track", "lighting") if spec.get(k)]
     if _suite_only:
         raise ValueError(f"{_suite_only} are suite-path features (room.outline_mm "
                          "specs); the rect path would silently ignore them — remove "

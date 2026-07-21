@@ -38,8 +38,13 @@ import suite_clearance   # reuse _shoelace + _point_in_poly (the polygon IP)
 
 # Target maintained illuminance by room class (lux). DRAFT midpoints from CIE/IES
 # residential guidance — a designer confirms per real fixture + local code.
+# wet 270 (was 200): ELEMENT 5 D-E5-2 — the stale 200 sat BELOW the wired bathroom
+# band 20-30 fc = 215.3-322.9 lux (dimensional_rules.v0.2.json, the instrument
+# clearance_check.check_lighting actually reads), so the auto plan failed its own
+# wired check (~189 lux achieved on the canonical ensuite). 270 = the band midpoint;
+# statutory floor stays >=100 lux (LAW, mr39 ตาราง 3, ห้องน้ำ).
 TARGET_LUX = {"habitable": 150, "bedroom": 150, "bedroom_suite": 150,
-              "living": 150, "wet": 200, "bath": 200, "default": 150}
+              "living": 150, "wet": 270, "bath": 270, "default": 150}
 _WET = ("bath", "ensuite", "toilet", "wc", "ห้องน้ำ")
 
 
@@ -106,7 +111,16 @@ def _ambient_for(outline, name, cu, llf, phi):
 
 
 def plan_lighting(spec):
-    """Return (fixtures, meta) for a room-spec@0.2 (metric polygon)."""
+    """Return (fixtures, meta) for a room-spec@0.2 (metric polygon).
+
+    ELEMENT 5 (scrutiny 2026-07-21): a spec carrying lighting schema e5-layers@0.1 gets
+    its fixtures FROM THE RENDER'S OWN PLAN (element5_lighting.schedule_fixtures) — one
+    source, so the client RCP/schedule (suite_package -> suite_rcp) can never silently
+    contradict the render (the auto grid below knows nothing of strips/bar/washes and
+    would document a different room). Late import: element5_lighting imports this module."""
+    import element5_lighting as _e5l
+    if _e5l.applies(spec):
+        return _e5l.schedule_fixtures(spec)
     r = spec["room"]
     outline = [tuple(p) for p in r["outline_mm"]]
     H = float(r.get("ceiling_mm", 2800))

@@ -1,7 +1,8 @@
 """Unit tests for bathroom.py (pure ensuite fixture massing). Run: python -m pytest."""
 import bathroom as B
 
-KNOWN_MATS = {"porcelain", "stone", "oak", "brass", "glass", "tray", "mirror"}
+KNOWN_MATS = {"porcelain", "stone", "oak", "brass", "glass", "tray", "mirror",
+              "blackalu", "opal"}   # element-5 task-bar roles (D-E5-5)
 
 # ink-true footprints from element4-ensuite_ink-read-2026-07-18.json
 VANITY = {"kind": "vanity_double", "name": "vanity", "x": 1077, "y": 5923, "w": 2047, "d": 654, "h": 850,

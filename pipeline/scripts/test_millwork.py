@@ -908,3 +908,56 @@ def test_nightstand_fails_loud_on_non_positive_dims():
                 dict(w_m=0.5, d_m=0.5, h_m=0.0)):
         with pytest.raises(ValueError):
             M.nightstand_lamp_parts(**bad)
+
+
+# ---------------------------------------------------------------- tub chair (element-2 seat)
+
+def _lay(rot=270.0, w=0.510, d=0.546, h=0.750):
+    return M.tub_chair_curved(w, d, h, rot_deg=rot)
+
+
+def test_tub_chair_inscribed_and_centred():
+    """The wrap circle inscribes min(w,d), centred — nothing leaves the footprint."""
+    w, d = 0.510, 0.546
+    lay = _lay()
+    assert lay["R"] * 2 <= min(w, d)
+    assert abs(lay["cx"] - w / 2) < 1e-9 and abs(lay["cy"] - d / 2) < 1e-9
+    for lg in lay["legs"]:
+        assert (lg["x"] ** 2 + lg["y"] ** 2) ** 0.5 + lg["r_top"] <= lay["R"] + 1e-9
+
+
+def test_tub_chair_rim_seat_heights():
+    lay = M.tub_chair_curved(0.510, 0.546, 0.750, seat_h_m=0.41, rot_deg=270)
+    assert abs(lay["shell"]["z1"] - 0.750) < 1e-9          # ONE rim height = the tub read
+    assert abs(lay["seat"]["z1"] - 0.41) < 1e-9            # seat = pass-through, not a frozen [est]
+    assert lay["seat"]["r"] < lay["shell"]["r_in"]         # cushion sits inside the wrap
+
+
+def test_tub_chair_opening_faces_front_any_rot():
+    """THE ONE FACING CONVENTION: front azimuth = rot-90 deg; the opening's centre must
+    aim there for cardinal AND non-cardinal rots (the curve killed the cardinal limit)."""
+    for rot in (0.0, 90.0, 270.0, 45.0, 213.0):
+        lay = _lay(rot=rot)
+        th0, th1 = lay["shell"]["th0"], lay["shell"]["th1"]
+        opening_centre = (th1 + th0) / 2 + math.pi        # opposite the wrap centre
+        want = math.radians(rot - 90.0)
+        diff = (opening_centre - want) % (2 * math.pi)
+        assert min(diff, 2 * math.pi - diff) < 1e-6, rot
+
+
+def test_tub_chair_legs_under_the_wrap_not_the_opening():
+    lay = _lay(rot=270.0)
+    th0, th1 = lay["shell"]["th0"], lay["shell"]["th1"]
+    for lg in lay["legs"]:
+        a = math.atan2(lg["y"], lg["x"]) % (2 * math.pi)
+        rel = (a - th0) % (2 * math.pi)
+        assert rel <= (th1 - th0) + 1e-9                   # every leg inside the wrap arc
+
+
+def test_tub_chair_fail_loud():
+    with pytest.raises(ValueError):
+        M.tub_chair_curved(0.5, 0.5, 0.75, seat_h_m=0.8)   # seat above rim
+    with pytest.raises(ValueError):
+        M.tub_chair_curved(-0.5, 0.5, 0.75)                # negative dim
+    with pytest.raises(ValueError):
+        M.tub_chair_curved(0.5, 0.5, 0.75, opening_deg=200)  # not a tub
