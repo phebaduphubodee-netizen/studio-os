@@ -1939,3 +1939,31 @@ DECLINED decision and nothing more.
   lane's commit.
 - Next: element 6 textiles (SMALL — curtains/rug/coverlet already built; remaining = west
   casement sheers + ensuite towels + short DD) → assemble → hero → one Gemini beauty pass.
+
+## 2026-07-21 (later) — element 6 textiles BUILT: the predicted 7th omission did not happen, but its cousins did
+
+- **Element 6 BUILT + eye-verified same day as its DD** (element6-textiles_BUILD-2026-07-21.md;
+  tests 1755→1839). The two pre-build guards did their job: the towel token went in with all
+  THREE router branches and zero silent-oak surface. The predicted 7th revert-by-omission was
+  PREVENTED, not just caught — the first element since the reset with no post-hoc omission fix
+  on its own decisions.
+- **But the omission class mutated instead of dying, twice, both caught by the adversarial
+  review**: (a) the census was declared ONE source and the story bit then HARDCODED the counts —
+  a prose copy is still a second source; the DD's own 18in fallback would have desynced build
+  vs polish-prompt (fixed: prose derives from census). (b) `material_story`'s legacy early-return
+  made EVERY element's anti-repaint armour (e3 FF&E, e4 ensuite, e5 light, e6 textiles)
+  conditional on an unrelated `materials` block existing — armour that can be silently unhooked
+  is the same class one level up (fixed: bits ride unconditionally). LESSON: the revert channel
+  is not a list of places, it is a SHAPE — every new "the spec says X so the render shows X"
+  link needs the question "what single deletion breaks this link silently?"
+- **The verifier that swaps and reruns**: the hook side-assignment (south=hand/north=robes) had
+  no pin — proven not by argument but by SWAPPING the code and watching 1834 tests stay green.
+  That move (mutate the decided value, demand a red) is the cheapest decided-thing detector we
+  have; the dd-decisions manifest's future pytest gate should do exactly that, mechanically.
+- **A verify camera is also a discovery instrument**: the first camera ever pointed at the
+  ensuite door found it rendered as SOLID (the e4 both-coincident-walls lesson applied to
+  windows but nobody re-asked it for the door; fixed as bay-side cut DATA). Same class as e5's
+  coplanar-backer catch: every new viewpoint audits old geometry for free.
+- Deliberately NOT touched: the x1125 four-way fixture-face tie (BF10-class, e4's element,
+  no visible defect — watch-item in the BUILD doc) and the pre-existing top-of-frame black band.
+- Next: assemble → hero frames → the single Gemini beauty pass (billing top-up still the gate).

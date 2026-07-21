@@ -269,6 +269,12 @@ def mill_object_role(objname):
     if "__" not in rest:
         return "oak"                                   # plain fallback box: name is not a part token
     pn = rest.rsplit("__", 1)[-1]
+    if "." in pn and pn.rsplit(".", 1)[1].isdigit():
+        # Blender DUPLICATE-NAME suffix (.001/.002): a name collision silently renames
+        # the object, and the exact-match tokens below (towel/opal/blackalu) would fall
+        # through to the oak default — the same silent-walnut channel the e5 task bar
+        # fell down (review 2026-07-21; the startswith tokens survive it by accident).
+        pn = pn.rsplit(".", 1)[0]
     if pn.startswith("rail") or pn.startswith("brass"):
         return "brass"                                 # brass rail (el-1) + el-4 ensuite tapware/fittings
     if pn.startswith("counter"):
@@ -279,6 +285,13 @@ def mill_object_role(objname):
         return "opal"                                  # element-5 luminous opal face (task strips/bar)
     if pn == "blackalu":
         return "blackalu"                              # element-5 black-alu luminaire body (D-E5-4/-5)
+    if pn == "towel":
+        # element-6 terry textiles (towels + bath mat, ONE token — D-E6-3). This branch is
+        # REQUIRED, not decorative: the closed fixture_part_name gate is one layer UP and
+        # does not protect this router — without this line every towel falls through to
+        # the `return "oak"` below and build_room's .get(_role, mill) ships it in WALNUT
+        # veneer with NO raise (the buildability verifier's catch, DD build-consequence 9).
+        return "towel"
     if pn.startswith("cool"):
         return "microcement"                           # element-2 cool carcass/gables/toe (anti-monopoly)
     if "front" in pn or pn.startswith("towerback"):
@@ -313,6 +326,7 @@ FIXTURE_MAT_OBJECT = {
     "blackalu":  "mill__{b}__blackalu",   # element-5 luminaire body (task bar)
     "opal":      "mill__{b}__opal",       # element-5 luminous opal face
     "tray":      "mill__{b}__cool",       # shower tray/curb -> cool microcement
+    "towel":     "mill__{b}__towel",      # element-6 greige-oatmeal terry (towels + bath mat)
     "oak":       "mill__{b}",             # the ONE warm-oak gesture (default mill role)
 }
 
@@ -618,7 +632,72 @@ def ensuite_material_story_bits(spec):
                      "microcement tray/curb, satin-brass shower fittings")
     if frags:
         bits.append("ensuite fixtures: " + ", ".join(frags))
+    # ELEMENT 6 (D-E6-2): the BARE ruling, gated on the ensuite's own casements existing
+    # (both spec copies carry the DECIDED BARE note; a Gemini shower-curtain is the only
+    # revert channel left — this line arms the polish prompt against it).
+    if any(o.get("type") in ("window", "glass")
+           for o in bath.get("openings") or []):
+        bits.append("ensuite casements: BOTH shower casement windows are BARE black-alu "
+                    "(D-E6-2 DECIDED) — the garden through them is the wet-side "
+                    "coherence carrier; NO curtain, blind, or fabric at these windows "
+                    "(never add a shower curtain)")
+    # ELEMENT 6 (D-E6-3/-4/-5): the textiles, DERIVED from the accessories fixture's
+    # design.census — the DD's ONE source for emitters + story bit + LOOK (review
+    # 2026-07-21 caught the first cut hardcoding "2 bath towels": the 18in-fallback
+    # census edit would have built ONE towel while this prose told the Gemini polish
+    # to paint the second back). A censusless/zero fixture contributes NO counted
+    # prose (the emitter RAISES on it — the story must not promise what cannot
+    # build). Greige-vs-cream is TONAL (LOOK: greige must not read cream under the
+    # warm lamps); the closing clause is the wet/dry law's anti-trope armour (D-E6-5).
+    acc = next((f for f in bath.get("fixtures") or []
+                if str(f.get("kind", "")) == "bath_accessories"), None)
+    if acc is not None:
+        census = ((acc.get("design") or {}).get("census")) or {}
+        def _n(key):
+            v = census.get(key, 0)
+            return v if isinstance(v, int) and not isinstance(v, bool) and v > 0 else 0
+        clauses = []
+        if _n("bath_on_bar"):
+            n = _n("bath_on_bar")
+            clauses.append(f"{n} bath towel{'s' if n != 1 else ''} folded over the "
+                           "satin-brass Purist bar on the west wall")
+        if _n("hand_on_south_hook"):
+            clauses.append("a hand towel on the south door-jamb hook")
+        if _n("hand_on_counter"):
+            clauses.append("a hand towel folded on the counter between the basins")
+        if _n("robes_on_north_hook"):
+            n = _n("robes_on_north_hook")
+            clauses.append(f"{n} robe{'s' if n != 1 else ''} double-hung on the north "
+                           "jamb hook")
+        if _n("bath_mat"):
+            clauses.append("ONE flat greige mat at the shower entry in the drawn dry "
+                           "strip")
+        if clauses:
+            bits.append("ensuite textiles: greige-oatmeal TERRY (the suite's one linen "
+                        "family extended; greige, NOT cream) — " + ", ".join(clauses)
+                        + "; the oak vanity stays the room's only warmth; no towel "
+                        "over the glass or tub edge")
     return bits
+
+
+def casement_sheer_story_bits(spec):
+    """ELEMENT 6 (D-E6-1, element6-textiles_DD-2026-07-21.md): the west casement
+    sheers, NAMED so the Gemini polish pass cannot strip them (bare-glass 'cleanup'),
+    park them, or dress the mirror pier between them (the revert-by-omission class,
+    fabric flavor). Spec-gated on the casement_sheers block; alpha read from the same
+    ONE source the build reads (curtains.render_state), defaulted softly here because
+    this is prose — the BUILD path fails loud in casement_sheers.sheer_alpha."""
+    cs = (spec or {}).get("casement_sheers")
+    wins = (cs or {}).get("windows") or {}
+    if not wins:
+        return []
+    alpha = ((spec.get("curtains") or {}).get("render_state") or {}).get("sheer_alpha", 0.38)
+    return [f"casement sheers: {len(wins)} sill-length cool off-white linen-look sheer "
+            f"panel(s) drawn inside the west casement reveals at alpha {alpha} (the "
+            "suite's ONE sheer transmission — same fabric as the glass-L sheer); the "
+            "garden windows stay the brightest source; the flanking opal strips stay "
+            "unoccluded and the mirror pier stays BARE — no fabric, no holdbacks, no "
+            "brass at the mirror"]
 
 
 def lighting_story_bits(spec):
@@ -642,27 +721,38 @@ def material_story(resolved, spec=None):
     """One prose sentence naming the ACTUAL selected materials — the truth the render
     shows, for the render-polish prompt's {material_story} slot (and rationale). Built
     from preset descriptions, so the prompt can never describe materials the spec did
-    not choose."""
-    if not resolved:
-        return ("the existing studio palette: warm oak plank floor, matte warm-white walls, "
-                "walnut feature wall and millwork, cream boucle upholstery")
+    not choose.
+
+    The spec-derived protective bits (millwork sub-parts, decided FF&E, ensuite
+    palette + textiles, e5 lighting, e6 sheers) ride REGARDLESS of whether a
+    `materials` block selected presets — until 2026-07-21 an early `if not resolved`
+    return dropped ALL of them for a spec without the block (review catch: every
+    element's anti-repaint armour hung on an unrelated block's presence — the
+    decided-data-through-swallows class, story flavor). A spec with neither presets
+    nor decided-element data still returns the legacy palette sentence verbatim."""
     bits = []
-    for role, label in (("floor", "floor"), ("walls", "walls"),
-                        ("feature_wall", "feature wall"), ("millwork", "millwork"),
-                        ("glazing", "glazing"), ("fixtures", "fixtures")):
-        pn = resolved["surfaces"].get(role)
-        if pn:
-            bits.append(f"{label}: {PRESETS[pn]['desc']}")
-    for fam, label in (("fabric", "upholstery"), ("wood", "wood furniture"),
-                       ("neutral", "other furniture")):
-        pn = resolved["families"].get(fam)
-        if pn:
-            bits.append(f"{label}: {PRESETS[pn]['desc']}")
-    for el, pn in sorted((resolved.get("elements") or {}).items()):
-        bits.append(f"{el}: {PRESETS[pn]['desc']}")
+    if not resolved:
+        bits.append("the existing studio palette: warm oak plank floor, matte "
+                    "warm-white walls, walnut feature wall and millwork, cream "
+                    "boucle upholstery")
+    else:
+        for role, label in (("floor", "floor"), ("walls", "walls"),
+                            ("feature_wall", "feature wall"), ("millwork", "millwork"),
+                            ("glazing", "glazing"), ("fixtures", "fixtures")):
+            pn = resolved["surfaces"].get(role)
+            if pn:
+                bits.append(f"{label}: {PRESETS[pn]['desc']}")
+        for fam, label in (("fabric", "upholstery"), ("wood", "wood furniture"),
+                           ("neutral", "other furniture")):
+            pn = resolved["families"].get(fam)
+            if pn:
+                bits.append(f"{label}: {PRESETS[pn]['desc']}")
+        for el, pn in sorted((resolved.get("elements") or {}).items()):
+            bits.append(f"{el}: {PRESETS[pn]['desc']}")
     for label, pn in millwork_subpart_presets(spec):
         bits.append(f"{label}: {PRESETS[pn]['desc']}")
     bits.extend(furniture_material_story_bits(spec))   # ELEMENT 3: bed base / lamps / rug (D7)
-    bits.extend(ensuite_material_story_bits(spec))     # ELEMENT 4: the ensuite's decided palette
+    bits.extend(ensuite_material_story_bits(spec))     # ELEMENT 4+6: ensuite palette + textiles
     bits.extend(lighting_story_bits(spec))             # ELEMENT 5: the deliberate 3-layer light
+    bits.extend(casement_sheer_story_bits(spec))       # ELEMENT 6: the west casement sheers
     return "; ".join(bits) if bits else material_story(None)

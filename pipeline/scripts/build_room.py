@@ -39,6 +39,10 @@ if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 import furniture
 import millwork       # bpy-free pure logic: built-in joinery layout (METRES) + the model-fit gate
+import casement_sheers as _csheers   # bpy-free pure logic: sill-length sheers inside the two
+                                     # west casement reveals (element 6 D-E6-1) — layout derives
+                                     # from each opening's OWN sill/head, alpha pinned cross-block
+                                     # to curtains.render_state (ONE sheer identity)
 import curtains       # bpy-free pure logic: fabric ribbons from curtain_track/curtains spec data —
 #   data the canonical spec carried since 2026-07-16 with NO consumer, so every render showed bare
 #   glass where the owner decided fabric (3ce5f5e measured that omission as a "pale band" finding)
@@ -1096,6 +1100,49 @@ def _add_curtains(spec, h):
     return len(ribbons)
 
 
+def _add_casement_sheers(spec):
+    """ELEMENT 6 (D-E6-1): sill-length flat sheers inside the two west casement
+    reveals. ALL layout (window matching, drawn-only state law, room side, the
+    micro-wave, z from each opening's OWN sill/head — NEVER floor-to-ceiling) is pure
+    and unit-tested in casement_sheers.py; here each ribbon is only extruded between
+    its own z0/z1 and given the EXISTING `curtain_sheer` material BY NAME — the suite
+    keeps ONE sheer identity (same rgba + alpha as the glass-L sheer). Must run AFTER
+    _add_curtains: that pass creates `curtain_sheer` (after its empty-ribbons early
+    return), and a get-or-create here would fork a second sheer identity — so an
+    absent material RAISES instead."""
+    ribbons = _csheers.sheer_ribbons(spec)
+    if not ribbons:
+        return 0
+    mat = bpy.data.materials.get("curtain_sheer")
+    if mat is None:
+        raise ValueError(
+            "casement_sheers present but material 'curtain_sheer' does not exist — "
+            "_add_curtains must have run first (it owns the sheer identity); a "
+            "get-or-create here would fork a second sheer")
+    for rb in ribbons:
+        pts, z0, z1 = rb["pts"], rb["z0"], rb["z1"]
+        n = len(pts)
+        verts = [(x, y, z0) for x, y in pts] + [(x, y, z1) for x, y in pts]
+        faces = [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]
+        me = bpy.data.meshes.new(rb["name"])
+        me.from_pydata(verts, [], faces)
+        me.validate()
+        me.update()
+        for poly in me.polygons:
+            poly.use_smooth = True   # a faceted micro-wave reads as a zigzag fan
+        obj = bpy.data.objects.new(rb["name"], me)
+        bpy.context.scene.collection.objects.link(obj)
+        obj.data.materials.append(mat)
+        # open ribbon surface: the wide suite bevel would shred its border edges, and
+        # its fabric is assigned right here — ph_model opts out of both passes (the
+        # same escape _add_curtains uses)
+        obj["ph_model"] = True
+    print(f"  casement sheers: {len(ribbons)} sill-length ribbon(s) drawn inside the "
+          f"west casement reveals (z from sill/head; alpha = the east system's "
+          f"curtain_sheer, ONE identity)")
+    return len(ribbons)
+
+
 def _add_juliet_rail(spec):
     """Materialize exterior.juliet_rail (ALL layout pure + unit-tested in exterior.py;
     here each member is only a box + black metal). The rail is DEPICTED from the
@@ -1391,6 +1438,15 @@ def _suite_materials(spec=None):
     blackalu = _solid("m_mill_blackalu", (0.045, 0.045, 0.05, 1.0), rough=0.45,
                       metallic=0.9, spec=0.5)
     opal = _solid("m_mill_opal", (0.90, 0.90, 0.88, 1.0), rough=0.4)
+    # ELEMENT 6 (D-E6-3/-4): greige-oatmeal TERRY for the ensuite towels + bath mat —
+    # ONE textile token 'towel' (material_presets.mill_object_role) so towels and mat
+    # share one identity. Lives here like blackalu/opal (bathroom.py is PURE; its part
+    # dicts carry no rgba). LIGHT neutral greige JOINS the cool 60% ground, clearly
+    # cooler/greyer than the cream boucle (NOT-cream is the family rule; LOOK checks it
+    # holds under the warm lamps); rgba [est] composition-not-SKU, high rough + sheen
+    # for the terry-pile read.
+    towel = _solid("m_mill_towel", (0.60, 0.575, 0.52, 1.0), rough=0.9, sheen=0.7,
+                   spec=0.3)
     _opb = _principled(opal)[1]
     if _opb:
         _set(_opb, "Emission Color", (1.0, 0.97, 0.92, 1.0))
@@ -1466,7 +1522,8 @@ def _suite_materials(spec=None):
             obj.data.materials.append(
                 {"brass": brass, "microcement": cement, "backing": backing,
                  "caesarstone": caesar, "mirror": mirror,
-                 "opal": opal, "blackalu": blackalu}.get(_role, mill))
+                 "opal": opal, "blackalu": blackalu,
+                 "towel": towel}.get(_role, mill))   # ELEMENT 6: the terry token's 3rd branch
             continue
         if n.startswith("rug__"):                        # rug already carries its own PBR
             continue
@@ -2357,7 +2414,11 @@ def build_suite(spec, label="suite"):
             # router is a CLOSED vocabulary in the pure layer (material_presets.fixture_part_name)
             # and RAISES on a mat it doesn't know — the silent oak default it replaced is how the
             # e5 task bar rendered oak (LOOK 2026-07-20).
-            _parts = bathroom.fixture_parts(fx, taskbar=_e5.applies(spec))
+            # ELEMENT 6: `subroom` reaches only the bath_accessories branch — its
+            # positions derive from the sibling fixtures + door, and the pure layer
+            # RAISES rather than returning [] so the white-box fallback below can
+            # never swallow a decided accessory set (DD build-consequence 8).
+            _parts = bathroom.fixture_parts(fx, taskbar=_e5.applies(spec), subroom=sr)
             if _parts:
                 for _p in _parts:
                     add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
@@ -2419,6 +2480,7 @@ def build_suite(spec, label="suite"):
     # glazing exists there to dress, and fabric floating on a blank wall would be a lie).
     if not spec.get("_hero"):
         _add_curtains(spec, h)
+        _add_casement_sheers(spec)  # ELEMENT 6: AFTER _add_curtains (it owns curtain_sheer)
         _add_juliet_rail(spec)   # outside the glass — same solid-wall reason for the skip
         _add_vanity_mirror(spec)  # ELEMENT 2: frameless mirror on the wall between the west windows
 
@@ -2636,8 +2698,9 @@ def build_rect(spec, label="default"):
     # (review 2026-07-17b): each is consumed only in build_suite, so a rect spec
     # carrying one would render the studio default / bare glass with the decided
     # element silently dropped — the exact revert-by-omission those blocks exist to kill.
-    _suite_only = [k for k in ("_suffix", "materials", "exterior",
-                               "curtains", "curtain_track", "lighting") if spec.get(k)]
+    _suite_only = [k for k in ("_suffix", "materials", "exterior", "curtains",
+                               "curtain_track", "lighting", "casement_sheers")
+                   if spec.get(k)]
     if _suite_only:
         raise ValueError(f"{_suite_only} are suite-path features (room.outline_mm "
                          "specs); the rect path would silently ignore them — remove "

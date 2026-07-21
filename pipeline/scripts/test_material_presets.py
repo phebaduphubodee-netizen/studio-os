@@ -554,7 +554,8 @@ def test_fixture_part_name_routes_the_whole_closed_vocabulary():
     assert mp.fixture_part_name("glass", "shower_screen") == "glass__shower_screen"
     assert mp.fixture_part_name("oak", "vanity_cabinet") == "mill__vanity_cabinet"
     for mat, role in (("stone", "caesarstone"), ("brass", "brass"), ("mirror", "mirror"),
-                      ("blackalu", "blackalu"), ("opal", "opal"), ("tray", "microcement")):
+                      ("blackalu", "blackalu"), ("opal", "opal"), ("tray", "microcement"),
+                      ("towel", "towel")):    # ELEMENT 6: the terry token's b-branch (D-E6-3)
         name = mp.fixture_part_name(mat, "p")
         assert mp.mill_object_role(name) == role, f"{mat} -> {name} -> {mp.mill_object_role(name)}"
 
@@ -562,8 +563,9 @@ def test_fixture_part_name_routes_the_whole_closed_vocabulary():
 def test_fixture_part_name_raises_on_unknown_mat():
     """The silent oak default was the revert-by-omission channel: blackalu/opal fell through it
     2026-07-20 (the task bar rendered OAK) and the e6 textile roles were predicted to be the 7th.
-    An unknown mat must fail LOUD at build time, never quietly wear oak."""
-    for bad in ("linen", "towel", "fabric", "", None, "OAK"):
+    An unknown mat must fail LOUD at build time, never quietly wear oak. ('towel' left this
+    list 2026-07-21 — its red test was the e6 build's forced touch-point, DD consequence 10.)"""
+    for bad in ("linen", "fabric", "terry", "", None, "OAK"):
         with pytest.raises(ValueError, match="closed"):
             mp.fixture_part_name(bad, "towel_stack")
 
@@ -592,3 +594,122 @@ def test_ensuite_bits_are_data_driven_on_the_bathroom_subroom():
     full = mp.ensuite_material_story_bits({"subrooms": [{"type": "bathroom", "fixtures": [
         {"kind": "vanity_double"}, {"kind": "toilet"}, {"kind": "shower"}]}]})
     assert len(full) == 2 and "only oak" in full[1] and "shower" in full[1]
+
+
+# --- ELEMENT 6 (D-E6-1..-5): sheers + BARE casements + textiles in the story ----------
+
+def test_casement_sheer_bit_is_gated_on_the_spec_block():
+    assert mp.casement_sheer_story_bits({}) == []
+    assert mp.casement_sheer_story_bits({"casement_sheers": {}}) == []
+    assert mp.casement_sheer_story_bits({"casement_sheers": {"windows": {}}}) == []
+    bits = mp.casement_sheer_story_bits({
+        "casement_sheers": {"windows": {"glz-west-win1": {"state": "drawn"},
+                                        "glz-west-win2": {"state": "drawn"}}},
+        "curtains": {"render_state": {"sheer_alpha": 0.38}}})
+    assert len(bits) == 1
+    assert "0.38" in bits[0], "the sheers' alpha must be named (probe: alpha-0.38)"
+    assert "opal strips" in bits[0] and "unoccluded" in bits[0]
+    assert "mirror pier" in bits[0] and "BARE" in bits[0]
+
+
+def test_ensuite_bare_casements_bit_gated_on_the_openings():
+    """D-E6-2 probe: the BARE line rides only when the ensuite subroom + its casement
+    openings exist — never on a bathroom without windows."""
+    no_win = mp.ensuite_material_story_bits({"subrooms": [{"type": "bathroom",
+        "openings": [{"type": "door"}]}]})
+    assert not any("BARE" in b for b in no_win)
+    with_win = mp.ensuite_material_story_bits({"subrooms": [{"type": "bathroom",
+        "openings": [{"type": "window", "id": "glz-ensuite-win1"}]}]})
+    bare = [b for b in with_win if "BARE" in b]
+    assert len(bare) == 1 and "shower curtain" in bare[0] and "coherence carrier" in bare[0]
+
+
+_E6_CENSUS = {"bath_on_bar": 2, "hand_on_south_hook": 1, "hand_on_counter": 1,
+              "robes_on_north_hook": 2, "bath_mat": 1}
+
+
+def _acc_spec(census):
+    fx = {"kind": "bath_accessories"}
+    if census is not None:
+        fx["design"] = {"census": census}
+    return {"subrooms": [{"type": "bathroom", "fixtures": [fx]}]}
+
+
+def test_ensuite_textiles_bit_gated_on_the_accessories_fixture():
+    no_acc = mp.ensuite_material_story_bits({"subrooms": [{"type": "bathroom",
+        "fixtures": [{"kind": "toilet"}]}]})
+    assert not any("terry" in b.lower() for b in no_acc)
+    with_acc = mp.ensuite_material_story_bits(_acc_spec(_E6_CENSUS))
+    tex = [b for b in with_acc if "terry" in b.lower()]
+    assert len(tex) == 1
+    assert "no towel over the glass or tub edge" in tex[0], "D-E6-5 wording missing"
+    assert "NOT cream" in tex[0], "the NOT-cream tonal rule must be stated (LOOK anchor)"
+    assert "only warmth" in tex[0]
+    assert "2 bath towels" in tex[0] and "2 robes" in tex[0]
+
+
+def test_ensuite_textiles_bit_derives_from_the_census_one_source():
+    """Review catch 2026-07-21 (two lenses, verified): the first cut HARDCODED the
+    counts, so the DD's own 18in fallback (census bath_on_bar -> 1) would render one
+    towel while the prose told the Gemini polish to paint the second back. The census
+    is the ONE source (D-E6-3): edits must change the prose; a censusless fixture
+    (the emitter RAISES on it) must contribute NO counted prose."""
+    fallback = dict(_E6_CENSUS, bath_on_bar=1, robes_on_north_hook=1,
+                    hand_on_counter=0)
+    tex = [b for b in mp.ensuite_material_story_bits(_acc_spec(fallback))
+           if "terry" in b.lower()][0]
+    assert "1 bath towel" in tex and "2 bath towels" not in tex
+    assert "1 robe" in tex and "2 robes" not in tex
+    assert "counter" not in tex, "a zero-count clause must be omitted"
+    assert not any("terry" in b.lower()
+                   for b in mp.ensuite_material_story_bits(_acc_spec(None))), \
+        "censusless fixture must not yield counted prose (the build RAISES on it)"
+    assert not any("terry" in b.lower()
+                   for b in mp.ensuite_material_story_bits(_acc_spec(
+                       {k: 0 for k in _E6_CENSUS})))
+
+
+def test_mill_object_role_survives_blender_duplicate_suffix():
+    """Review catch 2026-07-21: Blender silently renames a colliding object to
+    name.001 — the exact-match tokens (towel/opal/blackalu) then fell through to the
+    oak default, the SAME silent-walnut channel the e5 task bar fell down."""
+    assert mp.mill_object_role("mill__acc_bath_towel0__towel.001") == "towel"
+    assert mp.mill_object_role("mill__vanity_taskbar_opal__opal.002") == "opal"
+    assert mp.mill_object_role("mill__vanity_taskbar_body__blackalu.001") == "blackalu"
+    assert mp.mill_object_role("mill__x__towel.abc") == "oak"   # not a Blender suffix
+
+
+def test_material_story_bits_survive_a_spec_without_a_materials_block():
+    """Review catch 2026-07-21: the `if not resolved` early return dropped EVERY
+    protective bit (BARE casements, terry, sheers, e5 lighting) for a spec without a
+    materials block — all the anti-repaint armour hung on an unrelated block."""
+    import copy, json, os
+    spec = json.load(open(os.path.join(os.path.dirname(__file__),
+        "../../projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json"),
+        encoding="utf-8"))
+    bare = copy.deepcopy(spec)
+    del bare["materials"]
+    story = mp.material_story(mp.resolve_materials(bare), bare)
+    assert "existing studio palette" in story, "legacy palette sentence must lead"
+    for marker in ("casement sheers", "BARE black-alu", "greige-oatmeal TERRY",
+                   "no towel over the glass or tub edge", "lighting is DELIBERATE"):
+        assert marker in story, f"protective bit lost without the materials block: {marker}"
+    # a spec with neither presets nor decided-element data = the legacy sentence verbatim
+    assert mp.material_story(None) == ("the existing studio palette: warm oak plank "
+                                       "floor, matte warm-white walls, walnut feature "
+                                       "wall and millwork, cream boucle upholstery")
+
+
+def test_material_story_canonical_carries_the_e6_lines():
+    """The canonical spec's story must now name sheers + BARE casements + terry — the
+    three e6 lines the Gemini polish pass would otherwise revert (strip the sheers,
+    hang a shower curtain, warm the towels to cream)."""
+    import json, os
+    spec = json.load(open(os.path.join(os.path.dirname(__file__),
+        "../../projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json"),
+        encoding="utf-8"))
+    story = mp.material_story(mp.resolve_materials(spec), spec)
+    assert "casement sheers" in story and "0.38" in story
+    assert "BARE black-alu" in story and "shower curtain" in story
+    assert "greige-oatmeal TERRY" in story
+    assert "no towel over the glass or tub edge" in story
