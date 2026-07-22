@@ -415,48 +415,6 @@ DRAPE_SAG = 0.010          # mid-run sag, ALSO spent out of it (missed on the fi
 #                            budget, and the reveal came out at 11mm instead of 20mm)
 
 
-def bed_drape(coverlet, base_top, salt=0, fold=DRAPE_FOLD):
-    """Replace the coverlet slab's dead vertical faces with a hanging, creased skirt.
-
-    Footprint, top line and drop ALL derive from built parts: the coverlet gives the plan
-    rect and the suspension line, `base_top` (bed__base's own top plane) gives what the
-    hem falls toward. The skirt is INSET by `fold` so its outward bulge lands exactly on
-    the coverlet's declared bbox — the CAD invariant by construction, not by hope.
-
-    THE REVEAL IS PROTECTED. Element 3 deliberately recessed the plinth so a shadow gap
-    reads under the bed ("a LOW recessed plinth ... minimises the solid mass", 9d15bfc);
-    a skirt that fell past it would delete a signed softening decision while claiming to
-    add one. The drop is therefore solved to leave DRAPE_REVEAL of air above `base_top`
-    even at the hem's lowest wander, and RAISES if the geometry cannot afford it.
-    """
-    w, d = coverlet["dx"], coverlet["dy"]
-    if w <= 2 * fold or d <= 2 * fold:
-        _fail(f"bed_drape: coverlet {w:.3f}x{d:.3f} too small to inset by {fold}")
-    z_top = coverlet["z"] + coverlet["dz"]
-    drop = z_top - base_top - DRAPE_REVEAL - DRAPE_HEM - DRAPE_SAG
-    if drop <= 0.05:
-        _fail(f"bed_drape: only {drop * 1000:.0f}mm of fall between the coverlet top "
-              f"({z_top * 1000:.0f}mm) and the base top ({base_top * 1000:.0f}mm) once "
-              f"the {DRAPE_REVEAL * 1000:.0f}mm plinth reveal is protected — the skirt "
-              f"would bury element 3's signed shadow gap")
-    verts, faces = sg.drape_skirt(w - 2 * fold, d - 2 * fold, drop, top_z=0.0,
-                                  fold=fold, hem_wander=DRAPE_HEM, sag=DRAPE_SAG,
-                                  salt=salt)
-    # Budget arithmetic is checkable, so CHECK it rather than trusting it: measure the
-    # skirt that was actually generated and refuse to ship one that ate the reveal.
-    low = min(v[2] for v in verts) + z_top
-    if low < base_top + DRAPE_REVEAL - 1e-6:
-        _fail(f"bed_drape: hem reaches {low * 1000:.1f}mm, inside the "
-              f"{DRAPE_REVEAL * 1000:.0f}mm reveal above the base top "
-              f"({base_top * 1000:.0f}mm) — the drop budget is missing a term")
-    return [{
-        "name": "bed__coverdrape", "shape": "mesh",
-        "verts": [(coverlet["x"] + fold + v[0], coverlet["y"] + fold + v[1], z_top + v[2])
-                  for v in verts],
-        "faces": faces,
-    }]
-
-
 RANK_GAP = 0.020           # air between pillow ranks — a stack, not a wedge
 SHAM_D = 0.115             # a euro sham standing upright is THIN in plan
 PILLOW_D = 0.340           # a sleeping pillow lying flat
@@ -553,56 +511,33 @@ THROW_RIPPLE = 0.016       # softgoods.throw's own default crease amplitude
 THROW_FOLD_K = 1.9         # its out-of-plane gain at the free hem (softgoods.throw tail)
 
 
-def bed_throw(coverlet, head_axis, head_sign, salt=0):
-    """A throw laid across the foot third with a tail hanging over the near edge.
-
-    It is the one object that can make the coverlet read as fabric rather than foam, and
-    its hanging tail is the only vertical drape a flat-on hero frame would contain.
-
-    CONTAINMENT. The generator adds two outward terms of its own — the skewed hem line and
-    the tail's outward swing as it falls — and the first cut budgeted for neither: the
-    pre-commit review measured the throw 45.9mm outside the bed's plan bbox on the
-    canonical spec, and in AABB collision with the foot bench on specs/master_bedroom.json.
-    Both terms are now computed and the lay rect is inset by their sum, so the piece lands
-    inside the host it was handed. `bbox` is then re-measured and RAISED on, because a
-    budget that is merely argued is how this got shipped the first time."""
-    along = coverlet["dx"] if head_axis == "x" else coverlet["dy"]
-    across = coverlet["dy"] if head_axis == "x" else coverlet["dx"]
-    z_top = coverlet["z"] + coverlet["dz"]
-    lay = min(along * 0.30, 0.62)                    # how far up the bed it lies
-    tail = coverlet["dz"] * 1.35 + 0.16              # falls past the mattress edge
-    # EVERY outward term the generator runs up, not just the ones that were obvious: the
-    # tail's swing, the skewed hem line, AND the out-of-plane fold crease. That last one
-    # was added later to stop the tail rendering as torn paper, and it immediately tripped
-    # this function's own post-generation assert — which is the point of having one.
-    out = tail * THROW_SWING + THROW_SKEW * lay * 0.5 + THROW_RIPPLE * THROW_FOLD_K
-    if out * 2.0 >= across or lay + out >= along:
-        _fail(f"bed_throw: the outward budget ({out * 1000:.0f}mm) does not fit the "
-              f"{across * 1000:.0f}x{along * 1000:.0f}mm host")
-    verts, faces = sg.throw(across - 2 * out, lay, 0.0, tail_drop=tail,
-                            skew=THROW_SKEW, salt=salt)
-    # place: laid at the FOOT end, tail falling off the foot edge, inset by `out`
-    if head_axis == "x":
-        bx = (coverlet["x"] + out) if head_sign > 0 else (coverlet["x"] + coverlet["dx"] - out)
-        pts = [(bx + (v[1] if head_sign > 0 else -v[1]),
-                coverlet["y"] + out + v[0], z_top + v[2]) for v in verts]
-    else:
-        by = (coverlet["y"] + out) if head_sign > 0 else (coverlet["y"] + coverlet["dy"] - out)
-        pts = [(coverlet["x"] + out + v[0],
-                by + (v[1] if head_sign > 0 else -v[1]), z_top + v[2]) for v in verts]
-    x0, y0, _, x1, y1, _ = sg.bbox(pts)
-    if (x0 < coverlet["x"] - 1e-6 or x1 > coverlet["x"] + coverlet["dx"] + 1e-6
-            or y0 < coverlet["y"] - 1e-6 or y1 > coverlet["y"] + coverlet["dy"] + 1e-6):
-        _fail(f"bed_throw: the piece leaves its host rect "
-              f"(x {x0:.4f}..{x1:.4f} vs {coverlet['x']:.4f}.."
-              f"{coverlet['x'] + coverlet['dx']:.4f}) — the outward budget is missing a term")
-    return [{"name": f"mill__style_bedthrow__{TOK_LINEN}", "shape": "mesh",
-             "verts": pts, "faces": faces}]
+THROW_INSET = 0.18         # coverlet shoulder left showing on each side of the throw
 
 
-# ---------------------------------------------------------------------------
-# SURFACE VIGNETTES — objects on the horizontal planes that currently carry none.
-# ---------------------------------------------------------------------------
+def foot_throw(along, across, height, base_top):
+    """(band, hang) for the simulated foot throw, or None if this bed cannot carry one.
+
+    PURE, and it is the SAME predicate `_build_bed` uses, for one reason: the anti-repaint
+    armour has to state whether a throw exists, and the first cut of that gate consulted
+    the BAKED coverlet's measured width — which no pure re-run can see. A story bit that
+    cannot re-derive its own subject either goes silent (dropping armour off a piece that
+    was built) or asserts blind. The positioning still measures the baked coverlet; only
+    the EXISTENCE question was moved back to something both sides can compute.
+
+    band  what lies ON the bed. It must outweigh the cantilevered part or the whole sheet
+          drags itself over the foot edge — measured once at 0.30 m hang against a 0.50 m
+          band, where the throw slid off and fell 5.1 m through the floor.
+    hang  how far it falls past the foot, bounded by the plinth reveal it must not cover.
+    """
+    hang = min(0.30, (height - base_top) - DRAPE_REVEAL - 0.06)
+    band = max(hang * 2.2, min(0.72, along * 0.36))
+    _ranks, pz = head_ranks(along)
+    if hang <= 0.05 or (along - band) <= pz + 0.14:
+        return None                      # the throw would reach into the pillow ladder
+    if across <= 2 * THROW_INSET + 0.3:
+        return None                      # too narrow to leave a coverlet shoulder showing
+    return band, hang
+
 
 def book_stack(x, y, z, n=3, w=0.215, d=0.155, salt=0):
     """A leaning stack of books. Boards are oak-family, so a stack reads as a warm dark

@@ -2027,3 +2027,152 @@ DECLINED decision and nothing more.
   taps. All are recorded in the DD; none is claimed by any story bit.
 - Next: the owner's eye on these frames, then the remaining vignettes -> hero -> the single
   Gemini beauty pass (billing top-up still the gate).
+
+## 2026-07-22 (2) — "DR จะช่วยได้มั้ย เรื่องที่คุณยังใช้ blender ไม่เป็น"
+
+The owner opened this thread asking whether deep research would fix renders that still
+"ยังดูไม่มี style". I answered NO — the gap is execution, not knowledge — and shipped
+`d16a0ca`. He came back and named what I had actually missed: **the knowledge I lacked
+was Blender itself.** He was right, and the evidence was inside the commit I had just
+made.
+
+**The probe that settled it** (Blender 5.1.2, `-b --factory-startup`, no `bpy.ops`):
+
+| claim made in `d16a0ca` | measured |
+|---|---|
+| "this vocabulary has no collision term" | `COLLISION` modifier; 219/625 verts rest on the obstacle |
+| cloth sim is not headless-safe | runs; frame-stepping advances it |
+| physics must be hand-written | 0.48 s for a 625-vert sheet x 40 frames |
+| a sim can't be reproducible | drift **0.000000000 m** across two bakes |
+| it would break the no-n-gon export law | SUBSURF returns 0 n-gons |
+
+Cost of not knowing: **785 lines** of hand-written cloth mathematics (`softgoods.py` +
+tests), garments that read as "curved cards", and a foot throw written, tested,
+contained and then DISABLED for want of a collision term that is one line and half a
+second.
+
+**The layer law never forbade any of it.** `pipeline/CLAUDE.md` bans `bpy.ops` FOR
+GEOMETRY; modifiers are the data API and the repo has used one since day one
+(`build_room.py:292`, BEVEL). What actually happened is that layer 1 (pure python,
+testable under plain `python`) was comfortable, so soft-goods GEOMETRY got written
+there too and bought its testability by re-implementing physics badly. Restored split:
+layer 1 decides WHERE cloth goes and WHAT MAY NOT BE VIOLATED; layer 2 (`drape.py`)
+shapes it with the solver and then PROVES layer 1's bounds held on the baked result.
+
+**What the solver then taught, in order, each caught by a render or a guard:**
+1. A pinned grid ROW held the coverlet's overhanging wings rigidly in mid-air — the
+   flanks never fell while the unpinned foot draped correctly. Pin the trapped REGION.
+2. Simulation does not make folds. **Excess material does.** A sheet cut to fit hangs
+   perfectly flat: correct physics, still a box — the same wrong answer as the
+   hand-written version, reached by a better road. `shrink_min` negative is the dial.
+3. Cloth cannot be cut to a prediction: it stretches, and slack lengthens it again by
+   an amount that depends on the fold pattern that emerges. Six hand-picked constants
+   each satisfied one constraint by breaking the other. Replaced by `search_bake` — a
+   ladder of real bakes that accepts the first result clearing BOTH the signed plinth
+   reveal and the plan-measured footprint, and raises with the full history otherwise.
+4. Cloth is **not monotonic in its own inputs** — shortening a cut by 17 mm moved the
+   skirt FURTHER out, because a different cut lands on a different station count and
+   the whole fold pattern re-forms. So: walk a ladder, do not chase a fixed point.
+5. Corners went square (a 316 mm cowl to the floor) -> cut away (two free edges splay
+   into sharp tabs = the "engineer reads it as broken" defect) -> mitred (same tabs,
+   shorter) -> **ROUNDED**, which has one continuous boundary and nothing to splay.
+6. A throw with 0.30 m cantilevered against a 0.50 m band slid off and fell 5.1 m
+   through the floor. Correct physics, wrong instruction.
+7. Slack must be spent WHERE IT IS SAFE. Containment is decided at the hanging edge,
+   so a search trading slack for containment ironed the whole throw flat (0.06 ->
+   0.0075). `vertex_group_shrink` confines it to the part lying on the bed: solved in
+   1 bake at full slack instead of 4 bakes at none.
+
+**Design errors the measurements exposed, not the eye:** the duvet was inset 15 mm from
+the BED rect, putting it 75 mm past the mattress — a slab floating over the coverlet's
+fold, invisible until simulated cloth draped over it. And the throw was styled across
+the bed with flank tails, which this hero camera sees edge-on; turning it to fall over
+the FOOT put the fabric where the camera looks and where the room actually exists.
+
+**Armour:** the coverlet bit asserted "gathered folds at ~110mm pitch" — a true fact
+about a generator that had been deleted, and a number nothing now controls. Rewritten,
+plus a new throw bit; both now key off `styling.foot_throw`, the SAME predicate the
+build uses, pinned by a build-time RAISE if the two ever disagree. New test forbids any
+`mm` or "pitch" claim in the bed's bits at all.
+
+**Verified:** 2016 green (19 new pure tests on the feedstock — last element's lesson:
+the functions the consumer actually calls had zero coverage). All 6 buildable specs
+still build; `bedroom_suite` and `persona_condo_demo` fail identically at HEAD
+(pre-existing, A/B'd via `git archive`).
+
+**Standing rule earned here:** *when I explain why something cannot be done, check
+whether the tool already does it before writing the workaround.* The disabled throw's
+comment was a well-argued, well-tested, honest paragraph — and every claim in it was
+false about the software it was running on.
+
+- Still not fixed: the bed is two near-white values and reads pale; the throw's top face
+  is flatter than its edges; the bench is still a plain slab. Deferred DD items unchanged.
+
+## 2026-07-22 (3) — "เพราะทุกเรื่องที่เราติดอาจจะมีคนคิดไว้ให้หมดแล้ว"
+
+The owner's second correction of the day, and the more expensive one. After conceding
+that the Blender gap was real, I ran a *probe* — five questions whose answers I already
+suspected — and called it research. He named that too: everything we are stuck on,
+someone has probably already solved. Including us.
+
+**What the studio already owned, unread:**
+- `knowledge/_inbox/interior-ai/2026-07-01-photoreal-render-technique-DR.md`, DISTILLED
+  three weeks ago into 1,357 lines across `rendering/`, `materials/`, `classifications/`.
+- Notebook `639575c3` — a professional 1–5 render-critique RUBRIC, and a critique of
+  *our own* master-bedroom render scoring **2/5 Architectural Plausibility, 1/5 Material
+  Curation**. Staged, distilled into `qa-dimensions.md §8` with full provenance.
+
+The knowledge discipline here is genuinely good — the gap is **distilled-but-never-wired**,
+not undocumented. A 250-agent audit of 155 vault rules against the build measured it:
+
+| APPLIED | PARTIAL | NOT APPLIED | CONTRADICTED |
+|---|---|---|---|
+| 37 | 84 | 28 | 1 |
+
+**~24% of the studio's own distilled knowledge is fully applied.**
+
+The sharpest instance: `_pbr_material` has carried a `variation=` knob since it shipped,
+and the feature wall passes `variation=0.06`. The FLOOR — same function, same texture
+slug, the largest continuous surface in every frame — passed nothing and got 0.0. MA-03
+in the studio's own defect taxonomy forbids exactly that. One keyword, three weeks.
+
+**Wired this session** (all vault-cited, all verified in pixels or by probe):
+1. Floor `variation=0.05` — MA-03. Plank-to-plank tone variation now reads.
+2. `satin_brass` gains `aniso=0.6` — "brushed" was in the preset's NAME and never in its
+   physics; an isotropic metal returns a round highlight, which is the polished-plastic
+   look, on the suite's entire 10% accent layer.
+3. Dielectric IOR 1.45 → 1.5 (glass 1.52) — the vault's BSDF table is 1.5 on every row;
+   1.45 was a guess that predated it.
+4. `factory_args` whitelists which preset keys reach the factory, and `aniso` was not in
+   it — the new value would have been **silently dropped**. Extended, with a comment
+   telling the next person the list exists.
+5. **Every `.blend` this studio ever shipped recorded `BLENDER_EEVEE` at 4096 samples**,
+   because `render()` set the engine AFTER `save()`. The deliverable did not reproduce
+   the PNG beside it and, opened headless, took the EGL/Xvfb path `pipeline/CLAUDE.md`
+   forbids — a law broken by the ordering at its own call site. Now `configure_cycles()`
+   runs before the write, with the same samples/res the render gets, pinned by a test
+   proven to go red when the ordering is restored.
+
+**Scrutinize before commit earned its keep four times:**
+- `styling.bed_drape` / `bed_throw` and `softgoods.drape_skirt` / `throw` were superseded
+  by the solver and left behind with **22 green tests certifying them** — the prose-vs-build
+  wound in test form. Deleted; the record lives in `drape.py`'s header and here.
+- A comment still told readers the fall came from `softgoods.drape_skirt`. False.
+- `styling_story_bits`' docstring described `baked` as its mechanism after the body had
+  moved to `styling.foot_throw` — drift inside the armour written to prevent drift.
+- The armour resolves the bed's head axis by guessing the longer run. I claimed in a
+  docstring the guess errs safe; a 3,600-case sweep now PINS it: 547 false-YES (harmless),
+  **zero** false-NO. An asserted direction is not a direction.
+
+**Standing rule earned:** *search the vault and our own notebooks BEFORE starting a fix,
+not after getting stuck.* Both of today's corrections have the same shape — the answer was
+already in the building, and I went looking only after the failure.
+
+- Still not applied from the audit (ranked): fabric normal maps for weave · oak floor
+  clear-coat + sheen · IES profiles on the accent layer · CCT via blackbody instead of
+  hand-typed RGB · **and the wall/floor junction, which has no skirting, coving or shadow
+  gap anywhere in the build while `render-defaults.md:149-152` calls a razor 0 mm junction
+  "the CG tell"** — that one is an owner call (skirting vs reveal), so it goes to him as a
+  design, not a menu.
+- Pre-existing dead code noticed but NOT touched (out of this commit's scope):
+  `softgoods.vessel` has no caller.

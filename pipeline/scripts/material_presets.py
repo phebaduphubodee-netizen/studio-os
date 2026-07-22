@@ -197,6 +197,11 @@ PRESETS = {
         source="element1-oak-signature-wall_DD-2026-07-16.md D6-A"),
     "satin_brass": dict(
         factory="solid", space="srgb", hex="#C4A45C", rough=0.35, metallic=1.0,
+        # BRUSHED is in this preset's own name and was never in its physics. Satin brass is
+        # drawn in one direction, so its highlight is a STREAK along the grain; an isotropic
+        # metal returns a round dot, which is the polished-ball look and reads as plastic.
+        # The suite's whole 10% accent layer is this material (vault audit 2026-07-22).
+        aniso=0.6,
         tier="DESIGN-INTENT",
         desc="satin/brushed brass hang-rail + hardware — satin hides humidity marks (D4-A; "
              "AELLA SB line, solid-vs-plated is a supplier query)",
@@ -536,7 +541,11 @@ def factory_args(preset_name):
         a["dark"] = srgb_hex_to_linear_rgba(p["dark_hex"], clamp_band=not exempt)
     a["rough"] = min(max(float(p["rough"]), ROUGH_FLOOR), ROUGH_CEIL) if "rough" in p else 0.5
     a["metallic"] = metallic
-    for k in ("sheen", "coat", "ior", "spec", "transmission"):
+    # A key absent from this tuple is SILENTLY DROPPED — a preset can declare it, the
+    # authoring bounds can pass it, and the render never sees it. `aniso` was added to
+    # satin_brass on 2026-07-22 and would have vanished here. Extend this list whenever a
+    # preset gains a channel.
+    for k in ("sheen", "coat", "ior", "spec", "transmission", "aniso"):
         if k in p:
             a[k] = float(p[k])
     if "trans_tint" in p:
@@ -728,7 +737,29 @@ def lighting_story_bits(spec):
             "garden windows, which stay the brightest source"]
 
 
-def styling_story_bits(spec):
+def _bed_dims(spec):
+    """(along, across, height, base_top) for the spec's bed, or None.
+
+    The head axis is _build_bed's business, not this module's, so the LONGER run of the
+    footprint is taken as head-to-foot. That is a guess, and it is deliberately biased:
+    getting it wrong can only make the throw predicate answer for the other orientation,
+    and the cost of the two errors is not symmetric. A false NO drops armour off a piece
+    the build really made — the revert-by-omission this whole file exists to prevent. A
+    false YES tells the polish not to remove something that is not there, which costs
+    nothing. So when in doubt, speak."""
+    for it in (spec or {}).get("items") or []:
+        if str(it.get("kind", "")).lower() != "bed":
+            continue
+        try:
+            w, d = float(it["w"]) * 0.001, float(it["d"]) * 0.001
+            h = float(it["h"]) * 0.001
+        except Exception:
+            return None
+        return max(w, d), min(w, d), h, h * 0.34      # base_h mirrors _build_bed
+    return None
+
+
+def styling_story_bits(spec, baked=()):
     """ELEMENT 8 (2026-07-22): the STYLING layer, NAMED so the Gemini polish pass cannot
     strip it back to the empty room the owner rejected.
 
@@ -739,9 +770,22 @@ def styling_story_bits(spec):
     the prose too, because the prose is a len() over the same source.
 
     GATED on the referent: a spec whose millwork produces no hang rail emits nothing
-    rather than describing garments that do not exist."""
+    rather than describing garments that do not exist.
+
+    The bed's fabrics are cloth-solver output: their fold pitch, hem line and corner
+    behaviour EMERGE, so no literal may stand in for them. The previous cut asserted
+    "gathered folds at ~110mm pitch" — a true statement about a generator that had since
+    been deleted, and a number nothing controls any more.
+
+    Existence, though, IS decidable purely, and must be: whether a foot throw fits comes
+    from `styling.foot_throw`, the SAME function `_build_bed` gates on, so the prose and
+    the build cannot answer differently. `baked` (build_room._SOFT_BAKED) is accepted for
+    callers that have it and is NOT consulted — the render-polish path
+    (experiment_3leg.py:197) runs outside Blender and has none, and a bit that goes silent
+    there would drop armour off a piece the build really made."""
     import millwork as _mw
     import wardrobe_bay as _wb
+    import styling as _st
 
     rails, shelves = 0, 0
     _rc = None
@@ -776,9 +820,9 @@ def styling_story_bits(spec):
             for p in _wb.bay_parts(s):
                 rails += str(p.get("part", "")).startswith("rail")
                 shelves += str(p.get("part", "")).startswith("shelf")
-    if not rails:
-        return []
-    return [
+    bits = []
+    if rails:
+        bits.append(
         f"the suite is DRESSED, and the dressing is decided geometry — not set dressing "
         f"the polish may invent or remove: HANGING GARMENTS fill all {rails} satin-brass "
         f"hang rails (soft shells on wire hangers, three values from the suite's own "
@@ -787,19 +831,34 @@ def styling_story_bits(spec):
         f"and folded knit stacks sit on the open oak shelves ({shelves} shelf part(s) "
         f"available; a deliberate minority is left BARE so the joinery still reads as "
         f"joinery). NEVER empty a rail, never clear a shelf, never replace the garments "
-        f"with doors or panels",
-        "the bed's coverlet is a HANGING TEXTILE, not a slab: it falls from the mattress "
-        "top in real gathered folds at ~110mm pitch with a hem that wanders and never "
-        "runs level, stopping just above the recessed plinth so element 3's shadow "
-        "reveal survives — keep the folds, keep the uneven hem, keep the gap under the "
-        "bed; do NOT smooth the fall into a flat skirt or a box",
+        f"with doors or panels")
+    _bed = _bed_dims(spec)
+    if _bed:
+        bits.append(
+            "the bed's coverlet is SIMULATED CLOTH, not a slab and not a modelled skirt: "
+            "it lies on the mattress, overhangs three sides and FALLS, so its folds, the "
+            "roll at the mattress edge and its never-level hem are all solved rather than "
+            "drawn — and its corners are cut ROUND, so the drape turns them as one soft "
+            "cascade instead of a squared flap. The hem stops above the recessed plinth so "
+            "element 3's shadow reveal survives (the build re-cuts the cloth until it "
+            "does). Keep the folds, keep the uneven hem, keep the gap under the bed, keep "
+            "the corner cascades; do NOT iron the fall into a flat skirt or a box")
+    if _bed and _st.foot_throw(*_bed):
+        bits.append(
+            "a GREIGE LINEN THROW lies across the foot of the bed and falls over the foot "
+            "edge — the same greige as the bed base and the foot bench, no new colour. It "
+            "is the ONLY mid-tone in a frame otherwise filled by one value of near-white, "
+            "which is its whole job: do NOT recolour it toward the cream bedding, do NOT "
+            "flatten its fall back onto the mattress, and do NOT remove it")
+    if bits:
+        bits.append(
         "the bed head is a THREE-HEIGHT ladder: two upright euro shams against the oak "
         "slat wall, two plump sleeping pillows in front of them, and ONE greige-oatmeal "
         "terry lumbar cushion off-centre in the deepest value — the only dark object in "
         "the frame's upper half. Keep all three heights and keep the asymmetry; do NOT "
         "level them into a matched pair, and do NOT crease, dent or rumple any of them "
-        "(the room is made, not slept in)",
-    ]
+        "(the room is made, not slept in)")
+    return bits
 
 
 def wardrobe_bay_story_bits(spec):
@@ -874,7 +933,7 @@ def wardrobe_bay_story_bits(spec):
     return bits
 
 
-def material_story(resolved, spec=None):
+def material_story(resolved, spec=None, baked=()):
     """One prose sentence naming the ACTUAL selected materials — the truth the render
     shows, for the render-polish prompt's {material_story} slot (and rationale). Built
     from preset descriptions, so the prompt can never describe materials the spec did
@@ -913,5 +972,5 @@ def material_story(resolved, spec=None):
     bits.extend(lighting_story_bits(spec))             # ELEMENT 5: the deliberate 3-layer light
     bits.extend(casement_sheer_story_bits(spec))       # ELEMENT 6: the west casement sheers
     bits.extend(wardrobe_bay_story_bits(spec))         # ELEMENT 7: the open dressing gallery
-    bits.extend(styling_story_bits(spec))              # ELEMENT 8: the styling layer
+    bits.extend(styling_story_bits(spec, baked))              # ELEMENT 8: the styling layer
     return "; ".join(bits) if bits else material_story(None)

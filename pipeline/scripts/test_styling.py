@@ -314,44 +314,6 @@ def test_pillow_bank_follows_the_head_to_the_other_end():
 
 # ------------------------------------------------------------------------- the drape
 
-def test_the_drape_stays_within_the_coverlet_footprint():
-    """The inset must exactly absorb the fold bulge — the CAD invariant by construction,
-    not by hope."""
-    cov = coverlet()
-    d = st.bed_drape(cov, base_top=0.204)[0]
-    x0, y0, _, x1, y1, _ = sg.bbox(d["verts"])
-    assert x0 >= cov["x"] - 1e-6 and x1 <= cov["x"] + cov["dx"] + 1e-6
-    assert y0 >= cov["y"] - 1e-6 and y1 <= cov["y"] + cov["dy"] + 1e-6
-
-
-def test_the_drape_hangs_from_the_coverlet_top():
-    cov = coverlet()
-    _, _, z0, _, _, z1 = sg.bbox(st.bed_drape(cov, base_top=0.204)[0]["verts"])
-    assert abs(z1 - (cov["z"] + cov["dz"])) < 1e-6
-    assert z0 < cov["z"]
-
-
-def test_the_drape_keeps_the_bed_prefix_so_it_misses_the_mill_router():
-    """Bed soft goods take _build_bed's bespoke bedding materials. Routing them through
-    mill__ would expose the hero object to the silent-oak default."""
-    assert st.bed_drape(coverlet(), 0.204)[0]["name"].startswith("bed__")
-
-
-def test_a_coverlet_too_small_to_inset_raises():
-    tiny = dict(coverlet(), dx=0.02, dy=0.02)
-    with pytest.raises(ValueError):
-        st.bed_drape(tiny, base_top=0.0)
-
-
-def test_the_throw_hangs_off_the_foot_edge():
-    cov = coverlet()
-    t = st.bed_throw(cov, "x", 1)[0]
-    _, _, z0, _, _, z1 = sg.bbox(t["verts"])
-    assert z1 <= cov["z"] + cov["dz"] + 0.02
-    assert z0 < cov["z"] + cov["dz"] - 0.20, "the throw has no hanging tail"
-
-
-# ------------------------------------------------------------------- surface vignettes
 
 def test_book_stack_leans():
     xs = {round(p["x"], 6) for p in st.book_stack(1.0, 1.0, 0.52, n=3)}
@@ -372,23 +334,6 @@ def test_vessel_is_a_revolve_not_a_box():
 def test_vessel_rejects_degenerate():
     with pytest.raises(ValueError):
         st.vessel(1.0, 1.0, 0.52, r=0.0)
-
-
-def test_every_emitted_part_declares_a_shape():
-    parts = (st.garments_on_rail(rail(), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
-             + st.stack_on_shelf(shelf())
-             + st.bed_drape(coverlet(), 0.204)
-             + st.pillow_bank(coverlet(), "x", 1)
-             + st.bed_throw(coverlet(), "x", 1)
-             + st.book_stack(1.0, 1.0, 0.52)
-             + st.vessel(1.0, 1.0, 0.52)
-             + st.tray(1.0, 1.0, 0.52))
-    for p in parts:
-        assert p["shape"] in ("box", "mesh"), p
-        if p["shape"] == "mesh":
-            assert p["verts"] and p["faces"]
-        else:
-            assert {"x", "y", "z", "dx", "dy", "dz"} <= set(p)
 
 
 def test_every_emitted_part_is_deterministic():
@@ -414,8 +359,36 @@ def test_styling_story_bits_are_actually_called_by_material_story():
     import material_presets as mp
     story = mp.material_story(None, _canonical())
     assert "HANGING GARMENTS fill all" in story
-    assert "HANGING TEXTILE" in story
-    assert "THREE-HEIGHT ladder" in story
+    assert "SIMULATED CLOTH" in story          # 2026-07-22: was "HANGING TEXTILE", and that
+    assert "GREIGE LINEN THROW" in story       # bit still claimed "~110mm pitch" — a fact
+    assert "THREE-HEIGHT ladder" in story      # about a generator that had been deleted
+
+
+def test_the_armour_never_claims_a_fold_pitch_the_solver_owns():
+    """The bed's fabrics are cloth-solver output. Their fold pitch, hem line and corner
+    behaviour EMERGE — nothing in this codebase sets them any more. A number here would be
+    the e6 wound in its newest costume: prose asserting a value no build controls, which
+    the Gemini pass would then try to honour."""
+    import material_presets as mp
+    bed = [b for b in mp.styling_story_bits(_canonical())
+           if "coverlet" in b or "THROW" in b]
+    assert bed, "the bed lost its armour"
+    for bit in bed:
+        assert "pitch" not in bit.lower()
+        assert "mm" not in bit
+
+
+def test_the_throw_bit_appears_only_when_the_throw_predicate_says_so():
+    """The build and the armour answer this from ONE function (styling.foot_throw); a bed
+    that cannot carry a throw must not be described as having one."""
+    import copy
+    import material_presets as mp
+    spec = copy.deepcopy(_canonical())
+    assert "GREIGE LINEN THROW" in " ".join(mp.styling_story_bits(spec))
+    for it in spec.get("items") or []:
+        if str(it.get("kind", "")).lower() == "bed":
+            it["d"] = 500                      # too narrow to leave a coverlet shoulder
+    assert "GREIGE LINEN THROW" not in " ".join(mp.styling_story_bits(spec))
 
 
 def test_the_garment_count_in_the_prose_is_derived_not_written():
@@ -509,24 +482,6 @@ def test_dress_shelves_ignores_an_anchor_with_no_kind():
 
 
 # --------------------------------------------------- the throw's containment (was absent)
-
-def test_the_throw_stays_inside_its_host_rect():
-    """Measured at 45.9mm OUTSIDE the bed on the canonical spec, and in AABB collision with
-    the foot bench on specs/master_bedroom.json. The generator's skew and its tail's
-    outward swing are both outward terms, and neither was in any budget."""
-    cov = coverlet()
-    for sign in (1, -1):
-        for axis in ("x", "y"):
-            t = st.bed_throw(cov, axis, sign)[0]
-            x0, y0, _, x1, y1, _ = sg.bbox(t["verts"])
-            assert x0 >= cov["x"] - 1e-6 and x1 <= cov["x"] + cov["dx"] + 1e-6
-            assert y0 >= cov["y"] - 1e-6 and y1 <= cov["y"] + cov["dy"] + 1e-6
-
-
-def test_the_throw_raises_rather_than_overflowing_a_host_too_small_for_it():
-    tiny = dict(coverlet(), dx=0.12, dy=0.12)
-    with pytest.raises(ValueError):
-        st.bed_throw(tiny, "x", 1)
 
 
 def test_the_vessel_does_not_route_to_the_oak_default():

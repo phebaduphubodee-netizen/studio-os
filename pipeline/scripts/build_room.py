@@ -55,6 +55,10 @@ import element5_lighting as _e5   # bpy-free pure logic: the 3 real light layers
                        # (schema e5-layers@0.1); malformed/missing referents RAISE (831fc1b law).
 import styling       # bpy-free pure logic: ELEMENT 8 styling derived from built parts
 import softgoods     # bpy-free pure logic: ELEMENT 8 compliant-surface vocabulary
+import drape         # LAYER 2 (uses bpy): Blender's own cloth solver, baked headless and
+#                      frozen to static meshes. Element 8 hand-wrote cloth mathematics and
+#                      then DISABLED the foot throw for want of "a collision term"; the
+#                      solver has had one all along (see drape.py's header for the probe).
 import wardrobe_bay   # bpy-free pure logic: the wardrobe-bay dressing gallery (open oak+brass
                       # dressing masses + a mirror niche + one closed cool anchor; element 7).
                       # Routed BY SUBROOM TYPE in build_suite so no bay fixture can fall through
@@ -152,15 +156,18 @@ def _outdir():
     return out
 
 
-def save(name):
-    path = os.path.join(_outdir(), f"room_{name}.blend")
-    bpy.ops.wm.save_as_mainfile(filepath=path)
-    print(f"  saved: {path}")
+def configure_cycles(samples=128, res=None):
+    """Pin the engine of record + device + sampling. CYCLES because EEVEE needs EGL/Xvfb
+    and is unsafe headless (pipeline/CLAUDE.md).
 
-
-def render(name, samples=128, res=(1600, 1000)):
+    2026-07-22: extracted from render(), because it used to run AFTER save() — so every
+    .blend this studio has ever shipped recorded Blender 5.1's factory default,
+    BLENDER_EEVEE at 4096 samples. Two consequences, both real: the deliverable did not
+    reproduce the PNG lying beside it, and anyone opening it headless takes exactly the
+    EGL/Xvfb path the law above forbids. The rule was written at this call site and
+    broken by its own ordering. Now whatever writes a file pins it first."""
     scn = bpy.context.scene
-    scn.render.engine = 'CYCLES'   # EEVEE needs EGL/Xvfb headless; Cycles is the safe choice
+    scn.render.engine = 'CYCLES'
     try:
         prefs = bpy.context.preferences.addons['cycles'].preferences
         for dt in ('OPTIX', 'CUDA', 'HIP', 'METAL', 'ONEAPI'):
@@ -188,7 +195,23 @@ def render(name, samples=128, res=(1600, 1000)):
         scn.cycles.denoiser = 'OPENIMAGEDENOISE'         # CPU/GPU, always available headless
     except Exception:
         pass
-    scn.render.resolution_x, scn.render.resolution_y = res
+    if res:
+        scn.render.resolution_x, scn.render.resolution_y = res
+    return scn
+
+
+def save(name, samples=128, res=None):
+    """Write the .blend deliverable. Takes the render settings so the saved file
+    REPRODUCES the PNG rendered next to it — pass what render() will be given."""
+    configure_cycles(samples, res)
+    path = os.path.join(_outdir(), f"room_{name}.blend")
+    bpy.ops.wm.save_as_mainfile(filepath=path)
+    print(f"  saved: {path} (engine={bpy.context.scene.render.engine} "
+          f"samples={bpy.context.scene.cycles.samples})")
+
+
+def render(name, samples=128, res=(1600, 1000)):
+    scn = configure_cycles(samples, res)
     scn.render.filepath = os.path.join(_outdir(), f"room_{name}.png")
     print(f"  cycles device={scn.cycles.device} samples={scn.cycles.samples} -> rendering ...")
     bpy.ops.render.render(write_still=True)   # 'render' op is headless-safe (unlike geometry ops)
@@ -273,6 +296,11 @@ MILL_BEVEL_M = 0.0012   # joinery arris: a cabinet edge is nearly sharp, not a 5
 # consumed by _add_styling. Cleared per build in build_suite (a module-level list that is
 # never reset would carry one room's rails into the next room's render).
 _STYLE_ANCHORS = []
+# What the cloth solver actually FROZE this run. The anti-repaint armour keys the bed's
+# fabric bits off this rather than off the spec, because whether a piece of simulated
+# cloth exists is decided by a search over real bakes, not by anything a pure re-run can
+# predict. A name in here is a promise the render can be held to.
+_SOFT_BAKED = []
 
 
 def _bevel_edges(width_m=BEVEL_WIDTH_M, segments=2):
@@ -806,9 +834,15 @@ def _pbr_material(name, slug, base_tint=None, variation=0.0):
     return m
 
 
-def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.45, spec=0.5):
+def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.5, spec=0.5,
+           aniso=0.0):
     """Clean physically-plausible Principled material (no texture). sheen -> fabric,
-    coat -> lacquer/marble sheen, metallic+low rough -> brass/chrome."""
+    coat -> lacquer/marble sheen, metallic+low rough -> brass/chrome, aniso -> BRUSHED
+    metal (stretches the highlight along the grain instead of a round dot).
+
+    2026-07-22 (vault audit): default IOR was 1.45, a guess. The studio's own BSDF table
+    (knowledge/materials/bsdf-material-presets.md) carries 1.5 on every dielectric row and
+    1.52 for glass. Distilled 2026-07-01, never wired."""
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     nt, bsdf = _principled(m)
@@ -827,6 +861,9 @@ def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.45, spec=
         if coat:
             _set(bsdf, "Coat Weight", coat)
             _set(bsdf, "Coat Roughness", 0.1)
+        if aniso:
+            _set(bsdf, "Anisotropic", aniso)
+            _set(bsdf, "Anisotropic Rotation", 0.0)
     return m
 
 
@@ -1440,13 +1477,14 @@ def _material_from_preset(mat_name, preset_key):
         if _gb:
             _set(_gb, "Base Color", a.get("trans_tint", a["rgba"]))
             _set(_gb, "Roughness", a["rough"])
-            _set(_gb, "IOR", a.get("ior", 1.45))
+            _set(_gb, "IOR", a.get("ior", 1.5))
             _set(_gb, "Specular IOR Level", a.get("spec", 0.5))
             _set(_gb, "Transmission Weight", a.get("transmission", 0.95))
         return g
     return _solid(mat_name, a["rgba"], a["rough"], metallic=a.get("metallic", 0.0),
                   sheen=a.get("sheen", 0.0), coat=a.get("coat", 0.0),
-                  ior=a.get("ior", 1.45), spec=a.get("spec", 0.5))
+                  ior=a.get("ior", 1.5), spec=a.get("spec", 0.5),
+                  aniso=a.get("aniso", 0.0))
 
 
 def _suite_materials(spec=None):
@@ -1470,7 +1508,12 @@ def _suite_materials(spec=None):
         return legacy()
 
     floor = _pick(_sur.get("floor"), "floor",
-                  lambda: _pbr_material("floor_pbr", FLOOR_SLUG))                    # warm oak grain
+                  # MA-03 (knowledge/classifications/render-defects.md): a large continuous
+                  # surface must not show a repeating grid. The floor is the largest surface
+                  # in every frame and was the ONE that passed no drift, while the feature
+                  # wall below - same texture slug, same function - has carried variation=0.06
+                  # since it shipped. The knob was one keyword away for three weeks.
+                  lambda: _pbr_material("floor_pbr", FLOOR_SLUG, variation=0.05))
     wall = _pick(_sur.get("walls"), "walls",
                  lambda: _painted("wall_paint", WALL_RGBA, 0.88))                    # matte warm-white
     feature = _pick(_sur.get("feature_wall"), "feature",
@@ -1534,7 +1577,7 @@ def _suite_materials(spec=None):
         # glazing (2026-07-12): the panes poly_walls_bpy glazes back into the openings it cut. Named
         # glass__* so they route here and NOT to the opaque wall paint -- a sliding glass door that
         # renders as a painted wall is the exact bug the openings work exists to kill.
-        g = _solid("glazing", (0.60, 0.76, 0.80, 1.0), 0.05, ior=1.45, spec=0.5)
+        g = _solid("glazing", (0.60, 0.76, 0.80, 1.0), 0.05, ior=1.52, spec=0.5)  # vault: glass 1.52
         _gb = _principled(g)[1]
         if _gb:
             _set(_gb, "Transmission Weight", 0.95)
@@ -1567,7 +1610,7 @@ def _suite_materials(spec=None):
     for _ep in sorted(set(((sel or {}).get("elements") or {}).values())):
         M[f"em-{_ep}"] = _material_from_preset(f"m_el_{_ep}", _ep)
     if sel:
-        print(f"  materials: spec-selected presets -> {_matpre.material_story(sel, spec)}")
+        print(f"  materials: spec-selected presets -> {_matpre.material_story(sel, spec, _SOFT_BAKED)}")
     for obj in bpy.data.objects:
         if obj.type != 'MESH' or obj.get("ph_model"):   # imported models keep their own PBR
             continue
@@ -1979,13 +2022,16 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
         silently break the one invariant this whole builder rests on is not something to ship.
         A degenerate/tiny bed now simply gets FEWER parts (base + mattress always survive)."""
         if a_size <= 0.01 or c_size <= 0.01:
-            return
+            return None
         if from_head < -1e-9 or from_head + a_size > along + 1e-9:
-            return
+            return None
         if across_off < -1e-9 or across_off + c_size > across + 1e-9:
-            return
+            return None
         bx, by, bdx, bdy = box(from_head, across_off, a_size, c_size)
-        _rbox(name, bx, by, z, bdx, bdy, dz, mat, bevw=bevw, seg=seg)
+        # returns the object so a later cloth bake can COLLIDE with it (the throw
+        # must drape over the duvet, not through it). None on the reject paths above
+        # keeps that honest: a caller cannot collide with a part that was not built.
+        return _rbox(name, bx, by, z, bdx, bdy, dz, mat, bevw=bevw, seg=seg)
 
     # ELEMENT 3 D3-1 (2026-07-18): the base is UPHOLSTERED GREIGE STONEWASHED LINEN, not the old
     # dark (0.40,0.36,0.32) that read wood-brown — and deliberately NOT oak (D1-A anti-monopoly:
@@ -2010,11 +2056,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     cov_m = _solid("bed_coverlet", (0.80, 0.77, 0.72, 1.0), rough=0.96, sheen=0.3, spec=0.3)
     base_h = H * 0.34                                   # a LOW recessed plinth (a hidden toe)
     binset = 0.10                                       # pulled well IN — the coverlet drapes PAST it
-    _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset, base_h,
-          base_m, bevw=0.03, seg=4)
+    _base_o = _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset,
+                    base_h, base_m, bevw=0.03, seg=4)
     mins = 0.09                                         # mattress inset — hides UNDER the coverlet
-    _rbox("bed__mattress", x0 + mins, y0 + mins, base_h, W - 2 * mins, D - 2 * mins,
-          H - base_h, matt_m, bevw=0.05, seg=4)
+    _matt_o = _rbox("bed__mattress", x0 + mins, y0 + mins, base_h, W - 2 * mins, D - 2 * mins,
+                    H - base_h, matt_m, bevw=0.05, seg=4)
     # ELEMENT 8 (2026-07-22) — THE COVERLET STOPS BEING A SOLID.
     # The DD's ground phase looked at the render and named one mechanism behind "แข็ง",
     # "เหลี่ยม" and "ไม่มี style": nothing in this room DEFORMS, because every soft good was
@@ -2022,25 +2068,37 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # the largest instance: a single rigid plane occupying ~1/3 of the hero frame, whose
     # own comment claimed it was "the fabric FALL that kills the box". A 70mm bevel is not
     # drape. So the coverlet becomes what a coverlet physically is — a THIN layer lying on
-    # the mattress — and its FALL becomes a real hanging skirt (softgoods.drape_skirt):
+    # the mattress — and its FALL becomes real simulated cloth (drape.bake_bed_cover):
     # creases that grow from nothing at the suspension line to full at the free hem, a
     # multi-wavelength fold pitch that never corrugates, and a hem that is never level.
     # The layer's inset is the drape's own fold amplitude, DERIVED: the skirt's top ring
     # sits exactly at that inset (crease amplitude is zero at the suspension line), so the
     # two meet with no gap. A smaller inset would let this plate's flat face poke through
     # the skirt's inward swings — which is part of why the first render still read flat.
-    cins = styling.DRAPE_FOLD
-    cov_t = 0.045                                       # a LAYER, not a solid to the plinth
+    # 2026-07-22 — SIMULATED. This was a flat plate plus `styling.bed_drape`, a hand-written
+    # skirt (golden-ratio creases, a multi-wavelength fold pitch, a wandering hem). It is now
+    # ONE sheet of cloth laid over the mattress, overhanging on three sides, dropped under
+    # gravity onto the mattress and plinth it must fall past. The fold at the mattress edge,
+    # the fold pitch, the way the corners gather and the fact that the hem is not level are
+    # all SOLVED — none of them is authored any more, which is why they read as cloth.
+    # The decided constraints did NOT move to Blender: the hem still lands DRAPE_REVEAL above
+    # bed__base's top so element 3's signed recessed-plinth shadow gap survives, and the
+    # baked result is asserted back inside the plan-measured footprint (drape.bake_sheet
+    # RAISES on both, and on a sim that failed to advance — a frozen sheet is a flat plane,
+    # which is exactly the defect this replaces and must never pass silently).
     cov_top = H + 0.006
-    _rbox("bed__coverlet", x0 + cins, y0 + cins, cov_top - cov_t,
-          W - 2 * cins, D - 2 * cins, cov_t, cov_m, bevw=0.018, seg=4)
-    # the fall itself. Drop is SOLVED against bed__base's own top so element 3's signed
-    # recessed-plinth shadow gap survives — a "softening" that buried a signed softening
-    # would be a net loss (styling.bed_drape RAISES if the budget cannot afford it).
-    _cov_rec = {"x": x0 + cins, "y": y0 + cins, "z": cov_top - cov_t,
-                "dx": W - 2 * cins, "dy": D - 2 * cins, "dz": cov_t}
-    for _p in styling.bed_drape(_cov_rec, base_top=base_h):
-        _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], cov_m, own_mat=True)
+    _head_side = "%s%s" % (axis, "+" if sign > 0 else "-")
+    _cov_o = drape.bake_bed_cover(
+        "bed__coverlet",
+        rect=(x0 + mins, y0 + mins, W - 2 * mins, D - 2 * mins),
+        top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
+        colliders=[o for o in (_matt_o, _base_o) if o],
+        mat=cov_m, head=_head_side, fabric="linen",
+        bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.30))
+    _cov_o["ph_model"] = 1                              # keep the global 1 mm bevel off cloth
+    _SOFT_BAKED.append(_cov_o.name)                     # the armour keys off what BAKED
+    cov_t = 0.045                                       # kept: the pure layer's layer-thickness
+    cins = styling.DRAPE_FOLD                           # kept: pillow/duvet insets derive from it
 
     # duvet: a THIN cloth layer over the foot ~2/3, inset so the mattress edge still shows, and
     # dipping slightly INTO the mattress top so it reads as cloth lying on it, not a second slab.
@@ -2055,9 +2113,17 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # made in the same commit as the element-8 build.
     _ranks, pz = styling.head_ranks(along)
     dv_from = pz + 0.14
-    ci = 0.015
-    emit("bed__duvet", dv_from, ci, along - dv_from - 0.02, across - 2 * ci,
-         H - 0.02, 0.09, duvt_m, 0.04, seg=5)           # thicker + rounder = draped cloth, not a slab
+    # 2026-07-22: the duvet's cross inset was 15 mm from the BED rect, which put its
+    # edge 75 mm PAST the mattress on each side — a slab floating in the air over the
+    # coverlet's fold. Invisible while the coverlet was a flat plate spanning the same
+    # rect; the simulated throw found it immediately by draping over the duvet's edge
+    # instead of the bed's and landing outside the footprint. Element 3's own words for
+    # this part are "inset so the mattress edge still shows", so the inset is now DERIVED
+    # from the mattress it lies on — which honours that sentence rather than a number
+    # that never did. The 20 mm is the coverlet border it leaves visible.
+    ci = mins + 0.020
+    _duv_o = emit("bed__duvet", dv_from, ci, along - dv_from - 0.02, across - 2 * ci,
+                  H - 0.02, 0.09, duvt_m, 0.04, seg=5)  # thicker + rounder = draped cloth, not a slab
     #                                                     (bevw < half the 0.09 dz or the bevel collapses)
     # turned-back fold at the duvet's head edge — the single most legible "this is a made bed"
     # cue, and it gives the repaint an edge to hang linen folds on.
@@ -2083,23 +2149,98 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                              _mats.get(_stem, pill_m), own_mat=True)
         else:                                            # the lumbar wears a suite TOKEN
             _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], own_mat=False)
-    # a throw across the foot third with a tail falling over the near edge — the only
-    # vertical drape a flat-on hero frame would otherwise contain.
-    # THE FOOT THROW IS DECIDED-BUT-NOT-BUILT, on purpose, and this is the record of why.
-    # styling.bed_throw is written, contained and unit-tested — but every LOOK pass it has
-    # survived produced an artefact in the one frame the owner judges: first a torn-paper
-    # zigzag (its tail was a flat sheet with a wavy silhouette), then, once the crease moved
-    # out of plane, small tail flaps punching through the coverlet's own hanging skirt. A
-    # throw laid on a bed whose flank is ALSO compliant is a cloth-on-cloth interaction, and
-    # this vocabulary has no collision term — the honest fix is a real one (drape the throw
-    # ONTO the skirt's measured surface), not another amplitude tweak.
-    # The DD's own rule decides it: "no object placed where an engineer would read it as a
-    # defect" — the same rule that deleted the ajar drawer and the dented pillow. So the
-    # element ships without it rather than shipping a snag-list item into the hero frame.
-    # NOT a silent omission: the function, its tests and this comment are the standing
-    # record, and styling_story_bits does not claim a throw exists.
-    #   for _p in styling.bed_throw(_cov_rec, axis, sign):
-    #       _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], own_mat=False)
+    # THE FOOT THROW — RESTORED 2026-07-22. It shipped DISABLED, and the comment that
+    # disabled it said a throw on a compliant flank "is a cloth-on-cloth interaction, and
+    # this vocabulary has no collision term". That was true of the hand-written vocabulary
+    # and false of the room: the throw is now simulated ONTO the already-baked coverlet and
+    # duvet, which are passed as colliders. Cloth-on-cloth is the ordinary case for a solver.
+    # It is the only vertical drape a flat-on hero frame would otherwise contain, and the
+    # three LOOK failures it accumulated (zigzag silhouette, then tail flaps punching through
+    # the coverlet's skirt) were both interpenetration — the thing collision is for.
+    # The throw is sized against the COVERLET AS BAKED, not against the bed rect. Three
+    # containment failures in a row (20.6 / 16.6 / 6.6 mm) all had the same cause: the
+    # throw was cut to the nominal rect, then physically hung off whichever surface under
+    # it happened to be widest — first the coverlet's settled fold, then the duvet slab.
+    # Where simulated cloth comes to rest is not predictable from its cut, so it is
+    # measured. The tail is what remains of the gap to the bed line after the coverlet
+    # has taken its share, which makes the invariant hold BY CONSTRUCTION rather than by
+    # a tuned constant — and a wider coverlet automatically yields a shorter tail.
+    _cbb = drape.world_bbox(_cov_o)
+    _c_lo, _c_hi = (_cbb[1], _cbb[4]) if axis == "x" else (_cbb[0], _cbb[3])
+    _b_lo, _b_hi = (y0, y0 + D) if axis == "x" else (x0, x0 + W)
+    # THE THROW FALLS OVER THE FOOT, NOT THE FLANKS. The first four cuts ran it across the
+    # bed with tails down both flanks — the classic styling — and every one of them failed
+    # containment, because the coverlet's own skirt already spends the 90 mm between the
+    # mattress and the plan line and leaves ~30 mm for anything hanging outside it.
+    # Measuring that is also what exposed the design error: this hero camera looks straight
+    # down the bed from the foot, so flank tails are seen edge-on and read as nothing, while
+    # the foot face — the single largest surface in the frame — had no vertical fabric on it
+    # at all. Turning the throw through 90 degrees puts its fall where the camera is looking
+    # AND where the room actually exists. The cross span is inset from the coverlet's BAKED
+    # flanks, so it cannot reach the flank margin the coverlet has already spent.
+    _thr_plan = styling.foot_throw(along, across, H, base_h)
+    # The band lying ON the bed must outweigh the part cantilevered past the foot, or the
+    # throw simply slides off — the first cut put 0.30 m of cloth in mid-air against a
+    # 0.50 m band and the whole sheet dragged itself over the foot edge and fell 5.1 m
+    # through the floor. Correct physics, wrong instruction. A laid throw is also not
+    # DROPPED: it starts a few mm above the coverlet's measured top rather than 100 mm up,
+    # so it has no falling momentum to carry it over, and its innermost strip — the one
+    # buried under the duvet, invisible — is pinned the way a tucked edge really is.
+    if _thr_plan:
+        _thr_band, _thr_hang = _thr_plan
+        _thr_from = along - _thr_band
+        _t_in = styling.THROW_INSET                     # coverlet shoulder left showing
+        def _throw(scale, sl):
+            hang = _thr_hang * scale
+            tx, ty, tdx, tdy = box(_thr_from, (_c_lo + _t_in) - _b_lo,
+                                   _thr_band + hang, (_c_hi - _c_lo) - 2 * _t_in)
+            vs, fs = softgoods.flat_sheet(tx, ty, tdx, tdy, _cbb[5] + 0.012, cell=0.022)
+            # slack ONLY on the part lying on the bed: the fall is what containment is
+            # decided at, and letting the search buy millimetres there by ironing the
+            # whole throw flat is how this piece became a plate the first time.
+            _on = softgoods.verts_in_rect(vs, max(tx, x0), max(ty, y0),
+                                          min(tx + tdx, x0 + W), min(ty + tdy, y0 + D))
+            pw = 0.05
+            if axis == "x":
+                px = (tx + tdx - pw) if sign > 0 else tx
+                tpin = softgoods.verts_in_rect(vs, px, ty, px + pw, ty + tdy)
+            else:
+                py = (ty + tdy - pw) if sign > 0 else ty
+                tpin = softgoods.verts_in_rect(vs, tx, py, tx + tdx, py + pw)
+            return drape.bake_sheet(
+                "bed__throw", vs, fs,
+                [o for o in (_cov_o, _duv_o, _matt_o, _base_o) if o], pin=tpin,
+                # "wool" (bending 3.0) was wrong twice over: at 75 frames the tails went
+                # FURTHER out than at 48, so they were not still swinging — a stiff cloth
+                # draped over the coverlet's soft rounded flank BOWS instead of hanging,
+                # the same "curved card" failure the hand-written vocabulary had,
+                # reproduced in the solver by asking for the wrong fabric. Linen hangs.
+                # The throw wears the SUITE'S GREIGE LINEN — the identity already carried
+                # by the bed base and the foot bench (element 3 bundles them), not a new
+                # colour: the palette is closed. The first bake gave it cov_m and it was
+                # INVISIBLE, cream cloth on a cream bed. That is the whole job of this
+                # piece: it is the one mid-tone that breaks a hero frame otherwise filled
+                # by a single value of near-white, and it ties the bed to the bench.
+                frames=70, fabric="knit", mat=base_m, thickness=0.008, slack=sl,
+                slack_verts=_on)
+        # Same ladder as the coverlet, for the same reason: this piece also failed on a
+        # hand-picked length (2.7 mm past the plan line at the foot) and the number that
+        # would have fixed it is only correct for this one bed.
+        _thr_o = drape.search_bake(_throw, name="bed__throw", slack=0.10,
+                          top_z=_cbb[5], hem_min=base_h + styling.DRAPE_REVEAL,
+                          bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.30))
+        _thr_o["ph_model"] = 1
+        _SOFT_BAKED.append(_thr_o.name)
+    # SWAP-AND-DEMAND-RED: the anti-repaint armour states whether a throw exists by
+    # re-running styling.foot_throw. If this build ever stops honouring that same answer,
+    # the prose would promise a throw the render does not have (or go silent on one it
+    # does) and 1995 green tests would not notice. So the two are pinned to each other.
+    if bool(_thr_plan) != ("bed__throw" in _SOFT_BAKED):
+        raise RuntimeError(
+            "bed: styling.foot_throw says %s but the build baked %s — the story bits "
+            "derive from that predicate, so they would describe the wrong bed"
+            % ("a throw" if _thr_plan else "no throw",
+               "one" if "bed__throw" in _SOFT_BAKED else "none"))
     return True
 
 
@@ -2267,7 +2408,12 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
     element-3 solid-box shade renders byte-identical (E3's built-but-dark state, for specs
     that have not decided lighting)."""
     body_m  = _solid("nightstand_body", (0.13, 0.12, 0.11, 1.0), rough=0.55, sheen=0.1, spec=0.4)
-    brass_m = _solid("lamp_brass",      (0.60, 0.44, 0.20, 1.0), rough=0.32, metallic=1.0, spec=0.6)
+    brass_m = _solid("lamp_brass",      (0.60, 0.44, 0.20, 1.0), rough=0.32, metallic=1.0, spec=0.6,
+                     aniso=0.65)   # BRUSHED, not cast: satin brass is drawn in one direction, so
+                     #              its highlight is a STREAK. A round dot is the polished-ball
+                     #              look and it is why the only metal in the frame reads as
+                     #              plastic (vault audit 2026-07-22; the 10% accent layer is
+                     #              supposed to be what catches the light).
     shade_m = _solid("lamp_shade",      (0.93, 0.86, 0.72, 1.0), rough=0.85, sheen=0.4, spec=0.3)
     if glow:
         _sb = _principled(shade_m)[1]
@@ -2554,6 +2700,7 @@ def build_suite(spec, label="suite"):
     import math
     clear_scene()
     del _STYLE_ANCHORS[:]                  # ELEMENT 8: per-build, never across rooms
+    del _SOFT_BAKED[:]                     # ...and so must the baked-cloth record
     _enable_gltf()
     bpy.context.scene.unit_settings.system = "METRIC"
     # ZONE render-apply (owner-signed only): drop any piece the owner signed below_grade — the trees are
@@ -2898,9 +3045,11 @@ def build_suite(spec, label="suite"):
     # (e.g. spec-materialized) must never overwrite that leg silently.
     if spec.get("_suffix"):
         name += "_" + str(spec["_suffix"])
-    save(name)
+    _samples = 400 if hero else 256
+    _res = (2400, 1500) if hero else (2000, 1400)
+    save(name, samples=_samples, res=_res)        # ONE source, so the .blend matches the PNG
     if spec.get("render"):
-        render(name, samples=(400 if hero else 256), res=((2400, 1500) if hero else (2000, 1400)))
+        render(name, samples=_samples, res=_res)
     print(f"  built SUITE '{name}' {(max(xs)-min(xs)):.1f}x{(max(ys)-min(ys)):.1f}m + "
           f"{len(spec.get('builtins',[]))} built-ins + {len(spec.get('items',[]))} items")
     return f"OK: {label}"

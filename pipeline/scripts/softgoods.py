@@ -52,6 +52,109 @@ in pipeline/CLAUDE.md: n-gons are what a SketchUp recipient sees). The consumer
 
 import math
 
+
+# ---------------------------------------------------------------------------
+# SIMULATION FEEDSTOCK (2026-07-22 — owner correction: "you still can't use Blender")
+#
+# The generators below this block SHAPE cloth by hand. That was the wrong layer to
+# solve it in: Blender ships a cloth solver that runs headless, deterministically
+# (measured drift 0.000000000 m over two bakes), in 0.48 s for a 625-vert sheet, and
+# it has the collision term whose absence made element 8 DISABLE the foot throw.
+#
+# The split that survives: layer 1 still decides WHERE cloth goes, HOW FINE it is
+# discretised and WHAT IT MAY NOT VIOLATE — all pure, all unit-testable under plain
+# `python`. It just stops pretending to know how cloth falls. These two helpers are
+# that contract's feedstock; `drape.py` (layer 2) simulates them.
+# ---------------------------------------------------------------------------
+
+def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6):
+    """A flat QUAD grid in world XY at height `z` — the undeformed state of a
+    simulated sheet. Returns (verts, faces) in WORLD metres.
+
+    `cell` is a target EDGE LENGTH in metres, not a station count: the solver's
+    fold size is governed by how finely the sheet is discretised, so a coverlet and
+    a napkin must not share a station count or the napkin folds like a tarpaulin.
+    Stations are derived from the actual extent, so this is resolution-stable.
+
+    `cut` is a list of (x0, y0, x1, y1) world rects removed from the sheet — THE
+    TAILOR'S CUT. A rectangle of cloth laid over a rectangular bed has a square
+    flap at each corner where two overhangs meet, and that flap has nowhere to go:
+    it hangs as a diagonal cowl that spreads OUTSIDE the bed's own footprint (first
+    bake: 316 mm out, and it reached the floor). Real bedding solves this by cutting
+    or mitring the corner, not by tuning stiffness. Vertices orphaned by the cut are
+    dropped — a loose vertex is a free particle the solver drops to the floor.
+
+    `mitre` is (x0, y0, x1, y1, ix, iy): a corner square ROUNDED to radius
+    `mitre_keep` x its own size about the inner corner (ix, iy), instead of squared
+    off. This is the third corner tried here and the reason is the same each time —
+    what a corner must not have is a FREE EDGE.
+
+      * Leave the square: the flap has nowhere to go, hangs as a diagonal cowl and
+        spread 316 mm outside the bed, down to the floor.
+      * Cut the square away: the two adjacent panels are left with free vertical
+        edges meeting at a point, and they splay apart as they fall — two sharp tabs
+        sticking out of the bed's silhouette, which is the "an engineer reads it as
+        broken" defect, not a styling nit.
+      * Cut it to a diagonal (a real mitre): same free edges, shorter. Same tabs.
+
+    A rounded corner has ONE continuous boundary, so there is nothing to splay: the
+    cloth turns the corner as a smooth cowl. Plenty of real bedding is cut this way."""
+    if w <= 0 or d <= 0:
+        raise ValueError(f"flat_sheet: degenerate extent {w}x{d}")
+    nu = max(MIN_SEGMENTS, int(round(w / float(cell))))
+    nv = max(MIN_SEGMENTS, int(round(d / float(cell))))
+    grid = [(x0 + w * i / nu, y0 + d * j / nv, z)
+            for j in range(nv + 1) for i in range(nu + 1)]
+
+    def dropped(quad):
+        cx = sum(grid[k][0] for k in quad) * 0.25
+        cy = sum(grid[k][1] for k in quad) * 0.25
+        if any(a <= cx <= c and b <= cy <= e for a, b, c, e in cut):
+            return True
+        for a, b, c, e, ix, iy in mitre:
+            if a <= cx <= c and b <= cy <= e:
+                u = abs(cx - ix) / max(c - a, 1e-9)
+                v = abs(cy - iy) / max(e - b, 1e-9)
+                if (u * u + v * v) ** 0.5 > mitre_keep:
+                    return True
+        return False
+
+    keep, used = [], {}
+    for j in range(nv):
+        for i in range(nu):
+            q = (j * (nu + 1) + i, j * (nu + 1) + i + 1,
+                 (j + 1) * (nu + 1) + i + 1, (j + 1) * (nu + 1) + i)
+            if dropped(q):
+                continue
+            keep.append(q)
+    if not keep:
+        raise ValueError("flat_sheet: every face was cut away")
+    verts, faces = [], []
+    for q in keep:
+        f = []
+        for k in q:
+            if k not in used:
+                used[k] = len(verts)
+                verts.append(grid[k])
+            f.append(used[k])
+        faces.append(tuple(f))
+    return verts, faces
+
+
+def verts_in_rect(verts, x0, y0, x1, y1, tol=1e-9):
+    """Indices of `verts` whose XY falls inside a world rect — how a caller names
+    the region a solver PINS.
+
+    Pinning is what stops a long bake from letting a sheet creep toward its free
+    end. It must name the cloth that is PHYSICALLY TRAPPED, never a whole grid row:
+    the first cut pinned the entire head row of a coverlet, and because that row ran
+    on through the overhanging wings, two lines of pinned vertices hung in mid-air
+    holding both flanks rigidly out. The flanks then never fell at all, while the
+    foot — unpinned — draped correctly. Pin the region, not the row."""
+    return [n for n, p in enumerate(verts)
+            if x0 - tol <= p[0] <= x1 + tol and y0 - tol <= p[1] <= y1 + tol]
+
+
 PHI_INV = 0.6180339887498949      # golden-ratio conjugate — low-discrepancy, never clumps
 _SALT = 0.7548776662466927        # 2nd-dimension additive recurrence (plastic constant)
 
@@ -111,84 +214,6 @@ def _grid_faces(nu, nv, wrap_u=False):
 # 1. DRAPE SKIRT — the bed's fall, and any fabric that hangs off an edge.
 # ---------------------------------------------------------------------------
 
-def drape_skirt(w, d, drop, top_z=0.0, nu_per_m=40, nv=8,
-                fold=0.020, hem_wander=0.018, sag=0.010, salt=0):
-    """A gathered fabric skirt hanging around a w x d rectangle, from `top_z` down `drop`.
-
-    THIS IS THE ELEMENT'S KEYSTONE. The near face of the bed is the single largest area
-    in both frames the owner judges from, and it is currently one bevelled plane. Here it
-    becomes a textile: the crease amplitude grows from 0 at the suspension line to `fold`
-    at the free hem (constrained-top / free-bottom, the signature of hanging cloth), the
-    fold pitch is multi-wavelength so it never corrugates, and the hem wanders in z so it
-    is never level. `sag` dips the whole hem slightly at the middle of each long run,
-    which is what a cloth does between two corners.
-
-    Returns (verts, faces) with the rectangle's SW corner at local (0,0)."""
-    if w <= 0 or d <= 0:
-        _fail(f"drape_skirt: degenerate footprint {w}x{d}")
-    if drop <= 0:
-        _fail(f"drape_skirt: drop must be > 0 (got {drop})")
-    if hem_wander > MAX_HEM_WANDER:
-        _fail(f"drape_skirt: hem_wander {hem_wander} exceeds MAX_HEM_WANDER "
-              f"{MAX_HEM_WANDER} — that is damage, not drape")
-    perim = 2.0 * (w + d)
-    nu = max(MIN_SEGMENTS * 4, int(round(perim * nu_per_m)))
-
-    def wander(u):
-        """SPATIALLY SMOOTH hem variation.
-
-        The first cut used dev(i) here and the render showed why that is wrong: dev is a
-        low-discrepancy sequence, so ADJACENT stations get maximally DIFFERENT values —
-        exactly the property that makes it good for choosing garment widths and exactly
-        the property that turns a hem into a sawtooth. In pixels it read as torn
-        cardboard, not cloth. A hem is a continuous curve along the run, so its variation
-        must be low-FREQUENCY, not per-station noise."""
-        return _crease(u, salt + 31, ((1.0, 0.55), (2.0, 0.30), (3.0, 0.15)))
-
-    # perimeter parameterisation: walk the rectangle, returning (x, y, outward normal)
-    def on_perimeter(t):
-        s = (t % 1.0) * perim
-        if s <= w:
-            return s, 0.0, (0.0, -1.0)                      # south edge, normal -y
-        s -= w
-        if s <= d:
-            return w, s, (1.0, 0.0)                         # east edge
-        s -= d
-        if s <= w:
-            return w - s, d, (0.0, 1.0)                     # north edge
-        s -= w
-        return 0.0, d - s, (-1.0, 0.0)                      # west edge
-
-    # FOLD PITCH IS PHYSICAL, not a count. Specifying "13 cycles per perimeter" put the
-    # folds 615mm apart on this bed (perimeter ~8.3m) — far too wide to read as fabric;
-    # the render showed flat panels with a wavy edge. Real hanging cloth folds every
-    # ~60-160mm, so the frequencies are solved FROM the perimeter to land in that band and
-    # are rounded to whole cycles so the pattern still closes seamlessly around the loop.
-    def cycles_for(wavelength_m):
-        return max(2.0, float(round(perim / wavelength_m)))
-
-    waves = ((cycles_for(0.170), 0.46), (cycles_for(0.105), 0.33),
-             (cycles_for(0.075), 0.21))
-    verts = []
-    for i in range(nu + 1):
-        u = i / float(nu)
-        px, py, (nx, ny) = on_perimeter(u)
-        c = _crease(u, salt, waves)
-        # hem wander + a gentle sag toward the middle of each run
-        hw = hem_wander * wander(u)
-        sg = sag * math.sin(math.pi * ((u * 2.0) % 1.0))
-        for j in range(nv + 1):
-            v = j / float(nv)
-            amp = fold * (v ** 1.6)                          # 0 at the top, max at the hem
-            ox, oy = nx * amp * c, ny * amp * c
-            z = top_z - drop * v - (hw + sg) * (v ** 2)
-            verts.append((px + ox, py + oy, z))
-    return verts, _grid_faces(nu, nv, wrap_u=True)
-
-
-# ---------------------------------------------------------------------------
-# 2. GARMENT — what hangs on a brass rail.
-# ---------------------------------------------------------------------------
 
 def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
             fold=0.014, hem_wander=0.016, sway=0.010, salt=0):
@@ -375,53 +400,6 @@ def folded_stack(w, d, n, item_h, salt=0, jitter_xy=0.012, jitter_rot=0.0):
 # ---------------------------------------------------------------------------
 # 5. THROW — a length of cloth laid over something, with a hanging tail.
 # ---------------------------------------------------------------------------
-
-def throw(length, width, lay_z, tail_drop=0.0, nu=44, nv=9,
-          ripple=0.016, skew=0.05, salt=0):
-    """A throw/runner laid across a surface: a ripple across its width, a hem that is NOT
-    parallel to the host edge (`skew`), and an optional `tail_drop` where it falls over
-    the near edge.
-
-    Local origin: the laid rectangle's corner at (0, 0, lay_z); `length` runs along x,
-    `width` along y. The tail hangs at the y=0 edge. A throw is the one object that can
-    make a coverlet read as fabric rather than foam (DD ground), and its hanging tail is
-    the only vertical drape a flat-on hero frame would otherwise contain."""
-    if length <= 0 or width <= 0:
-        _fail(f"throw: degenerate {length}x{width}")
-    if tail_drop < 0:
-        _fail(f"throw: tail_drop must be >= 0 (got {tail_drop})")
-    # Fold pitch is PHYSICAL (the drape_skirt lesson): cycles are solved from the run so
-    # the folds land at ~110-190mm whatever the throw's length, and `nu` samples each fold
-    # several times. The first cut fixed 11 cycles over an undersampled 17-station run,
-    # which ALIASED into a hard zigzag.
-    def cycles_for(wl):
-        return max(2.0, float(round(length / wl)))
-    waves = ((cycles_for(0.34), 0.52), (cycles_for(0.185), 0.31), (cycles_for(0.115), 0.17))
-    verts = []
-    total_v = width + tail_drop
-    for i in range(nu + 1):
-        u = i / float(nu)
-        x = length * u
-        c = _crease(u, salt, waves)
-        for j in range(nv + 1):
-            v = j / float(nv)
-            s = v * total_v                                  # arclength from the far edge
-            if s <= width:                                   # the part lying on the host
-                y = width - s + skew * width * (u - 0.5)     # skewed hem: not parallel
-                z = lay_z + ripple * c * math.sin(math.pi * min(s / max(width, 1e-6), 1.0))
-            else:
-                # THE TAIL. The crease belongs OUT OF PLANE, growing toward the free hem —
-                # the same constrained-top/free-bottom law the drape obeys. Putting it in Z
-                # instead (the first cut) left a FLAT sheet with a wavy bottom edge, which
-                # renders as torn paper: a zigzag silhouette on the hero frame's foreground
-                # is exactly the "reads as broken" cue this owner rejects.
-                fall = s - width
-                g = fall / max(tail_drop, 1e-6)
-                y = (skew * width * (u - 0.5) - fall * 0.14
-                     + ripple * 1.9 * (g ** 1.5) * c)        # real vertical folds
-                z = lay_z - fall
-            verts.append((x, y, z))
-    return verts, _grid_faces(nu, nv, wrap_u=False)
 
 
 def bbox(verts):

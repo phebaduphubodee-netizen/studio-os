@@ -40,24 +40,14 @@ def test_dev_streams_are_independent():
     szz = math.sqrt(sum((z - mz) ** 2 for z in zs) / len(zs))
     assert abs(cov / (sx * szz)) < 0.35
 
-
-def test_dev_does_not_clump():
-    """Golden-ratio low discrepancy: no two of the first 30 samples land on top of each
-    other (a naive sin(i) sequence beats and clumps — the vault's 'identical repeating
-    assets' amateur red flag)."""
-    vals = sorted(sg.dev(i, 1.0) for i in range(30))
-    gaps = [b - a for a, b in zip(vals, vals[1:])]
-    assert min(gaps) > 0.005
-
-
-# --------------------------------------------------------------------- mesh sanity
-
+# Every generator this module still ships. `drape_skirt` and `throw` were removed on
+# 2026-07-22: their job is done by Blender's cloth solver (pipeline/scripts/drape.py) and
+# leaving them here would have left ~130 lines of superseded physics under 22 green tests
+# that certify what no render uses — the studio's own prose-vs-build wound, in test form.
 ALL_MESHES = [
-    ("drape_skirt", lambda: sg.drape_skirt(2.0, 2.149, 0.28)),
     ("garment", lambda: sg.garment(0.46, 0.95)),
     ("hanger", lambda: sg.hanger(0.40)),
     ("cushion", lambda: sg.cushion(0.70, 0.70, 0.19, dent=0.02)),
-    ("throw", lambda: sg.throw(1.40, 0.90, 0.60, tail_drop=0.42)),
 ]
 
 
@@ -91,121 +81,6 @@ def _skirt_rings(verts, nv):
     """Regroup a skirt's flat vert list into per-station rings of (nv+1) samples."""
     return [verts[i:i + nv + 1] for i in range(0, len(verts), nv + 1)]
 
-
-def test_drape_crease_grows_downward():
-    """THE signature of hanging cloth: constrained at the top, free at the bottom. If the
-    amplitude were uniform the surface is a corrugation (which is exactly why the existing
-    sheers read as fluted acrylic panel)."""
-    nv = 6
-    verts, _ = sg.drape_skirt(2.0, 2.0, 0.30, nv=nv, fold=0.03)
-    rings = _skirt_rings(verts, nv)
-    # sample the south edge only (normal -y): spread in y at each height level
-    south = [r for r in rings[: len(rings) // 4]]
-    spreads = []
-    for j in range(nv + 1):
-        ys = [r[j][1] for r in south]
-        spreads.append(max(ys) - min(ys))
-    assert spreads[0] < spreads[nv] * 0.25, f"crease does not grow downward: {spreads}"
-    assert spreads[nv] > 0.008, "hem has no fold at all — this is a slab"
-
-
-def test_drape_hem_is_not_level():
-    """A level hem is a machine cut. Real cloth wanders."""
-    nv = 6
-    verts, _ = sg.drape_skirt(2.0, 2.0, 0.30, nv=nv, hem_wander=0.020)
-    rings = _skirt_rings(verts, nv)
-    hem_z = [r[nv][2] for r in rings]
-    assert max(hem_z) - min(hem_z) > 0.004, "hem is level — that is a box, not a drape"
-
-
-def test_drape_hem_wanders_SMOOTHLY_not_as_a_sawtooth():
-    """CAUGHT IN PIXELS, 2026-07-22. The first cut drove the hem with dev(i), whose whole
-    purpose is to make adjacent samples maximally DIFFERENT — correct for choosing garment
-    widths, catastrophic for a continuous edge. The render showed torn cardboard. A hem is
-    a curve along its run: neighbouring stations must differ by a small fraction of the
-    total wander, not by all of it."""
-    nv = 8
-    verts, _ = sg.drape_skirt(1.95, 2.10, 0.37, nv=nv, hem_wander=0.018)
-    rings = _skirt_rings(verts, nv)
-    hem = [r[nv][2] for r in rings]
-    jumps = [abs(b - a) for a, b in zip(hem, hem[1:])]
-    total = max(hem) - min(hem)
-    assert max(jumps) < total * 0.12, (
-        f"hem jumps {max(jumps) * 1000:.1f}mm between adjacent stations out of a "
-        f"{total * 1000:.1f}mm range — that is a sawtooth, not drape")
-
-
-def test_drape_folds_land_in_a_physical_pitch_band():
-    """Fold pitch must be a LENGTH, not a cycle count. Specifying '13 cycles per
-    perimeter' put the folds 615mm apart on this bed and rendered as flat panels with a
-    wavy edge; hanging cloth folds every ~60-160mm regardless of how big the bed is."""
-    nv = 8
-    verts, _ = sg.drape_skirt(1.95, 2.10, 0.37, nv=nv, fold=0.02)
-    rings = _skirt_rings(verts, nv)
-    quarter = len(rings) // 4
-    ys = [r[nv][1] for r in rings[:quarter]]
-    peaks = [i for i in range(1, len(ys) - 1) if ys[i] < ys[i - 1] and ys[i] < ys[i + 1]]
-    pitch = 1.95 / max(len(peaks), 1)
-    assert 0.05 <= pitch <= 0.20, f"fold pitch {pitch * 1000:.0f}mm is not cloth-like"
-
-
-def test_drape_fold_pitch_is_independent_of_bed_size():
-    """The same fabric on a bigger bed folds at the same pitch — more folds, not wider
-    ones. A cycles-per-perimeter spec gets this exactly backwards."""
-    def pitch(w, d):
-        nv = 8
-        rings = _skirt_rings(sg.drape_skirt(w, d, 0.37, nv=nv, fold=0.02)[0], nv)
-        q = len(rings) // 4
-        ys = [r[nv][1] for r in rings[:q]]
-        pk = [i for i in range(1, len(ys) - 1) if ys[i] < ys[i - 1] and ys[i] < ys[i + 1]]
-        return w / max(len(pk), 1)
-    small, big = pitch(1.4, 1.9), pitch(2.6, 2.9)
-    assert abs(small - big) < 0.045, f"pitch drifts with size: {small:.3f} vs {big:.3f}"
-
-
-def test_drape_top_edge_is_clean():
-    """The suspension line must stay put: it is where the cloth meets built joinery, and
-    a wandering top edge would show a gap against the mattress."""
-    nv = 6
-    verts, _ = sg.drape_skirt(2.0, 2.0, 0.30, nv=nv, top_z=0.55)
-    rings = _skirt_rings(verts, nv)
-    tops = [r[0][2] for r in rings]
-    assert max(tops) - min(tops) < 1e-9
-    assert abs(tops[0] - 0.55) < 1e-9
-
-
-def test_drape_fold_pitch_is_irregular():
-    """Multi-wavelength on purpose: one frequency is a corrugation, several incommensurate
-    ones read as cloth. Measured as: the gaps between successive outward peaks vary."""
-    nv = 6
-    verts, _ = sg.drape_skirt(3.0, 3.0, 0.30, nv=nv, fold=0.03)
-    rings = _skirt_rings(verts, nv)
-    quarter = len(rings) // 4
-    ys = [r[nv][1] for r in rings[:quarter]]           # south hem, outward = -y
-    peaks = [i for i in range(1, len(ys) - 1) if ys[i] < ys[i - 1] and ys[i] < ys[i + 1]]
-    assert len(peaks) >= 3, f"too few folds to judge pitch: {peaks}"
-    gaps = [b - a for a, b in zip(peaks, peaks[1:])]
-    assert len(set(gaps)) > 1, f"fold pitch is uniform ({gaps}) — that is a corrugation"
-
-
-def test_drape_bulge_is_bounded_by_fold():
-    """The caller owes its host part the CAD invariant, so it must be able to size an
-    inset. The skirt may bulge outward, but never by more than `fold`."""
-    fold = 0.02
-    verts, _ = sg.drape_skirt(2.0, 2.149, 0.28, fold=fold, hem_wander=0.01)
-    x0, y0, _, x1, y1, _ = sg.bbox(verts)
-    assert -fold - 1e-9 <= x0 and x1 <= 2.0 + fold + 1e-9
-    assert -fold - 1e-9 <= y0 and y1 <= 2.149 + fold + 1e-9
-
-
-def test_drape_hangs_the_full_drop():
-    verts, _ = sg.drape_skirt(2.0, 2.0, 0.28, top_z=0.6)
-    _, _, z0, _, _, z1 = sg.bbox(verts)
-    assert abs(z1 - 0.6) < 1e-9
-    assert z0 < 0.6 - 0.28 + 1e-9
-
-
-# ----------------------------------------------------------------- garment physics
 
 def test_garment_shoulder_is_narrower_than_body():
     """A garment on a hanger is a shoulder line opening to a body. A constant width is a
@@ -301,40 +176,15 @@ def test_folded_stack_rejects_zero_items():
         sg.folded_stack(0.32, 0.30, 0, 0.045)
 
 
-def test_throw_hem_is_not_parallel_to_the_host_edge():
-    """A fold parallel to the bed edge is the machine's signature."""
-    nu, nv = 17, 7
-    verts, _ = sg.throw(1.4, 0.9, 0.6, nu=nu, nv=nv, skew=0.06)
-    far = [verts[i * (nv + 1)] for i in range(nu + 1)]     # j=0 == the far edge
-    ys = [v[1] for v in far]
-    assert max(ys) - min(ys) > 0.01, "throw hem runs parallel to the host edge"
-
-
-def test_throw_tail_falls_below_the_lay_plane():
-    verts, _ = sg.throw(1.4, 0.9, 0.6, tail_drop=0.42)
-    _, _, z0, _, _, z1 = sg.bbox(verts)
-    assert z0 < 0.6 - 0.35, "the tail does not hang"
-    assert z1 <= 0.6 + 0.05
-
-
-def test_throw_without_tail_stays_on_the_plane():
-    verts, _ = sg.throw(1.4, 0.9, 0.6, tail_drop=0.0)
-    _, _, z0, _, _, z1 = sg.bbox(verts)
-    assert z0 > 0.6 - 0.05 and z1 < 0.6 + 0.05
-
-
-# --------------------------------------------------------------------- fail loud
-
 @pytest.mark.parametrize("call", [
-    lambda: sg.drape_skirt(0.0, 2.0, 0.3),
-    lambda: sg.drape_skirt(2.0, 2.0, 0.0),
     lambda: sg.garment(0.0, 0.9),
     lambda: sg.garment(0.4, 0.0),
     lambda: sg.cushion(0.0, 0.5, 0.2),
-    lambda: sg.throw(0.0, 0.9, 0.6),
-    lambda: sg.throw(1.4, 0.9, 0.6, tail_drop=-0.1),
     lambda: sg.hanger(0.0),
     lambda: sg.bbox([]),
+    lambda: sg.flat_sheet(0, 0, 0.0, 1.0, 0.0),          # the simulation feedstock must
+    lambda: sg.flat_sheet(0, 0, 1.0, 1.0, 0.0,           # refuse a degenerate cut too
+                          cut=[(-1, -1, 2, 2)]),
 ])
 def test_degenerate_input_raises(call):
     """Silent-drop is this codebase's recurring wound: a botched drape must not look like
@@ -342,9 +192,3 @@ def test_degenerate_input_raises(call):
     with pytest.raises(ValueError):
         call()
 
-
-def test_hem_wander_beyond_the_cap_raises():
-    """Past a bound, 'drape' becomes damage — and a mistyped value must not quietly ship
-    a shredded hem."""
-    with pytest.raises(ValueError):
-        sg.drape_skirt(2.0, 2.0, 0.3, hem_wander=sg.MAX_HEM_WANDER + 0.001)
