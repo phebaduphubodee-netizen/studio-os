@@ -626,12 +626,21 @@ def tub_chair_curved(w_m, d_m, h_m, seat_h_m=0.43, rot_deg=0.0, opening_deg=110.
     boxy first pass; the box massing was the WRONG PRIMITIVE, superseding it, not layering
     bevels on it, is the fix that stays inside the element-3 clay-ceiling ruling).
 
-    Geometry: an annular wrap SHELL (one continuous arc, ONE rim height = the tub
-    signature) opening toward the spec FRONT (THE ONE FACING CONVENTION: front azimuth =
-    rot−90°, so ANY rot now works — the cardinal-only limit died with the boxes), a round
-    seat cushion inside it, 4 tapered round legs under the shell ring. Containment: the
-    circle is inscribed in min(w,d) and centred in the footprint. seat_h 0.43 [est
-    studio render-tier] (no vault row; h = the drawn label's overall rim height)."""
+    Geometry: an annular wrap SHELL (one continuous arc) opening toward the spec FRONT
+    (THE ONE FACING CONVENTION: front azimuth = rot−90°, so ANY rot now works — the
+    cardinal-only limit died with the boxes), a round seat cushion inside it, 4 tapered
+    round legs under the shell ring. Containment: the circle is inscribed in min(w,d) and
+    centred in the footprint. seat_h 0.43 [est studio render-tier] (no vault row; h = the
+    drawn label's overall rim height).
+
+    RIM PROFILE (owner feedback 2026-07-22 'เก้าอี้ยังดูไม่สวย' on the render): a UNIFORM
+    rim height read as a plain ceramic BUCKET, not an upholstered tub chair. The rim now
+    SWEEPS — highest at the BACK (opposite the opening, the real backrest = h_m) dropping
+    to low ARMS at the opening ends (`arm_h` = seat + a hand-rest rise) — the tub-chair
+    silhouette. build_room applies the cos profile per arc vertex (arm→back→arm); this
+    function returns the two heights + the arc midpoint so the mesh layer stays dumb.
+    The seat CUSHION sits PROUD (dome_m above the rim-low plane, inset from the shell) so
+    it reads as a pad in the wrap, not a flush disc (the bucket look)."""
     if w_m <= 0 or d_m <= 0 or h_m <= 0 or seat_h_m <= 0:
         raise ValueError(f"tub_chair: non-positive dim (w={w_m}, d={d_m}, h={h_m}, seat={seat_h_m})")
     if seat_h_m >= h_m:
@@ -641,6 +650,7 @@ def tub_chair_curved(w_m, d_m, h_m, seat_h_m=0.43, rot_deg=0.0, opening_deg=110.
     R = min(w_m, d_m) / 2.0 - 0.005
     shell_t = min(0.045, R * 0.18)
     leg_h = max(0.05, seat_h_m - 0.15)                   # shell drops just below the cushion
+    arm_h = min(seat_h_m + 0.11, h_m - 0.02)             # the low front arms (hand-rest rise)
     alpha = math.radians(rot_deg - 90.0)                 # front azimuth (+X=0, CCW)
     half = math.radians(opening_deg) / 2.0
     th0 = alpha + half                                   # shell wraps the complement CCW
@@ -651,12 +661,14 @@ def tub_chair_curved(w_m, d_m, h_m, seat_h_m=0.43, rot_deg=0.0, opening_deg=110.
         th = th0 + wrap * (i + 0.5) / 4.0
         lr = R - shell_t / 2.0
         legs.append({"x": lr * math.cos(th), "y": lr * math.sin(th),
-                     "r_top": 0.017, "r_bot": 0.012, "h": leg_h})
+                     "r_top": 0.018, "r_bot": 0.011, "h": leg_h})
     return {
         "cx": w_m / 2.0, "cy": d_m / 2.0, "R": R,
-        "shell": {"r_out": R, "r_in": R - shell_t, "z0": leg_h - 0.02, "z1": h_m,
-                  "th0": th0, "th1": th1},
-        "seat": {"r": R - shell_t - 0.004, "z0": leg_h - 0.02, "z1": seat_h_m},
+        "shell": {"r_out": R, "r_in": R - shell_t, "z0": leg_h - 0.02,
+                  "z1_back": h_m, "z1_arm": arm_h, "th0": th0, "th1": th1},
+        # cushion: a proud domed pad inset from the shell, top ~30mm above the seat plane
+        "seat": {"r": R - shell_t - 0.010, "z0": leg_h - 0.02, "z1": seat_h_m,
+                 "dome_r": R - shell_t - 0.010, "dome_z": seat_h_m + 0.030},
         "legs": legs,
     }
 

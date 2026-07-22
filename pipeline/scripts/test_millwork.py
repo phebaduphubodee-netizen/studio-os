@@ -928,9 +928,15 @@ def test_tub_chair_inscribed_and_centred():
 
 def test_tub_chair_rim_seat_heights():
     lay = M.tub_chair_curved(0.510, 0.546, 0.750, seat_h_m=0.41, rot_deg=270)
-    assert abs(lay["shell"]["z1"] - 0.750) < 1e-9          # ONE rim height = the tub read
+    sh = lay["shell"]
+    # SWEPT rim (owner 2026-07-22): tall back = h, low arms above the seat but below the back
+    assert abs(sh["z1_back"] - 0.750) < 1e-9               # the backrest = the label rim height
+    assert lay["seat"]["z0"] < sh["z1_arm"] < sh["z1_back"]  # arms sit between seat and back
+    assert sh["z1_arm"] > 0.41                             # the arms clear the seat (a hand-rest)
     assert abs(lay["seat"]["z1"] - 0.41) < 1e-9            # seat = pass-through, not a frozen [est]
-    assert lay["seat"]["r"] < lay["shell"]["r_in"]         # cushion sits inside the wrap
+    assert lay["seat"]["dome_z"] > lay["seat"]["z1"]       # the cushion is PROUD (a pad, not a disc)
+    assert lay["seat"]["dome_z"] < sh["z1_arm"]            # but nestles below the arm rim
+    assert lay["seat"]["r"] < sh["r_in"]                   # cushion sits inside the wrap
 
 
 def test_tub_chair_opening_faces_front_any_rot():

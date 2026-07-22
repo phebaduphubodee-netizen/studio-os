@@ -48,6 +48,51 @@ MIN_BAY_MM = 300.0
 
 ZONE_OPEN_ID = "zone-open-south"
 
+# FLUTED FRONTS (owner feedback 2026-07-22 'wardrobe ยังไม่ค่อยสวย' on the render): flat
+# matte-grey full-height leaves read as a blank LOCKER wall, not designed joinery. Each leaf
+# becomes a recessed BACKER + vertical REED battens proud of it (the suite's shadow-line
+# language — the slat headboard / the fluted ensuite vanity / the wave curtains — brought to
+# the bay), which cast real grooves that read in raw 3D and survive the Gemini pass, WITHOUT
+# adding oak (still cool mineral, anti-monopoly intact). The front plane is UNMOVED (the reeds
+# fill the leaf's own proud depth, grooves recess toward the carcass) so nothing exceeds the
+# plan bbox. [est] joinery-tier constants, owner-nudgeable.
+REED_PROUD_M = 0.013     # reed proudness off the recessed backer (the groove depth that casts)
+REED_PITCH_M = 0.055     # centre-to-centre reed spacing
+GROOVE_FRAC = 0.30       # fraction of each pitch that is groove (reed width = 0.70*pitch)
+
+
+def _flute_leaf(nm, lx, ly, lz, dx, dy, dz, axis, sign):
+    """A flat door-leaf box (millwork-local metres) -> a recessed backer + vertical reed
+    battens. `axis` is the leaf's DEPTH axis; `sign>0` = front at the high depth coord.
+    Returns [(name, x, y, z, dx, dy, dz)] in the same local frame."""
+    depth = dx if axis == "x" else dy
+    run_len = dy if axis == "x" else dx
+    backer_t = max(depth - REED_PROUD_M, 0.004)
+    reed_t = depth - backer_t
+    n = max(3, round(run_len / REED_PITCH_M))
+    slot = run_len / n
+    reed_w = slot * (1.0 - GROOVE_FRAC)
+    parts = []
+    if axis == "x":                                      # thin in x (depth), wide in y (run)
+        if sign > 0:                                     # front at high x
+            b_x, r_x = lx, lx + backer_t
+        else:                                            # front at low x
+            b_x, r_x = lx + reed_t, lx
+        parts.append((f"{nm}_bk", b_x, ly, lz, backer_t, dy, dz))
+        for i in range(n):
+            cy = ly + (i + 0.5) * slot
+            parts.append((f"{nm}_rd{i}", r_x, cy - reed_w / 2.0, lz, reed_t, reed_w, dz))
+    else:                                                # thin in y (depth), wide in x (run)
+        if sign > 0:
+            b_y, r_y = ly, ly + backer_t
+        else:
+            b_y, r_y = ly + reed_t, ly
+        parts.append((f"{nm}_bk", lx, b_y, lz, dx, backer_t, dz))
+        for i in range(n):
+            cx = lx + (i + 0.5) * slot
+            parts.append((f"{nm}_rd{i}", cx - reed_w / 2.0, r_y, lz, reed_w, reed_t, dz))
+    return parts
+
 # closed key set for a bay fixture's design block — an unknown key RAISES instead of
 # being silently ignored (the typo'd-key -> auto-fit swallow the DD critic predicted).
 _DESIGN_KEYS = frozenset({
@@ -189,12 +234,16 @@ def _fixture_parts(fx, sr_bbox, tag):
             _fail(f"fixture {fx.get('name')!r}: segment {si} ({seg_len:.1f}mm) yielded "
                   f"zero millwork parts — a decided front must not silently vanish")
         for (nm, lx, ly, lz, dx, dy, dz) in parts:
-            if axis == "x":
-                emit(f"{nm}_s{si}", lx / MM, seg_off + ly / MM, lz / MM,
-                     dx / MM, dy / MM, dz / MM)
-            else:
-                emit(f"{nm}_s{si}", seg_off + lx / MM, ly / MM, lz / MM,
-                     dx / MM, dy / MM, dz / MM)
+            # FLUTE the door leaves (the room-facing fronts); carcass/plinth stay flat
+            subs = (_flute_leaf(nm, lx, ly, lz, dx, dy, dz, axis, sign)
+                    if nm.startswith("door") else [(nm, lx, ly, lz, dx, dy, dz)])
+            for (snm, sx, sy, sz, sdx, sdy, sdz) in subs:
+                if axis == "x":
+                    emit(f"{snm}_s{si}", sx / MM, seg_off + sy / MM, sz / MM,
+                         sdx / MM, sdy / MM, sdz / MM)
+                else:
+                    emit(f"{snm}_s{si}", seg_off + sx / MM, sy / MM, sz / MM,
+                         sdx / MM, sdy / MM, sdz / MM)
     if not out:
         _fail(f"fixture {fx.get('name')!r}: zero parts emitted — the white-slab "
               f"fallback must never swallow a decided wardrobe")

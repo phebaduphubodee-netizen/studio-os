@@ -757,7 +757,9 @@ def wardrobe_bay_story_bits(spec):
             f"element (re-run the 914 arithmetic) and update this clause, do not let "
             f"the armour lie.")
     bits = [f"wardrobe bay ({len(masses)} closed built-in mass(es)): matte cool-mineral "
-            "microcement fronts, HANDLELESS (the recessed top pull-gap is the only "
+            "microcement fronts, VERTICALLY FLUTED (fine reeded battens casting soft "
+            "shadow grooves floor-to-ceiling — keep the reeding, never smooth it flat), "
+            "HANDLELESS (the recessed top pull-gap is the only "
             "hardware) — NEVER wood-grain, never oak, no brass, no pulls; internals "
             "are behind closed leaves (do not invent open shelving); the bay is OPEN "
             "to the bedroom on its south side — never paint a wall or doorway there; "

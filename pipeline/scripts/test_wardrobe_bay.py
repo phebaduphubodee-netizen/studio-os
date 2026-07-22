@@ -156,17 +156,16 @@ def test_front_faces_derive_toward_the_free_floor():
 
 
 def test_swap_and_demand_red_leaves_move_with_the_derived_face():
-    """The e6 hook-swap lesson: flip the mass to the other edge and the LEAVES must
-    move to the other face — if they didn't, a facing flip would survive green."""
-    sr = _mini_bay()
-    doors_n = [p for p in WB.bay_parts(sr) if "door" in p["name"]]
-    assert all(abs(p["y"] - 2400.0) < 1e-6 for p in doors_n)     # leaves on the SOUTH face
+    """The e6 hook-swap lesson: flip the mass to the other edge and the LEAF FRONT must
+    move to the other face — if it didn't, a facing flip would survive green. (Robust to
+    the 2026-07-22 fluting: the reeds define the front plane, so check the extremum.)"""
+    sr = _mini_bay()                                             # mass hugs NORTH -> fronts SOUTH
+    door_s = [p for p in WB.bay_parts(sr) if "door" in p["name"]]
+    assert min(p["y"] for p in door_s) == pytest.approx(2400.0, abs=0.3)   # front face at low y
     sr2 = _mini_bay()
-    sr2["fixtures"][0]["y"] = 0                                   # same mass, south edge
-    sr2["openings"][0]["rect"] = [0, 3000, 3000, 3000]
-    sr2["openings"][0]["id"] = "zone-open-south"
-    doors_s = [p for p in WB.bay_parts(sr2) if "door" in p["name"]]
-    assert all(abs((p["y"] + p["dy"]) - 600.0) < 1e-6 for p in doors_s)  # NORTH face now
+    sr2["fixtures"][0]["y"] = 0                                   # same mass on the SOUTH edge
+    door_n = [p for p in WB.bay_parts(sr2) if "door" in p["name"]]
+    assert max(p["y"] + p["dy"] for p in door_n) == pytest.approx(600.0, abs=0.3)  # front at high y
 
 
 # ------------------------------------------------------------ part vocabulary + mats
@@ -188,6 +187,24 @@ def test_every_part_routes_microcement_never_oak_or_brass():
     for p in WB.bay_parts(_bay()):
         obj = MP.fixture_part_name(p["mat"], p["name"])
         assert MP.mill_object_role(obj) == "microcement"
+
+
+def test_fronts_are_fluted_reeds_proud_of_a_backer():
+    """Owner refinement 2026-07-22: every door leaf is a recessed BACKER + vertical REED
+    battens (the flat leaf is gone) — so the fronts read as fluted joinery, not a blank
+    slab. Reeds outnumber backers (>= 3 per leaf) and each reed is thinner in the depth
+    axis than nothing survives as a full flat leaf."""
+    parts = WB.bay_parts(_bay())
+    backs = [p for p in parts if "_bk" in p["name"]]
+    reeds = [p for p in parts if "_rd" in p["name"]]
+    assert backs and reeds
+    assert len(reeds) >= 3 * len(backs)                # >= 3 reeds per leaf
+    # a reed is proud of its backer in the depth axis (thinner footprint, casts a groove)
+    for p in reeds:
+        assert min(p["dx"], p["dy"]) <= WB.REED_PROUD_M / WB.MM + 0.1
+    # no flat full-thickness (20mm) leaf remains
+    assert not any("door" in p["name"] and "_bk" not in p["name"] and "_rd" not in p["name"]
+                   for p in parts)
 
 
 def test_parts_stay_inside_their_fixture_bboxes():
@@ -234,14 +251,15 @@ def test_leaf_reveals_land_on_the_drawn_stations_and_follow_them():
     station in a COPY moves the leaves; the canonical file's stations are the ink."""
     bay = _bay()
     parts = WB.bay_parts(bay)
-    door_lo_x = sorted(p["x"] for p in parts if "door" in p["name"] and p["dy"] == 20.0)
+    # each leaf's BACKER spans the full leaf run; its x = the leaf's left edge (robust to
+    # the fluting — one backer per leaf, vs many reeds)
+    door_lo_x = sorted(p["x"] for p in parts if "_bk" in p["name"])
     # north leg: first leaf starts one REVEAL east of the first drawn station (3327.4+3)
-    assert any(abs(x - 3330.4) < 0.1 for x in door_lo_x)
+    assert any(abs(x - 3330.4) < 0.5 for x in door_lo_x)
     moved = copy.deepcopy(bay)
     moved["fixtures"][0]["design"]["divider_stations_mm"] = [3427.4, 4428.8]
-    moved_lo = sorted(p["x"] for p in WB.bay_parts(moved)
-                      if "door" in p["name"] and p["dy"] == 20.0)
-    assert any(abs(x - 3430.4) < 0.1 for x in moved_lo)
+    moved_lo = sorted(p["x"] for p in WB.bay_parts(moved) if "_bk" in p["name"])
+    assert any(abs(x - 3430.4) < 0.5 for x in moved_lo)
     assert door_lo_x != moved_lo
 
 

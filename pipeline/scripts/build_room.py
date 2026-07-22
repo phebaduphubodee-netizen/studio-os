@@ -2025,15 +2025,27 @@ def _cyl_frustum(name, cx, cy, r_bot, r_top, z0, z1, mat, seg=24, cap=True):
     return _smooth_mesh_obj(name, verts, faces, mat)
 
 
-def _arc_shell(name, cx, cy, r_out, r_in, z0, z1, th0, th1, mat, seg=48):
-    """An annular ARC WALL (the tub-chair wrap): outer + inner skins, rim cap, end caps."""
-    from math import cos, sin
+def _arc_shell(name, cx, cy, r_out, r_in, z0, z1, th0, th1, mat, seg=48, z1_arm=None):
+    """An annular ARC WALL (the tub-chair wrap): outer + inner skins, rim cap, end caps.
+
+    `z1` is the top height at the arc MIDPOINT (the back). If `z1_arm` is given, the rim
+    SWEEPS as z1_arm + (z1 - z1_arm)*sin(pi*t) along the arc (t in [0,1]) — low arms at the
+    opening ends rising to the tall back (the tub-chair silhouette, owner 2026-07-22);
+    None keeps the flat rim (byte-identical to the pinned pre-refinement mesh)."""
+    from math import cos, sin, pi
     verts, faces = [], []
     n = seg + 1
-    for r in (r_out, r_in):
-        for z in (z0, z1):
+
+    def top_z(i):
+        if z1_arm is None:
+            return z1
+        return z1_arm + (z1 - z1_arm) * sin(pi * i / seg)
+
+    for r in (r_out, r_in):                              # z0 row then the swept z1 row
+        for zc in (z0, "top"):
             for i in range(n):
                 a = th0 + (th1 - th0) * i / seg
+                z = top_z(i) if zc == "top" else z0
                 verts.append((cx + r * cos(a), cy + r * sin(a), z))
     O0, O1, I0, I1 = 0, n, 2 * n, 3 * n                  # outer z0/z1, inner z0/z1 rows
     for i in range(seg):
@@ -2060,14 +2072,21 @@ def _build_tub_chair(x0, y0, W, D, H, rot=0.0):
     are real curves via from_pydata (the curtain-wave law — the first boxy pass read as
     a box because the primitive was wrong, owner 2026-07-20)."""
     lay = millwork.tub_chair_curved(W, D, H, rot_deg=rot)
-    uph_m = _solid("stool_uph", (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.25, spec=0.3)
-    leg_m = _solid("stool_leg", (0.26, 0.21, 0.16, 1.0), rough=0.45, sheen=0.1, spec=0.5)
+    # deepened greige linen (owner 2026-07-22: the pale flat wrap read as ceramic) — a clear
+    # mid-greige with a touch more sheen so the fabric reads as fabric, still the ONE bed-base
+    # textile family (D1-A), not a new tone; legs the bench dark.
+    uph_m = _solid("stool_uph", (0.40, 0.37, 0.33, 1.0), rough=0.92, sheen=0.45, spec=0.35)
+    leg_m = _solid("stool_leg", (0.24, 0.19, 0.14, 1.0), rough=0.42, sheen=0.1, spec=0.5)
     cx, cy = x0 + lay["cx"], y0 + lay["cy"]
     sh = lay["shell"]
-    _arc_shell("stool__shell", cx, cy, sh["r_out"], sh["r_in"], sh["z0"], sh["z1"],
-               sh["th0"], sh["th1"], uph_m)
+    # swept rim: low arms at the opening rising to the tall back = the tub-chair silhouette
+    _arc_shell("stool__shell", cx, cy, sh["r_out"], sh["r_in"], sh["z0"], sh["z1_back"],
+               sh["th0"], sh["th1"], uph_m, z1_arm=sh["z1_arm"])
     st = lay["seat"]
-    _cyl_frustum("stool__seat", cx, cy, st["r"], st["r"], st["z0"], st["z1"], uph_m, seg=32)
+    # proud DOMED cushion (gentle top taper) so it reads as a pad nested in the wrap, not a
+    # flush disc — sits below the arm rim, above the seat plane
+    _cyl_frustum("stool__seat", cx, cy, st["r"], st["dome_r"] - 0.03, st["z0"], st["dome_z"],
+                 uph_m, seg=40)
     for i, lg in enumerate(lay["legs"]):
         _cyl_frustum(f"stool__leg{i}", cx + lg["x"], cy + lg["y"], lg["r_bot"], lg["r_top"],
                      0.0, lg["h"], leg_m, seg=12, cap=False)
