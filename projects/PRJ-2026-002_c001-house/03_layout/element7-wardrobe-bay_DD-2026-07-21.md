@@ -137,9 +137,12 @@ the NARROWED baycut (D-E7-9), the mouth stub at its south edge, BF09-2's north e
 east fronts at frame left, the scribe sliver + north-leg west end. Stands are [est]
 and move freely to satisfy _spot_is_clear; the MUST-SEE lists do NOT move silently.
 ORDERING LAW: zone-open-south lands BEFORE bay LOOK sign-off (view 1 must never
-verify a false room). Coverage map: D-E7-1→2+3; D-E7-2→1; D-E7-3/4→1+2+3 (fronts);
-D-E7-5→2 (no internals visible); D-E7-6→1+2 (cans); D-E7-9→3; D-E7-10/11→all three
-(bare floor, oak floor). RESIDUALS (accepted, e4 precedent): subroom fixtures are
+verify a false room). Coverage map (every D-E7 id appears — manifest D-E7-7 probe): D-E7-1→2+3;
+D-E7-2→1; D-E7-3/4→1+2+3 (fronts); D-E7-5→2 (no internals visible, closed-only);
+D-E7-6→1+2 (cans lit); **D-E7-7→the three views themselves (this map is its own
+deliverable);** **D-E7-8→all three (the story armour describes what all three
+show — mineral fronts, open edge, bare oak floor, open doorway);** D-E7-9→3
+(doorway open, bay-side stub); D-E7-10/11→all three (bare floor, oak floor). RESIDUALS (accepted, e4 precedent): subroom fixtures are
 invisible to the obstacle model (stand correctness is on the hand-set coords + LOOK);
 frame_subject_share may falsely WARN dead-wall on bay shots (advisory only). Verify
 pixels by PROJECTION, not axis-arithmetic.

@@ -327,6 +327,10 @@ FIXTURE_MAT_OBJECT = {
     "opal":      "mill__{b}__opal",       # element-5 luminous opal face
     "tray":      "mill__{b}__cool",       # shower tray/curb -> cool microcement
     "towel":     "mill__{b}__towel",      # element-6 greige-oatmeal terry (towels + bath mat)
+    "mineral":   "mill__{b}__cool",       # element-7 bay wardrobe fronts/carcass -> the EXISTING
+                                          #   microcement identity via the proven __cool token
+                                          #   (same route as 'tray'; D-E7-3/-4 — zero oak, zero
+                                          #   brass in the bay; no new material plumbing)
     "oak":       "mill__{b}",             # the ONE warm-oak gesture (default mill role)
 }
 
@@ -717,6 +721,61 @@ def lighting_story_bits(spec):
             "garden windows, which stay the brightest source"]
 
 
+def wardrobe_bay_story_bits(spec):
+    """ELEMENT 7 (D-E7-8, element7-wardrobe-bay_DD-2026-07-21.md): the wardrobe bay's
+    decided state, NAMED so the Gemini polish pass cannot repaint the mineral fronts
+    wood-grain, paint a wall across the open south edge, furnish the deliberately bare
+    floor, re-floor the walk-in, or 'clean up' the door-mouth stub. GATED on the bay's
+    own referent (a type='wardrobe' subroom with wardrobe fixtures — a bay-less spec
+    emits nothing); every counted/measured clause DERIVES from spec data (the S4
+    prose-copy lesson). The openness clause looks the zone-open-south record up BY ID
+    and RAISES if a wardrobe subroom lacks it — the cross-block pin (D-E7-2): the
+    armour must never survive the record it describes being deleted."""
+    bay = next((s for s in (spec or {}).get("subrooms") or []
+                if s.get("type") == "wardrobe"), None)
+    if not bay:
+        return []
+    masses = [f for f in bay.get("fixtures") or []
+              if str(f.get("kind", "")) == "wardrobe"]
+    if not masses:
+        return []
+    if not any(o.get("id") == "zone-open-south" for o in bay.get("openings") or ()):
+        raise ValueError(
+            "wardrobe_bay_story_bits: the wardrobe subroom lacks the 'zone-open-south' "
+            "record — D-E7-2's armour cannot describe an openness the spec no longer "
+            "declares; restore the record (the build lane raises on this too)")
+    # review catch E7-F1: the bare-floor clause DERIVES from a live scan, never a
+    # hardcoded 'bare' — if a decided item lands on the bay floor, RAISE (the polish
+    # armour must not silently order it erased; the towel-census prose-copy lesson).
+    import wardrobe_bay as _wb
+    _intruders = _wb.bay_floor_intruders(spec)
+    if _intruders:
+        raise ValueError(
+            f"wardrobe_bay_story_bits: the bay clear floor is no longer BARE — "
+            f"{_intruders} intrude(s) on it (D-E7-10). The bare-floor armour would "
+            f"tell the Gemini polish to erase them; decide the floor object as a NEW "
+            f"element (re-run the 914 arithmetic) and update this clause, do not let "
+            f"the armour lie.")
+    bits = [f"wardrobe bay ({len(masses)} closed built-in mass(es)): matte cool-mineral "
+            "microcement fronts, HANDLELESS (the recessed top pull-gap is the only "
+            "hardware) — NEVER wood-grain, never oak, no brass, no pulls; internals "
+            "are behind closed leaves (do not invent open shelving); the bay is OPEN "
+            "to the bedroom on its south side — never paint a wall or doorway there; "
+            "the bay floor is deliberately BARE (no island, bench, mirror, rug or "
+            "valet) and it is the bedroom's oak floor CONTINUING through the walk-in "
+            "— never tile or carpet it"]
+    cut = next((o for o in bay.get("openings") or ()
+                if o.get("id") == "door-ensuite-baycut"), None)
+    if cut:
+        r = cut.get("rect") or [0, 0, 0, 0]
+        clear = abs(float(r[3]) - float(r[1])) or abs(float(r[2]) - float(r[0]))
+        bits.append(f"the ensuite doorway in the bay's west wall is an OPEN ~{clear:.0f}mm "
+                    "passage (sliding leaf exists but is deliberately not drawn) with a "
+                    "shallow mouth stub at its south edge — keep the passage open and "
+                    "keep the stub, it is the drawn slide-mouth rebate, not a defect")
+    return bits
+
+
 def material_story(resolved, spec=None):
     """One prose sentence naming the ACTUAL selected materials — the truth the render
     shows, for the render-polish prompt's {material_story} slot (and rationale). Built
@@ -755,4 +814,5 @@ def material_story(resolved, spec=None):
     bits.extend(ensuite_material_story_bits(spec))     # ELEMENT 4+6: ensuite palette + textiles
     bits.extend(lighting_story_bits(spec))             # ELEMENT 5: the deliberate 3-layer light
     bits.extend(casement_sheer_story_bits(spec))       # ELEMENT 6: the west casement sheers
+    bits.extend(wardrobe_bay_story_bits(spec))         # ELEMENT 7: the closed mineral bay
     return "; ".join(bits) if bits else material_story(None)

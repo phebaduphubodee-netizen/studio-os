@@ -142,7 +142,11 @@ def test_strip_light_derives_with_mirror_x(sp):
 
 def test_bedroom_clip_sees_protruding_subroom_fixture(sp):
     """Scrutiny catch: a full-height SUBROOM fixture protruding into the bedroom band
-    must clip bedroom cans too (BF09-2 spans y5180..6680 across the y5850 line)."""
+    must clip bedroom cans too. (Rationale updated for the e7 truing, review catch
+    E7R-5: BF09-2 was y5180..6680 pre-e7; the trued rect is y5199.5..6697.6 — it still
+    crosses the y5850 bedroom/subroom line, so its south end still protrudes into the
+    bedroom band, and the name-based assertion below is unchanged and still passes.
+    Only this docstring's stale extents were wrong.)"""
     masses = E5.full_height_rects(sp, "bedroom")
     assert any(n == "BF09-2" for (_, _, _, _, n) in masses)
     # force a live hit: park a probe over grid can (941.7, 1757.6) — a spot no builtin
