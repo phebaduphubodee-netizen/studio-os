@@ -285,6 +285,13 @@ def mill_object_role(objname):
         return "opal"                                  # element-5 luminous opal face (task strips/bar)
     if pn == "blackalu":
         return "blackalu"                              # element-5 black-alu luminaire body (D-E5-4/-5)
+    if pn == "linen":
+        # ELEMENT 8: the greige stonewashed linen signed in element 3 (D3-1/D3-4), finally
+        # reachable BY NAME. EXACT-match like `towel` and for the same reason: the closed
+        # fixture gate is one layer up and does not protect this router, so without this
+        # branch every sham, folded stack and hanging garment falls through to the oak
+        # default below and build_room's .get(_role, mill) ships soft goods in WALNUT.
+        return "linen"
     if pn == "towel":
         # element-6 terry textiles (towels + bath mat, ONE token — D-E6-3). This branch is
         # REQUIRED, not decorative: the closed fixture_part_name gate is one layer UP and
@@ -721,6 +728,80 @@ def lighting_story_bits(spec):
             "garden windows, which stay the brightest source"]
 
 
+def styling_story_bits(spec):
+    """ELEMENT 8 (2026-07-22): the STYLING layer, NAMED so the Gemini polish pass cannot
+    strip it back to the empty room the owner rejected.
+
+    Every count DERIVES by re-running the same PURE layout the build runs — never a
+    literal. That is the e6 lesson stated as code: the towel bit once hardcoded "2 bath
+    towels" while the census said otherwise, and the polish would have painted back a
+    towel the build had removed. Here a rail that stops being built silently drops out of
+    the prose too, because the prose is a len() over the same source.
+
+    GATED on the referent: a spec whose millwork produces no hang rail emits nothing
+    rather than describing garments that do not exist."""
+    import millwork as _mw
+    import wardrobe_bay as _wb
+
+    rails, shelves = 0, 0
+    _rc = None
+    outline = ((spec or {}).get("room") or {}).get("outline_mm")
+    if outline:
+        pts = [(float(p[0]) * 0.001, float(p[1]) * 0.001) for p in outline]
+        _rc = (sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts))
+    for b in (spec or {}).get("builtins") or []:
+        try:
+            W, D = float(b["w"]) * 0.001, float(b["d"]) * 0.001
+            H = float(b["h"]) * 0.001 if b.get("h") else 2.8
+            ax, sg, _src = _mw.mill_axis(float(b["x"]) * 0.001, float(b["y"]) * 0.001,
+                                         W, D, _rc or (0.0, 0.0), (), b.get("face"))
+            if ax is None:
+                continue
+            # MIRROR the build's own call (open_front from the builtin, not forced
+            # True, and every builtin walked, not just the open ones). Forcing it made
+            # the prose say "21 shelf part(s)" while the build dressed from 39 — the
+            # prose-vs-build drift this armour exists to prevent, committed inside the
+            # armour itself.
+            for p in _mw.millwork_parts(str(b.get("kind", "")), W, D, H, ax, sg,
+                                        floor_standing=(not b.get("mount_mm")),
+                                        open_front=bool(b.get("open"))):
+                rails += p[0].startswith("rail")
+                shelves += p[0].startswith("shelf")
+        except Exception:                      # a builtin this lane cannot lay out is not
+            continue                           # an element-8 concern; the build lane owns it
+    if any(s.get("type") == "wardrobe" for s in (spec or {}).get("subrooms") or []):
+        for s in (spec or {}).get("subrooms") or []:
+            if s.get("type") != "wardrobe":
+                continue
+            for p in _wb.bay_parts(s):
+                rails += str(p.get("part", "")).startswith("rail")
+                shelves += str(p.get("part", "")).startswith("shelf")
+    if not rails:
+        return []
+    return [
+        f"the suite is DRESSED, and the dressing is decided geometry — not set dressing "
+        f"the polish may invent or remove: HANGING GARMENTS fill all {rails} satin-brass "
+        f"hang rails (soft shells on wire hangers, three values from the suite's own "
+        f"signed textiles — greige stonewashed linen, greige-oatmeal terry, matte-black "
+        f"— hung shoulder-to-shoulder ACROSS the carcass depth, never along the rail), "
+        f"and folded knit stacks sit on the open oak shelves ({shelves} shelf part(s) "
+        f"available; a deliberate minority is left BARE so the joinery still reads as "
+        f"joinery). NEVER empty a rail, never clear a shelf, never replace the garments "
+        f"with doors or panels",
+        "the bed's coverlet is a HANGING TEXTILE, not a slab: it falls from the mattress "
+        "top in real gathered folds at ~110mm pitch with a hem that wanders and never "
+        "runs level, stopping just above the recessed plinth so element 3's shadow "
+        "reveal survives — keep the folds, keep the uneven hem, keep the gap under the "
+        "bed; do NOT smooth the fall into a flat skirt or a box",
+        "the bed head is a THREE-HEIGHT ladder: two upright euro shams against the oak "
+        "slat wall, two plump sleeping pillows in front of them, and ONE greige-oatmeal "
+        "terry lumbar cushion off-centre in the deepest value — the only dark object in "
+        "the frame's upper half. Keep all three heights and keep the asymmetry; do NOT "
+        "level them into a matched pair, and do NOT crease, dent or rumple any of them "
+        "(the room is made, not slept in)",
+    ]
+
+
 def wardrobe_bay_story_bits(spec):
     """ELEMENT 7 (D-E7-8, element7-wardrobe-bay_DD-2026-07-21.md): the wardrobe bay's
     decided state, NAMED so the Gemini polish pass cannot repaint the mineral fronts
@@ -832,4 +913,5 @@ def material_story(resolved, spec=None):
     bits.extend(lighting_story_bits(spec))             # ELEMENT 5: the deliberate 3-layer light
     bits.extend(casement_sheer_story_bits(spec))       # ELEMENT 6: the west casement sheers
     bits.extend(wardrobe_bay_story_bits(spec))         # ELEMENT 7: the open dressing gallery
+    bits.extend(styling_story_bits(spec))              # ELEMENT 8: the styling layer
     return "; ".join(bits) if bits else material_story(None)

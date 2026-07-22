@@ -1967,3 +1967,63 @@ DECLINED decision and nothing more.
 - Deliberately NOT touched: the x1125 four-way fixture-face tie (BF10-class, e4's element,
   no visible defect — watch-item in the BUILD doc) and the pre-existing top-of-frame black band.
 - Next: assemble → hero frames → the single Gemini beauty pass (billing top-up still the gate).
+
+## 2026-07-22 (later) — element 8 styling: the owner asked "would a DR help?" and the answer was no
+
+- **The question was "งานคุณยังดูไม่มี style — การทำ DR จะช่วยได้มั้ย?"** The answer given was NO,
+  and the reasoning is the entry: a DR answers "what is true", and nothing here was a knowledge
+  gap. Every element 1-7 had a cited DD and the renders still read flat. Spending a DR on it
+  would have produced another document — the referee-factory relapse the 07-16 reset exists to
+  prevent. What the work needed was execution layers that were missing, and the instrument that
+  found them was LOOKING AT THE PIXELS, not researching.
+- **The DD's ground phase named a root cause the orchestrator had missed.** The diagnosis offered
+  first was "the room has no props" — half right. Reading the six frames found ONE mechanism
+  behind every word the owner has used: **NOTHING IN THIS ROOM DEFORMS.** Every soft good was
+  modelled with joinery's primitive, a bevelled box with a level hem. That is the literal
+  physical referent of "แข็ง" and "เหลี่ยม", and it explains why THREE prior softening passes
+  failed (bevels -> floating base -> draped coverlet, 9d15bfc): each one was still a box with
+  rounder corners. **A bevel radius is not drape.** LESSON: when a verdict repeats across three
+  fixes, the defect is the PRIMITIVE, not the parameter.
+- **New pure module softgoods.py — the compliant-surface vocabulary the codebase never had.**
+  Pinned by PHYSICS, not by numbers: crease amplitude must GROW from zero at the suspension line
+  (constrained-top/free-bottom is the signature of hanging cloth), the hem must never be level,
+  the fold pitch must be irregular. Plus styling.py, whose central law is DERIVE-FROM-BUILT-PART:
+  a garment hangs off the rail anchor the build actually emitted, so moving a rail moves its
+  garments and deleting one RAISES. 63 garments on 9 rails + 44 folded stacks now ship.
+- **Four bug classes, four different instruments — and the render caught what tests could not:**
+  (1) the DD's two adversarial critics INDEPENDENTLY found the same blocker in code neither had
+  seen: a hanger's shoulder bar runs FRONT-TO-BACK across the carcass, not along the rail — the
+  first cut packed 4.8 m of cloth into a 635 mm rail. (2) The module's own tests caught two
+  containment bugs. (3) **The RENDER caught two the tests were blind to**: `dev()` driving the
+  hem produced a sawtooth, because a low-discrepancy sequence makes ADJACENT samples maximally
+  DIFFERENT — right for choosing garment widths, catastrophic for a continuous edge; and fold
+  pitch specified as cycles-per-perimeter put the folds 615 mm apart on this bed. Both are now
+  pinned by tests written AFTER the pixels showed them. (4) The pre-commit review found a
+  REGRESSION no test could see.
+- **The regression is the entry's most transferable lesson: the guard fired on the ROOM, not on
+  the DECISION.** `dress_rails(min_rails=1)` demanded a hang rail from any room that merely had
+  millwork — so four room specs that built fine at HEAD hard-exited under real Blender. A bedroom
+  whose wardrobe is CLOSED has millwork and no rail, and that is a design, not an omission. The
+  fix derives the demand from the spec's own `open` declarations (3 on the canonical suite vs 9
+  built rails — strictly STRONGER than the blanket demand it replaced). RULE: **an anti-omission
+  guard must be keyed to the DECISION that was made, never to the presence of the machinery that
+  would have carried it.** The 1985-green suite could not see it because `dress_rails` and
+  `dress_shelves` — the only two functions the consumer calls — had ZERO coverage.
+- **Two more the review earned:** folded knits were landing on element 2's signed open DISPLAY
+  bookshelf (the one built with no back so the garden reads through) — the host KIND now rides
+  the anchor and the lane refuses non-wardrobe shelves; and `styling_story_bits` said "21 shelf
+  parts" while the build dressed from 39, the prose-vs-build drift the armour exists to prevent,
+  committed inside the armour itself.
+- **The foot throw is DECIDED-BUT-NOT-BUILT, on purpose.** It is written, contained and tested,
+  but every LOOK pass it survived produced an artefact in the hero frame (a torn-paper zigzag,
+  then tail flaps punching through the coverlet's own skirt). A throw on a bed whose flank is
+  ALSO compliant is a cloth-on-cloth interaction and this vocabulary has no collision term. The
+  DD's own rule decided it — "no object placed where an engineer would read it as a defect", the
+  same rule that deleted the ajar drawer and the dented pillow. Shipping without it beats
+  shipping a snag-list item into the frame he judges. The commented call + its tests + this entry
+  are the standing record, and the armour does not claim a throw exists.
+- Deliberately NOT done (7 of the DD's 12 decisions): nightstand/bench/counter vignettes, the
+  lamp drum + emission fix, the rug's pile and selvedge, the sheer gather, the ensuite basins and
+  taps. All are recorded in the DD; none is claimed by any story bit.
+- Next: the owner's eye on these frames, then the remaining vignettes -> hero -> the single
+  Gemini beauty pass (billing top-up still the gate).

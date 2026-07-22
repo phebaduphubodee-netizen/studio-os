@@ -167,7 +167,12 @@ def _fixture_parts(fx, sr_bbox, tag):
     out = []
 
     def emit(nm, mat, lx_mm, ly_mm, lz_mm, dx_mm, dy_mm, dz_mm):
-        out.append({"name": f"{tag}_{nm}", "mat": mat,
+        # `piece` + `part` are carried ALONGSIDE the composed name (element 8): the
+        # object name a bay part ends up with is routed by MATERIAL
+        # (mill__<piece>_<part>__brass), so the part's FUNCTION is no longer readable
+        # from its trailing token. The styling layer needs to find rails and shelves by
+        # what they ARE, and re-parsing a composed string is how those two facts drift.
+        out.append({"name": f"{tag}_{nm}", "mat": mat, "piece": tag, "part": nm,
                     "x": round(x0 + lx_mm, 1), "y": round(y0 + ly_mm, 1),
                     "z": round(lz_mm, 1),
                     "dx": round(dx_mm, 1), "dy": round(dy_mm, 1), "dz": round(dz_mm, 1)})

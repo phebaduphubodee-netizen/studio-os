@@ -53,6 +53,8 @@ import element5_lighting as _e5   # bpy-free pure logic: the 3 real light layers
                        # ambient grids clipped out of full-height masses + mirror task strips/bar
                        # + BF14/tub accent spots + lamp glow, all DERIVED from spec.lighting
                        # (schema e5-layers@0.1); malformed/missing referents RAISE (831fc1b law).
+import styling       # bpy-free pure logic: ELEMENT 8 styling derived from built parts
+import softgoods     # bpy-free pure logic: ELEMENT 8 compliant-surface vocabulary
 import wardrobe_bay   # bpy-free pure logic: the wardrobe-bay dressing gallery (open oak+brass
                       # dressing masses + a mirror niche + one closed cool anchor; element 7).
                       # Routed BY SUBROOM TYPE in build_suite so no bay fixture can fall through
@@ -265,6 +267,12 @@ def _environment(warm=False):
 
 
 MILL_BEVEL_M = 0.0012   # joinery arris: a cabinet edge is nearly sharp, not a 5mm round-over
+
+# ELEMENT 8: the styling layer's anchor registry — every millwork part the build actually
+# emitted, in absolute metres. Filled by _build_millwork and by the wardrobe-bay routes;
+# consumed by _add_styling. Cleared per build in build_suite (a module-level list that is
+# never reset would carry one room's rails into the next room's render).
+_STYLE_ANCHORS = []
 
 
 def _bevel_edges(width_m=BEVEL_WIDTH_M, segments=2):
@@ -1347,6 +1355,64 @@ WALL_RGBA = (0.83, 0.80, 0.75, 1.0)    # matte warm-white paint
 RUG_SLUG = "poly_wool_herringbone"
 
 
+def _emit_style_part(p):
+    """Materialise ONE styling part record (styling.py's contract) — box or mesh.
+
+    Both branches deliberately leave the material to `_suite_materials`, which routes on
+    the part's NAME token. That is why `own_mat=False` exists on _smooth_mesh_obj: without
+    it every soft mass would keep whatever handle it was handed and the token would be
+    decorative. A shape this function does not recognise RAISES rather than being skipped —
+    a silently dropped styling part is indistinguishable from one that was never decided."""
+    if p["shape"] == "box":
+        o = add_box(p["name"], p["x"], p["y"], p["z"], p["dx"], p["dy"], p["dz"])
+        o["mill_bevel"] = p.get("bevel", MILL_BEVEL_M)
+        return o
+    if p["shape"] == "mesh":
+        return _smooth_mesh_obj(p["name"], p["verts"], p["faces"], own_mat=False,
+                                bevel=p.get("bevel"))
+    raise ValueError(f"_emit_style_part: unknown shape {p['shape']!r} on {p['name']!r}")
+
+
+def _add_styling(spec):
+    """ELEMENT 8: hang the garments and dress the open shelves, DERIVED from the parts the
+    build actually emitted (`_STYLE_ANCHORS`).
+
+    Runs BEFORE _suite_materials so every token-named part is painted by the router.
+
+    WHAT IT RAISES ON, AND WHY THAT IS NOT "ZERO RAILS": element 7's DD promised
+    "satin-brass hang rails with garments", material_presets' wardrobe story bit still
+    tells the beauty pass they are there, and the render showed nine bare rails. That gap
+    — decided data the build never made, with prose still asserting it — is this studio's
+    recurring wound, and the cure is failing loudly the moment the decision stops being
+    built. But the FIRST cut of that guard demanded a rail from any room that merely had
+    millwork, and the pre-commit review reproduced the consequence under real headless
+    Blender: four room specs that built fine at HEAD (specs/master_bedroom.json,
+    living_room.json, sitting_room.json, living_condo.json) now hard-exit, because a
+    bedroom whose wardrobe is CLOSED has millwork and no rail, and that is not an omission
+    — it is a design with no open dressing piece in it.
+    So the demand is DERIVED FROM THE SPEC'S OWN DECISIONS: one rail-bearing piece per
+    builtin/mass that DECLARES `open`. On the canonical suite that is 3 (BF09-3 + two open
+    bay masses) against 9 built rails — strictly STRONGER than the old min_rails=1 — and on
+    a closed-wardrobe bedroom it is 0, which dresses nothing and raises nothing."""
+    if not _STYLE_ANCHORS:
+        return 0
+    _declared_open = (
+        sum(1 for b in spec.get("builtins") or () if b.get("open"))
+        + sum(1 for sr in spec.get("subrooms") or ()
+              if sr.get("type") == "wardrobe"
+              for f in (sr.get("fixtures") or ()) if f.get("open")))
+    parts = (styling.dress_rails(_STYLE_ANCHORS, min_rails=_declared_open)
+             + styling.dress_shelves(_STYLE_ANCHORS))
+    for p in parts:
+        _emit_style_part(p)
+    n_g = sum(1 for p in parts if "garment" in p["name"])
+    n_s = sum(1 for p in parts if "fold" in p["name"])
+    print(f"  styling: {n_g} garment(s) on "
+          f"{len(styling.find(_STYLE_ANCHORS, 'rail', required=False))} rail(s) + "
+          f"{n_s} folded item(s) on open shelves (element 8)")
+    return len(parts)
+
+
 def _material_from_preset(mat_name, preset_key):
     """Build ONE material from a spec-selected preset via the SAME factories the legacy
     palette uses. All authoring bounds (albedo band clamp, roughness floor/ceil, binary
@@ -1452,6 +1518,13 @@ def _suite_materials(spec=None):
     # for the terry-pile read.
     towel = _solid("m_mill_towel", (0.60, 0.575, 0.52, 1.0), rough=0.9, sheen=0.7,
                    spec=0.3)
+    # ELEMENT 8: the greige stonewashed LINEN, at the exact element-3 bed_base values.
+    # It was signed in element 3 but re-hardcoded inside each builder (_build_bed's base,
+    # _build_bench's seat) instead of being reachable BY NAME — so nothing outside those
+    # two functions could wear the suite's own signed textile. This row is what makes it a
+    # material identity rather than a number repeated in three places.
+    linen = _solid("m_mill_linen", (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.2,
+                   spec=0.25)
     _opb = _principled(opal)[1]
     if _opb:
         _set(_opb, "Emission Color", (1.0, 0.97, 0.92, 1.0))
@@ -1528,7 +1601,8 @@ def _suite_materials(spec=None):
                 {"brass": brass, "microcement": cement, "backing": backing,
                  "caesarstone": caesar, "mirror": mirror,
                  "opal": opal, "blackalu": blackalu,
-                 "towel": towel}.get(_role, mill))   # ELEMENT 6: the terry token's 3rd branch
+                 "towel": towel,                     # ELEMENT 6: the terry token's 3rd branch
+                 "linen": linen}.get(_role, mill))   # ELEMENT 8: the signed greige linen
             continue
         if n.startswith("rug__"):                        # rug already carries its own PBR
             continue
@@ -1941,16 +2015,45 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     mins = 0.09                                         # mattress inset — hides UNDER the coverlet
     _rbox("bed__mattress", x0 + mins, y0 + mins, base_h, W - 2 * mins, D - 2 * mins,
           H - base_h, matt_m, bevw=0.05, seg=4)
-    cins = 0.006                                        # coverlet drapes to the bbox edge…
-    cov_bot = base_h + 0.03                             # …and hangs DOWN to just above the plinth
-    _rbox("bed__coverlet", x0 + cins, y0 + cins, cov_bot, W - 2 * cins, D - 2 * cins,
-          H - cov_bot + 0.006, cov_m, bevw=0.07, seg=5)  # the fabric FALL that kills the box
+    # ELEMENT 8 (2026-07-22) — THE COVERLET STOPS BEING A SOLID.
+    # The DD's ground phase looked at the render and named one mechanism behind "แข็ง",
+    # "เหลี่ยม" and "ไม่มี style": nothing in this room DEFORMS, because every soft good was
+    # modelled with joinery's primitive — a bevelled box with a level hem. This block was
+    # the largest instance: a single rigid plane occupying ~1/3 of the hero frame, whose
+    # own comment claimed it was "the fabric FALL that kills the box". A 70mm bevel is not
+    # drape. So the coverlet becomes what a coverlet physically is — a THIN layer lying on
+    # the mattress — and its FALL becomes a real hanging skirt (softgoods.drape_skirt):
+    # creases that grow from nothing at the suspension line to full at the free hem, a
+    # multi-wavelength fold pitch that never corrugates, and a hem that is never level.
+    # The layer's inset is the drape's own fold amplitude, DERIVED: the skirt's top ring
+    # sits exactly at that inset (crease amplitude is zero at the suspension line), so the
+    # two meet with no gap. A smaller inset would let this plate's flat face poke through
+    # the skirt's inward swings — which is part of why the first render still read flat.
+    cins = styling.DRAPE_FOLD
+    cov_t = 0.045                                       # a LAYER, not a solid to the plinth
+    cov_top = H + 0.006
+    _rbox("bed__coverlet", x0 + cins, y0 + cins, cov_top - cov_t,
+          W - 2 * cins, D - 2 * cins, cov_t, cov_m, bevw=0.018, seg=4)
+    # the fall itself. Drop is SOLVED against bed__base's own top so element 3's signed
+    # recessed-plinth shadow gap survives — a "softening" that buried a signed softening
+    # would be a net loss (styling.bed_drape RAISES if the budget cannot afford it).
+    _cov_rec = {"x": x0 + cins, "y": y0 + cins, "z": cov_top - cov_t,
+                "dx": W - 2 * cins, "dy": D - 2 * cins, "dz": cov_t}
+    for _p in styling.bed_drape(_cov_rec, base_top=base_h):
+        _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], cov_m, own_mat=True)
 
     # duvet: a THIN cloth layer over the foot ~2/3, inset so the mattress edge still shows, and
     # dipping slightly INTO the mattress top so it reads as cloth lying on it, not a second slab.
     # NOTE: sizes below are computed, never floor-clamped — `emit` drops any part that would not
     # fit, so the footprint invariant holds for any bed size (see emit's docstring).
-    pz = min(0.42, along * 0.26)                        # pillow zone, measured from the head
+    # ELEMENT 8: the pillow zone is now the THREE-RANK head ladder, RE-DERIVED rather than
+    # added behind. Both DD critics independently ran the numbers and found the same
+    # blocker: the bed's head edge lands at x5204 and BF14's slat face at x5203, so the
+    # head is FLUSH with the wall — there is no space BEHIND the old two pillows to stand
+    # euro shams in. `pz` therefore comes from styling.head_ranks (one source, so the
+    # duvet start cannot drift from the ladder that sets it) and is an element-3 amendment
+    # made in the same commit as the element-8 build.
+    _ranks, pz = styling.head_ranks(along)
     dv_from = pz + 0.14
     ci = 0.015
     emit("bed__duvet", dv_from, ci, along - dv_from - 0.02, across - 2 * ci,
@@ -1961,13 +2064,42 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     emit("bed__duvet_fold", dv_from - 0.13, ci, 0.15, across - 2 * ci,
          H - 0.01, 0.10, pill_m, 0.045, seg=5)          # bevw < half the 0.10 dz
 
-    # two plump pillows at the HEAD, gapped (a plausible bed silhouette is what the beauty pass
-    # needs in order to paint linen; a bare slab is what made the critic reach for "cube tool").
-    gap = min(0.07, across * 0.06)
-    pw = (across - 3 * gap) / 2.0
-    for i in range(2):
-        emit(f"bed__pillow{i}", 0.08, gap + i * (pw + gap), pz - 0.08, pw,
-             H - 0.005, 0.19, pill_m, 0.085, seg=6)     # plumper + rounder (bevw < half the 0.19 h)
+    # ELEMENT 8: THE HEAD LADDER replaces the two identical flat slabs the DD's ground
+    # phase named as the loudest CAD tell in the hero frame ("same width, same thickness,
+    # same cream value, both lying FLAT with their tops level, mirrored across the
+    # centreline"). Three heights — upright euro shams against the slat wall, flat
+    # sleeping pillows in front, one accent lumbar — is the single most recognisable
+    # signal of a styled bed. Every piece is a softgoods.cushion (a waisted, corner-pinched
+    # form) rather than a bevelled slab, and NONE is dented: this owner's two prior
+    # rejections were both of things he read as BROKEN rather than ugly, so the DD deletes
+    # the slept-in cues on purpose.
+    _cov_full = {"x": x0, "y": y0, "z": cov_top - cov_t,
+                 "dx": W, "dy": D, "dz": cov_t}
+    _mats = {"sham": pill_m, "pillowsoft": pill_m}
+    for _p in styling.pillow_bank(_cov_full, axis, sign):
+        _stem = _p["name"].split("__")[1].rstrip("01")
+        if _p["name"].startswith("bed__"):
+            _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"],
+                             _mats.get(_stem, pill_m), own_mat=True)
+        else:                                            # the lumbar wears a suite TOKEN
+            _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], own_mat=False)
+    # a throw across the foot third with a tail falling over the near edge — the only
+    # vertical drape a flat-on hero frame would otherwise contain.
+    # THE FOOT THROW IS DECIDED-BUT-NOT-BUILT, on purpose, and this is the record of why.
+    # styling.bed_throw is written, contained and unit-tested — but every LOOK pass it has
+    # survived produced an artefact in the one frame the owner judges: first a torn-paper
+    # zigzag (its tail was a flat sheet with a wavy silhouette), then, once the crease moved
+    # out of plane, small tail flaps punching through the coverlet's own hanging skirt. A
+    # throw laid on a bed whose flank is ALSO compliant is a cloth-on-cloth interaction, and
+    # this vocabulary has no collision term — the honest fix is a real one (drape the throw
+    # ONTO the skirt's measured surface), not another amplitude tweak.
+    # The DD's own rule decides it: "no object placed where an engineer would read it as a
+    # defect" — the same rule that deleted the ajar drawer and the dented pillow. So the
+    # element ships without it rather than shipping a snag-list item into the hero frame.
+    # NOT a silent omission: the function, its tests and this comment are the standing
+    # record, and styling_story_bits does not claim a throw exists.
+    #   for _p in styling.bed_throw(_cov_rec, axis, sign):
+    #       _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], own_mat=False)
     return True
 
 
@@ -1993,17 +2125,41 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     return True
 
 
-def _smooth_mesh_obj(name, verts, faces, mat):
-    """from_pydata + smooth shading (data API, headless-safe) — curved furniture pieces."""
+def _smooth_mesh_obj(name, verts, faces, mat=None, own_mat=True, bevel=None):
+    """from_pydata + smooth shading (data API, headless-safe) — curved furniture pieces.
+
+    `own_mat=False` (ELEMENT 8) is the opt-out a DD critic proved was required: this helper
+    unconditionally tagged `ph_model`, and `_suite_materials` SKIPS every ph_model object
+    (:1533-ish), so a mesh part named with a material TOKEN could never be painted by the
+    router — it would silently keep whatever handle it was handed. Soft goods that carry a
+    token must therefore opt out of both the tag and the inline material.
+
+    NORMALS: from_pydata gives inconsistent winding, exactly as add_box documents at :101.
+    add_box recalcs; this helper never did — so every loft shipped here would flare its
+    bevel into "thin self-intersecting skirts that read as translucent under high-contrast
+    lighting", which is add_box's own words for the bug. Recalc here too."""
     me = bpy.data.meshes.new(name)
     me.from_pydata(verts, [], faces)
+    me.validate()
+    me.update()
+    import bmesh
+    bm = bmesh.new(); bm.from_mesh(me)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me); bm.free()
     me.update()
     for p in me.polygons:
         p.use_smooth = True
     o = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(o)
-    o.data.materials.append(mat)
-    o["ph_model"] = True                                  # keep its own material + no bevel pass
+    if own_mat:
+        if mat is None:
+            raise ValueError(f"_smooth_mesh_obj({name!r}): own_mat=True needs a material")
+        o.data.materials.append(mat)
+        o["ph_model"] = True                              # keep its own material + no bevel pass
+    else:
+        # painted later BY NAME through _suite_materials; keep it out of the global 5mm
+        # round-over, which would eat a prop's silhouette.
+        o["mill_bevel"] = MILL_BEVEL_M if bevel is None else bevel
     return o
 
 
@@ -2172,6 +2328,13 @@ def _build_millwork(name, kind, x0, y0, z0, W, D, H, room_ctr, item_ctrs=(), fac
     for pn, px, py, pz, dx, dy, dz in parts:
         o = add_box(f"mill__{name}__{pn}", x0 + px, y0 + py, z0 + pz, dx, dy, dz)
         o["mill_bevel"] = MILL_BEVEL_M               # a near-sharp arris, not the suite's 5mm round
+        # ELEMENT 8 ANCHOR REGISTRY: record what was ACTUALLY built, so the styling layer
+        # derives from it instead of from a number in a file. A garment must hang off the
+        # rail that exists; if the rail stops being built, styling RAISES rather than
+        # shipping a bare bar under prose that says otherwise (the e7 wound).
+        _STYLE_ANCHORS.append({"name": o.name, "piece": name, "part": pn, "kind": kind,
+                               "x": x0 + px, "y": y0 + py, "z": z0 + pz,
+                               "dx": dx, "dy": dy, "dz": dz})
     faces = {("x", 1): "E", ("x", -1): "W", ("y", 1): "N", ("y", -1): "S"}
     if src == "declared-cross-run":
         # The owner still WINS (we never override a signature) — but a wardrobe opened along its
@@ -2390,6 +2553,7 @@ def build_suite(spec, label="suite"):
     """Materialize a room-spec@0.2 (metric L-polygon + ensuite sub-room + built-ins)."""
     import math
     clear_scene()
+    del _STYLE_ANCHORS[:]                  # ELEMENT 8: per-build, never across rooms
     _enable_gltf()
     bpy.context.scene.unit_settings.system = "METRIC"
     # ZONE render-apply (owner-signed only): drop any piece the owner signed below_grade — the trees are
@@ -2439,9 +2603,21 @@ def build_suite(spec, label="suite"):
         if sr.get("type") == "wardrobe":
             _wparts = wardrobe_bay.bay_parts(sr)
             for _p in _wparts:
-                add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
-                        _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
-                        _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
+                _bo = add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
+                              _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
+                              _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
+                # ELEMENT 8: the bay's rails and shelves are anchors too — this is the
+                # dressing room the owner rejected twice for looking undesigned, and it is
+                # the mass with the most empty joinery in the suite.
+                # piece/part come from wardrobe_bay itself: a bay object's NAME is
+                # routed by material (…__brass), so its function is not readable from
+                # the name and a name-only match finds none of the bay's six rails.
+                _STYLE_ANCHORS.append({
+                    "name": _bo.name, "piece": _p.get("piece"), "part": _p.get("part"),
+                    "kind": "wardrobe",
+                    "x": _p["x"] * MM, "y": _p["y"] * MM,
+                    "z": _p["z"] * MM, "dx": _p["dx"] * MM, "dy": _p["dy"] * MM,
+                    "dz": _p["dz"] * MM})
             _wopen = sum(1 for f in sr.get("fixtures") or () if f.get("open"))
             print(f"  wardrobe bay: {len(sr.get('fixtures') or ())} mass(es) "
                   f"({_wopen} open dressing / {len(sr.get('fixtures') or ()) - _wopen} "
@@ -2678,6 +2854,8 @@ def build_suite(spec, label="suite"):
         gy1 = max(float(it["y"]) + float(it["d"]) for it in seats) * MM
         _add_rug("rug__lounge", gx0 - 0.55, gy0 - 0.35, (gx1 - gx0) + 1.1, (gy1 - gy0) + 0.7)
 
+    _add_styling(spec)                     # ELEMENT 8: BEFORE _suite_materials — the
+    #                                        router paints these parts by their name token
     _suite_materials(spec)
     _dress_scene(spec)                         # vases on the centre table + a floor plant
     _bevel_edges(width_m=0.005, segments=3)   # softer edges read as real furniture/millwork
