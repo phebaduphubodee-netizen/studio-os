@@ -257,7 +257,8 @@ def slat_schedule_setout(sched, run, H, sw, sg):
     return members, jamb, rev + field + rev, rev, dz
 
 
-def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=False, design=None):
+def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=False,
+                   design=None, niche_mirror=False):
     """PURE. Lay out a built-in's parts in bbox-LOCAL metres. Returns a list of
     (part_name, x, y, z, dx, dy, dz) with 0 <= x and x+dx <= W (likewise y/D and z/H).
 
@@ -522,6 +523,19 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
             n_w = niche_w - 2 * CARC_T
             for i, z in enumerate((0.40, 1.05, 1.70)):
                 part(f"shelf_ni{i}", n_off, max(n_w, 0.0), 0.0, depth, z, CARC_T)
+            if niche_mirror:
+                # THE FOCAL JEWEL (owner redesign 2026-07-22): a mirror at the niche
+                # BACK, just proud of the oak back_niche, doubling the niche depth and
+                # sparkling the lit shelves. It fills the niche back FULL-HEIGHT (so it
+                # doubles as a full-length dressing mirror), but the open oak shelves
+                # (shelf_ni at z0.40/1.05/1.70) cross in FRONT of it, breaking the
+                # reflection into bands so it reads as a mirrored NICHE, not a clean
+                # pass-through plane — LOOK-verified 2026-07-22 (no GI black-hole, no
+                # coplanar z-fight: the 6mm standoff clears the oak back). Routed by the
+                # 'mirror' token. depth_off is inward from the FRONT, so the oak back
+                # sits at depth - CARC_T; the mirror is the 6mm just in front of it.
+                part("niche_mirror", n_off, max(n_w, 0.0), depth - CARC_T - 0.006, 0.006,
+                     0.0, H)
         return out
 
     # A TALL DOOR RUN (wardrobe / full-height cabinet): leaves proud of a set-back carcass, a

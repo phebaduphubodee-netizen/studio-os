@@ -70,6 +70,14 @@ zone-open-south; missing/out-of-run divider stations; a wardrobe fixture yieldin
 zero parts; unknown design keys (validate-keys, the 831fc1b swallow law).
 
 ### D-E7-4 — FRONTS: closed, handleless, matte-mineral (microcement_cool identity)
+> **SUPERSEDED 2026-07-22 by THE DRESSING GALLERY** (owner rejected the closed grey
+> box twice — "ไม่ค่อยสวย" then "ไม่มี design เลยแข็งมาก"; his render verdict outranks
+> the anti-monopoly theory this decision rested on). The bay is now an OPEN
+> oak-and-brass dressing room (two open BF09-1 masses + a mirror-backed niche jewel)
+> with BF09-2 the one cool closed anchor. See
+> `refinement-wardrobe-dressing-gallery_2026-07-22.md`. The text below is the
+> original decision, kept as the record of what changed and why.
+
 All three masses get CLOSED full-height fronts in the EXISTING `microcement_cool`
 identity (#AEB2B2 rough 0.90 — the same surface as BF09-3's drawer fronts/tower back,
 BF14's south jamb, BF11's cool body). GROUNDING AS AMENDED (composition lens): the

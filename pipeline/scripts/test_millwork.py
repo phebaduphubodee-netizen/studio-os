@@ -960,6 +960,20 @@ def test_tub_chair_legs_under_the_wrap_not_the_opening():
         assert rel <= (th1 - th0) + 1e-9                   # every leg inside the wrap arc
 
 
+def test_open_front_niche_mirror_opt_in():
+    """THE DRESSING GALLERY (2026-07-22): open_front gains niche_mirror — default OFF is
+    byte-identical (BF09-3 never sees it), ON adds exactly one 'niche_mirror' part at the
+    niche back, full-height."""
+    base = M.millwork_parts("wardrobe", 0.6, 3.4, 2.8, "x", -1, open_front=True)
+    withm = M.millwork_parts("wardrobe", 0.6, 3.4, 2.8, "x", -1, open_front=True,
+                             niche_mirror=True)
+    assert not any("mirror" in p[0] for p in base)             # default off = no mirror
+    mir = [p for p in withm if "mirror" in p[0]]
+    assert len(mir) == 1 and mir[0][6] > 2.0                   # one, full-height (dz)
+    # the mirror is the ONLY difference (same part count + 1)
+    assert len(withm) == len(base) + 1
+
+
 def test_tub_chair_fail_loud():
     with pytest.raises(ValueError):
         M.tub_chair_curved(0.5, 0.5, 0.75, seat_h_m=0.8)   # seat above rim

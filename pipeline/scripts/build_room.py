@@ -53,10 +53,11 @@ import element5_lighting as _e5   # bpy-free pure logic: the 3 real light layers
                        # ambient grids clipped out of full-height masses + mirror task strips/bar
                        # + BF14/tub accent spots + lamp glow, all DERIVED from spec.lighting
                        # (schema e5-layers@0.1); malformed/missing referents RAISE (831fc1b law).
-import wardrobe_bay   # bpy-free pure logic: the wardrobe-bay subroom's closed mineral joinery
-                      # (element 7). Routed BY SUBROOM TYPE in build_suite so no bay fixture can
-                      # fall through to the bathroom lane's silent [] -> fix__ white slab
-                      # (D-E7-3 merge ruling; bathroom.py byte-untouched).
+import wardrobe_bay   # bpy-free pure logic: the wardrobe-bay dressing gallery (open oak+brass
+                      # dressing masses + a mirror niche + one closed cool anchor; element 7).
+                      # Routed BY SUBROOM TYPE in build_suite so no bay fixture can fall through
+                      # to the bathroom lane's silent [] -> fix__ white slab (D-E7-3 merge
+                      # ruling; bathroom.py byte-untouched).
 import bathroom       # bpy-free pure logic: ensuite sanitaryware massing (element 4). Subroom
 #   fixtures used to render as ONE plain box each (the crude v4); this emits per-part boxes with
 #   material ROLES that route to the SAME suite materials (oak/caesarstone/brass/glass) by name.
@@ -2429,22 +2430,25 @@ def build_suite(spec, label="suite"):
         so = [(float(x) * MM, float(y) * MM) for x, y in sr["outline_mm"]]
         sh = float(sr.get("ceiling_mm", 2000)) * MM
         poly_walls_bpy(f"s{si}_", so, thk, sh, sr.get("door"), sr.get("openings"))
-        # ELEMENT 7: a type='wardrobe' subroom routes BY TYPE to the pure wardrobe_bay
-        # lane — closed mineral joinery for every fixture, RAISING on anything it does
-        # not own — so no bay fixture can ever reach the bathroom dispatch below and
-        # fall through its silent [] to the fix__ white slab (D-E7-3 merge ruling;
-        # the source-text pin in test_wardrobe_bay.py walks this branch's existence).
+        # ELEMENT 7 (THE DRESSING GALLERY, 2026-07-22): a type='wardrobe' subroom routes
+        # BY TYPE to the pure wardrobe_bay lane — per-mass OPEN oak-and-brass dressing
+        # (rails/drawers/shelves/mirror niche) or a closed cool-microcement anchor,
+        # RAISING on anything it does not own — so no bay fixture can ever reach the
+        # bathroom dispatch below and fall through its silent [] to the fix__ white slab
+        # (D-E7-3 merge ruling; the source-text pin in test_wardrobe_bay.py walks this).
         if sr.get("type") == "wardrobe":
             _wparts = wardrobe_bay.bay_parts(sr)
             for _p in _wparts:
                 add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
                         _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
                         _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
-            print(f"  wardrobe bay: {len(sr.get('fixtures') or ())} mass(es) -> "
-                  f"{len(_wparts)} closed-mineral joinery part(s) (element 7)")
+            _wopen = sum(1 for f in sr.get("fixtures") or () if f.get("open"))
+            print(f"  wardrobe bay: {len(sr.get('fixtures') or ())} mass(es) "
+                  f"({_wopen} open dressing / {len(sr.get('fixtures') or ()) - _wopen} "
+                  f"closed) -> {len(_wparts)} joinery part(s) (element 7 dressing gallery)")
             # NOT counted into n_fix: that tally prints as "ensuite fixture(s) ...
-            # (oak vanity / ... / brass)" — a label the ZERO-oak ZERO-brass bay
-            # must never ride (review catch E7-CODE-4); the bay has its own line.
+            # (oak vanity / ... / brass)" — the ENSUITE label; the bay owns its own
+            # distinct print line above (review catch E7-CODE-4 / WB-2).
             continue
         for fx in sr.get("fixtures", []):
             # ELEMENT 4: ensuite fixtures get real per-part massing (bathroom.py, PURE) whose

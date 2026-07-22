@@ -756,16 +756,31 @@ def wardrobe_bay_story_bits(spec):
             f"tell the Gemini polish to erase them; decide the floor object as a NEW "
             f"element (re-run the 914 arithmetic) and update this clause, do not let "
             f"the armour lie.")
-    bits = [f"wardrobe bay ({len(masses)} closed built-in mass(es)): matte cool-mineral "
-            "microcement fronts, VERTICALLY FLUTED (fine reeded battens casting soft "
-            "shadow grooves floor-to-ceiling — keep the reeding, never smooth it flat), "
-            "HANDLELESS (the recessed top pull-gap is the only "
-            "hardware) — NEVER wood-grain, never oak, no brass, no pulls; internals "
-            "are behind closed leaves (do not invent open shelving); the bay is OPEN "
-            "to the bedroom on its south side — never paint a wall or doorway there; "
-            "the bay floor is deliberately BARE (no island, bench, mirror, rug or "
-            "valet) and it is the bedroom's oak floor CONTINUING through the walk-in "
-            "— never tile or carpet it"]
+    # THE DRESSING GALLERY (owner redesign 2026-07-22): the clauses DERIVE per-mass from
+    # spec data (open vs closed, mirror niche) so the polish armour follows the design and
+    # can never re-order the dead grey scheme (the S4 prose-copy lesson).
+    open_masses = [m for m in masses if m.get("open")]
+    closed_masses = [m for m in masses if not m.get("open")]
+    has_mirror = any(m.get("niche_mirror") for m in masses)
+    head = (f"wardrobe bay = an OPEN oak-and-brass walk-in DRESSING ROOM (the enclosed "
+            f"twin of the bedroom's BF09-3 dressing wall), {len(open_masses)} open "
+            f"composed mass(es)")
+    if closed_masses:
+        head += f" + {len(closed_masses)} calm cool CLOSED anchor(s)"
+    bits = [head + ": the open masses show HANGING GARMENTS on satin-brass rails, folded "
+            "knits/bags/objects on OPEN light-oak shelves, and floating cool-microcement "
+            "drawer towers — warm oak carcass glowing between the contents; "
+            + ("the cool closed anchor is flat handleless microcement with one horizontal "
+               "counter-datum shadow line (NOT a blank locker, NOT fluted, NOT wood-grain); "
+               if closed_masses else "")
+            + ("the HERO wall terminates in a MIRROR-BACKED open niche (the focal jewel — "
+               "the mirror doubles the niche depth and sparkles the lit shelves); "
+               if has_mirror else "")
+            + "keep it OPEN and composed — do NOT flatten it into closed doors, do NOT "
+            "strip the garments/shelves/rails, do NOT smooth it grey; the bay is OPEN to "
+            "the bedroom on its south side (never paint a wall or doorway there); the "
+            "floor is deliberately BARE and is the bedroom's oak floor CONTINUING through "
+            "the walk-in (never tile, carpet, or furnish it)"]
     cut = next((o for o in bay.get("openings") or ()
                 if o.get("id") == "door-ensuite-baycut"), None)
     if cut:
@@ -816,5 +831,5 @@ def material_story(resolved, spec=None):
     bits.extend(ensuite_material_story_bits(spec))     # ELEMENT 4+6: ensuite palette + textiles
     bits.extend(lighting_story_bits(spec))             # ELEMENT 5: the deliberate 3-layer light
     bits.extend(casement_sheer_story_bits(spec))       # ELEMENT 6: the west casement sheers
-    bits.extend(wardrobe_bay_story_bits(spec))         # ELEMENT 7: the closed mineral bay
+    bits.extend(wardrobe_bay_story_bits(spec))         # ELEMENT 7: the open dressing gallery
     return "; ".join(bits) if bits else material_story(None)

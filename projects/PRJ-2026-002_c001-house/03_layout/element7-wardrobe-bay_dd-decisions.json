@@ -43,22 +43,24 @@
     },
     {
       "id": "D-E7-4",
-      "title": "Fronts: closed handleless matte-mineral (microcement_cool); reveals on drawn stations; scribe filler; blind corner",
+      "title": "[AMENDED 2026-07-22 THE DRESSING GALLERY] Fronts: OPEN oak-and-brass dressing on the two BF09-1 masses + a mirror-backed niche jewel; BF09-2 the ONE cool closed anchor. (Superseded the original 'closed handleless matte-mineral, zero oak/brass' — owner rejected the recede-to-grey box TWICE; his render verdict outranks anti-monopoly theory. See refinement-wardrobe-dressing-gallery_2026-07-22.md.)",
       "probes": [
-        "every bay mill part routes role 'microcement'; ZERO bay objects route 'oak' and ZERO route 'brass'",
-        "divider stations live as spec fixture design data and leaves DERIVE from them (perturb a station in the CANONICAL file -> leaves move; station outside its run -> RAISE)",
-        "a leafless scribe-filler part exists at the north leg's west end; the filler rule is a declared MIN_BAY constant, not a hardcoded 73.0",
-        "NO front part exists in the corner region (recorded absence, the drawn front-stop)",
-        "no handle/pull/knob part or SKU string exists in any e7 artifact",
-        "per-mass front faces are DERIVED toward the clear floor; a sign/face swap goes red (swap-and-demand-red test)"
+        "the bay's built parts carry the MATERIAL MIX oak + brass + microcement + mirror (never all-microcement again); every part routes to a KNOWN suite material (no silent default)",
+        "warm oak is the body (oak parts > microcement parts); the closed anchor's leaves route microcement",
+        "the two BF09-1 masses carry open:true and build the open dressing composition (rails/drawers/shelves/niche tokens present); BF09-2 stays closed",
+        "the east mass carries niche_mirror:true and builds exactly one mirror part (the focal jewel); removing the mirror emission RAISES",
+        "divider stations still live as spec fixture data and VALIDATE (in-run, ascending); the open composition follows the boundary station (move it -> composition shifts)",
+        "a leafless OAK scribe-filler exists at the north leg's west end (MIN_BAY constant, not a hardcoded 73.0); the L-corner stays BLIND oak carcass (front_stop)",
+        "no handle/pull/knob part or SKU string exists (handleless; the rails are functional hang hardware, not door pulls)",
+        "per-mass front faces are DERIVED toward the clear floor; a sign/face swap goes red"
       ]
     },
     {
       "id": "D-E7-5",
-      "title": "Internals joinery-tier unbuilt; open_front never borrowed",
+      "title": "[AMENDED 2026-07-22] Internals now BUILT as the open dressing (rails/drawers/shelves/niche) on the open masses; the ONE closed anchor (BF09-2) keeps flat microcement leaves + a horizontal counter-datum reveal; open_front is now DELIBERATELY borrowed (the enclosed twin of BF09-3).",
       "probes": [
-        "no bay mass carries open:true (a spec giving one the flag is caught by a test, not silently BF09-3-joineried)",
-        "wardrobe_bay's closed-module part vocabulary = carcass/plinth/leaf/filler only (no rail/shelf/drawer tokens)",
+        "open:true now BUILDS the open dressing composition (retired the e7-era RAISE — the flag is HONORED); a closed mass has no open flag and renders flat microcement leaves",
+        "the closed anchor's counter-datum reveal (design.counter_reveal_mm) splits its leaves into lower+upper (a composed calm face, NOT a blank locker, NOT fluted)",
         "the BF09-2 sliding-or-side-hang fabricator note exists with the depth flag",
         "no artifact states a hinge count for the 2800 leaves"
       ]
@@ -93,7 +95,7 @@
         "a spec without the wardrobe subroom emits none of its lines",
         "the openness clause looks up zone-open-south BY ID and RAISES if absent (cross-block pin)",
         "the passage clause derives its width from the baycut rect (no hardcoded 898)",
-        "armour lines exist for: south-open, bare-floor, no-handles, never-oak-fronts, oak-floor-continues"
+        "[AMENDED 2026-07-22] armour lines exist for: OPEN-oak-and-brass-dressing (keep it open, do not flatten to closed/grey), the mirror-niche jewel, the cool closed anchor, south-open, bare-floor, oak-floor-continues; the open/closed mass counts DERIVE per-mass from spec data"
       ]
     },
     {

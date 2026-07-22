@@ -125,13 +125,18 @@ def test_raises_below_tall_h_never_worktop_parts():
         WB.bay_parts(sr)
 
 
-def test_raises_on_open_flag_never_silently_closed():
-    """Review catch E7-F2: a fixture-level open:true is a design decision this
-    module does not own — swallowing it would render a decided-open mass CLOSED."""
+def test_open_flag_builds_open_dressing_not_closed_leaves():
+    """THE DRESSING GALLERY (owner redesign 2026-07-22): open:true now BUILDS the
+    open dressing composition (brass rails + microcement drawer fronts + open oak
+    shelves), routed by token — NOT closed mineral leaves. (The e7-era E7-F2 RAISE
+    is retired: the flag is honoured, which is the correct resolution of the swallow.)"""
     sr = _mini_bay()
     sr["fixtures"][0]["open"] = True
-    with pytest.raises(ValueError, match="open"):
-        WB.bay_parts(sr)
+    parts = WB.bay_parts(sr)
+    roles = {MP.mill_object_role(MP.fixture_part_name(p["mat"], p["name"])) for p in parts}
+    assert "brass" in roles and "oak" in roles and "microcement" in roles
+    assert not any("door" in p["name"] for p in parts)          # no closed leaves
+    assert any("rail" in p["name"] for p in parts)              # real hang rails
 
 
 def test_raises_on_equal_gap_tie():
@@ -157,8 +162,8 @@ def test_front_faces_derive_toward_the_free_floor():
 
 def test_swap_and_demand_red_leaves_move_with_the_derived_face():
     """The e6 hook-swap lesson: flip the mass to the other edge and the LEAF FRONT must
-    move to the other face — if it didn't, a facing flip would survive green. (Robust to
-    the 2026-07-22 fluting: the reeds define the front plane, so check the extremum.)"""
+    move to the other face — if it didn't, a facing flip would survive green. (Checks the
+    extremum of the closed anchor's leaves, robust to whatever the front geometry is.)"""
     sr = _mini_bay()                                             # mass hugs NORTH -> fronts SOUTH
     door_s = [p for p in WB.bay_parts(sr) if "door" in p["name"]]
     assert min(p["y"] for p in door_s) == pytest.approx(2400.0, abs=0.3)   # front face at low y
@@ -169,42 +174,124 @@ def test_swap_and_demand_red_leaves_move_with_the_derived_face():
 
 
 # ------------------------------------------------------------ part vocabulary + mats
-def test_closed_module_vocabulary_and_mineral_only():
+def test_dressing_gallery_material_mix_every_part_to_a_suite_material():
+    """THE DRESSING GALLERY: the bay is now an OPEN oak-and-brass dressing room + one
+    cool closed anchor. Every part must route to a KNOWN suite material (no silent
+    default), and the mix must actually be present: oak + brass + microcement + the
+    mirror jewel — never all-grey again."""
     parts = WB.bay_parts(_bay())
     assert parts, "canonical bay must emit parts"
-    for p in parts:
-        assert p["mat"] == "mineral"
-        token = re.sub(r"^bay[^_]*_", "", p["name"])
-        assert re.match(r"^(carcass|plinth|door\d+|filler\d*|carcass_blind\d*)", token), \
-            f"foreign part token in the closed vocabulary: {p['name']}"
-    # D-E7-5: internals are joinery-tier — no open-dressing tokens may ever appear
-    joined = " ".join(p["name"] for p in parts)
-    for banned in ("rail", "shelf", "drawer", "towerback", "gable", "niche"):
-        assert banned not in joined
+    roles = [MP.mill_object_role(MP.fixture_part_name(p["mat"], p["name"])) for p in parts]
+    rs = set(roles)
+    assert rs <= {"oak", "brass", "microcement", "mirror"}, f"foreign material: {rs}"
+    assert {"oak", "brass", "microcement", "mirror"} <= rs, f"mix incomplete: {rs}"
+    assert roles.count("oak") > roles.count("microcement")     # warm oak is the body now
 
 
-def test_every_part_routes_microcement_never_oak_or_brass():
-    for p in WB.bay_parts(_bay()):
-        obj = MP.fixture_part_name(p["mat"], p["name"])
-        assert MP.mill_object_role(obj) == "microcement"
-
-
-def test_fronts_are_fluted_reeds_proud_of_a_backer():
-    """Owner refinement 2026-07-22: every door leaf is a recessed BACKER + vertical REED
-    battens (the flat leaf is gone) — so the fronts read as fluted joinery, not a blank
-    slab. Reeds outnumber backers (>= 3 per leaf) and each reed is thinner in the depth
-    axis than nothing survives as a full flat leaf."""
+def test_open_masses_carry_the_dressing_composition():
+    """The two open masses show real dressing content: brass hang rails, floating
+    microcement drawer fronts, open oak shelves, a corner niche."""
     parts = WB.bay_parts(_bay())
-    backs = [p for p in parts if "_bk" in p["name"]]
-    reeds = [p for p in parts if "_rd" in p["name"]]
-    assert backs and reeds
-    assert len(reeds) >= 3 * len(backs)                # >= 3 reeds per leaf
-    # a reed is proud of its backer in the depth axis (thinner footprint, casts a groove)
-    for p in reeds:
-        assert min(p["dx"], p["dy"]) <= WB.REED_PROUD_M / WB.MM + 0.1
-    # no flat full-thickness (20mm) leaf remains
-    assert not any("door" in p["name"] and "_bk" not in p["name"] and "_rd" not in p["name"]
-                   for p in parts)
+    joined = " ".join(p["name"] for p in parts)
+    for token in ("rail", "shelf", "drawer_front", "towerback", "niche"):
+        assert token in joined, f"open dressing token missing: {token}"
+
+
+def _role_of(p):
+    return MP.mill_object_role(MP.fixture_part_name(p["mat"], p["name"]))
+
+
+def test_open_part_tokens_route_to_the_right_material_per_token():
+    """WB-1: pin the per-TOKEN routing on the OPEN masses (the closed BF09-2 anchor is
+    uniformly microcement, pinned elsewhere) — a rail that slipped to oak, or a drawer
+    front that slipped off microcement, would pass the set-level mix test but is caught
+    here."""
+    for p in WB.bay_parts(_bay()):
+        n = p["name"]
+        if n.startswith("bayBF09-2"):                          # the closed anchor: all mineral
+            assert _role_of(p) == "microcement", f"anchor part not microcement: {n}"
+            continue
+        if "rail" in n:
+            assert _role_of(p) == "brass", f"rail not brass: {n}"
+        elif "drawer_front" in n or "towerback" in n:
+            assert _role_of(p) == "microcement", f"front/towerback not microcement: {n}"
+        elif "mirror" in n:
+            assert _role_of(p) == "mirror", f"mirror token not mirror: {n}"
+        elif any(t in n for t in ("shelf", "gable", "plinth", "top", "back", "carcass",
+                                  "filler")):
+            assert _role_of(p) == "oak", f"oak-carcass token not oak: {n}"
+
+
+def test_open_mass_filler_is_oak_closed_anchor_leaves_are_mineral():
+    """WB-TQ-1: the slab material follows the mass — an OPEN mass's scribe/blind slabs
+    are OAK (warm carcass), a CLOSED anchor's leaves are cool MICROCEMENT."""
+    parts = WB.bay_parts(_bay())
+    for p in parts:
+        if "filler" in p["name"] or "carcass_blind" in p["name"]:
+            assert _role_of(p) == "oak", f"open-mass slab not oak: {p['name']}"
+        if "door" in p["name"]:                                # only the closed anchor has doors
+            assert _role_of(p) == "microcement", f"anchor leaf not microcement: {p['name']}"
+
+
+def test_closed_anchor_is_flat_mineral_with_a_counter_reveal():
+    """BF09-2 stays the ONE cool closed anchor: flat microcement leaves (NO fluting —
+    the owner rejected it, so no _rd/_bk reed tokens survive) split by the horizontal
+    counter-datum reveal into lower + upper."""
+    parts = WB.bay_parts(_bay())
+    assert not any("_rd" in p["name"] or "_bk" in p["name"] for p in parts)  # fluting gone
+    anchor = [p for p in parts if "door" in p["name"]]         # only the closed anchor has doors
+    assert anchor, "the closed anchor must render leaves"
+    assert all(p["mat"] == "mineral" for p in anchor)
+    assert any("_lo" in p["name"] for p in anchor) and any("_hi" in p["name"] for p in anchor)
+
+
+def test_out_of_range_counter_reveal_fails_loud():
+    """E7-REV-1: a mistyped counter_reveal_mm must RAISE, never silently no-split back
+    to a blank locker (the revert-by-omission the module exists to prevent)."""
+    bay = _bay()
+    for bad in (72, 7200, 40, 0):
+        broken = copy.deepcopy(bay)
+        anchor = next(f for f in broken["fixtures"] if not f.get("open"))
+        anchor["design"]["counter_reveal_mm"] = bad
+        with pytest.raises(ValueError, match="counter_reveal"):
+            WB.bay_parts(broken)
+
+
+def test_interior_filler_between_run_segments_fails_loud():
+    """E7-COALESCE-2: the open composition spans [fronted_lo, fronted_hi]; a sub-MIN_BAY
+    station creating an INTERIOR filler between run segments would be overlapped — RAISE."""
+    sr = _mini_bay()                                           # run x100..2100
+    sr["fixtures"][0]["open"] = True
+    # two stations 100mm apart make a 100mm interior filler between two run segments
+    sr["fixtures"][0]["design"]["divider_stations_mm"] = [1000, 1100]
+    with pytest.raises(ValueError, match="INSIDE the fronted run"):
+        WB.bay_parts(sr)
+
+
+def test_mirror_niche_is_the_focal_jewel_at_the_north_terminal_niche():
+    """niche_mirror -> exactly one mirror part at the TERMINAL niche (north end of the
+    east hero leg, before the blind corner y7995.8) — MG-2: pin the position, not just
+    existence. Removing the mirror emission must RAISE, not silently drop the jewel."""
+    parts = WB.bay_parts(_bay())
+    mir = [p for p in parts if MP.mill_object_role(MP.fixture_part_name(p["mat"], p["name"])) == "mirror"]
+    assert len(mir) == 1 and mir[0]["dz"] > 2000            # full-height niche-back mirror
+    m = mir[0]
+    # the east hero leg spans y4621.9..7995.8 fronted; the terminal niche is at its NORTH
+    # end, so the mirror sits in the top third and clears the blind corner
+    assert 7000.0 < m["y"] and m["y"] + m["dy"] <= 7995.9, f"mirror not at the terminal niche: {m}"
+    assert m["x"] + m["dx"] <= 5654.1                       # inside the east leg, near its back
+    # a niche_mirror mass that yields no mirror part must fail (swap-and-demand-red)
+    import types
+    real = WB.millwork.millwork_parts
+
+    def strip_mirror(*a, **kw):
+        return [p for p in real(*a, **kw) if "mirror" not in p[0]]
+    WB.millwork.millwork_parts = strip_mirror
+    try:
+        with pytest.raises(ValueError, match="mirror"):
+            WB.bay_parts(_bay())
+    finally:
+        WB.millwork.millwork_parts = real
 
 
 def test_parts_stay_inside_their_fixture_bboxes():
@@ -246,21 +333,20 @@ def test_blind_corner_has_carcass_but_no_front():
             assert p["y"] + p["dy"] <= 7995.9, f"a leaf crossed the front-stop: {p}"
 
 
-def test_leaf_reveals_land_on_the_drawn_stations_and_follow_them():
-    """Derivation, not entrenchment: leaves derive from the spec stations — moving a
-    station in a COPY moves the leaves; the canonical file's stations are the ink."""
-    bay = _bay()
-    parts = WB.bay_parts(bay)
-    # each leaf's BACKER spans the full leaf run; its x = the leaf's left edge (robust to
-    # the fluting — one backer per leaf, vs many reeds)
-    door_lo_x = sorted(p["x"] for p in parts if "_bk" in p["name"])
-    # north leg: first leaf starts one REVEAL east of the first drawn station (3327.4+3)
-    assert any(abs(x - 3330.4) < 0.5 for x in door_lo_x)
+def test_open_composition_follows_the_boundary_station():
+    """Derivation, not entrenchment: the fronted OPEN composition begins at the drawn
+    boundary station (after the 73 scribe filler) — move that station and the whole
+    composition shifts with it (never a hardcoded x)."""
+    bay = _bay()                                                # north leg open, filler @3327.4
+    north = [p for p in WB.bay_parts(bay)
+             if p["name"].startswith("bayBF09-1-0") and "filler" not in p["name"]]
+    start = min(p["x"] for p in north)
+    assert abs(start - 3327.4) < 1.0                            # composition starts at the station
     moved = copy.deepcopy(bay)
     moved["fixtures"][0]["design"]["divider_stations_mm"] = [3427.4, 4428.8]
-    moved_lo = sorted(p["x"] for p in WB.bay_parts(moved) if "_bk" in p["name"])
-    assert any(abs(x - 3430.4) < 0.5 for x in moved_lo)
-    assert door_lo_x != moved_lo
+    north2 = [p for p in WB.bay_parts(moved)
+              if p["name"].startswith("bayBF09-1-0") and "filler" not in p["name"]]
+    assert abs(min(p["x"] for p in north2) - 3427.4) < 1.0      # it followed the moved station
 
 
 def test_millwork_is_the_derivation_source(monkeypatch):
@@ -315,10 +401,19 @@ def test_canonical_bay_identity_and_junction_pins():
     assert el["x"] + el["w"] > 5650.0 and "4.0" in el["note"]
 
 
-def test_canonical_flush_note_deleted_and_open_flag_absent():
+def test_canonical_dressing_gallery_open_closed_split():
+    """THE DRESSING GALLERY: the flush note stays deleted; exactly the two BF09-1
+    masses carry open:true, the east one carries niche_mirror, and BF09-2 stays the
+    ONE closed cool anchor (with the counter-datum reveal)."""
     raw = open(CANON, encoding="utf-8").read()
     assert "flush to ensuite east wall" not in raw
-    assert all("open" not in f or not f.get("open") for f in _bay()["fixtures"])
+    fixtures = _bay()["fixtures"]
+    opened = [f for f in fixtures if f.get("open")]
+    closed = [f for f in fixtures if not f.get("open")]
+    assert len(opened) == 2 and all(f["bf"] == "BF09-1" for f in opened)
+    assert len(closed) == 1 and closed[0]["bf"] == "BF09-2"
+    assert sum(1 for f in fixtures if f.get("niche_mirror")) == 1     # one focal jewel
+    assert closed[0]["design"].get("counter_reveal_mm")              # the composed calm face
 
 
 def test_canonical_zone_open_south_record():
@@ -412,9 +507,10 @@ def test_fixture_mat_object_mineral_row_and_closed_vocab():
 def test_story_bits_ride_in_material_story_and_gate_on_the_bay():
     spec = _canon()
     story = MP.material_story(None, spec)
-    for frag in ("wardrobe bay", "NEVER wood-grain", "OPEN to the bedroom",
-                 "deliberately BARE", "oak floor CONTINUING", "mouth stub"):
+    for frag in ("wardrobe bay", "OPEN oak-and-brass", "HANGING GARMENTS",
+                 "MIRROR-BACKED", "deliberately BARE", "oak floor CONTINUING", "mouth stub"):
         assert frag in story, f"armour clause missing from material_story: {frag}"
+    assert "wood-grain" not in story or "NOT wood-grain" in story    # the anchor may say NOT
     bare = copy.deepcopy(spec)
     bare["subrooms"] = [s for s in bare["subrooms"] if s.get("type") != "wardrobe"]
     assert "wardrobe bay" not in MP.material_story(None, bare)
@@ -438,13 +534,16 @@ def test_story_passage_width_derives_from_the_baycut_rect():
 
 
 def test_story_mass_count_derives_from_the_fixtures():
+    """The open/closed counts DERIVE from spec data: 2 open masses + 1 closed anchor."""
     spec = _canon()
-    assert any("(3 closed built-in mass(es))" in b
-               for b in MP.wardrobe_bay_story_bits(spec))
+    story = " ".join(MP.wardrobe_bay_story_bits(spec))
+    assert "2 open composed mass(es)" in story
+    assert "1 calm cool CLOSED anchor(s)" in story
+    # drop the closed anchor -> the closed-anchor clause disappears (derivation, not copy)
     fewer = copy.deepcopy(spec)
-    _bay(fewer)["fixtures"].pop()
-    assert any("(2 closed built-in mass(es))" in b
-               for b in MP.wardrobe_bay_story_bits(fewer))
+    _bay(fewer)["fixtures"] = [f for f in _bay(fewer)["fixtures"] if f.get("open")]
+    story2 = " ".join(MP.wardrobe_bay_story_bits(fewer))
+    assert "2 open composed mass(es)" in story2 and "CLOSED anchor" not in story2
 
 
 def test_bay_floor_is_bare_and_a_floor_intruder_raises():
