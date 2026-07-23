@@ -1205,8 +1205,11 @@ def _curtain_sheer(name, rgba, alpha):
     transparency — headless-safe). Full sheen so the fabric edge catches light."""
     # WOVEN with the 'plain' signature: a voile IS a fine tight plain weave, and its whole
     # job is to be a fabric the light passes THROUGH — a perfectly uniform one reads as
-    # tinted glass. The relief stays the smallest in the vocabulary so the sheer never
-    # reads as a textured blind.
+    # tinted glass. 'plain' is the LEAST TACTILE row in the vocabulary ("flat, tight"), so
+    # the sheer never reads as a textured blind. Velvet's relief_mm is lower still (1.0 vs
+    # 1.8) — an earlier draft of this comment called plain "the smallest in the vocabulary",
+    # which is simply false — but velvet is a PILE whose identity is directional sheen, and
+    # putting that scatter on a voile is MA-01 material mismatch.
     m = _woven(name, rgba, 0.6, _matpre.cloth_args("plain"), sheen=1.0)
     _nt, bsdf = _principled(m)
     if bsdf:

@@ -301,7 +301,14 @@ PRESETS = {
 #     changes the shading integral, so a physically-honest 1.4 mm slub over 28 mm returns
 #     ~1.5% and disappears. An amplitude bisect (render weave01 vs weaveLOUD, 2026-07-22)
 #     bracketed it: 0.30 invisible, 0.85 clearly read but coarse enough that the bench
-#     started reading as towelling. The shipped values sit at ~70% of the loud end.
+#     started reading as towelling. That bisect ran at ONE uniform value, so its verdicts
+#     are per-FABRIC, not global: "coarse" was the BENCH — linen — which is why linen ships
+#     0.65. The vocabulary therefore spans the whole bracket ON PURPOSE (velvet 0.30, plain
+#     0.45, linen 0.65, terry 0.80, boucle 0.85): towelling IS terry's correct read and
+#     loops are boucle's, while velvet ships at the "invisible" end because its identity is
+#     directional sheen and relief on velvet is MA-01 scatter mismatch. No row is a safety
+#     margin off a single global number — an earlier draft of this comment claimed "~70% of
+#     the loud end", which is true only of the MEAN and of no material actually rendered.
 #     So: bump is a RENDER GAIN, not a physical claim — relief_mm is the physical claim,
 #     and it stays in the real 1-4 mm band cloth actually occupies.
 # relief_mm is the Bump node's Distance (a real height in mm), stated rather than derived
@@ -324,14 +331,20 @@ CLOTH_KINDS = {
     "terry": dict(slub_mm=14.0, weave_mm=4.0, relief_mm=3.2, bump=0.80,
                   albedo_var=0.100, sheen_rough=0.55,
                   desc="cotton terry — short dense pile, the loosest surface in the suite"),
+    # `desc` is fed VERBATIM to the render-polish prompt through material_story(), so it
+    # must describe the MATERIAL and never our reasoning about it — the rule this file
+    # already states for PRESETS' desc (see the #3A3C3E note). Provenance and the
+    # why-this-number argument live in `source`, which cloth_args() does not pass on.
     "boucle": dict(slub_mm=9.0, weave_mm=4.5, relief_mm=3.6, bump=0.85,
                    albedo_var=0.110, sheen_rough=0.45,
-                   desc="wool boucle — looped nubs, the studio's one sourced fabric row "
-                        "(bsdf-material-presets.md:46 'normal/displacement for loops')"),
+                   desc="wool boucle — looped nubs, a soft irregular surface",
+                   source="bsdf-material-presets.md:46 'normal/displacement for loops' — "
+                          "the studio's one sourced fabric row"),
     "velvet": dict(slub_mm=40.0, weave_mm=1.2, relief_mm=1.0, bump=0.30,
                    albedo_var=0.050, sheen_rough=0.40,
-                   desc="velvet — near-smooth pile, its identity is directional SHEEN, "
-                        "not relief (over-bumping velvet is MA-01 scatter mismatch)"),
+                   desc="velvet — a near-smooth pile with a directional sheen",
+                   source="identity is SHEEN, not relief; over-bumping velvet is MA-01 "
+                          "scatter mismatch (pbr-material-behavior.md:102-106)"),
     "plain": dict(slub_mm=22.0, weave_mm=3.0, relief_mm=1.8, bump=0.45,
                   albedo_var=0.065, sheen_rough=0.50,
                   desc="plain synthetic weave — flat, tight, the least tactile row"),
@@ -1100,15 +1113,32 @@ def textile_surface_story_bits(spec, resolved=None):
     if any(it.get("kind") == "stool" and it.get("style") == "tub_chair" for it in items):
         wear("linen", "the vanity tub-chair")
     if (spec or {}).get("curtains"):
-        wear("linen", "the drawn curtain")
-        wear("plain", "the sheer")
+        # NAME THE LAYERS BY THE KEY THE BUILD ROUTES ON (build_room does mats[rb["type"]]),
+        # never by a state adjective. The first cut said "the drawn curtain" for the linen
+        # layer — and on the canonical spec the linen blackout is PARKED (render_state
+        # blackout=parked, privacy=drawn), so the ~5.3 m surface actually drawn across the
+        # glass is the PLAIN sheer. That sentence reaches the image model through
+        # material_story's {material_story} slot, i.e. it would have told the polish pass
+        # to treat the wrong panel as linen. A hardcoded state is also a second copy of a
+        # value the build reads from one source — the prose-copy mutation this file guards
+        # against elsewhere (casement_sheer_story_bits derives its alpha for that reason).
+        wear("linen", "the opaque blackout curtain")
+        wear("plain", "the sheer privacy panel")
     if (spec or {}).get("casement_sheers"):
         wear("plain", "the casement sheers")
     for s in (spec or {}).get("subrooms") or []:
         if s.get("type") != "bathroom":
             continue
         for f in s.get("fixtures") or []:
-            if ((f.get("design") or {}).get("census")):
+            # ROUTE ON THE SAME REFERENT THE BUILD DOES: bathroom.accessory_parts requires
+            # kind == "bath_accessories" and a census that is a non-empty DICT (it RAISES
+            # on anything else). The first cut accepted any fixture with a truthy
+            # design.census, so it would have claimed terry for a fixture the build refuses
+            # to make — prose that outlives its referent.
+            if str(f.get("kind", "")) != "bath_accessories":
+                continue
+            census = (f.get("design") or {}).get("census")
+            if isinstance(census, dict) and census:
                 wear("terry", "the ensuite towels, robes and bath mat")
     fam = ((resolved or {}).get("families") or {}).get("fabric")
     if fam:

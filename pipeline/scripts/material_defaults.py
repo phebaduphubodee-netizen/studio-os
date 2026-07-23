@@ -23,7 +23,11 @@ WOODEN_KINDS = {"coffee_table", "dining_table", "side_table", "nightstand", "des
 # (human-readable material, build_room slug) per render-default family.
 BUILTIN_MATERIAL = ("rift-walnut veneer, matte lacquer (linear ~#5F4430)", "mill_walnut")
 FIXTURE_MATERIAL = ("glossy white sanitaryware solid", "sanitary_white")
-FABRIC_MATERIAL = ("cream bouclé solid (sheen)", "fabric_boucle")
+# 2026-07-22: was "cream bouclé solid (sheen)". `fabric_boucle` is built by _woven now,
+# not _solid — and this string is CLIENT-FACING (rationale.py puts it in material_why,
+# suite_package ships it), so "solid" had become a false description of what renders.
+FABRIC_MATERIAL = ("cream bouclé woven textile — sheen + procedural slub/weave relief",
+                   "fabric_boucle")
 WOODEN_MATERIAL = ("oak PBR (wood_floor slug)", "wood_oak")
 NEUTRAL_MATERIAL = ("neutral solid", "furn_neutral")
 # whole-room surfaces (build_room constants FLOOR_SLUG / WALL_RGBA / feature_walnut)

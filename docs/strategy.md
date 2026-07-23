@@ -2246,10 +2246,14 @@ from the porcelain and stone beside them).
 
 `add_wall` starts every prism at `z0=0.0` and the slab top is exactly `z=0`, so the razor
 0 mm junction — `render-defaults.md:149-152`'s "CG tell" — is there **by construction**.
-Two facts made it more than polish: our own finish-schedule deliverable already emits a
-**"Base"** column (`schedules.py:33`) specifying a skirting the geometry never builds, and
-the shipped v04 hero shows the Gemini pass **inventing one**. So the question was never
-whether this suite has a wall base, only whether we decide it.
+Two facts made it more than polish: our own finish-schedule deliverable carries a **"Base"**
+column and, for this suite, leaves it at **`TBD (DRAFT)`** — `room.type` is `bedroom_suite`,
+which has no `FINISH_DEFAULTS` row, so it falls to `FINISH_FALLBACK` — while the shipped v04
+hero shows the Gemini pass **inventing** a skirting anyway. So the question was never whether
+this suite has a wall base, only whether we decide it or the repaint keeps guessing.
+*(Corrected in review: the first draft claimed the schedule already specified `Painted MDF,
+4"`. It does not — that is a default for a different room type, and this suite never reaches
+it. The corrected fact is the stronger one.)*
 
 Recommendation written up in
 `projects/PRJ-2026-002_c001-house/03_layout/wall-base-junction_PROPOSAL-2026-07-22.md`:
@@ -2258,11 +2262,26 @@ under the nib. The 12 is the owner's own signed BF14 number and his own toleranc
 the 15 mm depth is bought specifically to lap the 10 mm floating-floor expansion gap, which
 was the skirting direction's strongest argument. Nothing was built: it touches wall geometry
 every spec shares (20 room specs, 11 live, 13 subroom rings, **plus a second implementation
-in `build_floor.build_walls`**), and `poly_walls_bpy` has **zero** regression coverage
-because no test imports `build_room.py`. The deciding question reduced to a tolerance
-question — can the finished-floor build-up be frozen before the walls are finished — which
-is exactly the kind of question the owner is the right person to answer, and the kind I
-should never answer for him.
+in `build_floor.build_walls`**), and `poly_walls_bpy` has **zero** regression coverage on
+prism geometry today. The deciding question reduced to a tolerance question — can the
+finished-floor build-up be frozen before the walls are finished — which is exactly the kind
+of question the owner is the right person to answer, and the kind I should never answer for
+him.
+
+**Two corrections the pre-commit review forced, both mine, both in the owner-facing doc.**
+(1) I wrote that "no test imports `build_room.py`". **False** — `test_facing_convention.py`
+stubs `bpy` and imports it outright, and three other test files pin `build_room` wiring by
+SOURCE TEXT. That error mattered twice: it weakened the proposal's argument, and it was the
+excuse under which the weave itself shipped **unpinned** — a reviewer reverted three
+`_woven` call sites to `_solid` and the suite stayed GREEN while the armour kept telling the
+polish pass "every textile in this room is WOVEN". That is the revert-by-omission wound in
+its purest form, inside the change written to cure a cousin of it. Now pinned by source text
+across all 17 call sites, with the branch ORDER pinned too (the E7 lesson), and the pin
+proven to go red by actually performing the revert. (2) The 22.8 m run **double-counted
+5,300 mm** of wall shared between the main ring and the bay ring, while omitting the ensuite
+partition's dry face; corrected to ≈20.7 m and the cost band with it. Standing rule: a
+number I derive for an owner-facing document gets re-derived from the geometry, not
+re-checked against the arithmetic I already did.
 
 Panel: 5 grounding sweeps → 3 independent directions → 3 judges (coherence /
 constructability / pixels), split 2–1 for a reveal. Every dimension in the doc traces to

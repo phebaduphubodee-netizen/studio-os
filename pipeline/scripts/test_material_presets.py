@@ -822,12 +822,105 @@ def test_textile_story_bit_derives_from_spec_referents():
     assert "bed base" in bits[0] and "stonewashed linen" in bits[0]
     assert "terry" not in bits[0], "no ensuite in this spec — terry must not be claimed"
     # the ensuite census is the terry referent, exactly as the e6 bit derives it
+    # the ensuite census is the terry referent — and the fixture shape here MUST be the one
+    # bathroom.accessory_parts actually accepts (kind 'bath_accessories', census a non-empty
+    # DICT; it RAISES on anything else). The first version of this fixture used
+    # kind 'accessories' with a LIST census — a shape the build rejects — so the test
+    # certified prose for a fixture that could never be built.
     with_bath = mp.textile_surface_story_bits({
         "items": [{"kind": "bed"}],
         "subrooms": [{"type": "bathroom",
-                      "fixtures": [{"kind": "accessories",
-                                    "design": {"census": [{"item": "bath_towel"}]}}]}]})
+                      "fixtures": [{"kind": "bath_accessories",
+                                    "design": {"census": {"bath_towel": 2}}}]}]})
     assert "terry" in with_bath[0] and "ensuite towels" in with_bath[0]
+
+
+def test_terry_bit_refuses_a_fixture_shape_the_build_would_reject():
+    """Kills a mutant that claims terry off any truthy design.census. bathroom.py routes on
+    kind == 'bath_accessories' with a DICT census and raises otherwise, so a bit that fires
+    on kind 'accessories' or a list census is prose describing cloth the build never makes."""
+    for bad in ({"kind": "accessories", "design": {"census": {"bath_towel": 2}}},
+                {"kind": "bath_accessories", "design": {"census": [{"item": "towel"}]}},
+                {"kind": "bath_accessories", "design": {"census": {}}}):
+        bits = mp.textile_surface_story_bits({"items": [{"kind": "bed"}],
+                                              "subrooms": [{"type": "bathroom",
+                                                            "fixtures": [bad]}]})
+        assert bits and "terry" not in bits[0], f"terry claimed off a rejected shape: {bad}"
+
+
+def test_curtain_layers_are_named_by_type_not_by_a_state_adjective():
+    """The canonical suite parks its linen blackout and draws the sheer, so a bit that calls
+    the linen layer 'the drawn curtain' tells the polish pass the wrong panel is linen.
+    Kills that mutant: the label must name the LAYER (what build_room routes on), never its
+    state — and it must not silently disagree with curtains.render_state."""
+    bits = mp.textile_surface_story_bits({"items": [{"kind": "bed"}],
+                                          "curtains": {"render_state": {"blackout": "parked",
+                                                                        "privacy": "drawn"}}})
+    assert bits
+    assert "drawn curtain" not in bits[0], "prose asserts a curtain STATE it does not derive"
+    assert "blackout" in bits[0] and "sheer" in bits[0]
+
+
+# ---------------------------------------------------------------------------
+# BUILD-SIDE PIN for the weave (source-text, the studio's mechanic for the bpy layer —
+# same shape as test_wardrobe_bay / test_casement_sheers / test_drape_feedstock).
+# ---------------------------------------------------------------------------
+
+def _build_room_src():
+    import os
+    with open(os.path.join(os.path.dirname(__file__), "build_room.py"), encoding="utf-8") as fh:
+        return fh.read()
+
+
+# every textile the suite builds by NAME through a bespoke builder or the palette
+_WOVEN_NAMED = (
+    "bed_base", "bed_mattress", "bed_duvet", "bed_pillow", "bed_coverlet",
+    "bench_seat", "stool_uph", "curtain_opaque", "fabric_boucle",
+    "m_mill_towel", "m_mill_linen", "sofa_boucle", "sofa_base",
+    "cush_terra", "cush_sage",
+)
+
+
+def test_every_named_textile_is_built_woven_not_solid():
+    """THE ARMOUR'S MISSING HALF, and the reason this test exists: a reviewer reverted three
+    `_woven` call sites to `_solid` and the whole suite stayed GREEN while
+    textile_surface_story_bits kept telling the polish pass "every textile in this room is
+    WOVEN". Decided data that silently stops being built, with prose still asserting it, is
+    this studio's recurring wound — and the pure layer cannot see it, because the routing
+    lives in build_room's bpy layer. So pin the SOURCE, both halves: the _woven call must be
+    there AND the _solid call must not (without the negative, a revert only has to rename)."""
+    src = _build_room_src()
+    for name in _WOVEN_NAMED:
+        assert f'_woven("{name}"' in src, (
+            f'{name} is no longer built WOVEN — it would ship as an untextured slab (MA-05) '
+            f'while the story bit still claims a weave')
+        assert f'_solid("{name}"' not in src, (
+            f'{name} was reverted to the untextured _solid factory')
+
+
+def test_the_sheer_body_is_woven():
+    """_curtain_sheer names its material from a PARAMETER, so the by-name pin above cannot
+    see it — pin the function BODY instead (the test_casement_sheers body-pin shape)."""
+    src = _build_room_src()
+    body = src.split("def _curtain_sheer", 1)[1].split("\ndef ", 1)[0]
+    assert "_woven(" in body and "_solid(" not in body, (
+        "the sheer reverted to _solid — the one fabric the light passes THROUGH would "
+        "render as tinted glass")
+
+
+def test_preset_cloth_branch_stays_ABOVE_the_solid_fallthrough():
+    """Existence is not enough: the E7 lesson is that an un-pinned branch can drift BELOW
+    the dispatch it must precede, and then every textile preset falls through to the
+    untextured slab with nothing red. Pin the ORDER."""
+    src = _build_room_src()
+    body = src.split("def _material_from_preset", 1)[1].split("\ndef ", 1)[0]
+    i_cloth = body.find('a.get("cloth")')
+    i_solid = body.find("return _solid(")
+    assert i_cloth != -1, "the cloth branch is gone from _material_from_preset"
+    assert i_solid != -1, "the _solid fallthrough is gone — this pin needs re-deriving"
+    assert i_cloth < i_solid, (
+        "the cloth branch drifted BELOW the _solid fallthrough: every textile preset now "
+        "renders as an untextured slab")
 
 
 def test_textile_story_prose_derives_from_the_vocabulary_not_a_copy():

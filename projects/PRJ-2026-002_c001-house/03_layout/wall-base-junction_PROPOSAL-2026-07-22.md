@@ -12,8 +12,10 @@ constructability and tolerance — an engineering call, not a taste call.
 
 Our renderer builds the room shell as "floor + 4 walls" (`pipeline/scripts/build_room.py:5`)
 and the junction between them is **exactly zero**, by construction, not by oversight:
-`add_wall` starts every wall prism at `z0=0.0` (`build_room.py:339`) and the floor slab's
-top face is exactly `z=0` (`build_room.py:2729`). Wall and floor meet on a razor line.
+`add_wall(…, z0=0.0)` starts every wall prism at zero (`build_room.py:339`) and
+`add_poly_floor` builds the slab from `z=-fth` to `z=0` (`build_room.py:353`, called with
+`fth = 0.1` at `:2888-2890`), so the floor's top face is exactly `z=0`. Wall and floor meet
+on a razor line — by construction, in one line of arithmetic, not by oversight.
 
 The studio's own reference calls that line the tell:
 
@@ -32,13 +34,16 @@ termination** — I checked; there is no statutory pressure here in either direc
 
 Two facts make this more than a render-polish nicety:
 
-1. **Our own construction deliverable already specifies a base that our render does not
-   build.** `pipeline/scripts/schedules.py:33` emits a finish schedule with a **"Base"**
-   column whose room defaults are `Painted MDF, 4"` / `Tile / coved vinyl` / `Tile`, and
-   the studio drawing standard carries the tag **SK = บัวเชิงผนังอลูมิเนียม**
-   (`knowledge/brand-standards/drawing-symbols-abbreviations-th.md:45`). The schedule says
-   there is a skirting. The geometry says there is none. That is prose-vs-build drift
-   inside a client deliverable.
+1. **Our own construction deliverable does not decide the base at all — it says `TBD`.**
+   `pipeline/scripts/schedules.py` emits a finish schedule with a **"Base"** column, but
+   this suite's `room.type` is `bedroom_suite`, which has no `FINISH_DEFAULTS` row, so the
+   cell falls through to `FINISH_FALLBACK` and reads **`TBD (DRAFT)`** — I ran it on the
+   canonical spec to check. Meanwhile the studio drawing standard carries the tag
+   **SK = บัวเชิงผนังอลูมิเนียม** (`knowledge/brand-standards/drawing-symbols-abbreviations-th.md:45`),
+   i.e. we have a symbol for a skirting and no decision behind it. *(An earlier draft of
+   this document asserted the schedule already specifies `Painted MDF, 4"`. That is wrong —
+   that value is a default for a different room type and this suite never reaches it.
+   Corrected in pre-commit review.)*
 2. **The Gemini polish pass already invents one.** In the shipped v04 hero
    (`assets/projects/PRJ-2026-002/renders/R_PRJ002_MasterSuite_Cam02_v04.png`) a white
    skirting is clearly visible at the left wall. It is not in our model. So the question is
@@ -79,11 +84,20 @@ with the floor finish running under it. No skirting anywhere in the dry rooms.**
   stopped ends returned into the back face at each jamb. The reveal stops at every joinery
   end panel, where millwork's own toe-kick (`PLINTH_H 80 / PLINTH_R 18`,
   `pipeline/scripts/millwork.py:33`) already takes over.
-- **Run, derived and re-checked against the spec, not guessed:** main ring 29,995.6
-  − 8,420 (7,198 of sill-0 glazing + the 1,222 door threshold, both of which have no wall
-  base) − 5,950 (the two edges coincident with the wet ensuite: 2,800 on x=0 + 3,150 on
-  y=8,650) = 15,625.6; bay ring 10,600 − 2,500 (open south edge) − 898 (ensuite passage)
-  = 7,202. **≈ 22.8 m.** Every term recomputed from `master-suite.CANONICAL.spec.json`.
+- **Run, derived from the spec — and corrected once already, so here is every term:**
+  - bedroom ring: 29,995.6 − 8,420 (7,198 of sill-0 glazing + the 1,222 door threshold,
+    neither of which has a wall base) − 5,950 (the two edges coincident with the wet
+    ensuite: 2,800 on x=0 + 3,150 on y=8,650) = **15,625.6**
+  - wardrobe bay: its east (2,800) and north (2,500) edges are **sub-segments of main-ring
+    edges** — the same physical wall, already counted above — so the bay contributes only
+    its west party wall: 2,800 − 898 (ensuite passage) = **1,902**
+  - the ensuite's south partition, **bedroom-facing (dry) side**: **3,150**
+  - **total ≈ 20.7 m.**
+
+  *An earlier draft said 22.8 m. It added the bay ring whole and so counted 5,300 mm of
+  shared wall twice, while omitting the ensuite partition's dry face. Caught in pre-commit
+  review by re-deriving the edges; the corrected figure is lower, and if you want the
+  ensuite partition left out it is 17.5 m.*
 - **The ensuite is deliberately a different detail**: wall tile onto floor tile over the
   tanking with a 5 mm dark neutral-cure silicone joint — the same dark-line family, with no
   rebate cut through a waterproofed base. That asymmetry is a decision, not an omission —
@@ -156,30 +170,42 @@ TIP-TOP install note describes exactly that four-step chain
 (`knowledge/materials/wall-cladding-and-decorative-mouldings-th.md:139`).
 
 **Money — `[est]` only, and I want to be blunt about how weak the basis is.** Order of
-magnitude **฿175–320/m all-in, so ≈ ฿4,000–7,300** over the 22.8 m run. That is a
-labour-and-bead estimate, **not a quote**: the vault holds **no THB price for any skirting,
-bead, trim or profile in any material**. TIP-TOP is a spec book with no prices
-(`wall-cladding-and-decorative-mouldings-th.md:110`), Pan Union's price sheet has never been
-obtained, and there is no Thai supplier recorded for aluminium shadow-gap extrusion at all —
-despite our own drawing tag defaulting to aluminium skirting. If money is the deciding axis,
-that is a supplier query I should run before you decide, not a number I should invent.
+magnitude **฿175–320/m all-in, so ≈ ฿3,600–6,600** over the corrected 20.7 m run. That is a
+labour-and-bead estimate, **not a quote**: the vault holds **no per-SKU THB price for a
+skirting, bead or trim**. TIP-TOP's skirting range TP-68001–68016 is dimension-only
+(`wall-cladding-and-decorative-mouldings-th.md:126`; the catalogue carries no prices, `:110`),
+Pan Union's price sheet has never been obtained, and no Thai supplier is recorded for
+aluminium shadow-gap extrusion at all — despite our own drawing tag defaulting to aluminium
+skirting. The one price the vault *does* hold and that bears on the fallback is a
+section-wide band for MDF/HMR/Plastwood profiles — **80–1,000 THB/pc** at 2400 mm standard
+length (`wall-cladding-and-decorative-mouldings-th.md:51`), a family that includes
+skirting-sized sections (WM30-100, WM18-120, WM15, LM15). So the *skirting* fallback can be
+costed to a band; the *reveal* cannot, because it is labour and a bead rather than a SKU.
+If money is the deciding axis, that is a supplier query I should run before you decide, not
+a number I should invent.
 
 **In code** — this is the most invasive geometry change since the wall builder was written:
 
 - A new **pure** `wall_base.py` (bpy-free), following the `element5_lighting.coplanar_backer_skins`
-  / `wardrobe_bay.py` precedent — because **no test anywhere imports `build_room.py` or
-  `build_floor.py`** (both `import bpy` at module top), so `poly_walls_bpy` has *zero*
-  regression coverage on prism geometry, wall counts or names. The logic has to live where
-  it can be tested.
+  / `wardrobe_bay.py` precedent — because `poly_walls_bpy` has *zero* regression coverage on
+  prism geometry, wall counts or names today, and the geometry is the part that must be
+  right. *(An earlier draft justified this with "no test anywhere imports `build_room.py`".
+  That is false and I should not have written it: `test_facing_convention.py` stubs `bpy`
+  and imports `build_room` directly, and three other test files pin `build_room` wiring by
+  source text — which is how the weave change in this same commit is pinned. The true claim
+  is narrower: `poly_walls_bpy` is *unpinned*, not *unpinnable*. `build_floor.py` is genuinely
+  imported by nothing.)*
 - **20** room-spec JSONs carry `room.outline_mm`, **11** of them live; plus **13** subroom
   rings, each of which multiplies the detail.
 - **A second implementation is unavoidable**: 2 whole-floor manifests build walls through
   `build_floor.build_walls` (`build_floor.py:130`), a different code path with no continuous
   slab. Either it gets the detail too, or the razor junction survives there and we say so.
 - Two known traps: the name-prefix material router would send a `wall_base__*` object to the
-  wrong material silently (`build_room.py:1622`), and the global `_bevel_edges(0.005)`
-  (`build_room.py:3008`) would round a 12 mm slot into mush — 5 mm of bevel on a 12 mm
-  feature. Both must be handled or the detail ships broken-looking.
+  wrong material silently (its trailing `key = n.split("__", 1)[0] … else "furn"`
+  fall-through in `_suite_materials`), and the global `_bevel_edges` — applied at 5 mm to
+  every mesh — would round a 12 mm slot into mush. Both must be handled or the detail ships
+  broken-looking. *(Cited by symbol, not line: the first draft's line numbers were taken
+  from the pre-`_woven` file and had already rotted by the time the document shipped.)*
 
 ---
 
