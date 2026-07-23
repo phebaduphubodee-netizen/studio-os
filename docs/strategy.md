@@ -2176,3 +2176,96 @@ already in the building, and I went looking only after the failure.
   design, not a menu.
 - Pre-existing dead code noticed but NOT touched (out of this commit's scope):
   `softgoods.vessel` has no caller.
+
+## 2026-07-22 (4) — the fabric was never woven, and the junction goes to the owner
+
+Continuing the vault-audit lane: the two items at the top of the 28 NOT-APPLIED list.
+
+### A. Every textile in this build was a painted slab
+
+`_solid()` is documented "Clean physically-plausible Principled material (**no texture**)"
+(`build_room.py:837`) and **every** textile used it. So fabric was the only surface class
+here with a perfectly uniform albedo — the floor carries `variation=`, the walls carry
+`_painted`'s three non-uniformities, the millwork carries `_veneer`'s grain, and the bed
+base, coverlet, bench, towels and 63 garments carried nothing. That is **MA-05** in the
+studio's own taxonomy, *"Plastic look — missing micro-imperfections"*, recorded there as
+*"the corpus's canonical late-denoising-stage textural error"*
+(`knowledge/classifications/render-defects.md:69`), plus the `qa-dimensions.md:286-287`
+red flag *"flat single-colour surfaces without PBR normal maps"*.
+
+It was also **element 3's signed D3-2 only half-built**: that decision asks for
+"micro-imperfections (wrinkle/pilling) so it reads used, not synthetic-smooth". Three
+spatial bands make cloth read — sub-mm fibre fuzz (Sheen already models it), 10–40 mm
+slub/crease/pill, and 100 mm+ folds (drape.py solves those since element 8). **Only the
+middle band was missing**, and it is the band the eye resolves at 2 m/px. That is why a
+real cloth SOLVER still produced bedding that reads as latex.
+
+**Procedural, not a photo — and that was researched, not assumed.** Two cached CC0 fabric
+sets (`rough_linen`, `wool_boucle`) had sat unused in `assets/` since they were fetched, and
+wiring them was the obvious move. It is wrong: at a real thread pitch the map is minified to
+tens of texels per pixel at room distance and Cycles averages it to a flat colour. Two
+independent adversarial refuters reached the same verdict from their own headless probes,
+and one landed on the exact recipe already chosen (≤6% MULTIPLY drift, two-scale noise into
+Bump). `_veneer` settled this same trade for millwork on gate evidence in round 1: keep the
+grain, drop the photo. **Finding a use for two unused downloads is not a reason to ship
+them** — that is the `asset-lever-refuted` shape.
+
+Shipped: `_woven()` (`build_room.py:875`) + a pure `CLOTH_KINDS` vocabulary with 5
+scatter-distinct rows (MA-01 says linen/terry/bouclé/velvet signatures must differ), across
+17 call sites; `_solid` gained `sheen_rough` (it was a hardcoded 0.3 on every sheen material,
+uncited, unable to tell linen from velvet); a fail-loud guard — **a sheen-bearing solid
+preset with no cloth row now RAISES**, because in this palette Sheen *is* the textile
+tell, so a future fabric preset cannot be added without one; and
+`textile_surface_story_bits`, whose prose derives from `CLOTH_KINDS[...]['desc']` so
+retuning the vocabulary retunes the armour rather than leaving a second copy to drift.
+
+**THE FIRST CUT WAS INVISIBLE, AND THE PIXELS ARE WHAT SAID SO.** Bump was written at 0.30
+to stay in the same order as the repo's proven wood bumps (`_veneer` 0.08, `_painted` 0.05).
+The render at those values was indistinguishable from the flat slab it replaced. That is not
+a tuning miss, it is physics: this room is lit by soft ambient plus a wall wash, and under
+near-isotropic illumination tilting a normal barely changes the shading integral, so a
+physically-honest 1.4 mm slub over 28 mm returns ~1.5% and disappears. An amplitude bisect
+(`weave01` vs `weaveLOUD`) bracketed it — 0.30 invisible, 0.85 clearly read but coarse
+enough that the bench started reading as towelling — and the shipped values sit at ~70% of
+the loud end. **Standing distinction earned: `relief_mm` is the physical claim and stays in
+the real 1–4 mm band; `bump` is a RENDER GAIN and must not be read as a measurement.** The
+comment that justified 0.30 by the wood precedents was corrected rather than left standing.
+
+A refuter also caught that **roughness is signed data too** (linen 0.94, coverlet 0.96,
+terry 0.9 — all LOOK-tuned), so the break-up band is SYMMETRIC, unlike `_painted`'s
+(−0.05,+0.03): an asymmetric band shifts the mean toward gloss, the one direction a textile
+must never move. The albedo MULTIPLY's ~`albedo_var/2` mean darkening is disclosed in the
+code rather than left implicit.
+
+Verified: 1999 green; the built `.blend` inspected — all 11 textile materials carry linked
+Base Color + Roughness + Normal, so the mechanism is provably IN the deliverable and not
+just in the source; hero + ensuite both LOOK-verified (towels now read as terry, distinct
+from the porcelain and stone beside them).
+
+### B. The wall/floor junction — a design, not a menu, and not built
+
+`add_wall` starts every prism at `z0=0.0` and the slab top is exactly `z=0`, so the razor
+0 mm junction — `render-defaults.md:149-152`'s "CG tell" — is there **by construction**.
+Two facts made it more than polish: our own finish-schedule deliverable already emits a
+**"Base"** column (`schedules.py:33`) specifying a skirting the geometry never builds, and
+the shipped v04 hero shows the Gemini pass **inventing one**. So the question was never
+whether this suite has a wall base, only whether we decide it.
+
+Recommendation written up in
+`projects/PRJ-2026-002_c001-house/03_layout/wall-base-junction_PROPOSAL-2026-07-22.md`:
+a **12 mm dark-backed shadow reveal, 15 mm deep, dry rooms only**, with the floor running
+under the nib. The 12 is the owner's own signed BF14 number and his own tolerance reasoning;
+the 15 mm depth is bought specifically to lap the 10 mm floating-floor expansion gap, which
+was the skirting direction's strongest argument. Nothing was built: it touches wall geometry
+every spec shares (20 room specs, 11 live, 13 subroom rings, **plus a second implementation
+in `build_floor.build_walls`**), and `poly_walls_bpy` has **zero** regression coverage
+because no test imports `build_room.py`. The deciding question reduced to a tolerance
+question — can the finished-floor build-up be frozen before the walls are finished — which
+is exactly the kind of question the owner is the right person to answer, and the kind I
+should never answer for him.
+
+Panel: 5 grounding sweeps → 3 independent directions → 3 judges (coherence /
+constructability / pixels), split 2–1 for a reveal. Every dimension in the doc traces to
+`knowledge/` or the canonical spec; the 22.8 m run was recomputed from the spec by hand;
+**every baht is `[est]`** — the vault holds no THB price for any skirting, bead or trim in
+any material, and I said so in the document rather than inventing one.

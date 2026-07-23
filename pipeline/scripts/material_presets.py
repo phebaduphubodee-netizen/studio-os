@@ -254,6 +254,121 @@ PRESETS = {
 
 
 # ---------------------------------------------------------------------------
+# CLOTH SURFACE SIGNATURE (pure data) — what separates a textile from a slab
+# ---------------------------------------------------------------------------
+# THE DEFECT THIS EXISTS FOR. `build_room._solid` is documented "Clean physically-
+# plausible Principled material (NO TEXTURE)" (build_room._solid) and EVERY textile
+# in the suite is built with it. So fabric was the only surface class in the build with a
+# perfectly uniform albedo: the floor carries variation=0.05, the walls carry _painted's
+# three non-uniformities, the millwork carries _veneer's grain — and the bed base, the
+# coverlet, the bench, the towels and 63 hanging garments carried none. That is MA-05 in
+# the studio's own taxonomy, "Plastic look — missing micro-imperfections", recorded there
+# as "the corpus's canonical late-denoising-stage textural error"
+# (knowledge/classifications/render-defects.md:69), and the red flag "flat single-colour
+# surfaces without PBR normal maps" (knowledge/classifications/qa-dimensions.md:286-287).
+# It is also element 3's signed D3-2 only half-built: that decision asks for
+# "micro-imperfections (wrinkle/pilling) so it reads used, not synthetic-smooth"
+# (element3-bed_DD-2026-07-18.md:92-94, from knowledge/styles/color-composition.md:189-190).
+#
+# WHY THESE ARE PARAMETERS AND NOT A PHOTO. Three spatial bands make cloth read as cloth:
+# sub-mm fibre fuzz (that is what Sheen already IS), ~10-40 mm slub/crease/pilling, and
+# 100 mm+ folds (drape.py solves those). Only the MIDDLE band was missing. A photographic
+# weave map cannot supply it: at a real thread pitch the map is minified to tens of texels
+# per pixel at room distance and Cycles averages it to a flat colour — measured, not
+# assumed (probe 2026-07-22: an image pushed to fabric pitch returned an identical constant
+# across Object/Generated/FLAT/BOX coordinates). It would also trip MA-02 (scale) and MA-03
+# (tiling), and the fabric objects carry no UV at all (see the "carry no UV, the texture
+# samples ONE flat texel" WARN in build_room._suite_materials). So the
+# signature is PROCEDURAL and world-space, the same choice _veneer made when the round-1
+# gate proved a plank PHOTO on millwork read as "flooring on the walls" while procedural
+# grain helped (build_room._veneer's docstring).
+# (Line-number citations into build_room are deliberately avoided here: the first draft
+# carried three, and the same change that wrote them shifted two — pre-commit review catch.)
+#
+# TIER OF THESE NUMBERS. The vault has NO weave repeat size in metres, NO fabric bump
+# strength and NO Blender-side sheen roughness — three confirmed GAPs. So every value here
+# is [est] studio-default, bounded by the two things the vault DOES supply:
+#   * sheen_rough: the only sourced band anywhere is Corona's fabric cards, Sheen Roughness
+#     0.4-0.6 (knowledge/materials/texture-sets-discord.md:170-195, "Fabric = Sheen +
+#     Falloff"). Unlike that file's Bump numbers — which it explicitly forbids porting
+#     ("Bump is NOT 0-1 here … Do not paste those into a Blender bump Strength", :210-225) —
+#     sheen roughness is a 0-1 quantity in both engines, so the band transfers.
+#   * bump: set by LOOK, and the first cut was WRONG. It was written at 0.30 to stay in the
+#     same order as the repo's proven wood bumps (_veneer 0.08, _painted 0.05, _proc_wood
+#     0.10) — and the render at those values was INDISTINGUISHABLE from the flat slab it
+#     replaced. That is not a tuning miss, it is physics: this room is lit by soft ambient
+#     plus a wall wash, and under near-isotropic illumination tilting a normal barely
+#     changes the shading integral, so a physically-honest 1.4 mm slub over 28 mm returns
+#     ~1.5% and disappears. An amplitude bisect (render weave01 vs weaveLOUD, 2026-07-22)
+#     bracketed it: 0.30 invisible, 0.85 clearly read but coarse enough that the bench
+#     started reading as towelling. The shipped values sit at ~70% of the loud end.
+#     So: bump is a RENDER GAIN, not a physical claim — relief_mm is the physical claim,
+#     and it stays in the real 1-4 mm band cloth actually occupies.
+# relief_mm is the Bump node's Distance (a real height in mm), stated rather than derived
+# so nobody has to reverse a magic ratio to know what surface is being claimed.
+#
+# scatter identity is a studio QA rule, not decoration: "each material's scatter signature
+# is distinct: leather rendered with velvet's fuzzy diffuse scattering = material mismatch
+# -> regeneration" (knowledge/materials/pbr-material-behavior.md:102-106, MA-01). That is
+# why linen, terry, boucle and velvet get DIFFERENT rows instead of one "fabric" row.
+CLOTH_KINDS = {
+    # slub_mm  = the meso band that actually resolves at eye distance (crease/slub/pill)
+    # weave_mm = the thread-scale band; sub-pixel at room distance, it breaks the specular
+    # relief_mm= Bump Distance, the claimed physical height of that relief
+    # bump      = Bump Strength (0-1)
+    # albedo_var= peak luminance drift of the multiply (the MA-03/MA-05 cure, cf floor 0.05)
+    # sheen_rough = Principled Sheen Roughness (Corona band 0.4-0.6)
+    "linen": dict(slub_mm=26.0, weave_mm=5.0, relief_mm=2.6, bump=0.65,
+                  albedo_var=0.085, sheen_rough=0.50,
+                  desc="stonewashed linen — long soft slubs, a dry matte break-up"),
+    "terry": dict(slub_mm=14.0, weave_mm=4.0, relief_mm=3.2, bump=0.80,
+                  albedo_var=0.100, sheen_rough=0.55,
+                  desc="cotton terry — short dense pile, the loosest surface in the suite"),
+    "boucle": dict(slub_mm=9.0, weave_mm=4.5, relief_mm=3.6, bump=0.85,
+                   albedo_var=0.110, sheen_rough=0.45,
+                   desc="wool boucle — looped nubs, the studio's one sourced fabric row "
+                        "(bsdf-material-presets.md:46 'normal/displacement for loops')"),
+    "velvet": dict(slub_mm=40.0, weave_mm=1.2, relief_mm=1.0, bump=0.30,
+                   albedo_var=0.050, sheen_rough=0.40,
+                   desc="velvet — near-smooth pile, its identity is directional SHEEN, "
+                        "not relief (over-bumping velvet is MA-01 scatter mismatch)"),
+    "plain": dict(slub_mm=22.0, weave_mm=3.0, relief_mm=1.8, bump=0.45,
+                  albedo_var=0.065, sheen_rough=0.50,
+                  desc="plain synthetic weave — flat, tight, the least tactile row"),
+}
+
+# Which PRESET wears which cloth signature. A preset absent here is not cloth.
+PRESET_CLOTH = {
+    "boucle_cream": "boucle",
+    "boucle_cream_studio": "boucle",
+    "fabric_polyester_weave": "plain",
+    "velvet_sand": "velvet",
+}
+
+
+def cloth_args(kind):
+    """The Principled/relief parameters for a cloth identity, in METRES for the build.
+
+    Raises on an unknown kind for the usual reason: the silent fallback is the
+    revert-by-omission channel (cf FIXTURE_MAT_OBJECT), and here the fallback would be
+    a flat plastic slab that no test can see."""
+    k = CLOTH_KINDS.get(str(kind))
+    if k is None:
+        raise ValueError(f"unknown cloth kind {kind!r} — known: {sorted(CLOTH_KINDS)}. "
+                         f"Add a CLOTH_KINDS row rather than letting a textile fall back "
+                         f"to the untextured _solid slab (MA-05).")
+    return {"slub_m": k["slub_mm"] * 0.001, "weave_m": k["weave_mm"] * 0.001,
+            "relief_m": k["relief_mm"] * 0.001, "bump": k["bump"],
+            "albedo_var": k["albedo_var"], "sheen_rough": k["sheen_rough"],
+            "kind": str(kind)}
+
+
+def preset_cloth_kind(preset_name):
+    """The cloth identity a preset wears, or None if the preset is not a textile."""
+    return PRESET_CLOTH.get(_known(preset_name))
+
+
+# ---------------------------------------------------------------------------
 # build-layer helpers (pure) — routing + the ceiling-CCT override
 # ---------------------------------------------------------------------------
 # build_room lives in the bpy layer and cannot be imported under plain python, so the two bits
@@ -550,6 +665,23 @@ def factory_args(preset_name):
             a[k] = float(p[k])
     if "trans_tint" in p:
         a["trans_tint"] = tuple(p["trans_tint"])
+    # CLOTH: a textile preset carries its surface signature so the build renders a weave
+    # instead of a painted slab (see CLOTH_KINDS). The membership test is the preset's OWN
+    # physics, not its name: in this table a non-metal `solid` with a Sheen weight IS a
+    # textile — Sheen is the fibre-fuzz lobe and nothing else in the palette uses it. So a
+    # future fabric preset cannot be added WITHOUT a cloth row; it raises here rather than
+    # silently shipping the flat-plastic look this block exists to kill (the same fail-loud
+    # shape as FIXTURE_MAT_OBJECT's closed vocabulary).
+    if p["factory"] == "solid" and float(p.get("sheen", 0.0)) > 0.0 and metallic == 0.0:
+        kind = PRESET_CLOTH.get(preset_name)
+        if kind is None:
+            raise ValueError(
+                f"{preset_name!r} is a sheen-bearing solid (sheen={p['sheen']}) — i.e. a "
+                f"TEXTILE — but has no PRESET_CLOTH row, so it would render as an "
+                f"untextured slab (MA-05 'plastic look', "
+                f"knowledge/classifications/render-defects.md:69). Add a PRESET_CLOTH "
+                f"entry naming one of {sorted(CLOTH_KINDS)}.")
+        a["cloth"] = cloth_args(kind)
     return a
 
 
@@ -933,6 +1065,67 @@ def wardrobe_bay_story_bits(spec):
     return bits
 
 
+def textile_surface_story_bits(spec, resolved=None):
+    """THE WEAVE, NAMED — so the Gemini polish pass cannot iron the suite's textiles back
+    into the painted slabs they were until 2026-07-22 (MA-05 'plastic look',
+    knowledge/classifications/render-defects.md:69).
+
+    This is the armour half of the _woven change. Without it the render would carry a
+    surface the prose never claims, and the polish prompt — which is told the room in
+    words — would have every licence to smooth it: exactly the channel that repainted the
+    cool counter oak and emptied the hang rails.
+
+    DERIVED, never a literal, on two axes at once (the e6 lesson):
+      * WHICH cloths are on screen comes from the same spec referents the BUILD routes on
+        (a bed item, a tub-chair stool, a curtains block, the ensuite accessory census, an
+        explicitly selected fabric family). A textile that stops being built drops out of
+        the prose by construction.
+      * WHAT each cloth looks like comes from CLOTH_KINDS[kind]['desc'] — the same table
+        the build reads its slub pitch and bump from. Retune the vocabulary and the
+        sentence retunes with it; there is no second copy to drift.
+    A spec with no textiles emits nothing rather than describing cloth that isn't there."""
+    wearers = {}                      # cloth kind -> what wears it (sorted, deduped)
+
+    def wear(kind, label):
+        cloth_args(kind)              # RAISES on a kind with no vocabulary row
+        wearers.setdefault(kind, [])
+        if label not in wearers[kind]:
+            wearers[kind].append(label)
+
+    items = (spec or {}).get("items") or []
+    if any(it.get("kind") == "bed" for it in items):
+        # D3-2: bedding IS stonewashed linen, and _build_bed dresses base, mattress,
+        # duvet, pillows and coverlet from the one linen signature.
+        wear("linen", "the bed base, bedding and the solver-draped coverlet")
+    if any(it.get("kind") == "stool" and it.get("style") == "tub_chair" for it in items):
+        wear("linen", "the vanity tub-chair")
+    if (spec or {}).get("curtains"):
+        wear("linen", "the drawn curtain")
+        wear("plain", "the sheer")
+    if (spec or {}).get("casement_sheers"):
+        wear("plain", "the casement sheers")
+    for s in (spec or {}).get("subrooms") or []:
+        if s.get("type") != "bathroom":
+            continue
+        for f in s.get("fixtures") or []:
+            if ((f.get("design") or {}).get("census")):
+                wear("terry", "the ensuite towels, robes and bath mat")
+    fam = ((resolved or {}).get("families") or {}).get("fabric")
+    if fam:
+        k = preset_cloth_kind(fam)
+        if k:
+            wear(k, "the upholstery family")
+    if not wearers:
+        return []
+    parts = [f"{', '.join(wearers[k])} = {CLOTH_KINDS[k]['desc']}"
+             for k in sorted(wearers)]
+    return ["every textile in this room is WOVEN, not painted: " + "; ".join(parts)
+            + " — each carries a real slub/crease relief, a matching roughness break-up "
+              "and a low-amplitude tonal drift, which is what makes cloth read as cloth "
+              "instead of vinyl. KEEP that surface: do NOT smooth, gloss, iron flat or "
+              "re-tint any of it, and do NOT swap a weave for a printed pattern"]
+
+
 def material_story(resolved, spec=None, baked=()):
     """One prose sentence naming the ACTUAL selected materials — the truth the render
     shows, for the render-polish prompt's {material_story} slot (and rationale). Built
@@ -973,4 +1166,5 @@ def material_story(resolved, spec=None, baked=()):
     bits.extend(casement_sheer_story_bits(spec))       # ELEMENT 6: the west casement sheers
     bits.extend(wardrobe_bay_story_bits(spec))         # ELEMENT 7: the open dressing gallery
     bits.extend(styling_story_bits(spec, baked))              # ELEMENT 8: the styling layer
+    bits.extend(textile_surface_story_bits(spec, resolved))   # the WEAVE (2026-07-22)
     return "; ".join(bits) if bits else material_story(None)

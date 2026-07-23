@@ -835,7 +835,7 @@ def _pbr_material(name, slug, base_tint=None, variation=0.0):
 
 
 def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.5, spec=0.5,
-           aniso=0.0):
+           aniso=0.0, sheen_rough=0.3):
     """Clean physically-plausible Principled material (no texture). sheen -> fabric,
     coat -> lacquer/marble sheen, metallic+low rough -> brass/chrome, aniso -> BRUSHED
     metal (stretches the highlight along the grain instead of a round dot).
@@ -857,13 +857,144 @@ def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.5, spec=0
         _set(bsdf, "Specular IOR Level", spec)
         if sheen:
             _set(bsdf, "Sheen Weight", sheen)
-            _set(bsdf, "Sheen Roughness", 0.3)
+            # 2026-07-22 (vault audit): this was a hardcoded 0.3 on EVERY sheen material,
+            # carrying no citation and unable to tell linen from velvet — while the studio's
+            # own scatter-identity rule (pbr-material-behavior.md:102-106, MA-01) says those
+            # signatures must differ. Now per-fabric, defaulting to the old 0.3 so every
+            # non-cloth caller renders exactly as before.
+            _set(bsdf, "Sheen Roughness", sheen_rough)
         if coat:
             _set(bsdf, "Coat Weight", coat)
             _set(bsdf, "Coat Roughness", 0.1)
         if aniso:
             _set(bsdf, "Anisotropic", aniso)
             _set(bsdf, "Anisotropic Rotation", 0.0)
+    return m
+
+
+def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5):
+    """TEXTILE: _solid's signed colour + the surface signature that makes cloth read as
+    cloth instead of painted vinyl. `cloth` is material_presets.cloth_args(kind).
+
+    WHY THIS EXISTS. Every textile in this build was `_solid` — documented "no texture" —
+    so fabric was the ONLY surface class here with a perfectly uniform albedo, while the
+    floor got variation=, the walls _painted's three non-uniformities and the millwork
+    _veneer's grain. That is MA-05 "Plastic look — missing micro-imperfections", named in
+    the studio's own taxonomy as "the corpus's canonical late-denoising-stage textural
+    error" (knowledge/classifications/render-defects.md:69), and it is why three prior
+    softening passes and a real cloth SOLVER still produced bedding that reads as latex:
+    drape.py fixed the 100 mm+ fold band, Sheen covers the sub-mm fuzz band, and NOTHING
+    was modelling the 10-40 mm slub/crease/pill band in between. Element 3's signed D3-2
+    asked for exactly that band — "micro-imperfections (wrinkle/pilling) so it reads used,
+    not synthetic-smooth" — and it was the half of D3-2 the build never made.
+
+    PROCEDURAL, NOT A PHOTO — and that is the researched answer, not the lazy one. A weave
+    map at a real thread pitch is minified to tens of texels per pixel at room distance and
+    Cycles averages it to a flat colour (probe 2026-07-22: an image at fabric pitch returned
+    an identical constant across Object/Generated/FLAT/BOX). It would also trip MA-02
+    (scale) and MA-03 (tiling), and these objects carry no UV at all (see the WARN at
+    _suite_materials) — drape.py's baked sheets are from_pydata meshes with no uv_layers.
+    _veneer already settled this trade for millwork on gate evidence: keep the grain, drop
+    the photo.
+
+    THREE CHANNELS, ONE FIELD. The same two-scale field drives albedo, relief and roughness,
+    because on real cloth they are the same slubs seen three ways — driving them from
+    independent noise is what makes procedural fabric look like static.
+    Object coords (origins are all at 0,0,0) keep the field CONTINUOUS across parts, so a
+    coverlet and the base it falls onto share one weave instead of two unrelated ones."""
+    # coat/ior are forwarded rather than dropped: _material_from_preset's cloth branch now
+    # routes textile presets HERE instead of to _solid, and any channel this signature does
+    # not carry would be SILENTLY LOST — the same trap factory_args' own whitelist comment
+    # warns about ("A key absent from this tuple is SILENTLY DROPPED"). metallic and aniso
+    # are deliberately absent: factory_args only marks NON-METAL solids as cloth, so a
+    # textile cannot legally carry them.
+    m = _solid(name, rgba, rough, sheen=sheen, spec=spec, coat=coat, ior=ior,
+               sheen_rough=cloth["sheen_rough"])
+    nt, bsdf = _principled(m)
+    if not bsdf:
+        return m
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    # (1) the MESO band: slubs / creases / pilling — the only band that RESOLVES at the
+    #     hero camera's distance, so it carries most of the read.
+    slub = nt.nodes.new("ShaderNodeTexNoise")
+    slub.inputs["Scale"].default_value = 1.0 / cloth["slub_m"]
+    slub.inputs["Detail"].default_value = 2.0
+    nt.links.new(tc.outputs["Object"], slub.inputs["Vector"])
+    # (2) the THREAD band: sub-pixel at room distance by construction — it is not there to
+    #     be seen as threads, it is there to stop the specular being a single clean lobe.
+    weave = nt.nodes.new("ShaderNodeTexNoise")
+    weave.inputs["Scale"].default_value = 1.0 / cloth["weave_m"]
+    weave.inputs["Detail"].default_value = 1.0
+    nt.links.new(tc.outputs["Object"], weave.inputs["Vector"])
+    fld = nt.nodes.new("ShaderNodeMixRGB")            # meso-dominant, thread as a dither
+    fld.blend_type = "MIX"
+    fld.inputs["Fac"].default_value = 0.35
+    nt.links.new(slub.outputs["Fac"], fld.inputs["Color1"])
+    nt.links.new(weave.outputs["Fac"], fld.inputs["Color2"])
+    field = fld.outputs["Color"]
+    # (3) ALBEDO drift — the MA-03/MA-05 cure, the same keyword that fixed the floor.
+    #     MULTIPLY so the SIGNED colour is the CEILING and nothing ever brightens past it:
+    #     every one of these tones (greige linen D3-1, greige-oatmeal terry D-E6-3, cream
+    #     boucle) is an owner-signed decision, several of them LOOK-tuned by hand, and a
+    #     texture that repaints one would be this studio's recurring wound wearing a new
+    #     hat. DISCLOSED COST of choosing the ceiling over a centred drift: the MEAN tone
+    #     darkens by about albedo_var/2 — with the shipped vocabulary that is ~4.3% on
+    #     linen, ~5% on terry and ~5.5% on boucle. That is the same trade _painted
+    #     (0.97-1.0) and the floor's variation= already make, but at these amplitudes it is
+    #     NO LONGER negligible: it is at or just past the ~4% an eye resolves on a matte
+    #     surface. It is spent knowingly — a signed tone reads as ITS OWN colour slightly
+    #     deepened, which is what cloth does, whereas the flat slab it replaces did not read
+    #     as cloth at all. If a future retune pushes albedo_var higher, this trade must be
+    #     re-argued, not inherited. (The first draft of this comment said "~2.8%" and was
+    #     left behind by the retune that doubled the amplitude — prose-vs-build drift caught
+    #     in pre-commit review, in the very block warning about repainting signed data.)
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value = 1.0 - cloth["albedo_var"]
+    mr.inputs["To Max"].default_value = 1.0
+    mix = nt.nodes.new("ShaderNodeMixRGB")
+    mix.blend_type = "MULTIPLY"
+    mix.inputs["Fac"].default_value = 1.0
+    mix.inputs["Color1"].default_value = rgba
+    nt.links.new(field, mr.inputs["Value"])
+    nt.links.new(mr.outputs["Result"], mix.inputs["Color2"])
+    nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    # (4) RELIEF via Bump — not a NormalMap node: tangent-space normals need a UV map for
+    #     their tangents and these meshes have none, while Bump works from screen-space
+    #     derivatives on any mesh. Distance is a real height in metres (cloth.relief_m).
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = cloth["bump"]
+    # NOT wrapped in try/except like _veneer's: Bump.Distance defaults to 1.0, so a
+    # swallowed failure here does not degrade the weave — it claims a ONE METRE relief on a
+    # bedsheet. A missing socket means the API moved and the build must say so.
+    bump.inputs["Distance"].default_value = cloth["relief_m"]
+    nt.links.new(field, bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    # (5) ROUGHNESS break-up on the SAME field: a slub that stands proud also catches light
+    #     differently. SYMMETRIC about the preset's own value, unlike _painted's
+    #     (-0.05,+0.03): roughness is SIGNED data here too (linen 0.94, coverlet 0.96,
+    #     boucle 0.92, terry 0.9, every one LOOK-tuned), and an asymmetric band shifts the
+    #     MEAN toward gloss rather than only adding variance — which is the one direction a
+    #     textile must never move.
+    #     CLAMPED TO THE STUDIO BAND, not to 0..1: the coverlet is authored at 0.96 and the
+    #     pillows/duvet at 0.95, so a naive min(1.0, rough+var) would drive the top of the
+    #     band to an ABSOLUTE 1.0 — which `ROUGH_FLOOR, ROUGH_CEIL = 0.03, 0.97  # never
+    #     absolute 0.0/1.0` (material_presets.py:43, from bsdf-material-presets.md:54-60)
+    #     exists to forbid. factory_args enforces that ceiling for PRESET-driven materials,
+    #     but the bespoke _build_bed / _build_bench calls pass their roughness straight in
+    #     and never touch factory_args, so the bound has to be applied HERE or it is not
+    #     applied at all on exactly the largest textile in the hero frame.
+    #     The band SHRINKS rather than clipping: clamping the two ends independently would
+    #     leave the coverlet (0.96) at [0.915, 0.97] — asymmetric again, mean toward gloss,
+    #     the exact defect this paragraph forbids, re-introduced by the clamp that fixed the
+    #     absolute-1.0 one. So the half-width is the largest that stays symmetric AND inside
+    #     the studio band; near the ceiling the roughest cloths simply get less variance,
+    #     which is honest — there is no headroom there.
+    _rvar = max(0.0, min(0.045, _matpre.ROUGH_CEIL - rough, rough - _matpre.ROUGH_FLOOR))
+    mr2 = nt.nodes.new("ShaderNodeMapRange")
+    mr2.inputs["To Min"].default_value = rough - _rvar
+    mr2.inputs["To Max"].default_value = rough + _rvar
+    nt.links.new(field, mr2.inputs["Value"])
+    nt.links.new(mr2.outputs["Result"], bsdf.inputs["Roughness"])
     return m
 
 
@@ -1072,7 +1203,11 @@ def _add_rug(name, x, y, w, d, thick=0.014):
 def _curtain_sheer(name, rgba, alpha):
     """Sheer voile: Principled with partial Alpha (Cycles renders it as stochastic
     transparency — headless-safe). Full sheen so the fabric edge catches light."""
-    m = _solid(name, rgba, 0.6, sheen=1.0)
+    # WOVEN with the 'plain' signature: a voile IS a fine tight plain weave, and its whole
+    # job is to be a fabric the light passes THROUGH — a perfectly uniform one reads as
+    # tinted glass. The relief stays the smallest in the vocabulary so the sheer never
+    # reads as a textured blind.
+    m = _woven(name, rgba, 0.6, _matpre.cloth_args("plain"), sheen=1.0)
     _nt, bsdf = _principled(m)
     if bsdf:
         _set(bsdf, "Alpha", alpha)
@@ -1113,7 +1248,8 @@ def _add_curtains(spec, h):
                          "— below is an invisible sheer, above is a solid (a percent "
                          "value like 38 belongs here as 0.38)")
     mats = {"sheer": _curtain_sheer("curtain_sheer", sheer_rgba, alpha),
-            "opaque": _solid("curtain_opaque", opaque_rgba, 0.9, sheen=0.9)}
+            "opaque": _woven("curtain_opaque", opaque_rgba, 0.9,
+                             _matpre.cloth_args("linen"), sheen=0.9)}
     # top edge: hide inside the ceiling slab when one exists (--eye builds it at
     # h..h+0.05); the plain overview has NO ceiling, so stop just under the wall top —
     # a top 30mm proud of the walls reads as a fence in the dollhouse view
@@ -1481,6 +1617,12 @@ def _material_from_preset(mat_name, preset_key):
             _set(_gb, "Specular IOR Level", a.get("spec", 0.5))
             _set(_gb, "Transmission Weight", a.get("transmission", 0.95))
         return g
+    if a.get("cloth"):
+        # a TEXTILE preset (factory_args marks any sheen-bearing solid as one and RAISES if
+        # it has no cloth row) — it must not fall through to the untextured slab below.
+        return _woven(mat_name, a["rgba"], a["rough"], a["cloth"],
+                      sheen=a.get("sheen", 0.0), spec=a.get("spec", 0.5),
+                      coat=a.get("coat", 0.0), ior=a.get("ior", 1.5))
     return _solid(mat_name, a["rgba"], a["rough"], metallic=a.get("metallic", 0.0),
                   sheen=a.get("sheen", 0.0), coat=a.get("coat", 0.0),
                   ior=a.get("ior", 1.5), spec=a.get("spec", 0.5),
@@ -1525,7 +1667,10 @@ def _suite_materials(spec=None):
     mill = _pick(_sur.get("millwork"), "millwork",
                  lambda: _veneer("mill_walnut", (0.105, 0.052, 0.026, 1.0), 0.45))  # rift-walnut veneer
     fab = _pick(_fam.get("fabric"), "fabric",
-                lambda: _solid("fabric_boucle", (0.84, 0.79, 0.71, 1.0), 0.92, sheen=0.8))  # cream boucle
+                # cream boucle — now WOVEN (looped nubs), not a painted slab. The colour,
+                # roughness and sheen weight are the gate-proven values, untouched.
+                lambda: _woven("fabric_boucle", (0.84, 0.79, 0.71, 1.0), 0.92,
+                               _matpre.cloth_args("boucle"), sheen=0.8))
     wood = _pick(_fam.get("wood"), "wood",
                  lambda: _pbr_material("wood_oak", FLOOR_SLUG))                      # oak on wood items
     fix = _pick(_sur.get("fixtures"), "fixtures",
@@ -1559,15 +1704,15 @@ def _suite_materials(spec=None):
     # cooler/greyer than the cream boucle (NOT-cream is the family rule; LOOK checks it
     # holds under the warm lamps); rgba [est] composition-not-SKU, high rough + sheen
     # for the terry-pile read.
-    towel = _solid("m_mill_towel", (0.60, 0.575, 0.52, 1.0), rough=0.9, sheen=0.7,
-                   spec=0.3)
+    towel = _woven("m_mill_towel", (0.60, 0.575, 0.52, 1.0), rough=0.9,
+                   cloth=_matpre.cloth_args("terry"), sheen=0.7, spec=0.3)
     # ELEMENT 8: the greige stonewashed LINEN, at the exact element-3 bed_base values.
     # It was signed in element 3 but re-hardcoded inside each builder (_build_bed's base,
     # _build_bench's seat) instead of being reachable BY NAME — so nothing outside those
     # two functions could wear the suite's own signed textile. This row is what makes it a
     # material identity rather than a number repeated in three places.
-    linen = _solid("m_mill_linen", (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.2,
-                   spec=0.25)
+    linen = _woven("m_mill_linen", (0.46, 0.43, 0.39, 1.0), rough=0.94,
+                   cloth=_matpre.cloth_args("linen"), sheen=0.2, spec=0.25)
     _opb = _principled(opal)[1]
     if _opb:
         _set(_opb, "Emission Color", (1.0, 0.97, 0.92, 1.0))
@@ -1928,8 +2073,10 @@ def _build_modern_sofa(x0, y0, W, D):
     modern slat wall + mid-century chairs. Modern-luxury seating is geometrically simple (a low
     plinth + boxy bouclé cushions + low arms), so we model it to MATCH instead of retinting a
     Chesterfield. Colours = the same cream bouclé as the retint (#DCD0BD-ish), honed matte."""
-    boucle = _solid("sofa_boucle", (0.86, 0.81, 0.72, 1.0), rough=0.9, sheen=1.0, spec=0.4)
-    base   = _solid("sofa_base",   (0.70, 0.66, 0.60, 1.0), rough=0.75, sheen=0.25, spec=0.4)
+    boucle = _woven("sofa_boucle", (0.86, 0.81, 0.72, 1.0), 0.9,
+                    _matpre.cloth_args("boucle"), sheen=1.0, spec=0.4)
+    base   = _woven("sofa_base",   (0.70, 0.66, 0.60, 1.0), 0.75,
+                    _matpre.cloth_args("plain"), sheen=0.25, spec=0.4)
     arm_w, back_d, plinth_h = 0.24, 0.22, 0.14
     # 1) plinth (grounds the piece, slightly darker greige)
     _rbox("sofa__plinth", x0, y0, 0.0, W, D, plinth_h, base, bevw=0.01)
@@ -1953,8 +2100,9 @@ def _build_modern_sofa(x0, y0, W, D):
     # Placement rules learned the hard way: (a) keep bevw < half the smallest dimension or the
     # bevel collapses the mesh; (b) sit them ON the seat and clearly IN FRONT of the backrest —
     # if they interpenetrate the back cushion, coincident faces z-fight into a translucent ghost.
-    terra = _solid("cush_terra", (0.58, 0.32, 0.23, 1.0), rough=0.75, sheen=0.6, spec=0.4)
-    sage  = _solid("cush_sage",  (0.44, 0.46, 0.37, 1.0), rough=0.75, sheen=0.6, spec=0.4)
+    _pln = _matpre.cloth_args("plain")
+    terra = _woven("cush_terra", (0.58, 0.32, 0.23, 1.0), 0.75, _pln, sheen=0.6, spec=0.4)
+    sage  = _woven("cush_sage",  (0.44, 0.46, 0.37, 1.0), 0.75, _pln, sheen=0.6, spec=0.4)
     pw, pd, ph = 0.46, 0.22, 0.44
     # tuck the pillows into the arm+back corners (where a stylist puts them). With normals now
     # recalculated the bevel is clean, so they can nestle against the backrest without ghosting.
@@ -2042,10 +2190,16 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # crisp cream bedding (v1 at 0.58/sheen0.6 washed to the same white as the mattress under the
     # 3000 K key — the bed read as one pale blob; LOOK 2026-07-18). Darkened + de-sheened so the
     # platform plinth grounds the bed and stays a neutral (never a fifth warm oak mass, D1-A).
-    base_m = _solid("bed_base",     (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.2, spec=0.25)
-    matt_m = _solid("bed_mattress", (0.87, 0.85, 0.81, 1.0), rough=0.92, sheen=0.5, spec=0.35)
-    duvt_m = _solid("bed_duvet",    (0.80, 0.77, 0.71, 1.0), rough=0.95, sheen=0.7, spec=0.35)
-    pill_m = _solid("bed_pillow",   (0.90, 0.88, 0.84, 1.0), rough=0.95, sheen=0.8, spec=0.35)
+    # WOVEN, not _solid (2026-07-22): these five are the largest textile area in the hero
+    # frame and every one of them was an untextured slab — the MA-05 "plastic look" the
+    # owner has been describing since element 3. Bedding is stonewashed LINEN by D3-2, so
+    # base, mattress, duvet, pillow and coverlet all wear the linen signature; the colours,
+    # roughness and sheen weights below are the LOOK-tuned values and are untouched.
+    _lin = _matpre.cloth_args("linen")
+    base_m = _woven("bed_base",     (0.46, 0.43, 0.39, 1.0), 0.94, _lin, sheen=0.2, spec=0.25)
+    matt_m = _woven("bed_mattress", (0.87, 0.85, 0.81, 1.0), 0.92, _lin, sheen=0.5, spec=0.35)
+    duvt_m = _woven("bed_duvet",    (0.80, 0.77, 0.71, 1.0), 0.95, _lin, sheen=0.7, spec=0.35)
+    pill_m = _woven("bed_pillow",   (0.90, 0.88, 0.84, 1.0), 0.95, _lin, sheen=0.8, spec=0.35)
 
     # SOFT, LOW-DRAPED MASSING (owner LOOK 2026-07-18 "ยังเหลี่ยม" ×2 — bevels alone did NOT break the
     # box; a bed reads as a bed when CLOTH DRAPES over the edges, not when a slab has round corners).
@@ -2053,7 +2207,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # mattress insets UNDER (3) a full-width COVERLET that overhangs the mattress and FALLS down its
     # sides to just above the plinth — breaking the hard vertical faces into draped fabric and leaving
     # a shadow reveal beneath. That silhouette reads "a made bed", not "a foam cube".
-    cov_m = _solid("bed_coverlet", (0.80, 0.77, 0.72, 1.0), rough=0.96, sheen=0.3, spec=0.3)
+    cov_m = _woven("bed_coverlet", (0.80, 0.77, 0.72, 1.0), 0.96, _lin, sheen=0.3, spec=0.3)
     base_h = H * 0.34                                   # a LOW recessed plinth (a hidden toe)
     binset = 0.10                                       # pulled well IN — the coverlet drapes PAST it
     _base_o = _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset,
@@ -2253,7 +2407,8 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     # base — the spec's bench note and material_story both bundle them ("bed base + foot bench"), so
     # the render must not show a pale cream satin bench under that stated truth (the element-2
     # revert-by-omission the story bits exist to kill; review 2026-07-18). Same values as bed_base.
-    seat_m = _solid("bench_seat", (0.46, 0.43, 0.39, 1.0), rough=0.94, sheen=0.25, spec=0.3)
+    seat_m = _woven("bench_seat", (0.46, 0.43, 0.39, 1.0), 0.94,
+                    _matpre.cloth_args("linen"), sheen=0.25, spec=0.3)   # D3-4: same linen
     leg_m  = _solid("bench_leg",  (0.26, 0.21, 0.16, 1.0), rough=0.45, sheen=0.1, spec=0.5)
     leg_h = H * 0.62                                    # tall legs + a SLIM cushion = a bench;
     seat_h = H - leg_h                                  # a fat pad on stubs is just a box again
@@ -2373,7 +2528,8 @@ def _build_tub_chair(x0, y0, W, D, H, rot=0.0):
     # deepened greige linen (owner 2026-07-22: the pale flat wrap read as ceramic) — a clear
     # mid-greige with a touch more sheen so the fabric reads as fabric, still the ONE bed-base
     # textile family (D1-A), not a new tone; legs the bench dark.
-    uph_m = _solid("stool_uph", (0.40, 0.37, 0.33, 1.0), rough=0.92, sheen=0.45, spec=0.35)
+    uph_m = _woven("stool_uph", (0.40, 0.37, 0.33, 1.0), 0.92,
+                   _matpre.cloth_args("linen"), sheen=0.45, spec=0.35)  # SAME textile family
     leg_m = _solid("stool_leg", (0.24, 0.19, 0.14, 1.0), rough=0.42, sheen=0.1, spec=0.5)
     cx, cy = x0 + lay["cx"], y0 + lay["cy"]
     sh = lay["shell"]

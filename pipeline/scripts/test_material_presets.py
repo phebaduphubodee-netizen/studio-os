@@ -713,3 +713,144 @@ def test_material_story_canonical_carries_the_e6_lines():
     assert "BARE black-alu" in story and "shower curtain" in story
     assert "greige-oatmeal TERRY" in story
     assert "no towel over the glass or tub edge" in story
+
+
+# ---------------------------------------------------------------------------
+# CLOTH SURFACE SIGNATURE (the _woven layer, 2026-07-22)
+# ---------------------------------------------------------------------------
+
+def test_every_cloth_kind_is_complete_and_in_band():
+    """Kills a mutant that adds a half-filled CLOTH_KINDS row. Every row must carry the
+    six channels the build reads, and each must sit in a band that is physically a
+    TEXTILE: a weave finer than its own slub, a relief measured in millimetres not
+    centimetres, and a sheen roughness inside the only sourced band the vault has
+    (Corona fabric cards 0.4-0.6, texture-sets-discord.md:170-195)."""
+    assert mp.CLOTH_KINDS, "the cloth vocabulary must not be empty"
+    for kind, row in mp.CLOTH_KINDS.items():
+        for key in ("slub_mm", "weave_mm", "relief_mm", "bump", "albedo_var",
+                    "sheen_rough", "desc"):
+            assert key in row, f"{kind}: missing {key}"
+        assert row["weave_mm"] < row["slub_mm"], (
+            f"{kind}: the thread band must be FINER than the slub band, else the two "
+            f"noise fields collapse into one and the surface reads as static")
+        # relief_mm is the PHYSICAL claim and stays in the band real cloth occupies.
+        assert 0.3 <= row["relief_mm"] <= 4.0, f"{kind}: relief_mm out of cloth band"
+        # bump is a RENDER GAIN, not physics — the ceiling is a typo guard, and it sits
+        # where the 2026-07-22 amplitude bisect put the useful range (0.30 invisible under
+        # this room's soft light, 0.85 read but coarse). Do not read it as a measurement.
+        assert 0.0 < row["bump"] <= 0.9, f"{kind}: bump outside the LOOK-bracketed range"
+        # the albedo MULTIPLY darkens the SIGNED mean tone by ~albedo_var/2, so this
+        # ceiling is the real constraint: 0.15 == a 7.5% shift, past what may be spent
+        # silently on an owner-signed colour.
+        assert 0.0 < row["albedo_var"] <= 0.15, (
+            f"{kind}: albedo_var this high shifts an owner-SIGNED colour too far")
+        assert 0.4 <= row["sheen_rough"] <= 0.6, (
+            f"{kind}: sheen_rough outside the only sourced band the vault holds")
+
+
+def test_cloth_args_converts_to_metres_and_raises_on_unknown():
+    """The build consumes METRES. Kills a mutant that leaks millimetres into the shader
+    (a 28x oversize slub = MA-02 texture-scale error), and one that lets an unknown kind
+    fall back to a flat slab instead of raising."""
+    a = mp.cloth_args("linen")
+    assert abs(a["slub_m"] - 0.026) < 1e-9 and abs(a["weave_m"] - 0.005) < 1e-9
+    assert abs(a["relief_m"] - 0.0026) < 1e-9
+    assert a["kind"] == "linen"
+    with pytest.raises(ValueError):
+        mp.cloth_args("hessian")
+
+
+def test_scatter_identities_are_actually_distinct():
+    """MA-01 (pbr-material-behavior.md:102-106): each fabric's scatter signature must be
+    distinct, so one vocabulary row copy-pasted onto another is a defect. Kills a mutant
+    that makes velvet and boucle share numbers."""
+    sigs = {k: (r["slub_mm"], r["weave_mm"], r["relief_mm"], r["bump"])
+            for k, r in mp.CLOTH_KINDS.items()}
+    assert len(set(sigs.values())) == len(sigs), f"duplicate scatter signatures: {sigs}"
+    # the two the vault names explicitly must not converge: boucle is LOOPS (most relief),
+    # velvet is PILE whose identity is sheen (least relief)
+    assert mp.CLOTH_KINDS["boucle"]["relief_mm"] > mp.CLOTH_KINDS["velvet"]["relief_mm"]
+
+
+def test_every_sheen_bearing_solid_preset_is_cloth():
+    """THE OMISSION GUARD, proven rather than asserted. A sheen-bearing solid IS a textile
+    in this palette, so factory_args must hand the build a cloth block for every one of
+    them — otherwise that fabric silently ships as an untextured slab (MA-05), which is
+    this studio's recurring wound wearing a new hat. Kills a mutant that drops the raise."""
+    seen = 0
+    for name, p in mp.PRESETS.items():
+        # MIRROR factory_args' condition exactly, metallic test included — if this drifts
+        # from the guard, one of them is lying about what counts as a textile.
+        if (p["factory"] != "solid" or float(p.get("sheen", 0.0)) <= 0.0
+                or float(p.get("metallic", 0.0)) != 0.0):
+            continue
+        seen += 1
+        a = mp.factory_args(name)
+        assert a.get("cloth"), f"{name} is a textile preset with no cloth block"
+        assert a["cloth"]["kind"] in mp.CLOTH_KINDS
+    assert seen >= 4, f"expected the palette's textile presets, found {seen}"
+
+
+def test_a_new_fabric_preset_without_a_cloth_row_raises():
+    """Swap-and-demand-red (the dd-gate mechanic): adding a fabric preset while FORGETTING
+    its cloth row must fail LOUD at build time, not render flat. Kills a mutant that
+    silently defaults."""
+    mp.PRESETS["_probe_fabric"] = dict(
+        factory="solid", space="srgb", hex="#D8D2C6", rough=0.8, sheen=0.6,
+        tier="STUDIO", desc="probe", source="test")
+    try:
+        with pytest.raises(ValueError, match="no PRESET_CLOTH row"):
+            mp.factory_args("_probe_fabric")
+    finally:
+        del mp.PRESETS["_probe_fabric"]
+
+
+def test_non_cloth_presets_carry_no_cloth_block():
+    """Kills a mutant that hands a cloth block to stone/metal/glass/paint, which would
+    put a fabric weave on a marble counter."""
+    for name in ("honed_marble", "satin_brass", "clear_glass", "warm_white_paint",
+                 "sanitary_white", "neutral_solid", "powder_coat_black"):
+        assert "cloth" not in mp.factory_args(name), f"{name} must not be cloth"
+
+
+def test_textile_story_bit_derives_from_spec_referents():
+    """The bit must name only cloth the build actually makes. Kills a mutant that
+    hardcodes the sentence: remove the bed and the linen clause must go with it."""
+    assert mp.textile_surface_story_bits({}) == []
+    bits = mp.textile_surface_story_bits({"items": [{"kind": "bed"}]})
+    assert bits and "WOVEN, not painted" in bits[0]
+    assert "bed base" in bits[0] and "stonewashed linen" in bits[0]
+    assert "terry" not in bits[0], "no ensuite in this spec — terry must not be claimed"
+    # the ensuite census is the terry referent, exactly as the e6 bit derives it
+    with_bath = mp.textile_surface_story_bits({
+        "items": [{"kind": "bed"}],
+        "subrooms": [{"type": "bathroom",
+                      "fixtures": [{"kind": "accessories",
+                                    "design": {"census": [{"item": "bath_towel"}]}}]}]})
+    assert "terry" in with_bath[0] and "ensuite towels" in with_bath[0]
+
+
+def test_textile_story_prose_derives_from_the_vocabulary_not_a_copy():
+    """The e6 prose-copy lesson: the sentence must be built from CLOTH_KINDS[...]['desc'],
+    so retuning the vocabulary retunes the armour. Kills a mutant that pastes the text."""
+    original = mp.CLOTH_KINDS["linen"]["desc"]
+    mp.CLOTH_KINDS["linen"]["desc"] = "MARKER-XYZ"
+    try:
+        bits = mp.textile_surface_story_bits({"items": [{"kind": "bed"}]})
+        assert "MARKER-XYZ" in bits[0], "the story bit holds a second copy of the prose"
+    finally:
+        mp.CLOTH_KINDS["linen"]["desc"] = original
+
+
+def test_canonical_story_names_the_weave():
+    """The canonical suite must tell the polish pass its textiles are woven — without this
+    line the render carries a surface the prose never claims and the repaint may iron it
+    flat (the channel that repainted the cool counter oak)."""
+    import json, os
+    spec = json.load(open(os.path.join(os.path.dirname(__file__),
+        "../../projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json"),
+        encoding="utf-8"))
+    story = mp.material_story(mp.resolve_materials(spec), spec)
+    assert "WOVEN, not painted" in story
+    assert "do NOT smooth, gloss, iron flat" in story
+    assert "stonewashed linen" in story and "terry" in story
