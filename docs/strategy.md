@@ -2288,3 +2288,122 @@ constructability / pixels), split 2–1 for a reveal. Every dimension in the doc
 `knowledge/` or the canonical spec; the 22.8 m run was recomputed from the spec by hand;
 **every baht is `[est]`** — the vault holds no THB price for any skirting, bead or trim in
 any material, and I said so in the document rather than inventing one.
+
+## 2026-07-23 — the bed's value structure, and an instrument that could see it
+
+`docs/strategy.md:2108` has carried the same line since element 3, re-written unchanged
+after every softening pass: **"the bed is two near-white values and reads pale."** Three
+passes fixed the bed's SHAPE — bevels, a floating base, a solver-draped coverlet, a real
+foot throw — and not one touched its VALUE, because nothing in this build ever owned
+value. Each builder typed its own colour tuple beside a paragraph arguing for it, and the
+ladder those tuples produce in the render had never been measured.
+
+**The first instrument I reached for was wrong, and it lied convincingly.** Hand-drawn
+region boxes over the hero frame reported four bed surfaces at 183 ±2 — "two near-white
+values", apparently confirmed. They were four different OBJECTS at 155, 165, 178 and 199;
+the boxes straddled silhouettes. That is the "hardcoded prose over an unwalked probe"
+shape this repo's reviews have caught twice, committed inside the pass written to cure a
+cousin of it. So the question "which object owns this pixel" now goes to the renderer:
+`id_mask.py` re-renders the same camera with every object flat-emitting a palette colour
+(1 sample, 0 bounces, Standard view transform, near-box filter — **2.5 s**) and
+`value_probe.py` decodes it. Every number below is per-object.
+
+**Three defects, each killing a different claim.**
+
+1. **The head was one value.** Six pieces inside **7.1 codes** at the focal point of the
+   frame. Element 8 built a three-rank head ladder because "three heights is the single
+   most recognisable signal of a styled bed" — the heights were there and the eye could
+   not use them, because the euro shams wore the PILLOW material. The brightest object in
+   the whole bed was `bed__duvet_fold`: a turned-back fold of the duvet, also wearing the
+   pillowcase, out-valuing the pillows it lies below.
+2. **Albedo was never the lever anyone thought it was.** `bed__base`, `bed__throw` and
+   `bench__seat` carry the IDENTICAL authored albedo and render **57 codes apart**;
+   `bed__coverlet`, authored 74 % brighter, renders DARKER than `bench__seat`. Whatever
+   ladder the render showed, nobody had authored it. The foot throw's own comment claimed
+   it was "the one mid-tone that breaks a hero frame otherwise filled by a single value of
+   near-white" while rendering **9.7 codes** from the coverlet it was there to break.
+3. **The studio's own albedo band was never applied here.** 30–240 sRGB
+   (`pbr-material-behavior.md:55`). `material_presets` clamps preset-driven colours at
+   resolve time; `_build_bed`/`_build_bench` author LINEAR tuples straight into the BSDF
+   and never touch `factory_args`, so the pillows shipped at **243.5**, past the ceiling.
+   `albedo_plausible()` could not see it — it guards 0.04–0.94 floats, a different band in
+   a different unit, the **OPEN** item the vault records against itself
+   (`pbr-material-behavior.md:177-186`). The same hole had already been found and plugged
+   for ROUGHNESS inside `_woven`; albedo was the other half of that sentence.
+
+**The fix: `value_ladder.py` — one greige hue, five cloths, numbers SOLVED not typed.**
+The hue is element 3's own signed base colour, so the ladder re-VALUES the signed linen
+and never re-colours it (`color-composition.md` §1's monochromatic harmony). The five
+cloths are the five a bed actually has: a duvet SET (cover + euro shams, one fabric),
+sheets, pillowcases, a coverlet, upholstery. Two of them did not exist before. The values
+come from two measured renders, a power-law fit per piece, and a target stated in RENDERED
+value — because defect 2 says authored albedo does not predict the picture. Rungs are
+**objects, not cloths**: three share the upholstery and the frame separates them by 59
+codes on its own, so chasing that with three albedos would have been three lies about one
+fabric.
+
+    base 74.7 · throw 98.3 · bench 134.3 · coverlet 146.1 · sham0 164.3 · duvet 182.0 ·
+    pillowsoft0 195.9        span 121.2 codes (was 83.6), check_render CLEAN
+
+The `bed_hero` camera holds the same ORDER unprompted. The foot bench now sits BELOW the
+coverlet it stands in front of — at HEAD it shouted over it — and the oak signature wall
+(177) finally out-values the bed's field instead of being out-shone by it.
+
+**What the 98-agent pre-commit review earned, and it earned a lot.** Six lenses, every
+finding put to two independent skeptics; 54 distinct findings, and the ones that survived
+were not cosmetic:
+
+- **A blocker I would have shipped: the change inverts D3-1's signed rationale and my own
+  module said it reopened nothing.** D3-1 was signed with a reason — *"a LIGHT greige linen
+  joins the ~60 % plaster ground (Albers: a light element on a light ground recedes)"* —
+  and the upholstery rung takes that base from 0.46 to 0.20. The header listed two small
+  amendments and omitted the largest change in the file. Now recorded as SUPERSEDED with
+  the evidence: in the module, in a new element document, and as a `decision_amendment`
+  note beside the owner-signed text in the canonical spec — flagged for him, not quietly
+  rewritten. Albers still holds; it was being applied to the wrong element. The sheer joins
+  the ground correctly. The piece the eye lands on first should not be asked to recede.
+- **The tub chair was a fifth private copy of the "same" colour** — `(0.40, 0.37, 0.33)`
+  under a comment insisting it was "NOT A NEW TONE", while the spec says it matches the bed
+  base *EXACTLY*. The change widened an 11-code slip into 46. Worse: **the test I wrote to
+  guard that assertion checked a material the chair does not wear.** False armour, inside
+  the change written to kill false armour.
+- **The armour still shipped the two claims the diff had just retracted.** I retired "the
+  ONLY mid-tone in a frame otherwise filled by one value of near-white" and the lumbar's
+  "deepest value — the only dark object in the frame's upper half" in the CODE COMMENTS and
+  left them standing in `styling_story_bits` — the copy that actually reaches the image
+  model. Retiring a claim only where nobody reads it is worse than not retiring it.
+- **My own arithmetic.** I indicted the mattress at "0.87 = 240.5, past the ceiling". It is
+  239.83, inside. One material was out of bounds, not two.
+- **Guards that did not guard.** The object→material binding that IS the headline fix was
+  pinned by nothing (reverting the shams to `pill_m` left every test green); SPAN was scored
+  over whatever rungs happened to be visible, so a legitimate close-up failed the ladder it
+  had just been told was unscorable; a typo'd frame name silently switched all seven target
+  checks off and printed CLEAN; the mask/beauty alignment check was frame SIZE, and every
+  camera in this build renders 2000×1400; and the CLI ran a second, untested decoder while
+  the tests pinned functions that never executed on a real render.
+
+All fixed, and the four reverts the pins exist to catch were each **performed** and each
+went red: duvet fold → pillowcase, shams → pillowcase, pillows → past the band, tub chair →
+its private tuple.
+
+**Disclosed rather than buried.** The tones are solved against ONE camera's light, so
+`check_render` scores per-rung targets only on that frame and enforces ORDER and SPAN
+everywhere — an instrument that cried wolf off-frame would get muted. Five cloths drive
+seven rungs, so CLEAN is five solved values and three predictions that landed. The
+upholstery rung reaches the wardrobe's linen garments, the folded knits and the vanity tub
+chair, all three LOOK-verified on their own cameras after the review challenged a first
+draft that claimed verification "in the same frame" for pieces that frame does not contain.
+The whole-frame mean fell 121.1 → 107.3: the room is deliberately less bright and
+considerably more legible.
+
+**Not fixed here, and named so it is not mistaken for done:** the foot throw is 8.7 % of
+the hero frame and covers ~42 % of the bed top — a value pass cannot make it a narrower
+band, and `styling.foot_throw`'s 0.72 m band of a 2.0 m bed is a separate call. The lumbar
+stays element 6's terry and is an accent of texture, not of value; re-tinting it to rescue
+an old sentence would repaint four ensuite pieces in another room.
+
+**Verified:** 2078 green (2004 at HEAD). 6 of 8 specs build, the same 2 failing identically
+at HEAD. Four cameras rendered and probed.
+
+**Standing rule earned here:** *a region box is an eyeball wearing arithmetic.* When the
+question is "which object is doing this", ask the renderer, not the coordinates I typed.

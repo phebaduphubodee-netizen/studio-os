@@ -56,6 +56,15 @@ def srgb_to_linear(c):
     return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
 
+def linear_to_srgb(v):
+    """The INVERSE of srgb_to_linear — linear 0..1 -> sRGB-encoded 0..1 (IEC 61966-2-1
+    piecewise OETF). Added 2026-07-23: the 30-240 band is stated in sRGB TEXEL codes, so a
+    colour authored LINEAR (which every bespoke builder does — see value_ladder.py) could
+    not be checked against the studio's own bound without this direction. Its absence is
+    half of why `albedo_plausible()` guards a different band in a different unit."""
+    return v * 12.92 if v <= 0.0031308 else 1.055 * (v ** (1 / 2.4)) - 0.055
+
+
 def clamp_albedo_band(rgb01):
     """Clamp an sRGB-encoded triple into the 30–240 texel band (dielectric albedo law)."""
     lo, hi = _SRGB_BAND_LO / 255.0, _SRGB_BAND_HI / 255.0
@@ -748,8 +757,14 @@ def furniture_material_story_bits(spec):
     items = (spec or {}).get("items") or []
     bed = next((it for it in items if it.get("kind") == "bed"), None)
     if bed and (bed.get("design") or {}).get("base_material") == "upholstered_greige_linen":
-        bits.append("bed base + foot bench: upholstered greige stonewashed linen — matte, a mid-"
-                    "greige plinth below the crisp bedding; NOT oak (D1-A anti-monopoly)")
+        # 2026-07-23: "a mid-greige plinth" was measured and it was not one — the plinth,
+        # the foot throw and the bench all wear this cloth and rendered 121 / 155 / 178,
+        # with the bench ABOVE the coverlet it stands in front of. The cloth is now the
+        # ladder's DEEPEST rung, so the adjective changes with it rather than outliving it.
+        bits.append("bed base + foot bench + foot throw: upholstered greige stonewashed linen "
+                    "— matte, and the DEEPEST value in the room's soft goods: it grounds the "
+                    "bed and keeps the foreground below the bedding behind it; NOT oak "
+                    "(D1-A anti-monopoly), and NOT to be lifted toward the bedding")
     if any(it.get("kind") == "side_table" and it.get("lamp") for it in items):
         bits.append("nightstands: matte-dark low cabinets, each with a brass dome/'mushroom' table "
                     "lamp — the 10% brass accent, dim vs the garden windows (PH-02)")
@@ -989,20 +1004,37 @@ def styling_story_bits(spec, baked=()):
             "does). Keep the folds, keep the uneven hem, keep the gap under the bed, keep "
             "the corner cascades; do NOT iron the fall into a flat skirt or a box")
     if _bed and _st.foot_throw(*_bed):
+        # 2026-07-23: this used to end "It is the ONLY mid-tone in a frame otherwise filled
+        # by one value of near-white". Both halves were retired by measurement — the frame
+        # is no longer one value of near-white (that is what the tonal ladder fixed), and
+        # the throw was never the only mid-tone: at HEAD it rendered 155.1 with the coverlet
+        # at 164.8 and the bench at 178.2. Retiring the claim in build_room's comment while
+        # leaving it HERE would have been strictly worse than not retiring it at all, since
+        # this is the copy that actually reaches the image model.
         bits.append(
             "a GREIGE LINEN THROW lies across the foot of the bed and falls over the foot "
-            "edge — the same greige as the bed base and the foot bench, no new colour. It "
-            "is the ONLY mid-tone in a frame otherwise filled by one value of near-white, "
-            "which is its whole job: do NOT recolour it toward the cream bedding, do NOT "
-            "flatten its fall back onto the mattress, and do NOT remove it")
+            "edge — the same greige as the bed base and the foot bench, no new colour, and "
+            "at the DEEPEST value in the room's soft goods. That depth is its whole job: it "
+            "is what keeps the bed from reading as one pale mass. Do NOT lighten it toward "
+            "the bedding, do NOT flatten its fall back onto the mattress, do NOT remove it")
     if bits:
         bits.append(
-        "the bed head is a THREE-HEIGHT ladder: two upright euro shams against the oak "
-        "slat wall, two plump sleeping pillows in front of them, and ONE greige-oatmeal "
-        "terry lumbar cushion off-centre in the deepest value — the only dark object in "
-        "the frame's upper half. Keep all three heights and keep the asymmetry; do NOT "
-        "level them into a matched pair, and do NOT crease, dent or rumple any of them "
-        "(the room is made, not slept in)")
+        # 2026-07-23: "in the deepest value — the only dark object in the frame's upper
+        # half" was false when written (the lumbar measured 188.6, seventh lightest of the
+        # bed group's twelve measured pieces — the ten bed__ parts plus the bench seat and
+        # the lumbar itself) and this change is what makes it obviously false. The lumbar
+        # is an accent by TEXTURE and POSITION; terry is element 6's signed cloth, shared
+        # with four ensuite pieces, so it is not re-valued to rescue a sentence.
+        # The head's ladder is now a VALUE ladder too, and that is what is worth telling
+        # the polish pass — it is the half it kept flattening.
+        "the bed head is a THREE-HEIGHT ladder that is also a TONAL one: two upright euro "
+        "shams against the oak slat wall in the duvet set's deeper greige, two plump "
+        "sleeping pillows in front of them in the lightest cloth in the room, and ONE "
+        "greige-oatmeal terry lumbar cushion off-centre — an accent of TEXTURE, not of "
+        "value. Keep all three heights, keep the value steps between them, keep the "
+        "asymmetry; do NOT level them into a matched pair, do NOT wash the shams up to the "
+        "pillows, and do NOT crease, dent or rumple any of them (the room is made, not "
+        "slept in)")
     return bits
 
 
@@ -1156,6 +1188,27 @@ def textile_surface_story_bits(spec, resolved=None):
               "re-tint any of it, and do NOT swap a weave for a printed pattern"]
 
 
+def tonal_ladder_story_bits(spec):
+    """THE BED'S VALUE STRUCTURE, NAMED — so the polish pass cannot flatten it back.
+
+    Same referent the BUILD routes on: `_build_bed` runs for an item of kind 'bed', so a
+    spec without one says nothing rather than describing a ladder nobody rendered.
+
+    The sentence itself is `value_ladder.story_line()` — derived from the tone table and
+    the ladder the build reads, with no number retyped here. That matters more than usual
+    for this bit: the whole defect it guards is a set of values that drifted apart from
+    the words describing them, and an armour bit holding its own copy of those values
+    would drift the same way (twice caught in review already: "2 bath towels", "21 shelf
+    parts").
+
+    IMPORTED LAZILY on purpose: value_ladder imports THIS module for the sRGB conversions
+    and the 30-240 band, so a module-level import here would be a cycle."""
+    if not any(it.get("kind") == "bed" for it in (spec or {}).get("items") or []):
+        return []
+    import value_ladder as _vl
+    return [_vl.story_line()]
+
+
 def material_story(resolved, spec=None, baked=()):
     """One prose sentence naming the ACTUAL selected materials — the truth the render
     shows, for the render-polish prompt's {material_story} slot (and rationale). Built
@@ -1197,4 +1250,5 @@ def material_story(resolved, spec=None, baked=()):
     bits.extend(wardrobe_bay_story_bits(spec))         # ELEMENT 7: the open dressing gallery
     bits.extend(styling_story_bits(spec, baked))              # ELEMENT 8: the styling layer
     bits.extend(textile_surface_story_bits(spec, resolved))   # the WEAVE (2026-07-22)
+    bits.extend(tonal_ladder_story_bits(spec))                # the VALUE ladder (2026-07-23)
     return "; ".join(bits) if bits else material_story(None)

@@ -947,3 +947,57 @@ def test_canonical_story_names_the_weave():
     assert "WOVEN, not painted" in story
     assert "do NOT smooth, gloss, iron flat" in story
     assert "stonewashed linen" in story and "terry" in story
+
+
+# ---------------------------------------------------------------- the VALUE ladder (2026-07-23)
+
+def test_tonal_ladder_bit_is_gated_on_a_bed_the_build_would_actually_make():
+    """Same referent the BUILD routes on (_build_bed fires for kind == 'bed'). A spec with
+    no bed must not describe a ladder nobody rendered."""
+    assert mp.tonal_ladder_story_bits({}) == []
+    assert mp.tonal_ladder_story_bits({"items": []}) == []
+    assert mp.tonal_ladder_story_bits({"items": [{"kind": "rug"}]}) == []
+    assert len(mp.tonal_ladder_story_bits({"items": [{"kind": "bed"}]})) == 1
+
+
+def test_tonal_ladder_prose_derives_from_the_tone_table_not_a_copy():
+    """The whole defect this guards is values that drifted apart from the words describing
+    them. An armour bit holding its own copy of those values would drift the same way —
+    twice caught in review already ("2 bath towels", "21 shelf parts"). Kills a mutant
+    that pastes the sentence."""
+    import value_ladder as vl
+    before = mp.tonal_ladder_story_bits({"items": [{"kind": "bed"}]})[0]
+    vl.TONES["MARKER-XYZ"] = 0.33
+    vl.MATERIAL_TONE["bed_marker"] = "MARKER-XYZ"
+    try:
+        after = mp.tonal_ladder_story_bits({"items": [{"kind": "bed"}]})[0]
+        assert "MARKER-XYZ" in after, "the story bit holds a second copy of the tone table"
+        assert after != before
+    finally:
+        del vl.TONES["MARKER-XYZ"]
+        del vl.MATERIAL_TONE["bed_marker"]
+
+
+def test_canonical_story_names_the_tonal_ladder():
+    """Without this line the polish pass is told the cloths and NOT their value structure,
+    and 'greige stonewashed linen' alone is an instruction it can satisfy at any lightness
+    — which is how the bed spent five elements as one near-white mass."""
+    import json, os
+    spec = json.load(open(os.path.join(os.path.dirname(__file__),
+        "../../projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json"),
+        encoding="utf-8"))
+    story = mp.material_story(mp.resolve_materials(spec), spec)
+    assert "tonal ladder" in story
+    assert "told apart by VALUE" in story
+    assert "do NOT" in story and "single cream" in story
+
+
+def test_the_bed_base_bit_no_longer_calls_the_deepest_cloth_a_mid_tone():
+    """Measured: plinth 121.1, throw 155.1, bench 178.2 — with the bench ABOVE the coverlet
+    it stands in front of. 'a mid-greige plinth below the crisp bedding' described none of
+    that, and prose that outlives its measurement is the class this file keeps catching."""
+    bits = mp.furniture_material_story_bits(
+        {"items": [{"kind": "bed", "design": {"base_material": "upholstered_greige_linen"}}]})
+    assert len(bits) == 1
+    assert "mid-greige plinth" not in bits[0]
+    assert "DEEPEST value" in bits[0]

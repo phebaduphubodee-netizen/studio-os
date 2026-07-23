@@ -446,7 +446,11 @@ def head_ranks(along):
 
 def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     """Three pillow HEIGHTS at the bed head — upright euro shams against the slat wall,
-    flat sleeping pillows in front of them, one accent lumbar in the deepest value.
+    flat sleeping pillows in front of them, one accent lumbar in a contrasting TEXTURE.
+
+    (2026-07-23: this line used to end "one accent lumbar in the deepest value". Measured,
+    the lumbar was the seventh lightest of the twelve pieces the bed group measures as.
+    See the [3] block.)
 
     Three heights is the single most recognisable signal of a styled bed versus a made
     one; the build currently emits two identical flat slabs at identical height, which the
@@ -494,8 +498,15 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
                       "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     # [3] ONE accent lumbar, off-centre, in the greige-oatmeal TERRY identity — a real
     # signed textile with character, not a joinery ply pretending to be a cushion (the
-    # critic's amendment to the `ink` overload). It is the hero frame's darkest object
-    # above the plinth and the thing that breaks the mirror symmetry.
+    # critic's amendment to the `ink` overload). It breaks the mirror symmetry, and its
+    # accent is TEXTURE and POSITION, not value.
+    # 2026-07-23 — this comment used to claim it was "the hero frame's darkest object above
+    # the plinth". Measured: 188.6, the SEVENTH lightest of the twelve pieces the bed group
+    # measures as (the ten bed__ parts + the bench seat + this cushion), with
+    # the throw (155.1), the coverlet (164.8) and the bench (178.2) all below it. Terry is
+    # element 6's signed cloth and is shared with the ensuite towels, robes and mat, so it
+    # is deliberately NOT re-valued here — re-tinting it to make an old sentence true would
+    # repaint four other pieces in another room. The sentence goes instead.
     lw = min(across * 0.34, 0.52)
     loff = (across - lw) * 0.5 + sg.dev(salt, across * 0.06, salt + 3)
     x, y, dx, dy = place(lb_from, loff, lb_d, lw)

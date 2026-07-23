@@ -579,6 +579,15 @@ import material_defaults as _matdef
 # spec-selectable presets (owner's hand on materials; pure stdlib, testable outside bpy).
 # NO materials block in the spec == every legacy hardcoded default below, unchanged.
 import material_presets as _matpre
+# the suite's soft goods as a TONAL LADDER (pure; validates itself on import). Every
+# textile colour the bespoke builders used to type by hand now comes from here BY NAME —
+# see value_ladder.py for the measurement that made it necessary.
+import value_ladder as _vl
+# The dark furniture-leg tone, ONE definition. _build_bench and _build_tub_chair each held
+# their own copy (0.26/0.21/0.16 vs 0.24/0.19/0.14) under docstrings that each said the
+# other's was theirs. Not a soft good, so it is not a value_ladder rung — but it is the same
+# drift, and one name is the same cure.
+_DARK_LEG = (0.26, 0.21, 0.16, 1.0)
 _FABRIC = _matdef.FABRIC_KINDS
 _WOODEN = _matdef.WOODEN_KINDS
 
@@ -1709,12 +1718,18 @@ def _suite_materials(spec=None):
     # for the terry-pile read.
     towel = _woven("m_mill_towel", (0.60, 0.575, 0.52, 1.0), rough=0.9,
                    cloth=_matpre.cloth_args("terry"), sheen=0.7, spec=0.3)
-    # ELEMENT 8: the greige stonewashed LINEN, at the exact element-3 bed_base values.
+    # ELEMENT 8: the greige stonewashed LINEN. It used to say "at the exact element-3
+    # bed_base values" and hold its own copy of them; since 2026-07-23 it holds none —
+    # the value comes from value_ladder, which is what makes 'the same' checkable.
     # It was signed in element 3 but re-hardcoded inside each builder (_build_bed's base,
     # _build_bench's seat) instead of being reachable BY NAME — so nothing outside those
     # two functions could wear the suite's own signed textile. This row is what makes it a
     # material identity rather than a number repeated in three places.
-    linen = _woven("m_mill_linen", (0.46, 0.43, 0.39, 1.0), rough=0.94,
+    # 2026-07-23: the colour now comes from value_ladder BY NAME. This row and the two
+    # bespoke builders each held their own copy of the same tuple — the comment above
+    # claims this row made the linen "a material identity rather than a number repeated in
+    # three places", and it did not: it made a FOURTH copy. One tone, one source.
+    linen = _woven("m_mill_linen", _vl.rgba("m_mill_linen"), rough=0.94,
                    cloth=_matpre.cloth_args("linen"), sheen=0.2, spec=0.25)
     _opb = _principled(opal)[1]
     if _opb:
@@ -2186,23 +2201,50 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
 
     # ELEMENT 3 D3-1 (2026-07-18): the base is UPHOLSTERED GREIGE STONEWASHED LINEN, not the old
     # dark (0.40,0.36,0.32) that read wood-brown — and deliberately NOT oak (D1-A anti-monopoly:
-    # four oak masses already; a fifth on the hero bed breaks 60-30-10). A LIGHT greige linen joins
-    # the ~60% plaster ground (Albers: a light element on a light ground recedes — the curtain-DR
-    # grounding, 3ce5f5e), so the warm oak slat headboard wall + the crisp bedding carry the eye.
-    # High roughness + LOW sheen = matte linen weave, a mid-GREIGE that reads clearly BELOW the
-    # crisp cream bedding (v1 at 0.58/sheen0.6 washed to the same white as the mattress under the
-    # 3000 K key — the bed read as one pale blob; LOOK 2026-07-18). Darkened + de-sheened so the
-    # platform plinth grounds the bed and stays a neutral (never a fifth warm oak mass, D1-A).
+    # four oak masses already; a fifth on the hero bed breaks 60-30-10). High roughness + LOW
+    # sheen = matte linen weave. That identity is unchanged and not reopened.
+    # D3-1's RATIONALE IS SUPERSEDED (2026-07-23, owner loop OPEN — value_ladder.py header).
+    # It used to read: "A LIGHT greige linen joins the ~60% plaster ground (Albers: a light
+    # element on a light ground recedes — the curtain-DR grounding, 3ce5f5e), so the warm oak
+    # slat headboard wall + the crisp bedding carry the eye", and it noted the base had already
+    # been "darkened + de-sheened so the platform plinth grounds the bed" after v1 at 0.58
+    # "washed to the same white as the mattress ... the bed read as one pale blob; LOOK
+    # 2026-07-18". Those two sentences were pulling in opposite directions and the second one
+    # was right: measured, this cloth rendered 121.1 on the plinth, 155.1 on the throw and
+    # 178.2 on the BENCH — 13 codes ABOVE the coverlet the bench stands in front of. A light
+    # element on a light ground does recede; the piece the eye lands on first should not be
+    # asked to. So the base joins the ladder's DEEPEST rung and grounds the bed, which is what
+    # the 07-18 LOOK asked for and what the 07-18 Albers sentence prevented.
     # WOVEN, not _solid (2026-07-22): these five are the largest textile area in the hero
     # frame and every one of them was an untextured slab — the MA-05 "plastic look" the
     # owner has been describing since element 3. Bedding is stonewashed LINEN by D3-2, so
     # base, mattress, duvet, pillow and coverlet all wear the linen signature; the colours,
     # roughness and sheen weights below are the LOOK-tuned values and are untouched.
+    # 2026-07-23 — THE COLOURS LEAVE THIS FUNCTION. Every tuple below used to be typed
+    # here beside a paragraph arguing for it, and the ladder those tuples actually produced
+    # in the render had never been measured. It has now (object-id probe, hero frame):
+    # six of the bed's ten pieces rendered inside 7.1 sRGB codes of each other, the
+    # duvet's own turned-back FOLD was the brightest object in the bed because it wore the
+    # PILLOW material, and the pillows shipped at sRGB 243.5 — past the studio's own 30-240
+    # dielectric ceiling, which the bespoke path never applied. (The mattress at 0.87 =
+    # 239.8 was inside it; the review corrected a first draft that indicted both.) value_ladder.py owns all of
+    # it now: ONE greige hue in five cloths, each checked against the band, the ladder
+    # stated in RENDERED value and the albedos solved against the measurement. The count
+    # is not repeated here on purpose — value_ladder.cloths_by_tone() is the one source,
+    # and a "seven" in this sentence survived a revision that made it five.
+    # Roughness/sheen/spec below are element 3's LOOK-tuned values and are untouched.
     _lin = _matpre.cloth_args("linen")
-    base_m = _woven("bed_base",     (0.46, 0.43, 0.39, 1.0), 0.94, _lin, sheen=0.2, spec=0.25)
-    matt_m = _woven("bed_mattress", (0.87, 0.85, 0.81, 1.0), 0.92, _lin, sheen=0.5, spec=0.35)
-    duvt_m = _woven("bed_duvet",    (0.80, 0.77, 0.71, 1.0), 0.95, _lin, sheen=0.7, spec=0.35)
-    pill_m = _woven("bed_pillow",   (0.90, 0.88, 0.84, 1.0), 0.95, _lin, sheen=0.8, spec=0.35)
+    base_m = _woven("bed_base",     _vl.rgba("bed_base"),     0.94, _lin, sheen=0.2, spec=0.25)
+    matt_m = _woven("bed_mattress", _vl.rgba("bed_mattress"), 0.92, _lin, sheen=0.5, spec=0.35)
+    duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35)
+    pill_m = _woven("bed_pillow",   _vl.rgba("bed_pillow"),   0.95, _lin, sheen=0.8, spec=0.35)
+    # THE EURO SHAMS JOIN THE DUVET SET. They were sharing pill_m, so the head's three-rank
+    # ladder — built in element 8 because "three heights is the single most recognisable
+    # signal of a styled bed" — rendered as three heights of ONE value: sham0 199.6 against
+    # pillowsoft0 200.6, one code apart, at the focal point of the frame. Height without
+    # value is not a ladder. A duvet cover and its euro shams are one fabric in every
+    # bedding set ever sold, so this is not a new cloth — it is the cloth they were always
+    # supposed to be, and it puts them 33 codes under the pillowcases in front.
 
     # SOFT, LOW-DRAPED MASSING (owner LOOK 2026-07-18 "ยังเหลี่ยม" ×2 — bevels alone did NOT break the
     # box; a bed reads as a bed when CLOTH DRAPES over the edges, not when a slab has round corners).
@@ -2210,7 +2252,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # mattress insets UNDER (3) a full-width COVERLET that overhangs the mattress and FALLS down its
     # sides to just above the plinth — breaking the hard vertical faces into draped fabric and leaving
     # a shadow reveal beneath. That silhouette reads "a made bed", not "a foam cube".
-    cov_m = _woven("bed_coverlet", (0.80, 0.77, 0.72, 1.0), 0.96, _lin, sheen=0.3, spec=0.3)
+    cov_m = _woven("bed_coverlet", _vl.rgba("bed_coverlet"), 0.96, _lin, sheen=0.3, spec=0.3)
     base_h = H * 0.34                                   # a LOW recessed plinth (a hidden toe)
     binset = 0.10                                       # pulled well IN — the coverlet drapes PAST it
     _base_o = _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset,
@@ -2284,8 +2326,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     #                                                     (bevw < half the 0.09 dz or the bevel collapses)
     # turned-back fold at the duvet's head edge — the single most legible "this is a made bed"
     # cue, and it gives the repaint an edge to hang linen folds on.
+    # It wears duvt_m, not pill_m: this IS the duvet, folded back. Wearing the pillow
+    # material made a hem of the duvet the brightest object in the whole bed (204.7,
+    # above the pillows it lies below) — a piece of cloth out-valuing itself.
     emit("bed__duvet_fold", dv_from - 0.13, ci, 0.15, across - 2 * ci,
-         H - 0.01, 0.10, pill_m, 0.045, seg=5)          # bevw < half the 0.10 dz
+         H - 0.01, 0.10, duvt_m, 0.045, seg=5)          # bevw < half the 0.10 dz
 
     # ELEMENT 8: THE HEAD LADDER replaces the two identical flat slabs the DD's ground
     # phase named as the loudest CAD tell in the hero frame ("same width, same thickness,
@@ -2298,12 +2343,35 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # the slept-in cues on purpose.
     _cov_full = {"x": x0, "y": y0, "z": cov_top - cov_t,
                  "dx": W, "dy": D, "dz": cov_t}
-    _mats = {"sham": pill_m, "pillowsoft": pill_m}
+    # DERIVED from value_ladder.HEAD_CLOTH, not typed here. The line this replaces —
+    # `{"sham": pill_m, "pillowsoft": pill_m}` — WAS defect 1, and it was a literal inside
+    # this function that no test could reach. Now the mapping is data, so reverting it is a
+    # visible change to a table the tests read.
+    _by_name = {"bed_base": base_m, "bed_mattress": matt_m, "bed_duvet": duvt_m,
+                "bed_pillow": pill_m, "bed_coverlet": cov_m}
+    _mats = {}
+    for _stem, _matname in _vl.HEAD_CLOTH.items():
+        if _matname not in _by_name:
+            raise RuntimeError(
+                f"bed head: value_ladder.HEAD_CLOTH maps {_stem!r} to material "
+                f"{_matname!r}, which _build_bed does not weave (has: {sorted(_by_name)})")
+        _mats[_stem] = _by_name[_matname]
     for _p in styling.pillow_bank(_cov_full, axis, sign):
         _stem = _p["name"].split("__")[1].rstrip("01")
         if _p["name"].startswith("bed__"):
+            # RAISE, never default. This was `_mats.get(_stem, pill_m)`: a new head piece
+            # added to pillow_bank would silently have been dressed in the PILLOWCASE — the
+            # lightest cloth in the room — which is the precise mechanism that put the euro
+            # shams and the duvet's fold at the top of the value ladder in the first place.
+            # A silent default is how this defect was built; it does not get to survive the
+            # fix for it.
+            if _stem not in _mats:
+                raise RuntimeError(
+                    f"bed head: pillow_bank emitted {_p['name']!r} but no cloth is mapped "
+                    f"for stem {_stem!r} (known: {sorted(_mats)}). Add it to value_ladder "
+                    f"and to _mats — do not let it inherit a tone")
             _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"],
-                             _mats.get(_stem, pill_m), own_mat=True)
+                             _mats[_stem], own_mat=True)
         else:                                            # the lumbar wears a suite TOKEN
             _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], own_mat=False)
     # THE FOOT THROW — RESTORED 2026-07-22. It shipped DISABLED, and the comment that
@@ -2372,12 +2440,17 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                 # draped over the coverlet's soft rounded flank BOWS instead of hanging,
                 # the same "curved card" failure the hand-written vocabulary had,
                 # reproduced in the solver by asking for the wrong fabric. Linen hangs.
-                # The throw wears the SUITE'S GREIGE LINEN — the identity already carried
-                # by the bed base and the foot bench (element 3 bundles them), not a new
-                # colour: the palette is closed. The first bake gave it cov_m and it was
-                # INVISIBLE, cream cloth on a cream bed. That is the whole job of this
-                # piece: it is the one mid-tone that breaks a hero frame otherwise filled
-                # by a single value of near-white, and it ties the bed to the bench.
+                # The throw wears the SUITE'S GREIGE LINEN — base_m, the identity already
+                # carried by the bed base and the foot bench (element 3 bundles them), not a
+                # new colour: the palette is closed. The first bake gave it cov_m and it was
+                # INVISIBLE, cream cloth on a cream bed. That is the whole job of this piece
+                # — it is the one deep mass that breaks a hero frame otherwise filled by a
+                # single value of near-white — and under the old tone it was NOT doing it:
+                # it rendered 155.1 against a coverlet at 164.8, 9.7 codes from the thing it
+                # was there to break. The fix is the tone, not a second material: the same
+                # base_m now renders 98 here and 134 on the bench, because this surface lies
+                # flat in the bed's own shadow and that one is not. The light was always
+                # going to separate them; the cloth just had to be deep enough to let it.
                 frames=70, fabric="knit", mat=base_m, thickness=0.008, slack=sl,
                 slack_verts=_on)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
@@ -2410,9 +2483,12 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     # base — the spec's bench note and material_story both bundle them ("bed base + foot bench"), so
     # the render must not show a pale cream satin bench under that stated truth (the element-2
     # revert-by-omission the story bits exist to kill; review 2026-07-18). Same values as bed_base.
-    seat_m = _woven("bench_seat", (0.46, 0.43, 0.39, 1.0), 0.94,
+    # 2026-07-23: the tone comes from value_ladder ("upholstery"), the SAME rung the bed
+    # base and the tub chair wear — which is what D3-4 actually decided. Three copies of
+    # one tuple in three functions is not "the same linen", it is three chances to drift.
+    seat_m = _woven("bench_seat", _vl.rgba("bench_seat"), 0.94,
                     _matpre.cloth_args("linen"), sheen=0.25, spec=0.3)   # D3-4: same linen
-    leg_m  = _solid("bench_leg",  (0.26, 0.21, 0.16, 1.0), rough=0.45, sheen=0.1, spec=0.5)
+    leg_m  = _solid("bench_leg",  _DARK_LEG, rough=0.45, sheen=0.1, spec=0.5)
     leg_h = H * 0.62                                    # tall legs + a SLIM cushion = a bench;
     seat_h = H - leg_h                                  # a fat pad on stubs is just a box again
     lt = min(0.05, W * 0.12, D * 0.12)                  # leg thickness
@@ -2528,12 +2604,23 @@ def _build_tub_chair(x0, y0, W, D, H, rot=0.0):
     are real curves via from_pydata (the curtain-wave law — the first boxy pass read as
     a box because the primitive was wrong, owner 2026-07-20)."""
     lay = millwork.tub_chair_curved(W, D, H, rot_deg=rot)
-    # deepened greige linen (owner 2026-07-22: the pale flat wrap read as ceramic) — a clear
-    # mid-greige with a touch more sheen so the fabric reads as fabric, still the ONE bed-base
-    # textile family (D1-A), not a new tone; legs the bench dark.
-    uph_m = _woven("stool_uph", (0.40, 0.37, 0.33, 1.0), 0.92,
+    # 2026-07-23 — THE FIFTH COPY, found by the pre-commit review. This line read
+    # `(0.40, 0.37, 0.33)` under a comment saying "still the ONE bed-base textile family
+    # (D1-A), NOT A NEW TONE" — and it was a new tone, a fifth private copy of a colour the
+    # docstring above, the spec's own tub-chair decision ("upholstery = greige stonewashed
+    # LINEN matching the bed base + foot bench EXACTLY") and material_presets' story bit all
+    # swear is shared. Worse, the pass that introduced value_ladder shipped a TEST asserting
+    # the chair shares the rung — while the chair wore `stool_uph` and the test checked
+    # `m_mill_linen`. False armour, written inside the change built to kill false armour.
+    # The owner's 2026-07-22 LOOK ("the pale flat wrap read as ceramic") is honoured, not
+    # reverted: it asked for DEEPER than the then-0.46 family, and the family is now 0.20.
+    # The extra sheen he was given stays — sheen is a finish, not a tone.
+    uph_m = _woven("stool_uph", _vl.rgba("stool_uph"), 0.92,
                    _matpre.cloth_args("linen"), sheen=0.45, spec=0.35)  # SAME textile family
-    leg_m = _solid("stool_leg", (0.24, 0.19, 0.14, 1.0), rough=0.42, sheen=0.1, spec=0.5)
+    # ONE leg tone, from one place. This was `(0.24, 0.19, 0.14)` beside a docstring saying
+    # "legs = the bench leg tone", while _build_bench used `(0.26, 0.21, 0.16)`. Same drift,
+    # smaller stakes — and the same fix.
+    leg_m = _solid("stool_leg", _DARK_LEG, rough=0.42, sheen=0.1, spec=0.5)
     cx, cy = x0 + lay["cx"], y0 + lay["cy"]
     sh = lay["shell"]
     # swept rim: low arms at the opening rising to the tall back = the tub-chair silhouette
