@@ -1267,10 +1267,13 @@ def _add_curtains(spec, h):
     # a top 30mm proud of the walls reads as a fence in the dollhouse view
     z_top = h + 0.03 if spec.get("_eye") else h - 0.002
     for rb in ribbons:
-        pts, z0, z1 = rb["pts"], rb["z0"], min(rb["z1"], z_top)
-        n = len(pts)
-        verts = [(x, y, z0) for x, y in pts] + [(x, y, z1) for x, y in pts]
-        faces = [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]
+        # LOOK round-2 #4: the 2-ring prism this loop used to extrude (track wave at
+        # constant amplitude down to a dead-level hem) is what made the east sheer's
+        # hem a row of detached triangular spikes — the sawtooth class e8 killed
+        # elsewhere. The lattice (rings, decaying primary, irregular secondary,
+        # wandering hem, end-tapered so mitre corners still meet) is pure and
+        # unit-tested in curtains.ribbon_mesh; here it is only materialised.
+        verts, faces = curtains.ribbon_mesh(dict(rb, z1=min(rb["z1"], z_top)))
         me = bpy.data.meshes.new(rb["name"])
         me.from_pydata(verts, [], faces)
         me.validate()
@@ -2082,6 +2085,13 @@ def _rbox(name, x0, y0, z0, w, d, hgt, mat, bevw=0.02, seg=3):
     o["ph_model"] = 1                       # skip the global 1mm _bevel_edges (we bevel here)
     m = o.modifiers.new("bev", 'BEVEL')
     m.width = bevw; m.segments = seg; m.limit_method = 'ANGLE'; m.angle_limit = 0.5236
+    # use_smooth, like every other curved surface in this file (curtains, sheers,
+    # _smooth_mesh_obj) — the unapplied bevel inherits face smoothness. Without it the
+    # 3–5 flat segments render as stair-step value plateaus (LOOK round-2 #1: bench
+    # seat banded 142→84 in ~18 px steps; same terracing on mattress rolls, bed base,
+    # nightstands). The faces are planar, so smoothing costs the flats nothing.
+    for p in o.data.polygons:
+        p.use_smooth = True
     return o
 
 
@@ -2420,11 +2430,24 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
             tx, ty, tdx, tdy = box(_thr_from, (_c_lo + _t_in) - _b_lo,
                                    _thr_band + hang, (_c_hi - _c_lo) - 2 * _t_in)
             vs, fs = softgoods.flat_sheet(tx, ty, tdx, tdy, _cbb[5] + 0.012, cell=0.022)
-            # slack ONLY on the part lying on the bed: the fall is what containment is
-            # decided at, and letting the search buy millimetres there by ironing the
-            # whole throw flat is how this piece became a plate the first time.
+            # FULL slack only on the part lying on the bed; the FALL gets a PARTIAL
+            # weight, not zero. Zero was the first cut, and LOOK round-2 #2 read the
+            # result off the render: the largest cloth face in both frames (~1.4 m of
+            # drop face) was a fold-less slab with a near-level hem — a taut cantilever
+            # is the e8 "painted slab" rebuilt by the containment fix itself. The
+            # weight is 0.30, and the reason it is not higher is measured, not taste:
+            # the coverlet's own foot skirt already spends the 90 mm inset (its face
+            # settles ~3-15 mm inside the plan line), so there is NO room outboard for
+            # deep folds of the throw's own — at 0.45 the stack sat 10 mm proud of the
+            # plan line at every slack the ladder tried. What the fall CAN do in that
+            # space is stop BRIDGING the coverlet's fold crests: with modest excess it
+            # conforms into the troughs beneath (collision does the shaping), which is
+            # what makes cloth-over-cloth read, and the inherited undulation un-levels
+            # the hem.
             _on = softgoods.verts_in_rect(vs, max(tx, x0), max(ty, y0),
                                           min(tx + tdx, x0 + W), min(ty + tdy, y0 + D))
+            _wts = {i: 0.30 for i in range(len(vs))}
+            _wts.update({i: 1.0 for i in _on})
             pw = 0.05
             if axis == "x":
                 px = (tx + tdx - pw) if sign > 0 else tx
@@ -2452,7 +2475,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                 # flat in the bed's own shadow and that one is not. The light was always
                 # going to separate them; the cloth just had to be deep enough to let it.
                 frames=70, fabric="knit", mat=base_m, thickness=0.008, slack=sl,
-                slack_verts=_on)
+                slack_verts=_wts)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
         # would have fixed it is only correct for this one bed.

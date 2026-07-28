@@ -1,11 +1,11 @@
-"""Tests for the PURE half of the cloth lane (2026-07-22).
+﻿"""Tests for the PURE half of the cloth lane (2026-07-22).
 
 The previous element shipped 1985 green tests that could not see a build-breaking
 regression, because the two functions its consumer actually called had zero coverage.
 These are those functions this time: what layer 1 hands the solver, and the predicate
 the anti-repaint armour and the build must both answer the same way.
 
-Nothing here simulates cloth — that is layer 2's job and Blender's. What is pinned is
+Nothing here simulates cloth â€” that is layer 2's job and Blender's. What is pinned is
 the CONTRACT: quads only, no orphan vertices, corners that leave no free edge, a pin
 region that is a region and not a grid row, and one predicate with one answer.
 """
@@ -74,7 +74,7 @@ def _corner_profile(keep):
 def test_the_rounded_corner_leaves_no_free_edge_running_to_a_point():
     """The defect this replaced: a squared-off or mitred corner leaves the two
     adjacent panels with free edges meeting at a point, and they splay into sharp
-    tabs sticking out of the bed's silhouette. A rounded boundary has no such pair —
+    tabs sticking out of the bed's silhouette. A rounded boundary has no such pair â€”
     every kept corner vertex sits within the radius, so the outline is one curve."""
     r = 0.4
     for p in _corner_profile(1.0):
@@ -117,7 +117,7 @@ def test_pin_region_outside_the_sheet_is_empty_not_an_error():
 
 def test_foot_throw_agrees_with_the_canonical_bed_the_build_ships():
     """2026-07-28: band re-solved 0.72 -> 0.50 (owner LOOK: at 36% of the bed the throw
-    was the LARGEST object in both judged frames — a second coverlet, not an accent).
+    was the LARGEST object in both judged frames â€” a second coverlet, not an accent).
     The envelope here is the one the bake ladder actually verified on this bed."""
     band, hang = st.foot_throw(2.0, 2.149, 0.60, 0.204)
     assert 0.45 <= band <= 0.55 and 0.20 <= hang <= 0.30
@@ -126,11 +126,11 @@ def test_foot_throw_agrees_with_the_canonical_bed_the_build_ships():
 def test_the_laid_band_is_never_shorter_than_the_cantilever():
     """THE 2.2x FLOOR IS RETIRED, and this test records why instead of vanishing: the
     5.1 m fall it encoded was measured on an UNPINNED sheet. The build has since pinned
-    the throw's innermost strip (a tucked edge), so the pin — not the band's weight —
+    the throw's innermost strip (a tucked edge), so the pin â€” not the band's weight â€”
     holds the sheet, and the bake still fails the build loudly (hem_min, containment,
     frozen-sheet) if that ever stops being true; the 2026-07-28 resize attempt that
     misread `hang` proved that ladder fires. What pure logic still owns: a LAID throw
-    has at least as much cloth on the bed as hanging off it — band >= hang — which is
+    has at least as much cloth on the bed as hanging off it â€” band >= hang â€” which is
     also the envelope the bake has actually been verified in (0.50 vs 0.28)."""
     for along in (1.6, 1.9, 2.0, 2.2, 2.6):
         for h in (0.40, 0.50, 0.60, 0.75):
@@ -184,11 +184,11 @@ def test_the_saved_blend_is_pinned_to_cycles_before_it_is_written():
     """Every .blend this studio shipped up to 2026-07-22 recorded BLENDER_EEVEE at 4096
     samples, because render() set the engine AFTER save() ran. The deliverable therefore
     did not reproduce the PNG beside it, and opened headless it takes the EGL/Xvfb path
-    pipeline/CLAUDE.md forbids — a rule broken by the ordering at its own call site.
+    pipeline/CLAUDE.md forbids â€” a rule broken by the ordering at its own call site.
 
     This pins the ORDER, not just the presence: a configure_cycles() call that drifts
     below save_as_mainfile() restores the bug while still looking correct in a diff.
-    (Element 7 shipped exactly that shape — a routing pin that never pinned order.)"""
+    (Element 7 shipped exactly that shape â€” a routing pin that never pinned order.)"""
     src = _build_room_src()
     i_def = src.index("def save(")
     i_cfg = src.index("configure_cycles(", i_def)
@@ -216,14 +216,14 @@ def test_the_blend_and_the_png_are_given_the_same_settings():
 
 def test_the_armour_never_goes_silent_on_a_throw_the_build_actually_made():
     """`_build_bed` knows the head axis; the anti-repaint armour does not, and resolves it
-    by taking the LONGER footprint run as head-to-foot. That guess can disagree — and the
+    by taking the LONGER footprint run as head-to-foot. That guess can disagree â€” and the
     build/armour cross-check in _build_bed only pins build-against-build, so nothing else
     catches it. What makes the guess safe is its DIRECTION, and a direction asserted in a
     docstring is not a direction.
 
     A false YES (armour describes a throw that is not there) tells the beauty pass not to
     remove something absent: free. A false NO drops armour off a piece the build really
-    made — the revert-by-omission this whole lane exists to prevent. Sweep says: 547 false
+    made â€” the revert-by-omission this whole lane exists to prevent. Sweep says: 547 false
     YES, ZERO false NO."""
     import material_presets as mp        # noqa: F401  (import proves the pair ship together)
     false_no = []
@@ -238,3 +238,45 @@ def test_the_armour_never_goes_silent_on_a_throw_the_build_actually_made():
                 if built and not said:
                     false_no.append((round(w, 2), round(d, 2), h))
     assert not false_no, f"armour goes silent on {len(false_no)} built throws: {false_no[:5]}"
+
+
+# ---- the tangent mitre curve (LOOK round-2 #3) ---------------------------------------
+# The corner Z-step fix shipped once with ZERO armour (pre-commit review 2026-07-28):
+# reverting _mitre_radius to `return keep`, deleting the arc-snap and dropping the
+# coverlet's deep dip left all tests green. These make that revert red.
+
+def test_mitre_radius_is_full_at_the_strips_and_dips_on_the_diagonal():
+    for keep in (0.45, 0.6, 0.8):
+        assert sg._mitre_radius(1.0, 0.0, keep) == pytest.approx(1.0)
+        assert sg._mitre_radius(0.0, 1.0, keep) == pytest.approx(1.0)
+        assert sg._mitre_radius(0.7, 0.7, keep) == pytest.approx(keep)   # 45 deg
+        # everywhere between the two: inside [keep, 1], never outside
+        for k in range(1, 20):
+            u = k / 20.0
+            f = sg._mitre_radius(u, 1.0 - u, keep)
+            assert keep - 1e-9 <= f <= 1.0 + 1e-9
+
+
+def test_mitre_boundary_verts_are_snapped_onto_the_curve():
+    # every kept vert inside the corner rect must lie ON or INSIDE the tangent curve;
+    # face-drop precision alone leaves a staircase of verts beyond it (the squared
+    # drop->shelf->drop the render caught), so this fails if the arc-snap reverts
+    keep = 0.45
+    mit = (0.0, 0.0, 0.3, 0.3, 0.3, 0.3)      # corner rect, inner corner at (0.3, 0.3)
+    verts, faces = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.028,
+                                 mitre=[mit], mitre_keep=keep)
+    a, b, c, e, ix, iy = mit
+    for vx, vy, _ in verts:
+        if a - 1e-9 <= vx <= c + 1e-9 and b - 1e-9 <= vy <= e + 1e-9:
+            u = abs(vx - ix) / (c - a)
+            v = abs(vy - iy) / (e - b)
+            r = (u * u + v * v) ** 0.5
+            assert r <= sg._mitre_radius(u, v, keep) + 1e-6
+
+
+def test_coverlet_mitre_keep_is_the_deep_dip():
+    # 0.45, deliberately UNDER the 0.6 default: the tangent rise adds corner cloth,
+    # and at 0.6 that surplus cowled past the plan line and made the search ladder
+    # iron the whole coverlet (slack 2.5%->0.62%). The deep dip pays for the rise.
+    assert sg.COVERLET_MITRE_KEEP == pytest.approx(0.45)
+    assert sg.COVERLET_MITRE_KEEP < 0.6

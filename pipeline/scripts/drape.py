@@ -257,12 +257,26 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     # buy a few millimetres at one hem. The throw lost 0.06 -> 0.0075 that way and went
     # back to being a flat plate. Naming the region lets the part lying ON the bed carry
     # the fabric it should while the falling part stays taut enough to stay inside.
+    # `slack_verts` may be a list (weight 1.0 everywhere named) or a {index: weight}
+    # dict. The dict exists for LOOK round-2 #2: the throw's FALL carried weight 0 =
+    # dead taut, and a taut cantilever is a fold-less slab with a level hem — the
+    # literal e8 defect, rebuilt by the very mechanism that fixed containment. A
+    # PARTIAL weight on the fall buys it enough excess to buckle into vertical folds
+    # (constrained at the fold-over line, so excess width MUST wave) while still
+    # spending most of the slack where containment is cheap, on the bed.
     if slack_verts:
         vg = obj.vertex_groups.new(name="drape_slack")
-        vg.add(list(slack_verts), 1.0, 'REPLACE')
+        if isinstance(slack_verts, dict):
+            by_w = {}
+            for i, w in slack_verts.items():
+                by_w.setdefault(float(w), []).append(i)
+            for w, idxs in sorted(by_w.items()):
+                vg.add(idxs, w, 'REPLACE')
+        else:
+            vg.add(list(slack_verts), 1.0, 'REPLACE')
         s.vertex_group_shrink = vg.name
-        s.shrink_min = 0.0                  # weight 0 (the fall): taut
-        s.shrink_max = -abs(slack)          # weight 1 (on the bed): full slack
+        s.shrink_min = 0.0                  # weight 0: taut
+        s.shrink_max = -abs(slack)          # weight 1: full slack
     else:
         s.shrink_min = -abs(slack)
     if pin:
@@ -380,8 +394,18 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
             for cy0, cy1, iy in ((oy0, y0, y0), (y0 + dy, oy1, y0 + dy)):
                 if cx1 - cx0 > 1e-6 and cy1 - cy0 > 1e-6:
                     mit.append((cx0, cy0, cx1, cy1, ix, iy))
+        # COVERLET_MITRE_KEEP (0.45), not the 0.6 default: the tangent boundary
+        # (_mitre_radius) RISES to full overhang beside each strip, which is net cloth
+        # the constant-radius cut never kept — and that extra corner cloth, at 0.6,
+        # cowled past the plan line and made the search ladder iron the whole sheet to
+        # buy the corner back (slack 2.5%→0.62%, hem 62 mm short, and the throw
+        # stacked outboard could no longer fit at ANY slack). A deeper dip pays for
+        # the tangent rise: total corner cloth lands slightly UNDER the old mitre's,
+        # the ladder solves like before, and the hem still turns the corner as one
+        # continuous curve. The value lives in softgoods so pure tests pin it.
         verts, faces = sg.flat_sheet(ox0, oy0, ox1 - ox0, oy1 - oy0,
-                                     top_z + 0.004, cell=cell, mitre=mit)
+                                     top_z + 0.004, cell=cell, mitre=mit,
+                                     mitre_keep=sg.COVERLET_MITRE_KEEP)
         # Pin the band trapped under the pillows at the headboard — and ONLY the part
         # of it lying ON the mattress, never the full grid row (softgoods.verts_in_rect).
         band = min(0.12, dx * 0.2 if ax == "x" else dy * 0.2)

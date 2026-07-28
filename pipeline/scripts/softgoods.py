@@ -115,7 +115,7 @@ def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6):
             if a <= cx <= c and b <= cy <= e:
                 u = abs(cx - ix) / max(c - a, 1e-9)
                 v = abs(cy - iy) / max(e - b, 1e-9)
-                if (u * u + v * v) ** 0.5 > mitre_keep:
+                if (u * u + v * v) ** 0.5 > _mitre_radius(u, v, mitre_keep):
                     return True
         return False
 
@@ -138,7 +138,53 @@ def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6):
                 verts.append(grid[k])
             f.append(used[k])
         faces.append(tuple(f))
+    # THE ARC-SNAP (LOOK round-2 #3). Dropping whole faces by their CENTRE leaves the
+    # corner's free boundary as a STAIRCASE at cell resolution — and a staircase hem
+    # drapes as a staircase: the coverlet's left corner broke in a squared 90°
+    # drop→shelf→drop Z-step, knife-clean against the floor, which cloth cannot do. The
+    # rounding promised "ONE continuous boundary"; the cut delivered it only to face
+    # precision. So every kept vert past the boundary curve is PROJECTED onto it
+    # (radially in the rect-normalised space, so an oblong corner snaps to its ellipse).
+    # The curve itself is _mitre_radius: FULL overhang at both strip junctions, dipping
+    # to mitre_keep on the diagonal — verts on the shared strip edges satisfy r <= 1
+    # there, so the strips are untouched and the hem leaves each strip tangent instead
+    # of stepping. Quads stay quads; only boundary geometry moves.
+    if mitre:
+        for n_, (vx, vy, vz) in enumerate(verts):
+            for a, b, c, e, ix, iy in mitre:
+                if a - 1e-9 <= vx <= c + 1e-9 and b - 1e-9 <= vy <= e + 1e-9:
+                    u = abs(vx - ix) / max(c - a, 1e-9)
+                    v = abs(vy - iy) / max(e - b, 1e-9)
+                    r = (u * u + v * v) ** 0.5
+                    f = _mitre_radius(u, v, mitre_keep)
+                    if r > f:
+                        s = f / r
+                        verts[n_] = (ix + (vx - ix) * s, iy + (vy - iy) * s, vz)
+                    break
     return verts, faces
+
+
+def _mitre_radius(u, v, keep):
+    """Free-boundary radius of a rounded corner cut, by direction (rect-normalised).
+
+    LOOK round-2 #3 exposed what a CONSTANT radius does at a corner whose neighbours
+    keep full overhang: the strips' hems reach r=1.0 while the corner cloth stops at
+    r=keep, so the as-draped hem line breaks in a hard step where they meet — the
+    squared drop→shelf→drop the verdict called "cloth cannot do this". The boundary
+    must instead LEAVE each strip at the strip's own hem and shorten only through the
+    diagonal: full radius (1.0) at θ=0 and θ=90°, dipping to `keep` between, blended
+    with cos⁶(2θ) so the curve is tangent-flat at all three extremes. The exponent is
+    6, not 2, and the first bake is why: cos² held the boundary near full radius over
+    most of the arc, which nearly doubled the corner cloth — the corner cowl bulged
+    past the plan line, and the search ladder paid for that corner-local bulge by
+    stripping slack from the WHOLE coverlet (2.5% → 0.62%, folds ironed, hem 62 mm
+    short) and then starving the throw stacked outboard of it. cos⁶ rises to the
+    strip hem only within the last ~15° of arc: the step is still gone, the cloth
+    budget stays essentially the mitre's. (A full square flap remains the recorded
+    316mm-cowl failure — the dip is the design, the tangent is the fix.)"""
+    th = math.atan2(v, u)
+    c2 = math.cos(2.0 * th)
+    return keep + (1.0 - keep) * (c2 * c2) ** 3
 
 
 def verts_in_rect(verts, x0, y0, x1, y1, tol=1e-9):
@@ -232,13 +278,31 @@ def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
     if not 0.2 <= shoulder <= 1.0:
         _fail(f"garment: shoulder fraction {shoulder} outside 0.2..1.0")
     waves = ((2.0, 0.5), (5.0, 0.33), (9.0, 0.24))
+    # PER-GARMENT POSE DNA (LOOK round-2 #5). The rail read as "cloned boards" because
+    # dev() varied WIDTHS only: every piece shared one S-bend at one height, a
+    # dead-level shoulder line off a single-point hook, and hems that kicked in
+    # unison. The pose itself now derives from `salt`, inside the published bounds:
+    #   knee   where the shoulder opens into the body (the old constant 0.35);
+    #   flare  below-waist flare, <= 0.06 so GARMENT_FLARE stays the true span bound;
+    #   slope  shoulder TIPS drop toward the ends — a hanger's arms angle down from
+    #          the hook, a level top ring is a coat on a SHELF, not on a hanger;
+    #   bow    a lateral C-or-S bow along the shoulder axis, zero at the hook so the
+    #          piece still hangs FROM it, spent out of the sway budget so the
+    #          published span bound (width*FLARE + 2*sway) stays honest;
+    #   fold_g per-piece crease amplitude — phase already varied, depth never did.
+    knee = 0.35 + dev(1, 0.07, salt + 31)
+    flare_g = 0.04 + 0.02 * dev(2, 1.0, salt + 37)
+    slope = garment_slope(drop, salt)
+    bow_a = 0.55 * sway * dev(4, 1.0, salt + 43)
+    bow_m = 0.3 + 0.7 * abs(dev(5, 1.0, salt + 47))      # 1 = C-bow, toward 0 = S-bow
+    fold_g = fold * (0.65 + 0.35 * abs(dev(6, 1.0, salt + 53)))
     verts = []
     for j in range(nv + 1):
         v = j / float(nv)                                    # 0 at shoulder, 1 at hem
-        # width profile: shoulder -> full body over the top ~35%, then a slight flare
-        t = min(v / 0.35, 1.0)
+        # width profile: shoulder -> full body over the top ~knee, then a slight flare
+        t = min(v / knee, 1.0)
         wf = shoulder + (1.0 - shoulder) * (t * t * (3 - 2 * t))     # smoothstep
-        wf += 0.06 * max(v - 0.5, 0.0)                       # a little flare below the waist
+        wf += flare_g * max(v - 0.5, 0.0)                    # a little flare below the waist
         rx = 0.5 * width * wf
         # THE SHOULDER CAP. The first render put the garments' full thickness right up to
         # the top ring, so each one presented a flat-topped rectangular strip to the
@@ -247,18 +311,46 @@ def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
         # third of the way down — that curve is most of what says "clothing" when the
         # wardrobe is seen from the front and every garment is edge-on.
         ry = 0.5 * depth * (0.22 + 0.78 * min(v / 0.34, 1.0) ** 0.7)
-        sw = sway * (v ** 1.5) * dev(0, 1.0, salt + 3)       # whole garment leans a touch
+        # lean + bow share the sway budget so their SUM can never exceed it: the bow
+        # vanishes at v=0 (the hook) and at the hem line, mixing a C-shape with an
+        # S-shape per piece — this is what breaks the one-bend-at-one-height clone.
+        sw = (sway - abs(bow_a)) * (v ** 1.5) * dev(0, 1.0, salt + 3) \
+            + bow_a * (bow_m * math.sin(math.pi * v)
+                       + (1.0 - bow_m) * math.sin(2.0 * math.pi * v))
         hw = dev(j, hem_wander, salt + 2) if j == nv else 0.0
+        # the hanger-arm term: fades out by the knee, fully formed at the top ring
+        sl = slope * max(0.0, 1.0 - v / knee)
         for i in range(nu + 1):
             u = i / float(nu)
             a = 2.0 * math.pi * u
-            amp = fold * (v ** 1.5)
+            amp = fold_g * (v ** 1.5)
             c = _crease(u, salt, waves)
             x = rx * math.cos(a) + sw
             y = ry * math.sin(a) + amp * c * (1.0 if math.sin(a) >= 0 else -1.0)
-            z = -drop * v + hw
+            z = -drop * v + hw - sl * abs(math.cos(a)) ** 1.6
             verts.append((x, y, z))
     return verts, _loft_faces(nv, nu)
+
+
+def garment_slope(drop, salt):
+    """The shoulder-tip drop of the garment at `salt` — ONE stream, published, because
+    two consumers must agree on it: the garment's cloth follows this slope, and the
+    hanger's ARMS must angle down with the very same value or the pair contradicts.
+
+    The pre-commit review proved the first cut of the pose DNA did exactly that: slope
+    ran to 0.053 while the recorded cover budget (styling.SHOULDER_DROP 0.020 above a
+    bar at 0.030) is 10 mm — 40/40 salts hung cloth below the straight bar that
+    suspends it. Coverage math with LINEAR arms and the cloth's ^1.6 profile: at the
+    ring tip, cloth-minus-arm = 0.010 - 0.244*slope, so slope <= 0.038 keeps the cloth
+    outside the arm at every station. Hence the band [0.017, 0.038] — still >= the
+    12 mm the armour test demands, never enough to sag through the arm."""
+    return min(0.0275 + 0.0105 * dev(3, 1.0, salt + 41), 0.25 * drop)
+
+
+# The coverlet's corner-cut dip (see _mitre_radius). Lives HERE, not in drape.py, so
+# the value that decides the corner's cloth budget is pinned by pure tests — fix #3
+# shipped with zero armour once already (pre-commit review, 2026-07-28).
+COVERLET_MITRE_KEEP = 0.45
 
 
 def _loft_faces(nv, nu):
@@ -274,15 +366,23 @@ def _loft_faces(nv, nu):
     return faces
 
 
-def hanger(width, hook_r=0.015, bar_drop=0.030, salt=0):
-    """A hanger silhouette above a garment's shoulder: a shoulder bar + a hook.
+def hanger(width, hook_r=0.015, bar_drop=0.030, salt=0, arm_drop=0.0):
+    """A hanger silhouette above a garment's shoulder: two shoulder ARMS + a hook.
 
-    Returns (verts, faces) with origin at the RAIL centre; the bar sits `bar_drop` below
-    the rail and the hook rises to meet it. Small, but the repeated hook profile along a
-    rail is the visual signature that says 'wardrobe' — without it, garments read as
-    sheets pegged on a line (DD ground: 'Hangers themselves')."""
+    Returns (verts, faces) with origin at the RAIL centre; the arms root `bar_drop`
+    below the rail and the hook rises to meet it. Small, but the repeated hook profile
+    along a rail is the visual signature that says 'wardrobe' — without it, garments
+    read as sheets pegged on a line (DD ground: 'Hangers themselves').
+
+    `arm_drop` angles each arm DOWN from the hook root to its tip — a real hanger's
+    arms slope, and once the garment's shoulders slope too (pose DNA, LOOK round-2 #5)
+    a straight bar is worse than a detail gap: the pre-commit review measured cloth
+    hanging 13-43 mm BELOW a straight bar at every salt. The caller passes the SAME
+    `garment_slope` its garment wears, so cloth and wire agree by construction."""
     if width <= 0:
         _fail(f"hanger: degenerate width {width}")
+    if arm_drop < 0:
+        _fail(f"hanger: arm_drop {arm_drop} must be >= 0")
     hw = width * 0.5
     z0 = -bar_drop
     t = 0.0035                               # wire thickness — a hanger is WIRE. At 6mm,
@@ -300,7 +400,21 @@ def hanger(width, hook_r=0.015, bar_drop=0.030, salt=0):
                   (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
             faces.append(tuple(b + i for i in q))
 
-    bar(-hw, -t * 0.5, z0, width, t, t)                      # the shoulder bar
+    def arm(sx):
+        """One sheared-box arm from the hook root out to x = sx*hw, its top face
+        dropping linearly by `arm_drop` (planar quads: z is linear in x)."""
+        b = len(verts)
+        for x, zt in ((0.0, z0), (sx * hw, z0 - arm_drop)):
+            verts.append((x, -t * 0.5, zt))
+            verts.append((x, t * 0.5, zt))
+            verts.append((x, t * 0.5, zt - t))
+            verts.append((x, -t * 0.5, zt - t))
+        for q in ((0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7),
+                  (0, 3, 2, 1), (4, 5, 6, 7)):
+            faces.append(tuple(b + i for i in q))
+
+    arm(1.0)                                                 # the two shoulder arms
+    arm(-1.0)
     # the stem from the bar up to the hook root, then the hook curl over the rail
     bar(-t * 0.5, -t * 0.5, z0, t, t, max(bar_drop - hook_r, t))
     n = 10

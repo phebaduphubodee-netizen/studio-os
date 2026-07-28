@@ -421,3 +421,83 @@ def test_canonical_spec_integration():
     for leg in ("west", "east"):
         run = _run_mm(_get(rbs, leg, "privacy"))
         assert min(run) <= -697.8 + C.GAP_GLASS_MM + 0.2, leg
+
+
+# ---- the hanging lattice (LOOK round-2 #4) -------------------------------------------
+# ribbon_mesh turns each plan ribbon into a (stations x rings) lattice under the e8
+# softgoods law. These pin the law itself, on the real fixture geometry.
+
+def _lattice(rb, nv=C.RIBBON_RINGS):
+    verts, faces = C.ribbon_mesh(rb, nv=nv)
+    n = len(rb["pts"])
+    assert len(verts) == n * (nv + 1)
+    assert len(faces) == (n - 1) * nv
+    assert all(len(f) == 4 for f in faces)          # quads only (SketchUp law)
+    cols = [verts[i * (nv + 1):(i + 1) * (nv + 1)] for i in range(n)]
+    return cols
+
+
+def _off_mm(rb, v):
+    coord, plane, sign = PLANES[rb["leg"]]
+    c = v[0] if coord == "x" else v[1]
+    return sign * (c / C.MM - plane)
+
+
+def test_lattice_top_ring_is_the_track_wave():
+    # ring 0 = the owner-signed plan layout byte-for-byte, at the suspension height
+    for rb in _ribbons():
+        cols = _lattice(rb)
+        for (px, py), col in zip(rb["pts"], cols):
+            assert col[0][2] == pytest.approx(rb["z1"])
+            assert (col[0][0], col[0][1]) == pytest.approx((px, py))
+
+
+def test_lattice_stays_inside_the_layer_envelope():
+    # the law may redistribute the wave, never enlarge it: every vert of every ring
+    # within [centre-amp, centre+amp] -- the band the pocket stack was validated on
+    for rb in _ribbons():
+        lo = rb["centre_off_mm"] - rb["amp_mm"] - 1e-6
+        hi = rb["centre_off_mm"] + rb["amp_mm"] + 1e-6
+        for col in _lattice(rb):
+            for v in col:
+                assert lo <= _off_mm(rb, v) <= hi, rb["name"]
+
+
+def test_lattice_hem_never_level_but_never_low():
+    for rb in _ribbons():
+        cols = _lattice(rb)
+        hem = [col[-1][2] for col in cols]
+        assert min(hem) >= rb["z0"] - 1e-9, rb["name"]          # floor clearance holds
+        assert max(hem) <= rb["z0"] + C.HEM_WANDER_M + 1e-9
+        assert max(hem) - min(hem) > 0.006, rb["name"]          # a LEVEL hem is the defect
+
+
+def test_lattice_ends_stay_put_for_the_mitre_corners():
+    # at both run ends every ring sits exactly on the track wave and the hem lands at
+    # z0 -- a wandering end would open the L-corner where two legs meet
+    for rb in _ribbons():
+        cols = _lattice(rb)
+        for col, k in ((cols[0], 0), (cols[-1], -1)):
+            px, py = rb["pts"][k]
+            for v in col:
+                assert (v[0], v[1]) == pytest.approx((px, py)), rb["name"]
+            assert col[-1][2] == pytest.approx(rb["z0"])
+
+
+def test_lattice_breaks_the_metronome():
+    # the hem ring must NOT be a scalar multiple of the top ring (that is the fluted
+    # corrugation): station-wise gain top->hem must actually spread
+    rb = _get(_ribbons(), "south", "privacy")           # the widest drawn sheer
+    cols = _lattice(rb)
+    gains = []
+    for col in cols:
+        top = _off_mm(rb, col[0]) - rb["centre_off_mm"]
+        hem = _off_mm(rb, col[-1]) - rb["centre_off_mm"]
+        if abs(top) > 0.4 * rb["amp_mm"]:
+            gains.append(hem / top)
+    assert max(gains) - min(gains) > 0.25, "hem is still a uniform copy of the track wave"
+
+
+def test_lattice_deterministic():
+    rb = _get(_ribbons(), "east", "privacy")
+    assert C.ribbon_mesh(rb) == C.ribbon_mesh(rb)

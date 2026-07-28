@@ -215,3 +215,44 @@ def test_cushion_rejects_a_bad_edge():
         sg.cushion(0.6, 0.1, 0.4, edge=0.0)
     with pytest.raises(ValueError):
         sg.cushion(0.6, 0.1, 0.4, edge=1.4)
+
+
+# ---- per-garment pose DNA (LOOK round-2 #5) ------------------------------------------
+# The rail read as cloned boards because dev() varied widths only. These pin that two
+# salts now produce two POSES -- and that the pose never breaks the published bounds.
+
+def _cols(verts, nu=11, nv=7):
+    return [verts[j * (nu + 1):(j + 1) * (nu + 1)] for j in range(nv + 1)]
+
+
+def test_garment_shoulder_slopes_down_from_the_hook():
+    verts, _ = sg.garment(0.40, 1.10, depth=0.045, salt=5)
+    top = _cols(verts)[0]
+    tip = min(v[2] for v in top)            # a shoulder END (|cos a| = 1)
+    mid = max(v[2] for v in top)            # the hook point (cos a = 0)
+    assert mid - tip > 0.012, "top ring is still a level ellipse -- a coat on a shelf"
+
+
+def test_garment_poses_differ_by_salt():
+    a, _ = sg.garment(0.40, 1.10, depth=0.045, salt=5)
+    b, _ = sg.garment(0.40, 1.10, depth=0.045, salt=6)
+    ca, cb = _cols(a), _cols(b)
+    # bend: the mid-height lateral drift must not match piece-to-piece
+    bow_a = sum(v[0] for v in ca[4]) / len(ca[4])
+    bow_b = sum(v[0] for v in cb[4]) / len(cb[4])
+    assert abs(bow_a - bow_b) > 0.001
+    # shoulder slope differs too
+    sa = max(v[2] for v in ca[0]) - min(v[2] for v in ca[0])
+    sb = max(v[2] for v in cb[0]) - min(v[2] for v in cb[0])
+    assert abs(sa - sb) > 0.002
+
+
+def test_garment_pose_stays_inside_published_bounds():
+    # the containment law styling solves against: span <= width*FLARE + 2*sway, and
+    # nothing hangs below -drop - hem_wander
+    for salt in range(12):
+        w, d, sway, hw = 0.40, 1.10, 0.010, 0.016
+        verts, _ = sg.garment(w, d, depth=0.045, sway=sway, hem_wander=hw, salt=salt)
+        xs = [v[0] for v in verts]
+        assert max(xs) - min(xs) <= w * sg.GARMENT_FLARE + 2 * sway + 1e-9, salt
+        assert min(v[2] for v in verts) >= -d - hw - 1e-9, salt

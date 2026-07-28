@@ -36,6 +36,8 @@ CONVENTION (render-tier defaults, marked, owner-vetoable — NOT measurements):
 """
 import math
 
+import softgoods as sg
+
 MM = 0.001   # mm -> m
 
 # --- pocket layout (mm; the pocket WIDTH itself always comes from the spec) --------------
@@ -384,7 +386,7 @@ def curtain_ribbons(spec):
                 "leg": leg["name"], "role": role,
                 "type": str(l.get("type", "opaque")),
                 "state": state, "n_folds": n_folds, "over_glass_park": over_glass,
-                "centre_off_mm": centre, "amp_mm": amp,
+                "centre_off_mm": centre, "amp_mm": amp, "plane_mm": leg["plane"],
                 "pocket_used_mm": usable, "depth_scale": scale,
                 "squeezed_by": blocker if scale < 1.0 else None,
                 "pts": pts,
@@ -392,6 +394,93 @@ def curtain_ribbons(spec):
                 "z1": float(room.get("ceiling_mm", 2800)) * MM + TOP_EMBED_M,
             })
     return ribbons
+
+
+# --- the hanging lattice (LOOK round-2 #4) --------------------------------------------
+# This module predates the e8 softgoods law, and the render finally said so: the east
+# sheer's hem read as "a row of detached triangular spikes, one per pleat" — a vertical
+# blind — because each ribbon was extruded as a 2-ring PRISM: the track's sine carried
+# at constant amplitude from ceiling to a dead-level hem, at a metronomically constant
+# pitch. That is the exact "fluted acrylic panel" corrugation softgoods.py names. The
+# law ("the fold pitch must be irregular, the hem must never be level") is applied HERE,
+# in the vertical dimension, without touching the owner-signed plan layout: the TOP ring
+# is the track's own wave byte-for-byte, and everything the law adds decays to zero at
+# the ribbon's two ENDS so the L-corner mitre meets are preserved.
+RIBBON_RINGS = 8             # vertical rings hem→ceiling (smooth-shaded, 8 is plenty)
+HEM_WANDER_M = 0.032         # hem rises up to this above HEM_CLEAR — never below it
+PRIMARY_DECAY = 0.30         # how much of the track wave the free hem gives up
+SECONDARY_FRAC = 0.38        # irregular multi-wavelength crease share at the hem
+END_TAPER = 0.05             # run-fraction over which hem-law terms fade at the ends
+_SEC_WAVES = ((3.1, 0.5), (7.3, 0.33), (13.7, 0.22))   # incommensurate — never a beat
+_MOD_WAVES = ((1.7, 0.6), (4.3, 0.4))                  # slow per-station depth drift
+# Hem wander needs energy at TWO scales, and the second LOOK pass is why: with only
+# slow waves (2.3 / 5.9 cycles over a 5.5 m run of ~37 folds) adjacent pleats land at
+# near-identical heights, so the hem still read as a row of matched spikes — just a
+# slowly breathing one. The per-ribbon third wave at ~0.47 x n_folds (added in
+# ribbon_mesh; incommensurate with the pleat pitch, so it never locks to it) is what
+# makes NEIGHBOURING tips end at different heights.
+_HEM_WAVES = ((2.3, 0.35), (5.9, 0.35))
+_HEM_PLEAT_FRAC = 0.47       # pleat-scale wander frequency, as a fraction of n_folds
+_HEM_PLEAT_AMP = 0.55        # its share of the wander (sum clamps to [-1, 1])
+_LEG_OF = {v: k for k, v in _LEG_NAME.items()}          # leg name -> (axis, sign)
+
+
+def _ribbon_salt(name):
+    """Deterministic per-ribbon stream (hash() is process-seeded — never use it)."""
+    return sum(ord(ch) for ch in str(name)) % 97
+
+
+def ribbon_mesh(rb, nv=RIBBON_RINGS):
+    """One hanging ribbon -> (verts, faces): a (stations x rings) quad lattice.
+
+    Vertical structure per ring depth t (0 = suspension, 1 = hem):
+      * the track wave loses PRIMARY_DECAY x t of its amplitude, modulated smoothly
+        per station, so pleat depths stop being identical;
+      * an incommensurate secondary crease grows in as SECONDARY_FRAC x t^1.3;
+      * the summed offset is CLAMPED to the layer's own +/-amp envelope, so the
+        fabric can never leave the pocket the layer stack was validated against;
+      * the hem interpolates toward z0 + a smooth wander in [0, HEM_WANDER_M] —
+        never level, never below the declared floor clearance.
+    All three terms taper to zero within END_TAPER of each end: the mitre-trimmed
+    extents are where two legs MEET, and a wandering end would open the corner."""
+    axis, sign = _LEG_OF[rb["leg"]]
+    amp = float(rb["amp_mm"]) * MM
+    centre = float(rb["centre_off_mm"]) * MM
+    plane = float(rb["plane_mm"]) * MM
+    pts = rb["pts"]
+    z0, z1 = float(rb["z0"]), float(rb["z1"])
+    salt = _ribbon_salt(rb["name"])
+    n = len(pts)
+    if n < 2 or nv < 2 or amp <= 0:
+        raise ValueError(f"ribbon_mesh({rb.get('name')!r}): degenerate lattice "
+                         f"({n} stations, {nv} rings, amp {amp})")
+    hem_waves = _HEM_WAVES + ((max(2.0, float(rb.get("n_folds", 8)) * _HEM_PLEAT_FRAC),
+                               _HEM_PLEAT_AMP),)
+    verts = []
+    for i, p in enumerate(pts):
+        coord, run = (p[0], p[1]) if axis == "y" else (p[1], p[0])
+        b = (sign * (coord - plane) - centre) / amp          # track wave, in [-1, 1]
+        u = i / (n - 1.0)
+        taper = min(1.0, min(u, 1.0 - u) / END_TAPER) if END_TAPER > 0 else 1.0
+        mod = 0.5 * (1.0 + max(-1.0, min(1.0, sg._crease(u, salt + 1, _MOD_WAVES))))
+        sec = sg._crease(u, salt, _SEC_WAVES)
+        wand = HEM_WANDER_M * 0.5 * (1.0 + max(-1.0, min(1.0, sg._crease(
+            u, salt + 2, hem_waves)))) * taper
+        for j in range(nv + 1):
+            t = j / float(nv)
+            val = b * (1.0 - PRIMARY_DECAY * t * mod * taper) \
+                + SECONDARY_FRAC * (t ** 1.3) * sec * taper
+            val = max(-1.0, min(1.0, val))
+            off = plane + sign * (centre + amp * val)
+            z = z1 + (z0 + wand - z1) * t
+            verts.append((off, run, z) if axis == "y" else (run, off, z))
+    faces = []
+    for i in range(n - 1):
+        for j in range(nv):
+            a = i * (nv + 1) + j
+            c = (i + 1) * (nv + 1) + j
+            faces.append((a, c, c + 1, a + 1))
+    return verts, faces
 
 
 def _render_states(c, layers):

@@ -339,7 +339,10 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
 
         gv, gf = sg.garment(wid, drp, depth=thk, fold=GARMENT_FOLD,
                             hem_wander=GARMENT_HEM, sway=SWAY, salt=s)
-        hv, hf = sg.hanger(wid * 0.82, salt=s)
+        # the hanger's arms angle down by the SAME slope this garment's shoulders
+        # wear (one published stream) — a straight bar under sloped cloth hangs the
+        # cloth below the wire that suspends it (pre-commit review, 40/40 salts)
+        hv, hf = sg.hanger(wid * 0.82, salt=s, arm_drop=sg.garment_slope(drp, s))
         # THE ORIENTATION: the generator authors its shoulder span along local +x, so the
         # piece is rotated whenever that span would land ALONG the rail. Shoulder must lie
         # on the CROSS axis; thickness on the rail axis.
