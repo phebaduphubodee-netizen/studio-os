@@ -67,6 +67,9 @@ import wardrobe_bay   # bpy-free pure logic: the wardrobe-bay dressing gallery (
 import bathroom       # bpy-free pure logic: ensuite sanitaryware massing (element 4). Subroom
 #   fixtures used to render as ONE plain box each (the crude v4); this emits per-part boxes with
 #   material ROLES that route to the SAME suite materials (oak/caesarstone/brass/glass) by name.
+import quicklook      # bpy-free pure logic: R5 playblast-ladder rung (--quick) — cheap
+                      # first LOOK before any full-fidelity frame; kills bad work
+                      # early, never certifies good work
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
@@ -3384,6 +3387,13 @@ def build_suite(spec, label="suite"):
         name += "_" + str(spec["_suffix"])
     _samples = 400 if hero else 256
     _res = (2400, 1500) if hero else (2000, 1400)
+    if spec.get("_quick"):
+        # R5 rung: distinct _ql name so the deliverable pair is never overwritten
+        # by a cheap frame, and the .blend beside it records the SAME quick settings.
+        _samples, _res = quicklook.quick_params(_samples, _res)
+        name += "_" + quicklook.QUICK_SUFFIX
+        print(f"  QUICK-LOOK rung (R5): samples={_samples} res={_res} — a pass here "
+              f"kills/continues work; only the full-fidelity pair closes a gate")
     save(name, samples=_samples, res=_res)        # ONE source, so the .blend matches the PNG
     if spec.get("render"):
         render(name, samples=_samples, res=_res)
@@ -3465,9 +3475,14 @@ def build_rect(spec, label="default"):
     add_camera_and_light(w, d, h)
     _environment()
     name = r.get("type", "room")
-    save(name)
+    _qs, _qr = 128, (1600, 1000)                  # the rect path's save()/render() defaults
+    if spec.get("_quick"):
+        _qs, _qr = quicklook.quick_params(_qs, _qr)
+        name += "_" + quicklook.QUICK_SUFFIX
+        print(f"  QUICK-LOOK rung (R5): samples={_qs} res={_qr}")
+    save(name, samples=_qs, res=_qr)
     if spec.get("render"):
-        render(name)
+        render(name, samples=_qs, res=_qr)
 
     print(f"  built '{name}' {r['width_in']}x{r['depth_in']}in, ceiling {r['ceiling_in']}\" + {len(items)} items")
     print("  -> run  python pipeline/clearance_check.py <spec.json>  for the dimensional PASS/WARN/FAIL report")
@@ -3522,6 +3537,9 @@ if __name__ == "__main__":
     _spec = load_spec(_p) if _p else DEFAULT_SPEC
     if _force_render_from_argv():
         _spec["render"] = True
+    if "--quick" in _post_dashdash():     # R5 playblast rung: cheap first LOOK, implies render
+        _spec["_quick"] = True
+        _spec["render"] = True
     if "--hero" in _post_dashdash():      # close magazine shot of the lounge seating group
         _spec["_hero"] = True
     if "--eye" in _post_dashdash():       # eye-level interior shot aimed at the main piece
@@ -3548,6 +3566,16 @@ if __name__ == "__main__":
         _spec["eye_camera"] = _vars[_ecam]
         _spec["_eye"] = True
         _spec["_suffix"] = _spec.get("_suffix") or _ecam
+    _sfx_final = _spec.get("_suffix")
+    if _sfx_final and (_sfx_final == quicklook.QUICK_SUFFIX
+                       or str(_sfx_final).endswith("_" + quicklook.QUICK_SUFFIX)):
+        # R5 name law: '_ql' is the quick rung's reserved tail — a full-fidelity
+        # variant wearing it would collide with (and silently overwrite) the cheap
+        # frame of the same spec, making a deliverable mistakable for a quick-look.
+        print(f"BUILD FAILED: --suffix/--eyecam {_sfx_final!r} ends in the reserved "
+              f"quick-look tail '_{quicklook.QUICK_SUFFIX}' (R5); pick another name")
+        sys.stdout.flush()
+        os._exit(1)
     try:
         print(build(_spec, label=os.path.basename(_p) if _p else "DEFAULT_SPEC"))
     except BaseException as _e:  # noqa: BLE001 — incl. SystemExit (the --eye solver)

@@ -2553,3 +2553,32 @@ duvt_m + no fold box) rather than deleted.
 Residual, disclosed in the record: the throw's large surface is still near-featureless
 — that is the MATERIAL/LIGHT lane (flat fill light + weave invisible at render scale),
 i.e. the light-story pass and the Gemini leg, not more geometry.
+
+## 2026-07-28 — Iteration control R1-R6: กรงที่ออกแบบรอบความบอดของคนทำ
+
+The owner's verdict after round 3 was not about the room — it was about the
+WORKER: "project นี้ไม่ยั่งยืน เพราะคนทำมองไม่เห็นว่าตัวเองกำลังทำอะไรและไม่สามารถ
+หยุดสิ่งที่กำลังทำไปในทางที่ผิดไว้ได้". Both clauses are structurally true (no
+continuous perception of the artifact; nothing in the loop makes stopping cheaper
+than continuing), so the fix is not a promise to be careful — it is process
+designed around a component with known failure modes. A DR (notebook fd94d3c8,
+73 sources) found all five mature disciplines solve exactly this with the same
+move — systems of constraint that catch errors at the cheapest stage: VFX's
+playblast + dailies, Toyota's andon + jidoka, IV&V's builder-blindness numbers
+(builders catch 30-50% of their own defects), HITL stop-loss budgets, guarded
+golden sets vs self-preference bias. Distilled to
+knowledge/brand-standards/iteration-control-and-review-gates.md; ADOPTED by the
+owner ("ลุย") the same day. Wiring: R5 = build_room --quick (48-sample half-res
+rung, 68 s vs ~5 min proven on the canonical suite — the three failed cloth bakes
+of round 3 would each have cost 1/4); R4 = look_bench.py (deterministic
+side-by-side vs the sellability lane's audited 815-render anchor pool, LOCAL-ONLY
+under _private/ — its FIRST sheet already delivered a verdict my self-diff loop
+never produced: our frame loses to delivered work on LIGHT STORY, not geometry);
+R2 = templates/gate-artifact.md; R1/R3/R6 bind through root CLAUDE.md. The two
+warnings the DR attached that cut TOWARD the owner: Andon suppression (if
+stopping reads as failure, the worker hides defects) and the junior trap (gate
+spam trains the reviewer to skim) — the rules encode both. Learning worth
+keeping: the vault already held the CLIENT-side gate vocabulary (4 sign-off
+gates); what was missing was the BUILD-side counterpart for a worker whose
+self-assessment is the least reliable signal in the system — the DR's composite
+scoring literally weights agent self-confidence at ~15%.

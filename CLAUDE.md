@@ -41,6 +41,26 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   to subagents that return short structured summaries.
 - Use `/clear` between unrelated tasks; `/compact <focus>` when a thread wanders.
 
+## Iteration control — ADOPTED 2026-07-28 (owner order; full text + grounding:
+## knowledge/brand-standards/iteration-control-and-review-gates.md)
+- R1 STOP-LOSS: max 2 full build+render cycles per mechanism without a pass →
+  forced stop + gate. Repeating the same fix-shape twice = halt signal.
+  Stopping is always the CORRECT move (Andon law), never an admission.
+- R2 GATE: every stop hands the owner `templates/gate-artifact.md` (image pair +
+  3 lines + spend). The lane BLOCKS on an unanswered gate. Gate on decisions,
+  not keystrokes (no micro-iteration spam).
+- R3 DONE: only the owner closes a round. Reports end "พร้อมให้ตัดสิน", never
+  "เสร็จ" (builders catch 30-50% of their own defects).
+- R4 LOOK vs DELIVERED: judge crops beside the sellability anchor pool —
+  `python pipeline/scripts/look_bench.py <render>` (LOCAL-ONLY sheet under
+  `_private/`), not against our own previous frame.
+- R5 PLAYBLAST: no full-fidelity frame is the FIRST look at a change — run
+  `build_room.py … --quick` first (~1/4 wall time). Quick kills bad work;
+  only full fidelity closes a gate.
+- R6 BUDGET: report spend (cycles/renders/tokens) at every gate; multi-agent
+  fleets pre-commit or on explicit order only; new guards must name the class
+  existing guards miss.
+
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
 - Verify guard hooks:  `bash scripts/test_guards.sh`

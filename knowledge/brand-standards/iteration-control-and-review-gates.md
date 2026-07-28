@@ -10,8 +10,13 @@
 > wrong direction — so the process must be designed AROUND that blindness, the
 > way engineering designs around any unreliable component.
 >
-> STATUS: rules PROPOSED, grounded, awaiting the owner's adoption call before any
-> hook/config wiring. Nothing here is enforced yet.
+> STATUS: **ADOPTED 2026-07-28** (owner: "ลุย"). Wired the same day:
+> R5 → `build_room.py --quick` (quicklook.py rung: 48 samples / half-res, `_ql`
+> name so the deliverable pair is never overwritten; proven 68 s wall vs ~5 min,
+> test_quicklook.py armour); R4 → `pipeline/scripts/look_bench.py` (side-by-side
+> vs the sellability lane's audited anchor pool, LOCAL-ONLY under `_private/`,
+> deterministic panels, test_look_bench.py armour); R2 → `templates/gate-artifact.md`;
+> R1/R3/R6 are behavioral and bind via the root `CLAUDE.md` § Iteration control.
 
 The DR's one-line synthesis: mature disciplines do not try to make the worker
 infallible — they build **systems of constraint** that catch errors at the
