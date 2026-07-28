@@ -268,9 +268,12 @@ LADDER = (
 #   bed__mattress   — 0.34% of the frame and almost entirely occluded by the coverlet it
 #                     lies under. It still gets a TONE (a sheet is a real cloth) but
 #                     ranking a sliver of shadow would pin noise, not design.
-#   bed__duvet_fold — the duvet's own hem: same cloth, adjacent, and it lands between the
-#                     shams and the duvet by itself. Ranking a piece against its own
-#                     parent passes forever and means nothing.
+#   the duvet's turned-back fold — the duvet's own hem: same cloth, adjacent, and it
+#                     lands between the shams and the duvet by itself. Ranking a piece
+#                     against its own parent passes forever and means nothing. (Since
+#                     2026-07-28 round 3 it is not even a separate OBJECT: the duvet is
+#                     simulated cloth — softgoods.folded_sheet — and the fold is part of
+#                     bed__duvet's own lattice, duvt_m by construction.)
 #   the second sham / second pillow — mirrored twins of the ranked ones.
 TOLERANCE = 8.0            # codes a rung may miss its target by before the LOOK fails
 
@@ -385,7 +388,7 @@ def validate():
 # Objects `_build_bed`/`_build_bench` emit directly (build_room owns these literals; this
 # list is pinned against its SOURCE by test_value_ladder, so it cannot drift silently).
 BUILT_OBJECTS = ("bed__base", "bed__mattress", "bed__coverlet", "bed__duvet",
-                 "bed__duvet_fold", "bed__throw", "bench__seat")
+                 "bed__throw", "bench__seat")
 
 
 def _emitted_or_fail(objs):

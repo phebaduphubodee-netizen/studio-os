@@ -287,7 +287,11 @@ def test_no_pillow_is_dented():
     b = st.pillow_bank(coverlet(), "x", 1)
     lhs = sg.bbox([p for p in a if p["name"] == "bed__pillowsoft0"][0]["verts"])
     rhs = sg.bbox([p for p in b if p["name"] == "bed__pillowsoft1"][0]["verts"])
-    assert abs((lhs[5] - lhs[2]) - (rhs[5] - rhs[2])) < 1e-6
+    # 3 mm, not 1e-6: since round 3 the pair LEANS (one shared angle — the lean itself
+    # is pinned equal), and the tilt maps each pillow's own plan wobble/seam phase into
+    # sub-mm z differences. A dent the owner would read as damage is centimetres; a
+    # tolerance that fails on micrometres of loft noise would get muted, not read.
+    assert abs((lhs[5] - lhs[2]) - (rhs[5] - rhs[2])) < 0.003
 
 
 def test_the_lumbar_is_a_signed_textile_not_a_joinery_ply():

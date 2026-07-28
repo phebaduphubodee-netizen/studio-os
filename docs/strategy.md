@@ -2512,3 +2512,44 @@ test files mojibake'd — a PowerShell 5.1 `Get-Content`-without-BOM read re-enc
 whole files through the ANSI codepage. Recovered from the parent commit and re-applied
 with byte-clean tooling in the follow-up; the lesson is to never round-trip existing
 UTF-8 files through Windows PowerShell string cmdlets.)
+
+## 2026-07-28 — round 3: "แก้เท่าไรก็ไม่หายห่วย" was a CLASS statement, and the class was object identity
+
+The owner's verdict after round 2 shipped — "แก้เท่าไรก็ไม่หายห่วย", then four examples —
+named a defect class the artifact loop cannot reach: objects that do not read AS
+THEMSELVES. A duvet that is an island slab, pillows with no sewn identity, a lamp that
+is a glowing box, a wardrobe of one cloned species. Full record:
+`04_visualization/LOOK-fixes-round3-2026-07-28.md`; baseline pair g7/g7_bedhero;
+2100 green. The learnings:
+
+**1. Artifact-free ≠ legible. Identity lives in construction cues.** What made each fix
+work was never smoothness — it was the cue by which humans recognise the object's
+MAKING: the duvet's turned-back fold (real doubled cloth, solver-settled), the pillow's
+piped seam + corner ears, the lamp's turned profile + a bulb's gradient, the shirt's
+collar, the trouser's half-drop fold. Hunt the construction cue, not the polish.
+
+**2. The cloth-stack contact law (three failed bakes to earn).** A frozen cloth
+collider is a solidified TWO-SHELL mesh: later sheets tunnel between the shells and
+render as mottled cloth-through-cloth at ANY collision distance — 0.004 grazed, 0.012
+shard-crumpled (the birth impulse outgrew cloth forces; bbox+motion guards pass a
+contained crumple), 0.008 still patched. The fix was mechanism, not tuning:
+`sim_surface=True` bakes leave a hidden single-shell proxy, later sheets collide with
+the proxy, distances only clear the render shells, sheets are born above the field,
+proxies deleted after the stack (`drape.sim_surface_of`/`drop_sim_surfaces`).
+
+**3. Numeric guards cannot see a contained explosion.** fx7's shredded band passed
+bbox, hem, and min-motion — it moved plausibly and stayed in bounds. Only the LOOK
+caught it, three bakes running. Any future stacked-cloth bake keeps the render in the
+loop; a solver guard for crumple (e.g. face-normal variance) is a candidate instrument
+if this recurs.
+
+**4. Amend armour with its own logic, not around it.** The no-dent pin (equal pillow
+heights to 1e-6) broke on the lean because the tilt maps plan wobble into sub-mm z.
+The amendment keeps the pin's INTENT readable: one shared lean angle (pinned), 3 mm
+tolerance (a dent the owner reads as damage is centimetres), reason recorded in the
+test. Same for the duvet-fold armour: re-pinned to the new mechanism (folded_sheet +
+duvt_m + no fold box) rather than deleted.
+
+Residual, disclosed in the record: the throw's large surface is still near-featureless
+— that is the MATERIAL/LIGHT lane (flat fill light + weave invisible at render scale),
+i.e. the light-story pass and the Gemini leg, not more geometry.

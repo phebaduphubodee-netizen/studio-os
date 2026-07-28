@@ -187,6 +187,55 @@ def _mitre_radius(u, v, keep):
     return keep + (1.0 - keep) * (c2 * c2) ** 3
 
 
+def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016):
+    """A quad-grid sheet whose HEAD edge is already TURNED BACK over itself — the
+    feedstock of a made bed's duvet. Returns (verts, faces) in WORLD metres.
+
+    WHY (owner LOOK 2026-07-28, round 3): "เตียงยังดูแปลก ๆ เหมือนก้อนอะไรซักอย่างอยู่บน
+    ผ้าปู". The duvet was the LAST bevelled box on the bed — a 90 mm slab inset 110 mm
+    from every edge, floating mid-bed as an island, with a second box lying in front
+    of it PLAYING the turned-back fold. Boxes don't read as bedding; the coverlet and
+    the throw earned their cloth read from the solver, and the duvet gets the same
+    physics. The fold is not authored as geometry-on-top: the sheet really is longer
+    than its footprint by `band`, and the head-most strip is pre-bent 180° over the
+    main panel (grid stays ONE connected lattice, doubled in plan over the fold
+    strip, `lift` apart). The solver then settles the crease into a soft roll and
+    the two layers into contact — which is what a hotel fold physically is.
+
+    head: "x-"|"x+"|"y-"|"y+" — the side the crease faces (where the pillows are).
+    The rect [x0..x0+w, y0..y0+d] is the FINAL plan footprint; total cloth length is
+    footprint + band."""
+    if w <= 0 or d <= 0:
+        raise ValueError(f"folded_sheet: degenerate extent {w}x{d}")
+    axis, sgn = head[0], head[1]
+    if axis not in ("x", "y") or sgn not in ("+", "-"):
+        raise ValueError(f"folded_sheet: bad head {head!r}")
+    main = w if axis == "x" else d
+    cross = d if axis == "x" else w
+    if not 0 < band < main:
+        raise ValueError(f"folded_sheet: band {band} outside (0, {main})")
+    c0 = ((x0 + w) if sgn == "+" else x0) if axis == "x" else \
+         ((y0 + d) if sgn == "+" else y0)
+    into = -1.0 if sgn == "+" else 1.0
+    t0 = y0 if axis == "x" else x0
+    ns = max(MIN_SEGMENTS, int(round((band + main) / float(cell))))
+    nt = max(MIN_SEGMENTS, int(round(cross / float(cell))))
+    verts = []
+    for i in range(ns + 1):
+        s = -band + (band + main) * i / ns          # s<0 = the folded-back top layer
+        u = c0 + into * abs(s)
+        # the top layer rises to `lift` over ~2 cells so the crease is a bendable
+        # hinge for the solver, not a zero-thickness pinch it must tear open
+        zz = z + (lift * min(1.0, -s / (2.0 * cell)) if s < 0 else 0.0)
+        for j in range(nt + 1):
+            t = t0 + cross * j / nt
+            verts.append((u, t, zz) if axis == "x" else (t, u, zz))
+    faces = [(i * (nt + 1) + j, i * (nt + 1) + j + 1,
+              (i + 1) * (nt + 1) + j + 1, (i + 1) * (nt + 1) + j)
+             for i in range(ns) for j in range(nt)]
+    return verts, faces
+
+
 def verts_in_rect(verts, x0, y0, x1, y1, tol=1e-9):
     """Indices of `verts` whose XY falls inside a world rect — how a caller names
     the region a solver PINS.
@@ -262,7 +311,7 @@ def _grid_faces(nu, nv, wrap_u=False):
 
 
 def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
-            fold=0.014, hem_wander=0.016, sway=0.010, salt=0):
+            fold=0.014, hem_wander=0.016, sway=0.010, salt=0, collar=0.0):
     """One hanging garment as a closed lofted shell: a narrow angled SHOULDER line at the
     top opening out to a fuller body, creases that grow downward, an irregular hem, and a
     small lateral `sway` so a rail of them never reads as a picket fence.
@@ -325,10 +374,47 @@ def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
             a = 2.0 * math.pi * u
             amp = fold_g * (v ** 1.5)
             c = _crease(u, salt, waves)
-            x = rx * math.cos(a) + sw
+            ca = math.cos(a)
+            x = rx * ca + sw
             y = ry * math.sin(a) + amp * c * (1.0 if math.sin(a) >= 0 else -1.0)
-            z = -drop * v + hw - sl * abs(math.cos(a)) ** 1.6
+            z = -drop * v + hw - sl * abs(ca) ** 1.6
+            if collar and v < 0.10:
+                # a COLLAR: the neck region (|x| small — front and back of the neck)
+                # rises above the shoulder line, fading out by v=0.10. This is the one
+                # cue that says SHIRT rather than felt blank (round-3 owner read:
+                # "ผ้าที่แขวนในตู้ไม่สมจริง"). Capped by the caller under SHOULDER_DROP
+                # so it never pokes above the rail.
+                z += collar * math.exp(-(ca / 0.30) ** 2) * (1.0 - v / 0.10)
             verts.append((x, y, z))
+    return verts, _loft_faces(nv, nu)
+
+
+def trouser_fold(width, drop, depth=0.030, nu=9, nv=6, salt=0):
+    """Trousers folded over a hanger's bar: a narrow, near-straight panel with a soft
+    CYLINDRICAL ROLL at the top (the fold itself) and a gentle leg crease taper.
+
+    A rail of nothing but shirt-shells is a rail of one species — part of why the
+    owner read the wardrobe as cloned boards even after pose variation. Trousers are
+    the second-commonest thing on a real rail and their silhouette differs in KIND:
+    straight sides, no shoulder, half the drop (vault: trousers-on-hanger 500 mm).
+    Origin = top-centre at the bar, +z up; body occupies z in [-drop, 0]."""
+    if width <= 0 or drop <= 0 or depth <= 0:
+        _fail(f"trouser_fold: degenerate {width}x{depth} drop {drop}")
+    verts = []
+    for j in range(nv + 1):
+        v = j / float(nv)
+        # near-straight sides: a whisker of taper toward the cuffs, per-piece
+        wf = 1.0 - 0.06 * v * (1.0 + 0.5 * dev(1, 1.0, salt + 73))
+        rx = 0.5 * width * wf
+        # the top ring is the FOLD: full roll radius immediately (a cylinder over the
+        # bar), settling to the flat doubled-cloth thickness by ~a third down
+        ry = 0.5 * depth * (1.0 - 0.55 * min(v / 0.30, 1.0))
+        lean = 0.006 * (v ** 1.5) * dev(0, 1.0, salt + 3)
+        hw = dev(j, 0.008, salt + 2) if j == nv else 0.0
+        for i in range(nu + 1):
+            a = 2.0 * math.pi * i / float(nu)
+            verts.append((rx * math.cos(a) + lean, ry * math.sin(a),
+                          -drop * v + hw))
     return verts, _loft_faces(nv, nu)
 
 
@@ -439,7 +525,8 @@ def hanger(width, hook_r=0.015, bar_drop=0.030, salt=0, arm_drop=0.0):
 # 3. CUSHION / PILLOW — a plump form, not a slab.
 # ---------------------------------------------------------------------------
 
-def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30):
+def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30,
+            seam=0.0, ear=1.2):
     """A plump pillow/cushion: a rounded superellipsoid whose CORNERS pinch in (the way a
     stuffed cover does) and whose top may carry a soft `dent`.
 
@@ -457,6 +544,15 @@ def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30):
     the height the plan is already at ~86% width instead of 60%). edge=1.0 reproduces the
     old lens for any caller that genuinely wants one.
 
+    `seam` (metres) raises a piped SEAM RIDGE around the equator — the sewn edge of the
+    case, and the single strongest cue that a soft form is a PILLOW and not a blob
+    (owner LOOK 2026-07-28 round 3: "หมอนยังดูไม่เป็นหมอน เป็นก้อนอะไรไม่รู้ซ้อน ๆ กัน" — the
+    forms were smooth ellipsoids with no sewn identity). `ear` amplifies the ridge at
+    the four corners, where a real case's excess fabric sticks out as ears. Both spend
+    from a pre-shrunk radius, so the footprint invariant still holds. A caller whose
+    seam would LIE (a standing euro sham: its piped edge runs around the FACE, not in
+    a horizontal ring at half-height) keeps seam=0.
+
     Replaces the `_rbox` slab whose "two identical flat pillows at identical height" the
     DD ground phase named as the loudest CAD tell at the bed head."""
     if w <= 0 or d <= 0 or h <= 0:
@@ -465,12 +561,19 @@ def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30):
         _fail(f"cushion: pinch {pinch} outside 0..1")
     if not 0.05 <= edge <= 1.0:
         _fail(f"cushion: edge {edge} outside 0.05..1.0")
+    if seam < 0:
+        _fail(f"cushion: seam {seam} must be >= 0")
     # The 3% surface wobble below must live INSIDE the declared footprint, not spill past
     # it: this codebase's one hard geometric invariant is that a part never leaves its
     # plan bbox, and a pillow that overhangs its mattress by 2mm is a clipping artifact
-    # the beauty pass would faithfully amplify. Pre-shrink the radii by the wobble peak.
+    # the beauty pass would faithfully amplify. Pre-shrink the radii by the wobble peak —
+    # and by the seam ridge's own maximum reach (seam * (1 + ear)), for the same reason.
     WOB = 0.03
-    cx, cy = w * 0.5 / (1.0 + WOB), d * 0.5 / (1.0 + WOB)
+    s_max = seam * (1.0 + max(ear, 0.0))
+    cx = (w * 0.5 - s_max) / (1.0 + WOB)
+    cy = (d * 0.5 - s_max) / (1.0 + WOB)
+    if cx <= 0 or cy <= 0:
+        _fail(f"cushion: seam {seam} eats the whole {w}x{d} footprint")
     ox, oy = w * 0.5 - cx, d * 0.5 - cy       # re-centre in the footprint
     verts = []
     for j in range(nv + 1):
@@ -478,6 +581,7 @@ def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30):
         phi = math.pi * v                                    # 0 = bottom pole, pi = top
         zf = 0.5 - 0.5 * math.cos(phi)                       # 0..1
         r = math.sin(phi) ** edge
+        g = math.exp(-((v - 0.5) / 0.07) ** 2) if seam else 0.0   # equator gaussian
         for i in range(nu + 1):
             u = i / float(nu)
             a = 2.0 * math.pi * u
@@ -487,8 +591,17 @@ def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30):
             sx = math.copysign(abs(ca) ** (2.0 / e), ca)
             sy = math.copysign(abs(sa) ** (2.0 / e), sa)
             wob = 1.0 + WOB * math.sin(3.0 * a + 2.0 * math.pi * ((salt + 1) * PHI_INV % 1.0))
-            x = ox + cx + cx * r * sx * wob
-            y = oy + cy + cy * r * sy * wob
+            px = cx * r * sx * wob
+            py = cy * r * sy * wob
+            if seam and g > 1e-4:
+                # push the ridge outward along the plan direction; ears at the corners
+                so = seam * g * (1.0 + ear * abs(ca * sa) ** 1.2)
+                pl = math.hypot(px, py)
+                if pl > 1e-9:
+                    px += px / pl * so
+                    py += py / pl * so
+            x = ox + cx + px
+            y = oy + cy + py
             z = h * zf
             if dent and zf > 0.55:                           # a soft press on the upper face
                 z -= dent * ((zf - 0.55) / 0.45) * (1.0 - min(r * 1.4, 1.0))

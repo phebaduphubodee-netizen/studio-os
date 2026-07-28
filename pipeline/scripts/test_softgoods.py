@@ -256,3 +256,55 @@ def test_garment_pose_stays_inside_published_bounds():
         xs = [v[0] for v in verts]
         assert max(xs) - min(xs) <= w * sg.GARMENT_FLARE + 2 * sway + 1e-9, salt
         assert min(v[2] for v in verts) >= -d - hw - 1e-9, salt
+
+
+# ---- round-3 identity cues (owner: four named examples) ------------------------------
+# The round-2 review's lasting lesson: a fix without armour is revertible with every
+# test green. Each round-3 construction cue gets its pin.
+
+def test_cushion_seam_raises_a_ridge_but_never_leaves_the_footprint():
+    # the whole seamed form is PRE-SHRUNK to buy the ridge room, so the pin compares
+    # WITHIN each form: how far the equator ring stands proud of the ring a third of
+    # the way up (where the seam gaussian is ~zero). The seamed form's equator must
+    # stand proud by more than the plain form's own profile difference.
+    w, d, h, nu, nv = 0.60, 0.34, 0.15, 13, 12
+
+    def proud(verts):
+        eq = max(p[0] for p in verts[6 * (nu + 1):7 * (nu + 1)])
+        third = max(p[0] for p in verts[4 * (nu + 1):5 * (nu + 1)])
+        return eq - third
+
+    plain, _ = sg.cushion(w, d, h, nu=nu, nv=nv, salt=3)
+    seamed, _ = sg.cushion(w, d, h, nu=nu, nv=nv, salt=3, seam=0.008)
+    assert proud(seamed) > proud(plain) + 0.004      # the ridge exists
+    bb = sg.bbox(seamed)                             # and the case stays contained
+    assert bb[0] >= -1e-9 and bb[1] >= -1e-9
+    assert bb[3] <= w + 1e-9 and bb[4] <= d + 1e-9
+
+
+def test_cushion_refuses_a_seam_that_eats_the_footprint():
+    with pytest.raises(ValueError):
+        sg.cushion(0.05, 0.05, 0.05, seam=0.03)
+
+
+def test_trouser_fold_is_a_different_species():
+    tv, tf = sg.trouser_fold(0.14, 0.50, salt=2)
+    gv, _ = sg.garment(0.40, 1.10, salt=2)
+    assert all(len(f) == 4 for f in tf)
+    # half the drop, a fraction of the span — the silhouette differs in KIND
+    assert min(p[2] for p in tv) > min(p[2] for p in gv)
+    assert max(p[0] for p in tv) - min(p[0] for p in tv) \
+        < 0.5 * (max(p[0] for p in gv) - min(p[0] for p in gv))
+
+
+def test_garment_collar_rises_at_the_neck_only():
+    nu = 11
+    bare, _ = sg.garment(0.40, 1.10, salt=4)
+    col, _ = sg.garment(0.40, 1.10, salt=4, collar=0.016)
+    top_b, top_c = bare[:nu + 1], col[:nu + 1]
+    # the neck zone rises...
+    assert max(p[2] for p in top_c) > max(p[2] for p in top_b) + 0.008
+    # ...the shoulder TIPS (|x| max) stay where the hanger law put them
+    tip_b = min(top_b, key=lambda p: -abs(p[0]))
+    tip_c = min(top_c, key=lambda p: -abs(p[0]))
+    assert abs(tip_b[2] - tip_c[2]) < 0.001          # gaussian tail = float dust, not lift

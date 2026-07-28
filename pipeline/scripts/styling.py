@@ -337,8 +337,20 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
         # share, not value, so this adds the missing dark anchor without touching it.
         tok = (TOK_INK if i % 3 == 1 else TOK_TERRY if i % 5 == 2 else TOK_LINEN)
 
-        gv, gf = sg.garment(wid, drp, depth=thk, fold=GARMENT_FOLD,
-                            hem_wander=GARMENT_HEM, sway=SWAY, salt=s)
+        # TWO SPECIES ON THE RAIL (round 3, owner: "ผ้าที่แขวนในตู้ไม่สมจริง"): a rail of
+        # nothing but shirt-shells is one species cloned, however varied the poses.
+        # ~30% of slots become trousers folded over the bar — a silhouette that
+        # differs in KIND (narrow, straight, half the drop; vault row 500 mm) — and
+        # most shirts grow a COLLAR at the neck, the one cue that reads "shirt" over
+        # "felt blank". Collar 0.016 < SHOULDER_DROP so it never pokes above the rail.
+        trouser = sg.dev(i, 1.0, s + 71) > 0.4
+        if trouser:
+            tw = shoulder * (0.42 + 0.06 * abs(sg.dev(i, 1.0, s + 77)))
+            gv, gf = sg.trouser_fold(tw, 0.50, depth=min(thk, 0.034), salt=s)
+        else:
+            col = 0.016 if sg.dev(i, 1.0, s + 67) > -0.3 else 0.0
+            gv, gf = sg.garment(wid, drp, depth=thk, fold=GARMENT_FOLD,
+                                hem_wander=GARMENT_HEM, sway=SWAY, salt=s, collar=col)
         # the hanger's arms angle down by the SAME slope this garment's shoulders
         # wear (one published stream) — a straight bar under sloped cloth hangs the
         # cloth below the wire that suspends it (pre-commit review, 40/40 salts)
@@ -351,8 +363,11 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             ox, oy = along + lean, c_ctr
         else:
             ox, oy = c_ctr, along + lean
-        # garment local origin is its top-centre; hanger local origin is the rail centre
-        gs = SHOULDER_DROP                          # shoulder sits below the hanger bar
+        # garment local origin is its top-centre; hanger local origin is the rail centre.
+        # A shirt's shoulder hangs SHOULDER_DROP below the bar (covering it); a trouser
+        # fold WRAPS the bar, so its roll-top sits just under the rail and its body
+        # covers the bar's root zone.
+        gs = SHOULDER_DROP * 0.6 if trouser else SHOULDER_DROP
         parts.append({
             "name": f"mill__style_garment{salt}_{i}__{tok}", "shape": "mesh",
             "verts": _xlate(gv, ox, oy, z_top - gs, swap=cross_is_y), "faces": gf,
@@ -365,6 +380,30 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             "verts": _xlate(hv, ox, oy, z_top, swap=cross_is_y), "faces": hf,
         })
     return parts
+
+
+def _lean_to_head(verts, head_axis, head_sign, ext, deg):
+    """Rotate a LOCAL-frame mesh (footprint 0..ext on the head axis, z up from 0) about
+    its FOOT-side bottom edge, lifting the head-side edge by `deg` — a sleeping pillow
+    propped against the sham behind it. Plan effects, stated honestly: the head-side
+    edge rises AND pulls toward the pivot (ext·cosθ), but the form's top lip swings
+    h·sinθ PAST the pivot toward the foot — at 9-11° on a 150 mm pillow that is
+    ~25 mm, spent into the rank's own RANK_GAP air (the caller's head-ward shift gives
+    most of it back). The lean is what makes stacked soft pieces TOUCH — zero contact
+    is the verdict-#6 capsule read."""
+    a = math.radians(deg)
+    c, s = math.cos(a), math.sin(a)
+    i = 0 if head_axis == "x" else 1
+    out = []
+    for p in verts:
+        d = p[i] if head_sign > 0 else ext - p[i]
+        d2 = d * c - p[2] * s
+        z2 = d * s + p[2] * c
+        q = list(p)
+        q[i] = d2 if head_sign > 0 else ext - d2
+        q[2] = z2
+        out.append(tuple(q))
+    return out
 
 
 def _xlate(verts, ox, oy, oz, swap=False):
@@ -520,11 +559,27 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     # [2] two flat SLEEPING pillows in front of them. NO dent: this owner's two prior
     # rejections were both of things he read as BROKEN rather than ugly, and a pressed
     # pillow is exactly the cue an engineer reads as a modelling error (DD kill list).
+    # ROUND 3 (owner: "หมอนยังดูไม่เป็นหมอน เป็นก้อนอะไรไม่รู้ซ้อน ๆ กัน"): identity, not
+    # damage — each gets its sewn SEAM + corner ears (the case's piped edge, cushion's
+    # seam term), and the pair LEANS BACK against the shams (tilted about the foot-side
+    # bottom edge + eased toward the head to close most of the rank's air gap). Zero
+    # contact between stacked soft pieces is the verdict-#6 capsule read; a leaning
+    # pillow touches what it leans on.
     pw = min(across * 0.40, 0.66)
     for i in range(2):
         off = (across - 2 * pw - gap) * 0.5 + i * (pw + gap)
         x, y, dx, dy = place(pl_from, off, pl_d, pw)
-        v, f = sg.cushion(dx, dy, PILLOW_H, pinch=0.30, salt=salt + 5 + i)
+        v, f = sg.cushion(dx, dy, PILLOW_H, pinch=0.30, salt=salt + 5 + i,
+                          nv=12, seam=0.008)
+        ext = dx if head_axis == "x" else dy
+        # ONE angle for the pair, not per-pillow: the no-dent armour pins the two
+        # pillows to identical heights (equal-height IS its dent detector), and a
+        # side-by-side pair at the same rank leaning at the same angle is what a
+        # made bed looks like anyway — the salt already varies their surfaces.
+        v = _lean_to_head(v, head_axis, head_sign, ext, 10.0)
+        shift = head_sign * (RANK_GAP * 0.85)
+        v = [(p[0] + (shift if head_axis == "x" else 0.0),
+              p[1] + (shift if head_axis == "y" else 0.0), p[2]) for p in v]
         parts.append({"name": f"bed__pillowsoft{i}", "shape": "mesh",
                       "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     # [3] ONE accent lumbar, off-centre, in the greige-oatmeal TERRY identity — a real
@@ -544,7 +599,8 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     # against the pillow row (a lumbar is propped against what is behind it, it does not
     # float mid-bed).
     x, y, dx, dy = place(lb_from, loff, min(lb_d, LUMBAR_T), lw)
-    v, f = sg.cushion(dx, dy, LUMBAR_H, pinch=0.55, salt=salt + 9)
+    v, f = sg.cushion(dx, dy, LUMBAR_H, pinch=0.55, salt=salt + 9,
+                      nv=12, seam=0.006)
     parts.append({"name": f"mill__style_lumbar__{TOK_TERRY}", "shape": "mesh",
                   "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     return parts

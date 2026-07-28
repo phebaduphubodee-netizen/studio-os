@@ -448,20 +448,23 @@ def test_build_room_builds_the_head_mapping_from_the_data_not_a_literal():
 
 
 def test_the_duvet_fold_wears_the_duvet_not_the_pillowcase():
-    """Pinned by source text, the mechanic this repo already uses for the weave: the fold
-    is the duvet folded back, and wearing pill_m made a hem of the duvet the brightest
-    object in the bed (204.7, above the pillows it lies below)."""
-    import re
+    """Round 3 (2026-07-28) rebuilt the duvet as SIMULATED cloth whose fold is part of
+    its own lattice (softgoods.folded_sheet) — so the fold cannot wear a different
+    material any more BY CONSTRUCTION, and this test's job shifts: pin that the sim
+    mechanism is actually in place (the fold is a folded_sheet, the bake wears duvt_m)
+    and that no box named duvet_fold quietly returns (the old two-box island read the
+    owner called 'ก้อนอะไรซักอย่างอยู่บนผ้าปู')."""
     src = _build_room_code()
-    # A REGEX OVER THE WHOLE CALL, not index arithmetic. The first cut sliced the statement
-    # with `src.index(")", src.index("seg=5", i))` and flaked once in a full-suite run —
-    # a pin that is only usually right is worth less than no pin, because a red is then
-    # explained away instead of investigated.
-    m = re.search(r'emit\(\s*"bed__duvet_fold"(.*?)\)', src, re.S)
-    assert m, "the duvet fold is no longer emitted"
-    stmt = m.group(1)
-    assert "duvt_m" in stmt, stmt
-    assert "pill_m" not in stmt, stmt
+    assert 'emit("bed__duvet_fold"' not in src, \
+        "the duvet fold box is back — the fold must stay cloth of bed__duvet itself"
+    assert "def _duvet" in src, "bed__duvet is no longer a simulated sheet"
+    # the whole builder closure, up to the search ladder that bakes it
+    blk = src.split("def _duvet", 1)[1].split("search_bake", 1)[0]
+    assert 'bake_sheet("bed__duvet"' in blk, blk[:200]
+    assert "duvt_m" in blk, "the duvet bake stopped wearing duvt_m"
+    assert "pill_m" not in blk, "the duvet bake wears the pillowcase again"
+    assert "folded_sheet" in blk, \
+        "the duvet's feedstock lost its turned-back fold (folded_sheet)"
 
 
 def test_two_cloths_at_the_same_value_raise(pristine):

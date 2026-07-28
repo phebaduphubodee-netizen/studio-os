@@ -2303,7 +2303,10 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
         top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
         colliders=[o for o in (_matt_o, _base_o) if o],
         mat=cov_m, head=_head_side, fabric="linen",
-        bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.30))
+        bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.30),
+        sim_surface=True)                       # the duvet + throw collide with the
+    #                                             SINGLE-SHELL surface, not the
+    #                                             solidified render mesh (see drape)
     _cov_o["ph_model"] = 1                              # keep the global 1 mm bevel off cloth
     _SOFT_BAKED.append(_cov_o.name)                     # the armour keys off what BAKED
     cov_t = 0.045                                       # kept: the pure layer's layer-thickness
@@ -2322,25 +2325,46 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # made in the same commit as the element-8 build.
     _ranks, pz = styling.head_ranks(along)
     dv_from = pz + 0.14
-    # 2026-07-22: the duvet's cross inset was 15 mm from the BED rect, which put its
-    # edge 75 mm PAST the mattress on each side — a slab floating in the air over the
-    # coverlet's fold. Invisible while the coverlet was a flat plate spanning the same
-    # rect; the simulated throw found it immediately by draping over the duvet's edge
-    # instead of the bed's and landing outside the footprint. Element 3's own words for
-    # this part are "inset so the mattress edge still shows", so the inset is now DERIVED
-    # from the mattress it lies on — which honours that sentence rather than a number
-    # that never did. The 20 mm is the coverlet border it leaves visible.
-    ci = mins + 0.020
-    _duv_o = emit("bed__duvet", dv_from, ci, along - dv_from - 0.02, across - 2 * ci,
-                  H - 0.02, 0.09, duvt_m, 0.04, seg=5)  # thicker + rounder = draped cloth, not a slab
-    #                                                     (bevw < half the 0.09 dz or the bevel collapses)
-    # turned-back fold at the duvet's head edge — the single most legible "this is a made bed"
-    # cue, and it gives the repaint an edge to hang linen folds on.
-    # It wears duvt_m, not pill_m: this IS the duvet, folded back. Wearing the pillow
-    # material made a hem of the duvet the brightest object in the whole bed (204.7,
-    # above the pillows it lies below) — a piece of cloth out-valuing itself.
-    emit("bed__duvet_fold", dv_from - 0.13, ci, 0.15, across - 2 * ci,
-         H - 0.01, 0.10, duvt_m, 0.045, seg=5)          # bevw < half the 0.10 dz
+    # ELEMENT 3 AMENDED (owner LOOK 2026-07-28 round 3): "เตียงยังดูแปลก ๆ เหมือนก้อนอะไร
+    # ซักอย่างอยู่บนผ้าปู" — and the ก้อน was THIS part. The duvet was the last bevelled
+    # box on the bed: a 90 mm slab pulled 110 mm in from every edge, an island lump ON
+    # the bedding, with a SECOND box lying in front of it playing the turned-back fold.
+    # The coverlet and the throw earned their cloth read from the solver; the duvet now
+    # gets the same physics: softgoods.folded_sheet pre-bends the head band 180° over
+    # the main panel (ONE connected lattice) and the solver settles the crease into the
+    # soft roll a hotel fold actually is. It spans the mattress and FALLS PAST its
+    # flanks — a duvet covers a bed, it does not sit on one. bed__duvet_fold the OBJECT
+    # is gone: the fold is cloth of bed__duvet itself, same duvt_m by construction
+    # (value_ladder.BUILT_OBJECTS and the armour test moved with it). The throw still
+    # bakes AFTER this with the duvet as a collider, so the foot stack orders itself
+    # physically instead of by authored z.
+    _dv_w = min(across - 0.06, (across - 2 * mins) + 0.16)   # mattress span + ~80 mm
+    #                                                          fall per flank, never the plan edge
+    _dv_len = along - dv_from - 0.10                # the throw band owns the foot edge
+    _dv_x, _dv_y, _dv_dx, _dv_dy = box(dv_from, (across - _dv_w) * 0.5, _dv_len, _dv_w)
+
+    def _duvet(scale, sl):
+        vs, fs = softgoods.folded_sheet(_dv_x, _dv_y, _dv_dx, _dv_dy, H + 0.03,
+                                        band=0.28, head=_head_side, cell=0.028)
+        # THE CLOTH-STACK CONTACT LAW (earned across fx6→fx8, three failed reads):
+        # collide against the coverlet's SINGLE-SHELL sim surface, never its
+        # solidified render mesh — a sheet that tunnels between a frozen collider's
+        # two shells is trapped and renders as mottled cloth-through-cloth whatever
+        # the distance (graze at 0.004, shard-crumple at 0.012, still patched at
+        # 0.008). collide_dist then only has to clear the RENDER shells: 0.010 rests
+        # this sheet's −4 mm inner half above the coverlet's +3 mm outer half with
+        # 3 mm to spare.
+        _cprx = drape.sim_surface_of("bed__coverlet")
+        return drape.bake_sheet("bed__duvet", vs, fs,
+                                [o for o in (_cprx or _cov_o, _matt_o, _base_o) if o],
+                                frames=55, fabric="linen", mat=duvt_m,
+                                thickness=0.008, slack=sl, collide_dist=0.010,
+                                sim_surface=True)
+    _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
+                               top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
+                               bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
+    _duv_o["ph_model"] = 1
+    _SOFT_BAKED.append(_duv_o.name)
 
     # ELEMENT 8: THE HEAD LADDER replaces the two identical flat slabs the DD's ground
     # phase named as the loudest CAD tell in the hero frame ("same width, same thickness,
@@ -2401,6 +2425,10 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # has taken its share, which makes the invariant hold BY CONSTRUCTION rather than by
     # a tuned constant — and a wider coverlet automatically yields a shorter tail.
     _cbb = drape.world_bbox(_cov_o)
+    # the throw is born above the HIGHEST cloth beneath it — the simulated duvet's
+    # fold roll now stands ~40 mm proud of the coverlet where the band lies, and a
+    # sheet cut below that would be born intersecting its own collider
+    _z_top = max(_cbb[5], drape.world_bbox(_duv_o)[5]) if _duv_o else _cbb[5]
     _c_lo, _c_hi = (_cbb[1], _cbb[4]) if axis == "x" else (_cbb[0], _cbb[3])
     _b_lo, _b_hi = (y0, y0 + D) if axis == "x" else (x0, x0 + W)
     # THE THROW FALLS OVER THE FOOT, NOT THE FLANKS. The first four cuts ran it across the
@@ -2429,7 +2457,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
             hang = _thr_hang * scale
             tx, ty, tdx, tdy = box(_thr_from, (_c_lo + _t_in) - _b_lo,
                                    _thr_band + hang, (_c_hi - _c_lo) - 2 * _t_in)
-            vs, fs = softgoods.flat_sheet(tx, ty, tdx, tdy, _cbb[5] + 0.012, cell=0.022)
+            # born ABOVE the collision field, not at its boundary: a sheet cut at
+            # exactly collide_dist from the duvet's roll starts inside the repulsion
+            # zone and the ejection impulse crumples the whole band into shards
+            # (fx7's torn-cloth read — the bbox guards cannot see a contained crumple)
+            vs, fs = softgoods.flat_sheet(tx, ty, tdx, tdy, _z_top + 0.020, cell=0.022)
             # FULL slack only on the part lying on the bed; the FALL gets a PARTIAL
             # weight, not zero. Zero was the first cut, and LOOK round-2 #2 read the
             # result off the render: the largest cloth face in both frames (~1.4 m of
@@ -2457,7 +2489,12 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                 tpin = softgoods.verts_in_rect(vs, tx, py, tx + tdx, py + pw)
             return drape.bake_sheet(
                 "bed__throw", vs, fs,
-                [o for o in (_cov_o, _duv_o, _matt_o, _base_o) if o], pin=tpin,
+                # single-shell sim surfaces of both cloths beneath (the contact law
+                # in _duvet's comment); the render meshes stay out of the collider
+                # list or their solidified shells would fight the proxies
+                [o for o in (drape.sim_surface_of("bed__duvet") or _duv_o,
+                             drape.sim_surface_of("bed__coverlet") or _cov_o,
+                             _matt_o, _base_o) if o], pin=tpin,
                 # "wool" (bending 3.0) was wrong twice over: at 75 frames the tails went
                 # FURTHER out than at 48, so they were not still swinging — a stiff cloth
                 # draped over the coverlet's soft rounded flank BOWS instead of hanging,
@@ -2474,14 +2511,16 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                 # base_m now renders 98 here and 134 on the bench, because this surface lies
                 # flat in the bed's own shadow and that one is not. The light was always
                 # going to separate them; the cloth just had to be deep enough to let it.
-                frames=70, fabric="knit", mat=base_m, thickness=0.008, slack=sl,
-                slack_verts=_wts)
+                # 0.012 above the single-shell proxy = this sheet's −3 mm render
+                # half + the duvet's +4 mm, with 5 mm to spare (the contact law)
+                frames=70, fabric="knit", mat=base_m, thickness=0.006, slack=sl,
+                slack_verts=_wts, collide_dist=0.012)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
         # would have fixed it is only correct for this one bed.
         _thr_o = drape.search_bake(_throw, name="bed__throw", slack=0.10,
-                          top_z=_cbb[5], hem_min=base_h + styling.DRAPE_REVEAL,
-                          bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.30))
+                          top_z=_z_top, hem_min=base_h + styling.DRAPE_REVEAL,
+                          bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
         _thr_o["ph_model"] = 1
         _SOFT_BAKED.append(_thr_o.name)
     # SWAP-AND-DEMAND-RED: the anti-repaint armour states whether a throw exists by
@@ -2494,6 +2533,9 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
             "derive from that predicate, so they would describe the wrong bed"
             % ("a throw" if _thr_plan else "no throw",
                "one" if "bed__throw" in _SOFT_BAKED else "none"))
+    # the hidden single-shell proxies have served every sheet in the stack — they
+    # must never reach a render or an export
+    drape.drop_sim_surfaces("bed__coverlet", "bed__duvet")
     return True
 
 
@@ -2670,12 +2712,13 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
     `millwork.nightstand_lamp_parts` (footprint invariant proven there). `rot` is accepted but not
     applied — the piece is symmetric about both axes (same honesty as _build_bench).
 
-    ELEMENT 5 (D-E5-6): `glow` = {watts, z_off_m, rgb} makes the lamp EMIT — the shade
-    becomes an OPEN-BOTTOMED shell (from_pydata, headless-safe) with a faint warm emission
-    (the visible glow) and a small POINT light inside pools DOWN through the mouth onto the
-    nightstand top (MA-04 needs glow AND a cast pool; PH-05 real falloff). Without glow the
-    element-3 solid-box shade renders byte-identical (E3's built-but-dark state, for specs
-    that have not decided lighting)."""
+    ELEMENT 5 (D-E5-6): `glow` = {watts, z_off_m, rgb} makes the lamp EMIT — a warm
+    emission graded down the shade (mouth-bright, top-dim) and a small POINT light
+    inside pools DOWN through the open mouth onto the nightstand top (MA-04 needs glow
+    AND a cast pool; PH-05 real falloff). Since round 3 (owner: "โคมไฟเป็นเหลี่ยม ดูไม่มี
+    จริง") every lamp part is a turned surface of revolution inscribed in the pure
+    layer's box envelope — glow or not; without glow the same round lamp simply stays
+    dark (specs that have not decided lighting)."""
     body_m  = _solid("nightstand_body", (0.13, 0.12, 0.11, 1.0), rough=0.55, sheen=0.1, spec=0.4)
     brass_m = _solid("lamp_brass",      (0.60, 0.44, 0.20, 1.0), rough=0.32, metallic=1.0, spec=0.6,
                      aniso=0.65)   # BRUSHED, not cast: satin brass is drawn in one direction, so
@@ -2688,28 +2731,53 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
         _sb = _principled(shade_m)[1]
         if _sb:
             _set(_sb, "Emission Color", (*glow["rgb"], 1.0))
-            _set(_sb, "Emission Strength", 1.2)          # the GLOW half of MA-04 [est]
-    mats = {"body": body_m, "lamp_base": brass_m, "lamp_stem": brass_m, "lamp_shade": shade_m}
-    bevs = {"body": 0.008, "lamp_base": 0.010, "lamp_stem": 0.006, "lamp_shade": 0.060}
+            _set(_sb, "Emission Strength", 1.0)
+            # LOOK round-3 (owner: "โคมไฟเป็นเหลี่ยม ดูไม่มีจริง") — half of the unreal
+            # read was a SINGLE flat emission value edge-to-edge (measured 221±1, no
+            # bulb hotspot, no falloff; verdict #11). A shade lit from a bulb inside
+            # its mouth is brightest at the mouth and dies toward the closed top, so
+            # the strength is driven by shade-height: z → [0,1] → 1.5 at the mouth
+            # down to ~0.4 at the top. One MapRange + one Math node, added ONCE (the
+            # material is shared by both nightstands; their lamps sit at one height).
+            nt = shade_m.node_tree
+            if "lamp_grad" not in nt.nodes:
+                _z0 = H + 0.035 + 0.17 - 0.02            # shade mouth (millwork's oz)
+                _z1 = _z0 + 0.15                         # shade top
+                tc = nt.nodes.new("ShaderNodeTexCoord")
+                sx = nt.nodes.new("ShaderNodeSeparateXYZ")
+                mr = nt.nodes.new("ShaderNodeMapRange")
+                mr.name = "lamp_grad"
+                mr.inputs["From Min"].default_value = _z0
+                mr.inputs["From Max"].default_value = _z1
+                mm = nt.nodes.new("ShaderNodeMath")
+                mm.operation = 'MULTIPLY_ADD'
+                mm.inputs[1].default_value = -1.1        # t*-1.1 + 1.5: mouth 1.5 -> top 0.4
+                mm.inputs[2].default_value = 1.5
+                nt.links.new(tc.outputs["Object"], sx.inputs["Vector"])
+                nt.links.new(sx.outputs["Z"], mr.inputs["Value"])
+                nt.links.new(mr.outputs["Result"], mm.inputs[0])
+                nt.links.new(mm.outputs["Value"], _sb.inputs["Emission Strength"])
+    # LOOK round-3: the lamp was a stack of BOXES wearing a "dome/mushroom" docstring —
+    # the literal ก้อนเหลี่ยม the owner named. The pure part list (envelopes + the
+    # containment proof) is untouched; each lamp part is now materialised as a turned
+    # surface of revolution INSCRIBED in its own box: a tapering brass base, a round
+    # stem, and a drum shade whose mouth stays OPEN downward so the point light still
+    # pools onto the cabinet (same reason the old glow-shell had no bottom face —
+    # _cyl_frustum caps only the top).
     for name, ox, oy, oz, dx, dy, dz in millwork.nightstand_lamp_parts(W, D, H, lamp=bool(lamp)):
-        if glow and name == "lamp_shade":
-            # open-bottom 5-face shell: the inner point light must escape DOWN through
-            # the mouth (a closed beveled box swallows the pool — verify-lens catch)
-            x, y, z = x0 + ox, y0 + oy, oz
-            v = [(x, y, z), (x + dx, y, z), (x + dx, y + dy, z), (x, y + dy, z),
-                 (x, y, z + dz), (x + dx, y, z + dz), (x + dx, y + dy, z + dz),
-                 (x, y + dy, z + dz)]
-            f = [(4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
-            me = bpy.data.meshes.new("nightstand__lamp_shade")
-            me.from_pydata(v, [], f)
-            me.update()
-            o = bpy.data.objects.new("nightstand__lamp_shade", me)
-            bpy.context.scene.collection.objects.link(o)
-            o.data.materials.append(shade_m)
-            o["ph_model"] = True
+        if name == "body":
+            _rbox("nightstand__body", x0 + ox, y0 + oy, oz, dx, dy, dz, body_m, bevw=0.008)
             continue
-        _rbox(f"nightstand__{name}", x0 + ox, y0 + oy, oz, dx, dy, dz, mats[name],
-              bevw=bevs[name], seg=5 if name == "lamp_shade" else 3)
+        ccx, ccy, r = x0 + ox + dx * 0.5, y0 + oy + dy * 0.5, dx * 0.5
+        if name == "lamp_base":
+            _cyl_frustum("nightstand__lamp_base", ccx, ccy, r, r * 0.72, oz, oz + dz,
+                         brass_m, seg=24)
+        elif name == "lamp_stem":
+            _cyl_frustum("nightstand__lamp_stem", ccx, ccy, r, r * 0.90, oz, oz + dz,
+                         brass_m, seg=16)
+        else:
+            _cyl_frustum("nightstand__lamp_shade", ccx, ccy, r, r * 0.80, oz, oz + dz,
+                         shade_m, seg=32)
     if glow and lamp:
         ld = bpy.data.lights.new("lamp_glow", type='POINT')
         ld.energy = glow["watts"]

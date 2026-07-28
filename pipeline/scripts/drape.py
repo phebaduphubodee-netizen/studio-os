@@ -205,10 +205,29 @@ def _freeze(obj, solid_thickness):
     return baked
 
 
+def sim_surface_of(name):
+    """The hidden single-shell proxy a `sim_surface=True` bake left behind, or None.
+    Colliding a LATER sheet against this — instead of against the frozen render mesh —
+    is what makes cloth-on-cloth stacks stable: the render mesh is SOLIDIFIED (two
+    shells), and a sheet that tunnels between them gets trapped and renders as
+    mottled cloth-through-cloth patches whatever the collision distance (fx6/fx7/fx8,
+    2026-07-28: graze at 0.004, shard-crumple at 0.012, still patched at 0.008)."""
+    return bpy.data.objects.get(name + "__simsrf")
+
+
+def drop_sim_surfaces(*names):
+    """Delete the hidden proxies once every sheet that needed them has baked — they
+    must never reach the render or an export."""
+    for n in names:
+        p = sim_surface_of(n)
+        if p is not None:
+            bpy.data.objects.remove(p, do_unlink=True)
+
+
 def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                bounds=None, mat=None, pin=(), thickness=0.006, self_collide=True,
                quality=8, collide_dist=0.004, min_motion=0.010, tol=1e-4,
-               hem_min=None, slack=0.0, slack_verts=None):
+               hem_min=None, slack=0.0, slack_verts=None, sim_surface=False):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -314,6 +333,20 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
             f"The sheet would render as a rigid plane. Check gravity, frames={frames}, "
             f"and that the colliders are below it.")
 
+    if sim_surface:
+        # capture the settled SINGLE-SHELL surface before solidify, as a hidden
+        # collision proxy for the next sheet in the stack (see sim_surface_of).
+        # Idempotent per attempt: a search ladder re-bakes under the same name.
+        stale = bpy.data.objects.get(name + "__simsrf")
+        if stale is not None:
+            bpy.data.objects.remove(stale, do_unlink=True)
+        dgp = bpy.context.evaluated_depsgraph_get()
+        mep = bpy.data.meshes.new_from_object(obj.evaluated_get(dgp), depsgraph=dgp)
+        prx = bpy.data.objects.new(name + "__simsrf", mep)
+        bpy.context.collection.objects.link(prx)
+        prx.hide_render = True
+        prx["ph_model"] = True                    # no material pass, no bevel pass
+
     _freeze(obj, thickness)
     sc.frame_set(1)          # the render must not inherit the bake's frame
 
@@ -361,7 +394,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
 
 
 def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="linen",
-                   cell=0.028, frames=55, bounds=None, thickness=0.006, slack=0.05):
+                   cell=0.028, frames=55, bounds=None, thickness=0.006, slack=0.05,
+                   sim_surface=False):
     """A coverlet: a sheet lying on the mattress that OVERHANGS three sides and
     falls under gravity — the fold at the mattress edge is solved, not authored.
 
@@ -421,7 +455,8 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
         # to RETURN so it can measure and re-cut. bake_sheet's own guards still cover the
         # things a search cannot fix — a sim that never advanced, and n-gons.
         return bake_sheet(name, verts, faces, colliders, frames=frames, fabric=fabric,
-                          mat=mat, pin=pin, thickness=thickness, slack=sl)
+                          mat=mat, pin=pin, thickness=thickness, slack=sl,
+                          sim_surface=sim_surface)
 
     # The ladder that solves the cut lives in search_bake — the throw needs the very
     # same one, and a second copy of it would be the next thing to drift.

@@ -280,3 +280,51 @@ def test_coverlet_mitre_keep_is_the_deep_dip():
     # iron the whole coverlet (slack 2.5%->0.62%). The deep dip pays for the rise.
     assert sg.COVERLET_MITRE_KEEP == pytest.approx(0.45)
     assert sg.COVERLET_MITRE_KEEP < 0.6
+
+
+# ---- folded_sheet (round 3: the duvet stops being a box) -----------------------------
+
+def _fs(head="x+", band=0.28):
+    return sg.folded_sheet(0.0, 0.0, 1.8, 2.0, 0.6, band=band, head=head, cell=0.05)
+
+
+def test_folded_sheet_is_all_quads_and_connected():
+    verts, faces = _fs()
+    assert all(len(f) == 4 for f in faces)
+    used = {i for f in faces for i in f}
+    assert used == set(range(len(verts)))
+
+
+def test_folded_sheet_doubles_only_the_head_band():
+    verts, faces = _fs(head="x+", band=0.3)
+    zs = [v[2] for v in verts]
+    top = [v for v in verts if v[2] > 0.6 + 1e-6]            # the folded-back layer
+    assert top, "no folded layer — the fold is gone"
+    # the lifted layer lies over the head-most strip only
+    assert min(v[0] for v in top) >= 1.8 - 0.3 - 1e-6
+    assert max(v[0] for v in top) <= 1.8 + 1e-6
+    # and the main panel still spans the full footprint at base z
+    base = [v for v in verts if abs(v[2] - 0.6) < 1e-9]
+    assert min(v[0] for v in base) <= 1e-6
+    assert max(v[0] for v in base) >= 1.8 - 1e-6
+
+
+def test_folded_sheet_total_cloth_exceeds_the_footprint():
+    # the fold is REAL extra cloth, not geometry lying on top: station count along the
+    # fold axis covers footprint + band
+    v1, _ = _fs(band=0.2)
+    v2, _ = _fs(band=0.6)
+    assert len(v2) > len(v1)
+
+
+def test_folded_sheet_respects_the_head_side():
+    verts, _ = _fs(head="x-", band=0.3)
+    top = [v for v in verts if v[2] > 0.6 + 1e-6]
+    assert max(v[0] for v in top) <= 0.3 + 1e-6              # band hugs the x- edge
+
+
+def test_folded_sheet_refuses_bad_input():
+    with pytest.raises(ValueError):
+        sg.folded_sheet(0, 0, 1.0, 1.0, 0.5, band=1.5, head="x+")   # band > length
+    with pytest.raises(ValueError):
+        sg.folded_sheet(0, 0, 1.0, 1.0, 0.5, band=0.2, head="q+")
