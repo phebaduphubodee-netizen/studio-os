@@ -82,15 +82,18 @@ def _skirt_rings(verts, nv):
     return [verts[i:i + nv + 1] for i in range(0, len(verts), nv + 1)]
 
 
-def test_garment_shoulder_is_narrower_than_body():
-    """A garment on a hanger is a shoulder line opening to a body. A constant width is a
-    sheet pegged on a line."""
+def test_garment_shoulder_is_the_widest_point():
+    """INVERTED at round 4 (owner: "เสื้อผ้าในตู้ ดูไม่เหมือนเสื้อผ้าจริง"): the old pin
+    demanded a narrow top opening to a fuller body — which is the silhouette of a
+    GARMENT BAG. A real hanging piece is widest across the hanger tips and the body
+    falls slightly narrower below."""
     nu, nv = 11, 7
-    verts, _ = sg.garment(0.46, 0.95, nu=nu, nv=nv, shoulder=0.6, sway=0.0)
-    rings = [verts[j * (nu + 1):(j + 1) * (nu + 1)] for j in range(nv + 1)]
-    top_w = max(v[0] for v in rings[0]) - min(v[0] for v in rings[0])
-    bot_w = max(v[0] for v in rings[-1]) - min(v[0] for v in rings[-1])
-    assert top_w < bot_w * 0.75, f"shoulder {top_w:.3f} not narrower than body {bot_w:.3f}"
+    for salt in range(6):
+        verts, _ = sg.garment(0.46, 0.95, nu=nu, nv=nv, sway=0.0, salt=salt)
+        rings = [verts[j * (nu + 1):(j + 1) * (nu + 1)] for j in range(nv + 1)]
+        widths = [max(v[0] for v in r) - min(v[0] for v in r) for r in rings]
+        assert widths[0] == max(widths), f"salt {salt}: shoulder is not the widest ring"
+        assert widths[nv // 2] < widths[0] * 0.97, f"salt {salt}: no body taper — a slab"
 
 
 def test_garment_hem_wanders():
@@ -112,9 +115,33 @@ def test_garments_on_a_rail_are_not_identical():
     assert len(set(sils)) == len(sils)
 
 
-def test_garment_rejects_bad_shoulder():
-    with pytest.raises(ValueError):
-        sg.garment(0.46, 0.95, shoulder=1.4)
+def test_garment_sleeves_hang_beside_the_body_inside_every_bound():
+    """Round-4 identity cue: sleeves. Two tubes must appear BELOW the shoulder tips,
+    stay INSIDE the shoulder span (the published GARMENT_FLARE bound must survive
+    sleeves), stay inside the body's own thickness envelope (the rail pitch budget
+    is spent on the body, so sleeves may not widen it), and end above the hem."""
+    w, d, dep = 0.40, 1.00, 0.045
+    nu, nv = 11, 7
+    body_n = (nv + 1) * (nu + 1)
+    for salt in range(8):
+        verts, faces = sg.garment(w, d, depth=dep, sway=0.010, salt=salt, sleeves=True)
+        assert len(verts) > body_n, "sleeves=True added no geometry"
+        sleeve = verts[body_n:]
+        # two tubes, one per side
+        assert any(v[0] > 0 for v in sleeve) and any(v[0] < 0 for v in sleeve)
+        # span bound survives sleeves; thickness stays inside the half-depth budget
+        xs = [v[0] for v in verts]
+        assert max(xs) - min(xs) <= w * sg.GARMENT_FLARE + 2 * 0.010 + 1e-9
+        assert max(abs(v[1]) for v in sleeve) <= 0.5 * dep + 1e-9
+        # the SILHOUETTE NOTCH: the tube must reach wider than the narrowed body at
+        # its own band — a sleeve buried inside the body's width is invisible, which
+        # is exactly what the first cut rendered (quick-look, round 4)
+        assert max(abs(v[0]) for v in sleeve) > 0.5 * w * 0.80
+        # hangs from under the shoulder, ends above the hem
+        assert max(v[2] for v in sleeve) < 0.0
+        assert min(v[2] for v in sleeve) > -d
+    # the tubes are wired into the SAME mesh: faces must index into sleeve verts
+    assert max(i for f in faces for i in f) >= body_n
 
 
 # ---------------------------------------------------------------- cushion physics

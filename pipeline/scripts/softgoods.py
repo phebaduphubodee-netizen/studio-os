@@ -310,22 +310,27 @@ def _grid_faces(nu, nv, wrap_u=False):
 # ---------------------------------------------------------------------------
 
 
-def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
-            fold=0.014, hem_wander=0.016, sway=0.010, salt=0, collar=0.0):
-    """One hanging garment as a closed lofted shell: a narrow angled SHOULDER line at the
-    top opening out to a fuller body, creases that grow downward, an irregular hem, and a
-    small lateral `sway` so a rail of them never reads as a picket fence.
+def garment(width, drop, depth=0.085, nu=11, nv=7,
+            fold=0.014, hem_wander=0.016, sway=0.010, salt=0, collar=0.0,
+            sleeves=False):
+    """One hanging garment as a closed lofted shell, WIDEST AT THE SHOULDER.
 
-    `shoulder` is the shoulder width as a fraction of `width`. Local origin is the
-    garment's top-centre; +z is up, so the body occupies z in [-drop, 0].
+    Round-4 owner verdict ("เสื้อผ้าในตู้ ดูไม่เหมือนเสื้อผ้าจริง"): the previous
+    profile — a narrow top opening out to a fuller body — is the silhouette of a
+    GARMENT BAG, not a garment. A real hanging piece is widest across the hanger
+    tips and its body falls slightly NARROWER below; and its identity lives in the
+    sleeves hanging beside that body. So: wf(0)=1.0 easing down to a per-piece body
+    fraction by the knee, plus (opt-in) two flattened sleeve tubes appended into
+    the same mesh — each contained inside the shoulder span and inside the body's
+    own thickness envelope, so the published bounds (span <= width*GARMENT_FLARE
+    + 2*sway; pitch thickness budget) stay honest with sleeves on.
 
-    Built as a closed elliptical loft (nu stations around, nv rings down) rather than a
-    box: a garment seen from the side is a soft lens, and a box on a rail is exactly the
+    Local origin is the garment's top-centre; +z is up, body occupies z in
+    [-drop, 0]. Built as a closed elliptical loft (nu stations, nv rings): a
+    garment seen edge-on is a soft lens, and a box on a rail is exactly the
     "beveled slab" reading this module exists to end."""
     if width <= 0 or drop <= 0 or depth <= 0:
         _fail(f"garment: degenerate {width}x{depth} drop {drop}")
-    if not 0.2 <= shoulder <= 1.0:
-        _fail(f"garment: shoulder fraction {shoulder} outside 0.2..1.0")
     waves = ((2.0, 0.5), (5.0, 0.33), (9.0, 0.24))
     # PER-GARMENT POSE DNA (LOOK round-2 #5). The rail read as "cloned boards" because
     # dev() varied WIDTHS only: every piece shared one S-bend at one height, a
@@ -345,12 +350,24 @@ def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
     bow_a = 0.55 * sway * dev(4, 1.0, salt + 43)
     bow_m = 0.3 + 0.7 * abs(dev(5, 1.0, salt + 47))      # 1 = C-bow, toward 0 = S-bow
     fold_g = fold * (0.65 + 0.35 * abs(dev(6, 1.0, salt + 53)))
+    body = 0.74 + 0.04 * dev(7, 1.0, salt + 59)          # body width, fraction of shoulder
+    # DEEP INWARD-ONLY DRAPE FOLDS (round 4, second cut). The first cut kept the
+    # ±6 mm crease the pitch budget allows and the faces still rendered as flat
+    # board — real hanging cloth folds 15-30 mm deep. The pitch cannot give that
+    # outward, so the deep folds CARVE INWARD from the envelope (real folds are
+    # valleys in the silhouette, not bumps past the hanger): envelope untouched,
+    # pitch budget untouched, and the face finally stripes under light.
+    fold_in = 0.018 * (0.7 + 0.3 * abs(dev(12, 1.0, salt + 83)))
     verts = []
     for j in range(nv + 1):
         v = j / float(nv)                                    # 0 at shoulder, 1 at hem
-        # width profile: shoulder -> full body over the top ~knee, then a slight flare
+        # width profile (round 4): WIDEST at the hanger tips, easing IN to a
+        # genuinely narrower body by the knee — the side band this frees is where
+        # the sleeves live, so the notch (shoulder -> sleeve -> body) is what the
+        # camera reads as a shirt even when neighbours overlap. wf peaks at the
+        # shoulder, so GARMENT_FLARE remains the true span bound.
         t = min(v / knee, 1.0)
-        wf = shoulder + (1.0 - shoulder) * (t * t * (3 - 2 * t))     # smoothstep
+        wf = 1.0 - (1.0 - body) * (t * t * (3 - 2 * t))      # smoothstep down to the body
         wf += flare_g * max(v - 0.5, 0.0)                    # a little flare below the waist
         rx = 0.5 * width * wf
         # THE SHOULDER CAP. The first render put the garments' full thickness right up to
@@ -359,7 +376,10 @@ def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
         # narrows to a ROUNDED RIDGE at the shoulder line and only reaches full body a
         # third of the way down — that curve is most of what says "clothing" when the
         # wardrobe is seen from the front and every garment is edge-on.
+        # The HEM thins back down (round 4): a full-thickness bottom ring presented
+        # a wide flat underside edge-band — the literal look of a board's edge.
         ry = 0.5 * depth * (0.22 + 0.78 * min(v / 0.34, 1.0) ** 0.7)
+        ry *= 1.0 - 0.68 * max(v - 0.82, 0.0) / 0.18         # knife hem, not plank edge
         # lean + bow share the sway budget so their SUM can never exceed it: the bow
         # vanishes at v=0 (the hook) and at the hem line, mixing a C-shape with an
         # S-shape per piece — this is what breaks the one-bend-at-one-height clone.
@@ -375,8 +395,17 @@ def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
             amp = fold_g * (v ** 1.5)
             c = _crease(u, salt, waves)
             ca = math.cos(a)
+            sa = math.sin(a)
             x = rx * ca + sw
-            y = ry * math.sin(a) + amp * c * (1.0 if math.sin(a) >= 0 else -1.0)
+            y = ry * sa + amp * c * (1.0 if sa >= 0 else -1.0)
+            # the deep folds: carve the face TOWARD the midplane where the crease
+            # field peaks, growing down the drop — valleys, never bumps, so the
+            # thickness envelope (and with it the rail pitch budget) is untouched.
+            pinch = min((fold_in / max(ry, 1e-6)) * max(c, 0.0) * (v ** 1.2), 0.85)
+            y -= ry * sa * pinch
+            # the same folds nick the silhouette edges inward a whisker, so the
+            # side profile ripples instead of running dead straight
+            x -= math.copysign(1.0, ca) * fold_in * 0.25 * max(-c, 0.0) * v * abs(ca)
             z = -drop * v + hw - sl * abs(ca) ** 1.6
             if collar and v < 0.10:
                 # a COLLAR: the neck region (|x| small — front and back of the neck)
@@ -386,7 +415,42 @@ def garment(width, drop, depth=0.085, shoulder=0.62, nu=11, nv=7,
                 # so it never pokes above the rail.
                 z += collar * math.exp(-(ca / 0.30) ** 2) * (1.0 - v / 0.10)
             verts.append((x, y, z))
-    return verts, _loft_faces(nv, nu)
+    faces = _loft_faces(nv, nu)
+    if sleeves:
+        # SLEEVES (round 4): the silhouette cue no profile can fake — two flattened
+        # tubes hanging from under the shoulder tips, drifting a touch INWARD (a
+        # sleeve falls against the body, not away from it). Containment is by
+        # construction, not by luck: tube centre sits rx_s inside the tip so the
+        # outer edge never passes the shoulder (span bound untouched), and
+        # |y| <= 0.006 + ry_s stays inside the body's own half-depth (pitch budget
+        # untouched). Long/short is per-piece DNA; the cuff ring pinches to close.
+        long_s = dev(8, 1.0, salt + 61) > -0.35              # most sleeves are long
+        s_len = min(drop * (0.55 if long_s else 0.30) * (1.0 + 0.10 * dev(9, 1.0, salt + 71)),
+                    drop * 0.80)
+        # the tube lives in the side band the narrowed body freed: outer edge AT the
+        # shoulder tip (span bound untouched), inner edge overlapping the body edge —
+        # so below the cuff the silhouette STEPS in to the body. First cut buried the
+        # sleeves inside the body's volume (quick-look fx: nothing visible); now the
+        # tube also rides against one face (front for one arm, back for the other) so
+        # it reads as a raised ridge under light, still inside the half-depth budget.
+        rx_s = min(0.045, 0.24 * 0.5 * width)
+        ry_s = min(0.014, 0.45 * 0.5 * depth)
+        nus, nvs = 8, 6
+        for side in (-1.0, 1.0):
+            yo = (0.5 * depth * 0.95 - ry_s) * (side if dev(10, 1.0, salt + 79) > 0 else -side)
+            base = len(verts)
+            for j in range(nvs + 1):
+                v = j / float(nvs)
+                taper = (1.0 - 0.30 * v) * (0.35 if j == nvs else 1.0)
+                xc = side * (0.5 * width - rx_s) * (1.0 - 0.08 * v)
+                zc = -slope - v * s_len
+                for i in range(nus + 1):
+                    a = 2.0 * math.pi * i / float(nus)
+                    verts.append((xc + rx_s * taper * math.cos(a),
+                                  yo + ry_s * taper * math.sin(a), zc))
+            faces.extend((fa + base, fb + base, fc + base, fe + base)
+                         for (fa, fb, fc, fe) in _loft_faces(nvs, nus))
+    return verts, faces
 
 
 def trouser_fold(width, drop, depth=0.030, nu=9, nv=6, salt=0):

@@ -349,8 +349,15 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             gv, gf = sg.trouser_fold(tw, 0.50, depth=min(thk, 0.034), salt=s)
         else:
             col = 0.016 if sg.dev(i, 1.0, s + 67) > -0.3 else 0.0
+            # THIRD LENGTH SPECIES (round 4, owner: hems all landing at one line read
+            # as boards): ~a quarter of the shirts are SHORT pieces — jackets/tops at
+            # 0.62 of the rail's nominal drop — so the file gets the short-long
+            # rhythm of a worn closet. Shorter is always inside the drop budget.
+            if sg.dev(i, 1.0, s + 83) > 0.55:
+                drp *= 0.62
             gv, gf = sg.garment(wid, drp, depth=thk, fold=GARMENT_FOLD,
-                                hem_wander=GARMENT_HEM, sway=SWAY, salt=s, collar=col)
+                                hem_wander=GARMENT_HEM, sway=SWAY, salt=s, collar=col,
+                                sleeves=True)
         # the hanger's arms angle down by the SAME slope this garment's shoulders
         # wear (one published stream) — a straight bar under sloped cloth hangs the
         # cloth below the wire that suspends it (pre-commit review, 40/40 salts)
