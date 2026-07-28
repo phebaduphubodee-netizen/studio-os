@@ -1,15 +1,15 @@
-﻿"""Tests for styling.py â€” ELEMENT 8, the styling layer derived from BUILT geometry.
+"""Tests for styling.py — ELEMENT 8, the styling layer derived from BUILT geometry.
 
 These pin the two things that make this module different from a prop list:
-  (1) DERIVATION â€” every object's position comes from an anchor part, so moving the
+  (1) DERIVATION — every object's position comes from an anchor part, so moving the
       anchor moves the object and DELETING the anchor RAISES. A hardcoded coordinate
       would re-create the exact defect the module exists to fix.
-  (2) CONTAINMENT â€” the garment orientation blocker (both DD critics found it
+  (2) CONTAINMENT — the garment orientation blocker (both DD critics found it
       independently by running the numbers): a hanger's shoulder bar runs FRONT-TO-BACK
       across the carcass, not along the rail. Getting it backwards packs 4.8 m of cloth
       into a 635 mm rail. Several tests here exist only to make that unshippable.
 
-Pure python â€” no bpy, no Blender.
+Pure python — no bpy, no Blender.
 """
 import pytest
 
@@ -37,7 +37,7 @@ def coverlet():
 
 CARCASS_D = 0.600          # BF09-3's own depth
 # The REAL clear drop under BF09-3's lower short-hang rail: rail top 1.065 less the
-# plinth at 0.080. Using a made-up 0.900 here made the module's own budget guard fire â€”
+# plinth at 0.080. Using a made-up 0.900 here made the module's own budget guard fire —
 # a fixture that is not the built geometry tests the wrong thing.
 CLEAR_DROP = 0.985
 
@@ -65,9 +65,9 @@ def test_find_is_optional_when_asked():
 
 def test_find_matches_on_the_part_token_not_the_piece_name():
     """Anchor object names are `mill__<piece>__<token>` where <piece> is the spec's own
-    (Thai) name with spaces underscored â€” NOT the `bf` code. Matching must key off the
+    (Thai) name with spaces underscored — NOT the `bf` code. Matching must key off the
     trailing token, or every pin breaks the first time a piece is renamed."""
-    anchors = [rail(name="mill__à¸•à¸¹à¹‰à¹€à¸ªà¸·à¹‰à¸­à¸œà¹‰à¸²à¹€à¸«à¸™à¸·à¸­à¹€à¸•à¸µà¸¢à¸‡_BF09-3__rail_full")]
+    anchors = [rail(name="mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_full")]
     assert len(st.find(anchors, "rail")) == 1
 
 
@@ -88,7 +88,7 @@ def test_garment_thickness_runs_along_the_rail_not_its_shoulder():
         along, across = x1 - x0, y1 - y0            # rail runs along x in this fixture
         assert along < across * 0.35, (
             f"garment is {along * 1000:.0f}mm along the rail and only "
-            f"{across * 1000:.0f}mm across it â€” the hanger is turned the wrong way")
+            f"{across * 1000:.0f}mm across it — the hanger is turned the wrong way")
 
 
 def test_garments_do_not_interpenetrate():
@@ -106,7 +106,7 @@ def test_the_garment_file_fits_on_its_rail():
 
 def test_shoulders_stay_inside_the_host_carcass():
     """The containment bound must be solved on the garment's ACTUAL span (it flares below
-    the waist and leans), not on its nominal width â€” otherwise the widest garment grows
+    the waist and leans), not on its nominal width — otherwise the widest garment grows
     through a gable."""
     gs = [sg.bbox(g["verts"]) for g in _garments()]
     r = rail()
@@ -125,7 +125,7 @@ def test_garments_hang_below_their_rail():
 
 
 def test_a_drop_longer_than_the_clear_space_raises():
-    """A 1400mm dress on a rail with 900mm of air below does not 'look a bit long' â€” it
+    """A 1400mm dress on a rail with 900mm of air below does not 'look a bit long' — it
     passes through the shelf under it. RAISE, never clamp (the _build_bed clamp lesson)."""
     with pytest.raises(ValueError) as e:
         st.garments_on_rail(rail(), st.FULL_DROP, CARCASS_D, 0.90)
@@ -142,7 +142,7 @@ def test_no_garment_exceeds_the_clear_drop_even_with_variation():
 
 def test_a_rail_too_short_to_read_as_a_wardrobe_raises():
     """BF09-1-0's real rails are 263.9mm. A rail that can only hold two garments reads as
-    a bare towel bar â€” which IS the defect. Say so rather than emitting two."""
+    a bare towel bar — which IS the defect. Say so rather than emitting two."""
     with pytest.raises(ValueError) as e:
         st.garments_on_rail(rail(dx=0.15), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
     assert "MIN_GARMENTS" in str(e.value)
@@ -282,7 +282,7 @@ def test_the_shams_are_the_tallest_rank():
 def test_no_pillow_is_dented():
     """This owner's two prior rejections were both of things he read as BROKEN rather
     than ugly. A pressed pillow is the cue an engineer reads as a modelling error, and
-    the DD deletes it on purpose â€” a test so it cannot creep back."""
+    the DD deletes it on purpose — a test so it cannot creep back."""
     a = st.pillow_bank(coverlet(), "x", 1)
     b = st.pillow_bank(coverlet(), "x", 1)
     lhs = sg.bbox([p for p in a if p["name"] == "bed__pillowsoft0"][0]["verts"])
@@ -360,13 +360,13 @@ def test_styling_story_bits_are_actually_called_by_material_story():
     story = mp.material_story(None, _canonical())
     assert "HANGING GARMENTS fill all" in story
     assert "SIMULATED CLOTH" in story          # 2026-07-22: was "HANGING TEXTILE", and that
-    assert "GREIGE LINEN THROW" in story       # bit still claimed "~110mm pitch" â€” a fact
+    assert "GREIGE LINEN THROW" in story       # bit still claimed "~110mm pitch" — a fact
     assert "THREE-HEIGHT ladder" in story      # about a generator that had been deleted
 
 
 def test_the_armour_never_claims_a_fold_pitch_the_solver_owns():
     """The bed's fabrics are cloth-solver output. Their fold pitch, hem line and corner
-    behaviour EMERGE â€” nothing in this codebase sets them any more. A number here would be
+    behaviour EMERGE — nothing in this codebase sets them any more. A number here would be
     the e6 wound in its newest costume: prose asserting a value no build controls, which
     the Gemini pass would then try to honour."""
     import material_presets as mp
@@ -411,8 +411,8 @@ def test_the_armour_stays_silent_when_there_is_nothing_to_describe():
 
 
 # ------------------- the ORCHESTRATORS the consumer actually calls (were untested)
-# The pre-commit review found `dress_rails` and `dress_shelves` â€” the only two functions
-# _add_styling calls â€” had ZERO coverage, which is why 1985 green tests could not see a
+# The pre-commit review found `dress_rails` and `dress_shelves` — the only two functions
+# _add_styling calls — had ZERO coverage, which is why 1985 green tests could not see a
 # regression that hard-failed four other room specs under real Blender.
 
 def _wardrobe_anchors():
@@ -445,7 +445,7 @@ def test_dress_rails_derives_short_vs_full_hang_from_what_is_below():
 
 
 def test_a_closed_room_dresses_nothing_and_raises_nothing():
-    """THE REGRESSION. A bedroom whose wardrobe is CLOSED has millwork and no rail â€” that
+    """THE REGRESSION. A bedroom whose wardrobe is CLOSED has millwork and no rail — that
     is a design with no open dressing piece, not an omission. Demanding a rail from it
     hard-failed four room specs that built fine before this element existed."""
     closed = [{"name": "mill__C__door0", "piece": "C", "part": "door0", "kind": "wardrobe",
@@ -464,8 +464,8 @@ def test_a_room_that_DECLARED_an_open_piece_still_raises_when_its_rails_vanish()
 
 
 def test_dress_shelves_refuses_a_display_bookshelf():
-    """Folded knits on element 2's signed open display bookshelf â€” the one built with no
-    back so the garden reads THROUGH it â€” is the wrong object in the wrong room. The host
+    """Folded knits on element 2's signed open display bookshelf — the one built with no
+    back so the garden reads THROUGH it — is the wrong object in the wrong room. The host
     kind rides the anchor precisely so this lane can refuse it."""
     book = [dict(a, kind="bookshelf") for a in _wardrobe_anchors()]
     assert st.dress_shelves(book) == []
@@ -485,7 +485,7 @@ def test_dress_shelves_ignores_an_anchor_with_no_kind():
 
 
 def test_the_vessel_does_not_route_to_the_oak_default():
-    """`porcelain` is a FIXTURE role with no mill_object_role branch â€” a mill__ name
+    """`porcelain` is a FIXTURE role with no mill_object_role branch — a mill__ name
     carrying it falls through to oak. Sanitaryware goes through fix__."""
     import material_presets as mp
     name = st.vessel(1.0, 1.0, 0.5)[0]["name"]
