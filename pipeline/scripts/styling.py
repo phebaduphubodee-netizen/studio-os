@@ -420,6 +420,32 @@ SHAM_D = 0.115             # a euro sham standing upright is THIN in plan
 PILLOW_D = 0.340           # a sleeping pillow lying flat
 LUMBAR_D = 0.200
 
+# Rank HEIGHTS (2026-07-28, the pebble fix's other half). The heights used to be inline
+# literals — sham 0.235, pillow 0.135, lumbar 0.155 — and two of the three contradicted
+# the design they were built from. The DD's own words are "upright euro shams STANDING
+# against the slat wall": a 235mm-tall band on a 700mm width is a sham lying down, and it
+# is why the back rank rendered as low domes instead of the hotel-style standing squares
+# that anchor a styled bed. A real euro sham is a 650mm square; leaning upright it
+# presents ~0.45m. And the LUMBAR sat taller than the sleeping pillows (155 vs 135), so
+# the "three heights" ladder was really tall-short-mid — the accent outgrew the rank
+# behind it. Now: shams clearly TALLEST (the DD's word made true), pillows plump middle,
+# lumbar the SMALLEST — an accent, not a third pillow.
+SHAM_H = 0.44              # standing height. Width rides SHAM_W: the first standing cut
+#                            used 0.62 and the pair read as two AIRPLANE HEADRESTS — tall,
+#                            narrow, floating with 0.42 m of bare bed on each flank. A KING
+#                            sham is a 500x900 case; 0.80 x 0.44 upright IS that object,
+#                            and two of them span 1.66 of the 2.15 m width the way styled
+#                            bedding actually does.
+SHAM_W = 0.80              # cap; the across-fraction still governs on a narrow bed
+PILLOW_H = 0.15            # a plump sleeping pillow lying flat
+LUMBAR_H = 0.19            # tall enough to CLEAR the duvet's turned-back fold. At 0.13 the
+#                            accent vanished: the fold band (top ~0.75 above plan) fully
+#                            occluded it from the foot camera, so the "breaks the mirror
+#                            symmetry" piece was breaking nothing. 0.19 peeks ~90 mm above
+#                            the fold's ridge in silhouette.
+LUMBAR_T = 0.16            # the cushion's own thickness — less than its 0.20 rank, so it
+#                            sits tight against the pillow row like a propped lumbar does
+
 
 def head_ranks(along):
     """The bed head as THREE ranks, returned as [(from_head, depth), ...] plus the total.
@@ -477,13 +503,15 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
 
     parts = []
     gap = across * 0.030
-    # [1] two EURO SHAMS standing upright against the headboard wall — the tallest rank.
+    # [1] two KING SHAMS standing upright against the headboard wall — the tallest rank.
+    # pinch 0.30 (was 0.42): a king sham's case is sewn square-cornered; the heavier pinch
+    # rounded the tops into the headrest read.
     (sh_from, sh_d), (pl_from, pl_d), (lb_from, lb_d) = ranks
-    sham = min(across * 0.42, 0.70)
+    sham = min(across * 0.40, SHAM_W)
     for i in range(2):
         off = (across - 2 * sham - gap) * 0.5 + i * (sham + gap)
         x, y, dx, dy = place(sh_from, off, sh_d, sham)
-        v, f = sg.cushion(dx, dy, 0.235, pinch=0.42, salt=salt + i)
+        v, f = sg.cushion(dx, dy, SHAM_H, pinch=0.30, salt=salt + i)
         parts.append({"name": f"bed__sham{i}", "shape": "mesh",
                       "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     # [2] two flat SLEEPING pillows in front of them. NO dent: this owner's two prior
@@ -493,7 +521,7 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     for i in range(2):
         off = (across - 2 * pw - gap) * 0.5 + i * (pw + gap)
         x, y, dx, dy = place(pl_from, off, pl_d, pw)
-        v, f = sg.cushion(dx, dy, 0.135, pinch=0.30, salt=salt + 5 + i)
+        v, f = sg.cushion(dx, dy, PILLOW_H, pinch=0.30, salt=salt + 5 + i)
         parts.append({"name": f"bed__pillowsoft{i}", "shape": "mesh",
                       "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     # [3] ONE accent lumbar, off-centre, in the greige-oatmeal TERRY identity — a real
@@ -509,8 +537,11 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     # repaint four other pieces in another room. The sentence goes instead.
     lw = min(across * 0.34, 0.52)
     loff = (across - lw) * 0.5 + sg.dev(salt, across * 0.06, salt + 3)
-    x, y, dx, dy = place(lb_from, loff, lb_d, lw)
-    v, f = sg.cushion(dx, dy, 0.155, pinch=0.55, salt=salt + 9)
+    # LUMBAR_T < the rank depth: placed at the rank's head-side edge, so it sits tight
+    # against the pillow row (a lumbar is propped against what is behind it, it does not
+    # float mid-bed).
+    x, y, dx, dy = place(lb_from, loff, min(lb_d, LUMBAR_T), lw)
+    v, f = sg.cushion(dx, dy, LUMBAR_H, pinch=0.55, salt=salt + 9)
     parts.append({"name": f"mill__style_lumbar__{TOK_TERRY}", "shape": "mesh",
                   "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     return parts
@@ -535,13 +566,33 @@ def foot_throw(along, across, height, base_top):
     was built) or asserts blind. The positioning still measures the baked coverlet; only
     the EXISTENCE question was moved back to something both sides can compute.
 
-    band  what lies ON the bed. It must outweigh the cantilevered part or the whole sheet
-          drags itself over the foot edge — measured once at 0.30 m hang against a 0.50 m
-          band, where the throw slid off and fell 5.1 m through the floor.
-    hang  how far it falls past the foot, bounded by the plinth reveal it must not cover.
+    band  what lies ON the bed.
+    hang  the CANTILEVER CUT past the bed's plan foot line — NOT the visible fall. The
+          throw folds over at the mattress edge, ~0.09 m inboard of the plan line, so
+          roughly the first 0.10 m of `hang` is spent crossing that inset horizontally
+          and only the remainder becomes vertical drop. Discovered the hard way
+          (2026-07-28): a resize that read `hang` as "visible fall" and cut it to 0.18
+          left ~0.08 of true drop — a stubby flap with no weight, which BOWED outward
+          and failed the containment ladder at every slack (edge 1-28 mm proud on x).
+          The bake caught it, loudly, exactly as designed.
+
+    2026-07-28 RESIZE (owner LOOK on the tonal-ladder renders): the visible defect was
+    the BAND, not the hang. At the old formula the band bottomed out at 0.72 m — 36% of a
+    2.0 m bed, and measured in pixels the throw was 8.7% of the hero frame and 15.3% of
+    bed_hero, the LARGEST single object in both. A throw that outweighs the coverlet it
+    decorates is a second coverlet, and its long straight hem read as a defect. Now
+    0.50 m on this bed (25%) with the hang kept at the value whose physics is proven.
+
+    THE 2.2x BAND:HANG FLOOR IS RETIRED, and the reason is recorded rather than deleted:
+    it was measured on an UNPINNED sheet ("0.30 m of cloth in mid-air against a 0.50 m
+    band ... fell 5.1 m through the floor"). The build has since pinned the throw's
+    innermost strip the way a tucked edge really is, so the pin — not the band's weight —
+    is what holds the sheet, and the bake still fails the build loudly (hem_min,
+    containment, frozen-sheet) if that ever stops being true. Keeping the floor would
+    force band back to 0.62+ and reinstate the defect this resize removes.
     """
-    hang = min(0.30, (height - base_top) - DRAPE_REVEAL - 0.06)
-    band = max(hang * 2.2, min(0.72, along * 0.36))
+    hang = min(0.28, (height - base_top) - DRAPE_REVEAL - 0.06)
+    band = min(0.50, along * 0.25)
     _ranks, pz = head_ranks(along)
     if hang <= 0.05 or (along - band) <= pz + 0.14:
         return None                      # the throw would reach into the pillow ladder

@@ -192,3 +192,26 @@ def test_degenerate_input_raises(call):
     with pytest.raises(ValueError):
         call()
 
+
+
+def test_cushion_edge_fullness_kills_the_pebble_silhouette():
+    """2026-07-28, the pebble fix: r = sin(phi) raw made every cushion's silhouette a
+    pointed lens — six of them at the bed head read as pebbles/UFOs (owner LOOK on the
+    tonal-ladder renders). With the edge-fullness profile the first ring off the pole
+    must already carry most of the width; the old lens must stay reproducible at
+    edge=1.0 so the comparison itself is pinned."""
+    nu, nv = 13, 9
+    def ring1_frac(edge):
+        verts, _ = sg.cushion(0.62, 0.115, 0.44, nu=nu, nv=nv, edge=edge)
+        rings = [verts[j * (nu + 1):(j + 1) * (nu + 1)] for j in range(nv + 1)]
+        spans = [max(v[0] for v in r) - min(v[0] for v in r) for r in rings]
+        return spans[1] / spans[len(spans) // 2]
+    assert ring1_frac(0.30) > 0.65, "first ring collapsed — the pebble is back"
+    assert ring1_frac(1.0) < 0.45, "edge=1.0 no longer reproduces the old lens"
+
+
+def test_cushion_rejects_a_bad_edge():
+    with pytest.raises(ValueError):
+        sg.cushion(0.6, 0.1, 0.4, edge=0.0)
+    with pytest.raises(ValueError):
+        sg.cushion(0.6, 0.1, 0.4, edge=1.4)

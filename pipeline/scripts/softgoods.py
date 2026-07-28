@@ -325,7 +325,7 @@ def hanger(width, hook_r=0.015, bar_drop=0.030, salt=0):
 # 3. CUSHION / PILLOW — a plump form, not a slab.
 # ---------------------------------------------------------------------------
 
-def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0):
+def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30):
     """A plump pillow/cushion: a rounded superellipsoid whose CORNERS pinch in (the way a
     stuffed cover does) and whose top may carry a soft `dent`.
 
@@ -333,12 +333,24 @@ def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0):
     the top centre — a pillow that has been leaned on. Local origin = footprint SW corner
     at z0; the form fills (0..w, 0..d, 0..h).
 
+    `edge` is the EDGE FULLNESS — the exponent on the vertical radius profile.
+    2026-07-28, THE PEBBLE FIX (owner LOOK on the tonal-ladder renders): the first cut used
+    r = sin(phi) raw, which is a hemisphere-profile — the plan radius collapses smoothly to
+    zero at both poles, so every cushion's SILHOUETTE was a pointed lens. Six of them at
+    the bed head read as pebbles/UFOs, and no value ladder can fix a wrong silhouette. A
+    real pillow holds nearly full width for most of its height and turns a small rounded
+    edge at top and bottom: r = sin(phi)**edge with edge < 1 does exactly that (at 10% of
+    the height the plan is already at ~86% width instead of 60%). edge=1.0 reproduces the
+    old lens for any caller that genuinely wants one.
+
     Replaces the `_rbox` slab whose "two identical flat pillows at identical height" the
     DD ground phase named as the loudest CAD tell at the bed head."""
     if w <= 0 or d <= 0 or h <= 0:
         _fail(f"cushion: degenerate {w}x{d}x{h}")
     if not 0.0 <= pinch <= 1.0:
         _fail(f"cushion: pinch {pinch} outside 0..1")
+    if not 0.05 <= edge <= 1.0:
+        _fail(f"cushion: edge {edge} outside 0.05..1.0")
     # The 3% surface wobble below must live INSIDE the declared footprint, not spill past
     # it: this codebase's one hard geometric invariant is that a part never leaves its
     # plan bbox, and a pillow that overhangs its mattress by 2mm is a clipping artifact
@@ -351,7 +363,7 @@ def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0):
         v = j / float(nv)
         phi = math.pi * v                                    # 0 = bottom pole, pi = top
         zf = 0.5 - 0.5 * math.cos(phi)                       # 0..1
-        r = math.sin(phi)
+        r = math.sin(phi) ** edge
         for i in range(nu + 1):
             u = i / float(nu)
             a = 2.0 * math.pi * u

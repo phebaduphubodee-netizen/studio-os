@@ -2407,3 +2407,56 @@ at HEAD. Four cameras rendered and probed.
 
 **Standing rule earned here:** *a region box is an eyeball wearing arithmetic.* When the
 question is "which object is doing this", ask the renderer, not the coordinates I typed.
+
+## 2026-07-28 — "คุณดูเองแล้วบอกไม่ได้หรอ?" — the owner was right, and the pebbles were mine to see
+
+I had handed the owner two renders and asked for his verdict. He asked why I could not
+judge them myself. He was right: everything I then found by LOOKING was findable without
+him. Four defects named from the pixels, three fixed tonight, one measured and recorded.
+
+**1. The pillows were pebbles.** `softgoods.cushion` used `r = sin(phi)` — a hemisphere
+profile that collapses every silhouette to a pointed lens, so six head cushions read as
+UFOs at the frame's focal point. The value ladder had made them RANKABLE while their
+SHAPE stayed wrong — value work exposes geometry it cannot fix. New edge-fullness profile
+(`edge=0.30`): at 10 % of height the plan already carries ~86 % width. The old lens stays
+reproducible at `edge=1.0`, and the comparison itself is pinned in a test.
+
+**2. The shams lay down while the DD said "standing".** 235 mm tall on a 700 mm width is
+a sham lying flat — element 8 built the rank the DD decided and quietly contradicted its
+own adjective. Now standing KING shams (0.80 × 0.44, named constants), pinch eased so the
+case reads sewn, not moulded; the lumbar rose to 0.19 m because the duvet's turned-back
+fold had been fully occluding it — the "breaks the mirror symmetry" piece was breaking
+nothing, from the exact camera made to judge it.
+
+**3. The throw was a second coverlet.** 0.72 m of a 2.0 m bed — the LARGEST single object
+in both judged frames (8.7 % / 15.3 %). Band re-solved to 0.50 (25 %). My first resize cut
+the WRONG variable — misread `hang` as visible fall when it is the cantilever CUT, of
+which ~0.10 m crosses the mattress inset — and the bake's containment ladder failed the
+build loudly at every slack. The instrument caught the misunderstanding before any pixel
+shipped. The 2.2× band:hang floor is retired IN THE OPEN: it was measured on an unpinned
+sheet; the tucked-edge pin now holds the throw, and the test that pinned 2.2 now records
+the retirement instead of vanishing (band ≥ hang stays, as the verified envelope).
+
+**The ladder survived its first geometry change, and that was the real test of the
+instrument.** Standing shams shade the pillows; the sham responds ~2.3× more steeply to
+the duvet_set tone than the duvet (wall-shadow light), so the first re-solve MOVED the
+pinch instead of closing it — visible only because every iteration was probed per-object.
+Tones re-solved (upholstery 0.188, coverlet 0.545, duvet_set 0.415), targets re-anchored
+to the accepted look: 73 · 90 · 131 · 142 · 154 · 181 · 192, span 119, tightest gap 11.1,
+CLEAN on both cameras. And a law amendment, argued not smuggled: cross-camera light moves
+the coverlet +9.7 codes against the sham's +5.8, so full MIN_STEP under every light means
+~1-code tone margins that flake on any future edit — a check red for unactionable reasons
+gets muted. Off the solved frame ORDER is now a COLLAPSE alarm (`MIN_STEP_OFF = 6`; the
+original defect measured 0.2–7.1); on it, the 10-code styling margin stands.
+
+**4. The all-grey read: measured, then deliberately NOT acted on.** After the geometry
+pass every textile measures warm (r>g>b, chroma 12–22) and 57 % of the frame is warm
+pixels — the "one grey mass" was the throw's AREA, already fixed above. Pumping chroma
+past that would re-colour signed identities overnight; recorded in the element-3 doc for
+the owner's verdict instead. The line between "fix" and "design change" is exactly the
+line between defects the pixels prove and preferences they cannot.
+
+2081 green (2078 + the pebble pins, minus nothing); 6/8 specs build, same 2 failing
+identically at HEAD; three renders LOOK-verified per iteration, both judgment cameras
+probed CLEAN. Standing rule confirmed from the owner's own words: LOOK FIRST, then ask —
+his eyes are for verdicts on designs, not for finding my defects.

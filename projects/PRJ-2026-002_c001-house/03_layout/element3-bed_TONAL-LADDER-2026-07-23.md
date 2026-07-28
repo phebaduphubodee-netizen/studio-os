@@ -93,3 +93,41 @@ separate spread, upholstery is upholstery.
 - **Not fixed here (geometry, not value):** the foot throw covers ~42 % of the bed top and
   is the largest single object in the frame at 8.7 % — a value pass cannot make it a
   narrower band, and `styling.foot_throw`'s 0.72 m band of a 2.0 m bed is a separate call.
+
+---
+
+## Amendment 2026-07-28 — the PEBBLE-FIX geometry pass, and the ladder re-anchored
+
+The owner's LOOK on the ladder renders named three geometry defects the value work had
+exposed: the cushions read as **pebbles/lenses** (a `sin(phi)` hemisphere profile collapsed
+every silhouette to a pointed lens), the euro shams were **squat bands lying down** (235 mm
+tall against the DD's own word "upright/standing"), and the throw at its 0.72 m band was
+**the largest single object in both frames** — a second coverlet, not a styling accent.
+Fixed: `softgoods.cushion` gained an edge-fullness profile (`edge=0.30`; at 10 % of height
+the plan is at ~86 % width instead of 60 %), the shams became standing **king shams**
+(0.80 × 0.44, `SHAM_W`/`SHAM_H`), the lumbar rose to 0.19 so the duvet fold stops occluding
+it, and the throw band went to **0.50 m (25 %)** with the 2.2× band:hang floor retired in
+the open (it was measured on an unpinned sheet; the tucked-edge pin now holds the throw,
+and the bake still fails loudly if that stops being true — the resize attempt that misread
+`hang` as visible fall was CAUGHT by the containment ladder, exactly as designed).
+
+**Tones re-solved** for the new light distribution (standing shams shade the pillows;
+the sham responds ~2.3× more steeply to the duvet_set tone than the duvet — wall-shadow
+light): upholstery 0.188, coverlet 0.545, duvet_set 0.415; sheet/pillowcase unchanged.
+**Targets re-anchored** to the measured accepted look (eye frame):
+
+    base 73 · throw 90 · bench 131 · coverlet 142 · sham0 154 · duvet 181 · pillow 192
+    span 119 codes; tightest adjacent gap 11.1; CLEAN on eye AND bed_hero
+
+**Two-tier ORDER law** (`MIN_STEP_OFF = 6`): cross-camera light moves the coverlet
++9.7 codes and the sham +5.8 between the two verified views, so demanding the full
+10-code styling step under every light forces ~1-code tone margins that flake on any
+future edit. Off the solved frame the check is a **collapse alarm** (the original defect
+measured 0.2–7.1 codes); on it, the styling margin stands.
+
+**The all-grey question, measured and RECORDED FOR THE OWNER, not acted on:** after the
+geometry pass every textile measures warm (r>g>b throughout, chroma 12–22 codes) and
+57 % of the frame is warm pixels — the "one grey mass" read was the throw's AREA, which
+is fixed. If the owner still wants more colour after seeing the frame, that is a palette
+decision (new accent, or chroma-preserving deepening of the greige family) and reopens
+signed identities — his call, not a sleep-shift's.

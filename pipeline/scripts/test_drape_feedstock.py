@@ -116,19 +116,28 @@ def test_pin_region_outside_the_sheet_is_empty_not_an_error():
 # ----------------------------------------------------------------- the throw
 
 def test_foot_throw_agrees_with_the_canonical_bed_the_build_ships():
+    """2026-07-28: band re-solved 0.72 -> 0.50 (owner LOOK: at 36% of the bed the throw
+    was the LARGEST object in both judged frames — a second coverlet, not an accent).
+    The envelope here is the one the bake ladder actually verified on this bed."""
     band, hang = st.foot_throw(2.0, 2.149, 0.60, 0.204)
-    assert 0.60 <= band <= 0.80 and 0.20 <= hang <= 0.30
+    assert 0.45 <= band <= 0.55 and 0.20 <= hang <= 0.30
 
 
-def test_the_band_on_the_bed_always_outweighs_the_part_hanging_off_it():
-    """A throw whose cantilever is too heavy drags itself over the foot edge and
-    falls through the floor — measured once, at 5.1 m."""
+def test_the_laid_band_is_never_shorter_than_the_cantilever():
+    """THE 2.2x FLOOR IS RETIRED, and this test records why instead of vanishing: the
+    5.1 m fall it encoded was measured on an UNPINNED sheet. The build has since pinned
+    the throw's innermost strip (a tucked edge), so the pin — not the band's weight —
+    holds the sheet, and the bake still fails the build loudly (hem_min, containment,
+    frozen-sheet) if that ever stops being true; the 2026-07-28 resize attempt that
+    misread `hang` proved that ladder fires. What pure logic still owns: a LAID throw
+    has at least as much cloth on the bed as hanging off it — band >= hang — which is
+    also the envelope the bake has actually been verified in (0.50 vs 0.28)."""
     for along in (1.6, 1.9, 2.0, 2.2, 2.6):
         for h in (0.40, 0.50, 0.60, 0.75):
             plan = st.foot_throw(along, 2.0, h, h * 0.34)
             if plan:
                 band, hang = plan
-                assert band >= hang * 2.2 - 1e-9
+                assert band >= hang - 1e-9
 
 
 def test_the_throw_never_reaches_into_the_pillow_ladder():

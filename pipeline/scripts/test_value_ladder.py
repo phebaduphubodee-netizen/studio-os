@@ -514,3 +514,24 @@ def test_story_line_does_not_claim_the_swatch_order_is_the_frames_order():
     line = vl.story_line()
     assert "AS SWATCHES" in line
     assert "frame's own order differs" in line
+
+
+def test_off_frame_order_is_a_collapse_alarm_not_the_styling_gate():
+    """Cross-camera light moves pieces ~10 codes in opposite directions (measured:
+    coverlet +9.7, sham +5.8 between the two verified cameras), so the full MIN_STEP off
+    the solved frame forces ~1-code tone margins that flake on any edit — and a check
+    that is red for unactionable reasons gets muted. Off-frame, an 8-code squeeze passes;
+    a genuine collapse (the original defect measured 0.2-7.1 codes) still fails."""
+    # match the "ORDER:" violation PREFIX — the off-frame NOTE line also contains the
+    # word ORDER ("ORDER and SPAN still are"), and matching it made this test fail its
+    # own first assertion for the wrong reason.
+    def order_fired(viol):
+        return any(v.startswith("ORDER:") for v in viol)
+    m = {obj: target for _n, obj, target in vl.LADDER}
+    squeeze = dict(m)
+    squeeze["bed__sham0"] = squeeze["bed__coverlet"] + 8.0
+    assert not order_fired(vl.check_render(squeeze, frame="bed_hero"))
+    assert order_fired(vl.check_render(squeeze, frame=vl.FRAME))
+    collapse = dict(m)
+    collapse["bed__sham0"] = collapse["bed__coverlet"] + 4.0
+    assert order_fired(vl.check_render(collapse, frame="bed_hero"))
