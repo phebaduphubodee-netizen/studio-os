@@ -54,6 +54,12 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
 - R4 LOOK vs DELIVERED: judge crops beside the sellability anchor pool —
   `python pipeline/scripts/look_bench.py <render>` (LOCAL-ONLY sheet under
   `_private/`), not against our own previous frame.
+- R4b REFERENCE-BEFORE-BUILD (owner order 2026-07-29: four rounds of soft goods
+  were built from priors — "ไม่เคยไปหา reference" was the root): no object-class
+  build or LOOK judgment without a real reference of that class OPEN beside the
+  crop. Reference of record = the anchor pool; boards live in the project's
+  04_visualization/ (e.g. reference-board-softgoods-2026-07-29.md). Anchors
+  JUDGE, never DICTATE (no copying — benchmark leakage).
 - R5 PLAYBLAST: no full-fidelity frame is the FIRST look at a change — run
   `build_room.py … --quick` first (~1/4 wall time). Quick kills bad work;
   only full fidelity closes a gate.

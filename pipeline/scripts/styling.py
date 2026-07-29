@@ -92,13 +92,22 @@ BED_PILLOW = "bed__pillow"
 # into a 635 mm rail, every one interpenetrating its neighbours. Drops are vault-cited:
 # shirt/blouse 1100, dress 1400, coat 1600, trousers-on-hanger 500
 # (knowledge/.../casework-fixture-clearances-th-practice.md 2.1).
+CROP_DROP = 0.68           # cropped tops / short shirts — the third rung of the length
+                           # ladder, needed once sleeves (the true lowest point,
+                           # round 4-ref) tax the clear-drop budget by SLEEVE_OVER
 SHORT_DROP = 0.86          # a folded-over jacket / short garment — STUDIO CONVENTION,
 #                            deliberately NOT presented as vault-cited: the source has no
 #                            900 row (critic's minor finding; labelled, not smuggled).
 FULL_DROP = 1.40           # dress (vault row); coats 1600 exceed BF09-3's full-hang clear
-GARMENT_PITCH = 0.068      # centre-to-centre along the rail = a garment's own thickness
+GARMENT_PITCH = 0.24       # centre-to-centre along the rail. 0.068 -> 0.24 at round
+                           # 4-ref: the delivered-closet reference (I-24-062 #125386)
+                           # hangs TWO garments on ~a metre of rail — sparse, styled,
+                           # every silhouette fully readable. Packed at 68mm, 85% of
+                           # every piece was hidden behind its neighbour and the file
+                           # read as a deck of boards, whatever the per-piece geometry.
 SHOULDER_MAX = 0.46        # shoulder span across the depth axis, before the clear check
-MIN_GARMENTS = 3           # a rail with fewer than this does not read as a wardrobe
+MIN_GARMENTS = 2           # the reference rail holds two; below that it is a towel bar
+PITCH_FLOOR = 0.13         # least air per piece on a SHORT rail before it stops reading
 #                            (3, not 4: the bay's BF09-1-0 rails are a real 264mm run)
 GARMENT_FOLD = 0.006       # crease amplitude — SMALL, because it is spent on the pitch
 GARMENT_LEAN = 0.004       # lean along the rail — likewise
@@ -218,10 +227,10 @@ def dress_rails(anchors, min_rails=1):
     out = []
     for i, r in enumerate(rails):
         depth, drop_clear = rail_clearances(r, by_piece[piece_of(r)])
-        # a rail with over ~1.2m of air below it is a FULL hang (dresses/coats); a rail
-        # sitting over another rail or a shelf is a short hang. Derived, not declared.
-        drop = FULL_DROP if drop_clear > 1.25 else SHORT_DROP
-        out.extend(garments_on_rail(r, drop, depth, drop_clear, salt=i))
+        # the longest standard length whose SLEEVES clear what's below — derived,
+        # not declared (rail_drop owns the ladder since round 4-ref put the cuffs
+        # below the hem)
+        out.extend(garments_on_rail(r, rail_drop(drop_clear), depth, drop_clear, salt=i))
     return out
 
 
@@ -258,6 +267,22 @@ def dress_shelves(anchors, every=2, n_items=4, kinds=KNIT_KINDS):
 # GARMENTS — the largest gap between decided design and rendered pixels.
 # ---------------------------------------------------------------------------
 
+def rail_drop(clear_drop):
+    """The LONGEST standard garment length whose sleeves still clear what is below
+    the rail. Since round 4-ref the lowest point of a shirt is its cuff
+    (drop * SLEEVE_OVER + SLEEVE_PAD, published by softgoods), so a rail that used
+    to take an 860 mm body may now only take the next rung down — that is a
+    CENSUS choice (a stylist picks shorter pieces for a lower rail), never a
+    clamp of a chosen piece."""
+    budget = (clear_drop - SHOULDER_DROP - GARMENT_HEM - sg.SLEEVE_PAD) / sg.SLEEVE_OVER
+    for length in (FULL_DROP, SHORT_DROP, CROP_DROP):
+        if length <= budget + 1e-9:
+            return length
+    _fail(f"clear drop {clear_drop * 1000:.0f}mm cannot hang even a {CROP_DROP * 1000:.0f}mm "
+          f"crop once its sleeves reach {CROP_DROP * sg.SLEEVE_OVER * 1000 + sg.SLEEVE_PAD * 1000:.0f}mm "
+          f"— not a hangable rail")
+
+
 def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_PITCH):
     """Fill one brass hang rail with hanging garments + their hangers.
 
@@ -278,14 +303,23 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
     run = hi - lo
     n = int(run // pitch)
     if n < MIN_GARMENTS:
-        _fail(f"rail {rail['name']!r}: run {run * 1000:.0f}mm fits only {n} garments at "
-              f"{pitch * 1000:.0f}mm pitch — below MIN_GARMENTS ({MIN_GARMENTS}) a rail "
-              f"reads as a bare towel bar, which is the defect being fixed")
+        # the reference density (2 pieces on ~a metre) SCALES DOWN to short rails:
+        # a 264mm bay rail still hangs a readable pair as long as each piece keeps
+        # breathing room (PITCH_FLOOR) — only below that is it a bare towel bar.
+        if run >= MIN_GARMENTS * PITCH_FLOOR:
+            n = MIN_GARMENTS
+        else:
+            _fail(f"rail {rail['name']!r}: run {run * 1000:.0f}mm cannot breathe even "
+                  f"{MIN_GARMENTS} garments at the {PITCH_FLOOR * 1000:.0f}mm floor — "
+                  f"a rail below that reads as a bare towel bar, the defect being fixed")
+    pitch = min(pitch, run / n)                    # effective pitch on this rail
     # The DROP BUDGET is not just the garment body: the shoulder hangs SHOULDER_DROP below
     # the rail and the hem wanders another GARMENT_HEM below its nominal. A budget that
     # ignores what the generator adds is not a budget — this is the second of the two
     # containment bugs this module's own tests caught.
-    drop_budget = clear_drop - SHOULDER_DROP - GARMENT_HEM
+    # sleeves are the garment's lowest point (reference; softgoods publishes the
+    # overhang), so the whole budget is solved on the SLEEVE reach, not the hem
+    drop_budget = (clear_drop - SHOULDER_DROP - GARMENT_HEM - sg.SLEEVE_PAD) / sg.SLEEVE_OVER
     if drop > drop_budget + 1e-9:
         _fail(f"rail {rail['name']!r}: declared drop {drop * 1000:.0f}mm exceeds the "
               f"derived budget {drop_budget * 1000:.0f}mm (clear "
@@ -327,9 +361,15 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
         if thk_max <= 0.012:
             _fail(f"rail {rail['name']!r}: pitch {pitch * 1000:.0f}mm cannot hold a "
                   f"garment plus its crease and lean")
-        thk = thk_max * (0.72 + 0.28 * abs(sg.dev(i, 1.0, s + 7)))
+        # the sparse pitch leaves a huge thickness budget — cap at a real garment's
+        # ~85mm depth instead of letting cloth balloon to the pitch
+        thk = min(thk_max * (0.72 + 0.28 * abs(sg.dev(i, 1.0, s + 7))), 0.085)
         drp = min(drop * (1.0 + sg.dev(i, 0.13, s + 11)), drop_budget)   # raggeder hem
         lean = sg.dev(i, GARMENT_LEAN, s + 23)
+        # irregular AIR between pieces (reference: the two shirts hang close, the rest
+        # of the rail breathes) — jitter each slot along the rail, bounded well under
+        # the half-pitch so neighbours can never meet
+        along += sg.dev(i, min(0.06, pitch * 0.22), s + 91)
         # A THREE-VALUE LADDER from three ALREADY-SIGNED identities: mostly greige linen,
         # the element-6 terry for the occasional robe, and every third mass in matte-black
         # ply. Across six frames there is essentially nothing below 35% luminance, and a
@@ -583,7 +623,11 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
         # pillows to identical heights (equal-height IS its dent detector), and a
         # side-by-side pair at the same rank leaning at the same angle is what a
         # made bed looks like anyway — the salt already varies their surfaces.
-        v = _lean_to_head(v, head_axis, head_sign, ext, 10.0)
+        # 10 -> 26 degrees at round 4-ref: the delivered-bed reference (I-23-023
+        # #499473) slumps its sleeping pillows visibly back into the shams (~30-45
+        # degrees); ten degrees read as pillows standing at attention. The shared
+        # angle stays SHARED (the no-dent armour pins the pair to equal heights).
+        v = _lean_to_head(v, head_axis, head_sign, ext, 26.0)
         shift = head_sign * (RANK_GAP * 0.85)
         v = [(p[0] + (shift if head_axis == "x" else 0.0),
               p[1] + (shift if head_axis == "y" else 0.0), p[2]) for p in v]

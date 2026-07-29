@@ -2347,21 +2347,25 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     _dv_x, _dv_y, _dv_dx, _dv_dy = box(dv_from, (across - _dv_w) * 0.5, _dv_len, _dv_w)
 
     def _duvet(scale, sl):
+        # cell 0.028 -> 0.042 and thickness 0.008 -> 0.018 at round 4-ref: the
+        # delivered-bed reference (I-23-023 #499473) shows a comforter with LOFT —
+        # large soft billows and a thick rounded hem roll; our 8 mm sheet at 28 mm
+        # cells read as a thin blanket pulled tight.
         vs, fs = softgoods.folded_sheet(_dv_x, _dv_y, _dv_dx, _dv_dy, H + 0.03,
-                                        band=0.28, head=_head_side, cell=0.028)
+                                        band=0.28, head=_head_side, cell=0.042)
         # THE CLOTH-STACK CONTACT LAW (earned across fx6→fx8, three failed reads):
         # collide against the coverlet's SINGLE-SHELL sim surface, never its
         # solidified render mesh — a sheet that tunnels between a frozen collider's
         # two shells is trapped and renders as mottled cloth-through-cloth whatever
         # the distance (graze at 0.004, shard-crumple at 0.012, still patched at
-        # 0.008). collide_dist then only has to clear the RENDER shells: 0.010 rests
-        # this sheet's −4 mm inner half above the coverlet's +3 mm outer half with
-        # 3 mm to spare.
+        # 0.008). collide_dist then only has to clear the RENDER shells: 0.016 rests
+        # this sheet's −9 mm inner half above the coverlet's +3 mm outer half with
+        # 4 mm to spare.
         _cprx = drape.sim_surface_of("bed__coverlet")
         return drape.bake_sheet("bed__duvet", vs, fs,
                                 [o for o in (_cprx or _cov_o, _matt_o, _base_o) if o],
                                 frames=55, fabric="linen", mat=duvt_m,
-                                thickness=0.008, slack=sl, collide_dist=0.010,
+                                thickness=0.018, slack=sl, collide_dist=0.016,
                                 sim_surface=True)
     _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
                                top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
@@ -2514,10 +2518,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                 # base_m now renders 98 here and 134 on the bench, because this surface lies
                 # flat in the bed's own shadow and that one is not. The light was always
                 # going to separate them; the cloth just had to be deep enough to let it.
-                # 0.012 above the single-shell proxy = this sheet's −3 mm render
-                # half + the duvet's +4 mm, with 5 mm to spare (the contact law)
+                # 0.015 above the single-shell proxy = this sheet's −3 mm render
+                # half + the duvet's +9 mm (thickness 0.018 at round 4-ref), with
+                # 3 mm to spare (the contact law)
                 frames=70, fabric="knit", mat=base_m, thickness=0.006, slack=sl,
-                slack_verts=_wts, collide_dist=0.012)
+                slack_verts=_wts, collide_dist=0.015)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
         # would have fixed it is only correct for this one bed.

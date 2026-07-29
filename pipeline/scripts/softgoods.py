@@ -262,7 +262,15 @@ MIN_SEGMENTS = 3                  # below this a "gathered" ribbon cannot show a
 # piece may lean by `sway`. A caller sizing a garment to fit a carcass must bound the
 # ACTUAL span, so the factor is published here instead of being re-derived (wrongly) at
 # each call site. span <= width * GARMENT_FLARE + 2 * sway.
-GARMENT_FLARE = 1.03
+# 1.03 -> 1.10 at round 4-ref: the delivered-closet reference (I-24-062 #125386)
+# shows sleeve cuffs splaying OUT past the shoulder tips; the splay is capped at
+# 0.05*width inside garment(), so 1.10 stays the true span bound.
+GARMENT_FLARE = 1.10
+# Sleeve overhang budget, published for the caller's clear-drop solve: a hanging
+# shirt's cuffs are its LOWEST point (same reference — cuffs fall past the body
+# hem). lowest_z >= -(drop * SLEEVE_OVER + SLEEVE_PAD).
+SLEEVE_OVER = 1.12
+SLEEVE_PAD = 0.040
 
 
 def _fail(msg):
@@ -406,6 +414,9 @@ def garment(width, drop, depth=0.085, nu=11, nv=7,
             # the same folds nick the silhouette edges inward a whisker, so the
             # side profile ripples instead of running dead straight
             x -= math.copysign(1.0, ca) * fold_in * 0.25 * max(-c, 0.0) * v * abs(ca)
+            # irregular CRUMPLE (reference I-24-062: worn cloth wrinkles run in every
+            # direction, not only as vertical valleys) — per-vertex, growing downward
+            y += 0.004 * dev(i * 7 + j * 13, 1.0, salt + 87) * (v ** 0.8)
             z = -drop * v + hw - sl * abs(ca) ** 1.6
             if collar and v < 0.10:
                 # a COLLAR: the neck region (|x| small — front and back of the neck)
@@ -424,25 +435,32 @@ def garment(width, drop, depth=0.085, nu=11, nv=7,
         # outer edge never passes the shoulder (span bound untouched), and
         # |y| <= 0.006 + ry_s stays inside the body's own half-depth (pitch budget
         # untouched). Long/short is per-piece DNA; the cuff ring pinches to close.
+        # REFERENCE (delivered closet I-24-062 #125386, the round-4-ref board): the
+        # sleeves are the LOWEST part of a hanging shirt — free tubes falling PAST
+        # the body hem, splaying slightly outward, ending in a visible CUFF (a small
+        # flare, then the buttoned pinch). The first cut guessed sleeves from priors
+        # and hid them against the body; this one copies what the reference shows.
         long_s = dev(8, 1.0, salt + 61) > -0.35              # most sleeves are long
-        s_len = min(drop * (0.55 if long_s else 0.30) * (1.0 + 0.10 * dev(9, 1.0, salt + 71)),
-                    drop * 0.80)
-        # the tube lives in the side band the narrowed body freed: outer edge AT the
-        # shoulder tip (span bound untouched), inner edge overlapping the body edge —
-        # so below the cuff the silhouette STEPS in to the body. First cut buried the
-        # sleeves inside the body's volume (quick-look fx: nothing visible); now the
-        # tube also rides against one face (front for one arm, back for the other) so
-        # it reads as a raised ridge under light, still inside the half-depth budget.
-        rx_s = min(0.045, 0.24 * 0.5 * width)
-        ry_s = min(0.014, 0.45 * 0.5 * depth)
-        nus, nvs = 8, 6
+        # g9 full-fidelity LOOK vs the reference: wide-set splayed tubes read as an
+        # OPEN coat flapping; the reference's sleeves hang CLOSE, overlapping the
+        # body's edge. So: cuffs sit near the hem line (not dangling far below),
+        # splay is a whisker, and the tube hugs the body face.
+        s_len = drop * ((0.98 + 0.10 * abs(dev(9, 1.0, salt + 71))) if long_s else 0.55)
+        splay = min(0.008, 0.03 * width)     # cuff drift OUT past the tip — inside GARMENT_FLARE
+        rx_s = min(0.040, 0.20 * 0.5 * width)
+        ry_s = min(0.024, 0.45 * 0.5 * depth)
+        nus, nvs = 8, 7
         for side in (-1.0, 1.0):
-            yo = (0.5 * depth * 0.95 - ry_s) * (side if dev(10, 1.0, salt + 79) > 0 else -side)
+            yo = (0.5 * depth * 0.72 - 0.5 * ry_s) * (side if dev(10, 1.0, salt + 79) > 0 else -side)
             base = len(verts)
             for j in range(nvs + 1):
                 v = j / float(nvs)
-                taper = (1.0 - 0.30 * v) * (0.35 if j == nvs else 1.0)
-                xc = side * (0.5 * width - rx_s) * (1.0 - 0.08 * v)
+                taper = 1.0 - 0.24 * v
+                if j == nvs - 1:
+                    taper *= 1.18                            # the cuff's flare...
+                if j == nvs:
+                    taper *= 0.30                            # ...and its buttoned pinch
+                xc = side * ((0.5 * width - rx_s) + splay * (v ** 1.6))
                 zc = -slope - v * s_len
                 for i in range(nus + 1):
                     a = 2.0 * math.pi * i / float(nus)
@@ -516,7 +534,7 @@ def _loft_faces(nv, nu):
     return faces
 
 
-def hanger(width, hook_r=0.015, bar_drop=0.030, salt=0, arm_drop=0.0):
+def hanger(width, hook_r=0.020, bar_drop=0.030, salt=0, arm_drop=0.0):
     """A hanger silhouette above a garment's shoulder: two shoulder ARMS + a hook.
 
     Returns (verts, faces) with origin at the RAIL centre; the arms root `bar_drop`

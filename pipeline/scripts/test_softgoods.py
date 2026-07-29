@@ -137,9 +137,16 @@ def test_garment_sleeves_hang_beside_the_body_inside_every_bound():
         # its own band — a sleeve buried inside the body's width is invisible, which
         # is exactly what the first cut rendered (quick-look, round 4)
         assert max(abs(v[0]) for v in sleeve) > 0.5 * w * 0.80
-        # hangs from under the shoulder, ends above the hem
+        # hangs from under the shoulder; cuffs may fall PAST the body hem (reference
+        # I-24-062 #125386: sleeves are the lowest part) but never past the
+        # published budget the caller solves against
         assert max(v[2] for v in sleeve) < 0.0
-        assert min(v[2] for v in sleeve) > -d
+        assert min(v[2] for v in sleeve) >= -(d * sg.SLEEVE_OVER + sg.SLEEVE_PAD) - 1e-9
+    # across salts, LONG sleeves exist and actually drop below the body hem —
+    # the cue the reference shows and the whole rework exists to add
+    lows = [min(v[2] for v in sg.garment(w, d, depth=dep, salt=s, sleeves=True)[0][body_n:])
+            for s in range(8)]
+    assert any(lo < -d for lo in lows), "no sleeve ever falls past the hem"
     # the tubes are wired into the SAME mesh: faces must index into sleeve verts
     assert max(i for f in faces for i in f) >= body_n
 

@@ -76,7 +76,7 @@ def test_find_matches_on_the_part_token_not_the_piece_name():
 def _garments(**kw):
     kw.setdefault("clear_depth", CARCASS_D)
     kw.setdefault("clear_drop", CLEAR_DROP)
-    parts = st.garments_on_rail(rail(), st.SHORT_DROP, **kw)
+    parts = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), **kw)
     return [p for p in parts if "garment" in p["name"]]
 
 
@@ -141,16 +141,23 @@ def test_no_garment_exceeds_the_clear_drop_even_with_variation():
 
 
 def test_a_rail_too_short_to_read_as_a_wardrobe_raises():
-    """BF09-1-0's real rails are 263.9mm. A rail that can only hold two garments reads as
-    a bare towel bar — which IS the defect. Say so rather than emitting two."""
+    """AMENDED at round 4-ref: this pin used to say two garments = a bare towel bar
+    (the 68mm-pitch era's judgment). The delivered-closet reference (I-24-062
+    #125386) hangs exactly TWO on a metre of rail — two IS a styled rail. What
+    still raises is a rail too short to give even a pair its PITCH_FLOOR of air."""
     with pytest.raises(ValueError) as e:
-        st.garments_on_rail(rail(dx=0.15), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
-    assert "MIN_GARMENTS" in str(e.value)
+        st.garments_on_rail(rail(dx=0.15, dy=0.04), st.rail_drop(CLEAR_DROP),
+                            CARCASS_D, CLEAR_DROP)
+    assert "towel bar" in str(e.value)
+    # and BF09-1-0's real 264mm rail now HANGS ITS PAIR instead of raising
+    pair = [p for p in st.garments_on_rail(rail(dx=0.264, dy=0.04), st.rail_drop(CLEAR_DROP),
+                                           CARCASS_D, CLEAR_DROP) if "garment" in p["name"]]
+    assert len(pair) == 2
 
 
 def test_a_shallow_host_raises_rather_than_shrinking_to_nothing():
     with pytest.raises(ValueError):
-        st.garments_on_rail(rail(), st.SHORT_DROP, clear_depth=0.20, clear_drop=CLEAR_DROP)
+        st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), clear_depth=0.20, clear_drop=CLEAR_DROP)
 
 
 def test_garments_carry_a_three_value_ladder():
@@ -162,7 +169,7 @@ def test_garments_carry_a_three_value_ladder():
 
 
 def test_every_garment_gets_a_hanger():
-    parts = st.garments_on_rail(rail(), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
+    parts = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
     g = [p for p in parts if "garment" in p["name"]]
     h = [p for p in parts if "hanger" in p["name"]]
     assert len(g) == len(h) > 0
@@ -171,7 +178,7 @@ def test_every_garment_gets_a_hanger():
 def test_hangers_are_metal_not_joinery_backer():
     """matte_black_ply is a joinery BACKER identity already carrying the slat backing;
     a hanger is metal, and element 5's black-anodised aluminium is already routed."""
-    parts = st.garments_on_rail(rail(), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
+    parts = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
     for p in parts:
         if "hanger" in p["name"]:
             assert p["name"].endswith("__blackalu")
@@ -180,7 +187,7 @@ def test_hangers_are_metal_not_joinery_backer():
 def test_garments_move_when_their_rail_moves():
     """DERIVATION, stated as a test: this is what a hardcoded coordinate would break."""
     a = sg.bbox(_garments()[0]["verts"])
-    moved = st.garments_on_rail(rail(x=2.411 + 0.4), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
+    moved = st.garments_on_rail(rail(x=2.411 + 0.4), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
     b = sg.bbox([p for p in moved if "garment" in p["name"]][0]["verts"])
     assert abs((b[0] - a[0]) - 0.4) < 1e-6
 
@@ -195,7 +202,7 @@ def test_garments_are_not_instanced_copies():
 def test_a_rail_running_along_y_orients_the_same_way():
     """BF09-3 runs along x; the bay's masses run along y. The law is the same."""
     r = rail(x=3.0, y=1.0, dx=0.030, dy=0.700)
-    gs = [p for p in st.garments_on_rail(r, st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
+    gs = [p for p in st.garments_on_rail(r, st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
           if "garment" in p["name"]]
     for g in gs:
         x0, y0, _, x1, y1, _ = sg.bbox(g["verts"])
@@ -341,8 +348,8 @@ def test_vessel_rejects_degenerate():
 
 
 def test_every_emitted_part_is_deterministic():
-    a = st.garments_on_rail(rail(), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
-    b = st.garments_on_rail(rail(), st.SHORT_DROP, CARCASS_D, CLEAR_DROP)
+    a = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
+    b = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
     assert [p["name"] for p in a] == [p["name"] for p in b]
     assert a[0]["verts"] == b[0]["verts"]
 
