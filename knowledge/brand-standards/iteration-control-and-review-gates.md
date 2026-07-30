@@ -146,6 +146,39 @@ worker's self-assessment is the least reliable signal available.
 budget metric always reads fine, it stops being read. Spend gets reported at
 every gate, not only when it hurts.
 
+## R7 — บันไดกรรมการอิสระ (adopted 2026-07-30)
+
+**Rule.** Judgment climbs a ladder of increasingly independent critics before
+the owner sees anything: C0 instruments (clothcheck etc.) → C1 the builder's
+LOOK with reference open (R4b) → **C2 cold critic** — a fresh-context agent
+given ONLY the render, the reference of record, and the one standard prompt
+(`templates/cold-critic-prompt.md`); never the build history — → C3 cross-vendor
+critic (Gemini; owner-paste ritual until the API billing gate opens) on major
+gates or C2-vs-builder disagreement → C4 the owner (R3, final, unchanged).
+Every C2/C3 item gets a WRITTEN triage in the gate artifact: accepted (+ which
+lane fixes it) or refuted with a measurement/spec/reference citation — taste is
+not a refutation.
+
+**Grounding** (same DR as R1-R6, notebook fd94d3c8): acceptance testing is
+performed by someone other than the builder — builders catch only 30% to 50% of
+their own defects; LLM judges exhibit self-preference bias (a judge sharing the
+builder's context inherits the builder's blind spots — context independence is
+the cheapest form of judge independence); multi-signal escalation — never rely
+on the worker's self-assessment alone. Empirical anchor (2026-07-30): an
+external critic (Gemini, zero build context) named six real defects — lamp
+scale, rail gauge, missing drawer pulls, boxy folded stacks, mattress box
+edges, hanger read — in the same g10 frames the builder had LOOKed at dozens of
+times and passed.
+
+**Failure modes to watch.** Critique-spam / junior trap: a critic list swallowed
+whole floods the lanes — triage exists to rank by sellability and route, not to
+obey. Reflex-defense: refuting with taste — forbidden by the measurement rule
+(the "hanging direction" item is the worked example: answered by the spec's bay
+depth and the reference, not by argument). Judge hallucination: the prompt
+forces each defect to cite reference evidence or be marked "opinion".
+Agreement theater: C2 sharing the builder's model family is why C3 exists —
+cross-vendor at every major gate.
+
 ## How these sit with existing law
 
 - R1/R2 extend the LOOK permanent rule (ดูไปทำไปเหมือน designer จริงๆ) with a

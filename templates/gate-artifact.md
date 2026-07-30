@@ -17,5 +17,9 @@ never be empty — an empty unsure field is the round-2/3 failure shape (two
 2. **ผมตัดสินว่า:** <pass/kill + why, one line; ถ้าเลือกทางใดทางหนึ่ง ให้บอกทางที่ทิ้งไปและเหตุผลสั้นๆ>
 3. **ไม่แน่ใจ:** <the thing I most want his eye on — NEVER empty>
 
+**C2 cold critic (R7):** <top defects from the fresh-eyes report + triage each:
+✓รับ→เลนไหน / ✗หักล้าง→การวัด/spec/reference ที่ใช้หักล้าง — ห้ามหักล้างด้วยรสนิยม>
+**C3 (gate ใหญ่):** <Gemini verdict + triage, or "not fired — minor gate">
+
 **Spend:** <build+render cycles this gate / cumulative this lane> · **Reversible:** <yes/no+how>
 **ขอ verdict:** ไปต่อ / แก้ตามนี้ / ฆ่าทิ้ง

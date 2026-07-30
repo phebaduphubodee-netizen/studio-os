@@ -66,6 +66,15 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
 - R6 BUDGET: report spend (cycles/renders/tokens) at every gate; multi-agent
   fleets pre-commit or on explicit order only; new guards must name the class
   existing guards miss.
+- R7 CRITIC LADDER (owner order 2026-07-30; Gemini caught 6 defects the
+  builder's LOOK missed on frames viewed dozens of times): before any gate
+  artifact reaches the owner, a COLD CRITIC judges it — a fresh-context agent
+  seeing ONLY render + reference + `templates/cold-critic-prompt.md` (never
+  build history). Big gates add a cross-vendor critic (Gemini; owner-paste
+  ritual until API billing opens). EVERY critic item gets a WRITTEN triage in
+  the gate artifact: accept+lane, or refute WITH A MEASUREMENT/reference —
+  never with taste. Ladder: C0 instruments → C1 builder LOOK+reference →
+  C2 cold critic → C3 cross-vendor → C4 owner (R3, unchanged, final).
 
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
