@@ -70,3 +70,38 @@ STORY. (bench sheet → owner → Gemini → cold critic — unanimous.)
 A (light story) → C (small geometry batch) → B (materials) → D (styling life),
 re-critic (C2) after each lane, C3 + owner gate after A+C and again at the end.
 Every lane under R1 budget (2 full cycles) + R5 quick ladder.
+
+---
+
+# Lane A closed — light story (2026-07-30, pair ls3)
+
+**Mechanism found by recon**: the flat wash was the lumen-method ambient grid
+doing its CD job — 18 cans at even 114-283 lx by design. A hero frame is made
+at the DIMMERS, not the fixture list.
+
+**Shipped (all behind `--light-story`; the signed CD state is untouched and
+byte-identical when off — armour-pinned):**
+- Photoshoot dimmer state over the SAME signed e5 plan: ambient 0.48 with a
+  PER-ZONE exception (dressing zone 0.70 — task+display), spots 1.50 →
+  focal ratio 3.1:1, past the vault's 3:1 floor (lumen-method:48, Kelly
+  Focal Glow); lamps 1.5; AgX + exposure trim.
+- VISIBLE LUMINAIRES: every plan position (18 cans + 6 spots) now carries a
+  recessed trim — dark ring + warm emissive lens — geometry at the exact
+  signed positions (C2 re-critic: "แสงไม่มีที่มา").
+- Convergence discipline: quick ladder ×5 across three sub-mechanisms
+  (uniform dim → too dark; per-zone; brightness lift after the C2 verdict
+  "ยังจมมืดหม่น"); full pairs ls1 (caught the wardrobe sink the bed_hero
+  quick could not see) → ls2 (C2 re-critic input) → ls3 (closing pair).
+
+**The lane's honest ceiling — a DECISION, not a defect**: both deliverable
+cameras barely see the ceiling, so recessed trims cannot be the frame's
+visible origin. The reference's language is a visible COVE (behind headboard/
+slat wall) + paired SCONCES — fixtures element 5's signed DD does not contain.
+Adding them = amending a signed element → owner's call at the gate:
+(a) amend e5 (cove + sconces; the reference's exact vocabulary), or
+(b) accept off-frame origins and proceed to lane C.
+
+C2 items #1/#8 partially closed (pools, falloff, practicals, brightness);
+#13 smear watch-item improved with brightness, re-check after lane B
+materials. Full pair of record: `room_bedroom_suite_eye_ls3.png` +
+`room_bedroom_suite_eye_ls3_bedhero.png`; 2127 green.

@@ -86,3 +86,33 @@ def test_cloth_styling_parts_route_through_the_solver():
     assert 'cl.get("analytic")' in seg
     assert "ANALYTIC fallback" in seg
     assert '_smooth_mesh_obj(p["name"], an["verts"], an["faces"]' in seg
+
+
+def test_light_story_scales_are_unity_when_off_and_focal_when_on():
+    """Lane-A armour: story OFF must be byte-identical to the signed CD state
+    (every scale exactly 1.0); story ON must dim ambient BELOW the focal layers
+    so the vault's ~3:1 accent:ambient ratio is reachable (lumen-method file:48)."""
+    import element5_lighting as e5
+    off = e5.story_scales(False)
+    assert all(v == 1.0 for v in off.values())
+    on = e5.story_scales(True)
+    assert on["ambient"] < 0.5
+    # per-zone: the dressing zone stays brighter than the room (task+display),
+    # and unknown zones fall back to the room ambient
+    assert e5.ambient_scale(on, "โซนตู้เสื้อผ้า (wardrobe bay)") > on["ambient"]
+    assert e5.ambient_scale(on, "bedroom") == on["ambient"]
+    assert on["spots"] / on["ambient"] >= 3.0
+    assert on["lamps"] > 1.0
+
+
+def test_light_story_reaches_every_consumer():
+    """The flag must scale ALL layers — a layer that misses the dimmer keeps the
+    wash and silently reverts the story (the revert-by-omission class)."""
+    for pin in ('_e5.ambient_scale(_sc, f["zone"])', '* _sc["strips"]', '* _sc["bar"]',
+                '* _sc["spots"]', 'story_scales(_LIGHT_STORY)["lamps"]',
+                '"--light-story" in _post_dashdash()',
+                'view_settings.exposure -= 0.10',
+                # visible luminaires (C2: "แสงไม่มีที่มา") — every plan position
+                # must carry its recessed trim, downlights AND wall-wash spots
+                '_recessed_trim(f"dl{i}"', '_recessed_trim(s["name"]'):
+        assert pin in SRC, pin

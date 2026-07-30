@@ -585,3 +585,41 @@ if __name__ == "__main__":
     print(f"  spots: {[s['name'] for s in p['spots']]}")
     print(f"  lamps: {[(l['name'], l['cct_k'], l['rgb']) for l in p['lamps']]}")
     print(f"  counts: {p['meta']['counts']}  electric CCTs {p['meta']['nominal_cct']['electric']}")
+
+
+# ---------------------------------------------------------------------------
+# HERO LIGHT-STORY dimmer state (lane A, verdict-round6-2026-07-30 — four
+# independent judges unanimous that the flat wash is the #1 sellability gap).
+# The SAME signed fixture plan, operated like a photoshoot: the lumen-method
+# ambient grid is EVEN by design (correct for the CD, fatal for a hero frame),
+# and an accent must read ~3x ambient to register as a focal point
+# (knowledge/lighting/lumen-method-and-fixture-placement.md:48, Kelly "Focal
+# Glow"). Dimming is standard operating practice, not a fixture change
+# (residential-lighting.md dimming protocols) — element 5's PLAN is untouched;
+# only the dimmer levels differ, and only when the build asks for the story.
+# ambient 0.28 -> 0.40 + exposure trim relaxed at the first quick pair: the
+# delivered references are BRIGHT-warm rooms with accents on top, not moody
+# dusk scenes — 1.50/0.40 keeps the focal ratio at 3.75:1, still past the 3:1
+# ambient_wardrobe: the first full eye frame sank the dressing zone into
+# silhouette — its 2 cans have no accent layer to carry them, and a real
+# dressing area is lit BRIGHTER than the room it serves (task + display).
+# Per-zone dimming is exactly what real scene controllers do.
+# 0.40 -> 0.48 at the C2 re-critic ("ยังจมมืดหม่นเหมือน draft"): the story keeps
+# its 3:1 focal floor (1.50/0.48 = 3.1) while the room reads finished-bright.
+STORY_SCALES = {"ambient": 0.48, "ambient_wardrobe": 0.70,
+                "strips": 0.95, "bar": 0.95, "spots": 1.50, "lamps": 1.50}
+
+
+def ambient_scale(scales, zone):
+    """The ambient dimmer for one downlight, by its plan zone."""
+    if "wardrobe" in str(zone):
+        return scales.get("ambient_wardrobe", scales["ambient"])
+    return scales["ambient"]
+
+
+def story_scales(enabled):
+    """Per-layer dimmer multipliers. Disabled -> exact unity (the signed CD
+    state must be byte-identical when the story is off)."""
+    if not enabled:
+        return {k: 1.0 for k in STORY_SCALES}
+    return dict(STORY_SCALES)

@@ -1546,6 +1546,10 @@ WALL_RGBA = (0.83, 0.80, 0.75, 1.0)    # matte warm-white paint
 RUG_SLUG = "poly_wool_herringbone"
 
 
+# lane-A light story (verdict-round6): set from --light-story before the build
+# so every consumer (e5 layers + nightstand practicals + exposure) agrees
+_LIGHT_STORY = False
+
 # calibration switch for the shred detector: "" = enforce (cloth block default),
 # "report" = print profiles instead of raising (--shred-report; used to measure
 # the healthy-vs-shredded gap the thresholds are calibrated on)
@@ -1937,15 +1941,49 @@ def _add_e5_lights(spec, h_m):
     from math import radians
     plan = _e5.plan(spec)
     warm = _matpre.parse_light_warm(spec)
+    # lane-A light story: photoshoot dimmer state over the SAME signed plan
+    # (accent must read ~3x ambient to go focal — the vault row e5 cites)
+    _sc = _e5.story_scales(bool(spec.get("_light_story")))
     n = 0
+    # VISIBLE LUMINAIRES (lane A, C2 re-critic verdict: "แสงไม่มีที่มา" — the
+    # ceiling was bare, so every pool read as light from nowhere; the reference
+    # sells because every lux points back at a fixture the eye can find). Each
+    # plan position gets a recessed TRIM: a dark ring flush with the ceiling and
+    # a warm emissive micro-disk inset — geometry only, the AREA lights still do
+    # the actual lighting work at the same signed positions.
+    _trim_m = bpy.data.materials.get("e5_trim_dark")
+    if _trim_m is None:
+        _trim_m = bpy.data.materials.new("e5_trim_dark")
+        _trim_m.use_nodes = True
+        _b = _trim_m.node_tree.nodes.get("Principled BSDF")
+        _b.inputs["Base Color"].default_value = (0.05, 0.045, 0.04, 1.0)
+        _b.inputs["Roughness"].default_value = 0.45
+    _lens_m = bpy.data.materials.get("e5_trim_lens")
+    if _lens_m is None:
+        _lens_m = bpy.data.materials.new("e5_trim_lens")
+        _lens_m.use_nodes = True
+        _nt = _lens_m.node_tree
+        _em = _nt.nodes.new("ShaderNodeEmission")
+        _em.inputs["Color"].default_value = (1.0, 0.86, 0.70, 1.0)
+        _em.inputs["Strength"].default_value = 30.0
+        _out = _nt.nodes.get("Material Output")
+        _nt.links.new(_em.outputs[0], _out.inputs["Surface"])
+
+    def _recessed_trim(tag, cx, cy, cz):
+        _cyl_frustum(f"e5_trim_{tag}", cx, cy, 0.048, 0.048, cz - 0.006, cz - 0.0005,
+                     _trim_m, seg=20)
+        _cyl_frustum(f"e5_lens_{tag}", cx, cy, 0.032, 0.032, cz - 0.010, cz - 0.007,
+                     _lens_m, seg=20)
+
     for i, f in enumerate(plan["downlights"]):
+        _recessed_trim(f"dl{i}", f["x"] * MM, f["y"] * MM, f["z"] * MM)
         # the proven downlight style: AREA disk facing down, deterministic ±12%
         # output spread + a hint of CCT drift (a real ceiling never fires every
         # can at one exact output/colour); positions come mass-clipped from the plan
         ld = bpy.data.lights.new(f"e5_dl_{i}", type='AREA')
         ld.shape = 'DISK'
         ld.size = 0.22
-        ld.energy = f["watts"] * (0.88 + 0.24 * _det01(f"e5a{i}"))
+        ld.energy = f["watts"] * (0.88 + 0.24 * _det01(f"e5a{i}")) * _e5.ambient_scale(_sc, f["zone"])
         drift = 0.985 + 0.03 * _det01(f"e5c{i}")
         ld.color = (warm[0], min(1.0, warm[1] * drift), min(1.0, warm[2] * drift * drift))
         lo = bpy.data.objects.new(f"e5_dl_{i}", ld)
@@ -1960,7 +1998,7 @@ def _add_e5_lights(spec, h_m):
         ld.shape = 'RECTANGLE'
         ld.size = L["size"][0] * MM          # strip width
         ld.size_y = L["size"][1] * MM        # luminous length (the mirror field)
-        ld.energy = L["watts"]
+        ld.energy = L["watts"] * _sc["strips"]
         ld.color = warm
         _aimed_light(f"{s['name']}_L", ld,
                      (L["x"] * MM, L["y"] * MM, L["z"] * MM),
@@ -1971,14 +2009,15 @@ def _add_e5_lights(spec, h_m):
     ld.shape = 'RECTANGLE'
     ld.size = b["size"][0] * MM              # the 2m bar length IS the softness (PH-05)
     ld.size_y = b["size"][1] * MM
-    ld.energy = b["watts"]
+    ld.energy = b["watts"] * _sc["bar"]
     ld.color = warm
     _aimed_light("e5_bar_wash", ld, (b["x"] * MM, b["y"] * MM, b["z"] * MM),
                  (b["aim"][0] * MM, b["aim"][1] * MM, b["aim"][2] * MM))
     n += 1
     for s in plan["spots"]:
+        _recessed_trim(s["name"], s["x"] * MM, s["y"] * MM, s["z"] * MM)
         ld = bpy.data.lights.new(s["name"], type='SPOT')
-        ld.energy = s["watts"]
+        ld.energy = s["watts"] * _sc["spots"]
         ld.color = warm
         ld.spot_size = radians(s["cone_deg"])
         ld.spot_blend = s["blend"]
@@ -2856,7 +2895,8 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
                          shade_m, seg=32)
     if glow and lamp:
         ld = bpy.data.lights.new("lamp_glow", type='POINT')
-        ld.energy = glow["watts"]
+        # lane-A story: practicals CARRY the hero frame (Kelly focal glow)
+        ld.energy = glow["watts"] * _e5.story_scales(_LIGHT_STORY)["lamps"]
         ld.color = tuple(glow["rgb"])
         ld.shadow_soft_size = 0.025                      # a real bulb, not a point singularity
         lo = bpy.data.objects.new("lamp_glow", ld)
@@ -3443,6 +3483,11 @@ def build_suite(spec, label="suite"):
         # + Juliet rail belongs on (an eye-level look OUT through the glass-L).
         _hdri_world(*_exterior_world_args(spec, "brown_photostudio_02", 0.3, 30.0, -0.1,
                                           "AgX - Medium High Contrast"))
+        if spec.get("_light_story"):
+            # story mode: trim exposure so the dimmed ambient lets the lamp
+            # pools and slat-wash accents read as pools (the whole point of
+            # the 3:1 focal ratio) instead of being lifted back to a wash
+            bpy.context.scene.view_settings.exposure -= 0.10
     else:
         # OVERVIEW = the open-top dollhouse QA / hybrid CONTROL leg (make_all): kept on
         # the studio env so the exterior override never silently shifts the control
@@ -3621,6 +3666,10 @@ if __name__ == "__main__":
         styling.SIM_GARMENTS = True
     if "--shred-report" in _post_dashdash():
         globals()["_SHRED_MODE"] = "report"
+    if "--light-story" in _post_dashdash():
+        # hero dimmer state over the signed e5 plan (lane A) — spec untouched
+        _spec["_light_story"] = True
+        globals()["_LIGHT_STORY"] = True
     _smax = next((a.split("=", 1)[1] for a in _post_dashdash()
                   if a.startswith("--shred-max=")), None)
     if _smax:
