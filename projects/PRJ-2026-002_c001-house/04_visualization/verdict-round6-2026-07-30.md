@@ -192,3 +192,68 @@ stable DNAs). Pair of record: `room_bedroom_suite_eye_lc1.png` +
 joinery, stacks, asymmetry). What still fails is exactly what lanes B/D and
 the two gated signed-element questions own. R1 spent → this is the scheduled
 A+C gate.
+
+---
+
+# Lane B closed — ground-truth wire list (2026-07-30, pair lb1)
+
+The owner stopped the iterate-loop ("เลิกแก้งานตรงนี้ก่อน") and ordered the
+study; its measured wire list became this lane's spec (§ What to wire in
+blender-ground-truth-study-2026-07-30.md, commit 61073fb).
+
+**Shipped** (light/camera ride `--light-story`; materials default-on as approved):
+- Sheen cap 0.4 on ALL textiles (`_woven` clamps at the one place bespoke calls
+  pass through) — ours ran 0.7–1.0 vs the measured pro max 0.4.
+- Fabric maps A/B (`--fabric-maps`): the CC0 rough_linen 2k set — fetched
+  weeks ago, consumed by NOTHING — now composes onto `_woven`'s procedural
+  signature (BOX projection on Object coords; no UVs needed; signed colour
+  stays the multiply ceiling; cm-scale only, honouring the 2026-07-22
+  thread-pitch probe). A/B verdict at quick: maps win, no artifacts.
+- Key-light ratio: fill demoted ×0.25, env promoted ×2.3 — TWO wiring bugs
+  caught by MEASUREMENT at the quick rung: (1) the first HDRI knob multiplied
+  a call-site default that spec.exterior's resolver discards; (2) raw IES Fac
+  re-powered the whole rig (frame mean 84→166, whites clipping) — profiles now
+  normalized per-file (5.ies /0.20, 7.IES /0.065), watts stay the authority.
+- IES beams on cans (Halo 5.ies) + wash spots (Kurt Versen 7.IES), story-only.
+- Story aperture f/9 → f/2.8 (STORY_FSTOP).
+- SUBSURF on declared soft forms (pillows/shams/lumbar/garments; hangers
+  excluded — wire must not melt): render-time density to the measured 3k floor.
+
+**Converged frame numbers** (b1d quick → lb1 full): mean 84→102, p95 150→186
+(wider tonal range = the key), clip 0.00%. Spend: quick ×4 + full ×1 pair
+(= the R1 budget). 2134 green.
+
+## C2 re-critic on lb1 (fresh agent) — triage
+1. **Material IDENTITY doesn't separate** (#1+#8: everything one beige-grey
+   clay family; carcass reads raw MDF; only the floor has real texture) —
+   ✓ THE remaining lane-B core → lane B2: veneer grain amplitude on the
+   carcass (amplitude-bisect law), white-lacquer sheen split on drawer
+   fronts, rug pile/edge binding. The signed TONES stay; what separates is
+   roughness/sheen/grain per family.
+2. **Garments = ribbons** (#2) — known; (ก3) open-form stays ARMED, owner-
+   sequenced. (Critic's own note: TWO per rail is right — they must be SHIRTS.)
+3. **Pillows stone-smooth; headboard pads float** (#3) — seam is 12mm but
+   same-value → B2 value-contrast at the seam; float = GATE question #2,
+   now a THIRD independent vote.
+4. **Duvet felt-sheet + white corner shards** (#4) — ✓ the coverlet corner
+   salt was accepted into this cycle and NOT delivered (recorded honestly) →
+   B2 first item; duvet nap bump likely over-strong → bisect down.
+5. **Light origins still missing** (#5: pools with no fixture; lamp pool
+   weak) — GATE question #1 (cove/sconces), third unanimous vote. Lamp-pool
+   strength → B2 minor.
+6. **No life** (#6) — lane D, next in the approved order.
+7. **Bed mass / bench blocking** (#7) — bench footprint ✗ REFUTED by ink
+   (third time, recorded); camera symmetry self-marked opinion; bedding
+   stack height = watch-item (measure against spec H before acting).
+8. **Window vs interior temperature split** (#9, new) — ✓ accept → B2:
+   the ×2.3 env promotion blew the garden through the sheers; grade the
+   glass path (bracket, measure), keep the interior key.
+9. เก็บตก — left-frame model edge (check camera clip), rug pile (B2), bare
+   ceiling in the eye frame (architecture-finish batch, ink-check first).
+
+**Verdict shape:** the study's levers all reached the frame and the numbers
+moved the direction the files predicted. The critic's residual is now
+IDENTITY (which material am I looking at) rather than EXISTENCE (is this
+cloth) — a different, narrower class than round-6 opened with. R1 spent →
+gate. Lane B2 (identity separation + owed coverlet corners) is scoped and
+cheap; lane D and the three owner questions stand.

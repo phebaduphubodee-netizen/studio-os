@@ -227,6 +227,22 @@ def test_the_tight_bay_rail_gets_no_empty_hanger():
     assert not [p for p in parts if "hangerempty" in p["name"]]
 
 
+def test_soft_parts_declare_subsurf_and_hard_parts_do_not():
+    """Lane B (ground-truth study): soft forms carry a render-time subdivision
+    declaration (pillow 156 polys vs the measured 3,124 pro floor); a hanger is
+    WIRE — subdividing it would melt the profile the lane-C fix just earned."""
+    parts = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
+    for p in parts:
+        if "garment" in p["name"]:
+            assert p.get("subsurf"), p["name"]
+        if "hanger" in p["name"]:
+            assert not p.get("subsurf"), p["name"]
+    bank = st.pillow_bank({"x": 3.2, "y": 0.1, "z": 0.65, "dx": 2.0, "dy": 2.1, "dz": 0.045},
+                          "x", 1)
+    for p in bank:
+        assert p.get("subsurf"), p["name"]
+
+
 def test_hangers_are_metal_not_joinery_backer():
     """matte_black_ply is a joinery BACKER identity already carrying the slat backing;
     a hanger is metal, and element 5's black-anodised aluminium is already routed."""

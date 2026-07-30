@@ -557,14 +557,20 @@ def add_suite_eye_camera(spec, outline_m, h):
     try:
         cam_data.dof.use_dof = True
         cam_data.dof.focus_distance = (tgt - eye).length
-        cam_data.dof.aperture_fstop = 9.0    # gentle DoF, subject stays crisp
+        # lane B (ground-truth study): every pro scene camera measured f/1.4-2.4;
+        # our f/9 was past even asset-turnaround aperture. The story pair opens to
+        # STORY_FSTOP; the CD/documentation state keeps its crisp f/9.
+        cam_data.dof.aperture_fstop = _e5.STORY_FSTOP if _LIGHT_STORY else 9.0
     except Exception:
         pass
     bpy.context.scene.camera = cam
     # soft cool fill from behind the lens: the eye shot runs ENCLOSED (ceiling on), so
     # without it the room is downlights-only and the gate dings 'flat lighting' again.
+    # lane B: in the story state this fill DEMOTES (study: our strongest source was
+    # this cool fill = the measured no-key signature; a fill must never out-power keys)
     fill_data = bpy.data.lights.new("Fill", type='AREA')
-    fill_data.energy = 60; fill_data.size = 2.0
+    fill_data.energy = 60 * _e5.story_scales(_LIGHT_STORY)["fill"]
+    fill_data.size = 2.0
     try:
         fill_data.color = (0.85, 0.90, 1.0)
     except Exception:
@@ -884,7 +890,18 @@ def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.5, spec=0
     return m
 
 
-def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5):
+_FABRIC_MAPS = False       # --fabric-maps: lane-B A/B flag (ground-truth study 2026-07-30)
+_FABRIC_TILE_M = 0.85      # physical metres one 2k fabric tile spans — cm-scale features,
+#                            NOT thread pitch (the 2026-07-22 probe killed thread-pitch maps
+#                            and stays honoured: nothing here is authored below the meso band)
+_SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
+#                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
+#                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
+#                            realism in a channel the pros barely spend in, and the flat fuzz
+#                            highlight it bought is half the "clay" verdict.
+
+
+def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, maps=None):
     """TEXTILE: _solid's signed colour + the surface signature that makes cloth read as
     cloth instead of painted vinyl. `cloth` is material_presets.cloth_args(kind).
 
@@ -920,8 +937,8 @@ def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5):
     # warns about ("A key absent from this tuple is SILENTLY DROPPED"). metallic and aniso
     # are deliberately absent: factory_args only marks NON-METAL solids as cloth, so a
     # textile cannot legally carry them.
-    m = _solid(name, rgba, rough, sheen=sheen, spec=spec, coat=coat, ior=ior,
-               sheen_rough=cloth["sheen_rough"])
+    m = _solid(name, rgba, rough, sheen=min(sheen, _SHEEN_CAP), spec=spec, coat=coat,
+               ior=ior, sheen_rough=cloth["sheen_rough"])
     nt, bsdf = _principled(m)
     if not bsdf:
         return m
@@ -1007,6 +1024,59 @@ def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5):
     mr2.inputs["To Max"].default_value = rough + _rvar
     nt.links.new(field, mr2.inputs["Value"])
     nt.links.new(mr2.outputs["Result"], bsdf.inputs["Roughness"])
+    # (6) GROUND-TRUTH MAPS (lane B 2026-07-30, --fabric-maps A/B): the file study
+    #     measured pro cloth as image maps + sheen <= 0.4 while every textile here was
+    #     procedural-only (2/41 of our materials carried any image vs 50-66% in every
+    #     pro scene). This block COMPOSES a real 2k photographed weave onto the
+    #     signature above — it never replaces it, and every law of this function
+    #     survives: the SIGNED colour stays the albedo ceiling (multiply, band [1-v,1]),
+    #     roughness keeps the symmetric studio band (the map only co-drives mr2's
+    #     Value), relief chains through the same Bump. BOX projection on Object coords
+    #     because drape's baked meshes carry no UVs (the same reason relief is Bump,
+    #     not NormalMap) — and the map's features live at cm scale, the band the
+    #     2026-07-22 thread-pitch probe never tested.
+    if maps and _FABRIC_MAPS:
+        ts = _texset(maps)
+        if ts.get("Diffuse"):
+            mp = nt.nodes.new("ShaderNodeMapping")
+            _ms = 1.0 / _FABRIC_TILE_M
+            mp.inputs["Scale"].default_value = (_ms, _ms, _ms)
+            nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+
+            def _img(path, non_color):
+                n = _img_node(nt, path, non_color=non_color)
+                n.projection = 'BOX'
+                n.projection_blend = 0.3
+                nt.links.new(mp.outputs["Vector"], n.inputs["Vector"])
+                return n
+
+            di = _img(ts["Diffuse"], False)
+            bw = nt.nodes.new("ShaderNodeRGBToBW")
+            nt.links.new(di.outputs["Color"], bw.inputs["Color"])
+            mr3 = nt.nodes.new("ShaderNodeMapRange")
+            mr3.inputs["To Min"].default_value = 1.0 - 0.12
+            mr3.inputs["To Max"].default_value = 1.0
+            m2 = nt.nodes.new("ShaderNodeMixRGB")
+            m2.blend_type = "MULTIPLY"
+            m2.inputs["Fac"].default_value = 1.0
+            nt.links.new(bw.outputs["Val"], mr3.inputs["Value"])
+            nt.links.new(mix.outputs["Color"], m2.inputs["Color1"])
+            nt.links.new(mr3.outputs["Result"], m2.inputs["Color2"])
+            nt.links.new(m2.outputs["Color"], bsdf.inputs["Base Color"])
+            # the photographed weave also stands proud: chain its height UNDER the
+            # slub bump so both reliefs compose (Bump.Normal input = the chain)
+            bmp2 = nt.nodes.new("ShaderNodeBump")
+            bmp2.inputs["Strength"].default_value = cloth["bump"] * 0.6
+            bmp2.inputs["Distance"].default_value = cloth["relief_m"] * 0.5
+            nt.links.new(bw.outputs["Val"], bmp2.inputs["Height"])
+            nt.links.new(bmp2.outputs["Normal"], bump.inputs["Normal"])
+            if ts.get("Rough"):
+                ri = _img(ts["Rough"], True)
+                rmx = nt.nodes.new("ShaderNodeMixRGB")
+                rmx.inputs["Fac"].default_value = 0.5
+                nt.links.new(field, rmx.inputs["Color1"])
+                nt.links.new(ri.outputs["Color"], rmx.inputs["Color2"])
+                nt.links.new(rmx.outputs["Color"], mr2.inputs["Value"])
     return m
 
 
@@ -1630,9 +1700,16 @@ def _emit_style_part(p, quick=False):
                                            f"declared — last: {_err}")
                 print(f"  hybrid rail: {p['name']} -> ANALYTIC fallback ({_err})")
                 o = _smooth_mesh_obj(p["name"], an["verts"], an["faces"], own_mat=False)
+            if p.get("subsurf") and o.modifiers.get("softform_subsurf") is None:
+                # lane B: the baked/fallback cloth gets the same render-time
+                # subdivision as every declared soft form — a sim result at vertex
+                # scale is exactly the faceting the study measured us under on
+                md = o.modifiers.new("softform_subsurf", 'SUBSURF')
+                md.levels = 1
+                md.render_levels = int(p["subsurf"])
             return o
         return _smooth_mesh_obj(p["name"], p["verts"], p["faces"], own_mat=False,
-                                bevel=p.get("bevel"))
+                                bevel=p.get("bevel"), subsurf=p.get("subsurf", 0))
     raise ValueError(f"_emit_style_part: unknown shape {p['shape']!r} on {p['name']!r}")
 
 
@@ -1932,6 +2009,51 @@ def _add_emissive_box(name, x, y, z, dx, dy, dz, color=(1.0, 0.97, 0.92), streng
     return o
 
 
+def _ies_path(fname):
+    """A real LM-63 file from the fetched 30-profile pack (knowledge/lighting/
+    ies-and-lighting-notes-discord.md:68-93 maps indices to named luminaires)."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(os.path.dirname(os.path.dirname(here)), "knowledge", "_inbox",
+                        "discord", "MY-DATA-PEAT", "_external-fetched", "sharing",
+                        "002_IES", fname)
+
+
+def _ies_beam(ld, fname, norm=1.0):
+    """LANE B (ground-truth study 2026-07-30): attach a real photometric profile to a
+    light. The study measured IES 0/30 for us while 30 LM-63 files sat fetched in our
+    own knowledge dir — and the one same-genre pro file uses IES on 4/13 lights. The
+    beam scallop a real distribution throws on a wall is the visible signature that
+    light comes from a FIXTURE; a bare disk can only wash. Story-mode only: the CD
+    state's lumen-method compliance math never sees this."""
+    p = _ies_path(fname)
+    if not os.path.exists(p):
+        print(f"  e5 IES: {fname} missing at {p} — light keeps its bare emitter")
+        return
+    ld.use_nodes = True
+    nt = ld.node_tree
+    em = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeEmission"), None)
+    if em is None:
+        em = nt.nodes.new("ShaderNodeEmission")
+        out = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeOutputLight"), None)
+        if out is None:
+            out = nt.nodes.new("ShaderNodeOutputLight")
+        nt.links.new(em.outputs[0], out.inputs["Surface"])
+    ies = nt.nodes.new("ShaderNodeTexIES")
+    ies.mode = 'EXTERNAL'
+    ies.filepath = p
+    # NORMALIZED, measured, never raw: the b1 quick pair proved raw Fac re-scales the
+    # whole rig (room mean 84 -> 166, whites clipping — the profile was supposed to
+    # SHAPE the beam, not re-power it; e5's lumen-method watts stay the power
+    # authority). `norm` brings this profile's contribution back to plan scale
+    # (5.ies candela mean 629 / 7.IES 1947 — per-profile constants, bracketed by
+    # frame measurement like every amplitude in this room).
+    mul = nt.nodes.new("ShaderNodeMath")
+    mul.operation = 'MULTIPLY'
+    mul.inputs[1].default_value = float(norm)
+    nt.links.new(ies.outputs["Fac"], mul.inputs[0])
+    nt.links.new(mul.outputs["Value"], em.inputs["Strength"])
+
+
 def _add_e5_lights(spec, h_m):
     """ELEMENT 5 (element5-lighting_DD-2026-07-20.md): materialize the pure plan —
     ambient disks (mass-clipped grids), BF11 opal task strips (emissive mesh + aimed
@@ -1984,6 +2106,9 @@ def _add_e5_lights(spec, h_m):
         ld.shape = 'DISK'
         ld.size = 0.22
         ld.energy = f["watts"] * (0.88 + 0.24 * _det01(f"e5a{i}")) * _e5.ambient_scale(_sc, f["zone"])
+        if spec.get("_light_story"):
+            _ies_beam(ld, "5.ies", norm=0.20)    # Halo H7t-301 recessed open trim —
+            #                                      the pack's one true recessed-can profile
         drift = 0.985 + 0.03 * _det01(f"e5c{i}")
         ld.color = (warm[0], min(1.0, warm[1] * drift), min(1.0, warm[2] * drift * drift))
         lo = bpy.data.objects.new(f"e5_dl_{i}", ld)
@@ -2022,6 +2147,9 @@ def _add_e5_lights(spec, h_m):
         ld.spot_size = radians(s["cone_deg"])
         ld.spot_blend = s["blend"]
         ld.shadow_soft_size = 0.03           # physical emitter radius -> real penumbra (PH-05)
+        if spec.get("_light_story"):
+            _ies_beam(ld, "7.IES", norm=0.065)   # Kurt Versen B7424 directional — the
+            #                                      wall-wash scallop the references show
         _aimed_light(s["name"], ld, (s["x"] * MM, s["y"] * MM, s["z"] * MM),
                      (s["aim"][0] * MM, s["aim"][1] * MM, s["aim"][2] * MM))
         n += 1
@@ -2354,10 +2482,12 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # and a "seven" in this sentence survived a revision that made it five.
     # Roughness/sheen/spec below are element 3's LOOK-tuned values and are untouched.
     _lin = _matpre.cloth_args("linen")
-    base_m = _woven("bed_base",     _vl.rgba("bed_base"),     0.94, _lin, sheen=0.2, spec=0.25)
-    matt_m = _woven("bed_mattress", _vl.rgba("bed_mattress"), 0.92, _lin, sheen=0.5, spec=0.35)
-    duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35)
-    pill_m = _woven("bed_pillow",   _vl.rgba("bed_pillow"),   0.95, _lin, sheen=0.8, spec=0.35)
+    # maps="rough_linen" (lane B): the CC0 2k linen set fetched 2026-07-2x and never
+    # consumed — the study found the store itself was distilled-but-never-wired
+    base_m = _woven("bed_base",     _vl.rgba("bed_base"),     0.94, _lin, sheen=0.2, spec=0.25, maps="rough_linen")
+    matt_m = _woven("bed_mattress", _vl.rgba("bed_mattress"), 0.92, _lin, sheen=0.5, spec=0.35, maps="rough_linen")
+    duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35, maps="rough_linen")
+    pill_m = _woven("bed_pillow",   _vl.rgba("bed_pillow"),   0.95, _lin, sheen=0.8, spec=0.35, maps="rough_linen")
     # THE EURO SHAMS JOIN THE DUVET SET. They were sharing pill_m, so the head's three-rank
     # ladder — built in element 8 because "three heights is the single most recognisable
     # signal of a styled bed" — rendered as three heights of ONE value: sham0 199.6 against
@@ -2372,7 +2502,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     # mattress insets UNDER (3) a full-width COVERLET that overhangs the mattress and FALLS down its
     # sides to just above the plinth — breaking the hard vertical faces into draped fabric and leaving
     # a shadow reveal beneath. That silhouette reads "a made bed", not "a foam cube".
-    cov_m = _woven("bed_coverlet", _vl.rgba("bed_coverlet"), 0.96, _lin, sheen=0.3, spec=0.3)
+    cov_m = _woven("bed_coverlet", _vl.rgba("bed_coverlet"), 0.96, _lin, sheen=0.3, spec=0.3,
+                   maps="rough_linen")
     base_h = H * 0.34                                   # a LOW recessed plinth (a hidden toe)
     binset = 0.10                                       # pulled well IN — the coverlet drapes PAST it
     _base_o = _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset,
@@ -2525,9 +2656,10 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                     f"for stem {_stem!r} (known: {sorted(_mats)}). Add it to value_ladder "
                     f"and to _mats — do not let it inherit a tone")
             _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"],
-                             _mats[_stem], own_mat=True)
+                             _mats[_stem], own_mat=True, subsurf=_p.get("subsurf", 0))
         else:                                            # the lumbar wears a suite TOKEN
-            _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], own_mat=False)
+            _smooth_mesh_obj(_p["name"], _p["verts"], _p["faces"], own_mat=False,
+                             subsurf=_p.get("subsurf", 0))
     # THE FOOT THROW — RESTORED 2026-07-22. It shipped DISABLED, and the comment that
     # disabled it said a throw on a compliant flank "is a cloth-on-cloth interaction, and
     # this vocabulary has no collision term". That was true of the hand-written vocabulary
@@ -2673,7 +2805,8 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     # base and the tub chair wear — which is what D3-4 actually decided. Three copies of
     # one tuple in three functions is not "the same linen", it is three chances to drift.
     seat_m = _woven("bench_seat", _vl.rgba("bench_seat"), 0.94,
-                    _matpre.cloth_args("linen"), sheen=0.25, spec=0.3)   # D3-4: same linen
+                    _matpre.cloth_args("linen"), sheen=0.25, spec=0.3,
+                    maps="rough_linen")                                  # D3-4: same linen
     leg_m  = _solid("bench_leg",  _DARK_LEG, rough=0.45, sheen=0.1, spec=0.5)
     leg_h = H * 0.62                                    # tall legs + a SLIM cushion = a bench;
     seat_h = H - leg_h                                  # a fat pad on stubs is just a box again
@@ -2686,7 +2819,7 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     return True
 
 
-def _smooth_mesh_obj(name, verts, faces, mat=None, own_mat=True, bevel=None):
+def _smooth_mesh_obj(name, verts, faces, mat=None, own_mat=True, bevel=None, subsurf=0):
     """from_pydata + smooth shading (data API, headless-safe) — curved furniture pieces.
 
     `own_mat=False` (ELEMENT 8) is the opt-out a DD critic proved was required: this helper
@@ -2721,6 +2854,16 @@ def _smooth_mesh_obj(name, verts, faces, mat=None, own_mat=True, bevel=None):
         # painted later BY NAME through _suite_materials; keep it out of the global 5mm
         # round-over, which would eat a prop's silhouette.
         o["mill_bevel"] = MILL_BEVEL_M if bevel is None else bevel
+    if subsurf:
+        # LANE B (ground-truth study 2026-07-30): our soft forms were 20-566x under
+        # the measured pro poly floor (pillow 156 vs 3,124+) and we used SUBSURF on
+        # exactly 0 meshes vs their 33/726/56 — the pros smooth soft forms with
+        # subdivision, we were smoothing with shading alone. Render-time only; the
+        # pure layer's authored lattice (and every containment proof on it) is
+        # untouched — the modifier rounds BETWEEN its verts, never past its hull.
+        md = o.modifiers.new("softform_subsurf", 'SUBSURF')
+        md.levels = 1
+        md.render_levels = int(subsurf)
     return o
 
 
@@ -3495,8 +3638,15 @@ def build_suite(spec, label="suite"):
         add_suite_eye_camera(spec, outline_m, h)
         # EYE is the client-facing window view — the ONLY path a spec.exterior garden
         # + Juliet rail belongs on (an eye-level look OUT through the glass-L).
-        _hdri_world(*_exterior_world_args(spec, "brown_photostudio_02", 0.3, 30.0, -0.1,
-                                          "AgX - Medium High Contrast"))
+        # lane B: the story state scales whatever env strength actually WON — the
+        # b1 quick caught the first cut multiplying the call-site default that
+        # spec.exterior's declared strength then discards (line ~1271): a knob wired
+        # to a value the resolver throws away is the revert-by-omission class with
+        # extra steps. Story off = the declared/tuned strength exactly.
+        _wargs = _exterior_world_args(spec, "brown_photostudio_02", 0.3, 30.0, -0.1,
+                                      "AgX - Medium High Contrast")
+        _hs = _e5.story_scales(bool(spec.get("_light_story")))["hdri"]
+        _hdri_world(_wargs[0], _wargs[1] * _hs, *_wargs[2:])
         if spec.get("_light_story"):
             # story mode: trim exposure so the dimmed ambient lets the lamp
             # pools and slat-wash accents read as pools (the whole point of
@@ -3684,6 +3834,12 @@ if __name__ == "__main__":
         # hero dimmer state over the signed e5 plan (lane A) — spec untouched
         _spec["_light_story"] = True
         globals()["_LIGHT_STORY"] = True
+    if "--fabric-maps" in _post_dashdash():
+        # lane B A/B flag: compose the CC0 2k weave maps onto the signed textile
+        # signature (_woven block 6). Off = the exact procedural-only state, so the
+        # A/B pair differs by ONE mechanism.
+        _spec["_fabric_maps"] = True
+        globals()["_FABRIC_MAPS"] = True
     _smax = next((a.split("=", 1)[1] for a in _post_dashdash()
                   if a.startswith("--shred-max=")), None)
     if _smax:

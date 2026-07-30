@@ -607,7 +607,23 @@ if __name__ == "__main__":
 # 0.40 -> 0.48 at the C2 re-critic ("ยังจมมืดหม่นเหมือน draft"): the story keeps
 # its 3:1 focal floor (1.50/0.48 = 3.1) while the room reads finished-bright.
 STORY_SCALES = {"ambient": 0.48, "ambient_wardrobe": 0.70,
-                "strips": 0.95, "bar": 0.95, "spots": 1.50, "lamps": 1.50}
+                "strips": 0.95, "bar": 0.95, "spots": 1.50, "lamps": 1.50,
+                # LANE B (ground-truth study 2026-07-30): the measured flat-light
+                # mechanism was NO KEY — our energy range was 10:1 with a 60W COOL
+                # FILL on top, vs 191-2500:1 with a warm key on top in every pro
+                # scene, and the same-genre archviz feeds its HDRI at 2.0 vs our
+                # 0.3. The story demotes the fill to a whisper and lets the env +
+                # practicals carry the frame (the study's key-ratio lever, not a
+                # new fixture — the signed e5 plan is untouched).
+                # hdri 3.3 -> 2.3 at the b1 quick (amplitude-bisect law: the LOUD
+                # rung proved the key reaches the frame but blew the white cloths
+                # toward clip; ~70% keeps the direction, returns the highlights)
+                "fill": 0.25, "hdri": 2.3}
+
+# Story-mode aperture (ground-truth study: every pro scene camera sits at
+# f/1.4-2.4 — even asset turnarounds stop at f/8 — while our deliverable ran
+# f/9). The CD/documentation wide keeps f/9; the story pair opens up.
+STORY_FSTOP = 2.8
 
 
 def ambient_scale(scales, zone):

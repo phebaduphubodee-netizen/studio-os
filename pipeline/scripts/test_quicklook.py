@@ -91,12 +91,17 @@ def test_cloth_styling_parts_route_through_the_solver():
 def test_light_story_scales_are_unity_when_off_and_focal_when_on():
     """Lane-A armour: story OFF must be byte-identical to the signed CD state
     (every scale exactly 1.0); story ON must dim ambient BELOW the focal layers
-    so the vault's ~3:1 accent:ambient ratio is reachable (lumen-method file:48)."""
+    so the vault's ~3:1 accent:ambient ratio is reachable (lumen-method file:48).
+    Lane-B additions (ground-truth study): the story must DEMOTE the cool fill
+    (the measured no-key signature — our strongest source was the fill) and
+    PROMOTE the env (same-genre file feeds ~3.6x our energy)."""
     import element5_lighting as e5
     off = e5.story_scales(False)
     assert all(v == 1.0 for v in off.values())
     on = e5.story_scales(True)
     assert on["ambient"] < 0.5
+    assert on["fill"] < 0.5 < 1.0 < on["hdri"], "story must demote fill, promote env"
+    assert 1.0 < e5.STORY_FSTOP < 9.0, "story aperture opens toward the measured f/1.4-2.4"
     # per-zone: the dressing zone stays brighter than the room (task+display),
     # and unknown zones fall back to the room ambient
     assert e5.ambient_scale(on, "โซนตู้เสื้อผ้า (wardrobe bay)") > on["ambient"]
@@ -129,5 +134,26 @@ def test_light_story_reaches_every_consumer():
                 'view_settings.exposure -= 0.10',
                 # visible luminaires (C2: "แสงไม่มีที่มา") — every plan position
                 # must carry its recessed trim, downlights AND wall-wash spots
-                '_recessed_trim(f"dl{i}"', '_recessed_trim(s["name"]'):
+                '_recessed_trim(f"dl{i}"', '_recessed_trim(s["name"]',
+                # lane B (ground-truth study): fill demotes, env promotes, aperture
+                # opens, real photometric beams land on cans AND wash spots
+                'story_scales(_LIGHT_STORY)["fill"]',
+                '["hdri"]',
+                '_e5.STORY_FSTOP if _LIGHT_STORY else 9.0',
+                '_ies_beam(ld, "5.ies"', '_ies_beam(ld, "7.IES"',
+                # ...and the profile must stay NORMALIZED (raw Fac re-powers the
+                # rig — the b1 rung measured mean 84->166 with clipping whites)
+                'mul.inputs[1].default_value = float(norm)'):
         assert pin in SRC, pin
+
+
+def test_lane_b_fabric_maps_reach_the_bed_textiles():
+    """Ground-truth lane B armour: the CC0 linen set must be OFFERED to every bed
+    textile + the bench (maps=), the sheen cap must guard the _solid call, and the
+    A/B flag must be parseable — any of these silently dropped reverts the lane."""
+    assert SRC.count('maps="rough_linen"') >= 6      # 5 bed cloths + bench seat
+    assert 'min(sheen, _SHEEN_CAP)' in SRC
+    assert '"--fabric-maps" in _post_dashdash()' in SRC
+    assert '_FABRIC_MAPS' in SRC
+    for pin in ('subsurf=p.get("subsurf", 0)', 'subsurf=_p.get("subsurf", 0)'):
+        assert pin in SRC, pin                        # SUBSURF reaches both mesh paths

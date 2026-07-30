@@ -447,7 +447,9 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
         # verts near the hanger stay pinned, everything below settles under gravity
         # into real drape. Pins are computed on LOCAL z before translation.
         _g = {
-            "name": f"mill__style_garment{salt}_{i}__{tok}", "shape": "mesh",
+            # subsurf 2 (lane B): garments measured 544-1,232 polys vs the 2,308-poly
+            # 2019 coat — render-time subdivision, sim lattice untouched
+            "name": f"mill__style_garment{salt}_{i}__{tok}", "shape": "mesh", "subsurf": 2,
             "verts": _xlate(gv, ox, oy, z_top - gs, swap=cross_is_y), "faces": gf,
         }
         if _pin_z is not None and SIM_GARMENTS:
@@ -677,7 +679,10 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
         off = (across - 2 * sham - gap) * 0.5 + i * (sham + gap)
         x, y, dx, dy = place(sh_from, off, sh_d, sham)
         v, f = sg.cushion(dx, dy, SHAM_H, pinch=0.30, salt=salt + i)
-        parts.append({"name": f"bed__sham{i}", "shape": "mesh",
+        # subsurf 2 (lane B ground-truth): our cushions measured 156 polys against a
+        # 3,124-poly pro floor — the pure lattice stays authored-small (every
+        # containment proof untouched), render-time subdivision supplies the density
+        parts.append({"name": f"bed__sham{i}", "shape": "mesh", "subsurf": 2,
                       "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     # [2] two flat SLEEPING pillows in front of them. NO dent: this owner's two prior
     # rejections were both of things he read as BROKEN rather than ugly, and a pressed
@@ -711,7 +716,7 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
         shift = head_sign * (RANK_GAP * 0.85)
         v = [(p[0] + (shift if head_axis == "x" else 0.0),
               p[1] + (shift if head_axis == "y" else 0.0), p[2]) for p in v]
-        parts.append({"name": f"bed__pillowsoft{i}", "shape": "mesh",
+        parts.append({"name": f"bed__pillowsoft{i}", "shape": "mesh", "subsurf": 2,
                       "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     # [3] ONE accent lumbar, off-centre, in the greige-oatmeal TERRY identity — a real
     # signed textile with character, not a joinery ply pretending to be a cushion (the
@@ -732,7 +737,7 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     x, y, dx, dy = place(lb_from, loff, min(lb_d, LUMBAR_T), lw)
     v, f = sg.cushion(dx, dy, LUMBAR_H, pinch=0.55, salt=salt + 9,
                       nv=12, seam=0.009)
-    parts.append({"name": f"mill__style_lumbar__{TOK_TERRY}", "shape": "mesh",
+    parts.append({"name": f"mill__style_lumbar__{TOK_TERRY}", "shape": "mesh", "subsurf": 2,
                   "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     return parts
 
