@@ -91,3 +91,29 @@ cycle budget was NOT spent — every hypothesis died at quick price.
 - (ก3) OPEN-FORM feedstock: sim garments as open draped sheets over the hanger
   (the topology the solver has actually mastered here), not closed tubes.
 - (ข) as before: g9 + material/light + Gemini leg.
+
+---
+
+# Round 5d — HYBRID RAIL shipped (owner: "(ก2) ก่อน"), 2026-07-30
+
+The ladder's fail path now emits the piece's ANALYTIC TWIN (same salt, same
+silhouette DNA, carve on) instead of raising — declared by styling in the same
+cloth block (`analytic`), emitted loudly by `_emit_style_part`. Consequences,
+both guaranteed by construction: no piece can ever ship shredded, and no build
+can die for one unstable piece.
+
+The multi-rung ladder is CUT to one recipe on the 5b/5c data (rungs 2-3 rescued
+zero pieces while tripling worst-case time — the first hybrid build timed out on
+exactly that). Quick builds attempt a playblast-grade sim (quality 8, short
+settle); only the full recipe closes a gate (R5).
+
+Full-fidelity g10 pair: 3 of 12 shirts sim-passed at the 6% line (2_0/3_1/8_1 —
+the same stable DNAs every session run predicted), 9 analytic fallbacks, all
+LOUD in the log. LOOK vs the reference: the rail is coherent for the first time
+— solver drape on the passed pieces, carved folds on the twins, no wads, no
+sticks, no tears. `SIM_GARMENTS=True` is the default; False reproduces g9
+exactly. 2125 green pinning contract + fallback both ways.
+
+Residuals (disclosed): analytic twins still read pressed-felt next to the
+simmed piece (raising sim-share = the (ก3) open-form session); palette
+monochrome + flat light remain the material/light lane.

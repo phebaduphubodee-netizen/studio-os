@@ -179,27 +179,31 @@ def test_every_soft_piece_declares_its_cloth_support():
         return [p for p in st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP),
                                                CARCASS_D, CLEAR_DROP)
                 if "garment" in p["name"]]
-    # R1-stopped state (2026-07-30): the flag is OFF, so the default build must
-    # carry NO cloth blocks (the committed g9 procedural read) ...
-    assert st.SIM_GARMENTS is False
-    assert not any(p.get("cloth") for p in _parts())
-    # ... and flipping it must bring the full declarative sim contract back —
-    # shirts pinned at the hanger zone with a torso blocker, trousers exempt.
-    st.SIM_GARMENTS = True
+    # HYBRID RAIL is the default (owner "(ก2)", 2026-07-30): every shirt declares
+    # the full sim contract — pins at the hanger zone, a torso blocker, AND the
+    # analytic twin the ladder falls back to (no piece can ever ship shredded).
+    assert st.SIM_GARMENTS is True
+    clothed = [p for p in _parts() if p.get("cloth")]
+    assert clothed, "no garment declares cloth — the solver lane rotted"
+    for p in clothed:
+        cl = p["cloth"]
+        assert cl["pin"] and cl.get("support"), f"{p['name']} misses pins or torso"
+        an = cl.get("analytic")
+        assert an and an["verts"] and an["faces"], f"{p['name']} has no analytic twin"
+        # the twin is genuinely the CARVED variant, not a copy of the smooth feedstock
+        assert an["verts"] != p["verts"], f"{p['name']}: twin == feedstock (carve lost)"
+        zs = [v[2] for v in p["verts"]]
+        top, span = max(zs), max(zs) - min(zs)
+        pinned = [p["verts"][k][2] for k in cl["pin"]]
+        assert len(cl["pin"]) < len(p["verts"]) * 0.5, "over-pinned: nothing to drape"
+        assert all(z >= top - 0.30 * span for z in pinned), \
+            f"{p['name']}: a pin sits far below the hanger zone"
+    # False must still reproduce the pure-analytic g9 state (no cloth blocks)
+    st.SIM_GARMENTS = False
     try:
-        clothed = [p for p in _parts() if p.get("cloth")]
-        assert clothed, "flag on but no garment declares cloth — the solver lane rotted"
-        for p in clothed:
-            cl = p["cloth"]
-            assert cl["pin"] and cl.get("support"), f"{p['name']} misses pins or torso"
-            zs = [v[2] for v in p["verts"]]
-            top, span = max(zs), max(zs) - min(zs)
-            pinned = [p["verts"][k][2] for k in cl["pin"]]
-            assert len(cl["pin"]) < len(p["verts"]) * 0.5, "over-pinned: nothing to drape"
-            assert all(z >= top - 0.30 * span for z in pinned), \
-                f"{p['name']}: a pin sits far below the hanger zone"
+        assert not any(p.get("cloth") for p in _parts())
     finally:
-        st.SIM_GARMENTS = False
+        st.SIM_GARMENTS = True
 
 
 def test_every_garment_gets_a_hanger():

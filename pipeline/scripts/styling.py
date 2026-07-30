@@ -106,14 +106,14 @@ GARMENT_PITCH = 0.24       # centre-to-centre along the rail. 0.068 -> 0.24 at r
                            # every piece was hidden behind its neighbour and the file
                            # read as a deck of boards, whatever the per-piece geometry.
 SHOULDER_MAX = 0.46        # shoulder span across the depth axis, before the clear check
-SIM_GARMENTS = False       # ROUND 5 (2026-07-30): shirts through the cloth solver —
-                           # MECHANISM PROVEN, STABILITY NOT: three quick-rung states
-                           # (45f sleeves frozen mid-swing; 85f unsupported tube
-                           # self-collapsed to a wad; 85f + torso blocker = best dark
-                           # shirt yet BUT the grey shirt shredded on the faceted
-                           # blocker). R1 stop-loss called at attempt three — OFF by
-                           # default (build renders the committed g9 procedural read)
-                           # until the owner rules on the gate. Flip to reproduce.
+SIM_GARMENTS = True        # ROUND 5d — HYBRID RAIL (owner order "(ก2) ก่อน",
+                           # 2026-07-30): every shirt attempts the solver behind the
+                           # shred-detector ladder; a piece NO rung stabilises falls
+                           # back to its analytic twin (same salt, same silhouette
+                           # DNA, carve on) instead of failing the build — no piece
+                           # can ever ship shredded, rails mix best-of-both. The
+                           # 5b/5c instability record lives in LOOK-round5-sim-stop;
+                           # False reproduces the pure-analytic g9 state.
 MIN_GARMENTS = 2           # the reference rail holds two; below that it is a towel bar
 PITCH_FLOOR = 0.13         # least air per piece on a SHORT rail before it stops reading
 #                            (3, not 4: the bay's BF09-1-0 rails are a real 264mm run)
@@ -411,12 +411,15 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             # a coarse grid every fold is a facet, and the round-5b frames read as
             # folded paper. Finer cells cost ~2x sim time on ~8 shirts; the bed's
             # own sheets run at comparable cell sizes.
-            # sim feedstock enters SMOOTH (carve off, tiny fold) — the solver is the
-            # only wrinkle author on the sim path; analytic builds keep the carve
-            gv, gf = sg.garment(wid, drp, depth=thk, nu=24, nv=18,
-                                fold=(0.001 if SIM_GARMENTS else GARMENT_FOLD),
-                                hem_wander=GARMENT_HEM, sway=SWAY, salt=s, collar=col,
-                                sleeves=True, carve=not SIM_GARMENTS)
+            # TWO TWINS from one DNA (hybrid rail): the solver's feedstock enters
+            # SMOOTH (the solver is its only wrinkle author); the analytic twin
+            # keeps the carve and stands ready as the ladder's fallback.
+            def _mk(smooth, _w=wid, _d=drp, _t=thk, _s=s, _c=col):
+                return sg.garment(_w, _d, depth=_t, nu=24, nv=18,
+                                  fold=(0.001 if smooth else GARMENT_FOLD),
+                                  hem_wander=GARMENT_HEM, sway=SWAY, salt=_s,
+                                  collar=_c, sleeves=True, carve=not smooth)
+            gv, gf = _mk(SIM_GARMENTS)
             _pin_z = -0.14 * drp                             # hold collar/shoulder/sleeve roots
         # the hanger's arms angle down by the SAME slope this garment's shoulders
         # wear (one published stream) — a straight bar under sloped cloth hangs the
@@ -460,10 +463,13 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             sv, sf = sg.garment(wid * 0.80, drp * 0.96, depth=thk * 0.55,
                                 nu=18, nv=14, fold=0.004, hem_wander=0.004,
                                 sway=SWAY, salt=s, collar=0.0, sleeves=False)
+            av, af = _mk(False)                    # the analytic twin, carve on
             _g["cloth"] = {"pin": [k for k, pv in enumerate(gv) if pv[2] >= _pin_z],
                            "fabric": "linen", "thickness": 0.004, "frames": 85,
                            "support": {"verts": _xlate(sv, ox, oy, z_top - gs,
-                                                       swap=cross_is_y), "faces": sf}}
+                                                       swap=cross_is_y), "faces": sf},
+                           "analytic": {"verts": _xlate(av, ox, oy, z_top - gs,
+                                                        swap=cross_is_y), "faces": af}}
         parts.append(_g)
         parts.append({
             # hangers are METAL, and matte_black_ply is a joinery BACKER identity carrying

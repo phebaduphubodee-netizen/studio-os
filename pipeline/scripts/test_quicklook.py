@@ -80,3 +80,9 @@ def test_cloth_styling_parts_route_through_the_solver():
     assert "drape.bake_sheet" in seg
     assert 'pin=cl["pin"]' in seg
     assert "self_collide=True" in seg
+    # the HYBRID fallback (owner "(ก2)"): ladder exhausted -> the analytic twin is
+    # emitted LOUDLY; deleting this branch would turn every unstable piece back
+    # into a build failure (or worse, a shipped shred) with all green
+    assert 'cl.get("analytic")' in seg
+    assert "ANALYTIC fallback" in seg
+    assert '_smooth_mesh_obj(p["name"], an["verts"], an["faces"]' in seg

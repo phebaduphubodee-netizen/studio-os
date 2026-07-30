@@ -1552,7 +1552,7 @@ RUG_SLUG = "poly_wool_herringbone"
 _SHRED_MODE = ""
 
 
-def _emit_style_part(p):
+def _emit_style_part(p, quick=False):
     """Materialise ONE styling part record (styling.py's contract) — box or mesh.
 
     Both branches deliberately leave the material to `_suite_materials`, which routes on
@@ -1580,13 +1580,17 @@ def _emit_style_part(p):
                 _sup = _smooth_mesh_obj(p["name"] + "__torso", cl["support"]["verts"],
                                         cl["support"]["faces"], own_mat=False)
                 _sup.hide_render = True
-            # THE GARMENT STABILITY LADDER (owner order "ก"): the same discipline
-            # that earned the bed its pass — recipes climb solver quality, settle
-            # time and bending stiffness; the SHRED DETECTOR is the pass/fail on
-            # every rung (in report mode the first rung just reports). A piece no
-            # rung can stabilise fails the build loudly with its profile.
+            # THE GARMENT ATTEMPT (owner "(ก2)"): ONE recipe, then the analytic
+            # fallback. The 5b/5c measurements are the reason there is no longer a
+            # multi-rung climb here: across the whole session rungs 2-3 rescued
+            # ZERO pieces (0_0 moved 12.7->8.5% and still failed) while tripling
+            # the worst-case build time — the first hybrid build timed out on
+            # exactly that arithmetic. A QUICK build attempts a playblast-grade
+            # sim (cheaper solver, shorter settle): quick kills bad work; only the
+            # full build's recipe closes a gate (R5).
             _fr = cl.get("frames", 45)
-            _recipes = ((12, _fr, 1.0), (16, _fr + 20, 2.5), (16, _fr + 30, 5.0))
+            _recipes = (((8, max(35, _fr - 40), 1.0),) if quick
+                        else ((12, _fr, 1.0),))
             o, _err = None, None
             for _q, _f, _b in _recipes:
                 try:
@@ -1610,8 +1614,18 @@ def _emit_style_part(p):
             if _sup is not None:
                 bpy.data.objects.remove(_sup, do_unlink=True)
             if o is None:
-                raise drape.DrapeError(f"{p['name']}: no ladder rung stabilised the "
-                                       f"cloth — last: {_err}")
+                # HYBRID RAIL (owner "(ก2)"): a piece no rung can stabilise falls
+                # back to its analytic twin — same DNA, carve on — so a build can
+                # never ship a shredded piece and never dies for one either. The
+                # fallback is LOUD in the log; a silent swap would hide the
+                # sim-share the gate reports.
+                an = cl.get("analytic")
+                if an is None:
+                    raise drape.DrapeError(f"{p['name']}: no ladder rung stabilised "
+                                           f"the cloth and no analytic twin was "
+                                           f"declared — last: {_err}")
+                print(f"  hybrid rail: {p['name']} -> ANALYTIC fallback ({_err})")
+                o = _smooth_mesh_obj(p["name"], an["verts"], an["faces"], own_mat=False)
             return o
         return _smooth_mesh_obj(p["name"], p["verts"], p["faces"], own_mat=False,
                                 bevel=p.get("bevel"))
@@ -1649,7 +1663,7 @@ def _add_styling(spec):
     parts = (styling.dress_rails(_STYLE_ANCHORS, min_rails=_declared_open)
              + styling.dress_shelves(_STYLE_ANCHORS))
     for p in parts:
-        _emit_style_part(p)
+        _emit_style_part(p, quick=bool(spec.get("_quick")))
     n_g = sum(1 for p in parts if "garment" in p["name"])
     n_s = sum(1 for p in parts if "fold" in p["name"])
     print(f"  styling: {n_g} garment(s) on "
