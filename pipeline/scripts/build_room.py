@@ -1066,7 +1066,9 @@ def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, map
             # the photographed weave also stands proud: chain its height UNDER the
             # slub bump so both reliefs compose (Bump.Normal input = the chain)
             bmp2 = nt.nodes.new("ShaderNodeBump")
-            bmp2.inputs["Strength"].default_value = cloth["bump"] * 0.6
+            # 0.6 -> 0.35 at the lb1 LOOK + C2 ("แผ่นสักหลาด"): the photographed nap at
+            # full weight read as FELT, not linen — bisect down, keep the breakup
+            bmp2.inputs["Strength"].default_value = cloth["bump"] * 0.35
             bmp2.inputs["Distance"].default_value = cloth["relief_m"] * 0.5
             nt.links.new(bw.outputs["Val"], bmp2.inputs["Height"])
             nt.links.new(bmp2.outputs["Normal"], bump.inputs["Normal"])
@@ -1098,7 +1100,11 @@ def _veneer(name, rgba, rough):
     nz = nt.nodes.new("ShaderNodeTexNoise")
     nz.inputs["Scale"].default_value = 0.5
     mr = nt.nodes.new("ShaderNodeMapRange")
-    mr.inputs["To Min"].default_value = 0.94
+    # 0.94 -> 0.88 (round-6 B2, C2 on lb1: the carcass read as RAW MDF, one flat
+    # colour every face — the drift existed but sat under the ~4% an eye resolves;
+    # amplitude-bisect: loud enough to read as figured veneer, colour still the
+    # signed ceiling)
+    mr.inputs["To Min"].default_value = 0.88
     mr.inputs["To Max"].default_value = 1.0
     mix = nt.nodes.new("ShaderNodeMixRGB")
     mix.blend_type = "MULTIPLY"
@@ -1114,7 +1120,7 @@ def _veneer(name, rgba, rough):
     gz = nt.nodes.new("ShaderNodeTexNoise")
     gz.inputs["Scale"].default_value = 1.0
     bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.08
+    bump.inputs["Strength"].default_value = 0.16          # 0.08 doubled (B2, same verdict)
     try:
         bump.inputs["Distance"].default_value = 0.0003
     except Exception:
@@ -1125,10 +1131,41 @@ def _veneer(name, rgba, rough):
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     # sheen-of-lacquer roughness breakup along the same striations
     mr2 = nt.nodes.new("ShaderNodeMapRange")
-    mr2.inputs["To Min"].default_value = max(0.0, rough - 0.08)
-    mr2.inputs["To Max"].default_value = min(1.0, rough + 0.04)
+    mr2.inputs["To Min"].default_value = max(0.0, rough - 0.12)
+    mr2.inputs["To Max"].default_value = min(1.0, rough + 0.06)
     nt.links.new(gz.outputs["Fac"], mr2.inputs["Value"])
     nt.links.new(mr2.outputs["Result"], bsdf.inputs["Roughness"])
+    return m
+
+
+def _burnish(m, band=(0.10, 0.05), bump=0.06, scale=1.6):
+    """Trowel-burnish breakup for cement/plaster finishes (round-6 B2 — C2 on lb1
+    read the white drawer stack as untreated board: SIGNED microcement must read
+    as microcement, which is a TROWELLED surface — burnish patches where the
+    float pressed harder). Signed colour untouched: roughness band + faint bump
+    only, same discipline as _painted's three non-uniformities."""
+    nt, bsdf = _principled(m)
+    if not bsdf:
+        return m
+    r = float(bsdf.inputs["Roughness"].default_value)
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = scale
+    nz.inputs["Detail"].default_value = 3.0
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value = max(0.03, r - band[0])
+    mr.inputs["To Max"].default_value = min(0.97, r + band[1])
+    nt.links.new(tc.outputs["Object"], nz.inputs["Vector"])
+    nt.links.new(nz.outputs["Fac"], mr.inputs["Value"])
+    nt.links.new(mr.outputs["Result"], bsdf.inputs["Roughness"])
+    bp = nt.nodes.new("ShaderNodeBump")
+    bp.inputs["Strength"].default_value = bump
+    try:
+        bp.inputs["Distance"].default_value = 0.0004
+    except Exception:
+        pass
+    nt.links.new(nz.outputs["Fac"], bp.inputs["Height"])
+    nt.links.new(bp.outputs["Normal"], bsdf.inputs["Normal"])
     return m
 
 
@@ -1198,6 +1235,20 @@ def _hdri_world(slug, strength=1.0, rot_deg=0.0, exposure=0.0, look=""):
     out = nt.nodes.new("ShaderNodeOutputWorld")
     bg = nt.nodes.new("ShaderNodeBackground")
     bg.inputs["Strength"].default_value = strength
+    if _LIGHT_STORY:
+        # DUAL BACKGROUND (round-6 B2 — the Italian Flat file's own LightPath
+        # pattern, and C2 on lb1: "แสงนอกหน้าต่างขาวอมเขียวจ้าจนไหม้ ... เหมือนแปะ
+        # ฉากหลังคนละภาพ"): the story pumps the env as the interior KEY (x2.3),
+        # but what the CAMERA sees through the glass must not ride that gain —
+        # camera rays get ~45% of the light strength, so the garden reads as a
+        # view again while the room keeps its key. Story-only by construction.
+        lp = nt.nodes.new("ShaderNodeLightPath")
+        cmr = nt.nodes.new("ShaderNodeMapRange")
+        cmr.inputs["From Max"].default_value = 1.0
+        cmr.inputs["To Min"].default_value = strength
+        cmr.inputs["To Max"].default_value = strength * 0.45
+        nt.links.new(lp.outputs["Is Camera Ray"], cmr.inputs["Value"])
+        nt.links.new(cmr.outputs["Result"], bg.inputs["Strength"])
     path = _hdri_file(slug)
     if path:
         env = nt.nodes.new("ShaderNodeTexEnvironment")
@@ -1279,6 +1330,18 @@ def _add_rug(name, x, y, w, d, thick=0.014):
     obj = add_box(name, x, y, 0.004, w, d, thick)
     _planar_uv(obj, tile_m=1.3)
     obj.data.materials.append(_pbr_material("rug_" + name, RUG_SLUG))
+    # EDGE BINDING (round-6 B2, C2 on lb1: "พรมเป็น noise เนื้อเดียวทั้งผืน ไม่มีขอบ
+    # เก็บริม"): a real area rug is finished with a sewn tape band around its
+    # perimeter — the one manufactured line that says 'rug', not 'carpet patch'.
+    # Four slim boxes, a shade darker than the pile, sitting 2mm proud.
+    bind_m = _solid(name + "_binding", (0.42, 0.40, 0.37, 1.0), rough=0.85, sheen=0.15)
+    bw, bt = 0.032, thick + 0.002
+    for tag, bx, by, bdx, bdy in (("s", x, y, w, bw), ("n", x, y + d - bw, w, bw),
+                                  ("w", x, y + bw, bw, d - 2 * bw),
+                                  ("e", x + w - bw, y + bw, bw, d - 2 * bw)):
+        bo = add_box(f"{name}__bind_{tag}", bx, by, 0.004, bdx, bdy, bt)
+        bo.data.materials.append(bind_m)
+        bo["ph_model"] = True                     # keeps its own material, no router
     return obj
 
 
@@ -1554,9 +1617,53 @@ def _add_window_light(x, y, z, tx, ty, tz, size=(4.0, 2.4), energy=400.0, color=
 # room' read. Skipped gracefully if an asset isn't cached.
 def _dress_scene(spec):
     """Place a few CC0 decor pieces: a vase cluster on the round centre table + a floor
-    plant beside the seating group. Positions derived from the spec so it generalises."""
+    plant beside the seating group. Positions derived from the spec so it generalises.
+
+    LANE D (round-6, approved order; C2 ×2: "ห้องอ่านเป็นยังไม่มีใครย้ายเข้า" while the
+    reference styles its bench with a magazine): the SUITE branch dresses the foot
+    bench — a leaning book pair + a REAL simulated throw over the far end. Restraint
+    kept deliberately (the reference's own density); ฿0/CC0 law: everything
+    procedural; no-defect-object law: nothing torn, nothing worn. The throw wears
+    the DUVET's material handle — no new colour enters the signed palette."""
     placed = 0
     items = spec.get("items", [])
+    bench = next((it for it in items if it.get("kind") == "bench"), None)
+    if bench and not spec.get("_hero"):
+        bx, by = float(bench["x"]) * MM, float(bench["y"]) * MM
+        bw, bd = float(bench["w"]) * MM, float(bench["d"]) * MM
+        bh = float(bench.get("h", 450)) * MM
+        # [1] two leaning books at the south end — the bedroom's own muted boards
+        # dark board ON TOP (d1 quick: the cream book uppermost read as a tissue
+        # box — an ink cover over a cream base reads "books" at one glance)
+        for bi, bc in enumerate(((0.78, 0.74, 0.68, 1.0), (0.20, 0.18, 0.16, 1.0))):
+            bm = _solid(f"bench_book{bi}", bc, rough=0.55, spec=0.4)
+            _rbox(f"deco__bench_book{bi}", bx + (bw - 0.215) * 0.5 + bi * 0.010,
+                  by + 0.085 + bi * 0.007, bh + bi * 0.030,
+                  0.215 - bi * 0.013, 0.155 - bi * 0.010, 0.030, bm, bevw=0.004, seg=2)
+            placed += 1
+        # [2] the throw: a sheet lying on the north half, overhanging the end,
+        # dropped by the solver onto the seat it must fall past — pinned on its
+        # on-bench strip the way a tucked throw really is (the unpinned-sheet
+        # slide-off is a recorded failure shape)
+        _seat = bpy.data.objects.get("bench__seat")
+        if _seat is not None:
+            tv, tf = softgoods.folded_sheet(bx + 0.045, by + bd - 0.46, bw - 0.09,
+                                            0.66, bh + 0.02, band=0.18, head="y-",
+                                            cell=0.035, salt=11)
+            _pin = [k for k, p in enumerate(tv) if p[1] < by + bd - 0.28]
+            try:
+                _to = drape.bake_sheet("deco__bench_throw", tv, tf, [_seat],
+                                       frames=45, fabric="linen",
+                                       mat=bpy.data.materials.get("bed_duvet"),
+                                       pin=_pin, thickness=0.010, collide_dist=0.012,
+                                       shred_guard=True)
+                _to["ph_model"] = 1
+                placed += 1
+            except drape.DrapeError as _te:
+                # lane D is styling, never structure: a throw that cannot settle is
+                # DROPPED LOUDLY, the build survives (no analytic twin needed here —
+                # absence of a throw is not a defect object)
+                print(f"  lane D: bench throw dropped ({_te})")
     tbl = next((it for it in items if it.get("kind") in ("coffee_table", "round_table")
                 and float(it["x"]) > 4000), None)
     if tbl:
@@ -1851,7 +1958,7 @@ def _suite_materials(spec=None):
     # material_presets.mill_object_role); a closed door run references none of them. Built from the
     # signed presets so the render's material story stays true to the decision record.
     brass = _material_from_preset("m_mill_brass", "satin_brass")
-    cement = _material_from_preset("m_mill_cement", "microcement_cool")
+    cement = _burnish(_material_from_preset("m_mill_cement", "microcement_cool"))
     backing = _material_from_preset("m_mill_backing", "matte_black_ply")
     # ELEMENT 2 (west wall): the Caesarstone vanity counter + the frameless makeup mirror.
     # Routed to mill__ parts by 'counter*' -> caesarstone, 'mirror*' -> mirror (material_presets
@@ -2153,10 +2260,52 @@ def _add_e5_lights(spec, h_m):
         _aimed_light(s["name"], ld, (s["x"] * MM, s["y"] * MM, s["z"] * MM),
                      (s["aim"][0] * MM, s["aim"][1] * MM, s["aim"][2] * MM))
         n += 1
+    # E5 AMENDMENT (round-6 gate #8 — the same ask stood at three gates with four
+    # judges unanimous: pools need a FINDABLE fixture). Geometry + light for the
+    # cove and the sconce pair; positions all derive from the plan's own numbers.
+    cv = plan["cove"]
+    _pel_m = _solid("e5_pelmet", (0.32, 0.21, 0.13, 1.0), rough=0.5, spec=0.4)
+    _rbox("e5_cove_pelmet", (cv["face_x"] - cv["off"] - 20.0) * MM, cv["y0"] * MM,
+          cv["z"] * MM, 0.020, cv["len"] * MM, 0.140, _pel_m, bevw=0.003)
+    #      20mm board from the cove line up to a 10mm ceiling shadow gap (COVE_DROP
+    #      is 150 by construction) — the fascia the eye finds when it asks where
+    #      the wall graze comes from
+    cld = bpy.data.lights.new("e5_cove", type='AREA')
+    cld.shape = 'RECTANGLE'
+    cld.size = 0.04
+    cld.size_y = cv["len"] * MM * 0.96
+    cld.energy = cv["watts"] * _sc.get("cove", 1.0)
+    cld.color = warm
+    _aimed_light("e5_cove", cld,
+                 (cv["face_x"] * MM - cv["off"] * MM, (cv["y0"] + cv["len"] / 2.0) * MM,
+                  cv["z"] * MM),
+                 (cv["face_x"] * MM, (cv["y0"] + cv["len"] / 2.0) * MM,
+                  cv["z"] * MM - 1.2))          # graze DOWN the slat face
+    n += 1
+    _sc_body = _solid("e5_sconce_body", (0.60, 0.44, 0.20, 1.0), rough=0.32,
+                      metallic=1.0, spec=0.6, aniso=0.65)
+    for s in plan["sconces"]:
+        sx, sy, sz = s["x"] * MM, s["y"] * MM, s["z"] * MM
+        # body: a brass cylinder standing 70mm off the slat face
+        _cyl_frustum(s["name"], sx - 0.045, sy, 0.030, 0.030, sz - 0.070, sz + 0.070,
+                     _sc_body, seg=16)
+        for tag, aim_dz in (("up", 1.0), ("dn", -1.0)):
+            ld = bpy.data.lights.new(f"{s['name']}_{tag}", type='SPOT')
+            ld.energy = s["watts"] * _sc.get("sconces", 1.0) * 0.5
+            ld.color = warm
+            ld.spot_size = radians(85.0)
+            ld.spot_blend = 0.9
+            ld.shadow_soft_size = 0.02
+            if spec.get("_light_story"):
+                _ies_beam(ld, "1.IES", norm=0.10)    # BEGA 6339 surface wall luminaire
+            _aimed_light(f"{s['name']}_{tag}", ld, (sx - 0.045, sy, sz + aim_dz * 0.075),
+                         (sx, sy, sz + aim_dz * 1.0))
+            n += 1
     c = plan["meta"]["counts"]
     drops = plan["meta"]["dropped"]
     print(f"  e5 lights: {c['downlights']} ambient + {c['strips']} strips + bar + "
-          f"{c['spots']} spots placed ({n} sources; lamps glow via _build_nightstand); "
+          f"{c['spots']} spots + cove + {c['sconces']} sconces placed ({n} sources; "
+          f"lamps glow via _build_nightstand); "
           f"clipped {len(drops)} grid can(s) inside full-height masses: "
           f"{sorted({d['mass'] for d in drops})}")
     return n
@@ -2548,7 +2697,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
         colliders=[o for o in (_matt_o, _base_o) if o],
         mat=cov_m, head=_head_side, fabric="linen",
         bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.30),
-        sim_surface=True)                       # the duvet + throw collide with the
+        sim_surface=True, salt=5)     # B2: per-corner bias — the owed lane-C debt
+        #                               (C2 twice: corner gathers mirrored L/R)                       # the duvet + throw collide with the
     #                                             SINGLE-SHELL surface, not the
     #                                             solidified render mesh (see drape)
     _cov_o["ph_model"] = 1                              # keep the global 1 mm bevel off cloth

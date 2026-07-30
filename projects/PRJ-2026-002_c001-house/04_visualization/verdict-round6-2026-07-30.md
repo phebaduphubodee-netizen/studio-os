@@ -257,3 +257,49 @@ IDENTITY (which material am I looking at) rather than EXISTENCE (is this
 cloth) — a different, narrower class than round-6 opened with. R1 spent →
 gate. Lane B2 (identity separation + owed coverlet corners) is scoped and
 cheap; lane D and the three owner questions stand.
+
+---
+
+# Round-6 CLOSED — B2 + e5 amendment + lane D (2026-07-30, pair ld1)
+
+Owner's reply to gate #8 was "รออะไร?" → everything recommended proceeded.
+
+**B2 shipped:** coverlet skirt-only corner salt (the owed debt — flat_sheet
+gained salt/salt_rect, applied after cut/mitre/arc-snap so topology holds);
+duvet map-nap ×0.6→×0.35 (felt→linen); veneer drift 0.94→0.88 + bump ×2 +
+roughness band widened (raw-MDF read); microcement gains trowel burnish
+(_burnish — signed colour untouched); rug gains sewn edge binding; garden
+through glass graded by the Italian file's own LightPath dual-BG pattern
+(camera rays ×0.45, light rays keep the key).
+
+**e5 AMENDMENT shipped** (cove + paired sconces — authorization trail +
+what-was-refused recorded in e5-amendment-cove-sconces-2026-07-30.md):
+pure derivation in element5_lighting (off-run sconce RAISES), pelmet fascia +
+graze + brass cylinders + up/down beams (BEGA 1.IES in story), schedule rows
+emitted with the plan, counts pinned.
+
+**Lane D shipped:** the foot bench carries life — ink-on-cream book pair +
+a PINNED simulated throw wearing the duvet's own material handle (no new
+colour). Restraint deliberate (the reference's own density).
+
+**Spend this leg:** quick ×3 + full ×2 pairs (lb2, ld1) · 2136 green.
+
+## Final C2 (fresh agent, ld1) — 12 items, the round's closing read
+The verdict CONVERGED: #1-2 pillows-as-stones + bedding-as-one-felt-slab —
+"ผ้าคือวัสดุเดียวที่มนุษย์ทุกคนตรวจจับความปลอมได้ในเสี้ยววินาที". That class
+is exactly what the hybrid architecture assigned to the GEMINI PASS (weave,
+wrinkle micro-realism) + what (ก3) open-form owns (garments, #3). Remaining
+triage: #4 carcass mustard monotone — the signed tone itself now carries the
+critique (owner question, not builder); #5 pool-vs-fixture registration —
+small tune; #6 headboard float — FOURTH vote, stands at gate; #7 book spines
++ throw crease — minor D2; #8 skirting/switches/track — standing owner
+question (ink silent); #9 styling density — restraint was chosen, owner may
+raise it; #10 rug binding tone + contact shadows — small B3; #11-12
+self-marked opinions.
+
+**Round-6 arc, honestly told:** existence → identity → micro-realism. Four
+lanes + one amendment closed; every remaining item is either (a) the class
+the owner's own two queued levers exist for — (ก3) and the Gemini billing
+gate — or (b) a signed-design question only he can answer. The builder's
+deterministic levers are, for the first time, measured against pro files
+and spent to their measured ceiling.

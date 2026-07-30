@@ -67,7 +67,8 @@ import math
 # that contract's feedstock; `drape.py` (layer 2) simulates them.
 # ---------------------------------------------------------------------------
 
-def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6):
+def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6,
+               salt=0, salt_rect=None):
     """A flat QUAD grid in world XY at height `z` — the undeformed state of a
     simulated sheet. Returns (verts, faces) in WORLD metres.
 
@@ -161,6 +162,20 @@ def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6):
                         s = f / r
                         verts[n_] = (ix + (vx - ix) * s, iy + (vy - iy) * s, vz)
                     break
+    # PER-CORNER BIAS (round-6 lane B2 — the owed lane-C debt, C2 twice: the baked
+    # coverlet's corner gathers "แตกเป็นเสี้ยน" identically L/R): verts OUTSIDE
+    # `salt_rect` (the surface the sheet lies on — i.e. the skirt cloth only) get a
+    # bounded in-plane deviation growing with overhang distance, so each corner
+    # enters the solver with its own bias and the gathers stop mirroring. Applied
+    # AFTER cut/mitre/arc-snap so topology and the continuous boundary are already
+    # settled; salt=0 = the exact prior sheet.
+    if salt and salt_rect:
+        rx0, ry0, rx1, ry1 = salt_rect
+        for n_, (vx, vy, vz) in enumerate(verts):
+            g = min(1.0, max(rx0 - vx, vx - rx1, ry0 - vy, vy - ry1, 0.0) / 0.15)
+            if g > 0.0:
+                verts[n_] = (vx + dev(n_ * 131, 0.005, salt) * g,
+                             vy + dev(n_ * 137, 0.005, salt + 7) * g, vz)
     return verts, faces
 
 

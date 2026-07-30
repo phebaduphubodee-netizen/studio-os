@@ -42,9 +42,41 @@ def test_canonical_file_carries_the_block(spec):
     assert E5.applies(spec), "the canonical spec must carry lighting schema e5-layers@0.1"
 
 
+def test_amendment_cove_and_sconces_derive_from_signed_geometry(spec):
+    """E5 AMENDMENT (2026-07-30, gate #8): fixtures DERIVE — a moved wall or bed
+    re-derives them, and a sconce off the BF14 run must RAISE, never clamp."""
+    blk = E5.validate_block(spec)
+    cove, sconces = E5.cove_and_sconces(spec, blk)
+    bf = next(b for b in spec["builtins"] if b.get("bf") == blk["accent"]["target_bf"])
+    ceil = float(spec["room"].get("ceiling_mm", 2800))
+    assert cove["face_x"] == float(bf["x"]) and cove["len"] == float(bf["d"])
+    assert cove["z"] == ceil - E5.COVE_DROP_MM
+    assert cove["watts"] > 0
+    bed = next(i for i in spec["items"] if i.get("kind") == "bed")
+    cy = float(bed["y"]) + float(bed["d"]) / 2.0
+    assert len(sconces) == 2
+    ys = sorted(s["y"] for s in sconces)
+    assert math.isclose(ys[0], cy - E5.SCONCE_SPREAD_MM)
+    assert math.isclose(ys[1], cy + E5.SCONCE_SPREAD_MM)
+    for s in sconces:
+        assert float(bf["y"]) < s["y"] < float(bf["y"]) + float(bf["d"])
+        assert s["z"] == E5.SCONCE_Z_MM
+
+
+def test_amendment_reaches_the_schedule(spec):
+    """Documentation law: the frame and the fixture schedule must tell one room."""
+    fixtures, _ = E5.schedule_fixtures(spec)
+    layers = [f.get("layer") for f in fixtures]
+    assert layers.count("cove") == 1
+    assert layers.count("sconce") == 2
+
+
 def test_canonical_plan_counts(spec):
     p = E5.plan(spec)
-    assert p["meta"]["counts"] == {"downlights": 18, "strips": 2, "bar": 1,
+    # cove+sconces joined 2026-07-30 (e5 amendment, gate #8 — see the amendment doc
+    # in 04_visualization; the ask stood at three gates with four judges unanimous)
+    assert p["meta"]["counts"] == {"cove": 1, "sconces": 2,
+                                   "downlights": 18, "strips": 2, "bar": 1,
                                    "spots": 6, "lamps": 2}
 
 

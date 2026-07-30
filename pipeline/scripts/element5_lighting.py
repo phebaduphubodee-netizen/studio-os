@@ -433,6 +433,49 @@ def accent_plan(spec, blk):
     return spots
 
 
+
+# --- E5 AMENDMENT 2026-07-30 (round-6 gate #8, owner "รออะไร?" after the same ask
+# stood at gates #6/#7/#8 with FOUR judges unanimous across three rounds:
+# "แสงไม่มีที่มา" — pools on the slat wall with no visible fixture). The reference
+# language of every delivered bedroom in the anchor pool is a COVE grazing the
+# headboard wall + paired SCONCES the eye can find. Amendment doc:
+# 04_visualization/e5-amendment-cove-sconces-2026-07-30.md. Values are DD choices
+# [est render-tier] in the one warm family; positions DERIVE from the signed
+# geometry (BF14 run + bed centreline) so a plan move re-derives the fixtures.
+COVE_DROP_MM = 150.0        # pelmet line below the ceiling
+COVE_OFF_MM = 90.0          # strip offset from the slat face (graze angle)
+COVE_W_PER_M = 10.0         # LED strip watts per metre of run
+SCONCE_Z_MM = 1550.0        # mounting height (clears nightstand + lamp)
+SCONCE_SPREAD_MM = 850.0    # each side of the bed centreline
+SCONCE_WATTS = 6.0          # per fixture (up/down pair shares it)
+
+
+def cove_and_sconces(spec, blk):
+    """The amendment's fixtures, derived like accent_plan derives its wash."""
+    acc = blk["accent"]
+    ceil = float(spec["room"].get("ceiling_mm", 2800))
+    tgt = _find_one(spec.get("builtins") or [],
+                    lambda b: b.get("bf") == acc["target_bf"],
+                    f"builtin bf={acc['target_bf']!r}")
+    face_x = float(tgt["x"])
+    run_y0, run_len = float(tgt["y"]), float(tgt["d"])
+    bed = _find_one(spec.get("items") or [], lambda i: i.get("kind") == "bed",
+                    "item kind='bed'")
+    bed_cy = float(bed["y"]) + float(bed["d"]) / 2.0
+    cove = {"layer": "cove", "name": "bf14_cove", "face_x": face_x,
+            "y0": run_y0, "len": run_len, "z": ceil - COVE_DROP_MM,
+            "off": COVE_OFF_MM, "watts": COVE_W_PER_M * run_len / 1000.0}
+    sconces = []
+    for i, sy in enumerate((bed_cy - SCONCE_SPREAD_MM, bed_cy + SCONCE_SPREAD_MM)):
+        if not (run_y0 < sy < run_y0 + run_len):
+            _fail(f"sconce {i} at y={sy:.0f} falls off the {acc['target_bf']} run "
+                  f"{run_y0}..{run_y0 + run_len} — re-derive the amendment, never clamp")
+        sconces.append({"layer": "sconce", "name": f"bf14_sconce_{i}",
+                        "x": face_x, "y": sy, "z": SCONCE_Z_MM,
+                        "watts": SCONCE_WATTS})
+    return cove, sconces
+
+
 def coplanar_backer_skins(spec):
     """PURE (mm): the coplanar-backer skin rects — where a full-height builtin's face
     lies EXACTLY (<=2mm) on a subroom edge, Cycles' coplanar tie can render the
@@ -514,16 +557,19 @@ def plan(spec):
     strips = bf11_strips(spec, blk)
     bar = ensuite_bar_wash(spec, blk)
     spots = accent_plan(spec, blk)
+    cove, sconces = cove_and_sconces(spec, blk)
     lamps = [{"name": it.get("name", "lamp"), "cct_k": float(it["lamp"].get("cct_k", 2850)),
               "rgb": lamp_rgb(it["lamp"].get("cct_k", 2850))}
              for it in spec.get("items") or []
              if it.get("kind") == "side_table" and it.get("lamp")]
     dropped = [d for m in metas for d in m["dropped_in_masses"]]
     return {"downlights": downlights, "strips": strips, "bar": bar, "spots": spots,
+            "cove": cove, "sconces": sconces,
             "lamps": lamps,
             "meta": {"zones": metas, "dropped": dropped,
                      "counts": {"downlights": len(downlights), "strips": len(strips),
-                                "bar": 1, "spots": len(spots), "lamps": len(lamps)},
+                                "bar": 1, "spots": len(spots), "lamps": len(lamps),
+                                "cove": 1, "sconces": len(sconces)},
                      "nominal_cct": {"family": CCT_FAMILY,
                                      "electric": sorted({NOMINAL_ELECTRIC_CCT}
                                                         | {l["cct_k"] for l in lamps})}}}
@@ -563,6 +609,19 @@ def schedule_fixtures(spec):
                              "x": float(it["x"]) + float(it["w"]) / 2.0,
                              "y": float(it["y"]) + float(it["d"]) / 2.0,
                              "note": "e5 practical — lumens [est], SKU stage-05 (D-E5-6)"})
+    # E5 AMENDMENT (gate #8): the render's cove + sconces are documented the moment
+    # they exist — the schedule and the frame must never tell different rooms
+    cv = p["cove"]
+    fixtures.append({"type": "LED cove strip (pelmet, warm)", "lumens": 1200,
+                     "cct_k": 3000, "cri": 90, "mounting": "Pelmet, BF14 head wall",
+                     "layer": "cove", "x": cv["face_x"] - cv["off"],
+                     "y": cv["y0"] + cv["len"] / 2.0,
+                     "note": "e5 amendment 2026-07-30 — lumens [est], SKU stage-05"})
+    for s in p["sconces"]:
+        fixtures.append({"type": "Wall sconce (brass cylinder, up/down)", "lumens": 350,
+                         "cct_k": 2850, "cri": 90, "mounting": "Wall, BF14 head wall",
+                         "layer": "sconce", "x": s["x"], "y": s["y"],
+                         "note": "e5 amendment 2026-07-30 — lumens [est], SKU stage-05"})
     meta = {"source": SCHEMA, "ceiling_mm": float(spec["room"].get("ceiling_mm", 2800)),
             "zones": p["meta"]["zones"]}
     return fixtures, meta
@@ -618,7 +677,10 @@ STORY_SCALES = {"ambient": 0.48, "ambient_wardrobe": 0.70,
                 # hdri 3.3 -> 2.3 at the b1 quick (amplitude-bisect law: the LOUD
                 # rung proved the key reaches the frame but blew the white cloths
                 # toward clip; ~70% keeps the direction, returns the highlights)
-                "fill": 0.25, "hdri": 2.3}
+                "fill": 0.25, "hdri": 2.3,
+                # amendment fixtures (gate #8): the cove holds its CD level; the
+                # sconces lean in with the practicals (Kelly focal-glow family)
+                "cove": 1.0, "sconces": 1.25}
 
 # Story-mode aperture (ground-truth study: every pro scene camera sits at
 # f/1.4-2.4 — even asset turnarounds stop at f/8 — while our deliverable ran

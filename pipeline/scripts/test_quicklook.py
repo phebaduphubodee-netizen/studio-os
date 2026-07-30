@@ -139,6 +139,15 @@ def test_light_story_reaches_every_consumer():
                 # opens, real photometric beams land on cans AND wash spots
                 'story_scales(_LIGHT_STORY)["fill"]',
                 '["hdri"]',
+                # e5 amendment (gate #8): the cove pelmet + sconce pair must be
+                # BUILT, and the sconce beams carry the wall-luminaire profile
+                'e5_cove_pelmet', '_ies_beam(ld, "1.IES"', '_sc.get("cove"',
+                # B2: the coverlet feedstock enters per-corner biased (the owed debt)
+                'sim_surface=True, salt=5',
+                # lane D: the bench carries life — books + a PINNED simulated throw
+                # wearing the duvet's own handle (no new colour ever enters this way)
+                'deco__bench_book', 'deco__bench_throw',
+                'bpy.data.materials.get("bed_duvet")',
                 '_e5.STORY_FSTOP if _LIGHT_STORY else 9.0',
                 '_ies_beam(ld, "5.ies"', '_ies_beam(ld, "7.IES"',
                 # ...and the profile must stay NORMALIZED (raw Fac re-powers the

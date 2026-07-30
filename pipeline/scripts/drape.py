@@ -412,7 +412,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
 
 def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="linen",
                    cell=0.028, frames=55, bounds=None, thickness=0.006, slack=0.05,
-                   sim_surface=False):
+                   sim_surface=False, salt=0):
     """A coverlet: a sheet lying on the mattress that OVERHANGS three sides and
     falls under gravity — the fold at the mattress edge is solved, not authored.
 
@@ -456,7 +456,11 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
         # continuous curve. The value lives in softgoods so pure tests pin it.
         verts, faces = sg.flat_sheet(ox0, oy0, ox1 - ox0, oy1 - oy0,
                                      top_z + 0.004, cell=cell, mitre=mit,
-                                     mitre_keep=sg.COVERLET_MITRE_KEEP)
+                                     mitre_keep=sg.COVERLET_MITRE_KEEP,
+                                     # skirt-only per-corner bias (lane B2): the lying
+                                     # rect stays exact, so the pin band + reveal
+                                     # arithmetic below are untouched
+                                     salt=salt, salt_rect=(x0, y0, x0 + dx, y0 + dy))
         # Pin the band trapped under the pillows at the headboard — and ONLY the part
         # of it lying ON the mattress, never the full grid row (softgoods.verts_in_rect).
         band = min(0.12, dx * 0.2 if ax == "x" else dy * 0.2)
