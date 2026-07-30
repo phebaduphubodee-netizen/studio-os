@@ -106,6 +106,14 @@ GARMENT_PITCH = 0.24       # centre-to-centre along the rail. 0.068 -> 0.24 at r
                            # every piece was hidden behind its neighbour and the file
                            # read as a deck of boards, whatever the per-piece geometry.
 SHOULDER_MAX = 0.46        # shoulder span across the depth axis, before the clear check
+SIM_GARMENTS = False       # ROUND 5 (2026-07-30): shirts through the cloth solver —
+                           # MECHANISM PROVEN, STABILITY NOT: three quick-rung states
+                           # (45f sleeves frozen mid-swing; 85f unsupported tube
+                           # self-collapsed to a wad; 85f + torso blocker = best dark
+                           # shirt yet BUT the grey shirt shredded on the faceted
+                           # blocker). R1 stop-loss called at attempt three — OFF by
+                           # default (build renders the committed g9 procedural read)
+                           # until the owner rules on the gate. Flip to reproduce.
 MIN_GARMENTS = 2           # the reference rail holds two; below that it is a towel bar
 PITCH_FLOOR = 0.13         # least air per piece on a SHORT rail before it stops reading
 #                            (3, not 4: the bay's BF09-1-0 rails are a real 264mm run)
@@ -386,7 +394,11 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
         trouser = sg.dev(i, 1.0, s + 71) > 0.4
         if trouser:
             tw = shoulder * (0.42 + 0.06 * abs(sg.dev(i, 1.0, s + 77)))
-            gv, gf = sg.trouser_fold(tw, 0.50, depth=min(thk, 0.034), salt=s)
+            gv, gf = sg.trouser_fold(tw, 0.50, depth=min(thk, 0.034), nu=12, nv=10, salt=s)
+            _pin_z = None                                    # a pressed fold IS near-rigid:
+            #                                                  the quick rung measured 2.2mm of
+            #                                                  settle — below the solver's own
+            #                                                  min-motion floor. Shirts sim.
         else:
             col = 0.016 if sg.dev(i, 1.0, s + 67) > -0.3 else 0.0
             # THIRD LENGTH SPECIES (round 4, owner: hems all landing at one line read
@@ -395,9 +407,10 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             # rhythm of a worn closet. Shorter is always inside the drop budget.
             if sg.dev(i, 1.0, s + 83) > 0.55:
                 drp *= 0.62
-            gv, gf = sg.garment(wid, drp, depth=thk, fold=GARMENT_FOLD,
+            gv, gf = sg.garment(wid, drp, depth=thk, nu=16, nv=12, fold=GARMENT_FOLD,
                                 hem_wander=GARMENT_HEM, sway=SWAY, salt=s, collar=col,
                                 sleeves=True)
+            _pin_z = -0.14 * drp                             # hold collar/shoulder/sleeve roots
         # the hanger's arms angle down by the SAME slope this garment's shoulders
         # wear (one published stream) — a straight bar under sloped cloth hangs the
         # cloth below the wire that suspends it (pre-commit review, 40/40 salts)
@@ -415,10 +428,33 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
         # fold WRAPS the bar, so its roll-top sits just under the rail and its body
         # covers the bar's root zone.
         gs = SHOULDER_DROP * 0.6 if trouser else SHOULDER_DROP
-        parts.append({
+        # ROUND 5 (owner: "ยังไม่เหมือนของจริง" after three procedural rounds): every
+        # simulated cloth in this room passed the owner's eye and every analytic one
+        # failed, so garments go through the SOLVER too. The pure layer authors the
+        # construction (shape, pose, containment) and declares the SUPPORT — the
+        # verts near the hanger stay pinned, everything below settles under gravity
+        # into real drape. Pins are computed on LOCAL z before translation.
+        _g = {
             "name": f"mill__style_garment{salt}_{i}__{tok}", "shape": "mesh",
             "verts": _xlate(gv, ox, oy, z_top - gs, swap=cross_is_y), "faces": gf,
-        })
+        }
+        if _pin_z is not None and SIM_GARMENTS:
+            # 85 frames, not 45: the quick rung caught sleeves frozen MID-SWING at 45
+            # (a pendulum needs time to die out once the only support is the pins).
+            # The TORSO BLOCKER (quick rung again: at 85 frames an unsupported tube
+            # self-collapsed into a wad): a real shirt keeps its volume because a
+            # torso of air and interfacing holds it — so each simmed shirt gets a
+            # hidden slimmer copy of its own body as a passive collider (the bed
+            # stack's sim-surface pattern, inverted). Built by the bpy layer,
+            # never rendered, dropped after the bake.
+            sv, sf = sg.garment(wid * 0.80, drp * 0.96, depth=thk * 0.55,
+                                nu=10, nv=8, fold=0.004, hem_wander=0.004,
+                                sway=SWAY, salt=s, collar=0.0, sleeves=False)
+            _g["cloth"] = {"pin": [k for k, pv in enumerate(gv) if pv[2] >= _pin_z],
+                           "fabric": "linen", "thickness": 0.004, "frames": 85,
+                           "support": {"verts": _xlate(sv, ox, oy, z_top - gs,
+                                                       swap=cross_is_y), "faces": sf}}
+        parts.append(_g)
         parts.append({
             # hangers are METAL, and matte_black_ply is a joinery BACKER identity carrying
             # too much already — route them to element 5's black-anodised aluminium, which

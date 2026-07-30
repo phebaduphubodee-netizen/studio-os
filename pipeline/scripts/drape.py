@@ -240,9 +240,11 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                  it is checked AFTER the physics, which is the only moment it
                  can actually be known.
     """
-    if not colliders:
-        raise DrapeError(f"{name}: cloth with no collider would fall through the "
-                         f"world — pass the surfaces it must land on")
+    if not colliders and not pin:
+        # a PINNED sheet is supported by its pins (a garment on its hanger zone,
+        # round 5) — only cloth with neither pins nor surfaces would fall forever
+        raise DrapeError(f"{name}: cloth with no collider AND no pins would fall "
+                         f"through the world — pass surfaces or a pin group")
     me = bpy.data.meshes.new(name)
     me.from_pydata(list(verts), [], list(faces))
     me.update()

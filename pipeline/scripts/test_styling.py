@@ -168,6 +168,40 @@ def test_garments_carry_a_three_value_ladder():
     assert toks <= {st.TOK_LINEN, st.TOK_INK, st.TOK_TERRY}
 
 
+def test_every_soft_piece_declares_its_cloth_support():
+    """ROUND 5 (owner: 'ยังไม่เหมือนของจริง' after three procedural rounds): every
+    simulated cloth in this room passed and every analytic one failed, so garments
+    ride the solver. The pure layer must DECLARE the support — a cloth block whose
+    pins hold the hanger zone (top of the piece); a garment without pins would
+    fall off its rail inside the sim, and one without a cloth block silently
+    reverts to the analytic read the owner has refused three times."""
+    def _parts():
+        return [p for p in st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP),
+                                               CARCASS_D, CLEAR_DROP)
+                if "garment" in p["name"]]
+    # R1-stopped state (2026-07-30): the flag is OFF, so the default build must
+    # carry NO cloth blocks (the committed g9 procedural read) ...
+    assert st.SIM_GARMENTS is False
+    assert not any(p.get("cloth") for p in _parts())
+    # ... and flipping it must bring the full declarative sim contract back —
+    # shirts pinned at the hanger zone with a torso blocker, trousers exempt.
+    st.SIM_GARMENTS = True
+    try:
+        clothed = [p for p in _parts() if p.get("cloth")]
+        assert clothed, "flag on but no garment declares cloth — the solver lane rotted"
+        for p in clothed:
+            cl = p["cloth"]
+            assert cl["pin"] and cl.get("support"), f"{p['name']} misses pins or torso"
+            zs = [v[2] for v in p["verts"]]
+            top, span = max(zs), max(zs) - min(zs)
+            pinned = [p["verts"][k][2] for k in cl["pin"]]
+            assert len(cl["pin"]) < len(p["verts"]) * 0.5, "over-pinned: nothing to drape"
+            assert all(z >= top - 0.30 * span for z in pinned), \
+                f"{p['name']}: a pin sits far below the hanger zone"
+    finally:
+        st.SIM_GARMENTS = False
+
+
 def test_every_garment_gets_a_hanger():
     parts = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
     g = [p for p in parts if "garment" in p["name"]]

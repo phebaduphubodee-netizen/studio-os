@@ -68,3 +68,15 @@ def test_rect_path_applies_the_rung_to_both_save_and_render():
     assert "quicklook.quick_params(_qs, _qr)" in rect
     assert "save(name, samples=_qs, res=_qr)" in rect
     assert "render(name, samples=_qs, res=_qr)" in rect      # render must consume the SAME rung
+
+
+def test_cloth_styling_parts_route_through_the_solver():
+    """ROUND 5 armour (lives here because build_room.py source is already loaded):
+    a styling part that declares `cloth` MUST reach drape.bake_sheet with its
+    declared pins — dropping the branch silently reverts every garment to the
+    analytic read the owner refused three times, with all green."""
+    seg = SRC.split("def _emit_style_part", 1)[1].split("def _add_styling", 1)[0]
+    assert 'p.get("cloth")' in seg
+    assert "drape.bake_sheet" in seg
+    assert 'pin=cl["pin"]' in seg
+    assert "self_collide=True" in seg

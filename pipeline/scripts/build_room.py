@@ -1559,6 +1559,31 @@ def _emit_style_part(p):
         o["mill_bevel"] = p.get("bevel", MILL_BEVEL_M)
         return o
     if p["shape"] == "mesh":
+        cl = p.get("cloth")
+        if cl:
+            # ROUND 5: a styling part that declares `cloth` goes through the SOLVER —
+            # pinned at its declared support (the hanger zone), settling under
+            # gravity with self-collision into real drape. Same law as the bed
+            # stack: the pure layer authors construction, the solver authors cloth.
+            # Material stays with the name-token router (mat=None).
+            # The declared torso BLOCKER (if any) is a passive collider that is
+            # never rendered and never survives the bake — the sim-surface
+            # pattern inverted: support during physics, absent from the frame.
+            _sup = None
+            if cl.get("support"):
+                _sup = _smooth_mesh_obj(p["name"] + "__torso", cl["support"]["verts"],
+                                        cl["support"]["faces"], own_mat=False)
+                _sup.hide_render = True
+            o = drape.bake_sheet(p["name"], p["verts"], p["faces"],
+                                 [_sup] if _sup else [],
+                                 frames=cl.get("frames", 45),
+                                 fabric=cl.get("fabric", "linen"),
+                                 pin=cl["pin"],
+                                 thickness=cl.get("thickness", 0.004),
+                                 self_collide=True)
+            if _sup is not None:
+                bpy.data.objects.remove(_sup, do_unlink=True)
+            return o
         return _smooth_mesh_obj(p["name"], p["verts"], p["faces"], own_mat=False,
                                 bevel=p.get("bevel"))
     raise ValueError(f"_emit_style_part: unknown shape {p['shape']!r} on {p['name']!r}")
