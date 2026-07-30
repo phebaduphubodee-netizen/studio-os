@@ -267,7 +267,9 @@ def dress_shelves(anchors, every=2, n_items=4, kinds=KNIT_KINDS):
             continue
         if sh["dx"] < 0.20 or sh["dy"] < 0.20:
             continue                                  # too small to hold a folded stack
-        out.extend(stack_on_shelf(sh, n=n_items, salt=i))
+        # alternate 4-high / 3-high piles (round-6 lane C): every dressed shelf holding
+        # the SAME count is its own kind of extruded block, one shelf up
+        out.extend(stack_on_shelf(sh, n=max(1, n_items - (i // every) % 2), salt=i))
     return out
 
 
@@ -478,6 +480,24 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             "name": f"mill__style_hanger{salt}_{i}__blackalu", "shape": "mesh",
             "verts": _xlate(hv, ox, oy, z_top, swap=cross_is_y), "faces": hf,
         })
+    # ONE EMPTY HANGER (round-6 lane C, C2#3 "hangers read missing"): a dressed
+    # garment covers its own arms by construction (SHOULDER_DROP), so the only hanger
+    # evidence on a full rail is the hooks — and wire hooks vanished at render
+    # distance. A real closet parks a resting hanger on the rail; its FULL black
+    # silhouette is the cheapest honest "wardrobe" cue (closet reference: bare
+    # hangers between garments). Parked at the exact first mid-pitch — the slot
+    # jitter is bounded at 0.22*pitch and a garment's half-thickness at 42.5mm, so at
+    # pitch >= 180mm mid-pitch clears the widest jittered neighbour by construction;
+    # the 132mm-floor bay rails stay untouched (no room to breathe an extra wire).
+    if n >= 2 and pitch >= 0.18:
+        e_along = start + 0.5 * pitch
+        ev, ef = sg.hanger(shoulder * 0.80, salt=salt * 97 + 137,
+                           arm_drop=sg.garment_slope(drop * 0.8, salt * 97 + 139))
+        ex, ey = (e_along, c_ctr) if axis == "x" else (c_ctr, e_along)
+        parts.append({
+            "name": f"mill__style_hangerempty{salt}__blackalu", "shape": "mesh",
+            "verts": _xlate(ev, ex, ey, z_top, swap=(axis == "x")), "faces": ef,
+        })
     return parts
 
 
@@ -535,7 +555,11 @@ def stack_on_shelf(shelf, n=4, item_h=0.042, salt=0, frac_w=0.46, frac_d=0.62):
         parts.append({
             "name": f"mill__style_fold{salt}_{k}__{tok}", "shape": "box",
             "x": x0 + ox, "y": y0 + oy, "z": z0 + oz,
-            "dx": dx, "dy": dy, "dz": dz, "bevel": 0.008,
+            # bevel 0.008 -> 0.014 (round-6 lane C, C2#9): on a ~42mm item an 8mm
+            # radius left ~26mm of dead-flat face — the "perfect boxes" read. 14mm
+            # rounds a folded edge the way a knit actually rolls, and the per-item
+            # height variance (softgoods.folded_stack) breaks the extruded-block line.
+            "dx": dx, "dy": dy, "dz": dz, "bevel": 0.014,
         })
     return parts
 
@@ -668,8 +692,12 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     for i in range(2):
         off = (across - 2 * pw - gap) * 0.5 + i * (pw + gap)
         x, y, dx, dy = place(pl_from, off, pl_d, pw)
+        # seam 0.008 -> 0.012 (round-6 lane C, C2#5: at 8mm the piped edge measured
+        # invisible in both deliverable frames — a seam nobody can see is the sealed-
+        # capsule read the term exists to kill; 12mm stays inside cushion's own
+        # containment pre-shrink, proven by its footprint test)
         v, f = sg.cushion(dx, dy, PILLOW_H, pinch=0.30, salt=salt + 5 + i,
-                          nv=12, seam=0.008)
+                          nv=12, seam=0.012)
         ext = dx if head_axis == "x" else dy
         # ONE angle for the pair, not per-pillow: the no-dent armour pins the two
         # pillows to identical heights (equal-height IS its dent detector), and a
@@ -703,7 +731,7 @@ def pillow_bank(coverlet, head_axis, head_sign, salt=0):
     # float mid-bed).
     x, y, dx, dy = place(lb_from, loff, min(lb_d, LUMBAR_T), lw)
     v, f = sg.cushion(dx, dy, LUMBAR_H, pinch=0.55, salt=salt + 9,
-                      nv=12, seam=0.006)
+                      nv=12, seam=0.009)
     parts.append({"name": f"mill__style_lumbar__{TOK_TERRY}", "shape": "mesh",
                   "verts": [(x + p[0], y + p[1], z_top + p[2]) for p in v], "faces": f})
     return parts

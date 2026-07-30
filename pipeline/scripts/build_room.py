@@ -2378,8 +2378,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
     _base_o = _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset,
                     base_h, base_m, bevw=0.03, seg=4)
     mins = 0.09                                         # mattress inset — hides UNDER the coverlet
+    # bevw 0.05 -> 0.075, seg 5 (round-6 lane C, Gemini: "ฟูกหนาและขอบคมเป็นกล่อง") — the
+    # visible sliver of mattress between coverlet and duvet is all EDGE, so its radius
+    # is the whole read; 75mm on a ~400mm side is a real mattress roll, not a box arris
     _matt_o = _rbox("bed__mattress", x0 + mins, y0 + mins, base_h, W - 2 * mins, D - 2 * mins,
-                    H - base_h, matt_m, bevw=0.05, seg=4)
+                    H - base_h, matt_m, bevw=0.075, seg=5)
     # ELEMENT 8 (2026-07-22) — THE COVERLET STOPS BEING A SOLID.
     # The DD's ground phase looked at the render and named one mechanism behind "แข็ง",
     # "เหลี่ยม" and "ไม่มี style": nothing in this room DEFORMS, because every soft good was
@@ -2458,8 +2461,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
         # delivered-bed reference (I-23-023 #499473) shows a comforter with LOFT —
         # large soft billows and a thick rounded hem roll; our 8 mm sheet at 28 mm
         # cells read as a thin blanket pulled tight.
+        # salt=7 (round-6 lane C, C2#4): a mirror-symmetric lattice over mirror-
+        # symmetric colliders bakes mirror-image corners — the feedstock now enters
+        # with per-corner bias so each corner settles its own way
         vs, fs = softgoods.folded_sheet(_dv_x, _dv_y, _dv_dx, _dv_dy, H + 0.03,
-                                        band=0.28, head=_head_side, cell=0.042)
+                                        band=0.28, head=_head_side, cell=0.042, salt=7)
         # THE CLOTH-STACK CONTACT LAW (earned across fx6→fx8, three failed reads):
         # collide against the coverlet's SINGLE-SHELL sim surface, never its
         # solidified render mesh — a sheet that tunnels between a frozen collider's
@@ -2856,8 +2862,10 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
             # material is shared by both nightstands; their lamps sit at one height).
             nt = shade_m.node_tree
             if "lamp_grad" not in nt.nodes:
-                _z0 = H + 0.035 + 0.17 - 0.02            # shade mouth (millwork's oz)
-                _z1 = _z0 + 0.15                         # shade top
+                # shade mouth/top from millwork's OWN published stack — the hand-copied
+                # 0.035/0.17/0.15 here went stale the day the lamp rescaled (lane C)
+                _z0 = H + millwork.LAMP_BASE_H + millwork.LAMP_STEM_H - 0.02
+                _z1 = _z0 + millwork.LAMP_SHADE_H
                 tc = nt.nodes.new("ShaderNodeTexCoord")
                 sx = nt.nodes.new("ShaderNodeSeparateXYZ")
                 mr = nt.nodes.new("ShaderNodeMapRange")
@@ -2879,9 +2887,15 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
     # stem, and a drum shade whose mouth stays OPEN downward so the point light still
     # pools onto the cabinet (same reason the old glow-shell had no bottom face —
     # _cyl_frustum caps only the top).
+    # toe wears a NEAR-BLACK: its whole job is to be the shadow line under the mass
+    # (lane C, C2#7 — a cabinet with no plinth shadow reads as a box glued to the rug)
+    toe_m = _solid("nightstand_toe", (0.045, 0.042, 0.040, 1.0), rough=0.7, spec=0.2)
     for name, ox, oy, oz, dx, dy, dz in millwork.nightstand_lamp_parts(W, D, H, lamp=bool(lamp)):
-        if name == "body":
-            _rbox("nightstand__body", x0 + ox, y0 + oy, oz, dx, dy, dz, body_m, bevw=0.008)
+        if name == "toe":
+            _rbox("nightstand__toe", x0 + ox, y0 + oy, oz, dx, dy, dz, toe_m, bevw=0.004)
+            continue
+        if name in ("body", "drawer"):
+            _rbox(f"nightstand__{name}", x0 + ox, y0 + oy, oz, dx, dy, dz, body_m, bevw=0.008)
             continue
         ccx, ccy, r = x0 + ox + dx * 0.5, y0 + oy + dy * 0.5, dx * 0.5
         if name == "lamp_base":

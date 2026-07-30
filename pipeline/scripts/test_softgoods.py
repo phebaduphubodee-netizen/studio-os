@@ -211,6 +211,36 @@ def test_folded_stack_rejects_zero_items():
         sg.folded_stack(0.32, 0.30, 0, 0.045)
 
 
+def test_folded_stack_items_vary_in_height_but_the_pile_does_not():
+    """Round-6 lane C (C2#9 'perfect boxes'): equal slices are the one thing a pile of
+    folded knits never has — but the headroom contract (cumulative == n*item_h) stays."""
+    items = sg.folded_stack(0.32, 0.30, 5, 0.045)
+    hs = {round(i[5], 6) for i in items}
+    assert len(hs) > 1, "every item shares one thickness — an extruded block, sliced"
+    assert abs(items[-1][2] + items[-1][5] - 5 * 0.045) < 1e-9
+    for a, b in zip(items, items[1:]):                 # slices still tile: no air, no overlap
+        assert abs((a[2] + a[5]) - b[2]) < 1e-9
+
+
+def test_folded_sheet_salt_breaks_mirror_symmetry_boundedly():
+    """Round-6 lane C (C2#4): the duvet's L/R corners baked as mirror images because the
+    feedstock was mirror-symmetric. salt must (a) change the main panel, (b) leave the
+    fold band untouched, (c) stay bounded, (d) leave salt=0 as the exact old grid."""
+    plain, _ = sg.folded_sheet(0.0, 0.0, 1.8, 2.0, 0.6, band=0.28, head="x+", cell=0.05)
+    salted, _ = sg.folded_sheet(0.0, 0.0, 1.8, 2.0, 0.6, band=0.28, head="x+", cell=0.05, salt=7)
+    again, _ = sg.folded_sheet(0.0, 0.0, 1.8, 2.0, 0.6, band=0.28, head="x+", cell=0.05, salt=7)
+    assert salted == again, "salt must be deterministic"
+    assert salted != plain, "salt=7 must actually move the panel"
+    moved = 0
+    for p, s in zip(plain, salted):
+        d = max(abs(p[0] - s[0]), abs(p[1] - s[1]))
+        assert d <= 0.006 + 1e-9, "deviation must stay inside its declared 6mm bound"
+        assert abs(p[2] - s[2]) < 1e-12, "salt is in-plane only — the lift ramp is sacred"
+        if d > 1e-12:
+            moved += 1
+    assert moved > len(plain) * 0.3, "most of the main panel should carry its own bias"
+
+
 @pytest.mark.parametrize("call", [
     lambda: sg.garment(0.0, 0.9),
     lambda: sg.garment(0.4, 0.0),

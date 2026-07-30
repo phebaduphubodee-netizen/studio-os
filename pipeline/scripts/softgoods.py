@@ -187,7 +187,7 @@ def _mitre_radius(u, v, keep):
     return keep + (1.0 - keep) * (c2 * c2) ** 3
 
 
-def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016):
+def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016, salt=0):
     """A quad-grid sheet whose HEAD edge is already TURNED BACK over itself — the
     feedstock of a made bed's duvet. Returns (verts, faces) in WORLD metres.
 
@@ -204,7 +204,14 @@ def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016):
 
     head: "x-"|"x+"|"y-"|"y+" — the side the crease faces (where the pillows are).
     The rect [x0..x0+w, y0..y0+d] is the FINAL plan footprint; total cloth length is
-    footprint + band."""
+    footprint + band.
+
+    salt != 0 breaks the feedstock's mirror symmetry (round-6 lane C, C2#4: the baked
+    duvet's L/R corners came out mirror-images because a symmetric lattice over
+    symmetric colliders gives the solver no reason to break the tie): main-panel verts
+    get a bounded in-plane deviation that grows from zero at the fold to ~6mm at the
+    free foot corners, so each corner enters the sim with its own bias. salt=0 is the
+    exact pre-round-6 grid."""
     if w <= 0 or d <= 0:
         raise ValueError(f"folded_sheet: degenerate extent {w}x{d}")
     axis, sgn = head[0], head[1]
@@ -229,7 +236,13 @@ def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016):
         zz = z + (lift * min(1.0, -s / (2.0 * cell)) if s < 0 else 0.0)
         for j in range(nt + 1):
             t = t0 + cross * j / nt
-            verts.append((u, t, zz) if axis == "x" else (t, u, zz))
+            if salt and s > 0:
+                g = s / main                      # 0 at the fold, 1 at the free foot edge
+                u2 = u + into * dev(i * 131 + j, 0.006, salt) * g
+                t2 = t + dev(i * 137 + j, 0.006, salt + 7) * g
+            else:
+                u2, t2 = u, t
+            verts.append((u2, t2, zz) if axis == "x" else (t2, u2, zz))
     faces = [(i * (nt + 1) + j, i * (nt + 1) + j + 1,
               (i + 1) * (nt + 1) + j + 1, (i + 1) * (nt + 1) + j)
              for i in range(ns) for j in range(nt)]
@@ -562,9 +575,15 @@ def hanger(width, hook_r=0.020, bar_drop=0.030, salt=0, arm_drop=0.0):
         _fail(f"hanger: arm_drop {arm_drop} must be >= 0")
     hw = width * 0.5
     z0 = -bar_drop
-    t = 0.0035                               # wire thickness — a hanger is WIRE. At 6mm,
+    t = 0.005                                # wire thickness — a hanger is WIRE. At 6mm,
     #                                          nine of them per rail rendered as a band of
-    #                                          black sticks that dominated the frame.
+    #                                          black sticks that dominated the frame; at
+    #                                          3.5mm the C2 cold critic read the hangers as
+    #                                          MISSING (hook invisible at render distance,
+    #                                          round-6 lane C). 5mm is the slim black
+    #                                          hanger of the closet reference: the hook
+    #                                          reads, and a dressed rail still shows cloth,
+    #                                          not sticks (garments cover their own arms).
     verts, faces = [], []
 
     def bar(x0, y0, z0_, dx, dy, dz):
@@ -717,13 +736,20 @@ def folded_stack(w, d, n, item_h, salt=0, jitter_xy=0.012, jitter_rot=0.0):
         _fail(f"folded_stack: n must be >= 1 (got {n})")
     if w <= 0 or d <= 0 or item_h <= 0:
         _fail(f"folded_stack: degenerate {w}x{d}x{item_h}")
-    out = []
+    # PER-ITEM HEIGHT (round-6 lane C, C2#9 "perfect boxes"): equal slices are the one
+    # thing a pile of folded knits never has — each item's thickness varies ±12%, then
+    # the set is renormalised so the cumulative height stays EXACTLY n*item_h (the
+    # caller's headroom contract against the shelf above is not negotiable).
+    hs = [item_h * (1.0 + dev(k, 0.12, salt + 17)) for k in range(n)]
+    hs = [hk * (n * item_h) / sum(hs) for hk in hs]
+    out, z = [], 0.0
     for k in range(n):
         ox = dev(k, jitter_xy, salt)
         oy = dev(k, jitter_xy, salt + 5)
         sw = w * (1.0 - 0.035 * (k / max(n - 1, 1)))         # a stack tapers upward
         sd = d * (1.0 - 0.030 * (k / max(n - 1, 1)))
-        out.append((ox + (w - sw) * 0.5, oy + (d - sd) * 0.5, k * item_h, sw, sd, item_h))
+        out.append((ox + (w - sw) * 0.5, oy + (d - sd) * 0.5, z, sw, sd, hs[k]))
+        z += hs[k]
     return out
 
 

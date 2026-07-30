@@ -47,8 +47,23 @@ CARC_T    = 0.018   # carcass panel thickness (back / gables / shelves / top)
 RAIL_D    = 0.030   # brass hang-rail section (round rail modelled square; Ø25-28 D4-A)
 SHELF_LIFT = 0.102  # rod-to-shelf-above clearance (hanger lift-off; Ask1 ergonomics)
 DRAWER_H  = 0.240   # floating-drawer face height
-DRAWER_REV = 0.006  # reveal between stacked drawer faces
+DRAWER_REV = 0.010  # reveal between stacked drawer faces — 6mm was cabinet-true but
+#                     rendered invisible at the deliverable camera distance (round-6
+#                     lane C, C2#14 read the stack as sealed boxes); 10mm is still a
+#                     handleless shadow line, and now it survives the frame
 FLOAT_Z   = 0.450   # the drawer stack FLOATS — air/shadow reveal below it (D3-A)
+
+# ELEMENT-3 nightstand joinery + dome-lamp stack (round-6 lane C). PUBLISHED so the
+# bpy layer derives the shade's emission-gradient window from the SAME numbers that
+# place the shade — the old hand-copied 0.035/0.17/0.15 in build_room was the
+# hardcode-drift class waiting to fire on exactly this rescale.
+LAMP_BASE_H  = 0.040   # brass base height
+LAMP_STEM_H  = 0.200   # stem height
+LAMP_SHADE_H = 0.190   # drum shade height
+NS_TOE_H     = 0.035   # nightstand toe-shadow height
+NS_TOE_R     = 0.022   # toe set-back from every face (symmetric — rot-honesty)
+NS_DRAWER_H  = 0.185   # top-drawer face height
+NS_REV       = 0.006   # reveal between carcass and drawer face
 MAX_SPAN  = 0.900   # open-shelf span before a divider is needed (Ask1/NLM load rule)
 
 TALL_H     = 1.6    # >= this is a door run; below it is a worktop piece
@@ -607,25 +622,45 @@ def nightstand_lamp_parts(w_m, d_m, h_m, lamp=True):
 
     Kept PURE + here (the curtains.py / vanity_mirror_box law: build_room is bpy-only) so the
     geometry is unit-tested and the footprint invariant is PROVEN, not assumed:
-      - the CABINET fills the whole (w, d) footprint from the floor (a solid low box, NOT the
-        spindly `_table` primitive the side tables used to get — which read as a flimsy console,
+      - the CABINET fills the whole (w, d) footprint (toe-shadow + carcass + drawer face with
+        a wrapped reveal since round-6 lane C — still a solid low mass, NOT the spindly
+        `_table` primitive the side tables used to get — which read as a flimsy console,
         not a ~500 mm-square bedside cabinet with a lamp);
       - the LAMP (brass base + stem + dome shade) sits ON TOP (oz >= h_m), centred, and every
         lamp part stays WITHIN the footprint in x/y (a lamp wider than its stand is a render lie).
     Containment is not a runtime guard but a sizing INVARIANT: the widest lamp part (the shade)
-    has half-width 0.27*min(w,d), which is <= 0.5*min(w,d) <= half of EITHER axis — so a centred
+    has half-width 0.34*min(w,d), which is <= 0.5*min(w,d) <= half of EITHER axis — so a centred
     shade cannot overhang, for ANY positive aspect ratio (proven in test_millwork over extremes).
     Only a non-positive dimension is a real error, and that fails loud below."""
     if w_m <= 0 or d_m <= 0 or h_m <= 0:
         raise ValueError(f"nightstand has a non-positive dim (w={w_m}, d={d_m}, h={h_m})")
-    parts = [("body", 0.0, 0.0, 0.0, w_m, d_m, h_m)]
+    # CABINETMAKER SPLIT (round-6 lane C, C2#7 "sealed boxes"): a real bedside cabinet
+    # is toe-shadow + carcass + a drawer face with a reveal — three shadow lines the
+    # solid block never had. The split stays SYMMETRIC about both axes (the piece's
+    # rot-honesty contract) because toe inset and reveal wrap all four faces. A piece
+    # too small to hold the joinery keeps the old solid body (degenerate -> FEWER
+    # parts, never a part outside the footprint).
+    if min(w_m, d_m) > 6 * NS_TOE_R and h_m > NS_TOE_H + NS_DRAWER_H + NS_REV + 0.06:
+        parts = [
+            ("toe",    NS_TOE_R, NS_TOE_R, 0.0,
+             w_m - 2 * NS_TOE_R, d_m - 2 * NS_TOE_R, NS_TOE_H),
+            ("body",   0.0, 0.0, NS_TOE_H,
+             w_m, d_m, h_m - NS_TOE_H - NS_DRAWER_H - NS_REV),
+            ("drawer", 0.0, 0.0, h_m - NS_DRAWER_H, w_m, d_m, NS_DRAWER_H),
+        ]
+    else:
+        parts = [("body", 0.0, 0.0, 0.0, w_m, d_m, h_m)]
     if lamp:
         cx, cy = w_m / 2.0, d_m / 2.0
-        br = min(w_m, d_m) * 0.15                       # brass base half-width
+        # LAMP SCALE (round-6 lane C, Gemini + C2: "โคมเล็กจิ๋วเกินไปมาก" vs the 2.15m
+        # bed): shade 0.27 -> 0.34 of min(w,d) (~340mm dia on the 500 cabinet, the
+        # bedside-lamp mass of the bedroom reference), heights up in proportion. The
+        # containment invariant is untouched: 0.34 <= 0.5*min <= half of either axis.
+        br = min(w_m, d_m) * 0.17                       # brass base half-width
         tr = min(w_m, d_m) * 0.028                      # stem half-width — SCALED (a fixed 0.028 m
         #                                                 stem overhangs a sub-28 mm top; review 07-18)
-        sr = min(w_m, d_m) * 0.27                       # dome shade half-width (the widest part)
-        base_h, stem_h, shade_h = 0.035, 0.17, 0.15
+        sr = min(w_m, d_m) * 0.34                       # dome shade half-width (the widest part)
+        base_h, stem_h, shade_h = LAMP_BASE_H, LAMP_STEM_H, LAMP_SHADE_H
         parts.append(("lamp_base",  cx - br, cy - br, h_m,                2 * br, 2 * br, base_h))
         parts.append(("lamp_stem",  cx - tr, cy - tr, h_m + base_h,       2 * tr, 2 * tr, stem_h))
         parts.append(("lamp_shade", cx - sr, cy - sr, h_m + base_h + stem_h - 0.02,

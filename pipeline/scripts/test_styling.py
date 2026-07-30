@@ -209,8 +209,22 @@ def test_every_soft_piece_declares_its_cloth_support():
 def test_every_garment_gets_a_hanger():
     parts = st.garments_on_rail(rail(), st.rail_drop(CLEAR_DROP), CARCASS_D, CLEAR_DROP)
     g = [p for p in parts if "garment" in p["name"]]
-    h = [p for p in parts if "hanger" in p["name"]]
+    he = [p for p in parts if "hangerempty" in p["name"]]
+    h = [p for p in parts if "hanger" in p["name"] and "hangerempty" not in p["name"]]
     assert len(g) == len(h) > 0
+    # round-6 lane C (C2#3 "hangers read missing"): a breathing rail (pitch >= 180mm)
+    # also parks exactly ONE bare hanger — the full silhouette that says "wardrobe"
+    # when every worn hanger is covered by its own garment by construction
+    assert len(he) == 1
+
+
+def test_the_tight_bay_rail_gets_no_empty_hanger():
+    """The 132mm-floor bay pair has no air for an extra wire — mid-pitch there sits
+    inside a garment's jitter+thickness reach, and wire through cloth is the exact
+    growing-through class the thickness budget exists to prevent."""
+    parts = st.garments_on_rail(rail(dx=0.264, dy=0.04), st.rail_drop(CLEAR_DROP),
+                                CARCASS_D, CLEAR_DROP)
+    assert not [p for p in parts if "hangerempty" in p["name"]]
 
 
 def test_hangers_are_metal_not_joinery_backer():

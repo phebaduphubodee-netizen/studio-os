@@ -72,13 +72,24 @@ def _point_in_poly(x, y, poly):
     return inside
 
 
-def _wave(lo, hi, lam, amp):
-    """Sine polyline [(t, offset_mm)], offset in [-amp, +amp]."""
+def _wave(lo, hi, lam, amp, salt=0):
+    """Sine polyline [(t, offset_mm)], offset in [-amp, +amp].
+
+    Per-wave amplitude MODULATION (round-6 lane C, C2#10 "perfectly even
+    corrugation"): real sheer fabric never repeats one fold depth — each wave's
+    amplitude is scaled by a deterministic factor in [0.72, 1.0], derived from the
+    wave index + salt. STRICTLY <= 1.0 so the published `amp` stays the true bound
+    (the rod-offset clearance and containment tests solve on amp, and a modulation
+    that can exceed its own bound is not a bound)."""
     span = hi - lo
     steps = max(2, int(round(span / lam * PTS_PER_WAVE)))
-    return [(lo + span * i / steps,
-             amp * math.sin(2.0 * math.pi * (span * i / steps) / lam))
-            for i in range(steps + 1)]
+    out = []
+    for i in range(steps + 1):
+        t = span * i / steps
+        k = int(t / lam)                                  # which wave this sample rides
+        f = 0.72 + 0.28 * 0.5 * (1.0 + math.sin(k * 12.9898 + salt * 78.233))
+        out.append((lo + t, amp * f * math.sin(2.0 * math.pi * t / lam)))
+    return out
 
 
 def sheer_alpha(spec):
@@ -188,7 +199,9 @@ def sheer_ribbons(spec):
                              "probe points are both inside or both outside the outline")
         sign = 1 if in_pos else -1
         pts = []
-        for t, off in _wave(span_lo, span_hi, WAVELEN_MM, amp):
+        # per-ribbon salt from the opening id: two windows must not share one fold DNA
+        _rib_salt = sum(ord(c) for c in str(oid)) % 97
+        for t, off in _wave(span_lo, span_hi, WAVELEN_MM, amp, salt=_rib_salt):
             coord = plane + sign * (rod_off + off)
             pts.append(((coord * MM, t * MM) if axis == "y" else (t * MM, coord * MM)))
         ribbons.append({

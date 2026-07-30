@@ -105,6 +105,21 @@ def test_light_story_scales_are_unity_when_off_and_focal_when_on():
     assert on["lamps"] > 1.0
 
 
+def test_lane_c_geometry_reaches_the_frame():
+    """Round-6 lane C armour (the revert-by-omission class): the pure layers grew
+    joinery/asymmetry that build_room must CONSUME — a materializer that quietly
+    keeps handling only the old part names reverts the lane with every test green."""
+    for pin in (
+        # nightstand joinery: toe shadow + carcass/drawer with the reveal between them
+        '"nightstand__toe"', 'f"nightstand__{name}"',
+        # the shade's emission gradient derives from millwork's PUBLISHED lamp stack
+        # (the hand-copied 0.035/0.17/0.15 died with the lane-C rescale)
+        'millwork.LAMP_BASE_H + millwork.LAMP_STEM_H',
+        # duvet feedstock enters asymmetric (C2#4 mirror corners)
+        'cell=0.042, salt=7'):
+        assert pin in SRC, pin
+
+
 def test_light_story_reaches_every_consumer():
     """The flag must scale ALL layers — a layer that misses the dimmer keeps the
     wash and silently reverts the story (the revert-by-omission class)."""

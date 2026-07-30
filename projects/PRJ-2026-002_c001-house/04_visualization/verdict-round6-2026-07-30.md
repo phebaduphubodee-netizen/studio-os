@@ -51,6 +51,18 @@ STORY. (bench sheet → owner → Gemini → cold critic — unanimous.)
 | zero signs of life: no art/books/tray/plant; frame-1 wall bare | C2#9, Gemini | procedural simple objects only; keep restraint of reference |
 
 ### REFUTED / OPINION (with the evidence, per R7)
+- **"ottoman too deep, kisses bed base" (C2#11)** — REFUTED by ink at lane-C
+  recon: the bench footprint 498×1000 and its ~51mm gap to the bed foot are the
+  designer's own drawn lines (spec note: "INK x2654.5-3152.8 y625.8-1625.6 …
+  matched to ink", element-3 ink-true, owner-confirmed 2026-07-18). Drawing-tier
+  law: findings inside the ink are not findings. No change.
+- **"headboard pads float, need frame/full-panel" (C2#5, was accepted to lane C)**
+  — RE-ROUTED to the gate at recon: the fix collides with TWO signed decisions —
+  "the headboard IS the wall" (BF14, element 1/3) and the bed head sitting FLUSH
+  on BF14's face (x5204 vs x5203; there is no air for a panel behind the shams).
+  A mounted upholstered panel would cover the signed slat wall. Not smuggled;
+  owner decides beside the cove/sconce question (both are the reference
+  vocabulary asking to amend a signed element).
 - **"garments should hang side-on for a 600mm closet" (Gemini)** — REFUTED by
   measurement: spec depth = 600 (`builtins BF09-3 d:600`) and the generator
   already places shoulders ACROSS the depth axis (styling orientation law,
@@ -105,3 +117,78 @@ C2 items #1/#8 partially closed (pools, falloff, practicals, brightness);
 #13 smear watch-item improved with brightness, re-check after lane B
 materials. Full pair of record: `room_bedroom_suite_eye_ls3.png` +
 `room_bedroom_suite_eye_ls3_bedhero.png`; 2127 green.
+
+---
+
+# Lane C closed — geometry small batch (2026-07-30, pair lc1)
+
+**Shipped (all pure-layer first, 2132 green):**
+- HANGERS (C2#3): wire 3.5→5mm; ONE bare hanger parked per breathing rail
+  (pitch ≥180mm — the full silhouette that says "wardrobe" when every worn
+  hanger is covered by its garment by construction; the 132mm-floor bay rails
+  refuse it, tested). 6 empties emitted in the suite build, verified in-blend.
+- LAMPS (Gemini "เล็กจิ๋ว"): shade 270→340mm dia, stack taller; millwork now
+  PUBLISHES the lamp dims and build_room's emission-gradient window derives
+  from them (the hand-copied 0.035/0.17/0.15 was hardcode-drift waiting for
+  exactly this rescale); e5's bulb z already derived → moved automatically.
+- NIGHTSTANDS (C2#7): sealed box → toe-shadow (near-black, inset 22mm) +
+  carcass + drawer face with a 6mm wrapped reveal; symmetric, rot-honesty and
+  footprint invariants kept (tests amended WITH the design change).
+- PILLOWS (C2#5): sleeping-pillow seam 8→12mm, lumbar 6→9mm.
+- FOLDED STACKS (C2#9): per-item thickness ±12% (cumulative height exact —
+  headroom contract pinned), bevel 8→14mm, alternating 4/3-high piles.
+- MATTRESS (Gemini): edge bevel 50→75mm seg 5 — the visible sliver is all edge.
+- DUVET (C2#4): feedstock enters per-corner asymmetric (folded_sheet salt);
+  the baked corners stopped mirroring (LOOK-confirmed on the full pair).
+- SHEERS (C2#10): per-wave amplitude 72–100% (strictly ≤ the published bound —
+  clearance math untouched), per-window fold DNA.
+- WHITE DRAWERS (C2#14): stack reveal 6→10mm — reads at deliverable distance.
+
+**Spend:** quick ×3 (eye ×2 — one self-inflicted overwrite re-run — + bedhero),
+full ×1 pair = the R1 budget's 2 full builds. Sim share unchanged (3/12, same
+stable DNAs). Pair of record: `room_bedroom_suite_eye_lc1.png` +
+`room_bedroom_suite_eye_lc1_bedhero.png`.
+
+## C2 re-critic on lc1 (fresh agent, R7) — 11 items, triaged
+1. **Hanging garments read as rags/ribbons (worst)** — ✓ known: the analytic
+   twins are what fails (sim-passed pieces read right); already routed —
+   lane B material weave first, then the owner's own queued (ก3) open-form
+   feedstock. The critic confirming it post-C is the recorded trigger arming.
+2. **Bedding: white corner wads read as crumpled paper; near-mirror folds** —
+   ✓ partial: the DUVET corners stopped mirroring (this lane), but the
+   COVERLET's feedstock is still symmetric and its corner gathers pile both
+   sides alike → residual accepted, fold into the lane-B build cycle.
+3. **Pillows: seams still invisible; "only 3 pillows"** — seam ridge now 12mm
+   but SAME-COLOUR under soft light = value problem → lane B (normal/sheen
+   contrast). Count ✗ refuted by spec: the head ladder is FIVE pieces (2 sham
+   + 2 sleeping + 1 lumbar, element 8 signed); the front pair merges into the
+   shams from the head-on camera — a value-separation issue (lane B), not a
+   missing-object one.
+4. **Light: still flat-amber, no visible origins, weak contact shadows, shade
+   glow uniform** — ✓ the standing lane-A ceiling = the COVE/SCONCE gate
+   question (unchanged); shade gradient exists but reads uniform → widen the
+   mouth-to-top ratio in the lane-B cycle; contact shadows partly a material
+   issue (monotone greige hides AO) → lane B.
+5. **Monotone material world** — ✓ LANE B verbatim (the queued next lane).
+6. **Missing architecture finish: no skirting, no bulkhead over wardrobe, no
+   door/switches in frame** — ✓ NEW CLASS (nobody had named it). Routed:
+   check the INK first (drawing-tier law — if the CD set draws skirting, build
+   it; if not, it is an owner design question at the next gate). Queued as
+   lane C2 (architecture finish batch).
+7. **Zero styling life** — ✓ LANE D (queued, ฿0/CC0 law).
+8. **Sheer still too even + no track** — ✓ partial: variance shipped but reads
+   subtle at deliverable distance → widen range + add the track piece in the
+   lane-B cycle.
+9. **Split headboard floats on the wall** — ✓ known: THE second gate question
+   (frame/panel collides with signed BF14 "the headboard IS the wall").
+10. **Bench: no seams/piping, kisses bed, no shadow** — footprint/gap ✗
+    REFUTED by ink (498×1000, 51mm gap — the designer's drawn lines; the
+    "kiss" is head-on projection overlap). Seam/piping detail ✓ accepted →
+    small-geometry residual with the lane-B cycle.
+11. **bed_hero one-point camera** — critic self-marked opinion; the camera is
+    CAD-derived deliverable spec. No action.
+
+**Verdict shape:** lane C's mechanisms all landed and read (hangers, lamps,
+joinery, stacks, asymmetry). What still fails is exactly what lanes B/D and
+the two gated signed-element questions own. R1 spent → this is the scheduled
+A+C gate.

@@ -864,13 +864,32 @@ def test_vanity_kneehole_fails_loud_on_implausible_values():
 NS = dict(w_m=0.501, d_m=0.498, h_m=0.520)
 
 
-def test_nightstand_body_fills_the_whole_footprint_from_the_floor():
+def test_nightstand_cabinet_is_joinery_not_a_sealed_box():
+    """ROUND-6 LANE C (C2#7): the solid block became toe + carcass + drawer face —
+    three shadow lines — while KEEPING the old invariants: the mass still rises from
+    the floor to h, nothing leaves the footprint, and the only air is the one reveal.
+    (This test supersedes test_nightstand_body_fills_the_whole_footprint_from_the_floor;
+    the verdict + triage live in verdict-round6-2026-07-30.md.)"""
     parts = M.nightstand_lamp_parts(**NS)
-    body = next(p for p in parts if p[0] == "body")
-    _, ox, oy, oz, dx, dy, dz = body
-    assert (ox, oy, oz) == (0.0, 0.0, 0.0), "cabinet must sit on the floor at the SW corner"
-    assert (dx, dy, dz) == (NS["w_m"], NS["d_m"], NS["h_m"]), \
-        "cabinet must be a SOLID box filling the whole footprint (not a spindly table)"
+    cab = {p[0]: p for p in parts if not p[0].startswith("lamp_")}
+    assert set(cab) == {"toe", "body", "drawer"}
+    _, ox, oy, oz, dx, dy, dz = cab["toe"]
+    assert oz == 0.0 and ox == oy == M.NS_TOE_R > 0, "toe sits on the floor, set back"
+    assert dx == NS["w_m"] - 2 * M.NS_TOE_R and dy == NS["d_m"] - 2 * M.NS_TOE_R
+    _, bx, by, bz, bdx, bdy, bdz = cab["body"]
+    assert (bx, by) == (0.0, 0.0) and (bdx, bdy) == (NS["w_m"], NS["d_m"])
+    assert abs(bz - M.NS_TOE_H) < 1e-9, "carcass starts where the toe ends (no gap)"
+    _, qx, qy, qz, qdx, qdy, qdz = cab["drawer"]
+    assert (qx, qy) == (0.0, 0.0) and (qdx, qdy) == (NS["w_m"], NS["d_m"])
+    assert abs(qz + qdz - NS["h_m"]) < 1e-9, "drawer face tops out exactly at h"
+    assert abs(qz - (bz + bdz) - M.NS_REV) < 1e-9, "exactly ONE reveal, the declared width"
+
+
+def test_nightstand_too_small_for_joinery_stays_one_solid_body():
+    """Degenerate -> FEWER parts, never a part outside the footprint (the module law)."""
+    parts = M.nightstand_lamp_parts(0.1, 0.1, 0.15, lamp=False)
+    assert [p[0] for p in parts] == ["body"]
+    assert parts[0][1:] == (0.0, 0.0, 0.0, 0.1, 0.1, 0.15)
 
 
 def test_nightstand_lamp_sits_on_top_and_inside_the_footprint():
@@ -888,12 +907,13 @@ def test_nightstand_lamp_sits_on_top_and_inside_the_footprint():
 
 def test_nightstand_lamp_opt_out():
     parts = M.nightstand_lamp_parts(0.5, 0.5, 0.5, lamp=False)
-    assert [p[0] for p in parts] == ["body"], "lamp=False yields just the cabinet"
+    assert [p[0] for p in parts] == ["toe", "body", "drawer"], \
+        "lamp=False yields just the cabinet (its three joinery parts)"
 
 
 def test_nightstand_lamp_never_overhangs_for_any_aspect_ratio():
     # containment is a sizing invariant (EVERY lamp part's half-width scales with min(w,d): base
-    # 0.15, stem 0.028, shade 0.27 — all <= 0.5*min <= half of either axis), not a runtime guard.
+    # 0.17, stem 0.028, shade 0.34 — all <= 0.5*min <= half of either axis), not a runtime guard.
     # Includes TINY dims (0.02) that a fixed-width stem used to overhang — the regime the earlier
     # test never reached (review 2026-07-18).
     for w, d in ((0.5, 0.5), (0.9, 0.3), (0.3, 0.9), (1.2, 0.15), (0.15, 1.2),
