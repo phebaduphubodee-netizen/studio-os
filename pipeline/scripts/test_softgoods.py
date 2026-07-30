@@ -130,6 +130,7 @@ def test_garment_sleeves_hang_beside_the_body_inside_every_bound():
         # two tubes, one per side
         assert any(v[0] > 0 for v in sleeve) and any(v[0] < 0 for v in sleeve)
         # span bound survives sleeves; thickness stays inside the half-depth budget
+        # (outside-birth was tried and LOOK-refuted at round 5c: detached sticks)
         xs = [v[0] for v in verts]
         assert max(xs) - min(xs) <= w * sg.GARMENT_FLARE + 2 * 0.010 + 1e-9
         assert max(abs(v[1]) for v in sleeve) <= 0.5 * dep + 1e-9

@@ -407,9 +407,16 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             # rhythm of a worn closet. Shorter is always inside the drop budget.
             if sg.dev(i, 1.0, s + 83) > 0.55:
                 drp *= 0.62
-            gv, gf = sg.garment(wid, drp, depth=thk, nu=16, nv=12, fold=GARMENT_FOLD,
+            # nu/nv 24x18 (was 16x12): the sim's crumple renders at VERTEX scale — on
+            # a coarse grid every fold is a facet, and the round-5b frames read as
+            # folded paper. Finer cells cost ~2x sim time on ~8 shirts; the bed's
+            # own sheets run at comparable cell sizes.
+            # sim feedstock enters SMOOTH (carve off, tiny fold) — the solver is the
+            # only wrinkle author on the sim path; analytic builds keep the carve
+            gv, gf = sg.garment(wid, drp, depth=thk, nu=24, nv=18,
+                                fold=(0.001 if SIM_GARMENTS else GARMENT_FOLD),
                                 hem_wander=GARMENT_HEM, sway=SWAY, salt=s, collar=col,
-                                sleeves=True)
+                                sleeves=True, carve=not SIM_GARMENTS)
             _pin_z = -0.14 * drp                             # hold collar/shoulder/sleeve roots
         # the hanger's arms angle down by the SAME slope this garment's shoulders
         # wear (one published stream) — a straight bar under sloped cloth hangs the
@@ -447,8 +454,11 @@ def garments_on_rail(rail, drop, clear_depth, clear_drop, salt=0, pitch=GARMENT_
             # hidden slimmer copy of its own body as a passive collider (the bed
             # stack's sim-surface pattern, inverted). Built by the bpy layer,
             # never rendered, dropped after the bake.
+            # blocker at nu=18/nv=14, not 10/8: the round-5 shred happened where the
+            # cloth caught on the blocker's hard facets — the support must be
+            # smoother than the cloth that slides on it
             sv, sf = sg.garment(wid * 0.80, drp * 0.96, depth=thk * 0.55,
-                                nu=10, nv=8, fold=0.004, hem_wander=0.004,
+                                nu=18, nv=14, fold=0.004, hem_wander=0.004,
                                 sway=SWAY, salt=s, collar=0.0, sleeves=False)
             _g["cloth"] = {"pin": [k for k, pv in enumerate(gv) if pv[2] >= _pin_z],
                            "fabric": "linen", "thickness": 0.004, "frames": 85,

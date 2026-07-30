@@ -60,6 +60,7 @@ silently stops being built:
 
 import bpy
 
+import clothcheck
 import softgoods as sg
 
 
@@ -227,7 +228,8 @@ def drop_sim_surfaces(*names):
 def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                bounds=None, mat=None, pin=(), thickness=0.006, self_collide=True,
                quality=8, collide_dist=0.004, min_motion=0.010, tol=1e-4,
-               hem_min=None, slack=0.0, slack_verts=None, sim_surface=False):
+               hem_min=None, slack=0.0, slack_verts=None, sim_surface=False,
+               shred_guard=False, collision_quality=4, bend_scale=1.0):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -263,7 +265,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     s.tension_stiffness = ten
     s.compression_stiffness = com
     s.shear_stiffness = shr
-    s.bending_stiffness = ben
+    s.bending_stiffness = ben * bend_scale     # ladders may stiffen a wad-prone piece
     s.air_damping = air
     # SLACK — the single thing that separates simulated cloth from a simulated PANEL.
     # A sheet cut to exactly fit its bed hangs perfectly flat: physically correct, and
@@ -306,7 +308,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         s.vertex_group_mass = vg.name
         s.pin_stiffness = 5.0
     c = md.collision_settings
-    c.collision_quality = 4
+    c.collision_quality = collision_quality
     c.distance_min = collide_dist
     c.use_self_collision = self_collide
     c.self_distance_min = max(0.002, thickness * 0.5)
@@ -334,6 +336,19 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
             f"{name}: cloth never moved ({moved * 1000:.1f} mm < {min_motion * 1000:.0f} mm). "
             f"The sheet would render as a rigid plane. Check gravity, frames={frames}, "
             f"and that the colliders are below it.")
+
+    # GUARD 2 — the SHRED DETECTOR (round-5 gate, owner order "ก": instrument
+    # before any more sim spend). A wad or a shred passes bbox/hem/min-motion —
+    # only the normal field says it. `shred_guard`: False = off (bed cloths keep
+    # their own LOOK-verified recipes), "report" = print the profile for
+    # calibration, True = enforce clothcheck's published thresholds.
+    if shred_guard:
+        # the solver preserves topology, so the INPUT faces index the settled verts
+        _bad, _prof, _msg = clothcheck.shredded([tuple(a) for a in after], list(faces))
+        if shred_guard == "report":
+            print(f"  shred-report {name}: {_msg}")
+        elif _bad:
+            raise DrapeError(f"{name}: SHREDDED/WADDED — {_msg}")
 
     if sim_surface:
         # capture the settled SINGLE-SHELL surface before solidify, as a hidden

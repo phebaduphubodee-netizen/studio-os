@@ -320,7 +320,7 @@ def _grid_faces(nu, nv, wrap_u=False):
 
 def garment(width, drop, depth=0.085, nu=11, nv=7,
             fold=0.014, hem_wander=0.016, sway=0.010, salt=0, collar=0.0,
-            sleeves=False):
+            sleeves=False, carve=True):
     """One hanging garment as a closed lofted shell, WIDEST AT THE SHOULDER.
 
     Round-4 owner verdict ("เสื้อผ้าในตู้ ดูไม่เหมือนเสื้อผ้าจริง"): the previous
@@ -365,7 +365,12 @@ def garment(width, drop, depth=0.085, nu=11, nv=7,
     # outward, so the deep folds CARVE INWARD from the envelope (real folds are
     # valleys in the silhouette, not bumps past the hanger): envelope untouched,
     # pitch budget untouched, and the face finally stripes under light.
-    fold_in = 0.018 * (0.7 + 0.3 * abs(dev(12, 1.0, salt + 83)))
+    # carve=False = SMOOTH FEEDSTOCK for the solver (round 5c): every cloth that
+    # ever passed in this room entered the sim smooth (the bed sheets are flat
+    # grids); the garments were the only feedstock pre-wrinkled by hand, and two
+    # wrinkle-authors fighting is where the unstabilisable pieces came from.
+    # Analytic (non-sim) garments keep the carve — it is their only wrinkle author.
+    fold_in = 0.018 * (0.7 + 0.3 * abs(dev(12, 1.0, salt + 83))) if carve else 0.0
     verts = []
     for j in range(nv + 1):
         v = j / float(nv)                                    # 0 at shoulder, 1 at hem
@@ -416,7 +421,8 @@ def garment(width, drop, depth=0.085, nu=11, nv=7,
             x -= math.copysign(1.0, ca) * fold_in * 0.25 * max(-c, 0.0) * v * abs(ca)
             # irregular CRUMPLE (reference I-24-062: worn cloth wrinkles run in every
             # direction, not only as vertical valleys) — per-vertex, growing downward
-            y += 0.004 * dev(i * 7 + j * 13, 1.0, salt + 87) * (v ** 0.8)
+            if carve:
+                y += 0.004 * dev(i * 7 + j * 13, 1.0, salt + 87) * (v ** 0.8)
             z = -drop * v + hw - sl * abs(ca) ** 1.6
             if collar and v < 0.10:
                 # a COLLAR: the neck region (|x| small — front and back of the neck)
@@ -451,6 +457,9 @@ def garment(width, drop, depth=0.085, nu=11, nv=7,
         ry_s = min(0.024, 0.45 * 0.5 * depth)
         nus, nvs = 8, 7
         for side in (-1.0, 1.0):
+            # (outside-birth was tried at round 5c and REFUTED by LOOK: with only
+            # gravity, a tube born 3 mm off the body never returns — it hangs as a
+            # separate stick. Inside the face band, self-collision keeps it honest.)
             yo = (0.5 * depth * 0.72 - 0.5 * ry_s) * (side if dev(10, 1.0, salt + 79) > 0 else -side)
             base = len(verts)
             for j in range(nvs + 1):

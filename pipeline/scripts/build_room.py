@@ -1546,6 +1546,12 @@ WALL_RGBA = (0.83, 0.80, 0.75, 1.0)    # matte warm-white paint
 RUG_SLUG = "poly_wool_herringbone"
 
 
+# calibration switch for the shred detector: "" = enforce (cloth block default),
+# "report" = print profiles instead of raising (--shred-report; used to measure
+# the healthy-vs-shredded gap the thresholds are calibrated on)
+_SHRED_MODE = ""
+
+
 def _emit_style_part(p):
     """Materialise ONE styling part record (styling.py's contract) — box or mesh.
 
@@ -1574,15 +1580,38 @@ def _emit_style_part(p):
                 _sup = _smooth_mesh_obj(p["name"] + "__torso", cl["support"]["verts"],
                                         cl["support"]["faces"], own_mat=False)
                 _sup.hide_render = True
-            o = drape.bake_sheet(p["name"], p["verts"], p["faces"],
-                                 [_sup] if _sup else [],
-                                 frames=cl.get("frames", 45),
-                                 fabric=cl.get("fabric", "linen"),
-                                 pin=cl["pin"],
-                                 thickness=cl.get("thickness", 0.004),
-                                 self_collide=True)
+            # THE GARMENT STABILITY LADDER (owner order "ก"): the same discipline
+            # that earned the bed its pass — recipes climb solver quality, settle
+            # time and bending stiffness; the SHRED DETECTOR is the pass/fail on
+            # every rung (in report mode the first rung just reports). A piece no
+            # rung can stabilise fails the build loudly with its profile.
+            _fr = cl.get("frames", 45)
+            _recipes = ((12, _fr, 1.0), (16, _fr + 20, 2.5), (16, _fr + 30, 5.0))
+            o, _err = None, None
+            for _q, _f, _b in _recipes:
+                try:
+                    o = drape.bake_sheet(p["name"], p["verts"], p["faces"],
+                                         [_sup] if _sup else [],
+                                         frames=_f, fabric=cl.get("fabric", "linen"),
+                                         pin=cl["pin"],
+                                         thickness=cl.get("thickness", 0.004),
+                                         self_collide=True, quality=_q,
+                                         collision_quality=6, bend_scale=_b,
+                                         shred_guard=_SHRED_MODE
+                                         or cl.get("shred_guard", True))
+                    break
+                except drape.DrapeError as e:
+                    _err = e
+                    stale = bpy.data.objects.get(p["name"])
+                    if stale is not None:
+                        bpy.data.objects.remove(stale, do_unlink=True)
+                if _SHRED_MODE == "report":
+                    break                       # report mode measures rung 1 only
             if _sup is not None:
                 bpy.data.objects.remove(_sup, do_unlink=True)
+            if o is None:
+                raise drape.DrapeError(f"{p['name']}: no ladder rung stabilised the "
+                                       f"cloth — last: {_err}")
             return o
         return _smooth_mesh_obj(p["name"], p["verts"], p["faces"], own_mat=False,
                                 bevel=p.get("bevel"))
@@ -3570,6 +3599,23 @@ if __name__ == "__main__":
     if "--quick" in _post_dashdash():     # R5 playblast rung: cheap first LOOK, implies render
         _spec["_quick"] = True
         _spec["render"] = True
+    if "--sim-garments" in _post_dashdash():
+        # round-5 lane (R1-stopped, funded by owner order "ก"): flip the styling
+        # flag for this build only — the committed default stays False until the
+        # lane passes its gate, and the flag means experiments never need a
+        # source edit to reproduce.
+        styling.SIM_GARMENTS = True
+    if "--shred-report" in _post_dashdash():
+        globals()["_SHRED_MODE"] = "report"
+    _smax = next((a.split("=", 1)[1] for a in _post_dashdash()
+                  if a.startswith("--shred-max=")), None)
+    if _smax:
+        # CALIBRATION OVERRIDE ONLY: lets a probe render a piece that sits between
+        # the synthetic bands so the EYE can rule on it — the committed threshold
+        # in clothcheck.py moves only with a recorded verdict, never via this flag.
+        import clothcheck as _cc
+        _cc.SHRED_FRAC_MAX = float(_smax)
+        print(f"  [calibration] SHRED_FRAC_MAX overridden to {_smax} for this run")
     if "--hero" in _post_dashdash():      # close magazine shot of the lounge seating group
         _spec["_hero"] = True
     if "--eye" in _post_dashdash():       # eye-level interior shot aimed at the main piece

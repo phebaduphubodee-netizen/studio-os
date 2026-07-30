@@ -43,3 +43,51 @@ experiments exactly (2119 tests pin both states of the contract).
 Recommendation recorded at the gate: (ข)+(ค) — the last 10% of cloth realism is
 image-space work by the pipeline's own design, and the Gemini leg has never once
 been exercised on this room.
+
+---
+
+# Round 5b/5c addendum — the funded session (owner verdict "ก"), 2026-07-30
+
+## Deliverable 1 — THE INSTRUMENT (built first, as ordered)
+
+`clothcheck.py` (pure, 6 synthetic-mesh tests): adjacent-face normal-variance
+profile — frac_over(60°), p95, mean, degenerate count. Wired into
+`drape.bake_sheet(shred_guard=)` with three modes (off / "report" / enforce), a
+3-rung stability ladder in `_emit_style_part` (solver quality 12→16, +frames,
+bending ×1→×5) that uses the guard as pass/fail, and calibration tooling:
+`--sim-garments`, `--shred-report`, `--shred-max=`. The instrument measured the
+entire session below; it is permanent equipment (extendable to the bed stack).
+
+## The measurements (all quick-rung, ZERO full-price renders spent)
+
+Six mechanism hypotheses, each ~3 min, each measured by the instrument and/or
+refuted by LOOK:
+
+| # | hypothesis | result |
+|---|---|---|
+| 1 | finer torso blocker (nu 18) + collision_quality 6 | band 6.2–25.6%, torn piece visible |
+| 2 | stability ladder (quality/frames/bend) | best piece 3.4%; 0_0 improved 12.7→8.5%; 0_1 unmoved |
+| 3 | finer sim mesh (24×18) | facet-crumple softened; band unchanged |
+| 4 | self-collision distance theory | REFUTED by reading the code (already 2 mm) |
+| 5 | sleeves born outside the shell | LOOK-refuted: detached sticks; reverted |
+| 6 | SMOOTH feedstock (carve/jitter off for sim) | band unchanged; 0_1 constant 27.2% |
+
+The invariant: piece 0_1 sits at 27–34% under EVERY configuration — the
+instability lives in something none of the six touched, most plausibly the
+closed-tube topology + pinned-shoulder interaction itself (the bed has never
+simmed a closed tube). Pieces at 3–5% exist in every run and their LOOK is the
+best cloth this project has produced.
+
+## State at close
+
+`SIM_GARMENTS = False` (default build = g9 procedural read, verified); the whole
+lane reproducible via flags; 2125 tests green pinning both states. The 2-full-
+cycle budget was NOT spent — every hypothesis died at quick price.
+
+## Next-decision options (for the gate)
+
+- (ก2) HYBRID RAIL: ladder passes → simmed piece; ladder fails → analytic
+  fallback (no piece ever ships shredded; rails mix best-of-both). One session.
+- (ก3) OPEN-FORM feedstock: sim garments as open draped sheets over the hanger
+  (the topology the solver has actually mastered here), not closed tubes.
+- (ข) as before: g9 + material/light + Gemini leg.
