@@ -45,6 +45,44 @@ def test_select_pool_drops_starving_filters_and_says_so():
     assert eo2 == "landscape" and er2 is None and pool2       # satisfiable filters kept
 
 
+# ---- reproduction quarantine (R4 leakage law, qa/reproduction-curriculum.md r.2) --
+
+def test_quarantined_project_never_reaches_the_pool_even_when_it_fits_all_filters():
+    tgt = "โปรเจ็ก/002_TRN-target"
+    cands = [_rec("t/Enscape_a.png", (2000, 2000), project=tgt),
+             _rec("d/img.png", (2000, 1400))]
+    got = look_bench.anchor_pool(cands, trained=frozenset({tgt}))
+    assert [c["path"] for c in got] == ["d/img.png"]
+
+
+def test_select_pool_fallback_chain_never_drops_the_quarantine():
+    # The chain drops orient/room filters when they starve the pool; it must
+    # NEVER drop the quarantine the same way — an all-quarantined pool comes
+    # back EMPTY (main() then dies loudly), not silently repopulated.
+    tgt = "โปรเจ็ก/002_TRN-target"
+    cands = [_rec("t/Enscape_a.png", (2000, 2000), project=tgt)]
+    pool, _, _ = look_bench.select_pool(cands, "portrait", "bedroom",
+                                        trained=frozenset({tgt}))
+    assert pool == []
+
+
+def test_missing_or_empty_trained_file_is_fatal(tmp_path):
+    # Training targets exist since 2026-07-30, so no-file / no-keys can only
+    # mean the exclusion list was gutted — refuse, never silent-pass.
+    with pytest.raises(SystemExit):
+        look_bench.load_trained(str(tmp_path / "absent.json"))
+    empty = tmp_path / "empty.json"
+    empty.write_text('{"projects": []}', encoding="utf-8")
+    with pytest.raises(SystemExit):
+        look_bench.load_trained(str(empty))
+
+
+def test_trained_file_of_record_loads_and_names_trn001_project():
+    # The real exclusion list must exist and carry at least one project key.
+    keys = look_bench.load_trained()
+    assert len(keys) >= 1 and all(isinstance(k, str) and k for k in keys)
+
+
 # ---- deterministic panel ---------------------------------------------------------
 
 def test_same_name_and_salt_gives_the_same_panel_different_salt_a_new_one():

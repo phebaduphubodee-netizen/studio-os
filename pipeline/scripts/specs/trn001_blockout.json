@@ -1,0 +1,30 @@
+{
+  "_what": "TRN-001 reproduction blockout spec (round 1: camera + blockout). Generic prayer-room feature wall; dims are the 2026-07-30 study's mutually-consistent spine (vault-grounded where the vault speaks, trade standards where it is silent). Committed file carries TRN-id + generic content only per qa/reproduction-curriculum.md.",
+  "room": {
+    "ceiling_mm": 2700,
+    "back_wall_len_mm": 6000,
+    "room_depth_mm": 4500,
+    "unit_center_offset_mm": 0
+  },
+  "unit": {
+    "_asym": "2026-07-31 v2 — dims re-derived from VP-pinned solve residuals (real = model - printed_mm): asymmetric unit; plinth is a LOW tray-drawer bench ~190h running left-of-centre under the left tower; step top 420; box top 890 w~980; marble top 2275 leaving ~86mm glow reveal under the 340 header band; absolute scale rests on the ceiling=2700 assumption",
+    "_c2_round1": "C2 triage 2026-07-31: marble slab must never show its bottom edge (bot_z sunk to 150, hidden behind the 420 step everywhere); box narrowed 980->780 (B probe + critic 2:1 vs measurer A who read the pedestal silhouette); pedestals +40; header depth 360 (flush family with towers per reference). REFUTED with probes: tier-rhythm claim (plinth-top 190 / step-top 420 pinned by machine probe residuals <=10px) and top-right framing (header corner probe v130 vs model 125). Round-2 lane: tower cubbies, right-tower toe base, header 3-panel joints + brass, drawer reveals + toe recess",
+    "header": { "len_mm": 3270, "band_h_mm": 340, "depth_mm": 360, "top_z_mm": 2700, "cx_mm": 27 },
+    "tower": { "w_mm": 385, "d_mm": 350, "left_on_plinth": true },
+    "marble": { "w_mm": 1440, "h_mm": 2125, "bot_z_mm": 150, "proud_mm": 70, "cx_mm": -50 },
+    "plinth": { "len_mm": 2765, "h_mm": 190, "d_mm": 600, "r_mm": 120, "cx_mm": -192 },
+    "step": { "len_mm": 2100, "h_mm": 230, "d_mm": 500, "r_mm": 60, "cx_mm": -104 },
+    "box": { "w_mm": 780, "h_mm": 470, "d_mm": 450, "r_mm": 50, "cx_mm": 44 },
+    "pedestal": { "w_mm": 350, "h_mm": 190, "d_mm": 350, "cx_mm": 625, "r_mm": 40 }
+  },
+  "camera": {
+    "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",
+    "x_mm": 1550.0,
+    "y_mm": -4250.0,
+    "z_mm": 1150.0,
+    "yaw_deg": -20.5,
+    "focal_mm": 38.9,
+    "shift_x": 0.0,
+    "shift_y": 0.0
+  }
+}

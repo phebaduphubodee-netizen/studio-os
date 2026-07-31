@@ -36,6 +36,7 @@ import benchmark_precut as bp
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CANDIDATES = os.path.join(REPO, "_private", "benchmark", "candidates.json")
+TRAINED = os.path.join(REPO, "_private", "benchmark", "trained-anchors.json")
 OUT_DEFAULT = os.path.join(REPO, "_private", "benchmark", "look-bench")
 CELL_H = 480          # uniform cell height; widths follow each image's aspect
 PAD = 8
@@ -53,11 +54,33 @@ def orientation(wh):
     return "squarish"
 
 
-def anchor_pool(candidates, want_orient=None, room=None):
+def load_trained(path=TRAINED):
+    """Project keys quarantined by the reproduction curriculum (R4 leakage law,
+    qa/reproduction-curriculum.md rule 2). FAIL-LOUD: since 2026-07-30 at least
+    one training target exists, so a missing/empty file means the exclusion
+    list was gutted — refusing beats silently judging against trained anchors
+    (wired gates never silent-pass)."""
+    try:
+        data = json.load(open(path, encoding="utf-8"))
+        keys = frozenset(p["project_key"] for p in data["projects"])
+    except (OSError, KeyError, ValueError) as e:
+        raise SystemExit(f"look_bench: cannot load trained-anchors quarantine {path!r} ({e}) — "
+                         f"reproduction training targets exist (qa/reproduction-curriculum.md); "
+                         f"restore the file before running any panel")
+    if not keys:
+        raise SystemExit(f"look_bench: {path!r} lists no projects but the reproduction ledger "
+                         f"has ACTIVE training targets — restore it before running any panel")
+    return keys
+
+
+def anchor_pool(candidates, want_orient=None, room=None, trained=frozenset()):
     """The sellability lane's residential-render pool, optionally narrowed by
-    orientation / room hint. PURE (no I/O) — testable on synthetic records."""
+    orientation / room hint, minus reproduction-quarantined projects.
+    PURE (no I/O) — testable on synthetic records."""
     pool = []
     for c in candidates:
+        if c["project"] in trained:
+            continue
         eng = bp.render_engine(os.path.basename(c["path"]))
         if bp.dim_class(c["wh"], eng) != "render":
             continue
@@ -71,22 +94,23 @@ def anchor_pool(candidates, want_orient=None, room=None):
     return pool
 
 
-def select_pool(candidates, orient, room):
+def select_pool(candidates, orient, room, trained=frozenset()):
     """Fallback chain, honest about what it dropped: (orient+room) -> (room only)
     -> (bare pool). Returns (pool, effective_orient, effective_room) so the
     summary line never claims a filter the panel did not actually wear (review
     2026-07-28: a mixed-orientation panel labeled apples-to-apples is exactly
-    the mis-judgment R4 exists to prevent). PURE — testable on synthetic records."""
-    pool = anchor_pool(candidates, want_orient=orient, room=room)
+    the mis-judgment R4 exists to prevent). The trained quarantine is NEVER
+    dropped by the fallback chain. PURE — testable on synthetic records."""
+    pool = anchor_pool(candidates, want_orient=orient, room=room, trained=trained)
     if pool:
         return pool, orient, room
-    pool = anchor_pool(candidates, want_orient=None, room=room)
+    pool = anchor_pool(candidates, want_orient=None, room=room, trained=trained)
     if pool:
         return pool, None, room
-    pool = anchor_pool(candidates, want_orient=orient, room=None)
+    pool = anchor_pool(candidates, want_orient=orient, room=None, trained=trained)
     if pool:
         return pool, orient, None
-    return anchor_pool(candidates), None, None
+    return anchor_pool(candidates, trained=trained), None, None
 
 
 def pick(pool, ours_name, n, salt=0):
@@ -150,8 +174,9 @@ def main(argv=None):
         ours_orient = orientation((im.width, im.height))
 
     data = json.load(open(CANDIDATES, encoding="utf-8"))
+    trained = load_trained()
     root_fix = lambda p: p if os.path.exists(p) else os.path.join(REPO, p)
-    pool, eff_orient, eff_room = select_pool(data["images"], ours_orient, a.room)
+    pool, eff_orient, eff_room = select_pool(data["images"], ours_orient, a.room, trained=trained)
     if not pool:
         raise SystemExit("look_bench: anchor pool is empty even unfiltered — "
                          "_private/benchmark/candidates.json is missing or gutted")
@@ -165,7 +190,7 @@ def main(argv=None):
                        f"bench_{os.path.splitext(os.path.basename(a.ours))[0]}_s{a.salt}.png")
     compose(a.ours, [root_fix(c["path"]) for c in chosen], out)
     print(f"panel: {len(chosen)} delivered anchors (orient={eff_orient or 'any'}, "
-          f"room={eff_room or 'any'}, pool={len(pool)})")
+          f"room={eff_room or 'any'}, pool={len(pool)}, quarantined_projects={len(trained)})")
     print(f"sheet: {out}   [LOCAL-ONLY — never commit, never egress]")
     return 0
 
