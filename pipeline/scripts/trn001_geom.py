@@ -112,28 +112,28 @@ def _tower_masses(side, cx, t, z_top, plinth_h):
     return out
 
 
-def _surround_masses(s, m):
-    """Round-2 structural finding (2026-07-31): the towers are only ~72 mm proud
-    of the WHITE SURFACE beside them, not ~360 mm proud of bare wall — that ratio
-    held for every tower depth tried, so the white surround is a FURRED-OUT panel
-    and the marble sits at the back of a deep reveal. Built as four boxes around
-    the opening (a boolean hole would make the n-gons the export law forbids)."""
-    front, back = -s["front_y_mm"], -s["back_y_mm"]
-    dep = abs(front - back)
-    ycen = (front + back) / 2
-    x0, x1 = s["x0_mm"], s["x1_mm"]
-    z0, z1 = s["z0_mm"], s["z1_mm"]
-    g = s.get("reveal_gap_mm", 25.0)
-    ox0 = m.get("cx_mm", 0.0) - m["w_mm"] / 2 - g
-    ox1 = m.get("cx_mm", 0.0) + m["w_mm"] / 2 + g
+def _recess_masses(rc, m, x0, x1, z0, z1):
+    """THE SLAB IS RECESSED INTO THE WALL (owner, 2026-07-31: "ไฟที่ต้องซ่อนใน
+    กำแพงคือแผ่นหินอ่อนอยู่ลึกลงไป ไม่ใช้อยู่ด้านหน้ากำแพง"). The wall's front
+    layer runs from the room face (y=0) back to the recess depth, with a
+    rectangular opening; the stone sits at the BACK of that opening and the LED
+    hides just inside the returns, so nothing but the wash is ever in view.
+
+    Four boxes around the opening rather than a boolean hole — a boolean would
+    make the n-gons the export law forbids."""
+    dep = rc["depth_mm"]
+    ycen, ydep = dep / 2.0, dep
+    g = rc.get("gap_mm", 20.0)
+    mcx = m.get("cx_mm", 0.0)
+    ox0, ox1 = mcx - m["w_mm"] / 2 - g, mcx + m["w_mm"] / 2 + g
     oz0 = m["bot_z_mm"] - g
     oz1 = m["bot_z_mm"] + m["h_mm"] + g
-    v = 0.82
+    v = 0.80
     return [
-        _box("surround_jambL", (x0 + ox0) / 2, ycen, (z0 + z1) / 2, ox0 - x0, dep, z1 - z0, v),
-        _box("surround_jambR", (ox1 + x1) / 2, ycen, (z0 + z1) / 2, x1 - ox1, dep, z1 - z0, v),
-        _box("surround_head", (ox0 + ox1) / 2, ycen, (oz1 + z1) / 2, ox1 - ox0, dep, z1 - oz1, v),
-        _box("surround_sill", (ox0 + ox1) / 2, ycen, (z0 + oz0) / 2, ox1 - ox0, dep, oz0 - z0, v),
+        _box("recess_jambL", (x0 + ox0) / 2, ycen, (z0 + z1) / 2, ox0 - x0, ydep, z1 - z0, v),
+        _box("recess_jambR", (ox1 + x1) / 2, ycen, (z0 + z1) / 2, x1 - ox1, ydep, z1 - z0, v),
+        _box("recess_head", (ox0 + ox1) / 2, ycen, (oz1 + z1) / 2, ox1 - ox0, ydep, z1 - oz1, v),
+        _box("recess_sill", (ox0 + ox1) / 2, ycen, (z0 + oz0) / 2, ox1 - ox0, ydep, oz0 - z0, v),
     ]
 
 
@@ -227,9 +227,14 @@ def masses(spec):
     wall_off = room.get("unit_center_offset_mm", 0.0)  # unit centre vs wall centre
     depth = room["room_depth_mm"]
 
-    # room shell (floor, back wall, ceiling, left side wall at frame-left = -x)
+    # room shell (floor, back wall, ceiling, left side wall at frame-left = -x).
+    # When the feature wall carries a RECESS, the wall body is pushed back by
+    # the recess depth and a front layer with the opening is added below, so the
+    # room face still reads at y=0 while the stone sits inside the wall.
+    rc = u.get("recess")
+    rdep = rc["depth_mm"] if rc else 0.0
     out.append(_box("floor", -wall_off, -depth / 2, -50, wall_len, depth, 100, 0.65))
-    out.append(_box("back_wall", -wall_off, +50, ceil / 2, wall_len, 100, ceil, 0.80))
+    out.append(_box("back_wall", -wall_off, rdep + 50, ceil / 2, wall_len, 100, ceil, 0.80))
     out.append(_box("ceiling", -wall_off, -depth / 2, ceil + 50, wall_len, depth, 100, 0.82))
     lx = -wall_off - wall_len / 2
     out.append(_box("side_wall_L", lx - 50, -depth / 2, ceil / 2, 100, depth, ceil, 0.80))
@@ -258,10 +263,11 @@ def masses(spec):
         out.append(_box(f"tower_{side}", cx, -t["d_mm"] / 2, (tz + z0t) / 2,
                         t["w_mm"], t["d_mm"], tz - z0t, 0.28))
 
-    # furred-out white surround with the marble reveal cut through it
     m = u["marble"]
-    if u.get("surround"):
-        out.extend(_surround_masses(u["surround"], m))
+    if rc:
+        out.extend(_recess_masses(rc, m,
+                                  -wall_off - wall_len / 2, -wall_off + wall_len / 2,
+                                  0.0, ceil))
 
     # A THIN slab held OFF the wall, not a thick panel stuck to it — the
     # standoff cavity is where the concealed light lives, and modelling the slab
@@ -269,7 +275,11 @@ def masses(spec):
     # stone with nowhere for its light to go (caught 2026-07-31). proud_mm stays
     # the FRONT face, so the camera solve's marble landmarks are untouched.
     thick = m.get("thick_mm", m["proud_mm"])
-    out.append(_box("marble", m.get("cx_mm", 0.0), -(m["proud_mm"] - thick / 2),
+    # proud_mm = the stone's FRONT face relative to the room-side wall plane.
+    # POSITIVE = proud of the wall; NEGATIVE = set back INTO it, which is what
+    # this piece does — the whole point of the concealed detail.
+    face_y = -m["proud_mm"]
+    out.append(_box("marble", m.get("cx_mm", 0.0), face_y + thick / 2,
                     m["bot_z_mm"] + m["h_mm"] / 2,
                     m["w_mm"], thick, m["h_mm"], 0.75))
 
@@ -315,22 +325,23 @@ def masses(spec):
     if m.get("halo"):
         halo = m["halo"]
         mcx = m.get("cx_mm", 0.0)
-        t_ = halo.get("strip_mm", 25.0)
-        inset = halo.get("inset_mm", 30.0)
-        # the cavity BETWEEN the wall and the slab's back face
-        gap = m["proud_mm"] - m.get("thick_mm", m["proud_mm"])
-        ycen, ydep = -gap / 2, max(gap - 6.0, 4.0)
-        x0 = mcx - m["w_mm"] / 2 + inset
-        x1 = mcx + m["w_mm"] / 2 - inset
-        z0h = m["bot_z_mm"] + inset
-        z1h = m["bot_z_mm"] + m["h_mm"] - inset
-        out.append(_box("halo_top", (x0 + x1) / 2, ycen, z1h - t_ / 2,
-                        x1 - x0, ydep, t_, 1.0))
-        out.append(_box("halo_bot", (x0 + x1) / 2, ycen, z0h + t_ / 2,
-                        x1 - x0, ydep, t_, 1.0))
-        for tag, hx in (("l", x0 + t_ / 2), ("r", x1 - t_ / 2)):
-            out.append(_box(f"halo_{tag}", hx, ycen, (z0h + z1h) / 2,
-                            t_, ydep, z1h - z0h - 2 * t_, 1.0))
+        t_ = halo.get("strip_mm", 22.0)
+        # The strip is mounted on the RETURN of the recess, tucked just inside
+        # the opening so the wall's own edge hides it, and it faces back at the
+        # stone. setback = how far inside the opening it sits.
+        setback = halo.get("setback_mm", 20.0)
+        gp = rc.get("gap_mm", 20.0) if rc else 20.0
+        ycen, ydep = setback + t_ / 2, t_
+        ox0, ox1 = mcx - m["w_mm"] / 2 - gp, mcx + m["w_mm"] / 2 + gp
+        oz0 = m["bot_z_mm"] - gp
+        oz1 = m["bot_z_mm"] + m["h_mm"] + gp
+        out.append(_box("halo_top", (ox0 + ox1) / 2, ycen, oz1 - t_ / 2,
+                        ox1 - ox0, ydep, t_, 1.0))
+        out.append(_box("halo_bot", (ox0 + ox1) / 2, ycen, oz0 + t_ / 2,
+                        ox1 - ox0, ydep, t_, 1.0))
+        for tag, hx in (("l", ox0 + t_ / 2), ("r", ox1 - t_ / 2)):
+            out.append(_box(f"halo_{tag}", hx, ycen, (oz0 + oz1) / 2,
+                            t_, ydep, oz1 - oz0 - 2 * t_, 1.0))
     return out
 
 

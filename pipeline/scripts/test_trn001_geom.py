@@ -115,29 +115,42 @@ def test_the_side_pedestals_are_symmetric_about_the_centre_box(spec):
     assert ms["pedestal_L"]["s"][0] == pytest.approx(ms["pedestal_R"]["s"][0])
 
 
+def test_the_stone_is_set_back_into_the_wall_not_stuck_on_it(spec):
+    """Owner, 2026-07-31 (twice, because the first fix inverted it): the slab
+    sits DEEP IN the wall — ไฟที่ต้องซ่อนในกำแพงคือแผ่นหินอ่อนอยู่ลึกลงไป. Its
+    front face must therefore be behind the room-side wall plane, and it must be
+    behind the recess opening rather than filling it."""
+    m = spec["unit"]["marble"]
+    rc = spec["unit"].get("recess")
+    if not rc:
+        pytest.skip("no recess specified")
+    assert m["proud_mm"] < 0, "a recessed slab's front face is behind y=0"
+    face_y = -m["proud_mm"]
+    assert face_y >= rc["depth_mm"] - 1e-6, "the stone must sit at the recess back"
+
+
 def test_the_concealed_light_stays_concealed(spec):
-    """Owner, 2026-07-31: the panel behind the Buddha is ไฟซ่อน. A strip that
-    pokes past the slab edge, or sits proud of the slab face, stops being
-    concealed and becomes a visible tube — which is the failure this detail
-    exists to avoid."""
+    """A strip that reaches the room side of the wall plane, or that sits
+    outside the opening, stops being concealed and becomes a visible tube —
+    the exact failure this detail exists to avoid."""
     if not spec["unit"]["marble"].get("halo"):
         pytest.skip("halo not specified")
     ms = G.masses(spec)
     strips = [m for m in ms if m["name"].startswith("halo_")]
     assert len(strips) == 4
-    slab = [m for m in ms if m["name"] == "marble"][0]
-    sx0 = slab["c"][0] - slab["s"][0] / 2
-    sx1 = slab["c"][0] + slab["s"][0] / 2
-    sz0 = slab["c"][2] - slab["s"][2] / 2
-    sz1 = slab["c"][2] + slab["s"][2] / 2
-    slab_front = slab["c"][1] - slab["s"][1] / 2
+    m = spec["unit"]["marble"]
+    gp = (spec["unit"].get("recess") or {}).get("gap_mm", 20.0)
+    mcx = m.get("cx_mm", 0.0)
+    ox0, ox1 = mcx - m["w_mm"] / 2 - gp, mcx + m["w_mm"] / 2 + gp
+    oz0, oz1 = m["bot_z_mm"] - gp, m["bot_z_mm"] + m["h_mm"] + gp
     for s in strips:
-        assert s["c"][0] - s["s"][0] / 2 >= sx0 - 1e-6
-        assert s["c"][0] + s["s"][0] / 2 <= sx1 + 1e-6
-        assert s["c"][2] - s["s"][2] / 2 >= sz0 - 1e-6
-        assert s["c"][2] + s["s"][2] / 2 <= sz1 + 1e-6
-        # behind the slab face, never in front of it
-        assert s["c"][1] - s["s"][1] / 2 > slab_front - 1e-6
+        # never on the room side of the wall face
+        assert s["c"][1] - s["s"][1] / 2 > 0.0, "strip breaks the wall plane"
+        # and always inside the opening it hides in
+        assert s["c"][0] - s["s"][0] / 2 >= ox0 - 1e-6
+        assert s["c"][0] + s["s"][0] / 2 <= ox1 + 1e-6
+        assert s["c"][2] - s["s"][2] / 2 >= oz0 - 1e-6
+        assert s["c"][2] + s["s"][2] / 2 <= oz1 + 1e-6
 
 
 def test_marble_bottom_edge_can_never_show_below_the_altar(spec):
@@ -150,12 +163,23 @@ def test_marble_bottom_edge_can_never_show_below_the_altar(spec):
 
 
 def test_every_mass_is_in_front_of_the_wall_and_inside_the_room(spec):
+    """Nothing may float behind the wall face or leave the room — EXCEPT what
+    the wall deliberately contains: the recess returns, the stone set into them
+    and the light hidden there, none of which may pass the wall's back."""
     room = spec["room"]
+    rdep = (spec["unit"].get("recess") or {}).get("depth_mm", 0.0)
+    inwall = {"marble"}
     for m in G.masses(spec):
         if m["name"] in ("back_wall", "ceiling", "floor", "side_wall_L"):
             continue
         y0 = m["c"][1] - m["s"][1] / 2
         y1 = m["c"][1] + m["s"][1] / 2
+        if m["name"] in inwall or m["name"].startswith(("recess_", "halo_")):
+            assert y0 >= -1e-6, f"{m['name']} pokes out of the wall"
+            # the stone is bedded into the wall body behind the recess, but
+            # nothing may pass the wall's back face into the next room
+            assert y1 <= rdep + 100.0 + 1e-6, f"{m['name']} passes through the wall"
+            continue
         assert y1 <= 1e-9, f"{m['name']} pokes through the wall"
         assert y0 >= -room["room_depth_mm"], f"{m['name']} leaves the room"
 

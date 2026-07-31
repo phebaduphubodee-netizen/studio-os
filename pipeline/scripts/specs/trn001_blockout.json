@@ -54,11 +54,11 @@
    "w_mm": 1432,
    "h_mm": 2117,
    "bot_z_mm": 150,
-   "proud_mm": 48,
+   "proud_mm": -70,
    "cx_mm": -51,
    "halo": {
-    "strip_mm": 18,
-    "inset_mm": 22
+    "strip_mm": 20,
+    "setback_mm": 16
    },
    "thick_mm": 18
   },
@@ -104,7 +104,11 @@
   "_surround_refuted": "2026-07-31: the 72mm proud-of-white-surface measurement is REAL and repeatable (stable across every tower depth tried), but the structure it implied — a furred-out white panel across the bay with the marble at the back of a 218mm reveal — was BUILT and the frame refuted it on sight: it reads as a deep TV niche, which the target is not. Recorded as an unresolved measurement, not built. Do not re-derive it from the same flank pixels without a new independent read.",
   "_c2_round2": "C2 round-2 triage 2026-07-31 (every item measured, none taken on taste): ACCEPTED+BUILT — shallow face (tower depth 360->80 from the 28px vs 101px side return, header 380->150, which also removes the phantom soffit joint the critic found under the header), altar radii to the measured 150-200mm family, centre box 900 wide at cx-25 and pedestals 268 at +/-772 (both were fat and shifted right), plinth toe 16/45 so the base shadow reads, left tower to floor so its underside stops showing, room wall closed to the unit edge at x=-1608. CARRIED — the target's lowest left cubby is SHORTER than its four siblings because the plinth cuts it (ours are equal); rounded TOP edges (a section bullnose, not a plan radius) are still square.",
   "_depth_resolved": "2026-07-31, gate #2's carried question CLOSED by a third instrument. The built-in is ~100mm deep, not 360. Evidence: (A) the tower's inner side panel is one plane, so the depth making its front arris (u=459.3) and its wall junction (u=479.2) back-project to the same x is the depth -> 75mm; the earlier run missed this ONLY because its sweep started at 200. (B) a shelf board below the horizon shows its top surface as a band; the target's is 5.0px and the model gives 4/5/6px at cubby depth 80/100/120, while the old 342 gave 17.8px. (C) the critic's independent 28px-vs-101px side band. Why the landmark fit preferred 360: header_bot_* were the only landmarks whose 3D depended on tower depth, and their definition was wrong — a landmark defined wrongly returns a confident, precise, WRONG minimum. Same class as the rounded-silhouette trap; the lesson is that a fit can only test the geometry you told it about.",
-  "_owner_2026_07_31": "owner spotted two things the builder missed: the side pedestals sat unequal because they were anchored to x=0 while the centre box sits off-centre — measured symmetric about the BOX at 705.1/704.3mm, so they now hang off the box; and the panel behind the Buddha is CONCEALED LIGHTING (ไฟซ่อน), not a lit surface — an LED strip hidden in the standoff gap behind the slab edge"
+  "_owner_2026_07_31": "owner spotted two things the builder missed: the side pedestals sat unequal because they were anchored to x=0 while the centre box sits off-centre — measured symmetric about the BOX at 705.1/704.3mm, so they now hang off the box; and the panel behind the Buddha is CONCEALED LIGHTING (ไฟซ่อน), not a lit surface — an LED strip hidden in the standoff gap behind the slab edge",
+  "recess": {
+   "depth_mm": 70,
+   "gap_mm": 18
+  }
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",
