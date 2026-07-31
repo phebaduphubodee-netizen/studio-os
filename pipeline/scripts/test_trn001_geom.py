@@ -282,6 +282,49 @@ def test_rounded_outline_clamps_instead_of_inverting(jspec):
     assert min(y for _, y in pts) == pytest.approx(-9)
 
 
+# ---- round-3 materials (pure half) --------------------------------------------
+
+def test_every_mass_gets_a_material_that_exists(spec):
+    import trn001_materials as MAT
+    for m in G.masses(spec):
+        key = MAT.material_for(m["name"])
+        assert key in MAT.PALETTE, f"{m['name']} -> unknown material {key}"
+
+
+def test_material_routing_is_not_accidentally_generic(spec):
+    """A prefix that mis-routes dresses a whole element wrong and the render
+    hides it behind plausibility, so the identities are pinned by name."""
+    import trn001_materials as MAT
+    f = MAT.material_for
+    assert f("floor") == "floor_oak"
+    assert f("back_wall") == f("ceiling") == "paint_white"
+    assert f("marble") == "marble"
+    assert f("brass_p1_top") == "brass"
+    assert f("header_p0") == "veneer_dark"
+    assert f("tower_R_sA") == f("tower_L_shelf2") == "veneer_dark"
+    assert f("tower_R_back") == "cavity"
+    assert f("plinth") == f("plinth_face3") == f("plinth_toe") == "lacquer_white"
+    assert f("step") == f("centre_box") == f("pedestal_L") == "veneer_altar"
+
+
+def test_the_map_dressing_the_ground_truth_study_asked_for_is_actually_present():
+    """The 2026-07-30 study measured us at 95% image-free against 50-66% in pro
+    files. This pins that the wood/marble/floor/wall sets are on disk and wired,
+    so the fix cannot silently revert to flat colour."""
+    import trn001_materials as MAT
+    dressed = [k for k, v in MAT.PALETTE.items() if MAT.map_paths(v[3])]
+    assert {"veneer_dark", "marble", "floor_oak", "paint_white"} <= set(dressed)
+    for k in dressed:
+        maps = MAT.map_paths(MAT.PALETTE[k][3])
+        assert "base" in maps and "rough" in maps, k
+    assert len(dressed) / len(MAT.PALETTE) >= 0.5
+
+
+def test_no_material_exceeds_the_measured_sheen_ceiling():
+    import trn001_materials as MAT
+    assert MAT.SHEEN_CEILING == 0.4
+
+
 def test_masses_are_stable_under_reload(spec):
     """A mass list that depends on dict ordering or mutation would make the
     builder and the solver disagree run to run."""

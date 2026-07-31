@@ -1,12 +1,18 @@
-"""trn001_build.py — TRN-001 reproduction blockout materializer (INSIDE Blender).
+"""trn001_build.py — TRN-001 reproduction materializer (INSIDE Blender).
 
-Round-1 scope (qa/reproduction-curriculum.md element ladder): CAMERA + BLOCKOUT
-only — clay masses with value separation, neutral light, no materials story,
-no styling. Invocation (pipeline/CLAUDE.md law: headless, factory startup,
+Walks the charter's element ladder (qa/reproduction-curriculum.md): round 1
+camera + blockout, round 2 joinery, round 3 materials, and the light story
+still to come. Invocation (pipeline/CLAUDE.md law: headless, factory startup,
 data-API geometry only):
 
   blender -b --factory-startup --python pipeline/scripts/trn001_build.py -- \
-      <spec.json> --out <dir> [--tag v001] [--quick]
+      <spec.json> --out <dir> [--tag v001] [--quick] [--materials] [--idmask]
+
+  --quick      R5 playblast rung (48 samples, half res per axis)
+  --materials  dress the masses from trn001_materials instead of clay values
+  --idmask     one emission colour per mass, 1 sample, black world — the
+               instrument that caught a foreign object the spec-side checks
+               could not see (2026-07-31)
 
 Writes <out>/trn001_blockout_<tag>[_ql].png, a .blend beside it, and
 <out>/trn001_projections_<tag>.json holding BOTH Blender's own
@@ -24,6 +30,7 @@ import bpy
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 import trn001_geom as G          # noqa: E402
+import trn001_materials as MAT   # noqa: E402
 from quicklook import quick_params  # noqa: E402
 
 FULL_SAMPLES = 128
@@ -94,7 +101,7 @@ def clear_default_scene():
             bpy.data.meshes.remove(me)
 
 
-def build_masses(spec):
+def build_masses(spec, materials=None):
     col = bpy.context.scene.collection
     for m in G.masses(spec):
         cx, cy, cz = m["c"]
@@ -104,7 +111,12 @@ def build_masses(spec):
                                 cz - sz / 2.0, cz + sz / 2.0)
         if IDMASK:
             print(f"idmask mass {m['name']}")
-        me.materials.append(_clay(m["value"]))
+            me.materials.append(_clay(m["value"]))
+        elif materials:
+            key = MAT.material_for(m["name"])
+            me.materials.append(materials[key])
+        else:
+            me.materials.append(_clay(m["value"]))
         ob = bpy.data.objects.new(f"SM_TRN001_{m['name']}", me)
         col.objects.link(ob)
 
@@ -221,7 +233,11 @@ def main():
 
     spec = G.load_spec(spec_path)
     clear_default_scene()
-    build_masses(spec)
+    materials = None
+    if "--materials" in argv and not IDMASK:
+        materials = MAT.build_materials()
+        print("materials ON\n" + MAT.palette_report())
+    build_masses(spec, materials)
     cam_ob = build_camera(spec["camera"])
     build_light()
 

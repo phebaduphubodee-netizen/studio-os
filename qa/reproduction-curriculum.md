@@ -57,14 +57,21 @@
 
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
-| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 2: joinery พร้อมให้ตัดสิน (gate #2); 1 closed by owner "พอได้"; next = 3 materials, gated on the depth question | 2 | 5 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
+| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 3: materials พร้อมให้ตัดสิน (gate #3); 1–2 closed by owner ("พอได้" / "พอใช้ ลุยต่อ"); next = 4 LIGHT (the study's measured #1 gap) | 3 | 6 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
 
-**Open question at gate #2 (owner):** how deep is the built-in? The landmark fit
-has a clean minimum at 360 mm; the visible side-return beside the left tower
-says ~80 mm (target 28 px vs ours 101 px). Two attempts to build the shallow
-reading both made the frame worse, so R1 halted the lane on that mechanism
-rather than spend a third cycle. Everything else in round 2 is measured and
-converged.
+**Gate #2's open question — CLOSED 2026-07-31 by a third instrument.** The
+built-in is ~100 mm deep, not 360. A shelf board below the horizon shows its
+top surface as a band whose height reads the cubby depth directly: the target's
+is 5.0 px, and the model gives 4/5/6 px at 80/100/120 mm against 17.8 px at the
+old 342. The side-return test agreed at 75 mm once its sweep started low enough
+— the earlier run began at 200 mm, so the answer was outside the range it could
+see. Our render's side band is now 30 px against the target's 28 (was 101).
+**The lesson is about the fit, not the depth:** the landmark solve had a clean,
+confident minimum at 360 because the only landmarks that depended on tower depth
+were DEFINED wrongly. A least-squares fit can only test the geometry you told it
+about — it will report a precise answer to a mis-posed question, and the round-1
+rounded-silhouette trap was the same class. Cross-check a fitted dimension
+against a feature the fit never saw before believing it.
 
 ## Decisions
 
