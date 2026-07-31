@@ -300,8 +300,8 @@ def test_material_routing_is_not_accidentally_generic(spec):
     assert f("back_wall") == f("ceiling") == "paint_white"
     assert f("marble") == "marble"
     assert f("brass_p1_top") == "brass"
-    assert f("header_p0") == "veneer_dark"
-    assert f("tower_R_sA") == f("tower_L_shelf2") == "veneer_dark"
+    assert f("header_p0") == "veneer_fascia"
+    assert f("tower_R_sA") == f("tower_L_shelf2") == "veneer_pier"
     assert f("tower_R_back") == "cavity"
     assert f("plinth") == f("plinth_face3") == f("plinth_toe") == "lacquer_white"
     assert f("step") == f("centre_box") == f("pedestal_L") == "veneer_altar"
@@ -313,7 +313,8 @@ def test_the_map_dressing_the_ground_truth_study_asked_for_is_actually_present()
     so the fix cannot silently revert to flat colour."""
     import trn001_materials as MAT
     dressed = [k for k, v in MAT.PALETTE.items() if MAT.map_paths(v[3])]
-    assert {"veneer_dark", "marble", "floor_oak", "paint_white"} <= set(dressed)
+    assert {"veneer_fascia", "veneer_pier", "marble", "floor_oak",
+            "paint_white"} <= set(dressed)
     for k in dressed:
         maps = MAT.map_paths(MAT.PALETTE[k][3])
         assert "base" in maps and "rough" in maps, k
@@ -323,6 +324,35 @@ def test_the_map_dressing_the_ground_truth_study_asked_for_is_actually_present()
 def test_no_material_exceeds_the_measured_sheen_ceiling():
     import trn001_materials as MAT
     assert MAT.SHEEN_CEILING == 0.4
+
+
+def test_wood_grain_runs_along_the_element_not_isotropically():
+    """The round-3 critic measured our veneer at 1.57 directional energy where
+    the delivered fascia is 2.41 — near-isotropic mottle, which is what made
+    wood read as cast concrete. Every wood material must therefore be
+    anisotropic, and the rail must not run its grain the same way as the piers."""
+    import trn001_materials as MAT
+    for k in ("veneer_fascia", "veneer_pier", "veneer_altar"):
+        ax, _, az = MAT.MAP_ASPECT[k]
+        assert max(ax, az) / min(ax, az) >= 3.0, f"{k} grain is nearly isotropic"
+    fx, _, fz = MAT.MAP_ASPECT["veneer_fascia"]
+    px, _, pz = MAT.MAP_ASPECT["veneer_pier"]
+    assert (fx > fz) and (pz > px), "rail and piers must not share a grain axis"
+
+
+def test_the_painted_wall_is_the_least_chromatic_neutral_in_the_room():
+    """Ordering test from the critic, and it survives any exposure difference:
+    in the delivered work the wall is LESS chromatic than the stone (0.53x);
+    ours had it 1.7x MORE, which is what made the room read dingy."""
+    import trn001_materials as MAT
+
+    def chroma(rgb):
+        return (max(rgb) - min(rgb)) / max(max(rgb), 1e-6)
+
+    wall = chroma(MAT.PALETTE["paint_white"][0])
+    stone = chroma(MAT.PALETTE["marble"][0])
+    assert wall <= stone, f"wall chroma {wall:.3f} must not exceed stone {stone:.3f}"
+    assert chroma(MAT.PALETTE["lacquer_white"][0]) <= 0.05
 
 
 def test_masses_are_stable_under_reload(spec):

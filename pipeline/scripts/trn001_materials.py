@@ -48,22 +48,45 @@ NORMAL_STRENGTH = {"plastered_wall_03": 0.12, "marble_01": 0.15}
 # wall really is nearly flat, and "add maps everywhere" would be the
 # ground-truth study's lesson over-applied into a different wrong answer.
 MAP_MIX = {
-    "veneer_dark": 0.45, "veneer_altar": 0.55, "cavity": 0.30,
-    "marble": 0.80, "floor_oak": 0.70, "paint_white": 0.12,
+    "veneer_fascia": 0.90, "veneer_pier": 0.90, "veneer_altar": 0.90,
+    "cavity": 0.40, "marble": 0.85, "floor_oak": 0.80, "paint_white": 0.06,
+}
+
+# GRAIN HAS A DIRECTION. The round-3 critic measured the reference fascia at
+# 2.41 vertical/horizontal detail energy against our 1.57 — near-isotropic
+# mottle, which is precisely why our veneer read as cast concrete rather than
+# wood, and why the fascia and the altar measured as the SAME material (1.57 vs
+# 1.54) when the delivered work uses two different veneers (2.41 vs 1.61).
+# Box projection on object coords means a vertical face is textured by (x, z),
+# so an anisotropic scale runs the grain along whichever axis is stretched:
+# lengthwise on the rail, upright on the piers and the altar blocks.
+MAP_ASPECT = {
+    "veneer_fascia": (5.0, 1.0, 0.30),
+    "veneer_pier":   (0.45, 1.0, 4.0),
+    "veneer_altar":  (0.55, 1.0, 2.2),
+    "cavity":        (0.30, 1.0, 5.0),
 }
 
 # name -> (linear albedo, roughness, metallic, map-set slug or None, map scale m)
 PALETTE = {
-    "veneer_dark":  ((0.24, 0.17, 0.11), 0.42, 0.0, "wood_table_worn", 1.6),
-    "veneer_altar": ((0.27, 0.22, 0.17), 0.45, 0.0, "wood_table_worn", 1.1),
-    "cavity":       ((0.05, 0.04, 0.04), 0.70, 0.0, "wood_table_worn", 1.6),
-    "lacquer_white": ((0.85, 0.84, 0.83), 0.22, 0.0, None, 0.0),
+    # wood_floor, not the worn table: it is the only set on disk whose grain is
+    # LINEAR, which is the property that makes wood read as wood
+    "veneer_fascia": ((0.24, 0.17, 0.11), 0.42, 0.0, "wood_floor", 1.7),
+    "veneer_pier":  ((0.22, 0.16, 0.11), 0.42, 0.0, "wood_floor", 1.0),
+    "veneer_altar": ((0.27, 0.22, 0.17), 0.45, 0.0, "wood_floor", 1.0),
+    "cavity":       ((0.05, 0.04, 0.04), 0.70, 0.0, "wood_floor", 1.0),
+    "lacquer_white": ((0.88, 0.88, 0.87), 0.20, 0.0, None, 0.0),
     # 8 m so ONE pass of the stone covers the whole slab: the target is a single
     # bookmatched panel, and a tiling repeat reads as travertine tiles instead
-    "marble":       ((0.77, 0.75, 0.73), 0.18, 0.0, "marble_01", 8.0),
-    "brass":        ((0.72, 0.55, 0.26), 0.28, 1.0, None, 0.0),
+    "marble":       ((0.77, 0.76, 0.75), 0.18, 0.0, "marble_01", 8.0),
+    # the delivered inlay is pale champagne separating from the wood by VALUE,
+    # not a hot yellow line: the critic measured ours 15x further from its own
+    # veneer in R-B than the reference's
+    "brass":        ((0.74, 0.70, 0.60), 0.30, 1.0, None, 0.0),
     "floor_oak":    ((0.72, 0.60, 0.44), 0.40, 0.0, "wood_floor", 2.0),
-    "paint_white":  ((0.80, 0.79, 0.78), 0.65, 0.0, "plastered_wall_03", 4.0),
+    # a painted wall must be the LEAST chromatic neutral in the room; ours was
+    # 1.7x more chromatic than the stone where the reference is 0.53x
+    "paint_white":  ((0.80, 0.80, 0.80), 0.65, 0.0, "plastered_wall_03", 4.0),
 }
 
 
@@ -83,11 +106,11 @@ def material_for(mass_name):
     if n.startswith("brass_"):
         return "brass"
     if n.startswith("header_p"):
-        return "veneer_dark"
+        return "veneer_fascia"          # grain runs lengthwise along the rail
     if n.startswith("tower_"):
-        if n.endswith("_back") or "_shelf" in n:
-            return "cavity" if n.endswith("_back") else "veneer_dark"
-        return "veneer_dark"
+        if n.endswith("_back"):
+            return "cavity"
+        return "veneer_pier"            # grain runs upright on the piers
     if n.startswith("plinth"):
         return "lacquer_white"
     if n in ("step", "centre_box") or n.startswith("pedestal_"):
@@ -148,7 +171,8 @@ def build_materials():
             # box projection on OBJECT coords: no UVs exist on these meshes
             texco = nt.nodes.new("ShaderNodeTexCoord")
             mapping = nt.nodes.new("ShaderNodeMapping")
-            mapping.inputs["Scale"].default_value = (1.0 / scale,) * 3
+            asp = MAP_ASPECT.get(key, (1.0, 1.0, 1.0))
+            mapping.inputs["Scale"].default_value = tuple(1.0 / (scale * a) for a in asp)
             nt.links.new(texco.outputs["Object"], mapping.inputs["Vector"])
 
             def img(path, non_colour):
@@ -162,16 +186,32 @@ def build_materials():
                 return node
 
             if "base" in maps:
-                # the map carries the GRAIN, the sampled albedo carries the
-                # IDENTITY: divide the map by its own measured mean so the
-                # product lands on the albedo instead of albedo x mean
+                # DESATURATE the map to its own luminance first, then tint by
+                # the sampled albedo. Per-CHANNEL normalisation was the earlier
+                # design and it produced the blue specks the round-3 critic
+                # found on the two hero surfaces: the wood map's blue mean is
+                # 0.008, so dividing by it applied ~14x gain to a channel that
+                # holds almost nothing but compression noise. A scalar (the
+                # luminance mean) cannot do that, and it also keeps the map to
+                # its real job — the map carries the GRAIN, the sample carries
+                # the COLOUR.
                 mean = MAP_MEAN.get(slug, (1.0, 1.0, 1.0))
-                gain = tuple(a / max(m, 1e-4) for a, m in zip(albedo, mean))
+                lum_mean = 0.2126 * mean[0] + 0.7152 * mean[1] + 0.0722 * mean[2]
+                base_img = img(maps["base"], False)
+                grey = nt.nodes.new("ShaderNodeMixRGB")
+                grey.blend_type = "MIX"
+                grey.inputs["Fac"].default_value = 1.0    # fully desaturated
+                nt.links.new(base_img.outputs["Color"], grey.inputs["Color1"])
+                bw = nt.nodes.new("ShaderNodeRGBToBW")
+                nt.links.new(base_img.outputs["Color"], bw.inputs["Color"])
+                nt.links.new(bw.outputs["Val"], grey.inputs["Color2"])
+
+                gain = tuple(a / max(lum_mean, 1e-4) for a in albedo)
                 mix = nt.nodes.new("ShaderNodeMixRGB")
                 mix.blend_type = "MULTIPLY"
                 mix.inputs["Fac"].default_value = 1.0
                 mix.inputs["Color2"].default_value = (*gain, 1.0)
-                nt.links.new(img(maps["base"], False).outputs["Color"], mix.inputs["Color1"])
+                nt.links.new(grey.outputs["Color"], mix.inputs["Color1"])
                 # keep only part of the map's variation, blending back to flat
                 damp = nt.nodes.new("ShaderNodeMixRGB")
                 damp.blend_type = "MIX"

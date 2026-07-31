@@ -57,7 +57,7 @@
 
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
-| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 3: materials พร้อมให้ตัดสิน (gate #3); 1–2 closed by owner ("พอได้" / "พอใช้ ลุยต่อ"); next = 4 LIGHT (the study's measured #1 gap) | 3 | 6 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
+| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 3: materials พร้อมให้ตัดสิน (gate #3); 1–2 closed by owner ("พอได้" / "พอใช้ ลุยต่อ"); next = 4 LIGHT (the study's measured #1 gap) | 3 | 10 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
 
 **Gate #2's open question — CLOSED 2026-07-31 by a third instrument.** The
 built-in is ~100 mm deep, not 360. A shelf board below the horizon shows its
@@ -72,6 +72,23 @@ were DEFINED wrongly. A least-squares fit can only test the geometry you told it
 about — it will report a precise answer to a mis-posed question, and the round-1
 rounded-silhouette trap was the same class. Cross-check a fitted dimension
 against a feature the fit never saw before believing it.
+
+**Round-3 material lessons (2026-07-31).** A texture map is evidence of how a
+material VARIES, not an instruction to wear that material's character — the CC0
+wood is a worn table, and at full strength it dressed cabinet veneer in knots
+the delivered work does not have, while painted plaster keeps almost none of
+its map because a smooth wall really is nearly flat. **Grain has a direction**:
+the cold critic measured our veneer at 1.57 directional energy against the
+reference's 2.41 and that isotropy alone is why wood read as cast concrete —
+the same measurement also caught our rail and our altar wearing the SAME
+material where the delivered piece uses two. And **normalise a map by its
+luminance, never per channel**: the wood map's blue mean is 0.008, so
+per-channel normalisation applied ~14x gain to a channel holding nothing but
+compression noise and sprayed blue specks across both hero surfaces. Colour
+work needs its own numeric track (`trn001_matcheck.py`) because reprojection
+error says nothing about it — and that track must be honest that a uniform
+brightness gap is the LIGHT round's, so what it really catches is one surface
+wrong relative to its neighbours.
 
 ## Decisions
 
