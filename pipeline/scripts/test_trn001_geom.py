@@ -184,6 +184,34 @@ def test_every_mass_is_in_front_of_the_wall_and_inside_the_room(spec):
         assert y0 >= -room["room_depth_mm"], f"{m['name']} leaves the room"
 
 
+def test_the_side_wall_never_cuts_into_the_unit(spec):
+    """Owner, 2026-07-31: "ทำไมกำแพงซ้ายขยับเข้ามา". The wall had a hard-coded
+    position measured against an OLD carcass; round 3 re-derived the carcass
+    wider and further left and the wall stayed put, ending up 185 mm inside the
+    unit. Pinned at the invariant rather than the number, so the room can only
+    ever follow the unit."""
+    ms = {m["name"]: m for m in G.masses(spec)}
+    h = spec["unit"]["header"]
+    unit_left = h.get("cx_mm", 0.0) - h["len_mm"] / 2
+    side = ms["side_wall_L"]
+    assert side["c"][0] + side["s"][0] / 2 <= unit_left + 1e-6, \
+        "the side wall stands inside the unit's left edge"
+    for wall in ("back_wall", "ceiling", "floor"):
+        w = ms[wall]
+        assert w["c"][0] - w["s"][0] / 2 <= unit_left + 1e-6, \
+            f"{wall} does not reach the unit's left edge"
+
+
+def test_the_room_follows_the_unit_when_the_unit_moves(spec):
+    """The mechanism, not just today's numbers: widen the unit and the corner
+    must move with it."""
+    a = {m["name"]: m for m in G.masses(spec)}["side_wall_L"]["c"][0]
+    s2 = copy.deepcopy(spec)
+    s2["unit"]["header"]["len_mm"] += 400
+    b = {m["name"]: m for m in G.masses(s2)}["side_wall_L"]["c"][0]
+    assert b == pytest.approx(a - 200.0, abs=1.0)
+
+
 def test_spec_of_record_parses_and_carries_the_solved_camera(spec):
     for k in ("x_mm", "y_mm", "z_mm", "yaw_deg", "focal_mm"):
         assert isinstance(spec["camera"][k], (int, float))

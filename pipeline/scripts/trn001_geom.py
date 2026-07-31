@@ -223,9 +223,21 @@ def masses(spec):
     out = []
 
     ceil = room["ceiling_mm"]
-    wall_len = room["back_wall_len_mm"]
-    wall_off = room.get("unit_center_offset_mm", 0.0)  # unit centre vs wall centre
     depth = room["room_depth_mm"]
+    wall_len = room["back_wall_len_mm"]
+    # The unit is built INTO the left corner — in the target the ceiling/wall
+    # junction line runs out and dies exactly on the unit's top-left corner. So
+    # the corner DERIVES from the unit rather than carrying its own number:
+    # a hard-coded wall position went stale the moment round 3 re-derived the
+    # carcass wider and further left, and left the wall cutting 185 mm into it
+    # (owner spotted it: "ทำไมกำแพงซ้ายขยับเข้ามา"). Same class as every other
+    # decision this project has lost to an omission — so it is now impossible
+    # to change the unit without the room following.
+    if room.get("wall_follows_unit", True):
+        unit_left = u["header"].get("cx_mm", 0.0) - u["header"]["len_mm"] / 2
+        wall_off = -(unit_left + wall_len / 2)
+    else:
+        wall_off = room.get("unit_center_offset_mm", 0.0)
 
     # room shell (floor, back wall, ceiling, left side wall at frame-left = -x).
     # When the feature wall carries a RECESS, the wall body is pushed back by
