@@ -556,3 +556,43 @@ def test_a_missing_profile_never_silently_full_powers_a_light():
     assert "UNREAD" in prov
     norm2, prov2 = L.ies_norm_for("5.ies", 0.2)
     assert norm2 == 0.2 and prov2 == "pinned"
+
+
+def test_marble_veining_cannot_regress_to_a_contour_map():
+    """Two independent cold critics called our slab a topographic contour map,
+    and they were describing a MATHEMATICAL property, not a taste: the level
+    sets of a smooth scalar field are closed loops, so a fixed window on a fixed
+    noise field can only ever return closed curves of one width. Tuning the
+    window never escapes it — which is why the defect survived a whole round.
+
+    What escapes it is strong anisotropy (closed loops stretched into streaks)
+    plus a width that is itself an input. Pinned as those two properties rather
+    than as today's constants."""
+    import trn001_materials as MAT
+
+    k = MAT.PROCEDURAL["marble"]
+    sx, _, sz = k["stretch"]
+    assert max(sx, sz) / min(sx, sz) >= 5.0, (
+        "marble field must stay strongly anisotropic or its level sets close "
+        "back into contours")
+    assert k.get("width_var", 0) > 0.0, "vein width must vary along its length"
+    assert k.get("tilt", 0.0) != 0.0, "the vein system runs on a diagonal"
+
+
+def test_procedural_stone_gives_back_the_albedo_its_veining_eats():
+    """The veining only ever multiplies albedo DOWN, so the built slab drifts
+    below the albedo that was SAMPLED off the target — the same disease MAP_MEAN
+    cures for image maps, and it cost 0.61 against a target of 0.80 before it
+    was caught."""
+    import trn001_materials as MAT
+
+    assert MAT.PROCEDURAL["marble"].get("albedo_gain", 1.0) > 1.0
+
+
+def test_the_stone_is_translucent_at_all():
+    """Vault + research both say stone without subsurface reads as painted
+    plaster. Sparing is the point — a value, not a switch left off."""
+    import trn001_materials as MAT
+
+    w = MAT.PROCEDURAL["marble"].get("sss_weight", 0.0)
+    assert 0.0 < w <= 0.35, f"marble subsurface weight {w} is off or overdone"

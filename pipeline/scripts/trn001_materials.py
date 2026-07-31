@@ -162,62 +162,175 @@ EMISSION = {"halo_led": 16.0, "lens_warm": 40.0}
 # repeating, and controllable — as noise-distorted bands, which is what large
 # sweeping figure actually is. (key -> dict of knobs)
 PROCEDURAL = {
-    # two vein families: a few big sweeping ones, and a finer web inside them
-    "marble": {"scale": 2.6, "detail": 10.0, "roughness": 0.62, "distortion": 1.4,
-               "vein_lo": 0.470, "vein_hi": 0.512, "vein_dark": 0.55,
-               "fine_scale": 9.0, "fine_lo": 0.487, "fine_hi": 0.503,
-               "fine_dark": 0.80, "stretch": (1.0, 1.0, 0.45)},
+    "marble": {
+        "detail": 8.0, "roughness": 0.55, "distortion": 1.6,
+        # ANISOTROPY IS WHAT TURNS A CONTOUR INTO A VEIN. At 2.2:1 the level
+        # sets stayed closed; the delivered slab runs one dominant system, so
+        # the field is compressed ~9x across the vein direction and tilted about
+        # Y (the axis that actually rotates a pattern on a panel standing in the
+        # x-z plane — the old code turned it about Z, which barely moves it).
+        "stretch": (1.0, 1.0, 0.12), "tilt": 0.62,
+        # HOW MANY veins is set by scale x the compression, not by scale alone —
+        # the first cut ran 2.2 against a 9x squeeze, i.e. a feature every 50 mm,
+        # which is ~40 streaks across the panel and reads as watered silk. The
+        # delivered slab carries a handful of systems, so the product is aimed at
+        # a vein roughly every 300 mm instead.
+        "scale": 0.42, "width": 0.034, "width_var": 0.85, "width_scale": 0.6,
+        # vein VALUE is measured, not chosen: on the slab patch the delivered
+        # stone runs a p95/p5 spread of 1.23 and our first cut at dark 0.46 ran
+        # 1.42 — veins too heavy, which is what makes stone read as printed
+        "dark": 0.58, "sharp": 1.7,
+        # secondary feathering, held OFF the clean fields by its own mask
+        "fine_scale": 1.6, "fine_width": 0.015, "fine_var": 0.85,
+        "fine_dark": 0.78, "mask_scale": 0.55, "mask_lo": 0.50, "mask_hi": 0.78,
+        # Stone is not chalk. The vault carries the roughness bands (honed
+        # 0.4-0.7, polished 0.0-0.15) and one line saying SSS is used "sparingly
+        # for high-end realism" — the sparing amount is the point: enough that
+        # light entering the surface comes back out slightly offset, which is
+        # what separates marble from painted plaster, not enough to make an
+        # 18 mm slab glow like alabaster.
+        "sss_weight": 0.14, "sss_radius_mm": (3.6, 3.0, 2.6),
+        # the veining multiplies albedo DOWN, so the built slab drifts below the
+        # albedo that was sampled off the target. Same disease MAP_MEAN cures for
+        # image maps; measured back in frame rather than assumed.
+        "albedo_gain": 1.32,
+    },
 }
 
 
 def _build_veined_stone(nt, bsdf, albedo, k):
-    """Marble veining as THIN SINUOUS LINES, not clouds.
+    """Marble veining as a DIRECTIONAL system of varying-width veins.
 
-    A wave texture under heavy distortion makes soft blobs — it read as smoke.
-    What produces veins is a noise field passed through a NARROW window: only
-    where the field crosses a thin band does a vein appear, so the veins come
-    out fine, branching and continuous, and an anisotropic coordinate stretch
-    sweeps them diagonally the way a bookmatched slab runs.
+    The previous generator passed a noise field through a narrow ramp window,
+    and that is exactly why two independent cold critics called the result a
+    contour map: **the level sets of a smooth scalar field are closed loops.**
+    A fixed window on a fixed field can only ever return closed curves of one
+    width — a topographic map is literally the same construction. No amount of
+    tuning the window escapes that, which is why it survived a whole round.
+
+    Three changes make veins instead of contours, each answering something the
+    reference shows:
+      * ANISOTROPY. Compressing the field ~9x across one axis stretches those
+        closed loops into long streaks, and tilting about Y (the axis that
+        actually rotates a pattern on a panel standing in the x-z plane — the
+        old code turned it about Z, which barely moves it) lays them on the
+        delivered slab's diagonal.
+      * WIDTH AS A LIVE INPUT. Distance-to-the-centre-line divided by a width
+        that is itself a noise gives a vein that swells and thins along its own
+        length. A ramp cannot do this; its window is a constant.
+      * CLEAN FIELDS. The secondary feathering is multiplied by a large-scale
+        mask, so it clusters near the primary system and leaves the open white
+        areas the reference has between vein systems.
 
     Grey and achromatic on purpose: the round-3 critic measured the delivered
     slab's veins at +0.2 R-B (pure value, no colour) against our image-mapped
-    stone's +5.4 rusty veins."""
+    stone's +5.4 rusty ones."""
+    # TWO mapping nodes, and the ORDER is the whole point. One node applies
+    # Scale THEN Rotation, so the compression axis is pinned in object space
+    # before the rotation is ever reached and the veins come out running along a
+    # world axis whatever the tilt says — which is exactly what the first attempt
+    # rendered: horizontal streaks under a 35-degree tilt. Rotating FIRST and
+    # compressing SECOND puts the narrow axis on the diagonal, so the veins run
+    # on the delivered slab's diagonal instead.
     texco = nt.nodes.new("ShaderNodeTexCoord")
+    turn = nt.nodes.new("ShaderNodeMapping")
+    turn.inputs["Rotation"].default_value = (0.0, k.get("tilt", 0.0), 0.0)
+    nt.links.new(texco.outputs["Object"], turn.inputs["Vector"])
     mapping = nt.nodes.new("ShaderNodeMapping")
     mapping.inputs["Scale"].default_value = tuple(1.0 / a for a in k["stretch"])
-    mapping.inputs["Rotation"].default_value = (0.0, 0.0, 0.55)
-    nt.links.new(texco.outputs["Object"], mapping.inputs["Vector"])
+    nt.links.new(turn.outputs["Vector"], mapping.inputs["Vector"])
 
-    def vein(scale, lo, hi, dark, on_top):
+    def _noise(scale, detail, distortion, vector=None):
         n = nt.nodes.new("ShaderNodeTexNoise")
         n.inputs["Scale"].default_value = scale
-        n.inputs["Detail"].default_value = k["detail"]
+        n.inputs["Detail"].default_value = detail
         n.inputs["Roughness"].default_value = k["roughness"]
-        n.inputs["Distortion"].default_value = k["distortion"]
-        nt.links.new(mapping.outputs["Vector"], n.inputs["Vector"])
-        r = nt.nodes.new("ShaderNodeValToRGB")
-        r.color_ramp.interpolation = "B_SPLINE"
-        e = r.color_ramp.elements
-        e[0].position, e[0].color = lo, (1.0, 1.0, 1.0, 1.0)
-        e[1].position, e[1].color = (lo + hi) / 2, (0.0, 0.0, 0.0, 1.0)
-        e.new(hi).color = (1.0, 1.0, 1.0, 1.0)
-        nt.links.new(n.outputs["Fac"], r.inputs["Fac"])
+        n.inputs["Distortion"].default_value = distortion
+        nt.links.new(vector or mapping.outputs["Vector"], n.inputs["Vector"])
+        return n
+
+    def _math(op, a, b=None, clamp=False):
+        m = nt.nodes.new("ShaderNodeMath")
+        m.operation = op
+        m.use_clamp = clamp
+        if hasattr(a, "default_value") or not isinstance(a, (int, float)):
+            nt.links.new(a, m.inputs[0])
+        else:
+            m.inputs[0].default_value = a
+        if b is not None:
+            if isinstance(b, (int, float)):
+                m.inputs[1].default_value = b
+            else:
+                nt.links.new(b, m.inputs[1])
+        return m.outputs[0]
+
+    def vein_mask(scale, width, var, width_scale, extra_mask=None):
+        """1.0 on the vein centre-line, falling to 0 at its (varying) edge."""
+        field = _noise(scale, k["detail"], k["distortion"])
+        # half-width = width * (1 - var + 2*var*noise)  -> swells and thins
+        wnoise = _noise(width_scale, 2.0, 0.0)
+        w = _math("MULTIPLY", wnoise.outputs["Fac"], 2.0 * var)
+        w = _math("ADD", w, 1.0 - var)
+        w = _math("MULTIPLY", w, width)
+        w = _math("MAXIMUM", w, 1e-4)
+        d = _math("SUBTRACT", field.outputs["Fac"], 0.5)
+        d = _math("ABSOLUTE", d)
+        v = _math("DIVIDE", d, w)
+        v = _math("SUBTRACT", 1.0, v, clamp=True)
+        # a linear fall from centre-line to edge is a smear; real veining has a
+        # crisp core with a narrow bleed, which is what the exponent buys
+        if k.get("sharp", 1.0) != 1.0:
+            v = _math("POWER", v, k["sharp"], clamp=True)
+        if extra_mask is not None:
+            v = _math("MULTIPLY", v, extra_mask, clamp=True)
+        return v
+
+    def apply(v, dark, on_top, base):
         mixn = nt.nodes.new("ShaderNodeMixRGB")
         mixn.blend_type = "MIX"
-        mixn.inputs["Color2"].default_value = (*[c * dark for c in albedo], 1.0)
+        mixn.inputs["Color2"].default_value = (*[c * dark for c in base], 1.0)
         if on_top is None:
-            mixn.inputs["Color1"].default_value = (*albedo, 1.0)
+            mixn.inputs["Color1"].default_value = (*base, 1.0)
         else:
             nt.links.new(on_top, mixn.inputs["Color1"])
-        # ramp is white OFF-vein, black ON-vein -> invert into the mix factor
-        inv = nt.nodes.new("ShaderNodeInvert")
-        nt.links.new(r.outputs["Color"], inv.inputs["Color"])
-        nt.links.new(inv.outputs["Color"], mixn.inputs["Fac"])
+        nt.links.new(v, mixn.inputs["Fac"])
         return mixn.outputs["Color"]
 
-    big = vein(k["scale"], k["vein_lo"], k["vein_hi"], k["vein_dark"], None)
-    fine = vein(k["fine_scale"], k["fine_lo"], k["fine_hi"], k["fine_dark"], big)
-    nt.links.new(fine, bsdf.inputs["Base Color"])
+    # the veining only ever multiplies albedo DOWN, so the built slab drifts
+    # below the albedo sampled off the target unless it is given the loss back
+    gain = k.get("albedo_gain", 1.0)
+    base = tuple(min(0.95, c * gain) for c in albedo)
+
+    primary = vein_mask(k["scale"], k["width"], k["width_var"], k["width_scale"])
+    col = apply(primary, k["dark"], None, base)
+
+    mask_n = _noise(k["mask_scale"], 2.0, 0.0)
+    mask = _math("SUBTRACT", mask_n.outputs["Fac"], k["mask_lo"])
+    mask = _math("DIVIDE", mask, max(k["mask_hi"] - k["mask_lo"], 1e-4))
+    mask = _math("MAXIMUM", mask, 0.0)
+    mask = _math("MINIMUM", mask, 1.0)
+    fine = vein_mask(k["fine_scale"], k["fine_width"], k["fine_var"],
+                     k["width_scale"] * 2.0, extra_mask=mask)
+    col = apply(fine, k["fine_dark"], col, base)
+    nt.links.new(col, bsdf.inputs["Base Color"])
+
+    # subsurface, set by input NAME and skipped loudly if this Blender spells it
+    # differently — a silently-missing translucency is the "reverted by an
+    # omission" shape, and it would look exactly like a tuning choice
+    w = k.get("sss_weight")
+    if w:
+        if "Subsurface Weight" in bsdf.inputs:
+            bsdf.inputs["Subsurface Weight"].default_value = w
+            nt.links.new(col, bsdf.inputs["Subsurface Color"]) \
+                if "Subsurface Color" in bsdf.inputs else None
+            if "Subsurface Radius" in bsdf.inputs:
+                bsdf.inputs["Subsurface Radius"].default_value = tuple(
+                    r * 0.001 for r in k.get("sss_radius_mm", (1.0, 1.0, 1.0)))
+            if "Subsurface Scale" in bsdf.inputs:
+                bsdf.inputs["Subsurface Scale"].default_value = 1.0
+        else:
+            print("  MARBLE: no 'Subsurface Weight' input on this Principled "
+                  "BSDF — stone is rendering WITHOUT translucency")
 
 
 def material_for(mass_name):
