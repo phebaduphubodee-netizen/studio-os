@@ -32,29 +32,6 @@ RES = 2048
 
 # ------------------------------------------------------------------ geometry --
 
-def _rounded_rect(cx, cy, sx, sy, radii, seg=8):
-    """Plan-view outline (list of (x, y)) of a rect centred at (cx, cy), size
-    (sx, sy), with per-corner radii (front-left, front-right, back-left,
-    back-right); 'front' = -y. Counter-clockwise seen from +z."""
-    hx, hy = sx / 2.0, sy / 2.0
-    r_fl, r_fr, r_bl, r_br = [min(r, hx, hy) for r in radii]
-    # corners in CCW order starting front-left: (-,-) -> (+,-) -> (+,+) -> (-,+)
-    corners = [(-hx, -hy, r_fl, math.pi, 1.5 * math.pi),
-               (+hx, -hy, r_fr, 1.5 * math.pi, 2.0 * math.pi),
-               (+hx, +hy, r_br, 0.0, 0.5 * math.pi),
-               (-hx, +hy, r_bl, 0.5 * math.pi, math.pi)]
-    pts = []
-    for x, y, r, a0, a1 in corners:
-        if r <= 0:
-            pts.append((cx + x, cy + y))
-            continue
-        ccx, ccy = x - math.copysign(r, x), y - math.copysign(r, y)
-        for i in range(seg + 1):
-            a = a0 + (a1 - a0) * i / seg
-            pts.append((cx + ccx + r * math.cos(a), cy + ccy + r * math.sin(a)))
-    return pts
-
-
 def _mesh_from_outline(name, outline, z0, z1):
     """Extruded prism from a plan outline: side quads + n-gon caps (render-only
     blockout — not export geometry, so caps may be n-gons)."""
@@ -122,7 +99,7 @@ def build_masses(spec):
     for m in G.masses(spec):
         cx, cy, cz = m["c"]
         sx, sy, sz = m["s"]
-        outline = _rounded_rect(cx, cy, sx, sy, m["radii"])
+        outline = G.rounded_outline(cx, cy, sx, sy, m["radii"])
         me = _mesh_from_outline(f"SM_TRN001_{m['name']}", outline,
                                 cz - sz / 2.0, cz + sz / 2.0)
         if IDMASK:

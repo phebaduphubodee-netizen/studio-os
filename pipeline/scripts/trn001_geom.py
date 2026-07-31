@@ -34,9 +34,190 @@ def _box(name, cx, cy, cz, sx, sy, sz, value, radii=None):
             "value": value, "radii": radii or (0.0, 0.0, 0.0, 0.0)}
 
 
+def rounded_outline(cx, cy, sx, sy, radii, seg=8):
+    """Plan-view outline [(x, y)] of a rect centred at (cx, cy), size (sx, sy),
+    with per-corner radii (front-left, front-right, back-left, back-right);
+    'front' = -y (the room side). Counter-clockwise seen from +z.
+
+    PURE and here (not in the bpy layer) so the clamp below is testable: a
+    radius can never exceed HALF THE SHORTER SIDE, which is why an 18 mm-thick
+    drawer face cannot carry a 120 mm plan curve — the curve has to live on a
+    mass with the depth to hold it (2026-07-31: caught by reading the clamp,
+    after a test had pinned the requested radius instead of the built one)."""
+    hx, hy = sx / 2.0, sy / 2.0
+    r_fl, r_fr, r_bl, r_br = [max(0.0, min(r, hx, hy)) for r in radii]
+    corners = [(-hx, -hy, r_fl, math.pi, 1.5 * math.pi),
+               (+hx, -hy, r_fr, 1.5 * math.pi, 2.0 * math.pi),
+               (+hx, +hy, r_br, 0.0, 0.5 * math.pi),
+               (-hx, +hy, r_bl, 0.5 * math.pi, math.pi)]
+    pts = []
+    for x, y, r, a0, a1 in corners:
+        if r <= 0:
+            pts.append((cx + x, cy + y))
+            continue
+        ccx, ccy = x - math.copysign(r, x), y - math.copysign(r, y)
+        for i in range(seg + 1):
+            a = a0 + (a1 - a0) * i / seg
+            pts.append((cx + ccx + r * math.cos(a), cy + ccy + r * math.sin(a)))
+    return pts
+
+
+def effective_radii(mass):
+    """The radii a mass will ACTUALLY be built with, after the clamp."""
+    hx, hy = mass["s"][0] / 2.0, mass["s"][1] / 2.0
+    return tuple(max(0.0, min(r, hx, hy)) for r in mass["radii"])
+
+
+def _tower_masses(side, cx, t, z_top, plinth_h):
+    """Round-2 joinery: an OPEN CARCASS tower — two side panels, a back panel,
+    top and bottom boards, shelf boards, and a recessed toe base on whichever
+    tower stands on the floor. Authored boards, never a boolean-carved solid
+    (pipeline law: booleans make n-gons a SketchUp recipient would see).
+    Shelf heights come from the spec as measured z values, per side, because
+    the target's two towers do NOT share a shelf ladder."""
+    out = []
+    w, d = t["w_mm"], t["d_mm"]
+    b = t.get("board_mm", 18)
+    st = t.get("shelf_t_mm", 30)
+    carcass, cavity = 0.28, 0.13
+    on_plinth = (side == "L" and t.get("left_on_plinth"))
+    z_floor = plinth_h if on_plinth else 0.0
+    # The floor-standing tower reads as FLOATING: its lit face stops ~99 mm
+    # above the floor and bare floor shows beneath (measured 2026-07-31 by
+    # luminance, not assumed) — so the toe is a deep recess, and above it a
+    # solid base block whose top is the lowest cubby's floor.
+    toe_h = 0.0 if on_plinth else t.get("toe_h_mm", 0.0)
+    z_base = z_floor + toe_h
+    base_top = t.get("base_top_mm") if not on_plinth else None
+    if base_top is None:
+        base_top = z_base + b
+    if toe_h > 0:
+        ts = t.get("toe_setback_mm", 20)
+        out.append(_box(f"tower_{side}_toe", cx, -(d - ts) / 2, z_floor + toe_h / 2,
+                        w, d - ts, toe_h, 0.18))
+    z0 = base_top
+    out.append(_box(f"tower_{side}_base", cx, -d / 2, (z_base + base_top) / 2,
+                    w, d, base_top - z_base, carcass))
+    out.append(_box(f"tower_{side}_back", cx, -b / 2, (z0 + z_top) / 2,
+                    w, b, z_top - z0, cavity))
+    for tag, xoff in (("sA", -(w - b) / 2), ("sB", +(w - b) / 2)):
+        out.append(_box(f"tower_{side}_{tag}", cx + xoff, -d / 2, (z0 + z_top) / 2,
+                        b, d, z_top - z0, carcass))
+    inner_w, inner_y, inner_d = w - 2 * b, -(d + b) / 2, d - b
+    out.append(_box(f"tower_{side}_top", cx, inner_y, z_top - b / 2,
+                    inner_w, inner_d, b, carcass))
+    for i, sz in enumerate(t.get(f"shelves_{side}_z", [])):
+        out.append(_box(f"tower_{side}_shelf{i}", cx, inner_y, sz + st / 2,
+                        inner_w, inner_d, st, carcass))
+    return out
+
+
+def _surround_masses(s, m):
+    """Round-2 structural finding (2026-07-31): the towers are only ~72 mm proud
+    of the WHITE SURFACE beside them, not ~360 mm proud of bare wall — that ratio
+    held for every tower depth tried, so the white surround is a FURRED-OUT panel
+    and the marble sits at the back of a deep reveal. Built as four boxes around
+    the opening (a boolean hole would make the n-gons the export law forbids)."""
+    front, back = -s["front_y_mm"], -s["back_y_mm"]
+    dep = abs(front - back)
+    ycen = (front + back) / 2
+    x0, x1 = s["x0_mm"], s["x1_mm"]
+    z0, z1 = s["z0_mm"], s["z1_mm"]
+    g = s.get("reveal_gap_mm", 25.0)
+    ox0 = m.get("cx_mm", 0.0) - m["w_mm"] / 2 - g
+    ox1 = m.get("cx_mm", 0.0) + m["w_mm"] / 2 + g
+    oz0 = m["bot_z_mm"] - g
+    oz1 = m["bot_z_mm"] + m["h_mm"] + g
+    v = 0.82
+    return [
+        _box("surround_jambL", (x0 + ox0) / 2, ycen, (z0 + z1) / 2, ox0 - x0, dep, z1 - z0, v),
+        _box("surround_jambR", (ox1 + x1) / 2, ycen, (z0 + z1) / 2, x1 - ox1, dep, z1 - z0, v),
+        _box("surround_head", (ox0 + ox1) / 2, ycen, (oz1 + z1) / 2, ox1 - ox0, dep, z1 - oz1, v),
+        _box("surround_sill", (ox0 + ox1) / 2, ycen, (z0 + oz0) / 2, ox1 - ox0, dep, oz0 - z0, v),
+    ]
+
+
+def _header_masses(h, x_in):
+    """Round-2 joinery: the band is THREE faced panels split on the tower inner
+    faces (the joints the reference shows), separated by a shadow reveal, each
+    carrying a brass rectangle inset from its own panel edges."""
+    out = []
+    hcx, L = h.get("cx_mm", 0.0), h["len_mm"]
+    z1, bh, dep = h["top_z_mm"], h["band_h_mm"], h["depth_mm"]
+    z0 = z1 - bh
+    rev = h.get("reveal_mm", 4.0)
+    joints = h.get("joints_x_mm", [hcx - x_in, hcx + x_in])
+    bounds = [hcx - L / 2] + sorted(joints) + [hcx + L / 2]
+    br = h.get("brass") or {}
+    inset, bw, proud = br.get("inset_mm", 45.0), br.get("width_mm", 6.0), br.get("proud_mm", 2.0)
+    for i in range(len(bounds) - 1):
+        x0 = bounds[i] + (rev / 2 if i else 0.0)
+        x1 = bounds[i + 1] - (rev / 2 if i + 2 < len(bounds) else 0.0)
+        pw, pcx = x1 - x0, (x0 + x1) / 2
+        out.append(_box(f"header_p{i}", pcx, -dep / 2, (z0 + z1) / 2, pw, dep, bh, 0.45))
+        if not br or pw <= 2 * inset + 2 * bw or bh <= 2 * inset + 2 * bw:
+            continue
+        by, bd = -(dep + proud / 2), proud
+        iz0, iz1 = z0 + inset, z1 - inset
+        ix0, ix1 = x0 + inset, x1 - inset
+        out.append(_box(f"brass_p{i}_top", pcx, by, iz1 - bw / 2, ix1 - ix0, bd, bw, 0.62))
+        out.append(_box(f"brass_p{i}_bot", pcx, by, iz0 + bw / 2, ix1 - ix0, bd, bw, 0.62))
+        for tag, bx in (("l", ix0 + bw / 2), ("r", ix1 - bw / 2)):
+            out.append(_box(f"brass_p{i}_{tag}", bx, by, (iz0 + iz1) / 2,
+                            bw, bd, iz1 - iz0 - 2 * bw, 0.62))
+    return out
+
+
+def _plinth_masses(p):
+    """Round-2 joinery: handleless push-open drawer bank over a recessed toe.
+
+    The bank is the body: N FULL-DEPTH drawer prisms (so the two outer ones can
+    carry the real plan curve — see rounded_outline's clamp) separated by
+    shadow-gap reveals, and each gap is BACKED by a set-back strip so a reveal
+    reads as a groove instead of a see-through slot. The outer plane and the
+    rounded ends therefore stay exactly where round 1's camera solve fitted
+    them."""
+    out = []
+    cx, L, h, d, r = p.get("cx_mm", 0.0), p["len_mm"], p["h_mm"], p["d_mm"], p["r_mm"]
+    toe_h = p.get("toe_h_mm", 0.0)
+    toe_set = p.get("toe_setback_mm", 40.0)
+    n = int(p.get("drawers", 0))
+    if toe_h > 0:
+        out.append(_box("plinth_toe", cx, -(d - toe_set) / 2, toe_h / 2,
+                        L - 2 * r, d - toe_set, toe_h, 0.30))
+    zc, zh = (toe_h + h) / 2, h - toe_h
+    if n <= 1:
+        out.append(_box("plinth", cx, -d / 2, zc, L, d, zh, 0.85, radii=(r, r, 0, 0)))
+        return out
+    rev = p.get("reveal_mm", 4.0)
+    rev_d = p.get("reveal_depth_mm", 20.0)
+    # MEASURED reveal centres win over equal division: the target's two end
+    # faces are wider than the middle three because they carry the curve, so an
+    # equal split would be a tidier piece than the one that was built.
+    cuts = p.get("reveal_x_mm")
+    if cuts:
+        cuts = sorted(cuts)[:n - 1]
+    else:
+        fw = (L - rev * (n - 1)) / n
+        cuts = [cx - L / 2 + (i + 1) * fw + i * rev + rev / 2 for i in range(n - 1)]
+    edges = [cx - L / 2] + list(cuts) + [cx + L / 2]
+    for i in range(n):
+        x0 = edges[i] + (rev / 2 if i else 0.0)
+        x1 = edges[i + 1] - (rev / 2 if i + 1 < n else 0.0)
+        name = "plinth" if i == 0 else f"plinth_face{i}"
+        out.append(_box(name, (x0 + x1) / 2, -d / 2, zc, x1 - x0, d, zh, 0.85,
+                        radii=(r if i == 0 else 0.0, r if i == n - 1 else 0.0, 0, 0)))
+        if i:
+            out.append(_box(f"plinth_reveal{i}", edges[i], -(d - rev_d) / 2, zc,
+                            rev, d - rev_d, zh, 0.55))
+    return out
+
+
 def masses(spec):
     """Spec dict -> list of mass dicts. Every dimension read here is mm.
-    Room sits at y<0; positive spec depths are applied toward the room."""
+    Room sits at y<0; positive spec depths are applied toward the room.
+    Joinery detail is OPT-IN per element (spec keys present) so a round-1
+    blockout stays reproducible byte-for-byte."""
     u = spec["unit"]
     room = spec["room"]
     out = []
@@ -53,24 +234,37 @@ def masses(spec):
     lx = -wall_off - wall_len / 2
     out.append(_box("side_wall_L", lx - 50, -depth / 2, ceil / 2, 100, depth, ceil, 0.80))
 
-    # header band across the top; its brass trim lines are a later round
+    # header band across the top (one solid, or three faced panels + brass)
     h = u["header"]
     hcx = h.get("cx_mm", 0.0)
-    out.append(_box("header", hcx, -h["depth_mm"] / 2, h["top_z_mm"] - h["band_h_mm"] / 2,
-                    h["len_mm"], h["depth_mm"], h["band_h_mm"], 0.45))
+    t = u["tower"]
+    x_in = h["len_mm"] / 2 - t["w_mm"]
+    if h.get("joints_x_mm") or h.get("brass"):
+        out.extend(_header_masses(h, x_in))
+    else:
+        out.append(_box("header", hcx, -h["depth_mm"] / 2,
+                        h["top_z_mm"] - h["band_h_mm"] / 2,
+                        h["len_mm"], h["depth_mm"], h["band_h_mm"], 0.45))
 
     # towers (-> header underside); the LEFT tower stands on the plinth when
     # the spec says so (target reads asymmetric), the right on the floor
-    t = u["tower"]
     tz = h["top_z_mm"] - h["band_h_mm"]
     for side, sgn in (("L", -1), ("R", 1)):
-        z0t = u["plinth"]["h_mm"] if (side == "L" and t.get("left_on_plinth")) else 0.0
         cx = hcx + sgn * (h["len_mm"] / 2 - t["w_mm"] / 2)
+        if t.get(f"shelves_{side}_z"):
+            out.extend(_tower_masses(side, cx, t, tz, u["plinth"]["h_mm"]))
+            continue
+        z0t = u["plinth"]["h_mm"] if (side == "L" and t.get("left_on_plinth")) else 0.0
         out.append(_box(f"tower_{side}", cx, -t["d_mm"] / 2, (tz + z0t) / 2,
                         t["w_mm"], t["d_mm"], tz - z0t, 0.28))
 
-    # backlit slab, proud of the wall
+    # furred-out white surround with the marble reveal cut through it
     m = u["marble"]
+    if u.get("surround"):
+        out.extend(_surround_masses(u["surround"], m))
+
+    # backlit slab, proud of the wall
+
     out.append(_box("marble", m.get("cx_mm", 0.0), -m["proud_mm"] / 2,
                     m["bot_z_mm"] + m["h_mm"] / 2,
                     m["w_mm"], m["proud_mm"], m["h_mm"], 0.75))
@@ -79,9 +273,12 @@ def masses(spec):
     # reads ASYMMETRIC (plinth runs on under the left tower to the unit's outer
     # edge; the left tower stands ON it while the right tower stands on floor)
     p = u["plinth"]
-    out.append(_box("plinth", p.get("cx_mm", 0.0), -p["d_mm"] / 2, p["h_mm"] / 2,
-                    p["len_mm"], p["d_mm"], p["h_mm"], 0.85,
-                    radii=(p["r_mm"], p["r_mm"], 0, 0)))
+    if p.get("drawers") or p.get("toe_h_mm"):
+        out.extend(_plinth_masses(p))
+    else:
+        out.append(_box("plinth", p.get("cx_mm", 0.0), -p["d_mm"] / 2, p["h_mm"] / 2,
+                        p["len_mm"], p["d_mm"], p["h_mm"], 0.85,
+                        radii=(p["r_mm"], p["r_mm"], 0, 0)))
 
     # altar stack: wide step -> centre box -> side pedestals (all on plinth top)
     s = u["step"]
@@ -141,6 +338,8 @@ def landmarks_3d(spec):
         "box_top_right":    (bcx + b["w_mm"] / 2, -(b["d_mm"] - b["r_mm"]), z0 + b["h_mm"]),
         "step_top_left":    (scx - s["len_mm"] / 2, -(s["d_mm"] - s["r_mm"]), p["h_mm"] + s["h_mm"]),
         "step_top_right":   (scx + s["len_mm"] / 2, -(s["d_mm"] - s["r_mm"]), p["h_mm"] + s["h_mm"]),
+        **{f"plinth_top_rev{i}": (x, -p["d_mm"], p["h_mm"])
+           for i, x in enumerate(p.get("reveal_x_mm", []))},
     }
 
 
@@ -176,6 +375,30 @@ def project(cam, pt, res=2048):
 
 def project_all(cam, spec, res=2048):
     return {n: project(cam, p, res) for n, p in landmarks_3d(spec).items()}
+
+
+def backproject(cam, uv, plane, res=2048):
+    """Inverse of project(): a measured target pixel + the PLANE it is known to
+    lie on -> world mm. plane = (axis, value), axis in 'x'|'y'|'z'.
+
+    This is what a solved camera buys: once the station is fitted, any pixel a
+    probe can find on a face whose plane is known reads back as a real
+    dimension — no proportion-guessing. Returns None when the ray is parallel
+    to the plane or the hit lies behind the camera (never a silent bad number).
+    """
+    fwd, right, _ = cam_basis(cam["yaw_deg"])
+    k = cam["focal_mm"] / SENSOR_MM
+    a = (uv[0] / res - 0.5 - cam.get("shift_x", 0.0)) / k
+    b = (0.5 + cam.get("shift_y", 0.0) - uv[1] / res) / k
+    d = (fwd[0] + a * right[0], fwd[1] + a * right[1], b)
+    c = (cam["x_mm"], cam["y_mm"], cam["z_mm"])
+    i = "xyz".index(plane[0])
+    if abs(d[i]) < 1e-12:
+        return None
+    t = (plane[1] - c[i]) / d[i]
+    if t <= 0:
+        return None
+    return tuple(c[j] + t * d[j] for j in range(3))
 
 
 def load_spec(path):

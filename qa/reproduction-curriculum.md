@@ -57,7 +57,14 @@
 
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
-| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 1: camera+blockout พร้อมให้ตัดสิน (gate #1 in private dir); next = 2 joinery | 1 | 3 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
+| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 2: joinery พร้อมให้ตัดสิน (gate #2); 1 closed by owner "พอได้"; next = 3 materials, gated on the depth question | 2 | 5 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
+
+**Open question at gate #2 (owner):** how deep is the built-in? The landmark fit
+has a clean minimum at 360 mm; the visible side-return beside the left tower
+says ~80 mm (target 28 px vs ours 101 px). Two attempts to build the shallow
+reading both made the frame worse, so R1 halted the lane on that mechanism
+rather than spend a third cycle. Everything else in round 2 is measured and
+converged.
 
 ## Decisions
 

@@ -91,8 +91,18 @@ def solve(spec, targets, pins=None):
         mmz = dv / px_dz if abs(px_dz) > 1e-9 else float("nan")
         print(f"  {t['name']:18s} du={du:+7.1f} dv={dv:+7.1f}  |{d:6.1f}|  "
               f"~mm: x{mmx:+7.0f} z{mmz:+7.0f}  conf={t.get('confidence', 1):.2f}")
-    print(f"\nmean={np.mean(errs):.1f}px  median={np.median(errs):.1f}px  "
-          f"max={np.max(errs):.1f}px  (frame = {RES}px)")
+    # Report the CONFIDENT set separately. A demoted landmark still steers the
+    # fit a little (by design, as a weak prior) but its residual must not be
+    # averaged in as if it were evidence — that would let a superseded
+    # convention keep scoring the model it no longer describes.
+    strong = [e for e, t in zip(errs, used) if t.get("confidence", 1.0) >= 0.5]
+    print(f"\nALL       n={len(errs):2d}  mean={np.mean(errs):5.1f}px  "
+          f"median={np.median(errs):5.1f}px  max={np.max(errs):5.1f}px")
+    if strong and len(strong) != len(errs):
+        print(f"CONFIDENT n={len(strong):2d}  mean={np.mean(strong):5.1f}px  "
+              f"median={np.median(strong):5.1f}px  max={np.max(strong):5.1f}px  "
+              f"(conf>=0.5 — the metric of record)")
+    print(f"(frame = {RES}px)")
     return cam, errs
 
 
