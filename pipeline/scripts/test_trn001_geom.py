@@ -683,3 +683,61 @@ def test_the_unbuildable_styling_classes_are_declared_not_silently_dropped(spec)
     missing = S.unavailable(spec)
     assert missing, "the classes the pool cannot supply must be named in the spec"
     assert any("statuar" in m for m in missing)
+
+
+def test_no_styling_object_stands_inside_a_solid(spec):
+    """Owner, 2026-07-31: "แจกันทำไมไปตั้งตรงนั้น". A vase was standing INSIDE the
+    left pedestal — because its position came from back-projecting onto the step
+    plane, the hit landed 108 mm past the step's front edge, and I kept the x and
+    clamped the y instead of reading that as the model being refuted.
+
+    backproject() answers "where does this ray meet this PLANE"; it cannot know
+    whether the hit lies within the surface's EXTENT, so it returns a confident
+    number for an impossible question. This is the guard that turns that silence
+    into a failure."""
+    import trn001_styling as S
+
+    solids = [m for m in G.masses(spec)
+              if m["name"].startswith(("pedestal_", "centre_box", "step", "plinth",
+                                       "tower_", "marble", "header_"))]
+    for p in S.plan(spec):
+        if p["cls"] not in ("vase", "candlestick"):
+            continue
+        px, py, pz = p["pos_mm"]
+        prof = S.PROFILES[p["profile"]] if p["kind"] == "lathe" else None
+        r = max(rr for _, rr in prof) if prof else 40.0
+        r *= (p["height_mm"] / max(z for z, _ in prof)) if prof else 1.0
+        for m in solids:
+            x0, x1 = m["c"][0] - m["s"][0] / 2, m["c"][0] + m["s"][0] / 2
+            y0, y1 = m["c"][1] - m["s"][1] / 2, m["c"][1] + m["s"][1] / 2
+            z0, z1 = m["c"][2] - m["s"][2] / 2, m["c"][2] + m["s"][2] / 2
+            # the object's footprint circle vs the mass's plan rectangle
+            nx = min(max(px, x0), x1)
+            ny = min(max(py, y0), y1)
+            overlaps_plan = math.hypot(px - nx, py - ny) < r - 1e-6
+            # and it only counts as INSIDE if their heights overlap too
+            overlaps_z = pz < z1 - 1e-6 and pz + p["height_mm"] > z0 + 1e-6
+            assert not (overlaps_plan and overlaps_z), (
+                f"{p['name']} at ({px:.1f},{py:.1f},{pz:.1f}) r={r:.1f} stands "
+                f"inside {m['name']}")
+
+
+def test_every_styling_object_rests_on_a_real_surface(spec):
+    """Standing beside a solid is not the same as standing ON one. Each prop's
+    base must actually be supported by the top face of a mass whose plan extent
+    contains it — otherwise it floats, which reads as a composite, not a room."""
+    import trn001_styling as S
+
+    tops = {}
+    for m in G.masses(spec):
+        if not m["name"].startswith(("step", "plinth", "pedestal_", "centre_box")):
+            continue
+        tops.setdefault(round(m["c"][2] + m["s"][2] / 2, 1), []).append(m)
+    for p in S.plan(spec):
+        if p["cls"] not in ("vase", "candlestick"):
+            continue
+        px, py, pz = p["pos_mm"]
+        supports = [m for m in tops.get(round(pz, 1), [])
+                    if m["c"][0] - m["s"][0] / 2 <= px <= m["c"][0] + m["s"][0] / 2
+                    and m["c"][1] - m["s"][1] / 2 <= py <= m["c"][1] + m["s"][1] / 2]
+        assert supports, f"{p['name']} base z={pz} is not on any mass's top face"

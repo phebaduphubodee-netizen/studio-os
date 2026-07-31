@@ -154,15 +154,15 @@
   "vases": [
    {
     "name": "vase_L",
-    "x_mm": -864.7,
-    "y_mm": -280.0,
+    "x_mm": -1033.5,
+    "y_mm": -148.9,
     "z_mm": 455.0,
     "height_mm": 231.0
    },
    {
     "name": "vase_R",
-    "x_mm": 838.1,
-    "y_mm": -280.0,
+    "x_mm": 826.9,
+    "y_mm": -264.9,
     "z_mm": 455.0,
     "height_mm": 214.0
    }
@@ -198,7 +198,10 @@
    "statuary (3 seated figures: centre on the box top at x 205 z 882, flanking on the pedestals at x -473 / 599 z 645)",
    "lily florals (in both vases)"
   ],
-  "_unavailable_why": "(ข) says organics come from the CC0/PD pool at zero baht. The pool holds 13 models — furniture, three vases and one broadleaf plant — and no religious statuary and no lily floral. Hand-modelling a Buddha image was REFUSED rather than attempted: (ข)'s own wording is 'religious statuary used respectfully as-is', and a crude hand-built figure would be both bad work and disrespectful of the subject. Their measured positions are recorded above so the moment an asset exists it drops straight in. This is the (ข) decision's first live case answering itself: the assumption was that CC0 would supply the organics, and the first real test found the pool empty for exactly the two classes that carry the room's meaning."
+  "_unavailable_why": "(ข) says organics come from the CC0/PD pool at zero baht. The pool holds 13 models — furniture, three vases and one broadleaf plant — and no religious statuary and no lily floral. Hand-modelling a Buddha image was REFUSED rather than attempted: (ข)'s own wording is 'religious statuary used respectfully as-is', and a crude hand-built figure would be both bad work and disrespectful of the subject. Their measured positions are recorded above so the moment an asset exists it drops straight in. This is the (ข) decision's first live case answering itself: the assumption was that CC0 would supply the organics, and the first real test found the pool empty for exactly the two classes that carry the room's meaning.",
+  "_placement_error": "OWNER 2026-07-31, 'แจกันทำไมไปตั้งตรงนั้น' — and he was right. The vase base pixel back-projects onto the step-top plane at y=-418.8, which is 108 mm PAST the step's front edge, i.e. the point is not on the step at all. backproject() reports where a ray meets a PLANE; it has no idea whether the hit lies inside the surface's extent, so it returned a confident number for a question that had no answer. I saw the y was out of range and, instead of treating that as the model being refuted, KEPT the x and clamped the y onto the step — which is the explain-away-the-anomaly move, the same class as the depth sweep that started at 200 mm and concluded 'no solution'. Keeping that x put the vase inside pedestal_L's footprint (-968.5..-691.5): a vase standing inside a solid block. Fixed by solving the other way round — fix y to a value the surface actually has and let the measured pixel give x — which lands both vases on the step top within 12-32 mm of z=455, a plane they were never told about.",
+  "_step_depth_conflict": "UNRESOLVED, for the gate. Two direct measurements disagree about the step's depth: the signed spec value is 311 mm (VP-fitted, 0.4 px residuals, and the basis of the owner's own base-reveal correction), but the vase's base pixel only lands on the step top if it reaches y=-419. The landmark fit cannot settle it — swept 280-560 mm the step_top pair's error moves only 41.4 to 45.0 px and stays ~40 px throughout, i.e. FLAT, which by this project's own rule means unconstrained by the landmarks and answerable only by a direct probe. Note also that step_top_left/right are the two WORST-fitting landmarks in the set (47.1 and 56.5 px), so the step is the least-settled element in the model. NOT changed unilaterally: the depth is a signed, owner-corrected number.",
+  "_vase_L_is_displaced": "vase_L IS NOT WHERE THE IMAGE PUTS IT, and that is deliberate rather than hidden. Its measured base pixel, back-projected onto the step top, lands at y=-418.8 — 108 mm past a 311 mm step. Walking the pixel up the frame, the FIRST position that is both on the step and clear of pedestal_L's footprint sits 26 px above the detected base, which is far more than the ~9 px of contact shadow that contaminates the blob. So on our current geometry there is NO valid placement for an 80 mm vase at the measured pixel: the step is too shallow, the pedestal too far left, or both. It is built at the nearest VALID point (x -1033.5, y -148.9) so the scene stays physically coherent, and the 26 px gap is the measurement of how wrong the surrounding geometry is. See _step_depth_conflict."
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",
