@@ -103,6 +103,17 @@ def test_both_towers_reach_the_floor_and_the_plinth_hides_the_left_base(spec):
     assert _env(_group(ms, "plinth"))[2] < l[2]             # plinth front is nearer
 
 
+def test_the_wooden_base_projects_further_than_the_blocks_on_it(spec):
+    """Owner, 2026-07-31: the altar's wooden base must come forward slightly
+    more than the blocks standing on it. Ours had the centre box overhanging its
+    own base by 69 mm, which no piece of millwork does."""
+    u = spec["unit"]
+    base = u["step"]["d_mm"]
+    for k in ("box", "pedestal"):
+        assert u[k]["d_mm"] < base, f"{k} overhangs the base it stands on"
+        assert base - u[k]["d_mm"] <= 60, f"{k} is set back far more than a reveal"
+
+
 def test_the_side_pedestals_are_symmetric_about_the_centre_box(spec):
     """Owner, 2026-07-31: the two blocks sat unequal distances from the middle.
     Root cause was anchoring them to x=0 while the box sits off-centre; the

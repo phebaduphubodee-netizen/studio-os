@@ -33,12 +33,26 @@ SHEEN_CEILING = 0.4          # ground-truth study: pro files never run higher
 MAP_MEAN = {
     "wood_table_worn":  (0.0891, 0.0296, 0.0080),
     "marble_01":        (0.4493, 0.3397, 0.1936),
+    "grey_cartago_03":  (0.2664, 0.2489, 0.2317),
     "wood_floor":       (0.2189, 0.1185, 0.0557),
     "plastered_wall_03": (0.2495, 0.2061, 0.1679),
 }
 
+# Board-to-board / panel-to-panel tonal drift. The round-3 critic measured our
+# floor at 1.9% variation between boards against the reference's 30.4% — every
+# plank the identical tone, which is what makes a wood floor read as printed
+# laminate. A large, anisotropic noise multiplied into the base colour gives
+# neighbouring boards different values without touching the grain itself.
+# (key -> (amplitude, noise scale, per-axis stretch))
+TONE_NOISE = {
+    "floor_oak":     (0.30, 2.2, (0.35, 1.0, 6.0)),
+    "veneer_fascia": (0.16, 1.6, (0.5, 1.0, 3.0)),
+    "veneer_pier":   (0.16, 1.6, (3.0, 1.0, 0.5)),
+    "veneer_altar":  (0.16, 1.6, (3.0, 1.0, 0.5)),
+}
+
 # how hard each map's normal pushes; paint and stone are nearly flat in reality
-NORMAL_STRENGTH = {"plastered_wall_03": 0.12, "marble_01": 0.15}
+NORMAL_STRENGTH = {"plastered_wall_03": 0.12, "marble_01": 0.15, "grey_cartago_03": 0.10}
 
 # How much of the map's VARIATION each surface keeps (1.0 = the map as shot,
 # 0.0 = flat). A map is evidence of how a material varies, not an instruction to
@@ -49,7 +63,7 @@ NORMAL_STRENGTH = {"plastered_wall_03": 0.12, "marble_01": 0.15}
 # ground-truth study's lesson over-applied into a different wrong answer.
 MAP_MIX = {
     "veneer_fascia": 0.90, "veneer_pier": 0.90, "veneer_altar": 0.90,
-    "cavity": 0.40, "marble": 0.85, "floor_oak": 0.80, "paint_white": 0.06,
+    "cavity": 0.40, "marble": 0.60, "floor_oak": 0.80, "paint_white": 0.06,
 }
 
 # GRAIN HAS A DIRECTION. The round-3 critic measured the reference fascia at
@@ -76,9 +90,14 @@ PALETTE = {
     "veneer_altar": ((0.27, 0.22, 0.17), 0.45, 0.0, "wood_floor", 1.0),
     "cavity":       ((0.05, 0.04, 0.04), 0.70, 0.0, "wood_floor", 1.0),
     "lacquer_white": ((0.88, 0.88, 0.87), 0.20, 0.0, None, 0.0),
-    # 8 m so ONE pass of the stone covers the whole slab: the target is a single
-    # bookmatched panel, and a tiling repeat reads as travertine tiles instead
-    "marble":       ((0.77, 0.76, 0.75), 0.18, 0.0, "marble_01", 8.0),
+    # SCALE IS THE FIGURE. The critic's "small speckle" was not the stone, it was
+    # me: scale is the size of ONE map pass in metres, so 8.0 showed the 1.4 m
+    # slab a fifth of one tile, zoomed 5x past the figure the stone was shot at.
+    # At ~1.9 the slab reads one full pass and the veining lands at its designed
+    # size. (A candidate chosen instead on a large-figure SCORE turned out to be
+    # a wall of stone TILES — the metric cannot tell veins from tile joints, and
+    # I picked it without once opening the map. Look at the texture.)
+    "marble":       ((0.77, 0.76, 0.75), 0.18, 0.0, "marble_01", 1.9),
     # the delivered inlay is pale champagne separating from the wood by VALUE,
     # not a hot yellow line: the critic measured ours 15x further from its own
     # veneer in R-B than the reference's
@@ -93,7 +112,70 @@ PALETTE = {
 }
 
 # emission strength (W/m^2-ish) for the materials that are light sources
-EMISSION = {"halo_led": 34.0}
+EMISSION = {"halo_led": 16.0}
+
+# A bookmatched slab is the one thing the CC0 library does not have: every
+# marble set on it is a TILED floor, and both candidates put tile joints across
+# the middle of the panel. Veining is therefore generated — continuous, non
+# repeating, and controllable — as noise-distorted bands, which is what large
+# sweeping figure actually is. (key -> dict of knobs)
+PROCEDURAL = {
+    # two vein families: a few big sweeping ones, and a finer web inside them
+    "marble": {"scale": 2.6, "detail": 10.0, "roughness": 0.62, "distortion": 1.4,
+               "vein_lo": 0.470, "vein_hi": 0.512, "vein_dark": 0.55,
+               "fine_scale": 9.0, "fine_lo": 0.487, "fine_hi": 0.503,
+               "fine_dark": 0.80, "stretch": (1.0, 1.0, 0.45)},
+}
+
+
+def _build_veined_stone(nt, bsdf, albedo, k):
+    """Marble veining as THIN SINUOUS LINES, not clouds.
+
+    A wave texture under heavy distortion makes soft blobs — it read as smoke.
+    What produces veins is a noise field passed through a NARROW window: only
+    where the field crosses a thin band does a vein appear, so the veins come
+    out fine, branching and continuous, and an anisotropic coordinate stretch
+    sweeps them diagonally the way a bookmatched slab runs.
+
+    Grey and achromatic on purpose: the round-3 critic measured the delivered
+    slab's veins at +0.2 R-B (pure value, no colour) against our image-mapped
+    stone's +5.4 rusty veins."""
+    texco = nt.nodes.new("ShaderNodeTexCoord")
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = tuple(1.0 / a for a in k["stretch"])
+    mapping.inputs["Rotation"].default_value = (0.0, 0.0, 0.55)
+    nt.links.new(texco.outputs["Object"], mapping.inputs["Vector"])
+
+    def vein(scale, lo, hi, dark, on_top):
+        n = nt.nodes.new("ShaderNodeTexNoise")
+        n.inputs["Scale"].default_value = scale
+        n.inputs["Detail"].default_value = k["detail"]
+        n.inputs["Roughness"].default_value = k["roughness"]
+        n.inputs["Distortion"].default_value = k["distortion"]
+        nt.links.new(mapping.outputs["Vector"], n.inputs["Vector"])
+        r = nt.nodes.new("ShaderNodeValToRGB")
+        r.color_ramp.interpolation = "B_SPLINE"
+        e = r.color_ramp.elements
+        e[0].position, e[0].color = lo, (1.0, 1.0, 1.0, 1.0)
+        e[1].position, e[1].color = (lo + hi) / 2, (0.0, 0.0, 0.0, 1.0)
+        e.new(hi).color = (1.0, 1.0, 1.0, 1.0)
+        nt.links.new(n.outputs["Fac"], r.inputs["Fac"])
+        mixn = nt.nodes.new("ShaderNodeMixRGB")
+        mixn.blend_type = "MIX"
+        mixn.inputs["Color2"].default_value = (*[c * dark for c in albedo], 1.0)
+        if on_top is None:
+            mixn.inputs["Color1"].default_value = (*albedo, 1.0)
+        else:
+            nt.links.new(on_top, mixn.inputs["Color1"])
+        # ramp is white OFF-vein, black ON-vein -> invert into the mix factor
+        inv = nt.nodes.new("ShaderNodeInvert")
+        nt.links.new(r.outputs["Color"], inv.inputs["Color"])
+        nt.links.new(inv.outputs["Color"], mixn.inputs["Fac"])
+        return mixn.outputs["Color"]
+
+    big = vein(k["scale"], k["vein_lo"], k["vein_hi"], k["vein_dark"], None)
+    fine = vein(k["fine_scale"], k["fine_lo"], k["fine_hi"], k["fine_dark"], big)
+    nt.links.new(fine, bsdf.inputs["Base Color"])
 
 
 def material_for(mass_name):
@@ -181,6 +263,11 @@ def build_materials():
             if "Emission Strength" in bsdf.inputs:
                 bsdf.inputs["Emission Strength"].default_value = EMISSION[key]
 
+        if key in PROCEDURAL:
+            _build_veined_stone(nt, bsdf, albedo, PROCEDURAL[key])
+            made[key] = mat
+            continue
+
         maps = map_paths(slug)
         if maps:
             # box projection on OBJECT coords: no UVs exist on these meshes
@@ -194,7 +281,7 @@ def build_materials():
                 node = nt.nodes.new("ShaderNodeTexImage")
                 node.image = bpy.data.images.load(path, check_existing=True)
                 node.projection = "BOX"
-                node.projection_blend = 0.25
+                node.projection_blend = 0.0 if key == "marble" else 0.25
                 if non_colour:
                     node.image.colorspace_settings.name = "Non-Color"
                 nt.links.new(mapping.outputs["Vector"], node.inputs["Vector"])
@@ -233,7 +320,31 @@ def build_materials():
                 damp.inputs["Fac"].default_value = MAP_MIX.get(key, 1.0)
                 damp.inputs["Color1"].default_value = (*albedo, 1.0)
                 nt.links.new(mix.outputs["Color"], damp.inputs["Color2"])
-                nt.links.new(damp.outputs["Color"], bsdf.inputs["Base Color"])
+                out_col = damp.outputs["Color"]
+
+                if key in TONE_NOISE:
+                    amp, nscale, nasp = TONE_NOISE[key]
+                    nmap = nt.nodes.new("ShaderNodeMapping")
+                    nmap.inputs["Scale"].default_value = tuple(
+                        1.0 / (nscale * a) for a in nasp)
+                    nt.links.new(texco.outputs["Object"], nmap.inputs["Vector"])
+                    noise = nt.nodes.new("ShaderNodeTexNoise")
+                    noise.inputs["Detail"].default_value = 1.0
+                    noise.inputs["Scale"].default_value = 1.0
+                    nt.links.new(nmap.outputs["Vector"], noise.inputs["Vector"])
+                    # map noise 0..1 onto (1-amp/2 .. 1+amp/2) and multiply
+                    rng = nt.nodes.new("ShaderNodeMapRange")
+                    rng.inputs["To Min"].default_value = 1.0 - amp / 2
+                    rng.inputs["To Max"].default_value = 1.0 + amp / 2
+                    nt.links.new(noise.outputs["Fac"], rng.inputs["Value"])
+                    tone = nt.nodes.new("ShaderNodeMixRGB")
+                    tone.blend_type = "MULTIPLY"
+                    tone.inputs["Fac"].default_value = 1.0
+                    nt.links.new(out_col, tone.inputs["Color1"])
+                    nt.links.new(rng.outputs["Result"], tone.inputs["Color2"])
+                    out_col = tone.outputs["Color"]
+
+                nt.links.new(out_col, bsdf.inputs["Base Color"])
             if "rough" in maps:
                 nt.links.new(img(maps["rough"], True).outputs["Color"],
                              bsdf.inputs["Roughness"])
