@@ -263,11 +263,15 @@ def masses(spec):
     if u.get("surround"):
         out.extend(_surround_masses(u["surround"], m))
 
-    # backlit slab, proud of the wall
-
-    out.append(_box("marble", m.get("cx_mm", 0.0), -m["proud_mm"] / 2,
+    # A THIN slab held OFF the wall, not a thick panel stuck to it — the
+    # standoff cavity is where the concealed light lives, and modelling the slab
+    # as a solid the full depth of the standoff left the LED buried inside the
+    # stone with nowhere for its light to go (caught 2026-07-31). proud_mm stays
+    # the FRONT face, so the camera solve's marble landmarks are untouched.
+    thick = m.get("thick_mm", m["proud_mm"])
+    out.append(_box("marble", m.get("cx_mm", 0.0), -(m["proud_mm"] - thick / 2),
                     m["bot_z_mm"] + m["h_mm"] / 2,
-                    m["w_mm"], m["proud_mm"], m["h_mm"], 0.75))
+                    m["w_mm"], thick, m["h_mm"], 0.75))
 
     # white drawer plinth with rounded front corners; cx_mm because the target
     # reads ASYMMETRIC (plinth runs on under the left tower to the unit's outer
@@ -287,16 +291,46 @@ def masses(spec):
                     s["len_mm"], s["d_mm"], s["h_mm"], 0.58,
                     radii=(s["r_mm"], s["r_mm"], 0, 0)))
     b = u["box"]
+    bcx = b.get("cx_mm", 0.0)
     z0 = p["h_mm"] + s["h_mm"]
-    out.append(_box("centre_box", b.get("cx_mm", 0.0), -b["d_mm"] / 2,
+    out.append(_box("centre_box", bcx, -b["d_mm"] / 2,
                     z0 + b["h_mm"] / 2,
                     b["w_mm"], b["d_mm"], b["h_mm"], 0.40,
                     radii=(b["r_mm"], b["r_mm"], 0, 0)))
+    # The side pedestals are symmetric about the CENTRE BOX, not about the room
+    # centreline — measured 2026-07-31 at 705.1 / 704.3 mm from the box centre
+    # after the owner spotted that ours sat unequal. Anchoring them to x=0 while
+    # the box sits off-centre guarantees the asymmetry he saw.
     q = u["pedestal"]
     for side, sgn in (("L", -1), ("R", 1)):
-        out.append(_box(f"pedestal_{side}", sgn * q["cx_mm"], -q["d_mm"] / 2,
+        out.append(_box(f"pedestal_{side}", bcx + sgn * q["cx_mm"], -q["d_mm"] / 2,
                         z0 + q["h_mm"] / 2, q["w_mm"], q["d_mm"], q["h_mm"], 0.48,
                         radii=(q["r_mm"], q["r_mm"], 0, 0)))
+
+    # CONCEALED LIGHTING (owner, 2026-07-31: "แผ่นด้านหลังพระ จริง ๆ คือไฟซ่อน
+    # เข้าไป"). The slab is not a lit panel — it stands off the wall and an LED
+    # strip hides in the gap behind its edge, so the wall around it takes the
+    # wash and the source is never in view. Built as four strips set BEHIND the
+    # slab face and inset from its edge, which is what makes them invisible.
+    if m.get("halo"):
+        halo = m["halo"]
+        mcx = m.get("cx_mm", 0.0)
+        t_ = halo.get("strip_mm", 25.0)
+        inset = halo.get("inset_mm", 30.0)
+        # the cavity BETWEEN the wall and the slab's back face
+        gap = m["proud_mm"] - m.get("thick_mm", m["proud_mm"])
+        ycen, ydep = -gap / 2, max(gap - 6.0, 4.0)
+        x0 = mcx - m["w_mm"] / 2 + inset
+        x1 = mcx + m["w_mm"] / 2 - inset
+        z0h = m["bot_z_mm"] + inset
+        z1h = m["bot_z_mm"] + m["h_mm"] - inset
+        out.append(_box("halo_top", (x0 + x1) / 2, ycen, z1h - t_ / 2,
+                        x1 - x0, ydep, t_, 1.0))
+        out.append(_box("halo_bot", (x0 + x1) / 2, ycen, z0h + t_ / 2,
+                        x1 - x0, ydep, t_, 1.0))
+        for tag, hx in (("l", x0 + t_ / 2), ("r", x1 - t_ / 2)):
+            out.append(_box(f"halo_{tag}", hx, ycen, (z0h + z1h) / 2,
+                            t_, ydep, z1h - z0h - 2 * t_, 1.0))
     return out
 
 

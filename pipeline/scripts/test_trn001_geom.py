@@ -103,6 +103,43 @@ def test_both_towers_reach_the_floor_and_the_plinth_hides_the_left_base(spec):
     assert _env(_group(ms, "plinth"))[2] < l[2]             # plinth front is nearer
 
 
+def test_the_side_pedestals_are_symmetric_about_the_centre_box(spec):
+    """Owner, 2026-07-31: the two blocks sat unequal distances from the middle.
+    Root cause was anchoring them to x=0 while the box sits off-centre; the
+    target measures 705.1 / 704.3 mm from the BOX centre. Pinned so the anchor
+    cannot drift back to the room centreline."""
+    ms = {m["name"]: m for m in G.masses(spec)}
+    bcx = ms["centre_box"]["c"][0]
+    left, right = ms["pedestal_L"]["c"][0], ms["pedestal_R"]["c"][0]
+    assert (bcx - left) == pytest.approx(right - bcx, abs=1.0)
+    assert ms["pedestal_L"]["s"][0] == pytest.approx(ms["pedestal_R"]["s"][0])
+
+
+def test_the_concealed_light_stays_concealed(spec):
+    """Owner, 2026-07-31: the panel behind the Buddha is ไฟซ่อน. A strip that
+    pokes past the slab edge, or sits proud of the slab face, stops being
+    concealed and becomes a visible tube — which is the failure this detail
+    exists to avoid."""
+    if not spec["unit"]["marble"].get("halo"):
+        pytest.skip("halo not specified")
+    ms = G.masses(spec)
+    strips = [m for m in ms if m["name"].startswith("halo_")]
+    assert len(strips) == 4
+    slab = [m for m in ms if m["name"] == "marble"][0]
+    sx0 = slab["c"][0] - slab["s"][0] / 2
+    sx1 = slab["c"][0] + slab["s"][0] / 2
+    sz0 = slab["c"][2] - slab["s"][2] / 2
+    sz1 = slab["c"][2] + slab["s"][2] / 2
+    slab_front = slab["c"][1] - slab["s"][1] / 2
+    for s in strips:
+        assert s["c"][0] - s["s"][0] / 2 >= sx0 - 1e-6
+        assert s["c"][0] + s["s"][0] / 2 <= sx1 + 1e-6
+        assert s["c"][2] - s["s"][2] / 2 >= sz0 - 1e-6
+        assert s["c"][2] + s["s"][2] / 2 <= sz1 + 1e-6
+        # behind the slab face, never in front of it
+        assert s["c"][1] - s["s"][1] / 2 > slab_front - 1e-6
+
+
 def test_marble_bottom_edge_can_never_show_below_the_altar(spec):
     """C2 round-1 finding: in the delivered work the slab's bottom edge is never
     visible — it dies behind the stack. Pinned so a later dims edit cannot

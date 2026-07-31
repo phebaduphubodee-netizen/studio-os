@@ -87,7 +87,13 @@ PALETTE = {
     # a painted wall must be the LEAST chromatic neutral in the room; ours was
     # 1.7x more chromatic than the stone where the reference is 0.53x
     "paint_white":  ((0.80, 0.80, 0.80), 0.65, 0.0, "plastered_wall_03", 4.0),
+    # the concealed LED behind the slab (owner 2026-07-31) — an emitter, so its
+    # albedo entry is the emission colour and EMISSION carries the strength
+    "halo_led":     ((1.00, 0.955, 0.90), 0.50, 0.0, None, 0.0),
 }
+
+# emission strength (W/m^2-ish) for the materials that are light sources
+EMISSION = {"halo_led": 34.0}
 
 
 def material_for(mass_name):
@@ -103,6 +109,8 @@ def material_for(mass_name):
         return "paint_white"
     if n == "marble":
         return "marble"
+    if n.startswith("halo_"):
+        return "halo_led"
     if n.startswith("brass_"):
         return "brass"
     if n.startswith("header_p"):
@@ -165,6 +173,13 @@ def build_materials():
         if "Sheen Weight" in bsdf.inputs:
             bsdf.inputs["Sheen Weight"].default_value = min(
                 SHEEN_CEILING, bsdf.inputs["Sheen Weight"].default_value)
+        if key in EMISSION:
+            for nm_ in ("Emission Color", "Emission"):
+                if nm_ in bsdf.inputs:
+                    bsdf.inputs[nm_].default_value = (*albedo, 1.0)
+                    break
+            if "Emission Strength" in bsdf.inputs:
+                bsdf.inputs["Emission Strength"].default_value = EMISSION[key]
 
         maps = map_paths(slug)
         if maps:
