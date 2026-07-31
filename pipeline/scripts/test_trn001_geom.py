@@ -741,3 +741,27 @@ def test_every_styling_object_rests_on_a_real_surface(spec):
                     if m["c"][0] - m["s"][0] / 2 <= px <= m["c"][0] + m["s"][0] / 2
                     and m["c"][1] - m["s"][1] / 2 <= py <= m["c"][1] + m["s"][1] / 2]
         assert supports, f"{p['name']} base z={pz} is not on any mass's top face"
+
+
+def test_the_vases_are_a_symmetric_pair_about_the_centre_box(spec):
+    """Owner, 2026-07-31, on the second pass: "คำเดิม มันวางไม่สมมาตร". Same
+    correction he had already made for the pedestals, and the same root cause —
+    two independent x values instead of one mirrored offset, which is what lets
+    a pair drift apart one edit at a time.
+
+    Pinned on the RELATIONSHIP, not on today's 920.9 mm, and on the same axis the
+    pedestals use: a symmetric pair is symmetric about the centre box, which sits
+    off the room's centreline."""
+    import trn001_styling as S
+
+    vases = [p for p in S.plan(spec) if p["cls"] == "vase"]
+    assert len(vases) == 2
+    bcx = spec["unit"]["box"]["cx_mm"]
+    left = min(vases, key=lambda p: p["pos_mm"][0])
+    right = max(vases, key=lambda p: p["pos_mm"][0])
+    assert (bcx - left["pos_mm"][0]) == pytest.approx(right["pos_mm"][0] - bcx, abs=0.5)
+    # a pair standing on one surface shares its distance from the wall too
+    assert left["pos_mm"][1] == pytest.approx(right["pos_mm"][1], abs=0.5)
+    assert left["pos_mm"][2] == pytest.approx(right["pos_mm"][2], abs=0.5)
+    # and they flank OUTBOARD of the pedestals they stand beside
+    assert (bcx - left["pos_mm"][0]) > spec["unit"]["pedestal"]["cx_mm"]

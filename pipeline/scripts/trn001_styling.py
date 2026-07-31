@@ -126,6 +126,17 @@ def plan(spec):
     so every earlier round still builds byte-identically."""
     st = spec.get("styling") or {}
     out = []
+    pair = st.get("vase_pair")
+    if pair:
+        # ONE offset, mirrored about the centre box — the relationship the owner's
+        # pedestal correction established, applied to the pair he then caught
+        # standing unequal. Two independent x values is what let them drift.
+        bcx = spec["unit"]["box"].get("cx_mm", 0.0)
+        for side, sgn, hk in (("L", -1, "height_L_mm"), ("R", +1, "height_R_mm")):
+            out.append({"kind": "lathe", "name": f"vase_{side}", "profile": "VASE",
+                        "pos_mm": (bcx + sgn * pair["offset_x_mm"],
+                                   pair["y_mm"], pair["z_mm"]),
+                        "height_mm": pair[hk], "material": "vase_dark", "cls": "vase"})
     for v in st.get("vases", []):
         if v.get("slug"):
             out.append({"kind": "asset", "name": v["name"], "slug": v["slug"],

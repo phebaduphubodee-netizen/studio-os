@@ -151,22 +151,6 @@
  "styling": {
   "_what": "2026-07-31 round 5 (styling) — the first live test of decision (ข). Every position is BACK-PROJECTED from the target through the solved camera, never placed by eye, and the check that they are right is that they land on surfaces the placement was never told about: vase bases at z 433-451 against a step top of 455, candlestick bases at z 219-229 against a plinth top of 225.",
   "_vase_choice": "the vase is BUILT from a profile read off the target row by row, after the CC0 route failed instructively. ceramic_vase_03 was chosen because its bounding box (112x414, aspect 0.271) matched the target vase's (71x269, aspect 0.264) to within 3% — and it renders as a flat tapered PLANK; the asset is mispackaged and its mesh datablock is even named 'Cube.001'. A bounding box cannot tell a vase from a board, exactly as round 3's figure metric could not tell veins from tile joints. LOOK AT THE ASSET. The pool's one real vase (ceramic_vase_01) is aspect 0.51 against the target's 0.264, twice as fat, so it is the wrong vessel rather than the wrong size.",
-  "vases": [
-   {
-    "name": "vase_L",
-    "x_mm": -1033.5,
-    "y_mm": -148.9,
-    "z_mm": 455.0,
-    "height_mm": 231.0
-   },
-   {
-    "name": "vase_R",
-    "x_mm": 826.9,
-    "y_mm": -264.9,
-    "z_mm": 455.0,
-    "height_mm": 214.0
-   }
-  ],
   "_candle_note": "the middle stick measures SHORTER than its two neighbours (bronze 292 against 351, overall 397 against 456) and is built that way — a styling row that is three identical objects reads as a product shot, and the delivered work does not do that.",
   "candlesticks": [
    {
@@ -199,9 +183,15 @@
    "lily florals (in both vases)"
   ],
   "_unavailable_why": "(ข) says organics come from the CC0/PD pool at zero baht. The pool holds 13 models — furniture, three vases and one broadleaf plant — and no religious statuary and no lily floral. Hand-modelling a Buddha image was REFUSED rather than attempted: (ข)'s own wording is 'religious statuary used respectfully as-is', and a crude hand-built figure would be both bad work and disrespectful of the subject. Their measured positions are recorded above so the moment an asset exists it drops straight in. This is the (ข) decision's first live case answering itself: the assumption was that CC0 would supply the organics, and the first real test found the pool empty for exactly the two classes that carry the room's meaning.",
-  "_placement_error": "OWNER 2026-07-31, 'แจกันทำไมไปตั้งตรงนั้น' — and he was right. The vase base pixel back-projects onto the step-top plane at y=-418.8, which is 108 mm PAST the step's front edge, i.e. the point is not on the step at all. backproject() reports where a ray meets a PLANE; it has no idea whether the hit lies inside the surface's extent, so it returned a confident number for a question that had no answer. I saw the y was out of range and, instead of treating that as the model being refuted, KEPT the x and clamped the y onto the step — which is the explain-away-the-anomaly move, the same class as the depth sweep that started at 200 mm and concluded 'no solution'. Keeping that x put the vase inside pedestal_L's footprint (-968.5..-691.5): a vase standing inside a solid block. Fixed by solving the other way round — fix y to a value the surface actually has and let the measured pixel give x — which lands both vases on the step top within 12-32 mm of z=455, a plane they were never told about.",
   "_step_depth_conflict": "UNRESOLVED, for the gate. Two direct measurements disagree about the step's depth: the signed spec value is 311 mm (VP-fitted, 0.4 px residuals, and the basis of the owner's own base-reveal correction), but the vase's base pixel only lands on the step top if it reaches y=-419. The landmark fit cannot settle it — swept 280-560 mm the step_top pair's error moves only 41.4 to 45.0 px and stays ~40 px throughout, i.e. FLAT, which by this project's own rule means unconstrained by the landmarks and answerable only by a direct probe. Note also that step_top_left/right are the two WORST-fitting landmarks in the set (47.1 and 56.5 px), so the step is the least-settled element in the model. NOT changed unilaterally: the depth is a signed, owner-corrected number.",
-  "_vase_L_is_displaced": "vase_L IS NOT WHERE THE IMAGE PUTS IT, and that is deliberate rather than hidden. Its measured base pixel, back-projected onto the step top, lands at y=-418.8 — 108 mm past a 311 mm step. Walking the pixel up the frame, the FIRST position that is both on the step and clear of pedestal_L's footprint sits 26 px above the detected base, which is far more than the ~9 px of contact shadow that contaminates the blob. So on our current geometry there is NO valid placement for an 80 mm vase at the measured pixel: the step is too shallow, the pedestal too far left, or both. It is built at the nearest VALID point (x -1033.5, y -148.9) so the scene stays physically coherent, and the 26 px gap is the measurement of how wrong the surrounding geometry is. See _step_depth_conflict."
+  "_vases_are_a_symmetric_pair": "OWNER 2026-07-31, twice: 'แจกันทำไมไปตั้งตรงนั้น' then 'คำเดิม มันวางไม่สมมาตร'. He was right both times and the second word was the one that solved it. SYMMETRY IS A CONSTRAINT, not a complaint: a symmetric pair standing on one surface has a single unknown — how far forward the pair sits — so the two measured pixels over-determine it and the answer can be SOLVED rather than guessed. Solved on the horizontal pixel alone, because contact shadow displaces v and not u, which is why three earlier attempts using the blob's BOTTOM all disagreed with each other. At y=-145 the two offsets about the box come out 921.6 and 920.1 mm — 1.6 mm apart — with both bases on the step top and vase_L clearing pedestal_L by 29 mm. Every prior attempt (x kept and y clamped; y fixed at the step edge; a 26 px displacement to dodge the pedestal) was me solving for two unknowns with one equation and then patching the residue. Stored as ONE offset mirrored about the centre box — the same relationship the owner's own pedestal correction established — so it cannot drift apart again by editing one side.",
+  "vase_pair": {
+   "offset_x_mm": 920.9,
+   "y_mm": -145.0,
+   "z_mm": 455.0,
+   "height_L_mm": 231.0,
+   "height_R_mm": 214.0
+  }
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",
