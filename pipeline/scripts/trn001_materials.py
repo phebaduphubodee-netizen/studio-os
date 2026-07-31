@@ -151,6 +151,12 @@ PALETTE = {
     # of it), so the lens is SUPPOSED to blow; what must not is the halo.
     "lens_warm":    ((1.00, 0.955, 0.90), 0.50, 0.0, None, 0.0),
     "trim_metal":   ((0.52, 0.52, 0.53), 0.35, 1.0, None, 0.0),
+    # ROUND 5 styling. The vase is the darkest object in the delivered frame —
+    # it is what the detector found it BY, thresholding below 0.16 luminance —
+    # so its albedo has to sit under the cavity's, not at some generic "dark".
+    "vase_dark":    ((0.035, 0.030, 0.030), 0.22, 0.0, None, 0.0),
+    "bronze_dark":  ((0.35, 0.27, 0.16), 0.38, 1.0, None, 0.0),
+    "wax_white":    ((0.86, 0.84, 0.79), 0.55, 0.0, None, 0.0),
 }
 
 # emission strength (W/m^2-ish) for the materials that are light sources

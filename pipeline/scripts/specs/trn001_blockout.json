@@ -24,7 +24,10 @@
   "_fill_refuted": "2026-07-31: an AREA light standing off frame on the camera side — the room's door/window — was BUILT and REFUTED by measurement, not by taste. The reasoning that led to it still stands (the target's floor ramps 42% toward frame-right while its ceiling shows no lean and its wall is brighter at the BOTTOM, which no ceiling fixture produces), but the source itself flattens the frame instead of ramping it: p99/p1 fell 50 -> 28 at 150 W and -> 15 at 400 W, while the floor tilt it was meant to create fell 21.7% -> 15.1% -> 7.1%. Recorded as an unresolved measurement like round 2's surround, NOT iterated (R1).",
   "downlights": {
    "_measured": "x_mm and row_y_mm are MEASURED: the two lens discs were found as bright disks in the ceiling band and back-projected onto the ceiling plane z=2700, landing at (-999.5, -605.0) and (+1164.7, -605.5) — both 605 mm off the wall to within 0.5 mm, i.e. one wall-wash row. lens_dia_mm is the same probe read across the disc (86 and 91 mm). fill rows are INFERRED (the frame only shows the ceiling back to y~-880, so no second row is measurable) and use the measured column pitch as row pitch.",
-   "x_mm": [-999.5, 1164.7],
+   "x_mm": [
+    -999.5,
+    1164.7
+   ],
    "row_y_mm": -605.0,
    "lens_dia_mm": 88.0,
    "trim_dia_mm": 112.0,
@@ -144,6 +147,58 @@
   },
   "_owner_base_reveal": "owner 2026-07-31: the WOODEN BASE of the altar must project slightly further into the room than the blocks standing on it. Ours had the centre box overhanging its own base by 69mm — backwards for millwork. The step depth (311) is a direct VP-fitted measurement with 0.4px residuals, so it is the blocks that move: set back 26mm behind the base, with their widths re-read on the new silhouette plane and the measured symmetry about the box preserved.",
   "_owner_flush_header": "owner 2026-07-31: the tops of the two cubby stacks did not read level. Geometry was already symmetric, so the cause was the HEADER standing 30mm proud of the towers — its soffit overhangs each tower and, from an oblique camera, eats a different amount of each stack. The delivered piece keeps header and tower faces in one plane (the round-2 critic saw the same thing as a phantom joint line under our header). Header depth now derives from tower depth so the two can never drift apart again."
+ },
+ "styling": {
+  "_what": "2026-07-31 round 5 (styling) — the first live test of decision (ข). Every position is BACK-PROJECTED from the target through the solved camera, never placed by eye, and the check that they are right is that they land on surfaces the placement was never told about: vase bases at z 433-451 against a step top of 455, candlestick bases at z 219-229 against a plinth top of 225.",
+  "_vase_choice": "the vase is BUILT from a profile read off the target row by row, after the CC0 route failed instructively. ceramic_vase_03 was chosen because its bounding box (112x414, aspect 0.271) matched the target vase's (71x269, aspect 0.264) to within 3% — and it renders as a flat tapered PLANK; the asset is mispackaged and its mesh datablock is even named 'Cube.001'. A bounding box cannot tell a vase from a board, exactly as round 3's figure metric could not tell veins from tile joints. LOOK AT THE ASSET. The pool's one real vase (ceramic_vase_01) is aspect 0.51 against the target's 0.264, twice as fat, so it is the wrong vessel rather than the wrong size.",
+  "vases": [
+   {
+    "name": "vase_L",
+    "x_mm": -864.7,
+    "y_mm": -280.0,
+    "z_mm": 455.0,
+    "height_mm": 231.0
+   },
+   {
+    "name": "vase_R",
+    "x_mm": 838.1,
+    "y_mm": -280.0,
+    "z_mm": 455.0,
+    "height_mm": 214.0
+   }
+  ],
+  "_candle_note": "the middle stick measures SHORTER than its two neighbours (bronze 292 against 351, overall 397 against 456) and is built that way — a styling row that is three identical objects reads as a product shot, and the delivered work does not do that.",
+  "candlesticks": [
+   {
+    "name": "cand_1",
+    "x_mm": -568.8,
+    "y_mm": -417.0,
+    "z_mm": 225.0,
+    "bronze_h_mm": 350.5,
+    "total_h_mm": 457.0
+   },
+   {
+    "name": "cand_2",
+    "x_mm": -146.1,
+    "y_mm": -444.0,
+    "z_mm": 225.0,
+    "bronze_h_mm": 291.9,
+    "total_h_mm": 396.7
+   },
+   {
+    "name": "cand_3",
+    "x_mm": 232.3,
+    "y_mm": -405.0,
+    "z_mm": 225.0,
+    "bronze_h_mm": 350.9,
+    "total_h_mm": 455.8
+   }
+  ],
+  "_unavailable": [
+   "statuary (3 seated figures: centre on the box top at x 205 z 882, flanking on the pedestals at x -473 / 599 z 645)",
+   "lily florals (in both vases)"
+  ],
+  "_unavailable_why": "(ข) says organics come from the CC0/PD pool at zero baht. The pool holds 13 models — furniture, three vases and one broadleaf plant — and no religious statuary and no lily floral. Hand-modelling a Buddha image was REFUSED rather than attempted: (ข)'s own wording is 'religious statuary used respectfully as-is', and a crude hand-built figure would be both bad work and disrespectful of the subject. Their measured positions are recorded above so the moment an asset exists it drops straight in. This is the (ข) decision's first live case answering itself: the assumption was that CC0 would supply the organics, and the first real test found the pool empty for exactly the two classes that carry the room's meaning."
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",

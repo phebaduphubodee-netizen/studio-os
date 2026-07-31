@@ -32,6 +32,7 @@ sys.path.insert(0, _HERE)
 import trn001_geom as G          # noqa: E402
 import trn001_light as LIGHT     # noqa: E402
 import trn001_materials as MAT   # noqa: E402
+import trn001_styling as STYLE   # noqa: E402
 from quicklook import quick_params  # noqa: E402
 
 FULL_SAMPLES = 128
@@ -255,6 +256,9 @@ def main():
             emission_override={"halo_led": LIGHT.halo_watt(spec)})
         print("materials ON\n" + MAT.palette_report())
     build_masses(spec, materials)
+    if spec.get("styling") and not IDMASK:
+        STYLE.build_styling(spec, materials)
+        print("styling ON\n" + STYLE.report(spec))
     cam_ob = build_camera(spec["camera"])
     build_light(spec)
 
