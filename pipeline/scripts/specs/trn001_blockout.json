@@ -4,7 +4,40 @@
   "ceiling_mm": 2700,
   "back_wall_len_mm": 6000,
   "room_depth_mm": 4500,
-  "unit_center_offset_mm": -1370
+  "unit_center_offset_mm": -1370,
+  "close_box": true
+ },
+ "light": {
+  "_what": "2026-07-31 round 4 (LIGHT). Every knob here is either a MEASUREMENT off the target or a declared inference — see downlights._measured. The round opened on trn001_lightcheck numbers, not on a look: our ceiling read 1.21x the wall against the target's 0.73x, our cubbies 1.63x too bright, our blacks 2.7x lifted, our frame's p99/p1 range 66:1 against 141:1, and our halo 1.92x too strong while clipping 2.15% of the frame against 0.08%. All five are one defect — rounds 1-3 lit the set with a WORLD, which lights a ceiling exactly as hard as a floor.",
+  "_kelvin": "6000 K is a MEASUREMENT, bracketed at 5200/6200 against the target's own white surfaces: at 5200 our white wall read R/G 1.111 B/G 0.907 against the target's 1.050/0.951, at 6200 it read 1.060/0.976. The room still looks warm because the WOOD warms it, which is also why the target's ceiling (1.21/0.81, lit only by bounce off floor and header) is warmer than its walls (1.05/0.95) — our 3800 K first cut made every white surface in the room orange.",
+  "kelvin": 6000,
+  "_halo_w": "bracketed against the glow band's ratio to the wall, not against how bright it looks: 16 gave 2.14x, 13 gave 2.22x, target is 1.72x. Pushing the strip deeper into the recess (setback 16 -> 45) was TESTED and moved it 2.223 -> 2.191, i.e. the halo's geometry is not the lever, its power is.",
+  "halo_w": 8.0,
+  "world": {
+   "_what": "the world is not this room's light source — with the box closed it is only what leaks in. Rounds 1-3 ran it at 0.55 doing ALL the work, which is what made our ceiling as bright as our walls.",
+   "strength": 0.05
+  },
+  "film": {
+   "view_transform": "AgX",
+   "exposure": -0.25
+  },
+  "_fill_refuted": "2026-07-31: an AREA light standing off frame on the camera side — the room's door/window — was BUILT and REFUTED by measurement, not by taste. The reasoning that led to it still stands (the target's floor ramps 42% toward frame-right while its ceiling shows no lean and its wall is brighter at the BOTTOM, which no ceiling fixture produces), but the source itself flattens the frame instead of ramping it: p99/p1 fell 50 -> 28 at 150 W and -> 15 at 400 W, while the floor tilt it was meant to create fell 21.7% -> 15.1% -> 7.1%. Recorded as an unresolved measurement like round 2's surround, NOT iterated (R1).",
+  "downlights": {
+   "_measured": "x_mm and row_y_mm are MEASURED: the two lens discs were found as bright disks in the ceiling band and back-projected onto the ceiling plane z=2700, landing at (-999.5, -605.0) and (+1164.7, -605.5) — both 605 mm off the wall to within 0.5 mm, i.e. one wall-wash row. lens_dia_mm is the same probe read across the disc (86 and 91 mm). fill rows are INFERRED (the frame only shows the ceiling back to y~-880, so no second row is measurable) and use the measured column pitch as row pitch.",
+   "x_mm": [-999.5, 1164.7],
+   "row_y_mm": -605.0,
+   "lens_dia_mm": 88.0,
+   "trim_dia_mm": 112.0,
+   "trim_drop_mm": 12.0,
+   "emitter_drop_mm": 6.0,
+   "_beam": "THE PROFILE WAS CHOSEN BY MEASUREMENT, from three real LM-63 files. Every remaining error after the level was right said one thing — our wall was over-washed — so the beam was too wide. 5.ies (Halo R-30 flood, 141 cd still at 40 deg) washed the wall from above and gave it the WRONG vertical shape; 30.IES (Kurt Versen C7394, medium) was better but flattened the frame to 32:1; 29.IES (Kurt Versen C7302, a real tight downlight, zero output past 45 deg) fixed four independent readings at once — cubby 0.051 vs 0.062 target, header 0.231 vs 0.252, the wall's top-to-bottom gradient flipped to the target's own shape, and the floor's falloff went 5.1% -> 23.6% against the target's 37.6%.",
+   "watt": 60.0,
+   "fill_watt": 25.0,
+   "spot_deg": 120.0,
+   "spot_blend": 0.5,
+   "ies": "29.IES",
+   "ies_norm": "auto"
+  }
  },
  "unit": {
   "_asym": "2026-07-31 v2 — dims re-derived from VP-pinned solve residuals (real = model - printed_mm): asymmetric unit; plinth is a LOW tray-drawer bench ~190h running left-of-centre under the left tower; step top 420; box top 890 w~980; marble top 2275 leaving ~86mm glow reveal under the 340 header band; absolute scale rests on the ceiling=2700 assumption",
@@ -114,10 +147,11 @@
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",
-  "x_mm": 1550.0,
-  "y_mm": -4250.0,
-  "z_mm": 1150.0,
-  "yaw_deg": -20.5,
+  "_solved": "ROUND 4 CAUGHT THIS, and it is the class this project keeps paying for. The values below were the PRE-SOLVE VP estimate; the solved station lived only in a private scratch spec, so every gate frame from round 2 on was rendered from that file while the spec of record still said z=1150. Building round 4 from the spec of record therefore un-did round 1's camera solve — 83 mm of camera height, a ~40 px shift, landmark median 15.5 -> 54.6 px — and nothing failed, because a spec that renders is a spec that looks fine. The solved camera (which reproduces the round-3 gate frame to 0.00 px) now lives HERE, and a test refuses any spec whose camera lacks this marker, so a pre-solve camera can never sit in the spec of record again.",
+  "x_mm": 1511.4199679041185,
+  "y_mm": -4217.361276861022,
+  "z_mm": 1232.8002512073056,
+  "yaw_deg": -20.55,
   "focal_mm": 38.9,
   "shift_x": 0.0,
   "shift_y": 0.0

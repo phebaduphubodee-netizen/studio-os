@@ -30,6 +30,7 @@ import bpy
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 import trn001_geom as G          # noqa: E402
+import trn001_light as LIGHT     # noqa: E402
 import trn001_materials as MAT   # noqa: E402
 from quicklook import quick_params  # noqa: E402
 
@@ -140,9 +141,16 @@ def build_camera(cam):
 
 # -------------------------------------------------------------------- light --
 
-def build_light():
-    """Neutral form light for a geometry LOOK: bright world + one soft sun from
-    high camera-left. The light STORY is a later element (charter ladder)."""
+def build_light(spec):
+    """Rounds 1-3: a neutral FORM light — bright world + one soft sun — whose
+    only job was to let geometry read. Round 4 replaces it with the measured
+    story (trn001_light) the moment the spec carries a `light` block, so a
+    round-1..3 spec still renders exactly as it did."""
+    if spec.get("light"):
+        LIGHT.build_world(spec)
+        LIGHT.build_lights(spec)
+        print("light story ON\n" + LIGHT.report(spec))
+        return True
     w = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = w
     w.use_nodes = True
@@ -155,11 +163,12 @@ def build_light():
     ob = bpy.data.objects.new("SUN_TRN001", sun)
     ob.rotation_euler = (math.radians(55), 0.0, math.radians(-35))
     bpy.context.scene.collection.objects.link(ob)
+    return False
 
 
 # ------------------------------------------------------------------- render --
 
-def setup_render(quick, out_png):
+def setup_render(quick, out_png, spec=None):
     sc = bpy.context.scene
     sc.render.engine = "CYCLES"
     samples, (w, h) = (FULL_SAMPLES, (RES, RES))
@@ -188,8 +197,15 @@ def setup_render(quick, out_png):
     sc.render.resolution_x, sc.render.resolution_y = w, h
     sc.render.image_settings.file_format = "PNG"
     sc.render.filepath = out_png
-    sc.view_settings.view_transform = "Standard"
-    print(f"cycles device={device} samples={samples} res={w}x{h}")  # keep: silent-CPU catch
+    # Standard is a straight line with no shoulder: under it our halo clipped
+    # 2.15% of the frame where the target clips 0.08%. AgX has the shoulder, so
+    # a source can be bright without becoming a hole in the image.
+    vt = "Standard"
+    if spec is not None and spec.get("light") and not IDMASK:
+        vt = LIGHT.apply_film(spec, sc)
+    else:
+        sc.view_settings.view_transform = "Standard"
+    print(f"cycles device={device} samples={samples} res={w}x{h} view={vt}")  # keep: silent-CPU catch
 
 
 def dump_projections(spec, cam_ob, path):
@@ -235,15 +251,16 @@ def main():
     clear_default_scene()
     materials = None
     if "--materials" in argv and not IDMASK:
-        materials = MAT.build_materials()
+        materials = MAT.build_materials(
+            emission_override={"halo_led": LIGHT.halo_watt(spec)})
         print("materials ON\n" + MAT.palette_report())
     build_masses(spec, materials)
     cam_ob = build_camera(spec["camera"])
-    build_light()
+    build_light(spec)
 
     suffix = "_ql" if quick else ""
     out_png = os.path.join(out_dir, f"trn001_blockout_{tag}{suffix}.png")
-    setup_render(quick, out_png)
+    setup_render(quick, out_png, spec)
     # depsgraph update so world_to_camera_view sees final transforms
     bpy.context.view_layer.update()
     dump_projections(spec, cam_ob, os.path.join(out_dir, f"trn001_projections_{tag}.json"))

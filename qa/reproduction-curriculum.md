@@ -57,7 +57,7 @@
 
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
-| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 3: materials พร้อมให้ตัดสิน (gate #3); 1–2 closed by owner ("พอได้" / "พอใช้ ลุยต่อ"); next = 4 LIGHT (the study's measured #1 gap) | 3 | 10 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
+| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 4: LIGHT พร้อมให้ตัดสิน (gate #4); 1–3 closed by owner ("พอได้" / "พอใช้ ลุยต่อ" / owner corrections + "ลุยต่อ"); next = 5 styling (first live case of the (ข) decision) | 4 | 14 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
 
 **Gate #2's open question — CLOSED 2026-07-31 by a third instrument.** The
 built-in is ~100 mm deep, not 360. A shelf board below the horizon shows its
@@ -89,6 +89,47 @@ work needs its own numeric track (`trn001_matcheck.py`) because reprojection
 error says nothing about it — and that track must be honest that a uniform
 brightness gap is the LIGHT round's, so what it really catches is one surface
 wrong relative to its neighbours.
+
+**Round-4 light lessons (2026-07-31).** The round's biggest find was not about
+light. **A decision that lives only in a scratch file is not a decision:** the
+spec of record still carried round 1's PRE-SOLVE camera while every gate frame
+since round 2 had been rendered from a private copy holding the solved one, so
+rebuilding from the spec silently un-did the camera solve — 83 mm of height, a
+~40 px shift, landmark median 15.5 → 54.6 px — and nothing failed, because a
+spec with a plausible camera renders a plausible picture. This is the
+revertible-by-omission class wearing a new shape (the file that renders is not
+automatically the file of record), and the guard is a test that refuses any spec
+whose camera carries no `_solved` marker.
+
+Second: **a material sample inherits the lighting model it was taken under.**
+Round 3 backed every albedo out by dividing the target patch by the white wall
+and taking the wall as 0.80 — which assumes both surfaces receive the same
+illuminance. True under a flat form light, false under downlights, where a
+horizontal floor collects far more from a ceiling fixture than a vertical wall.
+The floor therefore came out at 0.72 albedo — brighter than most white paint, on
+the largest surface in the room — and behaved as a second ceiling, bouncing every
+gradient flat (frame range 22:1 against the target's 141:1, cavities 2.6× too
+bright, the floor's own 37.6% falloff reduced to 2.5%). Our own vault had the
+physical value the whole time (`knowledge/lighting/lumen-method-and-fixture-
+placement.md:150` — ceiling ~80%, walls ~50%, floor ~20%), which is the
+search-our-own-vault-first lesson landing a fourth time.
+
+Third: **two hand-bracketed constants in another project were one rule.**
+build_room's IES norms (0.20 for 5.ies, 0.065 for 7.IES) multiply out to 125.8
+and 126.6 against their own measured candela means — i.e. norm = K/mean. A pure
+LM-63 parser reproduces both (0.2003, 0.0647), so a beam profile can now be
+swapped without silently re-powering the room, and the beam became something
+choosable BY MEASUREMENT: of three real profiles, the tight downlight fixed four
+independent readings at once where the flood fixed none.
+
+Fourth, on instruments: **a profile measure that moves when the background moves
+is measuring the background.** The halo's half-fall was defined against half the
+PEAK, so when round 4 raised the room's ambient the same unchanged glow reported
+as spreading from 72 to 98 px. Measured against half the peak-to-floor it reads
+22 px, exactly the target's. And an honest first guess still has to be tested:
+the floor's 1.64× error looked like round 3's board-to-board variation failing,
+until splitting the strip into board-wide columns showed a 37.6% smooth ramp
+with only a 3.4% neighbour jump — light, not material.
 
 ## Decisions
 

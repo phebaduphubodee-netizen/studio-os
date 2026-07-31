@@ -180,8 +180,11 @@ def test_every_mass_is_in_front_of_the_wall_and_inside_the_room(spec):
     room = spec["room"]
     rdep = (spec["unit"].get("recess") or {}).get("depth_mm", 0.0)
     inwall = {"marble"}
+    # the shell IS the room's boundary, so it is the one family allowed to sit
+    # on it; recessed fixtures live inside the ceiling slab for the same reason
+    shell = {"back_wall", "ceiling", "floor", "side_wall_L", "side_wall_R", "front_wall"}
     for m in G.masses(spec):
-        if m["name"] in ("back_wall", "ceiling", "floor", "side_wall_L"):
+        if m["name"] in shell or m["name"].startswith("dl_"):
             continue
         y0 = m["c"][1] - m["s"][1] / 2
         y1 = m["c"][1] + m["s"][1] / 2
@@ -438,6 +441,13 @@ def test_wood_grain_runs_along_the_element_not_isotropically():
     fx, _, fz = MAT.MAP_ASPECT["veneer_fascia"]
     px, _, pz = MAT.MAP_ASPECT["veneer_pier"]
     assert (fx > fz) and (pz > px), "rail and piers must not share a grain axis"
+    # ROUND 4: and the altar runs LENGTHWISE, which round 3 had upright. Measured
+    # by the same horizontal/vertical detail-energy ratio the round-3 critic used:
+    # delivered altar 2.26, ours 0.38 before this. Pinned on the axis ORDER, not
+    # on today's numbers, so a rescale cannot quietly rotate the boards again.
+    assert MAT.grain_axis("veneer_altar") == "x",         "altar veneer grain must run along the blocks, not up them"
+    assert MAT.grain_axis("veneer_pier") == "z", "piers stay upright"
+    assert MAT.grain_axis("veneer_fascia") == "x", "the rail runs lengthwise"
 
 
 def test_the_painted_wall_is_the_least_chromatic_neutral_in_the_room():
@@ -461,3 +471,88 @@ def test_masses_are_stable_under_reload(spec):
     a = G.masses(spec)
     b = G.masses(copy.deepcopy(spec))
     assert json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+
+
+def test_the_spec_of_record_carries_a_SOLVED_camera(spec):
+    """The camera solve is round 1's entire deliverable, and round 4 found it
+    missing from the file everything else is built from: the spec of record
+    still held the pre-solve VP estimate while every gate frame since round 2
+    had been rendered from a private scratch spec. Nothing failed — a spec with
+    a plausible camera renders a plausible picture — until the frame was rebuilt
+    from the spec and 83 mm of camera height quietly went away.
+
+    So this is not a test of today's numbers. It refuses any spec whose camera
+    does not declare that it came from the solve, which is the only state that
+    can produce that failure again."""
+    cam = spec["camera"]
+    assert "_solved" in cam, (
+        "camera in the spec of record carries no _solved provenance — it may be "
+        "a pre-solve estimate, which silently reverts round 1")
+    init = {"x_mm": 1550.0, "y_mm": -4250.0, "z_mm": 1150.0, "yaw_deg": -20.5}
+    assert not all(abs(cam[k] - v) < 1e-9 for k, v in init.items()), \
+        "camera is byte-identical to the round-1 pre-solve VP estimate"
+
+
+def test_downlights_are_one_decision_seen_twice(spec):
+    """The housing the camera sees and the light that emits must come from the
+    same source, or the room grows a fixture that glows where nothing is and a
+    trim that is dark where something should be."""
+    import trn001_light as L
+
+    pos = {n: (x, y) for n, x, y, _ in G.downlight_positions(spec)}
+    assert pos, "spec carries downlights"
+    ms = {m["name"]: m for m in G.masses(spec)}
+    for name, (x, y) in pos.items():
+        for part in ("trim", "lens"):
+            m = ms[f"{name}_{part}"]
+            assert abs(m["c"][0] - x) < 1e-6 and abs(m["c"][1] - y) < 1e-6
+    for f in L.plan(spec):
+        if f["kind"] != "SPOT":
+            continue
+        assert (f["pos"][0], f["pos"][1]) == pos[f["name"]]
+        # the emitter must hang BELOW the lens it appears to shine from
+        assert f["pos"][2] < ms[f"{f['name']}_lens"]["c"][2]
+
+
+def test_the_lens_is_visible_and_the_trim_reads_as_a_ring(spec):
+    """The flange is an annulus made of two solids, because a boolean would
+    carve the n-gons the export law forbids. That only works while the lens
+    hangs just below the trim's underside and stays narrower than it."""
+    ms = {m["name"]: m for m in G.masses(spec)}
+    name = next(n for n, *_ in G.downlight_positions(spec))
+    trim, lens = ms[f"{name}_trim"], ms[f"{name}_lens"]
+    assert lens["s"][0] < trim["s"][0], "lens must be narrower than the trim"
+    t_bot = trim["c"][2] - trim["s"][2] / 2
+    l_bot = lens["c"][2] - lens["s"][2] / 2
+    assert l_bot < t_bot, "lens must sit below the trim's underside or be hidden"
+    assert t_bot - l_bot < 5.0, "lens must not hang off the ceiling"
+
+
+def test_ies_normalisation_is_derived_not_pinned():
+    """build_room's two hand-bracketed norms (0.20 for 5.ies, 0.065 for 7.IES)
+    are one rule: norm x mean_candela lands on ~126 for both. This parser has to
+    reproduce that, or a beam swap silently re-powers the room — which is the
+    exact failure the lane-B pass paid for once already."""
+    import trn001_light as L
+
+    for fname, pinned in (("5.ies", 0.20), ("7.IES", 0.065)):
+        p = L.ies_path(fname)
+        if not os.path.exists(p):
+            pytest.skip(f"{fname} not fetched")
+        mean = L.ies_mean_candela(p)
+        assert mean, f"{fname} candela table unreadable"
+        derived = L.IES_NORM_K / mean
+        assert abs(derived - pinned) / pinned < 0.02, \
+            f"{fname}: derived {derived:.4f} vs build_room's measured {pinned}"
+
+
+def test_a_missing_profile_never_silently_full_powers_a_light():
+    """An unreadable IES must not fall through to norm 1.0 pretending to be
+    normalised — it has to SAY so, because a 15x over-powered rig looks like a
+    lighting choice."""
+    import trn001_light as L
+
+    norm, prov = L.ies_norm_for("no-such-profile.ies", "auto")
+    assert "UNREAD" in prov
+    norm2, prov2 = L.ies_norm_for("5.ies", 0.2)
+    assert norm2 == 0.2 and prov2 == "pinned"

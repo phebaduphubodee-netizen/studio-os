@@ -168,6 +168,73 @@ def _header_masses(h, x_in):
     return out
 
 
+def downlight_positions(spec):
+    """[(name, x_mm, y_mm, measured)] — the ONE source of fixture positions, so
+    the housings the camera sees and the lights that emit can never drift apart.
+
+    The in-frame row is a MEASUREMENT, not a layout choice: the two lenses in
+    the target were found as bright disks and back-projected onto the ceiling
+    plane, and both landed at y = -605 mm off the wall to within 0.5 mm — two
+    fixtures on one line, which is what a wall-wash row is.
+
+    Everything beyond that row is INFERRED and says so: the frame only shows
+    the ceiling back to y ~= -880 (camera z 1150, 49.3 deg vertical fov), so no
+    further row can be measured from this image. The continuation uses the
+    measured COLUMN pitch as the row pitch — a square grid, the default a
+    lighting layout falls back to — and exists only to supply the room's ambient
+    at the level the measured ladder demands."""
+    lt = spec.get("light") or {}
+    dl = lt.get("downlights") or {}
+    xs = list(dl.get("x_mm") or [])
+    if not xs:
+        return []
+    y0 = float(dl["row_y_mm"])
+    rows = [(y0, True)]
+    pitch = dl.get("fill_pitch_mm")
+    if pitch is None and len(xs) > 1:
+        pitch = abs(max(xs) - min(xs))          # square grid off the measured pair
+    depth = spec["room"]["room_depth_mm"]
+    y = y0 - (pitch or 0.0)
+    while pitch and y > -depth:
+        rows.append((y, False))
+        y -= pitch
+    out = []
+    for ri, (yy, measured) in enumerate(rows):
+        for ci, x in enumerate(xs):
+            out.append((f"dl_r{ri}c{ci}", float(x), float(yy), measured))
+    return out
+
+
+def _downlight_masses(spec):
+    """A recessed downlight the camera can SEE: a trim flange with a lit lens
+    inside it. PRJ-2026-002's lane A learned this the expensive way — a room lit
+    by sources with no visible origin reads as lit by nothing — and the target
+    shows both trims plainly.
+
+    The flange is an annulus, which a boolean would carve and the export law
+    forbids. So it is built as two solids instead: the lens disk sits 1 mm BELOW
+    the trim's underside, which hides the middle of the trim's bottom cap and
+    leaves exactly the visible ring. Same trick as the recess returns — the
+    shape you want, made of the shapes you are allowed to author."""
+    lt = spec.get("light") or {}
+    dl = lt.get("downlights") or {}
+    pos = downlight_positions(spec)
+    if not pos:
+        return []
+    ceil = spec["room"]["ceiling_mm"]
+    lens_d = float(dl.get("lens_dia_mm", 88.0))
+    trim_d = float(dl.get("trim_dia_mm", 112.0))
+    drop = float(dl.get("trim_drop_mm", 12.0))
+    out = []
+    for name, x, y, _measured in pos:
+        z_t = ceil - drop
+        out.append(_box(f"{name}_trim", x, y, z_t + drop / 2, trim_d, trim_d, drop,
+                        0.35, radii=(trim_d / 2,) * 4))
+        out.append(_box(f"{name}_lens", x, y, z_t + 4.0, lens_d, lens_d, 10.0,
+                        1.0, radii=(lens_d / 2,) * 4))
+    return out
+
+
 def _plinth_masses(p):
     """Round-2 joinery: handleless push-open drawer bank over a recessed toe.
 
@@ -250,6 +317,19 @@ def masses(spec):
     out.append(_box("ceiling", -wall_off, -depth / 2, ceil + 50, wall_len, depth, 100, 0.82))
     lx = -wall_off - wall_len / 2
     out.append(_box("side_wall_L", lx - 50, -depth / 2, ceil / 2, 100, depth, ceil, 0.80))
+    # ROUND 4: close the box. Rounds 1-3 lit an open three-sided set, which is
+    # why the ladder measured our ceiling as bright as our walls (1.21 vs the
+    # target's 0.73 relative) and our blacks lifted 2.7x — with no room to bounce
+    # in, every surface can only take light straight from the source, and light
+    # that should have come back off a wall left the scene instead. The two
+    # closing surfaces are both outside the frame (the right wall stands beyond
+    # the unit, the front wall 250 mm behind the camera station), so they change
+    # no silhouette the camera was fitted to — they only give the light somewhere
+    # to come from. Opt-in, so a round-1..3 spec still renders byte-identically.
+    if room.get("close_box"):
+        rx = -wall_off + wall_len / 2
+        out.append(_box("side_wall_R", rx + 50, -depth / 2, ceil / 2, 100, depth, ceil, 0.80))
+        out.append(_box("front_wall", -wall_off, -depth - 50, ceil / 2, wall_len, 100, ceil, 0.80))
 
     # header band across the top (one solid, or three faced panels + brass)
     h = u["header"]
@@ -354,6 +434,8 @@ def masses(spec):
         for tag, hx in (("l", ox0 + t_ / 2), ("r", ox1 - t_ / 2)):
             out.append(_box(f"halo_{tag}", hx, ycen, (oz0 + oz1) / 2,
                             t_, ydep, oz1 - oz0 - 2 * t_, 1.0))
+
+    out.extend(_downlight_masses(spec))
     return out
 
 

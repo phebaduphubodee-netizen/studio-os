@@ -77,9 +77,31 @@ MAP_MIX = {
 MAP_ASPECT = {
     "veneer_fascia": (5.0, 1.0, 0.30),
     "veneer_pier":   (0.45, 1.0, 4.0),
-    "veneer_altar":  (0.55, 1.0, 2.2),
+    # ROUND 4: the delivered altar measures 2.26 horizontal-to-vertical grain
+    # energy against our 0.38 — round 3 reasoned "upright on the piers AND the
+    # altar blocks" and the reference supports that for the piers (0.57 target
+    # vs 0.45 ours) but not for the altar. Given at the fascia's own ratio
+    # strength (16.7:1), because the first cut at 4:1 only reached 0.75.
+    "veneer_altar":  (4.0, 1.0, 0.30),
     "cavity":        (0.30, 1.0, 5.0),
 }
+
+def grain_axis(key):
+    """Which world axis a surface's figure runs along: the STRETCHED one. PURE,
+    so the reference's verdict is pinned as a property rather than as the two
+    numbers that happen to produce it.
+
+    Worth stating because round 4 got it wrong first: a 90-degree turn of the
+    texture coordinate was tried, on the reasoning that the map's own planks run
+    along its v axis and no stretch could rotate them. The frame refuted it —
+    the grain ratio went 0.38 -> 0.98, not to the 2.26 the reference measures.
+    The turn only swaps WHICH texture axis carries each world axis; the stretch
+    per world axis is untouched, so the figure still reads along the same one.
+    Which is also why the fascia already reads correctly at 16.7:1 while the
+    altar sat at 4:1 — the axis was right, the ratio was too weak."""
+    ax, _, az = MAP_ASPECT.get(key, (1.0, 1.0, 1.0))
+    return "z" if az >= ax else "x"
+
 
 # name -> (linear albedo, roughness, metallic, map-set slug or None, map scale m)
 PALETTE = {
@@ -102,17 +124,37 @@ PALETTE = {
     # not a hot yellow line: the critic measured ours 15x further from its own
     # veneer in R-B than the reference's
     "brass":        ((0.74, 0.70, 0.60), 0.30, 1.0, None, 0.0),
-    "floor_oak":    ((0.72, 0.60, 0.44), 0.40, 0.0, "wood_floor", 2.0),
+    # ROUND 4 FOUND ROUND 3's ASSUMPTION. Every albedo in this table was backed
+    # out by dividing the target patch by the white wall's reading and taking the
+    # wall as 0.80 — which silently assumes the two surfaces receive the SAME
+    # illuminance. Under a flat form light they did, so the sample was self-
+    # consistent; under downlights it is false, because a horizontal floor
+    # collects far more from a ceiling fixture than a vertical wall does. The
+    # sample said 0.72 — an albedo brighter than most white paint, on the largest
+    # surface in the room — and our own vault has the physical value:
+    # knowledge/lighting/lumen-method-and-fixture-placement.md:150, "ceiling ~80%,
+    # walls ~50%, floor ~20%". At 0.72 the floor was a second ceiling, bouncing
+    # every gradient flat: the frame measured 22:1 against the target's 141:1,
+    # cavities 2.6x too bright, and the floor's own 37.6% falloff reduced to 2.5%.
+    # Set to pale-oak LRV with the sampled HUE preserved, then confirmed in frame
+    # (the floor must still read ~0.94 of the wall — that it does is the proof
+    # the illuminance ratio, not the albedo, was carrying that reading).
+    "floor_oak":    ((0.42, 0.35, 0.26), 0.40, 0.0, "wood_floor", 2.0),
     # a painted wall must be the LEAST chromatic neutral in the room; ours was
     # 1.7x more chromatic than the stone where the reference is 0.53x
     "paint_white":  ((0.80, 0.80, 0.80), 0.65, 0.0, "plastered_wall_03", 4.0),
     # the concealed LED behind the slab (owner 2026-07-31) — an emitter, so its
     # albedo entry is the emission colour and EMISSION carries the strength
     "halo_led":     ((1.00, 0.955, 0.90), 0.50, 0.0, None, 0.0),
+    # ROUND 4 — the downlight the camera can see. The target's two lens discs
+    # read at 1.0 (they are the frame's only legitimately clipped pixels: 0.08%
+    # of it), so the lens is SUPPOSED to blow; what must not is the halo.
+    "lens_warm":    ((1.00, 0.955, 0.90), 0.50, 0.0, None, 0.0),
+    "trim_metal":   ((0.52, 0.52, 0.53), 0.35, 1.0, None, 0.0),
 }
 
 # emission strength (W/m^2-ish) for the materials that are light sources
-EMISSION = {"halo_led": 16.0}
+EMISSION = {"halo_led": 16.0, "lens_warm": 40.0}
 
 # A bookmatched slab is the one thing the CC0 library does not have: every
 # marble set on it is a TILED floor, and both candidates put tile joints across
@@ -193,6 +235,10 @@ def material_for(mass_name):
         return "marble"
     if n.startswith("halo_"):
         return "halo_led"
+    if n.endswith("_lens"):
+        return "lens_warm"
+    if n.endswith("_trim"):
+        return "trim_metal"
     if n.startswith("brass_"):
         return "brass"
     if n.startswith("header_p"):
@@ -238,11 +284,20 @@ def palette_report():
 
 # ------------------------------------------------------------------ bpy side --
 
-def build_materials():
+def build_materials(emission_override=None):
     """Create every palette material as a Blender node graph. Returns
-    {key: bpy Material}. Only called from inside Blender."""
+    {key: bpy Material}. Only called from inside Blender.
+
+    emission_override lets the LIGHT round dial an emitter from the spec without
+    editing this table — the halo's strength is a lighting decision, and leaving
+    it here would have made it revertible by an omission (this project's most
+    expensive recurring class)."""
     import bpy
 
+    emis = dict(EMISSION)
+    for k, v in (emission_override or {}).items():
+        if v is not None:
+            emis[k] = float(v)
     made = {}
     for key, (albedo, rough, metal, slug, scale) in PALETTE.items():
         mat = bpy.data.materials.new(f"M_TRN001_{key}")
@@ -255,13 +310,13 @@ def build_materials():
         if "Sheen Weight" in bsdf.inputs:
             bsdf.inputs["Sheen Weight"].default_value = min(
                 SHEEN_CEILING, bsdf.inputs["Sheen Weight"].default_value)
-        if key in EMISSION:
+        if key in emis:
             for nm_ in ("Emission Color", "Emission"):
                 if nm_ in bsdf.inputs:
                     bsdf.inputs[nm_].default_value = (*albedo, 1.0)
                     break
             if "Emission Strength" in bsdf.inputs:
-                bsdf.inputs["Emission Strength"].default_value = EMISSION[key]
+                bsdf.inputs["Emission Strength"].default_value = emis[key]
 
         if key in PROCEDURAL:
             _build_veined_stone(nt, bsdf, albedo, PROCEDURAL[key])
