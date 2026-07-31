@@ -57,7 +57,7 @@
 
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
-| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 4: LIGHT พร้อมให้ตัดสิน (gate #4); 1–3 closed by owner ("พอได้" / "พอใช้ ลุยต่อ" / owner corrections + "ลุยต่อ"); next = 5 styling (first live case of the (ข) decision) | 4 | 14 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
+| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 5: styling built (candlesticks + vase pair); statuary/florals declared UNAVAILABLE in the ฿0 CC0 pool — owner's call pending. Rounds 1–4 closed by owner; gate #4 (LIGHT) still open | 5 | 19 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) |
 
 **Gate #2's open question — CLOSED 2026-07-31 by a third instrument.** The
 built-in is ~100 mm deep, not 360. A shelf board below the horizon shows its
@@ -130,6 +130,40 @@ as spreading from 72 to 98 px. Measured against half the peak-to-floor it reads
 the floor's 1.64× error looked like round 3's board-to-board variation failing,
 until splitting the strip into board-wide columns showed a 37.6% smooth ramp
 with only a 3.4% neighbour jump — light, not material.
+
+**Round-5 styling lessons (2026-07-31).** **Symmetry is a CONSTRAINT, not a
+complaint.** The owner said "not symmetric" twice about the same pair, and the
+second time it stopped being a note and became the missing equation: a symmetric
+pair standing on one surface has exactly ONE unknown — how far forward the pair
+sits — so two measured pixels over-determine it and the position can be SOLVED.
+It solved to 1.6 mm. What made three earlier attempts disagree is that every one
+of them used the blob's BOTTOM, and **contact shadow displaces v, not u** — the
+horizontal pixel was the uncontaminated measurement the whole time. The shape
+those three attempts share is worth naming: each solved for two unknowns with one
+equation and then patched the residue (keep x and clamp y → a vase inside a solid
+pedestal; fix y at the step's front edge → half the base overhanging; displace
+26 px to dodge the pedestal → a prop where the image does not put it). Stored now
+as one offset mirrored about the centre box, the same relationship the owner's
+own pedestal correction established, because two independent x values is exactly
+what lets a pair drift apart one edit at a time.
+
+Second: **`backproject()` answers where a ray meets a PLANE, and knows nothing
+about the extent of the SURFACE.** It returned a confident millimetre for a point
+108 mm past the step's front edge. Reading that as noise and clamping it is the
+explain-away-the-anomaly move — same class as the depth sweep that began at
+200 mm and concluded "no solution" from a range that excluded the answer. Guards
+added: nothing may stand inside a solid, and every prop must rest on the top face
+of a mass whose plan extent contains it.
+
+Third, on assets: **LOOK AT THE ASSET.** A CC0 vase was chosen because its
+bounding-box aspect matched the target's to 3%, and it rendered as a flat plank —
+the asset is mispackaged, its mesh datablock literally named "Cube.001". A
+bounding box cannot tell a vase from a board, exactly as round 3's figure metric
+could not tell veins from tile joints; the lesson was already written down in the
+same file, in my own words, and repeated anyway. Also: an asset that imports at
+the right SCALE can still land in the wrong PLACE, and the build log will report
+it placed because the log reports what was ASKED for — one vase printed
+"414mm -> 259mm (x0.625)" while sitting unscaled at the world origin.
 
 ## Decisions
 
