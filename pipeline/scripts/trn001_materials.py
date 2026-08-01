@@ -159,9 +159,33 @@ LEAF_PITCH_MM = {
 }
 
 # how far each successive leaf slides along the flitch, as a fraction of pitch.
-# Small on purpose: enough that a run of leaves is SEQUENCED rather than the same
-# leaf stamped repeatedly, not so much that the mirror at the seam stops reading.
+#
+# MEASURED CONSEQUENCE, 2026-08-01, and it is not what this comment first claimed.
+# A fleet swept the drift against a mirror-correlation detector running on this
+# repo's own fold: r at a true seam is 0.714 / 0.410 / 0.318 / 0.245 / 0.112 for
+# drift 0 / 0.015 / 0.03 / 0.045 / 0.06. At 0.06 the mirror sits BELOW the target
+# header's own noise floor (sd 0.074, max 0.212) — so the bookmatch is, by
+# measurement, doing nothing an instrument can see.
+#
+# Left at 0.06 deliberately, because the same sweep measured the TARGET: zero
+# mirror axes at r>=0.5 anywhere on the header, step, box or cubby back, across
+# the whole 152-305 mm range. The delivered work shows no detectable leaf
+# structure either. Turning the drift down would make our panel diverge from the
+# artefact in order to satisfy trade theory — the same precedence already applied
+# when the DR said grain "must run vertically" and a measured 2.26 horizontal
+# outranked it. The mechanism stays built and correct; it stays quiet because the
+# target is quiet.
 LEAF_DRIFT = 0.06
+
+# A REAL DEFECT THE SAME SWEEP FOUND, recorded not fixed: our veneer shows MAP
+# TILING that the target does not. On r7dr the header carries mirror axes at
+# x=-5 and x=+942 (r 0.703, spacing 947 against 944.4 predicted from map scale
+# 1.7 m x aspect 5.0 = 8.5 m / 9) and the step a transverse autocorrelation peak
+# of +0.306 at 445 mm (444.4 predicted from 1.0 m x 4.0 / 9). A 2611 mm rail
+# carrying ~2.8 visible repeats of one figure is the printed-laminate read the
+# round-3 critic named on the FLOOR, arriving on the joinery by another route.
+# Levers are map scale (push the repeat past the panel) and TONE_NOISE; both are
+# pixel-affecting and belong in their own round with a gate.
 
 LEAF_MIN_MM, LEAF_MAX_MM = 152.0, 305.0
 
