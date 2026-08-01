@@ -1152,3 +1152,41 @@ def test_every_spliced_panel_s_pitch_is_derived_from_its_real_width(spec):
         assert got is not None, f"{key}: {panel} mm admits no leaf layout"
         assert pitch == pytest.approx(got[1], abs=0.5), (
             f"{key} pitch {pitch} no longer matches leaf_layout({panel}) = {got[1]:.1f}")
+
+
+def test_every_mass_gets_a_colour_no_other_mass_can_produce():
+    """ASK THE RENDERER WHICH OBJECT THIS IS — a standing rule here, earned when
+    region boxes reported four bed surfaces at one height that were really four
+    objects at 155/165/178/199. The ID pass could not honour it: a 14-entry
+    palette handed out with `i % 14` meant every colour named six of this scene's
+    78 masses, so the mask could only ever return a shortlist. That is how a 6 mm
+    brass bar stayed indistinguishable from the panel behind it.
+
+    Round-trip over the whole capacity, plus the reserved background slot."""
+    import importlib.util
+    here = os.path.dirname(os.path.abspath(__file__))
+    spec_ = importlib.util.spec_from_file_location(
+        "_trn001_build_pure", os.path.join(here, "trn001_build.py"))
+    src = open(os.path.join(here, "trn001_build.py"), encoding="utf-8").read()
+    ns = {}
+    # the module imports bpy at top level; lift just the pure encoder pair
+    start = src.index("ID_BASE, ID_STEPS")
+    end = src.index("ID_CAPACITY =")
+    exec(src[start:end], ns)
+    exec(src[end:src.index("_id_counter")], ns)
+    colour, index, cap = ns["id_colour"], ns["id_index"], ns["ID_CAPACITY"]
+
+    seen = {}
+    for i in range(cap):
+        c = colour(i)
+        key = tuple(round(x, 4) for x in c)
+        assert key not in seen, f"index {i} collides with {seen[key]} at {key}"
+        seen[key] = i
+        assert index(c) == i, f"index {i} did not survive the round trip"
+    # background must decode to nothing, not to mass 0
+    assert index((0.0, 0.0, 0.0)) is None
+    # and survive an 8-bit PNG quantisation, which is what the mask is written as
+    for i in (0, 1, 37, cap - 1):
+        c = colour(i)
+        q = tuple(round(x * 255) / 255.0 for x in c)
+        assert index(q) == i, f"index {i} lost to 8-bit quantisation"

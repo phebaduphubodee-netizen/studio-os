@@ -36,15 +36,15 @@ from PIL import Image
 # could not tell a shallow box from a deep pocket. THE INSTRUMENT THAT SCORES
 # THE WORK HAS TO BE CHECKED AGAINST THE WORK.
 PATCHES = {
-    # SUSPECT, not yet repaired (2026-08-01). An ID-mask read resolves this box
-    # to brass_p1_bot rather than the veneer panel, which would mean this row
-    # compares OUR BRASS INLAY against the target's veneer. But the check is not
-    # trustworthy for a thin bar: brass_p1_bot is 6 mm tall and its IMAGE bbox
-    # spans the whole panel width, so bbox disambiguation cannot separate the bar
-    # from the panel behind it. Recorded as doubt rather than moved on a bad read —
-    # moving it would be fixing an instrument with an instrument that failed its
-    # own control. Needs a per-pixel mass id (unique colour per mass, not a
-    # 14-entry palette that repeats every 14 masses).
+    # CLEARED 2026-08-01, after briefly being flagged as suspect. A first ID-mask
+    # read resolved this box to brass_p1_bot, which would have meant the row was
+    # comparing OUR BRASS INLAY against the target's veneer. The read was wrong,
+    # not the patch: the ID pass wrote LINEAR emission and the PNG stores sRGB, so
+    # a 0.2 step lands at 0.485 on disk and the decoder was matching encoded
+    # values against linear ones. Re-read in linear space with unique per-mass
+    # colours it resolves header_p1 95% / brass_p1_top 4% — the panel, correctly.
+    # Kept as a note because the instinct to MOVE the patch on the first reading
+    # would have broken a working row to satisfy a broken instrument.
     "veneer_dark (header face)": (900, 1200, 300, 360),
     "veneer_pier (R outer stile)": {"ours": (1946, 1956, 700, 900),
                                     "target": (1939, 1949, 700, 900)},

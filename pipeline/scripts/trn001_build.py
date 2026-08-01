@@ -57,9 +57,43 @@ def _mesh_from_outline(name, outline, z0, z1):
 
 
 IDMASK = False
-_ID_PALETTE = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0), (1, 0, 1), (0, 1, 1),
-               (1, 0.5, 0), (0.5, 0, 1), (0, 0.5, 0), (0.5, 0.25, 0), (0, 0.5, 0.5),
-               (0.75, 0.75, 0.75), (0.25, 0.25, 0.25), (1, 0.75, 0.8)]
+# The ID pass used a 14-entry palette and handed out colours with `i % 14`, so
+# with 78 masses every colour named SIX different objects and the mask could only
+# ever narrow a pixel to a shortlist. That turned "ask the renderer which object
+# this is" — a standing rule in this studio, earned when region boxes reported
+# four bed surfaces as one — back into a guess, and it is exactly how a 6 mm brass
+# bar became indistinguishable from the panel behind it.
+#
+# Colours are now UNIQUE and DECODABLE: the index is written in base 6 across the
+# three channels at 0.2 steps, giving 216 slots. Index 0 is reserved (it would be
+# black, which is also the background) so the encoding starts at 1.
+ID_BASE, ID_STEPS = 6, 5.0
+
+
+def id_colour(i):
+    """Mass index -> a colour no other index can produce. PURE."""
+    n = i + 1
+    return ((n % ID_BASE) / ID_STEPS,
+            ((n // ID_BASE) % ID_BASE) / ID_STEPS,
+            ((n // (ID_BASE * ID_BASE)) % ID_BASE) / ID_STEPS)
+
+
+def id_index(rgb):
+    """Colour read back off the mask -> mass index, or None for background.
+    Inverse of id_colour(); rounding is what makes it survive 8-bit PNG.
+
+    rgb MUST BE LINEAR. The pass writes linear emission and the PNG stores sRGB,
+    so a 0.2 step lands at 0.485 on disk — decoding the raw file bytes silently
+    returns the wrong mass for every pixel, which is exactly how a correct patch
+    was briefly convicted of measuring the brass inlay. Linearise first."""
+    d = [int(round(c * ID_STEPS)) for c in rgb]
+    if any(x < 0 or x >= ID_BASE for x in d):
+        return None
+    n = d[0] + ID_BASE * d[1] + ID_BASE * ID_BASE * d[2]
+    return None if n == 0 else n - 1
+
+
+ID_CAPACITY = ID_BASE ** 3 - 1
 _id_counter = {"i": 0}
 
 
@@ -67,7 +101,12 @@ def _clay(value):
     if IDMASK:
         i = _id_counter["i"]
         _id_counter["i"] += 1
-        c = _ID_PALETTE[i % len(_ID_PALETTE)]
+        if i >= ID_CAPACITY:
+            raise RuntimeError(
+                f"ID pass has {ID_CAPACITY} unique colours and this scene has "
+                f"more masses — a repeating colour would silently make the mask "
+                f"ambiguous again, which is the defect this encoding replaced")
+        c = id_colour(i)
         mat = bpy.data.materials.new(f"M_TRN001_id_{i}")
         mat.use_nodes = True
         nt = mat.node_tree
@@ -77,7 +116,7 @@ def _clay(value):
         em.inputs[0].default_value = (*c, 1.0)
         outn = nt.nodes.new("ShaderNodeOutputMaterial")
         nt.links.new(em.outputs[0], outn.inputs[0])
-        print(f"idmask colour {i} {c} -> next mass")
+        print(f"idmask colour {i} {tuple(round(x, 3) for x in c)} -> next mass")
         return mat
     key = f"M_TRN001_clay_{value:.2f}"
     mat = bpy.data.materials.get(key)
