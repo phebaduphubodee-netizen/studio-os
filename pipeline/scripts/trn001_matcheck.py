@@ -36,15 +36,30 @@ from PIL import Image
 # could not tell a shallow box from a deep pocket. THE INSTRUMENT THAT SCORES
 # THE WORK HAS TO BE CHECKED AGAINST THE WORK.
 PATCHES = {
+    # SUSPECT, not yet repaired (2026-08-01). An ID-mask read resolves this box
+    # to brass_p1_bot rather than the veneer panel, which would mean this row
+    # compares OUR BRASS INLAY against the target's veneer. But the check is not
+    # trustworthy for a thin bar: brass_p1_bot is 6 mm tall and its IMAGE bbox
+    # spans the whole panel width, so bbox disambiguation cannot separate the bar
+    # from the panel behind it. Recorded as doubt rather than moved on a bad read —
+    # moving it would be fixing an instrument with an instrument that failed its
+    # own control. Needs a per-pixel mass id (unique colour per mass, not a
+    # 14-entry palette that repeats every 14 masses).
     "veneer_dark (header face)": (900, 1200, 300, 360),
     "veneer_pier (R outer stile)": {"ours": (1946, 1956, 700, 900),
                                     "target": (1939, 1949, 700, 900)},
     "veneer_pier (R inner stile)": {"ours": (1686, 1696, 700, 900),
                                     "target": (1684, 1694, 700, 900)},
     "cavity (cubby interior)":   (1750, 1800, 700, 850),
-    # a second cavity sample well below the first: the target's cubby column
-    # swings strongly top-to-bottom, so ONE box reports a band, not a material
-    "cavity (lower bay)":        (1750, 1800, 1150, 1300),
+    # 2026-08-01: this row USED to be "cavity (lower bay)" at (1750,1800,1150,1300),
+    # on the reasoning that a second box further down would report the material
+    # rather than a band. An ID-mask read showed both boxes land on the SAME mass
+    # (tower_R_back), so the table carried two rows that were never independent —
+    # a spread computed over them counts one surface twice. Repointed at the LEFT
+    # tower's interior SIDE WALL, verified by ID mask to contain tower_L_sA and
+    # nothing else, which also puts the lane's outstanding defect on the sheet:
+    # that wall measures 2.05x the target's against a back panel that is exact.
+    "cavity (L side wall)":      (315, 350, 990, 1020),
     "paint_white (left of bay)": (520, 600, 700, 1000),
     "paint_white (right of bay)": (1450, 1550, 700, 1000),
     "marble (clean field)":      (760, 900, 600, 750),
