@@ -176,10 +176,13 @@ def test_marble_bottom_edge_can_never_show_below_the_altar(spec):
 
 def test_every_mass_is_in_front_of_the_wall_and_inside_the_room(spec):
     """Nothing may float behind the wall face or leave the room — EXCEPT what
-    the wall deliberately contains: the recess returns, the stone set into them
-    and the light hidden there, none of which may pass the wall's back."""
+    the wall deliberately contains: the recess returns, the stone set into them,
+    the light hidden there, and (2026-08-01) the tower cavities, which are
+    measured pockets INTO the wall rather than boxes stood in front of it. The
+    bound is the wall's own back face, taken from the builder's own function so
+    a deeper pocket can never leave this test testing a stale number."""
     room = spec["room"]
-    rdep = (spec["unit"].get("recess") or {}).get("depth_mm", 0.0)
+    rdep = G.wall_front_depth(spec["unit"])
     inwall = {"marble"}
     # the shell IS the room's boundary, so it is the one family allowed to sit
     # on it; recessed fixtures live inside the ceiling slab for the same reason
@@ -189,7 +192,12 @@ def test_every_mass_is_in_front_of_the_wall_and_inside_the_room(spec):
             continue
         y0 = m["c"][1] - m["s"][1] / 2
         y1 = m["c"][1] + m["s"][1] / 2
-        if m["name"] in inwall or m["name"].startswith(("recess_", "halo_")):
+        pockets = m["name"].startswith("tower_") and spec["unit"]["tower"].get("pocket_mm")
+        if pockets:
+            assert y1 <= rdep + 1e-6, f"{m['name']} passes through the wall"
+            assert y0 >= -room["room_depth_mm"], f"{m['name']} leaves the room"
+            continue
+        if m["name"] in inwall or m["name"].startswith(("recess_", "wall_", "halo_")):
             assert y0 >= -1e-6, f"{m['name']} pokes out of the wall"
             # the stone is bedded into the wall body behind the recess, but
             # nothing may pass the wall's back face into the next room
@@ -827,3 +835,145 @@ def test_the_two_veneer_species_stay_distinguishable():
         assert lum(k) == pytest.approx(want, rel=0.02), (
             f"{k} moved in VALUE ({lum(k):.4f} vs {want}); this was a hue-only "
             f"change and its value belongs to the light lane")
+
+
+# ---- the cavity has a depth of its own ---------------------------------------
+
+def test_the_cubby_cavity_is_not_the_same_number_as_the_proud_depth(spec):
+    """2026-08-01, and this is the class the project keeps paying for. The real
+    unit has TWO depths — how far the carcass stands proud of the wall (100 mm,
+    measured, still true) and how far the cavity pockets BACK into it (176.5 mm,
+    measured, never modelled). One parameter for both is why proving the first
+    read as proving the second, and why five rounds of light could not fix a
+    cubby that was 82 mm deep instead of 276.5.
+
+    Pinned as a RELATION, not as today's numbers, so re-measuring either depth
+    cannot quietly collapse them back into one."""
+    t = spec["unit"]["tower"]
+    d, pk, b = t["d_mm"], t.get("pocket_mm", 0.0), t["board_mm"]
+    assert pk > 0, "the towers stopped pocketing into the wall"
+    ms = {m["name"]: m for m in G.masses(spec)}
+    side = ms["tower_L_sA"]
+    y0 = side["c"][1] - side["s"][1] / 2
+    back = ms["tower_L_back"]
+    y_back = back["c"][1] - back["s"][1] / 2
+    assert y0 == pytest.approx(-d), f"carcass no longer stands {d} proud (got {-y0})"
+    assert y_back == pytest.approx(pk), f"cavity back moved to {y_back}, spec says {pk}"
+    assert y_back - y0 == pytest.approx(d + pk), "cavity depth != proud + pocket"
+    # the shelves must reach the back of the cavity, or they read as a shallow one
+    for i in range(len(t["shelves_L_z"])):
+        sh = ms[f"tower_L_shelf{i}"]
+        assert sh["c"][1] + sh["s"][1] / 2 == pytest.approx(pk), (
+            f"shelf{i} stops short of the cavity back — the band a shelf top "
+            f"shows is the measurement that proved the pocket")
+
+
+def test_the_wall_actually_opens_where_a_tower_pockets_into_it(spec):
+    """A pocket is only a pocket if the wall gets out of the way. The old wall
+    layer could cut exactly ONE hole (the marble), so its jamb ran straight
+    through both towers and would have filled the cavity back in — an omission
+    silently undoing a measured decision, which is the recurring shape here."""
+    ms = G.masses(spec)
+    t, h = spec["unit"]["tower"], spec["unit"]["header"]
+    pk = t.get("pocket_mm", 0.0)
+    z_top = h["top_z_mm"] - h["band_h_mm"]
+    for sgn, side in ((-1, "L"), (1, "R")):
+        cx = h.get("cx_mm", 0.0) + sgn * (h["len_mm"] / 2 - t["w_mm"] / 2)
+        # a point well inside the cavity, behind the old wall face
+        probe = (cx, pk / 2, (t["base_top_mm"] + z_top) / 2)
+        for m in ms:
+            if not m["name"].startswith(("wall_", "recess_", "back_wall")):
+                continue
+            c, s = m["c"], m["s"]
+            inside = all(abs(probe[k] - c[k]) < s[k] / 2 - 1e-6 for k in range(3))
+            assert not inside, (
+                f"{m['name']} fills tower {side}'s cavity at {probe}")
+
+
+def test_deepening_the_wall_for_the_towers_never_moves_the_stone(spec):
+    """The marble's 70 mm reveal is a measurement of its own. The towers made the
+    wall 194.5 mm deep; the stone must not follow it back.
+
+    The reveal is the distance from the wall FACE to the STONE's front face —
+    not to whatever closes the hole behind it. Written the wrong way round first
+    time and caught by the build: the back plate has to start behind the stone,
+    so pinning the reveal on the plate pins it 18 mm out."""
+    u = spec["unit"]
+    rc = u.get("recess")
+    assert rc, "spec lost its recess"
+    ms = {m["name"]: m for m in G.masses(spec)}
+    stone = ms["marble"]
+    reveal = stone["c"][1] - stone["s"][1] / 2
+    assert reveal == pytest.approx(rc["depth_mm"]), (
+        f"the stone's reveal became {reveal} mm; it is measured at {rc['depth_mm']}")
+    bp = ms.get("recess_backplate")
+    assert bp is not None, "deep wall with no back plate — the marble opening is a void"
+    assert bp["c"][1] + bp["s"][1] / 2 == pytest.approx(G.wall_front_depth(u)), (
+        "the back plate does not reach the wall body — a void behind the stone")
+
+
+def test_a_wall_layer_refuses_openings_that_overlap(spec):
+    """Two holes sharing x would tile into overlapping solids that render as
+    one — fail loud instead."""
+    with pytest.raises(ValueError):
+        G._wall_layer_masses([(0, 100, 0, 100), (50, 200, 0, 100)],
+                             -500, 500, 0, 2700, 100)
+
+
+def test_a_spec_without_a_pocket_still_builds_the_legacy_wall(spec):
+    """Rounds 1-4 specs carry no pocket_mm. They must keep the single-opening
+    recess wall byte-for-byte, so this change cannot rewrite history."""
+    old = copy.deepcopy(spec)
+    old["unit"]["tower"].pop("pocket_mm", None)
+    names = {m["name"] for m in G.masses(old)}
+    assert "recess_jambL" in names and "recess_jambR" in names
+    assert not any(n.startswith("wall_pier") for n in names)
+
+
+def test_no_solid_swallows_another_solid(spec):
+    """COPLANAR FACES ARE NOT A STYLE QUESTION. The marble sits in a 70 mm
+    recess and the wall body started at 70 too, so the stone (70..88) was
+    contained in the wall with their front faces exactly coincident — the hero
+    object was winning a BVH coin flip on every render. It lost the flip the day
+    a second box went in behind it, and the slab came back as blank white paint.
+
+    Pinned on CONTAINMENT rather than on the marble, because the next thing to
+    be quietly buried will not be the marble."""
+    ms = [m for m in G.masses(spec) if not m["name"].startswith("dl_")]
+    shell = {"back_wall", "ceiling", "floor", "side_wall_L", "side_wall_R",
+             "front_wall"}
+
+    def box(m):
+        return [(m["c"][k] - m["s"][k] / 2, m["c"][k] + m["s"][k] / 2)
+                for k in range(3)]
+
+    for a in ms:
+        if a["name"] in shell:
+            continue
+        ba = box(a)
+        for b in ms:
+            if b is a:
+                continue
+            bb = box(b)
+            if all(bb[k][0] <= ba[k][0] + 1e-6 and ba[k][1] <= bb[k][1] + 1e-6
+                   for k in range(3)):
+                assert False, (
+                    f"{a['name']} is entirely inside {b['name']} — whichever "
+                    f"the renderer picks is luck, not a decision")
+
+
+def test_the_wall_body_never_starts_in_front_of_the_stones_back(spec):
+    """The one number that keeps the stone out of the wall, held where the
+    builder computes it so the two cannot drift."""
+    u = spec["unit"]
+    if not u.get("recess"):
+        pytest.skip("no recess in this spec")
+    ms = {m["name"]: m for m in G.masses(spec)}
+    back = G.stone_back_y(u)
+    wall = ms["back_wall"]
+    assert wall["c"][1] - wall["s"][1] / 2 >= back - 1e-6, (
+        "the wall body starts in front of the stone's back face")
+    bp = ms.get("recess_backplate")
+    if bp is not None:
+        assert bp["c"][1] - bp["s"][1] / 2 >= back - 1e-6, (
+            "the back plate starts in front of the stone's back face")

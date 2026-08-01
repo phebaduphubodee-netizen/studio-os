@@ -77,6 +77,12 @@ def _tower_masses(side, cx, t, z_top, plinth_h):
     the target's two towers do NOT share a shelf ladder."""
     out = []
     w, d = t["w_mm"], t["d_mm"]
+    # TWO depths, not one (2026-08-01). d_mm is how far the carcass stands PROUD
+    # of the wall face; pocket_mm is how much further the CAVITY continues BEHIND
+    # it, into the wall. Rounds 1-4 had a single parameter for both, so proving
+    # the proud depth (100 mm, confirmed again today to 1.7 mm) looked like it
+    # had also settled the cavity — and it had not. Cavity = d + pocket.
+    pk = t.get("pocket_mm", 0.0)
     b = t.get("board_mm", 18)
     st = t.get("shelf_t_mm", 30)
     carcass, cavity = 0.28, 0.13
@@ -98,12 +104,13 @@ def _tower_masses(side, cx, t, z_top, plinth_h):
     z0 = base_top
     out.append(_box(f"tower_{side}_base", cx, -d / 2, (z_base + base_top) / 2,
                     w, d, base_top - z_base, carcass))
-    out.append(_box(f"tower_{side}_back", cx, -b / 2, (z0 + z_top) / 2,
+    out.append(_box(f"tower_{side}_back", cx, pk + b / 2, (z0 + z_top) / 2,
                     w, b, z_top - z0, cavity))
+    side_d, side_y = d + pk + b, (pk + b - d) / 2
     for tag, xoff in (("sA", -(w - b) / 2), ("sB", +(w - b) / 2)):
-        out.append(_box(f"tower_{side}_{tag}", cx + xoff, -d / 2, (z0 + z_top) / 2,
-                        b, d, z_top - z0, carcass))
-    inner_w, inner_y, inner_d = w - 2 * b, -(d + b) / 2, d - b
+        out.append(_box(f"tower_{side}_{tag}", cx + xoff, side_y, (z0 + z_top) / 2,
+                        b, side_d, z_top - z0, carcass))
+    inner_w, inner_y, inner_d = w - 2 * b, -(d - pk) / 2, d + pk
     out.append(_box(f"tower_{side}_top", cx, inner_y, z_top - b / 2,
                     inner_w, inner_d, b, carcass))
     for i, sz in enumerate(t.get(f"shelves_{side}_z", [])):
@@ -135,6 +142,88 @@ def _recess_masses(rc, m, x0, x1, z0, z1):
         _box("recess_head", (ox0 + ox1) / 2, ycen, (oz1 + z1) / 2, ox1 - ox0, ydep, z1 - oz1, v),
         _box("recess_sill", (ox0 + ox1) / 2, ycen, (z0 + oz0) / 2, ox1 - ox0, ydep, oz0 - z0, v),
     ]
+
+
+def _wall_layer_masses(openings, x0, x1, z0, z1, dep, v=0.80):
+    """The wall's front layer as a TILING around N openings that must not
+    overlap in x — piers between them, a head above and a sill below each.
+
+    Generalises _recess_masses, which could only ever cut ONE hole. The tower
+    cavities pocket into the same wall the marble does, so a single-hole wall
+    layer silently BLOCKED them: the jamb box spanning out to the wall edge runs
+    straight through both towers. Same shape as every other defect this project
+    has lost to an omission — the wall had no way to know a second opening
+    existed, so it quietly filled it in."""
+    ops = sorted(openings, key=lambda o: o[0])
+    for a, b in zip(ops, ops[1:]):
+        if b[0] < a[1]:
+            raise ValueError(f"wall openings overlap in x: {a} and {b}")
+    out, cursor = [], x0
+    for i, (ox0, ox1, oz0, oz1) in enumerate(ops):
+        ox0, ox1 = max(ox0, x0), min(ox1, x1)
+        if ox1 <= ox0:
+            continue
+        if ox0 - cursor > 1e-6:
+            out.append(_box(f"wall_pier{i}", (cursor + ox0) / 2, dep / 2,
+                            (z0 + z1) / 2, ox0 - cursor, dep, z1 - z0, v))
+        if z1 - oz1 > 1e-6:
+            out.append(_box(f"wall_head{i}", (ox0 + ox1) / 2, dep / 2,
+                            (oz1 + z1) / 2, ox1 - ox0, dep, z1 - oz1, v))
+        if oz0 - z0 > 1e-6:
+            out.append(_box(f"wall_sill{i}", (ox0 + ox1) / 2, dep / 2,
+                            (z0 + oz0) / 2, ox1 - ox0, dep, oz0 - z0, v))
+        cursor = ox1
+    if x1 - cursor > 1e-6:
+        out.append(_box("wall_pierN", (cursor + x1) / 2, dep / 2, (z0 + z1) / 2,
+                        x1 - cursor, dep, z1 - z0, v))
+    return out
+
+
+def wall_front_depth(u):
+    """How deep the feature wall's front layer runs — the DEEPEST thing that
+    pockets into it. Lives here, in one place, because a test or a builder that
+    recomputes it from recess.depth_mm alone goes stale the moment something
+    else pockets deeper (which is exactly how the towers got filled in)."""
+    rc = u.get("recess")
+    t = u.get("tower", {})
+    pk = t.get("pocket_mm", 0.0)
+    return max(rc["depth_mm"] if rc else 0.0,
+               pk + t.get("board_mm", 18) if pk else 0.0)
+
+
+def stone_back_y(u):
+    """The y of the marble's BACK face. The wall body must start at or behind
+    it: the stone is set INTO the recess, so a wall that starts at the recess
+    depth (70) contains the stone (70..88) outright, with coincident front
+    faces. That was live from the moment the recess landed — the hero object
+    was winning a BVH coin flip, and it lost the flip the day a second box was
+    added behind it. Coplanar faces are not a style question."""
+    m = u["marble"]
+    face_y = -m["proud_mm"]
+    return face_y + m.get("thick_mm", m["proud_mm"])
+
+
+def marble_opening(rc, m):
+    """The marble's hole in the wall, as (x0, x1, z0, z1)."""
+    g = rc.get("gap_mm", 20.0)
+    mcx = m.get("cx_mm", 0.0)
+    return (mcx - m["w_mm"] / 2 - g, mcx + m["w_mm"] / 2 + g,
+            m["bot_z_mm"] - g, m["bot_z_mm"] + m["h_mm"] + g)
+
+
+def tower_openings(u, z_top):
+    """The two tower cavities' holes in the wall, as (x0, x1, z0, z1) — empty
+    when the towers do not pocket, so a pre-2026-08-01 spec is untouched."""
+    t, h = u["tower"], u["header"]
+    if not t.get("pocket_mm"):
+        return []
+    hcx, w = h.get("cx_mm", 0.0), t["w_mm"]
+    z_bot = t.get("base_top_mm") or 0.0
+    out = []
+    for sgn in (-1, 1):
+        cx = hcx + sgn * (h["len_mm"] / 2 - w / 2)
+        out.append((cx - w / 2, cx + w / 2, z_bot, z_top))
+    return out
 
 
 def _header_masses(h, x_in):
@@ -311,9 +400,13 @@ def masses(spec):
     # the recess depth and a front layer with the opening is added below, so the
     # room face still reads at y=0 while the stone sits inside the wall.
     rc = u.get("recess")
-    rdep = rc["depth_mm"] if rc else 0.0
+    # The wall's front layer must be at least as deep as the DEEPEST thing that
+    # pockets into it. The marble keeps its own measured 70 mm reveal via a back
+    # plate, so deepening the layer for the towers cannot move the stone.
+    rdep = wall_front_depth(u)
+    body_y0 = max(rdep, stone_back_y(u)) if rc else rdep
     out.append(_box("floor", -wall_off, -depth / 2, -50, wall_len, depth, 100, 0.65))
-    out.append(_box("back_wall", -wall_off, rdep + 50, ceil / 2, wall_len, 100, ceil, 0.80))
+    out.append(_box("back_wall", -wall_off, body_y0 + 50, ceil / 2, wall_len, 100, ceil, 0.80))
     out.append(_box("ceiling", -wall_off, -depth / 2, ceil + 50, wall_len, depth, 100, 0.82))
     lx = -wall_off - wall_len / 2
     out.append(_box("side_wall_L", lx - 50, -depth / 2, ceil / 2, 100, depth, ceil, 0.80))
@@ -357,9 +450,22 @@ def masses(spec):
 
     m = u["marble"]
     if rc:
-        out.extend(_recess_masses(rc, m,
-                                  -wall_off - wall_len / 2, -wall_off + wall_len / 2,
-                                  0.0, ceil))
+        wx0, wx1 = -wall_off - wall_len / 2, -wall_off + wall_len / 2
+        tops = tower_openings(u, tz)
+        if not tops:
+            out.extend(_recess_masses(rc, m, wx0, wx1, 0.0, ceil))
+        else:
+            mo = marble_opening(rc, m)
+            out.extend(_wall_layer_masses([mo] + tops, wx0, wx1, 0.0, ceil, rdep))
+            # the stone's reveal is a MEASUREMENT (70 mm); it stays 70 mm no
+            # matter how deep the towers made the wall, so the marble opening
+            # gets its own back plate at exactly that depth.
+            bp0 = stone_back_y(u)
+            if rdep - bp0 > 1e-6:
+                out.append(_box("recess_backplate", (mo[0] + mo[1]) / 2,
+                                (bp0 + rdep) / 2, (mo[2] + mo[3]) / 2,
+                                mo[1] - mo[0], rdep - bp0,
+                                mo[3] - mo[2], 0.80))
 
     # A THIN slab held OFF the wall, not a thick panel stuck to it — the
     # standoff cavity is where the concealed light lives, and modelling the slab
