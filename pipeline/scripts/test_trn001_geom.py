@@ -977,3 +977,54 @@ def test_the_wall_body_never_starts_in_front_of_the_stones_back(spec):
     if bp is not None:
         assert bp["c"][1] - bp["s"][1] / 2 >= back - 1e-6, (
             "the back plate starts in front of the stone's back face")
+
+
+def test_first_hit_names_what_actually_blocks_the_view(spec):
+    """THE PLANE-IS-NOT-THE-SURFACE GUARD. backproject() answers where a ray
+    meets an infinite plane and knows nothing about extent or occlusion, so it
+    returns a confident millimetre for points no camera can see. It has cost
+    this project three times; the fourth was caught only because a cubby back
+    panel 276 mm deep came back BRIGHTER than its own mouth.
+
+    Two halves, both needed: a hidden point must be named as blocked, and a
+    visible point must NOT be — including a point lying ON a surface, where the
+    box it belongs to still contains the ray at t=1."""
+    cam, ms = spec["camera"], G.masses(spec)
+    u = spec["unit"]
+    t, h = u["tower"], u["header"]
+    w, b, d = t["w_mm"], t["board_mm"], t["d_mm"]
+    pk = t.get("pocket_mm", 0.0)
+    cxR = h.get("cx_mm", 0.0) + (h["len_mm"] / 2 - w / 2)
+
+    # a point on a front-facing surface is visible and must not report itself
+    stile = (cxR - (w - b) / 2, -d + 1.0, 1276.0)
+    assert G.first_hit(cam, stile, ms)[0] is None, "a lit front face read as blocked"
+
+    # the right tower faces the camera, so its back panel centre is visible
+    assert G.first_hit(cam, (cxR, pk, 1276.0), ms)[0] is None
+
+    # a point buried behind the room's own back wall cannot be seen
+    blocked, _ = G.first_hit(cam, (cxR, G.wall_front_depth(u) + 400.0, 1276.0), ms)
+    assert blocked is not None, "a point behind the wall read as visible"
+
+
+def test_first_hit_agrees_with_the_projection_it_guards(spec):
+    """The guard is only worth anything if it shares the camera with project():
+    a visibility test on a different station would silently pass bad samples."""
+    cam, ms = spec["camera"], G.masses(spec)
+    # march along a ray through a known pixel; the first mass the guard names
+    # must contain the point where that ray reaches it
+    for uv in ((700.0, 900.0), (1200.0, 1400.0), (1850.0, 800.0)):
+        p = G.backproject(cam, uv, ("y", 0.0), res=2048)
+        if p is None:
+            continue
+        name, t_hit = G.first_hit(cam, p, ms)
+        if name is None:
+            continue
+        m = next(x for x in ms if x["name"] == name)
+        c = (cam["x_mm"], cam["y_mm"], cam["z_mm"])
+        pt = tuple(c[i] + t_hit * (p[i] - c[i]) for i in range(3))
+        for i in range(3):
+            lo = m["c"][i] - m["s"][i] / 2 - 1.0
+            hi = m["c"][i] + m["s"][i] / 2 + 1.0
+            assert lo <= pt[i] <= hi, f"{name} hit point {pt} is outside the mass"

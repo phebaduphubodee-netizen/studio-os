@@ -622,6 +622,54 @@ def project_all(cam, spec, res=2048):
     return {n: project(cam, p, res) for n, p in landmarks_3d(spec).items()}
 
 
+def first_hit(cam, pt, spec, skip=(), tol=1e-3):
+    """Walk the ray from the camera toward `pt` and name the first mass that
+    BLOCKS it. Returns (mass_name, t) or (None, None) if the point is visible.
+
+    A mass counts as blocking only if the ray LEAVES it before reaching the
+    point (exit t < 1 - tol). That is what makes the test usable on a surface
+    sample: the box the point sits on, and the box it sits inside, both still
+    contain the ray at t=1 and so are not mistaken for occluders. `tol` is in
+    ray-length units — on this camera's ~4 m rays the default is about 4 mm.
+
+    THE PLANE-IS-NOT-THE-SURFACE GUARD, made available instead of remembered.
+    backproject() answers where a ray meets an infinite plane and knows nothing
+    about extent or occlusion, so it will hand back a confident millimetre for a
+    point no camera can see. That has now cost this project three times: a vase
+    placed inside a pedestal, a bounding box that could not tell a vase from a
+    plank, and a cubby back panel sampled straight through the side panel that
+    hides it — where the giveaway was a luminance far too BRIGHT for 276 mm of
+    depth. Any of the three would have been caught by asking this first.
+
+    AABB test: masses with corner radii are treated as their full boxes, which
+    can only over-report occlusion (conservative), never miss it."""
+    c = (cam["x_mm"], cam["y_mm"], cam["z_mm"])
+    d = tuple(pt[i] - c[i] for i in range(3))
+    best, best_t = None, None
+    for m in masses(spec) if isinstance(spec, dict) else spec:
+        if m["name"] in skip:
+            continue
+        t0, t1 = 0.0, float("inf")
+        for i in range(3):
+            lo = m["c"][i] - m["s"][i] / 2
+            hi = m["c"][i] + m["s"][i] / 2
+            if abs(d[i]) < 1e-12:
+                if not (lo - 1e-6 <= c[i] <= hi + 1e-6):
+                    t0 = 1e9
+                    break
+                continue
+            a, b = (lo - c[i]) / d[i], (hi - c[i]) / d[i]
+            if a > b:
+                a, b = b, a
+            t0, t1 = max(t0, a), min(t1, b)
+            if t0 > t1:
+                break
+        # blocks only if the ray is fully through this box before the point
+        if t0 <= t1 and t1 < 1.0 - tol and (best_t is None or t0 < best_t):
+            best, best_t = m["name"], t0
+    return best, best_t
+
+
 def backproject(cam, uv, plane, res=2048):
     """Inverse of project(): a measured target pixel + the PLANE it is known to
     lie on -> world mm. plane = (axis, value), axis in 'x'|'y'|'z'.

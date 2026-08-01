@@ -132,7 +132,16 @@ PALETTE = {
     "veneer_fascia": ((0.221, 0.174, 0.126), 0.42, 0.0, "wood_floor", 1.7),
     "veneer_pier":  ((0.182, 0.169, 0.136), 0.42, 0.0, "wood_floor", 1.0),
     "veneer_altar": ((0.27, 0.22, 0.17), 0.45, 0.0, "wood_floor", 1.0),
-    "cavity":       ((0.05, 0.04, 0.04), 0.70, 0.0, "wood_floor", 1.0),
+    # 2026-08-01: the cubby lining was a near-black (0.05) chosen when the cavity
+    # was 82 mm deep — at that depth almost anything reads dark, so the value was
+    # never really under test. With the pocket built to its measured 276.5 mm the
+    # back panel became measurable and the near-black is REFUTED: our cavity MOUTH
+    # runs 1.42x too BRIGHT while our back panel reads 0.36-0.68x of the target's
+    # across both towers, and more incident light returning less means the albedo
+    # is too low, by a factor near the 3.6x that separated it from the veneer.
+    # Hue agrees — ours rendered R/G 1.49 against the target's 1.15-1.37, and the
+    # old triple was WARMER (1.25) than the veneer it sits beside (1.08).
+    "cavity":       ((0.182, 0.169, 0.136), 0.70, 0.0, "wood_floor", 1.0),
     "lacquer_white": ((0.88, 0.88, 0.87), 0.20, 0.0, None, 0.0),
     # SCALE IS THE FIGURE. The critic's "small speckle" was not the stone, it was
     # me: scale is the size of ONE map pass in metres, so 8.0 showed the 1.4 m
