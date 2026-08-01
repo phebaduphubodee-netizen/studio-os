@@ -40,6 +40,7 @@ beam, not re-spec the wattage. 5.ies (Halo H7t-301 recessed open trim, the one
 profile in the fetched pack that IS this fixture type) carries norm 0.20 there;
 the same constant is used here and the watts stay the one power authority.
 """
+import math
 import os
 import sys
 
@@ -106,6 +107,40 @@ def ies_norm_for(fname, given):
     return IES_NORM_K / mean, f"auto K/{mean:.0f}"
 
 
+def aim_euler(pos, aim):
+    """(pitch, 0, yaw) that points a light's local -Z at a world point. PURE.
+
+    This lives here, tested, because the inline version it replaces was WRONG BY
+    180 DEGREES IN YAW and had been wrong for every aimed light this lane ever
+    built. `atan2(dy, dx) + pi/2` names the direction perpendicular to the run,
+    turned the wrong way: rotating (0,0,-1) by X then Z gives
+    (-sin@ sin!, sin@ cos!, -cos@), so the yaw that satisfies it is
+    atan2(-dx, dy) -- the two differ by exactly pi, which is why the error was
+    invisible in the one case where it could not show (the cove, tilted 3.4 deg
+    off vertical, landed 6.8 deg from its aim and still read as "down").
+
+    IT IS NOT INVISIBLE IN THE OTHER CASE. `_fill_refuted` and `_fill_retest`
+    both describe an AREA light "standing off frame on the camera side" aimed
+    INTO the room; built through the old formula it faced 180 deg away, i.e. it
+    lit the back of the room and reached the frame only as bounce. A source that
+    can only arrive as bounce is a diffuse fill by construction -- which is
+    precisely the "raises everything at once and FLATTENS" result both
+    refutations recorded. Those two verdicts now rest on a broken instrument
+    (they measured a bounce card, not the wall-directed source they claim), and
+    that is the owner's to re-open, not this lane's to assume.
+
+    Verified against bpy itself rather than against this reasoning: Blender's own
+    object transform returns 44.4 deg of error for the shipped formula and 0.0
+    for this one on the downlight case."""
+    import math
+
+    dx, dy, dz = (a - p for a, p in zip(aim, pos))
+    run = math.hypot(dx, dy)
+    if run < 1e-9:
+        return (0.0 if dz < 0 else math.pi, 0.0, 0.0)
+    return (math.atan2(run, -dz), 0.0, math.atan2(-dx, dy))
+
+
 def plan(spec):
     """spec -> [fixture dict]. PURE. Positions come from trn001_geom so the
     emitter and the housing the camera sees are the same decision."""
@@ -124,9 +159,38 @@ def plan(spec):
         # flat at 3.5%, and a second row sitting between the camera and the
         # measured row is exactly what would fill that ramp in.
         watt = dl.get("watt", 60.0) if measured else dl.get("fill_watt", dl.get("watt", 60.0))
+        # WALL-WASH AIM, and the reason it is the measured row ONLY. That row is
+        # 605 mm off the wall on a 2700 ceiling — the setback of a wall-wash, and
+        # downlight_positions' own docstring already calls it "what a wall-wash
+        # row is" — but every round so far has emitted it pointing at the floor,
+        # which is why our floor field is explained by distance-to-nearest-lamp
+        # at R2 0.965 while the target's reaches 0.104-0.449, and why
+        # floor_far_left (1.0 m from the left lamp) reads 2.73x. A wall-wash
+        # REDISTRIBUTES: it is the only lever tried in this lane that lowers a
+        # horizontal and raises a vertical with one move, because it does not add
+        # a source. The inferred rows behind the frame keep pointing down — they
+        # are the room's general lighting and the only thing feeding floor_near,
+        # which is already 0.79x SHORT.
+        #
+        # TILT IS THE KNOB, not the aim height. `aim_z_mm` cannot express a
+        # gentle wash: the fixture sits 605 mm off a 2682 mm ceiling, so aiming
+        # at the wall's very base is already 12.7 deg and there is no aim point
+        # below it — the parameter's own floor was 12.7, which is most of the
+        # useful range, and a sweep that cannot reach the small end cannot
+        # bisect (the same shape as sweeping a depth from 200 mm and concluding
+        # "no solution" from a range that excluded the answer).
+        aim = None
+        tilt = dl.get("tilt_deg")
+        if measured and tilt is not None:
+            r = math.radians(float(tilt))
+            aim = (x, y + math.sin(r) * 1000.0, z - math.cos(r) * 1000.0)
+        elif measured and dl.get("aim_z_mm") is not None:
+            aim = (x + float(dl.get("aim_dx_mm", 0.0)),
+                   float(dl.get("aim_y_mm", 0.0)), float(dl["aim_z_mm"]))
         out.append({
             "name": name,
             "kind": "SPOT",
+            "aim": aim,
             "pos": (x, y, z),
             "watt": float(watt),
             "kelvin": float(lt.get("kelvin", 3800.0)),
@@ -238,9 +302,12 @@ def report(spec):
                         f"{f['watt']:5.1f}W {f['kelvin']:.0f}K AREA "
                         f"{f['size_mm'][0]:.0f}x{f['size_mm'][1]:.0f} aim {f['aim']}")
             continue
+        import math as _m
+        tilt = "nadir" if f.get("aim") is None else \
+            f"tilt {_m.degrees(aim_euler(f['pos'], f['aim'])[0]):.1f}d->wall"
         rows.append(f"  {f['name']:10s} {tag:8s} "
                     f"({f['pos'][0]:8.1f},{f['pos'][1]:8.1f},{f['pos'][2]:7.1f}) "
-                    f"{f['watt']:5.1f}W {f['kelvin']:.0f}K "
+                    f"{f['watt']:5.1f}W {f['kelvin']:.0f}K {tilt:16s} "
                     f"ies={ies}x{f['ies_norm']:.4f} [{f['ies_norm_from']}]")
     w, fm = world(spec), film(spec)
     n_meas = sum(1 for f in fx if f["measured"])
@@ -326,11 +393,9 @@ def build_lights(spec):
         if aim is None:
             ob.rotation_euler = (0.0, 0.0, 0.0)  # -Z local = straight down
         else:
-            # aim the light's -Z at a world point: pitch from the horizontal run,
-            # yaw from the plan bearing. No bpy.ops, no track constraint.
-            dx, dy, dz = (a - p for a, p in zip(aim, f["pos"]))
-            run = math.hypot(dx, dy)
-            ob.rotation_euler = (math.atan2(run, -dz), 0.0, math.atan2(dy, dx) + math.pi / 2)
+            # aim the light's -Z at a world point. No bpy.ops, no track
+            # constraint, and no inline trigonometry either — see aim_euler.
+            ob.rotation_euler = aim_euler(f["pos"], aim)
         col.objects.link(ob)
         made.append(ob)
     return made
