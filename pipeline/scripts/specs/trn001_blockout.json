@@ -1,11 +1,12 @@
 {
  "_what": "TRN-001 reproduction blockout spec (round 1: camera + blockout). Generic prayer-room feature wall; dims are the 2026-07-30 study's mutually-consistent spine (vault-grounded where the vault speaks, trade standards where it is silent). Committed file carries TRN-id + generic content only per qa/reproduction-curriculum.md.",
  "room": {
-  "ceiling_mm": 2700,
+  "ceiling_mm": 2805,
   "back_wall_len_mm": 6000,
   "room_depth_mm": 4500,
   "unit_center_offset_mm": -1370,
-  "close_box": true
+  "close_box": true,
+  "_height": "2026-08-01, ROUND 11. The room is 105 mm taller than nine rounds assumed, and the error was invisible because nothing in the model disagreed with anything else in the model. Found by a fleet sweep of regions nobody had looked at, then attacked: three independent detectors put the target's unit-top arris at z=2773 on the header face plane (2773.5+/-0.3 and 2773.4+/-0.3 from two edge-finders whose controls reproduce our own known 2700 to 2 mm; a third, cruder one failed its control at -32 mm but agreed on the OFFSET at +66 mm against the others' +73, which is what a common-mode bias does). THE CEILING ITSELF IS A SEPARATE NUMBER and the first claim conflated them: back-projecting a top edge onto an ASSUMED header setback trades ceiling height against header depth. Closed with an instrument containing no header at all -- the left side wall is a plane x=Xw, its FLOOR junction fixes Xw because z=0 is known, and its CEILING junction then gives Zc, both lines constrained to the wall-normal vanishing point so plank seams cannot win. Control on our own render: Xw -1818.5+/-0.8 against the model's -1815.0 and Zc 2702.9+/-0.6 against 2700. Target: Zc 2805+/-5. Forcing Zc=2773 would require the target's floor line to be wrong by 13.7 px where the control's error is 0.6 px. So: ceiling 2805, header top 2773 (the band HANGS 32 mm below the ceiling, it does not touch it), header depth 93 (its visible soffit band is 14.0 px in the target against our 15.0). The band's BOTTOM arris barely moves -- 2439 -> 2430 -- which is why every landmark fit stayed happy: the edge the solve could see was already right and the edge it could not see was 73 mm out."
  },
  "light": {
   "_what": "2026-07-31 round 4 (LIGHT). Every knob here is either a MEASUREMENT off the target or a declared inference — see downlights._measured. The round opened on trn001_lightcheck numbers, not on a look: our ceiling read 1.21x the wall against the target's 0.73x, our cubbies 1.63x too bright, our blacks 2.7x lifted, our frame's p99/p1 range 66:1 against 141:1, and our halo 1.92x too strong while clipping 2.15% of the frame against 0.08%. All five are one defect — rounds 1-3 lit the set with a WORLD, which lights a ceiling exactly as hard as a floor.",
@@ -24,12 +25,12 @@
   },
   "_fill_refuted": "2026-07-31: an AREA light standing off frame on the camera side — the room's door/window — was BUILT and REFUTED by measurement, not by taste. The reasoning that led to it still stands (the target's floor ramps 42% toward frame-right while its ceiling shows no lean and its wall is brighter at the BOTTOM, which no ceiling fixture produces), but the source itself flattens the frame instead of ramping it: p99/p1 fell 50 -> 28 at 150 W and -> 15 at 400 W, while the floor tilt it was meant to create fell 21.7% -> 15.1% -> 7.1%. Recorded as an unresolved measurement like round 2's surround, NOT iterated (R1).",
   "downlights": {
-   "_measured": "x_mm and row_y_mm are MEASURED: the two lens discs were found as bright disks in the ceiling band and back-projected onto the ceiling plane z=2700, landing at (-999.5, -605.0) and (+1164.7, -605.5) — both 605 mm off the wall to within 0.5 mm, i.e. one wall-wash row. lens_dia_mm is the same probe read across the disc (86 and 91 mm). fill rows are INFERRED (the frame only shows the ceiling back to y~-880, so no second row is measurable) and use the measured column pitch as row pitch.",
+   "_measured": "RE-DERIVED 2026-08-01 and the old value was internally inconsistent with its own spec. The recorded x -999.5/+1164.7 at y -605.0/-605.5 is not reproducible from the two lens discs at ANY ceiling height: at 2700 they back-project to (-904.9,-769.2) and (+1143.7,-767.9). The 'both 605 mm off the wall to within 0.5 mm' evidence was also VACUOUS as a height argument -- two ceiling lamps in one row are coplanar in y at every candidate ceiling for this camera (|dy| 1.32 mm at 2700, 1.41 at 2805), so that agreement could never have selected a height, only confirmed they are a row. At the measured ceiling of 2805 the same disc pixels give x -1077.8 / +1117.4 at y -521.7. WHAT THIS COSTS ROUND 9: the wall-wash was argued from '605 mm off the wall on a 2700 ceiling, which is what a wall-wash row is'. The real setback is 522 mm under a 2805 ceiling -- a TIGHTER wash, so the mechanism's direction survives and its bracketed 7 degrees must be re-bracketed against the new geometry rather than assumed to carry over.",
    "x_mm": [
-    -999.5,
-    1164.7
+    -1077.8,
+    1117.4
    ],
-   "row_y_mm": -605.0,
+   "row_y_mm": -521.7,
    "lens_dia_mm": 88.0,
    "trim_dia_mm": 112.0,
    "trim_drop_mm": 12.0,
@@ -56,9 +57,9 @@
   "_joinery": "2026-07-31 round 2 — every joinery number below is BACK-PROJECTED from the target through the round-1 camera onto the face plane it lies on, never proportioned: shelf boards land on a 432 mm ladder shared by BOTH towers (which refutes round 1's 'the two towers' shelves disagree' — that was pure perspective, gone the moment the rows were read in mm), board ~28 mm, right tower stands on a recessed toe ~197 mm, and the plinth's four drawer reveals sit at measured x so the two end faces stay WIDER than the middle three because they carry the end curve",
   "header": {
    "len_mm": 3490,
-   "band_h_mm": 261,
-   "depth_mm": 100,
-   "top_z_mm": 2700,
+   "band_h_mm": 343,
+   "depth_mm": 93,
+   "top_z_mm": 2773,
    "cx_mm": -70,
    "joints_x_mm": [
     -1377,
@@ -67,8 +68,9 @@
    "reveal_mm": 5,
    "brass": {
     "inset_mm": 45,
-    "width_mm": 6,
-    "proud_mm": 2
+    "width_mm": 10,
+    "proud_mm": 2,
+    "_width": "6 -> 10, MEASURED as an equivalent width rather than eyeballed: sum(excess over the local wood level) / peak excess, on both horizontal runs of the right small panel, 31-32 columns each. Target 5.38 and 5.29 px; ours 3.14 and 3.09 px = 0.58x, at the same px/mm on the same surface. The inlay also reads as a pale grey reveal rather than metal because it is LESS chromatic than the wood it sits in, which no width change fixes."
    }
   },
   "tower": {
@@ -96,7 +98,7 @@
   },
   "marble": {
    "w_mm": 1432,
-   "h_mm": 2117,
+   "h_mm": 2131,
    "bot_z_mm": 150,
    "proud_mm": -70,
    "cx_mm": -51,
@@ -104,7 +106,8 @@
     "strip_mm": 20,
     "setback_mm": 16
    },
-   "thick_mm": 18
+   "thick_mm": 18,
+   "_top": "2117 -> 2131: our slab top measures 14.3 mm low. Related and NOT yet fixed: the head reveal (opening arris to slab top, 21 columns) is 165.0 mm in ours against 140.9 in the target, so 10 mm of that gap remains after raising the slab and belongs to the recess opening rather than the stone."
   },
   "plinth": {
    "len_mm": 2804,
@@ -133,10 +136,11 @@
   },
   "box": {
    "w_mm": 969,
-   "h_mm": 427,
+   "h_mm": 409,
    "d_mm": 285,
    "r_mm": 140,
-   "cx_mm": -116
+   "cx_mm": -116,
+   "_height": "427 -> 409, and the interesting part is why not 390. The top-front arris measures +18.5 px below our model over 33 columns, and h=390 lands that arris exactly -- but a box top is a PLANE WITH TWO ARRISES, and the second one (found in HUE, d(R/B)/dv, because in the target the box top and the marble both read luminance 1.14-1.15 and no luminance edge exists there) sits only 8.0 px below the model where a pure -37 mm height change predicts 17.8. Two edges, one unknown -- the same under-determined shape the vase placement had. The missing second unknown is already named in this spec's own _c2_round2 note as CARRIED: 'rounded TOP edges (a section bullnose, not a plan radius) are still square'. Solving both together gives R about 18 mm with z_top about 864, i.e. h 409. THE BULLNOSE IS NOT BUILT YET, so h=409 currently splits the two edges instead of landing either; that is better than 427 (which misses the front by 18.5 px) and is honest about being half a fix."
   },
   "pedestal": {
    "w_mm": 277,
