@@ -160,6 +160,50 @@ def compose(ours_path, anchor_paths, out_path):
     return out_path
 
 
+def blind_slot(ours_name, salt, n_cells):
+    """Which cell OURS occupies in a blind panel. PURE and deterministic, so a
+    sheet can be regenerated and still mean the same thing — and separated from
+    compose_blind so a test can assert the distribution is not always cell 0."""
+    seed = int(hashlib.sha1(f"blind|{ours_name}|{salt}".encode()).hexdigest()[:8], 16)
+    return seed % n_cells
+
+
+def compose_blind(ours_path, anchor_paths, out_path, slot):
+    """THE FINISH-LINE SHEET, and the reason it had to be written.
+
+    `compose` puts OURS first, draws a red border round it and labels it "OURS".
+    That is right for R4's day-to-day question — how does this frame compare with
+    delivered work — and it makes R4's instrument structurally incapable of
+    asking the CLOSING question, which is whether the owner can still pick ours
+    out at all. A judge who is told the answer cannot fail the test.
+
+    So this mode shuffles our frame into the panel at a deterministic slot,
+    draws no border, writes no labels, and puts the answer in a SEPARATE file
+    that the judge does not open until after choosing. Everything still lands
+    under _private/ — a blind sheet is client imagery like any other."""
+    from PIL import Image, ImageDraw
+    paths = list(anchor_paths)
+    paths.insert(slot, ours_path)
+    cells = []
+    for p in paths:
+        im = Image.open(p).convert("RGB")
+        cells.append(im.resize((max(1, round(im.width * CELL_H / im.height)), CELL_H)))
+    total_w = sum(c.width for c in cells) + PAD * (len(cells) + 1)
+    sheet = Image.new("RGB", (total_w, CELL_H + LABEL_H + 2 * PAD), (24, 24, 24))
+    d = ImageDraw.Draw(sheet)
+    x = PAD
+    for i, c in enumerate(cells):
+        sheet.paste(c, (x, LABEL_H + PAD))
+        d.text((x + 4, 6), chr(ord("A") + i), fill=(200, 200, 200))
+        x += c.width + PAD
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    sheet.save(out_path)
+    key = os.path.splitext(out_path)[0] + ".ANSWER.txt"
+    with open(key, "w", encoding="utf-8") as f:
+        f.write(f"ours is panel {chr(ord('A') + slot)}\n")
+    return out_path, key
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="R4 side-by-side vs delivered anchors (LOCAL-ONLY)")
     ap.add_argument("ours", help="our render (png)")
@@ -167,6 +211,9 @@ def main(argv=None):
     ap.add_argument("--room", default=None, help="room_hint filter, e.g. bedroom")
     ap.add_argument("--salt", type=int, default=0, help="new salt = new panel, same salt = same panel")
     ap.add_argument("--out", default=OUT_DEFAULT)
+    ap.add_argument("--blind", action="store_true",
+                    help="reproduction FINISH TEST: shuffle ours in unlabelled, "
+                         "answer key written beside the sheet")
     a = ap.parse_args(argv)
 
     from PIL import Image
@@ -186,12 +233,23 @@ def main(argv=None):
                   f"than asked; judge accordingly)")
     chosen = pick(pool, os.path.basename(a.ours), a.n, a.salt)
 
-    out = os.path.join(_guard_out(a.out),
-                       f"bench_{os.path.splitext(os.path.basename(a.ours))[0]}_s{a.salt}.png")
-    compose(a.ours, [root_fix(c["path"]) for c in chosen], out)
+    stem = os.path.splitext(os.path.basename(a.ours))[0]
+    kind = "blind" if a.blind else "bench"
+    out = os.path.join(_guard_out(a.out), f"{kind}_{stem}_s{a.salt}.png")
+    anchors = [root_fix(c["path"]) for c in chosen]
+    key = None
+    if a.blind:
+        out, key = compose_blind(a.ours, anchors, out,
+                                 blind_slot(os.path.basename(a.ours), a.salt,
+                                            len(anchors) + 1))
+    else:
+        compose(a.ours, anchors, out)
     print(f"panel: {len(chosen)} delivered anchors (orient={eff_orient or 'any'}, "
           f"room={eff_room or 'any'}, pool={len(pool)}, quarantined_projects={len(trained)})")
     print(f"sheet: {out}   [LOCAL-ONLY — never commit, never egress]")
+    if key:
+        print(f"answer: {key}   — DO NOT OPEN until the pick is made; opening it "
+              f"first is the only way to fail this test by accident")
     return 0
 
 

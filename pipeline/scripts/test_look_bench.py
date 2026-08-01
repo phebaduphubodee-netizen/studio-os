@@ -112,3 +112,55 @@ def test_sheet_output_is_allowlisted_to_private_only():
         with pytest.raises(SystemExit):
             look_bench._guard_out(banned)
     assert look_bench._guard_out(os.path.join(look_bench.REPO, "_private", "benchmark", "look-bench"))
+
+
+def test_a_blind_panel_never_says_which_one_is_ours(tmp_path):
+    """The finish test only means something if the judge is not told the answer.
+    `compose` labels OURS and draws a red border round it — correct for R4's
+    daily question, fatal for the closing one.
+
+    Pinned on BEHAVIOUR, not on source text: the first cut of this test asserted
+    "OURS" not in the function's source and failed on its own docstring, which is
+    the test measuring the wrong thing in the smallest possible way."""
+    from PIL import Image
+
+    import look_bench as LB
+
+    # 1. the slot moves. A "shuffle" that always returns 0 would pass an eyeball
+    # check and fail the only thing it exists for.
+    slots = {LB.blind_slot("frame.png", s, 6) for s in range(60)}
+    assert len(slots) >= 4, f"blind slot barely moves: {sorted(slots)}"
+    assert all(0 <= s < 6 for s in slots)
+    assert LB.blind_slot("frame.png", 7, 6) == LB.blind_slot("frame.png", 7, 6)
+
+    # 2. compose a real sheet from solid colours: ours is pure blue, the anchors
+    # are greens no red channel can be confused with.
+    ours = tmp_path / "ours.png"
+    Image.new("RGB", (100, 100), (0, 0, 255)).save(ours)
+    anchors = []
+    for i in range(4):
+        p = tmp_path / f"a{i}.png"
+        Image.new("RGB", (100, 100), (0, 100 + i * 20, 0)).save(p)
+        anchors.append(str(p))
+    slot = LB.blind_slot("ours.png", 0, len(anchors) + 1)
+    out, key = LB.compose_blind(str(ours), anchors, str(tmp_path / "blind.png"), slot)
+
+    sheet = Image.open(out).convert("RGB")
+    px = sheet.load()
+    # 3. no red border anywhere: `compose` draws (255, 80, 80) around our cell,
+    # and a blind sheet that kept it would hand the answer over.
+    reds = sum(1 for y in range(sheet.height) for x in range(sheet.width)
+               if px[x, y] == (255, 80, 80))
+    assert reds == 0, f"{reds} border pixels give our frame away"
+
+    # 4. our frame really is AT the slot — a blind sheet that quietly dropped it
+    # would pass every check above while testing nothing at all.
+    # cells are resized to CELL_H tall, so a square source is CELL_H wide —
+    # derive the position, never assume the source size survived
+    cw = LB.CELL_H
+    cx = LB.PAD + slot * (cw + LB.PAD) + cw // 2
+    cy = LB.LABEL_H + LB.PAD + LB.CELL_H // 2
+    assert px[cx, cy][2] > 200 and px[cx, cy][1] < 60,         f"cell {slot} is {px[cx, cy]}, not our blue frame"
+
+    # 5. the answer left the sheet rather than vanishing
+    assert chr(ord("A") + slot) in open(key, encoding="utf-8").read()

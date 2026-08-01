@@ -21,6 +21,44 @@
   work converges, its transferable techniques are distilled into `knowledge/`
   (via `_inbox/`) and, where applicable, into pipeline capabilities.
 
+## The finish line — ADOPTED 2026-08-01 (owner: "ทำต่อให้มันจบซักที")
+
+The charter has claimed since it was written that "the target image EXISTS ->
+'เหมือนงานเพื่อน' is a falsifiable finish line... the loop TERMINATES". It did not
+terminate. Nine rounds ran because nobody had written the THRESHOLD, so every
+round ended with "พร้อมให้ตัดสิน" and the only stopping condition available was the
+owner running out of patience. A finish line that only one person can call is
+not a criterion; it is a queue.
+
+**THE TEST.** `python pipeline/scripts/look_bench.py <our frame> --blind` builds
+a panel of delivered anchors with our frame shuffled in UNLABELLED, and writes
+the answer to a separate `.ANSWER.txt` beside the sheet. The owner picks which
+panel is ours. **If he cannot pick it, or picks wrong, the reproduction CLOSES.**
+
+Three reasons this and not a number:
+* It is R4's own law, already adopted — "แพ้งานส่งจริง = ขายไม่ได้" — rather than a
+  new criterion invented to make a lane end.
+* An aggregate over named patches can be gamed by the patches. The panel cannot:
+  it judges the whole frame, against work that was actually delivered and paid
+  for, by the person who has to sell ours.
+* It orders the work correctly. A frame missing the objects a room is FOR gets
+  picked instantly no matter how good its light is, which is why round 10 built
+  the florals before touching the remaining light findings.
+
+**And R4's daily instrument could not run it.** `compose` puts our frame first,
+rings it in red and writes "OURS" over it — right for "how does this compare",
+structurally incapable of "can you still tell". A judge who is told the answer
+cannot fail. `--blind` (2026-08-01) is that gap closed, and it is general: every
+future unit of this curriculum closes the same way.
+
+**Standing exclusion, declared before the test rather than after:** TRN-001 is
+judged WITHOUT the three Buddha figures. The zero-baht CC0 pool holds no
+religious statuary (521 models searched), and hand-modelling a Buddha image was
+refused on decision (ข)'s own wording, "used respectfully as-is". That is a
+STUDIO capability gap — every Thai residential job with a prayer room meets it —
+and not a defect of this reproduction. It is the owner's to price, not this
+lane's to fake.
+
 ## Standing rules
 
 1. **Pick**: seeded random from the SAME pool R4 judges against
