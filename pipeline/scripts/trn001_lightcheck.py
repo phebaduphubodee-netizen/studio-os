@@ -206,12 +206,28 @@ def main():
         return
 
     o, t = ladder(a.ours), ladder(a.target)
-    print(f"{'patch':20s} {'ours lin':>9s} {'tgt lin':>9s} | "
+
+    # ABSOLUTE FIRST, and here is why. Every rel_err this tool printed was
+    # divided by REF_PATCH in each frame, so when the reference itself sits
+    # 0.795x of the target's, EVERY row is inflated by 1.26x — which is exactly
+    # how the plinth got reported as a 1.26x defect when it is 1.006x absolute,
+    # and how a bay that is 0.82x SHORT got read as over-lit. Absolute is
+    # legitimate here precisely when the two frames' medians agree, so the tool
+    # now says whether they do instead of assuming it.
+    med_ratio = o["frame_p50"] / max(t["frame_p50"], 1e-6)
+    ref_abs = o["patches"][REF_PATCH]["lum"] / max(t["patches"][REF_PATCH]["lum"], 1e-6)
+    print(f"exposure check: frame median ours/target = {med_ratio:.3f} "
+          f"({'ABSOLUTE COMPARISON VALID' if abs(med_ratio - 1) < 0.05 else 'MEDIANS DISAGREE — absolute rows are exposure-contaminated'})")
+    print(f"reference patch '{REF_PATCH}' is itself {ref_abs:.3f}x of target — "
+          f"every rel_err below is scaled by {1 / max(ref_abs, 1e-6):.2f}x by that alone\n")
+
+    print(f"{'patch':20s} {'ours lin':>9s} {'tgt lin':>9s}  {'ABS':>7s} | "
           f"{'ours rel':>9s} {'tgt rel':>9s}  rel_err")
     for name in PATCHES:
         ro, rt = o["patches"][name], t["patches"][name]
         err = ro["rel"] / max(rt["rel"], 1e-6)
-        print(f"{name:20s} {ro['lum']:9.4f} {rt['lum']:9.4f} | "
+        absr = ro["lum"] / max(rt["lum"], 1e-6)
+        print(f"{name:20s} {ro['lum']:9.4f} {rt['lum']:9.4f}  {absr:6.2f}x | "
               f"{ro['rel']:9.3f} {rt['rel']:9.3f}  {err:6.2f}x")
     print(f"\n{'':20s} {'OURS':>12s} {'TARGET':>12s}")
     for k in ("patch_range", "frame_range_p99_p1", "frame_p1", "frame_p50",

@@ -765,3 +765,37 @@ def test_the_vases_are_a_symmetric_pair_about_the_centre_box(spec):
     assert left["pos_mm"][2] == pytest.approx(right["pos_mm"][2], abs=0.5)
     # and they flank OUTBOARD of the pedestals they stand beside
     assert (bcx - left["pos_mm"][0]) > spec["unit"]["pedestal"]["cx_mm"]
+
+
+def test_matcheck_refuses_a_narrow_patch_shared_between_frames():
+    """Round 5: the row labelled "veneer_dark (right stile)" was sampling the
+    CUBBY BACK in BOTH frames — 0.0205 and 0.0186 linear where a lit stile reads
+    above 0.05 — so a cavity was reported as a stile and the two cavity rows
+    silently agreed with each other. The stiles are ~10 px wide and the frames
+    put them 6 px apart, so no shared box can sample both.
+
+    The instrument that scores the work has to be checked against the work; this
+    refuses the shape of box that cannot be right."""
+    import trn001_matcheck as MC
+
+    with pytest.raises(ValueError, match="per-frame"):
+        MC._check_narrow("bogus (thin thing)", (1900, 1910, 700, 900))
+    MC._check_narrow("wide enough", (900, 1200, 300, 360))          # no raise
+    MC._check_narrow("paired", {"ours": (1, 9, 0, 9), "target": (2, 10, 0, 9)})
+
+    for name, spec in MC.PATCHES.items():
+        MC._check_narrow(name, spec)                                 # all legal
+        ob, tb = MC._boxes(spec)
+        assert len(ob) == 4 and len(tb) == 4, name
+
+
+def test_every_narrow_matcheck_patch_is_located_per_frame():
+    """Pinned as a property of the table, so a later edit cannot reintroduce a
+    shared box on a thin feature."""
+    import trn001_matcheck as MC
+
+    for name, spec in MC.PATCHES.items():
+        ob, tb = MC._boxes(spec)
+        if (ob[1] - ob[0]) < MC.NARROW_PX:
+            assert isinstance(spec, dict), f"{name} is narrow and must be per-frame"
+            assert ob != tb, f"{name} gives identical boxes — locate it in each frame"

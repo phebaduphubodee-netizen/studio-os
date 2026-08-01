@@ -21,11 +21,30 @@ import numpy as np
 from PIL import Image
 
 # patch = (u0, u1, v0, v1) in 2048-space, chosen on flat unoccluded areas that
-# carry the SAME material in both frames (styling objects avoided by design)
+# carry the SAME material in both frames (styling objects avoided by design).
+#
+# A patch may be ONE box (the same pixels in both frames) or a per-frame pair
+# {"ours": box, "target": box}. THE PAIR IS NOT A CONVENIENCE — a narrow feature
+# cannot be sampled by a shared box at all. Round 5 found the row labelled
+# "veneer_dark (right stile)" sitting on the CUBBY BACK in BOTH frames: it read
+# 0.0205 and 0.0186 linear where a lit stile reads above 0.05, so a cavity was
+# being reported as a stile and the two cavity rows silently agreed with each
+# other. The stiles are ~10 px wide and the two frames put them 6 px apart
+# (target's outer band starts u1937, ours u1943), which is why the box has to be
+# located per frame. Same failure class the project has already paid for twice:
+# a bounding box that could not tell a vase from a plank, and a return band that
+# could not tell a shallow box from a deep pocket. THE INSTRUMENT THAT SCORES
+# THE WORK HAS TO BE CHECKED AGAINST THE WORK.
 PATCHES = {
     "veneer_dark (header face)": (900, 1200, 300, 360),
-    "veneer_dark (right stile)": (1900, 1940, 700, 900),
+    "veneer_pier (R outer stile)": {"ours": (1946, 1956, 700, 900),
+                                    "target": (1939, 1949, 700, 900)},
+    "veneer_pier (R inner stile)": {"ours": (1686, 1696, 700, 900),
+                                    "target": (1684, 1694, 700, 900)},
     "cavity (cubby interior)":   (1750, 1800, 700, 850),
+    # a second cavity sample well below the first: the target's cubby column
+    # swings strongly top-to-bottom, so ONE box reports a band, not a material
+    "cavity (lower bay)":        (1750, 1800, 1150, 1300),
     "paint_white (left of bay)": (520, 600, 700, 1000),
     "paint_white (right of bay)": (1450, 1550, 700, 1000),
     "marble (clean field)":      (760, 900, 600, 750),
@@ -33,6 +52,9 @@ PATCHES = {
     "veneer_altar (step face)":  (500, 640, 1440, 1470),
     "floor_oak (mid)":           (700, 900, 1850, 1950),
 }
+
+# any patch narrower than this must be located per frame, never shared
+NARROW_PX = 24
 
 
 def _lin(img, box):
@@ -44,15 +66,38 @@ def _lin(img, box):
     return np.median(lin, axis=0)
 
 
+def _boxes(spec):
+    """A patch is one shared box, or a per-frame pair. Returns (ours, target)."""
+    if isinstance(spec, dict):
+        return spec["ours"], spec["target"]
+    return spec, spec
+
+
+def _check_narrow(name, spec):
+    """A narrow feature sampled by a SHARED box is the round-5 defect. Refuse it
+    rather than reporting a number that names the wrong surface."""
+    if isinstance(spec, dict):
+        return
+    if spec[1] - spec[0] < NARROW_PX:
+        raise ValueError(
+            f"patch {name!r} is {spec[1] - spec[0]} px wide and shared between "
+            f"frames; anything under {NARROW_PX} px must give a per-frame box "
+            f"({{'ours': ..., 'target': ...}}) or it will sample two different "
+            f"surfaces and report them as one material")
+
+
 def compare(ours_path, target_path):
     ours, tgt = Image.open(ours_path), Image.open(target_path)
     rows = []
-    for name, box in PATCHES.items():
-        o, t = _lin(ours, box), _lin(tgt, box)
+    for name, spec in PATCHES.items():
+        _check_narrow(name, spec)
+        ob, tb = _boxes(spec)
+        o, t = _lin(ours, ob), _lin(tgt, tb)
         ratio = float(np.mean(o) / max(np.mean(t), 1e-6))
         # hue error is lighting-independent in a way brightness is not
         on, tn = o / max(np.mean(o), 1e-6), t / max(np.mean(t), 1e-6)
         rows.append({"patch": name,
+                     "per_frame": isinstance(spec, dict),
                      "ours": [round(float(c), 4) for c in o],
                      "target": [round(float(c), 4) for c in t],
                      "value_ratio": round(ratio, 3),
