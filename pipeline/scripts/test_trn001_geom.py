@@ -799,3 +799,31 @@ def test_every_narrow_matcheck_patch_is_located_per_frame():
         if (ob[1] - ob[0]) < MC.NARROW_PX:
             assert isinstance(spec, dict), f"{name} is narrow and must be per-frame"
             assert ob != tb, f"{name} gives identical boxes — locate it in each frame"
+
+
+def test_the_two_veneer_species_stay_distinguishable():
+    """The delivered joinery uses TWO woods; ours was one wood rendered twice.
+    Measured at matched value the target's pair sits 1.499x apart in R/B and ours
+    sat 1.104x — and 1.104x was exactly what the palette predicted, so albedo was
+    the whole of it. Pinned on the SEPARATION, not on today's triples, and with
+    the value held because the value error on these surfaces belongs to the light
+    lane and must not be paid for twice."""
+    import trn001_materials as MAT
+
+    def rb(key):
+        a = MAT.PALETTE[key][0]
+        return a[0] / a[2]
+
+    def lum(key):
+        a = MAT.PALETTE[key][0]
+        return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2]
+
+    split = rb("veneer_fascia") / rb("veneer_pier")
+    assert split > 1.20, (
+        f"the rail and the carcass read as one wood (R/B split {split:.3f}); "
+        f"the delivered pair measures 1.499x apart")
+    # neither veneer may drift into the altar's value lane while cooling hue
+    for k, want in (("veneer_fascia", 0.1806), ("veneer_pier", 0.1691)):
+        assert lum(k) == pytest.approx(want, rel=0.02), (
+            f"{k} moved in VALUE ({lum(k):.4f} vs {want}); this was a hue-only "
+            f"change and its value belongs to the light lane")

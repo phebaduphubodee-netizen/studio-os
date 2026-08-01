@@ -77,6 +77,14 @@ MAP_MIX = {
 MAP_ASPECT = {
     "veneer_fascia": (5.0, 1.0, 0.30),
     "veneer_pier":   (0.45, 1.0, 4.0),
+    # NOT cooled with the other two veneers, though the fix list said to carry it
+    # with them: measured, this albedo's hue is ALREADY the target's. Normalised,
+    # ours (1.227, 1.000, 0.773) against the target patch's (1.228, 0.978, 0.794)
+    # is a hue distance of 0.022, where the stiles measure 0.327. matcheck's 0.106
+    # on this row is the RENDERED patch, and that surface is blown — this frame
+    # desaturates as it brightens (measured exponent -0.35 on paint), so 0.106 is
+    # a VALUE symptom wearing a hue costume. Cooling it would pay for the light's
+    # error inside the material table, permanently.
     # ROUND 4: the delivered altar measures 2.26 horizontal-to-vertical grain
     # energy against our 0.38 — round 3 reasoned "upright on the piers AND the
     # altar blocks" and the reference supports that for the piers (0.57 target
@@ -107,8 +115,22 @@ def grain_axis(key):
 PALETTE = {
     # wood_floor, not the worn table: it is the only set on disk whose grain is
     # LINEAR, which is the property that makes wood read as wood
-    "veneer_fascia": ((0.24, 0.17, 0.11), 0.42, 0.0, "wood_floor", 1.7),
-    "veneer_pier":  ((0.22, 0.16, 0.11), 0.42, 0.0, "wood_floor", 1.0),
+    # THE DELIVERED MILLWORK IS SMOKED GREY OAK; OURS WAS HONEY OAK, TWICE.
+    # Two instruments sharing no assumption agree. (1) At MATCHED VALUE the
+    # target's two woods are 1.499x apart in R/B and ours only 1.104x — and our
+    # 1.104x is exactly what these two triples predict (1.091), so nothing but
+    # albedo contributes hue here and the delivered joinery is genuinely two
+    # species where ours was one wood rendered twice. (2) Binned across the whole
+    # luminance range, our header face reads R/B 3.18-3.29 against the target's
+    # 2.37-2.47, FLAT in both frames — flat across luminance is the signature of
+    # a material, not of a light.
+    # Both moves are HUE-ONLY: luminance is preserved to 0.01% (fascia
+    # 0.18055 -> 0.18053) and 0.14% (pier 0.16915 -> 0.16938), because the value
+    # error on these surfaces belongs to the light lane and must not be paid for
+    # twice. Direction is measured; the exact triples are display-referred
+    # estimates and should be bracketed the way halo_w and the kelvin were.
+    "veneer_fascia": ((0.221, 0.174, 0.126), 0.42, 0.0, "wood_floor", 1.7),
+    "veneer_pier":  ((0.182, 0.169, 0.136), 0.42, 0.0, "wood_floor", 1.0),
     "veneer_altar": ((0.27, 0.22, 0.17), 0.45, 0.0, "wood_floor", 1.0),
     "cavity":       ((0.05, 0.04, 0.04), 0.70, 0.0, "wood_floor", 1.0),
     "lacquer_white": ((0.88, 0.88, 0.87), 0.20, 0.0, None, 0.0),
