@@ -552,7 +552,31 @@ def palette_report():
 
 # ------------------------------------------------------------------ bpy side --
 
-def build_materials(emission_override=None):
+def resolved_palette(overrides=None):
+    """PALETTE with per-key spec overrides applied. PURE, so a probe can ask
+    what a config WOULD build without opening Blender.
+
+    Overrides are named fields, never a positional tuple: the palette rows are
+    5-tuples and a probe that hands back a 4-tuple would silently re-slug a
+    material. Unknown keys and unknown fields raise, because a typo'd override
+    that quietly does nothing is the shape of bug this project pays for most —
+    a decision revertible by an omission."""
+    fields = ("albedo", "roughness", "metallic", "map", "scale")
+    out = dict(PALETTE)
+    for key, patch in (overrides or {}).items():
+        if key not in out:
+            raise KeyError(f"material override for unknown palette key {key!r}")
+        row = list(out[key])
+        for f, v in patch.items():
+            if f not in fields:
+                raise KeyError(f"unknown material field {f!r} on {key!r}")
+            i = fields.index(f)
+            row[i] = tuple(v) if f == "albedo" else v
+        out[key] = tuple(row)
+    return out
+
+
+def build_materials(emission_override=None, palette_override=None):
     """Create every palette material as a Blender node graph. Returns
     {key: bpy Material}. Only called from inside Blender.
 
@@ -567,7 +591,7 @@ def build_materials(emission_override=None):
         if v is not None:
             emis[k] = float(v)
     made = {}
-    for key, (albedo, rough, metal, slug, scale) in PALETTE.items():
+    for key, (albedo, rough, metal, slug, scale) in resolved_palette(palette_override).items():
         mat = bpy.data.materials.new(f"M_TRN001_{key}")
         mat.use_nodes = True
         nt = mat.node_tree
