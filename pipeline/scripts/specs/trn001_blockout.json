@@ -212,7 +212,8 @@
     "lean_x_mm": 20.0,
     "seed": 11,
     "flowers": 9,
-    "buds": 5
+    "buds": 5,
+    "subsurf": 0
    },
    "R": {
     "width_mm": 204.3,
@@ -220,7 +221,8 @@
     "lean_x_mm": 18.4,
     "seed": 23,
     "flowers": 8,
-    "buds": 4
+    "buds": 4,
+    "subsurf": 0
    },
    "_envelope": "REVERTED, and the reason is worth more than the number. The spray looked 30% too small, so the envelope was scaled 1.36x -- and it was never too small. Extent was being measured with a mask keyed on absolute chroma AND absolute brightness (sat>0.28 and max>0.05), so darkening the petals to fix their COLOUR dropped pixels out of the mask and the object appeared to shrink by 30% while its geometry never moved. TWO METRICS THAT SHARE A THRESHOLD ARE NOT TWO MEASUREMENTS. Re-measured with a mask keyed on distance from the local wall colour instead, the built spray was already 168x217 px against the target's 172x218 (left) and 117x182 against 114x205 (right). So width/height here are the MEASURED petal extent after all, and the generator fills its envelope more completely than the first estimate assumed."
   },
@@ -232,7 +234,8 @@
     "y_mm": -142.5,
     "z_mm": 864.0,
     "height_mm": 373.0,
-    "mirror": false
+    "mirror": false,
+    "subsurf": 0
    },
    {
     "name": "figure_L",
@@ -240,7 +243,8 @@
     "y_mm": -142.5,
     "z_mm": 645.0,
     "height_mm": 235.0,
-    "mirror": false
+    "mirror": false,
+    "subsurf": 0
    },
    {
     "name": "figure_R",
@@ -248,9 +252,11 @@
     "y_mm": -142.5,
     "z_mm": 645.0,
     "height_mm": 260.0,
-    "mirror": false
+    "mirror": false,
+    "subsurf": 0
    }
-  ]
+  ],
+  "_subsurf": "TESTED 2026-08-01 AND NOT SHIPPED, kept spec-gated at 0 like the cove was, because the mechanism is sound and the measurement that asked for it still stands. A probe found every organic-modelling tool in Blender reachable from the DATA API alone, deterministic, in milliseconds — and this figure goes 759 faces -> 12,176 in 41 ms with its 3 hand-made n-gons removed, which the export law forbids anyway. The 2026-07-30 ground-truth study had measured our files at SUBSURF 0 against pro files that use it. All of that is true and NONE of it was worth shipping: applied to everything it ROUNDED AWAY the stepped pedestal's ledges, which is the exact thing flat shading had just been introduced to save; restricted to the cast body it changed nothing visible at all, because the body is already smooth-shaded at 24 segments per ring and at 200 px on screen there was never any faceting to remove. 16x the geometry for zero. THE LESSON IS THE REASON: subdivision smooths what EXISTS and cannot add what was never there. Our figure does not read wrong because it is faceted — it reads wrong because it has no face, no robe folds and no crossed legs, and no subdivision level produces those. The bottleneck was never the tool's smoothness, it was the PARAMETERISATION."
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",

@@ -589,13 +589,14 @@ def plan(spec):
                                    pair["y_mm"], pair["z_mm"] + pair[hk]),
                         "width_mm": d["width_mm"], "height_mm": d["height_mm"],
                         "seed": d.get("seed", 1), "flowers": d.get("flowers", 7),
-                        "buds": d.get("buds", 4),
+                        "buds": d.get("buds", 4), "subsurf": d.get("subsurf", 0),
                         "material": "lily_pink", "stem_material": "stem_green",
                         "cls": "floral"})
     for fg in st.get("figures", []):
         out.append({"kind": "figure", "name": fg["name"],
                     "pos_mm": (fg["x_mm"], fg["y_mm"], fg["z_mm"]),
                     "height_mm": fg["height_mm"], "mirror": bool(fg.get("mirror")),
+                    "subsurf": fg.get("subsurf", 0),
                     "material": "gilt", "cls": "figure"})
     for v in st.get("vases", []):
         if v.get("slug"):
@@ -756,6 +757,26 @@ def build_styling(spec, materials=None):
                 if materials and p["material"] in materials:
                     me.materials.append(materials[p["material"]])
                 ob = bpy.data.objects.new(f"SM_TRN001_{p['name']}_{part}", me)
+                # SUBDIVISION. The 2026-07-30 ground-truth study measured every
+                # pro .blend file using it and ours at SUBSURF 0, and a probe
+                # (2026-08-01) settled the rest: it is reachable from the DATA
+                # API alone, it is deterministic, it costs 41 ms on this figure,
+                # it takes it from 759 faces to 12,176 — and it REMOVES the 3
+                # n-gons our own hand-built loft creates, which the export law
+                # forbids. Five rounds of hand-tuning rings could not do what
+                # two lines of modifier do, and that is the finding.
+                # ...AND ONLY ON THE CAST BODY. The first cut applied it to
+                # both meshes and the render refuted it on sight: subdivision
+                # rounds away every edge you MEANT to be sharp, so it erased the
+                # stepped pedestal's ledges — the exact thing flat shading had
+                # just been introduced to save. The probe proved the modifier is
+                # REACHABLE; it did not prove it is free, and a number is not a
+                # look. The base is already a separate mesh for the shading
+                # split, so the fix is the same boundary: smooth what is cast,
+                # leave sharp what is cut.
+                if p.get("subsurf") and smooth:
+                    sub = ob.modifiers.new("subsurf", "SUBSURF")
+                    sub.levels = sub.render_levels = int(p["subsurf"])
                 col.objects.link(ob)
                 made.append(ob)
             print(f"  STYLING: {p['name']} seated figure {p['height_mm']:.0f}mm "
@@ -776,6 +797,9 @@ def build_styling(spec, materials=None):
                 if materials and matkey in materials:
                     me.materials.append(materials[matkey])
                 ob = bpy.data.objects.new(f"SM_TRN001_{p['name']}_{part}", me)
+                if p.get("subsurf"):
+                    sub = ob.modifiers.new("subsurf", "SUBSURF")
+                    sub.levels = sub.render_levels = int(p["subsurf"])
                 col.objects.link(ob)
                 made.append(ob)
             print(f"  STYLING: {p['name']} spray {p['width_mm']:.0f}x{p['height_mm']:.0f}mm "
