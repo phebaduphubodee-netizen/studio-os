@@ -181,7 +181,9 @@ def lenses(path, v_max=400, min_px=20):
             continue
         p = np.array(pts, dtype=np.float32)
         # a lens is round; a reveal/edge highlight is a thin sliver — reject it
-        w, h = p[:, 1].ptp() + 1, p[:, 0].ptp() + 1
+        # np.ptp(arr), not arr.ptp(): the METHOD was removed in numpy 2.0 and
+        # this line had silently killed --lenses on this machine (numpy 2.2.6)
+        w, h = np.ptp(p[:, 1]) + 1, np.ptp(p[:, 0]) + 1
         out.append({"u": float(p[:, 1].mean() / s), "v": float(p[:, 0].mean() / s),
                     "w_px": float(w / s), "h_px": float(h / s), "n": len(pts),
                     "round": bool(w >= 2 * h) is False or w / max(h, 1) < 6.0})
