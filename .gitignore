@@ -42,3 +42,9 @@ knowledge/_inbox/discord/**/files/383192_*
 # client-derived CLIP embedding banks (Stage B2) -- never commit
 *embed-bank*.npz
 *.embedbank.npz
+
+# 3D Warehouse models — Trimble General Model License: free to USE, NOT
+# redistributable AS MODELS. A model that may not be redistributed must not
+# enter version control. Fetch is reproducible from the entity id instead
+# (pipeline/scripts/warehouse.py, and every consuming spec records the id).
+assets/shared/warehouse/

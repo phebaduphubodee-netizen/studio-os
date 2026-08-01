@@ -577,6 +577,103 @@ def floral_spray(origin, width_mm, height_mm, seed=1, flowers=7, buds=4):
     return {"petal": (pv, pf), "stem": (sv, sf)}
 
 
+
+def _asset_figure_path(slug):
+    """A 3D Warehouse model in the (gitignored, non-CC0) warehouse cache."""
+    return os.path.join(REPO, "assets", "shared", "warehouse", slug, f"{slug}.glb")
+
+
+def build_asset_figure(p, materials=None):
+    """Import a bought/downloaded figure, CUT it, scale it, place it.
+
+    Returns the objects made. Kept separate from the CC0 asset path in
+    build_styling because the licence, the cache and the mining step are all
+    different — Poly Haven is CC0 and arrives as one clean object, 3D Warehouse
+    is free-to-use-not-redistribute and arrives as somebody's whole scene."""
+    import bmesh
+    import bpy
+
+    import trn001_geom as G
+
+    path = _asset_figure_path(p["slug"])
+    if not os.path.exists(path):
+        print(f"  STYLING: {p['name']} asset {p['slug']} not in the warehouse "
+              f"cache — SKIPPED (run pipeline/scripts/warehouse.py fetch)")
+        return []
+    before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=path)        # headless-safe, not a geometry op
+    objs = [o for o in bpy.data.objects if o not in before]
+    meshes = [o for o in objs if o.type == "MESH" and len(o.data.polygons)]
+    if not meshes:
+        print(f"  STYLING: {p['name']} <- {p['slug']} imported no geometry — SKIPPED")
+        return []
+
+    bpy.context.view_layer.update()
+    zs = [(o.matrix_world @ v.co).z for o in meshes for v in o.data.vertices]
+    z0, z1 = min(zs), max(zs)
+    cut = z0 + (z1 - z0) * float(p.get("z_keep", 0.0))
+
+    # drop everything below the cut, in world space, on each mesh
+    for o in meshes:
+        bm = bmesh.new()
+        bm.from_mesh(o.data)
+        mw = o.matrix_world
+        doomed = [f for f in bm.faces
+                  if sum(((mw @ v.co).z for v in f.verts)) / len(f.verts) < cut]
+        if doomed:
+            bmesh.ops.delete(bm, geom=doomed, context="FACES")
+        bmesh.ops.delete(
+            bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+        bm.to_mesh(o.data)
+        bm.free()
+        o.data.update()
+
+    bpy.context.view_layer.update()
+    live = [o for o in meshes if len(o.data.polygons)]
+    if not live:
+        print(f"  STYLING: {p['name']} z_keep cut removed everything — SKIPPED")
+        return objs
+    zs = [(o.matrix_world @ v.co).z for o in live for v in o.data.vertices]
+    xs = [(o.matrix_world @ v.co).x for o in live for v in o.data.vertices]
+    ys = [(o.matrix_world @ v.co).y for o in live for v in o.data.vertices]
+    native_mm = (max(zs) - min(zs)) / G.MM
+    if native_mm < 1.0:
+        print(f"  STYLING: {p['name']} degenerate after cut — SKIPPED")
+        return objs
+    k = p["height_mm"] / native_mm
+    ctr = ((max(xs) + min(xs)) / 2.0, (max(ys) + min(ys)) / 2.0, min(zs))
+
+    roots, seen = [], set()
+    for o in live:
+        r = o
+        while r.parent is not None:
+            r = r.parent
+        if r.name not in seen:
+            seen.add(r.name)
+            roots.append(r)
+    tgt = tuple(c * G.MM for c in p["pos_mm"])
+    for r in roots:
+        r.scale = tuple(s * k for s in r.scale)
+        r.location = (r.location.x * k + tgt[0] - ctr[0] * k,
+                      r.location.y * k + tgt[1] - ctr[1] * k,
+                      r.location.z * k + tgt[2] - ctr[2] * k)
+    for o in live:
+        o.name = f"SM_TRN001_{p['name']}"
+
+    # ASSERT the scale rather than trust it (pipeline/CLAUDE.md)
+    bpy.context.view_layer.update()
+    zs = [(o.matrix_world @ v.co).z for o in live for v in o.data.vertices]
+    got = (max(zs) - min(zs)) / G.MM
+    if abs(got - p["height_mm"]) > 2.0:
+        raise SystemExit(f"STYLING: {p['name']} asked for {p['height_mm']:.0f}mm "
+                         f"and got {got:.1f}mm — scale assertion FAILED")
+    faces = sum(len(o.data.polygons) for o in live)
+    print(f"  STYLING: {p['name']} <- warehouse/{p['slug']} native "
+          f"{native_mm:.0f}mm -> {got:.0f}mm (x{k:.4f}), z_keep "
+          f"{p.get('z_keep', 0.0):.2f}, {faces} faces after the cut")
+    return objs
+
+
 # -------------------------------------------------------------------- plan ---
 
 def plan(spec):
@@ -615,7 +712,9 @@ def plan(spec):
                         "material": "lily_pink", "stem_material": "stem_green",
                         "cls": "floral"})
     for fg in st.get("figures", []):
-        out.append({"kind": "figure", "name": fg["name"],
+        out.append({"kind": "figure_asset" if fg.get("slug") else "figure",
+                    "name": fg["name"], "slug": fg.get("slug"),
+                    "z_keep": fg.get("z_keep", 0.0),
                     "pos_mm": (fg["x_mm"], fg["y_mm"], fg["z_mm"]),
                     "height_mm": fg["height_mm"], "mirror": bool(fg.get("mirror")),
                     "subsurf": fg.get("subsurf", 0),
@@ -762,6 +861,10 @@ def build_styling(spec, materials=None):
             print(f"  STYLING: {p['name']} <- {p['slug']} native {native_mm:.0f}mm "
                   f"-> {p['height_mm']:.0f}mm (x{k:.3f})")
             made.extend(objs)
+            continue
+
+        if p["kind"] == "figure_asset":
+            made.extend(build_asset_figure(p, materials))
             continue
 
         if p["kind"] == "figure":
