@@ -57,7 +57,7 @@
 
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
-| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 6: cubby POCKET built — the model had one depth where the unit has two (proud 100 CONFIRMED + pocket 176.5 NEW = cavity 276.5, measured 274.8); the wall now opens for it. Rounds 1–3 closed by owner; gates #4 (light), #5 (styling), #6 (depth) all OPEN. R1 STOP on cubby mouth brightness. Round 7: PALETTE's roughness column was dead for every mapped material (marble asked 0.18, rendered 0.506 — the hero object's polish reached no frame in four rounds); veneer wore the floor's micro-bevel relief; DR fired on veneer figure; step depth 311 taken back OFF the owner's queue as unconstrained rather than wrong. Round 8: the cubby was never too bright, it was too WARM (hue err 0.339 -> 0.095 at unchanged luminance); bookmatch built per the DR; the ID pass rebuilt to give every mass a unique decodable colour, which promptly acquitted a matcheck row the previous commit had convicted | 8 | 28 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) ; **ONE PARAMETER CARRYING TWO THINGS is the shape to hunt** — five rounds of light could not fix a cubby because `tower.d_mm` meant both 'how far the carcass stands proud' and 'how deep the cavity is', so proving the first read as proving the second (a note was CLOSED on it); the tell was a gating metric (p99/p1) that no amount of the lane's own knobs could move, and it moved 57.8→157.9 the moment the second dimension existed; **an instrument that cannot reproduce a value you already know must not be asked for one you don't** — two reads were disqualified here by their own controls (a horizontal-plane back-projection failing by 57-172mm, and a grazing side wall returning y=+323.7 for an arris that must be ~-100), which is cheaper than believing them; **plane≠surface paid for the 4th time** and is now the `first_hit` instrument rather than a memory — it reversed a conclusion from 'left tower fine, right dark' to 'both dark, consistently'; **coincident faces are not a style question** — the hero marble sat inside the wall body with front faces exactly flush and had been winning a BVH coin flip on every render since the recess landed ; **the cure you already wrote for one input is not applied to the next** — MAP_MEAN normalises the diffuse map so the map gives VARIATION and the table gives IDENTITY, and the roughness map two lines below was still linked raw, silently overriding a whole column of the table (found only because two roughness values gave byte-identical ladders: identical to three decimals is not a weak effect, it is NO effect); **one-parameter-carrying-two-things recurred twice in one day** — tower.d_mm (proud vs cavity) and NORMAL_STRENGTH keyed by map slug (a veneer forced to wear the floor's plank bevel), so hunt the SHAPE and not the instance; **a finding rejected on a broken measurement is not yet a finding** — the geometry fix invalidated the criterion that had killed the fill and the wide beam, so both went back on trial: the fill's refutation survived on an untouched metric and the beam's held too, and re-opening was still right; **a vault MISS is not a vault GAP until the search runs in the language the vault is written in** (an English grep for bookmatch/flitch found nothing in a file indexing them in Thai) |
+| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 6: cubby POCKET built — the model had one depth where the unit has two (proud 100 CONFIRMED + pocket 176.5 NEW = cavity 276.5, measured 274.8); the wall now opens for it. Rounds 1–3 closed by owner; gates #4 (light), #5 (styling), #6 (depth) all OPEN. R1 STOP on cubby mouth brightness. Round 7: PALETTE's roughness column was dead for every mapped material (marble asked 0.18, rendered 0.506 — the hero object's polish reached no frame in four rounds); veneer wore the floor's micro-bevel relief; DR fired on veneer figure; step depth 311 taken back OFF the owner's queue as unconstrained rather than wrong. Round 8: the cubby was never too bright, it was too WARM (hue err 0.339 -> 0.095 at unchanged luminance); bookmatch built per the DR; the ID pass rebuilt to give every mass a unique decodable colour, which promptly acquitted a matcheck row the previous commit had convicted. Round 9 (owner order 1, take light OFF the floor): SHIPPED wall-wash tilt 7 deg + 5.ies + diffuse_bounces 4->16, aggregate |abs-1| 3.26 -> 2.01 and worst patch 1.18 -> 0.34, at the cost of header/plinth and p99/p1; found and fixed a 180-degree yaw error in every aimed light this lane ever built, which invalidates the FILL's two refutations; and measured the one thing no knob can move -- the target's floor carries a left-right ramp of +0.199/m that ours reports as -0.005/m in all 30 configs | 9 | 29 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) ; **ONE PARAMETER CARRYING TWO THINGS is the shape to hunt** — five rounds of light could not fix a cubby because `tower.d_mm` meant both 'how far the carcass stands proud' and 'how deep the cavity is', so proving the first read as proving the second (a note was CLOSED on it); the tell was a gating metric (p99/p1) that no amount of the lane's own knobs could move, and it moved 57.8→157.9 the moment the second dimension existed; **an instrument that cannot reproduce a value you already know must not be asked for one you don't** — two reads were disqualified here by their own controls (a horizontal-plane back-projection failing by 57-172mm, and a grazing side wall returning y=+323.7 for an arris that must be ~-100), which is cheaper than believing them; **plane≠surface paid for the 4th time** and is now the `first_hit` instrument rather than a memory — it reversed a conclusion from 'left tower fine, right dark' to 'both dark, consistently'; **coincident faces are not a style question** — the hero marble sat inside the wall body with front faces exactly flush and had been winning a BVH coin flip on every render since the recess landed ; **the cure you already wrote for one input is not applied to the next** — MAP_MEAN normalises the diffuse map so the map gives VARIATION and the table gives IDENTITY, and the roughness map two lines below was still linked raw, silently overriding a whole column of the table (found only because two roughness values gave byte-identical ladders: identical to three decimals is not a weak effect, it is NO effect); **one-parameter-carrying-two-things recurred twice in one day** — tower.d_mm (proud vs cavity) and NORMAL_STRENGTH keyed by map slug (a veneer forced to wear the floor's plank bevel), so hunt the SHAPE and not the instance; **a finding rejected on a broken measurement is not yet a finding** — the geometry fix invalidated the criterion that had killed the fill and the wide beam, so both went back on trial: the fill's refutation survived on an untouched metric and the beam's held too, and re-opening was still right; **a vault MISS is not a vault GAP until the search runs in the language the vault is written in** (an English grep for bookmatch/flitch found nothing in a file indexing them in Thai) |
 
 **Gate #2's open question — CLOSED 2026-07-31 by a third instrument.** The
 built-in is ~100 mm deep, not 360. A shelf board below the horizon shows its
@@ -186,3 +186,104 @@ lessons expected: edge-lit backlight story, warm/neutral light mix, stone
 figure material, wood grain at near-horizontal camera, brass trim lines,
 small-object styling assets (first live case for the CC0-scanned-assets
 question ข).
+
+
+**Round-9 (2026-08-01, owner order "1" = take light off the floor).**
+**The mechanism worked on the axis it could reach.** Fitted in world
+millimetres rather than in pixels, the floor's DEPTH gradient went +0.762/m →
++0.213/m against the target's +0.308/m, floor_far_left 2.18× → 1.30×, and the
+whole ladder's aggregate |abs−1| fell 3.26 → 2.01 with the worst single patch
+1.18 → 0.34. Nothing was added to the room to do it: a row of downlights sitting
+605 mm off the wall was leaned 7° at the wall it was always described as
+washing. Two other levers came with it — 5.ies, which `_beam_retest` had
+measured as better overall and SHELVED because it broke header/plinth/cubby,
+the exact three patches a wall-wash feeds; and `diffuse_bounces`, which had been
+sitting at Blender's factory 4 because nothing ever set it, in a CLOSED BOX
+whose deepest pockets can only be reached by light that has already bounced
+several times.
+
+**Three method lessons, each of which changed a conclusion.**
+
+First, **the normaliser was the thing under test.** Every rel_err this lane ever
+printed divides by `wall_bay_right`, and a wall-wash exists to move that patch —
+so the first sweep read floor_far_left crashing to 0.56× when it had merely
+become brighter more slowly than its own denominator. Same shape as the annulus
+normaliser the fleet killed a day earlier. Setting exposure so the two frames'
+medians agree is what made the mechanism measurable at all, and it is now in
+the spec as a measurement, not a look.
+
+Second, **a knob you cannot bisect is not a knob.** `aim_z_mm` could not express
+a gentle wash: the fixture is 605 mm off a 2682 mm ceiling, so aiming at the
+wall's very base is already 12.7° and there is no aim point below it — the
+parameter's own floor was most of its useful range. Replaced by `tilt_deg`,
+which is the angle actually built (pinned by a test), and the useful answer
+turned out to be 7°.
+
+Third, and the one worth carrying: **the aim code had been 180° wrong in yaw
+since it was written.** `atan2(dy, dx) + π/2` names the perpendicular to the run
+turned the wrong way. Blender's own transform was asked instead of argued with:
+44.4° of error for the shipped formula, 0.0 for the replacement. The cove
+survived by luck (3.4° of tilt, so being flipped put it 6.8° off and it still
+read as "down"), but the FILL did not — both `_fill_refuted` and `_fill_retest`
+describe a source aimed INTO the room, and what was built faced the back wall
+and reached the frame only as bounce. **A source that can only arrive as bounce
+is a diffuse fill by construction**, which is precisely the "raises everything
+at once and FLATTENS" result both refutations recorded. Those two verdicts
+convicted a mechanism that was never on trial. Recorded, not re-opened.
+
+**The finding that outlives the round: our model of that room is SYMMETRIC and
+the room is not.** The target's floor carries a left-to-right brightness ramp of
+**+0.199/m** (planar R² 0.603, present in four independent bands, and
+strengthening toward the camera: 25% → 38% → 62%). Ours reports **−0.005/m** —
+zero — across all thirty configurations rendered this round: four beam profiles,
+tilts from 0° to 51.5°, three power splits, four bounce budgets and a fivefold
+floor-gloss sweep. That is the same tell as the cubby: a metric no knob in the
+lane can move.
+
+Three hypotheses were put to it and two died. A **post-production gradient** is
+refuted because post does not know about geometry and would tilt everything at
+one rate per pixel — the target's floor runs +0.349 per 1000 px while its
+ceiling runs −0.091 and its wall −0.018. A **source off-frame right** is
+refuted because a source lights every surface facing it, and the target's wall
+shows +0.019/m at R² **0.001**. That left the floor's own material, and the LOOK
+supported it beautifully — the target's planks carry a broad specular SHEEN band
+and ours are dead matte, and gloss is the one effect that can live on a floor
+and nowhere else, because a floor is viewed at a grazing angle where Fresnel
+reflectance is large and a wall is not. **Refuted too**: roughness 0.40 → 0.08,
+a fivefold change, moved dL/dx from −0.006 to −0.013. Gloss is the CARRIER of a
+lateral asymmetry, not a source of one — a mirror floor in a symmetric room
+still mirrors something symmetric.
+
+So the asymmetry is real, it is on the floor plane and nowhere else, and it is
+not any of the three cheap explanations. What our model lacks is a left-right
+feature of that room which the frame does not show — the room's opening, most
+likely — and that is a fact about the friend's room, not a setting.
+
+## GATE #9 — พร้อมให้ตัดสิน
+
+**Pair**: `_private/…/look/trn001_gate9_r9wash.png` (target ‖ ours), against
+`trn001_gate9_r8gate.png` for the before. Crops: `…_crop_floor.png`,
+`…_crop_altar.png`.
+
+1. **SHIPPED and measured**: the wall-wash round moved every one of the twelve
+   ladder patches toward the target and none away, aggregate 3.26 → 2.01. It
+   made two things worse and they are named, not buried: header_face 0.78× →
+   0.66×, plinth_face 1.00× → 0.77×, and p99/p1 fell 73.6 → 53.5 against a
+   target of 141.4. More bounce lifts p1 (0.0120 → 0.0137) when the target wants
+   0.0055 — **the target's darkness is not a bounce deficit, something there
+   absorbs**, and that is now the lane's clearest open question.
+2. **Owner's call, not mine**: the fill's two refutations were both measured on
+   a light aimed 180° away from where the note says it pointed. Re-open it, or
+   leave it convicted?
+3. **The ramp**: our rig cannot produce a left-right floor gradient because it
+   is symmetric by construction. Building the room's asymmetry means inferring
+   something the frame does not show. Do we infer it, or do we stop the light
+   lane here and take the round's remaining budget to the floor MATERIAL, which
+   the LOOK says is the most visibly wrong surface in the frame (planks nearly
+   uniform where the target's vary strongly, no sheen at all)?
+
+**Spend, round 9**: 30 quick renders (~12–15 s each), **1 full frame** (89 s),
+0 external calls, 2210 tests green. R1 not tripped: one mechanism, one build.
+Critic ladder: C0 instruments ✓, C1 builder LOOK + reference ✓ (native-resolution
+crops, never upscaled). **C2 cold critic and C3 cross-vendor NOT run** — this
+session is not spawning agents; both are available on your word.
