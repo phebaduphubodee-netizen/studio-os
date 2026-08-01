@@ -827,9 +827,28 @@ def test_the_two_veneer_species_stay_distinguishable():
         return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2]
 
     split = rb("veneer_fascia") / rb("veneer_pier")
-    assert split > 1.20, (
-        f"the rail and the carcass read as one wood (R/B split {split:.3f}); "
-        f"the delivered pair measures 1.499x apart")
+    # THIS GUARD WAS COMPARING TWO DIFFERENT QUANTITIES. It reads R/B off the
+    # ALBEDO TABLE and compared it against 1.499, a number taken from RENDERED
+    # frames — and a render is albedo x map x light, so the two are not the same
+    # ratio and never were. Re-measured 2026-08-01 in world space through
+    # first_hit on both surfaces in both frames (fascia n=75 on the header face,
+    # pier n=48 on the right tower's stiles): the target RENDERS at R/B 2.234 and
+    # 1.781 = 1.254 apart, ours rendered 2.624 and 1.664 = 1.576 apart. So the
+    # delivered pair is 1.254 and not 1.499, and we had OVER-separated the two
+    # woods rather than under-separated them.
+    #
+    # The transfer from table to frame is measurable: our albedo split was 1.311
+    # and rendered 1.576, i.e. x1.202. The delivered 1.254 therefore corresponds
+    # to an albedo split of 1.043, which is what the table now carries.
+    #
+    # So this test guards what it can actually see — that the two rows are not
+    # the same wood and that the rail is the WARMER of the two, which is the
+    # direction the reference shows. The magnitude belongs to trn001_matcheck,
+    # which measures rendered frames and is the only instrument entitled to it.
+    assert split > 1.02, (
+        f"the rail and the carcass are the same wood in the table "
+        f"(albedo R/B split {split:.3f}); the delivered pair renders 1.254x "
+        f"apart, which this table's own transfer factor puts at 1.043 here")
     # neither veneer may drift into the altar's value lane while cooling hue
     for k, want in (("veneer_fascia", 0.1806), ("veneer_pier", 0.1691)):
         assert lum(k) == pytest.approx(want, rel=0.02), (
