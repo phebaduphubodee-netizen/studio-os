@@ -75,6 +75,43 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   the gate artifact: accept+lane, or refute WITH A MEASUREMENT/reference —
   never with taste. Ladder: C0 instruments → C1 builder LOOK+reference →
   C2 cold critic → C3 cross-vendor → C4 owner (R3, unchanged, final).
+- R8 BUILD vs ACQUIRE — DECIDED BEFORE THE FIRST VERTEX (owner order 2026-08-01,
+  "เวลาคุณต้องปั้น model ที่มีส่วนเว้าส่วนโค้ง มันมักจะเพี้ยนเสมอ ตั้งแต่ทำมาในทุก
+  project"). He is right and the evidence has a clean edge: everything generated
+  from MEASURABLE numbers landed in ONE cut (vase and candlestick by lathe from a
+  probed profile; every box+radius of millwork), and everything that is FREE FORM
+  cost five or six rounds each and still only approximates — garments (5 rounds +
+  785 hand-written lines of cloth physics, sim ending at 3/12), the Buddha image
+  (5), the lily spray (6). **The test, applied before modelling starts:** can the
+  object be produced by (a) boxes with radii, (b) sweeping a measured 1D profile,
+  or (c) extruding a measured outline? YES → BUILD, it is millwork and building
+  it is the learning. NO → ACQUIRE; never hand-model free-form (figures, plants,
+  cut flowers, drapery, upholstery, animals, food). Acquisition fails → a
+  DECLARED GAP handed to the owner as a procurement decision, never a modelling
+  task. **Stop-loss:** max TWO shape iterations on a hand-built organic object; a
+  third means the class was misclassified, not that the shape needs more tuning.
+  Why it fails is structural, not taste: free form has no metric to iterate
+  against, so I must invent the parameterisation first — and the parameterisation
+  IS the guess. Each round then fixes what it named and reveals what no setting
+  of it can express (no face, no robe folds, no crossed legs). Same family as a
+  knob that cannot reach and one parameter carrying two things.
+- R8b DO NOT HAND-WRITE WHAT BLENDER ALREADY GENERATES. A probe (2026-08-01,
+  scratchpad/organic_probe.py) found ten organic-modelling techniques ALL
+  reachable from the DATA API alone, all deterministic, all 1-41 ms, all with
+  ZERO n-gons, and none needing a `bpy.ops` on geometry: SUBSURF, SKIN (an edge
+  skeleton → a limb), METABALL (masses that MERGE — a shoulder meeting an arm,
+  which a loft of rings cannot do), CURVE bevel+taper, DISPLACE on a subdivided
+  cage (folds with no simulation), REMESH, CORRECTIVE_SMOOTH, GEOMETRY NODES.
+  Our own hand-built geometry carries n-gons that every one of them avoids.
+  2,177 lines of hand-written generators sit across trn001_styling / softgoods /
+  curtains and several duplicate the above — audit in
+  `docs/handbuilt-geometry-audit-2026-08-01.md`.
+  AND THE COROLLARY, learned by over-claiming it the same hour: **subdivision
+  smooths what EXISTS and cannot add what was never there.** On the numbers it
+  looked free (759 → 12,176 faces in 41 ms, n-gons gone); rendered, it erased
+  the deliberate ledges of a stepped base and, restricted to the smooth-shaded
+  body, changed nothing visible at all. A probe proves REACHABILITY. Only a look
+  proves VALUE.
 
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
@@ -88,6 +125,17 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
 - `comfyui`, `catalog`, `git` — Phase 2+; keep stubs commented until then.
 
 ## External research lane (NotebookLM)
+- DR-INITIATION IS PULL, NOT PUSH (owner order 2026-07-30, after the 3rd
+  owner-initiated research round — 07-22 ×2 "DR จะช่วยได้มั้ย", 07-30 "ต้องรอ
+  ให้ผมทำเอง"): the builder fires vault → NLM ask → full DR
+  (`BRAINDEAD/scripts/notebooklm_dr.py --new`) on its OWN, without waiting for
+  the owner, whenever (1) an R1 stop names a mechanism mystery, (2) a defect
+  class is about to get its 2nd build round, (3) an owner verdict can't be
+  translated into a testable fix, (4) building an object/domain class for the
+  first time. A DR is the `--quick` rung of research (R5's law applied to
+  knowledge): cheaper than one full build+render cycle — never loop full-price
+  builds on a question someone has already answered. Check the parallel-pane /
+  vault state first so a DR never duplicates a lane another session owns.
 - `notebooklm` CLI is installed + authenticated. Design corpora: `a5a43395`
   (Design Systems, 118 sources), `79476082` (lighting/rendering). Source
   manifests: `knowledge/_inbox/nlm-design-systems/sources-manifest.md`.

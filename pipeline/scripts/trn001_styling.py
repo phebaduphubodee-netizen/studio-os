@@ -80,6 +80,28 @@ VASE = [
 PROFILES = {"CANDLESTICK": CANDLESTICK, "TAPER": TAPER, "VASE": VASE}
 
 
+def _cap(verts, faces, ring, flip):
+    """Close a ring with a FAN to its own centroid, not with one face.
+
+    Every generator here used to cap with `faces.append(list(ring))`, which on a
+    32-segment lathe is a 32-gon — and pipeline/CLAUDE.md's export law forbids
+    n-gons outright ("booleans produce n-gons that a SketchUp recipient will
+    see"). We were producing them without a boolean in sight, while a probe
+    measured ten of Blender's own organic tools at zero each. Triangles are
+    allowed; a fan gives triangles and a centre vertex the cap can shade around."""
+    if len(ring) < 3:
+        return
+    cx = sum(verts[i][0] for i in ring) / len(ring)
+    cy = sum(verts[i][1] for i in ring) / len(ring)
+    cz = sum(verts[i][2] for i in ring) / len(ring)
+    c = len(verts)
+    verts.append((cx, cy, cz))
+    n = len(ring)
+    for i in range(n):
+        a, b = ring[i], ring[(i + 1) % n]
+        faces.append([c, b, a] if flip else [c, a, b])
+
+
 def lathe(profile, cx, cy, z0, seg=32, scale=1.0):
     """Solid of revolution from a (z_mm, radius_mm) profile. PURE — returns
     (verts, faces) in mm, so it is testable without Blender.
@@ -113,9 +135,9 @@ def lathe(profile, cx, cy, z0, seg=32, scale=1.0):
             n = len(lo)
             faces.extend([[lo[i], lo[(i + 1) % n], hi[(i + 1) % n], hi[i]] for i in range(n)])
     if len(rings[0]) > 1:
-        faces.append(list(reversed(rings[0])))
+        _cap(verts, faces, rings[0], True)
     if len(rings[-1]) > 1:
-        faces.append(list(rings[-1]))
+        _cap(verts, faces, rings[-1], False)
     return verts, faces
 
 
@@ -184,9 +206,9 @@ def loft(rings, cx, cy, z0, height, seg=24):
             n = len(lo)
             faces.extend([[lo[i], lo[(i + 1) % n], hi[(i + 1) % n], hi[i]] for i in range(n)])
     if len(ringidx[0]) > 1:
-        faces.append(list(reversed(ringidx[0])))
+        _cap(verts, faces, ringidx[0], True)
     if len(ringidx[-1]) > 1:
-        faces.append(list(ringidx[-1]))
+        _cap(verts, faces, ringidx[-1], False)
     return verts, faces
 
 
@@ -227,9 +249,9 @@ def rect_loft(rings, cx, cy, z0, height, corner=0.12):
             n = len(lo)
             faces.extend([[lo[i], lo[(i + 1) % n], hi[(i + 1) % n], hi[i]] for i in range(n)])
     if len(idx[0]) > 1:
-        faces.append(list(reversed(idx[0])))
+        _cap(verts, faces, idx[0], True)
     if len(idx[-1]) > 1:
-        faces.append(list(idx[-1]))
+        _cap(verts, faces, idx[-1], False)
     return verts, faces
 
 

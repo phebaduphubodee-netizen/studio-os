@@ -1343,3 +1343,44 @@ def test_a_material_override_can_only_change_what_it_names():
                 {"floor_oak": {"roughnes": 0.1}}):
         with pytest.raises(KeyError):
             MAT.resolved_palette(bad)
+
+
+def test_no_hand_built_generator_emits_an_n_gon(spec):
+    """pipeline/CLAUDE.md's export law forbids n-gons — "booleans produce n-gons
+    that a SketchUp recipient will see" — and we were making them ourselves.
+
+    A headless probe (2026-08-01) measured ten of Blender's own organic tools at
+    zero n-gons each and our own hand-built figure at THREE, which is the whole
+    R8b argument in one number: the tool we declined to use is better-formed than
+    the code we wrote instead. The caps are the culprit — `lathe`, `loft` and
+    `rect_loft` each close their first and last ring with a single face, so a
+    24-segment ring emits a 24-gon.
+
+    Pinned on every generator rather than on today's three, because the next one
+    added will cap its rings the same way."""
+    import trn001_styling as S
+
+    cases = {
+        "lathe/VASE": S.lathe(S.VASE, 0.0, 0.0, 0.0),
+        "lathe/CANDLESTICK": S.lathe(S.CANDLESTICK, 0.0, 0.0, 0.0),
+        "loft/figure": S.loft(S.FIGURE_CANON, 0.0, 0.0, 0.0, 400.0),
+        "rect_loft/base": S.rect_loft(S.BASE_CANON, 0.0, 0.0, 0.0, 400.0),
+    }
+    parts = S.buddha_figure((0.0, 0.0, 0.0), 400.0)
+    cases["buddha/gilt"] = parts["gilt"]
+    cases["buddha/base"] = parts["gilt_flat"]
+    spray = S.floral_spray((0.0, 0.0, 0.0), 260.0, 240.0, seed=3)
+    cases["spray/petal"] = spray["petal"]
+    cases["spray/stem"] = spray["stem"]
+
+    bad = {}
+    for name, (verts, faces) in cases.items():
+        n = [len(f) for f in faces if len(f) > 4]
+        if n:
+            bad[name] = (len(n), max(n))
+        # and no face may reference a vertex that does not exist
+        for f in faces:
+            assert all(0 <= i < len(verts) for i in f), f"{name}: face out of range"
+    assert not bad, (
+        f"hand-built generators emitted n-gons {bad}; the export law forbids "
+        f"them and every one of Blender's own organic tools produces none")
