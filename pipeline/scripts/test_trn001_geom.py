@@ -1100,3 +1100,55 @@ def test_cabinet_veneer_does_not_wear_the_floor_s_micro_bevel():
         assert got <= floor / 2.0, (
             f"{key} relief {got} is not clearly below the floor's {floor} — "
             f"a cabinet panel showing plank bevels reads as flooring")
+
+
+def test_leaf_layout_is_even_centre_balanced_and_refuses_impossible_panels():
+    """DR 2026-08-01: architectural veneer is an EVEN number of equal leaves,
+    152-305 mm wide, centred so no seam lands on the panel's centreline.
+
+    The refusal half matters as much as the arithmetic: a 261 mm rail is wider
+    than one leaf and narrower than two, so the honest answer is None. Rounding
+    that into "one leaf" or "two narrow leaves" would invent a joint the trade
+    does not cut."""
+    import trn001_materials as MAT
+    for panel in (446.0, 900.0, 1432.0, 2611.0, 3490.0):
+        got = MAT.leaf_layout(panel)
+        assert got is not None, f"{panel} mm should be splice-able"
+        n, pitch = got
+        assert n % 2 == 0, f"{panel} mm -> {n} leaves is odd; a seam lands on centre"
+        assert MAT.LEAF_MIN_MM <= pitch <= MAT.LEAF_MAX_MM
+        assert n * pitch == pytest.approx(panel)
+    for panel in (261.0, 230.0, 100.0):
+        assert MAT.leaf_layout(panel) is None, (
+            f"{panel} mm admits no even leaf count in the trade range — that is "
+            f"the answer, not a rounding opportunity")
+
+
+def test_the_splice_runs_across_the_grain_not_along_it(spec):
+    """A veneer leaf is long along the grain and narrow across it, so the splice
+    axis is perpendicular to the figure. Held as a relation between the two
+    tables rather than as two hand-typed letters, because this file has twice
+    been bitten by one entry quietly meaning two things."""
+    import trn001_materials as MAT
+    for key, ax in MAT.LEAF_AXIS.items():
+        assert ax != MAT.grain_axis(key), (
+            f"{key} splices along its own grain direction ({ax}) — leaves would "
+            f"be cut across the figure, which no flitch produces")
+
+
+def test_every_spliced_panel_s_pitch_is_derived_from_its_real_width(spec):
+    """The pitch table must re-derive from leaf_layout() applied to the panel's
+    measured extent, so a re-measured carcass cannot leave a stale pitch behind
+    — the failure that let the spec carry a pre-solve camera for two rounds."""
+    import trn001_materials as MAT
+    t = spec["unit"]["tower"]
+    extents = {"veneer_pier": float(t["w_mm"])}
+    for key, pitch in MAT.LEAF_PITCH_MM.items():
+        assert key in MAT.LEAF_AXIS, f"{key} has a pitch but no splice axis"
+        panel = extents.get(key)
+        if panel is None:
+            continue
+        got = MAT.leaf_layout(panel)
+        assert got is not None, f"{key}: {panel} mm admits no leaf layout"
+        assert pitch == pytest.approx(got[1], abs=0.5), (
+            f"{key} pitch {pitch} no longer matches leaf_layout({panel}) = {got[1]:.1f}")

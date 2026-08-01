@@ -126,6 +126,68 @@ MAP_ASPECT = {
     "cavity":        (0.30, 1.0, 5.0),
 }
 
+# WHICH panels are spliced from veneer leaves, and along which world axis the
+# splice runs. DR 2026-08-01 (notebook 2638a889): a cabinet panel is not one
+# continuous sheet — it is an EVEN, centre-balanced number of leaves 152-305 mm
+# wide, with alternate leaves flipped so the grain mirrors at every seam. Ours
+# was a stretched CC0 FLOOR map with no leaf structure whatsoever, which is the
+# other half of why it read as flooring (the first half, the plank micro-bevel,
+# is fixed in NORMAL_STRENGTH above).
+#
+# The axis is the panel's own long axis, which is also where grain_axis() already
+# says the figure runs — kept as a separate table anyway, because "which way the
+# figure runs" and "which way the panel is spliced" are two facts, and this file
+# has now twice been bitten by one entry meaning two things.
+# A leaf is long ALONG the grain and narrow ACROSS it, so the splice axis is
+# PERPENDICULAR to grain_axis(). Applying that rule to the measured panels:
+#   veneer_pier   grain upright (z), panel 446 wide  -> splices across x
+#   veneer_fascia grain lengthwise (x), rail 261 tall -> 261 mm is under two
+#                 leaves and over one, so a single leaf covers it: NO seams
+#   veneer_altar  grain lengthwise (x), blocks ~230 tall -> likewise NO seams
+# Only the piers get a visible splice, and that is a RESULT of the trade width
+# range rather than a styling choice — leaf_layout() returns None for the other
+# two, which is why they are absent here rather than set to something.
+LEAF_AXIS = {
+    "veneer_pier": "x",
+}
+
+# Pitch is DERIVED, never typed: leaf_layout(panel extent across the grain).
+# 446 mm of pier -> 2 leaves at 223.0 mm, one mirrored seam down the centre,
+# which is what "centre-balanced" means for the narrowest legal panel.
+LEAF_PITCH_MM = {
+    "veneer_pier": 223.0,
+}
+
+# how far each successive leaf slides along the flitch, as a fraction of pitch.
+# Small on purpose: enough that a run of leaves is SEQUENCED rather than the same
+# leaf stamped repeatedly, not so much that the mirror at the seam stops reading.
+LEAF_DRIFT = 0.06
+
+LEAF_MIN_MM, LEAF_MAX_MM = 152.0, 305.0
+
+
+def leaf_layout(panel_mm, lo=LEAF_MIN_MM, hi=LEAF_MAX_MM):
+    """(count, pitch_mm) for a centre-balanced bookmatched panel, or None.
+
+    PURE, and here rather than in the bpy layer because it is arithmetic with a
+    rule in it: the DR's architectural standard is an EVEN number of EQUAL leaves
+    centred on the panel, so a seam never lands on the centreline. Returns the
+    even count whose pitch sits closest to the middle of the trade width range;
+    None when no even count fits, which is a real answer for a narrow panel and
+    must not be silently rounded into one."""
+    if panel_mm <= 0:
+        return None
+    best = None
+    for n in range(2, 65, 2):
+        pitch = panel_mm / n
+        if pitch < lo or pitch > hi:
+            continue
+        score = abs(pitch - 0.5 * (lo + hi))
+        if best is None or score < best[0]:
+            best = (score, n, pitch)
+    return None if best is None else (best[1], best[2])
+
+
 def grain_axis(key):
     """Which world axis a surface's figure runs along: the STRETCHED one. PURE,
     so the reference's verdict is pinned as a property rather than as the two
@@ -173,7 +235,7 @@ PALETTE = {
     # is too low, by a factor near the 3.6x that separated it from the veneer.
     # Hue agrees — ours rendered R/G 1.49 against the target's 1.15-1.37, and the
     # old triple was WARMER (1.25) than the veneer it sits beside (1.08).
-    "cavity":       ((0.182, 0.169, 0.136), 0.70, 0.0, "wood_floor", 1.0),
+    "cavity":       ((0.1529, 0.1709, 0.2033), 0.70, 0.0, "wood_floor", 1.0),
     "lacquer_white": ((0.88, 0.88, 0.87), 0.20, 0.0, None, 0.0),
     # SCALE IS THE FIGURE. The critic's "small speckle" was not the stone, it was
     # me: scale is the size of ONE map pass in metres, so 8.0 showed the 1.4 m
@@ -512,7 +574,69 @@ def build_materials(emission_override=None):
             mapping = nt.nodes.new("ShaderNodeMapping")
             asp = MAP_ASPECT.get(key, (1.0, 1.0, 1.0))
             mapping.inputs["Scale"].default_value = tuple(1.0 / (scale * a) for a in asp)
-            nt.links.new(texco.outputs["Object"], mapping.inputs["Vector"])
+            coord_src = texco.outputs["Object"]
+
+            leaf_ax = LEAF_AXIS.get(key)
+            if leaf_ax and LEAF_PITCH_MM.get(key):
+                # BOOKMATCH. Fold the leaf axis so alternate leaves sample the
+                # texture MIRRORED: the grain reflects at every seam, which is
+                # the one cue that says "spliced from one flitch" rather than
+                # "planks laid end to end".
+                #   u      = coord / pitch
+                #   i      = floor(u)            leaf index
+                #   f      = u - i               position within the leaf
+                #   parity = i mod 2
+                #   folded = abs(parity - f)     -> f on even leaves, 1-f on odd
+                # abs(parity - f) is the whole mirror: at parity 0 it is f, at
+                # parity 1 it is 1-f, and it is continuous across the seam.
+                pitch_m = LEAF_PITCH_MM[key] / 1000.0
+                ax_i = "xyz".index(leaf_ax)
+                sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+                nt.links.new(coord_src, sep.inputs["Vector"])
+
+                def mnode(op, a=None, b=None):
+                    n = nt.nodes.new("ShaderNodeMath")
+                    n.operation = op
+                    if a is not None:
+                        n.inputs[0].default_value = a
+                    if b is not None:
+                        n.inputs[1].default_value = b
+                    return n
+
+                comp = sep.outputs["XYZ"[ax_i]]
+                u = mnode("DIVIDE", b=pitch_m)
+                nt.links.new(comp, u.inputs[0])
+                i = mnode("FLOOR")
+                nt.links.new(u.outputs[0], i.inputs[0])
+                f = mnode("SUBTRACT")
+                nt.links.new(u.outputs[0], f.inputs[0])
+                nt.links.new(i.outputs[0], f.inputs[1])
+                par = mnode("MODULO", b=2.0)
+                nt.links.new(i.outputs[0], par.inputs[0])
+                d = mnode("SUBTRACT")
+                nt.links.new(par.outputs[0], d.inputs[0])
+                nt.links.new(f.outputs[0], d.inputs[1])
+                folded = mnode("ABSOLUTE")
+                nt.links.new(d.outputs[0], folded.inputs[0])
+                # a slow drift per leaf so a wall of leaves is SEQUENCED from one
+                # flitch rather than the same leaf stamped over and over (the DR's
+                # flitch-sequencing point); tiny, so the mirror still reads
+                drift = mnode("MULTIPLY", b=LEAF_DRIFT)
+                nt.links.new(i.outputs[0], drift.inputs[0])
+                shifted = mnode("ADD")
+                nt.links.new(folded.outputs[0], shifted.inputs[0])
+                nt.links.new(drift.outputs[0], shifted.inputs[1])
+                back = mnode("MULTIPLY", b=pitch_m)
+                nt.links.new(shifted.outputs[0], back.inputs[0])
+                comb = nt.nodes.new("ShaderNodeCombineXYZ")
+                for j, nm in enumerate("XYZ"):
+                    if j == ax_i:
+                        nt.links.new(back.outputs[0], comb.inputs[nm])
+                    else:
+                        nt.links.new(sep.outputs[nm], comb.inputs[nm])
+                coord_src = comb.outputs["Vector"]
+
+            nt.links.new(coord_src, mapping.inputs["Vector"])
 
             def img(path, non_colour):
                 node = nt.nodes.new("ShaderNodeTexImage")
