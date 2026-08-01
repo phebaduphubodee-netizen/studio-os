@@ -119,6 +119,213 @@ def lathe(profile, cx, cy, z0, seg=32, scale=1.0):
     return verts, faces
 
 
+# ------------------------------------------------------------------ figure ---
+#
+# THE SEATED FIGURES, BUILT. Round 5 refused to model them and round 10 upheld
+# that refusal; the owner asked "ไหนพระล่ะ" and he is right, so the refusal is
+# withdrawn and the reasoning corrected rather than quietly dropped. Decision
+# (ข)'s words are "religious statuary used respectfully as-is" — that is a rule
+# about ASSETS, saying do not distort a scanned image to fit, and it never said
+# do not model one. A prayer room with no image in it is not a reproduction, and
+# every Thai visualiser puts one in. Refusing was over-caution wearing the
+# costume of respect, and it cost two rounds.
+#
+# Built the way everything else in this lane is built: MEASURED FIRST. The gilt
+# is found by chroma inside a tight window and thresholded against that window's
+# own background (the first, whole-frame attempt lit up the entire oak room,
+# because wood is also R>G>B — the discriminator that works is SATURATION, not
+# hue order), then back-projected onto the plane each figure stands on:
+#
+#   centre figure   total height 373 mm (flame tip z 1237 over a box top of 864)
+#                   base 165 wide, lap 113, head 63, flame 21
+#   gilt            linear RGB mean 0.351/0.207/0.074, p95 0.671/0.540/0.258
+#                   — R/G 1.24 and G/B 2.09 at the highlight, i.e. polished gold
+#
+# The posture is ปางมารวิชัย (Bhumisparsha, subduing Mara), which is what the
+# reference plainly shows and the most common form on a Thai home altar: right
+# hand down over the right knee, left hand resting in the lap, legs crossed,
+# robe over the left shoulder leaving the right bare, and a tall flame ushnisha.
+# The right arm is a separate loft because it is the one part of the silhouette
+# that a body-of-revolution cannot produce, and at ~200 px it is exactly what
+# distinguishes this posture from any other.
+
+
+def loft(rings, cx, cy, z0, height, seg=24):
+    """Elliptical loft. rings = [(z_frac, half_x, half_y, dx_frac)] in FRACTIONS
+    of the total height, so one canon of proportions serves every size. PURE.
+
+    Not a lathe: a seated figure is wider than it is deep at the lap and the
+    head leans forward of the base, so both the cross-section and the axis have
+    to vary. A ring with half_x <= 0 collapses to a pole."""
+    verts, ringidx = [], []
+    for zf, hx, hy, dx in rings:
+        z = z0 + zf * height
+        ax, ay = hx * height, hy * height
+        x0 = cx + dx * height
+        if ax <= 1e-6 or ay <= 1e-6:
+            ringidx.append([len(verts)])
+            verts.append((x0, cy, z))
+            continue
+        r = []
+        for i in range(seg):
+            a = 2.0 * math.pi * i / seg
+            r.append(len(verts))
+            verts.append((x0 + ax * math.cos(a), cy + ay * math.sin(a), z))
+        ringidx.append(r)
+    faces = []
+    for lo, hi in zip(ringidx, ringidx[1:]):
+        if len(lo) == 1 and len(hi) == 1:
+            continue
+        if len(lo) == 1:
+            faces.extend([[lo[0], hi[i], hi[(i + 1) % len(hi)]] for i in range(len(hi))])
+        elif len(hi) == 1:
+            faces.extend([[lo[i], lo[(i + 1) % len(lo)], hi[0]] for i in range(len(lo))])
+        else:
+            n = len(lo)
+            faces.extend([[lo[i], lo[(i + 1) % n], hi[(i + 1) % n], hi[i]] for i in range(n)])
+    if len(ringidx[0]) > 1:
+        faces.append(list(reversed(ringidx[0])))
+    if len(ringidx[-1]) > 1:
+        faces.append(list(ringidx[-1]))
+    return verts, faces
+
+
+def rect_loft(rings, cx, cy, z0, height, corner=0.12):
+    """Lofted rectangular stack with lightly cut corners. rings = [(z_frac,
+    half_x, half_y)] in fractions of the total height. PURE.
+
+    The figure's base is a stepped pedestal with sharp horizontal ledges, and an
+    elliptical loft physically cannot make a ledge — the first cut built it as a
+    body of revolution and it read as a soft blob under the figure. `corner`
+    clips the plan corners so the gold catches an edge highlight instead of a
+    hard black seam."""
+    verts, idx = [], []
+    for zf, hx, hy in rings:
+        z = z0 + zf * height
+        ax, ay = hx * height, hy * height
+        if ax <= 1e-6 or ay <= 1e-6:
+            idx.append([len(verts)])
+            verts.append((cx, cy, z))
+            continue
+        c = corner * min(ax, ay)
+        pts = [(ax - c, ay), (ax, ay - c), (ax, -ay + c), (ax - c, -ay),
+               (-ax + c, -ay), (-ax, -ay + c), (-ax, ay - c), (-ax + c, ay)]
+        ring = []
+        for dx, dy in pts:
+            ring.append(len(verts))
+            verts.append((cx + dx, cy + dy, z))
+        idx.append(ring)
+    faces = []
+    for lo, hi in zip(idx, idx[1:]):
+        if len(lo) == 1 and len(hi) == 1:
+            continue
+        if len(lo) == 1:
+            faces.extend([[lo[0], hi[i], hi[(i + 1) % len(hi)]] for i in range(len(hi))])
+        elif len(hi) == 1:
+            faces.extend([[lo[i], lo[(i + 1) % len(lo)], hi[0]] for i in range(len(lo))])
+        else:
+            n = len(lo)
+            faces.extend([[lo[i], lo[(i + 1) % n], hi[(i + 1) % n], hi[i]] for i in range(n)])
+    if len(idx[0]) > 1:
+        faces.append(list(reversed(idx[0])))
+    if len(idx[-1]) > 1:
+        faces.append(list(idx[-1]))
+    return verts, faces
+
+
+# THE BASE — ฐานชุกชี, a stepped pedestal, rectangular in plan. (z_frac, half_x,
+# half_y) in fractions of the figure's TOTAL height. It carries the bottom 22%,
+# which is what the reference shows: this is a tall base, not a foot.
+BASE_CANON = [
+    (0.000, 0.230, 0.185),
+    (0.030, 0.230, 0.185),   # plinth, full width
+    (0.036, 0.246, 0.198),   # the lip that catches the light
+    (0.052, 0.246, 0.198),
+    (0.060, 0.212, 0.171),   # step in
+    (0.092, 0.196, 0.158),   # concave moulding — บัวคอด
+    (0.118, 0.181, 0.146),
+    (0.132, 0.196, 0.158),   # and back out
+    (0.150, 0.222, 0.179),
+    (0.163, 0.238, 0.192),   # top ledge
+    (0.180, 0.238, 0.192),
+    (0.188, 0.208, 0.168),   # the seat the figure sits on
+    (0.205, 0.200, 0.162),
+]
+
+# THE FIGURE — (z_frac, half_x, half_y, dx_frac). Widened throughout: the first
+# cut ran the lap at half_x 0.151 of total height and the reference's lap is
+# nearly as wide as its base, at about 0.22. The head was enlarged and the flame
+# shortened for the same reason — the silhouette has to read as a seated body,
+# and at 0.35 width-to-height it read as a spire.
+FIGURE_CANON = [
+    (0.196, 0.150, 0.128, 0.000),   # rises out of the base
+    (0.230, 0.206, 0.170, 0.004),
+    (0.268, 0.228, 0.185, 0.008),
+    (0.300, 0.232, 0.188, 0.012),   # knees — a SHELF, not a slope: the first cut
+    (0.316, 0.230, 0.186, 0.014),   # sloped from here to the waist over a third
+    (0.330, 0.196, 0.150, 0.016),   # of the figure and read as a cone
+    (0.344, 0.150, 0.112, 0.018),
+    (0.362, 0.122, 0.094, 0.020),
+    (0.400, 0.098, 0.078, 0.022),
+    (0.430, 0.090, 0.072, 0.024),   # waist
+    (0.470, 0.104, 0.080, 0.026),
+    (0.505, 0.132, 0.098, 0.027),   # shoulders — square, and wider than the head
+    (0.545, 0.138, 0.101, 0.028),
+    (0.566, 0.120, 0.090, 0.028),
+    (0.580, 0.072, 0.060, 0.028),
+    (0.590, 0.038, 0.036, 0.028),   # NECK — absent from the first cut, which is
+    (0.606, 0.038, 0.036, 0.028),   # why the head merged into the shoulders
+    (0.622, 0.056, 0.054, 0.028),
+    (0.646, 0.068, 0.066, 0.028),   # jaw
+    (0.678, 0.072, 0.070, 0.028),   # head — widest. The previous 0.098 made
+    # the head 42% of the lap where the reference reads about 30%, and a head
+    # that size turns the whole silhouette into an onion whatever else is right.
+    (0.706, 0.069, 0.067, 0.028),
+    (0.734, 0.058, 0.056, 0.028),   # crown, where the curls sit
+    (0.758, 0.044, 0.043, 0.028),
+    (0.778, 0.034, 0.033, 0.028),   # ushnisha
+    (0.798, 0.026, 0.025, 0.028),
+    (0.816, 0.019, 0.018, 0.028),   # the flame springs — slender, and SHORT:
+    (0.848, 0.016, 0.015, 0.028),   # the first cut's bulbous finial was most of
+    (0.888, 0.011, 0.010, 0.028),   # what made the silhouette read as a stupa
+    (0.936, 0.006, 0.005, 0.028),
+    (1.000, 0.000, 0.000, 0.028),   # tip
+]
+
+# The right arm, hanging from the shoulder down over the right knee — the one
+# silhouette feature that names ปางมารวิชัย and that a body of revolution
+# cannot make. Widened with the rest so it clears the torso and reads.
+ARM_CANON = [
+    (0.532, 0.052, 0.050, 0.120),
+    (0.480, 0.054, 0.052, 0.162),
+    (0.424, 0.052, 0.050, 0.192),
+    (0.372, 0.048, 0.046, 0.208),
+    (0.332, 0.036, 0.038, 0.218),
+    (0.306, 0.038, 0.042, 0.214),   # the hand, over the right knee
+    (0.290, 0.026, 0.032, 0.204),
+]
+
+
+def buddha_figure(origin, height_mm, mirror=False):
+    """A seated gilt image on its stepped base. PURE — returns
+    {"gilt": (verts, faces)} in mm. `mirror` flips the arm to the other side."""
+    cx, cy, z0 = origin
+    sgn = -1.0 if mirror else 1.0
+    base = rect_loft(BASE_CANON, cx, cy, z0, height_mm)
+    verts, faces = [], []
+    for canon, seg in ((FIGURE_CANON, 24), (ARM_CANON, 10)):
+        rings = [(zf, hx, hy, dx * sgn) for zf, hx, hy, dx in canon]
+        v, f = loft(rings, cx, cy, z0, height_mm, seg=seg)
+        off = len(verts)
+        verts.extend(v)
+        faces.extend([[i + off for i in face] for face in f])
+    # TWO MESHES, because they want opposite shading. The base is a stepped
+    # pedestal whose whole character is its ledges, and smooth shading rounded
+    # every one of them away; the body is cast and polished and genuinely is
+    # smooth. One answer for both was wrong for half the object.
+    return {"gilt": (verts, faces), "gilt_flat": base}
+
+
 # ------------------------------------------------------------------ floral ---
 #
 # THE LILIES ARE BUILT, AND THE BUDDHA IMAGES ARE NOT. Round 5 refused to
@@ -385,6 +592,11 @@ def plan(spec):
                         "buds": d.get("buds", 4),
                         "material": "lily_pink", "stem_material": "stem_green",
                         "cls": "floral"})
+    for fg in st.get("figures", []):
+        out.append({"kind": "figure", "name": fg["name"],
+                    "pos_mm": (fg["x_mm"], fg["y_mm"], fg["z_mm"]),
+                    "height_mm": fg["height_mm"], "mirror": bool(fg.get("mirror")),
+                    "material": "gilt", "cls": "figure"})
     for v in st.get("vases", []):
         if v.get("slug"):
             out.append({"kind": "asset", "name": v["name"], "slug": v["slug"],
@@ -527,6 +739,27 @@ def build_styling(spec, materials=None):
             print(f"  STYLING: {p['name']} <- {p['slug']} native {native_mm:.0f}mm "
                   f"-> {p['height_mm']:.0f}mm (x{k:.3f})")
             made.extend(objs)
+            continue
+
+        if p["kind"] == "figure":
+            parts = buddha_figure(p["pos_mm"], p["height_mm"], mirror=p["mirror"])
+            nf = 0
+            for part, smooth in (("gilt", True), ("gilt_flat", False)):
+                verts, faces = parts[part]
+                nf += len(faces)
+                me = bpy.data.meshes.new(f"SM_TRN001_{p['name']}_{part}")
+                me.from_pydata([(x * G.MM, y * G.MM, z * G.MM) for x, y, z in verts],
+                               [], faces)
+                me.validate()
+                for poly in me.polygons:
+                    poly.use_smooth = smooth
+                if materials and p["material"] in materials:
+                    me.materials.append(materials[p["material"]])
+                ob = bpy.data.objects.new(f"SM_TRN001_{p['name']}_{part}", me)
+                col.objects.link(ob)
+                made.append(ob)
+            print(f"  STYLING: {p['name']} seated figure {p['height_mm']:.0f}mm "
+                  f"({nf} faces, arm {'left' if p['mirror'] else 'right'})")
             continue
 
         if p["kind"] == "spray":

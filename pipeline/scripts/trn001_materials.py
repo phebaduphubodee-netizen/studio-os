@@ -373,6 +373,15 @@ PALETTE = {
     "vase_dark":    ((0.035, 0.030, 0.030), 0.22, 0.0, None, 0.0),
     "bronze_dark":  ((0.35, 0.27, 0.16), 0.38, 1.0, None, 0.0),
     "wax_white":    ((0.86, 0.84, 0.79), 0.55, 0.0, None, 0.0),
+    # POLISHED GILT, metallic — measured off the target's own figures inside a
+    # tight window (a whole-frame "R>G>B and saturated" mask lit up the entire
+    # oak room, because wood satisfies it too; SATURATION is the discriminator,
+    # not hue order). Gilt highlight p95 linear 0.671/0.540/0.258, i.e. R/G 1.24
+    # and G/B 2.09 — gold's own reflectance curve, so this is metallic with a
+    # low roughness rather than a yellow diffuse. Roughness 0.18 because the
+    # reference's figures carry sharp, high-contrast reflections with dark
+    # cores, which is a mirror finish and not a satin one.
+    "gilt":         ((0.85, 0.63, 0.26), 0.18, 1.0, None, 0.0),
     # THE LILIES, and the assumption their albedo rests on, stated rather than
     # hidden. What is measured off the target is what the petals RENDER at
     # (linear 0.252/0.083/0.101 left, 0.302/0.101/0.124 right), and an observed

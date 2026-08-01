@@ -682,15 +682,30 @@ def test_the_candle_sits_on_top_of_its_own_stick(spec):
         assert taper["pos_mm"][:2] == stick["pos_mm"][:2]
 
 
-def test_the_unbuildable_styling_classes_are_declared_not_silently_dropped(spec):
-    """(ข) assumed the CC0 pool would supply the organics; the first live test
-    found it empty for statuary and florals. An absence that is not DECLARED
-    reads as a scene that was finished."""
+def test_every_styling_class_the_reference_shows_is_built_or_declared(spec):
+    """An absence that is not DECLARED reads as a scene that was finished.
+
+    This guard used to assert the opposite of what it means: it required
+    `unavailable()` to be NON-EMPTY and to name statuary, because at the time
+    the CC0 pool could supply neither the figures nor the florals. Both are
+    built now, so the old form would have forced the lane to keep declaring a
+    gap it had closed. The durable statement is the one it was always reaching
+    for: every class the reference shows is EITHER in the plan OR named as
+    missing, and never neither."""
     import trn001_styling as S
 
-    missing = S.unavailable(spec)
-    assert missing, "the classes the pool cannot supply must be named in the spec"
-    assert any("statuar" in m for m in missing)
+    built = {p["cls"] for p in S.plan(spec)}
+    declared = " ".join(S.unavailable(spec)).lower()
+    for cls, word in (("figure", "statuar"), ("floral", "floral"),
+                      ("vase", "vase"), ("candlestick", "candle")):
+        assert cls in built or word in declared, (
+            f"the reference shows {cls} and this spec neither builds it nor "
+            f"declares it missing — a silent absence reads as a finished scene")
+    # and a class cannot be both, which is how a stale declaration survives a
+    # round that quietly fixed it
+    for cls, word in (("figure", "statuar"), ("floral", "floral")):
+        assert not (cls in built and word in declared), (
+            f"{cls} is built AND still declared unavailable")
 
 
 def test_no_styling_object_stands_inside_a_solid(spec):
