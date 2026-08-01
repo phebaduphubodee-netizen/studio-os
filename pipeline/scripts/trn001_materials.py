@@ -51,6 +51,21 @@ TONE_NOISE = {
     "veneer_altar":  (0.16, 1.6, (3.0, 1.0, 0.5)),
 }
 
+# Linear MEAN of each CC0 ROUGHNESS map, measured the same way MAP_MEAN was.
+# Needed for the same reason and it was missed for four rounds: the rough map was
+# linked STRAIGHT to the shader, so PALETTE's roughness column was dead for every
+# material that has one. The marble asked for 0.18 and rendered at 0.506 — the
+# hero object's polish never reached a single frame — while paint asked 0.65 and
+# got 0.911 and the cavity asked 0.70 and got 0.471. Normalising by the mean makes
+# the map contribute VARIATION and the specified value contribute LEVEL, which is
+# exactly what MAP_MEAN already does for base colour; the cure existed in this
+# file and had simply never been carried across to the next input.
+ROUGH_MEAN = {
+    "marble_01": 0.506,
+    "plastered_wall_03": 0.911,
+    "wood_floor": 0.471,
+}
+
 # how hard each map's normal pushes; paint and stone are nearly flat in reality
 NORMAL_STRENGTH = {"plastered_wall_03": 0.12, "marble_01": 0.15, "grey_cartago_03": 0.10}
 
@@ -551,8 +566,18 @@ def build_materials(emission_override=None):
 
                 nt.links.new(out_col, bsdf.inputs["Base Color"])
             if "rough" in maps:
-                nt.links.new(img(maps["rough"], True).outputs["Color"],
-                             bsdf.inputs["Roughness"])
+                rmean = ROUGH_MEAN.get(slug)
+                rsrc = img(maps["rough"], True).outputs["Color"]
+                if rmean:
+                    # scale the map so its MEAN lands on the specified roughness,
+                    # keeping the map's variation and the table's level
+                    sc = nt.nodes.new("ShaderNodeMath")
+                    sc.operation = "MULTIPLY"
+                    sc.use_clamp = True
+                    sc.inputs[1].default_value = rough / rmean
+                    nt.links.new(rsrc, sc.inputs[0])
+                    rsrc = sc.outputs["Value"]
+                nt.links.new(rsrc, bsdf.inputs["Roughness"])
             if "normal" in maps:
                 nm = nt.nodes.new("ShaderNodeNormalMap")
                 nm.inputs["Strength"].default_value = NORMAL_STRENGTH.get(slug, 0.8)

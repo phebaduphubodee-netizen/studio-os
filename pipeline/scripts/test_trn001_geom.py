@@ -1028,3 +1028,53 @@ def test_first_hit_agrees_with_the_projection_it_guards(spec):
             lo = m["c"][i] - m["s"][i] / 2 - 1.0
             hi = m["c"][i] + m["s"][i] / 2 + 1.0
             assert lo <= pt[i] <= hi, f"{name} hit point {pt} is outside the mass"
+
+
+def test_the_roughness_a_material_asks_for_is_the_one_it_gets():
+    """A COLUMN OF THE TABLE WAS DEAD. The CC0 roughness map was linked straight
+    to the shader, so PALETTE's roughness was overridden for every mapped
+    material: the marble asked 0.18 and rendered at 0.506 — the hero object's
+    polish reached no frame in four rounds — paint asked 0.65 and got 0.911, the
+    cavity asked 0.70 and got 0.471. SHEEN_CEILING was being tested against a
+    number that never left the table.
+
+    Same disease MAP_MEAN already cures for base colour, on the very next input.
+    Pinned as "every mapped material has a measured mean to normalise by", so a
+    new map set cannot silently reinstate the override."""
+    import trn001_materials as MAT
+    for key, (_alb, rough, _m, slug, _s) in MAT.PALETTE.items():
+        if not slug:
+            continue
+        maps = MAT._map_set(slug) if hasattr(MAT, "_map_set") else None
+        if maps is not None and "rough" not in maps:
+            continue
+        assert slug in MAT.ROUGH_MEAN, (
+            f"{key} wears '{slug}', whose roughness map would override the "
+            f"{rough} this table asks for — no measured mean to normalise by")
+        gain = rough / MAT.ROUGH_MEAN[slug]
+        assert 0.0 < gain < 8.0, f"{key}: implausible roughness gain {gain:.2f}"
+
+
+def test_every_measured_map_mean_is_a_plausible_reading_of_its_map():
+    """The normalisation is only as good as the means it divides by, and a mean
+    typed in by hand is exactly the kind of number that goes stale silently.
+    Re-read each map and check the stored mean still describes it.
+
+    (Deliberately NOT a test that the shader receives the value — that needs bpy
+    and would have to live in the build. A pure test asserting `rough == rough`
+    would pass forever while proving nothing, which is the shape this project
+    keeps catching in its own scorers.)"""
+    import trn001_materials as MAT
+    np = pytest.importorskip("numpy")
+    Image = pytest.importorskip("PIL.Image")
+    for slug, stored in MAT.ROUGH_MEAN.items():
+        d = os.path.join(MAT.CC0, slug)
+        if not os.path.isdir(d):
+            pytest.skip(f"{slug} not on disk")
+        f = [x for x in os.listdir(d) if "ough" in x.lower()]
+        if not f:
+            pytest.fail(f"{slug} has a stored roughness mean but no roughness map")
+        a = np.asarray(Image.open(os.path.join(d, f[0])).convert("L"),
+                       dtype=float) / 255.0
+        assert a.mean() == pytest.approx(stored, abs=0.02), (
+            f"{slug} roughness map now means {a.mean():.3f}, table says {stored}")
