@@ -216,6 +216,21 @@ def setup_render(quick, out_png, spec=None):
         samples, (w, h) = quick_params(FULL_SAMPLES, (RES, RES))
     sc.cycles.samples = 1 if IDMASK else samples
     sc.cycles.use_denoising = not IDMASK
+    # LIGHT TRANSPORT LIMITS, and why they are now a spec decision instead of a
+    # factory default nobody read. `--factory-startup` gives diffuse_bounces=4.
+    # This room is a CLOSED BOX lit by four recessed downlights: the only light
+    # that ever reaches a 276 mm-deep cubby, a soffit face that shades itself,
+    # or a plinth face under an overhang is light that has already bounced
+    # several times — and those are exactly the three patches that refused to
+    # move for any knob in the light lane (header 0.56-0.76x, cubby 0.57-0.87x,
+    # plinth 0.55-0.95x across eight rigs). A truncated bounce budget cannot be
+    # tuned around from the light side, which is the signature this project has
+    # learned to look for. Defaults below are Blender's own, so absent a spec
+    # block nothing changes.
+    rn = (spec or {}).get("render") or {}
+    for k, dflt in (("diffuse_bounces", 4), ("max_bounces", 12),
+                    ("glossy_bounces", 4), ("sample_clamp_indirect", 10.0)):
+        setattr(sc.cycles, k, type(dflt)(rn.get(k, dflt)))
     if IDMASK and sc.world:
         sc.world.node_tree.nodes["Background"].inputs[1].default_value = 0.0
     prefs = bpy.context.preferences.addons.get("cycles")
@@ -245,7 +260,9 @@ def setup_render(quick, out_png, spec=None):
         vt = LIGHT.apply_film(spec, sc)
     else:
         sc.view_settings.view_transform = "Standard"
-    print(f"cycles device={device} samples={samples} res={w}x{h} view={vt}")  # keep: silent-CPU catch
+    print(f"cycles device={device} samples={samples} res={w}x{h} view={vt} "
+          f"diff_bounce={sc.cycles.diffuse_bounces} max_bounce={sc.cycles.max_bounces} "
+          f"clamp_ind={sc.cycles.sample_clamp_indirect}")  # keep: silent-CPU catch
 
 
 def dump_projections(spec, cam_ob, path):
@@ -292,7 +309,8 @@ def main():
     materials = None
     if "--materials" in argv and not IDMASK:
         materials = MAT.build_materials(
-            emission_override={"halo_led": LIGHT.halo_watt(spec)})
+            emission_override={"halo_led": LIGHT.halo_watt(spec)},
+            palette_override=spec.get("materials"))
         print("materials ON\n" + MAT.palette_report())
     build_masses(spec, materials)
     if spec.get("styling") and not IDMASK:

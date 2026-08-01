@@ -19,7 +19,8 @@
   },
   "film": {
    "view_transform": "AgX",
-   "exposure": -0.25
+   "exposure": -0.457,
+   "_exposure": "set so the two frames' MEDIANS agree (1.05). This is not a look decision: trn001_lightcheck refuses to trust its own absolute column unless the medians are within 5%, and until now they were not, so every absolute reading the lane took was exposure-contaminated and only the rel ladder was usable -- a ladder normalised by wall_bay_right, which a wall-wash moves. Matching the medians is what makes the wall-wash measurable at all."
   },
   "_fill_refuted": "2026-07-31: an AREA light standing off frame on the camera side — the room's door/window — was BUILT and REFUTED by measurement, not by taste. The reasoning that led to it still stands (the target's floor ramps 42% toward frame-right while its ceiling shows no lean and its wall is brighter at the BOTTOM, which no ceiling fixture produces), but the source itself flattens the frame instead of ramping it: p99/p1 fell 50 -> 28 at 150 W and -> 15 at 400 W, while the floor tilt it was meant to create fell 21.7% -> 15.1% -> 7.1%. Recorded as an unresolved measurement like round 2's surround, NOT iterated (R1).",
   "downlights": {
@@ -34,12 +35,14 @@
    "trim_drop_mm": 12.0,
    "emitter_drop_mm": 6.0,
    "_beam": "THE PROFILE WAS CHOSEN BY MEASUREMENT, from three real LM-63 files. Every remaining error after the level was right said one thing — our wall was over-washed — so the beam was too wide. 5.ies (Halo R-30 flood, 141 cd still at 40 deg) washed the wall from above and gave it the WRONG vertical shape; 30.IES (Kurt Versen C7394, medium) was better but flattened the frame to 32:1; 29.IES (Kurt Versen C7302, a real tight downlight, zero output past 45 deg) fixed four independent readings at once — cubby 0.051 vs 0.062 target, header 0.231 vs 0.252, the wall's top-to-bottom gradient flipped to the target's own shape, and the floor's falloff went 5.1% -> 23.6% against the target's 37.6%.",
-   "watt": 60.0,
-   "fill_watt": 25.0,
+   "watt": 45.0,
+   "fill_watt": 45.0,
    "spot_deg": 120.0,
    "spot_blend": 0.5,
-   "ies": "29.IES",
-   "ies_norm": "auto"
+   "ies": "5.ies",
+   "ies_norm": "auto",
+   "_wallwash": "2026-08-01, owner order (1): TAKE LIGHT OFF THE FLOOR RATHER THAN ADD A SOURCE. Three knobs, measured together at the quick rung across 22 configs, and each earns its place on a different reading. (a) tilt_deg 7: the row is 605 mm off the wall and downlight_positions already calls that 'what a wall-wash row is', but every round so far emitted it at nadir, which is why our floor field was explained by distance-to-nearest-lamp at R2 0.756-0.965 while the target's reaches 0.019. Fitted in world millimetres, the depth gradient goes +0.762/m -> +0.213/m against the target's +0.308/m. Tilt is the ONLY lever tried in this lane that lowers a horizontal and raises a vertical in one move, because it adds nothing. Bracketed 0/4/7/10/14.8/17/19.8/29.2/51.5 deg: past ~10 it overshoots the wall (1.13x) and the marble (1.14x), which were the two patches nadir already had right. (b) ies 5.ies: _beam_retest measured this profile as better on aggregate (3.48 -> 2.13) and SHELVED it because it broke header/plinth/cubby -- exactly the three patches the wall-wash tilt feeds. Neither half works alone; the pair does. (c) watt 45 / fill_watt 45: moving power from the measured row (which sits over the one floor patch reading 2.18x) to the inferred rows (which feed floor_near, reading 0.63x). fill_watt is INFERRED and this raises it, so it is declared the softest of the three. RESULT, absolute and exposure-matched so the comparison is legitimate: aggregate |abs-1| 2.98 -> 1.71, worst patch 1.18 -> 0.33, patch_range 38.7 -> 26.4 against the target's 27.6, and every one of the twelve ladder patches moved toward the target, none away.",
+   "tilt_deg": 7.0
   },
   "_cove_refuted": "2026-08-01, R1 STOP on the room-light mechanism — SECOND attempt, refuted like the first but for a reason worth keeping. A concealed cove wall-wash was built (hidden behind the header soffit at y=-72, z=2412, aimed down the wall) because the repaired instrument said our verticals run 0.78x while our horizontals run 1.11x (ceiling) and 2.20x (far floor), with the wall's own ramp 1.81 against the target's 1.40. It DID what it was built to do — verticals 0.779 -> 1.023 at 48W/55W, i.e. onto the target's 1.00 — and it failed everything else at the same time: ceiling 1.11 -> 1.25, far floor barely moved (2.20 -> 2.13), and p99/p1 fell 56 -> 54. Four configurations, one shape of result: horizontals worsen as verticals improve, which by the fix list's own wording is 'a trade, not a cure'. AND THE GATING TEST IS UNSATISFIABLE BY THIS LANE, which is the part to remember: it requires p99/p1 to RISE, p1 is the darkest 1% of the frame, 93.2% of the target's darkest 1% lives inside the two cubby stacks, and substituting only those pixels moves our ratio 57.8 -> 154.8 on its own. That deficit is GEOMETRY. Every light added anywhere in a closed room can only raise p1 — measured across all four configs, 0.0156 -> 0.0168, 0.0175, 0.0184, 0.0195, against a target of 0.0055. So the room-light lane cannot pass a test only the tower-depth decision can move, and the two are not separable. The cove CODE PATH stays in trn001_light (spec-gated, off) because the mechanism is sound and the measurement that asked for it still stands; it must not be re-tried before the geometry question is answered.",
   "_beam_retest": "2026-08-01, R1 STOP #3 on the room-light mechanism. The beam PROFILE was re-opened on a real ground: round 4 rejected the wider files partly because they 'flattened the frame to 32:1', and that criterion was p99/p1, which we now know was dominated by the 82 mm cubby rather than by the light. Re-tested against the corrected geometry, shape only (the rel column divides by wall_bay_right, so differing total flux between profiles cancels). 5.ies genuinely fixes what 29.IES gets worst: ceiling 1.44 -> 1.01, floor_far 2.76 -> 1.57, marble 1.18 -> 1.03, wall_return 0.92 -> 1.02, and the aggregate |rel_err-1| falls 3.48 -> 2.13. It also breaks what 29.IES gets best: header 0.98 -> 0.58, plinth 1.26 -> 0.77, cubby 0.93 -> 0.73. 19.ies and 4.IES are worse than both. NOT SHIPPED: this is a trade of the same shape the fill and the cove produced, and round 4 rejected this exact file for this exact reason -- the re-test was worth doing because the ground was corrupt, and the answer came back the same anyway.",
@@ -211,5 +214,10 @@
   "focal_mm": 38.9,
   "shift_x": 0.0,
   "shift_y": 0.0
+ },
+ "render": {
+  "_what": "LIGHT TRANSPORT LIMITS, previously Blender's factory defaults because nothing set them. diffuse_bounces was 4. This room is a closed box lit by four recessed downlights, so the only light that reaches a 276 mm cubby, a soffit face that shades itself, or a plinth face under an overhang is light that has bounced several times -- and those were the three patches that refused to move for any knob in eight light rigs. Raising it: cubby 0.67 -> 0.80, header 0.58 -> 0.66, converged by 8-16, and it costs 3 s on a 12 s quick render. sample_clamp_indirect was tested OFF as well and changed nothing (0.79 vs 0.80), so the clamp is NOT what was truncating them and stays at Blender's default.",
+  "diffuse_bounces": 16,
+  "max_bounces": 24
  }
 }

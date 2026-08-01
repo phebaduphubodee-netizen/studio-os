@@ -1190,3 +1190,122 @@ def test_every_mass_gets_a_colour_no_other_mass_can_produce():
         c = colour(i)
         q = tuple(round(x * 255) / 255.0 for x in c)
         assert index(q) == i, f"index {i} lost to 8-bit quantisation"
+
+
+def _rot_xyz(pitch, yaw):
+    """Blender's XYZ euler as a matrix applied to a vector: R = Rz @ Ry @ Rx.
+    Reimplemented here rather than imported so the test can FAIL the shipped
+    code — a helper shared with the thing under test proves nothing."""
+    import math
+
+    cp, sp, cy, sy = math.cos(pitch), math.sin(pitch), math.cos(yaw), math.sin(yaw)
+    # (Rz @ Rx) applied to local -Z
+    return (-sp * sy, sp * cy, -cp)
+
+
+def test_an_aimed_light_actually_points_where_it_was_aimed():
+    """The formula this replaces was 180 deg out in yaw, which is invisible on a
+    near-vertical fixture and total on a horizontal one. Pinned on the DIRECTION
+    rather than on the angles, so any future re-derivation is free to pick other
+    euler conventions and still has to hit the aim point.
+
+    The reference direction is checked against bpy in
+    scratchpad/aimchk.py; this test is the pure half that runs on every commit.
+    """
+    import math
+
+    import trn001_light as L
+
+    cases = [
+        ((-999.5, -605.0, 2682.0), (-999.5, 0.0, 1200.0)),   # downlight -> wall
+        ((-70.0, -72.0, 2412.0), (-70.0, 0.0, 1200.0)),      # cove -> wall
+        ((0.0, -3000.0, 900.0), (0.0, -1200.0, 900.0)),      # fill -> into room
+        ((500.0, -900.0, 2400.0), (-800.0, 0.0, 600.0)),     # off-axis, both signs
+        ((-500.0, -900.0, 2400.0), (800.0, -200.0, 600.0)),
+        ((0.0, 0.0, 1000.0), (0.0, 0.0, 0.0)),               # degenerate: straight down
+    ]
+    for pos, aim in cases:
+        pitch, roll, yaw = L.aim_euler(pos, aim)
+        assert roll == 0.0, "a light has no reason to roll"
+        got = _rot_xyz(pitch, yaw)
+        d = [a - p for a, p in zip(aim, pos)]
+        n = math.sqrt(sum(c * c for c in d))
+        want = [c / n for c in d]
+        cos = sum(g * w for g, w in zip(got, want))
+        ang = math.degrees(math.acos(max(-1.0, min(1.0, cos))))
+        assert ang < 1e-6, f"aim {pos}->{aim} points {ang:.1f} deg off target"
+
+
+def test_only_the_measured_downlight_row_washes_the_wall(spec):
+    """The wall-wash is a claim about ONE row -- the measured pair 605 mm off the
+    wall. The inferred rows behind the frame are the room's general lighting and
+    the only source feeding floor_near, which already reads 0.79x SHORT; tilting
+    them at the wall would take light off the one floor patch that needs more."""
+    import copy
+
+    import trn001_light as L
+
+    import math
+
+    for knob, val in (("tilt_deg", 7.0), ("aim_z_mm", 1400.0)):
+        s = copy.deepcopy(spec)
+        d = s["light"]["downlights"]
+        d.pop("tilt_deg", None)
+        d.pop("aim_z_mm", None)
+        d[knob] = val
+        fx = [f for f in L.plan(s) if f["kind"] == "SPOT"]
+        assert any(f["measured"] for f in fx) and any(not f["measured"] for f in fx)
+        for f in fx:
+            if not f["measured"]:
+                assert f["aim"] is None, f"{f['name']} is room light, not a wash"
+                continue
+            assert f["aim"] is not None, f"{f['name']} is the wash row and must aim"
+            assert f["aim"][0] == f["pos"][0], "no lateral throw unless asked"
+            # whichever knob spelled it, the wash leans toward the WALL (+y) and
+            # downward — a wash that leaned into the room would be a different
+            # fixture wearing the same name
+            assert f["aim"][1] > f["pos"][1], "the wash must lean toward the wall"
+            assert f["aim"][2] < f["pos"][2], "and still point downward"
+        if knob == "tilt_deg":
+            f = next(x for x in fx if x["measured"])
+            assert abs(math.degrees(L.aim_euler(f["pos"], f["aim"])[0]) - val) < 1e-6, \
+                "tilt_deg must be the angle actually built, or it cannot be bisected"
+
+    # tilt_deg outranks aim_z_mm, because the shipped spec carries the first and
+    # the second only survives as the bracket that produced it
+    s = copy.deepcopy(spec)
+    s["light"]["downlights"].update({"tilt_deg": 7.0, "aim_z_mm": 1400.0})
+    f = next(x for x in L.plan(s) if x["kind"] == "SPOT" and x["measured"])
+    assert abs(math.degrees(L.aim_euler(f["pos"], f["aim"])[0]) - 7.0) < 1e-6
+
+    # and with both knobs absent the rig is exactly what it was before they existed
+    s2 = copy.deepcopy(spec)
+    s2["light"]["downlights"].pop("aim_z_mm", None)
+    s2["light"]["downlights"].pop("tilt_deg", None)
+    assert all(f["aim"] is None for f in L.plan(s2) if f["kind"] == "SPOT")
+
+
+def test_a_material_override_can_only_change_what_it_names():
+    """The gloss probe needed to move one number in one row without opening the
+    palette, and an override that silently does nothing is worse than no override
+    at all -- it reads as a refuted hypothesis. So unknown keys and unknown
+    fields raise, and every field not named comes back identical."""
+    import trn001_materials as MAT
+
+    base = MAT.resolved_palette(None)
+    assert base == dict(MAT.PALETTE), "no override must be a no-op"
+
+    got = MAT.resolved_palette({"floor_oak": {"roughness": 0.15}})
+    for key in MAT.PALETTE:
+        if key == "floor_oak":
+            continue
+        assert got[key] == MAT.PALETTE[key], f"{key} moved and was never named"
+    a0, r0, m0, s0, k0 = MAT.PALETTE["floor_oak"]
+    a1, r1, m1, s1, k1 = got["floor_oak"]
+    assert r1 == 0.15 and (a1, m1, s1, k1) == (a0, m0, s0, k0)
+    assert MAT.PALETTE["floor_oak"][1] == r0, "the palette itself must not mutate"
+
+    for bad in ({"no_such_material": {"roughness": 0.1}},
+                {"floor_oak": {"roughnes": 0.1}}):
+        with pytest.raises(KeyError):
+            MAT.resolved_palette(bad)
