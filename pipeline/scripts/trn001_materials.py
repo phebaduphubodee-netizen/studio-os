@@ -84,6 +84,10 @@ NORMAL_STRENGTH = {
     # per-material: fine veneer is a flush, sanded plane, not a plank floor
     "veneer_fascia": 0.10, "veneer_pier": 0.10, "veneer_altar": 0.10,
     "cavity": 0.10,
+    # the floor is the ONE surface that really does carry a plank micro-bevel,
+    # and it had no entry at all -- it fell through to the 0.8 default while
+    # every veneer was deliberately given 0.10, so nobody has ever set it.
+    "floor_oak": 1.6,
 }
 
 # How much of the map's VARIATION each surface keeps (1.0 = the map as shot,
@@ -93,9 +97,29 @@ NORMAL_STRENGTH = {
 # millwork does not have. Painted plaster keeps almost none — a smooth painted
 # wall really is nearly flat, and "add maps everywhere" would be the
 # ground-truth study's lesson over-applied into a different wrong answer.
+# CONTRAST DELIVERY. The floor lane measured the CC0 map, band-passed to the
+# 7-60 mm band of floor it is actually projected onto, at robust sd 0.0869 —
+# and the target's floor over the same band at 0.0852, a match. Ours delivers
+# 0.0388, i.e. 45%. So the map already carries exactly the texture the delivered
+# work has and the pipeline is losing it; this is a DELIVERY problem, not a
+# choose-a-better-map problem, and no amount of hunting for texture sets would
+# have found that.
+#
+# The gain is a POWER about the map's own luminance mean, so it changes only the
+# CONTRAST and leaves the mean — and therefore the albedo the table specifies —
+# exactly where MAP_MEAN put it. Default 1.0 everywhere: absent an entry this is
+# a no-op and every other material renders byte-identically.
+#
+# CAVEAT THAT TRAVELS WITH THE NUMBER (the lane's own words): 30-40% of the loss
+# is a texture-free NEUTRAL wash — room interreflection at diffuse_bounces=16 in
+# a closed white box, plus grazing specular — and that denominator belongs to the
+# LIGHT lane. If the light lane later takes that wash out, this gain must come
+# back down or the floor over-shoots.
+MAP_GAIN = {"floor_oak": 2.2}
+
 MAP_MIX = {
     "veneer_fascia": 0.90, "veneer_pier": 0.90, "veneer_altar": 0.90,
-    "cavity": 0.40, "marble": 0.60, "floor_oak": 0.80, "paint_white": 0.06,
+    "cavity": 0.40, "marble": 0.60, "floor_oak": 1.00, "paint_white": 0.06,
 }
 
 # GRAIN HAS A DIRECTION. The round-3 critic measured the reference fascia at
@@ -247,7 +271,30 @@ PALETTE = {
     # error on these surfaces belongs to the light lane and must not be paid for
     # twice. Direction is measured; the exact triples are display-referred
     # estimates and should be bracketed the way halo_w and the kelvin were.
-    "veneer_fascia": ((0.221, 0.174, 0.126), 0.42, 0.0, "wood_floor", 1.7),
+    # ROUND 11: cooled 1.20x, the consensus of the only two reads that cancel
+    # the light — 1.175 and 1.234, both taken as wood divided by the white
+    # paint wall at the SAME height. Raw R/B ratios on this pair are unusable
+    # (see veneer_pier below: five reads, 1.254 to 2.05). Measured as wood
+    # divided by the white paint wall at the SAME height, so the light's own
+    # colour cancels: R/B on the header face (n=85,155) is 2.005 in the target
+    # against 2.474 in ours. Cooled LUMINANCE-PRESERVING (0.18053 either side,
+    # exact) and G untouched, because value belongs to the light lane.
+    # veneer_pier was measured in the same pass and is ALREADY RIGHT — it is
+    # deliberately not touched, and that precision is the finding: "the veneers
+    # are too warm" would have been a wrong instruction for one of the three.
+    "veneer_fascia": ((0.2141, 0.174, 0.1465), 0.42, 0.0, "wood_floor", 1.7),
+    # ROUND 11 TRIED TO WARM THIS ROW AND REVERTED. Five reads of the SAME
+    # quantity on the SAME target — how far apart in R/B the rail and the
+    # carcass sit — returned 1.254, 1.401, 1.499, 1.95 and 2.05, differing only
+    # in which part of each surface was sampled. Raw R/B on a mapped wood
+    # surface at this scale is not a material descriptor: the light varies
+    # across the surface and the map varies with it, so the ratio moves with an
+    # arbitrary choice. By this project's own rule an instrument that answers
+    # differently depending on a choice it should not depend on cannot set a
+    # value, so this row keeps its measured original and the correction is NOT
+    # shipped on a number that will not hold still. The only reads that agree
+    # are the ones that divide by a white wall AT THE SAME HEIGHT, and those say
+    # this row is already right.
     "veneer_pier":  ((0.182, 0.169, 0.136), 0.42, 0.0, "wood_floor", 1.0),
     "veneer_altar": ((0.27, 0.22, 0.17), 0.45, 0.0, "wood_floor", 1.0),
     # 2026-08-01: the cubby lining was a near-black (0.05) chosen when the cavity
@@ -288,7 +335,27 @@ PALETTE = {
     # Set to pale-oak LRV with the sampled HUE preserved, then confirmed in frame
     # (the floor must still read ~0.94 of the wall — that it does is the proof
     # the illuminance ratio, not the albedo, was carrying that reading).
-    "floor_oak":    ((0.42, 0.35, 0.26), 0.40, 0.0, "wood_floor", 2.0),
+    # ROUND 11. Three measured corrections, none of them a taste call.
+    # PITCH: the map lays 9 planks across its tile, so a 2.0 m tile gives 222 mm
+    # boards; the target's floor was read joint-by-joint at y = -1490/-1300/
+    # -1110/-920/-730/-542/-350, six consecutive intervals of 192/192/186/192/
+    # 186/192 = 190.0 mm mean. 9 x 0.190 = 1.71.
+    # HUE: ours renders at saturation 0.333 against the target's 0.508, and the
+    # gap survives dividing each frame by its own median (the two frames' white
+    # walls agree, so it is not exposure). Target floor R/G 1.317 B/G 0.647
+    # against ours 1.222 / 0.816. HUE-ONLY: luminance is preserved to 0.04%
+    # (0.35838 -> 0.35850), because the floor's VALUE error is a LIGHT-lane
+    # item — floor_near reads 0.63x and floor_far 2.2x in the same spec — and
+    # paying for it here would put the light's error into the material table
+    # permanently. That is the same discipline that kept veneer_altar's hue from
+    # being cooled in round 3.
+    # ROUGHNESS AND METALLIC ARE DELIBERATELY UNTOUCHED: the bright band across
+    # the target's planks was tested as a specular sheen and REFUTED twice — by a
+    # fivefold roughness sweep here in round 9 (dL/dx -0.006 -> -0.013, zero all
+    # the way down) and independently by chroma, since a sheen carries the
+    # light's colour and would dilute the wood's saturation as it brightens
+    # while the target's only falls 0.531 -> 0.445 over a 2.5x luminance range.
+    "floor_oak":    ((0.452, 0.348, 0.186), 0.40, 0.0, "wood_floor", 1.71),
     # a painted wall must be the LEAST chromatic neutral in the room; ours was
     # 1.7x more chromatic than the stone where the reference is 0.53x
     "paint_white":  ((0.80, 0.80, 0.80), 0.65, 0.0, "plastered_wall_03", 4.0),
@@ -744,7 +811,22 @@ def build_materials(emission_override=None, palette_override=None):
                 nt.links.new(base_img.outputs["Color"], grey.inputs["Color1"])
                 bw = nt.nodes.new("ShaderNodeRGBToBW")
                 nt.links.new(base_img.outputs["Color"], bw.inputs["Color"])
-                nt.links.new(bw.outputs["Val"], grey.inputs["Color2"])
+                # CONTRAST GAIN (see MAP_GAIN): (v / mean) ** g * mean, so the
+                # mean is untouched and only the spread changes. Done on the
+                # SCALAR the RGBToBW already produces rather than on the colour,
+                # because a MixRGB cannot raise a power and a second desaturation
+                # would quietly re-flatten what this is here to restore.
+                _g = MAP_GAIN.get(key, 1.0)
+                _src = bw.outputs["Val"]
+                if abs(_g - 1.0) > 1e-9:
+                    _lm = max(lum_mean, 1e-4)
+                    for _op, _b in (("DIVIDE", _lm), ("POWER", _g), ("MULTIPLY", _lm)):
+                        _n = nt.nodes.new("ShaderNodeMath")
+                        _n.operation = _op
+                        _n.inputs[1].default_value = _b
+                        nt.links.new(_src, _n.inputs[0])
+                        _src = _n.outputs[0]
+                nt.links.new(_src, grey.inputs["Color2"])
 
                 gain = tuple(a / max(lum_mean, 1e-4) for a in albedo)
                 mix = nt.nodes.new("ShaderNodeMixRGB")
