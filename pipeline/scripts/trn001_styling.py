@@ -688,6 +688,15 @@ def build_asset_figure(p, materials=None):
         print(f"  STYLING: {p['name']} degenerate after cut — SKIPPED")
         return objs
     k = p["height_mm"] / native_mm
+    # THE ANCHOR IS THE BOUNDING BOX, AND A BOUNDING BOX IS NOT A CENTRE. A
+    # seated figure leans forward and carries one arm out over a knee, so the
+    # midpoint of its extents sits off the middle of what the eye reads as the
+    # object. Measured on the shipped frame: centring the mesh's bbox on the
+    # box left the silhouette 3.4% of the box width to the LEFT where the
+    # target's own image sits at -0.5%, i.e. centred. `x_nudge_mm` carries that
+    # measured asymmetry of the ASSET, and it belongs to the asset rather than
+    # to the placement — a different model would need a different number and
+    # the same measurement produces it.
     ctr = ((max(xs) + min(xs)) / 2.0, (max(ys) + min(ys)) / 2.0, min(zs))
 
     roots, seen = [], set()
@@ -698,7 +707,13 @@ def build_asset_figure(p, materials=None):
         if r.name not in seen:
             seen.add(r.name)
             roots.append(r)
-    tgt = tuple(c * G.MM for c in p["pos_mm"])
+    # the nudge is WORLD mm and must be applied AFTER the scale, not folded into
+    # the asset-space centre: the first cut put it inside `ctr`, where it was
+    # multiplied by k=0.0798 along with everything else and moved the figure
+    # 2.7 mm instead of 33.4. A correction expressed in the wrong space is a
+    # correction that silently does almost nothing.
+    tgt = (p["pos_mm"][0] * G.MM + float(p.get("x_nudge_mm", 0.0)) * G.MM,
+           p["pos_mm"][1] * G.MM, p["pos_mm"][2] * G.MM)
     for r in roots:
         r.scale = tuple(s * k for s in r.scale)
         r.location = (r.location.x * k + tgt[0] - ctr[0] * k,
@@ -797,6 +812,7 @@ def plan(spec):
                     "z_keep": fg.get("z_keep", 0.0),
                     "use_our_material": bool(fg.get("use_our_material")),
                     "base_h_mm": fg.get("base_h_mm", 0.0),
+                    "x_nudge_mm": fg.get("x_nudge_mm", 0.0),
                     "pos_mm": (fg["x_mm"], fg["y_mm"], fg["z_mm"]),
                     "height_mm": fg["height_mm"], "mirror": bool(fg.get("mirror")),
                     "subsurf": fg.get("subsurf", 0),
