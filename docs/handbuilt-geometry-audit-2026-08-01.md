@@ -124,6 +124,50 @@ July. That is one lane, not five.
   fabricated and were overridden by web checks. Firing another would have been
   the fifth repeat of *search our own vault first*.
 
+## 3D Warehouse — the source the research missed, and the reason it did
+
+**Owner, same day, after asking a working designer:** *"เค้าบอกว่า model
+furniture ส่วนใหญ่หาจาก 3D warehouse ทำไมคุณไม่เคยไปหามา?"*
+
+Because it is **not in our 2026-07-01 asset-sourcing DR at all.** That DR lists
+Poly Haven, BlenderKit, 3dassets.one, manufacturer sites, Poliigon, Dimensiva,
+3D Sky and Design Connected — and our own DISTILLATION-LEDGER already records
+that its prices and licences are FABRICATED and had to be overridden by web
+checks. I leaned on a document this repo had itself flagged as partly invented,
+instead of asking someone who does this for a living. The signal was also
+everywhere in our own files: `pipeline/CLAUDE.md` carries an entire *Export and
+interop law (SketchUp-using collaborator)* section, we ship a `build_room.rb`
+SketchUp generator, and the Discord corpus is a SketchUp/3ds Max designer
+community. Every one of those points at 3D Warehouse and I followed none of them.
+
+**Probed 2026-08-01, and it works end to end:**
+
+* API is open and needs no key:
+  `3dwarehouse.sketchup.com/warehouse/v1.0/entities?q=…&contentType=3dw`
+* The classes this studio keeps failing at are all there — *"Thai Buddha altar"*
+  (862 downloads), Buddha statues (one at 27,511), lily flower vases — and so is
+  ordinary furniture.
+* **Every hit offers `.glb`**, which the glTF path already in `build_room.py`
+  ingests. No new format work at all.
+* Downloaded and imported the Thai altar headless: **3,394,819 verts /
+  2,110,314 faces / 0 n-gons**, 55 materials, 11 images, one root, clean import.
+
+**Two honest caveats, and they decide HOW it gets used rather than whether.**
+
+1. **The content is unfiltered.** That "Thai Buddha altar" is not a component —
+   it is somebody's entire project, 13.9 × 17.3 × 3.1 m of room at 2.1M faces.
+   Usable, but it has to be MINED for the part we want, and the scale assertion
+   `pipeline/CLAUDE.md` already mandates is what tells you which you have got
+   (17.3 m reads as a room in metres; under the SketchUp inch trap the same
+   model would be 439 mm, which is why that assertion is not optional).
+2. **The licence is not CC0.** 3D Warehouse models carry Trimble's General Model
+   License: free to download and use in your work, not public domain, and not
+   redistributable AS MODELS. Decision (ข) currently reads "฿0 + CC0/
+   public-domain only", and that rule now excludes the best free source
+   available. **Widening it is the owner's call, not this lane's.** Nothing has
+   been written into the repo's asset cache; the downloaded model sits in the
+   scratchpad pending that decision.
+
 ## Open items
 
 1. **The n-gons.** `lathe`, `loft` and `rect_loft` all cap their first and last

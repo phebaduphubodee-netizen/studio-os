@@ -124,6 +124,22 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
 - `vault` (stdio, read-only knowledge) — configure from `.mcp.json.example`.
 - `comfyui`, `catalog`, `git` — Phase 2+; keep stubs commented until then.
 
+## Research lane — THE PRACTITIONER RUNG COMES FIRST (owner 2026-08-01)
+- The ladder was vault → NLM ask → DR → probe, and **every rung of it is a
+  machine.** The owner asked a working designer one question and got a better
+  answer than a 154-line DR: most furniture comes from **3D Warehouse**, which
+  that DR does not mention at all — while our own DISTILLATION-LEDGER already
+  recorded that the same DR fabricates prices and licences. A research lane with
+  no human in it will confidently return the world as documents describe it.
+- So: for any question about WHAT PRACTITIONERS ACTUALLY DO — tools, sources,
+  workflow, what a studio really buys — ask the owner to ask someone, or say
+  plainly that no practitioner input exists yet. Cheaper and more accurate than
+  a DR, and it is the rung this studio did not have.
+- Corollary already paid for: our own files pointed at 3D Warehouse from three
+  directions (the SketchUp interop law, build_room.rb, a SketchUp/3ds Max
+  Discord corpus) and none of it was followed. When an outside answer surprises
+  you, check whether the repo was already implying it.
+
 ## External research lane (NotebookLM)
 - DR-INITIATION IS PULL, NOT PUSH (owner order 2026-07-30, after the 3rd
   owner-initiated research round — 07-22 ×2 "DR จะช่วยได้มั้ย", 07-30 "ต้องรอ
