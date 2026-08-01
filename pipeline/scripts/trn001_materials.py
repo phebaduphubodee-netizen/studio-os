@@ -67,7 +67,24 @@ ROUGH_MEAN = {
 }
 
 # how hard each map's normal pushes; paint and stone are nearly flat in reality
-NORMAL_STRENGTH = {"plastered_wall_03": 0.12, "marble_01": 0.15, "grey_cartago_03": 0.10}
+# Resolved by material KEY first, then by map slug. Keyed by slug alone it was
+# ONE PARAMETER CARRYING TWO THINGS — the same shape found in tower.d_mm on the
+# same day: every veneer shares the `wood_floor` slug with the actual floor, so a
+# cabinet panel and a floor plank were forced to wear the same micro-bevel relief.
+#
+# The DR fired 2026-08-01 (notebook 2638a889, conv 579867c3) names that relief as
+# THE tell: pre-finished flooring carries a 1-2 mm V-groove around every plank to
+# disguise subfloor lippage, while cabinet panels are spliced flush and sanded to
+# a single seamless plane — "if your render includes linear micro-shadows catching
+# the light at the joint lines... the eye instantly recognizes the boundary
+# markers of individual floor planks". Ours ran the floor's normal at the 0.8
+# default on all three veneers and the cubby lining.
+NORMAL_STRENGTH = {
+    "plastered_wall_03": 0.12, "marble_01": 0.15, "grey_cartago_03": 0.10,
+    # per-material: fine veneer is a flush, sanded plane, not a plank floor
+    "veneer_fascia": 0.10, "veneer_pier": 0.10, "veneer_altar": 0.10,
+    "cavity": 0.10,
+}
 
 # How much of the map's VARIATION each surface keeps (1.0 = the map as shot,
 # 0.0 = flat). A map is evidence of how a material varies, not an instruction to
@@ -580,7 +597,8 @@ def build_materials(emission_override=None):
                 nt.links.new(rsrc, bsdf.inputs["Roughness"])
             if "normal" in maps:
                 nm = nt.nodes.new("ShaderNodeNormalMap")
-                nm.inputs["Strength"].default_value = NORMAL_STRENGTH.get(slug, 0.8)
+                nm.inputs["Strength"].default_value = NORMAL_STRENGTH.get(
+                    key, NORMAL_STRENGTH.get(slug, 0.8))
                 nt.links.new(img(maps["normal"], True).outputs["Color"], nm.inputs["Color"])
                 nt.links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
         made[key] = mat

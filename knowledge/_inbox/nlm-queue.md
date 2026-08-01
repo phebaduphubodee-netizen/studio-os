@@ -11,3 +11,12 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
 ## Queue
 
 (empty)
+
+- 2026-08-01 **AUDIT GAP, not a queued question** — `scripts/inbox_audit.py`
+  `classify()` whitelists `knowledge/_inbox/nlm-design-systems/` by name, but
+  CLAUDE.md prescribes `_inbox/nlm-<topic>/` generally. Every DR staged by the
+  documented process therefore lands in UNCLASSIFIED + PROVENANCE-ORPHAN:
+  nlm-backlit-stone, nlm-cloth-closedtube, nlm-process-rules, nlm-veneer-figure
+  (4 units, 8 of the audit's 11 integrity failures). The staging is correct and
+  the CLASSIFIER is behind the convention. NOT FIXED HERE: inbox_audit.py is
+  uncommitted-modified by a parallel session and belongs to that lane.

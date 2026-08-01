@@ -1078,3 +1078,25 @@ def test_every_measured_map_mean_is_a_plausible_reading_of_its_map():
                        dtype=float) / 255.0
         assert a.mean() == pytest.approx(stored, abs=0.02), (
             f"{slug} roughness map now means {a.mean():.3f}, table says {stored}")
+
+
+def test_cabinet_veneer_does_not_wear_the_floor_s_micro_bevel():
+    """DR 2026-08-01 (notebook 2638a889, conv 579867c3): pre-finished flooring
+    carries a 1-2 mm V-groove around every plank to hide subfloor lippage;
+    cabinet panels are spliced flush and sanded to one seamless plane, and the
+    linear micro-shadows at those joint lines are what makes the eye read a
+    rendered panel as a floor.
+
+    NORMAL_STRENGTH was keyed by map SLUG, and every veneer shares `wood_floor`
+    with the actual floor — one parameter carrying two things, the same shape
+    found in tower.d_mm the same day. Pinned as a RELATION (veneer relief must
+    stay well under the floor's) so the two can never be collapsed again."""
+    import trn001_materials as MAT
+    floor = MAT.NORMAL_STRENGTH.get("floor_oak",
+                                    MAT.NORMAL_STRENGTH.get("wood_floor", 0.8))
+    for key in ("veneer_fascia", "veneer_pier", "veneer_altar", "cavity"):
+        got = MAT.NORMAL_STRENGTH.get(key)
+        assert got is not None, f"{key} falls back to the floor's plank relief"
+        assert got <= floor / 2.0, (
+            f"{key} relief {got} is not clearly below the floor's {floor} — "
+            f"a cabinet panel showing plank bevels reads as flooring")
