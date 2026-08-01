@@ -190,10 +190,9 @@
    }
   ],
   "_unavailable": [
-   "statuary (3 seated figures: centre on the box top at x 205 z 882, flanking on the pedestals at x -473 / 599 z 645)",
-   "lily florals (in both vases)"
+   "statuary (3 seated figures: centre on the box top at x 205 z 882, flanking on the pedestals at x -473 / 599 z 645)"
   ],
-  "_unavailable_why": "(ข) says organics come from the CC0/PD pool at zero baht. The pool holds 13 models — furniture, three vases and one broadleaf plant — and no religious statuary and no lily floral. Hand-modelling a Buddha image was REFUSED rather than attempted: (ข)'s own wording is 'religious statuary used respectfully as-is', and a crude hand-built figure would be both bad work and disrespectful of the subject. Their measured positions are recorded above so the moment an asset exists it drops straight in. This is the (ข) decision's first live case answering itself: the assumption was that CC0 would supply the organics, and the first real test found the pool empty for exactly the two classes that carry the room's meaning.",
+  "_unavailable_why": "REVISED 2026-08-01, and the revision matters more than the conclusion. Round 5 wrote 'the pool holds 13 models' -- 13 was the LOCAL CACHE under assets/shared/cc0/models, not the pool. The real Poly Haven pool is 521 models and was searched exhaustively: its only flowers are Namaqualand field flowers and ground cover (celandine, dandelion, gazania, ursinia, periwinkle -- no cut stem, no arrangement) and its only figures are a gothic statue, a marble bust, a horse and three bronze sea animals. So the CONCLUSION survives on the full pool while the EVIDENCE was a cache miss read as a source gap -- the same shape as a vault search run in the wrong language. FLORALS ARE NOW BUILT (see _floral): (b)'s refusal was about religious statuary 'used respectfully as-is', and cut flowers are ordinary props that reasoning never covered. THE FIGURES REMAIN UNBUILT and that refusal stands. What it exposes is a STUDIO capability gap rather than a TRN-001 defect: every Thai residential job with a prayer room needs this asset class and a zero-baht CC0 pool does not supply it. That is a procurement question for the owner, stated as a fact and not proposed as a purchase.",
   "_step_depth_conflict": "UNRESOLVED, for the gate. Two direct measurements disagree about the step's depth: the signed spec value is 311 mm (VP-fitted, 0.4 px residuals, and the basis of the owner's own base-reveal correction), but the vase's base pixel only lands on the step top if it reaches y=-419. The landmark fit cannot settle it — swept 280-560 mm the step_top pair's error moves only 41.4 to 45.0 px and stays ~40 px throughout, i.e. FLAT, which by this project's own rule means unconstrained by the landmarks and answerable only by a direct probe. Note also that step_top_left/right are the two WORST-fitting landmarks in the set (47.1 and 56.5 px), so the step is the least-settled element in the model. NOT changed unilaterally: the depth is a signed, owner-corrected number.",
   "_vases_are_a_symmetric_pair": "OWNER 2026-07-31, twice: 'แจกันทำไมไปตั้งตรงนั้น' then 'คำเดิม มันวางไม่สมมาตร'. He was right both times and the second word was the one that solved it. SYMMETRY IS A CONSTRAINT, not a complaint: a symmetric pair standing on one surface has a single unknown — how far forward the pair sits — so the two measured pixels over-determine it and the answer can be SOLVED rather than guessed. Solved on the horizontal pixel alone, because contact shadow displaces v and not u, which is why three earlier attempts using the blob's BOTTOM all disagreed with each other. At y=-145 the two offsets about the box come out 921.6 and 920.1 mm — 1.6 mm apart — with both bases on the step top and vase_L clearing pedestal_L by 29 mm. Every prior attempt (x kept and y clamped; y fixed at the step edge; a 26 px displacement to dodge the pedestal) was me solving for two unknowns with one equation and then patching the residue. Stored as ONE offset mirrored about the centre box — the same relationship the owner's own pedestal correction established — so it cannot drift apart again by editing one side.",
   "vase_pair": {
@@ -202,6 +201,26 @@
    "z_mm": 455.0,
    "height_L_mm": 231.0,
    "height_R_mm": 214.0
+  },
+  "_floral": "2026-08-01. MEASURED BY CHROMA, not placed by eye: this is a neutral wood/white/gold room, so a magenta mask (sat>0.28, R>G, B>G) finds the two sprays and nothing else -- the gold figures are warm (B<G) and never enter it. The blobs were back-projected onto the vase plane y=-145 that the symmetric-pair solve already established, and the read CONTROLS on a value it already knew: each spray's lowest petal lands within 27 mm of its own vase rim (-27.3 L, -3.3 R). The lean is stored PER SIDE as measured (+20.0 and +18.4 mm, both toward +x) and is deliberately NOT mirrored -- the vases are a joinery pair and mirror; two hand-arranged bunches are not, and mirroring them would be the model asserting a symmetry the image denies. ACCEPTANCE TEST, which outranks the silhouette: inside its own bounding box the target's spray is 34.5% (L) / 42.9% (R) petal with 45-53% of the wall still showing through. A spray that reads as a solid ball is wrong even when its outline is right.",
+  "floral_pair": {
+   "L": {
+    "width_mm": 269.7,
+    "height_mm": 241.5,
+    "lean_x_mm": 20.0,
+    "seed": 11,
+    "flowers": 9,
+    "buds": 5
+   },
+   "R": {
+    "width_mm": 204.3,
+    "height_mm": 219.5,
+    "lean_x_mm": 18.4,
+    "seed": 23,
+    "flowers": 8,
+    "buds": 4
+   },
+   "_envelope": "REVERTED, and the reason is worth more than the number. The spray looked 30% too small, so the envelope was scaled 1.36x -- and it was never too small. Extent was being measured with a mask keyed on absolute chroma AND absolute brightness (sat>0.28 and max>0.05), so darkening the petals to fix their COLOUR dropped pixels out of the mask and the object appeared to shrink by 30% while its geometry never moved. TWO METRICS THAT SHARE A THRESHOLD ARE NOT TWO MEASUREMENTS. Re-measured with a mask keyed on distance from the local wall colour instead, the built spray was already 168x217 px against the target's 172x218 (left) and 117x182 against 114x205 (right). So width/height here are the MEASURED petal extent after all, and the generator fills its envelope more completely than the first estimate assumed."
   }
  },
  "camera": {

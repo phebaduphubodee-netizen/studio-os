@@ -306,6 +306,35 @@ PALETTE = {
     "vase_dark":    ((0.035, 0.030, 0.030), 0.22, 0.0, None, 0.0),
     "bronze_dark":  ((0.35, 0.27, 0.16), 0.38, 1.0, None, 0.0),
     "wax_white":    ((0.86, 0.84, 0.79), 0.55, 0.0, None, 0.0),
+    # THE LILIES, and the assumption their albedo rests on, stated rather than
+    # hidden. What is measured off the target is what the petals RENDER at
+    # (linear 0.252/0.083/0.101 left, 0.302/0.101/0.124 right), and an observed
+    # value is not an albedo — round 3 paid for exactly that when it backed the
+    # floor out to 0.72 by dividing by a white wall. The conversion used here is
+    # the same frame's own white paint: albedo 0.80 renders at 0.464, i.e. this
+    # room returns ~0.58 of albedo on a camera-facing surface at wall height, so
+    # the petals' observed mean 0.277/0.092/0.112 back-converts to roughly
+    # 0.48/0.16/0.19. DECLARED ASSUMPTION: the sprays stand 300 mm forward of the
+    # wall and 300 mm higher, so their illuminance is not identical to it — if
+    # the rendered petals come back wrong, this line is the first suspect and the
+    # ratio is the thing to re-derive, not the colour.
+    # CORRECTED BY THE RENDER, and the correction is the lesson. The wall-based
+    # back-conversion above assumed the sprays receive the wall's illuminance;
+    # they receive 2.2x more (free-standing, thin double-sided petals catching
+    # light from every side), so albedo 0.478/0.158/0.193 rendered at
+    # 0.606/0.361/0.370 against a target of 0.282/0.094/0.115 -- twice too
+    # bright AND desaturated (R/G 1.63 where the target is 3.00). Re-derived
+    # per channel from the frame itself, which is the only illuminance model
+    # that is not an assumption: new = old x target_observed / our_observed.
+    # SECOND ITERATION, and the number that matters is the EXPONENT. Dropping
+    # albedo by 2.15x moved the rendered petal by only 1.30x, i.e. the response
+    # goes as albedo^0.35 — AgX has a shoulder and these petals sit well up it,
+    # so a linear correction under-shoots every time and would have been re-tried
+    # forever. Solved on the measured exponent instead: to fall the remaining
+    # 1.65x needs albedo x 0.235, taken at ~0.30 as a bracket rather than a
+    # solve, because one exponent from two points is a slope, not a law.
+    "lily_pink":    ((0.067, 0.012, 0.018), 0.52, 0.0, None, 0.0),
+    "stem_green":   ((0.048, 0.072, 0.019), 0.48, 0.0, None, 0.0),
 }
 
 # emission strength (W/m^2-ish) for the materials that are light sources
