@@ -233,33 +233,39 @@
     "x_mm": 16.8,
     "y_mm": -142.5,
     "z_mm": 864.0,
-    "height_mm": 373.0,
+    "height_mm": 296.5,
     "mirror": false,
     "subsurf": 0,
-    "slug": "th_a",
-    "z_keep": 0.38
+    "slug": "th_f",
+    "z_keep": 0.0,
+    "use_our_material": true,
+    "base_h_mm": 76.5
    },
    {
     "name": "figure_L",
     "x_mm": -830,
     "y_mm": -142.5,
     "z_mm": 645.0,
-    "height_mm": 235.0,
+    "height_mm": 186.8,
     "mirror": false,
     "subsurf": 0,
-    "slug": "th_a",
-    "z_keep": 0.38
+    "slug": "th_f",
+    "z_keep": 0.0,
+    "use_our_material": true,
+    "base_h_mm": 48.2
    },
    {
     "name": "figure_R",
     "x_mm": 598,
     "y_mm": -142.5,
     "z_mm": 645.0,
-    "height_mm": 260.0,
+    "height_mm": 206.7,
     "mirror": false,
     "subsurf": 0,
-    "slug": "th_a",
-    "z_keep": 0.38
+    "slug": "th_f",
+    "z_keep": 0.0,
+    "use_our_material": true,
+    "base_h_mm": 53.3
    }
   ],
   "_subsurf": "TESTED 2026-08-01 AND NOT SHIPPED, kept spec-gated at 0 like the cove was, because the mechanism is sound and the measurement that asked for it still stands. A probe found every organic-modelling tool in Blender reachable from the DATA API alone, deterministic, in milliseconds — and this figure goes 759 faces -> 12,176 in 41 ms with its 3 hand-made n-gons removed, which the export law forbids anyway. The 2026-07-30 ground-truth study had measured our files at SUBSURF 0 against pro files that use it. All of that is true and NONE of it was worth shipping: applied to everything it ROUNDED AWAY the stepped pedestal's ledges, which is the exact thing flat shading had just been introduced to save; restricted to the cast body it changed nothing visible at all, because the body is already smooth-shaded at 24 segments per ring and at 200 px on screen there was never any faceting to remove. 16x the geometry for zero. THE LESSON IS THE REASON: subdivision smooths what EXISTS and cannot add what was never there. Our figure does not read wrong because it is faceted — it reads wrong because it has no face, no robe folds and no crossed legs, and no subdivision level produces those. The bottleneck was never the tool's smoothness, it was the PARAMETERISATION."

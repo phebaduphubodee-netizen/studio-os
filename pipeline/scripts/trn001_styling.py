@@ -578,6 +578,40 @@ def floral_spray(origin, width_mm, height_mm, seed=1, flowers=7, buds=4):
 
 
 
+
+# An acquired figure must be a BODY, not a relief. Two numbers, because either
+# alone can be argued with: how deep it is against how wide, and whether that
+# depth CHANGES down its height. A real seated figure is nearly as deep as it is
+# wide at the lap and narrows toward the head; an extruded outline holds one
+# depth all the way up. th_a measured 0.29 and 37% and shipped anyway, because
+# it was only ever looked at from the front.
+FIGURE_MIN_DEPTH_RATIO = 0.45
+FIGURE_MIN_DEPTH_VARIATION = 0.25
+
+
+def flatness(points, bands=10):
+    """(depth/width, depth variation) for a world-space point cloud. PURE."""
+    if len(points) < 8:
+        return 0.0, 0.0
+    z0 = min(p[2] for p in points)
+    z1 = max(p[2] for p in points)
+    if z1 - z0 < 1e-9:
+        return 0.0, 0.0
+    depths, widths = [], []
+    for i in range(bands):
+        a = z0 + (z1 - z0) * i / bands
+        b = z0 + (z1 - z0) * (i + 1) / bands
+        band = [p for p in points if a <= p[2] < b]
+        if len(band) < 4:
+            continue
+        widths.append(max(p[0] for p in band) - min(p[0] for p in band))
+        depths.append(max(p[1] for p in band) - min(p[1] for p in band))
+    if not depths or max(depths) <= 0 or max(widths) <= 0:
+        return 0.0, 0.0
+    return (max(depths) / max(widths),
+            (max(depths) - min(depths)) / max(depths))
+
+
 def _asset_figure_path(slug):
     """A 3D Warehouse model in the (gitignored, non-CC0) warehouse cache."""
     return os.path.join(REPO, "assets", "shared", "warehouse", slug, f"{slug}.glb")
@@ -633,6 +667,19 @@ def build_asset_figure(p, materials=None):
     if not live:
         print(f"  STYLING: {p['name']} z_keep cut removed everything — SKIPPED")
         return objs
+
+    # IS IT A BODY OR A COIN? Asserted on the CUT geometry, because a relief
+    # mounted on a solid pedestal would pass the check on the whole model.
+    pts = [tuple(o.matrix_world @ v.co) for o in live for v in o.data.vertices]
+    ratio, variation = flatness(pts)
+    if ratio < FIGURE_MIN_DEPTH_RATIO or variation < FIGURE_MIN_DEPTH_VARIATION:
+        raise SystemExit(
+            f"STYLING: {p['name']} <- {p['slug']} is FLAT — depth/width "
+            f"{ratio:.2f} (min {FIGURE_MIN_DEPTH_RATIO}) and depth varies "
+            f"{variation:.0%} down its height (min "
+            f"{FIGURE_MIN_DEPTH_VARIATION:.0%}). That is an extruded outline "
+            f"with a photograph on it, not a statue, and it reads as a coin "
+            f"from every angle except the one it was chosen from.")
     zs = [(o.matrix_world @ v.co).z for o in live for v in o.data.vertices]
     xs = [(o.matrix_world @ v.co).x for o in live for v in o.data.vertices]
     ys = [(o.matrix_world @ v.co).y for o in live for v in o.data.vertices]
@@ -659,6 +706,13 @@ def build_asset_figure(p, materials=None):
                       r.location.z * k + tgt[2] - ctr[2] * k)
     for o in live:
         o.name = f"SM_TRN001_{p['name']}"
+        # An acquired asset may keep its own materials or wear ours. Ours is a
+        # MEASURED gilt (linear 0.85/0.63/0.26, metallic, roughness 0.18, read
+        # off the target's own figures); a downloaded photogrammetry texture
+        # carries someone else's lighting baked into it and fights this room's.
+        if p.get("use_our_material") and materials and p["material"] in materials:
+            o.data.materials.clear()
+            o.data.materials.append(materials[p["material"]])
 
     # ASSERT the scale rather than trust it (pipeline/CLAUDE.md)
     bpy.context.view_layer.update()
@@ -667,6 +721,32 @@ def build_asset_figure(p, materials=None):
     if abs(got - p["height_mm"]) > 2.0:
         raise SystemExit(f"STYLING: {p['name']} asked for {p['height_mm']:.0f}mm "
                          f"and got {got:.1f}mm — scale assertion FAILED")
+    # R8 CUTS BOTH WAYS. The figure is acquired because free form cannot be
+    # measured; its BASE is a stepped pedestal — boxes with ledges, recoverable
+    # from measurement — so the base is BUILT, from the same BASE_CANON the
+    # hand-built figure used. The reference shows the image standing on a gilt
+    # tiered base and this asset has none.
+    if p.get("base_h_mm"):
+        import bpy as _b
+        bh = float(p["base_h_mm"])
+        bx, by, bz = p["pos_mm"]
+        verts, faces_b = rect_loft(BASE_CANON, bx, by, bz, bh / 0.205)
+        keep = bz + bh
+        verts = [(x, y, min(z, keep)) for x, y, z in verts]
+        me = _b.data.meshes.new(f"SM_TRN001_{p['name']}_base")
+        me.from_pydata([(x * G.MM, y * G.MM, z * G.MM) for x, y, z in verts],
+                       [], faces_b)
+        me.validate()
+        if materials and p["material"] in materials:
+            me.materials.append(materials[p["material"]])
+        ob = _b.data.objects.new(f"SM_TRN001_{p['name']}_base", me)
+        col_ = _b.context.scene.collection
+        col_.objects.link(ob)
+        objs.append(ob)
+        # and the figure stands ON it, not through it
+        for r in roots:
+            r.location = (r.location.x, r.location.y, r.location.z + bh * G.MM)
+
     faces = sum(len(o.data.polygons) for o in live)
     print(f"  STYLING: {p['name']} <- warehouse/{p['slug']} native "
           f"{native_mm:.0f}mm -> {got:.0f}mm (x{k:.4f}), z_keep "
@@ -715,6 +795,8 @@ def plan(spec):
         out.append({"kind": "figure_asset" if fg.get("slug") else "figure",
                     "name": fg["name"], "slug": fg.get("slug"),
                     "z_keep": fg.get("z_keep", 0.0),
+                    "use_our_material": bool(fg.get("use_our_material")),
+                    "base_h_mm": fg.get("base_h_mm", 0.0),
                     "pos_mm": (fg["x_mm"], fg["y_mm"], fg["z_mm"]),
                     "height_mm": fg["height_mm"], "mirror": bool(fg.get("mirror")),
                     "subsurf": fg.get("subsurf", 0),
