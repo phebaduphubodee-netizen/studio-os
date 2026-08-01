@@ -148,6 +148,37 @@ def plan(spec):
     # camera side, does all three. That is an ordinary room opening — a door or a
     # window — and it is declared INFERRED, with its direction derived from the
     # frame rather than chosen.
+    # WALL-DIRECTED, and that word is the whole difference from the fill this
+    # lane already built and refuted. `_fill_refuted` records a big soft AREA
+    # standing off-frame on the camera side: it raised everything at once and
+    # FLATTENED the frame (p99/p1 50 -> 28 -> 15). The measurement that asks for
+    # this one is different in both sign and direction — our verticals run 0.78x
+    # of the target while our horizontals run 1.11x (ceiling) and 2.20x (far
+    # floor), and our wall's own top-to-bottom ramp is 1.81 against the target's
+    # 1.40, i.e. too bottom-heavy. A wash arriving from ABOVE, at the wall,
+    # raises verticals and flattens that ramp without feeding the horizontals,
+    # which no omnidirectional source can do.
+    #
+    # It hides behind the header band (the header stands 100 mm off the wall and
+    # its soffit is at z=2439), so it is a cove a joiner could actually build,
+    # not a light floating in the room.
+    cv = lt.get("cove")
+    if cv:
+        out.append({
+            "name": "cove_wallwash",
+            "kind": "AREA",
+            "pos": (float(cv["x_mm"]), float(cv["y_mm"]), float(cv["z_mm"])),
+            "aim": (float(cv.get("aim_x_mm", cv["x_mm"])),
+                    float(cv.get("aim_y_mm", 0.0)),
+                    float(cv.get("aim_z_mm", 1200.0))),
+            "size_mm": (float(cv.get("w_mm", 3400.0)), float(cv.get("h_mm", 60.0))),
+            "watt": float(cv.get("watt", 40.0)),
+            "kelvin": float(cv.get("kelvin", lt.get("kelvin", 3800.0))),
+            "hidden": bool(cv.get("hidden", True)),
+            "ies": None, "ies_norm": 1.0, "ies_norm_from": "-",
+            "measured": False,
+        })
+
     fl = lt.get("fill")
     if fl:
         out.append({
@@ -268,6 +299,11 @@ def build_lights(spec):
         elif f["kind"] == "AREA":
             ld.shape = "RECTANGLE"
             ld.size, ld.size_y = (s * G.MM for s in f["size_mm"])
+            # a concealed cove is concealed BY GEOMETRY here (it sits behind the
+            # header's own soffit); the flag is a belt on top of that, so a small
+            # spec change can never turn the source itself into a visible bar
+            if f.get("hidden") and hasattr(ld, "visible_camera"):
+                ld.visible_camera = False
         p = ies_path(f["ies"])
         em = None
         if p and os.path.exists(p):
