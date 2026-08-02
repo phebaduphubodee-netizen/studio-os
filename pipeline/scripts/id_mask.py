@@ -47,6 +47,8 @@ def _emission(name, srgb255):
 
 
 def build_mask(out_png, filters):
+    # BOTH HALVES RESOLVE THE PATH ONCE, TOGETHER. See value_probe.mask_paths.
+    out_png, out_json = _vp.mask_paths(out_png)
     targets = sorted((o for o in bpy.data.objects
                       if o.type == 'MESH' and any(f in o.name for f in filters)),
                      key=lambda o: o.name)
@@ -117,7 +119,7 @@ def build_mask(out_png, filters):
                 scn.render.resolution_percentage],
         "meshes": len([o for o in bpy.data.objects if o.type == 'MESH']),
     }
-    with open(os.path.splitext(out_png)[0] + ".json", "w", encoding="utf-8") as fh:
+    with open(out_json, "w", encoding="utf-8") as fh:
         json.dump({"source": src, "ids": {str(k): v for k, v in names.items()}},
                   fh, indent=1)
     return names

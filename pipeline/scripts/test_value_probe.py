@@ -10,9 +10,34 @@ module exists is that a hand-drawn region probe reported four different objects 
 
 Pure python — no bpy, no Blender.
 """
+import os
+
 import pytest
 
 import value_probe as vp
+
+
+# --------------------------------------------------------------------------- where it writes
+
+def test_the_mask_and_its_sidecar_land_in_the_same_directory():
+    """The defect this pins, found 2026-08-02: the PNG went to C:\\_private\\ and the
+    JSON to the repo, because Blender and Python disagree about a drive-less relative
+    path on Windows. A sidecar whose job is to certify the image beside it cannot do
+    that from a different directory."""
+    png, js = vp.mask_paths(os.path.join("_private", "x", "mask.png"))
+    assert os.path.dirname(png) == os.path.dirname(js)
+    assert os.path.splitext(js)[1] == ".json"
+
+
+def test_a_mask_path_is_absolute_so_two_writers_cannot_disagree_about_here():
+    png, js = vp.mask_paths(os.path.join("_private", "x", "mask.png"))
+    assert os.path.isabs(png) and os.path.isabs(js)
+
+
+def test_an_already_absolute_path_is_left_where_the_caller_put_it():
+    given = os.path.abspath(os.path.join("_private", "x", "mask.png"))
+    png, _ = vp.mask_paths(given)
+    assert png == given
 
 
 # --------------------------------------------------------------------------- palette

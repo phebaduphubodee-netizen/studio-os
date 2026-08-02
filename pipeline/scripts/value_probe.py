@@ -26,6 +26,27 @@ not a physics mistake: this module measures what the EYE RANKS in the delivered 
 which is the display-encoded value. Linear-luminance averaging would over-weight the
 highlights and report a ladder no viewer sees.
 """
+import os
+
+# --------------------------------------------------------------------------- where it writes
+
+
+def mask_paths(out_png):
+    """(png, json) for a mask, both ABSOLUTE and both in the SAME directory.
+
+    2026-08-02: `id_mask.py` wrote its two halves with two different writers —
+    `scene.render.filepath = out_png` for the image and `open(...)` for the sidecar —
+    and on Windows those disagree about what a relative path means. Python resolves
+    against the CWD; Blender hands a drive-less path to the OS, which resolves it
+    against the CURRENT DRIVE ROOT. So `_private/…/mask.png` landed in `C:\\_private\\`
+    while `_private/…/mask.json` landed in the repo, the run printed OK, and a frame
+    derived from a client scene sat outside every `.gitignore` that was written to
+    contain it. One function, two writers, two notions of "here" — the sidecar's whole
+    job is to certify the image beside it, which it cannot do from another directory.
+    """
+    png = os.path.abspath(out_png)
+    return png, os.path.splitext(png)[0] + ".json"
+
 
 # --------------------------------------------------------------------------- palette
 
