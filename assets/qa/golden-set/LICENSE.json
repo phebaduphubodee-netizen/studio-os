@@ -1,0 +1,8 @@
+{
+ "license_id": "original",
+ "source": "this studio",
+ "scope": "this directory and everything below it",
+ "redistributable": true,
+ "why_this_file_exists": "The QA golden set is our own rendered output, so redistribution is ours to grant. Declared explicitly rather than assumed, because scripts/asset_license.py fails CLOSED — an asset that declares nothing is a violation, and 'obviously ours' is precisely the assumption a licence audit exists to stop taking on trust.",
+ "note": "If a golden-set image is ever replaced by, or composited with, third-party imagery, this declaration stops being true and a SOURCE.json must be placed beside that file."
+}

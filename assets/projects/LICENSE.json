@@ -1,0 +1,9 @@
+{
+ "license_id": "original",
+ "source": "this studio",
+ "scope": "this directory and everything below it — per-project render output, maps and experiment artifacts",
+ "redistributable": true,
+ "why_this_file_exists": "Project render output is ours. Declared explicitly because scripts/asset_license.py fails closed on an undeclared asset.",
+ "note": "A RENDER of a scene containing a non-redistributable model is still ours to hand over — that is exactly what the Trimble General Model License grants and what docs/LICENSING.md's 'deliver the assembled scene only' rule is built on. What may never be committed or handed over is the MODEL. So this declaration covers images and does NOT license any mesh that lands here: a .glb or .blend under assets/projects/ needs its own SOURCE.json, and if its licence forbids redistribution it does not belong in git at all.",
+ "privacy": "Client-identifying material is governed by .claude/rules/client-privacy.md, which is a separate question from licensing and is not relaxed by this file."
+}
