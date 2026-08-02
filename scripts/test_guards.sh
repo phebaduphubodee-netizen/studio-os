@@ -230,5 +230,30 @@ else
   echo "                   failure is now a SILENT UNSCREENED ALLOW. Restore it."; FAIL=$((FAIL+1))
 fi
 
+echo "== asset_license.py : no non-redistributable mesh may reach a commit =="
+# NEW CLASS, and it names what the other guards miss (R6): guard_paths/guard_bash screen
+# PATHS and COMMANDS. Neither can answer "may this file be redistributed", which became a
+# live question on 2026-08-01 when the owner cancelled the "0-baht + CC0/public-domain only"
+# sourcing clause. From that day the tree holds several licences at once and the answer
+# differs per asset. Fails CLOSED: an asset that declares nothing is a violation.
+if python3 "$ROOT/scripts/asset_license.py" >/dev/null 2>&1; then
+  echo "  LICENCE ok : every tracked asset declares a redistributable licence"; PASS=$((PASS+1))
+else
+  echo "  !! LICENCE VIOLATION: a tracked asset is undeclared or may not be redistributed."
+  echo "                       Run: python3 scripts/asset_license.py"; FAIL=$((FAIL+1))
+fi
+# The audit is the SECOND line. The first is one .gitignore line that nothing else pinned.
+if git -C "$ROOT" check-ignore -q assets/shared/warehouse/probe.glb; then
+  echo "  CACHE ok   : the non-redistributable warehouse cache is still gitignored"; PASS=$((PASS+1))
+else
+  echo "  !! CACHE EXPOSED: assets/shared/warehouse/ is no longer gitignored -- a Trimble-GML"
+  echo "                   mesh can now be committed. Restore .gitignore."; FAIL=$((FAIL+1))
+fi
+if python3 -m pytest "$ROOT/scripts/test_asset_license.py" -q >/dev/null 2>&1; then
+  echo "  PINS ok    : asset_license self-pins hold (incl. the real-warehouse catch case)"; PASS=$((PASS+1))
+else
+  echo "  !! PINS BROKEN: scripts/test_asset_license.py fails -- the licence guard can lie"; FAIL=$((FAIL+1))
+fi
+
 echo; echo "PASS=$PASS FAIL=$FAIL"
 [ $FAIL -eq 0 ] && echo "M0.1 guard test: ALL GREEN" || { echo "M0.1 guard test: FAILURES PRESENT"; exit 1; }
