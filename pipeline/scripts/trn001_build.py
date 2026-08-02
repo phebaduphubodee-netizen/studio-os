@@ -325,7 +325,7 @@ def main():
     if os.environ.get("TRN001_GEOCHK"):
         import mathutils
         for ob in list(bpy.data.objects):
-            if not ob.name.startswith("SM_TRN001_figure_centre"):
+            if not ob.name.startswith("SM_TRN001_figure"):
                 continue
             lo = mathutils.Vector((1e9, 1e9, 1e9)); hi = mathutils.Vector((-1e9, -1e9, -1e9))
             for c in ob.bound_box:
@@ -333,7 +333,8 @@ def main():
                 lo = mathutils.Vector((min(lo[i], w[i]) for i in range(3)))
                 hi = mathutils.Vector((max(hi[i], w[i]) for i in range(3)))
             d = (hi - lo) * 1000.0
-            print(f"GEOCHK {ob.name[:34]:36s} w {d.x:7.1f}  h {d.z:7.1f} mm")
+            print(f"GEOCHK {ob.name[:34]:36s} w {d.x:7.1f}  h {d.z:7.1f} mm "
+                  f"centre_x {(lo.x + hi.x) / 2 * 1000:9.1f}")
     cam_ob = build_camera(spec["camera"])
     build_light(spec)
 
