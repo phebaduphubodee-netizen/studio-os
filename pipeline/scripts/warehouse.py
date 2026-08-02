@@ -104,6 +104,10 @@ def fetch(entity_id, slug=None, fmt="glb"):
     with open(os.path.join(base, "SOURCE.json"), "w", encoding="utf-8") as f:
         json.dump({"source": "3dwarehouse.sketchup.com", "entity_id": entity_id,
                    "format": fmt, "bytes": size,
+                   # machine-readable FIRST: scripts/asset_license.py reads this
+                   # id, and matching an English sentence is a fallback for the
+                   # models fetched before the id existed, not the contract
+                   "license_id": "trimble-gml",
                    "license": "Trimble General Model License — use yes, "
                               "redistribute as a model no"}, f, indent=1)
     dest = os.path.join(base, f"{slug or entity_id}.{fmt}")

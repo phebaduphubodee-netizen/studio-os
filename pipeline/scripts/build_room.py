@@ -1622,9 +1622,14 @@ def _dress_scene(spec):
     LANE D (round-6, approved order; C2 ×2: "ห้องอ่านเป็นยังไม่มีใครย้ายเข้า" while the
     reference styles its bench with a magazine): the SUITE branch dresses the foot
     bench — a leaning book pair + a REAL simulated throw over the far end. Restraint
-    kept deliberately (the reference's own density); ฿0/CC0 law: everything
-    procedural; no-defect-object law: nothing torn, nothing worn. The throw wears
-    the DUVET's material handle — no new colour enters the signed palette."""
+    kept deliberately (the reference's own density); everything here is procedural;
+    no-defect-object law: nothing torn, nothing worn. The throw wears the DUVET's
+    material handle — no new colour enters the signed palette.
+
+    "Everything procedural" was a ฿0/CC0 CONSTRAINT when this was written; the owner
+    cancelled that clause 2026-08-01, so it is now a CHOICE — and one worth re-testing
+    against R8, which says a book and a folded throw are free-form and belong on the
+    acquire side. Not changed here: this lane is PRJ-2026-002 and closed."""
     placed = 0
     items = spec.get("items", [])
     bench = next((it for it in items if it.get("kind") == "bench"), None)

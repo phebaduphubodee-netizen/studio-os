@@ -205,15 +205,54 @@ it placed because the log reports what was ASKED for — one vase printed
 
 ## Decisions
 
-- **(ข) CC0 scanned assets — เคาะ 2026-07-31 (owner delegated)**: styling-tier
-  organic objects (statuary, florals, candlesticks) in this lane USE external
-  CC0/PD assets; millwork/joinery stays build-not-buy (the build IS the
-  learning; the ground-truth study measured every pro file leaning on assets
-  for organics). Rules: ฿0 + CC0/public-domain only (asset-lever law upheld);
-  generic search terms only (privacy — never client context in queries); scale
-  ASSERTED in mm on every ingest before the spec consumes it (pipeline law);
-  religious statuary used respectfully as-is. First live case: TRN-001 Buddha
-  figures + lilies at the styling rung.
+- **(ข) Scanned/acquired assets — เคาะ 2026-07-31 (owner delegated), AMENDED
+  2026-08-01 (owner order, below)**: styling-tier organic objects (statuary,
+  florals, candlesticks) in this lane USE external assets; millwork/joinery
+  stays build-not-buy (the build IS the learning; the ground-truth study
+  measured every pro file leaning on assets for organics). Rules: **any licence
+  that permits commercial use in our renders** (see the amendment for what
+  replaced "฿0 + CC0/public-domain only"); generic search terms only (privacy —
+  never client context in queries); scale ASSERTED in mm on every ingest before
+  the spec consumes it (pipeline law); religious statuary used respectfully
+  as-is. First live case: TRN-001 Buddha figures + lilies at the styling rung.
+
+- **(ข-แก้) THE ฿0 + CC0-ONLY CLAUSE IS CANCELLED — owner order 2026-08-01,
+  *"฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้"***. It was written on
+  2026-07-12 to close a *paid-library* question, and by 2026-08-01 it was
+  fencing out the best FREE source available (3D Warehouse, Trimble General
+  Model License: free to download and use commercially, not public domain, not
+  redistributable as models). It had also become the narrowest rule in the repo
+  about its own subject — `docs/LICENSING.md` already whitelists 3D Warehouse
+  as a Combined-Work source, and `warehouse.py` + `.gitignore:50` already
+  handle it correctly. The clause was the only thing still saying no.
+
+  **What the sourcing rule IS now:** any source whose licence permits
+  commercial use of the RENDER. That admits CC0/PD, Trimble GML (3D Warehouse),
+  CC-BY with attribution recorded, and paid royalty-free libraries.
+
+  **What did NOT change, because it is licence text and client-liability law
+  rather than a studio preference** (`docs/LICENSING.md`, unchanged and still
+  binding):
+  1. A model that may not be redistributed **never enters version control** —
+     it lives in a gitignored cache with its `SOURCE.json` provenance, and the
+     fetch is reproducible from the entity id instead. Already wired.
+  2. The client receives the **assembled room scene** only. Never a standalone
+     model, never the asset bundle (GML §2.4 / §2.6 aggregation ban).
+  3. **Scale is ASSERTED on every ingest**, never assumed (pipeline/CLAUDE.md).
+     A plausible-but-wrong-scale model is the exact failure this studio sells
+     against, and user-uploaded warehouse content carries no scale guarantee.
+  4. **Trade dress is not a licence question.** A permissive licence on a model
+     that copies a named product's design clears the model, not the design.
+  5. **Money is still the owner's call, per purchase.** ฿0 is no longer a RULE,
+     but a spend is an irreversible outward action and is never made without an
+     explicit go-ahead. What the cancellation buys immediately is the FREE
+     sources the old clause excluded — those need no decision at all.
+
+  **Reality check recorded with the amendment:** 13 warehouse models were
+  already fetched and rendered on 2026-08-01 (rounds 13–17) under R8's
+  build-vs-acquire order, so this amendment makes the written rule match code
+  that was already correct — the standing "the file of record is not
+  automatically the file that runs" defect, wearing its licensing shape.
 
 Target profile (generic, committable): prayer-room built-in feature wall —
 backlit stone panel with warm edge halo, symmetric dark-wood open shelf

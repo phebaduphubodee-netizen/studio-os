@@ -4,6 +4,16 @@ Research wf_0246d7e9 (2026-06-30, with an adversarial license skeptic). The foun
 real money + liability exposure → these rules are binding, not advisory. **When in doubt,
 do NOT ship the model.**
 
+> **2026-08-01 — nothing in this file changed, and that is the point.** The owner cancelled the
+> separate "฿0 + CC0/public-domain only" SOURCING clause (`docs/DECISIONS-render-assets.md`, top
+> entry), which had been narrower than this file: the table below already whitelists 3D Warehouse.
+> The sourcing rule is now *any licence permitting commercial use of the render*. **Every DELIVERY
+> rule here survives it unchanged** — Combined-Work-scene-only, no standalone model, no aggregation,
+> no redistribution of a non-redistributable mesh (which is why `assets/shared/warehouse/` is
+> gitignored), provenance recorded per asset, and the scale sanity-check. A wider sourcing rule makes
+> this file MORE load-bearing, not less: the repo now holds assets under several licences at once, so
+> "which licence is this one?" stops being rhetorical.
+
 ## The one rule that protects us
 **Deliver to a client ONLY the assembled ROOM SCENE** (`.skp` = shell + layout + multiple
 placed components + in-model dimensions = a "Combined Work" with substantial added content).

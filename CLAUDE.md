@@ -88,7 +88,18 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   it is the learning. NO → ACQUIRE; never hand-model free-form (figures, plants,
   cut flowers, drapery, upholstery, animals, food). Acquisition fails → a
   DECLARED GAP handed to the owner as a procurement decision, never a modelling
-  task. **Stop-loss:** max TWO shape iterations on a hand-built organic object; a
+  task. **WHERE to acquire (owner order 2026-08-01, "฿0 + CC0/public-domain
+  เท่านั้น ยกเลิกข้อนี้"): any source whose licence permits commercial use of the
+  RENDER** — CC0 (`assets.py`, Poly Haven, committable), 3D Warehouse
+  (`warehouse.py`, Trimble GML, gitignored cache, `.gitignore:50`), CC-BY with
+  attribution recorded, paid libraries. UNCHANGED and still binding, because it
+  is licence text not preference (`docs/LICENSING.md`): a non-redistributable
+  mesh never enters git; the client gets the assembled SCENE, never a standalone
+  model or the asset bundle; **scale is ASSERTED on every ingest**, never
+  assumed; trade dress is not cleared by a licence; and a SPEND is the owner's
+  call per purchase — the cancellation's immediate value is the FREE sources it
+  unfenced. Full record: `docs/DECISIONS-render-assets.md` top entry.
+  **Stop-loss:** max TWO shape iterations on a hand-built organic object; a
   third means the class was misclassified, not that the shape needs more tuning.
   Why it fails is structural, not taste: free form has no metric to iterate
   against, so I must invent the parameterisation first — and the parameterisation

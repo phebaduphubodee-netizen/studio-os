@@ -1,6 +1,87 @@
 # INTERIOR-AI — Render asset decision log
 
+## 2026-08-01 — OWNER ORDER: the "฿0 + CC0/public-domain only" clause is CANCELLED.
+Owner, verbatim: *"฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้"*. This **amends** the
+2026-07-12 entry below (decisions 2 and 3 of it). That entry's *analysis* stands and is not
+retracted — the asset lever really was measured and really was not the lever. What is cancelled
+is the **sourcing fence** it left behind.
+
+**Why it had to go, and it is not the reason it was written.** The clause was authored to close a
+question about **paid libraries** (Evermotion, a commission, BlenderKit). By 2026-08-01 its live
+effect was to fence out the best **free** source available — SketchUp 3D Warehouse, which a working
+designer named in one sentence when the owner asked, and which our 2026-07-01 asset-sourcing DR does
+not mention at all. It had also become the **narrowest rule in this repo about its own subject**:
+`docs/LICENSING.md` (the load-bearing, adversarially-researched licensing law) already whitelists 3D
+Warehouse as a Combined-Work source, `pipeline/scripts/warehouse.py` already fetches it into its own
+cache with a `LICENSE.txt` and per-model `SOURCE.json`, and `.gitignore:50` already keeps that cache
+out of git. Every other artifact in the repo had already accepted the source. This clause was the
+only thing still saying no.
+
+**THE SOURCING RULE, as of now:** *any source whose licence permits commercial use of the RENDER.*
+That admits CC0/public domain, **Trimble General Model License (3D Warehouse)**, CC-BY with the
+attribution recorded, and paid royalty-free libraries.
+
+**Five things this order does NOT touch**, because they are licence text and client-liability law
+rather than studio preference — `docs/LICENSING.md` is UNCHANGED and still binding:
+1. **Non-redistributable models never enter version control.** They live in a gitignored cache with
+   provenance; the fetch is reproducible from the entity id. Already wired, already correct.
+2. **The client receives the assembled ROOM SCENE only** — never a standalone model, never the asset
+   bundle (GML §2.4 no standalone resale, §2.6 no aggregation). This is the one rule that protects
+   the founder's real liability exposure and it predates and outranks this entry.
+3. **Scale is ASSERTED on every ingest, never assumed** (`pipeline/CLAUDE.md`). Warehouse content is
+   user-uploaded with no scale guarantee, and the SketchUp imperial trap turns a metre-authored model
+   into a 0.0254× one that still looks like a model. Also: the content is unfiltered — the "Thai
+   Buddha altar" hit is somebody's entire 13.9 × 17.3 m project at 2.1 M faces, so a model has to be
+   MINED for the part wanted, and the scale assertion is what tells you which one you got.
+4. **Trade dress is not a licence question.** A permissive licence on a model that copies a named
+   product's design clears the model, not the design (the 2026-07-12 note on the CC-BY "Michael
+   Amini / IKEA-style" assets was right about this and is carried forward untouched).
+5. **Money is the owner's call, per purchase.** ฿0 is no longer a RULE, but a spend is an
+   irreversible outward-facing action and is never made without an explicit go-ahead. What the
+   cancellation buys *immediately* is the free sources the clause excluded — those need no decision.
+
+**Status on disk when this was written:** 13 warehouse models already fetched and rendered
+(TRN-001 rounds 13–17, 2026-08-01) under R8's build-vs-acquire order. The code was already right;
+only the written rule was stale. That is the repo's standing *"the file of record is not
+automatically the file that runs"* defect wearing a licensing shape — logged, not excused.
+
+**Superseded claims — do not act on these lines in the entry below:** its decision 2 (*"Budget =
+฿0"*) and decision 3 (*"CC-BY = NOT accepted … CC0-only"*), and the sentence *"no free bed, no free
+bench, no free wardrobe. Period."* — that conclusion was true only over CC0, and the pool it was
+measured on (Poly Haven 521 / Sketchfab CC0) is no longer the whole pool.
+
+### Downstream debt this cancellation created — DECLARED, not silently left
+
+**Two passages in `knowledge/` now rest on a cancelled premise, and `knowledge/` is READ + CITE only
+(`knowledge/CLAUDE.md`) — corrections enter through `_inbox/`, never a hand-edit. Recorded here so
+the debt is visible rather than fixed illegally:**
+
+1. `knowledge/styles/style-and-asset-references-discord.md` **§3.8** — rules the 3D Warehouse /
+   3dzip / 3df.pro collection links REFERENCE-tier-only, on the grounds of "budget = ฿0 … CC0-only …
+   Geometry enters `assets/` only with a per-model licence verified CC0." **The grounds are gone.**
+   3D Warehouse geometry may now enter, into the gitignored non-redistributable cache. The rest of
+   §3.8 stands: *silence in a source is not a permission*, and a per-model licence check is still
+   required — it just no longer has to return CC0.
+2. **§4 (3DSKY bundles)** — its ⛔ DO-NOT-BUY/DO-NOT-INGEST call says explicitly that it *"rests on
+   the studio's standing asset decision alone, and that is enough: budget ฿0 … CC0-only."*
+   **That sole stated ground is cancelled.** The conclusion is very likely still right, but it must
+   now be re-derived on the independent half the same section already records: the bundles are
+   priced far below the rights-holder's own retail ⇒ licence **UNCLEAR / unverifiable**, and an
+   unverifiable licence fails the new rule too, which asks for a licence that PERMITS commercial use.
+   Until that re-derivation runs, treat §4 as **still ⛔** — a rule change is not a licence.
+
+**Also repaired in this pass** (line-number citations into this newest-first log, which the new top
+entry shifted by 55): `scripts/inbox_audit.py`, `docs/strategy.md` §F. Both were re-anchored to the
+**date heading** instead of a line number, because a log that grows at the top guarantees this rot.
+The four `knowledge/` citations (`:59`, `:61-62`, `:132`) are stale by the same amount and are part
+of the `_inbox/` debt above. One canonical spec's `license` field was corrected in place
+(`master-suite.CANONICAL.spec.json`) — the CC0 fact was true and is unchanged; only the rule
+citation beside it was wrong.
+
 ## 2026-07-12 — OWNER DECISION: NO ASSET SPEND. The asset lever was measured and it is not the lever.
+> **AMENDED 2026-08-01** — decisions 2 and 3 below are CANCELLED by the entry above. The measurement
+> and the refutation of the furniture-realism lever are NOT retracted and remain the reason not to
+> chase assets as a score lever. Read the top entry before acting on anything in this one.
 Closes the 2026-07-01 "furniture pack (DEFERRED)" entry below. 31-agent workflow: repo forensics +
 live-catalog CC0 hunt + adversarial license verification (21 claims survived, 3 refuted).
 

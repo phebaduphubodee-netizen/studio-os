@@ -4,9 +4,15 @@ Two layers as always (LAYER LAW): a PURE plan and lathe, importable under plain
 python, and a bpy half that materialises it.
 
 This is also the first live test of decision (ข) (qa/reproduction-curriculum.md
-§Decisions): styling-tier ORGANIC objects use external CC0/PD assets, while
+§Decisions): styling-tier ORGANIC objects use external ACQUIRED assets, while
 millwork stays build-not-buy, because the ground-truth study measured every pro
-file leaning on assets for organics. The rung splits accordingly:
+file leaning on assets for organics. The rung splits accordingly.
+
+(ข) read "฿0 + CC0/public-domain only" when this module was written, and the
+owner CANCELLED that clause on 2026-08-01 — the sourcing rule is now any licence
+permitting commercial use of the render, which is what let the figures below stop
+being a declared gap. The non-redistributable cache and the scale assertion are
+unchanged; see the top entry of docs/DECISIONS-render-assets.md.
 
   * VASES — BUILT, after the CC0 route was tried and failed in a way worth
     recording. `ceramic_vase_03` was picked because its bounding box (112 x 414,
@@ -22,10 +28,14 @@ file leaning on assets for organics. The rung splits accordingly:
   * CANDLESTICKS — built. A turned candlestick is a solid of revolution, which
     is millwork by another name, and building it is the learning (ข) reserves
     for millwork.
-  * STATUARY AND FLORALS — see `unavailable()`. The pool holds neither, and
-    hand-modelling a Buddha image would be both bad work and disrespectful of
-    the subject, which (ข) explicitly guards against with "used respectfully
-    as-is". Reported to the gate rather than faked.
+  * FLORALS — BUILT (round 10). Decision (ข)'s "used respectfully as-is" guard
+    covers religious statuary; cut flowers are ordinary props it never reached.
+  * STATUARY — ACQUIRED (round 13), from 3D Warehouse via `warehouse.py`. It sat
+    in `unavailable()` for eight rounds as a DECLARED GAP, correctly: the CC0
+    pool holds no religious statuary (521 models searched) and hand-modelling a
+    Buddha image would be both bad work and disrespectful of the subject. What
+    changed is the pool, not the refusal — R8 says acquire, and the ฿0/CC0 fence
+    that made acquisition impossible was cancelled 2026-08-01.
 
 EVERY position below is BACK-PROJECTED from the target through the solved
 camera, never placed by eye. The evidence they are right: the vase bases land
@@ -865,8 +875,15 @@ def plan(spec):
 
 
 def unavailable(spec):
-    """The (ข) classes the ฿0 CC0 pool cannot supply, reported rather than
-    faked. This is the decision's first live test answering itself."""
+    """The (ข) classes NO reachable pool can supply, reported rather than faked
+    — a DECLARED GAP handed to the owner as procurement, never quietly
+    hand-modelled (R8).
+
+    It read "the CC0 pool" until 2026-08-01, when the owner cancelled the
+    ฿0 + CC0-only clause and the figures this list was created to hold were
+    acquired from 3D Warehouse. The list is now empty and the channel stays:
+    naming what cannot be sourced is the point, and which pool was searched is
+    not part of that claim."""
     st = spec.get("styling") or {}
     return list(st.get("_unavailable", []))
 
@@ -876,8 +893,8 @@ def report(spec):
             f"({p['pos_mm'][0]:8.1f},{p['pos_mm'][1]:7.1f},{p['pos_mm'][2]:7.1f}) "
             f"h={p['height_mm']:.0f}mm" for p in plan(spec)]
     miss = unavailable(spec)
-    rows.append(f"  -> {len(plan(spec))} placed; {len(miss)} class(es) UNAVAILABLE "
-                f"in the CC0 pool: {', '.join(miss) if miss else 'none'}")
+    rows.append(f"  -> {len(plan(spec))} placed; {len(miss)} class(es) UNSOURCEABLE "
+                f"(declared gap): {', '.join(miss) if miss else 'none'}")
     return "\n".join(rows)
 
 

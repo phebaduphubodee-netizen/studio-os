@@ -1765,21 +1765,40 @@ to *tag* rooms already found geometrically — **never** to extract geometry or 
 as a standing engineering decision; the implementation home is a pipeline spec field + a gate, **not**
 `knowledge/`.
 
-### F. Asset-provenance schema — OPEN proposal, LOW priority, NOT adopted
+### F. Asset-provenance schema — OPEN proposal, priority RAISED 2026-08-01
 
 The **only** item in [A] that is safe to carry, because it is an engineering proposal rather than a
 fact claim ([A]:129-134): every library asset would carry `asset_ID`, `asset_Source` (vendor),
 `asset_License` (e.g. `CC0`, `Royalty-Free Commercial Use`), `asset_Category` (hierarchical, e.g.
 `FURNITURE > SEATING > SOFA`), and `asset_Style` tags. That is the natural hook for the
-sourceability / FF&E-signoff gates. **Priority is LOW and it is not adopted**: the owner's standing
-position is ฿0 on assets / CC0-only, and the paid-asset lane is **CLOSED-DECLINED**
-(`docs/DECISIONS-render-assets.md`, the 2026-07-12 owner decision at the top of that file).
+sourceability / FF&E-signoff gates.
 
-⚠️ **Nothing else in [A] may be promoted, anywhere.** Our own authority document states that this DR
-**fabricates its prices and licenses**: *"(DR fabricates these; real money at stake)"* —
-`docs/DECISIONS-render-assets.md:126`. [A]'s own banner ([A]:1-4) asserts "The source list + licenses
-below stay valid", which **directly contradicts that authority**. Treat [A] as provenance for the
-DECLINED decision and nothing more.
+~~**Priority is LOW and it is not adopted**: the owner's standing position is ฿0 on assets /
+CC0-only, and the paid-asset lane is **CLOSED-DECLINED**.~~ **That reason expired 2026-08-01**, when
+the owner cancelled the ฿0 + CC0-only clause (`docs/DECISIONS-render-assets.md`, top entry). The
+sourcing rule is now *any licence permitting commercial use of the render*, which means the repo will
+hold assets under **several different licences at once** — CC0 (redistributable, committed), Trimble
+GML (use yes, redistribute no, gitignored cache), possibly CC-BY (attribution obligation travels
+downstream). A per-asset `license` field stops being paperwork the moment more than one licence is in
+play, because the *handling* now differs per asset: whether it may be committed, whether the client
+handoff must stay a Combined Work, whether an attribution string has to ride along.
+
+**Partially implemented already, ahead of the schema**: `warehouse.py` writes a per-model
+`SOURCE.json` (`source`, `entity_id`, `format`, `bytes`, `license`) and the fetch is reproducible
+from the entity id. The gap is that the CC0 path (`assets.py` → `assets/shared/cc0/`) carries no
+license field at all — it is *implied* by the directory name, which is exactly the "convention
+asserted in five places and tested in none" shape. Promote when an asset from a third licence class
+lands, or when an FF&E signoff first has to answer "may this be handed over".
+
+⚠️ **Nothing else in [A] may be promoted, anywhere — and the 2026-08-01 cancellation does NOT
+rehabilitate it.** Our own authority document states that this DR **fabricates its prices and
+licenses**: *"(DR fabricates these; real money at stake)"* — `docs/DECISIONS-render-assets.md`,
+the **2026-07-01 furniture-pack entry** (cited by date, not line: that file is a newest-first log and
+the 2026-08-01 entry shifted every line citation into it by 55). [A]'s own banner ([A]:1-4) asserts
+"The source list + licenses below stay valid", which **directly contradicts that authority**. Treat
+[A] as provenance for the 2026-07-12 refutation and nothing more. A wider sourcing rule makes a DR
+that INVENTS licences more dangerous, not less — and its most conspicuous defect is an absence:
+**3D Warehouse, the source a working designer named first, appears in it nowhere.**
 
 ### G. Consciously DROPPED — written down so they cannot be re-imported
 
