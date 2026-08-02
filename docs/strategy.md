@@ -2601,3 +2601,41 @@ keeping: the vault already held the CLIENT-side gate vocabulary (4 sign-off
 gates); what was missing was the BUILD-side counterpart for a worker whose
 self-assessment is the least reliable signal in the system — the DR's composite
 scoring literally weights agent self-confidence at ~15%.
+
+---
+
+## 2026-08-01 — three owner observations, three standing rules
+
+Recorded here as pointers, not copies; each rule lives in the file that enforces it.
+
+**1. "ปั้น model ที่มีส่วนเว้าส่วนโค้ง มันมักจะเพี้ยนเสมอ ตั้งแต่ทำมาในทุก project."**
+He is right and the edge is clean: everything generated from MEASURABLE numbers
+landed in one cut (vase and candlestick by lathe from a probed profile, all
+millwork); everything FREE FORM cost five or six rounds each and still only
+approximated (garments 5 + 785 lines of hand-written cloth physics, the Buddha
+image 5, the lily spray 6). The dividing line is not difficulty — it is whether
+the shape is recoverable from measurement. A cabinet *is* its dimensions; a
+seated figure is several hundred correlated decisions that no measurement of a
+200 px render recovers, so the parameterisation has to be invented first and the
+invented parameterisation IS the guess. → **R8 / R8b in `CLAUDE.md`**, measured
+half in `docs/handbuilt-geometry-audit-2026-08-01.md`, probe staged at
+`knowledge/_inbox/2026-08-01-blender-organic-modelling-probe.md`.
+
+**2. "ผมไปถามเพื่อนที่เป็น designer ตัวจริงมา... 3D warehouse. ทำไมคุณไม่เคยไปหามา?"**
+One sentence from a practitioner beat a 154-line DR that does not mention the
+source at all — and whose prices and licences our own DISTILLATION-LEDGER had
+already recorded as fabricated. Our research ladder (vault → NLM → DR → probe)
+is made entirely of machines. → **practitioner rung added at the front of
+`CLAUDE.md` §Research lane.** Corollary worth more than the miss: our own files
+pointed at 3D Warehouse from three directions (the SketchUp interop law,
+`build_room.rb`, a SketchUp/3ds Max Discord corpus) and none was followed —
+when an outside answer surprises you, check whether the repo was already
+implying it.
+
+**3. "฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้."**
+The clause was written to close a question about PAID libraries and its live
+effect had become fencing out the best FREE source available. Cancelled and
+propagated; §F above was raised from LOW *because* of it. The DELIVERY law in
+`docs/LICENSING.md` is unchanged, and `scripts/asset_license.py` now enforces
+per-directory licence facts — because once several licences coexist under
+`assets/`, **a `.gitignore` protects a PATH, not a LICENCE**.
