@@ -814,14 +814,100 @@ def test_matcheck_refuses_a_narrow_patch_shared_between_frames():
 
 def test_every_narrow_matcheck_patch_is_located_per_frame():
     """Pinned as a property of the table, so a later edit cannot reintroduce a
-    shared box on a thin feature."""
+    shared box on a thin feature. BOTH axes — a 10 px-tall shared box is exactly
+    as blind as a 10 px-wide one, and this lane has already lost rounds to a
+    defect that hid in the axis nothing measured."""
     import trn001_matcheck as MC
 
     for name, spec in MC.PATCHES.items():
         ob, tb = MC._boxes(spec)
-        if (ob[1] - ob[0]) < MC.NARROW_PX:
-            assert isinstance(spec, dict), f"{name} is narrow and must be per-frame"
-            assert ob != tb, f"{name} gives identical boxes — locate it in each frame"
+        for axis, size in (("wide", ob[1] - ob[0]), ("tall", ob[3] - ob[2])):
+            if size < MC.NARROW_PX:
+                assert isinstance(spec, dict), f"{name} is {axis} and must be per-frame"
+                assert ob != tb, f"{name} gives identical boxes — locate it in each frame"
+
+
+def _synthetic_mask(objects, w=2048, h=2048):
+    """An id-mask array where each named object owns the given column range over
+    the given rows. Encodes ids exactly the way id_mask.py renders them."""
+    import numpy as np
+    import value_probe as vp
+
+    m = np.zeros((h, w, 3), dtype=np.uint8)
+    names = {}
+    for i, (name, (u0, u1, v0, v1)) in enumerate(objects.items(), start=1):
+        names[i] = name
+        m[v0:v1, u0:u1] = vp.id_to_srgb(i)
+    return m, names
+
+
+def test_the_patch_auditor_refuses_a_box_sitting_on_an_edge_on_sliver():
+    """THE DEFECT THIS PINS, measured 2026-08-02. Two matcheck rows had been
+    reporting 2.50x and 0.95x as material findings. An id mask says what they were
+    sampling: `tower_R_sA` is 20 px wide on screen at this camera and
+    `tower_R_sB` is 17 px, because those panels are 18 mm thick and we see them
+    EDGE ON. The 2.50 was a sliver, not a veneer.
+
+    `_check_narrow` passed both, and was right to by its own logic: a 10 px box is
+    fine on a 400 px panel. It asks whether the BOX is narrow when the question is
+    whether the FEATURE is, and no box can answer that about itself. Only the
+    renderer knows which surface owns a pixel."""
+    import numpy as np
+    import trn001_matcheck as MC
+
+    mask, names = _synthetic_mask({
+        "sliver": (1685, 1705, 700, 900),      # the real measured extent of tower_R_sA
+        "wide_panel": (300, 1000, 700, 900),
+    })
+    ids = MC.decode_mask(mask)
+
+    rows = {r["patch"]: r for r in MC.audit_against_mask(
+        ids, names, patches={"on the sliver": (1686, 1696, 700, 900),
+                             "on the panel": (500, 600, 720, 880)})}
+
+    assert rows["on the sliver"]["object"] == "sliver"
+    assert not rows["on the sliver"]["ok"]
+    assert "sliver" in rows["on the sliver"]["why"]
+    # and the SAME box size on a wide surface is fine — the box was never the problem
+    assert rows["on the panel"]["ok"], rows["on the panel"]
+
+
+def test_the_patch_auditor_refuses_a_box_that_overhangs_its_object():
+    """The `ours` box for the outer stile ran u1946-1956 against a feature that
+    ends at u1954: two of its ten columns were off the object entirely, and the
+    row still reported a number."""
+    import trn001_matcheck as MC
+
+    mask, names = _synthetic_mask({"stile": (1938, 1955, 700, 900)})
+    ids = MC.decode_mask(mask)
+    r = MC.audit_against_mask(ids, names,
+                              patches={"overhanging": (1946, 1956, 700, 900)})[0]
+    assert not r["ok"]
+    assert r["margins"]["right"] < 0
+
+
+def test_the_patch_auditor_refuses_a_box_that_mixes_two_surfaces():
+    """A box spanning a boundary reports neither material, which is the round-5
+    failure in its original form."""
+    import trn001_matcheck as MC
+
+    mask, names = _synthetic_mask({"left": (0, 500, 0, 500), "right": (500, 1000, 0, 500)})
+    ids = MC.decode_mask(mask)
+    r = MC.audit_against_mask(ids, names, patches={"straddling": (400, 600, 100, 400)})[0]
+    assert not r["ok"] and r["why"] == "mixed surfaces"
+
+
+def test_the_mask_decoder_agrees_with_the_probes_own_encoder():
+    """matcheck decodes the palette itself rather than importing the numpy path,
+    so the two implementations are checked against each other rather than assumed
+    equal — the same rule test_value_probe applies to its own second decoder."""
+    import numpy as np
+    import trn001_matcheck as MC
+    import value_probe as vp
+
+    ids = [1, 2, 7, 43, vp.MAX_ID]
+    m = np.array([[vp.id_to_srgb(i) for i in ids]], dtype=np.uint8)
+    assert MC.decode_mask(m).tolist() == [ids]
 
 
 def test_the_two_veneer_species_stay_distinguishable():
