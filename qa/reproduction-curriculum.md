@@ -51,6 +51,52 @@ structurally incapable of "can you still tell". A judge who is told the answer
 cannot fail. `--blind` (2026-08-01) is that gap closed, and it is general: every
 future unit of this curriculum closes the same way.
 
+---
+
+## THE IDENTIFICATION TEST IS REFUTED — 2026-08-02, one sentence from the owner
+
+> *"ผมต้องชี้ได้สิว่าอันไหนของเรา เพราะผมนั่งดูตลอดว่าคุณผิดอะไร"*
+
+**He is right, and it invalidates the test above for every unit this curriculum
+will ever run.** A blind identification test assumes a judge with no priors about
+the candidate. The only judge the privacy rules permit is the owner — the anchors
+are other people's delivered client work and may never leave this machine — and
+he is the single most contaminated observer possible for this frame: he watched
+twenty rounds of it, he knows our lilies are magenta and our altar is blond, and
+he has been told every defect as it was found. **He picks ours by RECOGNITION and
+the sheet reads it as a quality verdict.**
+
+The instrument measures his memory of the build. It cannot return "close enough"
+no matter how good the render gets, so it has no passing state — which makes it
+not a finish line but a second queue, the exact failure the section above was
+written to fix. Adopted at round 11, never usable, and nine rounds' worth of
+"the finish line finally exists" rested on it.
+
+Note the shape, because this repo has now paid for it many times: **an instrument
+was adopted on the strength of the gap it closed, and nobody asked what it
+assumed about its own judge.**
+
+**THE REPLACEMENT — RANK, DO NOT IDENTIFY.** The same sheet, the same six
+panels, already lettered A–F. The question changes:
+
+> เรียง A–F จาก "ดูเสร็จ/ส่งลูกค้าได้" มากสุดไปน้อยสุด และให้เหตุผลสั้น ๆ ต่อช่อง
+
+**PASS = ours does not come last, and no reason given against it names a defect
+rather than a preference.** Knowing which panel is ours tells the judge nothing
+about where it BELONGS in a quality order, so recognition cannot leak into the
+answer. A contaminated judge who is harsh on the frame he built biases the result
+CONSERVATIVE — toward keeping the lane open — which is the safe direction for a
+stopping rule to fail in.
+
+And it is a strictly better artefact than a binary: the per-panel reasons are the
+work queue for the next round, in the owner's own words, ranked by him. The
+binary produced one bit and no direction.
+
+Same law underneath, stated more exactly: R4 says **แพ้งานส่งจริง = ขายไม่ได้**.
+The finish line is therefore *not losing to delivered work* — never *being
+indistinguishable from it*, which was always a stronger claim than the law asked
+for and than a reproduction exercise needs.
+
 **Standing exclusion, declared before the test rather than after:** TRN-001 is
 judged WITHOUT the three Buddha figures. The zero-baht CC0 pool holds no
 religious statuary (521 models searched), and hand-modelling a Buddha image was
