@@ -173,7 +173,7 @@
     "bronze_h_mm": 350.5,
     "total_h_mm": 457.0,
     "place": {
-     "rest_on": "plinth",
+     "rest_on": "plinth_face1",
      "x_from": "plinth",
      "dx_mm": 692.3,
      "y_from": "plinth",
@@ -185,7 +185,7 @@
     "bronze_h_mm": 291.9,
     "total_h_mm": 396.7,
     "place": {
-     "rest_on": "plinth",
+     "rest_on": "plinth_face2",
      "x_from": "plinth",
      "dx_mm": 1115.0,
      "y_from": "plinth",
@@ -197,7 +197,7 @@
     "bronze_h_mm": 350.9,
     "total_h_mm": 455.8,
     "place": {
-     "rest_on": "plinth",
+     "rest_on": "plinth_face3",
      "x_from": "plinth",
      "dx_mm": 1493.4,
      "y_from": "plinth",
@@ -288,7 +288,8 @@
    }
   ],
   "_subsurf": "TESTED 2026-08-01 AND NOT SHIPPED, kept spec-gated at 0 like the cove was, because the mechanism is sound and the measurement that asked for it still stands. A probe found every organic-modelling tool in Blender reachable from the DATA API alone, deterministic, in milliseconds — and this figure goes 759 faces -> 12,176 in 41 ms with its 3 hand-made n-gons removed, which the export law forbids anyway. The 2026-07-30 ground-truth study had measured our files at SUBSURF 0 against pro files that use it. All of that is true and NONE of it was worth shipping: applied to everything it ROUNDED AWAY the stepped pedestal's ledges, which is the exact thing flat shading had just been introduced to save; restricted to the cast body it changed nothing visible at all, because the body is already smooth-shaded at 24 segments per ring and at 200 px on screen there was never any faceting to remove. 16x the geometry for zero. THE LESSON IS THE REASON: subdivision smooths what EXISTS and cannot add what was never there. Our figure does not read wrong because it is faceted — it reads wrong because it has no face, no robe folds and no crossed legs, and no subdivision level produces those. The bottleneck was never the tool's smoothness, it was the PARAMETERISATION.",
-  "_place_R9": "2026-08-02, owner order: positions are DECLARED as contacts and DERIVED at build time, never typed. A coordinate encodes a RESULT and a contact encodes a RELATIONSHIP: resize centre_box and the figure on it follows, where a typed triple would have stayed legal-looking while the contact broke in silence. x_nudge_mm is DELETED, not zeroed — it existed to centre a figure's silhouette on a box and in doing so moved the figure across its own pedestal, which is one number asked to satisfy two relationships. Every offset below is measured FROM A NAMED DATUM, so the next reader can see what it is relative to. Conversion was verified before it was made: all 8 declared positions reproduce their typed values to 0.000000 mm. See CLAUDE.md R9 and docs/placement-audit-2026-08-02.md."
+  "_place_R9": "2026-08-02, owner order: positions are DECLARED as contacts and DERIVED at build time, never typed. A coordinate encodes a RESULT and a contact encodes a RELATIONSHIP: resize centre_box and the figure on it follows, where a typed triple would have stayed legal-looking while the contact broke in silence. x_nudge_mm is DELETED, not zeroed — it existed to centre a figure's silhouette on a box and in doing so moved the figure across its own pedestal, which is one number asked to satisfy two relationships. Every offset below is measured FROM A NAMED DATUM, so the next reader can see what it is relative to. Conversion was verified before it was made: all 8 declared positions reproduce their typed values to 0.000000 mm. See CLAUDE.md R9 and docs/placement-audit-2026-08-02.md.",
+  "_place_rest_on_note": "2026-08-02: the candlesticks first declared rest_on 'plinth'. That mass is one SEGMENT of a drawer-front run (plinth | reveal1 | face1 | ... | face4) sitting at x -1576..-946, and the sticks stand at -569, -146 and +232 — on face1, face2 and face3. Every derived coordinate was already right because 'plinth' was being used as the run's x/y DATUM, which is a different question from what holds the object up; the build gate caught the wrong support the first time it ran with a containment check. A support and a datum may differ, and naming both honestly is what lets a gate check either one."
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",

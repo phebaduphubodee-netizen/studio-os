@@ -182,6 +182,28 @@ def test_the_tolerances_are_claims_about_the_real_world():
     assert P.AXIS_TOL_DEG == 0.05
 
 
+def test_the_known_FLOATING_hole_is_pinned_not_forgotten():
+    """PINS A LIMITATION, not a behaviour we want.
+
+    An unsupported object escapes FLOATING when anything touches it — including
+    its own contents. This test exists so the hole cannot be closed by accident
+    without someone reading why it is open: applying the "contents do not brace"
+    rule here turned 5 correct objects into failures on the live scene (four
+    downlight trims recessed INTO a ceiling, held from ABOVE, and a petal held by
+    a stem inside its own footprint). A vase held only by its flowers and a petal
+    held only by its stem are the same relationship to a bounding box.
+
+    If this test starts failing, the hole was closed — check what it cost on a
+    real scene before celebrating."""
+    objs = [FLOOR,
+            ob("step", 0, 0, 0, 400, 400, 100),
+            ob("vase", 900, 100, 100, 80, 80, 300),          # nowhere near the step
+            ob("stem", 920, 120, 400, 20, 20, 200)]          # its own flowers
+    assert "FLOATING" not in kinds(objs), (
+        "the FLOATING hole closed — see the docstring for the 5 correct objects "
+        "the obvious fix convicted")
+
+
 @pytest.mark.parametrize("dy,expect", [(-100.0, False), (-140.0, True)])
 def test_the_overhang_threshold_discriminates_at_the_real_margin(dy, expect):
     """Taken from the live TRN-001 scene: the vase has 125.9 mm of step in front of

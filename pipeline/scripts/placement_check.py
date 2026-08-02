@@ -34,6 +34,31 @@ once (a bounding box could not tell a vase from a flat plank).
   (a lid on a pot, a leg through a rail). So INTERPENETRATION is reported as
   ADVISORY and never fails the run. Promoting it would train the reader to mute
   the whole instrument, which is how the previous debt instrument died.
+
+KNOWN HOLE IN *FLOATING*, MEASURED AND LEFT OPEN ON PURPOSE (2026-08-02).
+An object with NO support escapes FLOATING if anything at all touches it — even
+its own contents. Reproduction: move the vase pair's `offset_x_mm` to 1200 and
+rebuild. The left vase lands at x -1356..-1276 against a step that ends at -1258,
+`supports` is empty, it hangs in mid-air — and it is excused because its own
+flower stems touch it.
+
+The obvious fix was tried and is REFUTED BY MEASUREMENT, which is why the hole is
+still here. Reusing the "contents do not brace" rule in the FLOATING branch turned
+5 CORRECT objects into failures on the clean scene: four downlight trims (recessed
+INTO the ceiling, so the thing holding them is ABOVE them) and a flower petal
+(held by its stem, which sits inside the petal cluster's own footprint).
+
+**A vase whose only contact is the flowers inside it, and a petal whose only
+contact is the stem inside it, are the SAME relationship to an AABB.** One is a
+defect and one is not, and no refinement of bounding boxes separates them — that
+takes real contact geometry, or a declared `rest_on` for every object rather than
+only the styling props. Correcting this rule a fifth and sixth time was the R1
+stop-loss shape (the same fix-shape twice is a halt signal), so it stopped.
+
+WHAT COVERS IT MEANWHILE: the build gate in `trn001_build.py` compares every
+centred object against its RESOLVED contact, and a spec-side `PL.contains` refuses
+a footprint that leaves its declared support before a vertex exists. The vase
+above is caught there — by its declaration, not by its geometry.
 """
 import argparse
 import json

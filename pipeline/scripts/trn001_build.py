@@ -362,9 +362,138 @@ def main():
     # depsgraph update so world_to_camera_view sees final transforms
     bpy.context.view_layer.update()
     dump_projections(spec, cam_ob, os.path.join(out_dir, f"trn001_projections_{tag}.json"))
+    check_placement(spec, os.path.join(out_dir, f"trn001_placement_{tag}.json"))
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out_dir, f"trn001_{tag}.blend"))
     bpy.ops.render.render(write_still=True)  # 'render' op is headless-safe (unlike geometry ops)
     print(f"wrote {out_png}")
+
+
+def check_placement(spec, out_json):
+    """R9b, as a BUILD RUNG rather than a thing somebody remembers to run.
+
+    Two assertions, and they catch different classes:
+
+    (1) EVERY STYLING OBJECT IS WHERE ITS CONTACT SAYS. The resolver decides the
+        position in pure python; this compares that number against the object's
+        world transform AFTER the materialiser has had it. It is the guard-rail
+        R9 actually needs, because the defect it replaces was a shift applied to
+        an already-correct position — `x_nudge_mm` moved a figure off its own
+        base AFTER the placement was right. Any post-shift, in any form a future
+        edit invents, fails here.
+
+    (2) NOTHING FLOATS, OVERHANGS OR SITS CROOKED, judged on the built scene, no
+        allowlist. See placement_check.py for the three scope corrections this
+        cost and for its declared blind spots.
+
+    It RAISES. The baseline is verified clean (TRN-001 and PRJ-2026-002 both at
+    0 FAIL), so a failure here is new and belongs in front of a person before it
+    reaches a frame — a wired gate that warns is a gate that gets read past."""
+    import json as _json
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import placement as PL
+    import placement_check as PC
+    import placement_dump as PD
+    import trn001_geom as G
+    import trn001_styling as S
+
+    bpy.context.view_layer.update()
+    objs = PD.dump()
+    with open(out_json, "w", encoding="utf-8") as f:
+        _json.dump({"unit": "mm", "objects": objs}, f, indent=1, ensure_ascii=False)
+
+    # (1) the spec's declared contact vs where the geometry actually landed.
+    #
+    # COMPARED IN PLAN (x,y) AND AGAINST THE BUILT AABB CENTRE, which took one
+    # wrong cut to get right: the first version read `matrix_world.translation`
+    # and reported 11 objects adrift. That is the object ORIGIN, wherever the
+    # importer happened to leave it, while `pos_mm` is the CONTACT POINT at the
+    # object's horizontal centre — the instrument was measuring a different
+    # quantity from the one it was named after, and the build was innocent.
+    #
+    # SCOPED BY THE BUILDER'S OWN `kind`, NOT BY A LIST OF NAMES. A lathe, a box
+    # and an imported asset are all placed centred on their contact, so for them
+    # AABB centre IS the anchor and any difference is a post-resolve shift. A
+    # `spray` is not: a bunch of flowers leans and splays, so the middle of its
+    # bounding box is not where its stems are planted — measured here at 8-24 mm,
+    # which is geometry rather than drift. Inventing an allowlist to make that
+    # number look clean would be the exact move R9b exists to forbid.
+    CENTRED_KINDS = {"lathe", "figure", "figure_asset", "asset", "box"}
+    table = PL.support_table(G.masses(spec))
+    by_name = {}
+    for o in objs:
+        if "min" in o:
+            by_name.setdefault(o["name"], []).append(o)
+    drift = []
+    for p in S.plan(spec):
+        if p["kind"] not in CENTRED_KINDS:
+            continue
+        parts = [o for n, v in by_name.items()
+                 if n == f"SM_TRN001_{p['name']}" or n.startswith(f"SM_TRN001_{p['name']}.")
+                 for o in v]
+        if not parts:
+            continue
+        cx = (min(o["min"][0] for o in parts) + max(o["max"][0] for o in parts)) / 2
+        cy = (min(o["min"][1] for o in parts) + max(o["max"][1] for o in parts)) / 2
+        want = p["pos_mm"]
+        d = max(abs(cx - want[0]), abs(cy - want[1]))
+        # TOLERANCE 2 mm, and the number is measured rather than picked. The placer
+        # anchors on the imported mesh's RAW vertex bounds; this checker reads the
+        # EVALUATED depsgraph bounds. Both are "the bounding box" and they are not
+        # the same box. Measured on the three figures, the gap is +0.478, +0.333
+        # and +0.301 mm against heights of 296.5, 206.7 and 186.8 — i.e. 0.1611%
+        # of height in every case, identical to four significant figures, which is
+        # a deterministic anchor-stage difference and not drift. (The gilt bases,
+        # built rather than imported, sit at 0.000.) 2 mm clears it with margin and
+        # is still an order of magnitude below the 33.4 mm shift this gate exists
+        # to catch.
+        if d > 2.0:
+            drift.append(f"{p['name']}: contact resolves to x={want[0]:.1f} "
+                         f"y={want[1]:.1f}, built centre is x={cx:.1f} y={cy:.1f} "
+                         f"— {d:.1f}mm of post-resolve shift")
+    # (1b) THE DECLARATION vs THE BUILT FOOTPRINT. This is what covers the known
+    # hole in PC's FLOATING rule (see its docstring): a vase moved clean off its
+    # step is excused there because its own flowers touch it, but here it is
+    # convicted by the support it DECLARED it stands on. Geometry from the build,
+    # the claim from the spec — neither alone catches it.
+    st = spec.get("styling") or {}
+    declared = {f["name"]: f.get("place") for f in st.get("figures", [])}
+    declared.update({c["name"]: c.get("place") for c in st.get("candlesticks", [])})
+    if st.get("vase_pair"):
+        for s in ("L", "R"):
+            declared[f"vase_{s}"] = dict(st["vase_pair"]["place"], side=s)
+    for p in S.plan(spec):
+        place = declared.get(p["name"])
+        if not place or p["kind"] not in CENTRED_KINDS:
+            continue
+        parts = [o for n, v in by_name.items()
+                 if n == f"SM_TRN001_{p['name']}" or n.startswith(f"SM_TRN001_{p['name']}.")
+                 for o in v]
+        if not parts:
+            continue
+        w = max(o["max"][0] for o in parts) - min(o["min"][0] for o in parts)
+        d_ = max(o["max"][1] for o in parts) - min(o["min"][1] for o in parts)
+        try:
+            PL.contains(place, table, (w, d_), p["pos_mm"], p["name"],
+                        tol_mm=PC.OVERHANG_TOL_MM)
+        except PL.PlacementError as e:
+            drift.append(str(e))
+
+    # (2) the scene on its own terms
+    found = [f for f in PC.check(objs) if f["sev"] == "FAIL"]
+
+    n_adv = len(PC.check(objs)) - len(found)
+    print(f"  PLACEMENT: {len(objs)} objects, {len(drift)} post-resolve drift, "
+          f"{len(found)} FAIL, {n_adv} advisory -> {os.path.basename(out_json)}")
+    if drift or found:
+        for m in drift:
+            print(f"    !! POST-RESOLVE SHIFT {m}")
+        for f in found:
+            print(f"    !! {f['kind']} {f['object']}: {f['detail']}")
+        raise SystemExit(
+            f"PLACEMENT GATE FAILED (R9b): {len(drift)} shifted, {len(found)} "
+            f"floating/overhanging/crooked. A position that can be DERIVED from a "
+            f"contact must never be TYPED, and a resolved position must never be "
+            f"shifted afterwards.")
 
 
 if __name__ == "__main__":

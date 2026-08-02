@@ -159,12 +159,93 @@ taught survives in a comment, because the class will recur: a correction express
 in the wrong SPACE silently does almost nothing — folded into the asset-space
 centre it was multiplied by k=0.0798 and moved the figure 2.7 mm instead of 33.4.
 
-## 7. Still open
+## 7. The three "still open" items — measured, and two of them were wrong
 
-- The correction the nudge was covering for — the acquired mesh's bbox is not its
-  visual centre — is **real and now uncompensated**. If it is worth fixing it must
-  be a per-slug asset property applied BEFORE the contact resolves, never a shift
-  of the resolved position.
-- Only the TRN-001 styling block is converted. `build_room.py`'s furniture and
-  `master-suite.CANONICAL.spec.json` still type coordinates.
-- `placement_check` is not yet a build-ladder rung; it is run by hand.
+### (a) The nudge's correction — REFUTED, not outstanding
+
+§6 claimed the asset's bbox-vs-visual-centre offset was "real and now
+uncompensated". **The record and the measurement both say otherwise.**
+
+The record: round 17's owner order was *"ตัวพระขยับไปทางซ้ายนิดนึงทุกองค์ โดยที่ฐาน
+ทองไม่ต้องขยับ"*, and the note it produced already ruled — *"a statue sits centred
+on its pedestal; that is the relationship the eye checks first, and it outranks a
+blob midpoint measured against a box."* The correction was adjudicated away, not
+left owing. My own §6 line was written from the code's history and not from the
+verdict.
+
+The measurement, run anyway: the asset's **area centroid** sits 72.8 mm (native)
+from its bbox centre in x and **482.3 mm in y**. At the centre figure's scale that
+is 7.3 mm and **48.6 mm** — the y figure alone would shove the image half a
+pedestal forward. The area centroid is a different quantity from "where the eye
+reads the middle", and adopting it would have been a 48 mm design change wearing a
+refactor's clothes.
+
+**Nothing to build. The mechanism that would have hidden it is gone anyway**: a
+correction can no longer be a shift of a resolved position, because the build gate
+compares every centred object against its resolved contact.
+
+### (b) build_room.py and the canonical spec — the defect is not there
+
+Also measured rather than assumed. `placement_check` on the built PRJ-2026-002
+scene: **110 meshes, 0 FAIL.** And the mechanism is already contact-shaped:
+
+* the canonical spec's items carry `x`, `y` and `rot` and **no z at all** — z comes
+  from the floor, i.e. it is already derived;
+* `_dress_scene` places decor with `z0=top`, derived from the table's own height;
+* what *does* type coordinates in `build_room.py` is the **lighting** — downlights,
+  wash bars, coves. A light does not rest on anything, and forcing `rest_on` onto
+  it would be the metaphor breaking, not the rule applying.
+
+Converting it would have been work with no defect behind it. Left alone, and the
+check is what will say if that ever changes.
+
+### (c) The build-ladder rung — BUILT, and it caught something on its first run
+
+`trn001_build.py` now runs the gate in-process after the scene is built:
+
+1. **Post-resolve shift.** Every centred object's built AABB centre against the
+   position its contact resolved to. This is the guard-rail R9 actually needs,
+   because the defect it replaces was a shift applied to an *already correct*
+   position.
+2. **Declaration vs footprint.** `PL.contains` against the support the object
+   DECLARES — which is what covers the FLOATING hole below.
+3. **The scene on its own terms** — `placement_check`, no allowlist.
+
+It **raises**; a wired gate that warns is a gate that gets read past.
+
+**It found a real error in my own conversion on its first run.** The candlesticks
+declared `rest_on: "plinth"`, and `plinth` is one SEGMENT of a drawer-front run
+(`plinth | reveal1 | face1 | … | face4`) spanning x −1576…−946 — while the sticks
+stand at −569, −146 and +232, on `face1`, `face2` and `face3`. Every derived
+coordinate was already correct, because `plinth` was serving as the run's x/y
+DATUM, which is a different question from what holds the object up. Fixed, with
+the positions unchanged at **0.000000000 mm**.
+
+Two instrument errors of my own were also caught and are recorded rather than
+quietly fixed: comparing `matrix_world.translation` (the object ORIGIN) against a
+contact point (the object's horizontal CENTRE) reported 11 objects adrift when the
+build was innocent; and a 0.5 mm threshold convicted the figures at 0.478/0.333/
+0.301 mm — **0.1611% of height in all three cases, identical to four significant
+figures**, which is a deterministic difference between raw-mesh and evaluated
+bounds, not drift. Tolerance is 2 mm, measured rather than picked.
+
+## 8. The FLOATING hole — open on purpose, with the fix refuted
+
+An unsupported object escapes FLOATING if **anything** touches it, including its
+own contents. Reproduction: set the vase pair's `offset_x_mm` to 1200. The left
+vase lands at x −1356…−1276 against a step ending at −1258, `supports` is empty,
+it hangs in mid-air — and its own flower stems excuse it.
+
+The obvious fix was tried: reuse "contents do not brace" in the FLOATING branch.
+**It convicted 5 correct objects** on the clean scene — four downlight trims
+recessed INTO the ceiling (held from ABOVE) and a petal held by a stem inside its
+own footprint. **A vase held only by its flowers and a petal held only by its stem
+are the same relationship to a bounding box.** No refinement of AABBs separates
+them; that needs real contact geometry, or a declared `rest_on` on every object
+rather than only the styling props.
+
+Correcting this rule a fifth and sixth time was the R1 stop-loss shape, so it
+stopped. The hole is documented in the module, **pinned by a test** that fails if
+someone closes it without reading what the closure costs, and covered in practice
+by the declaration check — the vase above is caught by the support it CLAIMS, not
+by its geometry.
