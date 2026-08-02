@@ -75,6 +75,35 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   the gate artifact: accept+lane, or refute WITH A MEASUREMENT/reference —
   never with taste. Ladder: C0 instruments → C1 builder LOOK+reference →
   C2 cold critic → C3 cross-vendor → C4 owner (R3, unchanged, final).
+- R7b GEMINI JUDGES AS A DESIGNER AFTER EVERY RENDER — NOT ONLY AT BIG GATES
+  (owner order 2026-08-02: *"เพิ่มกฏเลย ใช้ gemini ตัวช่วยวิเคราะห์และตัดสินในฐานะ
+  designer หลังผล render ออกทุกครั้ง"*, after ruling *"คุณวิเคราะห์แบบนี้ไม่ได้"*).
+  C3 was scoped to big gates; it is now EVERY render. **What earned it:** one
+  Gemini pass named the centre image as too small for its altar, and measurement
+  then confirmed our figure assembly at 0.71x the target's width, 0.82x its
+  height, **0.65x its area** — a first-order, whole-frame defect that nineteen
+  rounds of patches, ladders, masks and back-projection never once surfaced.
+  **The gap is categorical, not a matter of tuning: an instrument answers the
+  question it was built to ask, and every instrument in this repo was built by
+  the same builder who chose what to worry about.** A designer's eye names what
+  is wrong without being asked, which is the one thing a measurement cannot do.
+  Note the exact shape of how it hid: rounds 12-18 asserted the built figure
+  matched its spec height to within 2 mm — a SELF-CONSISTENCY check against a
+  number we chose ourselves, which can prove the build correct and never notice
+  the ask was wrong. Pair the two rungs and neither is optional: **the eye finds
+  WHAT is wrong; the measurement finds HOW MUCH and WHICH KNOB.**
+  - PROCEDURE: every render ends by writing a paste bundle — the render plus
+    `templates/cold-critic-prompt.md` — and handing the owner the path. Manual
+    paste stays the ritual until API billing opens.
+  - WHAT MAY GO: **our own render, and nothing else.** The TARGET image and the
+    anchor pool NEVER leave this machine — they are another studio's delivered
+    client work, so sending them is both a privacy breach and benchmark leakage
+    (a judge shown the answer stops being a judge). No client names, addresses,
+    plan text or file paths travel with the image.
+  - TRIAGE IS UNCHANGED AND STILL MANDATORY (R7): every returned item gets a
+    written accept+lane or a refutation carrying a MEASUREMENT — never taste.
+    Where the eye and the instruments disagree about whether something is wrong,
+    the eye wins; the instruments decide by how much and where.
 - R8 BUILD vs ACQUIRE — DECIDED BEFORE THE FIRST VERTEX (owner order 2026-08-01,
   "เวลาคุณต้องปั้น model ที่มีส่วนเว้าส่วนโค้ง มันมักจะเพี้ยนเสมอ ตั้งแต่ทำมาในทุก
   project"). He is right and the evidence has a clean edge: everything generated
