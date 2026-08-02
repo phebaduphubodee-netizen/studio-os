@@ -748,6 +748,21 @@ def build_asset_figure(p, materials=None):
         verts, faces_b = rect_loft(BASE_CANON, bx, by, bz, bh / 0.205)
         keep = bz + bh
         verts = [(x, y, min(z, keep)) for x, y, z in verts]
+        # THE BASE IS SIZED FROM THE FIGURE IT CARRIES, not from BASE_CANON's own
+        # ratio. That ratio was drawn for the HAND-BUILT figure, and the acquired
+        # one has a different lap-to-height proportion, so the canon's base came
+        # out 0.86 of the lap it was under and the image sat overhanging it —
+        # "พระนั่งเกือบตกฐาน". Measured on the reference: its base is 127 px wide
+        # under a 125 px lap, i.e. 1.02, the base is slightly WIDER than the lap
+        # and never narrower. A constant that was correct for one object is not a
+        # constant.
+        lap_mm = (max(xs) - min(xs)) / G.MM * k
+        want = lap_mm * float(p.get("base_lap_ratio", 1.02))
+        built = max(hx for _, hx, _ in BASE_CANON) * 2.0 * (bh / 0.205)
+        if built > 1e-6:
+            f_xy = want / built
+            verts = [(bx + (x - bx) * f_xy, by + (y - by) * f_xy, z)
+                     for x, y, z in verts]
         me = _b.data.meshes.new(f"SM_TRN001_{p['name']}_base")
         me.from_pydata([(x * G.MM, y * G.MM, z * G.MM) for x, y, z in verts],
                        [], faces_b)
@@ -813,6 +828,7 @@ def plan(spec):
                     "use_our_material": bool(fg.get("use_our_material")),
                     "base_h_mm": fg.get("base_h_mm", 0.0),
                     "x_nudge_mm": fg.get("x_nudge_mm", 0.0),
+                    "base_lap_ratio": fg.get("base_lap_ratio", 1.02),
                     "pos_mm": (fg["x_mm"], fg["y_mm"], fg["z_mm"]),
                     "height_mm": fg["height_mm"], "mirror": bool(fg.get("mirror")),
                     "subsurf": fg.get("subsurf", 0),

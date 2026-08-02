@@ -316,6 +316,24 @@ def main():
     if spec.get("styling") and not IDMASK:
         STYLE.build_styling(spec, materials)
         print("styling ON\n" + STYLE.report(spec))
+    # TRN001_GEOCHK=1 dumps the built figure's own bounds in mm. Added when a
+    # chroma mask on the RENDER reported a base/lap ratio going the wrong way
+    # while the eye plainly saw the base widen: the base renders paler than the
+    # figure it carries, so a single saturation threshold sits between two golds
+    # and measures itself. The geometry is the authority for a number the
+    # builder computes directly, and this is how to ask it.
+    if os.environ.get("TRN001_GEOCHK"):
+        import mathutils
+        for ob in list(bpy.data.objects):
+            if not ob.name.startswith("SM_TRN001_figure_centre"):
+                continue
+            lo = mathutils.Vector((1e9, 1e9, 1e9)); hi = mathutils.Vector((-1e9, -1e9, -1e9))
+            for c in ob.bound_box:
+                w = ob.matrix_world @ mathutils.Vector(c)
+                lo = mathutils.Vector((min(lo[i], w[i]) for i in range(3)))
+                hi = mathutils.Vector((max(hi[i], w[i]) for i in range(3)))
+            d = (hi - lo) * 1000.0
+            print(f"GEOCHK {ob.name[:34]:36s} w {d.x:7.1f}  h {d.z:7.1f} mm")
     cam_ob = build_camera(spec["camera"])
     build_light(spec)
 
