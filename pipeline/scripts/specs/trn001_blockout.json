@@ -252,11 +252,13 @@
     "slug": "th_f",
     "z_keep": 0.0,
     "use_our_material": true,
-    "base_h_mm": 76.5,
+    "base_h_mm": 128.0,
     "place": {
      "rest_on": "centre_box",
      "centre_on": "centre_box"
-    }
+    },
+    "_scale": "2026-08-02 FINAL ROUND, and the first cut of this fix was WRONG in a way worth keeping. A cross-vendor designer critique (R7b) said the centre image reads too small; I measured the whole gold assembly at 0.65x the target's area and scaled the FIGURE by 1.224. An adversarial re-measure decomposed the same silhouette and found the sculpture already reproduces to 2-4% (head width 27 vs 28 px, tip-to-shoulder 70 vs 70, tip-to-lap 147 vs 150, coincident in a tip-aligned overlay) -- the ENTIRE deficit is the gilt throne WE build under the acquired asset: 44x121 px against 74x170. Scaling the assembly would have made a correct Buddha 22% too big to fix a base half its proper mass. ROOT CAUSE: base_lap_ratio defaulted to 1.02 from a misread of the reference ('base 127 px under a 125 px lap'); re-read with an id-mask-validated segmenter it is 170 px of base under a 110 px body. L and R bases carry the same shape constants by extrapolation -- only the centre throne was measured.",
+    "base_lap_ratio": 1.32
    },
    {
     "name": "figure_L",
@@ -266,11 +268,12 @@
     "slug": "th_f",
     "z_keep": 0.0,
     "use_our_material": true,
-    "base_h_mm": 48.2,
+    "base_h_mm": 80.6,
     "place": {
      "rest_on": "pedestal_L",
      "centre_on": "pedestal_L"
-    }
+    },
+    "base_lap_ratio": 1.32
    },
    {
     "name": "figure_R",
@@ -280,11 +283,12 @@
     "slug": "th_f",
     "z_keep": 0.0,
     "use_our_material": true,
-    "base_h_mm": 53.3,
+    "base_h_mm": 89.2,
     "place": {
      "rest_on": "pedestal_R",
      "centre_on": "pedestal_R"
-    }
+    },
+    "base_lap_ratio": 1.32
    }
   ],
   "_subsurf": "TESTED 2026-08-01 AND NOT SHIPPED, kept spec-gated at 0 like the cove was, because the mechanism is sound and the measurement that asked for it still stands. A probe found every organic-modelling tool in Blender reachable from the DATA API alone, deterministic, in milliseconds — and this figure goes 759 faces -> 12,176 in 41 ms with its 3 hand-made n-gons removed, which the export law forbids anyway. The 2026-07-30 ground-truth study had measured our files at SUBSURF 0 against pro files that use it. All of that is true and NONE of it was worth shipping: applied to everything it ROUNDED AWAY the stepped pedestal's ledges, which is the exact thing flat shading had just been introduced to save; restricted to the cast body it changed nothing visible at all, because the body is already smooth-shaded at 24 segments per ring and at 200 px on screen there was never any faceting to remove. 16x the geometry for zero. THE LESSON IS THE REASON: subdivision smooths what EXISTS and cannot add what was never there. Our figure does not read wrong because it is faceted — it reads wrong because it has no face, no robe folds and no crossed legs, and no subdivision level produces those. The bottleneck was never the tool's smoothness, it was the PARAMETERISATION.",
@@ -305,6 +309,7 @@
  "render": {
   "_what": "LIGHT TRANSPORT LIMITS, previously Blender's factory defaults because nothing set them. diffuse_bounces was 4. This room is a closed box lit by four recessed downlights, so the only light that reaches a 276 mm cubby, a soffit face that shades itself, or a plinth face under an overhang is light that has bounced several times -- and those were the three patches that refused to move for any knob in eight light rigs. Raising it: cubby 0.67 -> 0.80, header 0.58 -> 0.66, converged by 8-16, and it costs 3 s on a 12 s quick render. sample_clamp_indirect was tested OFF as well and changed nothing (0.79 vs 0.80), so the clamp is NOT what was truncating them and stays at Blender's default.",
   "diffuse_bounces": 16,
-  "max_bounces": 24
+  "max_bounces": 24,
+  "_bounce_retest": "2026-08-02: the bounce budget was re-opened because three independent findings pointed at over-uniform indirect light (cubby horizontals 1.9-2.7x too bright, contact darkening absent, corners filled). REFUTED at the quick rung in 15 s: 16->6 moved contact darkening -0.21% -> -0.01% against a target of +31.2%, i.e. nothing, while costing a flat 1-2 luma on marble, floor, plinth and cubby alike. That is an exposure change wearing a mechanism costume. The missing contact shadow is NOT a bounce-budget deficit and the next round must not spend a knob here."
  }
 }

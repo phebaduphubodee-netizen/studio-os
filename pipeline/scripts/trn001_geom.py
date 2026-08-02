@@ -111,6 +111,12 @@ def _tower_masses(side, cx, t, z_top, plinth_h):
         out.append(_box(f"tower_{side}_{tag}", cx + xoff, side_y, (z0 + z_top) / 2,
                         b, side_d, z_top - z0, carcass))
     inner_w, inner_y, inner_d = w - 2 * b, -(d - pk) / 2, d + pk
+    # These were briefly re-valued to `cavity` on 2026-08-02 to match a material
+    # change that was itself refuted within the hour (see material_for): the two
+    # palette entries have the SAME luma, so the move could not darken anything
+    # and measured slightly brighter. Reverted with the material. The clay value
+    # tracks `material_for` and a test pins that, because when the two disagree
+    # the R5 playblast stops predicting the frame it exists to de-risk.
     out.append(_box(f"tower_{side}_top", cx, inner_y, z_top - b / 2,
                     inner_w, inner_d, b, carcass))
     for i, sz in enumerate(t.get(f"shelves_{side}_z", [])):

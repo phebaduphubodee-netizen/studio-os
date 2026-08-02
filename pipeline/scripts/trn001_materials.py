@@ -617,6 +617,44 @@ def material_for(mass_name):
     if n.startswith("header_p"):
         return "veneer_fascia"          # grain runs lengthwise along the rail
     if n.startswith("tower_"):
+        # THE LINING IS THE WHOLE POCKET, NOT JUST ITS BACK (2026-08-02). Whole-
+        # object measurement against the target put every horizontal surface
+        # INSIDE a cubby at 1.9-2.7x too bright — shelf0 1.92/2.67, shelf3
+        # 2.03/2.48, the top boards 2.07/2.40 — while the floor (673 k px) and
+        # the ceiling (449 k px), the two horizontals NOT inside a pocket, both
+        # matched within 3%. Neither exposure nor a light rig does that.
+        #
+        # The back panel of the same pocket measures 0.99 on 230,233 px, so the
+        # cavity albedo is already calibrated; it was simply never applied to the
+        # seven surfaces around it. That is why the error survived rounds of light
+        # work: `cavity (cubby interior)`, the one hand-placed patch watching this
+        # pocket, sits on the back panel — the single surface that agrees, and one
+        # larger than the other seven combined. An instrument aimed at the one
+        # part that is right reports the pocket as solved.
+        #
+        # AND THE FIX ABOVE WAS BUILT, RENDERED AND REFUTED THE SAME HOUR — the
+        # refutation is why this comment stays. The premise was "the back panel
+        # measures 0.99, so the lining albedo is calibrated and simply never
+        # reached its neighbours". FALSE: `cavity` and `veneer_pier` have the SAME
+        # luminance to four decimals (0.1694 either side); they differ only in hue
+        # and in MAP_MIX (0.40 vs 0.90). Routing the shelves to the lining could
+        # therefore not darken them, and measured on the built frame it did the
+        # opposite — tower_L_shelf0 118.1 -> 127.2, tower_L_top 46.5 -> 49.8 —
+        # because the lining takes LESS of the darkening map.
+        #
+        # So the back panel is not right because of its albedo. It has the same
+        # albedo as the shelves. It is right because of WHERE IT SITS, and the
+        # 0.99-versus-2.0 spread across one pocket is ILLUMINANCE, entire. That is
+        # the trap this lane has now paid for repeatedly — attributing an
+        # illuminance difference to a material — and I walked into it in the same
+        # commit as a comment warning about it. The tell was available for free
+        # and unread: two palette entries whose luma agrees to four decimals
+        # cannot be the reason two surfaces differ by 2x.
+        #
+        # The SIDE panels were excluded for a reason that still stands on its own:
+        # each is one 18 mm board carrying an outer stile face AND an inner lining
+        # face, and the readings refuse a blanket answer (tower_R_sB 0.88 against
+        # tower_L_sA 1.57). Splitting a board's two faces is a geometry change.
         if n.endswith("_back"):
             return "cavity"
         return "veneer_pier"            # grain runs upright on the piers

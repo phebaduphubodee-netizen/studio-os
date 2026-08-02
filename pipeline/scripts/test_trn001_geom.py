@@ -413,10 +413,39 @@ def test_material_routing_is_not_accidentally_generic(spec):
     assert f("marble") == "marble"
     assert f("brass_p1_top") == "brass"
     assert f("header_p0") == "veneer_fascia"
-    assert f("tower_R_sA") == f("tower_L_shelf2") == "veneer_pier"
+    # ONLY the back panel is lining. Extending it to the shelves and top boards
+    # was BUILT, RENDERED AND REFUTED on 2026-08-02 — see the long note in
+    # material_for. Pinned here so the same reasoning cannot come back.
     assert f("tower_R_back") == "cavity"
+    assert f("tower_L_shelf2") == f("tower_R_shelf0") == "veneer_pier"
+    assert f("tower_L_top") == f("tower_R_top") == "veneer_pier"
+    assert f("tower_R_sA") == f("tower_L_sB") == "veneer_pier"
     assert f("plinth") == f("plinth_face3") == f("plinth_toe") == "lacquer_white"
     assert f("step") == f("centre_box") == f("pedestal_L") == "veneer_altar"
+
+
+def test_two_materials_that_differ_only_in_hue_are_not_a_value_lever():
+    """The refutation of 2026-08-02, as a property rather than a story.
+
+    I read `tower_R_back` at 0.99 against the target while the seven other
+    surfaces of the same pocket ran 1.6-2.7x, concluded the lining albedo was
+    calibrated and had never reached its neighbours, and routed the shelves to
+    it. `cavity` and `veneer_pier` turn out to have the SAME luminance to four
+    decimals, so the move could not darken anything, and on the built frame it
+    made the shelves slightly BRIGHTER (tower_L_shelf0 118.1 -> 127.2) because
+    the lining takes less of the darkening map.
+
+    Which means the back panel is not right because of its albedo — it has the
+    same albedo as the shelves — and a 2x spread across one pocket is
+    ILLUMINANCE, entire. The tell was free and unread: two palette entries whose
+    luma agrees to four decimals cannot be why two surfaces differ by 2x."""
+    import trn001_materials as MAT
+
+    def luma(k):
+        a = MAT.PALETTE[k][0]
+        return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2]
+
+    assert abs(luma("cavity") - luma("veneer_pier")) / luma("veneer_pier") < 0.01
 
 
 def test_the_map_dressing_the_ground_truth_study_asked_for_is_actually_present():
@@ -1528,3 +1557,25 @@ def test_no_hand_built_generator_emits_an_n_gon(spec):
     assert not bad, (
         f"hand-built generators emitted n-gons {bad}; the export law forbids "
         f"them and every one of Blender's own organic tools produces none")
+
+
+def test_the_clay_value_of_a_mass_agrees_with_the_material_it_will_wear(spec):
+    """R5 lets a QUICK clay playblast gate work before a full frame is spent, and
+    that licence holds only while the clay rung predicts the material rung. When
+    the cubby lining was extended from the back panel to the shelves and top
+    boards (2026-08-02) the material moved and the clay value did not, so the
+    playblast would have shown pale shelves and the full frame dark ones — the
+    quick rung lying about the exact change it was run to de-risk.
+
+    Pinned as a property rather than a list: every mass routed to `cavity` must
+    carry the darker clay value, and no mass routed elsewhere may carry it."""
+    import trn001_materials as MAT
+    clay = {m["name"]: m["value"] for m in G.masses(spec)}
+    lining = {n for n in clay if MAT.material_for(n) == "cavity"}
+    assert lining, "no mass routes to the lining material — the test is measuring nothing"
+    values = {clay[n] for n in lining}
+    assert len(values) == 1, f"lining masses disagree on their clay value: {values}"
+    dark = values.pop()
+    strays = {n: clay[n] for n in clay
+              if n not in lining and clay[n] == dark and n.startswith("tower_")}
+    assert not strays, f"non-lining tower masses wearing the lining clay value: {strays}"
