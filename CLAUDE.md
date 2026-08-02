@@ -143,6 +143,17 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   the defect wearing a knob.** **Stop-loss:** two placement corrections on the
   same object means the position is being TYPED, not derived — convert it to a
   contact, never nudge a third time (rounds 15–18 were four).
+  **BUILT 2026-08-02 — `pipeline/scripts/placement.py`**, pure: `rest_on` →
+  the support's top face, `centre_on` → its plan centre, `x_from`/`y_from` +
+  `dx_mm`/`dy_mm` → a measured offset from a NAMED datum, `mirror_about` + `side`
+  → one offset for two objects. Nothing is relative to the world. It FAILS CLOSED
+  (unknown support raises rather than defaulting to the origin; an undetermined
+  axis raises; `nudge` and its synonyms are refused by name). TRN-001's styling
+  block is converted and `x_nudge_mm` is DELETED, not zeroed — zeroing leaves the
+  mechanism for the next round to reach for. Verified before and after: derived ==
+  typed to **0.000000 mm** on all 13 placements, and a rebuilt scene's 21 prop
+  meshes sit **0.000000 mm** from where the typed spec put them. Not yet
+  converted: `build_room.py` furniture and the PRJ-2026-002 canonical spec.
 - R9b THE GUARD IS UNIVERSAL AND READS THE BUILT SCENE. `placement_dump.py`
   (in Blender) → `placement_check.py` (pure, no bpy) → FLOATING / OVERHANG /
   OFF-AXIS, with interpenetration ADVISORY because an AABB cannot tell

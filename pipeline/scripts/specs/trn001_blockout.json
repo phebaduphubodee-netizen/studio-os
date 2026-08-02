@@ -170,27 +170,39 @@
   "candlesticks": [
    {
     "name": "cand_1",
-    "x_mm": -568.8,
-    "y_mm": -417.0,
-    "z_mm": 225.0,
     "bronze_h_mm": 350.5,
-    "total_h_mm": 457.0
+    "total_h_mm": 457.0,
+    "place": {
+     "rest_on": "plinth",
+     "x_from": "plinth",
+     "dx_mm": 692.3,
+     "y_from": "plinth",
+     "dy_mm": -117.0
+    }
    },
    {
     "name": "cand_2",
-    "x_mm": -146.1,
-    "y_mm": -444.0,
-    "z_mm": 225.0,
     "bronze_h_mm": 291.9,
-    "total_h_mm": 396.7
+    "total_h_mm": 396.7,
+    "place": {
+     "rest_on": "plinth",
+     "x_from": "plinth",
+     "dx_mm": 1115.0,
+     "y_from": "plinth",
+     "dy_mm": -144.0
+    }
    },
    {
     "name": "cand_3",
-    "x_mm": 232.3,
-    "y_mm": -405.0,
-    "z_mm": 225.0,
     "bronze_h_mm": 350.9,
-    "total_h_mm": 455.8
+    "total_h_mm": 455.8,
+    "place": {
+     "rest_on": "plinth",
+     "x_from": "plinth",
+     "dx_mm": 1493.4,
+     "y_from": "plinth",
+     "dy_mm": -105.0
+    }
    }
   ],
   "_unavailable": [],
@@ -198,11 +210,15 @@
   "_step_depth_conflict": "UNRESOLVED, for the gate. Two direct measurements disagree about the step's depth: the signed spec value is 311 mm (VP-fitted, 0.4 px residuals, and the basis of the owner's own base-reveal correction), but the vase's base pixel only lands on the step top if it reaches y=-419. The landmark fit cannot settle it — swept 280-560 mm the step_top pair's error moves only 41.4 to 45.0 px and stays ~40 px throughout, i.e. FLAT, which by this project's own rule means unconstrained by the landmarks and answerable only by a direct probe. Note also that step_top_left/right are the two WORST-fitting landmarks in the set (47.1 and 56.5 px), so the step is the least-settled element in the model. NOT changed unilaterally: the depth is a signed, owner-corrected number.",
   "_vases_are_a_symmetric_pair": "OWNER 2026-07-31, twice: 'แจกันทำไมไปตั้งตรงนั้น' then 'คำเดิม มันวางไม่สมมาตร'. He was right both times and the second word was the one that solved it. SYMMETRY IS A CONSTRAINT, not a complaint: a symmetric pair standing on one surface has a single unknown — how far forward the pair sits — so the two measured pixels over-determine it and the answer can be SOLVED rather than guessed. Solved on the horizontal pixel alone, because contact shadow displaces v and not u, which is why three earlier attempts using the blob's BOTTOM all disagreed with each other. At y=-145 the two offsets about the box come out 921.6 and 920.1 mm — 1.6 mm apart — with both bases on the step top and vase_L clearing pedestal_L by 29 mm. Every prior attempt (x kept and y clamped; y fixed at the step edge; a 26 px displacement to dodge the pedestal) was me solving for two unknowns with one equation and then patching the residue. Stored as ONE offset mirrored about the centre box — the same relationship the owner's own pedestal correction established — so it cannot drift apart again by editing one side.",
   "vase_pair": {
-   "offset_x_mm": 920.9,
-   "y_mm": -145.0,
-   "z_mm": 455.0,
    "height_L_mm": 231.0,
-   "height_R_mm": 214.0
+   "height_R_mm": 214.0,
+   "place": {
+    "rest_on": "step",
+    "mirror_about": "centre_box",
+    "offset_x_mm": 920.9,
+    "y_from": "step",
+    "dy_mm": 10.5
+   }
   },
   "_floral": "2026-08-01. MEASURED BY CHROMA, not placed by eye: this is a neutral wood/white/gold room, so a magenta mask (sat>0.28, R>G, B>G) finds the two sprays and nothing else -- the gold figures are warm (B<G) and never enter it. The blobs were back-projected onto the vase plane y=-145 that the symmetric-pair solve already established, and the read CONTROLS on a value it already knew: each spray's lowest petal lands within 27 mm of its own vase rim (-27.3 L, -3.3 R). The lean is stored PER SIDE as measured (+20.0 and +18.4 mm, both toward +x) and is deliberately NOT mirrored -- the vases are a joinery pair and mirror; two hand-arranged bunches are not, and mirroring them would be the model asserting a symmetry the image denies. ACCEPTANCE TEST, which outranks the silhouette: inside its own bounding box the target's spray is 34.5% (L) / 42.9% (R) petal with 45-53% of the wall still showing through. A spray that reads as a solid ball is wrong even when its outline is right.",
   "floral_pair": {
@@ -230,9 +246,6 @@
   "figures": [
    {
     "name": "figure_centre",
-    "x_mm": -116,
-    "y_mm": -142.5,
-    "z_mm": 864.0,
     "height_mm": 296.5,
     "mirror": false,
     "subsurf": 0,
@@ -240,13 +253,13 @@
     "z_keep": 0.0,
     "use_our_material": true,
     "base_h_mm": 76.5,
-    "x_nudge_mm": 0.0
+    "place": {
+     "rest_on": "centre_box",
+     "centre_on": "centre_box"
+    }
    },
    {
     "name": "figure_L",
-    "x_mm": -830,
-    "y_mm": -142.5,
-    "z_mm": 645.0,
     "height_mm": 186.8,
     "mirror": false,
     "subsurf": 0,
@@ -254,13 +267,13 @@
     "z_keep": 0.0,
     "use_our_material": true,
     "base_h_mm": 48.2,
-    "x_nudge_mm": 0.0
+    "place": {
+     "rest_on": "pedestal_L",
+     "centre_on": "pedestal_L"
+    }
    },
    {
     "name": "figure_R",
-    "x_mm": 598,
-    "y_mm": -142.5,
-    "z_mm": 645.0,
     "height_mm": 206.7,
     "mirror": false,
     "subsurf": 0,
@@ -268,10 +281,14 @@
     "z_keep": 0.0,
     "use_our_material": true,
     "base_h_mm": 53.3,
-    "x_nudge_mm": 0.0
+    "place": {
+     "rest_on": "pedestal_R",
+     "centre_on": "pedestal_R"
+    }
    }
   ],
-  "_subsurf": "TESTED 2026-08-01 AND NOT SHIPPED, kept spec-gated at 0 like the cove was, because the mechanism is sound and the measurement that asked for it still stands. A probe found every organic-modelling tool in Blender reachable from the DATA API alone, deterministic, in milliseconds — and this figure goes 759 faces -> 12,176 in 41 ms with its 3 hand-made n-gons removed, which the export law forbids anyway. The 2026-07-30 ground-truth study had measured our files at SUBSURF 0 against pro files that use it. All of that is true and NONE of it was worth shipping: applied to everything it ROUNDED AWAY the stepped pedestal's ledges, which is the exact thing flat shading had just been introduced to save; restricted to the cast body it changed nothing visible at all, because the body is already smooth-shaded at 24 segments per ring and at 200 px on screen there was never any faceting to remove. 16x the geometry for zero. THE LESSON IS THE REASON: subdivision smooths what EXISTS and cannot add what was never there. Our figure does not read wrong because it is faceted — it reads wrong because it has no face, no robe folds and no crossed legs, and no subdivision level produces those. The bottleneck was never the tool's smoothness, it was the PARAMETERISATION."
+  "_subsurf": "TESTED 2026-08-01 AND NOT SHIPPED, kept spec-gated at 0 like the cove was, because the mechanism is sound and the measurement that asked for it still stands. A probe found every organic-modelling tool in Blender reachable from the DATA API alone, deterministic, in milliseconds — and this figure goes 759 faces -> 12,176 in 41 ms with its 3 hand-made n-gons removed, which the export law forbids anyway. The 2026-07-30 ground-truth study had measured our files at SUBSURF 0 against pro files that use it. All of that is true and NONE of it was worth shipping: applied to everything it ROUNDED AWAY the stepped pedestal's ledges, which is the exact thing flat shading had just been introduced to save; restricted to the cast body it changed nothing visible at all, because the body is already smooth-shaded at 24 segments per ring and at 200 px on screen there was never any faceting to remove. 16x the geometry for zero. THE LESSON IS THE REASON: subdivision smooths what EXISTS and cannot add what was never there. Our figure does not read wrong because it is faceted — it reads wrong because it has no face, no robe folds and no crossed legs, and no subdivision level produces those. The bottleneck was never the tool's smoothness, it was the PARAMETERISATION.",
+  "_place_R9": "2026-08-02, owner order: positions are DECLARED as contacts and DERIVED at build time, never typed. A coordinate encodes a RESULT and a contact encodes a RELATIONSHIP: resize centre_box and the figure on it follows, where a typed triple would have stayed legal-looking while the contact broke in silence. x_nudge_mm is DELETED, not zeroed — it existed to centre a figure's silhouette on a box and in doing so moved the figure across its own pedestal, which is one number asked to satisfy two relationships. Every offset below is measured FROM A NAMED DATUM, so the next reader can see what it is relative to. Conversion was verified before it was made: all 8 declared positions reproduce their typed values to 0.000000 mm. See CLAUDE.md R9 and docs/placement-audit-2026-08-02.md."
  },
  "camera": {
   "_init": "VP pre-solve 2026-07-31: focal from orthogonal VP pair f_px=2210 -> 38.9mm; horizon v=1023.5 = frame centre -> shift_y~0; yaw -20.5 (station in front of right tower, axis re-centred on marble); metric position scaled from the VP station solve to this spec's 3300 run",

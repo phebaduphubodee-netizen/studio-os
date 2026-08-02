@@ -279,6 +279,16 @@ else
   echo "  !! PINS BROKEN: pipeline/scripts/test_placement_check.py fails -- the"
   echo "                 placement guard can pass a floating or overhanging object"; FAIL=$((FAIL+1))
 fi
+# R9's other half: the resolver that makes the defect unbuildable. Most of its
+# tests assert a RAISE -- a position that cannot be derived must STOP the build,
+# because the alternative is a default, and a default is a typed coordinate with
+# the typing hidden.
+if python3 -m pytest "$ROOT/pipeline/scripts/test_placement.py" -q >/dev/null 2>&1; then
+  echo "  R9  ok     : contacts resolve, and fail closed (nudge refused by name)"; PASS=$((PASS+1))
+else
+  echo "  !! R9 BROKEN: pipeline/scripts/test_placement.py fails -- a position may"
+  echo "               be silently defaulting instead of deriving"; FAIL=$((FAIL+1))
+fi
 
 echo; echo "PASS=$PASS FAIL=$FAIL"
 [ $FAIL -eq 0 ] && echo "M0.1 guard test: ALL GREEN" || { echo "M0.1 guard test: FAILURES PRESENT"; exit 1; }

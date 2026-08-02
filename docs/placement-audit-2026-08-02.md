@@ -110,13 +110,61 @@ not measuring the margin.
   wrong; it does not derive the right one. That is R9's other half and it is
   **not built**: `pos_mm` and `x_nudge_mm` are still what the spec stores.
 
-## 6. What is done, and what is next
+## 6. The other half — SHIPPED the same day
 
-DONE: the audit, R9 + R9b in `CLAUDE.md`, `placement_dump.py`,
-`placement_check.py`, 19 pure tests with a negative control for every scope rule.
+The check catches a typed coordinate that went wrong. It does not stop one being
+typed. `placement.py` does: a **contact resolver**, pure, that turns a declaration
+into a position at build time.
 
-NEXT, and it is the half that actually removes the defect class rather than
-reporting it: **contacts in the spec.** `rest_on` / `centre_on` / `align` resolved
-at build time, `pos_mm` derived and never typed, `x_nudge_mm` deleted rather than
-zeroed. The check then stops being a net and becomes a regression test on a
-mechanism that cannot produce the defect.
+```json
+"place": {"rest_on": "centre_box", "centre_on": "centre_box"}
+"place": {"rest_on": "step", "mirror_about": "centre_box",
+          "offset_x_mm": 920.9, "y_from": "step", "dy_mm": 10.5}
+```
+
+`rest_on` → the support's TOP face. `centre_on` → its plan centre. `x_from`/`y_from`
++ `dx_mm`/`dy_mm` → a measured offset from a NAMED datum. `mirror_about` + `side`
+→ one offset, two objects. **Nothing is relative to the world.**
+
+**It fails closed, and that is the whole design.** An unknown support raises
+rather than defaulting to the origin — this lane has already shipped an asset that
+landed at (0,0,0) while the build log reported it placed. An undetermined axis
+raises, because a silently defaulted axis is a typed coordinate with the typing
+hidden. And **`nudge` is banned by name** (with synonyms), because `x_nudge_mm` is
+what centred a figure's silhouette on a box while sliding it off its own pedestal
+— one number asked to satisfy two relationships.
+
+### The conversion was verified BEFORE it was made, and again after
+
+| stage | result |
+|---|---|
+| derive all 8 declared positions, compare to the typed triples | **0.000000 mm** worst delta |
+| `plan()` output, 13 placements, all fields | **0.000000000 mm**, no other field changed |
+| rebuild in Blender, dump 99 meshes, `placement_check` | **0 FAIL** |
+| 21 prop meshes vs the pre-conversion build, world position | **0.000000 mm** |
+
+A mechanism change that moves the picture is a design change wearing a refactor's
+clothes. This one moved nothing, to the micron, all the way to rendered geometry.
+
+**And the assertion that states the point** (`test_resizing_a_support_MOVES_what_stands_on_it`):
+raise `centre_box` by 50 mm and the figure on it now rises 50 mm. Under typed
+coordinates it stayed where it was, hanging in the air, and nothing failed.
+
+### `x_nudge_mm` is DELETED, not zeroed
+
+Zeroing leaves the mechanism in place for the next round to reach for. The spec
+field is gone, the code path is gone, and a test asserts the spec carries no
+`x_mm`/`y_mm`/`z_mm`/`x_nudge_mm` anywhere in the styling block. The lesson it
+taught survives in a comment, because the class will recur: a correction expressed
+in the wrong SPACE silently does almost nothing — folded into the asset-space
+centre it was multiplied by k=0.0798 and moved the figure 2.7 mm instead of 33.4.
+
+## 7. Still open
+
+- The correction the nudge was covering for — the acquired mesh's bbox is not its
+  visual centre — is **real and now uncompensated**. If it is worth fixing it must
+  be a per-slug asset property applied BEFORE the contact resolves, never a shift
+  of the resolved position.
+- Only the TRN-001 styling block is converted. `build_room.py`'s furniture and
+  `master-suite.CANONICAL.spec.json` still type coordinates.
+- `placement_check` is not yet a build-ladder rung; it is run by hand.

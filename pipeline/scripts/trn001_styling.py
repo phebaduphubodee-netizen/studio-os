@@ -50,6 +50,10 @@ imported bounds fall inside a per-class band and RAISES otherwise.
 """
 import math
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import placement as PL                                  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CC0_MODELS = os.path.join(REPO, "assets", "shared", "cc0", "models")
@@ -703,10 +707,17 @@ def build_asset_figure(p, materials=None):
     # midpoint of its extents sits off the middle of what the eye reads as the
     # object. Measured on the shipped frame: centring the mesh's bbox on the
     # box left the silhouette 3.4% of the box width to the LEFT where the
-    # target's own image sits at -0.5%, i.e. centred. `x_nudge_mm` carries that
-    # measured asymmetry of the ASSET, and it belongs to the asset rather than
-    # to the placement — a different model would need a different number and
-    # the same measurement produces it.
+    # target's own image sits at -0.5%, i.e. centred.
+    #
+    # A NUDGE USED TO LIVE HERE AND IT IS DELETED, NOT ZEROED (R9, 2026-08-02).
+    # `x_nudge_mm` carried that measured asset asymmetry — and because the BASE is
+    # built at the un-nudged position, every millimetre of it also slid the figure
+    # across its own pedestal. One number was being asked to satisfy two
+    # relationships: centre the SILHOUETTE on the box, and seat the FIGURE on its
+    # base. The second is the one the eye checks first, and it lost silently.
+    # If the asset's lean is ever to be corrected again it must be expressed
+    # against the asset — a per-slug bbox-to-visual-centre offset applied before
+    # the contact resolves — and never as a shift of the resolved position.
     ctr = ((max(xs) + min(xs)) / 2.0, (max(ys) + min(ys)) / 2.0, min(zs))
 
     roots, seen = [], set()
@@ -717,13 +728,13 @@ def build_asset_figure(p, materials=None):
         if r.name not in seen:
             seen.add(r.name)
             roots.append(r)
-    # the nudge is WORLD mm and must be applied AFTER the scale, not folded into
-    # the asset-space centre: the first cut put it inside `ctr`, where it was
-    # multiplied by k=0.0798 along with everything else and moved the figure
-    # 2.7 mm instead of 33.4. A correction expressed in the wrong space is a
-    # correction that silently does almost nothing.
-    tgt = (p["pos_mm"][0] * G.MM + float(p.get("x_nudge_mm", 0.0)) * G.MM,
-           p["pos_mm"][1] * G.MM, p["pos_mm"][2] * G.MM)
+    # the resolved contact, straight through — no correction is applied here.
+    # (The deleted nudge also taught its own lesson, kept because the class will
+    # recur: it is WORLD mm and had to be applied AFTER the scale. The first cut
+    # folded it into the asset-space centre, where k=0.0798 multiplied it along
+    # with everything else and moved the figure 2.7 mm instead of 33.4. A
+    # correction expressed in the wrong space silently does almost nothing.)
+    tgt = (p["pos_mm"][0] * G.MM, p["pos_mm"][1] * G.MM, p["pos_mm"][2] * G.MM)
     for r in roots:
         r.scale = tuple(s * k for s in r.scale)
         r.location = (r.location.x * k + tgt[0] - ctr[0] * k,
@@ -809,22 +820,31 @@ def plan(spec):
     so every earlier round still builds byte-identically."""
     st = spec.get("styling") or {}
     out = []
+    # R9: every position below is RESOLVED from a declared contact against the
+    # built masses. Nothing here reads an x_mm/y_mm/z_mm, and there is no nudge.
+    import trn001_geom as G                             # lazily, as elsewhere here
+    table = PL.support_table(G.masses(spec))
+    vpos = {}
     pair = st.get("vase_pair")
     if pair:
         # ONE offset, mirrored about the centre box — the relationship the owner's
         # pedestal correction established, applied to the pair he then caught
         # standing unequal. Two independent x values is what let them drift.
-        bcx = spec["unit"]["box"].get("cx_mm", 0.0)
-        for side, sgn, hk in (("L", -1, "height_L_mm"), ("R", +1, "height_R_mm")):
+        for side, hk in (("L", "height_L_mm"), ("R", "height_R_mm")):
+            p = dict(pair["place"], side=side)
+            vpos[side] = PL.resolve(p, table, f"vase_{side}")
             out.append({"kind": "lathe", "name": f"vase_{side}", "profile": "VASE",
-                        "pos_mm": (bcx + sgn * pair["offset_x_mm"],
-                                   pair["y_mm"], pair["z_mm"]),
+                        "pos_mm": vpos[side],
                         "height_mm": pair[hk], "material": "vase_dark", "cls": "vase"})
     fl = st.get("floral_pair")
     if fl and pair:
-        bcx = spec["unit"]["box"].get("cx_mm", 0.0)
-        for side, sgn, hk in (("L", -1, "height_L_mm"), ("R", +1, "height_R_mm")):
+        for side, hk in (("L", "height_L_mm"), ("R", "height_R_mm")):
             d = fl[side]
+            # the spray STANDS IN ITS VASE, so its position is the vase's — read
+            # from the resolved value, not recomputed. Two expressions for one
+            # x is precisely how a pair drifts apart one edit at a time, and this
+            # file used to carry both.
+            vx, vy, vz = vpos[side]
             # the lean is stored per side AS MEASURED and is NOT mirrored: both
             # sprays sit ~+19 mm toward +x of their own vase axis, which is what
             # two independently arranged bunches in one room actually do, and
@@ -832,8 +852,7 @@ def plan(spec):
             # denies. (The vases themselves ARE mirrored — that is a joinery
             # relationship; this is not.)
             out.append({"kind": "spray", "name": f"floral_{side}",
-                        "pos_mm": (bcx + sgn * pair["offset_x_mm"] + d["lean_x_mm"],
-                                   pair["y_mm"], pair["z_mm"] + pair[hk]),
+                        "pos_mm": (vx + d["lean_x_mm"], vy, vz + pair[hk]),
                         "width_mm": d["width_mm"], "height_mm": d["height_mm"],
                         "seed": d.get("seed", 1), "flowers": d.get("flowers", 7),
                         "buds": d.get("buds", 4), "subsurf": d.get("subsurf", 0),
@@ -845,9 +864,8 @@ def plan(spec):
                     "z_keep": fg.get("z_keep", 0.0),
                     "use_our_material": bool(fg.get("use_our_material")),
                     "base_h_mm": fg.get("base_h_mm", 0.0),
-                    "x_nudge_mm": fg.get("x_nudge_mm", 0.0),
                     "base_lap_ratio": fg.get("base_lap_ratio", 1.02),
-                    "pos_mm": (fg["x_mm"], fg["y_mm"], fg["z_mm"]),
+                    "pos_mm": PL.resolve(fg["place"], table, fg["name"]),
                     "height_mm": fg["height_mm"], "mirror": bool(fg.get("mirror")),
                     "subsurf": fg.get("subsurf", 0),
                     "material": "gilt", "cls": "figure"})
@@ -863,12 +881,15 @@ def plan(spec):
                     "height_mm": v["height_mm"],
                     "material": v.get("material", "vase_dark"), "cls": "vase"})
     for c in st.get("candlesticks", []):
+        cx, cy, cz = PL.resolve(c["place"], table, c["name"])
         out.append({"kind": "lathe", "name": c["name"], "profile": "CANDLESTICK",
-                    "pos_mm": (c["x_mm"], c["y_mm"], c["z_mm"]),
+                    "pos_mm": (cx, cy, cz),
                     "height_mm": c["bronze_h_mm"], "material": "bronze_dark",
                     "cls": "candlestick"})
+        # the candle stands ON its stick: derived from the resolved base, never
+        # re-read from the spec, so the two can never disagree
         out.append({"kind": "lathe", "name": c["name"] + "_taper", "profile": "TAPER",
-                    "pos_mm": (c["x_mm"], c["y_mm"], c["z_mm"] + c["bronze_h_mm"]),
+                    "pos_mm": (cx, cy, cz + c["bronze_h_mm"]),
                     "height_mm": c["total_h_mm"] - c["bronze_h_mm"],
                     "material": "wax_white", "cls": "candle"})
     return out
