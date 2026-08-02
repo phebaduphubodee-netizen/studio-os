@@ -95,7 +95,7 @@ lane's to fake.
 
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
-| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 6: cubby POCKET built — the model had one depth where the unit has two (proud 100 CONFIRMED + pocket 176.5 NEW = cavity 276.5, measured 274.8); the wall now opens for it. Rounds 1–3 closed by owner; gates #4 (light), #5 (styling), #6 (depth) all OPEN. R1 STOP on cubby mouth brightness. Round 7: PALETTE's roughness column was dead for every mapped material (marble asked 0.18, rendered 0.506 — the hero object's polish reached no frame in four rounds); veneer wore the floor's micro-bevel relief; DR fired on veneer figure; step depth 311 taken back OFF the owner's queue as unconstrained rather than wrong. Round 8: the cubby was never too bright, it was too WARM (hue err 0.339 -> 0.095 at unchanged luminance); bookmatch built per the DR; the ID pass rebuilt to give every mass a unique decodable colour, which promptly acquitted a matcheck row the previous commit had convicted. Round 9 (owner order 1, take light OFF the floor): SHIPPED wall-wash tilt 7 deg + 5.ies + diffuse_bounces 4->16, aggregate |abs-1| 3.26 -> 2.01 and worst patch 1.18 -> 0.34, at the cost of header/plinth and p99/p1; found and fixed a 180-degree yaw error in every aimed light this lane ever built, which invalidates the FILL's two refutations; and measured the one thing no knob can move -- the target's floor carries a left-right ramp of +0.199/m that ours reports as -0.005/m in all 30 configs. Round 10 (florals): round 5's 'the CC0 pool holds 13 models' was a CACHE MISS -- the real pool is 521 and its conclusion survives on it; lilies BUILT (decision (kho)'s refusal was about religious statuary 'used respectfully as-is' and never covered cut flowers), Buddha figures still refused and now recorded as a STUDIO capability gap rather than a TRN-001 defect. Round 11 (11-agent fleet): the ROOM IS 105 mm TALLER than nine rounds assumed and nothing in the model ever disagreed; the floor's texture was in the map all along and being lost in delivery; and the finish line finally has a threshold the owner can run. Rounds 12-18: the figures, ACQUIRED after the owner asked where models come from and a working designer said 3D Warehouse — a source our own asset DR never mentions | 18 | 36 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) ; **ONE PARAMETER CARRYING TWO THINGS is the shape to hunt** — five rounds of light could not fix a cubby because `tower.d_mm` meant both 'how far the carcass stands proud' and 'how deep the cavity is', so proving the first read as proving the second (a note was CLOSED on it); the tell was a gating metric (p99/p1) that no amount of the lane's own knobs could move, and it moved 57.8→157.9 the moment the second dimension existed; **an instrument that cannot reproduce a value you already know must not be asked for one you don't** — two reads were disqualified here by their own controls (a horizontal-plane back-projection failing by 57-172mm, and a grazing side wall returning y=+323.7 for an arris that must be ~-100), which is cheaper than believing them; **plane≠surface paid for the 4th time** and is now the `first_hit` instrument rather than a memory — it reversed a conclusion from 'left tower fine, right dark' to 'both dark, consistently'; **coincident faces are not a style question** — the hero marble sat inside the wall body with front faces exactly flush and had been winning a BVH coin flip on every render since the recess landed ; **the cure you already wrote for one input is not applied to the next** — MAP_MEAN normalises the diffuse map so the map gives VARIATION and the table gives IDENTITY, and the roughness map two lines below was still linked raw, silently overriding a whole column of the table (found only because two roughness values gave byte-identical ladders: identical to three decimals is not a weak effect, it is NO effect); **one-parameter-carrying-two-things recurred twice in one day** — tower.d_mm (proud vs cavity) and NORMAL_STRENGTH keyed by map slug (a veneer forced to wear the floor's plank bevel), so hunt the SHAPE and not the instance; **a finding rejected on a broken measurement is not yet a finding** — the geometry fix invalidated the criterion that had killed the fill and the wide beam, so both went back on trial: the fill's refutation survived on an untouched metric and the beam's held too, and re-opening was still right; **a vault MISS is not a vault GAP until the search runs in the language the vault is written in** (an English grep for bookmatch/flitch found nothing in a file indexing them in Thai) |
+| TRN-001 | 2026-07-30 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 6: cubby POCKET built — the model had one depth where the unit has two (proud 100 CONFIRMED + pocket 176.5 NEW = cavity 276.5, measured 274.8); the wall now opens for it. Rounds 1–3 closed by owner; gates #4 (light), #5 (styling), #6 (depth) all OPEN. R1 STOP on cubby mouth brightness. Round 7: PALETTE's roughness column was dead for every mapped material (marble asked 0.18, rendered 0.506 — the hero object's polish reached no frame in four rounds); veneer wore the floor's micro-bevel relief; DR fired on veneer figure; step depth 311 taken back OFF the owner's queue as unconstrained rather than wrong. Round 8: the cubby was never too bright, it was too WARM (hue err 0.339 -> 0.095 at unchanged luminance); bookmatch built per the DR; the ID pass rebuilt to give every mass a unique decodable colour, which promptly acquitted a matcheck row the previous commit had convicted. Round 9 (owner order 1, take light OFF the floor): SHIPPED wall-wash tilt 7 deg + 5.ies + diffuse_bounces 4->16, aggregate |abs-1| 3.26 -> 2.01 and worst patch 1.18 -> 0.34, at the cost of header/plinth and p99/p1; found and fixed a 180-degree yaw error in every aimed light this lane ever built, which invalidates the FILL's two refutations; and measured the one thing no knob can move -- the target's floor carries a left-right ramp of +0.199/m that ours reports as -0.005/m in all 30 configs. Round 10 (florals): round 5's 'the CC0 pool holds 13 models' was a CACHE MISS -- the real pool is 521 and its conclusion survives on it; lilies BUILT (decision (kho)'s refusal was about religious statuary 'used respectfully as-is' and never covered cut flowers), Buddha figures still refused and now recorded as a STUDIO capability gap rather than a TRN-001 defect. Round 11 (11-agent fleet): the ROOM IS 105 mm TALLER than nine rounds assumed and nothing in the model ever disagreed; the floor's texture was in the map all along and being lost in delivery; and the finish line finally has a threshold the owner can run. Rounds 12-18: the figures, ACQUIRED after the owner asked where models come from and a working designer said 3D Warehouse — a source our own asset DR never mentions | 19 | 36 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) ; **ONE PARAMETER CARRYING TWO THINGS is the shape to hunt** — five rounds of light could not fix a cubby because `tower.d_mm` meant both 'how far the carcass stands proud' and 'how deep the cavity is', so proving the first read as proving the second (a note was CLOSED on it); the tell was a gating metric (p99/p1) that no amount of the lane's own knobs could move, and it moved 57.8→157.9 the moment the second dimension existed; **an instrument that cannot reproduce a value you already know must not be asked for one you don't** — two reads were disqualified here by their own controls (a horizontal-plane back-projection failing by 57-172mm, and a grazing side wall returning y=+323.7 for an arris that must be ~-100), which is cheaper than believing them; **plane≠surface paid for the 4th time** and is now the `first_hit` instrument rather than a memory — it reversed a conclusion from 'left tower fine, right dark' to 'both dark, consistently'; **coincident faces are not a style question** — the hero marble sat inside the wall body with front faces exactly flush and had been winning a BVH coin flip on every render since the recess landed ; **the cure you already wrote for one input is not applied to the next** — MAP_MEAN normalises the diffuse map so the map gives VARIATION and the table gives IDENTITY, and the roughness map two lines below was still linked raw, silently overriding a whole column of the table (found only because two roughness values gave byte-identical ladders: identical to three decimals is not a weak effect, it is NO effect); **one-parameter-carrying-two-things recurred twice in one day** — tower.d_mm (proud vs cavity) and NORMAL_STRENGTH keyed by map slug (a veneer forced to wear the floor's plank bevel), so hunt the SHAPE and not the instance; **a finding rejected on a broken measurement is not yet a finding** — the geometry fix invalidated the criterion that had killed the fill and the wide beam, so both went back on trial: the fill's refutation survived on an untouched metric and the beam's held too, and re-opening was still right; **a vault MISS is not a vault GAP until the search runs in the language the vault is written in** (an English grep for bookmatch/flitch found nothing in a file indexing them in Thai) |
 
 **Gate #2's open question — CLOSED 2026-07-31 by a third instrument.** The
 built-in is ~100 mm deep, not 360. A shelf board below the horizon shows its
@@ -548,3 +548,115 @@ still prints nothing about depth, which is what round 18 turned on.
 **Spend, rounds 12-18**: 7 full frames, ~25 quick, 13 models fetched and
 measured (7 rejected on scale, 1 on flatness, 1 on iconography), 2212 tests
 green. Critic ladder: C0 ✓ C1 ✓ — C2/C3 not run.
+
+
+**Round 19 (2026-08-02, no render spent — the instrument round).**
+
+**THE LANE'S PALETTE SHEET HAD BEEN CARRYING TWO NUMBERS THAT WERE NOT
+MEASUREMENTS.** `trn001_matcheck`'s two stile rows reported 2.50x and 0.95x, and
+the 2.50 was the largest number on the sheet. An id mask rendered off the same
+build says what they sampled: at this camera `tower_R_sA` is **20 px** wide on
+screen and `tower_R_sB` is **17 px**, because those panels are 18 mm thick and we
+see them EDGE ON. The 2.50 was a sliver of a panel's thickness. The outer row's
+box ran u1946-1956 against a feature ending at u1954 — two of its ten columns
+were off the object.
+
+`_check_narrow` passed both, and was right to by its own logic: a 10 px box is
+fine on a 400 px panel. **It asks whether the BOX is narrow when the question is
+whether the FEATURE is, and no box can answer that about itself.** Same family as
+the bounding box that could not tell a vase from a plank and the return band that
+could not tell a shallow box from a deep pocket — the instrument measured itself
+instead of its subject. `audit_against_mask` now asks the renderer, `--mask`
+wires it in where the numbers are made, and `_check_narrow` checks BOTH axes
+(round 18 lost three rounds to a defect that hid in the axis nothing measured).
+
+**AND THE SAME MASK MAKES THE HAND-PLACED TABLE LARGELY OBSOLETE.**
+`compare_objects` reads the median of EVERY object in BOTH frames off one pixel
+set — 39 surfaces instead of 9 boxes, no placement, no slivers by construction.
+Its first run overturned the sheet's biggest surviving claim: **the altar step
+reads 2.38x too bright from a 140x30 box and 1.02x over the whole 120,103 px
+object.** A 30 px band on a graded surface is not that surface. The declared
+limit, which is the only thing here to distrust: the mask is OUR geometry, so a
+row is a comparison only where our geometry lands on the target's — hence the
+6 px erosion and the px count on every row.
+
+**WHAT THE 39-OBJECT TABLE THEN SAID, AND IT IS NOT WHAT ANY EARLIER ROUND
+BELIEVED.** Sorted by height, the horizontal surfaces:
+
+| surface | z mm | px | target | ours | delta |
+|---|---|---|---|---|---|
+| floor | -50 | 673266 | 165.2 | 160.3 | **-4.9** |
+| tower_L_shelf0 | 597 | 1261 | 44.2 | 118.1 | +73.9 |
+| tower_R_shelf0 | 597 | 4615 | 59.2 | 113.4 | +54.2 |
+| tower_R_shelf3 | 1957 | 5316 | 22.0 | 44.6 | +22.6 |
+| tower_L_top | 2421 | 2810 | 19.3 | 46.5 | +27.1 |
+| tower_R_top | 2421 | 9030 | 20.3 | 42.0 | +21.7 |
+| ceiling | 2855 | 449509 | 154.4 | 158.8 | **+4.4** |
+
+**Every horizontal surface inside a cubby is 1.9-2.7x too bright. The two
+horizontals that are not inside a cubby — floor at 673 k px and ceiling at 449 k
+px — are both right to within 3%.** That is not exposure and not albedo.
+
+**AND THE LANE HAD BEEN TUNING THE ONE CUBBY SURFACE THAT AGREES.**
+`tower_R_back` is 230,233 px — bigger than the other seven pocket surfaces
+together — and it measures **0.99**. It is also where the hand table's
+"cavity (cubby interior)" box sits. Round 12-18 raised the cavity albedo 0.05 →
+0.15 to bring the back panel up, the back panel came up, and the seven surfaces
+around it stayed where they were: `tower_L_sA` 1.57 (60 k px), `tower_L_back`
+1.59 (52 k px), `tower_L_sB` 1.59 (19 k px). **The cavity's own note said the
+mouth was running 1.42x too bright; it is still true, now measured over 60,000 px
+instead of a hand box, and the albedo change never addressed it.** The veneer
+rows carry a written warning against exactly this — "cooling it would pay for the
+light's error inside the material table, permanently" — and the cavity row is
+where it happened.
+
+**Second mass-weighted finding: all four plinth faces are 0.77-0.86x** (172 k px
+together, deltas -28 to -48) **while the plinth's TOP is 0.97.** An albedo error
+cannot make a top right and its four faces dark.
+
+**Whole-frame, the one large difference:** the target puts 1.56% of its pixels
+under luma 20 and we put 0.04% — 65,514 px against 1,349. A 16-cell map places
+55% of the target's darks in the two cubby columns, which agrees with
+`_cove_refuted`'s 93.2% and with the picture (`look/trn001_darks.png`).
+
+**REFUTED THIS ROUND, BY ME, AGAINST MY OWN FIRST READ.** I proposed that the
+target's palette sits in three tiers with an empty band between wood and white,
+and that our altar had climbed out of the wood tier. A whole-frame histogram
+kills it: **43.1% of the target's pixels live in that "empty" band against our
+47.4%.** The tiers were an artefact of having chosen nine boxes. Also killed: a
+context crop read OPPOSITE in sign to the numbers on two rows — flat swatches on
+a grey surround settled it, and the numbers were right. **A crop with a surround
+has a known way to lie; look at swatches when the question is value.**
+
+**Also fixed, and it was not a measurement problem.** `id_mask.py` wrote its PNG
+with `scene.render.filepath` and its sidecar with `open()`. On Windows those
+disagree about a drive-less relative path — Python resolves against the CWD,
+Blender against the current DRIVE ROOT — so the image landed in `C:\_private\`
+and the JSON in the repo, and the run printed OK. **The half that escaped carried
+a client scene's pixels, outside every `.gitignore` written to contain it.** One
+function, two writers, two notions of "here"; `value_probe.mask_paths` resolves
+once for both.
+
+## GATE #13 — พร้อมให้ตัดสิน
+
+**Sheets**: `look/trn001_darks.png` (where the target is dark and we are not),
+`look/trn001_altar_pair.png`, `look/trn001_swatches.png`,
+`look/trn001_patch_audit.png`. Frame unchanged: `trn001_blockout_r20.png`.
+**The blind finish sheet is still the open test**:
+`benchmark/look-bench/blind_trn001_blockout_r13_s0.png`.
+
+1. **No pixel of the render changed this round and that is the result.** Two
+   instruments were wrong, one of them was writing client pixels outside the
+   repo, and the numbers the next build would have been steered by included a
+   2.50 and a 2.38 that are now known to be artefacts. Building on them first
+   would have bought a round of chasing them.
+2. **The light question is now stated in mass, not in boxes**: seven cubby
+   surfaces at 1.6-2.7x with the eighth — the biggest, the one the lane was
+   watching — at 0.99, and four plinth faces at 0.8 under a plinth top at 0.97.
+   Both say light is distributed wrongly, not that a material is wrong.
+3. **Owner's call, carried forward unchanged**: the fill's two refutations were
+   measured on a light aimed 180° away from where the note said it pointed.
+   Re-open, or leave convicted? And gates #4-#12 remain unanswered.
+
+**Spend, round 19**: 0 beauty renders, 1 id-mask probe (2.2 s), 0 quick renders,
+10 new tests, 2347 green, guards 88/0.

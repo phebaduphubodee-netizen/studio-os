@@ -897,6 +897,64 @@ def test_the_patch_auditor_refuses_a_box_that_mixes_two_surfaces():
     assert not r["ok"] and r["why"] == "mixed surfaces"
 
 
+def test_erosion_drops_the_rim_and_treats_the_frame_border_as_outside():
+    """The rim is where a residual camera error puts OUR surface on top of the
+    TARGET's neighbour, so whole-object mode measures the interior only. A border
+    pixel has no neighbour, and must erode away rather than wrap around."""
+    import numpy as np
+    import trn001_matcheck as MC
+
+    sel = np.zeros((40, 40), bool)
+    sel[10:30, 10:30] = True
+    core = MC._erode(sel, 3)
+    assert core.sum() == 14 * 14
+    assert core[13:27, 13:27].all() and not core[12, 20] and not core[20, 12]
+
+    edge = np.zeros((40, 40), bool)
+    edge[:5, :5] = True                      # touching the frame corner
+    assert MC._erode(edge, 3).sum() == 0     # not 4, and nothing wrapped to the far side
+
+
+def test_whole_object_mode_measures_the_same_pixels_in_both_frames():
+    """Both medians come from ONE pixel set, so a value difference cannot be a
+    difference in where the two frames were sampled — which is the failure mode
+    the hand-placed table has, and the reason it lost two rows to 18 mm slivers."""
+    import numpy as np
+    import trn001_matcheck as MC
+
+    mask, names = _synthetic_mask({"big": (100, 400, 100, 400),
+                                   "sliver": (500, 508, 100, 400)}, w=600, h=500)
+    ids = MC.decode_mask(mask)
+    ours = np.full((500, 600, 3), 200.0, np.float32)
+    tgt = np.full((500, 600, 3), 100.0, np.float32)
+
+    rows = MC.compare_objects(ours, tgt, ids, names, min_px=1000, erosion=6)
+    assert [r["object"] for r in rows] == ["big"]          # the sliver erodes to nothing
+    assert rows[0]["target"] == 100.0 and rows[0]["ours"] == 200.0
+    assert rows[0]["ratio"] == 2.0
+    assert rows[0]["px"] == (300 - 12) ** 2
+
+
+def test_whole_object_mode_is_not_fooled_by_an_unrepresentative_band():
+    """The finding that motivated this mode: the altar step read 2.38x from a
+    140x30 hand box and 1.02x over the whole 120,103 px object. A 30 px band on a
+    graded surface is not that surface. Reproduced in miniature — a bright stripe
+    across an otherwise matching object moves a box reading and not the median."""
+    import numpy as np
+    import trn001_matcheck as MC
+
+    mask, names = _synthetic_mask({"graded": (0, 400, 0, 400)}, w=400, h=400)
+    ids = MC.decode_mask(mask)
+    tgt = np.full((400, 400, 3), 100.0, np.float32)
+    ours = np.full((400, 400, 3), 100.0, np.float32)
+    ours[190:220] = 240.0                                  # a 30-row band, 7.5% of the object
+
+    band = ours[190:220, 100:240, 0].mean() / tgt[190:220, 100:240, 0].mean()
+    whole = MC.compare_objects(ours, tgt, ids, names, min_px=1000, erosion=6)[0]
+    assert band == 2.4                                     # what a band-shaped box reports
+    assert whole["ratio"] == 1.0                           # what the object actually is
+
+
 def test_the_mask_decoder_agrees_with_the_probes_own_encoder():
     """matcheck decodes the palette itself rather than importing the numpy path,
     so the two implementations are checked against each other rather than assumed

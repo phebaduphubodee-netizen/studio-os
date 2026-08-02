@@ -101,6 +101,12 @@ FEATURE_MARGIN_PX = 8
 # below this the box is sampling more than one surface and reports neither
 MIN_DOMINANT_SHARE = 0.90
 
+# whole-object mode: an object smaller than this is not a material reading, and
+# every pixel within EROSION of a silhouette is dropped because that is where a
+# residual camera error puts our surface on top of the target's neighbour
+OBJECT_MIN_PX = 3000
+OBJECT_EROSION_PX = 6
+
 
 def _lin(img, box):
     u0, u1, v0, v1 = box
@@ -194,6 +200,66 @@ def audit_against_mask(ids, names, patches=None,
     return rows
 
 
+def _erode(sel, k):
+    """Boolean erosion by a (2k+1)^2 box, separable, borders treated as outside."""
+    if k <= 0:
+        return sel
+    out = sel
+    for axis in (0, 1):
+        pad = [(k, k) if a == axis else (0, 0) for a in (0, 1)]
+        p = np.pad(out, pad, constant_values=False)
+        acc = np.ones_like(out, dtype=bool)
+        for d in range(2 * k + 1):
+            sl = [slice(None), slice(None)]
+            sl[axis] = slice(d, d + out.shape[axis])
+            acc &= p[tuple(sl)]
+        out = acc
+    return out
+
+
+def compare_objects(ours_rgb, target_rgb, ids, names,
+                    min_px=OBJECT_MIN_PX, erosion=OBJECT_EROSION_PX):
+    """Every object is a patch. Rec.709 luma median per object, in BOTH frames.
+
+    WHY THIS EXISTS AND WHAT IT REPLACES. The hand-placed table above covers nine
+    boxes and each one had to be argued for, re-verified and occasionally retired;
+    two of them turned out to be sampling 18 mm panel edges. This covers every
+    object the camera can see, needs no placement, and cannot sit on the wrong
+    surface — the mask IS the patch table. On the first run it overturned the
+    largest number the hand table carried: the altar step read 2.38x too bright
+    from a 140x30 box and 1.02x over the whole 120,103 px object, because a 30 px
+    band on a graded surface is not that surface.
+
+    THE ASSUMPTION, which is the only thing here worth distrusting: the mask is
+    OUR geometry, so a row is only a comparison where our geometry lands on the
+    target's. The camera is solved and the landmark residuals are pinned, but
+    residuals are not zero — hence `erosion`, which drops every pixel within k of
+    an object's edge, and hence `px`, printed on every row so a thin object's
+    reading can be discounted. Where the two builds genuinely differ in SHAPE this
+    reports the difference as a value error; that is a real limit, not a bug, and
+    it is why the small figures at ~1-3 k px are the least trustworthy rows.
+
+    Pure: takes decoded arrays, opens nothing.
+    """
+    lo = 0.2126 * ours_rgb[..., 0] + 0.7152 * ours_rgb[..., 1] + 0.0722 * ours_rgb[..., 2]
+    lt = 0.2126 * target_rgb[..., 0] + 0.7152 * target_rgb[..., 1] + 0.0722 * target_rgb[..., 2]
+    rows = []
+    for i, name in names.items():
+        sel = ids == int(i)
+        if sel.sum() < min_px:
+            continue
+        core = _erode(sel, erosion)
+        if core.sum() < max(min_px // 3, 1):
+            continue
+        o, t = float(np.median(lo[core])), float(np.median(lt[core]))
+        rows.append({"object": name, "px": int(core.sum()),
+                     "target": round(t, 1), "ours": round(o, 1),
+                     "delta": round(o - t, 1),
+                     "ratio": round(o / max(t, 1e-6), 3)})
+    rows.sort(key=lambda r: r["target"])
+    return rows
+
+
 def compare(ours_path, target_path):
     ours, tgt = Image.open(ours_path), Image.open(target_path)
     rows = []
@@ -240,6 +306,23 @@ def main():
             raise SystemExit(f"\n{len(bad)} patch(es) do not sit on the surface they "
                              f"name: {bad}. A ratio from one of these is not a material "
                              f"reading — fix the patch table, do not read the number.")
+        print()
+
+        orgb = np.asarray(Image.open(a.ours).convert("RGB"), dtype=np.float32)
+        trgb = np.asarray(Image.open(a.target).convert("RGB"), dtype=np.float32)
+        orows = compare_objects(orgb, trgb, ids, names)
+        print(f"{'object (whole, eroded)':30s} {'px':>8s} {'target':>7s} {'ours':>7s} "
+              f"{'delta':>7s} {'ratio':>6s}")
+        for r in orows:
+            print(f"{r['object'].replace('SM_TRN001_',''):30s} {r['px']:8d} "
+                  f"{r['target']:7.1f} {r['ours']:7.1f} {r['delta']:+7.1f} {r['ratio']:6.2f}")
+        dl = np.array([r["delta"] for r in orows])
+        print(f"\n{len(orows)} objects. mean delta {dl.mean():+.1f}  "
+              f"median {np.median(dl):+.1f}  sd {dl.std():.1f}  "
+              f"worst {dl.min():+.1f} .. {dl.max():+.1f}")
+        if a.json:
+            json.dump(orows, open(a.json.replace(".json", ".objects.json"), "w",
+                                  encoding="utf-8"), indent=1)
         print()
 
     rows = compare(a.ours, a.target)
