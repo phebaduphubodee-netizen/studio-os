@@ -756,12 +756,20 @@ def build_asset_figure(p, materials=None):
         # under a 125 px lap, i.e. 1.02, the base is slightly WIDER than the lap
         # and never narrower. A constant that was correct for one object is not a
         # constant.
-        lap_mm = (max(xs) - min(xs)) / G.MM * k
-        want = lap_mm * float(p.get("base_lap_ratio", 1.02))
-        built = max(hx for _, hx, _ in BASE_CANON) * 2.0 * (bh / 0.205)
-        if built > 1e-6:
-            f_xy = want / built
-            verts = [(bx + (x - bx) * f_xy, by + (y - by) * f_xy, z)
+        # X AND Y INDEPENDENTLY. One factor for both was the same mistake one
+        # level down: BASE_CANON's own depth-to-width ratio is 0.75 and the
+        # acquired figure's is 0.54, so a base matched to the lap's WIDTH came
+        # out 163 mm deep under a figure 115 mm deep and jutted 24 mm toward the
+        # camera at front and back. Two ratios, two factors.
+        ratio = float(p.get("base_lap_ratio", 1.02))
+        want_x = (max(xs) - min(xs)) / G.MM * k * ratio
+        want_y = (max(ys) - min(ys)) / G.MM * k * ratio
+        H = bh / 0.205
+        built_x = max(hx for _, hx, _ in BASE_CANON) * 2.0 * H
+        built_y = max(hy for _, _, hy in BASE_CANON) * 2.0 * H
+        if built_x > 1e-6 and built_y > 1e-6:
+            fx, fy = want_x / built_x, want_y / built_y
+            verts = [(bx + (x - bx) * fx, by + (y - by) * fy, z)
                      for x, y, z in verts]
         me = _b.data.meshes.new(f"SM_TRN001_{p['name']}_base")
         me.from_pydata([(x * G.MM, y * G.MM, z * G.MM) for x, y, z in verts],

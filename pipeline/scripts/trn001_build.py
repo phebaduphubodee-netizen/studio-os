@@ -335,6 +335,24 @@ def main():
             d = (hi - lo) * 1000.0
             print(f"GEOCHK {ob.name[:34]:36s} w {d.x:7.1f}  h {d.z:7.1f} mm "
                   f"centre_x {(lo.x + hi.x) / 2 * 1000:9.1f}")
+            # AND THE CONTACT, which is the relationship the eye actually
+            # checks: a base is judged at its TOP band and a figure at its
+            # BOTTOM band, because two bounding boxes can share a centre while
+            # the seat still sits off the pedestal it rests on.
+            pts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+            if pts:
+                z0 = min(p_.z for p_ in pts); z1 = max(p_.z for p_ in pts)
+                if z1 - z0 > 1e-9:
+                    top = ob.name.endswith("_base")
+                    a = z0 + (z1 - z0) * (0.88 if top else 0.0)
+                    b = z0 + (z1 - z0) * (1.0 if top else 0.12)
+                    sel = [p_.x for p_ in pts if a <= p_.z <= b]
+                    if len(sel) > 2:
+                        print(f"GEOCHK   z {z0*1000:8.1f}..{z1*1000:8.1f}  "
+                              f"{'base TOP ' if top else 'fig SEAT '}"
+                              f"x {min(sel)*1000:9.1f}..{max(sel)*1000:9.1f}"
+                              f"  mid {(min(sel)+max(sel))/2*1000:9.1f}"
+                              f"  w {(max(sel)-min(sel))*1000:7.1f}")
     cam_ob = build_camera(spec["camera"])
     build_light(spec)
 
