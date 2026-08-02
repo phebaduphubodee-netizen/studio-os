@@ -75,6 +75,11 @@ these four were named.
 - GAP: the corpus names the four cuts but describes **no** appearance or
   yield differences — the appearance column above is unverified general
   reference (*); re-source before it enters drawings or a client spec.
+  **PARTLY ANSWERED 2026-08-02, at a LOWER tier, in a different file:**
+  `knowledge/materials/veneer-figure-and-panel-layout.md` carries plain-sliced
+  leaf widths, centre-balancing and the barber-pole effect from a research
+  answer. That is REFERENCE tier and does NOT upgrade the `*` cells above —
+  this corpus still says nothing. Yield is still absent everywhere.
 
 ## 3. การเรียงลายวีเนียร์ / Veneer matching
 
@@ -89,6 +94,10 @@ Two matching techniques named (Interior Design Knowledge Structuring.pdf p.5):
 - GAP: source names the two techniques only; the appearance descriptions are
   general reference (*). Other matches (random, end, balance matching) are not
   in the corpus — do not cite them from this file.
+  **See `knowledge/materials/veneer-figure-and-panel-layout.md` §3** for why
+  book matching produces the barber-pole banding this row mentions, and why
+  slip matching does not — REFERENCE tier, and it is also where flitch
+  sequencing (absent from this corpus) is described.
 
 ## 4. วิธีเข้าไม้ / Joinery methods
 
