@@ -230,6 +230,18 @@ else
   echo "                   failure is now a SILENT UNSCREENED ALLOW. Restore it."; FAIL=$((FAIL+1))
 fi
 
+echo "== inbox_audit.py : the debt instrument's own pins =="
+# The instrument, not the debt: its self-pins (units!=files, git-add age never mtime,
+# PIN-MISS downgrades DISTILLED, provenance-is-code, UNCLASSIFIED-is-loud) must hold.
+# Debt itself stays a HUMAN decision — inbox_audit's exit code is deliberately NOT
+# gated here (exit 2 = aging debt is advisory; exit 1 = bookkeeping lies, which the
+# pytest pins below already catch on the real tree).
+if python3 -m pytest "$ROOT/scripts/test_inbox_audit.py" -q >/dev/null 2>&1; then
+  echo "  PINS ok    : inbox_audit self-pins hold"; PASS=$((PASS+1))
+else
+  echo "  !! PINS BROKEN: scripts/test_inbox_audit.py fails — the debt instrument can lie again"; FAIL=$((FAIL+1))
+fi
+
 echo "== asset_license.py : no non-redistributable mesh may reach a commit =="
 # NEW CLASS, and it names what the other guards miss (R6): guard_paths/guard_bash screen
 # PATHS and COMMANDS. Neither can answer "may this file be redistributed", which became a
