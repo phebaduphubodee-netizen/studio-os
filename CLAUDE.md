@@ -123,6 +123,41 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   the deliberate ledges of a stepped base and, restricted to the smooth-shaded
   body, changed nothing visible at all. A probe proves REACHABILITY. Only a look
   proves VALUE.
+- R9 A POSITION THAT CAN BE DERIVED FROM A CONTACT MUST NEVER BE TYPED (owner
+  order 2026-08-02, *"ผมสังเกตว่าที่ผ่านมาทั้งหมดคุณชอบวาง model เบี้ยว ลอย ไม่ตรงแกน
+  ไม่สมจริง"* — an observation across every project, and the measurement agreed).
+  Full audit: `docs/placement-audit-2026-08-02.md`. **The mechanism is not
+  carelessness.** Positions are stored as ABSOLUTE coordinates (`pos_mm`, plus an
+  `x_nudge_mm` fudge). **A coordinate encodes a RESULT, never a RELATIONSHIP** —
+  so when the thing underneath is resized the stored number stays perfectly
+  legal, the contact silently breaks, and nothing fails, because a coordinate is
+  always a legal coordinate. With no declared parent, "centre it on the box" and
+  "stand it on the pedestal" become two edits to the same three numbers: the spec
+  says so in its own words — *"I optimised one relationship and broke another in
+  the same edit, and did not look at the second."* Same family as ONE PARAMETER
+  CARRYING TWO THINGS. **The test, before the first coordinate is typed:** can
+  this placement be written as (a) `rest_on <face>`, (b) `centre_on`/`align
+  <datum>`, or (c) a MEASURED offset from a named edge? YES → declare the
+  relationship and let the builder solve it; nobody types a z. **A `nudge`
+  parameter is the tell that the derivation is missing — it is not the fix, it is
+  the defect wearing a knob.** **Stop-loss:** two placement corrections on the
+  same object means the position is being TYPED, not derived — convert it to a
+  contact, never nudge a third time (rounds 15–18 were four).
+- R9b THE GUARD IS UNIVERSAL AND READS THE BUILT SCENE. `placement_dump.py`
+  (in Blender) → `placement_check.py` (pure, no bpy) → FLOATING / OVERHANG /
+  OFF-AXIS, with interpenetration ADVISORY because an AABB cannot tell
+  interlocking from intersecting. **No allowlist**: the two guards it replaces
+  covered `vase` and `candlestick` out of five classes placed, so 8 of 13
+  objects — every figure among them — were exempt, and four consecutive rounds of
+  figure-placement defects followed. **A rule that names the objects it applies
+  to will always exempt the next one.** Spec-side checks are not enough for the
+  same reason a `--factory-startup` default cube corrupted three renders: they
+  cannot see an object the spec does not know about, and the file that renders is
+  not automatically the file of record. Scope is derived from the rule's own
+  premise, never chosen to silence false positives — that cost three corrections
+  (built elements are braced, spanning elements have many supports, contents do
+  not brace their container), and the version that silenced the first 27 false
+  positives would also have passed round 16.
 
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`

@@ -267,5 +267,18 @@ else
   echo "  !! PINS BROKEN: scripts/test_asset_license.py fails -- the licence guard can lie"; FAIL=$((FAIL+1))
 fi
 
+echo "== placement_check.py : nothing floats, overhangs or sits crooked (R9b) =="
+# The rules only. The LIVE check needs a built .blend and belongs on the build
+# ladder, not in a guard suite that must stay seconds long -- but the rules that
+# judge it are pure, and three of this check's four scope corrections were found
+# by it convicting CORRECT construction, so every scope rule has a negative
+# control beside it. A guard that fires on both sides of a margin measures nothing.
+if python3 -m pytest "$ROOT/pipeline/scripts/test_placement_check.py" -q >/dev/null 2>&1; then
+  echo "  PINS ok    : placement rules hold (incl. every negative control)"; PASS=$((PASS+1))
+else
+  echo "  !! PINS BROKEN: pipeline/scripts/test_placement_check.py fails -- the"
+  echo "                 placement guard can pass a floating or overhanging object"; FAIL=$((FAIL+1))
+fi
+
 echo; echo "PASS=$PASS FAIL=$FAIL"
 [ $FAIL -eq 0 ] && echo "M0.1 guard test: ALL GREEN" || { echo "M0.1 guard test: FAILURES PRESENT"; exit 1; }
