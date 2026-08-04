@@ -1184,10 +1184,32 @@ trio and the niche back panel both needed and did not get.)
 **Spend r5**: 1 quick + 1 full frame, 1 Gemini call, 2 fitter probes
 (desk-step refutation, target downlight scan), no workflow.
 
+### r5b — the yellow circle: the owner asked why the column isn't shelving all the way, and the target agreed with him
+
+C4 question on the circled column: *"ในวงเหลืองทำไมไม่เป็นชั้นวางเหมือนกันทั้งหมด"*.
+Target at 3x: open shelving nearly FULL height — four lit niches (pink vases /
+pinecone vase / white vase), solid only ~300mm under the ceiling. We had
+opened two niches and left a 1,122mm solid block above them. **Root cause is
+a new named measurement shape: the r4 niche measurement read only inside the
+crop window it cut for itself (v>=300) — the CROP BOUNDARY silently became
+the DESIGN BOUNDARY.** New segments on the same y=-400 basis: board
+1839..1918 | void 1918..2346 | board 2346..2419 | void 2419..2633 | cap
+2633..3040. Frame of record → `trn002_blockout_r5b.png` (0.09px, R9b 0 FAIL).
+
+**Slot errand CLOSED in the same pass** (after two agent deaths, by one look):
+the target's opening u 690-731 contains the lit white corner wall — no
+geometry inside. The black void in our clay is light-phase debt. Nothing owed.
+
+C3 on r5b: **the column complaint is gone** — the circled zone passed the
+blind critic silently. Its five items all triaged in the bundle README:
+two refuted with M numbers (chair 2nd recurrence, bench top 420 = target's
+own measurement), three lodged with cloth/materials (pillow softness, the
+R1-halted duvet, run-fusing grain). C2 Cowork pending ask moved to r5b.
+
 ## TRN-002 GATE #5 — พร้อมให้ตัดสิน
 
-**Pair**: `_private/…/TRN-002/look/trn002_pair_r5.png`, blend
-`trn002_blend_r5.png`. Frame of record: `trn002_blockout_r5.png`.
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r5b.png`, blend
+`trn002_blend_r5b.png`. Frame of record: `trn002_blockout_r5b.png`.
 
 1. **Geometry ledger is clean by count**: every zone C2/C4 named across five
    rounds is closed, refuted-with-numbers, or formally transferred — the one
