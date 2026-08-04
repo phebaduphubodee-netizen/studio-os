@@ -46,3 +46,28 @@ it renders.
 Blockout scope: no open GEOMETRY defect names a mass out of place; every
 standing critic item routes to materials/cloth/light or to the two owed
 errands (shelf voids, slot) already queued for round 4.
+
+- `ANSWER_claude-cowork.md` — C2 (R7c) filed 2026-08-04: เรขาคณิตยังไม่ปิด — หัวเตียงไม่ map กับ trio หมอน2+bolster (แคปซูลตั้ง+ก้อนขั้นบันได), เก้าอี้สูง ~0.65+ vs โต๊ะ 0.875 นั่งไม่ได้, ดาวน์ไลท์ ~6 vs 4 (รอบที่สาม); หายแล้ว: ฐานเตียง/run ซ้าย/ก้อนลอยปลายเตียง — ท้ายไฟล์มีคำตอบ ledger เรื่อง rung ไหนบอด พร้อมการวัดเดียวที่ตัดสิน
+
+## RUNG RULING — the measurement C2 proposed, run 2026-08-04 (rung_audit)
+
+Identity table from the scene file: the three masses ARE the program trio —
+stair mass = bolster(700) + pillow_R(900) + mattress(520) stacking as three
+treads; standing capsule = pillow_L presenting its 240mm end face, THE SAME
+MECHANISM AS r2b (the builder moved the box, never changed its posture);
+wide slab = bed_headboard. **But the dimensions/postures are NOT the trio's**:
+"lying" pillows still stood at 90° (380 tall, vertical rounded edges) and the
+bolster was a 210mm plan-rounded BOX — its roundness in the wrong PLANE can
+never read as a lying cylinder.
+
+**Verdict: C1+C3 were the blind rungs; C2's eye was right.** C1 by habituation
+(the zone most-looked-at across three rounds) plus knowing-what-it-is; C3 by
+the addendum licence ("หมอนแข็ง" pre-excused the zone) — both mechanisms
+exactly as C2 diagnosed. Calibration recorded: C2's coarse-clay reads have now
+been right at full strength twice (r1 island, r3b trio); its numeric estimates
+run high (~650-700 vs built 550) — trust the WHAT entirely, re-measure the
+HOW MUCH, per R7b as written.
+
+Fixes shipped in round 4: tilt_deg + axis:"y" in the builder (posture and
+roundness-plane are now expressible), chair split, shelf voids, downlight
+table + console float pinned in spec, PROMPT de-licensed.

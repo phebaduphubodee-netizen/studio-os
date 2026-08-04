@@ -1093,6 +1093,65 @@ closed — the owner's eye disagreed. That disagreement is the ladder working
 **Pair**: `_private/…/TRN-002/look/trn002_pair_r3b.png`, blend
 `trn002_blend_r3b.png`. Frame of record: `trn002_blockout_r3b.png`.
 
+## TRN-002 ROUND 4 — the rung audit ruled against the builder, and the fix was two words the builder had never written: posture and plane
+
+**C2's verdict came back** (r3b bundle): geometry NOT closed — the head zone's
+three masses don't map to the program trio; and C2 handed the lane the one
+measurement that would decide which rung was blind. **The audit ruled: C1+C3
+blind, C2 right.** Identity mapped (the masses WERE pillows+bolster) but the
+FORMS were not the trio's: "lying" pillows still standing at 90° — the r2b
+capsule mechanism, unkilled, because the builder moved the box and never
+changed its posture — and a bolster whose roundness lived in the wrong plane
+(plan, not section), which no eye can read as a lying cylinder. C1's blindness
+= habituation on the most-looked-at zone; C3's = the addendum sentence
+"หมอนเป็นก้อน clay แข็ง" acting as a licence to not-doubt that zone — both
+mechanisms exactly as C2 diagnosed before the audit confirmed them.
+
+- Builder upgrades earned by the ruling: `tilt_deg` (rotation about the
+  bottom-back edge — a leaning pillow is now expressible) and `axis:"y"`
+  (section rounding — a lying cylinder is now expressible). R8b stands: the
+  data API always could; the builder had simply never written the two words.
+- Also shipped: chair split seat 450 + back 780 (identity was chair, M twice;
+  the solid box denied the knee void — C2 #2 accepted); shelf voids opened at
+  target-measured bands (818..1331, 1350..1918 on face y=−400, A-swept);
+  downlight table + console float PINNED in spec gauges (third-round items
+  closed with a table, per C2's ask); PROMPT addendum de-licensed (global
+  phase statement; no zone is pre-excused ever again).
+- r4 → r4b: the niche BACK panel shipped on the CAMERA face and filled both
+  voids from view — C3 caught it on the r4 pass while the builder's LOOK was
+  parked on the head zone (habituation again, one hour after writing it up).
+  Moved to the north face. Every rung caught something this round; no rung
+  was decorative.
+- C3 on r4b: **all four gate-#3 items FIXED** (head trio ✓ bolster ✓ chair ✓
+  shelf voids ✓). Its residual items are triaged in the r4b bundle README:
+  bed "ziggurat" refuted with M pins (clay residue → materials); petcave
+  misbound as nightstand for the FIFTH time (the ticket's evidence grows);
+  bench-vs-ottoman and bolster-length — target wins both (R4b: the delivered
+  image outranks generic norms and our own program wording); artwork-square
+  refuted with the landmark table (95×141px, portrait, ≤0.14px err).
+- **Spend r4**: 2 quick + 2 full frames, 2 Gemini pro calls, 1 rung-audit
+  script, spec_r4 = 52 masses, 2 builder features, 0 workflow.
+
+## TRN-002 GATE #4 — พร้อมให้ตัดสิน
+
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r4b.png`, blend
+`trn002_blend_r4b.png`. Frame of record: `trn002_blockout_r4b.png`.
+
+1. **Everything your gate-#3 fail and C2's verdict named is rebuilt as forms,
+   not renames**: pillows lean and meet the headboard, the bolster is a lying
+   cylinder, the chair seats at 450 under the 875 desk, the corner column
+   opens its two lit niches — and the two chronic items (downlights=4,
+   console float=495) are pinned in the spec with tables so they cannot
+   recur unanswered.
+2. **The audit that decided the blind rung is on file** (r3b bundle README):
+   C2's eye right twice at full strength; C1's habituation caught twice in
+   one day (head zone, then the niche back panel). The de-licensed PROMPT
+   removes the mechanism that blinded C3.
+3. **Decision asked**: close the BLOCKOUT phase and enter materials/light —
+   or point at what still reads wrong (slot contents remain the one
+   unmeasured errand, agent died twice; it rides into the next round either
+   way).
+
 1. **Both your GATE #2 flags are closed and cross-vendor confirmed**: the desk
    is a thick-top waterfall to the floor (no more orphan plate), the console a
    floating two-tier run — every number measured, prov M in spec_r3.

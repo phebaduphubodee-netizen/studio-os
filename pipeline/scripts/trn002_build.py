@@ -54,28 +54,56 @@ def _box(name, c, s, value):
     return ob
 
 
-def _oct(name, c, s, cut, value):
-    """Rounded-plan prism: four true ARC corners of radius `cut` mm, 6 segments
-    each. Round 2 shipped this as a single 45-degree chamfer and the C3 critic
-    read it as a faceted octagon, not a curve — a chamfer is not a radius, and
-    'มุมโค้ง' is geometry the blockout owes (C2's point, accepted). Name kept
-    so specs don't churn."""
+def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0):
+    """Rounded prism: four true ARC corners of radius `cut` mm, 6 segments each.
+    Round 2 shipped this as a single 45-degree chamfer and the C3 critic read it
+    as a faceted octagon, not a curve — a chamfer is not a radius. Name kept so
+    specs don't churn.
+
+    axis: which axis the prism is EXTRUDED along — "z" (default: rounding in
+    plan) or "y" (rounding in the x-z SECTION: a lying cylinder when cut is
+    ~half the section). Earned in r3b: the bolster was built plan-rounded and
+    three blind critics could not read a lying cylinder in it, because the
+    roundness was in the wrong plane.
+
+    tilt_deg: rotation about the y-axis through the bottom-BACK edge
+    (x_max, z_min) — tips the top toward +x while the back edge keeps its
+    mattress contact. Earned in r3b: a "lying" pillow that still stands at 90
+    degrees reads as a capsule, whatever its dimensions say.
+    """
     import math as _m
     x, y, z = (v * MM for v in c)
-    sx, sy = s[0] * MM / 2, s[1] * MM / 2
     z0, z1 = z - s[2] * MM / 2, z + s[2] * MM / 2
-    r = min(cut * MM, sx * 0.95, sy * 0.95)
+    if axis == "y":
+        sa, sb = s[0] * MM / 2, s[2] * MM / 2      # section in x-z
+        e0, e1 = y - s[1] * MM / 2, y + s[1] * MM / 2
+        ca, cb = x, z
+    else:
+        sa, sb = s[0] * MM / 2, s[1] * MM / 2      # section in x-y (plan)
+        e0, e1 = z0, z1
+        ca, cb = x, y
+    r = min(cut * MM, sa * 0.95, sb * 0.95)
     SEG = 6
     ring = []
-    for ccx, ccy, a0 in ((x + sx - r, y - sy + r, -90.0), (x + sx - r, y + sy - r, 0.0),
-                         (x - sx + r, y + sy - r, 90.0), (x - sx + r, y - sy + r, 180.0)):
+    for cca, ccb, a0 in ((ca + sa - r, cb - sb + r, -90.0), (ca + sa - r, cb + sb - r, 0.0),
+                         (ca - sa + r, cb + sb - r, 90.0), (ca - sa + r, cb - sb + r, 180.0)):
         for i in range(SEG + 1):
             a = _m.radians(a0 + 90.0 * i / SEG)
-            ring.append((ccx + r * _m.cos(a), ccy + r * _m.sin(a)))
+            ring.append((cca + r * _m.cos(a), ccb + r * _m.sin(a)))
     n = len(ring)
-    vs = [(px, py, z0) for px, py in ring] + [(px, py, z1) for px, py in ring]
+    if axis == "y":
+        vs = [(pa, e0, pb) for pa, pb in ring] + [(pa, e1, pb) for pa, pb in ring]
+    else:
+        vs = [(pa, pb, e0) for pa, pb in ring] + [(pa, pb, e1) for pa, pb in ring]
     fs = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
     fs += [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
+    if tilt_deg:
+        th = _m.radians(tilt_deg)
+        px_, pz = x + s[0] * MM / 2, z0            # pivot: bottom-back edge
+        vs = [((vx - px_) * _m.cos(th) + (vz - pz) * _m.sin(th) + px_,
+               vy,
+               -(vx - px_) * _m.sin(th) + (vz - pz) * _m.cos(th) + pz)
+              for vx, vy, vz in vs]
     me = bpy.data.meshes.new(name)
     me.from_pydata(vs, [], fs)
     me.materials.append(_clay(value))
@@ -223,7 +251,9 @@ def main():
     built = {}
     for m in spec["masses"]:
         if m.get("kind") == "oct":
-            built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200), m["value"])
+            built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200),
+                                    m["value"], axis=m.get("axis", "z"),
+                                    tilt_deg=m.get("tilt_deg", 0.0))
         else:
             built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"])
     # "parent": <mass> declares an assembly IN the scene — placement_check groups
