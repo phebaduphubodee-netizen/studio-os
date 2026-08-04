@@ -28,3 +28,11 @@
 ## หมายเหตุรอบนี้
 
 TRN-002 r2b - same geometry as r2 with TRUE arc corners replacing the chamfer octagons
+- `ANSWER_claude-cowork.md` — C2 (R7c) filed 2026-08-04: เกาะหาย/มุมโค้งมา; ค้าง: มวลแคปซูลนิรนามหัวเตียง, nightstand หาย, แท่นยังสูง ~650-700 ฐานยื่น, ชั้นโค้งยังตัน, ดาวน์ไลท์ ~6-7 vs 4
+- `TRIAGE_claude-cowork.md` — triage ตาม R7 filed 2026-08-04: แคปซูล = `pillow_L`
+  มองด้านสกัด (projection [715-826, 490-600] ตรงกล่อง; ไม่ใช่ petcave [1001-1513])
+  → ACCEPT เข้า r3; nightstand REFUTED (อยู่ในเฟรม [964-1080clip, 631-738] ที่
+  ตำแหน่ง M); ดาวน์ไลท์ REFUTED (นับ 4 พอดีทั้ง scene/crop/target); เตียงสูง
+  ACCEPT แกน (สร้างจริง 550 แต่เป็น A-prov — วัดจาก target = คิว 1 ของ r3);
+  ชั้นตัน ACCEPT; bench/console REFUTED ด้วย scene+measurement (console ลอยจริง
+  ใต้ท้องพ้นเฟรม v 821..1026; ไม่มี duplicate) + รับ lane แก้ข้อความ PROMPT

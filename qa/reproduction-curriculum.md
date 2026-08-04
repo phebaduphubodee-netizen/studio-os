@@ -958,3 +958,35 @@ triage in both bundle dirs; C2 Cowork ask for r2b PENDING in the bundle README.
 3. **Spend, round 2**: 2 quick + 2 full frames, 1 verifier workflow (4 agents,
    306 k tokens, 1 API failure), 2 Gemini pro calls, v005 fitter pass, R9b
    caught 1 typed float (headboard — the same class as r1, my own hand again).
+
+### C2 (Claude-Cowork, R7c) on r2b — filed + triaged 2026-08-04
+
+First full C2→triage cycle on this lane. Verdict: 2 of 3 r1 symptoms GONE
+(island, sharp corners), platform reduced-not-closed. Triage
+(`TRIAGE_claude-cowork.md` in the r2b bundle, all six items, R7 form):
+
+- **The anonymous capsule at the headboard — C2's #1 — is `pillow_L` seen
+  end-on** (projection [715–826, 490–600] matches the capsule box exactly;
+  petcave hypothesis refuted at [1001–1513]). The placeholder that existed to
+  disambiguate headboard orientation now stands at the focal point reading as
+  a water tank. Eye named WHAT (illegible mass), scene file corrected HOW MUCH
+  (z 490..910 on the mattress, not 1.4–1.5 m on the floor) — R7b pairing law,
+  textbook. → r3: lying pillows + bolster replace both placeholders.
+- REFUTED with numbers: nightstand exists in frame ([964–1080clip, 631–738],
+  M-prov, same spot as target's single wood nightstand); downlights count 4
+  exactly (scene, ceiling crop, target — not 6–7); console does float
+  (z 150..520 — its underside spans v 821..1026, BELOW the frame edge, so the
+  gap cannot render; the frame, not the geometry, grounds it); bench/petcave
+  are two distinct target-measured objects, no duplicate.
+- ACCEPTED: bed stack is A-provenance (built top = 550, never measured from
+  target → r3 queue #1, with C2's ~500–550/recess 60–100 as hypotheses to
+  test); shelf_col is one solid oct where target shows open lit shelves
+  (voids are geometry, owed at clay → left-wall pass); PROMPT program text
+  carries stale pre-measurement lines (bench "ฝั่งหน้า") that critics keep
+  hitting → refresh in r3.
+- Cowork also delivered a dimension-norms board
+  (`training/TRN-002/reference-board-dimension-norms-2026-08-04.md`) that
+  softens two of its own critiques with sources (platform 560–810 US range;
+  TV-from-bed centre 1220–1525) — a critic that arms its own refutation is
+  the rung working as designed. Norms de-panic numbers; the target stays
+  the judge.
