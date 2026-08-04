@@ -1,0 +1,21 @@
+{
+ "note": "v004 = the camera set of record. junction_true seeded from the column-ladder probe (the v002 'backwall_ceil' corridor straddled two features and averaged them; the 'ceiling junction at 222-238' read was the partition header + its shadow). sill = partition track band on the deep wall. door_head = the nook-plane door top (y-family per the camera-lens agent's anomaly finding).",
+ "seeds": [
+  {"name": "art_top",       "p0": [470, 316], "p1": [560, 318], "family": "x"},
+  {"name": "art_bot",       "p0": [470, 455], "p1": [560, 454], "family": "x", "mode": "dark", "half": 5},
+  {"name": "art_L",         "p0": [466.5, 322], "p1": [466.5, 450], "family": "v", "mode": "dark", "half": 5},
+  {"name": "art_R",         "p0": [564, 324],  "p1": [564, 449], "family": "v", "mode": "dark", "half": 5},
+  {"name": "part_head_top", "p0": [152, 231], "p1": [396, 239], "family": "x"},
+  {"name": "part_head_bot", "p0": [152, 249], "p1": [356, 253], "family": "x"},
+  {"name": "part_frame_L",  "p0": [148.5, 245], "p1": [148.5, 550], "family": "v"},
+  {"name": "part_slide_R",  "p0": [277, 255],  "p1": [277, 545], "family": "v"},
+  {"name": "shelf_top",     "p0": [55, 123],  "p1": [144, 128], "family": "x"},
+  {"name": "junction_true", "p0": [255, 138.5], "p1": [720, 174.5], "family": "x", "rms_max": 2.0, "half": 5},
+  {"name": "sill",          "p0": [155, 608],  "p1": [290, 601], "family": "x", "rms_max": 2.0, "half": 5},
+  {"name": "door_head",     "p0": [633, 313.5], "p1": [671, 306.3], "family": "y", "mode": "dark", "half": 4},
+  {"name": "ceil_diag",     "p0": [782, 139], "p1": [1070, 23],  "family": "y"},
+  {"name": "upper_diag",    "p0": [742, 96],  "p1": [886, 22],  "family": "y", "rms_max": 2.0, "half": 5},
+  {"name": "band_top",      "p0": [708, 479], "p1": [1060, 501], "family": "y", "half": 4},
+  {"name": "corner_v",      "p0": [732.5, 158], "p1": [732.5, 460], "family": "v"}
+ ]
+}

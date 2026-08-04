@@ -1,0 +1,35 @@
+{
+ "W": 1080,
+ "H": 821,
+ "f_px": 1165.22,
+ "focal_mm": 38.841,
+ "yaw_deg": 20.0417,
+ "horizon_v": 407.3,
+ "shift_y": -0.002961,
+ "shift_x": 0.0,
+ "vp_A": [
+  3734.2,
+  406.3
+ ],
+ "vp_B": [
+  114.9,
+  411.0
+ ],
+ "dv_horizon_px": 4.73,
+ "family_A": [
+  "art_bot",
+  "art_top",
+  "junction_true",
+  "part_head_bot",
+  "part_head_top",
+  "shelf_top",
+  "sill"
+ ],
+ "family_B": [
+  "ceil_diag",
+  "door_head"
+ ],
+ "vertical_dev_deg_median": 0.0,
+ "n_verticals": 5,
+ "note": "pitch=0 model; family_A = along-wall (x), family_B = depth (y). shift_x assumed 0 (declared, untested)."
+}

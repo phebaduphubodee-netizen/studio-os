@@ -1,0 +1,177 @@
+{
+ "_what": "TRN-001 target landmark pixels, 2048-space, origin top-left. Reconciled 2026-07-31 from two independent numpy-probe measurers (A/B) + VP analysis. Solve landmarks follow trn001_geom silhouette convention; header_bot_* = tower-front/header-underside junction. LOOK-only landmarks kept for overlay judgment.",
+ "landmarks": [
+  {
+   "name": "header_top_left",
+   "u": 288.5,
+   "v": 346,
+   "confidence": 0.85
+  },
+  {
+   "name": "header_top_right",
+   "u": 1947,
+   "v": 130,
+   "confidence": 0.75
+  },
+  {
+   "name": "header_bot_left",
+   "u": 450,
+   "v": 491,
+   "confidence": 0.7
+  },
+  {
+   "name": "header_bot_right",
+   "u": 1696,
+   "v": 368,
+   "confidence": 0.7
+  },
+  {
+   "name": "marble_top_left",
+   "u": 712.5,
+   "v": 540.5,
+   "confidence": 0.8
+  },
+  {
+   "name": "marble_top_right",
+   "u": 1379,
+   "v": 483,
+   "confidence": 0.8
+  },
+  {
+   "name": "plinth_top_left",
+   "u": 296,
+   "v": 1529.5,
+   "confidence": 0.12,
+   "note": "round-2: demoted — end-silhouette convention superseded by the probe-fitted plinth top-front line; kept only as a weak prior"
+  },
+  {
+   "name": "plinth_top_right",
+   "u": 1620,
+   "v": 1658,
+   "confidence": 0.12,
+   "note": "round-2: demoted — end-silhouette convention superseded by the probe-fitted plinth top-front line; kept only as a weak prior"
+  },
+  {
+   "name": "plinth_bot_left",
+   "u": 264.5,
+   "v": 1630.5,
+   "confidence": 0.12,
+   "note": "round-2: demoted — end-silhouette convention superseded by the probe-fitted plinth top-front line; kept only as a weak prior"
+  },
+  {
+   "name": "plinth_bot_right",
+   "u": 1666,
+   "v": 1775,
+   "confidence": 0.12,
+   "note": "round-2: demoted — end-silhouette convention superseded by the probe-fitted plinth top-front line; kept only as a weak prior"
+  },
+  {
+   "name": "box_top_left",
+   "u": 766.0,
+   "v": 1199,
+   "confidence": 0.75,
+   "note": "round-2: 842 (measurer B) superseded by the C2 critic colour-masked silhouette at 766 — masking the gold figure and flowers out before reading the platform edge beats an edge probe that can catch a statue"
+  },
+  {
+   "name": "box_top_right",
+   "u": 1209.0,
+   "v": 1215,
+   "confidence": 0.75,
+   "note": "round-2: colour-masked silhouette read"
+  },
+  {
+   "name": "step_top_left",
+   "u": 458,
+   "v": 1433,
+   "confidence": 0.12,
+   "note": "round-2: demoted — end-silhouette convention superseded by the probe-fitted plinth top-front line; kept only as a weak prior"
+  },
+  {
+   "name": "step_top_right",
+   "u": 1494,
+   "v": 1496,
+   "confidence": 0.12,
+   "note": "round-2: demoted — end-silhouette convention superseded by the probe-fitted plinth top-front line; kept only as a weak prior"
+  },
+  {
+   "name": "marble_left_low",
+   "u": 712,
+   "v": 1262,
+   "confidence": 0.6
+  },
+  {
+   "name": "marble_right_low",
+   "u": 1379,
+   "v": 1342,
+   "confidence": 0.7
+  },
+  {
+   "name": "towerL_inner_bot",
+   "u": 450,
+   "v": 1466,
+   "confidence": 0.7
+  },
+  {
+   "name": "towerR_inner_bot",
+   "u": 1699,
+   "v": 1700,
+   "confidence": 0.5
+  },
+  {
+   "name": "dl_left",
+   "u": 453,
+   "v": 229,
+   "confidence": 0.9
+  },
+  {
+   "name": "dl_right",
+   "u": 1594,
+   "v": 58,
+   "confidence": 0.8
+  },
+  {
+   "name": "plinth_top_rev0",
+   "u": 498.66,
+   "v": 1548.5,
+   "confidence": 0.9,
+   "note": "drawer-reveal centre crossed with the probe-fitted plinth top-front line v=1023.5+0.09759*(u+4881), residual <0.4px over u=300..1500"
+  },
+  {
+   "name": "plinth_top_rev1",
+   "u": 733.66,
+   "v": 1571.4,
+   "confidence": 0.9,
+   "note": "drawer-reveal centre crossed with the probe-fitted plinth top-front line v=1023.5+0.09759*(u+4881), residual <0.4px over u=300..1500"
+  },
+  {
+   "name": "plinth_top_rev2",
+   "u": 990.21,
+   "v": 1596.5,
+   "confidence": 0.9,
+   "note": "drawer-reveal centre crossed with the probe-fitted plinth top-front line v=1023.5+0.09759*(u+4881), residual <0.4px over u=300..1500"
+  },
+  {
+   "name": "plinth_top_rev3",
+   "u": 1271.06,
+   "v": 1623.9,
+   "confidence": 0.9,
+   "note": "drawer-reveal centre crossed with the probe-fitted plinth top-front line v=1023.5+0.09759*(u+4881), residual <0.4px over u=300..1500"
+  }
+ ],
+ "vp_analysis": {
+  "vp_wall_parallel": [
+   -4881,
+   1023.5
+  ],
+  "vp_wall_normal": [
+   1851,
+   1023.5
+  ],
+  "f_px_on_2048": 2210,
+  "focal_mm_ff": 38.9,
+  "horizon_v": 1023.5,
+  "yaw_deg": -20.5,
+  "notes": "Towers measure asymmetric in the VP solve (left ~460 vs right ~550 wide); right tower shelf lines sit 60-90px off the left's — the built piece may not be perfectly mirror-symmetric. Floor plank long seams share the wall-parallel VP."
+ },
+ "_round2": "landmark set re-based on the joinery probe: six end-silhouette points demoted to 0.12, four plinth top-front points added at 0.9"
+}

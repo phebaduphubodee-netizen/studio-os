@@ -1,0 +1,31 @@
+{
+ "note": "v002: thin dark strokes (frames, reveals, shadow gaps) use mode=dark; soft junctions declare rms_max<=2.0; curved features from v001 (console_front, desk_front, rug, headboard cushion) dropped by the straightness guard and not re-seeded. family = HINT only.",
+ "seeds": [
+  {"name": "art_top",            "p0": [470, 316], "p1": [560, 318], "family": "x"},
+  {"name": "art_bot",            "p0": [470, 455], "p1": [560, 454], "family": "x", "mode": "dark", "half": 5},
+  {"name": "art_L",              "p0": [466.5, 322], "p1": [466.5, 450], "family": "v", "mode": "dark", "half": 5},
+  {"name": "art_R",              "p0": [564, 324],  "p1": [564, 449], "family": "v", "mode": "dark", "half": 5},
+  {"name": "door_top",           "p0": [603, 295], "p1": [685, 297.5], "family": "x", "mode": "dark", "half": 4},
+  {"name": "door_L",             "p0": [599, 305],  "p1": [599, 450], "family": "v", "mode": "dark", "half": 4},
+  {"name": "door_R",             "p0": [690, 305],  "p1": [690, 450], "family": "v", "mode": "dark", "half": 4},
+  {"name": "part_head_top",      "p0": [152, 231], "p1": [396, 239], "family": "x"},
+  {"name": "part_head_bot",      "p0": [152, 249], "p1": [356, 253], "family": "x"},
+  {"name": "part_frame_L",       "p0": [148.5, 245], "p1": [148.5, 550], "family": "v"},
+  {"name": "part_frame_R",       "p0": [396, 255],  "p1": [396, 540], "family": "v", "mode": "dark", "half": 9},
+  {"name": "part_slide_R",       "p0": [277, 255],  "p1": [277, 545], "family": "v"},
+  {"name": "closet_ceil",        "p0": [115, 192], "p1": [390, 220], "family": "x", "rms_max": 2.0, "half": 5},
+  {"name": "backwall_ceil",      "p0": [420, 136], "p1": [755, 151], "family": "x", "rms_max": 2.0, "half": 5},
+  {"name": "shelf_top",          "p0": [55, 123],  "p1": [144, 128], "family": "x"},
+  {"name": "ward_top",           "p0": [745, 153], "p1": [1065, 161], "family": "x", "rms_max": 2.0, "half": 5},
+  {"name": "headboard_band_top", "p0": [745, 466], "p1": [1060, 409], "family": "?", "rms_max": 1.6, "half": 4},
+  {"name": "ceil_diag",          "p0": [782, 139], "p1": [1070, 23],  "family": "y"},
+  {"name": "soffit_diag2",       "p0": [755, 160], "p1": [1075, 97], "family": "?", "rms_max": 2.0},
+  {"name": "console_back",       "p0": [5, 584],   "p1": [140, 563], "family": "y", "rms_max": 1.6},
+  {"name": "nightstand_top",     "p0": [1015, 585], "p1": [1075, 572], "family": "x"},
+  {"name": "ward_gable_L",       "p0": [732.5, 158], "p1": [732.5, 460], "family": "v"},
+  {"name": "reveal_1",           "p0": [787, 180],  "p1": [787, 450], "family": "v", "mode": "dark", "half": 4},
+  {"name": "reveal_2",           "p0": [855, 180],  "p1": [855, 435], "family": "v", "mode": "dark", "half": 4},
+  {"name": "reveal_3",           "p0": [920, 185],  "p1": [920, 430], "family": "v", "mode": "dark", "half": 4},
+  {"name": "reveal_4",           "p0": [985, 190],  "p1": [985, 420], "family": "v", "mode": "dark", "half": 4}
+ ]
+}

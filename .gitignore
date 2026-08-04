@@ -11,6 +11,9 @@ CLAUDE.local.md
 .perplexity_usage.json
 logs/
 pipeline/output/
+# Blender auto-backups anywhere in the tree (pipeline/output/ already covers its own;
+# this catches a .blend saved outside it — outside-review 2026-08-04 item 3)
+*.blend1
 # raw client intake documents (identifying: names, addresses, plan title blocks)
 # stay LOCAL-ONLY — anonymized derivatives (brief.json, specs) are what gets committed
 projects/*/00_intake/raw-local/
@@ -42,6 +45,16 @@ knowledge/_inbox/discord/**/files/383192_*
 # client-derived CLIP embedding banks (Stage B2) -- never commit
 *embed-bank*.npz
 *.embedbank.npz
+
+# training/ holds TRN reproduction TEXT only (owner decision 2026-08-04, outside-review
+# item A) — every pixel layer (our renders, and target/anchor above all) stays in
+# _private/. Defensive: a stray image/blend dropped here must never ride a commit.
+training/**/*.png
+training/**/*.jpg
+training/**/*.jpeg
+training/**/*.webp
+training/**/*.blend
+training/**/*.blend1
 
 # 3D Warehouse models — Trimble General Model License: free to USE, NOT
 # redistributable AS MODELS. A model that may not be redistributed must not

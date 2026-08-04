@@ -1,0 +1,11 @@
+{
+  "_what": "Preview back-projection of the shelf-divider rows the round-1 camera-grammar agent reported (right tower, u~1820), to validate trn001_measure end-to-end before the dedicated joinery probes land.",
+  "probes": [
+    { "name": "R_shelf_div_1", "u": 1820, "v": 615, "plane": "tower_front" },
+    { "name": "R_shelf_div_2", "u": 1820, "v": 875, "plane": "tower_front" },
+    { "name": "R_shelf_div_3", "u": 1820, "v": 1128, "plane": "tower_front" },
+    { "name": "R_shelf_div_4", "u": 1820, "v": 1385, "plane": "tower_front" },
+    { "name": "R_tower_base", "u": 1820, "v": 1700, "plane": "tower_front" },
+    { "name": "header_soffit_R", "u": 1820, "v": 367, "plane": "tower_front" }
+  ]
+}
