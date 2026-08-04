@@ -1,7 +1,14 @@
-"""trn002_build.py — TRN-002 blockout materializer (Blender headless).
+"""trn002_build.py — TRN-002 materializer (Blender headless).
 
   blender -b --factory-startup --python pipeline/scripts/trn002_build.py -- \
-      <spec.json> --out <render.png> [--quick]
+      <spec.json> --out <render.png> [--quick] [--materials]
+
+  --quick      R5 playblast rung (half res per axis, 64 samples)
+  --materials  dress the masses from trn002_materials instead of clay values,
+               and light the set from the spec's `light` block instead of the
+               neutral form light. Phase 2 (blockout closed 2026-08-04); a
+               blockout spec with no `light` block still renders exactly as it
+               did, because the form light is kept as the fallback.
 
 Round-1 scope: every mass is a clay box straight from the spec (the spec's
 numbers are MEASURED through the solved camera — see trn002_station.py), a
@@ -39,7 +46,15 @@ def _clay(value):
     return m
 
 
-def _box(name, c, s, value):
+def _surface(value, mat):
+    """The one place a mass's shading is decided: a dressed material when the
+    materials pass is on, the clay value otherwise. Kept as a single function so
+    the two paths can never diverge per shape-kind (a box dressed and an oct
+    left clay is exactly the kind of split nobody sees in a thumbnail)."""
+    return mat if mat is not None else _clay(value)
+
+
+def _box(name, c, s, value, mat=None):
     x, y, z = (v * MM for v in c)
     sx, sy, sz = (v * MM / 2 for v in s)
     vs = [(x + dx * sx, y + dy * sy, z + dz * sz)
@@ -48,13 +63,13 @@ def _box(name, c, s, value):
           (0, 4, 5, 1), (2, 3, 7, 6)]
     me = bpy.data.meshes.new(name)
     me.from_pydata(vs, [], fs)
-    me.materials.append(_clay(value))
+    me.materials.append(_surface(value, mat))
     ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
     bpy.context.scene.collection.objects.link(ob)
     return ob
 
 
-def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0):
+def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None):
     """Rounded prism: four true ARC corners of radius `cut` mm, 6 segments each.
     Round 2 shipped this as a single 45-degree chamfer and the C3 critic read it
     as a faceted octagon, not a curve — a chamfer is not a radius. Name kept so
@@ -106,7 +121,7 @@ def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0):
               for vx, vy, vz in vs]
     me = bpy.data.meshes.new(name)
     me.from_pydata(vs, [], fs)
-    me.materials.append(_clay(value))
+    me.materials.append(_surface(value, mat))
     ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
     bpy.context.scene.collection.objects.link(ob)
     return ob
@@ -127,7 +142,20 @@ def build_camera(cam):
     return ob
 
 
-def build_light():
+def build_light(spec=None):
+    """Blockout rounds 1-5: a neutral FORM light — bright world + one soft sun —
+    whose only job was to let geometry read. Phase 2 replaces it with the
+    measured story (trn002_light) the moment the spec carries a `light` block,
+    so every blockout spec still renders exactly as it did.
+
+    The form light is also the reason four blind critics counted 6-7 downlights
+    in a 4-downlight room: a flat world washes bright pools that read as
+    fixtures. Killing those is a named phase-2 ticket, and it is killed HERE."""
+    if spec and spec.get("light"):
+        import trn002_light as LIGHT
+        LIGHT.build_world(spec)
+        LIGHT.build_lights(spec)
+        return
     w = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = w
     w.use_nodes = True
@@ -248,14 +276,28 @@ def main():
         for ob in list(coll):
             coll.remove(ob)
 
+    materials = None
+    if "--materials" in argv:
+        import trn002_materials as MAT
+        materials = MAT.build_materials(palette_override=spec.get("materials"))
+        print("materials ON\n" + MAT.palette_report())
+
+    def mat_of(name):
+        if materials is None:
+            return None
+        import trn002_materials as MAT
+        return materials[MAT.material_for(name)]
+
     built = {}
     for m in spec["masses"]:
         if m.get("kind") == "oct":
             built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200),
                                     m["value"], axis=m.get("axis", "z"),
-                                    tilt_deg=m.get("tilt_deg", 0.0))
+                                    tilt_deg=m.get("tilt_deg", 0.0),
+                                    mat=mat_of(m["name"]))
         else:
-            built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"])
+            built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"],
+                                    mat=mat_of(m["name"]))
     # "parent": <mass> declares an assembly IN the scene — placement_check groups
     # by Blender hierarchy ("the scene's own declaration of what moves together"),
     # so a shade over its stem is judged as one lamp, not as a slab teetering on a
@@ -265,7 +307,7 @@ def main():
         if m.get("parent"):
             built[m["name"]].parent = built[m["parent"]]
     cam_ob = build_camera(spec["camera"])
-    build_light()
+    build_light(spec)
     setup_render(spec, out_png, quick)
 
     base = os.path.splitext(out_png)[0]
