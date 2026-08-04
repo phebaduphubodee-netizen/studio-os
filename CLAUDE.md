@@ -107,6 +107,38 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
     written accept+lane or a refutation carrying a MEASUREMENT — never taste.
     Where the eye and the instruments disagree about whether something is wrong,
     the eye wins; the instruments decide by how much and where.
+- R7c CLAUDE-COWORK IS THE STANDING C2 COLD CRITIC (owner order 2026-08-04:
+  *"เวลาต้องการคำวิจารณ์ให้หยุดแล้วมาถาม claude ui"*). Whenever the lane needs a
+  designer's critique — every finished render (R7b), every R1 stop that needs a
+  verdict, every gate artifact before it reaches the owner — the builder STOPS
+  (Andon; stopping to ask is the correct move, R1) and routes the question to
+  Claude in the Cowork app ("Claude UI"), instead of self-judging or spawning a
+  critic inside its own context. Why this rung is structural, not preference: a
+  Cowork session is a SEPARATE machine and SEPARATE context by architecture,
+  not by discipline — it cannot inherit the builder's conversation the way a
+  spawned subagent can, and it has real eyes on the image. Proven 2026-08-04,
+  first pass on trn002_blockout_r1: it named the bed as an island detached from
+  the wardrobe-wall band+nightstand assembly the program anchors it to, and
+  read the headboard as facing the wrong wall — first-order, whole-frame
+  placement defects, filed before the builder's triage began.
+  - PROCEDURE: bundle unchanged (R7b: our own render + PROMPT.md, nothing
+    else). The ask is owner-mediated: open the Cowork chat and point at the
+    bundle path (the project folder is connected there). The answer is archived
+    as `ANSWER_claude-cowork.md` IN the bundle dir and indexed in the bundle
+    README, before any triage. Channel unreachable (desktop app closed /
+    session gone) → record the pending ask in the bundle README and proceed to
+    C3 — never silently skip the rung, never block the lane on this rung alone.
+  - BLINDNESS IS THE INSTRUMENT: the Cowork session judges from the bundle
+    ONLY — it must not open target/anchor images, `clients/`, build history, or
+    another critic's answer before filing its verdict, even though the
+    connected folder makes them technically readable (a judge shown the answer
+    stops being a judge — same law as the Gemini rung).
+  - NOT A C3 REPLACEMENT: Cowork is the same vendor as the builder (both
+    Claude), so the cross-vendor rung (Gemini, R7b) still fires on every
+    render. Triage per R7 unchanged — every item from every critic gets a
+    written accept+lane or a measured refutation.
+  Ladder is now: C0 instruments → C1 builder LOOK+reference → C2 Claude-Cowork
+  (off-machine, on every ask for critique) → C3 Gemini → C4 owner (R3, final).
 - R8 BUILD vs ACQUIRE — DECIDED BEFORE THE FIRST VERTEX (owner order 2026-08-01,
   "เวลาคุณต้องปั้น model ที่มีส่วนเว้าส่วนโค้ง มันมักจะเพี้ยนเสมอ ตั้งแต่ทำมาในทุก
   project"). He is right and the evidence has a clean edge: everything generated
