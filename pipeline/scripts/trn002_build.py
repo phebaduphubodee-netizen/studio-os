@@ -54,6 +54,36 @@ def _box(name, c, s, value):
     return ob
 
 
+def _oct(name, c, s, cut, value):
+    """Rounded-plan prism: four true ARC corners of radius `cut` mm, 6 segments
+    each. Round 2 shipped this as a single 45-degree chamfer and the C3 critic
+    read it as a faceted octagon, not a curve — a chamfer is not a radius, and
+    'มุมโค้ง' is geometry the blockout owes (C2's point, accepted). Name kept
+    so specs don't churn."""
+    import math as _m
+    x, y, z = (v * MM for v in c)
+    sx, sy = s[0] * MM / 2, s[1] * MM / 2
+    z0, z1 = z - s[2] * MM / 2, z + s[2] * MM / 2
+    r = min(cut * MM, sx * 0.95, sy * 0.95)
+    SEG = 6
+    ring = []
+    for ccx, ccy, a0 in ((x + sx - r, y - sy + r, -90.0), (x + sx - r, y + sy - r, 0.0),
+                         (x - sx + r, y + sy - r, 90.0), (x - sx + r, y - sy + r, 180.0)):
+        for i in range(SEG + 1):
+            a = _m.radians(a0 + 90.0 * i / SEG)
+            ring.append((ccx + r * _m.cos(a), ccy + r * _m.sin(a)))
+    n = len(ring)
+    vs = [(px, py, z0) for px, py in ring] + [(px, py, z1) for px, py in ring]
+    fs = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
+    fs += [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(vs, [], fs)
+    me.materials.append(_clay(value))
+    ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
 def build_camera(cam):
     data = bpy.data.cameras.new("CAM_TRN002")
     data.lens = cam["focal_mm"]
@@ -191,7 +221,10 @@ def main():
             coll.remove(ob)
 
     for m in spec["masses"]:
-        _box(m["name"], m["c"], m["s"], m["value"])
+        if m.get("kind") == "oct":
+            _oct(m["name"], m["c"], m["s"], m.get("cut", 200), m["value"])
+        else:
+            _box(m["name"], m["c"], m["s"], m["value"])
     cam_ob = build_camera(spec["camera"])
     build_light()
     setup_render(spec, out_png, quick)

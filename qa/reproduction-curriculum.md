@@ -900,3 +900,61 @@ only, `gemini-2.5-pro`, answer archived in the bundle
    get chased as geometry. No action.
 
 **Single-fix verdict agrees with the lane's own queue: the bed block first.**
+
+**Round 2 (2026-08-04) — the right wall, re-solved by consilience; the bed
+anchored. Both outside critics confirm the island is gone.**
+
+The r2 verifier fleet (4 agents; 1 API-failure re-covered by a sibling's
+finding) killed round 1's right-wall model three ways: the "nightstand top
+edge" both prior reads reported does not exist (one stitched BOOK COVERS, one
+matched nothing — the true arris is v=645.3+0.269(u−992), VP-consistent); the
+"raised slot interior" tone-tracks the wardrobe doors to <=1.3 L at eight
+stations with the door seams running THROUGH it at matched amplitude (it is
+the doors continuing up to a filler; model A refuted by luminance, not
+argument); and the corner strip is the VIEW THROUGH AN OPENING between the
+entry-door plane and the wardrobe run. The re-solve then hit a genuine
+three-way tension — equal door modules want the wardrobe plane at x=-1290
+(cv 0.0046: modules 506/509/506), run-meets-ceiling-3102 wants -940, door
+standards want -976 — resolved by DROPPING the shared-plane premise: wardrobe
+section at -1290 with its own top junction MEASURED at z~2920 (the bulkhead
+Gemini's and the architecture agent's eyes both called and my flat-ceiling
+read denied), entry-door section its own plane at -976, open slot between.
+The bed: platform foot x=-3555 and near side y=-4145 from two straight-edge
+fits (rms 0.09/0.25 px), head derived against the band -> LENGTH 2065; the
+940 mm shift left is exactly the "island gap" the Cowork critic estimated by
+eye (~800-1000). Bench backprojects to (-2738,-5182) — BESIDE the bed toward
+camera, refuting the program-text placement with a measurement.
+
+**C2 (Cowork, first pass under new R7c) triage:** island ACCEPT->fixed by the
+re-anchor; "headboard faces wrong wall" REFUTED as rotation (pillow projection
+pins bed-along-x; u would be ~395 otherwise) but ACCEPTED as mass ambiguity ->
+pillow placeholders added; two-step dais + sharp corners ACCEPT -> stack kept
+(heights now the top UNMEASURED item) and plan radii built; "bench belongs at
+the foot" REFUTED with the backprojection; downlight count 6-7 REFUTED (spec
+builds exactly 4). **C3 (Gemini r2/r2b) triage:** chamfer octagons read as
+facets ACCEPT -> true 6-segment arc corners now in the builder; corner+island
+fixes CONFIRMED by the critic itself; bed stack height still reads monumental
+ACCEPT AND HONEST: both 300/250 are assumed, never measured — round 3 opens by
+backprojecting the target's duvet top at the foot plane; band invisible behind
+the headboard ACCEPT (band_top fit was pillow-contaminated; refit clean right
+of the headboard next); the open slot renders as an unexplained void ACCEPT
+(what fills it in the target — niche, return, shadow — is round 3's corner
+question); partition-reads-solid parked to materials (no glass in clay).
+
+## TRN-002 GATE #2 — พร้อมให้ตัดสิน
+
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r2.png`, blend
+`trn002_blend_r2.png`. Frames: `trn002_blockout_r2.png` (chamfer),
+`trn002_blockout_r2b.png` (true arcs — frame of record). Critic answers +
+triage in both bundle dirs; C2 Cowork ask for r2b PENDING in the bundle README.
+
+1. **The right wall is now measured, not assumed**: four equal ~507 mm doors,
+   groove 2668, bulkhead 2920 under the 3102 ceiling, band ~895, entry door
+   845 on its own plane — and the bed anchors to it (length 2065 measured
+   against the band). Round 3 = bed stack height + band refit + slot contents
+   + the left-wall pass.
+2. **Both gauges still unswept** (G1 door/lever, G2 gone — replaced by
+   measured planes). The G1 sweep is round 3's first instrument job.
+3. **Spend, round 2**: 2 quick + 2 full frames, 1 verifier workflow (4 agents,
+   306 k tokens, 1 API failure), 2 Gemini pro calls, v005 fitter pass, R9b
+   caught 1 typed float (headboard — the same class as r1, my own hand again).
