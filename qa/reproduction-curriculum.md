@@ -856,3 +856,47 @@ blend `trn002_blend_r1.png`, edges `trn002_edges_r1.png`.
    C:\_private — our own clay pixels, no client imagery), 0 full frames, 1
    workflow (5 agents, 420 k tokens), 4 fitter passes, 10 new tests (2285
    green in the lane's file). R1 not tripped: one mechanism, one build.
+
+**C3 RAN — and for the first time WITHOUT the paste ritual.** The owner asked
+"คุณทำไม่ได้หรอ?"; a ping showed Gemini API billing has OPENED (blocked since
+07-11), so the R7b call now runs from here: our render + the context addendum
+only, `gemini-2.5-pro`, answer archived in the bundle
+(`ANSWER_gemini25pro.md`). The owner's verdict that triggered it: "ดูเพี้ยนเยอะมาก".
+
+**C3 TRIAGE (R7: accept+lane or refute WITH A MEASUREMENT, never taste):**
+
+1. **"เตียงใหญ่/จัตุรัสเกิน ทำลายสเปซทั้งห้อง" — ACCEPT, and it was pre-declared.**
+   The platform's 2400x2400 was in the prompt's own ASSUMED list (typed, not
+   measured). Lane: round-2 bed-block measurement pass — already the top open
+   question (foot corner measured at x=-3562 vs a headboard that cannot be
+   3.4 m away; occlusion-vs-junction on the wardrobe face). NOTE: the fix
+   target comes from MEASURING the target's oversized platform (the furniture
+   lens read a deliberate mattress-inset ledge), not from Gemini's generic
+   king-size numbers — the judge has never seen the reference, by law.
+2. **"ผนังซ้ายสะเปะสะปะ" — SPLIT.** Desk/console/chair boxes: ACCEPT (typed
+   guesses, declared) -> same measurement pass + the joinery round. The tall
+   column: REFUTED as misplacement — it exists in the reference at that spot
+   and its build is measured (u 46-152, top backprojects to z~3030); what it
+   lacks is the curved-shelf joinery, which is the JOINERY round's work, and
+   Gemini itself parked detail-absence under clay-phase artifacts.
+3. **"ไม่มีตู้สูงจรดฝ้า / nightstand หาย" — REFUTED as absence, ACCEPTED as
+   unreadability.** Both masses exist in the build (the wardrobe face IS the
+   measured x=0 plane; placement gate passed 40 objects) — but with zero
+   V-grooves, no top reveal and no oak band contrast, a full-height wardrobe
+   face is INDISTINGUISHABLE from a bare wall in clay. A defect of round-2
+   joinery, not of the blockout's geometry. The nightstand block waits on the
+   occlusion-vs-junction resolution before it gets detailed.
+4. **"ฝ้าอ่านเป็นหลุมดรอป ไม่ใช่แถบยก" — ACCEPT AS GENUINELY OPEN.** The
+   "raised" conclusion leaned on backprojecting the arris onto an ASSUMED
+   plane (x=0), and levelness cannot discriminate the plane choice for a
+   depth-family line (the z-coefficients are near-identical on every x-plane
+   — same degeneracy family as the headboard test). A dropped curtain/AC
+   bulkhead along the wardrobe wall is also the more common Thai detail, and
+   the camera-lens agent's third read (wardrobe top filler) is still alive.
+   Lane: dedicated corner measurement in round 2. Sellability priority LOW
+   (a <=115 mm soffit detail either way).
+5. **Clay-phase group (weight/sharp edges/opaque glass/flat rug) — PARKED
+   correctly**: the addendum's question 3 exists precisely so these do not
+   get chased as geometry. No action.
+
+**Single-fix verdict agrees with the lane's own queue: the bed block first.**

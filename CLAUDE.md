@@ -92,9 +92,12 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   number we chose ourselves, which can prove the build correct and never notice
   the ask was wrong. Pair the two rungs and neither is optional: **the eye finds
   WHAT is wrong; the measurement finds HOW MUCH and WHICH KNOB.**
-  - PROCEDURE: every render ends by writing a paste bundle — the render plus
-    `templates/cold-critic-prompt.md` — and handing the owner the path. Manual
-    paste stays the ritual until API billing opens.
+  - PROCEDURE: every render ends by writing the critique bundle (render plus
+    `templates/cold-critic-prompt.md`), then CALLING GEMINI DIRECTLY — billing
+    OPENED 2026-08-04 (verified by ping + first live C3 run, TRN-002 r1;
+    `gemini-2.5-pro`, key from repo `.env`, bump `.gemini_usage.json`). The
+    owner-paste ritual is the FALLBACK when the API errors, never the default.
+    The answer is archived IN the bundle dir before any triage.
   - WHAT MAY GO: **our own render, and nothing else.** The TARGET image and the
     anchor pool NEVER leave this machine — they are another studio's delivered
     client work, so sending them is both a privacy breach and benchmark leakage
