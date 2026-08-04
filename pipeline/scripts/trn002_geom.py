@@ -95,6 +95,52 @@ def oct_mesh(c, s, cut, axis="z", tilt_deg=0.0, seg=6):
     return vs, fs
 
 
+def herringbone(w=132.1, length=619.6, anchor=(-5321.0, 422.2), joint=2.0,
+                x_range=(-4750.0, 60.0), y_range=(-6600.0, 60.0)):
+    """Plank rectangles of a herringbone floor, as [(x,y) x4] in mm on z=0.
+
+    MEASURED, not styled: w and length come from 20 independently fitted joint
+    lines (per-family answers agree to 0.05 mm), the 45 deg orientation from
+    refitting each line FREELY and finding the bisector at 89.97 deg, and the
+    anchor from phase-fitting against joint darkness (joints 4.12 vs floor 2.25).
+
+    Construction is done in the rotated frame a=(x+y)/r2, b=(y-x)/r2, where the
+    A planks lie along +a and the B planks along +b. In that frame the pattern
+    is two rectangles and two lattice vectors:
+        A at (a, b) spanning [a, a+L] x [b, b+w]
+        B at (a+L, b+w-L) spanning [.., ..+w] x [.., ..+L]
+        repeats  t1 = (L+w, w-L)   (along the staircase)
+                 t2 = (w, w)       (across it)
+    `joint` shrinks each plank so the dark base below shows as the groove — the
+    target's joints are a measurable 1.83x darker than the field, which is what
+    made the phase fit possible in the first place.
+    """
+    r2 = math.sqrt(2.0)
+    half = joint / 2.0
+    t1 = (length + w, w - length)
+    t2 = (w, w)
+    out = []
+    # generous index window, clipped by the world-space bounds below
+    span = int((abs(x_range[1] - x_range[0]) + abs(y_range[1] - y_range[0]))
+               / min(w, length)) + 4
+    for i in range(-span, span + 1):
+        for j in range(-span, span + 1):
+            a0 = anchor[0] + i * t1[0] + j * t2[0]
+            b0 = anchor[1] + i * t1[1] + j * t2[1]
+            for (aa, bb, da, db) in ((a0, b0, length, w),
+                                     (a0 + length, b0 + w - length, w, length)):
+                corners = [(aa + half, bb + half), (aa + da - half, bb + half),
+                           (aa + da - half, bb + db - half), (aa + half, bb + db - half)]
+                xy = [((a - b) / r2, (a + b) / r2) for a, b in corners]
+                if all(x_range[0] - length <= x <= x_range[1] + length
+                       and y_range[0] - length <= y <= y_range[1] + length
+                       for x, y in xy) and any(
+                        x_range[0] <= x <= x_range[1] and y_range[0] <= y <= y_range[1]
+                        for x, y in xy):
+                    out.append(xy)
+    return out
+
+
 def face_normal(vs, f):
     """Newell normal of a polygon — robust for non-planar quads."""
     nx = ny = nz = 0.0

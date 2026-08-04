@@ -90,6 +90,56 @@ def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None):
     return ob
 
 
+def _herringbone(name, z_mm, thick_mm, value, mat=None, **kw):
+    """The measured herringbone as REAL planks, one mesh, sitting a hair proud
+    of a darker base so the gaps read as joints. The floor map alone cannot do
+    this: it lays parallel planks, and the target's floor is a 45-degree
+    chevron whose w, L and phase were all fitted from its own joint lines."""
+    quads = G.herringbone(**kw)
+    z0, z1 = z_mm * MM, (z_mm + thick_mm) * MM
+    vs, fs, uvs = [], [], []
+    uv_scale = kw.get("uv_scale", 0.9)
+    for q in quads:
+        b = len(vs)
+        vs += [(x * MM, y * MM, z1) for x, y in q]
+        vs += [(x * MM, y * MM, z0) for x, y in q]
+        fs.append((b, b + 1, b + 2, b + 3))                       # top
+        # PER-PLANK UVs, and they are the whole point. The joints themselves are
+        # SUB-PIXEL at this camera (2 mm at ~4 m through f_px 1165 is 0.58 px),
+        # exactly like the wardrobe reveal the pattern pass declared
+        # geometrically unresolved — so a herringbone cannot be sold by its
+        # grooves here. What IS resolvable is each plank's 132 mm width (~38 px)
+        # and the direction of its grain, and that only changes per plank if
+        # each plank carries its own UV frame. One box projection over the whole
+        # floor gives every plank identical grain, which is a parquet-printed-
+        # on-lino look no amount of joint tuning can fix.
+        ex = ((q[1][0] - q[0][0]), (q[1][1] - q[0][1]))
+        ln = (ex[0] ** 2 + ex[1] ** 2) ** 0.5 or 1.0
+        ux, uy = ex[0] / ln, ex[1] / ln
+        for (px, py) in q:
+            dx, dy = (px - q[0][0]) * MM, (py - q[0][1]) * MM
+            uvs.append((( dx * ux + dy * uy) / uv_scale,
+                        (-dx * uy + dy * ux) / uv_scale))
+        for k in range(4):
+            k2 = (k + 1) % 4
+            fs.append((b + k, b + 4 + k, b + 4 + k2, b + k2))     # side
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(vs, [], fs)
+    uvl = me.uv_layers.new(name="UVMap")
+    for poly in me.polygons:
+        if len(poly.vertices) == 4 and poly.vertices[0] % 8 == 0 and \
+                poly.vertices[0] // 8 * 4 + 3 < len(uvs) and \
+                all(v - poly.vertices[0] < 4 for v in poly.vertices):
+            base_uv = poly.vertices[0] // 8 * 4
+            for j, li in enumerate(poly.loop_indices):
+                uvl.data[li].uv = uvs[base_uv + j]
+    me.materials.append(_surface(value, mat))
+    ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
+    bpy.context.scene.collection.objects.link(ob)
+    print(f"herringbone: {len(quads)} planks, {len(vs)} verts")
+    return ob
+
+
 def build_camera(cam):
     data = bpy.data.cameras.new("CAM_TRN002")
     data.lens = cam["focal_mm"]
@@ -253,7 +303,11 @@ def main():
 
     built = {}
     for m in spec["masses"]:
-        if m.get("kind") == "oct":
+        if m.get("kind") == "herringbone":
+            built[m["name"]] = _herringbone(
+                m["name"], m["c"][2], m["s"][2], m["value"],
+                mat=mat_of(m["name"]), **(m.get("lattice") or {}))
+        elif m.get("kind") == "oct":
             built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200),
                                     m["value"], axis=m.get("axis", "z"),
                                     tilt_deg=m.get("tilt_deg", 0.0),

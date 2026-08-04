@@ -1242,6 +1242,53 @@ a SIDE-face bulge copied onto the FOOT face nobody measured). The owner's
 gate pass leaves it standing as a DECLARED FALSE READ that dies with the
 cloth sim — the phase's first object replaces it entirely.
 
+### PHASE 2 ROUND 1 (r7) — materials, light and a real herringbone floor
+
+Frame of record `trn002_mat_r7.png`, spec_r9 (54 masses). Built from a
+four-agent measurement pass (939 k tokens) whose light findings refuted the
+obvious reading of the room four ways: **the left window is not the key** (it
+is a near-closed blind; the floor beside it is the frame's darkest and the one
+cast shadow points 22° off where a window key predicts), **the downlights make
+no pools** (ceiling glow dead within 120-200 mm; the parquet under dl_1 is
+DARKER than a metre away — and our own flat form light had been making exactly
+the pools four blind critics counted as extra fixtures), **the lamp is off**,
+and **the unlit shelf compartments stay dark** — the named etagere debt is
+paid by the 250 mm falloff gradient, not by fill.
+
+Also corrected: the "oak band" is not oak. At 8x it is vein-cut travertine
+with a mitred return, the same signature as the console — so it is now one
+material with the left run, whose 4x value spread is LIGHTING (proven on one
+continuous panel reading 2.24x between two spots 0.6 m apart).
+
+**The instrument earned its keep on its first use.** `trn002_lightcheck`
+samples both frames through an object-ID mask — the same pixel set is the same
+physical surface in both, because the geometry agrees sub-pixel — and reports a
+per-object ladder. It found what a LOOK could not: every object in the room sat
+at 0.4-0.65 of its target value RELATIVE TO the back wall, because our key lit
+that wall directly where the target's is bounce-lit (measured flat in x,
+-7.7%/m upward = brightest at the floor). Moving the key from far-and-flat to
+close-and-aimed-down put bed, bench and mattress within 6% of their target
+ratios. Histogram now p50 0.412 vs 0.372, p95 0.633 vs 0.636.
+
+**Defect found by the fleet, five rounds old:** every `_box` face in the
+blockout was wound INWARD, and every axis="y" prism too. Cycles flips a
+backfacing normal so it rendered correctly throughout and no critic could ever
+have seen it — but a cloth COLLISION modifier pushes along the normal, so the
+probe duvet fell straight through the mattress. Fixed, moved into the pure
+layer, and pinned by tests with a negative control.
+
+**Two of my own claims refuted and corrected in place:** the ledger called the
+cloth machinery "TRN-001's proven machinery" (TRN-001 has no cloth at all —
+it is drape.py/softgoods.py/clothcheck.py from PRJ-2026-002), and lightcheck's
+docstring compared our p99/p1 to the ground-truth study's 191-2500:1 as if
+they were the same quantity (those are Blender wattages; these are
+display-referred pixels, and the target's tails are material — the TV screen
+and the pet-cave void — not light).
+
+**Open after r7**: contact shadows and shadow DEPTH (p1 0.074 vs 0.004),
+the downlight ceiling glow, the unlit-shelf lift, travertine porosity, the
+cloth sim, styling, and the artwork frame/relief the pattern pass measured.
+
 **PHASE 2 — MATERIALS / CLOTH / LIGHT — OPENED.** Queue of record:
 1. **Duvet → cloth sim** (first object; the machinery is `drape.py` +
    `softgoods.py` + `clothcheck.py`, proven on PRJ-2026-002 element 8 —

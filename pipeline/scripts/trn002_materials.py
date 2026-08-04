@@ -44,7 +44,11 @@ CC0 = os.path.join(REPO, "assets", "shared", "cc0", "textures")
 # back to a default, because a silent default is a decision nobody made
 # (the class this repo names "a default nobody set = a decision nobody made").
 EXACT = {
-    "floor": "floor_herringbone",
+    # The floor slab is now the JOINT plane: the planks ride 2 mm proud of it,
+    # so what shows between them is this. The target's joints measure 1.83x
+    # darker than the field, which is the number this row carries.
+    "floor": "floor_joint",
+    "floor_planks": "floor_herringbone",
     "back_wall": "paint_white", "left_wall": "paint_white",
     "right_wall": "paint_white", "door_wall": "paint_white",
     "ceil_main": "paint_ceiling",
@@ -127,6 +131,7 @@ PALETTE = {
     # recorded when it corrected a floor's VALUE instead of its hue.
     "veneer_travertine": ((0.578, 0.485, 0.361), 0.60, 0.0, "marble_01", 1.4),
     "floor_herringbone": ((0.503, 0.314, 0.168), 0.42, 0.0, "wood_floor", 0.66),
+    "floor_joint":       ((0.275, 0.172, 0.092), 0.55, 0.0, None, 0.0),
     # The 2026-07-30 ground-truth study measured this studio at 95% image-free
     # materials against 50-66% in every photoreal reference file, with fabric
     # compensating by flat sheen. Every fabric here therefore carries a real
@@ -172,6 +177,9 @@ PALETTE_PROV = {
                               "saturated surface in the room (corrected B/R "
                               "0.327). Map scale 0.66 m = the measured 132 mm "
                               "plank width x the map's ~5-plank tile.",
+    "floor_joint": _M + "; the plank field divided by the measured joint "
+                        "contrast (joints read 1.83x darker than the field — "
+                        "the same signal the herringbone phase was fitted on).",
     "rug_cream": _M + "; sampled in BOTH conditions (lit front 1.154x wall, "
                       "shadowed band 0.938x = 1.23x apart) and the row carries "
                       "their midpoint — the spread is the light's to produce. "
@@ -236,6 +244,11 @@ ROUGH_MEAN = {
 # Materials that keep a map set for its NORMAL (weave, grain relief) but must
 # NOT take its colour variation — measured texture near zero on that surface.
 DIFFUSE_OFF = {"rug_cream"}
+# Materials whose mesh carries REAL UVs and must use them instead of box
+# projection. Only the herringbone floor: its planks each carry their own UV
+# frame so the grain turns with the chevron, which is what a box projection —
+# one orientation for the whole floor — structurally cannot do.
+UV_MAPPED = {"floor_herringbone"}
 # Emission strength per material. The four downlight lenses are the frame's
 # only legitimately clipped pixels (273 px, 0.03%), so the LENS is supposed to
 # blow — what must not appear is a ceiling pool, and the measurement killed
@@ -305,16 +318,18 @@ def build_materials(palette_override=None):
         diff_f, rough_f, nor_f = MAP_FILE[slug]
         coord = nt.nodes.new("ShaderNodeTexCoord")
         mapping = nt.nodes.new("ShaderNodeMapping")
-        s = 1.0 / max(scale, 1e-6)
+        uv = key in UV_MAPPED
+        s = 1.0 if uv else 1.0 / max(scale, 1e-6)
         mapping.inputs["Scale"].default_value = (s, s, s)
-        nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+        nt.links.new(coord.outputs["UV" if uv else "Object"], mapping.inputs["Vector"])
 
         def _tex(fname, non_color):
             t = nt.nodes.new("ShaderNodeTexImage")
             t.image = bpy.data.images.load(os.path.join(CC0, slug, fname),
                                            check_existing=True)
-            t.projection = "BOX"
-            t.projection_blend = 0.3
+            if not uv:
+                t.projection = "BOX"
+                t.projection_blend = 0.3
             t.extension = "REPEAT"
             if non_color:
                 t.image.colorspace_settings.name = "Non-Color"

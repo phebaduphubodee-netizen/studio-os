@@ -53,14 +53,22 @@ import math
 # produces and cannot show the emitter. Declared as A everywhere it is quoted.
 KEY = {
     "name": "KEY_front_left", "kind": "AREA", "shape": "RECTANGLE",
-    "loc_mm": (-3900, -10600, 1850), "size_mm": (4200, 2600),
-    "rot_deg": (78.0, 0.0, -14.0),
+    "loc_mm": (-3300, -8700, 2400), "size_mm": (3000, 2000),
+    # Aimed DOWN into the room, not across it. The first rig at 78 deg threw
+    # the key flat down the room and lit the back wall directly, and the ladder
+    # caught it: every object in the room came back at 0.4-0.65 of its target
+    # value RELATIVE TO that wall. The target's back wall is not directly lit
+    # at all — it measures FLAT in x and -7.7% per metre UPWARD, i.e. brightest
+    # at the floor, which is the signature of bounce off the rug and the bed.
+    # So the key has to light the floor and the bedding, and the wall has to be
+    # paid for out of what they return.
+    "rot_deg": (58.0, 0.0, -14.0),
     # 165 W, bracketed on the quick rung against the target's own histogram
     # (three-point sweep after the strip/world clipping was fixed): p50 0.363
     # vs 0.372, p95 0.617 vs 0.636. It is an EXPOSURE match, not a physical
     # wattage — the target is display-referred with an unknown tonemap, so no
     # absolute power is recoverable and none is claimed.
-    "power_w": 165.0, "color": (1.000, 0.958, 0.912),
+    "power_w": 98.0, "color": (1.000, 0.958, 0.912),
     "prov": "A(inferred: the frame shows the gradient, never the emitter; a "
             "glazed wall, an HDRI portal and a fill card all predict it)",
 }
