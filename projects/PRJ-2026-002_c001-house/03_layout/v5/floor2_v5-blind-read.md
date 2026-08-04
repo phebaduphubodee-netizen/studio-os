@@ -12,7 +12,12 @@ page 1 = `PLAN FURNITURE FLOOR 2` (1:75, A3) · **Tools:** `pdf_extract_walls.py
   `merge_carried` found no prior and did **not** pull v4's owner wall-patches — the extract is
   pure machine walls (`manual_additions: false`, verified).
 - **Did NOT read:** `03_layout/v4/**`, the root `03_layout/floor2-walls-mm.json` (it carries v4's
-  owner `manual_additions`), or any v4 scene-graph / openings / gate / defect / manifest.
+  owner `manual_additions` — **CORRECTION 2026-08-04, measured:** that reason was FALSE. Root's
+  md5 is identical to this v5 extract and has no `manual_additions` key; root is the untouched v3
+  machine baseline, and the owner wall-patches live ONLY in `v4/floor2-walls-mm.json`. The
+  not-reading itself was still correct blindness — only the stated reason misdescribed root's
+  content. See `../README-walls.md` for which copy is truth), or any v4 scene-graph / openings /
+  gate / defect / manifest.
 - **Honesty limit (stated, not hidden):** prior session context held v4 *REVIEW-state summaries*
   (s2 sliding door, shower niche, tub, outline offsets). Those specific v4 answers were **not
   imported** — geometry is derived independently from the PDF and every owner-signature point is

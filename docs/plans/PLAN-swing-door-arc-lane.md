@@ -1,4 +1,10 @@
 # PLAN-swing-door-arc-lane
+
+> **สถานะ (2026-08-04): EXECUTED** — detector + tests + wiring + รายงานครบ
+> (commits `ac92f9a`, `9025090`; `qa/reports/floorplancad-swing-door-2026-07-07.md`);
+> door recall 14.6%→70.4% อยู่ในกรอบ 2,000–4,500 ที่แผนคาดไว้เอง (ย้ายจาก root มา
+> docs/plans/ 2026-08-04 ตาม outside-review ข้อ 7)
+
 Rank: 2/5
 
 ## Goal (incl. the measured number this moves)

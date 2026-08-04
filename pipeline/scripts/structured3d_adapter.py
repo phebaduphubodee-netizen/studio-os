@@ -109,7 +109,9 @@ from collections import Counter
 
 ADAPTER_VERSION = "structured3d_adapter v1.0"
 
-DATASET_ROOT = "C:/Users/teza_/studio-datasets/structured3d"
+# dataset lives OUTSIDE the repo — override via STRUCTURED3D_ROOT env var
+# (.env / shell); the literal below is only this machine's default
+DATASET_ROOT = os.environ.get("STRUCTURED3D_ROOT", "C:/Users/teza_/studio-datasets/structured3d")
 ANNO_ROOT = os.path.join(DATASET_ROOT, "annotation_3d", "Structured3D")
 BBOX_ROOT = os.path.join(DATASET_ROOT, "bbox", "Structured3D")
 DEFAULT_OUT = os.path.join(DATASET_ROOT, "gt-sample")

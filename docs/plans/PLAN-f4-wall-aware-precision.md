@@ -1,4 +1,11 @@
 # PLAN-f4-wall-aware-precision
+
+> **สถานะ (2026-08-04): EXECUTED** — ทำครบตั้งแต่ 2026-07-07 (commits
+> `1c6a13f`/`46f95c5`/`1d1721a`); ผลที่ `qa/reports/floorplancad-oracle-walls-2026-07-07.md`
+> (F4 precision 2.9%→3.4%, candidates −23,651 โดย recall คงเดิมตามเงื่อนไขแผน);
+> เลนต่อยอดเป็น `wall_detect.py`/`wall_aware_lane.py` แล้ว (ย้ายจาก root มา
+> docs/plans/ 2026-08-04 ตาม outside-review ข้อ 7)
+
 Rank: 1/5
 
 ## Goal

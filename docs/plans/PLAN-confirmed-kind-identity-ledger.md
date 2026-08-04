@@ -1,4 +1,11 @@
 # PLAN-confirmed-kind-identity-ledger
+
+> **สถานะ (2026-08-04): EXECUTED** — ทำเสร็จในวันเดียวกับที่เขียนแผน: commit `20bb90d`
+> ลง `confirmed_kind` ครบทั้ง 6 ไฟล์ตามแผน (placement_gate / raster_overlay /
+> gen_floor2_v4 + test ทั้งสามชุด) และงาน slice F ที่แผนเลื่อนไว้ปิดตามใน `f20e242`;
+> กลไกถูกขยายเป็น `confirmed_zone` ใน `d4227c1` (ย้ายจาก root มา docs/plans/
+> 2026-08-04 ตาม outside-review ข้อ 7)
+
 Rank: 4/5
 
 ## Goal (incl. the measured number this moves)

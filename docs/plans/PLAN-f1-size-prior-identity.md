@@ -1,4 +1,10 @@
 # PLAN-f1-size-prior-identity — deterministic size/shape identity priors (first honest nonzero F1)
+
+> **สถานะ (2026-08-04): EXECUTED** — สร้างครบตามแผน: `kind_priors.py` + tests
+> (`6508701`), wired เข้า `svg_plan_reader.py`, รายงาน
+> `qa/reports/floorplancad-f1-priors-2026-07-07.md`; ต่อยอดเข้า doubt suite ภายหลัง
+> (`63271bf`, `474dc11`) (ย้ายจาก root มา docs/plans/ 2026-08-04 ตาม outside-review ข้อ 7)
+
 Rank: 3/5
 
 ## Goal (incl. the measured number this moves)

@@ -7,7 +7,7 @@
   "derivation": "BLIND re-derivation from the source PDF only. v4 artifacts (walls, openings, scene-graph, gates, defect set) were NOT read. Purpose: an independent second reading to diff against v4 (the diff is the owner's to run).",
   "blind_protocol": {
     "used": ["source PDF 00_intake/raw-local/The City ... Plan funiture 02.pdf (page 1 = FLOOR 2)", "pipeline tools (pdf_extract_walls.py)", "stage _contract.md", "knowledge/ ASA-2554 layer standard"],
-    "not_read": ["03_layout/v4/**", "03_layout/floor2-walls-mm.json (root; carries v4 owner manual_additions)", "any v4 scene-graph/openings/gate/defect/manifest"],
+    "not_read": ["03_layout/v4/**", "03_layout/floor2-walls-mm.json (root; CORRECTION 2026-08-04: root is the untouched v3 machine extract — md5-identical to this v5 derivation, NO manual_additions; owner patches live only in v4/. The blindness held; the original stated reason misdescribed root. See ../README-walls.md)", "any v4 scene-graph/openings/gate/defect/manifest"],
     "honesty_limit": "Perfect blindness is impossible -- prior context held v4 REVIEW-state summaries (s2 door / shower niche / tub / outline offsets). Those specific v4 answers were NOT imported; geometry was derived independently from the PDF and every owner-signature point is re-flagged open, not copied."
   },
   "calibration": {

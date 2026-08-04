@@ -1,4 +1,12 @@
 # PLAN-gate-hardening-freshness
+
+> **สถานะ (2026-08-04): EXECUTED** — ปิดทั้งสองช่องที่แผนชี้ตั้งแต่ `f20e242` (07-07):
+> overlay ถูก hash เข้า marker (inputs ปัจจุบัน 11 ตัวใน
+> `03_layout/v4/placement-gate.json`) และ `reconcile_rooms` ทำงานใน
+> `placement_gate.run()`/`build_floor`; ขยายต่อด้วย confirmed_kind/zone_flag
+> หมายเหตุ: ไฟล์นี้ยังถูกอ้างเป็นบันทึก verification ของ v4 gate — ย้ายได้ ห้ามลบ
+> (ย้ายจาก root มา docs/plans/ 2026-08-04 ตาม outside-review ข้อ 7)
+
 Rank: 5/5
 
 ## Goal (incl. the measured number this moves)
