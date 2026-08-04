@@ -1080,11 +1080,18 @@ petcave/nightstand cluster misread by a third straight blind critic →
 materials phase's first legibility ticket). C2 Cowork pending ask moved to
 the r3b bundle.
 
-## TRN-002 GATE #3 — พร้อมให้ตัดสิน
+## TRN-002 GATE #3 — ANSWERED 2026-08-04 (owner, C4): ไม่ผ่าน
+
+The owner rejected the round and is routing the frame to Claude-Cowork (C2,
+R7c) himself for a fresh cold-critique pass. Blockout phase stays OPEN; the
+lane BLOCKS here (R2) until the C2 answer + the owner's corrections come back
+— then every item gets the standard R7 triage before round 4 starts.
+Note for the record: the builder's own C1 and the C3 pass called the geometry
+closed — the owner's eye disagreed. That disagreement is the ladder working
+(C4 outranks everything), and whatever C2 finds will say which rung went blind.
 
 **Pair**: `_private/…/TRN-002/look/trn002_pair_r3b.png`, blend
-`trn002_blend_r3b.png` (the blend is the exhibit: clay edges riding the
-target's own lines). Frame of record: `trn002_blockout_r3b.png`.
+`trn002_blend_r3b.png`. Frame of record: `trn002_blockout_r3b.png`.
 
 1. **Both your GATE #2 flags are closed and cross-vendor confirmed**: the desk
    is a thick-top waterfall to the floor (no more orphan plate), the console a
