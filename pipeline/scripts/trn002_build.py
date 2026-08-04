@@ -220,11 +220,20 @@ def main():
         for ob in list(coll):
             coll.remove(ob)
 
+    built = {}
     for m in spec["masses"]:
         if m.get("kind") == "oct":
-            _oct(m["name"], m["c"], m["s"], m.get("cut", 200), m["value"])
+            built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200), m["value"])
         else:
-            _box(m["name"], m["c"], m["s"], m["value"])
+            built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"])
+    # "parent": <mass> declares an assembly IN the scene — placement_check groups
+    # by Blender hierarchy ("the scene's own declaration of what moves together"),
+    # so a shade over its stem is judged as one lamp, not as a slab teetering on a
+    # post. Meshes carry world coords with identity transforms, so no inverse
+    # matrix is needed.
+    for m in spec["masses"]:
+        if m.get("parent"):
+            built[m["name"]].parent = built[m["parent"]]
     cam_ob = build_camera(spec["camera"])
     build_light()
     setup_render(spec, out_png, quick)

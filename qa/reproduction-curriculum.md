@@ -941,7 +941,17 @@ of the headboard next); the open slot renders as an unexplained void ACCEPT
 (what fills it in the target — niche, return, shadow — is round 3's corner
 question); partition-reads-solid parked to materials (no glass in clay).
 
-## TRN-002 GATE #2 — พร้อมให้ตัดสิน
+## TRN-002 GATE #2 — ANSWERED 2026-08-04 (owner, C4)
+
+**Verdict**: pass-with-corrections. Two flags, both landing on all-A-provenance
+assemblies — the owner's eye found the unmeasured zones without being told
+which they were: (1) "แท่นวางของใต้ทีวียังดูแปลก" — `console`+`tv`, both prov A;
+(2) "โต๊ะที่มุมห้อง ด้านข้างมันมีแผ่นอะไรไม่รู้" — `desk_panel`, a side plate I
+ASSUMED into existence and placed with a visible gap off the 30 mm desk slab.
+Target truth at 3x: one continuous floating wood run — low TV console flowing
+into a vanity/desk with a WATERFALL end panel (top and side are one volume,
+rounded outer corner), meeting the shelf column at the corner. Round 2 CLOSED
+by owner; round 3 OPEN with both flags at the head of the measurement queue.
 
 **Pair**: `_private/…/TRN-002/look/trn002_pair_r2.png`, blend
 `trn002_blend_r2.png`. Frames: `trn002_blockout_r2.png` (chamfer),
@@ -990,3 +1000,82 @@ First full C2→triage cycle on this lane. Verdict: 2 of 3 r1 symptoms GONE
   TV-from-bed centre 1220–1525) — a critic that arms its own refutation is
   the rung working as designed. Norms de-panic numbers; the target stays
   the judge.
+
+## TRN-002 ROUND 3 — the owner's eye landed on the only unmeasured wall, and the measurements agreed with him everywhere
+
+**GATE #2 verdict (C4)**: pass with two flags — "แท่นใต้ทีวีดูแปลก" and "โต๊ะมุมห้อง
+มีแผ่นอะไรไม่รู้ข้างๆ". Both flags sat on all-A-provenance assemblies; `desk_panel`
+was a plate I assumed into existence and placed with an air gap. The owner found
+the unmeasured zone by eye, unprompted.
+
+**Measurement fleet** (6 agents, 871k tokens; `measure:slot` died on an API
+error — slot + shelf voids stay OPEN): the left wall re-measured to M almost
+everywhere, and the spec was wrong in every number it had assumed there:
+
+- Console: NOT a 370-tall tub at 150 float — a floating square-section slab
+  (255 deep × 258 thick, M), top 753, front plane x=-4495±8 (measured by the
+  one ray direction immune to the near-wall ill-conditioning), rounded end
+  R~55 (a chamfer would have been called; the fitter's straightness guard
+  measured the curve by REFUSING the line). Runs unbroken into the desk.
+- Desk: NOT slab+plate — a thick-edge box top (fascia ~100), top 875±15, with
+  a TRUE WATERFALL pier (210 wide) whose face is flush and whose foot MEETS
+  THE FLOOR: that contact is the wall's M pin. desk_panel DELETED (R9: deleted,
+  not zeroed). TV lowered into its measured band (bottom ~950, was 1125).
+- **Adjudication of record**: the two wall agents split on the pier plane
+  (y=-2200 vs y=-3445) — same v~525 top edge, two planes, 745 vs 875. The 3x
+  crop settled it: the pier foot visibly meets the herringbone at v~755-765 →
+  y=-3445 wins; the other "contact" at v685-687 was a mid-face feature. And the
+  chair went the OTHER way (the -3445 agent's "chair at the vanity" blobs sit
+  below the real feet = floor shadows; spec chair M confirmed twice). Neither
+  agent was globally right — each claim adjudicated separately, by pixels.
+- Bed stack (both critics' #1 for two rounds, finally measured, all M):
+  platform top 221 not 300; bottom FLUSH (no toe kick — the dark line is AO,
+  do not model it); ledge +165/side not 75 (independently on two faces);
+  mattress structural ~510-530 rising ~550, dressed crest at the foot 626-734.
+  The spec's 300/250 split was upside down: the real ratio is low tray : fat
+  soft stack ≈ 1 : 1.4.
+- Band top 937.1±1.0 on -1290 (was 895 — r2's fit was the HEADBOARD edge
+  backprojected on the wrong plane; on its own plane that edge gives exactly
+  895, mechanism identified). Band rises 22mm above the headboard, which the
+  image always showed. Unmodeled black lamp found occluding the band
+  (u1057-1080) → now a mass, parented stem+shade (placement_check groups by
+  Blender hierarchy — the scene declares the assembly, no allowlist touched).
+- G1 SWEPT (two rounds overdue): NOT robust — cam_z band 1278..1338, H_main
+  3038..3180, lever dominates 2.5:1. Plus a found bias: the record pins
+  (horizon 407.3) give cam_z 1319/H 3120; 1305 belongs to a different horizon.
+  **Decision: do NOT rescale mid-lane** — spec+camera share one similarity and
+  the render cannot see it; the basis gets fixed when absolute mm matter
+  (procurement). G3 declared: the 510mm door module is what actually selects
+  x_wall=-1290 (the r2 "cv minimum" is refuted — cv=0.0046 at every x over an
+  870mm range; the module standard did the choosing all along).
+
+**Round-3 frame**: `trn002_blockout_r3.png` — dump 18 landmarks mean 0.09px
+(6 new landmarks pin the measured pixels through the build), R9b 0 FAIL.
+C3 (Gemini, live): **both GATE #2 owner flags declared FIXED** (waterfall desk ✓
+two-tier console ✓); its two "ยังไม่แก้" verdicts collide with M numbers that put
+the clay on the target's own pixels — triage in the bundle README: the residual
+wrongness lives in materials/cloth/light, not placement. C2 Cowork: pending ask
+recorded in bundle README.
+
+**Open after r3**: shelf_col voids + slot contents (their agent died — round-4
+queue #1 with a re-probe), petcave arch void, then the materials/cloth/light
+phase. **Spend r3**: 1 workflow (6 agents, 871k), 2 quick + 1 full frame,
+1 Gemini pro, spec_r3 = 47 masses.
+
+## TRN-002 GATE #3 — พร้อมให้ตัดสิน
+
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r3.png`, blend
+`trn002_blend_r3.png` (the blend is the exhibit: clay edges riding the
+target's own lines).
+
+1. **Both your GATE #2 flags are closed and cross-vendor confirmed**: the desk
+   is a thick-top waterfall to the floor (no more orphan plate), the console a
+   floating two-tier run — every number measured, prov M in spec_r3.
+2. **The bed is finally measured** (221 tray + 165 reveal + fat stack) and the
+   whole frame's geometry now sits on target pixels at 0.09px mean; what still
+   reads wrong (rigid bedding, opaque glass, tone-merged furniture) is
+   material/cloth/light by measurement, not mass placement.
+3. **Decision asked**: close the BLOCKOUT phase and enter materials/light
+   (shelf voids + slot ride along as the first geometry errand of round 4),
+   or order another pure-geometry round first.
+

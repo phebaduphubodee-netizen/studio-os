@@ -31,14 +31,22 @@ def main():
     ap.add_argument("--model", default="pro", choices=list(MODELS))
     a = ap.parse_args()
 
+    # Since the training/ split (2026-08-04) a bundle is TWO mirrored dirs:
+    # binaries stay under _private/**, text (PROMPT/ANSWER/README) lives under
+    # training/**. Resolve both; the answer archives on the text side.
     hits = [p for p in REPO.glob(f"_private/**/critique/{a.bundle}") if p.is_dir()]
     if len(hits) != 1:
-        sys.exit(f"bundle '{a.bundle}' matched {len(hits)} dirs — need exactly 1")
+        sys.exit(f"bundle '{a.bundle}' matched {len(hits)} render dirs — need exactly 1")
     bundle = hits[0]
+    text_hits = [p for p in REPO.glob(f"training/**/critique/{a.bundle}") if p.is_dir()]
+    text_dir = text_hits[0] if len(text_hits) == 1 else bundle
     render = bundle / (a.bundle.replace("critique-", "") + ".png")
     if not render.exists():
         sys.exit(f"bundle render {render.name} missing — the ONLY image allowed out")
-    prompt = (bundle / "PROMPT.md").read_text(encoding="utf-8")
+    prompt_path = text_dir / "PROMPT.md"
+    if not prompt_path.exists():
+        prompt_path = bundle / "PROMPT.md"
+    prompt = prompt_path.read_text(encoding="utf-8")
     m = FORBIDDEN.search(prompt)
     if m:
         sys.exit(f"PROMPT.md contains forbidden reference '{m.group(0)}' — refusing to send")
@@ -57,7 +65,7 @@ def main():
         contents=[types.Part.from_bytes(data=render.read_bytes(), mime_type="image/png"), prompt],
         config=types.GenerateContentConfig(temperature=0.3),
     )
-    out = bundle / f"ANSWER_gemini25{a.model}.md"
+    out = text_dir / f"ANSWER_gemini25{a.model}.md"
     out.write_text(resp.text, encoding="utf-8")
 
     usage = REPO / ".gemini_usage.json"
