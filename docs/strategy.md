@@ -2665,3 +2665,38 @@ Owner ruled A/D/E/F the same day; B + C queued at TRN-002 close; E declined
    last; the `target.json` pick mappings stay private by charter. And `pipeline/output`
    now lives outside OneDrive behind a junction at the same path — the state machine
    and the state moved one step closer to the same address.
+
+## 2026-08-04b — research-lane session: the queue got a gatekeeper, and the fallback out-measured the tool
+
+Six DR topics proposed by the C2 landscape scan went through a 10-agent dedup
+before any entered `knowledge/_inbox/nlm-queue.md`: 3 survived as DRs, one
+became two asks to notebooks we already own, one became measurement-first
+(704 anchors, existing tools), one was rerouted off NLM entirely. Full triage:
+`docs/research/2026-08-04-dr-queue-triage.md`. Learnings earned:
+
+1. **Dedup ก่อนเข้าคิวจ่ายค่าตัวเองสองครั้งในวันเดียว.** The bedding topic's
+   extend-premise was refuted by grep (nlm-cloth-closedtube has zero bedding
+   terms and was already distilled), and the asset topic's check-list had
+   missed the CLOSER prior DR (`docs/research/2026-07-11-furniture-sourcing-DR.md`
+   already ranks Thai retailers and names the six unchecked brands).
+   "Search our own vault first" is now also a queue-admission gate, not only
+   a build rule.
+2. **scite quota died and the fallback beat it.** Crossref REST + PubMed
+   efetch produced 32 DOI-backed findings across 4 lenses
+   (`docs/research/2026-08-04-inspection-blindness-evidence.md`), and the
+   sweep-2 verification rung caught sweep-1's own citation error (a 1-page
+   letter mis-cited as the SOS review) — the no-URL-no-vault quarantine rule
+   catching its own builder before anything reached the vault.
+3. **The literature repositions two of our instincts before they became
+   rules.** Systematic-viewing/zone-scan training is NULL (Kok 2016 — trained
+   full-coverage novices got WORSE), so the STRANGER SWEEP must be
+   parameterised as a forced RE-ASK of cleared zones, never a scan-order
+   protocol; and inversion/flip is a false-positive filter (2025 replication),
+   not a miss-finder — triage tool, not discovery tool. Distillation is
+   deferred until the [Q] numbers clear verification and a value first gates
+   procedure (three triggers named in the triage doc).
+4. **C2's one-line verdict on r5c was another existence-class read the
+   instruments never asked about** (duvet_drape 489-tall pillar at the foot;
+   target's platform face is bare). Mechanism, named for reuse: a crest-LINE
+   maximum extruded into a uniform prism + a SIDE-face relationship copied
+   onto the FOOT face — strip≠surface working in 3D, both on A/D-tier provs.
