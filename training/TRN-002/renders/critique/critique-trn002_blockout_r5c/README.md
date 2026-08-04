@@ -26,9 +26,40 @@ independent seed windows agreeing ≤3mm):
 
 - C1: col pair target|r5c — board levels land on the target's own lines;
   stranger sweep run (artwork, petcave, door zone hold).
-- **C2 (Cowork, R7c): PENDING** — attach `trn002_blockout_r5c.png` + this
-  PROMPT.md (program text now says étagère; supersedes the r5b ask).
+- **C2 (Cowork, R7c): FILED** — one item, archived `ANSWER_claude-cowork.md`
+  (delivered via the Cowork channel 2026-08-04, research-lane session;
+  triaged below).
 - C3 (Gemini): filed. **No new geometry item.**
+
+## C2-r5c triage (R7)
+
+1. **"ก้อนผ้านวมแนวตั้งที่ปลายเตียงไม่มีในตัวจริง"** → **ACCEPTED — correct
+   bind, verified against the file and both frames** (foot-zone crops
+   target vs r5c, 2026-08-04). The vertical mass is `duvet_drape`
+   (155×1870×**489**, z 221..710, prov **D**) whose near end presents as a
+   standing rounded pillar at the foot corner, compounded by `duvet_top`
+   (540×1870×190 rolled oct, prov **A-swept**) showing a sectional end-disc
+   beside it. In the target's foot zone the platform face is **unobstructed**
+   — a 489-tall wrap would cover it — and the duvet's foot presentation is a
+   FLUSH low fold at deck level with a slight overhang, hem well above the
+   221 ledge. **Mechanism, named:** the only MEASURED inputs were the crest
+   band 626..734 and the side-bulge plane (−3545). The realization then
+   (a) extruded a crest-LINE maximum into a uniform 540×1870 prism, and
+   (b) took a bulge observed on the SIDE face (mid-bed, where the throw
+   drapes over the rail) and wrapped it around the FOOT face full-width to
+   the ledge. Both are the strip≠surface error working in 3D: one measured
+   line carried a whole form; one face's relationship was copied onto
+   another face nobody measured. **Lane:** CLOTH phase — this CONFIRMS the
+   r5 R1 halt (duvet = R8 drapery; a third clay shape stays forbidden) and
+   sharpens its brief with three target-reads the clay stand-in violates:
+   foot mass is a LOW swell not a uniform 190 prism; y-ends terminate as
+   draped hem, never sectional discs/pills; the foot face stays largely
+   OPEN (platform visible), fabric overhangs only slightly. Gate note: the
+   stand-in currently fabricates an object-read that does not exist in the
+   target — the fourth-critic "เครื่องนอนแข็งทื่อ" chorus (C3-r5c item 1)
+   was reading THIS. Whether to flatten the stand-in to the measured deck
+   envelope before the cloth phase, or carry it as a declared false read,
+   is the owner's call at the gate.
 
 ## C3-r5c triage (R7)
 

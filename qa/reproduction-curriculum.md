@@ -1227,7 +1227,34 @@ the unlit shelf ticket, light phase), bench refuted M (3rd), petcave bound
 CORRECTLY by a blind critic for the first time (arch = styling ticket as
 before). C2 Cowork pending ask moved to r5c.
 
-## TRN-002 GATE #5 — พร้อมให้ตัดสิน
+## TRN-002 GATE #5 — ANSWERED 2026-08-04 (owner, C4): ผ่าน — BLOCKOUT PHASE CLOSED
+
+Verdict "ผ่านก็ได้" on the r5c frame. Five rounds + four correction frames;
+every zone measured or formally transferred; the owner's eye set the pace the
+whole way (gates #3, #4 both failed on zones C1+C3 had passed, and both times
+he was right).
+
+**C2-r5c rode in at the gate** (one item, filed + triaged in the bundle
+README): the duvet stand-in FABRICATES a read the target does not have — its
+drape wall covers a platform face the target shows open; mechanism = the
+strip≠surface error in 3D (a measured crest LINE extruded into a whole prism;
+a SIDE-face bulge copied onto the FOOT face nobody measured). The owner's
+gate pass leaves it standing as a DECLARED FALSE READ that dies with the
+cloth sim — the phase's first object replaces it entirely.
+
+**PHASE 2 — MATERIALS / CLOTH / LIGHT — OPENED.** Queue of record:
+1. **Duvet → cloth sim** (first object; TRN-001's proven machinery — headless,
+   deterministic, 0.48s). Brief sharpened by C2-r5c's three target-reads: low
+   swell not a uniform prism; y-ends terminate as draped hem, never sectional
+   discs; foot face stays largely open with slight overhang. Pillows/bolster
+   ride the same pass.
+2. **Light**: shelf strips (étagère levels + the "solid top" darkness), slot
+   bounce (the lit corner wall), kill the clay-light artifacts four critics
+   counted as downlights, lamp glow.
+3. **Materials**: travertine run, oak band/wardrobe, fabric values, herringbone
+   floor — the run-fusing grain C3 keeps asking for.
+4. **Legibility/styling**: petcave arch void + the right-lower cluster
+   (6 misbinds on file), shelf objects, TV black.
 
 **Pair**: `_private/…/TRN-002/look/trn002_pair_r5c.png`, blend
 `trn002_blend_r5c.png`. Frame of record: `trn002_blockout_r5c.png`.
