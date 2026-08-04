@@ -27,6 +27,99 @@ SENSOR_MM = 36.0
 MM = 0.001
 
 
+# --------------------------------------------------------------- mesh tables --
+# The vertex/face tables for the two shapes the builder makes live HERE, in the
+# pure layer, and the builder only hands them to bpy. They were inside the
+# Blender module until a probe found that every _box face was wound INWARD and
+# every axis="y" prism too — invisible to Cycles (its diffuse BSDF flips a
+# backfacing normal) and fatal to a cloth COLLISION modifier, which pushes cloth
+# along the normal and so pushed the duvet straight into the mattress. A defect
+# that survives five rounds of LOOKing needs a test, and a test needs the table
+# out of bpy. LAYER LAW, applied to the one thing that had escaped it.
+
+def box_mesh(c, s):
+    """(verts, faces) of an axis-aligned box in METRES from mm centre+size."""
+    x, y, z = (v * MM for v in c)
+    sx, sy, sz = (v * MM / 2 for v in s)
+    vs = [(x + dx * sx, y + dy * sy, z + dz * sz)
+          for dz in (-1, 1) for dy in (-1, 1) for dx in (-1, 1)]
+    fs = [(2, 3, 1, 0), (5, 7, 6, 4), (4, 6, 2, 0), (3, 7, 5, 1),
+          (1, 5, 4, 0), (6, 7, 3, 2)]
+    return vs, fs
+
+
+def oct_mesh(c, s, cut, axis="z", tilt_deg=0.0, seg=6):
+    """(verts, faces) of a rounded prism: four true ARC corners of radius `cut`.
+
+    axis  — the extrusion axis: "z" rounds the PLAN, "y" rounds the x-z SECTION
+            (a lying cylinder when cut is ~half the section).
+    tilt_deg — rotation about y through the bottom-back edge, so a leaning
+            pillow is a declared posture rather than a typed position.
+    """
+    x, y, z = (v * MM for v in c)
+    z0, z1 = z - s[2] * MM / 2, z + s[2] * MM / 2
+    if axis == "y":
+        sa, sb = s[0] * MM / 2, s[2] * MM / 2
+        e0, e1 = y - s[1] * MM / 2, y + s[1] * MM / 2
+        ca, cb = x, z
+    else:
+        sa, sb = s[0] * MM / 2, s[1] * MM / 2
+        e0, e1 = z0, z1
+        ca, cb = x, y
+    r = min(cut * MM, sa * 0.95, sb * 0.95)
+    ring = []
+    for cca, ccb, a0 in ((ca + sa - r, cb - sb + r, -90.0), (ca + sa - r, cb + sb - r, 0.0),
+                         (ca - sa + r, cb + sb - r, 90.0), (ca - sa + r, cb - sb + r, 180.0)):
+        for i in range(seg + 1):
+            a = math.radians(a0 + 90.0 * i / seg)
+            ring.append((cca + r * math.cos(a), ccb + r * math.sin(a)))
+    n = len(ring)
+    if axis == "y":
+        vs = [(pa, e0, pb) for pa, pb in ring] + [(pa, e1, pb) for pa, pb in ring]
+    else:
+        vs = [(pa, pb, e0) for pa, pb in ring] + [(pa, pb, e1) for pa, pb in ring]
+    fs = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
+    fs += [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
+    if axis == "y":
+        # (a, b) -> (x, z) extruded along +y is an ODD permutation of (x, y, z),
+        # so the ring order that gives outward normals for axis="z" gives
+        # inward ones here — all 30 faces.
+        fs = [tuple(reversed(f)) for f in fs]
+    if tilt_deg:
+        th = math.radians(tilt_deg)
+        px, pz = x + s[0] * MM / 2, z0          # pivot: bottom-back edge
+        vs = [((vx - px) * math.cos(th) + (vz - pz) * math.sin(th) + px,
+               vy,
+               -(vx - px) * math.sin(th) + (vz - pz) * math.cos(th) + pz)
+              for vx, vy, vz in vs]
+    return vs, fs
+
+
+def face_normal(vs, f):
+    """Newell normal of a polygon — robust for non-planar quads."""
+    nx = ny = nz = 0.0
+    for i in range(len(f)):
+        a, b = vs[f[i]], vs[f[(i + 1) % len(f)]]
+        nx += (a[1] - b[1]) * (a[2] + b[2])
+        ny += (a[2] - b[2]) * (a[0] + b[0])
+        nz += (a[0] - b[0]) * (a[1] + b[1])
+    return (nx, ny, nz)
+
+
+def inward_faces(vs, fs):
+    """Indices of faces whose normal points at the mesh centroid. A closed
+    convex solid must return [] — anything else is a collider that repels
+    inward."""
+    cen = [sum(v[k] for v in vs) / len(vs) for k in range(3)]
+    bad = []
+    for j, f in enumerate(fs):
+        n = face_normal(vs, f)
+        fc = [sum(vs[i][k] for i in f) / len(f) for k in range(3)]
+        if sum(n[k] * (fc[k] - cen[k]) for k in range(3)) <= 0:
+            bad.append(j)
+    return bad
+
+
 def load_spec(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)

@@ -1243,8 +1243,15 @@ gate pass leaves it standing as a DECLARED FALSE READ that dies with the
 cloth sim — the phase's first object replaces it entirely.
 
 **PHASE 2 — MATERIALS / CLOTH / LIGHT — OPENED.** Queue of record:
-1. **Duvet → cloth sim** (first object; TRN-001's proven machinery — headless,
-   deterministic, 0.48s). Brief sharpened by C2-r5c's three target-reads: low
+1. **Duvet → cloth sim** (first object; the machinery is `drape.py` +
+   `softgoods.py` + `clothcheck.py`, proven on PRJ-2026-002 element 8 —
+   **NOT "TRN-001's machinery" as this ledger first said: TRN-001 contains no
+   cloth at all** (zero hits for cloth/drape/CLOTH across every `trn001_*.py`).
+   The correction matters because it changes which lane's failure modes apply.
+   Measured fresh on this bed: 4.2-6.5 s per bake, and bit-exact ACROSS
+   PROCESSES (identical vertex SHA-256 from two separate `blender -b` runs) —
+   a stronger determinism claim than drape.py's own header, which only ever
+   asserted bit-exactness within one process). Brief sharpened by C2-r5c's three target-reads: low
    swell not a uniform prism; y-ends terminate as draped hem, never sectional
    discs; foot face stays largely open with slight overhang. Pillows/bolster
    ride the same pass.

@@ -22,10 +22,21 @@ Three readings:
            a REFERENCE object, so a pure exposure difference cancels and only
            the SHAPE of the light is compared. A frame whose ladder is
            compressed is flat, and this says by how much and WHERE.
-  RANGE    p1/p5/p50/p95/p99 and p99/p1 of each frame. The 2026-07-30
-           ground-truth study measured photoreal references at 191:1 to 2500:1
-           against our 10:1 — light range is the studio's named #1 gap, so it
-           gets a number here, never an adjective.
+  RANGE    p1/p5/p50/p95/p99 and p99/p1 of each frame — REPORTED, AND NOT TO
+           BE READ AS A DYNAMIC RANGE. The first version of this file quoted
+           "our 20:1 against the target's 182:1" beside the ground-truth
+           study's "191:1 to 2500:1 in pro files vs our 10:1", as though the
+           three were the same quantity. They are not, and the phase-2
+           measurement pass refuted it on both sides: the study's figures are
+           BLENDER LIGHT WATTAGES read out of .blend files, while these are
+           display-referred pixels out of an 8-bit JPEG with an unknown
+           tonemap — and the target's two tails are MATERIAL, not light (the
+           dark tail is the TV screen and the pet-cave void, the bright tail
+           is 273 clipped downlight lens cores, 0.03% of the frame). Measured
+           per material, the illumination range on any single surface in that
+           room is 1.2-1.9:1, except the etagere at 7.6:1. So p99/p1 is a
+           frame statistic worth watching for gross drift, and the honest
+           light metric is the LADDER below plus the same-material ratios.
   SPREAD   the target contains objects we do not model (vases, books, a bird
            sculpture, plants). Where they sit inside one of our masks, the
            target-side sample is not that surface at all. Every row carries the

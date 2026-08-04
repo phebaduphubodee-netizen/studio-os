@@ -19,6 +19,66 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import trn002_geom as G  # noqa: E402
+
+
+# --- mesh winding -----------------------------------------------------------
+# Cycles' diffuse BSDF flips a backfacing normal, so an inward-wound solid
+# renders correctly and no LOOK can catch it. A cloth COLLISION modifier does
+# not flip — it pushes cloth ALONG the normal, i.e. into the box. Five rounds
+# of blockout shipped with every box and every axis="y" prism inverted, and it
+# only surfaced when a duvet fell through the mattress. These tests are the
+# reason it cannot come back.
+
+def _shapes():
+    yield "box", G.box_mesh([100, 200, 300], [1000, 800, 600])
+    yield "oct z", G.oct_mesh([0, 0, 500], [800, 600, 400], 120, axis="z")
+    yield "oct y", G.oct_mesh([0, 0, 500], [400, 900, 400], 150, axis="y")
+    yield "oct z tilt", G.oct_mesh([0, 0, 500], [800, 600, 400], 120,
+                                   axis="z", tilt_deg=22.0)
+
+
+def test_every_generated_face_is_wound_outward():
+    for label, (vs, fs) in _shapes():
+        assert G.inward_faces(vs, fs) == [], f"{label} has inward faces"
+
+
+def test_the_winding_check_can_actually_fail():
+    """A guard that cannot fail is not a guard — reverse one face and it must
+    be caught (the negative control this repo asks every new guard to carry)."""
+    vs, fs = G.box_mesh([0, 0, 0], [100, 100, 100])
+    fs[2] = tuple(reversed(fs[2]))
+    assert G.inward_faces(vs, fs) == [2]
+
+
+def test_box_dimensions_and_centre_survive_the_table():
+    vs, _ = G.box_mesh([100, 200, 300], [1000, 800, 600])
+    xs, ys, zs = zip(*vs)
+    assert abs((max(xs) - min(xs)) - 1.0) < 1e-9
+    assert abs((max(ys) - min(ys)) - 0.8) < 1e-9
+    assert abs((max(zs) + min(zs)) / 2 - 0.3) < 1e-9
+
+
+def test_oct_y_rounds_the_section_not_the_plan():
+    """The r3b lesson in a test: axis='y' must make the x-z SECTION round and
+    leave the y extent flat-ended, which is what a lying bolster is."""
+    vs, _ = G.oct_mesh([0, 0, 0], [400, 900, 400], 200, axis="y")
+    ys = sorted({round(v[1], 6) for v in vs})
+    assert len(ys) == 2, "a y-extruded prism has exactly two end planes"
+    xs = {round(v[0], 6) for v in vs}
+    zs = {round(v[2], 6) for v in vs}
+    assert len(xs) > 4 and len(zs) > 4, "the x-z section must be a rounded ring"
+
+
+def test_tilt_pivots_about_the_bottom_back_edge():
+    """A leaning pillow must keep its mattress contact: the pivot edge cannot
+    move, or the tilt silently becomes a translation too."""
+    c, s = [0, 0, 500], [400, 600, 400]
+    flat, _ = G.oct_mesh(c, s, 60, axis="z")
+    lean, _ = G.oct_mesh(c, s, 60, axis="z", tilt_deg=20.0)
+    pivot = (max(v[0] for v in flat), min(v[2] for v in flat))
+    still = [v for v in lean
+             if abs(v[0] - pivot[0]) < 1e-6 and abs(v[2] - pivot[1]) < 1e-6]
+    assert still, "no vertex stayed on the pivot edge"
 import trn002_lines as L  # noqa: E402
 
 WH = (1080, 821)

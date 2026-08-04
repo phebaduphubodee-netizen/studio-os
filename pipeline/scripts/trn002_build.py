@@ -55,12 +55,7 @@ def _surface(value, mat):
 
 
 def _box(name, c, s, value, mat=None):
-    x, y, z = (v * MM for v in c)
-    sx, sy, sz = (v * MM / 2 for v in s)
-    vs = [(x + dx * sx, y + dy * sy, z + dz * sz)
-          for dz in (-1, 1) for dy in (-1, 1) for dx in (-1, 1)]
-    fs = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 2, 6, 4), (1, 5, 7, 3),
-          (0, 4, 5, 1), (2, 3, 7, 6)]
+    vs, fs = G.box_mesh(c, s)
     me = bpy.data.meshes.new(name)
     me.from_pydata(vs, [], fs)
     me.materials.append(_surface(value, mat))
@@ -86,39 +81,7 @@ def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None):
     mattress contact. Earned in r3b: a "lying" pillow that still stands at 90
     degrees reads as a capsule, whatever its dimensions say.
     """
-    import math as _m
-    x, y, z = (v * MM for v in c)
-    z0, z1 = z - s[2] * MM / 2, z + s[2] * MM / 2
-    if axis == "y":
-        sa, sb = s[0] * MM / 2, s[2] * MM / 2      # section in x-z
-        e0, e1 = y - s[1] * MM / 2, y + s[1] * MM / 2
-        ca, cb = x, z
-    else:
-        sa, sb = s[0] * MM / 2, s[1] * MM / 2      # section in x-y (plan)
-        e0, e1 = z0, z1
-        ca, cb = x, y
-    r = min(cut * MM, sa * 0.95, sb * 0.95)
-    SEG = 6
-    ring = []
-    for cca, ccb, a0 in ((ca + sa - r, cb - sb + r, -90.0), (ca + sa - r, cb + sb - r, 0.0),
-                         (ca - sa + r, cb + sb - r, 90.0), (ca - sa + r, cb - sb + r, 180.0)):
-        for i in range(SEG + 1):
-            a = _m.radians(a0 + 90.0 * i / SEG)
-            ring.append((cca + r * _m.cos(a), ccb + r * _m.sin(a)))
-    n = len(ring)
-    if axis == "y":
-        vs = [(pa, e0, pb) for pa, pb in ring] + [(pa, e1, pb) for pa, pb in ring]
-    else:
-        vs = [(pa, pb, e0) for pa, pb in ring] + [(pa, pb, e1) for pa, pb in ring]
-    fs = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
-    fs += [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
-    if tilt_deg:
-        th = _m.radians(tilt_deg)
-        px_, pz = x + s[0] * MM / 2, z0            # pivot: bottom-back edge
-        vs = [((vx - px_) * _m.cos(th) + (vz - pz) * _m.sin(th) + px_,
-               vy,
-               -(vx - px_) * _m.sin(th) + (vz - pz) * _m.cos(th) + pz)
-              for vx, vy, vz in vs]
+    vs, fs = G.oct_mesh(c, s, cut, axis=axis, tilt_deg=tilt_deg)
     me = bpy.data.meshes.new(name)
     me.from_pydata(vs, [], fs)
     me.materials.append(_surface(value, mat))
