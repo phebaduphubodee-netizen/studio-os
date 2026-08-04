@@ -1062,11 +1062,29 @@ queue #1 with a re-probe), petcave arch void, then the materials/cloth/light
 phase. **Spend r3**: 1 workflow (6 agents, 871k), 2 quick + 1 full frame,
 1 Gemini pro, spec_r3 = 47 masses.
 
+### r3b — the owner caught the builder repeating the class it had just triaged
+
+C4 on the r3 frame: *"กลายเป็นคุณใส่ก้อนอะไรไม่รู้ที่ปลายเตียง"* — the new
+`duvet_roll`, an A-prov block floating mid-mattress, exactly the r2b
+pillow-capsule class, SECOND occurrence, committed one commit after the builder
+wrote the first one's triage. **Law, now earned twice: a clay placeholder for
+soft goods must READ AS ITS CLASS from the record camera, or it leaves the
+frame until the cloth phase; every new mass answers "what would a stranger
+call this?" before it renders.** Reshaped into duvet_top + duvet_drape (hem
+wraps the foot face and RESTS ON the platform ledge — the contact the target
+shows; parented as one duvet). Frame of record → `trn002_blockout_r3b.png`
+(dump 0.09px, R9b 0 FAIL / 50 objects). C3 on r3b: capsule GONE, foot blob
+GONE, desk ✓, console ✓; residual items triaged in the bundle README (bed
+"altar" read refuted by M pins → clay; duvet softness → cloth lane; the
+petcave/nightstand cluster misread by a third straight blind critic →
+materials phase's first legibility ticket). C2 Cowork pending ask moved to
+the r3b bundle.
+
 ## TRN-002 GATE #3 — พร้อมให้ตัดสิน
 
-**Pair**: `_private/…/TRN-002/look/trn002_pair_r3.png`, blend
-`trn002_blend_r3.png` (the blend is the exhibit: clay edges riding the
-target's own lines).
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r3b.png`, blend
+`trn002_blend_r3b.png` (the blend is the exhibit: clay edges riding the
+target's own lines). Frame of record: `trn002_blockout_r3b.png`.
 
 1. **Both your GATE #2 flags are closed and cross-vendor confirmed**: the desk
    is a thick-top waterfall to the floor (no more orphan plate), the console a

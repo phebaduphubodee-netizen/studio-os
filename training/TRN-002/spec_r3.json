@@ -695,7 +695,7 @@
    "prov": "M(face y=-3445+/-60 pier-foot on z=0; x -4515..-4305; rest_on floor)"
   },
   {
-   "name": "duvet_roll",
+   "name": "duvet_top",
    "c": [
     -3225.0,
     -3045.0,
@@ -707,9 +707,27 @@
     155
    ],
    "value": 0.92,
-   "prov": "A-swept(foot crest 626..734 -> 675 at mattress plane)",
+   "prov": "A-swept(foot crest 626..734 -> 675 at mattress plane); r3b: reshaped from a floating mid-mattress block after the owner read it as an anonymous mass — same class as the r2b pillow capsule, 2nd occurrence",
    "kind": "oct",
-   "cut": 80
+   "cut": 120
+  },
+  {
+   "name": "duvet_drape",
+   "parent": "duvet_top",
+   "c": [
+    -3435.0,
+    -3045.0,
+    448.0
+   ],
+   "s": [
+    90,
+    1870,
+    454
+   ],
+   "value": 0.92,
+   "prov": "D(hem hangs over the mattress foot face and RESTS ON the platform ledge z=221 — the contact the target shows; declared one duvet via parent)",
+   "kind": "oct",
+   "cut": 40
   },
   {
    "name": "bolster",
