@@ -2639,3 +2639,29 @@ propagated; §F above was raised from LOW *because* of it. The DELIVERY law in
 `docs/LICENSING.md` is unchanged, and `scripts/asset_license.py` now enforces
 per-directory licence facts — because once several licences coexist under
 `assets/`, **a `.gitignore` protects a PATH, not a LICENCE**.
+
+## 2026-08-04 — outside structure review → triage → owner ruling, one day end-to-end
+
+The review was itself an R7c artifact (Cowork session, cold, structure-only) and the
+triage law held: 35 measured checks, every item accept+lane or refuted with a number.
+Owner ruled A/D/E/F the same day; B + C queued at TRN-002 close; E declined
+(rules-in-face is proven). Three learnings earned:
+
+1. **ที่ค้างคือป้าย ไม่ใช่งาน.** All five root `PLAN-*.md`, flagged stale by the review,
+   measured EXECUTED since 07-07 (commits + reports verified per plan). The debt was a
+   missing disposition line, not missing work — now in `docs/plans/` with measured
+   status headers. Corollary for every future review: verify a "stale" label against
+   the artifacts it promised before treating it as debt.
+2. **Evidence outranks the proposal — including mine.** My own triage queued
+   `run_altcwd/` for `qa/`; opening the files showed `pilot-blind-key.json` is the
+   blind-test ANSWER KEY (anchor refs of the friend studio's delivered work), covered
+   by no ignore rule — one `git add -A` from leaking the benchmark. Parked under
+   `_private/benchmark/pilot-blind/_superseded/`. Same shape as the walls finding: the
+   reviewer's frame ("no one knows which copy is true") was refuted by measurement,
+   and the measurement then found the real defect the frame missed — the CANONICAL
+   path holds the retired copy behind a self-consistent pin (`README-walls.md` is now
+   the sign at the point of use).
+3. **training/ is born** (ruling A): 272 TRN text files out of `_private/`, diffable at
+   last; the `target.json` pick mappings stay private by charter. And `pipeline/output`
+   now lives outside OneDrive behind a junction at the same path — the state machine
+   and the state moved one step closer to the same address.
