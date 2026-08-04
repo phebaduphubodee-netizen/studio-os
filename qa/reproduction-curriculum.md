@@ -1141,6 +1141,65 @@ converging one round before the owner's eye does. Lane BLOCKS (R2) awaiting
 `ANSWER_claude-cowork.md` in the r4b bundle + the owner's corrections; every
 returned item then gets the standard R7 triage before any build.
 
+## TRN-002 ROUND 5 — C2 closed the argued zones, the counts went binary, and the duvet hit its stop-loss
+
+**C2 on r4b** (owner-mediated): the contested zones are CLOSED — the head trio
+reads at first glance, the shelf voids read, the tall chair block is gone.
+Three residuals, all small: duvet has no mass (#1), downlights ≥5 vs 4 (fourth
+recurrence, now binary), chair [verify]. C2's calibration note, kept: *"a
+critic that can only say 'not passed' is a constant, not an instrument"* —
+and its reading of C1's blindness pattern: the missed zones are always the
+most-looked-at ones, not new ones.
+
+**Triage with instruments (r5 bundle README for detail):**
+- Downlights CLOSED BINARY by scanning the TARGET FILE itself: exactly 4
+  compact peak-255 ceiling blobs at the 4 M positions; the other brights are
+  the shelf-light strip and blind highlights. Four blind critics were counting
+  OUR render's clay-light artifacts — a light-phase debt, not a fixture.
+- Chair CLOSED with the file + one fit: target's own chair back reads z≈770 ≈
+  our 780; and the "two-level desk" hypothesis it reopened was measured and
+  REFUTED — two windows of the disputed top edge fit one line to 0.1 px; the
+  "step face" gradient at u 102-106 is the vase silhouette. Desk = 875, one
+  level, r3 adjudication stands.
+- Duvet ACCEPTED → rebuilt once more (widened 540, crest 710 inside the
+  measured 626..734 band, section-rounded, hem bulged to the platform-edge
+  plane) — and C3 on r5 still reads a log, not a fold. **That is the second
+  post-fail fix-shape on one object: R1 fires, and R8 names why — a folded
+  duvet is free-form drapery, the class this repo forbids hand-modelling.
+  Clay iterations HALT at the measured envelope; "reads as folded fabric"
+  transfers to the cloth phase (TRN-001's proven sim machinery). The three
+  rounds of duvet shapes were the misclassification tax, same family as the
+  garment rounds R8 was written from.**
+- C3-r5 residuals: "เก้าอี้เด็ก" refuted (numbers above); petcave misbound as
+  nightstand a SIXTH time; "everything too round" split — measured cuts stand,
+  A-cuts declared for the materials pass.
+
+**C1 calibration wired (from C2's diagnosis, now twice-confirmed):** the
+builder's look fails on HABITUATED zones, not new ones. Adopted discipline:
+before any gate, the C1 pass runs a STRANGER SWEEP over the N
+oldest-unchanged zones asking "what would a stranger call this mass" —
+the inverse of the diff-focused look. (This round's sweep is what the head
+trio and the niche back panel both needed and did not get.)
+
+**Spend r5**: 1 quick + 1 full frame, 1 Gemini call, 2 fitter probes
+(desk-step refutation, target downlight scan), no workflow.
+
+## TRN-002 GATE #5 — พร้อมให้ตัดสิน
+
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r5.png`, blend
+`trn002_blend_r5.png`. Frame of record: `trn002_blockout_r5.png`.
+
+1. **Geometry ledger is clean by count**: every zone C2/C4 named across five
+   rounds is closed, refuted-with-numbers, or formally transferred — the one
+   transfer is the duvet, halted by R1/R8 at its measured envelope because a
+   folded duvet is cloth, not clay (the sim machinery owns it next phase).
+2. **The counts went binary**: downlights 4=4=4 (target scan / spec / M
+   landmarks); console float 495; chair 450/780 = target's own 770.
+3. **Decision asked**: close BLOCKOUT and open the materials/cloth/light
+   phase with this order: duvet fold (cloth sim, first object) → clay-light
+   artifact kill (the false downlight pools) → petcave/nightstand cluster
+   legibility → slot contents (the twice-died measurement rides along).
+
 ## TRN-002 GATE #4 (superseded record) — พร้อมให้ตัดสิน
 
 **Pair**: `_private/…/TRN-002/look/trn002_pair_r4b.png`, blend

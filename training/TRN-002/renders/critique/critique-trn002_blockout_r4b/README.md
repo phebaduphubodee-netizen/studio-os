@@ -60,3 +60,5 @@ exact mechanism C2-r3b named). Moved to the north face y −60..0.
 Blockout scope after r4b: every geometry item from the failed GATE #3 is
 fixed and cross-vendor confirmed; every open critic item is either refuted
 with a measurement above or lodged with the materials/cloth/light phase.
+
+- `ANSWER_claude-cowork.md` — C2 (R7c) filed 2026-08-04: หัวเตียงปิดแล้ว (หมอนเอียง2+bolster ครบ trio, แคปซูล/บันไดหาย, ตู้โค้งเปิดช่องแล้ว); เหลือ: ผ้านวมปลายเตียงแทบไม่มีมวล (อันดับ1), ดาวน์ไลท์ ≥5 vs 4 (รอบที่สี่ — ตอนนี้ binary), เก้าอี้ติด [verify] มิติ/การมองเห็น
