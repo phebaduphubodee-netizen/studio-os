@@ -1206,10 +1206,31 @@ two refuted with M numbers (chair 2nd recurrence, bench top 420 = target's
 own measurement), three lodged with cloth/materials (pillow softness, the
 R1-halted duvet, run-fusing grain). C2 Cowork pending ask moved to r5b.
 
+### r5c — "ชั้นวางยังแตกต่างกัน": the third column build is the first measured one
+
+C4 rejected r5b's column and was right at the STRUCTURAL level: at 6x the
+target is an **open étagère** — back panel continuous to the top, three thin
+corner-wrapped boards, objects on them, NO front-face solid above the base —
+while both our builds (r4's slots, r5b's four slots) were a cabinet with
+windows cut in it: fat boards 73-79 thick and a 407mm solid cap that does not
+exist in the target. **Both wrong builds came from eyeball reads of a 3x crop
+(±30mm/edge); r5c is fitted subpixel** (two independent seed windows, all
+edges agree ≤3mm): boards 1337-1385 / 1915-1970 / 2385-2456, panel top
+**2918-2926 — which REFUTES r2's coarse "col top ~3030" and lands the top on
+the wardrobe bulkhead line (2920) across the room**, a design consilience the
+coarse number hid. Caveats declared: y=-400 face plane (A-swept), small n
+where vases occlude, b2_strip from the wide window (6mm off r4's basis).
+Frame of record → `trn002_blockout_r5c.png` (0.09px, R9b 0 FAIL). C3 on r5c:
+**no new geometry item** — bedding = the R1-halted cloth class, "top reads
+solid" refuted with the file (only a 60mm panel exists there; the darkness is
+the unlit shelf ticket, light phase), bench refuted M (3rd), petcave bound
+CORRECTLY by a blind critic for the first time (arch = styling ticket as
+before). C2 Cowork pending ask moved to r5c.
+
 ## TRN-002 GATE #5 — พร้อมให้ตัดสิน
 
-**Pair**: `_private/…/TRN-002/look/trn002_pair_r5b.png`, blend
-`trn002_blend_r5b.png`. Frame of record: `trn002_blockout_r5b.png`.
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r5c.png`, blend
+`trn002_blend_r5c.png`. Frame of record: `trn002_blockout_r5c.png`.
 
 1. **Geometry ledger is clean by count**: every zone C2/C4 named across five
    rounds is closed, refuted-with-numbers, or formally transferred — the one
