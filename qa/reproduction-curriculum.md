@@ -1132,7 +1132,16 @@ mechanisms exactly as C2 diagnosed before the audit confirmed them.
 - **Spend r4**: 2 quick + 2 full frames, 2 Gemini pro calls, 1 rung-audit
   script, spec_r4 = 52 masses, 2 builder features, 0 workflow.
 
-## TRN-002 GATE #4 — พร้อมให้ตัดสิน
+## TRN-002 GATE #4 — ANSWERED 2026-08-04 (owner, C4): ไม่ผ่าน — Cowork C2 pass ordered on r4b
+
+Second consecutive gate where C1+C3 called the geometry closed and the owner's
+eye said no. That is now a PATTERN about the builder's C1, not an incident:
+whatever C2 returns, round 5 opens by asking why the builder's own look keeps
+converging one round before the owner's eye does. Lane BLOCKS (R2) awaiting
+`ANSWER_claude-cowork.md` in the r4b bundle + the owner's corrections; every
+returned item then gets the standard R7 triage before any build.
+
+## TRN-002 GATE #4 (superseded record) — พร้อมให้ตัดสิน
 
 **Pair**: `_private/…/TRN-002/look/trn002_pair_r4b.png`, blend
 `trn002_blend_r4b.png`. Frame of record: `trn002_blockout_r4b.png`.
