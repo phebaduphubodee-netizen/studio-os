@@ -26,11 +26,21 @@ Three readings:
            ground-truth study measured photoreal references at 191:1 to 2500:1
            against our 10:1 — light range is the studio's named #1 gap, so it
            gets a number here, never an adjective.
-  CONTAMINATION  the target contains objects we do not model (vases, books, a
-           bird sculpture, plants). Where they sit inside one of our masks, the
-           target-side sample is not that surface. Every row therefore carries
-           the target-side IQR/median, and rows above --dirty are FLAGGED and
-           excluded from the ladder summary rather than quietly averaged in.
+  SPREAD   the target contains objects we do not model (vases, books, a bird
+           sculpture, plants). Where they sit inside one of our masks, the
+           target-side sample is not that surface at all. Every row carries the
+           target-side IQR/median so a dispersed region cannot be read as a
+           clean measurement.
+           **AND THE FLAG NAMES WHAT IT MEASURES, NOT A CAUSE IT CANNOT SEE.**
+           A first cut called this "contaminated", which asserts foreign
+           content — but a wall running from window-bright to corner-dark is
+           legitimately dispersed and perfectly clean. Dispersion has two
+           causes and IQR alone cannot separate them, so the row reports BOTH
+           frames' spread: ours shares the target's geometry and carries a
+           smooth light, so `spread_ratio = target_spread / ours_spread` near
+           1 means a real gradient both frames see, while a large ratio means
+           the target holds something ours does not. Naming a cause the
+           instrument cannot distinguish is how a metric starts flattering.
 
 DISCIPLINE THIS FILE ENFORCES SO THE CALLER CANNOT SKIP IT:
   * Absolute values between frames are never compared — only ratios within a
@@ -92,6 +102,14 @@ def decode_mask(mask_png, mask_json):
     return ids, names
 
 
+def _spread(sample, med):
+    """IQR normalised by the median — dimensionless, so a dark surface and a
+    bright one are comparable. Returns a large sentinel for a near-black median
+    rather than dividing by it."""
+    q1, q3 = np.percentile(sample, [25, 75])
+    return float((q3 - q1) / med) if med > 1e-6 else 9.99
+
+
 def erode(mask_bool, k):
     """Shrink a boolean region by k pixels (4-neighbour). Pure numpy — no scipy
     dependency, and k is small."""
@@ -123,19 +141,27 @@ def ladder(ours_png, target_png, mask_png, mask_json, erode_px=3, min_px=250,
                                                 "after erosion — occluded or tiny)"}
             continue
         o, t = ours[m], tgt[m]
-        t_med = float(np.median(t))
-        q1, q3 = np.percentile(t, [25, 75])
-        spread = float((q3 - q1) / t_med) if t_med > 1e-6 else 9.99
+        o_med, t_med = float(np.median(o)), float(np.median(t))
+        t_spread = _spread(t, t_med)
+        o_spread = _spread(o, o_med)
         rows[short] = {
             "n_px": n,
-            "ours": float(np.median(o)),
+            "ours": o_med,
             "target": t_med,
-            "target_spread": round(spread, 3),
-            "contaminated": bool(spread > dirty),
+            "target_spread": round(t_spread, 3),
+            "ours_spread": round(o_spread, 3),
+            # >1 means the target is more varied here than our same-geometry,
+            # smoothly-lit frame is — the signature of content we do not model.
+            # ~1 with both high means a gradient BOTH frames see: clean.
+            "spread_ratio": round(t_spread / o_spread, 2) if o_spread > 1e-3 else None,
+            "dispersed": bool(t_spread > dirty),
         }
 
+    # The ladder reference must be a surface whose median is a clean sample:
+    # low dispersion in BOTH frames, so neither a foreign object nor a strong
+    # gradient is setting the number every other row is divided by.
     clean = {k: v for k, v in rows.items()
-             if "ours" in v and not v["contaminated"]}
+             if "ours" in v and not v["dispersed"] and v["ours_spread"] <= dirty}
     if ref is None:
         # the reference must be a LARGE, CLEAN, singly-lit surface; pick the
         # biggest clean row rather than typing a name, so the choice is derived
@@ -183,12 +209,18 @@ def main():
     print(f"\nLADDER (relative to {lad['reference']}; ladder_error 1.00 = our "
           f"light puts this surface at the target's own relative brightness)")
     print(f"  {'object':22s} {'n_px':>7s} {'ours_rel':>9s} {'tgt_rel':>9s} "
-          f"{'err':>6s}  flag")
+          f"{'err':>6s} {'spr':>5s}  note")
     meas = [(k, v) for k, v in lad["rows"].items() if v.get("ladder_error")]
     for k, v in sorted(meas, key=lambda kv: -abs(np.log(kv[1]["ladder_error"]))):
-        flag = "CONTAMINATED" if v["contaminated"] else ""
+        sr = v.get("spread_ratio")
+        if v["dispersed"]:
+            note = ("target holds content we do not model" if sr and sr > 1.6
+                    else "gradient both frames see")
+        else:
+            note = ""
         print(f"  {k:22s} {v['n_px']:7d} {v['ours_rel']:9.3f} "
-              f"{v['target_rel']:9.3f} {v['ladder_error']:6.2f}  {flag}")
+              f"{v['target_rel']:9.3f} {v['ladder_error']:6.2f} "
+              f"{(f'{sr:5.2f}' if sr else '    -')}  {note}")
     skipped = [k for k, v in lad["rows"].items() if "ours" not in v]
     if skipped:
         print(f"\n  UNMEASURABLE ({len(skipped)}): {', '.join(sorted(skipped))}")

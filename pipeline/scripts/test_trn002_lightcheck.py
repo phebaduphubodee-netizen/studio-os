@@ -94,16 +94,33 @@ def test_too_small_a_region_is_unmeasurable_not_noise(tmp_path):
     assert "ours" in out["rows"]["obj9"]
 
 
-def test_contamination_flag_fires_on_a_dirty_region(tmp_path):
-    """Where the target holds an object we do not model, the sample is not that
-    surface — high spread must FLAG rather than average in."""
-    grid = np.full((32, 32), 4, dtype=np.int32)
+def _two_frames(tmp_path, ours, tgt):
+    grid = np.full(ours.shape[:2], 4, dtype=np.int32)
     png, js = _write_mask(tmp_path, grid)
-    ours = np.full((32, 32, 3), 128, dtype=np.uint8)
-    tgt = ours.copy()
-    tgt[:, :16] = 20                        # half the region is a foreign object
     fo, ft = tmp_path / "o.png", tmp_path / "t.png"
     Image.fromarray(ours).save(fo)
     Image.fromarray(tgt).save(ft)
-    out = LC.ladder(str(fo), str(ft), png, js, erode_px=1, min_px=10)
-    assert out["rows"]["obj4"]["contaminated"] is True
+    return LC.ladder(str(fo), str(ft), png, js, erode_px=1, min_px=10)["rows"]["obj4"]
+
+
+def test_dispersion_flag_fires_when_the_target_holds_foreign_content(tmp_path):
+    ours = np.full((32, 32, 3), 128, dtype=np.uint8)
+    tgt = ours.copy()
+    tgt[:, :16] = 20                        # half the region is a foreign object
+    row = _two_frames(tmp_path, ours, tgt)
+    assert row["dispersed"] is True
+    assert row["spread_ratio"] is None or row["spread_ratio"] > 1.6
+
+
+def test_a_gradient_both_frames_see_is_not_called_foreign_content(tmp_path):
+    """The separation this instrument owes: a wall running window-bright to
+    corner-dark is dispersed and perfectly clean. Our frame shares the target's
+    geometry, so it shows the same gradient — and spread_ratio near 1 is what
+    says so. A flag that called this 'contaminated' would be naming a cause it
+    cannot see."""
+    ramp = np.linspace(40, 220, 32).astype(np.uint8)
+    grad = np.repeat(ramp[None, :, None], 32, axis=0).repeat(3, axis=2)
+    row = _two_frames(tmp_path, grad.copy(), grad.copy())
+    assert row["dispersed"] is True, "a real gradient should still be reported"
+    assert abs(row["spread_ratio"] - 1.0) < 0.05, (
+        "both frames see it, so the ratio must say 'gradient', not 'foreign'")
