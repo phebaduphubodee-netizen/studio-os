@@ -782,3 +782,77 @@ wardrobe beyond, herringbone parquet, and a bed's worth of soft goods. That last
 part is the point — TRN-001 was millwork, boxes and radii, which R8 says to
 BUILD. This one is mostly R8's other half, and the first real test of whether
 "acquire what cannot be measured" holds up across a whole room.
+
+**Round 1 (2026-08-04) — camera + blockout. Landmark reprojection mean 0.16 px,
+max 0.66 px @1080 over 15 landmarks; R9b placement gate 0 FAIL; blend sheet
+registers the whole room.**
+
+The camera was solved by INSTRUMENT this time, not by eyeball — and the eyeball
+needed the correction: my own crop-reading produced three mutually contradictory
+VP families in one sitting (a rounded console end read as a straight edge
+pointed at a vanishing point no room axis owns). `trn002_lines.py` replaces the
+eyeball: corridor subpixel ridge fits with a STRAIGHTNESS GUARD (split-half
+angle; it rejected the console, the rug corner and the desk edge as curves), a
+dark-STROKE mode for thin features an edge detector sees as two edges and drops
+(the artwork frame starved at n=1 until this mode), and a two-VP RANSAC with
+ANGULAR tolerance (a fixed pixel tolerance is meaningless at a 3700-px VP).
+Camera of record: **38.84 mm eq, yaw 20.04 deg, horizon v=407.3, pitch/roll 0,
+shift_y -0.003** — and the ceiling DOWNLIGHT GRID confirms both VPs at
+0.09-0.10 deg, evidence no wall seed can pollute. A 4-lens agent inventory ran
+in parallel; its camera lens independently landed on the same numbers (38.6 mm,
+yaw 20.0, horizon 409.4) and found the round's best structural fact: **the
+white door is NOT on the back wall** — its head line converges to the DEPTH VP,
+so the door sits in a protruding entry fin, which my fitter then confirmed
+(door_head ang 169.3 in family B, rms 0.63).
+
+Structure that survived measurement: one deep wall plane holds partition + art
++ fin mouth (its real ceiling junction is the faint line (250,138)->(725,175)
+— the "junction" both I and one agent first read at v 222-238 is the partition
+HEADER + its shadow); main ceiling 3102 with a 115 mm RAISED band over the bed
+zone (x -1100..wall, stopping 750 mm short of the back wall — arris level to
+6 mm); wardrobe = full-height face at x=0 whose top runs INTO the raised band.
+Scale gauges DECLARED, not measured: G1 door leaf 2000 + lever 1030 -> camera
+z 1305 -> H_main 3102; G2 wardrobe depth 600. Sanity that came out free: the
+artwork measures 727x1008 mm with its top edge level to 1.0 mm; the partition
+head is level to 1.6 mm at z 2478; the sill closes at z -4 mm; the corner at
+z -1 mm; downlights land in two rows at y -711/-2460.
+
+**Two of TRN-001's lessons were re-paid in miniature, same day, new masks.**
+(1) The drive-root path split (Blender resolves drive-less paths against the
+DRIVE ROOT, Python against CWD) recurred in the NEW build script — the first
+quick render escaped to C:\_private before `--out` was made absolute-once for
+every writer. The cure existed in value_probe since round 19; it was not
+applied to the next script. (2) The R9b gate convicted the spec's first build:
+mattress and headboard floating 50 mm above the platform — positions TYPED
+instead of derived, the exact class the gate was built for. Also new and named:
+relaxing the fitter's rms cap on a soft corridor let it fit an ILLUMINATION
+GRADIENT on the wardrobe panels as a "line" (v002 band_top, n=54, straight,
+pointing nowhere) — a corridor instrument given permission to be sloppy will
+measure the light instead of the geometry.
+
+**Open at the gate, in order:** the bed-assembly plan position past its floor
+corner (the platform reads ~3.4 m long if the headboard touches the wardrobe;
+the nightstand's top edge backprojects to an impossible z on the wardrobe face
+— "reveals terminate at the band" may be OCCLUSION, not junction, so the whole
+bed+band+nightstand block may stand off the wardrobe face); wardrobe reveal
+positions (my four fits vs the agents' five reads give unequal 3D door widths);
+both gauges G1/G2 need their sweep before any mm downstream is trusted
+(TRN-001's 105 mm room-height lesson, applied before it bites).
+
+## TRN-002 GATE #1 — พร้อมให้ตัดสิน
+
+**Pair**: `_private/…/TRN-002/look/trn002_pair_r1.png` (target ‖ clay blockout),
+blend `trn002_blend_r1.png`, edges `trn002_edges_r1.png`.
+
+1. **The room is solved and registered**: 15 landmarks reproject at mean
+   0.16 px; the blend sheet shows art, partition, ceiling junctions, raised
+   band, downlights, fin door and every furniture mass inside the target's own
+   silhouettes. Round 2 = the measurement pass on the open bed-block question,
+   then architecture/joinery per the ladder.
+2. **R7b bundle is ready for your paste ritual**:
+   `_private/…/renders/critique/critique-trn002_blockout_r1_quick/` (render +
+   prompt only; target and anchors refused by construction).
+3. **Spend, round 1**: 2 quick renders (one destroyed after escaping to
+   C:\_private — our own clay pixels, no client imagery), 0 full frames, 1
+   workflow (5 agents, 420 k tokens), 4 fitter passes, 10 new tests (2285
+   green in the lane's file). R1 not tripped: one mechanism, one build.
