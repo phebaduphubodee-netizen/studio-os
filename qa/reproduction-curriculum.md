@@ -1444,3 +1444,64 @@ cloth sim, styling, and the artwork frame/relief the pattern pass measured.
    (shelf voids + slot ride along as the first geometry errand of round 4),
    or order another pure-geometry round first.
 
+
+---
+
+## TRN-002 phase 2, rounds 13–15 (2026-08-05) — after "เละกว่าเดิม"
+
+The revert (`046e162`) said the right-wall consilience had to be re-run as a
+whole before any audit finding touching it went back in. It was, and it came
+back CONFIRMED rather than broken:
+
+| feature | model predicts | target measures | agreement |
+|---|---|---|---|
+| room back corner (0,0) | u 730.64 | u 730.15 (5 v-bands, spread 0.10 px) | **0.5 px** |
+| wardrobe front-face far corner (−1290,−2550) | u 754.33 | u 753.80 (spread 0.38 px) | **0.5 px** |
+| door leaf near / far edge | u 629.88 / 684.86 | u 630.0 / 685.0 | **0.15 px** |
+| door lever handle | u 668.2, v 460.1 | blob u 669–683, v 452–468 | inside |
+
+**The audit's wardrobe number died with a mechanism, not an opinion.** Its
+y = −2299 projects to u 730.94 — the ROOM CORNER, 0.3 px away. The agent fitted
+the corner arris and labelled it the wardrobe end. *On a wall of parallel
+verticals a single-feature fit is not a measurement; it is a label applied to an
+edge.* Require a second, different feature before adopting.
+
+**The audit's other number was right, for a reason nobody had found.** The
+alcove wall stood between the camera and its own door: `door_leaf` was a 14 mm
+slab inside a 100 mm wall, protruding 2 mm on the face pointing away. Invisible
+since r2 — twelve rounds — while its `seen` field described the target's door in
+detail and its plane fitted the head line to 0.001 in slope. **A mass can be
+well-measured, well-placed and unrenderable at once**, and no reprojection
+metric can see it.
+
+Three rounds, three commits, one change at a time with a look between:
+
+- **r13** `cc28b73` — the left run is OAK, not travertine (wrong since r6). A
+  crop cannot identify a material; the console wraps its fibre lines around a
+  half-round end and stone does not bend. The catching measurement is
+  ANISOTROPY (target 6.3:1 along/across grain, ours 2.1:1), never hue, which
+  agreed the whole time. Grain rotation must be about the axis the panel FACES —
+  keyed to the material it was a silent no-op, ONE PARAMETER CARRYING TWO THINGS.
+- **r14** `8a67315` — MEASURED AND NEVER BUILT, three instances: the artwork's
+  measured 21 mm black frame bar, the door's shadow gaps and lever, the veneer's
+  grain. Distilled to `knowledge/_inbox/trn002-reference-study/measured-and-never-built.md`
+  with the check that would catch it: **a mass whose `seen` says VISIBLE must own
+  pixels in the id mask** — we already render that map and nothing compares it.
+- **r15** `459137e` — every manufactured mass gets a 1.5 mm eased arris (C3's
+  catch). **The amplitude was set by the R9b placement gate, not by taste**: the
+  loud 5 mm pass was REFUSED because it floated both pillows by 1.7 mm. An edge
+  ease may never exceed the tolerance of the contacts around it.
+
+**Gate #6 written (`training/TRN-002/gate-06-r15.md`); the lane BLOCKS.** C3
+fired and all five items are triaged in writing; two refuted with measurements
+(the target's deepest cast shadow is −8%, and its walls really do measure a 0.03
+texture index). C2 Cowork recorded as PENDING, not skipped — it needs the owner
+to open the app.
+
+Named and unfixed, so silence is not read as done: the back wall's vertical
+gradient SIGN (+10%/m ours vs −8.6%/m target) which an emitter-isolation pass
+proves is a property of the room and not any knob (key alone +8.7, world alone
++26.9); the opaque partition; the bedding; the styling props (R8 acquire); and
+the bed-width conflict, whose *method* of settlement is now decided even though
+its number is not — fit the platform's own far long side, because the headboard
+is not the bed.
