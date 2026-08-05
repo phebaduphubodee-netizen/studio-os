@@ -79,6 +79,15 @@ def main():
     data["vision"] = data.get("vision", 0) + 1
     data[a.model] = data.get(a.model, 0) + 1
     usage.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    # The answer is usually Thai; a cp1252 console cannot print it and the
+    # UnicodeEncodeError made this tool exit 1 AFTER successfully archiving —
+    # so every scripted caller read "failed" on calls that worked (it did so on
+    # both r14 and r15). Reconfigure stdout rather than strip the text: the
+    # answer's exact words are the artifact.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
     print(f"answer -> {out.relative_to(REPO)}\n{'=' * 70}\n{resp.text}")
 
 
