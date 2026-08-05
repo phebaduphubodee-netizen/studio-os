@@ -21,6 +21,41 @@
   work converges, its transferable techniques are distilled into `knowledge/`
   (via `_inbox/`) and, where applicable, into pipeline capabilities.
 
+## AMENDED 2026-08-05 — the lane was executed as imitation, and the charter had already forbidden that
+
+Owner: *"ที่ผมให้ศึกษางานเพื่อนผม คุณก็ควรตั้งคำถามงานเพื่อนผมด้วย แล้วก็ทำ DR
+หรืออะไรก็ได้เพื่อเก็บความรู้จากงาน"*.
+
+He is right, and the sharper finding is that **the charter three paragraphs
+above already said it**: *"The copies are NOT deliverables. The product is the
+LEARNING: after each work converges, its transferable techniques are distilled
+into `knowledge/` (via `_inbox/`)"*. Six rounds of TRN-002 produced hundreds of
+measured numbers and **not one line entered `knowledge/`**. The rule existed,
+was never gated on, and therefore never happened — the studio's own recorded
+failure shape, DISTILLED-BUT-NEVER-WIRED, this time applied to the distillation
+step itself. Measuring is not learning.
+
+**TWO CHANGES, both binding from here:**
+
+1. **DISTILLATION IS A GATE CONDITION, not a follow-up.** A round whose
+   measurements produced transferable knowledge does not close until that
+   knowledge is written to `knowledge/_inbox/`. First payment of the debt:
+   `knowledge/_inbox/trn002-reference-study/what-a-sold-render-actually-does.md`
+   — the light story, palette structure and millwork dimensions of a delivered
+   Thai bedroom, each entry carrying what would confirm or kill it, and the
+   whole file stamped **n = 1**.
+
+2. **INTERROGATE THE REFERENCE — it is evidence, not scripture.** The charter
+   said to LEARN FROM the work; it never said to QUESTION it, and a lane that
+   treats the reference as perfect cannot tell a deliberate decision from an
+   accident or a rescue. Every study now ends with an explicit list of *where
+   the reference made a CHOICE* — the near-closed blind that costs the room its
+   daylight story, four downlights that light nothing, a TV left as the frame's
+   darkest object, 273 deliberately clipped pixels — separated from what it was
+   CONSTRAINED to do. Questions our own frame cannot settle go to the
+   practitioner rung FIRST (this studio has already proven one question to a
+   working designer beat a 154-line DR), then to a DR.
+
 ## The finish line — ADOPTED 2026-08-01 (owner: "ทำต่อให้มันจบซักที")
 
 The charter has claimed since it was written that "the target image EXISTS ->
