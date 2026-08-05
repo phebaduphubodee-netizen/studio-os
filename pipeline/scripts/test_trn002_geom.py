@@ -176,3 +176,40 @@ def test_vp_residual_is_angular():
     ang_near = math.degrees(math.asin(10.0 / math.hypot(950.0, 10.0)))
     assert near == pytest.approx(ang_near, abs=0.02)
     assert far == pytest.approx(math.degrees(math.asin(100.0 / math.hypot(9950.0, 100.0))), abs=0.02)
+
+
+def test_ripple_seed_moves_only_z_and_is_deterministic():
+    """The plan footprint is MEASURED (it is the platform's own edges), so a
+    fold seed that moved x or y would silently re-cut a solved dimension."""
+    vs = [(x * 0.001, y * 0.001, 0.5)
+          for x in range(0, 400, 20) for y in range(0, 200, 20)]
+    a = G.ripple_seed(vs)
+    b = G.ripple_seed(vs)
+    assert a == b, "same input must bake the same cloth"
+    assert [(v[0], v[1]) for v in a] == [(v[0], v[1]) for v in vs]
+    assert any(abs(p[2] - q[2]) > 1e-6 for p, q in zip(a, vs))
+
+
+def test_ripple_seed_adds_arc_length_without_widening_the_plan():
+    """The excess IS the point: a made bed's spare fabric, delivered already
+    buckled at a wavelength the mesh can hold."""
+    import math
+    vs = [(x * 0.001, 0.0, 0.5) for x in range(0, 600, 5)]
+    r = G.ripple_seed(vs, "x", 75.0, 6.0, jitter=0.0)
+    flat = sum(math.dist(vs[i], vs[i + 1]) for i in range(len(vs) - 1))
+    arc = sum(math.dist(r[i], r[i + 1]) for i in range(len(r) - 1))
+    assert arc > flat * 1.02, f"seed adds no fabric: {arc/flat:.4f}"
+    assert arc < flat * 1.20, f"seed adds absurd fabric: {arc/flat:.4f}"
+
+
+def test_ripple_seed_wavelength_is_the_one_asked_for():
+    """A 42 mm cell cannot hold a 75 mm fold (Nyquist 84) — the whole reason
+    this exists — so the seed's own period must be trustworthy."""
+    vs = [(x * 0.0005, 0.0, 0.0) for x in range(0, 1200)]
+    r = G.ripple_seed(vs, "x", 75.0, 6.0, jitter=0.0)
+    zs = [v[2] for v in r]
+    crossings = sum(1 for i in range(len(zs) - 1)
+                    if (zs[i] <= 0) != (zs[i + 1] <= 0))
+    span_mm = (vs[-1][0] - vs[0][0]) * 1000.0
+    period = 2 * span_mm / max(crossings, 1)
+    assert 60 < period < 95, f"asked 75 mm, seed delivers {period:.1f} mm"

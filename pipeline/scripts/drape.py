@@ -161,6 +161,14 @@ FABRIC = {
     "wool":   (0.40, 20.0,   20.0,    8.0,   3.0,     1.0),   # heavier, fewer folds
     "knit":   (0.35, 12.0,   12.0,    4.0,   0.35,    1.0),   # a throw: heavy but LIMP
     "silk":   (0.15,  5.0,    5.0,    5.0,   0.05,    1.0),   # sheers, fine drape
+    # A LOFTED DUVET, added for TRN-002 r21 (owner's route-c call). It is not a
+    # sheet and the difference is COMPRESSION: linen at 15 pulls itself flat
+    # against a mattress, and a quilted duvet - batting between two skins -
+    # buckles at almost no load, which is why a made bed carries standing folds
+    # that a bedsheet does not. Compression 1.0 lets it buckle; bending 2.6
+    # (above wool) makes the buckles LARGE and standing rather than fine and
+    # collapsed, which is the fold family the reference shows at ~75 mm.
+    "duvet":  (0.30, 15.0,    1.0,    3.0,   2.6,     1.0),
 }
 
 

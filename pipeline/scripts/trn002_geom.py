@@ -267,3 +267,71 @@ def reprojection_table(spec, measured):
                "mean": round(sum(errs) / len(errs), 2) if errs else None,
                "max": round(max(errs), 2) if errs else None}
     return rows, summary
+
+
+def ripple_seed(verts, axis="x", wavelength_mm=75.0, amp_mm=6.0, jitter=0.35,
+                salt=3, scale=0.001):
+    """Seed a flat cloth sheet with ORGANISED fold starts. PURE.
+
+    WHY THIS EXISTS, and why the two cheaper rungs could not do its job. The
+    target's white duvet carries folds of ~75 mm wavelength (15.6 px at a
+    measured 4.7-5.0 mm/px on the bed top). A cloth grid at 42 mm cells has a
+    Nyquist wavelength of 84 mm — IT CANNOT REPRESENT A 75 MM FOLD AT ALL, at
+    any slack, for any number of frames. That is why raising the solver's slack
+    bought 1.4x of a needed 13x, and why a noise bump could reach the amplitude
+    only by inventing an isotropic crumple that renders as tree bark. Fold
+    depth was never the free variable; MESH RESOLUTION was, and under it the
+    direction was.
+
+    So: a finer cell gives the folds somewhere to exist, and this gives them a
+    direction. Real bedding folds run in FAMILIES along the drape's tension
+    lines, not as isotropic noise — which is the structural reason the noise
+    rung failed. The seed is a jittered sinusoid whose ridges run ACROSS the
+    bed (varying along `axis`), and it is deliberately irregular: a perfect
+    sine reads as corrugated metal.
+
+    The ripple moves z ONLY, so the plan footprint is unchanged while the ARC
+    LENGTH grows by about pi^2*A^2/L^2 (6.3% at A=6, L=75). That excess IS the
+    fabric a made bed has spare, delivered in the one form the solver can keep:
+    already buckled, in a direction, at a wavelength the mesh can hold.
+
+    verts are in world METRES (softgoods' contract); wavelength/amp are mm.
+    """
+    i = "xyz".index(axis)
+    j = 1 if i == 0 else 0            # the ACROSS axis, for the envelope
+    L = wavelength_mm * scale
+    A = amp_mm * scale
+    out = []
+    for n, v in enumerate(verts):
+        u = v[i]
+        # ENVELOPE — REFUTED BY LOOK 2026-08-05 and kept at 1.0 deliberately.
+        # The intent was to leave some bands flat and others deeply folded, so
+        # the ridges would stop reading as corduroy. It did the opposite: a
+        # periodic envelope adds a SECOND regular period (its own), and the
+        # render came back more banded than before. The eye caught it; the fold
+        # metric could not, because a regular field and an irregular one carry
+        # the same high-passed rms. Irregularity has to come from the jitter
+        # term, which is aperiodic, not from another sine. Left in place at 1.0
+        # rather than deleted so the next person does not re-derive it.
+        env = 1.0
+        # THREE INCOMMENSURATE PERIODS, and the reason is what both the eye and
+        # the cross-vendor critic caught on the first build of this seed: the
+        # cloth read as CORDUROY / "a repeating pattern with no depth". The
+        # first version added irregularity as a PER-VERTEX random term, which
+        # is the wrong kind — per-vertex noise is high-frequency grain and
+        # leaves the RIDGE SPACING perfectly even, and it is spacing the eye
+        # reads. Real folds are unevenly spaced, so the irregularity has to
+        # live in the phase field itself: three sines whose wavelengths share
+        # no common multiple never repeat over the sheet.
+        phase = 2.0 * math.pi * u / L
+        h = (math.sin(phase)
+             + 0.62 * math.sin(phase * 0.611 + 0.9)      # a longer swell
+             + 0.31 * math.sin(phase * 1.703 + 2.3))     # a shorter break-up
+        if jitter:
+            # a slow ACROSS-sheet phase drift, so a ridge is not a straight
+            # line either. Deterministic and salt-keyed: the same spec must
+            # bake the same cloth, bit for bit.
+            drift = math.sin(v[j] / (L * 3.1) + salt * 0.7)
+            h += jitter * math.sin(phase + 1.9 * drift)
+        out.append((v[0], v[1], v[2] + A * env * h))
+    return out

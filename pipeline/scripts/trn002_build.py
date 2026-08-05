@@ -185,12 +185,26 @@ def _cloth_duvet(m, built, mat):
             x1 - w, y1 - d, w, d, p["z"] * MM,
             band=p["band"] * MM, head=p["head"], cell=p["cell"] * MM,
             salt=p.get("salt", 0))
+        # FOLD SEED (route ค, owner's call 2026-08-05). The cell must be fine
+        # enough to hold the target's ~75 mm fold FIRST — at 42 mm the mesh's
+        # Nyquist wavelength is 84 mm and no amount of slack or frames can put
+        # a 75 mm fold in it. With the resolution there, this gives the folds a
+        # DIRECTION: ridges across the bed, jittered, carrying their own arc
+        # excess so the fabric arrives already buckled instead of arriving flat
+        # and being asked to buckle.
+        r = p.get("ripple")
+        if r:
+            vs = G.ripple_seed(vs, axis=r.get("axis", "x"),
+                               wavelength_mm=r["wavelength_mm"],
+                               amp_mm=r["amp_mm"] * scale,
+                               jitter=r.get("jitter", 0.35),
+                               salt=r.get("salt", 3), scale=MM)
         # bounds go to search_bake ONLY (the PRJ-002 pattern): bake_sheet with
         # bounds RAISES on first violation, which kills the ladder before it
         # can halve slack or rescale — the first integration did exactly that.
         return drape.bake_sheet(
             m["name"], vs, fs, colliders,
-            frames=p.get("frames", 55), fabric="linen",
+            frames=p.get("frames", 55), fabric=p.get("fabric", "linen"),
             mat=mat if mat is not None else _clay(m["value"]),
             thickness=p["thickness"] * MM, slack=sl,
             collide_dist=p["collide_dist"] * MM)
