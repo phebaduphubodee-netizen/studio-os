@@ -331,6 +331,50 @@ def main():
         import trn002_materials as MAT
         return materials[MAT.material_for(name)]
 
+    # C3-r14 item 5, accepted: "ขอบ...คมกริบเกินไป ... แม้วัตถุจะมีดีไซน์เหลี่ยม แต่ขอบจะมี
+    # การลบมุมเล็กน้อยเสมอ เพื่อให้เกิดไฮไลท์ของแสงที่ขอบวัตถุ". A manufactured object has an
+    # eased arris because it is cut, sanded and edge-banded; the highlight that
+    # runs along it is a large part of why a real object reads as one and a
+    # primitive does not. Every mass in this lane is a perfectly sharp box.
+    #
+    # Blender generates this (R8b: do not hand-write what the tool already does)
+    # and a MODIFIER is headless-safe — it is not a geometry `bpy.ops`.
+    #
+    # SCOPE COMES FROM THE RULE'S OWN PREMISE, not from what looks better. The
+    # premise is "a manufactured object has an eased edge". Plaster does not:
+    # a wall/ceiling/floor junction is a sharp arris, and those arrises are the
+    # features this lane MEASURES AGAINST — the room corner and the wardrobe
+    # corner are confirmed at 0.5 px, and rounding them would move the very
+    # lines the camera solve stands on. R9b's warning is the other half: a rule
+    # that NAMES the objects it applies to will exempt the next one, so this
+    # names the exempt CLASS and beveals everything else, including masses that
+    # do not exist yet.
+    ARCHITECTURE = {"back_wall", "left_wall", "right_wall", "ceil_main",
+                    "floor", "floor_planks", "closet_back", "closet_floor"}
+
+    def _ease(ob, name):
+        if name in ARCHITECTURE or name.startswith(("ceil_", "door_wall")):
+            return
+        b = ob.modifiers.new("EASE", "BEVEL")
+        # 1.5 mm — a cabinetmaker's arris ease. This lane's own rule is to
+        # bracket an amplitude LOUD and then take ~70% of it, because trn001
+        # once shipped a physically-honest bump that rendered as nothing. The
+        # loud pass here was 5 mm and the R9b PLACEMENT GATE REFUSED IT: both
+        # pillows came back FLOATING by 1.7 mm, because a bevel that size eats
+        # the measured contact between two objects. So the bracket was closed by
+        # a guard rather than by an opinion, which is the better outcome — and
+        # it names a real constraint: an edge ease may never exceed the
+        # tolerance of the contacts around it.
+        b.width = 0.0015
+        b.segments = 2
+        b.limit_method = "ANGLE"
+        b.angle_limit = math.radians(30)
+        b.harden_normals = False
+        # clamp is what keeps this safe on the 6 mm reveal strips: a 1.5 mm
+        # bevel on a 6 mm member would eat a quarter of it, so the modifier
+        # shrinks itself rather than deforming the part.
+        b.use_clamp_overlap = True
+
     built = {}
     for m in spec["masses"]:
         if m.get("kind") == "herringbone":
@@ -345,6 +389,7 @@ def main():
         else:
             built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"],
                                     mat=mat_of(m["name"]))
+        _ease(built[m["name"]], m["name"])
     # "parent": <mass> declares an assembly IN the scene — placement_check groups
     # by Blender hierarchy ("the scene's own declaration of what moves together"),
     # so a shade over its stem is judged as one lamp, not as a slab teetering on a
