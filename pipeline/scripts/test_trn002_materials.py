@@ -55,7 +55,7 @@ def test_exact_beats_prefix():
     # rev_* are reveals, but if an exact rule is ever added for one it must win
     assert MAT.material_for("rev_3") == "reveal_shadow"
     assert MAT.material_for("dl_1") == "lens_warm"
-    assert MAT.material_for("shelf_board4") == "veneer_travertine"
+    assert MAT.material_for("shelf_board4") == "veneer_oak"
 
 
 def test_the_left_run_is_one_material():
@@ -84,3 +84,31 @@ def test_every_palette_row_declares_its_provenance():
     for key in MAT.PALETTE:
         assert key in MAT.PALETTE_PROV and MAT.PALETTE_PROV[key], (
             f"{key} has a value but no stated basis")
+
+
+def test_retired_material_names_still_resolve():
+    """A rename must never break a past round: re-rendering an old spec is how a
+    regression is caught, and every retired key here (veneer_travertine, the
+    lamp's two old masses, desk_panel) must still land on real palette values."""
+    for retired in ("veneer_travertine",):
+        assert retired in MAT.PALETTE, f"retired key {retired} dropped from PALETTE"
+    for old_mass in ("lamp_shade", "lamp_stem", "desk_panel", "wardrobe", "chair"):
+        assert MAT.material_for(old_mass) in MAT.PALETTE
+
+
+def test_grain_rotation_only_names_real_materials():
+    """MAP_ROT keyed to a material that does not exist is a silent no-op — the
+    grain would stay wrong and nothing would say so."""
+    assert set(MAT.MAP_ROT) <= set(MAT.PALETTE), (
+        f"MAP_ROT names materials absent from PALETTE: "
+        f"{sorted(set(MAT.MAP_ROT) - set(MAT.PALETTE))}")
+
+
+def test_the_two_grain_directions_are_the_same_material_otherwise():
+    """veneer_oak and veneer_oak_h differ ONLY in grain direction. If someone
+    retunes one albedo and not the other the run splits into two woods, which is
+    the defect this lane already paid for once under a different name."""
+    a = MAT.PALETTE["veneer_oak"]
+    b = MAT.PALETTE["veneer_oak_h"]
+    assert a == b, f"the oak run has drifted into two materials: {a} vs {b}"
+    assert "veneer_oak" not in MAT.MAP_ROT and "veneer_oak_h" in MAT.MAP_ROT

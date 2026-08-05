@@ -24,10 +24,22 @@ each earned by a failed round there — read that file before changing any of it
     the LIGHT lane, correct HUE ONLY and leave luminance alone — otherwise the
     light's error is baked into the material table permanently.
 
-WHAT IS DIFFERENT HERE: TRN-002's palette is dominated by a pale travertine-look
-veneer run (console/desk/etagere), smoked-oak wardrobe fronts, white paint, and
-a herringbone floor — and every mass in the frame is measured geometry, so a
-material can be assigned by NAME with no guessing about which surface is which.
+WHAT IS DIFFERENT HERE: TRN-002's palette is dominated by an OAK veneer run
+(console/desk/etagere/band/nightstand), lacquered greige wardrobe fronts, white
+paint, and a herringbone floor — and every mass in the frame is measured
+geometry, so a material can be assigned by NAME with no guessing about which
+surface is which.
+
+AND ONE CORRECTION WORTH MORE THAN ITS ROW: that run was called TRAVERTINE from
+r6 to r12 on the strength of an 8x crop, and it is oak. A crop shows texture;
+texture does not identify a material, because rift oak and vein-cut travertine
+carry the same tight parallel lines. What identifies it is what the material is
+asked to DO — the console wraps those fibre lines continuously around a
+half-round end, and stone does not bend. The measurement that catches it is
+ANISOTROPY, never hue: on the target these surfaces vary 6x more along the grain
+than across it, and our marble-mapped frame came back isotropic while its
+corrected B/R sat within 0.1 of the target's the whole time. A hue check was
+never going to find this, and we ran one.
 
 PALETTE VALUES ARE FILLED FROM THE PHASE-2 MEASUREMENT PASS. Any row still
 carrying `prov="A"` in PALETTE_PROV is a declared assumption, not a measurement,
@@ -60,23 +72,23 @@ EXACT = {
     "part_jamb_R": "frame_black", "part_stile_M": "frame_black",
     "part_rail_B": "frame_black", "part_rail_top": "frame_black",
     "closet_floor": "floor_herringbone", "closet_back": "paint_white",
-    "desk": "veneer_travertine", "console": "veneer_travertine",
-    "desk_pier": "veneer_travertine",
-    "shelf_col_base": "veneer_travertine", "shelf_col_back": "veneer_travertine",
+    "desk": "veneer_oak", "console": "veneer_oak",
+    "desk_pier": "veneer_oak",
+    "shelf_col_base": "veneer_oak", "shelf_col_back": "veneer_oak",
     "tv": "screen_black",
     "rug": "rug_cream",
     "bed_platform": "upholstery_bed", "bed_headboard": "upholstery_bed",
     "bed_mattress": "linen_white",
     "duvet_top": "linen_white", "duvet_drape": "linen_white",
     "pillow_L": "linen_white", "pillow_R": "linen_white", "bolster": "linen_white",
-    # NOT oak. At 8x the band shows fine vertical fibrous striations, irregular
-    # linear porosity, a vertical butt joint and a MITRED RETURN at the left
-    # corner — vein-cut travertine, the same signature as the console. It has
-    # been called "the oak band" in every round doc and prompt since r2; the
-    # name was a first-look guess that nobody re-examined once it was written
-    # down. Same family as the left run, so it must be the same material key.
-    "ward_band": "veneer_travertine",
-    "nightstand": "veneer_travertine",
+    # It IS oak, and the r6 pass that renamed it travertine was wrong — see the
+    # PALETTE row. Grain runs VERTICALLY here (fine dense staves, top to bottom).
+    "ward_band": "veneer_oak",
+    # ...and HORIZONTALLY on the nightstand: at 8x the drawer front carries
+    # continuous long-grain lines running the full width, with a soft cathedral
+    # figure. Grain direction is a per-OBJECT fact, not a per-material one, so it
+    # gets its own key rather than a knob on the shared one.
+    "nightstand": "veneer_oak_h",
     "bench": "upholstery_bed",
     "petcave": "upholstery_bed",
     # ONE lamp. The two-mass version invented a post to hold a measured shade
@@ -87,7 +99,7 @@ EXACT = {
     "lamp": "shade_black",
     "lamp_shade": "shade_black", "lamp_stem": "shade_black",
     "duvet_top": "linen_white", "duvet_drape": "linen_white",
-    "shelf_col_base": "veneer_travertine",
+    "shelf_col_base": "veneer_oak",
     "chair_seat": "upholstery_chair", "chair_back": "upholstery_chair",
 }
 PREFIX = (
@@ -95,7 +107,7 @@ PREFIX = (
     ("dl_", "lens_warm"),
     # every etagere part, under any of the names it has carried across eleven
     # specs (shelf_col, shelf_col_mid/top/cap/board3..., shelf_board2...)
-    ("shelf_", "veneer_travertine"),
+    ("shelf_", "veneer_oak"),
     # historical names from earlier rounds, kept so every past spec still
     # renders — reproducing an old round is how a regression is caught
     ("ceil_", "paint_ceiling"),
@@ -111,7 +123,7 @@ EXACT.update({
     "wardrobe": "lacquer_wardrobe",
     "fin_wall": "paint_white",
     "chair": "upholstery_chair",
-    "desk_panel": "veneer_travertine",
+    "desk_panel": "veneer_oak",
 })
 
 
@@ -148,14 +160,37 @@ PALETTE = {
     "paint_ceiling":     ((0.680, 0.638, 0.597), 0.80, 0.0, None, 0.0),
     "lacquer_wardrobe":  ((0.665, 0.651, 0.617), 0.52, 0.0, None, 0.0),
     "lacquer_white":     ((0.760, 0.755, 0.740), 0.45, 0.0, None, 0.0),
-    # ONE travertine for the whole left run AND the headboard band. The four
-    # objects sample 0.26x-1.05x of the wall, a 4x range — and that range is
-    # LIGHTING, proven on a single continuous etagere panel where one spot
-    # under the LED strip reads 2.24x another 0.6 m away on the SAME surface,
-    # same material, same orientation. Giving each object its own albedo would
-    # bake the light's job into the material table, the exact error trn001
-    # recorded when it corrected a floor's VALUE instead of its hue.
-    "veneer_travertine": ((0.578, 0.485, 0.361), 0.60, 0.0, "marble_01", 1.4),
+    # ONE oak for the whole left run AND the headboard band. The four objects
+    # sample 0.26x-1.05x of the wall, a 4x range — and that range is LIGHTING,
+    # proven on a single continuous etagere panel where one spot under the LED
+    # strip reads 2.24x another 0.6 m away on the SAME surface, same material,
+    # same orientation. Giving each object its own albedo would bake the light's
+    # job into the material table, the exact error trn001 recorded when it
+    # corrected a floor's VALUE instead of its hue. The ALBEDO below is
+    # unchanged by the identity correction — it is a measurement of those
+    # pixels, and the pixels did not move.
+    #
+    # THE IDENTITY WAS WRONG FROM r6 TO r12 and the correction is the console.
+    # r6 examined the band at 8x, found "fine vertical fibrous striations and
+    # irregular linear porosity", and wrote vein-cut travertine — a reading a
+    # crop genuinely supports, because rift oak and vein-cut travertine both
+    # give tight parallel lines. What the crop could not answer, and nobody
+    # asked, is whether the material WRAPS A RADIUS: at 4x the console and the
+    # desk pier carry those same fibre lines continuously around a full
+    # half-round end, and stone does not bend. The nightstand settles it a second
+    # way, with long-grain cathedral figure running the width of the drawer.
+    # The lesson is the one this lane keeps paying for: a texture crop answers
+    # "what does this surface look like", and identity needs "what could have
+    # been MADE this way" — different questions, and only the second one has an
+    # answer a measurement can refute.
+    "veneer_oak":        ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 1.10),
+    # Same oak, grain turned 90 deg. Split by OBJECT because grain direction is
+    # a fact about the panel, not about the species.
+    "veneer_oak_h":      ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 1.10),
+    # RETIRED NAME, kept so the twelve specs in this lane all still build and any
+    # past round can be re-rendered — reproducing an old round is how a
+    # regression is caught. Points at the same values as veneer_oak.
+    "veneer_travertine": ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 1.10),
     "floor_herringbone": ((0.503, 0.314, 0.168), 0.42, 0.0, "wood_floor", 0.66),
     "floor_joint":       ((0.275, 0.172, 0.092), 0.55, 0.0, None, 0.0),
     # The 2026-07-30 ground-truth study measured this studio at 95% image-free
@@ -196,12 +231,26 @@ PALETTE_PROV = {
     "lacquer_white": _A + " — the entry door leaf is never cleanly sampled "
                           "(it sits in the slot's shadow); taken as the wall "
                           "paint slightly warmed and smoother.",
-    "veneer_travertine": _M + "; ONE material for console/desk/pier/etagere/band"
-                              "/nightstand. Value from the etagere panel (the "
-                              "middle of the run's 4x lighting spread). The "
-                              "band was called OAK from r2 to r5 and is not: "
-                              "at 8x it is vein-cut travertine with a mitred "
-                              "return, same signature as the console.",
+    "veneer_oak": _M + "; ONE material for console/desk/pier/etagere/band, and "
+                       "veneer_oak_h is the same row with the grain turned. "
+                       "Value from the etagere panel (the middle of the run's "
+                       "4x lighting spread). IDENTITY corrected at r13 from "
+                       "travertine back to oak — the console wraps its fibre "
+                       "lines around a half-round end and stone does not bend; "
+                       "the nightstand shows long-grain cathedral figure across "
+                       "the drawer width. Measured against our own r12 frame, "
+                       "the tell is ANISOTROPY, not hue: on the target's "
+                       "nightstand the along-grain/across-grain variation ratio "
+                       "is 6.3:1 (row 0.169 / col 0.027) and on the band 5.8:1, "
+                       "while our marble-mapped r12 returned 2.1:1 and 0.42:1 — "
+                       "isotropic blotch where the target has direction. "
+                       "Corrected B/R agreed all along (0.59-0.69 target vs "
+                       "0.66-0.77 ours), which is exactly why a hue check never "
+                       "caught it.",
+    "veneer_oak_h": "see veneer_oak — same measured row, grain rotated 90 deg "
+                    "for panels whose long axis is horizontal.",
+    "veneer_travertine": "RETIRED NAME (r6-r12). Kept pointing at veneer_oak's "
+                         "values so every past spec still renders.",
     "floor_herringbone": _M + "; 0.436x wall, n=30,694, the warmest and most "
                               "saturated surface in the room (corrected B/R "
                               "0.327). Map scale 0.66 m = the measured 132 mm "
@@ -303,9 +352,31 @@ MAP_FILE = {          # slug -> (diffuse, roughness or None, normal or None)
                               "poly_wool_herringbone_Rough_2k.jpg",
                               "poly_wool_herringbone_nor_gl_2k.jpg"),
 }
+# Grain direction, as a rotation of the OBJECT coordinates fed to the box
+# projection. wood_floor lays its boards along the map's V axis, and a box
+# projection takes a face's UV from the two axes that are NOT its normal — so on
+# any wall panel, X-facing or Y-facing, V comes from world Z and the unrotated
+# default already runs the grain up the panel. That is what the etagere column,
+# the console and the band want, and what they show.
+#
+# TO TURN THE GRAIN, ROTATE ABOUT THE AXIS THE PANEL FACES. That is the whole
+# rule, and the first version of this table got it wrong by keying the rotation
+# to the MATERIAL: (0,90,0) turns a Y-facing drawer front and is a silent no-op
+# on an X-facing one, because rotating about Y leaves an X-face's (Y,Z) pair
+# untouched. The nightstand faces -X, the rotation did nothing, and the frame
+# came back with vertical grain on a drawer that shows long grain across its
+# width in the target. Same shape as this repo's recorded ONE PARAMETER CARRYING
+# TWO THINGS: one Euler was standing for both "which way does the grain run" and
+# "which way does the panel face". The KEY NAME now carries the facing, so a
+# panel with a different one gets its own row instead of quietly not turning.
+MAP_ROT = {
+    "veneer_oak_h": (90.0, 0.0, 0.0),   # horizontal grain on an X-FACING panel
+}
 NORMAL_STRENGTH = {
     "floor_herringbone": 1.6,          # planks DO carry a joint micro-bevel
-    "veneer_travertine": 0.10,         # spliced flush and sanded — not a floor
+    "veneer_oak": 0.10,                # spliced flush and sanded — not a floor
+    "veneer_oak_h": 0.10,
+    "veneer_travertine": 0.10,
     "lacquer_wardrobe": 0.06,
     "paint_white": 0.12, "paint_ceiling": 0.12,
     "linen_white": 0.6, "upholstery_bed": 0.6, "rug_cream": 0.9,
@@ -313,7 +384,12 @@ NORMAL_STRENGTH = {
 }
 TONE_NOISE = {
     "floor_herringbone": (0.30, 2.2, (0.35, 1.0, 6.0)),
-    "veneer_travertine": (0.16, 1.6, (0.5, 1.0, 3.0)),
+    # leaf-to-leaf drift on a spliced veneer. The stretch is ALONG the grain
+    # (6x in z) so the drift reads as neighbouring leaves at slightly different
+    # tone, never as a stain blotch crossing the grain.
+    "veneer_oak": (0.16, 1.6, (1.0, 1.0, 6.0)),
+    "veneer_oak_h": (0.16, 1.6, (6.0, 1.0, 1.0)),
+    "veneer_travertine": (0.16, 1.6, (1.0, 1.0, 6.0)),
 }
 
 
@@ -351,6 +427,10 @@ def build_materials(palette_override=None):
         uv = key in UV_MAPPED
         s = 1.0 if uv else 1.0 / max(scale, 1e-6)
         mapping.inputs["Scale"].default_value = (s, s, s)
+        if key in MAP_ROT:
+            import math as _math
+            mapping.inputs["Rotation"].default_value = tuple(
+                _math.radians(a) for a in MAP_ROT[key])
         nt.links.new(coord.outputs["UV" if uv else "Object"], mapping.inputs["Vector"])
 
         def _tex(fname, non_color):
