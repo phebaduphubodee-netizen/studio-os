@@ -58,7 +58,7 @@ EXACT = {
     "artwork": "art_relief",
     "part_head": "frame_black", "part_jamb_L": "frame_black",
     "part_jamb_R": "frame_black", "part_stile_M": "frame_black",
-    "part_rail_B": "frame_black",
+    "part_rail_B": "frame_black", "part_rail_top": "frame_black",
     "closet_floor": "floor_herringbone", "closet_back": "paint_white",
     "desk": "veneer_travertine", "console": "veneer_travertine",
     "desk_pier": "veneer_travertine",
@@ -100,6 +100,11 @@ PREFIX = (
     # renders — reproducing an old round is how a regression is caught
     ("ceil_", "paint_ceiling"),
     ("slot_fascia", "paint_white"),
+    # the partition's members are PAIRS in the target: a fixed jamb/mullion and
+    # the sliding leaf's own stile beside it. All the same powder-coated metal.
+    ("leaf_stile", "frame_black"),
+    ("mullion", "frame_black"),
+    ("chair_leg", "leg_dark"),
 )
 # Retired names, mapped once so the eleven specs in this lane all build.
 EXACT.update({
@@ -172,6 +177,9 @@ PALETTE = {
     "art_relief":        ((0.780, 0.770, 0.750), 0.80, 0.0, None, 0.0),
     "reveal_shadow":     ((0.300, 0.290, 0.275), 0.85, 0.0, None, 0.0),
     "lens_warm":         ((1.000, 0.955, 0.900), 0.50, 0.0, None, 0.0),
+    # the chair legs: near-black tapered timber in the reference, the darkest
+    # furniture element in the frame after the TV.
+    "leg_dark":          ((0.055, 0.048, 0.042), 0.40, 0.0, None, 0.0),
 }
 
 PALETTE_PROV = {
@@ -237,6 +245,7 @@ PALETTE_PROV = {
                           "this camera (equivalent width 1.05 mm, sigma does "
                           "not grow with scale), so they must be matched "
                           "photometrically, never tuned by eye.",
+    "leg_dark": _A + " — read off the target's chair legs as a near-black stained timber; not sampled cleanly (they are 4-6 px wide), so the value is bracketed by the partition frame core (0.11) above and the TV core (0.05) below.",
     "lens_warm": _M + "; the four lens cores are the frame's only legitimately "
                       "clipped pixels (273 px, 0.03%).",
 }

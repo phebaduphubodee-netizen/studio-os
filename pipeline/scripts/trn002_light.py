@@ -87,7 +87,13 @@ BLIND = {
 # four recessed lenses: blown cores, glow dead by ~200 mm, no beam
 DOWNLIGHT_XY = ((-4129, -2465), (-3851, -717), (-1778, -706), (-1788, -2456))
 DOWNLIGHT = {
-    "kind": "POINT", "z_mm": 3010, "radius_mm": 40.0,
+    # z 3102 = AT the ceiling plane, not 92 mm below it. A source hanging below
+    # the plane delivers light to it at a grazing angle and washes a halo; a
+    # source ON the plane delivers cos(theta)=0 and cannot light it at all.
+    # That is the whole mechanism behind the ceiling glow the owner saw, Gemini
+    # filed twice, and four blind critics kept counting as extra fixtures —
+    # and it was 92 mm of z, not a power setting.
+    "kind": "POINT", "z_mm": 3102, "radius_mm": 40.0,
     # 9 W washed a visible pool across the ceiling in the first materials
     # frame — the exact artifact the measurement refuted twice, and the exact
     # artifact four blind critics kept counting as extra downlights in the clay

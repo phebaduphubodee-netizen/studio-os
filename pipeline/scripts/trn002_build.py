@@ -96,10 +96,16 @@ def _herringbone(name, z_mm, thick_mm, value, mat=None, **kw):
     of a darker base so the gaps read as joints. The floor map alone cannot do
     this: it lays parallel planks, and the target's floor is a 45-degree
     chevron whose w, L and phase were all fitted from its own joint lines."""
+    kw = dict(kw)
+    # 1.192 m puts exactly ONE of the map's own boards across one 132.1 mm
+    # plank: the wood_floor map lays its boards at 227/2048 = 0.11084 of a tile,
+    # and 132.1 / 0.11084 = 1191.8. At the previous 0.9 each plank carried ~1.3
+    # of the map's boards, so a "plank" was a plank and a bit — the grain
+    # crossed its own joint, which is what a real parquet never does.
+    uv_scale = kw.pop("uv_scale", 1.192)
     quads = G.herringbone(**kw)
     z0, z1 = z_mm * MM, (z_mm + thick_mm) * MM
     vs, fs, uvs = [], [], []
-    uv_scale = kw.get("uv_scale", 0.9)
     for q in quads:
         b = len(vs)
         vs += [(x * MM, y * MM, z1) for x, y in q]
@@ -119,8 +125,12 @@ def _herringbone(name, z_mm, thick_mm, value, mat=None, **kw):
         ux, uy = ex[0] / ln, ex[1] / ln
         for (px, py) in q:
             dx, dy = (px - q[0][0]) * MM, (py - q[0][1]) * MM
-            uvs.append((( dx * ux + dy * uy) / uv_scale,
-                        (-dx * uy + dy * ux) / uv_scale))
+            along = (dx * ux + dy * uy) / uv_scale      # along the plank's length
+            across = (-dx * uy + dy * ux) / uv_scale    # across its width
+            # U <- ACROSS, V <- ALONG. The map's boards run along its V axis, so
+            # feeding the plank's length into U laid the grain ACROSS every
+            # plank — the one orientation a parquet floor never has.
+            uvs.append((across, along))
         for k in range(4):
             k2 = (k + 1) % 4
             fs.append((b + k, b + 4 + k, b + 4 + k2, b + k2))     # side
