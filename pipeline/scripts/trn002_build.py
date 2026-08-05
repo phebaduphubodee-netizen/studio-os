@@ -195,9 +195,23 @@ def _cloth_duvet(m, built, mat):
             thickness=p["thickness"] * MM, slack=sl,
             collide_dist=p["collide_dist"] * MM)
 
+    # hem_min is DELIBERATELY OFF for this sheet, and that is a correction of
+    # mechanism rather than of a number. search_bake's hem constraint exists for
+    # a coverlet hanging FREE below a plinth, where the hem's z really is the
+    # design variable the cut controls. This duvet's hem lands ON THE DECK — a
+    # supporting surface — so its z is set by the platform, not by the cut, and
+    # feeding it to the ladder asks the length to solve for something that is
+    # not free. It showed as a bounce: hem 35 -> rescale -> 264, hem 133 ->
+    # rescale -> 347, each correction overshooting because the measured
+    # "shortfall" was really a strip slipping over the platform edge. Three
+    # rounds of retyping the same three numbers is R1's repeat signal, so the
+    # numbers stopped and the rung changed. BOUNDS alone now govern, which is
+    # what keeps the slack — and SLACK IS THE FOLD AMPLITUDE the target has 6.7x
+    # more of than we do.
+    hem = p.get("hem_min")
     return drape.search_bake(
         build, name=m["name"], bounds=bounds,
-        hem_min=p["hem_min"] * MM, top_z=p["z"] * MM,
+        hem_min=None if hem is None else hem * MM, top_z=p["z"] * MM,
         slack=p.get("slack", 0.04))
 
 

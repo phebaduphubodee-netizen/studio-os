@@ -404,6 +404,42 @@ NORMAL_STRENGTH = {
     "linen_white": 0.6, "upholstery_bed": 0.6, "rug_cream": 0.9,
     "upholstery_chair": 0.5,
 }
+# CRUMPLE — sub-mesh fold relief, carried by the MATERIAL rather than by the
+# solver. A categorically different rung, reached only after the solver's own
+# knob was shown not to reach: the target's white bedding measures a high-passed
+# rms of 0.01133 on its fold field; our baked cloth returns 0.00168 at slack 2%
+# and 0.00234 at 6%, and slack is the ONLY fold-amplitude knob the drape ladder
+# has — which it then halves on every billow, by its own design, because slack
+# and footprint are antagonistic. A knob that cannot reach its target value is
+# not a tuning problem (this repo's own recorded class).
+#
+# So the finest crumple moves to where sub-mesh detail belongs. At this camera a
+# 14 px fold period is ~50 mm of world, which a 42 mm cloth cell cannot resolve
+# and a normal can. {material: (noise scale, bump strength, stretch)}
+# R1 STOP FILED 2026-08-05 — this rung is REFUTED as the answer, and kept only
+# as a hint. The bracket, all at quick price, on a strip that is white duvet in
+# BOTH frames (see below — the first strip was not):
+#   scale 7.0 str 2.0 d0.12 -> rms 0.00788 vs target 0.00983 (1.25x short) and
+#                              fold PERIOD 15.6 px, the target's exactly.
+#                              AND IT RENDERS AS TREE BARK.
+#   scale 3.2 str 0.7 d0.05 -> reads as cloth again, and measures ~14x short.
+# There is no setting between them that is both. WHY, structurally: a noise
+# field is ISOTROPIC and organised cloth folds are not — real folds run in
+# FAMILIES along the drape's tension lines, which is why the target's crumple
+# reads as fabric at the same amplitude that makes ours read as bark. A knob
+# whose two ends are "invisible" and "wrong material" is not under-tuned.
+#
+# THE MEASUREMENT THAT ENDORSED THE BARK IS DISQUALIFIED, by this lane's own
+# rule about a metric that cannot separate two things: a 1-D high-passed rms
+# rewards ANY high-frequency variation and cannot tell a soft fold from a
+# crumpled foil. It said 1.25x while the eye said catastrophe, and the eye wins.
+# (It had already lied once: the strip I first quoted, u430-700, overlaps the
+# TARGET'S THROWS — so "6.7x too smooth" was comparing their woven herringbone
+# against our bare duvet. The honest white-on-white gap was 12.8x.)
+CRUMPLE = {
+    # a hint only, verified BY EYE to read as cloth. It is not the fix.
+    "linen_white": (3.2, 0.7, (1.0, 1.0, 1.0)),
+}
 TONE_NOISE = {
     "floor_herringbone": (0.30, 2.2, (0.35, 1.0, 6.0)),
     # leaf-to-leaf drift on a spliced veneer. The stretch is ALONG the grain
@@ -529,7 +565,27 @@ def build_materials(palette_override=None):
             nmapn = nt.nodes.new("ShaderNodeNormalMap")
             nmapn.inputs["Strength"].default_value = NORMAL_STRENGTH.get(key, 0.3)
             nt.links.new(nt_tex.outputs["Color"], nmapn.inputs["Color"])
-            nt.links.new(nmapn.outputs["Normal"], bsdf.inputs["Normal"])
+            nrm_out = nmapn.outputs["Normal"]
+            if key in CRUMPLE:
+                # CHAINED, not replacing: the weave map feeds the bump's own
+                # Normal input, so the material carries both the thread and the
+                # fold instead of one overwriting the other.
+                cs, cstr, cstretch = CRUMPLE[key]
+                cmap = nt.nodes.new("ShaderNodeMapping")
+                cmap.inputs["Scale"].default_value = cstretch
+                nt.links.new(coord.outputs["Object"], cmap.inputs["Vector"])
+                cn = nt.nodes.new("ShaderNodeTexNoise")
+                cn.inputs["Scale"].default_value = cs
+                cn.inputs["Detail"].default_value = 6.0
+                cn.inputs["Roughness"].default_value = 0.6
+                nt.links.new(cmap.outputs["Vector"], cn.inputs["Vector"])
+                bump = nt.nodes.new("ShaderNodeBump")
+                bump.inputs["Strength"].default_value = cstr
+                bump.inputs["Distance"].default_value = 0.05
+                nt.links.new(cn.outputs["Fac"], bump.inputs["Height"])
+                nt.links.new(nrm_out, bump.inputs["Normal"])
+                nrm_out = bump.outputs["Normal"]
+            nt.links.new(nrm_out, bsdf.inputs["Normal"])
         out[key] = m
     return out
 
