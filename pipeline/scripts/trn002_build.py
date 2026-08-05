@@ -151,6 +151,56 @@ def _herringbone(name, z_mm, thick_mm, value, mat=None, **kw):
     return ob
 
 
+def _cloth_duvet(m, built, mat):
+    """The duvet as SIMULATED cloth — the recipe is PRJ-2026-002's shipped
+    folded_sheet hotel roll, inherited whole rather than re-learned (every
+    simulated bed cloth in that lane passed the owner's eye; every analytic one
+    failed). What TRN-002 adds is only that the feedstock footprint, the hem
+    target and the bounds are MEASURED from the reference through the solved
+    camera instead of derived from styling constants.
+
+    Units: the spec speaks mm (this lane's convention); drape/softgoods speak
+    world METRES (their contract) — converted here, in one place.
+
+    The class licence, spelled out because R8 forbids hand-modelling free form:
+    what never converged in TRN-001 was closed-tube pinned garments (piece 0_1
+    at 27-34% shred under every configuration). A duvet is an open flat sheet
+    settling on rigid outward-wound colliders — the solver's proven topology.
+    No pins: bed cloth is supported by its colliders (pins are the coverlet's
+    mechanism, for a band trapped under pillows)."""
+    import drape
+    import softgoods
+    p = m["cloth"]
+    x1 = (p["x0"] + p["w"]) * MM          # head edge — measured, stays fixed
+    y1 = (p["y0"] + p["d"]) * MM          # far edge — declared, stays fixed
+    w0, d0 = p["w"] * MM, p["d"] * MM
+    colliders = [built[n] for n in p["colliders"]]
+    bounds = tuple(v * MM for v in p["bounds"])
+
+    def build(scale, sl):
+        # the ladder lengthens the FALL sides: head and far edges hold their
+        # measured/declared lines while the foot and near cascade gain fabric
+        w, d = w0 * scale, d0 * scale
+        vs, fs = softgoods.folded_sheet(
+            x1 - w, y1 - d, w, d, p["z"] * MM,
+            band=p["band"] * MM, head=p["head"], cell=p["cell"] * MM,
+            salt=p.get("salt", 0))
+        # bounds go to search_bake ONLY (the PRJ-002 pattern): bake_sheet with
+        # bounds RAISES on first violation, which kills the ladder before it
+        # can halve slack or rescale — the first integration did exactly that.
+        return drape.bake_sheet(
+            m["name"], vs, fs, colliders,
+            frames=p.get("frames", 55), fabric="linen",
+            mat=mat if mat is not None else _clay(m["value"]),
+            thickness=p["thickness"] * MM, slack=sl,
+            collide_dist=p["collide_dist"] * MM)
+
+    return drape.search_bake(
+        build, name=m["name"], bounds=bounds,
+        hem_min=p["hem_min"] * MM, top_z=p["z"] * MM,
+        slack=p.get("slack", 0.04))
+
+
 def build_camera(cam):
     data = bpy.data.cameras.new("CAM_TRN002")
     data.lens = cam["focal_mm"]
@@ -376,7 +426,14 @@ def main():
         b.use_clamp_overlap = True
 
     built = {}
+    cloth_queue = []
     for m in spec["masses"]:
+        if m.get("kind") == "cloth_duvet":
+            # cloth builds AFTER every rigid mass exists (its colliders are
+            # looked up in `built`), and never enters _ease — a bevel modifier
+            # on a cloth object would evaluate into the frozen drape.
+            cloth_queue.append(m)
+            continue
         if m.get("kind") == "herringbone":
             built[m["name"]] = _herringbone(
                 m["name"], m["c"][2], m["s"][2], m["value"],
@@ -398,6 +455,8 @@ def main():
     for m in spec["masses"]:
         if m.get("parent"):
             built[m["name"]].parent = built[m["parent"]]
+    for m in cloth_queue:
+        built[m["name"]] = _cloth_duvet(m, built, mat_of(m["name"]))
     cam_ob = build_camera(spec["camera"])
     build_light(spec)
     setup_render(spec, out_png, quick)

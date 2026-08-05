@@ -89,6 +89,7 @@ EXACT = {
     "rug": "rug_cream",
     "bed_platform": "upholstery_bed", "bed_headboard": "upholstery_bed",
     "bed_mattress": "linen_white",
+    "duvet": "linen_white",
     "duvet_top": "linen_white", "duvet_drape": "linen_white",
     "pillow_L": "linen_white", "pillow_R": "linen_white", "bolster": "linen_white",
     # It IS oak, and the r6 pass that renamed it travertine was wrong — see the
