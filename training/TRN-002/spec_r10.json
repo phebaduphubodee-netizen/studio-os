@@ -1,6 +1,6 @@
 {
  "id": "TRN-002",
- "round": 10,
+ "round": 11,
  "image": {
   "w": 1080,
   "h": 821
@@ -665,43 +665,6 @@
    "prov": "M(face y=-3445+/-60 pier-foot on z=0; x -4515..-4305; rest_on floor)"
   },
   {
-   "name": "duvet_top",
-   "c": [
-    -3120.0,
-    -3347.5,
-    615.0
-   ],
-   "s": [
-    540.0,
-    1265.0,
-    190.0
-   ],
-   "value": 0.92,
-   "prov": "A-swept(crest 710 in measured band 626..734; widened 330->540 and rolled axis-y after C2-r4b: a fold with no mass and square edges reads as a thin lift \u2014 the roll crest is section geometry)",
-   "kind": "oct",
-   "cut": 90,
-   "axis": "y"
-  },
-  {
-   "name": "duvet_drape",
-   "parent": "duvet_top",
-   "c": [
-    -3467.5,
-    -3347.5,
-    465.5
-   ],
-   "s": [
-    155.0,
-    1265.0,
-    489.0
-   ],
-   "value": 0.92,
-   "prov": "D(hem wraps foot face, rests on ledge 221; outer face -3545 = 10mm shy of the platform edge plane the target roll bulges to)",
-   "kind": "oct",
-   "cut": 70,
-   "axis": "y"
-  },
-  {
    "name": "bolster",
    "c": [
     -1930.0,
@@ -1098,5 +1061,8 @@
  "light": {
   "rig": "trn002_light.plan()",
   "note": "phase-2 measured story; see the module docstring for the four refutations that shaped it"
+ },
+ "declared_gaps": {
+  "duvet": "REMOVED from the frame 2026-08-05 (owner circled it and asked what it was). A folded duvet is free-form drapery (R8): it may not be hand-modelled, R1 halted it after two reshapes, and C2-r5c showed the stand-in fabricated a read the target does not have - its hem wall covered a platform face the target shows OPEN. The law written after the owner first caught this in r3 says a soft-goods placeholder that does not read as its class LEAVES THE FRAME until the cloth phase; that law was not applied to its own object. The bed now renders as platform + mattress, which is honest, and the duvet returns as the cloth sim first object."
  }
 }
