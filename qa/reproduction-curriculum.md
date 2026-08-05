@@ -1505,3 +1505,53 @@ proves is a property of the room and not any knob (key alone +8.7, world alone
 the bed-width conflict, whose *method* of settlement is now decided even though
 its number is not — fit the platform's own far long side, because the headboard
 is not the bed.
+
+---
+
+## TRN-002 phase 2, rounds 16–19 (2026-08-05, owner's "ลุย") — the bed round
+
+Owner closed gate #6 with a go-order; mechanism choice delegated and recorded
+(duvet = SIM because the failed class was closed-tube garments, not flat
+sheets; pillows analytic; chair/props stay ACQUIRE). Cowork retired the same
+hour — **R7c amended: C2 is now a fresh-context LOCAL agent** spawned on the
+bundle dir only, blindness enforced by the ask's construction.
+
+A 3-agent read-only scout workflow measured first; every application then went
+in ONE at a time with a LOOK between (the r12 lesson, kept this time):
+
+- **r16** `124b921` — the bed is **2075 wide** (was 1595). Both long sides
+  fitted on the platform's OWN edges; the far arris is self-consistent only on
+  z=221; the mattress foot-contact shadow runs straight to y=−2436, which a
+  1265-wide mattress cannot produce. Both priors died by r14's own mislabel
+  class: 1595's anchors were a fabric silhouette failing the plane test at
+  every z, and a headboard end fitted at u≈730 — the room corner's pixel
+  column. The headboard is its own 2195 panel (near end measured −4745, 565
+  past the bed): *the panel was never the bed.* Verified in-build: far corner
+  projects (313.5, 623.2) vs measured (312, 622).
+- **r17** `24d9bd4` — **the duvet returns as simulated cloth** (PRJ-002
+  folded_sheet recipe whole; footprint/hem/bounds MEASURED through the solved
+  camera). search_bake closed in 2 bakes, hem 49 vs measured 43±20. Two
+  integration wounds now in comments: the rug wasn't a collider (cloth fell
+  1068 through the floor — the target's hem puddles ON the rug), and bounds
+  passed into bake_sheet kill the ladder (PRJ-002 passes them to search_bake
+  only).
+- **r18** `decc574` — pillow zone rebuilt from its own measurements: 800×2
+  shams at the measured run (the old 440 pair sat ON the taupe cushion's
+  pixels), **the taupe lumbar cushion exists for the first time** (in the
+  reference since round 1, never in any spec), bolster from its end-cap
+  ellipse. The rule gate refused the first build over two typed UNMEASURABLEs
+  until each carried a `why` — exactly its job.
+- **r19** `light` — **the wall-gradient SIGN flipped: +10.4 → −1.9 %/m**
+  (target −8.6). The knob was the key's SPREAD: a bare card at 180° cannot
+  keep direct light off the wall; 60°@42W ends the direct cone before the
+  wall and lets floor-bounce pay it, which is the target's own signature. The
+  bracket also mapped the failure modes: 45° cedes the wall to the other
+  emitters (all +), a bigger card re-exposes the upper wall (+5.1) — size is
+  not the lever. Residual −1.9 vs −8.6 named, hypothesis = bounce strength.
+
+**The round's best metric is the critic ladder itself: Gemini's #1 is no
+longer the bed** — first time in the lane. C2's local-agent debut filed the
+item no instrument could ask: the whole frame still wears ONE white material
+(bedding/upholstery/lacquer/wall respond identically), which heads the next
+material round. Gate #7 written (`training/TRN-002/gate-07-r19.md`); lane
+blocks. Frame of record **trn002_mat_r19**.

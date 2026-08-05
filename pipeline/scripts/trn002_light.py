@@ -63,12 +63,39 @@ KEY = {
     # So the key has to light the floor and the bedding, and the wall has to be
     # paid for out of what they return.
     "rot_deg": (58.0, 0.0, -14.0),
+    # Beam SPREAD — solved r19, and it is the wall-gradient SIGN's own knob.
+    # 180 = a bare emitting rectangle (every point radiates a full hemisphere),
+    # which is what this rig had implicitly — and a 3x2 m card at spread 180
+    # cannot keep its direct light off ANY surface, so the back wall was lit
+    # directly from high-left and its vertical gradient came out +10%/m UPWARD
+    # against the target's measured -8.6%/m. The target's wall carries a
+    # bounce signature (brightest at the floor), reachable only if the key's
+    # direct cone ends before the wall — a softbox with a grid, which is what
+    # every studio actually rigs. The r19 bracket, all on the quick rung:
+    #   spread 180 @98W  -> +10.5%/m      (the defect)
+    #   spread  60 @30W  ->  +2.0         (sign nearly gone; frame dim)
+    #   spread  60 @42W  ->  -1.9         (SIGN FLIPS — more key power feeds
+    #                                      the floor bounce that pays the wall
+    #                                      bottom, while spread caps the top)
+    #   spread  45 @30W  ->  +8.5         (too narrow: the weakened key cedes
+    #                                      the wall to the other emitters,
+    #                                      which ALL carry the + signature)
+    #   4.5x3 m card, 60 @42W -> +5.1     (a taller card's top edge sees the
+    #                                      upper wall again — size is NOT the
+    #                                      lever, spread+power is)
+    # Residual, named: -1.9 vs the target's -8.6 — right sign, 22% of the
+    # magnitude. The rest likely lives in bounce strength (rug/bedding albedo
+    # and the key's floor aim), a next-session solve, not a tonight guess.
+    "spread_deg": 60.0,
     # 165 W, bracketed on the quick rung against the target's own histogram
     # (three-point sweep after the strip/world clipping was fixed): p50 0.363
     # vs 0.372, p95 0.617 vs 0.636. It is an EXPOSURE match, not a physical
     # wattage — the target is display-referred with an unknown tonemap, so no
     # absolute power is recoverable and none is claimed.
-    "power_w": 98.0, "color": (1.000, 0.958, 0.912),
+    # 42 W at spread 60 (was 98 at spread 180): the exposure match moved with
+    # the spread — see the bracket table above; p50 0.34 vs target 0.37 at this
+    # point, the small deficit rides with the residual slope item.
+    "power_w": 42.0, "color": (1.000, 0.958, 0.912),
     "prov": "A(inferred: the frame shows the gradient, never the emitter; a "
             "glazed wall, an HDRI portal and a fill card all predict it)",
 }
@@ -157,6 +184,7 @@ def plan(spec=None):
     rot_over, loc_over, size_over = (lb.get("rot_deg") or {},
                                      lb.get("loc_mm") or {},
                                      lb.get("size_mm") or {})
+    spread_over = lb.get("spread_deg") or {}
     out = [dict(KEY), dict(BLIND)]
     for i, (x, y) in enumerate(DOWNLIGHT_XY, start=1):
         out.append({**DOWNLIGHT, "name": f"DL_{i}", "loc_mm": (x, y, DOWNLIGHT["z_mm"])})
@@ -176,6 +204,8 @@ def plan(spec=None):
             f["loc_mm"] = tuple(float(a) for a in loc_over[n])
         if n in size_over:
             f["size_mm"] = tuple(float(a) for a in size_over[n])
+        if n in spread_over:
+            f["spread_deg"] = float(spread_over[n])
     return out
 
 
@@ -213,6 +243,8 @@ def build_lights(spec=None):
             data.shape = f.get("shape", "RECTANGLE")
             sx, sy = f["size_mm"]
             data.size, data.size_y = sx * MM, sy * MM
+            if "spread_deg" in f:
+                data.spread = math.radians(f["spread_deg"])
         else:
             data.shadow_soft_size = f.get("radius_mm", 50.0) * MM
         ob = bpy.data.objects.new(f["name"], data)
