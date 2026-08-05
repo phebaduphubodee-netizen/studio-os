@@ -92,6 +92,7 @@ EXACT = {
     "duvet": "linen_white",
     "duvet_top": "linen_white", "duvet_drape": "linen_white",
     "pillow_L": "linen_white", "pillow_R": "linen_white", "bolster": "linen_white",
+    "cushion_taupe": "fabric_taupe",
     # It IS oak, and the r6 pass that renamed it travertine was wrong — see the
     # PALETTE row. Grain runs VERTICALLY here (fine dense staves, top to bottom).
     "ward_band": "veneer_oak",
@@ -217,6 +218,10 @@ PALETTE = {
     # 0.05 — "extraordinarily uniform", plausibly a matte leatherette rather
     # than a weave — so it loses its diffuse map too.
     "rug_cream":         ((0.828, 0.837, 0.823), 0.92, 0.0, "wool_boucle", 0.45),
+    # the taupe lumbar cushion. Lit-face swatch (720,525)=(161,145,129) sRGB ->
+    # lin (0.357,0.285,0.222); over the wall reference at 0.80 that is albedo
+    # (0.64,0.59,0.52) - a warm pale taupe, darker in B the way linen mixes are.
+    "fabric_taupe":      ((0.638, 0.588, 0.519), 0.92, 0.0, "rough_linen", 0.5),
     "upholstery_bed":    ((0.855, 0.871, 0.863), 0.90, 0.0, None, 0.0),
     "linen_white":       ((0.860, 0.855, 0.840), 0.95, 0.0, "rough_linen", 0.7),
     "upholstery_chair":  ((0.791, 0.768, 0.708), 0.90, 0.0, "rough_linen", 0.5),
@@ -272,6 +277,9 @@ PALETTE_PROV = {
     "floor_joint": _M + "; the plank field divided by the measured joint "
                         "contrast (joints read 1.83x darker than the field — "
                         "the same signal the herringbone phase was fitted on).",
+    "fabric_taupe": _M + "; cushion lit face (720,525)=(161,145,129) sRGB over "
+                          "the wall-at-0.80 method; piping (770,550)=(62,55,47) "
+                          "is geometry the oct does not carry - declared.",
     "rug_cream": _M + "; sampled in BOTH conditions (lit front 1.154x wall, "
                       "shadowed band 0.938x = 1.23x apart) and the row carries "
                       "their midpoint — the spread is the light's to produce. "
