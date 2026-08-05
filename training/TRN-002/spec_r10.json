@@ -74,7 +74,8 @@
     3102
    ],
    "value": 0.82,
-   "prov": "A(left wall x)"
+   "prov": "A(left wall x)",
+   "why": "the room's left boundary. Its exact x is NOT pinned: the only hard datum is a BOUND \u2014 the console's left corner exits frame-left, which requires the wall at x <= -4724 \u2014 and -4750 is the value at which the measured desk depth (410) closes. Everything on this wall inherits that, so if the wall moves the whole left run moves with it."
   },
   {
    "name": "right_wall",
@@ -359,7 +360,8 @@
     100
    ],
    "value": 0.6,
-   "prov": "A"
+   "prov": "A",
+   "why": "the dressing area behind the glass partition. It exists so the partition has a room behind it to light: in the reference that opening is BRIGHT and reads as depth, and with nothing behind the glass our frame renders a flat dark panel. Its dimensions are unmeasurable from this camera (the far-room geometry is behind glazing) and are not claimed."
   },
   {
    "name": "closet_back",
@@ -374,7 +376,8 @@
     2800
    ],
    "value": 0.75,
-   "prov": "A"
+   "prov": "A",
+   "why": "the far surface of that same dressing area \u2014 the thing the light bounces off so the partition reads as a lit room rather than a hole. Position assumed; only its BRIGHTNESS is answerable from the reference (the far opening reads Ylin 0.812) and that is a light-phase target, not a dimension."
   },
   {
    "name": "desk",
@@ -587,7 +590,8 @@
    "value": 0.9,
    "prov": "A(identity open; floor pt (-1599,-4392) r1)",
    "kind": "oct",
-   "cut": 250
+   "cut": 250,
+   "why": "a REAL object in the reference's lower-right corner \u2014 a rounded form with an arch opening, which is why our clay shows the frame's darkest pixels there. What is assumed is its CLASS, not its presence: six blind critics have each bound it to something different (a nightstand, a bench, a pet cave), and per R8 an object whose identity cannot be settled from the frame is a declared gap handed to the owner, not a modelling guess."
   },
   {
    "name": "dl_1",
@@ -680,7 +684,8 @@
    "prov": "A(target: white roll, far corner in front of pillows) \u2014 axis=y makes the roundness sectional, the r3b defect",
    "kind": "oct",
    "cut": 85,
-   "axis": "y"
+   "axis": "y",
+   "why": "the white roll lying across the bed in front of the pillows \u2014 visible in the reference, so its EXISTENCE is not assumed. Its length and position along the bed are: C2 flagged it as short and set left of centre and asked for a comparison against the reference that has not been run. Like the pillows it is a soft-goods stand-in awaiting the cloth pass, and by the r3-b law it survives in the frame only while it still reads as its class."
   },
   {
    "name": "lamp_shade",

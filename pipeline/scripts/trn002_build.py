@@ -31,6 +31,7 @@ import trn002_geom as G  # noqa: E402
 
 MM = 0.001
 FULL_SAMPLES = 128
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def _clay(value):
@@ -288,6 +289,18 @@ def main():
     for coll in (bpy.data.objects, bpy.data.meshes, bpy.data.materials):
         for ob in list(coll):
             coll.remove(ob)
+
+    # R10 RULE GATE, before a single vertex is made. It sits here rather than in
+    # a checklist because the only rules this repo has ever actually kept are
+    # the ones that are programs in a path someone already runs — the placement
+    # gate below has never been skipped, while "write the triage" and "distil
+    # the learning" drifted the moment nobody was watching. `--no-rule-gate`
+    # exists for bisecting an old spec, and prints loudly that it was used.
+    import rule_gate as RULES
+    if "--no-rule-gate" in argv:
+        print("!! RULE GATE BYPASSED by --no-rule-gate")
+    else:
+        RULES.enforce(spec, inbox_root=os.path.join(REPO, "knowledge", "_inbox"))
 
     materials = None
     if "--materials" in argv:
