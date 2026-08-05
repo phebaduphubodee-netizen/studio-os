@@ -234,6 +234,60 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
   not brace their container), and the version that silenced the first 27 false
   positives would also have passed round 16.
 
+- R10 EVERY OBJECT MUST JUSTIFY ITS OWN EXISTENCE (owner order 2026-08-05,
+  after putting materials and light on a passed blockout: *"ผมเห็นชัดว่า
+  geometry ห่วยมาก มีของที่ไม่สมเหตุสมผลเยอะมาก"* and then, naming the gap
+  exactly: *"คุณไม่เคยตั้งคำถามของแต่ละชิ้นว่ามันอยู่ตรงนี้สมเหตุสมผลมั้ย"*).
+  R8 governs HOW to make an object and R9 governs WHERE to put it. **Nothing
+  governed WHETHER IT SHOULD EXIST**, so masses entered the scene because a
+  measurement suggested one or because the structure needed one, and were never
+  asked again. Two he found by eye in a minute: `lamp_stem`, a bare post whose
+  provenance literally reads "carries shade" — it exists so a measured shade
+  would have something under it, and the target shows a bird and books there;
+  and `desk_pier`, where the measurement pass said in writing "depth in y is
+  UNMEASURABLE, occluded" and the builder typed 60 mm anyway, producing a
+  775 mm fin standing free on the floor.
+  - THE TEST, applied to every mass before a frame is judged and again before
+    any gate: (1) IDENTITY — what is it? (2) EXISTS — point at it in the
+    reference, or say plainly that nothing is there; (3) SENSE — is its size
+    and construction possible as a built object (does it hold anything up, does
+    it touch what it leans on, could it be manufactured)? (4) VERDICT —
+    keep / fix with a number / remove / unresolved-and-why.
+  - **AN OBJECT INVENTED TO SATISFY A STRUCTURE IS A DECLARED ASSUMPTION, NOT
+    A MEASUREMENT** — and the moment a measurement pass says a dimension is
+    UNMEASURABLE, typing a number for it is the defect, not the workaround. If
+    the object cannot be justified it leaves the frame as a declared gap; the
+    absent thing is honest, the wrong thing fabricates a reading.
+  - WHY CLAY HID ALL OF IT: flat grey under flat light gives every mass the
+    same standing, so "a white box next to a white box" reads as one mass and
+    nothing looks impossible. A material boundary and a directional key are
+    what make an object claim to BE something. **Materials and light are a
+    geometry INSTRUMENT, not merely the next phase** — which also means a
+    blockout gate can never close the object question, only the massing one.
+- R10b PRIVACY FENCE NARROWED, AND A SIGHTED LOCAL RUNG OPENED (owner order
+  2026-08-05: *"ผมไม่สนเรื่อง privacy แล้ว ขอแค่อย่าส่งงานลูกค้าเพื่อนผมออกไป
+  github"*). The hard line is now GIT: the friend's delivered client work must
+  never be committed or pushed (`_private/` is gitignored and stays that way).
+  The blanket "no critic may see the reference" is lifted for anything that
+  runs ON THIS MACHINE. That opens the rung the ladder never had: a
+  FRESH-CONTEXT LOCAL AGENT that sees the reference AND our frame, with no
+  egress at all — not habituated like the builder, not guessing from generic
+  priors like a blind judge.
+  - WHY THE BLIND RUNGS KEPT MISSING: blindness answers *"does this read as a
+    believable room"* while a reproduction asks *"does this match the
+    reference"*. Blind critics were answering the other question, which is why
+    so many of their items came back refuted-by-measurement — `petcave`
+    misbound six times, downlight pools prescribed for a room measured to have
+    none, a chair called child-sized against the target's own numbers. Their
+    WHAT is worth having; their WHY and their prescription are priors, and this
+    room violates the priors.
+  - KEEP BLIND where the question really is generic: `look_bench --blind` RANK
+    sheets (does our frame lose to delivered work) and the cold-critic rungs
+    judging believability. Sending the reference to an EXTERNAL vendor is still
+    off by default — not for privacy now, but because the whole benefit is
+    available locally at zero risk, and a judge shown the answer stops being a
+    judge. That default is the builder's call and the owner can override it.
+
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
 - Verify guard hooks:  `bash scripts/test_guards.sh`
