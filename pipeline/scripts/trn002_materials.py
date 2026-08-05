@@ -67,7 +67,17 @@ EXACT = {
     "ward_bulkhead": "lacquer_wardrobe", "ward_body": "lacquer_wardrobe",
     "ward_groove": "reveal_shadow",
     "door_leaf": "lacquer_white",
-    "artwork": "art_relief",
+    # The artwork mass IS the frame. Its own `seen` line measured a 21 mm black
+    # bar at luma 28-33 against a 175-187 wall — a 6:1 contrast, the strongest
+    # edge on that wall — and the mass wore a 0.78-albedo white from r2 to r13,
+    # so the target's most legible wall object rendered as a blank slab. MEASURED
+    # AND NEVER BUILT: the pass that identifies an object by a feature is not the
+    # pass that builds it, and nothing checked that the feature survived.
+    "artwork": "frame_black",
+    "art_mat": "art_relief",
+    "door_handle": "frame_black",
+    "door_rev_near": "reveal_shadow", "door_rev_far": "reveal_shadow",
+    "door_rev_head": "reveal_shadow",
     "part_head": "frame_black", "part_jamb_L": "frame_black",
     "part_jamb_R": "frame_black", "part_stile_M": "frame_black",
     "part_rail_B": "frame_black", "part_rail_top": "frame_black",
@@ -112,6 +122,9 @@ PREFIX = (
     # renders — reproducing an old round is how a regression is caught
     ("ceil_", "paint_ceiling"),
     ("slot_fascia", "paint_white"),
+    # the alcove wall, split into near/far/head around its opening
+    ("door_wall", "paint_white"),
+    ("door_jamb", "reveal_shadow"),
     # the partition's members are PAIRS in the target: a fixed jamb/mullion and
     # the sliding leaf's own stile beside it. All the same powder-coated metal.
     ("leaf_stile", "frame_black"),

@@ -144,8 +144,19 @@ def plan(spec=None):
     on the QUICK rung (R5) instead of guessed: the first full materials frame
     came back with p95 AND p99 both pinned at 1.000, and a clipped frame cannot
     be measured at all — every ladder row above the clip reads the same number
-    whatever the light is doing."""
-    over = ((spec or {}).get("light") or {}).get("power_w") or {}
+    whatever the light is doing.
+
+    `rot_deg`, `loc_mm` and `size_mm` take the same by-name form. AIM is
+    bracketed for the same reason POWER is: r13 measured our back wall's
+    vertical gradient at +6% per metre UPWARD where the target's is -7.7%, i.e.
+    the SIGN is wrong — ours is lit from above by the key, the target's from
+    below by bounce off the floor and the bed. A sign error in a gradient is an
+    aim question, and aiming by eye is what put it there."""
+    lb = (spec or {}).get("light") or {}
+    over = lb.get("power_w") or {}
+    rot_over, loc_over, size_over = (lb.get("rot_deg") or {},
+                                     lb.get("loc_mm") or {},
+                                     lb.get("size_mm") or {})
     out = [dict(KEY), dict(BLIND)]
     for i, (x, y) in enumerate(DOWNLIGHT_XY, start=1):
         out.append({**DOWNLIGHT, "name": f"DL_{i}", "loc_mm": (x, y, DOWNLIGHT["z_mm"])})
@@ -156,8 +167,15 @@ def plan(spec=None):
                     "size_mm": (STRIP["len_mm"], STRIP["depth_mm"]),
                     "rot_deg": (0.0, 0.0, 0.0)})
     for f in out:
-        if f["name"] in over:
-            f["power_w"] = float(over[f["name"]])
+        n = f["name"]
+        if n in over:
+            f["power_w"] = float(over[n])
+        if n in rot_over:
+            f["rot_deg"] = tuple(float(a) for a in rot_over[n])
+        if n in loc_over:
+            f["loc_mm"] = tuple(float(a) for a in loc_over[n])
+        if n in size_over:
+            f["size_mm"] = tuple(float(a) for a in size_over[n])
     return out
 
 
@@ -180,7 +198,8 @@ def build_world(spec=None):
     w.use_nodes = True
     bg = w.node_tree.nodes["Background"]
     bg.inputs[0].default_value = (*WORLD["color"], 1.0)
-    bg.inputs[1].default_value = WORLD["strength"]
+    s = ((spec or {}).get("light") or {}).get("world_strength")
+    bg.inputs[1].default_value = WORLD["strength"] if s is None else float(s)
 
 
 def build_lights(spec=None):
