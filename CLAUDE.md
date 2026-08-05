@@ -128,17 +128,31 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
     README, before any triage. Channel unreachable (desktop app closed /
     session gone) → record the pending ask in the bundle README and proceed to
     C3 — never silently skip the rung, never block the lane on this rung alone.
-  - BLINDNESS IS THE INSTRUMENT: the Cowork session judges from the bundle
+  - CHANNEL AMENDED 2026-08-05 (owner: *"cowork ใช้ไม่ได้แล้ว"*, then *"ลุย"* on
+    the proposed replacement): the Cowork app is RETIRED as the C2 channel.
+    C2 is now a FRESH-CONTEXT LOCAL AGENT (Agent tool), spawned with a prompt
+    that names ONLY the bundle dir — render + PROMPT.md, nothing else. What is
+    lost is architectural blindness: a spawned subagent CAN be handed builder
+    context, so blindness is now enforced by the ASK'S CONSTRUCTION — the
+    bundle builder refuses target/anchors by code, and the spawning prompt
+    must never carry build history, hypotheses, round numbers, or another
+    critic's answer. The answer is archived as `ANSWER_claude-local-c2.md` in
+    the bundle dir, indexed in the bundle README, before any triage — law
+    unchanged. R10b's SIGHTED local rung is separate and additional: a sighted
+    comparator answers "does it match the reference", C2 keeps answering "is
+    it believable", and one agent is never asked both.
+  - BLINDNESS IS THE INSTRUMENT: the C2 session judges from the bundle
     ONLY — it must not open target/anchor images, `clients/`, build history, or
-    another critic's answer before filing its verdict, even though the
-    connected folder makes them technically readable (a judge shown the answer
+    another critic's answer before filing its verdict, even though local
+    access makes them technically readable (a judge shown the answer
     stops being a judge — same law as the Gemini rung).
-  - NOT A C3 REPLACEMENT: Cowork is the same vendor as the builder (both
+  - NOT A C3 REPLACEMENT: the C2 critic is the same vendor as the builder (both
     Claude), so the cross-vendor rung (Gemini, R7b) still fires on every
     render. Triage per R7 unchanged — every item from every critic gets a
     written accept+lane or a measured refutation.
-  Ladder is now: C0 instruments → C1 builder LOOK+reference → C2 Claude-Cowork
-  (off-machine, on every ask for critique) → C3 Gemini → C4 owner (R3, final).
+  Ladder is now: C0 instruments → C1 builder LOOK+reference → C2 fresh-context
+  local critic (blind-by-bundle, on every ask for critique; Cowork retired
+  2026-08-05) → C3 Gemini → C4 owner (R3, final).
 - R8 BUILD vs ACQUIRE — DECIDED BEFORE THE FIRST VERTEX (owner order 2026-08-01,
   "เวลาคุณต้องปั้น model ที่มีส่วนเว้าส่วนโค้ง มันมักจะเพี้ยนเสมอ ตั้งแต่ทำมาในทุก
   project"). He is right and the evidence has a clean edge: everything generated
