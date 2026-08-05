@@ -79,14 +79,35 @@ EXACT = {
     "nightstand": "veneer_travertine",
     "bench": "upholstery_bed",
     "petcave": "upholstery_bed",
+    # ONE lamp. The two-mass version invented a post to hold a measured shade
+    # up, and the owner spotted it in the first frame that had light on it.
+    # The two old names are KEPT so every historical spec still builds — a
+    # rename that silently breaks a past round destroys the ability to
+    # reproduce it, and reproducing past rounds is how regressions are found.
+    "lamp": "shade_black",
     "lamp_shade": "shade_black", "lamp_stem": "shade_black",
+    "duvet_top": "linen_white", "duvet_drape": "linen_white",
+    "shelf_col_base": "veneer_travertine",
     "chair_seat": "upholstery_chair", "chair_back": "upholstery_chair",
 }
 PREFIX = (
     ("rev_", "reveal_shadow"),
     ("dl_", "lens_warm"),
-    ("shelf_board", "veneer_travertine"),
+    # every etagere part, under any of the names it has carried across eleven
+    # specs (shelf_col, shelf_col_mid/top/cap/board3..., shelf_board2...)
+    ("shelf_", "veneer_travertine"),
+    # historical names from earlier rounds, kept so every past spec still
+    # renders — reproducing an old round is how a regression is caught
+    ("ceil_", "paint_ceiling"),
+    ("slot_fascia", "paint_white"),
 )
+# Retired names, mapped once so the eleven specs in this lane all build.
+EXACT.update({
+    "wardrobe": "lacquer_wardrobe",
+    "fin_wall": "paint_white",
+    "chair": "upholstery_chair",
+    "desk_panel": "veneer_travertine",
+})
 
 
 def material_for(name):

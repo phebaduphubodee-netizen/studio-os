@@ -14,12 +14,26 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import trn002_materials as MAT  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SPEC = os.path.join(REPO, "training", "TRN-002", "spec_r7.json")
+LANE = os.path.join(REPO, "training", "TRN-002")
+
+
+def _spec_files():
+    """EVERY spec in the lane, not just the newest.
+
+    This test used to pin spec_r7 by name and went green while the spec the
+    builder actually renders drifted away from it. Checking them all also
+    enforces the other half: a rename must not silently break a past round,
+    because re-rendering a past round is how a regression gets caught."""
+    import glob
+    return sorted(glob.glob(os.path.join(LANE, "spec_r*.json")))
 
 
 def _masses():
-    with open(SPEC, encoding="utf-8") as f:
-        return [m["name"] for m in json.load(f)["masses"]]
+    out = []
+    for p in _spec_files():
+        with open(p, encoding="utf-8") as f:
+            out += [m["name"] for m in json.load(f)["masses"]]
+    return sorted(set(out))
 
 
 def test_every_mass_in_the_spec_has_a_material():

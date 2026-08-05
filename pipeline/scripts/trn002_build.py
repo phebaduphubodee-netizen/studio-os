@@ -300,7 +300,14 @@ def main():
     if "--no-rule-gate" in argv:
         print("!! RULE GATE BYPASSED by --no-rule-gate")
     else:
-        RULES.enforce(spec, inbox_root=os.path.join(REPO, "knowledge", "_inbox"))
+        # require_seen is ON: after the object-justification audit every mass
+        # can point at itself in the reference, so the strict form is now the
+        # cheap one. It is the only check that catches an invented object whose
+        # derivation is impeccable — lamp_stem's prov ("rest_on nightstand top
+        # 481, carries shade") was a perfectly well-formed contact for a thing
+        # that is not in the room.
+        RULES.enforce(spec, inbox_root=os.path.join(REPO, "knowledge", "_inbox"),
+                      require_seen=True)
 
     materials = None
     if "--materials" in argv:
