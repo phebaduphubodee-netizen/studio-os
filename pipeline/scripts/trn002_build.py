@@ -120,17 +120,41 @@ def _herringbone(name, z_mm, thick_mm, value, mat=None, **kw):
         # each plank carries its own UV frame. One box projection over the whole
         # floor gives every plank identical grain, which is a parquet-printed-
         # on-lino look no amount of joint tuning can fix.
-        ex = ((q[1][0] - q[0][0]), (q[1][1] - q[0][1]))
-        ln = (ex[0] ** 2 + ex[1] ** 2) ** 0.5 or 1.0
-        ux, uy = ex[0] / ln, ex[1] / ln
+        # THE LONG AXIS IS MEASURED, NOT ASSUMED. The previous version took
+        # q0->q1 as the plank's length; on a herringbone the two arms wind in
+        # opposite senses, so for HALF the planks that edge is the 132 mm WIDTH
+        # and their grain came out running across. Comparing the two edges is
+        # the whole fix, and it costs one hypot.
+        e1 = ((q[1][0] - q[0][0]), (q[1][1] - q[0][1]))
+        e3 = ((q[3][0] - q[0][0]), (q[3][1] - q[0][1]))
+        l1 = (e1[0] ** 2 + e1[1] ** 2) ** 0.5
+        l3 = (e3[0] ** 2 + e3[1] ** 2) ** 0.5
+        ex, ln = (e1, l1) if l1 >= l3 else (e3, l3)
+        ux, uy = ex[0] / (ln or 1.0), ex[1] / (ln or 1.0)
+        # AND EVERY PLANK NOW SAMPLES A DIFFERENT PART OF THE MAP. Each plank's
+        # UV frame started at (0,0) at its own first vertex, so all 458 of them
+        # read the SAME rectangle — one board's figure, printed 458 times. That
+        # is trn001's recorded "printed laminate" defect (it measured its floor
+        # at 1.9% plank-to-plank variation against a reference's 30.4%),
+        # reintroduced here by the per-plank frame that was added to fix a
+        # different defect. A fix that solves one thing can restore another.
+        # The offset is derived from the plank's own world position, so it is
+        # deterministic and a rebuild is bit-identical; the flip doubles the
+        # library of figures for free.
+        h = int(abs(q[0][0]) * 7.13 + abs(q[0][1]) * 3.71) % 997
+        off_v = (h % 31) / 31.0
+        off_u = ((h // 31) % 17) / 17.0
+        flip = (h // 527) % 2
         for (px, py) in q:
             dx, dy = (px - q[0][0]) * MM, (py - q[0][1]) * MM
             along = (dx * ux + dy * uy) / uv_scale      # along the plank's length
             across = (-dx * uy + dy * ux) / uv_scale    # across its width
+            if flip:
+                along = -along
             # U <- ACROSS, V <- ALONG. The map's boards run along its V axis, so
             # feeding the plank's length into U laid the grain ACROSS every
             # plank — the one orientation a parquet floor never has.
-            uvs.append((across, along))
+            uvs.append((across + off_u, along + off_v))
         for k in range(4):
             k2 = (k + 1) % 4
             fs.append((b + k, b + 4 + k, b + 4 + k2, b + k2))     # side

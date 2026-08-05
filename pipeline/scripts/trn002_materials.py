@@ -198,16 +198,32 @@ PALETTE = {
     # "what does this surface look like", and identity needs "what could have
     # been MADE this way" — different questions, and only the second one has an
     # answer a measurement can refute.
-    "veneer_oak":        ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 1.10),
+    # MAP SCALE 1.10 -> 3.2 m (r22). At 1.10 the wood_floor map laid a plank
+    # joint every ~120 mm across a veneer panel and repeated its whole tile 2.6
+    # times up the column, so the etagere came back with plank joints a veneer
+    # does not have and visible horizontal tile seams — which is what the owner
+    # meant by "ลายไม้ยังไม่สวย" and what C2 filed as texture tiling. THE MAP IS A
+    # FLOOR: it carries board joints, and cabinetwork does not. At 3.2 m one of
+    # the map's boards spans a whole panel, so the grain runs unbroken top to
+    # bottom and the tile no longer repeats within the object — one leaf per
+    # panel, which is exactly what the reference shows. Bracketed 1.10 / 2.2 /
+    # 3.2 on the quick rung and judged by eye: 2.2 still showed seams at a third
+    # and two thirds of the column's height.
+    "veneer_oak":        ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 3.2),
     # Same oak, grain turned 90 deg. Split by OBJECT because grain direction is
     # a fact about the panel, not about the species.
-    "veneer_oak_h":      ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 1.10),
+    "veneer_oak_h":      ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 3.2),
     # RETIRED NAME, kept so the twelve specs in this lane all still build and any
     # past round can be re-rendered — reproducing an old round is how a
     # regression is caught. Points at the same values as veneer_oak.
-    "veneer_travertine": ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 1.10),
-    "floor_herringbone": ((0.503, 0.314, 0.168), 0.42, 0.0, "wood_floor", 0.66),
-    "floor_joint":       ((0.275, 0.172, 0.092), 0.55, 0.0, None, 0.0),
+    "veneer_travertine": ((0.578, 0.485, 0.361), 0.60, 0.0, "wood_floor", 3.2),
+    # HUE CORRECTED r22 against the target's own floor, illuminant-cancelled
+    # through the wall in BOTH frames: corrected G/R 0.634 target vs 0.722 ours,
+    # B/R 0.357 vs 0.513. Ours was ashy where the target is honey — G x0.877,
+    # B x0.695. The previous row's warmth was measured through the joint plane,
+    # not the plank field, so it carried the joint's own lift.
+    "floor_herringbone": ((0.503, 0.275, 0.117), 0.42, 0.0, "wood_floor", 0.66),
+    "floor_joint":       ((0.275, 0.150, 0.064), 0.55, 0.0, None, 0.0),
     # The 2026-07-30 ground-truth study measured this studio at 95% image-free
     # materials against 50-66% in every photoreal reference file, with fabric
     # compensating by flat sheen. Every fabric here therefore carries a real
