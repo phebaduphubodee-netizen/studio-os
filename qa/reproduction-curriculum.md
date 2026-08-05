@@ -1277,6 +1277,60 @@ a SIDE-face bulge copied onto the FOOT face nobody measured). The owner's
 gate pass leaves it standing as a DECLARED FALSE READ that dies with the
 cloth sim — the phase's first object replaces it entirely.
 
+### PHASE 2 ROUNDS 2-4 (r8-r11) — the owner put light on it and the objects fell apart
+
+**The finding that reframes the whole lane**: the owner said *"พอใส่แสงใส่ mat
+แล้วผมเห็นชัดว่า geometry ห่วยมาก มีของที่ไม่สมเหตุสมผลเยอะมาก"*, then named the
+mechanism — *"คุณไม่เคยตั้งคำถามของแต่ละชิ้นว่ามันอยู่ตรงนี้สมเหตุสมผลมั้ย"*.
+Correct on both counts. **Clay gives every mass equal standing, so a white box
+beside a white box reads as one mass and nothing looks impossible; a material
+boundary and a directional key are what make an object CLAIM to be something.**
+Materials and light are a geometry instrument, and a blockout gate can close
+the massing question but never the object question. → R10, R10b, `rule_gate.py`.
+
+**Three defects he found by eye in minutes, all confirmed by measurement:**
+door/headboard overlap (the bed was 605 mm wider than the wall it leans on,
+from a typed `A(width 2200)`); the étagère "not shelving all the way" (the
+target is open full height; our r4 measurement had read only inside its own
+crop and the CROP BOUNDARY became the DESIGN boundary); and two objects that
+exist only because the builder needed them there — `lamp_stem`, whose
+provenance literally reads "carries shade", and `desk_pier`, where the
+measurement pass wrote "depth is UNMEASURABLE, occluded" and 60 mm was typed
+anyway.
+
+**The sighted local rung (R10b) audited all 52 masses**: 32 FIX, 2 REMOVE,
+15 KEEP, 3 UNRESOLVED. Biggest: `desk_pier` was 1.3 m from its real pedestal
+(16 floor-contact backprojections at y=-2131); `shelf_col_base` was an 818 mm
+plinth occluded in BOTH frames whose own prov quoted a number belonging to a
+different object; `shelf_board3` had grabbed the wrong edge (our bottom = the
+target's top) and the three boards now sit on one 526.5 mm module the
+reference holds to 1 mm; the desk apron was 100 against a measured 185 with
+all three of its junctions typed rather than contacted; **the partition is a
+TOPOLOGY error — one fat member drawn where the target has a jamb+leaf-stile
+PAIR with a 44 mm gap**; the chair had no legs; the downlight halo was 92 mm
+of z (a source below the ceiling plane grazes it, a source ON it delivers
+cos θ = 0); and the herringbone's grain ran ACROSS every plank because the
+map's board axis is V and the plank length was fed into U.
+
+**Refusals are recorded in the spec, not silently skipped** (`audit_conflicts`):
+the bed width stays 1595 against the audit's 2100, because that solve is
+indirect while the headboard's own edge, the band's measured start and the
+owner's eye all say otherwise — and when the measured 800 mm pillows were
+applied, R9b refused the build because two of them cannot sit on a 1265 mm
+mattress. That is now logged as SECOND independent evidence for a wider bed,
+with the likely reconciliation named: **the headboard is not the bed** (the
+audit found the panel runs 410 mm past the bed's near side), so measuring its
+end was never measuring the bed's. Settle it by fitting the platform's own far
+long side.
+
+**Enforcement changed, which is the durable part** (owner: *"แก้ไขความเข้มงวด
+ในการบังคับใช้กฏหน่อย"*). The rules that held in this repo were programs in a
+path someone already runs; the rest drifted. `rule_gate.py` now checks R10
+(every mass justifies itself and points at itself in the reference), R7 (every
+critic answer owes a written triage) and the charter's distillation debt — and
+the builder calls it before making a vertex. It blocked immediately on five
+masses, and R9b caught two consequences of R10's own removals.
+
 ### PHASE 2 ROUND 1 (r7) — materials, light and a real herringbone floor
 
 Frame of record `trn002_mat_r7.png`, spec_r9 (54 masses). Built from a
