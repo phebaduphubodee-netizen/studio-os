@@ -124,3 +124,57 @@ def test_a_gradient_both_frames_see_is_not_called_foreign_content(tmp_path):
     assert row["dispersed"] is True, "a real gradient should still be reported"
     assert abs(row["spread_ratio"] - 1.0) < 0.05, (
         "both frames see it, so the ratio must say 'gradient', not 'foreign'")
+
+
+# ---- LEVEL / SHAPE: the r24 split -------------------------------------------
+
+def _row(err, n=1000, align="ALIGNED", spread=1.0):
+    return {"ladder_error": err, "n_px": n, "alignment": align,
+            "spread_ratio": spread}
+
+
+def test_shape_is_invariant_to_the_choice_of_reference():
+    """The whole point of the split. Re-normalising every row to a different
+    object multiplies each ladder_error by one constant; LEVEL must move and
+    SHAPE must not."""
+    base = {"rows": {"a": _row(0.8), "b": _row(1.0), "c": _row(1.5),
+                     "d": _row(0.6), "e": _row(1.2)}}
+    k = 1.37
+    shifted = {"rows": {n: _row(v["ladder_error"] * k)
+                        for n, v in base["rows"].items()}}
+    x, y = LC.level_and_shape(base), LC.level_and_shape(shifted)
+    assert abs(y["level"] / x["level"] - k) < 1e-9
+    assert abs(y["shape"] - x["shape"]) < 1e-9
+
+
+def test_level_carries_a_uniform_error_and_shape_reports_none():
+    """r24's actual failure: twenty-one rows fell together because the
+    reference came up. That is ONE defect, and SHAPE must say so."""
+    lad = {"rows": {n: _row(0.72) for n in "abcdef"}}
+    ls = LC.level_and_shape(lad)
+    assert abs(ls["level"] - 0.72) < 1e-9
+    assert ls["shape"] < 1e-9
+
+
+def test_untrustworthy_rows_are_dropped_by_the_instruments_own_verdicts():
+    lad = {"rows": {"ok": _row(1.1), "moved": _row(4.9, align="OFF BY +6px"),
+                    "dirty": _row(0.2, spread=7.1), "ok2": _row(0.9),
+                    "ok3": _row(1.0), "ok4": _row(1.05)}}
+    ls = LC.level_and_shape(lad)
+    assert ls["dropped"] == ["dirty", "moved"]
+    assert ls["n"] == 4
+
+
+def test_pinned_membership_beats_self_selection():
+    """A metric that re-chooses its own rows per frame can rank a change by
+    which rows it decided to drop — the r24 bracket's seven-object subset."""
+    lad = {"rows": {n: _row(e) for n, e in
+                    (("a", 1.0), ("b", 1.1), ("c", 3.0), ("d", 0.9), ("e", 1.05))}}
+    everything = LC.level_and_shape(lad)
+    flattering = LC.level_and_shape(lad, rows={"a", "b", "d", "e"})
+    assert flattering["shape"] < everything["shape"]
+    assert flattering["n"] == 4 and everything["n"] == 5
+
+
+def test_too_few_rows_returns_nothing_rather_than_a_number():
+    assert LC.level_and_shape({"rows": {"a": _row(1.0), "b": _row(1.1)}}) is None

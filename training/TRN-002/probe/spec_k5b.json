@@ -1,0 +1,1478 @@
+{
+ "id": "TRN-002",
+ "round": 23,
+ "image": {
+  "w": 1080,
+  "h": 821
+ },
+ "camera": {
+  "x_mm": -4491.0,
+  "y_mm": -7992.0,
+  "z_mm": 1305.0,
+  "yaw_deg": 20.0417,
+  "focal_mm": 38.841,
+  "shift_x": 0.0,
+  "shift_y": -0.002961,
+  "_solved": "v004 pins + corner anchor + G1, unchanged from r1"
+ },
+ "gauges": {
+  "G1": "door leaf 2000 + lever 1030 -> cam z 1305. SWEPT r3: NOT ROBUST — cam_z band 1278..1338, H_main 3038..3180, lever dominates 2.5:1. Horizon-basis bias found: record pins (horizon 407.3) give cam_z 1319/H 3120; 1305 belongs to horizon 409.4. DECISION r3: do NOT rescale mid-lane — camera+spec share one similarity, the render cannot see it; fix the basis only when the lane needs absolute mm (procurement).",
+  "open_tension": "equal-modules gives wardrobe plane x=-1290 (cv 0.0046, four ~510 doors); run-to-ceiling-3102 wants -940; door standards want ~-960..-976. ADOPTED r2: wardrobe section x=-1290 with its top junction MEASURED at z~2920 (a bulkhead/lower junction over the run — the two eyes that read 'dropped' were right), entry-door section its own plane x=-976, open slot between them at y -1.15..-2.55. All three numbers are round-2-measured, sweep-tested next round.",
+  "G3": "door module 510mm IS the gauge that selects x_wall=-1290 — declared r3. The r2 'equal-modules cv=0.0046 minimum' is REFUTED as an instrument: cv is 0.0046 at every x in -1400..-518; the module WIDTH standard did the choosing.",
+  "downlight_table": "CLOSED r4 (C2 #3, third recurrence): ceiling fixtures in scene = EXACTLY 4 recessed downlights dl_1..dl_4, all prov M from the target blob grid at (199,9)(227,110)(551,135)(662,62); no other emitter or ceiling-fixture mass exists in the spec. Bright NON-fixture features a blind count picks up: the lit left-wall/TV patch at frame edge (u<15), the bulkhead face highlight, and dl side-face speculars. Any future 'N downlights' claim must name pixel positions to reopen this.",
+  "console_float": "CLOSED r4 (C2 #5 [verify]): underside z=495 (M), floor 0 -> gap 495mm."
+ },
+ "provenance_legend": "M=measured via solved camera, D=derived from a measured contact, A=assumed (standard), tag on every mass",
+ "shell": {
+  "H_main": 3102,
+  "left_wall_x": -4750,
+  "right_wall_x": 0,
+  "back_wall_y": 0,
+  "_left_wall_prov": "A-banded(M bound: <=-4724 console-corner frame-edge; desk depth 410 closes at -4750)"
+ },
+ "masses": [
+  {
+   "name": "floor",
+   "c": [
+    -2375.0,
+    -4750,
+    -50
+   ],
+   "s": [
+    4750.0,
+    9500,
+    100
+   ],
+   "value": 0.55,
+   "prov": "M(sill z=0) ; r9: this is now the JOINT plane under the planks",
+   "seen": "the herringbone field, u 80..1080 below the wall line; the joints are 1.83x darker than the field, which is the signal the plank phase was fitted on"
+  },
+  {
+   "name": "back_wall",
+   "c": [
+    -2375.0,
+    100,
+    1551
+   ],
+   "s": [
+    4750.0,
+    200,
+    3102
+   ],
+   "value": 0.82,
+   "prov": "M",
+   "seen": "u 72..730.6, v ~130..612. Right-hand corner arris: max|grad| at u=730.0+-0.5 in three v-bands (150-200, 200-250, 250-300); spec projects (x=0,y=0) to u=730.64 -> 0.6 px agreement.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "left_wall",
+   "c": [
+    -4850,
+    -4750,
+    1551
+   ],
+   "s": [
+    200,
+    9500,
+    3102
+   ],
+   "value": 0.82,
+   "prov": "A(left wall x)",
+   "why": "the room's left boundary. Its exact x is NOT pinned: the only hard datum is a BOUND — the console's left corner exits frame-left, which requires the wall at x <= -4724 — and -4750 is the value at which the measured desk depth (410) closes. Everything on this wall inherits that, so if the wall moves the whole left run moves with it.",
+   "seen": "Partially: plain white wall at u 0..47, v 100..275, above the TV. Its x cannot be measured from this view — the plane is near edge-on, so it carries no scale, and every landmark that could pin it (desk depth, console front) belongs to another zone.",
+   "audit": "UNRESOLVED"
+  },
+  {
+   "name": "right_wall",
+   "c": [
+    100,
+    -4750,
+    1551
+   ],
+   "s": [
+    200,
+    9500,
+    3102
+   ],
+   "value": 0.8,
+   "prov": "M(corner arris u731.5, seen through slot)",
+   "seen": "NOT VISIBLE as a wall. The only pixels our model attributes to it are the sliver u 732..752 (right wall x=0 at y 0..-352, seen past the wardrobe's far end). In the target that sliver reads lum 161.2, statistically identical to the wardrobe face at u800-900 (163.0); in our render it reads 88.4 agains",
+   "audit": "UNRESOLVED"
+  },
+  {
+   "name": "ceil_main",
+   "c": [
+    -2375.0,
+    -4750,
+    3152
+   ],
+   "s": [
+    4750.0,
+    9500,
+    100
+   ],
+   "value": 0.86,
+   "prov": "M(junction_true ratio, H=3102)",
+   "seen": "u 0..1080, v 0..~175 down to the wall junction; H=3102 from the junction ratio"
+  },
+  {
+   "name": "ward_bulkhead",
+   "c": [
+    -645,
+    -3850,
+    3011
+   ],
+   "s": [
+    1290,
+    5300,
+    182
+   ],
+   "value": 0.84,
+   "prov": "M(upper_edge z~2920 on x=-1290)",
+   "seen": "The COURSE exists: at u 726..960 the target carries a fine dark junction line at v = 96..7 that backprojects to z=2920 on x=-1290 (predicted 101.6/82.6/73.1/54.2/25.7/6.8 at u=760/800/820/860/920/960; measured 96-99/83-88/73-78/54-57/25-29/7-9). Same lacquer above and below it, so it is a flush cour",
+   "audit": "FIX"
+  },
+  {
+   "name": "ward_body",
+   "c": [
+    -645,
+    -4525,
+    1929.0
+   ],
+   "s": [
+    1290,
+    3950,
+    1982.0
+   ],
+   "value": 0.78,
+   "prov": "M(x_wall=-1290 equal modules; groove starts y~-2830; top 2920) / M(BOTTOM z=938+/-33: the cabinet's own lower edge fitted at 6 u-stations 800..1040 and backprojected on its face x=-1290; it lands on the band's measured top of 937 to 1 mm)",
+   "seen": "YES. u 731..1080 (runs off the right frame edge), v ~10 (top, off frame past u~965) down to the band at v 477..511. Face lacquer sampled u880-980/v300-400 = RGB(175,163,152), sat 0.130.",
+   "audit": "FIXED r23. The run was modelled z 0..2920 - doors to the floor - with a 915 mm headboard parked across them, so they could never open. C2 read that as a plan error before any measurement, and the measurement agrees: in the reference the white doors STOP at the band and oak panelling continues below, which is what keeps the cabinet usable. No instrument we own asks whether a door can open."
+  },
+  {
+   "name": "ward_groove",
+   "c": [
+    -1291,
+    -4525,
+    2668
+   ],
+   "s": [
+    6,
+    3950,
+    30
+   ],
+   "value": 0.3,
+   "prov": "M(ceil_diag on -1290: z 2666/2671)",
+   "seen": "YES, and it is the strongest horizontal feature on the run. Traced at u=780..1060: v = 142.5, 134.4, 126.4, 118.3, 110.2, 102.2, 94.0, 86.0, 77.9, 69.8, 61.8, 53.7, 45.6, 37.5, 29.4 - against z=2668 predictions of 141.3, 133.3, 125.3, 117.3, 109.3, 101.3, 93.3, 85.3, 77.3, 69.3, 61.3, 53.3, 45.3, 37",
+   "audit": "KEEP"
+  },
+  {
+   "name": "rev_1",
+   "c": [
+    -1291,
+    -2945,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u795 -> y-2945 on -1290)",
+   "seen": "YES. Subpixel dark minimum at u = 795.12 / 795.15 / 795.14 / 795.14 / 795.13 at v = 200/260/320/380/440 (perfectly vertical). Spec projects 793.8..795.8.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "rev_2",
+   "c": [
+    -1291,
+    -3084,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u811)",
+   "seen": "YES. u = 810.22 / 810.21 / 810.24 / 810.22 / 810.28 at v = 200/260/320/380/440. Spec projects 809.4..811.3.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "rev_3",
+   "c": [
+    -1291,
+    -3590,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u874; modules 506/509/506)",
+   "seen": "YES. u = 873.81 / 873.81 / 873.83 / 873.82 / 873.83 at v = 200/260/320/380/440. Spec projects 872.4..874.6.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "rev_4",
+   "c": [
+    -1291,
+    -4099,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u950)",
+   "seen": "YES. u = 949.77 / 949.79 / 949.78 / 949.78 / 949.81 at v = 200/260/320/380/440. Spec projects 948.6..951.1.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "rev_5",
+   "c": [
+    -1291,
+    -4605,
+    1780
+   ],
+   "s": [
+    6,
+    8,
+    1770
+   ],
+   "value": 0.35,
+   "prov": "M(u1043)",
+   "seen": "YES. u = 1042.68 / 1042.65 / 1042.67 / 1042.66 / 1042.63 at v = 200/260/320/380/440. Spec projects 1041.1..1044.1. It also runs DOWN through the band: still a clean single-pixel dip at u=1045 at v=540/560/575, inside the warm band material.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "door_leaf",
+   "c": [
+    -968.0,
+    -694.65,
+    957.1
+   ],
+   "s": [
+    14.0,
+    869.7,
+    1914.2
+   ],
+   "value": 0.88,
+   "prov": "M(leaf shadow-gap minima u=630.0 and 685.0 backprojected on the alcove plane x=-974 -> y -259.8..-1129.5 = an 869.7 mm leaf, a standard door width to 0.3%; head trim underside v=300 -> z=1914)",
+   "seen": "Yes: leaf edges (shadow-gap dark minima) at u=630.16 / 630.01 / 629.80 across v-bands 330-400, 400-445, 480-540, and u=685.0; head trim v 300-316; black lever handle at u 669-683, v 452-468. Plane confirmed independently: the head shadow line fits dv/du = -0.1888 over u 630..678 (13 points); the dep",
+   "audit": "APPLIED r14 (was y -174..-1020 from a coarser read)"
+  },
+  {
+   "name": "artwork",
+   "c": [
+    -1773.5,
+    -15,
+    1466
+   ],
+   "s": [
+    727,
+    30,
+    1008
+   ],
+   "value": 0.9,
+   "prov": "M",
+   "seen": "u 464.85..562.63, v 315.26..456.19 (subpixel half-max on the black frame bar; the bar itself is only 2.75 px = ~21 mm, luma 28-33 against a 175-187 wall).",
+   "audit": "APPLIED r14: the measured 21 mm black bar is now the object's material"
+  },
+  {
+   "name": "part_head",
+   "c": [
+    -3458,
+    0,
+    2425.5
+   ],
+   "s": [
+    1667,
+    70,
+    107
+   ],
+   "value": 0.25,
+   "prov": "M",
+   "seen": "Yes: at u=230 the dark band runs v 230.93..247.03; backprojected on y=0 that is z 2478.8..2371.6 = 107.2 mm total against spec's 107 (z 2372..2479). Position is 0.8 px (~5 mm) low. The right-hand end read at u=350 gives z=2478.1, so the head is level. Frame outside width measured x -4292.9..-2606.0 ",
+   "audit": "FIX"
+  },
+  {
+   "name": "part_jamb_L",
+   "c": [
+    -4260,
+    0,
+    1186
+   ],
+   "s": [
+    64,
+    60,
+    2372
+   ],
+   "value": 0.25,
+   "prov": "M",
+   "seen": "The dark bar at u 147.37..162.58 (15.2 px, band v 320-440), containing a hairline dark joint at u=155.0 (luma 53.9 against the two faces' 80-92). Backprojected on y=0: x -4292.9 / -4245.7 / -4198.7 -> two faces of 47.2 mm and 47.0 mm. Spec's single member x -4292..-4228 nails the OUTER edge (0.9 mm)",
+   "audit": "FIX"
+  },
+  {
+   "name": "part_jamb_R",
+   "c": [
+    -2657,
+    0,
+    1186
+   ],
+   "s": [
+    64,
+    60,
+    2372
+   ],
+   "value": 0.25,
+   "prov": "M",
+   "seen": "u 392.27..401.67 (9.4 px), with an internal step at u=395.56: left sub-strip luma ~87, right ~74. Front face = u 395.56..401.67 -> x -2648.2..-2606.0 = 42.2 mm. Left sub-strip = the opening's reveal receding into the closet, 3.29 px wide.",
+   "audit": "FIX"
+  },
+  {
+   "name": "part_stile_M",
+   "c": [
+    -3500,
+    0,
+    1186
+   ],
+   "s": [
+    72,
+    60,
+    2372
+   ],
+   "value": 0.25,
+   "prov": "M",
+   "seen": "NOT as one member. Two dark bars with a bright gap between them, band v 320-440: B1 u 271.29..278.75 -> x -3501.8..-3452.4 (49.4 mm); gap u 278.75..285.11 -> x -3452.4..-3410.0 (42.4 mm, luma 170-177, sd 3-4); B2 u 285.11..293.00 -> x -3410.0..-3357.3 (52.7 mm). Total span 144.5 mm. Spec's single 72",
+   "audit": "FIX"
+  },
+  {
+   "name": "part_rail_B",
+   "c": [
+    -3458,
+    0,
+    30
+   ],
+   "s": [
+    1667,
+    60,
+    60
+   ],
+   "value": 0.25,
+   "prov": "M",
+   "seen": "Yes: at u=251 the dark band is v 594.5..603.0, backprojecting on y=0 to z 51.7..-5.2, i.e. z 0..~52. Spec (z 0..60) projects to v 593.96..602.96 at the same u — agreement to 0.5 px (~3 mm).",
+   "audit": "KEEP"
+  },
+  {
+   "name": "closet_floor",
+   "c": [
+    -3458,
+    1250,
+    -50
+   ],
+   "s": [
+    2400,
+    2500,
+    100
+   ],
+   "value": 0.6,
+   "prov": "A",
+   "why": "the dressing area behind the glass partition. It exists so the partition has a room behind it to light: in the reference that opening is BRIGHT and reads as depth, and with nothing behind the glass our frame renders a flat dark panel. Its dimensions are unmeasurable from this camera (the far-room geometry is behind glazing) and are not claimed.",
+   "seen": "Yes: floor visible through the right bay at u 293..360, v 575..595, continuous with the bedroom floor and at the same level (z=0 confirmed via the bottom-rail band above).",
+   "audit": "KEEP"
+  },
+  {
+   "name": "closet_back",
+   "c": [
+    -3458,
+    2440,
+    1400
+   ],
+   "s": [
+    2400,
+    100,
+    2800
+   ],
+   "value": 0.75,
+   "prov": "A",
+   "why": "the far surface of that same dressing area — the thing the light bounces off so the partition reads as a lit room rather than a hole. Position assumed; only its BRIGHTNESS is answerable from the reference (the far opening reads Ylin 0.812) and that is a light-phase target, not a dimension.",
+   "seen": "NOT as modelled. Through the opening the target shows, at u 293..367, a full-height wood wardrobe with an illuminated open niche (shirt on a hanger, a box, a folded tray) over a cabinet; at u 366..397 a white door with a black lever (handle u 370-380, v 447-457). The wardrobe's foot line is at v=574",
+   "audit": "FIX"
+  },
+  {
+   "name": "desk",
+   "c": [
+    -4545.0,
+    -1947.5,
+    782.5
+   ],
+   "s": [
+    410,
+    2995,
+    185.0
+   ],
+   "value": 0.6,
+   "prov": "M(top 875 confirmed at u=133; apron underside ~690 from the apron groove (133,538) backprojected on the pedestal near-end plane). Apron was 100, measured ~185.",
+   "kind": "oct",
+   "cut": 40,
+   "seen": "YES — top surface + apron at u 85..157, v 480..545. Top z=875 confirmed: at u=133 the top-front region reads v~498, which is exactly z=875 on the pedestal near-end plane (projected 498.1).",
+   "audit": "FIX"
+  },
+  {
+   "name": "console",
+   "c": [
+    -4622.5,
+    -4302.5,
+    624.0
+   ],
+   "s": [
+    255,
+    1715,
+    258
+   ],
+   "value": 0.6,
+   "prov": "M(front -4495+/-8, top 753+/-22, thick 258+/-10) / A-swept(end y -5160)",
+   "kind": "oct",
+   "cut": 55,
+   "seen": "YES — u 0..114, v 649..774. Two independent confirmations. (a) Its bottom arc backprojected on z=0 lands at x=-4870, outside any plausible left wall; on z=495 it lands at x -4727..-4498, y -4970..-5151, inside the room — so the FLOATING read is right and the near end is y ~= -5140 (built -5160). (b)",
+   "audit": "KEEP"
+  },
+  {
+   "name": "tv",
+   "c": [
+    -4750.0,
+    -4935.0,
+    1325.0
+   ],
+   "s": [
+    40,
+    1250,
+    750
+   ],
+   "value": 0.08,
+   "prov": "A-swept(bottom band 820..1090 -> 950; right edge u41 vertical M)",
+   "seen": "YES — a clean quadrilateral, u 9..40.8, v 281..534. Its far edge is a subpixel VERTICAL at u = 40.78, constant to +/-0.05 px over v = 316..505 (95 rows). That is the held-out judge line `tv_right`. Our built TV's far edge projects to u = 19.6 (back face x=-4750) or 27.2 (front face x=-4730): the bui",
+   "audit": "FIX"
+  },
+  {
+   "name": "rug",
+   "c": [
+    -2548,
+    -3720,
+    6
+   ],
+   "s": [
+    2495,
+    3755,
+    12
+   ],
+   "value": 0.92,
+   "prov": "M(left edge x=-3795, corner y=-1843) / A(right end clipped at ward face)",
+   "seen": "YES. Far edge and left edge both visible and both fit cleanly: rug_far (x-line, rms 0.386, bend 0.184, dVPx 0.328) and rug_left_a (y-line, rms 0.349, bend 0.11, dVPy 0.918).",
+   "audit": "FIX"
+  },
+  {
+   "name": "bed_platform",
+   "c": [
+    -2522.5,
+    -3142.5,
+    110.5
+   ],
+   "s": [
+    2065,
+    2075.0,
+    221
+   ],
+   "value": 0.88,
+   "prov": "M(both long sides fitted on the platform's OWN edges, r16 scout: near -4180 from two independent lines agreeing to 0.2 mm — base contact on rug z=12 [6 pts, sd 0.8] and top arris z=221 [5 pts, sd 1.7], the pair also confirming plinth height 221; far -2105+/-20 from the plinth's far top arris in the u 312-352 corner window, self-consistent ONLY on z=221 [sd 19.9; on z=520 it lands mid-bed, on z=12 on bare floor beyond the rug — both impossible]. Under the old 1595 this arris would project 18 px below the measured edge with nothing there to explain the line.)",
+   "kind": "oct",
+   "cut": 300,
+   "seen": "YES. u 315..~953, v 622..797. Foot face and near long face both visible; far face occluded (correct for this camera).",
+   "audit": "RESOLVED r16: width 1595 -> 2075. The 1595 rested on the bedding's far silhouette (fabric — fails the plane test on every z, drift -230..-254 mm/span: a label, not a measurement) and on a headboard top edge dying at u~730, the SAME pixel column as the room corner — the mislabel class r14 documented. The audit's 2100 was right in direction, 50 mm off in value; the measured -2105/-4180 replaces both priors."
+  },
+  {
+   "name": "bed_mattress",
+   "c": [
+    -2442.0,
+    -3125.5,
+    370.5
+   ],
+   "s": [
+    1904.0,
+    1719.0,
+    299
+   ],
+   "value": 0.9,
+   "prov": "M(near face -3985+/-14 [contact pts on z=221; old spec -3980 confirmed]; foot face x=-3394 [contact-shadow line, x constant to 1 mm over 6 pts — this line runs straight to y=-2436, which the old 1265-wide mattress ending at -2865 could not produce]) / D(far face -2266 = platform far -2105 + the MEASURED foot inset 161 applied symmetrically; contact evidence bounds it -2230..-2290)",
+   "kind": "oct",
+   "cut": 150,
+   "seen": "YES. Its foot face and its contact line on the plinth top are directly measurable at u 355..425, v 628..692; its own surfaces above that are covered by bedding.",
+   "audit": "RESOLVED r16 with the platform (width 1265 -> 1719; pillow constraint >=1640 now satisfiable)"
+  },
+  {
+   "name": "bed_headboard",
+   "c": [
+    -1402.0,
+    -3647.5,
+    457.5
+   ],
+   "s": [
+    176.0,
+    2195.0,
+    915
+   ],
+   "value": 0.88,
+   "prov": "M(outer/near end: u 1027.5 on x=-1490 -> y=-4745 — the panel runs 565 mm past the platform's near side, which is why measuring the panel was never measuring the bed; far end kept at the band start -2550: its only direct read, -2401..-2581, dies at u~730 = the room corner's pixel column, so it is left at the band datum rather than adopted from a suspect fit)",
+   "seen": "YES. u 755..1027.6, v 477..~632 (below v~632 the nightstand occludes it). Its near end shows TWO parallel verticals: an outer silhouette at u=1027.62 and an inner piping line at u~1008, with the panel's end face between them.",
+   "audit": "RESOLVED r16: the headboard is a WALL PANEL 2195 wide; the bed is 2075; they were one number for fourteen rounds"
+  },
+  {
+   "name": "ward_band",
+   "c": [
+    -1302.0,
+    -4525.0,
+    469.0
+   ],
+   "s": [
+    24,
+    3950,
+    938.0
+   ],
+   "value": 0.62,
+   "prov": "M(the oak panelling under the cabinet, z 0..938. At 5x the wall below the band shows continuous vertical oak grain and vertical joints running down behind the nightstand - it is one panel, and what was called 'the band' was only the sliver of it visible above the headboard)",
+   "seen": "YES. Top edge fitted at v=477.0 (u=760) rising to 511 (u=1076) - our z=937.1 reproduces it to <1 px. Visible strip u 731..1080; clean unoccluded sample u1038-1058/v515-600 = RGB(145,121,94), sat 0.351, per-channel std (28,25,21).",
+   "audit": "FIXED r23: 485..937 -> 0..938, the panel it always was"
+  },
+  {
+   "name": "nightstand",
+   "c": [
+    -1465,
+    -4950,
+    396
+   ],
+   "s": [
+    350,
+    700,
+    170
+   ],
+   "value": 0.58,
+   "prov": "M(arris y-4706..-5132 at depth 350; top z~481)",
+   "seen": "YES. Front face u 985..1080 (cut by frame), v 644..716. Front-top-far corner measured at (985,644); its bottom edge fitted at v = 697,699,701,703,705,707,709,711,713,715 for u = 988..1042.",
+   "audit": "FIX"
+  },
+  {
+   "name": "bench",
+   "c": [
+    -2738,
+    -5182,
+    210
+   ],
+   "s": [
+    1050,
+    600,
+    420
+   ],
+   "value": 0.9,
+   "prov": "M(top mid backprojection at z=420)",
+   "kind": "oct",
+   "cut": 200,
+   "seen": "YES. u ~653..950, v ~742..821 (runs off the bottom of the frame). Hard vertical boundary against the pet house at u~951 (lum 185-192 vs 205-222).",
+   "audit": "FIX"
+  },
+  {
+   "name": "petcave",
+   "c": [
+    -1750,
+    -5750,
+    275
+   ],
+   "s": [
+    700,
+    900,
+    550
+   ],
+   "value": 0.9,
+   "prov": "A(identity open; floor pt (-1599,-4392) r1)",
+   "kind": "oct",
+   "cut": 250,
+   "why": "a REAL object in the reference's lower-right corner — a rounded form with an arch opening, which is why our clay shows the frame's darkest pixels there. What is assumed is its CLASS, not its presence: six blind critics have each bound it to something different (a nightstand, a bench, a pet cave), and per R8 an object whose identity cannot be settled from the frame is a declared gap handed to the owner, not a modelling guess.",
+   "seen": "YES. Body u 951..1080 (runs off the right frame edge), v 715..821 (runs off the bottom). The entrance is a pure-black region, arch apex at (1043, 752), left jamb at u~1005, running off both frame edges. Body lum 205-222 / warm 11-17 with a visible boucle weave, separated from the bench at u~951 by a",
+   "audit": "FIX"
+  },
+  {
+   "name": "dl_1",
+   "c": [
+    -4129,
+    -2465,
+    3107.0
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M ; r11: lens flush with the ceiling (3102) instead of 10 mm proud - a disc hanging below the plane is what let it wash the ceiling it is supposed to sit in.",
+   "seen": "blown lens core at (199,13) - one of exactly four compact peak-255 blobs in the target's ceiling strip"
+  },
+  {
+   "name": "dl_2",
+   "c": [
+    -3851,
+    -717,
+    3107.0
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M ; r11: lens flush with the ceiling (3102) instead of 10 mm proud - a disc hanging below the plane is what let it wash the ceiling it is supposed to sit in.",
+   "seen": "blown lens core at (227,111)"
+  },
+  {
+   "name": "dl_3",
+   "c": [
+    -1778,
+    -706,
+    3107.0
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M ; r11: lens flush with the ceiling (3102) instead of 10 mm proud - a disc hanging below the plane is what let it wash the ceiling it is supposed to sit in.",
+   "seen": "blown lens core at (548,138)"
+  },
+  {
+   "name": "dl_4",
+   "c": [
+    -1788,
+    -2456,
+    3107.0
+   ],
+   "s": [
+    120,
+    120,
+    10
+   ],
+   "value": 1.0,
+   "prov": "M ; r11: lens flush with the ceiling (3102) instead of 10 mm proud - a disc hanging below the plane is what let it wash the ceiling it is supposed to sit in.",
+   "seen": "blown lens core at (662,66)"
+  },
+  {
+   "name": "desk_pier",
+   "c": [
+    -4427.5,
+    -2101.0,
+    345.0
+   ],
+   "s": [
+    175.0,
+    60.0,
+    690.0
+   ],
+   "value": 0.6,
+   "prov": "M(16 floor-contact backprojections on z=0 across u114-158, spread -2115..-2151, mean -2131). The built y=-3445 was 1.3 m away: the earlier pass measured the FACE of a different feature and the depth was typed.",
+   "why": "the visible pedestal carrying the far end of the 2995 mm worktop. Its y-DEPTH remains unmeasurable (occluded) - the 60 mm that was typed is gone; the depth is now derived to meet the desk it supports, and a leg may never be proud of its own top.",
+   "seen": "NOT FOUND at its built location. Its foot line projects to (108,764)-(168,758). Luminance column u=133, v=650..800 drifts 82->99 with NO step at v=761; row v=761, u=100..175 is flat 79..118 — bare herringbone. The real support is 76 px higher: a rounded-end pedestal whose floor contact traces at v=6",
+   "audit": "FIX"
+  },
+  {
+   "name": "lamp",
+   "c": [
+    -1479.8,
+    -4919.0,
+    801.4
+   ],
+   "s": [
+    220.0,
+    220,
+    640.7
+   ],
+   "value": 0.05,
+   "prov": "M(shade silhouette u1057-1080, v484-508, hard containment: no pixel left of u=1057) / DECLARED(the body below the shade is OCCLUDED in the reference by the bird sculpture and book stack, so it is modelled as the minimum envelope that stands the measured shade on the measured nightstand top 481 — one object, not a shade plus an invented post)",
+   "kind": "oct",
+   "cut": 80,
+   "seen": "shade silhouette u1057-1080 v484-508 in the reference; the body below is occluded by the bird sculpture and books",
+   "audit": "UNRESOLVED",
+   "why": "the bedside lamp, which is a real object in the reference and is switched OFF (a black cone at Ylin 0.008-0.020, no rim, no pool). It is ONE mass because the previous two-mass version invented `lamp_stem` — a bare post whose whole justification was 'carries shade' — and the owner spotted it immediately. What is known is the shade's silhouette and that the thing stands on the nightstand; the form between those two facts is declared, not claimed."
+  },
+  {
+   "name": "chair_seat",
+   "c": [
+    -3920.0,
+    -455.0,
+    225.0
+   ],
+   "s": [
+    600,
+    620,
+    450
+   ],
+   "value": 0.7,
+   "prov": "M(feet on floor, r2+r3 twice) / A(seat 450 vanity norm; C2 range 450-480)",
+   "kind": "oct",
+   "cut": 180,
+   "seen": "YES — a cream upholstered tub chair at u 155..258, v 490..637, standing on FOUR dark tapered splayed legs. Three foot contacts on z=0: (163,635)->(-4232,-978), (203,617)->(-3976,-461), (245,622)->(-3748,-724). Seat top z = 450.5 and the seat underside / leg top z = 297.5, both from (160,547) and (16",
+   "audit": "FIX"
+  },
+  {
+   "name": "chair_back",
+   "c": [
+    -3660.0,
+    -455.0,
+    615.0
+   ],
+   "s": [
+    80,
+    580,
+    330
+   ],
+   "value": 0.7,
+   "prov": "D(on seat; back top = old chair top 780 < desk 875, tucks per C2)",
+   "kind": "oct",
+   "cut": 35,
+   "parent": "chair_seat",
+   "seen": "PARTLY — the target's backrest is a single curved tub shell that wraps the back AND both arms, its top edge running (158,517) to (230,492); top z ~= 774 on the far-leg plane y=-461 (built 780, 6 mm).",
+   "audit": "FIX"
+  },
+  {
+   "name": "shelf_col_back",
+   "c": [
+    -4496.0,
+    -30.0,
+    1951.0
+   ],
+   "s": [
+    408.0,
+    60.0,
+    2152.0
+   ],
+   "value": 0.55,
+   "prov": "M(column-top edge fitted over 38 columns, v 122.9->128.9, backprojected on the y=-400 front plane -> 3027; the +6.0 px slope rules out the y=-60 plane). Agrees with the orphaned 'top z~3030' the deleted plinth had been carrying. Foot now RESTS ON the worktop (875) rather than on an invented base.",
+   "seen": "YES — the wood column, u ~65..150, v 122..~500 (its foot is hidden behind the worktop). Column top edge fitted over 38 columns: v=122.9 at u=76 rising monotonically to v=128.9 at u=148. That +6.0 px slope matches the y=-400 front plane's own +5.8 and rules out the y=-60 plane.",
+   "audit": "FIX"
+  },
+  {
+   "name": "shelf_board2",
+   "c": [
+    -4496.0,
+    -200.0,
+    1361.0
+   ],
+   "s": [
+    408.0,
+    400.0,
+    48.8
+   ],
+   "value": 0.58,
+   "prov": "M-px subpixel fits on face plane y=-400 (A-swept) — r5c: the target is an OPEN etagere (back panel + thin boards), not a cabinet with slots; owner C4: 'ชั้นวางยังแตกต่างกัน' after two builds from coarse crop reads",
+   "kind": "oct",
+   "cut": 170,
+   "seen": "YES — u 78..149, v 394..402. Fitted lower edge 1339.0 +/-1.0 and upper edge 1386.4 on the y=-400 plane over 27 columns: 2 mm and 1 mm from the build.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "shelf_board3",
+   "c": [
+    -4496.0,
+    -200.0,
+    1890.0
+   ],
+   "s": [
+    408.0,
+    400.0,
+    48.0
+   ],
+   "value": 0.58,
+   "prov": "M(lower edge 1866.3+/-0.6 on y=-400 over 27 columns). The previous fit grabbed the board's TOP edge: our 1915 equalled the target board's 1914. The three boards now sit on one 526.5 mm module (1339/1866/2392), which the reference holds to +/-1 mm and our old spacings broke at 578/470.",
+   "kind": "oct",
+   "cut": 170,
+   "seen": "YES but at the wrong height. The three shelf lines, each fitted on the y=-400 front plane over 27 independent columns: 1339.0 +/-1.0 (its top edge 1386.4), 1866.3 +/-0.6, 2392.4 +/-1.5. Spacings 527 and 526 — a single 526.5 mm module. Our board2 (1337..1385) and board4 (2385..2456) match to 2 and 7 ",
+   "audit": "FIX"
+  },
+  {
+   "name": "shelf_board4",
+   "c": [
+    -4496.0,
+    -200.0,
+    2420.3
+   ],
+   "s": [
+    408.0,
+    400.0,
+    70.9
+   ],
+   "value": 0.58,
+   "prov": "M-px subpixel fits on face plane y=-400 (A-swept) — r5c: the target is an OPEN etagere (back panel + thin boards), not a cabinet with slots; owner C4: 'ชั้นวางยังแตกต่างกัน' after two builds from coarse crop reads",
+   "kind": "oct",
+   "cut": 170,
+   "seen": "YES — u 78..149, v 217..241. Fitted lower edge 2392.4 +/-1.5 (7 mm from our 2385); upper band 2425..2455 straddles our 2456.",
+   "audit": "KEEP"
+  },
+  {
+   "name": "floor_planks",
+   "kind": "herringbone",
+   "c": [
+    -2350,
+    -4750,
+    3
+   ],
+   "s": [
+    4700,
+    9500,
+    6
+   ],
+   "value": 0.55,
+   "prov": "M(w=132.1+/-0.6, L=619.6+/-0.8, 45deg to the room axes, phase anchored on the target's own joint darkness; 20 independent line fits)",
+   "seen": "same region; 132.1 x 619.6 mm planks at 45 deg fitted from 20 independent joint lines, two families agreeing to 0.05 mm"
+  },
+  {
+   "name": "door_rev_near",
+   "c": [
+    -978.0,
+    -256.8,
+    957.1
+   ],
+   "s": [
+    6.0,
+    6.0,
+    1914.2
+   ],
+   "value": 0.3,
+   "prov": "M(the leaf's near edge, u=630.16/630.01/629.80 across three v bands)",
+   "seen": "u 629.8..630.2, v 330..540 - a dark minimum, which is what a shadow gap IS",
+   "audit": "NEW r14"
+  },
+  {
+   "name": "door_rev_far",
+   "c": [
+    -978.0,
+    -1132.5,
+    957.1
+   ],
+   "s": [
+    6.0,
+    6.0,
+    1914.2
+   ],
+   "value": 0.3,
+   "prov": "M(the leaf's far edge, u=685.0)",
+   "seen": "u ~685.0, v 330..540",
+   "audit": "NEW r14"
+  },
+  {
+   "name": "door_rev_head",
+   "c": [
+    -978.0,
+    -694.65,
+    1917.2
+   ],
+   "s": [
+    6.0,
+    881.7,
+    6.0
+   ],
+   "value": 0.3,
+   "prov": "M(head trim band v 300..316 -> z 2021..1914; this is its lower line)",
+   "seen": "v 300..316 at u 630..678, fitted dv/du=-0.1888 over 13 points",
+   "audit": "NEW r14"
+  },
+  {
+   "name": "door_handle",
+   "c": [
+    -1003.0,
+    -997.6,
+    953.4
+   ],
+   "s": [
+    56.0,
+    206.6,
+    107.0
+   ],
+   "value": 0.12,
+   "prov": "M(black lever blob u 669..683, v 452..468, backprojected on the leaf plane x=-974 -> y -894.3..-1100.9, z 900.0..1006.8; centre height 953 mm and 29 mm from the latch edge, both standard) / A(projection 56 mm off the leaf face - a lever's stand-off is not measurable at 14 px, so it is declared, not derived)",
+   "seen": "u 669..683, v 452..468 - the darkest pixels anywhere on that wall",
+   "why": "a flush white leaf in a white wall is invisible without it; the handle and the shadow gaps are the entire reason the target's door reads as a door and ours reads as nothing",
+   "audit": "NEW r14"
+  },
+  {
+   "name": "art_mat",
+   "c": [
+    -1773.5,
+    -32.5,
+    1466
+   ],
+   "s": [
+    685.0,
+    5.0,
+    966.0
+   ],
+   "value": 0.9,
+   "prov": "D(inset from artwork by the measured bar width 21 mm on all four sides and stood 2.5 mm proud of its face - nobody types a coordinate here, both come from the frame)",
+   "seen": "u 467.6..559.9, v 318.1..453.4 - the white mat inside the black bar",
+   "audit": "NEW r14"
+  },
+  {
+   "name": "door_wall_near",
+   "c": [
+    -925.0,
+    -129.9,
+    1551.0
+   ],
+   "s": [
+    100.0,
+    259.8,
+    3102
+   ],
+   "value": 0.82,
+   "prov": "D(the fin is UNCHANGED in extent - y 0..-1200, z 0..3102, thickness 100. What changed is that it now has an OPENING, and the opening's four edges are the leaf's own measured shadow gaps, not typed numbers.)",
+   "seen": "the white wall around the door, u 600..700, v 150..600",
+   "audit": "NEW r14 (door_wall split)"
+  },
+  {
+   "name": "door_wall_far",
+   "c": [
+    -925.0,
+    -1164.75,
+    1551.0
+   ],
+   "s": [
+    100.0,
+    70.5,
+    3102
+   ],
+   "value": 0.82,
+   "prov": "D(the fin is UNCHANGED in extent - y 0..-1200, z 0..3102, thickness 100. What changed is that it now has an OPENING, and the opening's four edges are the leaf's own measured shadow gaps, not typed numbers.)",
+   "seen": "the white wall around the door, u 600..700, v 150..600",
+   "audit": "NEW r14 (door_wall split)"
+  },
+  {
+   "name": "door_wall_head",
+   "c": [
+    -925.0,
+    -694.65,
+    2508.1
+   ],
+   "s": [
+    100.0,
+    869.7,
+    1187.8
+   ],
+   "value": 0.82,
+   "prov": "D(the fin is UNCHANGED in extent - y 0..-1200, z 0..3102, thickness 100. What changed is that it now has an OPENING, and the opening's four edges are the leaf's own measured shadow gaps, not typed numbers.)",
+   "seen": "the white wall around the door, u 600..700, v 150..600",
+   "audit": "NEW r14 (door_wall split)"
+  },
+  {
+   "name": "door_jamb_back",
+   "c": [
+    -925.0,
+    -694.65,
+    957.1
+   ],
+   "s": [
+    86.0,
+    869.7,
+    1914.2
+   ],
+   "value": 0.55,
+   "prov": "D(the reveal behind the leaf - the opening's own depth minus the leaf thickness. Without it the opening is a hole through to nothing and the leaf reads as a panel stuck on a wall.)",
+   "seen": "NOT VISIBLE at this camera: the leaf covers it. Built because an opening with nothing behind it renders as a void, which is the exact defect this round is fixing on the wall next to it.",
+   "audit": "NEW r14"
+  },
+  {
+   "name": "duvet",
+   "kind": "cloth_duvet",
+   "c": [
+    -2582.0,
+    -3350.5,
+    385.0
+   ],
+   "s": [
+    1954.0,
+    2669.0,
+    330.0
+   ],
+   "value": 0.9,
+   "cloth": {
+    "x0": -3555.0,
+    "y0": -4180.0,
+    "w": 1785.0,
+    "d": 2075.0,
+    "z": 550.0,
+    "band": 200.0,
+    "head": "x+",
+    "cell": 22.0,
+    "salt": 7,
+    "thickness": 18.0,
+    "collide_dist": 16.0,
+    "frames": 55,
+    "slack": 0.06,
+    "hem_min": null,
+    "bounds": [
+     -3615.0,
+     -4240.0,
+     100.0,
+     -1720.0,
+     -2045.0,
+     620.0
+    ],
+    "colliders": [
+     "bed_mattress",
+     "bed_platform",
+     "rug"
+    ],
+    "ripple": {
+     "axis": "x",
+     "wavelength_mm": 75.0,
+     "amp_mm": 7.0,
+     "jitter": 0.35,
+     "salt": 3
+    },
+    "fabric": "duvet",
+    "sim_surface": true
+   },
+   "prov": "M(head edge: crease where pillows sit on the duvet, 5 pts on z=545 -> d_head 240..347 mm from the headboard plane, edge fixed at x=-1770; foot: hem line (354,629)..(432,699) on x=-3394 -> z 216-227 = the hem rests ON the deck and the platform face stays OPEN, fall ~300; near: cascade to the floor, hem corner pts -> z 204/160/113/43, the foot and near hems both land ON THE DECK: fall 299 mm from mattress top 520 to deck 221, plus ~80 lying on it, so 380 mm past each mattress face. The floor-reaching cascade at the near-HEAD corner is a different feature at a different height and is not this sheet's job - r19 gave the whole sheet that corner's hem and it swallowed the platform) / A(far-side hang: self-occluded, UNMEASURABLE - fed 250 mm and declared; band 200: the target shows a 40-55 mm pressed roll, not a contrasting fold-back, so the band exists to give the solver a crease to settle, not to be seen at width)",
+   "seen": "the white cloth covering the whole mattress: head crease u 775-835 v 578-601, foot skirt u 354-432 v 629-699 with 2-3 deep creases, near cascade u 665-836 falling to the rug, far roll-over silhouette z 533-547 on y=-2715",
+   "audit": "ROUTE ค r21 (owner's call after the r20 R1 stop). The stop's own diagnosis was wrong about WHICH variable was stuck: it is not fold amplitude, it is MESH RESOLUTION. The target's folds measure ~75 mm (15.6 px at 4.7-5.0 mm/px on the bed top) and a 42 mm cell has a Nyquist wavelength of 84 mm - the mesh could not hold that fold at any slack, for any number of frames, which is why both refuted rungs failed the way they did. cell 22, frames 90, and the excess fabric now arrives as a directional ripple seed instead of as isotropic slack the ladder immediately halves."
+  },
+  {
+   "name": "pillow_L",
+   "c": [
+    -1730.0,
+    -3037.0,
+    755.0
+   ],
+   "s": [
+    180.0,
+    800.0,
+    420.0
+   ],
+   "value": 0.92,
+   "kind": "oct",
+   "cut": 60,
+   "tilt_deg": 22.0,
+   "prov": "M(the pillow run: P1 far-end bottom (675,553) -> y=-2637; total run 1610+/-150 = two ~800 mm shams; front bases on the duvet at x -1800..-1846 on z=545; tops z 860-930 vs headboard top 892-908 - white-on-white, +/-20; lean derived 20-25 deg) / A(thickness 180: a sham's loft, not measurable side-on)",
+   "seen": "far white sham, u ~675..815, leaning on the headboard",
+   "audit": "REBUILT r18 at measured span (the old 440-wide pair sat mid-bed on the taupe cushion's pixels)",
+   "why": "thickness 180 is a DECLARED stand-in, not a fabricated reading: the sham is seen face-on so its depth has no edge to fit; 180 is the loft the same sham class carried in PRJ-2026-002, and the frame constrains the value only through the lean contact, which the tilt already satisfies. The number is typed because the object cannot exist without SOME depth; what R10 forbids is typing it and calling it measured, which the prov does not."
+  },
+  {
+   "name": "pillow_R",
+   "c": [
+    -1730.0,
+    -3837.0,
+    755.0
+   ],
+   "s": [
+    180.0,
+    800.0,
+    420.0
+   ],
+   "value": 0.92,
+   "kind": "oct",
+   "cut": 60,
+   "tilt_deg": 22.0,
+   "prov": "M(same run: P2 body near end -4250+/-150, fold point (931,551) is the FLAP not the body; the sham flap overhangs the mattress corner, tip (874,611) dangling to z~472-485) / A(the flap itself is cloth detail this analytic body does not carry - declared)",
+   "seen": "near white sham, u ~815..945, sham flap dangling at the bed corner",
+   "audit": "REBUILT r18 at measured span"
+  },
+  {
+   "name": "cushion_taupe",
+   "c": [
+    -1905.0,
+    -3446.0,
+    745.0
+   ],
+   "s": [
+    120.0,
+    668.0,
+    400.0
+   ],
+   "value": 0.6,
+   "kind": "oct",
+   "cut": 55,
+   "tilt_deg": 37.0,
+   "prov": "M(its own four corners on the leaning face plane x=-1950+0.769(z-545): top edge 668 mm at z 860-864, slant height 382-396, lean 37 deg - steeper than the shams it rests on; piping luma 13-26 vs face 131-161, the darkest bedding feature) / A(thickness 120)",
+   "seen": "the taupe accent cushion in front of the far sham, corners (739,500) (818,513) (688,562) (785,582)",
+   "audit": "NEW r18 - existed in the reference since round 1, never in the spec"
+  },
+  {
+   "name": "bolster",
+   "c": [
+    -1551.0,
+    -4111.0,
+    625.0
+   ],
+   "s": [
+    165.0,
+    400.0,
+    165.0
+   ],
+   "value": 0.92,
+   "kind": "oct",
+   "cut": 78,
+   "axis": "y",
+   "prov": "M(end-cap ellipse u 903-949 v 563-606: D=165+/-8 by the rest-z sweep 530/545/560 -> 168/164/161; cap plane y_end -4311 at rest z 545; its right limb reaches x=-1469+/-25, pressed against the headboard) / A(length: far end fully occluded behind P2 and its flap - UNMEASURABLE, >=250 visible; 400 declared)",
+   "seen": "white bolster roll, end cap toward camera at the bed's near-head corner, on the drape-corner pile",
+   "audit": "REBUILT r18: cap position + diameter measured; old one was 165 short and mid-bed",
+   "why": "length 400 is a DECLARED stand-in: the far end is occluded behind P2 and its flap, >=250 mm is visible, and no choice above 250 changes a single rendered pixel because the occluder is exactly what hides it. 400 is typed so the mass closes; the reading itself stays UNMEASURABLE and says so."
+  },
+  {
+   "kind": "cloth_duvet",
+   "value": 0.6,
+   "name": "throw_woven",
+   "c": [
+    -2700.0,
+    -3150.0,
+    560.0
+   ],
+   "s": [
+    500.0,
+    2600.0,
+    60.0
+   ],
+   "cloth": {
+    "x0": -2950.0,
+    "y0": -4450.0,
+    "w": 500.0,
+    "d": 2600.0,
+    "z": 585.0,
+    "cell": 22.0,
+    "salt": 11,
+    "thickness": 10.0,
+    "collide_dist": 10.0,
+    "frames": 55,
+    "slack": 0.05,
+    "fabric": "knit",
+    "hem_min": null,
+    "bounds": [
+     -3050.0,
+     -4520.0,
+     -20.0,
+     -2300.0,
+     -1980.0,
+     700.0
+    ],
+    "ripple": {
+     "axis": "y",
+     "wavelength_mm": 95.0,
+     "amp_mm": 6.0,
+     "jitter": 0.35,
+     "salt": 11
+    },
+    "colliders": [
+     "duvet",
+     "bed_mattress",
+     "bed_platform",
+     "rug"
+    ],
+    "sim_surface": true
+   },
+   "prov": "M(the coarse fringed throw: the stack's head-side edge on z=555 at x -2366..-2488, its own share of the ~770 mm band is 450-500 mm; near tail solves to z=0 only for planes y -4300..-4400, i.e. it swings ~150-250 mm proud of the platform face and PUDDLES ON THE RUG; far end crests z 624-656 on y=-2715, a loose rolled bunch) / A(fringe itself not modelled - declared)",
+   "seen": "the pale woven herringbone throw, u ~575-665 on the near tail, fringe tips (608,796) and (632,798)",
+   "audit": "NEW r23"
+  },
+  {
+   "kind": "cloth_duvet",
+   "value": 0.6,
+   "name": "throw_velvet",
+   "c": [
+    -3080.0,
+    -3150.0,
+    600.0
+   ],
+   "s": [
+    300.0,
+    2500.0,
+    50.0
+   ],
+   "cloth": {
+    "x0": -3233.0,
+    "y0": -4400.0,
+    "w": 300.0,
+    "d": 2500.0,
+    "z": 625.0,
+    "cell": 18.0,
+    "salt": 5,
+    "thickness": 8.0,
+    "collide_dist": 9.0,
+    "frames": 55,
+    "slack": 0.04,
+    "fabric": "silk",
+    "hem_min": null,
+    "bounds": [
+     -3320.0,
+     -4470.0,
+     150.0,
+     -2820.0,
+     -1980.0,
+     720.0
+    ],
+    "ripple": {
+     "axis": "y",
+     "wavelength_mm": 120.0,
+     "amp_mm": 4.0,
+     "jitter": 0.3,
+     "salt": 5
+    },
+    "colliders": [
+     "throw_woven",
+     "duvet",
+     "bed_mattress",
+     "bed_platform"
+    ]
+   },
+   "prov": "M(foot-side edge on z=555 at x -3165..-3233 = 157-225 mm head-ward of the mattress foot arris; velvet band 250-330 mm of the bed's length; near hem (500,726),(520,724),(545,722) on the platform plane y*=-4177 -> z 206-208, i.e. it stops just below the deck at 221 and does NOT reach the floor; far lip z 474-486 on y=-2715, ~60-70 mm below the local duvet top) / A(piping not modelled)",
+   "seen": "the smooth taupe runner with piped edges, u ~495-575 on its near tail, crossing the bed at v 560-600",
+   "audit": "NEW r23"
+  }
+ ],
+ "landmarks_3d": {
+  "corner_ceiling": [
+   0,
+   0,
+   3102
+  ],
+  "art_TL": [
+   -2137,
+   0,
+   1970
+  ],
+  "art_TR": [
+   -1410,
+   0,
+   1970
+  ],
+  "art_BL": [
+   -2137,
+   0,
+   962
+  ],
+  "art_BR": [
+   -1410,
+   0,
+   962
+  ],
+  "ph_TL": [
+   -4292,
+   0,
+   2479
+  ],
+  "ph_TR": [
+   -2625,
+   0,
+   2479
+  ],
+  "sill_L": [
+   -4292,
+   0,
+   0
+  ],
+  "ward_junction_far": [
+   -1290,
+   -3000,
+   2920
+  ],
+  "ward_groove_far": [
+   -1290,
+   -3018,
+   2560
+  ],
+  "door_head_far": [
+   -976,
+   -175,
+   1990
+  ],
+  "door_head_near": [
+   -976,
+   -1020,
+   1990
+  ],
+  "plat_foot_corner": [
+   -3555,
+   -4145,
+   0
+  ],
+  "dl_1": [
+   -4129,
+   -2465,
+   3102
+  ],
+  "dl_2": [
+   -3851,
+   -717,
+   3102
+  ],
+  "dl_3": [
+   -1778,
+   -706,
+   3102
+  ],
+  "dl_4": [
+   -1788,
+   -2456,
+   3102
+  ],
+  "plat_top_foot": [
+   -3555.0,
+   -3454.1,
+   221.6
+  ],
+  "mat_foot_contact": [
+   -3391.3,
+   -2932.0,
+   221.0
+  ],
+  "band_top_far": [
+   -1290.0,
+   -4596.1,
+   937.1
+  ],
+  "desk_top_end": [
+   -4576.3,
+   -3445.0,
+   877.6
+  ],
+  "pier_foot": [
+   -4428.4,
+   -3438.5,
+   0.0
+  ],
+  "console_junction": [
+   -4535.4,
+   -3445.0,
+   754.5
+  ]
+ },
+ "landmarks_px": {
+  "corner_ceiling": [
+   730.6,
+   175.8
+  ],
+  "art_TL": [
+   466.1,
+   314.1
+  ],
+  "art_TR": [
+   561.1,
+   316.7
+  ],
+  "art_BL": [
+   466.1,
+   455.4
+  ],
+  "art_BR": [
+   561.1,
+   454.0
+  ],
+  "ph_TL": [
+   147.5,
+   226.7
+  ],
+  "ph_TR": [
+   399.0,
+   239.6
+  ],
+  "sill_L": [
+   147.8,
+   608.6
+  ],
+  "dl_1": [
+   199.4,
+   13.3
+  ],
+  "dl_2": [
+   227.4,
+   110.4
+  ],
+  "dl_3": [
+   547.8,
+   137.9
+  ],
+  "dl_4": [
+   662.1,
+   65.5
+  ],
+  "plat_top_foot": [
+   368.2,
+   682.7
+  ],
+  "mat_foot_contact": [
+   380.8,
+   653.5
+  ],
+  "band_top_far": [
+   1041.0,
+   507.3
+  ],
+  "desk_top_end": [
+   90.0,
+   524.7
+  ],
+  "pier_foot": [
+   133.0,
+   761.0
+  ],
+  "console_junction": [
+   102.0,
+   558.0
+  ]
+ },
+ "judge_lines": {
+  "note": "held out of every derivation above; the build is scored against them (rule: a metric that can fail)",
+  "rev_lo_set": [
+   "rev_795_lo",
+   "rev_874_lo",
+   "rev_950_lo",
+   "rev_1043_lo"
+  ],
+  "others": [
+   "tv_right",
+   "chair_backtop"
+  ]
+ },
+ "render": {
+  "diffuse_bounces": 8,
+  "max_bounces": 12
+ },
+ "light": {
+  "rig": "trn002_light.plan()",
+  "note": "BRACKET k5b: k3 aim + spread 75 (does spread still steer the wall gradient at the NEW aim?)",
+  "power_w": {
+   "KEY_front_left": 62.0
+  },
+  "rot_deg": {
+   "KEY_front_left": [
+    69.05,
+    0.0,
+    -8.51
+   ]
+  },
+  "spread_deg": {
+   "KEY_front_left": 75.0
+  }
+ },
+ "declared_gaps": {
+  "duvet": "RETURNED r17 as the lane's first simulated cloth (was: removed after R1 stop-loss as a hand-modelled box, which R8 forbids). The class distinction that licenses this: what failed in TRN-001 was closed-tube pinned garments; a duvet is an open flat sheet on rigid colliders, the solver's proven class (PRJ-2026-002 folded_sheet hotel roll, every simulated bed cloth passed the owner's eye there). Recipe inherited whole from that lane; feedstock footprint here is MEASURED from the target through the solved camera.",
+  "lamp_stem": "REMOVED (audit + owner's own catch). A bare post whose provenance read 'carries shade'. The audit measured hard containment for the lamp: no pixel may fall left of u=1057, and the stem projects to u 1061-1075 with nothing like it in the reference. The shade is retained; what held it up was invented. R10.",
+  "shelf_col_base": "REMOVED (audit). An 818 mm plinth under the etagere that is 100% occluded in BOTH frames, invented so the boards would have something beneath them - the lamp_stem pattern exactly. Its own prov quoted 'top z~3030', a number belonging to the COLUMN, pasted onto a base whose top is 818. The carcass now runs continuously from the worktop, which is what the reference shows.",
+  "artwork_relief": "The target's print is an embossed letterform panel. Not built - a styling-round ticket. What r14 does build is the FRAME, because the artwork's own `seen` line measured a 21 mm black bar at luma 28-33 against a 175-187 wall (a 6:1 contrast) and the mass had been wearing a 0.78-albedo white the whole time. Measured and never built is its own defect class, and this frame and the door's shadow gaps are both instances of it."
+ },
+ "audit_conflicts": {
+  "bed_width": "RESOLVED r16 by the method agreed at r14: fit the platform's own far long side and nothing else. Width = 2075 +/- 40 (near -4180, far -2105+/-20). Both priors die: 1595's anchors were a fabric silhouette that fails the plane test everywhere and a headboard end fitted at the room corner's own pixel column; the audit's 2100 came from an assumed rounded-corner plan and lands 50 mm long. Third constraint closes green: two measured 800 mm pillows need 1640 and the mattress is now 1719."
+ },
+ "STATUS": "r14 = spec_r11 geometry with the right-wall solve INTACT and now confirmed to 0.5 px, plus: the alcove wall turned around (its door was buried inside it), an OPENING cut for that door, the shadow gaps and handle that make a flush white leaf legible, and the artwork's measured black frame."
+}

@@ -327,6 +327,51 @@ def ladder(ours_png, target_png, mask_png, mask_json, erode_px=3, min_px=250,
     return out
 
 
+def level_and_shape(lad, rows=None):
+    """Split the ladder into LEVEL and SHAPE — the two numbers it conflates.
+
+    EARNED BY BEING WRONG, r24. Every `ladder_error` is divided by ONE chosen
+    reference object, so a reference that is itself mis-lit taxes every other
+    row by the same factor. r24 re-aimed the key, the back wall (the reference)
+    came up, and twenty-one rows fell to ~0.72 together — which reads in the
+    table as twenty-one regressions and is in fact ONE. The round before it, the
+    same instrument was steered by a hand-picked seven-object subset, which is
+    the other half of the same defect: a metric whose membership or whose
+    divisor the builder chooses can be moved without the light moving.
+
+      LEVEL  px-weighted geometric mean of ladder_error. How far the ROOM sits
+             from the reference object's own brightness. One scalar, one cause.
+      SHAPE  px-weighted spread about that mean. INVARIANT to the choice of
+             reference — pick any other object and every log shifts by the same
+             constant, which the mean removes. This is the light's real score.
+
+    Rows are weighted by pixel count because a 155,000-px wall and a 400-px
+    shelf board are not equal evidence, and untrustworthy rows are dropped by
+    the instrument's OWN verdicts (never by hand): a silhouette the alignment
+    check calls displaced is measuring somebody else's surface, and a row whose
+    target side is far more dispersed than ours is measuring content we do not
+    model. `rows` pins the membership when comparing two frames, so the metric
+    cannot rank a change by which rows it decided to drop."""
+    L, W, used, dropped = [], [], [], []
+    for k, v in lad["rows"].items():
+        e = v.get("ladder_error")
+        if not e or (rows is not None and k not in rows):
+            continue
+        if v["alignment"].startswith("OFF BY") or (v.get("spread_ratio") or 0) > 2.0:
+            dropped.append(k)
+            continue
+        L.append(np.log(e))
+        W.append(float(v["n_px"]))
+        used.append(k)
+    if len(L) < 4:
+        return None
+    L, W = np.array(L), np.array(W)
+    mu = float((W * L).sum() / W.sum())
+    return {"level": float(np.exp(mu)),
+            "shape": float(np.sqrt((W * (L - mu) ** 2).sum() / W.sum())),
+            "n": len(L), "used": sorted(used), "dropped": sorted(dropped)}
+
+
 def frame_range(path):
     l = _lum(_linear(path)).ravel()
     p = np.percentile(l, [1, 5, 50, 95, 99])
@@ -361,6 +406,14 @@ def main():
     print(f"RANGE          {'ours':>12s} {'target':>12s}")
     for k in ("p1", "p5", "p50", "p95", "p99", "range_99_1"):
         print(f"  {k:11s} {ro[k]:12.4f} {rt[k]:12.4f}")
+    ls = level_and_shape(lad)
+    if ls:
+        print(f"\nLEVEL {ls['level']:.3f}  (the room against {lad['reference']}; "
+              f"1.00 = the reference is lit like the rest of the room)")
+        print(f"SHAPE {ls['shape']:.4f}  (n={ls['n']} trustworthy rows, px-weighted; "
+              f"0 = perfect, and NO choice of reference can move this)")
+        if ls["dropped"]:
+            print(f"      dropped as untrustworthy: {', '.join(ls['dropped'])}")
     print(f"\nLADDER (relative to {lad['reference']}; ladder_error 1.00 = our "
           f"light puts this surface at the target's own relative brightness)")
     print(f"  {'object':22s} {'n_px':>7s} {'ours_rel':>9s} {'tgt_rel':>9s} "

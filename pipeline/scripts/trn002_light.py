@@ -62,7 +62,50 @@ KEY = {
     # at the floor, which is the signature of bounce off the rug and the bed.
     # So the key has to light the floor and the bedding, and the wall has to be
     # paid for out of what they return.
-    "rot_deg": (58.0, 0.0, -14.0),
+    # AIM — re-solved r24, and this is the round's whole mechanism. The rig had
+    # carried (58, 0, -14) since the first build, and nobody ever asked where
+    # that beam LANDS. It lands on the floor at (-2371, -4973): the bench sits
+    # at (-2738, -5182). THE KEY WAS AIMED AT THE OBJECT THAT WAS BLOWING OUT —
+    # 18,192 of our 24,704 clipped pixels were on that one mass, and every near
+    # white surface ran 1.3-2.4x its target brightness relative to the wall
+    # while the far half of the room was paid for out of bounce alone.
+    #
+    # r19 bracketed SPREAD and POWER against the wall gradient and never touched
+    # aim, because the defect it was chasing (the gradient's SIGN) is a spread
+    # question. A knob nobody brackets is a decision nobody made — the same
+    # shape as the default that "nobody set" in trn001.
+    #
+    # The r24 bracket, all on the quick rung, judged on THREE metrics that are
+    # each within-frame ratios (so the legs' different wattages cannot flatter
+    # any of them): NEAR = median ladder_error over bench/platform/mattress/
+    # pillows/headboard/rug (1.00 = our light puts them at the target's own
+    # brightness relative to the back wall); WALL = the back wall's vertical
+    # gradient, %/m upward, target -8.6; CLIP = frame share above 0.99, target
+    # 0.03%.
+    #                                   NEAR   WALL    CLIP
+    #   r23 as shipped                  1.382  -1.89   2.80    the defect
+    #   key pushed 4 m back its axis    1.864 +14.50   9.59    REFUTED
+    #   key pushed 9 m back its axis    1.860 +15.66   9.97    REFUTED
+    #   re-aim floor hit y=-3704        1.279 -10.64   5.85
+    #   re-aim floor hit y=-2500        1.070  -8.16   4.64
+    #     same aim, spread 75           1.056  -1.59   3.97
+    #     same aim, spread 50           1.134 -16.26   6.01
+    #   re-aim floor hit y=-1500        0.987  -6.78   3.95
+    #   ADOPTED: y=-1500, spread 57     0.995  -7.66   1.09
+    #
+    # PUSHING THE KEY BACK IS REFUTED, and it was my first hypothesis: if the
+    # near field is hot, inverse-square says move the source away. It made every
+    # metric worse. Moving it back along its own axis also moves it UP and OUT
+    # of the room, and from up there it rakes the back wall directly — the exact
+    # +10%/m defect r19 spent a bracket killing. The lever was never the source's
+    # DISTANCE; it was where the beam was pointing.
+    #
+    # The two knobs turned out to separate cleanly, which is why this converged
+    # in three brackets: AIM is the coarse knob for the near/far ratio, SPREAD
+    # is the fine knob for the wall gradient (0.587 %/m per degree, monotone,
+    # measured at the new aim rather than assumed from r19's — a knob's
+    # sensitivity is not portable across another knob's move).
+    "rot_deg": (71.71, 0.0, -7.34),
     # Beam SPREAD — solved r19, and it is the wall-gradient SIGN's own knob.
     # 180 = a bare emitting rectangle (every point radiates a full hemisphere),
     # which is what this rig had implicitly — and a 3x2 m card at spread 180
@@ -86,7 +129,10 @@ KEY = {
     # Residual, named: -1.9 vs the target's -8.6 — right sign, 22% of the
     # magnitude. The rest likely lives in bounce strength (rug/bedding albedo
     # and the key's floor aim), a next-session solve, not a tonight guess.
-    "spread_deg": 60.0,
+    # 60 -> 57 (r24): the sign is r19's finding and stands, but the MAGNITUDE
+    # moved when the aim did, and the fine trim is 3 degrees. See the aim block
+    # above for the bracket that measured 0.587 %/m per degree at the new aim.
+    "spread_deg": 57.0,
     # 165 W, bracketed on the quick rung against the target's own histogram
     # (three-point sweep after the strip/world clipping was fixed): p50 0.363
     # vs 0.372, p95 0.617 vs 0.636. It is an EXPOSURE match, not a physical
@@ -95,7 +141,18 @@ KEY = {
     # 42 W at spread 60 (was 98 at spread 180): the exposure match moved with
     # the spread — see the bracket table above; p50 0.34 vs target 0.37 at this
     # point, the small deficit rides with the residual slope item.
-    "power_w": 42.0, "color": (1.000, 0.958, 0.912),
+    # 42 -> 34.8 W (r24). Aiming the beam deeper into the room puts it on more
+    # of what the camera sees, so the same watts return a brighter frame; this
+    # is the exposure re-match, not a new claim about the source.
+    # DERIVED, NOT GUESSED, and it carries a rung correction: the bracket ran on
+    # the quick rung, and quick reads p50 ~11% LOWER than full at identical
+    # power (64 vs 128 samples, half res, denoiser). Cross-checked two ways —
+    # r23 full 42 W -> p50 0.3237 against k0b quick 48.5 W -> 0.3376, and k8
+    # quick 41.5 W -> 0.4016 — both give full/quick = 1.107. Setting power from
+    # a quick gain without that factor would have landed the full frame 11% hot,
+    # which is most of the clipping budget. A metric measured on one rung does
+    # not transfer to another without its own calibration.
+    "power_w": 34.8, "color": (1.000, 0.958, 0.912),
     "prov": "A(inferred: the frame shows the gradient, never the emitter; a "
             "glazed wall, an HDRI portal and a fill card all predict it)",
 }
