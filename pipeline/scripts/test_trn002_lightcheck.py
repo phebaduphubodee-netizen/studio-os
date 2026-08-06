@@ -178,3 +178,82 @@ def test_pinned_membership_beats_self_selection():
 
 def test_too_few_rows_returns_nothing_rather_than_a_number():
     assert LC.level_and_shape({"rows": {"a": _row(1.0), "b": _row(1.1)}}) is None
+
+
+# ---- contact_profile: the test that validates itself -------------------------
+
+import numpy as _np
+
+_CAM = {"x_mm": 0.0, "y_mm": -8000.0, "z_mm": 1500.0, "yaw_deg": 0.0,
+        "focal_mm": 38.841, "shift_x": 0.0, "shift_y": 0.0}
+_WH = (400, 300)
+_FOOT = ((0.0, -3000.0), (2000.0, 2000.0))
+_BANDS = ((0, 150), (150, 300), (300, 600))
+_REF = (600, 1400)
+
+
+def _synthetic(field):
+    """A floor filling the frame, id 1, shaded by `field(x_mm, y_mm)`.
+
+    The object's own footprint is punched OUT of the floor id, because in a real
+    frame those pixels belong to the object, not to the surface it stands on.
+    Leaving them in is what made the first cut of this test return 1.000 on both
+    faces: the whole footprint interior sits at d=0 and averages the field."""
+    import trn002_geom as G
+    (cx, cy), (sx, sy) = _FOOT
+    lum = _np.zeros((_WH[1], _WH[0]), dtype=_np.float32)
+    ids = _np.ones((_WH[1], _WH[0]), dtype=_np.int32)
+    for v in range(_WH[1]):
+        for u in range(_WH[0]):
+            p = G.backproject(_CAM, (u + .5, v + .5), ("z", 6.0), _WH)
+            if (p is None or p[1] > 0 or p[1] < -7000
+                    or (abs(p[0] - cx) < sx / 2 and abs(p[1] - cy) < sy / 2)):
+                ids[v, u] = 0
+            else:
+                lum[v, u] = field(p[0], p[1])
+    return lum, ids
+
+
+def test_a_directional_gradient_splits_the_two_faces_opposite_ways():
+    """The self-validation. A pure ramp in x is brighter on one side of the
+    object and dimmer on the other, so the -x and -y faces MUST disagree —
+    which is how this test tells a beam apart from an occlusion."""
+    lum, ids = _synthetic(lambda x, y: 1.0 + 0.00020 * x)
+    out = LC.contact_profile(lum, ids, 1, _CAM, _FOOT, wh=_WH, min_px=20,
+                             bands=_BANDS, ref_band=_REF, erode_px=0)
+    a, b = out["-x"], out["+x"]
+    assert a and b, (a, b)
+    assert (a[0] - 1.0) * (b[0] - 1.0) < 0, (a[0], b[0])
+
+
+def test_a_radial_dip_at_the_edge_darkens_both_faces():
+    """What occlusion looks like: a function of distance from the object only."""
+    def f(x, y):
+        d = max(abs(x) - 1000.0, 0.0, abs(y + 3000.0) - 1000.0)
+        return 0.4 + 0.6 * min(d / 600.0, 1.0)
+    lum, ids = _synthetic(f)
+    out = LC.contact_profile(lum, ids, 1, _CAM, _FOOT, wh=_WH, min_px=20,
+                             bands=_BANDS, ref_band=_REF, erode_px=0)
+    # -y is legitimately absent: the fixture camera is level at z=1500 with a
+    # 19.2 deg half-FOV, so the floor between it and the object falls below the
+    # frame. A face with no pixels must report None, never a number.
+    assert out["-y"] is None, out["-y"]
+    for face in ("-x", "+x", "+y"):
+        assert out[face][0] < 0.75, (face, out[face])
+        assert out[face][0] < out[face][2], (face, out[face])
+
+
+def test_a_flat_field_reports_no_contact_effect():
+    lum, ids = _synthetic(lambda x, y: 0.5)
+    out = LC.contact_profile(lum, ids, 1, _CAM, _FOOT, wh=_WH, min_px=20,
+                             bands=_BANDS, ref_band=_REF, erode_px=0)
+    for face, vals in out.items():
+        assert vals is None or all(abs(v - 1.0) < 1e-6 for v in vals
+                                   if v is not None), (face, vals)
+
+
+def test_a_band_with_too_few_pixels_is_None_rather_than_a_number():
+    lum, ids = _synthetic(lambda x, y: 0.5)
+    out = LC.contact_profile(lum, ids, 1, _CAM, _FOOT, wh=_WH, min_px=10**6,
+                             bands=_BANDS, ref_band=_REF, erode_px=0)
+    assert all(v is None for v in out.values()), out

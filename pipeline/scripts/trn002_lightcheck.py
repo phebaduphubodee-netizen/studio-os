@@ -327,6 +327,82 @@ def ladder(ours_png, target_png, mask_png, mask_json, erode_px=3, min_px=250,
     return out
 
 
+def contact_profile(lum, ids, obj_id, cam, foot, others=(), faces=True,
+                    bands=((0, 25), (25, 50), (50, 100), (100, 150)),
+                    ref_band=(150, 300), plane_z=6.0, wh=(1080, 821), min_px=50,
+                    erode_px=2):
+    """How a floor surface behaves as it approaches an object standing on it.
+
+    THREE FORMULATIONS OF THIS MEASUREMENT DISSOLVED BEFORE THIS ONE HELD, and
+    each failed in a way worth keeping:
+
+      1. Raw distance bins, each frame over its own far bin. Reported the target
+         at 0.44 and ours at 1.35 — but "distance from the object" is not
+         independent of "position in the room", and the key has its own gradient
+         across the floor. It was measuring the beam.
+      2. Fit that gradient on the far pixels and take the residual. The target's
+         fit came out at 2.67x per metre; extrapolating a slope that steep into
+         the contact zone invents most of the answer.
+      3. THIS. Split by WHICH FACE the pixel approaches and normalise each face
+         to its own far band. No fit, no model of the light, and it VALIDATES
+         ITSELF: a single directional gradient must push the two faces OPPOSITE
+         ways, because one edge is up-beam and the other down-beam, while
+         occlusion must darken BOTH. Run against a direct-light-only render it
+         returned -y 0.849 / -x 1.230 — opposite, exactly as it must.
+
+    `foot` = (centre, size) of the object in plan, mm. `others` = the same for
+    everything else standing on the surface; a pixel is only charged to `foot`
+    if it is nearer to it than to any of them."""
+    import trn002_geom as _G
+    c, s = foot
+    # EROSION IS NOT FREE HERE, unlike everywhere else in this file. The pixels
+    # it removes are the ones nearest the object — exactly the measurement's
+    # subject — so it biases every frame toward LESS contact darkening. It stays
+    # because an un-eroded silhouette carries the object's own antialiased edge,
+    # which is far brighter than the contact; it is a parameter so the bias is a
+    # choice, and any band narrower than a few px must be read knowing this.
+    m = erode(ids == obj_id, erode_px) if erode_px else (ids == obj_id)
+    ys, xs = np.nonzero(m)
+    sc = wh[0] / float(lum.shape[1])
+    P = np.array([(_G.backproject(cam, ((u + .5) * sc, (v + .5) * sc),
+                                  ("z", plane_z), wh) or (np.nan,) * 3)
+                  for u, v in zip(xs, ys)])
+    ok = np.isfinite(P[:, 0])
+    P, ys, xs = P[ok], ys[ok], xs[ok]
+    dx = np.maximum(np.abs(P[:, 0] - c[0]) - s[0] / 2.0, 0.0)
+    dy = np.maximum(np.abs(P[:, 1] - c[1]) - s[1] / 2.0, 0.0)
+    d = np.hypot(dx, dy)
+    oth = np.full(len(P), np.inf)
+    for cc, ss in others:
+        oth = np.minimum(oth, np.hypot(
+            np.maximum(np.abs(P[:, 0] - cc[0]) - ss[0] / 2.0, 0.0),
+            np.maximum(np.abs(P[:, 1] - cc[1]) - ss[1] / 2.0, 0.0)))
+    # FACES ARE SIGNED, and the synthetic ramp is what forced that. A first cut
+    # split on "which axis dominates", so the -x bucket held the rug on BOTH
+    # sides of the object; a gradient symmetric about it then cancelled to
+    # exactly 1.000 on both faces and the test read as "no effect". In this
+    # scene only two sides of the platform are visible so it happened to work,
+    # which is precisely how a broken instrument survives — by being run on the
+    # one input that hides the break.
+    side = {"-y": (dy > dx) & (P[:, 1] < c[1]), "+y": (dy > dx) & (P[:, 1] >= c[1]),
+            "-x": (dx >= dy) & (P[:, 0] < c[0]), "+x": (dx >= dy) & (P[:, 0] >= c[0])}
+    out = {}
+    for face, sel in (sorted(side.items()) if faces
+                      else (("all", np.ones(len(d), bool)),)):
+        k0 = (d >= ref_band[0]) & (d < ref_band[1]) & (oth > d) & sel
+        if k0.sum() < min_px:
+            out[face] = None
+            continue
+        ref = float(np.median(lum[ys[k0], xs[k0]]))
+        vals = []
+        for lo, hi in bands:
+            k = (d >= lo) & (d < hi) & (oth > d) & sel
+            vals.append(float(np.median(lum[ys[k], xs[k]]) / ref)
+                        if k.sum() >= min_px and ref > 1e-9 else None)
+        out[face] = vals
+    return out
+
+
 def level_and_shape(lad, rows=None):
     """Split the ladder into LEVEL and SHAPE — the two numbers it conflates.
 
