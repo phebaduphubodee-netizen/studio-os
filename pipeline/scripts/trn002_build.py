@@ -198,17 +198,35 @@ def _cloth_duvet(m, built, mat):
     x1 = (p["x0"] + p["w"]) * MM          # head edge — measured, stays fixed
     y1 = (p["y0"] + p["d"]) * MM          # far edge — declared, stays fixed
     w0, d0 = p["w"] * MM, p["d"] * MM
-    colliders = [built[n] for n in p["colliders"]]
+    colliders = []
+    for n in p["colliders"]:
+        ob = built.get(n)
+        if ob is None:
+            # a sim-surface proxy from an earlier cloth in the stack
+            import bpy as _b
+            ob = _b.data.objects.get(f"{n}__simsrf")
+            if ob is None:
+                raise KeyError(f"{m['name']}: collider '{n}' not built and no "
+                               f"'{n}__simsrf' proxy — bake order wrong?")
+        colliders.append(ob)
     bounds = tuple(v * MM for v in p["bounds"])
 
     def build(scale, sl):
         # the ladder lengthens the FALL sides: head and far edges hold their
         # measured/declared lines while the foot and near cascade gain fabric
         w, d = w0 * scale, d0 * scale
-        vs, fs = softgoods.folded_sheet(
-            x1 - w, y1 - d, w, d, p["z"] * MM,
-            band=p["band"] * MM, head=p["head"], cell=p["cell"] * MM,
-            salt=p.get("salt", 0))
+        if p.get("band"):
+            vs, fs = softgoods.folded_sheet(
+                x1 - w, y1 - d, w, d, p["z"] * MM,
+                band=p["band"] * MM, head=p["head"], cell=p["cell"] * MM,
+                salt=p.get("salt", 0))
+        else:
+            # a THROW has no turned-back head fold — it is a plain rectangle
+            # laid across the bed. Same rig otherwise, so the two cloths cannot
+            # drift into two recipes.
+            vs, fs = softgoods.flat_sheet(
+                x1 - w, y1 - d, w, d, p["z"] * MM,
+                cell=p["cell"] * MM, salt=p.get("salt", 0))
         # FOLD SEED (route ค, owner's call 2026-08-05). The cell must be fine
         # enough to hold the target's ~75 mm fold FIRST — at 42 mm the mesh's
         # Nyquist wavelength is 84 mm and no amount of slack or frames can put
@@ -231,7 +249,12 @@ def _cloth_duvet(m, built, mat):
             frames=p.get("frames", 55), fabric=p.get("fabric", "linen"),
             mat=mat if mat is not None else _clay(m["value"]),
             thickness=p["thickness"] * MM, slack=sl,
-            collide_dist=p["collide_dist"] * MM)
+            collide_dist=p["collide_dist"] * MM,
+            # sim_surface leaves a hidden SINGLE-SHELL proxy for the next cloth
+            # in the stack. Cloth-on-cloth law (drape.py:209-215): a sheet baked
+            # against a SOLIDIFIED sheet tunnels between its two shells and
+            # renders as mottled cloth-through-cloth at ANY collide distance.
+            sim_surface=p.get("sim_surface", False))
 
     # hem_min is DELIBERATELY OFF for this sheet, and that is a correction of
     # mechanism rather than of a number. search_bake's hem constraint exists for

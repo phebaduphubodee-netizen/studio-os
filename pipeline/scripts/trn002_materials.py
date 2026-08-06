@@ -93,6 +93,7 @@ EXACT = {
     "duvet_top": "linen_white", "duvet_drape": "linen_white",
     "pillow_L": "linen_white", "pillow_R": "linen_white", "bolster": "linen_white",
     "cushion_taupe": "fabric_taupe",
+    "throw_velvet": "velvet_taupe", "throw_woven": "woven_oat",
     # It IS oak, and the r6 pass that renamed it travertine was wrong — see the
     # PALETTE row. Grain runs VERTICALLY here (fine dense staves, top to bottom).
     "ward_band": "veneer_oak",
@@ -238,6 +239,15 @@ PALETTE = {
     # lin (0.357,0.285,0.222); over the wall reference at 0.80 that is albedo
     # (0.64,0.59,0.52) - a warm pale taupe, darker in B the way linen mixes are.
     "fabric_taupe":      ((0.638, 0.588, 0.519), 0.92, 0.0, "rough_linen", 0.5),
+    # The two throws — the ONLY non-neutral things on the target's bed, and the
+    # trained fingerprint says that is exactly what our frame lacks: coloured
+    # share 0.128 against the target's 0.320, while the chroma of the colour we
+    # DO have already matches (16.30 vs 16.02). Not more saturation; more AREA.
+    # Velvet swatch (520,640)=(173,155,135) sRGB, tail (540,700)=(147,129,110);
+    # woven top (610,640)=(187,170,151), tail (620,740)=(173,152,131).
+    "velvet_taupe":      ((0.560, 0.470, 0.375), 0.42, 0.0, None, 0.0),
+    "woven_oat":         ((0.640, 0.548, 0.443), 0.88, 0.0,
+                          "poly_wool_herringbone", 0.30),
     "upholstery_bed":    ((0.855, 0.871, 0.863), 0.90, 0.0, None, 0.0),
     "linen_white":       ((0.860, 0.855, 0.840), 0.95, 0.0, "rough_linen", 0.7),
     "upholstery_chair":  ((0.791, 0.768, 0.708), 0.90, 0.0, "rough_linen", 0.5),
@@ -296,6 +306,13 @@ PALETTE_PROV = {
     "fabric_taupe": _M + "; cushion lit face (720,525)=(161,145,129) sRGB over "
                           "the wall-at-0.80 method; piping (770,550)=(62,55,47) "
                           "is geometry the oct does not carry - declared.",
+    "velvet_taupe": _M + "; the runner's lit face over the wall-at-0.80 method. "
+                         "Roughness 0.42 because velvet is the one sheened "
+                         "fabric in the frame - its tail reads 0.85x its top "
+                         "where a matte weave reads ~0.95x.",
+    "woven_oat": _M + "; the coarse throw's lit face; it keeps a REAL "
+                      "herringbone map because its weave is the one fabric "
+                      "texture the target resolves at this camera.",
     "rug_cream": _M + "; sampled in BOTH conditions (lit front 1.154x wall, "
                       "shadowed band 0.938x = 1.23x apart) and the row carries "
                       "their midpoint — the spread is the light's to produce. "
@@ -418,6 +435,7 @@ NORMAL_STRENGTH = {
     "lacquer_wardrobe": 0.06,
     "paint_white": 0.12, "paint_ceiling": 0.12,
     "linen_white": 0.6, "upholstery_bed": 0.6, "rug_cream": 0.9,
+    "woven_oat": 1.1, "velvet_taupe": 0.2,
     "upholstery_chair": 0.5,
 }
 # CRUMPLE — sub-mesh fold relief, carried by the MATERIAL rather than by the
