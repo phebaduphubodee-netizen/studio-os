@@ -112,3 +112,38 @@ def test_the_two_grain_directions_are_the_same_material_otherwise():
     b = MAT.PALETTE["veneer_oak_h"]
     assert a == b, f"the oak run has drifted into two materials: {a} vs {b}"
     assert "veneer_oak" not in MAT.MAP_ROT and "veneer_oak_h" in MAT.MAP_ROT
+
+
+# ------------------------------------------------------------ fresnel (r29) --
+
+def test_a_fresnel_row_naming_no_material_is_refused():
+    """The whole point of this table is that a specular setting REACHES the
+    render. A row keyed to a typo would no-op in silence, which is how this
+    lane spent four rounds bracketing a number that never arrived."""
+    with pytest.raises(KeyError):
+        MAT.resolve_fresnel(MAT.PALETTE, {"screen_blak": (1.0, 0.0)})
+
+
+def test_a_fresnel_row_must_be_ior_and_level():
+    with pytest.raises(ValueError):
+        MAT.resolve_fresnel(MAT.PALETTE, {"screen_black": (1.0,)})
+
+
+def test_a_spec_override_wins_and_the_defaults_survive_it():
+    out = MAT.resolve_fresnel(MAT.PALETTE, {"screen_black": (1.45, 0.15)})
+    assert out["screen_black"] == (1.45, 0.15)
+    for k, v in MAT.FRESNEL.items():
+        if k != "screen_black":
+            assert out[k] == v
+
+
+def test_the_cavity_lining_is_darker_than_any_lit_surface_in_the_room():
+    """The white liner WAS rendered and it missed: 0.348 against the target's
+    0.0003. That result is what earns this row, so the pin is that the lining
+    is its own dark material and not the cave's — and that it never drifts
+    below a real textile, which would be typing a number to hit a pixel."""
+    assert MAT.material_for("petcave_mouth") == "cave_liner"
+    alb = MAT.PALETTE["cave_liner"][0]
+    assert 0.005 <= sum(alb) / 3 <= 0.05, alb
+    assert sum(alb) / 3 < min(sum(MAT.PALETTE[k][0]) / 3
+                              for k in ("upholstery_bed", "rug_cream", "paint_white"))

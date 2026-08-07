@@ -105,6 +105,20 @@ EXACT = {
     "nightstand": "veneer_oak_h",
     "bench": "upholstery_bed",
     "petcave": "upholstery_bed",
+    # THE CAVITY WORE THE CAVE'S OWN MATERIAL FIRST, and that was a test, not
+    # a default: if a 0.86-albedo lining 300 mm wide and 450 mm deep had
+    # rendered anywhere near the target's 0.0003, the black would have been
+    # OCCLUSION and geometry the whole answer. IT RENDERED 0.1884, with 0.0% of
+    # the mouth below Ylin 0.02 against the target's 85.1% — the cavity fills by
+    # interreflection like an integrating sphere. So the lining is DARK, and
+    # this row is derived from a number instead of chosen.
+    # THE FIRST RUN OF THIS TEST WAS VOID AND IS NOT WHAT IS QUOTED: it was
+    # measured while the cavity was still 2 mm proud of a solid face, where the
+    # lining was barely hit and a 40x albedo change moved the region 1%. A
+    # conclusion refuted OR confirmed by a broken instrument is not a
+    # conclusion, so it was re-run on the corrected opening before this row was
+    # believed. See PALETTE cave_liner.
+    "petcave_mouth": "cave_liner",
     # ONE lamp. The two-mass version invented a post to hold a measured shade
     # up, and the owner spotted it in the first frame that had light on it.
     # The two old names are KEPT so every historical spec still builds — a
@@ -253,8 +267,27 @@ PALETTE = {
     "linen_white":       ((0.860, 0.855, 0.840), 0.95, 0.0, "rough_linen", 0.7),
     "upholstery_chair":  ((0.791, 0.768, 0.708), 0.90, 0.0, "rough_linen", 0.5),
     "frame_black":       ((0.117, 0.095, 0.078), 0.45, 0.0, None, 0.0),
-    "screen_black":      ((0.051, 0.040, 0.028), 0.12, 0.0, None, 0.0),
+    # ROUGHNESS 0.12 -> 0.90, and the albedo is UNTOUCHED because it was never
+    # the lever: at 86.3 degrees off this panel's normal, Fresnel returns 0.69
+    # whatever the base colour is. Bracketed at quick price on the ONE metric
+    # that decides it, our p50 over the TV's own 8,989 px against the target's
+    # 0.0409:  r=0.12 (r28) 0.2756 = 6.75x | specular level 0.15 -> 0.2512 =
+    # 6.15x, the knob that cannot reach | IOR 1.0 -> 0.0129 = 0.32x, a physical
+    # lie that overshoots | r=0.45 -> 0.1221 = 2.99x | **r=0.90 -> 0.0409 =
+    # 1.00x**. It also moves the character the right way: the target's TV runs
+    # p99/p50 = 11.4, ours was 2.3 at r=0.12 and is 7.2 here.
+    "screen_black":      ((0.051, 0.040, 0.028), 0.90, 0.0, None, 0.0),
     "shade_black":       ((0.045, 0.040, 0.035), 0.55, 0.0, None, 0.0),
+    # THE PET CAVE'S LINING — measured by INVERSION, not by sampling, because
+    # the pixels it has to match read 0.0000 and a saturated pixel carries no
+    # value. What was sampled is OUR OWN cavity: built at the cave's 0.863
+    # upholstery, through a REAL opening, it rendered 0.1884 with 0.0% of the
+    # mouth below Ylin 0.02 against the target's 85.1% — so occlusion is NOT
+    # the mechanism, and the round measured that rather than assuming it.
+    # 0.020 is the darkest a real textile goes (soot sits near 0.02); anything
+    # lower would be typed to hit a number. See PALETTE_PROV for what the
+    # residual then belongs to.
+    "cave_liner":        ((0.020, 0.019, 0.018), 0.95, 0.0, None, 0.0),
     "art_relief":        ((0.780, 0.770, 0.750), 0.80, 0.0, None, 0.0),
     "reveal_shadow":     ((0.300, 0.290, 0.275), 0.85, 0.0, None, 0.0),
     "lens_warm":         ((1.000, 0.955, 0.900), 0.50, 0.0, None, 0.0),
@@ -341,10 +374,43 @@ PALETTE_PROV = {
                         "1.1-1.4 once JPEG ringing off the glass is excluded.",
     "screen_black": _M + " (upper bound); dark core 0.053x wall -> albedo ~0.04."
                          " The TV is the ONLY specular class in the frame "
-                         "(p99/med 11.97, two broad soft bands), hence the low "
-                         "roughness here while everything else is matte.",
+                         "(p99/med 11.97, two broad soft bands). ROUGHNESS "
+                         "CORRECTED r29, 0.12 -> 0.90, and the old reasoning is "
+                         "left standing because its ERROR is the useful part: "
+                         "it read high specular CONTRAST off the target and "
+                         "inferred a POLISHED screen. At 86.3 degrees the "
+                         "contrast comes from the environment being reflected, "
+                         "not from the lobe being tight — a mirror at grazing "
+                         "shows a bright wall as a bright panel, and that is "
+                         "what ours did for 29 rounds at 6.75x the target. "
+                         "Bracketed on the quick rung: r=0.45 -> 2.99x, "
+                         "r=0.90 -> 1.00x, and p99/p50 moved 2.3 -> 7.2 against "
+                         "the target's 11.4. Same mechanism as FRESNEL's note: "
+                         "a value method with a diffuse model inside it cannot "
+                         "measure a grazing specular surface.",
     "shade_black": _M + "; the lamp shade sits at Ylin 0.008-0.020 with no rim "
                         "and no pool — it is a dark cone, and the lamp is OFF.",
+    "cave_liner": "M-by-inversion(upper bound) — the target's mouth reads Ylin "
+                  "0.0000 over thousands of px and a saturated pixel has no "
+                  "value in it, so nothing here was sampled FROM the target. "
+                  "What was measured is our own: the same cavity built at the "
+                  "cave's own 0.863 upholstery rendered 0.1884 with 0.0% of "
+                  "the mouth below Ylin 0.02 against the target's 85.1%, which "
+                  "settles the question the geometry was built to ask — a 300 mm mouth "
+                  "on a 450 mm cavity does NOT go dark by occlusion, it fills "
+                  "by interreflection like an integrating sphere. 0.020 is the "
+                  "darkest a real textile reaches. THE RESIDUAL IS DECLARED, "
+                  "NOT TUNED AWAY: if 0.020 still lands above the target, the "
+                  "MEASURED SPLIT (both legs re-run on the corrected "
+                  "opening, because the first pair was taken while the cavity "
+                  "was still a 2 mm groove and said nothing about linings): "
+                  "the OPENING is worth 1.8x, 0.344 -> 0.1884 at the same white "
+                  "lining, and the LINING is worth 38x. The material dominates, "
+                  "which is the opposite of what the round set out to show. "
+                  "gap belongs to DEPTH — which this camera cannot see and the "
+                  "spec declares — or to the target's mouth not being a lit "
+                  "surface at all. Driving the albedo below a real material to "
+                  "close it would be typing a number to hit a pixel.",
     "art_relief": _A + " — the mount board reads near the wall value; the "
                        "artwork's relief is geometry the spec does not yet "
                        "carry (frame 20.9 mm, relief block ~450x650 in a "
@@ -397,6 +463,77 @@ UV_MAPPED = {"floor_herringbone"}
 # SURFACE rather than a bright point is what separates the two: a surface that
 # small blows its own pixels and lights almost nothing.
 EMISSIVE = {"lens_warm": 34.0, "strip_led": 26.0}
+
+# ------------------------------------------------------------------ fresnel --
+# {key: (ior, specular_ior_level)}. A SEPARATE table from PALETTE, and the
+# reason it is separate is the whole finding: it answers a question an albedo
+# row structurally cannot.
+#
+# MEASURED 2026-08-07. The TV renders at Ylin p50 0.281 against the target's
+# 0.037 — 7.6x, on 8,989 px, the largest single wrong-value object in the frame
+# — and NOT ONE PART of that value comes from its albedo. The camera sits
+# 86.3 degrees off that panel's normal (computed from the solved camera and the
+# mass's own +x face), and a dielectric at 86.3 degrees returns Fresnel
+# R = 0.689 whatever its base colour is. `screen_black`'s 0.040 contributes
+# about 0.02 of the 0.281; the rest is the room, mirrored.
+#
+# WHY EVERY INSTRUMENT IN THIS LANE MISSED IT: every value in PALETTE was
+# measured by the trn001 ratio method — sample the patch, divide by a reference
+# surface under the same illumination, so the light cancels. That method has a
+# DIFFUSE model inside it. Pointed at a grazing specular surface it returns a
+# number that is not an albedo and cannot be made into one, and the four rounds
+# r23-r26 that bracketed this lane's WATTAGE could not have moved this pixel by
+# construction: the panel is showing a reflection, and a reflection scales with
+# the thing reflected, so brightening or dimming the room moves the TV and the
+# wall together. Same family as this repo's recorded A KNOB THAT CANNOT REACH.
+#
+# WHAT THE BRACKET THEN DID TO THE SECOND HALF OF THAT PARAGRAPH (r29, quick
+# rung, and it is left in because being wrong on the record is the point of
+# writing a falsifiable claim). This block first said: "specular_ior_level
+# scales what remains, and roughness is not the lever." BOTH HALVES WERE WRONG,
+# and the same arithmetic kills them:
+#
+#   Blender's Principled takes a Schlick form, F = F0 + (1-F0)(1-cos0)^5. At
+#   86.3 degrees (1-cos0)^5 = 0.716, so F = 0.716 + 0.283*F0 and F0 is worth 2%
+#   of the answer. MEASURED: dropping the level to 0.15 moved the TV's p50 from
+#   0.2756 to 0.2512 — 9%, against 21x for IOR 1.0. The level knob does not
+#   reach, for the same structural reason the wattage bracket did not.
+#
+#   And roughness DOES reach, because the two claims are about different
+#   quantities. Total reflectance at 86 degrees is pinned near 0.72 by geometry
+#   and nothing changes it. But what lands in the frame is the RADIANCE from the
+#   mirror direction, and a rough lobe replaces one bright wall with the average
+#   of a whole hemisphere. "Reflectance" and "the pixel" are not the same
+#   number, and the first version of this comment used one to rule out the other.
+#
+# So the honest control is ROUGHNESS at a physical IOR — an anti-glare screen is
+# a rough dielectric, not a dielectric with an impossible IOR. IOR 1.0 stays in
+# the table as the bracket's dark end, never as a shipped value: it is a
+# physical lie that happens to land near the right number.
+FRESNEL = {}
+
+
+def resolve_fresnel(palette, override=None):
+    """FRESNEL merged with a spec override, or raise. PURE — the layer law.
+
+    It lives out here rather than inside `build_materials` for a reason this
+    session already paid for once: a pure check written inside a bpy-only
+    function cannot be tested under plain python, and the bug it was guarding
+    against then ships. A fresnel row naming a material that does not exist is
+    exactly the silent no-op this table was created to end.
+    """
+    out = dict(FRESNEL)
+    out.update(override or {})
+    unknown = sorted(set(out) - set(palette))
+    if unknown:
+        raise KeyError(f"FRESNEL names no such material: {unknown} — "
+                       f"a row that matches nothing is a setting nobody applied")
+    for k, row in out.items():
+        if len(row) != 2:
+            raise ValueError(f"FRESNEL[{k}] must be (ior, specular_level), got {row!r}")
+    return out
+
+
 MAP_FILE = {          # slug -> (diffuse, roughness or None, normal or None)
     "wood_floor": ("wood_floor_Diffuse_2k.jpg", "wood_floor_Rough_2k.jpg",
                    "wood_floor_nor_gl_2k.jpg"),
@@ -491,7 +628,28 @@ TONE_NOISE = {
 }
 
 
-def build_materials(palette_override=None):
+def _set_fresnel(bsdf, ior, level):
+    """Apply a FRESNEL row, tolerating socket renames across Blender versions.
+
+    Reports what it could NOT set rather than failing silently: a specular
+    control that quietly no-ops is exactly how this lane spent four rounds
+    bracketing a number that was never reaching the render.
+    """
+    missed = []
+    for names, value in ((("IOR",), ior),
+                         (("Specular IOR Level", "Specular"), level)):
+        if value is None:
+            continue
+        for n in names:
+            if n in bsdf.inputs:
+                bsdf.inputs[n].default_value = float(value)
+                break
+        else:
+            missed.append(names[0])
+    return missed
+
+
+def build_materials(palette_override=None, fresnel_override=None):
     """{palette key: bpy Material}. bpy-only — imported from the builder.
 
     Every mapped material is BOX-PROJECTED on object coordinates because these
@@ -504,6 +662,7 @@ def build_materials(palette_override=None):
     import bpy
     pal = dict(PALETTE)
     pal.update(palette_override or {})
+    fres = resolve_fresnel(pal, fresnel_override)
     out = {}
     for key, (alb, rough, metal, slug, scale) in pal.items():
         m = bpy.data.materials.new(f"M_TRN002_{key}")
@@ -513,6 +672,10 @@ def build_materials(palette_override=None):
         bsdf.inputs["Base Color"].default_value = (*alb, 1.0)
         bsdf.inputs["Roughness"].default_value = rough
         bsdf.inputs["Metallic"].default_value = metal
+        if key in fres:
+            missed = _set_fresnel(bsdf, *fres[key])
+            print(f"  fresnel {key}: ior={fres[key][0]} level={fres[key][1]}"
+                  + (f"  !! SOCKET NOT FOUND: {missed}" if missed else ""))
         if key in EMISSIVE:
             bsdf.inputs["Emission Color"].default_value = (*alb, 1.0)
             bsdf.inputs["Emission Strength"].default_value = EMISSIVE[key]
