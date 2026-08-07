@@ -1555,3 +1555,219 @@ item no instrument could ask: the whole frame still wears ONE white material
 (bedding/upholstery/lacquer/wall respond identically), which heads the next
 material round. Gate #7 written (`training/TRN-002/gate-07-r19.md`); lane
 blocks. Frame of record **trn002_mat_r19**.
+
+
+---
+
+# PROPOSED AMENDMENT — 2026-08-07 — awaiting owner verdict (R3)
+
+> Written by the builder after an outside structural audit. **NOT ADOPTED.**
+> Every rule in this charter that binds was adopted by owner order, and this one
+> is not law until the same happens — R3: only the owner closes. It is filed
+> here rather than in a side document because a proposal kept somewhere nobody
+> reads is the failure shape this very amendment is about.
+>
+> The single sentence it exists to answer: **this lane has a working "not yet"
+> generator and no "done paying" generator**, so the only stopping condition it
+> has ever had is the owner running out of patience — which is, verbatim, the
+> diagnosis this charter already wrote about itself and then answered with an
+> acceptance test instead of a stopping rule.
+
+## ABANDONMENT — AMENDED 2026-08-07: this charter has a working "not yet" generator and no "done paying" generator
+
+Every rule this lane owns answers *should we keep going*. None answers *should we
+stop going*. The finish line (line 119) can only say **PASS**; R1 (`CLAUDE.md:46`)
+can only say **stop this mechanism**; and standing rule 5 (line 163) states the
+gap in its own words — *"The lane itself is standing (owner-ordered) — the
+stop-loss governs elements, not the curriculum."* Twenty-seven rounds later that
+sentence is the only thing standing between this lane and an unbounded one.
+
+### The four facts this amendment answers — each verified before it was used
+
+**1. R1's budget is `2 × (number of mechanisms)` and nothing bounds the
+multiplier.** R10 (`47598b4`, 2026-08-05) made **all 62 masses** of
+`spec_r27.json` a first-class object of interrogation. The multiplier is not even
+constant: masses went **38 → 62** from `spec_r1.json` to `spec_r27.json` and
+`declared_gaps` **0 → 6**. Tightening quality control multiplied the legal
+iteration budget by ~62 in the same act. **A stop rule whose denominator the work
+itself creates is not a stop rule.**
+
+**2. R1 fired twice in 27 rounds and neither firing terminated anything.**
+
+* `gate-08-r20-STOP.md:41-49` ends with three priced routes (ก)/(ข)/(ค) and
+  *"ยังไม่ทำ รอคุณ"*. The owner picked (ค), and the very next round overturned the
+  stop's own diagnosis — the stuck variable was never slack, it was **Nyquist**
+  (`gate-09-r21.md:5-11`; commit `4087822`: *"my stop named the wrong cause"*).
+* `gate-12-r24-STOP.md:81-87` ends with three routes, two of which open new lanes.
+  The stop it filed is **still standing three rounds later**
+  (`gate-14-r26.md:55`, `gate-15-r27.md:106`).
+
+Both firings **RELEASED a fresh mechanism**. That is structural, not sloppiness:
+R2's artifact ends `ขอ verdict`, which asks *which mechanism next* — **R1's output
+is a fork, and a fork cannot terminate.**
+
+**3. The published scalars have not descended.** Pulled from
+`gate-14-r26.md:16-23`, `gate-15-r27.md:35-53`, `gate-10-r23.md:28`,
+`gate-15-r27.md:107`, `gate-12-r24-STOP.md:23-29`, `gate-14-r26.md:48-52`:
+
+| | เป้า | r23 | r24 | r25 | r26 | r27 |
+|---|---|---|---|---|---|---|
+| clipped >0.99 | 0.034% | 2.804 | 0.731 | 0.093 | 0.124 | 0.125 |
+| p99 | 0.7153 | 1.0000 | 0.8704 | 0.8522 | 0.7232 | 0.7238 |
+| p50 | 0.3724 | 0.3237 | **0.3742** | 0.3323 | 0.3818 | **0.3869** |
+| LEVEL | 1.000 | 1.046 | 0.847 | 0.829 | 0.837 | 0.849 |
+| SHAPE (free membership) | 0 | 0.3031 | 0.2761 | 0.3165 | 0.2587 | 0.2000 |
+| SHAPE (**pinned**) | 0 | — | — | — | **0.1989** | **0.2000** |
+| p1 | 0.0039 | **0.0479** | — | — | — | **0.0479** |
+| contact −y 0–25 mm | 0.139 | 1.117 | 1.095 | — | 1.037 | — |
+
+**Plainly: of the last four rounds, r24 and r26 improved on their predecessors;
+r25 and r27 did not.** p50 at r27 is **8× further from target than r24 was**
+(0.0145 vs 0.0018). LEVEL moved **0.002 in four rounds** and is still 15% off.
+**p1 is bit-identical across five rounds and both R1 STOPs.** Contact
+shadow — ranked #1 by both critics for three consecutive rounds — closed **8% of
+its gap in three rounds**; at that rate it needs **~33 more**. And the one
+headline that looked like a record was manufactured by membership: SHAPE
+"0.2587 → 0.2000, best this lane has measured" is **0.6% WORSE** when pinned to
+the 22 rows both frames share (`gate-15-r27.md:42-53`).
+
+**4. Six of the last eight rounds repaired defects this lane injected itself** —
+confirmed, and understated. Commit bodies: `4087822` (our 42 mm cloth cell could
+not represent the target's 75 mm fold **at any setting**), `826ca63` (wardrobe
+modelled `z 0..2920` with a 915 mm headboard across it — doors that could never
+open), `fcc982c` (the key carried `rot(58,0,-14)` since the first build and lands
+on our own bench: 18,192 of 24,704 clipped px), `0bafb10` (the aperture fired into
+a wall **15 mm away for every round of this lane**), `2b15c59` (a power set
+against that broken aim), `64cd167` (the wardrobe's far end **TYPED** at
+y=−2550). Add `000f853` — *"three wood defects, and two of them were bugs in the
+fix for a third"*, which also **reintroduced TRN-001's recorded printed-laminate
+defect** — and `bc65b85`, whose own metric was disqualified twice in one round,
+and it is **eight of eight headlines that are our own work, not a gap against the
+reference.** Two rounds also shipped brand-new damage: r26's left-edge band (318
+of 1,102 clipped px inside 10% of the width, target 0 there — `gate-14-r26.md:69-75`)
+and r27's 14,600 px dark band (`gate-15-r27.md:67-71`).
+
+**5. Spend is one currency.** All ten Spend lines — `gate-06-r15.md:55`,
+`07:63`, `08:51`, `09:69`, `10:64`, `11:106`, `12:78`, `13:90`, `14:95`,
+`15:132` — are render counts. No minutes, no tokens, no baht, against
+`CLAUDE.md:66` which asks for **cycles/renders/tokens**. r22 (`000f853`) got no
+gate at all, so its spend was never published. And **TRN-002 has no ledger row**:
+standing rule 7 (line 171) orders one, and the Ledger table (line 177) holds
+only TRN-001, 27 rounds in.
+
+---
+
+### 9. ABANDONMENT — the floor is on the LANE, not on a mechanism
+
+Evaluated at the close of every round N of a unit U, on quantities the lane
+already publishes:
+
+* **D(N) — distance.** Median over a FROZEN scalar panel of
+  `|ours − target| / |target|` (`|ours − 0|` where the target is 0). The panel is
+  declared before round 1 and never edited; TRN-002's is the eight rows of the
+  table above. **Membership is PINNED to the rows present in both round N and
+  N−1** — r27 is the reason, and the rule is r27's own correction promoted to law.
+* **O(N) — open work.** Count of accepted-and-still-open critic items at the
+  close of the round, plus `len(spec_rN.declared_gaps)`. Both are published today:
+  the gates' `✓ รับ` lists already carry age (`gate-09-r21.md:60` — *"ค้างมาตั้งแต่
+  gate #6"*), and `rule_gate` has counted items since 2026-08-07
+  (`triage-debt-2026-08-07.md:8-11`). A defect the round created itself enters O
+  like any other item.
+* **R(N) — recurrence.** Share of the round's critic items that restate an item
+  already accepted or already refuted in an earlier round of U. The gates already
+  count this in words: *"ครั้งที่สาม"*, *"ซ้ำเป็นรอบที่ห้า"*, *"critic ตัวที่ห้า"*
+  (`gate-15-r27.md:123,126,128`).
+
+**Why these three and not others.** D is the only aggregate the lane publishes
+against a target column every round, so no new instrument is invented to end the
+lane. O is the only quantity that grows when a round moves work instead of
+finishing it — the exact failure R1 cannot see. R is the only one that reads the
+critics as evidence: when half of what two independent critics file is something
+we already answered, the reference has stopped yielding and more rounds buy
+re-refutation. **All three are free — they are already in the gate.**
+
+> **A round CLEARS the floor iff `D(N) ≤ 0.95·D(N−1)` OR `O(N) ≤ O(N−1) − 1`.**
+> Otherwise it is SUB-FLOOR. **THREE consecutive SUB-FLOOR rounds end the unit.**
+> Independently, **`R(N) ≥ 0.50` for two consecutive rounds ends the unit.**
+
+Three, not two: R1 already uses two per mechanism, and this lane has proven two
+is inside its own noise — r24 and r26 each won on some scalars while losing on
+others, and four consecutive gates say *"ได้อย่างเสียอย่าง"* in the builder's own
+words. Three lets a genuine measure-then-build pair survive; four would hide a
+whole stop-loss cycle plus a rebound.
+
+**Its own negative control, run before adoption.** On the pinned panel this floor
+scores r25 SUB-FLOOR (D 0.2465 → 0.2539), **r26 CLEARS** (0.2539 → 0.1809, −29%),
+r27 SUB-FLOOR (−3.0%, under the 5% floor). **It would NOT have ended TRN-002 by
+r27.** That is reported, not hidden: a floor that retroactively terminates
+everything is a floor written to justify a verdict. This lane is not flatlining —
+it is grinding, and grinding is what rule 10 is for.
+
+### 10. THE HARD CAP — declared before round 1, in the ledger row
+
+> **A unit declares `cap_rounds` and `cap_full_frames` in its Ledger row BEFORE
+> its first render. Default 20 rounds / 40 full frames, whichever comes first.
+> No ledger row → round 1 may not render.**
+
+The default is not invented: **TRN-001, the only unit this curriculum has ever
+CLOSED, cost 20 rounds and 37 full frames** (Ledger row, line 179). TRN-002 is at
+**27 rounds and ≥25 full frames in phase 2 alone** (9 cumulative at
+`gate-06-r15.md:55` plus 16 across gates 07–15) — **135% of the only closed
+precedent, with no rule anywhere that noticed.**
+
+**Half-cap checkpoint.** At `cap_rounds / 2` the RANK sheet runs (line 119).
+Its answer is not pass/fail at that point; it is the **trajectory** — the lane
+records where ours placed, so the second half is spent knowing whether the
+position is moving.
+
+**Only the owner extends a cap (R3), once per unit, with the new number and its
+reason written in the ledger row before the next render.** An extension that is
+not written did not happen.
+
+**And the cap needs a currency.** From here every Spend line carries
+`rounds-to-date · full-frames-to-date · wall-clock minutes · tokens`, per
+`CLAUDE.md:66`. Two of those four are new. Until they exist the cap is
+denominated in rounds and full frames **because those are the only two units this
+lane has ever actually published** — the cap is written in the currency we can
+prove, not the one we would prefer.
+
+### 11. THE 60-SECOND RULE — a pass condition a human cannot run is not a condition
+
+> **Any PASS condition must be answerable by a human in under 60 seconds, from a
+> single artifact, without the builder explaining how it was measured.**
+
+The RANK sheet qualifies: six panels, one ordering, *ours does not come last*
+(line 119). The scalar panel does not, and is hereby **demoted from candidate
+pass condition to DIAGNOSTIC** — `gate-15-r27.md` is 143 lines and eight tables,
+and knowing whether its headline number improved required a membership argument
+(`:42-53`) that the builder had to construct after nearly shipping the opposite
+claim. **The two jobs are different and now named separately: YIELD decides
+whether to keep paying; RANK decides whether it is done.** A number that needs a
+paragraph is evidence, never a verdict.
+
+### ON TERMINATION — what an abandoned unit still owes
+
+A unit closed under rule 9 or 10 closes **ABANDONED-WITH-YIELD**, not FAILED.
+The distillation gate still fires (amendment 2026-08-05, lines 41-46) — *the
+copies are NOT deliverables, the product is the LEARNING* (line 20) — and **O at
+termination is written out as a studio capability-gap register**, the same move
+this charter already makes for TRN-001's Buddha figures (lines 134-141): *"It is
+the owner's to price, not this lane's to fake."* Abandonment is that move applied
+to the unit instead of the object.
+
+### WHAT EACH RULE GIVES UP, AND WHAT WOULD SHOW IT IS WRONG
+
+| rule | given up | evidence that the rule itself is wrong |
+|---|---|---|
+| **9 — yield floor** | The pure-diagnosis round. `gate-12-r24-STOP.md` built nothing, moved no scalar and closed no item — four levers refuted, 7 probes — and scores SUB-FLOOR. Under this rule a lane may spend at most two consecutive rounds *understanding* before it must *deliver*. | A terminated unit is reopened by the owner, or the round immediately after a would-be termination produces a win causally traceable to a SUB-FLOOR round. **Two such cases in the next three units ⇒ the floor is set too high; raise 0.95 to 0.98 and record it.** |
+| **9 — R trigger** | Critics that repeat themselves for a real reason. Both critics have ranked contact shadow #1 for three rounds and were **right every time** — repetition is not always exhaustion. R counts only items already ACCEPTED or already REFUTED, never open ones, which is why contact shadow does not inflate R. | An R-triggered termination whose next-unit critique bundle produces >50% new items on the same class ⇒ R was measuring our triage's laziness, not the reference's exhaustion. |
+| **10 — hard cap** | Round 28, which might have been the one. And rule 5's premise that the lane is standing. | A unit terminates at cap while its RANK position improved monotonically over the last five rounds ⇒ the cap cut live convergence. Conversely, a unit whose half-cap RANK already passes ⇒ the cap was never binding and the RANK sheet should run earlier, not the cap move later. |
+| **11 — 60 seconds** | Precision. A 60-second condition cannot express "SHAPE with pinned membership", so it will pass frames the scalar panel would fail and fail frames it would pass. | The 60-second verdict and the pinned panel disagree **in the same direction three times** ⇒ the sheet is measuring something other than sellability, and R4's premise needs re-earning, not the rule tuning. |
+
+**The honest summary of what this amendment costs:** it will end at least one unit
+that was two rounds from working. That is the price of the thing this charter has
+never had, and the alternative has now been measured — 27 rounds, 2 stops that
+both handed back a menu, six of the last eight rounds spent repairing our own
+work, and a p1 that has not moved a digit since r23.
+
+**พร้อมให้ตัดสิน**
