@@ -246,3 +246,125 @@ def test_a_shallower_tilt_opens_the_gaps():
 def test_pitch_larger_than_the_box_still_makes_one_slat():
     v, f = G.slat_stack((0, 0, 100), (40, 500, 20), 999.0, 34.0, 25.0)
     assert len(f) // 6 == 1
+
+
+# ------------------------------------------------------- arch_pocket (r29) --
+# The cavity that puts true black in the frame. These pins exist because this
+# lane's recorded failure is MEASURED AND NEVER BUILT — the artwork's 21 mm
+# black bar was measured at r2 and the mass wore a 0.78 white until r13, and
+# nothing checked that the measured feature survived into geometry.
+
+MOUTH = dict(face_x_mm=-2100.0, y_centre_mm=-5464.8, spring_z_mm=199.6,
+             radius_mm=149.9, base_z_mm=0.0, depth_mm=450.0)
+
+
+def test_the_pocket_outline_carries_the_measured_arch():
+    """Crown, springing and both extremes, in mm, straight off the fit."""
+    v, f = G.arch_pocket(**MOUTH)
+    ys = [p[1] * 1000 for p in v]
+    zs = [p[2] * 1000 for p in v]
+    assert abs(max(zs) - (199.6 + 149.9)) < 0.05, max(zs)      # crown 349.5
+    assert abs(min(zs)) < 1e-6                                  # base at floor
+    assert abs(max(ys) - (-5464.8 + 149.9)) < 0.05, max(ys)     # left springing
+    assert abs(min(ys) - (-5464.8 - 149.9)) < 0.05, min(ys)     # right springing
+
+
+def test_the_near_end_is_open_and_the_far_end_is_capped():
+    """The opening IS the object. A cap on the near face makes it a lump of
+    upholstery with a decorative groove, which is what a boolean-free build
+    accidentally produces if the face loop is closed at the wrong end."""
+    v, f = G.arch_pocket(**MOUTH)
+    n = len(v) // 2
+    near, far = set(range(n)), set(range(n, 2 * n))
+    caps = [q for q in f if len(q) == n]
+    assert len(caps) == 1 and set(caps[0]) == far, caps
+    assert not any(set(q) <= near for q in f)
+
+
+def test_the_arc_is_an_arc_and_not_a_chamfer():
+    """A straight line fit the measured top edge 9.7x worse than a circle. If
+    the generator ever flattens the head, this catches it: every head vertex
+    must sit on the fitted radius."""
+    v, _ = G.arch_pocket(**MOUTH)
+    n = len(v) // 2
+    head = [(p[1] * 1000, p[2] * 1000) for p in v[:n]
+            if p[2] * 1000 > MOUTH["spring_z_mm"] + 1e-9]
+    assert len(head) >= 20, len(head)
+    for y, z in head:
+        r = math.hypot(y - MOUTH["y_centre_mm"], z - MOUTH["spring_z_mm"])
+        assert abs(r - MOUTH["radius_mm"]) < 1e-6, (y, z, r)
+
+
+def test_the_built_mouth_reprojects_onto_the_pixels_it_was_measured_from():
+    """END TO END, and the only test here that could have caught the artwork:
+    push the built rim back through the SOLVED camera and land on the target's
+    own measured arch — crown (1034, 754) and left jamb u=1004.00."""
+    spec = G.load_spec(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "..", "..", "training", "TRN-002",
+                                    "spec_r29.json"))
+    cam, wh = spec["camera"], (spec["image"]["w"], spec["image"]["h"])
+    v, _ = G.arch_pocket(**MOUTH)
+    n = len(v) // 2
+    uv = [G.project(cam, tuple(t * 1000 for t in p), wh) for p in v[:n]]
+    crown = min(uv, key=lambda t: t[1])
+    assert abs(crown[0] - 1034.0) < 2.0, crown      # measured apex column
+    assert abs(crown[1] - 754.0) < 2.0, crown       # measured apex row
+    jamb = max(uv, key=lambda t: -t[0])             # left springing / jamb
+    assert abs(jamb[0] - 1004.0) < 2.0, jamb
+
+
+@pytest.mark.parametrize("bad", [dict(radius_mm=0.0), dict(depth_mm=-1.0),
+                                 dict(spring_z_mm=-10.0)])
+def test_a_pocket_that_cannot_be_a_cavity_raises(bad):
+    """Fail closed. A zero radius or a negative depth silently yields a
+    degenerate sliver that renders as nothing, and 'nothing' is exactly what
+    this object is here to stop being."""
+    with pytest.raises(ValueError):
+        G.arch_pocket(**{**MOUTH, **bad})
+
+
+def test_open_face_drops_exactly_the_minus_x_quad():
+    """DERIVED from the ring order, not typed as an index — and pinned, because
+    dropping the wrong quad opens a hole in a wall nobody is looking at while
+    the mouth stays shut."""
+    c, s, cut = (-1750, -5464.8, 275), (700, 900, 550), 200
+    v0, f0 = G.oct_mesh(c, s, cut)
+    v1, f1 = G.oct_mesh(c, s, cut, open_face="x_min")
+    assert len(f1) == len(f0) - 1
+    gone = [f for f in f0 if f not in f1]
+    assert len(gone) == 1, gone
+    xs = [v0[i][0] * 1000 for i in gone[0]]
+    assert all(abs(x - (-2100.0)) < 1e-6 for x in xs), xs
+
+
+def test_open_face_is_refused_where_the_ring_order_does_not_hold():
+    with pytest.raises(ValueError):
+        G.oct_mesh((0, 0, 0), (100, 100, 100), 20, axis="y", open_face="x_min")
+
+
+def test_the_host_face_is_authored_around_the_opening_not_over_it():
+    """The quads that replace the dropped face must all lie ON the opening's
+    plane, and none of them may cover the mouth: a face that spans the arch is
+    the 2 mm groove defect again, wearing a different shape."""
+    face = (-5714.8, -5214.8, 550.0)
+    v, f = G.arch_pocket(**MOUTH, face=face)
+    plane = MOUTH["face_x_mm"] / 1000.0
+    host = [q for q in f if all(abs(v[i][0] - plane) < 1e-9 for i in q)]
+    assert host, "no host face emitted"
+    yc, r, sp = MOUTH["y_centre_mm"], MOUTH["radius_mm"], MOUTH["spring_z_mm"]
+    for q in host:
+        pts = [(v[i][1] * 1000, v[i][2] * 1000) for i in q]
+        mid = (sum(p[0] for p in pts) / 4, sum(p[1] for p in pts) / 4)
+        inside = (abs(mid[0] - yc) < r and
+                  (mid[1] <= sp or math.hypot(mid[0] - yc, mid[1] - sp) < r))
+        assert not inside, f"host quad centred inside the mouth: {mid}"
+
+
+def test_a_mouth_too_wide_for_its_host_face_raises():
+    with pytest.raises(ValueError):
+        G.arch_pocket(**MOUTH, face=(-5500.0, -5400.0, 550.0))
+
+
+def test_a_crown_that_reaches_the_top_of_the_host_face_raises():
+    with pytest.raises(ValueError):
+        G.arch_pocket(**MOUTH, face=(-5714.8, -5214.8, 300.0))

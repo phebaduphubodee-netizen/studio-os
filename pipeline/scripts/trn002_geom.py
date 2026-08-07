@@ -48,13 +48,27 @@ def box_mesh(c, s):
     return vs, fs
 
 
-def oct_mesh(c, s, cut, axis="z", tilt_deg=0.0, seg=6):
+def oct_mesh(c, s, cut, axis="z", tilt_deg=0.0, seg=6, open_face=None):
     """(verts, faces) of a rounded prism: four true ARC corners of radius `cut`.
 
     axis  — the extrusion axis: "z" rounds the PLAN, "y" rounds the x-z SECTION
             (a lying cylinder when cut is ~half the section).
     tilt_deg — rotation about y through the bottom-back edge, so a leaning
             pillow is a declared posture rather than a typed position.
+    open_face — "x_min" omits the single flat quad on the -x side, so another
+            mesh can author an opening through it. THIS IS THE ONLY WAY A HOLE
+            EXISTS HERE: booleans are banned in this pipeline (they leave
+            n-gons a SketchUp recipient sees) and a geometry `bpy.ops` dies
+            headless, so an opening is an authored face loop.
+            Earned the expensive way in r29: the first cavity was drawn 2 mm
+            PROUD of this face instead of through it, on the theory that a
+            sub-pixel offset would read the same. It does not — the host is
+            SOLID, so a ray entering the mouth travelled 2 mm and hit the face
+            behind it, and 450 mm of cavity rendered as a 2 mm groove. The tell
+            was in the numbers and unmissable once looked for: changing the
+            lining's albedo 40x moved the region by 1%, because the lining was
+            almost never hit. A surface that does not respond to its own
+            material is not being rendered.
     """
     x, y, z = (v * MM for v in c)
     z0, z1 = z - s[2] * MM / 2, z + s[2] * MM / 2
@@ -79,6 +93,12 @@ def oct_mesh(c, s, cut, axis="z", tilt_deg=0.0, seg=6):
     else:
         vs = [(pa, pb, e0) for pa, pb in ring] + [(pa, pb, e1) for pa, pb in ring]
     fs = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
+    if open_face is not None:
+        if open_face != "x_min" or axis != "z":
+            raise ValueError("open_face only knows 'x_min' on a z-extruded oct")
+        # the flat -x quad bridges the end of corner 2's arc and the start of
+        # corner 3's — see the ring order above. Derived, never typed.
+        fs.pop(3 * (seg + 1) - 1)
     fs += [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
     if axis == "y":
         # (a, b) -> (x, z) extruded along +y is an ODD permutation of (x, y, z),
@@ -381,3 +401,95 @@ def slat_stack(c, s, pitch_mm, chord_mm, tilt_deg, thick_mm=2.0, scale=0.001):
                   (a, cc, g, e), (b, f, h, d),      # the two faces in ez
                   (a, e, f, b), (cc, d, h, g)]      # the two ends in y
     return verts, faces
+
+
+def arch_pocket(face_x_mm, y_centre_mm, spring_z_mm, radius_mm, base_z_mm,
+                depth_mm, seg=24, scale=MM, face=None):
+    """(verts, faces) of an ARCHED CAVITY sunk into a face at x=`face_x_mm`.
+
+    A tube whose cross-section is the measured mouth outline — vertical jambs
+    from `base_z_mm` up to `spring_z_mm`, then a semicircular head of
+    `radius_mm` — extruded `depth_mm` in +x and CAPPED at the far end. The near
+    end is left OPEN: that is the whole point of the object.
+
+    WHY THIS EXISTS AND WHY NO MATERIAL COULD HAVE DONE IT (measured
+    2026-08-07): the target's frame holds 1.9% of its pixels below Ylin 0.02
+    and ours holds 0.007% — 270x — and its single blackest region, 4,284 px at
+    Ylin 0.0003, is the mouth of the pet cave. No albedo in this room produces
+    that number. The darkest row in PALETTE is 0.040 and it renders at 0.035
+    to 0.070, which is not a tuning failure but arithmetic: a diffuse surface
+    in a room whose white wall reads 0.48 cannot go below roughly albedo x 0.6.
+    THE TARGET'S BLACK IS NOT A SURFACE, IT IS A PLACE LIGHT CANNOT REACH — and
+    a cavity is geometry. Every instrument this lane owns measures a per-surface
+    photometric ratio, and not one of them can ask whether the frame contains
+    anywhere light does not go.
+
+    THE OUTLINE IS MEASURED, THE DEPTH IS NOT. The mouth's top edge was fitted
+    over 76 back-projected points as a circle: centre (y -5464.8, z 199.6),
+    R 149.9 mm, residual rms 2.77 mm, and a straight line fits 9.7x worse — so
+    it is an arc, not a chamfer. Its left springing point is confirmed a SECOND
+    and independent way: the black region's left boundary holds u=1004.00 with
+    sd 0.00 over 34 rows, which on this plane is a constant y, and that y lands
+    on the circle's own left extreme to 0.6 mm. Two features, different pixels,
+    different fits, agreeing sub-millimetre.
+    WHAT IS ASSUMED, AND IT MATTERS: the RADIUS SCALES WITH THE PLANE. The fit
+    back-projects onto x=-2100, which is the petcave's assumed -x face — that
+    mass carries prov A in every dimension. The mouth's SHAPE (an arc, not a
+    line) is independent of that choice; its SIZE is not. `depth_mm` is a
+    declaration outright: nothing in this frame sees into the cave far enough
+    to measure how deep it goes.
+    """
+    if radius_mm <= 0 or depth_mm <= 0:
+        raise ValueError("arch_pocket needs a positive radius and depth")
+    if spring_z_mm < base_z_mm:
+        raise ValueError("springing sits below the base — outline would invert")
+    y_l, y_r = y_centre_mm + radius_mm, y_centre_mm - radius_mm
+    ring = [(y_l, base_z_mm), (y_l, spring_z_mm)]
+    for i in range(1, seg):                      # arc, springing to springing
+        a = math.pi * i / seg
+        ring.append((y_centre_mm + radius_mm * math.cos(a),
+                     spring_z_mm + radius_mm * math.sin(a)))
+    ring += [(y_r, spring_z_mm), (y_r, base_z_mm)]
+    x0, x1 = face_x_mm, face_x_mm + depth_mm
+    n = len(ring)
+    vs = [(x0 * scale, y * scale, z * scale) for y, z in ring] + \
+         [(x1 * scale, y * scale, z * scale) for y, z in ring]
+    fs = [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]   # the walls
+    fs.append(tuple(range(n, 2 * n)))                           # the far cap
+    fs.append((n - 1, 0, n, 2 * n - 1))                         # the floor
+    if face is None:
+        return vs, fs
+
+    # ---- the host's face, authored AROUND the opening -----------------------
+    # `face` = (y_lo, y_hi, z_top) of the flat quad this cavity replaces. The
+    # host drops that quad (oct_mesh open_face="x_min") and these three pieces
+    # take its place: a full-height strip each side of the mouth, and a band
+    # over the head whose lower edge is the SAME vertices the tube's rim uses,
+    # so the seam is watertight by construction rather than by tolerance.
+    y_lo, y_hi, z_top = face
+    if not (y_lo < y_r and y_l < y_hi):
+        raise ValueError(f"the mouth ({y_r}..{y_l}) does not fit inside the "
+                         f"face it opens ({y_lo}..{y_hi})")
+    if z_top <= spring_z_mm + radius_mm:
+        raise ValueError("the mouth's crown reaches the top of its host face")
+    base = len(vs)
+
+    def add(y, z):
+        vs.append((face_x_mm * scale, y * scale, z * scale))
+        return len(vs) - 1
+
+    tl0, tl1 = add(y_hi, base_z_mm), add(y_hi, z_top)
+    jl0, jl1 = add(y_l, base_z_mm), add(y_l, z_top)
+    fs.append((tl0, jl0, jl1, tl1))                              # left strip
+    tr0, tr1 = add(y_lo, base_z_mm), add(y_lo, z_top)
+    jr0, jr1 = add(y_r, base_z_mm), add(y_r, z_top)
+    fs.append((jr0, tr0, tr1, jr1))                              # right strip
+    head = [i for i in range(n) if ring[i][1] > spring_z_mm - 1e-9]
+    prev = None
+    for i in head:                                               # band over it
+        y, z = ring[i]
+        top = add(y, z_top)
+        if prev is not None:
+            fs.append((prev[0], i, top, prev[1]))
+        prev = (i, top)
+    return vs, fs

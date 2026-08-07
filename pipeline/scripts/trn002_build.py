@@ -84,7 +84,8 @@ def _slats(name, c, s, value, mat=None, pitch_mm=29.4, chord_mm=34.0,
     return ob
 
 
-def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None):
+def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None,
+         open_face=None):
     """Rounded prism: four true ARC corners of radius `cut` mm, 6 segments each.
     Round 2 shipped this as a single 45-degree chamfer and the C3 critic read it
     as a faceted octagon, not a curve — a chamfer is not a radius. Name kept so
@@ -101,10 +102,36 @@ def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None):
     mattress contact. Earned in r3b: a "lying" pillow that still stands at 90
     degrees reads as a capsule, whatever its dimensions say.
     """
-    vs, fs = G.oct_mesh(c, s, cut, axis=axis, tilt_deg=tilt_deg)
+    vs, fs = G.oct_mesh(c, s, cut, axis=axis, tilt_deg=tilt_deg,
+                        open_face=open_face)
     me = bpy.data.meshes.new(name)
     me.from_pydata(vs, [], fs)
     me.materials.append(_surface(value, mat))
+    ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
+def _pocket(name, value, mat=None, host_mat=None, host_value=None, **kw):
+    """An arched CAVITY cut THROUGH its host's face — see G.arch_pocket.
+
+    Two materials on one mesh, and the split is DERIVED, never indexed: a quad
+    whose four vertices all sit on the opening's plane is the host's own face
+    (it wears the host's material); everything else is the cavity's lining. An
+    index into a face list would go stale the first time the generator gains a
+    quad, and a lining that silently spread onto the host's face is precisely
+    the kind of error that reads as a shadow and gets tuned instead of fixed.
+    """
+    vs, fs = G.arch_pocket(**kw)
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(vs, [], fs)
+    me.materials.append(_surface(host_value if host_value is not None else value,
+                                 host_mat))
+    me.materials.append(_surface(value, mat))
+    plane = float(kw["face_x_mm"]) * 0.001
+    for poly, f in zip(me.polygons, fs):
+        poly.material_index = 0 if all(
+            abs(vs[i][0] - plane) < 1e-9 for i in f) else 1
     ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
     bpy.context.scene.collection.objects.link(ob)
     return ob
@@ -548,7 +575,8 @@ def main():
     materials = None
     if "--materials" in argv:
         import trn002_materials as MAT
-        materials = MAT.build_materials(palette_override=spec.get("materials"))
+        materials = MAT.build_materials(palette_override=spec.get("materials"),
+                                        fresnel_override=spec.get("fresnel"))
         print("materials ON\n" + MAT.palette_report())
 
     def mat_of(name):
@@ -649,11 +677,18 @@ def main():
             built[m["name"]] = _slats(m["name"], m["c"], m["s"], m["value"],
                                       mat=mat_of(m["name"]),
                                       **(m.get("slat") or {}))
+        elif m.get("kind") == "pocket":
+            built[m["name"]] = _pocket(m["name"], m["value"],
+                                       mat=mat_of(m["name"]),
+                                       host_mat=mat_of(m["host"]),
+                                       host_value=m.get("host_value"),
+                                       **m["pocket"])
         elif m.get("kind") == "oct":
             built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200),
                                     m["value"], axis=m.get("axis", "z"),
                                     tilt_deg=m.get("tilt_deg", 0.0),
-                                    mat=mat_of(m["name"]))
+                                    mat=mat_of(m["name"]),
+                                    open_face=m.get("open_face"))
         else:
             built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"],
                                     mat=mat_of(m["name"]))
