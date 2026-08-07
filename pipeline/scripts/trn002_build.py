@@ -65,6 +65,19 @@ def _box(name, c, s, value, mat=None):
     return ob
 
 
+def _slats(name, c, s, value, mat=None, pitch_mm=29.4, chord_mm=34.0,
+           tilt_deg=25.0, thick_mm=2.0):
+    """A venetian blind as ONE mesh of 62 slats — see G.slat_stack for which of
+    its numbers are measured and which are declared."""
+    vs, fs = G.slat_stack(c, s, pitch_mm, chord_mm, tilt_deg, thick_mm)
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(vs, [], fs)
+    me.materials.append(_surface(value, mat))
+    ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
 def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None):
     """Rounded prism: four true ARC corners of radius `cut` mm, 6 segments each.
     Round 2 shipped this as a single 45-degree chamfer and the C3 critic read it
@@ -513,6 +526,10 @@ def main():
             built[m["name"]] = _herringbone(
                 m["name"], m["c"][2], m["s"][2], m["value"],
                 mat=mat_of(m["name"]), **(m.get("lattice") or {}))
+        elif m.get("kind") == "slats":
+            built[m["name"]] = _slats(m["name"], m["c"], m["s"], m["value"],
+                                      mat=mat_of(m["name"]),
+                                      **(m.get("slat") or {}))
         elif m.get("kind") == "oct":
             built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200),
                                     m["value"], axis=m.get("axis", "z"),

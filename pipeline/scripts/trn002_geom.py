@@ -335,3 +335,49 @@ def ripple_seed(verts, axis="x", wavelength_mm=75.0, amp_mm=6.0, jitter=0.35,
             h += jitter * math.sin(phase + 1.9 * drift)
         out.append((v[0], v[1], v[2] + A * env * h))
     return out
+
+
+def slat_stack(c, s, pitch_mm, chord_mm, tilt_deg, thick_mm=2.0, scale=0.001):
+    """A venetian blind: horizontal slats filling the box (centre `c`, size `s`).
+
+    Slats run along y (the window's width), each a thin plate of `chord_mm`
+    tilted `tilt_deg` about that axis, repeated every `pitch_mm` up z. Returns
+    (verts, faces) for ONE mesh — 8 verts and 6 quads per slat, no n-gons.
+
+    R8 BUILD class by its own test: this is an extrusion of a measured outline
+    repeated on a measured pitch, not a free-form shape. Every number here is
+    measured or declared:
+      pitch   6.50 px between 89 peaks in the target's own column, constant up
+              the whole band, backprojecting to 29.4 mm on the wall plane.
+      extent  the light rig's blind measurement (y -2630..-910, z 730..2550),
+              confirmed independently here at the near edge (u=50 -> y -2631,
+              1 mm) and at the top (v=125 -> z 2582 against 2550, 32 mm). The
+              BOTTOM is the one number of that pass this view could not confirm
+              — the periodic column runs on past the blind into the console
+              below it — so it is inherited, not re-measured.
+      chord/tilt  DECLARED. A 1080-px frame gives ~6.5 px per slat, which
+              cannot resolve a slat's width or its angle; what it fixes is the
+              pitch and the fact that the gaps are narrow. Chord and tilt are
+              chosen to satisfy the one thing the pixels DO say — chord*cos(tilt)
+              just under the pitch, so the blind reads nearly closed.
+    """
+    n = max(1, int(round(s[2] / pitch_mm)))
+    t = math.radians(tilt_deg)
+    ct, st = math.cos(t), math.sin(t)
+    y0, y1 = (c[1] - s[1] / 2.0) * scale, (c[1] + s[1] / 2.0) * scale
+    verts, faces = [], []
+    for i in range(n):
+        z0 = c[2] - s[2] / 2.0 + (i + 0.5) * s[2] / n
+        base = len(verts)
+        for ex in (-chord_mm / 2.0, chord_mm / 2.0):
+            for ez in (-thick_mm / 2.0, thick_mm / 2.0):
+                x = (c[0] + ex * ct - ez * st) * scale
+                z = (z0 + ex * st + ez * ct) * scale
+                for y in (y0, y1):
+                    verts.append((x, y, z))
+        # 8 verts, ordered (ex, ez, y). Quads over the box's six faces.
+        a, b, cc, d, e, f, g, h = (base + k for k in range(8))
+        faces += [(a, b, d, cc), (e, g, h, f),      # the two ends in ex
+                  (a, cc, g, e), (b, f, h, d),      # the two faces in ez
+                  (a, e, f, b), (cc, d, h, g)]      # the two ends in y
+    return verts, faces

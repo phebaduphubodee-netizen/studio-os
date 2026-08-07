@@ -86,6 +86,7 @@ EXACT = {
     "desk_pier": "veneer_oak",
     "shelf_col_base": "veneer_oak", "shelf_col_back": "veneer_oak",
     "tv": "screen_black",
+    "blind": "blind_slat",
     "rug": "rug_cream",
     "bed_platform": "upholstery_bed", "bed_headboard": "upholstery_bed",
     "bed_mattress": "linen_white",
@@ -260,6 +261,10 @@ PALETTE = {
     # the chair legs: near-black tapered timber in the reference, the darkest
     # furniture element in the frame after the TV.
     "leg_dark":          ((0.055, 0.048, 0.042), 0.40, 0.0, None, 0.0),
+    # the venetian slats. Their room-facing side is what the camera sees and
+    # it is lit by the aperture, so this is a plain matte white — the bright
+    # bar / dark gap reading has to come from the GEOMETRY, not from a value.
+    "blind_slat":        ((0.780, 0.775, 0.760), 0.62, 0.0, None, 0.0),
 }
 
 PALETTE_PROV = {
@@ -350,6 +355,7 @@ PALETTE_PROV = {
                           "not grow with scale), so they must be matched "
                           "photometrically, never tuned by eye.",
     "leg_dark": _A + " — read off the target's chair legs as a near-black stained timber; not sampled cleanly (they are 4-6 px wide), so the value is bracketed by the partition frame core (0.11) above and the TV core (0.05) below.",
+    "blind_slat": _A + " — the slats are ~6.5 px apart at this camera, far too fine to sample a value from; taken as the wall paint slightly warmed. What IS measured is their pitch (29.4 mm) and that the gaps are narrow.",
     "lens_warm": _M + "; the four lens cores are the frame's only legitimately "
                       "clipped pixels (273 px, 0.03%).",
 }

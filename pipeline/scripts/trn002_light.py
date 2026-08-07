@@ -161,7 +161,16 @@ KEY = {
 BLIND = {
     "name": "BLIND_left_wall", "kind": "AREA", "shape": "RECTANGLE",
     "loc_mm": (-4735, -1770, 1640), "size_mm": (1720, 1820),
-    "rot_deg": (90.0, 0.0, 90.0),
+    # 90 -> -90 in yaw (r25). An area light emits along its own -Z; at
+    # (90, 0, 90) that resolves to (-1, 0, 0) — this emitter has been firing
+    # into the left wall, 15 mm away, for every round of this lane. It is the
+    # third light in this lane found aimed 180 degrees from where its comment
+    # says, and the tell was in the frame the whole time: `left_wall` carries
+    # 1,400 of r24's 1,586 remaining clipped pixels, which is exactly what a
+    # 38 W card does to a wall patch 15 mm in front of it. The docstring above
+    # says this aperture's job is to light ITS OWN SLATS; it could not, because
+    # the slats are on the other side of it — and until r25 there were no slats.
+    "rot_deg": (90.0, 0.0, -90.0),
     "power_w": 38.0, "color": (0.960, 0.975, 1.000),
     "prov": "M(extent y -2630..-910, z 730..2550 backprojected from the blind "
             "sliver) / A(power: it lights its own slats at 0.43-0.49 and the "

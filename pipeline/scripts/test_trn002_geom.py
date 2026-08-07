@@ -213,3 +213,36 @@ def test_ripple_seed_wavelength_is_the_one_asked_for():
     span_mm = (vs[-1][0] - vs[0][0]) * 1000.0
     period = 2 * span_mm / max(crossings, 1)
     assert 60 < period < 95, f"asked 75 mm, seed delivers {period:.1f} mm"
+
+
+# ---- slat_stack (r25 venetian blind) ----------------------------------------
+
+def test_slat_stack_fills_the_box_at_the_measured_pitch():
+    v, f = G.slat_stack((-4700, -1770, 1640), (40, 1720, 1820), 29.4, 34.0, 25.0)
+    assert len(f) // 6 == 62, len(f) // 6          # 1820 / 29.4
+    zs = [p[2] * 1000 for p in v]
+    assert 730 <= min(zs) and max(zs) <= 2550, (min(zs), max(zs))
+    ys = [p[1] * 1000 for p in v]
+    assert abs(min(ys) + 2630) < 1e-6 and abs(max(ys) + 910) < 1e-6
+
+
+def test_every_slat_face_is_a_quad_and_no_vertex_is_shared_between_slats():
+    """8 verts and 6 quads per slat. Shared verts would weld two slats into one
+    surface and the gaps — the whole point of a blind — would close."""
+    v, f = G.slat_stack((0, 0, 1000), (40, 1000, 300), 30.0, 34.0, 25.0)
+    assert all(len(q) == 4 for q in f)
+    assert len(v) == 8 * (len(f) // 6)
+    assert len(set(v)) == len(v)
+
+
+def test_a_shallower_tilt_opens_the_gaps():
+    """chord*cos(tilt) against the pitch is what decides open vs closed, and it
+    is the one thing a 6.5-px-per-slat image actually constrains."""
+    import math
+    for tilt, closed in ((25.0, True), (70.0, False)):
+        assert (34.0 * math.cos(math.radians(tilt)) > 29.4) is closed
+
+
+def test_pitch_larger_than_the_box_still_makes_one_slat():
+    v, f = G.slat_stack((0, 0, 100), (40, 500, 20), 999.0, 34.0, 25.0)
+    assert len(f) // 6 == 1
