@@ -2700,3 +2700,96 @@ became two asks to notebooks we already own, one became measurement-first
    target's platform face is bare). Mechanism, named for reuse: a crest-LINE
    maximum extruded into a uniform prism + a SIDE-face relationship copied
    onto the FOOT face — strip≠surface working in 3D, both on A/D-tier provs.
+
+## 2026-08-07 — an outside structural audit, and the day the owner let the AI see the reference
+
+The session opened on a question, not a task: *"ประเมินแบบคนนอกหน่อย ว่าทำไม
+ทำงานออกมาให้ถูกต้องเท่าตาคนและสวยซักที"*. Twelve agents audited the repo cold.
+What survived adversarial attack, and what it cost to find out:
+
+1. **The two questions have DIFFERENT root causes and this repo conflates them.**
+   Not-correct-to-the-eye is an INSTRUMENT problem: every scalar the lane owns
+   (LEVEL/SHAPE/p50/p99/ladder) is a per-surface photometric statistic, and none
+   of them has a term for *"this surface should not be in the frame"*. Not-beautiful
+   is an OBJECTIVE problem: `critique.py` — the one module in the repo that scores
+   `furniture_realism` / `styling_and_life` / `photoreal_believability` and can
+   return SHIP — has never been called by any `trn00*` module. **Proved
+   experimentally the same day:** a deliberate geometry change (SUBSURF on five
+   soft masses) plus a real aperture moved every whole-frame scalar by **under
+   0.1%** (p50 −0.0005, p99 0.0000, sat +0.0005, std −0.0004) while the crop shows
+   the change plainly. The lane can measure "how close to the target" exhaustively
+   and "is it better" not at all.
+2. **The external standard was never missing — it was never consumed.**
+   `look_bench --blind` had built FIVE finish-line sheets across two lanes with
+   their answer keys beside them; `find _private -iname "*rank*"` returned zero
+   files. The 2026-07-30 ground-truth study produced eight numbered criteria
+   nobody here chose; TRN-002 opened four days later and implements ~none.
+3. **AgX is a lever that can EXPIRE.** trn001 measured and wrote it
+   (`trn001_light.py:273-280`, "a straight-line transform with no shoulder");
+   trn002 hardcoded `Standard` and then spent r23-r26 closing a blown highlight
+   tail by bracketing wattage (2.804% → 0.124%). Bracketed both legs at r27:
+   the shoulder is real (clipped −26..36%) and now costs 16% of frame saturation
+   for nothing, **because the wattage rounds already closed the tail**. Value of
+   a lever depends on whether the defect it fixes is still open. Do not re-open.
+4. **A benchmark number without its context does not transfer.** The study's
+   "every pro camera f/1.4-2.4" came from DETAIL cameras at close focus. Applied
+   to a 38.8 mm whole-room camera at 5.36 m it moves far/near high-frequency
+   energy 1.151 → 1.092 — a 5% effect. Copied the number, not its premise.
+5. **R5 has a second edge nobody had written.** Quick kills bad work; at half
+   resolution it also OVERSTATED the subsurf win, which at delivery resolution is
+   small. Quick can flatter as well as condemn.
+
+**The owner's verdict on the whole body of work: F.** Not one frame — every
+version. And it corrects the audit's own finding: `grep VERDICT` found the owner's
+rung in 1 of 10 gates, and the audit read that as "the rung was switched off by a
+builder default". Half wrong. *"ผมเปิดดูทุก version ตลอด ซึ่งมันเป็น F ทุกอัน"* — he
+was judging continuously; what never happened was RECORDING the judgment. A lane
+ran 27 rounds past a standing negative verdict because every round had a number
+that improved.
+
+**Then he lifted the sight fence** (*"ผมยอมให้ AI ดูงานลูกค้าได้แล้ว จะได้คืบหน้าซักที"*;
+the GIT line from 2026-08-05 stands unchanged and `_private/` is verified
+untracked). Within one hour of first sight, measured against the reference:
+warm-wood coverage 65.9% vs our 32.2%; pixels below Y 0.12 — target 1.55%, **ours
+0.00%, the frame has no black in it at all**; the wardrobe reveals 5-9x too dark
+(0.117-0.330 below panel against 0.035-0.060); the oak band at headboard height
+6x too short (22 px vs 137). And the defect he found by eye in one glance:
+
+**A 26 px slot showing unlit back wall beside the door — the SECOND of two
+adjacent slots. r27 closed the other one.** He had caught the first by eye a round
+earlier. Neither is a brightness error on any surface — every surface in the slot
+renders correctly — so no instrument in the lane could ask about it.
+
+His read of the cause (*"น่าจะเป็นแนวเสาที่ล้ำเข้ามา"*) was right in substance and
+wrong in location, and the correction is the finding worth keeping:
+* There is no missing column beside the door. u 686→729.5 in the reference is
+  FEATURELESS (max per-pixel |dL/du| 0.0018 over 44 px, four height bands), and
+  u=730.3 is the wardrobe's OCCLUDING SILHOUETTE, not a corner (its strip matches
+  the known cabinet face to 0.4-1.9 lum and the wall to 14-21).
+* **Our door wall was 530 mm too short.** Fixed as a CONTACT on the cabinet's near
+  face, not a typed number (`spec_r28`). Slot deficit 2.35-2.53x → 0.92-0.99x;
+  the step at u=730 reversed sign, +0.42 → −0.021.
+* **A column does exist — 24 px to the right.** Vanishing-point test with no depth
+  assumption: three facets at u 730.4 / 753.6 / 773.5, A and C constant-x, B
+  frontal = a rectangular pier corner, 115.5 ± 1.5 mm proud, 242 mm deep. Ours is
+  one flat plane there. That is the other 65% of the missing step.
+* **Cost, accepted knowingly:** the slot was the only window onto the
+  back-wall/right-wall corner. Closing it makes `right_wall_x` permanently
+  unmeasurable from this camera — ZERO mm now excluded, and the −236..−4 band that
+  looked derivable rests on the fin stopping at −1200, which the reference refutes.
+
+**Mechanism to carry forward, because it is not carelessness.** `door_wall_far`
+carries prov **D, not A** — it was not unmeasured, it was *measured in the wrong
+identity* in round 1 ("the fin"), and every round since re-asserted the same
+sentence, *"UNCHANGED in extent — y 0..−1200"*. Confidence compounded while the
+claim was never re-checked against the reference. R7b names the general shape
+(self-consistency proves the build, never the ask); this is its sharpest instance:
+**a name given once becomes the thing every later measurement confirms.**
+
+Corollary paid for in the same session, twice: **an ACCEPTED critic item needs
+evidence exactly as much as a refuted one.** R7 says a refutation must carry a
+measurement; I read that as "an acceptance need not" and accepted r26's C2#14
+(*"wardrobe bays arbitrarily unequal"*) into the queue. Measured after sight: our
+joints land at u 810/873/949/1042 against the reference's 810/874/950/1043 — within
+1 px on all four — and the reference's own bays vary 231% of their mean. Accepting
+wrongly puts wrong work in the queue and nobody audits the queue.
