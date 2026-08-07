@@ -19,9 +19,11 @@ neutral form light, and two verification rungs before any pixel is trusted:
   2. R9b PLACEMENT GATE — placement_dump + placement_check on the built scene,
      FAIL-loud (floating / overhang / off-axis; no allowlist).
 """
+import glob
 import json
 import math
 import os
+import re
 import sys
 
 import bpy
@@ -32,6 +34,10 @@ import trn002_geom as G  # noqa: E402
 MM = 0.001
 FULL_SAMPLES = 128
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+LANE_DIR = os.path.join(REPO, "training", "TRN-002")
+BUNDLE_ROOT = os.path.join(REPO, "_private", "benchmark", "reproduction",
+                           "TRN-002", "renders", "critique")
+WAIVERS = os.path.join(LANE_DIR, "r7-triage-waivers.md")
 
 
 def _clay(value):
@@ -289,13 +295,26 @@ def _cloth_duvet(m, built, mat):
         slack=p.get("slack", 0.04))
 
 
-def build_camera(cam):
+def build_camera(cam, beauty=None):
     data = bpy.data.cameras.new("CAM_TRN002")
     data.lens = cam["focal_mm"]
     data.sensor_fit = "HORIZONTAL"
     data.sensor_width = G.SENSOR_MM
     data.shift_x = cam.get("shift_x", 0.0)
     data.shift_y = cam.get("shift_y", 0.0)
+    # DEPTH OF FIELD — off unless the spec asks, so every reproduction frame
+    # renders exactly as it did. The 2026-07-30 ground-truth study measured
+    # every camera in five professional interior .blend files at f/1.4-2.4 and
+    # ranked "f/2.0-2.8 detail camera" as one of eight wire items; this lane
+    # set lens, sensor and shift and never touched aperture, i.e. it renders a
+    # pinhole. Nothing in the ladder can see this: DOF moves no per-surface
+    # mean, which is why 27 rounds of per-surface metrics never asked for it.
+    cd = (beauty or {}).get("camera") or {}
+    if cd.get("fstop"):
+        data.dof.use_dof = True
+        data.dof.aperture_fstop = float(cd["fstop"])
+        data.dof.focus_distance = float(cd["focus_mm"]) * MM
+        data.dof.aperture_blades = int(cd.get("blades", 7))
     ob = bpy.data.objects.new("CAM_TRN002", data)
     ob.location = (cam["x_mm"] * MM, cam["y_mm"] * MM, cam["z_mm"] * MM)
     ob.rotation_euler = (math.pi / 2, 0.0, -math.radians(cam["yaw_deg"]))
@@ -364,7 +383,43 @@ def setup_render(spec, out_png, quick):
     sc.render.resolution_x, sc.render.resolution_y = W, H
     sc.render.image_settings.file_format = "PNG"
     sc.render.filepath = out_png
-    sc.view_settings.view_transform = "Standard"
+    # FILM. Default stays Standard so every reproduction frame is unchanged,
+    # but it is no longer a hardcoded literal — it is a declared, bracketable
+    # setting, which is the whole complaint against the line it replaces.
+    #
+    # WHY THIS MATTERS MORE THAN IT LOOKS: TRN-001 measured this exact lever and
+    # wrote the finding into trn001_light.py:273-280 — "ours clipped 2.15% under
+    # Standard, which is a straight-line transform with no shoulder to hold a
+    # highlight. AgX has one — this is a measured lever, not a preference" — and
+    # defaulted that lane to AgX. TRN-002 opened four days later with `Standard`
+    # typed in, no film hook, no comment, and the string appears in none of
+    # gates 06-15. Rounds r23→r26 (four rounds, four gates) were then spent
+    # closing a blown highlight tail by bracketing WATTAGE: clipped pixels
+    # 2.804% → 0.731% → 0.093% → 0.124%, p99 1.0000 (clipped solid) → 0.7232.
+    # That is the symptom the shoulder exists to remove, rediscovered one
+    # project later at the price of four build+render cycles.
+    #
+    # It is NOT automatically correct to switch: the target is display-referred
+    # and we do not know its transform, so AgX has to be measured against the
+    # same ratios like anything else. The defect was never "wrong transform" —
+    # it was an uncalibrated free variable at the last stage of every
+    # measurement, set by a literal nobody bracketed.
+    film = ((spec or {}).get("beauty") or {}).get("film") or {}
+    vt = film.get("view_transform", "Standard")
+    for cand in (vt, "Standard"):
+        try:
+            sc.view_settings.view_transform = cand
+            break
+        except TypeError:
+            print(f"!! view_transform {cand!r} not available in this Blender")
+    if film.get("look"):
+        try:
+            sc.view_settings.look = film["look"]
+        except TypeError:
+            print(f"!! look {film['look']!r} not available")
+    sc.view_settings.exposure = float(film.get("exposure", 0.0))
+    print(f"film view={sc.view_settings.view_transform} "
+          f"look={sc.view_settings.look} exposure={sc.view_settings.exposure:+.3f}")
     print(f"cycles device={device} samples={samples} res={W}x{H} "
           f"diff_bounce={sc.cycles.diffuse_bounces}")  # keep: silent-CPU catch
 
@@ -446,7 +501,19 @@ def main():
     # exists for bisecting an old spec, and prints loudly that it was used.
     import rule_gate as RULES
     if "--no-rule-gate" in argv:
+        # Was an unconditional bypass. A bypass whose only cost is typing the
+        # flag is not a bypass, it is the default with extra steps — so it now
+        # costs an env var AND writes a line into the lane's own record, where
+        # the next gate has to look at it.
+        if os.environ.get("TRN002_ALLOW_RULE_GATE_BYPASS") != "1":
+            raise SystemExit(
+                "--no-rule-gate requires TRN002_ALLOW_RULE_GATE_BYPASS=1. It "
+                "exists for bisecting an OLD spec, not for getting past a gate "
+                "that is telling you something.")
         print("!! RULE GATE BYPASSED by --no-rule-gate")
+        with open(os.path.join(LANE_DIR, "rule-gate-bypasses.log"), "a",
+                  encoding="utf-8") as f:
+            f.write(f"{os.path.basename(spec_path)} -> {out_png}\n")
     else:
         # require_seen is ON: after the object-justification audit every mass
         # can point at itself in the reference, so the strict form is now the
@@ -454,8 +521,29 @@ def main():
         # derivation is impeccable — lamp_stem's prov ("rest_on nightstand top
         # 481, carries shade") was a perfectly well-formed contact for a thing
         # that is not in the room.
-        RULES.enforce(spec, inbox_root=os.path.join(REPO, "knowledge", "_inbox"),
-                      require_seen=True)
+        # R7's half of this gate had NEVER executed: `check()` runs
+        # audit_bundle only `if bundle_dir:` and this call site passed none, so
+        # every render printed "all justified" while the triage rule was mute.
+        # A mute is indistinguishable from compliance, which is why it survived
+        # 27 rounds. Now the debt is resolved here and passed in.
+        debt = RULES.bundle_debt(BUNDLE_ROOT, spec_path, WAIVERS)
+        older = []
+        for d in debt[:-1]:
+            older += [f"[{os.path.basename(d)}] {s}"
+                      for s in RULES.audit_bundle(d, LANE_DIR)]
+        if older:
+            print(f"\nRULE GATE: {len(older)} standing violation(s) in "
+                  f"{len(debt) - 1} older bundle(s)")
+            for s in older:
+                print(f"  !! {s}")
+        # `hard` is handed to enforce only when there is nothing else to add, so
+        # enforce prints its own list and no violation is ever printed twice.
+        v = RULES.enforce(
+            spec, bundle_dir=debt[-1] if debt else None,
+            inbox_root=os.path.join(REPO, "knowledge", "_inbox"),
+            require_seen=True, lane_dir=LANE_DIR, hard=not older)
+        if older or v:
+            raise SystemExit("RULE GATE FAILED (R10 / R7 / charter)")
 
     materials = None
     if "--materials" in argv:
@@ -513,6 +601,37 @@ def main():
         # shrinks itself rather than deforming the part.
         b.use_clamp_overlap = True
 
+    # SOFT FORMS — off unless the spec asks. `oct` masses (pillows, bolster,
+    # the throw stand-ins) are built by oct_mesh(seg=6): 56 verts, 30 faces,
+    # two 28-gon end caps, FLAT shaded, no subdivision. The 2026-07-30
+    # ground-truth study measured pro pillows at 3,124-88,374 polys and named
+    # SUBSURF on soft forms as a wire item; this lane never ran either, so
+    # every arc in the frame renders as visible facets.
+    #
+    # R8b's corollary is the reason this is opt-in per mass and not global:
+    # subdivision SMOOTHS WHAT EXISTS AND CANNOT ADD WHAT WAS NEVER THERE. On
+    # trn001 it erased the deliberate ledges of a stepped base while changing
+    # nothing visible on the smooth-shaded body. A probe proves reachability;
+    # only a look proves value — so this ships as a bracket, not as a default.
+    soft = ((spec.get("beauty") or {}).get("soft") or {})
+
+    def _soften(ob, name, kind):
+        cfg = soft.get(name) or soft.get(kind or "") or {}
+        if not cfg:
+            return
+        if cfg.get("smooth"):
+            for p in ob.data.polygons:
+                p.use_smooth = True
+        lv = int(cfg.get("subsurf", 0))
+        if lv:
+            # Appended AFTER the EASE bevel, which is the order we want and the
+            # order `modifiers.new` already gives: bevel cuts the arris, then
+            # subdivision rounds the result. (There is no `move_to_index` on
+            # this collection in 5.1 — reordering is an operator, and geometry
+            # operators are banned headless. The append order is the contract.)
+            s = ob.modifiers.new("SOFT", "SUBSURF")
+            s.levels = s.render_levels = lv
+
     built = {}
     cloth_queue = []
     for m in spec["masses"]:
@@ -539,6 +658,7 @@ def main():
             built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"],
                                     mat=mat_of(m["name"]))
         _ease(built[m["name"]], m["name"])
+        _soften(built[m["name"]], m["name"], m.get("kind"))
     # "parent": <mass> declares an assembly IN the scene — placement_check groups
     # by Blender hierarchy ("the scene's own declaration of what moves together"),
     # so a shade over its stem is judged as one lamp, not as a slab teetering on a
@@ -549,7 +669,7 @@ def main():
             built[m["name"]].parent = built[m["parent"]]
     for m in cloth_queue:
         built[m["name"]] = _cloth_duvet(m, built, mat_of(m["name"]))
-    cam_ob = build_camera(spec["camera"])
+    cam_ob = build_camera(spec["camera"], spec.get("beauty"))
     build_light(spec)
     setup_render(spec, out_png, quick)
 

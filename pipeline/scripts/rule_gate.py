@@ -79,6 +79,17 @@ def audit_spec(spec, require_seen=False):
     if not masses:
         return ["spec carries no masses at all"]
     gaps = spec.get("declared_gaps", {})
+    # A gap may be declared against the MASS ("duvet") or against one DIMENSION
+    # of a measured mass ("right_wall_x"). The second form is R10 working as
+    # written — the object is measured, one axis is not — and a checker that
+    # only knew the first form would have blocked r27 for declaring its gap
+    # more precisely than the check could read.
+    AXIS = ("x", "y", "z", "w", "h", "d", "depth", "width", "height")
+    gap_names = set(gaps)
+    for g in gaps:
+        head, _, tail = g.rpartition("_")
+        if head and tail in AXIS:
+            gap_names.add(head)
     for m in masses:
         name = m.get("name", "<unnamed>")
         prov = m.get("prov")
@@ -105,7 +116,7 @@ def audit_spec(spec, require_seen=False):
                 f"reference'. Give a pixel region, or 'NOT VISIBLE: <reason>'. "
                 f"A correct-looking derivation cannot distinguish a real object "
                 f"from one invented to hold another object up.")
-        if UNMEASURABLE.search(prov) and name not in gaps and not m.get("why"):
+        if UNMEASURABLE.search(prov) and name not in gap_names and not m.get("why"):
             out.append(
                 f"{name}: its own provenance says the measurement was not "
                 f"possible, yet a number was typed. R10 corollary: the moment a "
@@ -114,30 +125,156 @@ def audit_spec(spec, require_seen=False):
     return out
 
 
-def audit_bundle(bundle_dir):
-    """R7 — every critic item gets a WRITTEN triage. Returns [violation str]."""
+# R7 is an ITEM-level rule, so checking it at FILE level is the repo's own named
+# failure shape (a guard whose granularity does not match its rule's). The old
+# version asked "does a TRIAGE_ file exist beside this ANSWER_ file" — and the
+# answer was no for every bundle in the lane, while the triage of record sat in
+# the GATE ARTIFACT at finer granularity than the check could see: one row per
+# item, each refutation carrying its measurement. A file-level check would have
+# cried wolf on eleven correctly-triaged rounds, which is how the previous debt
+# instrument in this repo died.
+#
+# So: count the ITEMS a critic filed, find every id the builder wrote a triage
+# row for — in a TRIAGE_ file, the bundle README, or the round's gate artifact —
+# and name the ids that are missing. A violation now points at work, not at a
+# filename.
+#
+# Both critics number the same way, verified against the r21-r27 answers:
+#     C2 (local)   "## 7. The wood assembly on the left wall is not identifiable"
+#     C3 (Gemini)  "**4. รายละเอียดพื้นผิว (Material) ขาดความสมจริง**"
+ITEM_HEAD = re.compile(r"^[ \t]{0,3}(?:#{1,6}[ \t]*)?\*{0,2}(\d{1,2})[.)][ \t]", re.M)
+ROUND_TOKEN = re.compile(r"_(r\d+[a-z]?)$", re.I)
+
+
+def _critic_tag(stem):
+    """ANSWER_<stem>.md -> the tag its items are cited by in a triage row."""
+    s = stem.lower()
+    if "gemini" in s or "c3" in s:
+        return "C3"
+    if "c2" in s or "local" in s or "cowork" in s:
+        return "C2"
+    return None
+
+
+def _item_count(text):
+    """Items 1..n present as top-level headings. A stray '2026.' cannot inflate
+    this, because only the contiguous run FROM 1 counts."""
+    seen = {int(x) for x in ITEM_HEAD.findall(text)}
+    n = 0
+    while n + 1 in seen:
+        n += 1
+    return n
+
+
+# The gates triage in TWO notations, and a checker that knew only the newer one
+# reported six correctly-triaged items as untriaged on its first run — the
+# cry-wolf failure this check exists to avoid, caught by testing it against the
+# real gates before wiring it:
+#   gates #6-#8   a table under a critic heading, first cell a bare number
+#                 "## C3 Gemini 2.5 Pro" ... "| 1 | เครื่องนอนแข็ง… | ✓ รับ |"
+#   gates #9-#15  the id inline, unambiguous  "**C2#3,7,13,18 + C3#4** …"
+TABLE_ROW = re.compile(r"^\s*\|\s*(\d{1,2})\s*\|")
+SAYS_C3 = re.compile(r"\bC3\b|gemini", re.I)
+SAYS_C2 = re.compile(r"\bC2\b|cowork|local[- ]c2|claude-local", re.I)
+# Gate #7 cites Gemini as G#1 … G#4 and G(r15)#5. Three notations for one rule
+# across ten gates is itself a finding, but a checker that knows only the
+# newest one converts the builder's own correct work into a violation — and a
+# gate that fails on correct work is the one that gets muted.
+ALIAS = {"C3": r"(?:C3|G(?:\(r\d+[a-z]?\))?)", "C2": r"(?:C2)"}
+
+
+def _triaged_ids(text, tag):
+    """Ids the builder wrote a triage row for, in any of the three notations."""
+    ids = set()
+    pat = ALIAS.get(tag, re.escape(tag))
+    for run in re.findall(rf"\b{pat}\s*#\s*(\d{{1,2}}(?:\s*,\s*\d{{1,2}})*)", text):
+        ids.update(int(p) for p in re.split(r"\s*,\s*", run))
+    # Table form: a bare-number row belongs to the critic named by the nearest
+    # heading above it. Ambiguous lines (both critics named) leave the attribution
+    # unchanged rather than guessing.
+    cur = None
+    for line in text.splitlines():
+        row = TABLE_ROW.match(line)
+        if row:
+            if cur == tag:
+                ids.add(int(row.group(1)))
+            continue
+        c3, c2 = bool(SAYS_C3.search(line)), bool(SAYS_C2.search(line))
+        if c3 != c2:
+            cur = "C3" if c3 else "C2"
+    return ids
+
+
+def _gate_text(bundle_dir, lane_dir):
+    """The gate artifact(s) that triage THIS bundle.
+
+    Ids are not unique across rounds (gate #14 and gate #15 both carry a
+    C2#12), so a lane-wide scan would let one round's triage pay another's
+    debt. Two bindings, both exact:
+      * the gate filename carries the bundle's round token (gate-10-r23.md), or
+      * the gate NAMES the bundle directory, which is how a gate that triages
+        the previous round's answers declares it ("เก็บคำตอบดิบไว้ที่
+        `_private/.../critique-trn002_mat_r14/ANSWER_gemini25pro.md`").
+    The second binding was added after the first version reported five
+    correctly-triaged Gemini items as untriaged.
+    """
+    if not lane_dir or not os.path.isdir(lane_dir):
+        return ""
+    base = os.path.basename(os.path.normpath(bundle_dir))
+    m = ROUND_TOKEN.search(base)
+    tok = m.group(1).lower() if m else None
+    parts = []
+    surfaces = sorted(glob.glob(os.path.join(lane_dir, "gate-*.md")) +
+                      glob.glob(os.path.join(lane_dir, "triage-*.md")))
+    for p in surfaces:
+        with open(p, encoding="utf-8") as f:
+            body = f.read()
+        named = base in body
+        tokked = tok and re.search(rf"[-_]{tok}([-_.]|$)", os.path.basename(p), re.I)
+        if named or tokked:
+            parts.append(body)
+    return "\n".join(parts)
+
+
+def audit_bundle(bundle_dir, lane_dir=None):
+    """R7 — every critic ITEM gets a WRITTEN triage. Returns [violation str]."""
     out = []
     if not os.path.isdir(bundle_dir):
         return [f"bundle dir not found: {bundle_dir}"]
     answers = sorted(glob.glob(os.path.join(bundle_dir, "ANSWER_*.md")))
     if not answers:
         return out                      # no critic has filed yet; nothing owed
-    readme = ""
-    rp = os.path.join(bundle_dir, "README.md")
-    if os.path.exists(rp):
-        with open(rp, encoding="utf-8") as f:
-            readme = f.read()
+    surfaces = [_gate_text(bundle_dir, lane_dir)]
+    for extra in ("README.md",) + tuple(
+            os.path.basename(p) for p in glob.glob(
+                os.path.join(bundle_dir, "TRIAGE_*.md"))):
+        p = os.path.join(bundle_dir, extra)
+        if os.path.exists(p):
+            with open(p, encoding="utf-8") as f:
+                surfaces.append(f.read())
+    triage = "\n".join(surfaces)
     for a in answers:
         stem = os.path.basename(a)[len("ANSWER_"):-len(".md")]
-        has_file = os.path.exists(os.path.join(bundle_dir, f"TRIAGE_{stem}.md"))
-        has_section = re.search(rf"{re.escape(stem)}.{{0,40}}triage|triage.{{0,40}}"
-                                rf"{re.escape(stem)}", readme, re.I | re.S)
-        if not (has_file or has_section):
+        tag = _critic_tag(stem)
+        if tag is None:                 # unknown critic: fall back to file level
+            if not os.path.exists(os.path.join(bundle_dir, f"TRIAGE_{stem}.md")):
+                out.append(f"ANSWER_{stem}.md: no TRIAGE_{stem}.md, and the "
+                           f"critic tag could not be derived from the filename "
+                           f"to look for item rows.")
+            continue
+        with open(a, encoding="utf-8") as f:
+            n = _item_count(f.read())
+        if not n:
+            continue                    # unparseable answer: do not cry wolf
+        missing = sorted(set(range(1, n + 1)) - _triaged_ids(triage, tag))
+        if missing:
             out.append(
-                f"{os.path.basename(a)} has no triage. R7: every returned item "
-                f"gets a written accept+lane or a refutation carrying a "
-                f"MEASUREMENT — never taste. Write TRIAGE_{stem}.md or a "
-                f"'{stem} triage' section in the bundle README.")
+                f"ANSWER_{stem}.md filed {n} items; {len(missing)} have no "
+                f"triage row: {tag}#" + f", {tag}#".join(str(i) for i in missing) +
+                f". R7: every returned item gets a written accept+lane or a "
+                f"refutation carrying a MEASUREMENT — never taste. Cite the id "
+                f"({tag}#N) in the round's gate artifact, the bundle README, or "
+                f"TRIAGE_{stem}.md.")
     return out
 
 
@@ -163,20 +300,82 @@ def audit_learning(spec, inbox_root):
             f"and not one line of knowledge/, because nothing gated on it."]
 
 
-def check(spec, bundle_dir=None, inbox_root=None, require_seen=False):
+
+# --- R7 debt resolution -------------------------------------------------------
+# PURE, and it lives here rather than in the builder for the reason the layer law
+# gives (pipeline/CLAUDE.md): rule/gate code must run under plain python. It sat
+# in trn002_build.py for one afternoon and in that time acquired a real bug that
+# no test could reach — a waiver written for `critique-trn002_blockout_r1_quick`
+# silently waived `critique-trn002_blockout_r1`, because the match was `x in
+# text`. Both bundles exist in this lane. A guard that quietly excuses work
+# nobody excused is worse than no guard.
+
+ROUND_OF = re.compile(r"(r\d+[a-z]?)(?=\.|$|_)", re.I)
+
+
+def round_of(path):
+    """'spec_r28.json' / 'critique-trn002_mat_r27' -> 'r28' / 'r27'."""
+    m = ROUND_OF.search(os.path.basename(str(path)))
+    return m.group(1).lower() if m else None
+
+
+def is_waived(name, waiver_text):
+    """BOUNDED name match. Never a substring test — see the note above."""
+    return re.search(rf"(?<![\w-]){re.escape(name)}(?![\w-])",
+                     waiver_text or "") is not None
+
+
+def bundle_debt(bundle_root, spec_path, waivers_path=None):
+    """Bundle dirs that have a critic ANSWER and still owe a triage, oldest first.
+
+    The round being rendered is EXCLUDED by construction: its critics have not
+    run yet, and a gate that blocks a render on a critique OF that render can
+    never open. The check therefore carries exactly one round of latency — which
+    is the latency the rule always had. r26's C2#14 said the wardrobe bays were
+    "arbitrarily unequal", nobody triaged it, and the next round the owner found
+    that bay built 259 mm short with his own eye.
+    """
+    this_round = round_of(spec_path)
+    waived = ""
+    if waivers_path and os.path.exists(waivers_path):
+        with open(waivers_path, encoding="utf-8") as f:
+            waived = f.read()
+    owing = []
+    for d in glob.glob(os.path.join(bundle_root, "critique-*")):
+        base = os.path.basename(d)
+        tok = round_of(base)
+        if not tok or tok == this_round or is_waived(base, waived):
+            continue
+        if glob.glob(os.path.join(d, "ANSWER_*.md")):
+            owing.append((int(re.search(r"\d+", tok).group()), tok, d))
+    return [d for _, _, d in sorted(owing)]
+
+
+def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
+          lane_dir=None):
     v = audit_spec(spec, require_seen)
     if bundle_dir:
-        v += audit_bundle(bundle_dir)
+        v += audit_bundle(bundle_dir, lane_dir)
     if inbox_root:
         v += audit_learning(spec, inbox_root)
     return v
 
 
-def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=False):
+def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=False,
+            lane_dir=None):
     """Print and, if hard, refuse to continue. Called by the builder."""
-    v = check(spec, bundle_dir, inbox_root, require_seen)
+    v = check(spec, bundle_dir, inbox_root, require_seen, lane_dir)
     if not v:
-        print(f"RULE GATE: {len(spec.get('masses', []))} masses, all justified")
+        # Name what was checked, not just that nothing failed. A gate that
+        # prints the same success line whether or not it ran a half of itself
+        # is indistinguishable from a mute — which is exactly what the R7 half
+        # was for every render of this lane until this line was written.
+        ran = ["R10 spec"] + (["R7 triage"] if bundle_dir else []) + \
+              (["charter distillation"] if inbox_root else [])
+        print(f"RULE GATE: {len(spec.get('masses', []))} masses, all justified "
+              f"[checked: {', '.join(ran)}]")
+        if not bundle_dir:
+            print("RULE GATE: !! R7 triage NOT checked (no bundle dir given)")
         return []
     print(f"\nRULE GATE: {len(v)} violation(s)")
     for s in v:
@@ -190,6 +389,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--spec", required=True)
     ap.add_argument("--bundle", default=None)
+    ap.add_argument("--lane", default=None,
+                    help="lane dir holding gate-*.md, where the triage of "
+                         "record actually lives (e.g. training/TRN-002)")
     ap.add_argument("--inbox", default=None)
     ap.add_argument("--soft", action="store_true", help="report, do not exit 1")
     ap.add_argument("--require-seen", action="store_true",
@@ -198,8 +400,11 @@ def main():
     with open(a.spec, encoding="utf-8") as f:
         spec = json.load(f)
     v = enforce(spec, a.bundle, a.inbox, hard=not a.soft,
-                require_seen=a.require_seen)
-    sys.exit(0 if not v else 0)
+                require_seen=a.require_seen, lane_dir=a.lane)
+    # Was `0 if not v else 0` — the CLI could not exit nonzero, so no caller,
+    # hook or CI step could ever have failed on it. --soft is the way to ask
+    # for a report and keeps its promise of exit 0; the default is a gate.
+    sys.exit(0 if a.soft else (1 if v else 0))
 
 
 if __name__ == "__main__":
