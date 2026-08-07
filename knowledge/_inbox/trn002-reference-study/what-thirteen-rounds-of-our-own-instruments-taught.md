@@ -481,6 +481,137 @@ closer to the reference than the measured refutations do.
 
 ---
 
+## 16. A value method with a DIFFUSE MODEL inside it cannot measure a grazing specular surface — and it does not fail, it answers
+
+**n = 1 (TRN-002 r29), but the mechanism is arithmetic and transfers on sight.**
+
+The reproduction's TV rendered Ylin p50 **0.281** against the target's **0.041**
+over 8,989 px — the largest single wrong-value object in the frame — for 29
+rounds. Its albedo was not the lever and never could have been. The camera sits
+**86.3 degrees off that panel's normal**, and a dielectric at 86.3 degrees
+returns Fresnel **R = 0.689 whatever its base colour is**. The 0.040 albedo
+contributed about 0.02 of the 0.281; the rest was the room, mirrored.
+
+**The instrument that missed it is the lane's best one.** Every value in the
+palette was measured by the inherited ratio method — sample the patch, divide by
+a reference surface under the same illumination so the light cancels. That
+method is correct and it is load-bearing, and **it has a diffuse model inside
+it**. Pointed at a grazing specular surface it returns a number that is not an
+albedo and cannot be made into one. It does not error, it does not widen its
+bars: it answers.
+
+**The tell was available for four rounds and read as noise.** r23–r26 bracketed
+this lane's wattage across four full build+render cycles. None of them moved
+this object, and none could have: *a panel showing a reflection scales with the
+thing it reflects*, so brightening or dimming the room moves the TV and the wall
+together. **A whole-lane knob that cannot move one object is naming a mechanism,
+not failing to reach.** This repo already records the class (ONE KNOB THAT
+CANNOT REACH); what is new is that the knob's failure IDENTIFIES the physics.
+
+**And the first explanation was wrong in a way worth keeping.** Written into the
+code before the bracket ran: *"specular level scales what remains, and roughness
+is not the lever."* Both halves false, from the same arithmetic — Blender takes
+a Schlick form, `F = F0 + (1-F0)(1-cos0)^5`, so at 86.3 degrees `(1-cos0)^5 =
+0.716` and **F0 is worth 2% of the answer**. Measured: cutting the specular
+level 70% moved the pixel 9%. Roughness was ruled out by confusing two
+quantities — *total reflectance* at 86 degrees is pinned near 0.72 by geometry
+and nothing moves it, but what lands in the frame is the **radiance from the
+mirror direction**, and a rough lobe replaces one bright wall with the average
+of a hemisphere. **"Reflectance" and "the pixel" are not the same number.**
+
+Bracket, at quick price, p50 over the object's own pixels against 0.0409:
+
+| leg | setting | p50 | vs target |
+|---|---|---|---|
+| control | IOR 1.45 · r 0.12 | 0.2756 | 6.75x |
+| b | + specular level 0.15 | 0.2512 | 6.15x — the knob that cannot reach |
+| a | IOR 1.00 · r 0.12 | 0.0129 | 0.32x — overshoots, physically a lie |
+| c | IOR 1.45 · r 0.45 | 0.1221 | 2.99x |
+| **d** | **IOR 1.45 · r 0.90** | **0.0409** | **1.00x** |
+
+**REUSE:** before trusting any sampled value, compute the **incidence angle from
+the solved camera to that surface's normal**. Past ~60 degrees the ratio method
+is reporting the environment. It costs one dot product and it is not in any
+gate in this repo. **KILL CONDITION:** a grazing surface whose sampled ratio
+predicts its rendered value within 20% refutes the scope, not the arithmetic.
+
+---
+
+## 17. A surface that does not respond to its own material is not being rendered
+
+**n = 1 (TRN-002 r29), and the test is free.**
+
+The pet cave's 450 mm cavity was built 2 mm **proud** of its host's face instead
+of **through** it, on the theory that a sub-pixel offset would read the same at
+this camera. The host is solid, so a ray entering the mouth travelled 2 mm and
+hit the face behind it: **450 mm of cavity rendered as a 2 mm groove**, and the
+frame looked plausible.
+
+What named it was not a look and not a critic. It was this:
+
+> swapping the lining's albedo **0.863 → 0.020 — a factor of 40 — moved the
+> region by 1%** (p50 0.348 → 0.344).
+
+**A material change that does not move its own pixels means those pixels are not
+that material's.** It costs one extra quick render, it applies to every object
+that enters a frame for the first time, and no photometric ladder in this repo
+asks it — every one of them compares our value to the target's, which is exactly
+the comparison that stays quiet when the surface is missing.
+
+**The second half is the one that nearly got away.** The white-lining control
+had already been run *on the broken geometry*, where the lining is barely hit,
+and its answer was about to be written up as "occlusion is not the mechanism."
+**A conclusion confirmed by a broken instrument is not a conclusion** — the same
+sentence this lane wrote at r24 about a refutation, now earned from the other
+direction. Re-run on the corrected opening:
+
+| | p50 | % of the mouth below Ylin 0.02 |
+|---|---|---|
+| lining 0.863 (the cave's own) | 0.1884 | 0.0% |
+| lining 0.020 (darkest real textile) | 0.0049 | 79.3% |
+| target | 0.0000 | 85.1% |
+
+So the split is **measured, not asserted: the opening is worth 1.8x and the
+lining 38x.** The material dominates — the opposite of what the round set out to
+prove — and that is only visible because the void run was rejected instead of
+quoted.
+
+**REUSE:** every new object gets one perturbation render before its value is
+believed. **KILL CONDITION:** an object whose pixels move proportionally with
+its albedo needs no further check.
+
+---
+
+## 18. The frame's black is a PLACE, not a surface — and no instrument here can ask for it
+
+**n = 1 (TRN-002 r29).**
+
+Target: **1.914%** of pixels below Ylin 0.02. Ours: **0.007%** — 270x. At the
+1st percentile the target sits at 0.0039 against our 0.0491, so **our darkest 1%
+was 12.6x brighter than theirs**, and the owner graded every version F while it
+was true.
+
+The darkest region in the target is a **cavity**, not a material: 4,284 px at
+Ylin 0.0003, the mouth of a pet cave. **No albedo in this room reaches it.** The
+darkest row in the palette is 0.040 and renders at 0.035–0.070, which is
+arithmetic — a diffuse surface in a room whose white wall reads 0.48 cannot go
+much below albedo x 0.6.
+
+**Every instrument in this lane measures a per-surface photometric ratio, so not
+one of them can ask whether the frame contains anywhere light does not go.** The
+question has no surface to attach to. A ladder comparing our value to the
+target's *per region* will report the cavity's region as "too bright" and offer
+the material lane as the fix, which is where four rounds of this kind of miss go
+to be tuned.
+
+**REUSE:** when a frame reads flat or bright and the per-surface values all
+check out, stop measuring surfaces and segment the reference's dark pixels by
+connected component, then **identify each blob by eye against the reference**.
+In this lane that took twenty minutes and returned a ranked queue with numbers:
+the TV wall (10,135 px), the glass partition (6,308), the cave mouth (4,264),
+the under-bed contact shadow (1,368 at 31x). Three of the four are objects or
+openings, not values.
+
 ## Provenance and how to reuse
 
 Thirteen rounds, one lane, one delivered reference image. Every number traces to
@@ -493,6 +624,14 @@ from the builder's memory.
 distilled into `knowledge/` proper. Entries §1, §6 and §9 have n ≥ 2 instances
 and are the closest to being rules; the rest are single-lane hypotheses with
 kill conditions attached.
+
+**§16–§18 added 2026-08-07 (r29)** and they differ from §1–§15 in a way worth
+flagging rather than smoothing over: all three are n = 1, but **§16 and §17 are
+arithmetic, not induction.** A dielectric at 86 degrees returns 0.69 because
+Fresnel says so, and a surface whose pixels ignore a 40x albedo change is not
+being hit — neither needs a second instance to be true, only a second instance
+to know how often it bites. §18 is the ordinary kind of n = 1 and should be
+read as a hypothesis.
 
 **The one that should be wired first**, because it is the only entry that
 explains why the other fourteen went unbanked for thirteen rounds: §14 — a rule
