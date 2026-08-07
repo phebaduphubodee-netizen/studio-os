@@ -351,6 +351,107 @@ def bundle_debt(bundle_root, spec_path, waivers_path=None):
     return [d for _, _, d in sorted(owing)]
 
 
+
+# --- R9: NOT SHIPPED AS A GATE. Diagnostic only, and here is why -------------
+# The prose draft proposed a floor: `D(N) <= 0.95*D(N-1) OR O(N) <= O(N-1)-1`,
+# with D a median relative distance over a frozen scalar panel. Its author sent
+# it back for the OR (closing one open item clears the floor however far the
+# picture moved), rewrote it without the OR, and then ran it against this lane's
+# own published history. IT NEVER FIRES:
+#
+#     round     D    verdict
+#      r23  0.3031   FIRST
+#      r24  0.2168   CLEARS  -28.5%
+#      r25  0.1914   CLEARS  -11.7%
+#      r26  0.1630   CLEARS  -14.8%
+#      r27  0.1510   CLEARS   -7.4%
+#
+# Per row, the reason is plain and it is the twelfth flattering scorer in this
+# repo rather than a tuning problem:
+#
+#     row            r23     r24     r25     r26     r27    r23->r27
+#     clipped_pct  81.471  20.500   1.735   2.647   2.676     0.03x
+#     p99           0.398   0.217   0.191   0.011   0.012     0.03x
+#     p50           0.131   0.005   0.108   0.025   0.039     0.30x
+#     LEVEL         0.046   0.153   0.171   0.163   0.151     3.28x WORSE
+#     SHAPE         0.303   0.276   0.317   0.199   0.200     0.66x
+#
+# The median descends every round because ONE row collapsed from 82x off target
+# to 2.7x, and that row's scale is an artifact of its target being 0.034. Under
+# it, LEVEL got 3.3x WORSE across four rounds and no gate said so. THE ROWS ARE
+# NOT COMMENSURABLE, so no aggregate over them means anything: `max` is captured
+# by the same row, and "no row may worsen" ends the unit at r26 and would have
+# killed r24 and r26, which were the two good rounds.
+#
+# Two alternatives were tried and both fail. A defensible single floor is NOT
+# solved, and shipping a third scorer for a repo already burned eleven times by
+# scorers would be the disease. So:
+#
+#   * `distance` and `yield_report` are DIAGNOSTIC. They print the per-row table
+#     every round. That alone is worth having: it is the instrument that would
+#     have shown LEVEL degrading for four rounds while the headline improved.
+#   * `cap_check` DOES gate, because counting rounds needs no aggregate.
+#
+# What would solve it, for whoever picks this up: a per-row TOLERANCE declared
+# with the panel before round 1 (how much of this row's distance is noise), so
+# "worsened" becomes a claim with a number behind it instead of any change of
+# sign. That is a measurement task, not a rule-writing task, and it is exactly
+# the work this repo keeps skipping in favour of writing the rule.
+YIELD_FLOOR = 0.05          # informational: the descent the draft asked for
+
+
+def distance(scalars, targets):
+    """D - median relative distance over a FROZEN panel. DIAGNOSTIC ONLY; see the
+    note above for why this number must not carry a verdict."""
+    ds = []
+    for k, t in targets.items():
+        if k in scalars and scalars[k] is not None:
+            ds.append(abs(scalars[k] - t) / (abs(t) if t else 1.0))
+    if not ds:
+        raise ValueError("no panel rows present - D is undefined, not zero")
+    ds.sort()
+    n = len(ds)
+    return ds[n // 2] if n % 2 else 0.5 * (ds[n // 2 - 1] + ds[n // 2])
+
+
+def per_row(scalars, targets):
+    """The table that matters. Every panel row's own distance, unaggregated."""
+    return {k: abs(scalars[k] - t) / (abs(t) if t else 1.0)
+            for k, t in targets.items() if k in scalars and scalars[k] is not None}
+
+
+def yield_report(ledger, targets):
+    """Per-round D plus per-row distances and which rows WORSENED. No verdict."""
+    out, prev = [], None
+    for row in ledger:
+        rows = per_row(row["scalars"], targets)
+        worse = sorted(k for k in rows if prev and k in prev and rows[k] > prev[k])
+        out.append({"round": row["round"], "D": distance(row["scalars"], targets),
+                    "rows": rows, "worsened": worse})
+        prev = rows
+    return out
+
+
+def cap_check(ledger_row, rounds_done, full_frames_done):
+    """R10-proposed: a unit declares its cap BEFORE round 1. No row -> no render."""
+    if not ledger_row:
+        return ["no ledger row: a unit declares cap_rounds and cap_full_frames "
+                "before its first render. TRN-001, the only unit this curriculum "
+                "has closed, cost 20 rounds and 37 full frames; TRN-002 passed "
+                "135% of that with no rule anywhere that noticed."]
+    out = []
+    for key, done in (("cap_rounds", rounds_done),
+                      ("cap_full_frames", full_frames_done)):
+        cap = ledger_row.get(key)
+        if cap is None:
+            out.append(f"ledger row declares no {key}")
+        elif done > cap:
+            out.append(f"{key} exceeded: {done} > {cap}. Only the owner extends a "
+                       f"cap (R3), once per unit, with the new number and its "
+                       f"reason written in the ledger row BEFORE the next render.")
+    return out
+
+
 def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
           lane_dir=None):
     v = audit_spec(spec, require_seen)

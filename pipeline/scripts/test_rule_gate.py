@@ -261,6 +261,72 @@ def test_bundle_debt_honours_a_written_waiver(tmp_path):
     assert len(RG.bundle_debt(str(tmp_path), "spec_r28.json")) == 1
 
 
+# --- R9 diagnostic + R10 cap -------------------------------------------------
+
+PANEL = {"clipped_pct": 0.034, "p99": 0.7153, "p50": 0.3724, "LEVEL": 1.000,
+         "SHAPE": 0.0}
+# This lane's own published rows, gates #10-#15.
+HISTORY = [
+    ("r23", {"clipped_pct": 2.804, "p99": 1.0000, "p50": 0.3237, "LEVEL": 1.046, "SHAPE": 0.3031}),
+    ("r24", {"clipped_pct": 0.731, "p99": 0.8704, "p50": 0.3742, "LEVEL": 0.847, "SHAPE": 0.2761}),
+    ("r25", {"clipped_pct": 0.093, "p99": 0.8522, "p50": 0.3323, "LEVEL": 0.829, "SHAPE": 0.3165}),
+    ("r26", {"clipped_pct": 0.124, "p99": 0.7232, "p50": 0.3818, "LEVEL": 0.837, "SHAPE": 0.1989}),
+    ("r27", {"clipped_pct": 0.125, "p99": 0.7238, "p50": 0.3869, "LEVEL": 0.849, "SHAPE": 0.2000}),
+]
+LEDGER = [{"round": r, "scalars": s} for r, s in HISTORY]
+
+
+def test_a_target_of_zero_uses_the_raw_value_not_a_division():
+    assert RG.distance({"SHAPE": 0.2}, {"SHAPE": 0.0}) == 0.2
+
+
+def test_D_is_undefined_when_no_panel_row_is_present():
+    try:
+        RG.distance({"other": 1.0}, PANEL)
+    except ValueError:
+        return
+    assert False, "an empty panel must raise, never return 0.0"
+
+
+def test_the_aggregate_D_descends_on_every_round_of_this_lane():
+    """The reason D is DIAGNOSTIC and not a gate. It never fires, because one
+    row collapsed from 82x off target to 2.7x and carries the median."""
+    ds = [r["D"] for r in RG.yield_report(LEDGER, PANEL)]
+    assert ds == sorted(ds, reverse=True), ds
+
+
+def test_LEVEL_got_worse_across_the_same_rounds_the_aggregate_called_progress():
+    rows = RG.yield_report(LEDGER, PANEL)
+    assert rows[-1]["rows"]["LEVEL"] > 3 * rows[0]["rows"]["LEVEL"]
+
+
+def test_the_per_row_report_names_rows_that_worsened_while_D_fell():
+    """r27: D falls 7.4% while four of five rows move away from target. This is
+    the whole value of the diagnostic."""
+    rows = RG.yield_report(LEDGER, PANEL)
+    assert rows[-1]["D"] < rows[-2]["D"]
+    assert set(rows[-1]["worsened"]) == {"SHAPE", "clipped_pct", "p50", "p99"}
+
+
+def test_no_ledger_row_means_round_one_may_not_render():
+    v = RG.cap_check(None, 0, 0)
+    assert len(v) == 1 and "before its first render" in v[0]
+
+
+def test_a_cap_that_is_declared_and_not_exceeded_passes():
+    assert RG.cap_check({"cap_rounds": 20, "cap_full_frames": 40}, 19, 37) == []
+
+
+def test_an_exceeded_cap_names_the_rule_that_extends_it():
+    v = RG.cap_check({"cap_rounds": 20, "cap_full_frames": 40}, 27, 25)
+    assert len(v) == 1 and "cap_rounds exceeded: 27 > 20" in v[0] and "R3" in v[0]
+
+
+def test_a_ledger_row_missing_a_cap_field_is_a_violation():
+    v = RG.cap_check({"cap_rounds": 20}, 1, 1)
+    assert len(v) == 1 and "cap_full_frames" in v[0]
+
+
 # --- the charter: the product is the learning ------------------------------
 
 def test_a_lane_with_no_distillation_fails(tmp_path):

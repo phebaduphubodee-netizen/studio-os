@@ -1559,7 +1559,99 @@ blocks. Frame of record **trn002_mat_r19**.
 
 ---
 
-# PROPOSED AMENDMENT — 2026-08-07 — awaiting owner verdict (R3)
+# AMENDMENT 2026-08-07 — RULED. Two adopted, one sent back to be a program first
+
+> **OWNER ORDER 2026-08-07: *"ตามที่คุณบอกเลย"*** — after the builder reviewed its own
+> proposal and recommended against a third of it. What follows is the ruling; the
+> full draft that produced it is kept below, unedited, because a proposal that was
+> partly rejected is evidence and deleting it would hide the reasoning.
+
+## ADOPTED — rule 10, THE HARD CAP
+
+Unchanged from the draft. A unit declares `cap_rounds` and `cap_full_frames` in its
+ledger row BEFORE its first render; default **20 rounds / 40 full frames**; no row →
+round 1 may not render; only the owner extends a cap (R3), once per unit, in writing,
+before the next render. **The default is not invented** — TRN-001, the only unit this
+curriculum has ever closed, cost 20 rounds and 37 full frames. TRN-002 is at 27 rounds
+and ≥25 full frames in phase 2 alone, i.e. 135% of the only closed precedent, and no
+rule anywhere noticed. **It is a program**: `rule_gate.cap_check`, 4 tests. Counting
+rounds needs no aggregate, which is the whole reason this one survived.
+
+## ADOPTED — rule 11, THE 60-SECOND RULE, and the cost it carries is now written
+
+Unchanged: any PASS condition must be answerable by a human in under 60 seconds, from
+a single artifact, without the builder explaining how it was measured. YIELD decides
+whether to keep paying; RANK decides whether it is done; a number that needs a
+paragraph is evidence, never a verdict.
+
+**THE COST, which the draft buried and is now stated plainly: after adopting this, this
+lane has NO usable pass condition at all.** The scalar panel is demoted to diagnostic.
+The RANK sheet is the only surviving candidate, its one built sheet is spent (the
+answer key was opened 2026-08-07 in a misreading), and its judge has just graded every
+version of this unit **F**. That is the true state and it should be uncomfortable —
+naming it is worth more than a condition nobody can run.
+
+## SENT BACK — rule 9, THE YIELD FLOOR. It is not a rule until it is a program, and it is not solved
+
+The builder recommended against its own draft and the owner ruled with it. Two
+independent reasons, the second found only by building it:
+
+**1. It was PROSE.** The audit that produced this amendment had just found that this
+repo answers every failure with writing, and that the two rules which did become
+programs were disabled by an omitted argument and a bypass flag. Three more paragraphs
+is the finding, not the fix.
+
+**2. Built and run against this lane's own history, IT NEVER FIRES — and the reason is
+that it is the twelfth flattering scorer here.** The draft's `OR` clause went first
+(closing one open item clears the floor however far the picture moved). Rewritten
+without it, on the five rows published for every round of gates #10–#15:
+
+| round | D | verdict |
+|---|---|---|
+| r23 | 0.3031 | FIRST |
+| r24 | 0.2168 | CLEARS −28.5% |
+| r25 | 0.1914 | CLEARS −11.7% |
+| r26 | 0.1630 | CLEARS −14.8% |
+| r27 | 0.1510 | CLEARS −7.4% |
+
+Per row, the reason is not tuning:
+
+| row | r23 | r24 | r25 | r26 | r27 | r23→r27 |
+|---|---|---|---|---|---|---|
+| clipped_pct | 81.471 | 20.500 | 1.735 | 2.647 | 2.676 | 0.03x |
+| p99 | 0.398 | 0.217 | 0.191 | 0.011 | 0.012 | 0.03x |
+| p50 | 0.131 | 0.005 | 0.108 | 0.025 | 0.039 | 0.30x |
+| **LEVEL** | **0.046** | 0.153 | 0.171 | 0.163 | 0.151 | **3.28x WORSE** |
+| SHAPE | 0.303 | 0.276 | 0.317 | 0.199 | 0.200 | 0.66x |
+
+The median descends every round because ONE row collapsed from 82x off target to
+2.7x, and that row's scale is an artifact of its target being 0.034. Underneath it
+**LEVEL got 3.3x worse across four rounds and no gate said so.** The rows are not
+commensurable, so no aggregate over them means anything: `max` is captured by the
+same row, and "no row may worsen" ends the unit at r26 — killing r24 and r26, which
+were the two good rounds.
+
+**What ships instead, today:** `rule_gate.per_row` / `yield_report` as a DIAGNOSTIC
+printed every round — no verdict, no termination. On r27 it says immediately what
+fifteen gates could not: *D fell 7.4% while four of five rows moved AWAY from target.*
+5 tests, including this lane's real history as the fixture.
+
+**What would solve it, for whoever picks it up:** a per-row TOLERANCE declared with
+the panel before round 1 — how much of each row's distance is noise — so "worsened"
+becomes a claim with a number behind it instead of any change of sign. That is a
+MEASUREMENT task, not a rule-writing task, and it is precisely the work this repo
+keeps skipping in favour of writing the rule.
+
+---
+
+# THE DRAFT THAT WAS RULED ON — 2026-08-07 — superseded, kept unedited
+
+> **RULED ABOVE.** Rules 10 and 11 adopted; rule 9 sent back to be a program and
+> then found unsolvable in its proposed form. This text is kept because a
+> proposal that was partly rejected is evidence, and because rule 9's own
+> negative control here — *"it would NOT have ended TRN-002 by r27"* — was
+> computed on a panel the author did not re-derive, and the re-derivation
+> changed the answer. That is worth being able to read back.
 
 > Written by the builder after an outside structural audit. **NOT ADOPTED.**
 > Every rule in this charter that binds was adopted by owner order, and this one
