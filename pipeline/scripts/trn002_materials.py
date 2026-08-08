@@ -555,7 +555,14 @@ RETIRED = {"veneer_travertine"}
 #     r14. Nothing noticed for eighteen rounds, because nothing counted.
 #
 # The check is four lines and it would have caught both the day they happened.
-ORPHAN_ROWS = {"blind_slat", "leg_dark"}
+# EMPTIED at r31: both were built. The blind became a mass (it had had a
+# generator, a builder, a palette row, three tests and a light aimed at it for
+# thirty specs), and the chair's measured legs and seat were restored from
+# spec_r12 — where a sighted audit had put them, and from which r14 silently
+# reverted. `leg_dark` sitting unworn for eighteen rounds was the ONLY trace
+# left that the chair had ever been measured, which is the argument for this
+# whole check: the orphan outlived every gate, every critic and every report.
+ORPHAN_ROWS = set()
 
 
 def unworn_rows(mass_names, palette=None):
