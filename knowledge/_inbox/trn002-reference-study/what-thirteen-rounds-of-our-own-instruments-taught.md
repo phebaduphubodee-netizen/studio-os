@@ -612,6 +612,115 @@ the TV wall (10,135 px), the glass partition (6,308), the cave mouth (4,264),
 the under-bed contact shadow (1,368 at 31x). Three of the four are objects or
 openings, not values.
 
+## 19. An instrument that compares OUR value to THEIRS at the same place cannot see a MISSING OPENING
+
+**n = 1 (TRN-002 r30), and it cost thirty rounds.**
+
+The id mask, run for the first time on that zone: **53.4% of the partition zone
+(u140-410, v215-650) is `back_wall`.** What every critic and every gate had read
+as frosted glass panels was the bedroom's back wall, seen through a doorway that
+was never cut. The frame around it — head, two jambs, mullion, bottom rail — is
+prov M throughout and lands inside 0.2 px of its measured landmarks. **A
+measured frame on a solid wall projects exactly like a measured frame on an
+opening.**
+
+**Why it survived, and it is not that nobody looked.** Every instrument in this
+lane compares *our value at a place* to *the target's value at the same place*,
+and answers in a currency the material lane can spend. A wall where a room
+should be **is not a value error** — it is an absence — so the ladder reported
+the zone as "too bright and too flat", which was true, and sent every next round
+to the palette. Both blind critics filed items about the partition; both were
+triaged toward material, correctly by their own logic.
+
+**The shape of the blind spot:** a ratio needs two surfaces to divide. When the
+defect is that a surface should NOT BE THERE AT ALL, there is nothing to put in
+the denominator, so the metric reports the nearest thing it can express.
+
+**REUSE — and this is the cheap part.** Run the id mask over any region the
+frame keeps losing and **ask what fills it**, not how bright it is. Twenty
+seconds, and it names absences no photometric comparison can. Pair with §18:
+segment the reference's own regions, then ask which of OUR objects covers each.
+Both questions are about identity, and neither is expressible as a ratio.
+**KILL CONDITION:** a lane whose ladder has ever flagged a missing object as
+missing, rather than as mis-valued, refutes the scope.
+
+---
+
+## 20. A wattage that has to be absurd to work is not under-powered — it is pointed at, or standing behind, a wall
+
+**n = 4 in this lane alone, which makes it the most-repeated defect on record here.**
+
+r30 cut the partition opening and added an emitter for the room behind it. The
+bracket climbed toward **240 W to light a dressing room whose own window runs
+37 W**, and the wattage was the only symptom either underlying defect ever
+showed. Two, stacked:
+
+- **AIM.** Blender emits along its own -Z and the XYZ Euler is `Rz·Ry·Rx`, so
+  `rot (90,0,0)` sends the normal to **+y** — into the closet's own back wall
+  90 mm behind the card, with the opening on the far side. Prior instances:
+  BLIND fired into a wall 15 mm away for every round until r25; r25 found a
+  third light yawed 180 degrees.
+- **POSITION.** Fixing the yaw exposed the same error one level out. The card
+  stood 90 mm IN FRONT of the wall it had to light pointing away from it, and
+  BEHIND the panel's lit face pointing away from that too — **every surface the
+  camera saw through the opening was lit by bounce alone.** Moved inside the
+  opening, high, looking back and down: the same regions went from wanting
+  167-267 W to wanting **24-47 W**, with slopes **7-10x steeper**.
+
+**THE FIX IS THE CLASS, NOT THE INSTANCE, and that is the transferable part.**
+`aim_at_mm` declares WHERE an emitter points as a *place*; `rot_for_aim` solves
+the Euler from it — **R9 applied to light: an aim derivable from a place must
+never be typed**; `normal_of` / `aim_error_deg` are pure and check the claim
+against the maths. The offending light no longer has a typed `rot_deg` at all,
+so its defect is now **unrepresentable**.
+
+**The guard paid for itself twice within the hour it was written:** it found
+three concealed strips that declared no aim at all, and it caught
+`rot_for_aim`'s own first cut at **96 degrees out** (`atan2(dx,-dy)` where
+`atan2(-dx,dy)` was meant) **before that reached a render**. A guard that
+catches the function written to retire the defect it guards is the only kind
+worth having.
+
+**REUSE:** any emitter whose power has to be an order of magnitude off the
+room's other sources — check the normal and the standoff before touching the
+number. **KILL CONDITION:** an emitter that genuinely needs an anomalous wattage
+with a correct normal and clear line of sight refutes this.
+
+---
+
+## 21. A palette row no mass wears is a decision that never reached a render
+
+**n = 3 instances found by one four-line check.**
+
+Looking at the finished r30 frame prompted the question nobody had asked: *which
+PALETTE rows does no mass actually wear?*
+
+- **`blind_slat`** — the venetian blind the target shows plainly on the left
+  wall. There is a mesh generator with a **MEASURED** docstring (pitch 29.4 mm,
+  extent back-projected from the target's own sliver), a builder path, a palette
+  row with provenance, **three tests**, and an area light whose comment states
+  its job is *"to light ITS OWN SLATS … and until r25 there were no slats."*
+  **Across all thirty specs there has never been a `blind` mass.** Every part of
+  the machine exists except the one line that puts it in the room.
+- **`leg_dark`** — the chair's black tapered legs, among the darkest elements in
+  the target and named in the row's own provenance. `chair_leg_1..4` existed in
+  spec_r12 and were gone by r14. **Eighteen rounds unnoticed, because nothing
+  counted.**
+- **`strip_led`** — sat in `EMISSIVE` naming a material with no `PALETTE` row,
+  and the builder iterates `PALETTE`, so **no code path in any round could reach
+  it.** Deleted rather than documented: a dead declaration is worse than none,
+  because it reads as a decision that was made.
+
+Same family as §17 and as this lane's artwork (measured at r2, not built until
+r13) — **MEASURED AND NEVER BUILT**. What is new is that it is now **countable**.
+
+**REUSE — wire it as a RATCHET, not a report.** A pure `unworn_rows`, a pinned
+list of the known orphans, and **two** tests: one refusing any new orphan, one
+refusing a STALE entry so a name must leave the list once its object is built.
+Without the second half the list becomes the permission slip it was written not
+to be. **KILL CONDITION:** a lane where every palette row has always had a
+wearer does not need this.
+
 ## Provenance and how to reuse
 
 Thirteen rounds, one lane, one delivered reference image. Every number traces to
@@ -624,6 +733,16 @@ from the builder's memory.
 distilled into `knowledge/` proper. Entries §1, §6 and §9 have n ≥ 2 instances
 and are the closest to being rules; the rest are single-lane hypotheses with
 kill conditions attached.
+
+**§19–§21 added 2026-08-07 (r30).** §20 is the only entry in this file with
+n ≥ 4 in a single lane, which makes it the closest thing here to a rule; §19 and
+§21 are n = 1 and n = 3 and should be read as hypotheses with their kill
+conditions attached. All three share one shape worth naming on its own: **every
+instrument in this lane measures a RATIO, and a ratio needs two things to
+divide. None of them can ask whether something is simply ABSENT** — not a
+missing opening (§19), not an emitter pointed the wrong way (§20, whose only
+symptom was a number in a different table), not an object that has a generator
+and a material and no mass (§21). That is one blind spot wearing three faces.
 
 **§16–§18 added 2026-08-07 (r29)** and they differ from §1–§15 in a way worth
 flagging rather than smoothing over: all three are n = 1, but **§16 and §17 are
