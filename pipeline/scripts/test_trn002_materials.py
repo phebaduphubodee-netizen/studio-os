@@ -147,3 +147,40 @@ def test_the_cavity_lining_is_darker_than_any_lit_surface_in_the_room():
     assert 0.005 <= sum(alb) / 3 <= 0.05, alb
     assert sum(alb) / 3 < min(sum(MAT.PALETTE[k][0]) / 3
                               for k in ("upholstery_bed", "rug_cream", "paint_white"))
+
+
+# ------------------------------------------------- unworn rows (r30) --
+
+def _newest_spec_masses():
+    import re
+    p = max(_spec_files(), key=lambda f: int(re.search(r"spec_r(\d+)", f).group(1)))
+    with open(p, encoding="utf-8") as f:
+        return [m["name"] for m in json.load(f)["masses"]]
+
+
+def test_orphan_palette_rows_only_ever_shrink():
+    """A RATCHET. Every row in PALETTE is a decision; a row no mass wears is a
+    decision that never reached a render. The two known orphans are both things
+    the target plainly shows — the venetian blind (which has a generator, a
+    builder, a palette row, three tests and a light aimed at it, and has never
+    had a mass in thirty specs) and the chair's black legs (built once at r12,
+    dropped by r14, unnoticed for eighteen rounds). New ones are refused."""
+    orphans = MAT.unworn_rows(_newest_spec_masses())
+    new = orphans - MAT.ORPHAN_ROWS
+    assert not new, f"new orphan palette rows: {sorted(new)}"
+
+
+def test_the_orphan_list_is_not_stale():
+    """The other half of a ratchet: once an orphan is built, it must leave the
+    list. Otherwise the list becomes the permission slip it was written not to
+    be."""
+    orphans = MAT.unworn_rows(_newest_spec_masses())
+    stale = MAT.ORPHAN_ROWS - orphans
+    assert not stale, f"listed as orphans but now worn — delete them: {sorted(stale)}"
+
+
+def test_every_emissive_key_has_a_palette_row():
+    """`strip_led` sat in EMISSIVE with no PALETTE row for the whole lane, so
+    build_materials — which iterates PALETTE — never created it. Same class."""
+    missing = set(MAT.EMISSIVE) - set(MAT.PALETTE)
+    assert not missing, f"EMISSIVE names with no material to attach to: {sorted(missing)}"

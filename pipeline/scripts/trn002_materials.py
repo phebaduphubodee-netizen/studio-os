@@ -62,6 +62,13 @@ EXACT = {
     "floor": "floor_joint",
     "floor_planks": "floor_herringbone",
     "back_wall": "paint_white", "left_wall": "paint_white",
+    # r30 split `back_wall` into the three pieces that stop at the partition
+    # frame, because the single slab was standing IN the opening — 53.4% of the
+    # partition zone by id mask, which thirty rounds of critics read as frosted
+    # glass. Same paint; the reference-surface measurement (n=65,014 px) lives
+    # in back_wall_R, since that is where those pixels are.
+    "back_wall_L": "paint_white", "back_wall_R": "paint_white",
+    "back_wall_head": "paint_white",
     "right_wall": "paint_white", "door_wall": "paint_white",
     "ceil_main": "paint_ceiling",
     "ward_bulkhead": "lacquer_wardrobe", "ward_body": "lacquer_wardrobe",
@@ -82,6 +89,10 @@ EXACT = {
     "part_jamb_R": "frame_black", "part_stile_M": "frame_black",
     "part_rail_B": "frame_black", "part_rail_top": "frame_black",
     "closet_floor": "floor_herringbone", "closet_back": "paint_white",
+    # the wardrobe niche behind the partition — same oak as the whole left run.
+    # Grain VERTICAL, which is what a tall lining panel shows and what the
+    # target's own niche shows at 4x.
+    "closet_oak": "veneer_oak",
     "desk": "veneer_oak", "console": "veneer_oak",
     "desk_pier": "veneer_oak",
     "shelf_col_base": "veneer_oak", "shelf_col_back": "veneer_oak",
@@ -462,7 +473,14 @@ UV_MAPPED = {"floor_herringbone"}
 # under a fixture is DARKER than a metre away). Making the lens an emissive
 # SURFACE rather than a bright point is what separates the two: a surface that
 # small blows its own pixels and lights almost nothing.
-EMISSIVE = {"lens_warm": 34.0, "strip_led": 26.0}
+# `strip_led: 26.0` was DELETED here at r30, not documented. It named a
+# material that has never existed in PALETTE, and build_materials iterates
+# PALETTE — so the entry could not have been reached by any code path in any
+# round. The etagere strips are AREA lights (trn002_light.STRIP), which is the
+# approach that actually shipped; this was the abandoned other one, left behind
+# looking like a setting. A dead declaration is worse than no declaration:
+# it reads as a decision that was made.
+EMISSIVE = {"lens_warm": 34.0}
 
 # ------------------------------------------------------------------ fresnel --
 # {key: (ior, specular_ior_level)}. A SEPARATE table from PALETTE, and the
@@ -511,6 +529,50 @@ EMISSIVE = {"lens_warm": 34.0, "strip_led": 26.0}
 # the table as the bracket's dark end, never as a shipped value: it is a
 # physical lie that happens to land near the right number.
 FRESNEL = {}
+
+
+# Names kept alive ONLY so past specs still render — see the rows themselves.
+# A retired name is a deliberate orphan; every other orphan is a defect.
+RETIRED = {"veneer_travertine"}
+
+# Rows the CURRENT spec does not wear. This is a RATCHET, not a permission
+# slip: the pin below lets it shrink and never grow, and each entry has to say
+# what the target shows that we are not building.
+#
+# WHY IT EXISTS. r30 went looking for orphan rows on a hunch and found the most
+# expensive instance of this lane's own recorded class, MEASURED AND NEVER
+# BUILT:
+#   blind_slat  — the venetian blind. There is a mesh generator (G.slat_stack)
+#     with a MEASURED docstring (pitch 29.4 mm, extent back-projected from the
+#     target's own sliver), a builder path (_slats), a palette row, THREE tests
+#     in test_trn002_geom, and an area light in trn002_light whose comment says
+#     its job is "to light ITS OWN SLATS ... and until r25 there were no slats".
+#     Across all thirty specs THERE HAS NEVER BEEN A `blind` MASS. Every part of
+#     the machine exists except the one line that puts it in the room, and the
+#     target shows the blind plainly on the left wall.
+#   leg_dark    — the chair's black tapered legs, among the darkest elements in
+#     the target's frame. chair_leg_1..4 existed in spec_r12 and were dropped by
+#     r14. Nothing noticed for eighteen rounds, because nothing counted.
+#
+# The check is four lines and it would have caught both the day they happened.
+ORPHAN_ROWS = {"blind_slat", "leg_dark"}
+
+
+def unworn_rows(mass_names, palette=None):
+    """PALETTE rows that no mass in `mass_names` wears, minus retired names.
+
+    PURE. An unworn row is a decision that never reached a render — the same
+    shape as a FRESNEL row naming no material, or `strip_led` sitting in
+    EMISSIVE with no PALETTE row to attach to.
+    """
+    pal = palette if palette is not None else PALETTE
+    worn = set()
+    for n in mass_names:
+        try:
+            worn.add(material_for(n))
+        except KeyError:
+            pass
+    return set(pal) - worn - RETIRED
 
 
 def resolve_fresnel(palette, override=None):
