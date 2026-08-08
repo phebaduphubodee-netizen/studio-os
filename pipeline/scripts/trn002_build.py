@@ -248,9 +248,13 @@ def _cloth_duvet(m, built, mat):
     for n in p["colliders"]:
         ob = built.get(n)
         if ob is None:
-            # a sim-surface proxy from an earlier cloth in the stack
+            # a sim-surface proxy from an earlier cloth in the stack. The proxy
+            # is named after its cloth, which now carries the SM_TRN002_ prefix
+            # (see search_bake below) — both spellings are tried so a stack
+            # baked before that change still resolves.
             import bpy as _b
-            ob = _b.data.objects.get(f"{n}__simsrf")
+            ob = (_b.data.objects.get(f"SM_TRN002_{n}__simsrf")
+                  or _b.data.objects.get(f"{n}__simsrf"))
             if ob is None:
                 raise KeyError(f"{m['name']}: collider '{n}' not built and no "
                                f"'{n}__simsrf' proxy — bake order wrong?")
@@ -290,8 +294,13 @@ def _cloth_duvet(m, built, mat):
         # bounds go to search_bake ONLY (the PRJ-002 pattern): bake_sheet with
         # bounds RAISES on first violation, which kills the ladder before it
         # can halve slack or rescale — the first integration did exactly that.
+        # THE OBJECT'S NAME IS BORN HERE, not at search_bake — search_bake's
+        # `name` only labels its progress lines. Changing the outer one alone
+        # renamed nothing, which is worth leaving on the record: the first fix
+        # for the missing-cloth defect was applied to the wrong call and the
+        # mask came back with the same 68 objects.
         return drape.bake_sheet(
-            m["name"], vs, fs, colliders,
+            f"SM_TRN002_{m['name']}", vs, fs, colliders,
             frames=p.get("frames", 55), fabric=p.get("fabric", "linen"),
             mat=mat if mat is not None else _clay(m["value"]),
             thickness=p["thickness"] * MM, slack=sl,
@@ -316,8 +325,18 @@ def _cloth_duvet(m, built, mat):
     # what keeps the slack — and SLACK IS THE FOLD AMPLITUDE the target has 6.7x
     # more of than we do.
     hem = p.get("hem_min")
+    # THE PREFIX IS NOT COSMETIC. Every other mass here is emitted as
+    # `SM_TRN002_<name>`; these three came out of drape under their BARE names,
+    # so `id_mask.py … SM_TRN002_` — the filter every ladder measurement in this
+    # lane is taken through — never saw the duvet or either throw. Thirty-one
+    # rounds of per-object value measurement silently excluded the three largest
+    # soft-goods objects in the frame, including the one the C2 critics named as
+    # the target's brightest. A selector that keys on a naming convention is only
+    # as good as the convention's WEAKEST caller, and this was it. (The guard
+    # that makes it impossible to happen again is in trn002_lightcheck.ladder:
+    # a spec mass with no mask row is now reported, not skipped.)
     return drape.search_bake(
-        build, name=m["name"], bounds=bounds,
+        build, name=f"SM_TRN002_{m['name']}", bounds=bounds,
         hem_min=None if hem is None else hem * MM, top_z=p["z"] * MM,
         slack=p.get("slack", 0.04))
 

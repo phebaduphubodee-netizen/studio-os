@@ -180,6 +180,204 @@ def test_too_few_rows_returns_nothing_rather_than_a_number():
     assert LC.level_and_shape({"rows": {"a": _row(1.0), "b": _row(1.1)}}) is None
 
 
+# ---- SHAPE_FLAT: the blind spot px weighting has ------------------------------
+
+def test_px_weighting_hides_an_error_the_objects_carry():
+    """r27's real shape, in miniature. Two huge planes agree; four small
+    objects are wrong by 1.5x in both directions. The px-weighted SHAPE says
+    the frame is nearly right, which it is — and says nothing about the objects,
+    which is the question a viewer is asking.
+
+    Measured on r27's own artifacts, the real numbers were 0.2000 weighted
+    against 0.3359 flat."""
+    lad = {"rows": {"wall": _row(1.0, n=150000), "ceiling": _row(1.0, n=100000),
+                    "desk": _row(1.5, n=800), "chair": _row(0.67, n=800),
+                    "lamp": _row(1.5, n=600), "vase": _row(0.67, n=600)}}
+    ls = LC.level_and_shape(lad)
+    assert ls["shape"] < 0.05, "the frame IS right, and SHAPE should say so"
+    assert ls["shape_flat"] > 0.3, "the objects are NOT, and something must say so"
+    assert ls["weight_gap"] > 6
+
+
+def test_both_spreads_are_still_invariant_to_the_reference():
+    """SHAPE_FLAT would be worthless if it could be moved by re-normalising."""
+    base = {"rows": {"a": _row(0.8, n=10), "b": _row(1.0, n=900),
+                     "c": _row(1.5, n=50), "d": _row(0.6, n=7000),
+                     "e": _row(1.2, n=300)}}
+    k = 0.61
+    shifted = {"rows": {n: _row(v["ladder_error"] * k, n=v["n_px"])
+                        for n, v in base["rows"].items()}}
+    x, y = LC.level_and_shape(base), LC.level_and_shape(shifted)
+    assert abs(y["shape"] - x["shape"]) < 1e-9
+    assert abs(y["shape_flat"] - x["shape_flat"]) < 1e-9
+
+
+# ---- SLOPE / RHO: the two readings a spread of ratios cannot give -------------
+
+def _vrow(o, t, n=1000, align="ALIGNED", spread=1.0):
+    return {"ours": o, "target": t, "ladder_error": o / t, "n_px": n,
+            "alignment": align, "spread_ratio": spread}
+
+
+_TGT = (0.52, 0.44, 0.37, 0.30, 0.21, 0.15, 0.09)
+
+
+def test_a_uniform_exposure_error_is_not_a_compression():
+    """THE NEGATIVE CONTROL, and the reason SLOPE exists. Every object at 0.70x
+    the target is one exposure scalar: LEVEL catches it, and SLOPE and RHO must
+    both come back perfect. A metric that called this 'flat' would send the lane
+    to repaint materials over a mistake in one number."""
+    lad = {"rows": {f"o{i}": _vrow(0.70 * t, t) for i, t in enumerate(_TGT)}}
+    co = LC.contrast_and_order(lad)
+    assert abs(co["slope"] - 1.0) < 1e-9
+    assert abs(co["rho"] - 1.0) < 1e-9
+    assert abs(co["range_ours"] - co["range_target"]) < 1e-9
+    assert abs(LC.level_and_shape(lad)["level"] - 0.70) < 1e-9
+
+
+def test_a_compressed_frame_is_caught_with_the_order_intact():
+    """Ours = target^0.5 rescaled: the exact 'every object is the same white
+    plastic' failure. The ORDER is perfect, so RHO alone would pass it."""
+    import numpy as _n
+    lad = {"rows": {f"o{i}": _vrow(0.5 * t ** 0.5, t) for i, t in enumerate(_TGT)}}
+    co = LC.contrast_and_order(lad)
+    assert abs(co["slope"] - 0.5) < 1e-6
+    assert abs(co["rho"] - 1.0) < 1e-9, "order is intact — RHO cannot catch this"
+    assert co["range_ours"] < co["range_target"]
+    assert _n.isfinite(co["slope"])
+
+
+def test_a_scrambled_order_is_caught_with_the_range_intact():
+    """The complement: same values, wrong objects. SLOPE degrades but RHO is
+    the reading that names it."""
+    shuffled = [_TGT[i] for i in (3, 0, 6, 1, 5, 2, 4)]
+    lad = {"rows": {f"o{i}": _vrow(shuffled[i], t) for i, t in enumerate(_TGT)}}
+    co = LC.contrast_and_order(lad)
+    assert abs(co["range_ours"] - co["range_target"]) < 1e-9, "same values"
+    assert co["rho"] < 0.6
+
+
+def test_slope_and_rho_survive_a_change_of_reference():
+    """Reference-invariance is claimed in the docstring; a claim in a docstring
+    is not a property."""
+    lad = {"rows": {f"o{i}": _vrow(0.5 * t ** 0.5, t) for i, t in enumerate(_TGT)}}
+    scaled = {"rows": {k: _vrow(v["ours"] * 1.9, v["target"] * 0.4)
+                       for k, v in lad["rows"].items()}}
+    a, b = LC.contrast_and_order(lad), LC.contrast_and_order(scaled)
+    assert abs(a["slope"] - b["slope"]) < 1e-9
+    assert abs(a["rho"] - b["rho"]) < 1e-9
+
+
+def test_the_extremes_are_named_so_a_two_point_claim_can_be_checked():
+    lad = {"rows": {f"o{i}": _vrow(t, t) for i, t in enumerate(_TGT)}}
+    co = LC.contrast_and_order(lad)
+    assert co["ours_extremes"] == ["o0", "o6"]
+    assert co["target_extremes"] == ["o0", "o6"]
+
+
+def test_untrustworthy_rows_are_dropped_by_contrast_too():
+    """ONE definition of trustworthy, shared. A row SHAPE drops and SLOPE keeps
+    would let the two disagree for a reason neither reports."""
+    lad = {"rows": {f"o{i}": _vrow(t, t) for i, t in enumerate(_TGT)}}
+    lad["rows"]["moved"] = _vrow(9.0, 0.01, align="OFF BY +6px")
+    lad["rows"]["dirty"] = _vrow(9.0, 0.01, spread=7.1)
+    co = LC.contrast_and_order(lad)
+    assert co["n"] == len(_TGT)
+    assert "moved" not in co["used"] and "dirty" not in co["used"]
+
+
+def test_spearman_averages_ties_instead_of_taking_input_order():
+    assert abs(LC.spearman([1, 2, 2, 3], [1, 2, 2, 3]) - 1.0) < 1e-12
+    assert abs(LC.spearman([1, 2, 3, 4], [4, 3, 2, 1]) + 1.0) < 1e-12
+    assert abs(LC.spearman([1, 1, 1, 1], [4, 3, 2, 1])) < 1e-12
+
+
+# ---- by_material: light and albedo, separated by an identity -----------------
+
+def test_within_one_material_a_spread_can_only_be_light():
+    """Six objects on two materials. Ours modulates each material half as hard
+    as the target does, while the two materials sit at exactly the target's own
+    means — so this is a pure LIGHT failure and the split must say so."""
+    rows = {}
+    # exact reciprocal pairs, so each material's geometric mean is its own
+    # value and log(ours span) / log(target span) is exactly 0.5 by algebra
+    for i, (o, t) in enumerate([(1.3, 1.69), (1.0, 1.0), (1 / 1.3, 1 / 1.69)]):
+        rows[f"oak{i}"] = _vrow(0.20 * o, 0.20 * t)
+        rows[f"pnt{i}"] = _vrow(0.50 * o, 0.50 * t)
+    bm = LC.by_material({"rows": rows},
+                        material_of=lambda k: "veneer_oak" if k.startswith("oak")
+                        else "paint_white")
+    assert abs(bm["light_span"] - 0.5) < 1e-9
+    assert bm["n_materials_spanned"] == 2
+    assert abs(bm["materials"]["veneer_oak"]["target_mean"] - 0.20) < 1e-9
+
+
+def test_a_material_the_target_does_not_modulate_is_excluded_not_divided_by():
+    """log(1.02)/log(1.0) is infinity dressed as evidence."""
+    rows = {"a": _vrow(0.30, 0.40), "b": _vrow(0.306, 0.40),
+            "c": _vrow(0.20, 0.30), "d": _vrow(0.34, 0.12)}
+    bm = LC.by_material({"rows": rows},
+                        material_of=lambda k: "flat" if k in "ab" else "lit")
+    assert "light_span" not in bm["materials"]["flat"]
+    assert bm["n_materials_spanned"] == 1
+
+
+def test_a_name_the_material_table_refuses_is_skipped_not_guessed():
+    def refusing(k):
+        if k == "mystery":
+            raise KeyError(k)
+        return "paint_white"
+    rows = {"a": _vrow(0.30, 0.40), "b": _vrow(0.20, 0.30),
+            "mystery": _vrow(0.9, 0.01)}
+    bm = LC.by_material({"rows": rows}, material_of=refusing)
+    assert list(bm["materials"]) == ["paint_white"]
+    assert bm["materials"]["paint_white"]["objects"] == ["a", "b"]
+
+
+def test_the_real_material_table_answers_for_the_lane_s_own_objects():
+    """by_material's default is trn002_materials.material_for. If that import
+    or those names ever move, this reading goes silently empty."""
+    rows = {n: _vrow(0.3, 0.4) for n in
+            ("desk", "console", "floor_planks", "left_wall", "bed_platform")}
+    bm = LC.by_material({"rows": rows})
+    assert "veneer_oak" in bm["materials"]
+    assert set(bm["materials"]["veneer_oak"]["objects"]) == {"desk", "console"}
+
+
+# ---- the mask coverage guard -------------------------------------------------
+
+def test_a_mass_the_mask_never_saw_is_reported_not_skipped(tmp_path):
+    """The defect: `id_mask.py` filters by name substring, the cloth solver
+    emitted `duvet` without the SM_TRN002_ prefix, and thirty-one rounds of
+    per-object measurement silently excluded the three largest soft-goods
+    objects in the frame. A filter that matches nothing just returns fewer
+    rows."""
+    spec = tmp_path / "s.json"
+    spec.write_text(json.dumps({"camera": {}, "masses": [
+        {"name": "bed_platform", "c": [0, 0, 0]}, {"name": "duvet", "c": [0, 0, 0]},
+        {"name": "throw_woven", "c": [0, 0, 0]}]}), encoding="utf-8")
+    absent = LC.absent_from_mask(str(spec), {1: "SM_TRN002_bed_platform"})
+    assert absent == ["duvet", "throw_woven"]
+    assert LC.absent_from_mask(None, {1: "x"}) is None
+
+
+def test_a_cavity_takes_its_depth_from_the_host_it_names(tmp_path):
+    """r29's arch pocket has no `c`, and reading one raised — which is how a
+    live instrument stops running on the round that changed the geometry. A
+    mouth is at its host's face, so the depth is derived, not typed."""
+    spec = tmp_path / "s.json"
+    spec.write_text(json.dumps({
+        "camera": {"x_mm": 0.0, "y_mm": -1000.0, "z_mm": 0.0},
+        "masses": [{"name": "petcave", "c": [0, 0, 0]},
+                   {"name": "petcave_mouth", "host": "petcave"},
+                   {"name": "orphan"}]}), encoding="utf-8")
+    d = LC.depths_from_spec(str(spec), {1: "SM_TRN002_petcave",
+                                        2: "SM_TRN002_petcave_mouth",
+                                        3: "SM_TRN002_orphan"})
+    assert abs(d[1] - 1000.0) < 1e-9 and abs(d[2] - 1000.0) < 1e-9
+    assert 3 not in d, "a mass with no derivable centre is left out, not invented"
+
+
 # ---- contact_profile: the test that validates itself -------------------------
 
 import numpy as _np

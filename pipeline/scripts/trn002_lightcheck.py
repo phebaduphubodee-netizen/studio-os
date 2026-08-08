@@ -242,19 +242,67 @@ def depths_from_spec(spec_path, names):
     A centroid distance is a coarse proxy for a per-pixel depth buffer, and it
     is enough for the only question asked of it — which of two ADJACENT objects
     is in front — because two objects that touch in the image and are within a
-    few mm of each other in depth do not have a meaningful occluder anyway."""
+    few mm of each other in depth do not have a meaningful occluder anyway.
+
+    NOT EVERY MASS CARRIES A `c`. r29's arch pocket is authored as a cavity
+    block (face plane, springing, radius, depth), and reading `m["c"]` raised on
+    the first spec that held one — which is how a live instrument stops running
+    on the very round that changed the geometry. A cavity's mouth is at its
+    HOST's face, so its depth is DERIVED from the host it names rather than
+    typed or invented (R9: a position derivable from a contact is never typed).
+    Anything still without a centre is left OUT of the map and COUNTED, because
+    a partial depth map is a limitation and a silent one is a defect: an id with
+    no entry keeps only the boundary it shares with nothing, which can make a
+    verdict INDETERMINATE but can never make one wrong."""
     import math
     with open(spec_path, encoding="utf-8") as f:
         spec = json.load(f)
     cam = spec["camera"]
     cx, cy, cz = cam["x_mm"], cam["y_mm"], cam["z_mm"]
-    by = {m["name"]: m["c"] for m in spec["masses"]}
-    out = {}
+    by = {m["name"]: m for m in spec["masses"]}
+    out, missing = {}, []
     for i, full in names.items():
-        c = by.get(full.replace("SM_TRN002_", ""))
+        m = by.get(full.replace("SM_TRN002_", ""))
+        if m is None:
+            continue
+        c = m.get("c") or (by.get(m.get("host"), {}) or {}).get("c")
         if c:
             out[i] = math.dist((cx, cy, cz), c)
+        else:
+            missing.append(m["name"])
+    if missing:
+        print(f"note: no centre for {len(missing)} mass(es) ({', '.join(missing)}) "
+              f"— they are absent from the depth map, so their alignment verdicts "
+              f"are conservative")
     return out
+
+
+def absent_from_mask(spec_path, names):
+    """Spec masses that produced NO id in the mask — the rows no metric here can
+    ever see, reported instead of skipped.
+
+    EARNED 2026-08-08, and it is the sharpest instrument defect this lane has
+    found. `id_mask.py` selects objects by NAME SUBSTRING, and every ladder in
+    TRN-002 has been taken through the filter `SM_TRN002_`. Three masses were
+    emitted by the cloth solver under their BARE names — `duvet`,
+    `throw_woven`, `throw_velvet` — so for thirty-one rounds the three largest
+    soft-goods objects in the frame were absent from every per-object value
+    measurement, silently, including the object two independent critics named as
+    the target's brightest. Nothing failed: a filter that matches nothing simply
+    returns fewer rows, and a table with 21 rows in it looks exactly like a
+    table with 24.
+
+    The general shape, and why the fix is a REPORT rather than a longer filter:
+    a selector keyed on a naming convention is only as good as its weakest
+    caller, so the durable check is not "add the missing names" (an allowlist
+    that will exempt the next one, R9b) but "the spec knows what exists — say
+    which of it the instrument could not see"."""
+    if not spec_path:
+        return None
+    with open(spec_path, encoding="utf-8") as f:
+        spec = json.load(f)
+    seen = {n.replace("SM_TRN002_", "") for n in names.values()}
+    return sorted(m["name"] for m in spec["masses"] if m["name"] not in seen)
 
 
 def ladder(ours_png, target_png, mask_png, mask_json, erode_px=3, min_px=250,
@@ -314,7 +362,7 @@ def ladder(ours_png, target_png, mask_png, mask_json, erode_px=3, min_px=250,
         # the reference must be a LARGE, CLEAN, singly-lit surface; pick the
         # biggest clean row rather than typing a name, so the choice is derived
         ref = max(clean, key=lambda k: clean[k]["n_px"]) if clean else None
-    out = {"reference": ref, "rows": rows}
+    out = {"reference": ref, "rows": rows, "absent": absent_from_mask(spec_path, names)}
     if ref and ref in clean:
         ro, rt = clean[ref]["ours"], clean[ref]["target"]
         for k, v in rows.items():
@@ -427,25 +475,206 @@ def level_and_shape(lad, rows=None):
     check calls displaced is measuring somebody else's surface, and a row whose
     target side is far more dispersed than ours is measuring content we do not
     model. `rows` pins the membership when comparing two frames, so the metric
-    cannot rank a change by which rows it decided to drop."""
+    cannot rank a change by which rows it decided to drop.
+
+      SHAPE_FLAT  the same spread with every object counting ONCE. Added
+             2026-08-08 because px weighting answers a different question than
+             the one the lane thinks it is asking: the walls, ceiling and
+             wardrobe body own ~62% of the trustworthy pixels, so SHAPE scores
+             HOW MUCH OF THE FRAME IS RIGHT, never WHETHER THE OBJECTS ARE.
+             Measured on r27's own artifacts, with no new render: SHAPE 0.2000
+             px-weighted against 0.3359 unweighted — the metric of record was
+             reporting 60% of the error the objects actually carry, for five
+             consecutive rounds. Both are kept and both are printed: the
+             weighted one is the right answer for "does this frame read as this
+             room", the flat one for "does each thing in it read as that
+             thing", and their RATIO is itself the finding."""
     L, W, used, dropped = [], [], [], []
     for k, v in lad["rows"].items():
-        e = v.get("ladder_error")
-        if not e or (rows is not None and k not in rows):
+        if not _trustworthy(k, v, rows):
+            if v.get("ladder_error") and (rows is None or k in rows):
+                dropped.append(k)
             continue
-        if v["alignment"].startswith("OFF BY") or (v.get("spread_ratio") or 0) > 2.0:
-            dropped.append(k)
-            continue
-        L.append(np.log(e))
+        L.append(np.log(v["ladder_error"]))
         W.append(float(v["n_px"]))
         used.append(k)
     if len(L) < 4:
         return None
     L, W = np.array(L), np.array(W)
     mu = float((W * L).sum() / W.sum())
-    return {"level": float(np.exp(mu)),
-            "shape": float(np.sqrt((W * (L - mu) ** 2).sum() / W.sum())),
+    flat = float(np.sqrt(((L - L.mean()) ** 2).mean()))
+    shape = float(np.sqrt((W * (L - mu) ** 2).sum() / W.sum()))
+    return {"level": float(np.exp(mu)), "shape": shape, "shape_flat": flat,
+            "weight_gap": float(flat / shape) if shape > 1e-9 else None,
             "n": len(L), "used": sorted(used), "dropped": sorted(dropped)}
+
+
+def _trustworthy(k, v, rows=None):
+    """ONE definition of a row worth scoring, shared by every metric here.
+
+    It was two copies for one commit and that is exactly how the pair drifts:
+    a row dropped by SHAPE but kept by the contrast reading would let the two
+    disagree for a reason neither reports."""
+    if not v.get("ladder_error") or (rows is not None and k not in rows):
+        return False
+    return not (v["alignment"].startswith("OFF BY")
+                or (v.get("spread_ratio") or 0) > 2.0)
+
+
+def spearman(a, b):
+    """Rank correlation, ties averaged. Pure numpy so the module keeps its one
+    dependency; scipy is not installed on this machine."""
+    def rank(x):
+        x = np.asarray(x, dtype=float)
+        order = np.argsort(x, kind="mergesort")
+        r = np.empty(len(x), dtype=float)
+        r[order] = np.arange(len(x), dtype=float)
+        # average the ranks of tied values, or a tied pair biases rho by its
+        # arbitrary input order
+        for v in np.unique(x):
+            sel = x == v
+            if sel.sum() > 1:
+                r[sel] = r[sel].mean()
+        return r
+    ra, rb = rank(a) - rank(a).mean(), rank(b) - rank(b).mean()
+    den = np.sqrt((ra * ra).sum() * (rb * rb).sum())
+    return float((ra * rb).sum() / den) if den > 1e-12 else 0.0
+
+
+def contrast_and_order(lad, rows=None):
+    """How wide the frame's objects spread, and whether they spread in the
+    TARGET'S ORDER. The two readings LEVEL/SHAPE structurally cannot give.
+
+    WHY A THIRD METRIC AND NOT A FOURTH USE OF SHAPE. SHAPE is the spread of
+    RATIOS, and a ratio spread is blind to the one structure the C2 critics
+    named on two different frames in two separate contexts: *every object is
+    the same white plastic*. Three failures with the same SHAPE:
+
+      * every object 0.7x the target      -> LEVEL 0.70, SHAPE 0     (exposure)
+      * our values are the target's, ^0.5 -> compression: the room flattens
+      * two objects swapped               -> the order is wrong, the range is not
+
+    Only the last two are what a viewer calls "flat", and neither is separable
+    from the first by a spread of ratios alone. So:
+
+      SLOPE  OLS slope of log(ours) on log(target), over the trustworthy rows.
+             1.00 = our objects span exactly the target's range; 0.50 = half
+             the contrast, in log terms, which is what "reads as one material"
+             measures as. THIS IS THE HEADLINE, and it is preferred to max/min
+             because max/min is a TWO-POINT statistic decided by whichever two
+             objects happen to be extreme — on r27 it would have been set by a
+             1,082 px door jamb.
+      RHO    Spearman rank correlation of the two value orders. A frame can
+             have SLOPE 1.0 and still be wrong if the brightest object in the
+             target is our fifth brightest.
+      RANGE  max/min in each frame, kept because it is what the eye is told
+             about ("the target spans 5.4x"), and REPORTED WITH THE OBJECTS
+             THAT SET IT so a two-point claim can be checked against them.
+
+    Reference-invariant like SHAPE: switching reference multiplies every `ours`
+    and every `target` by its own constant, which shifts both logs by a
+    constant and leaves a slope and a rank order untouched. Membership is
+    pinnable for the same reason it is in level_and_shape."""
+    o, t, used = [], [], []
+    for k, v in lad["rows"].items():
+        if not _trustworthy(k, v, rows) or not (v.get("ours") and v.get("target")):
+            continue
+        o.append(float(v["ours"]))
+        t.append(float(v["target"]))
+        used.append(k)
+    if len(used) < 4:
+        return None
+    o, t = np.array(o), np.array(t)
+    lo, lt = np.log(o), np.log(t)
+    var = float(((lt - lt.mean()) ** 2).sum())
+    slope = float(((lt - lt.mean()) * (lo - lo.mean())).sum() / var) if var > 1e-12 else None
+    return {
+        "n": len(used), "used": sorted(used), "slope": slope,
+        "rho": spearman(o, t),
+        "range_ours": float(o.max() / o.min()),
+        "range_target": float(t.max() / t.min()),
+        "ours_extremes": [used[int(o.argmax())], used[int(o.argmin())]],
+        "target_extremes": [used[int(t.argmax())], used[int(t.argmin())]],
+    }
+
+
+def by_material(lad, material_of=None, rows=None):
+    """SPLIT THE COMPRESSION INTO ITS TWO CAUSES — the one measurement that can.
+
+    SLOPE says our objects span 0.69 of the target's range. It cannot say
+    whether that is because our ALBEDOS are too close together or because our
+    LIGHT is too even, and those want opposite fixes. This does, by an identity
+    rather than a model:
+
+        **WITHIN ONE MATERIAL THE ALBEDO IS THE SAME NUMBER BY CONSTRUCTION.**
+
+    So every value difference between two objects wearing one PALETTE row is
+    LIGHT, with nothing else it can possibly be — no assumption about the
+    tonemap, no reference surface, no model of the room. Six oak objects that
+    span 4.6x in the target and 2.2x in ours is a light finding that no albedo
+    edit can reach, and it is measurable on frames already on disk.
+
+      LIGHT_SPAN    per material with >=2 measured objects, log(ours max/min)
+                    over log(target max/min), aggregated. 1.00 = our light
+                    modulates that material exactly as hard as the target's;
+                    0.50 = our room is half as directional across it. THIS one
+                    is light and only light, by the identity above.
+      BETWEEN_MATERIAL_SLOPE  the SLOPE reading computed on one point per
+                    MATERIAL (its objects' geometric mean), so WITHIN-material
+                    light averages out and what is left is how far apart the
+                    materials sit.
+
+    **The second name says `between_material` and not `albedo` on purpose.** It
+    is albedo PLUS whatever light difference exists between one material's
+    location and another's, and no measurement here can split those — calling
+    it `albedo_slope` would have been a claim the number cannot carry, which is
+    the overclaim-in-a-name defect this repo keeps finding in its own metrics.
+    What the pair DOES give is a bound from each end, and they disagree loudly
+    when the answer is one and not the other. `material_of` is any callable
+    name -> material (trn002_materials.material_for); a name it refuses is
+    skipped, never guessed at."""
+    if material_of is None:
+        import trn002_materials as _M
+        material_of = _M.material_for
+    groups = {}
+    for k, v in lad["rows"].items():
+        if not _trustworthy(k, v, rows) or not (v.get("ours") and v.get("target")):
+            continue
+        try:
+            groups.setdefault(material_of(k), []).append((k, v["ours"], v["target"]))
+        except (KeyError, ValueError):
+            continue
+    mats, spans, weights = {}, [], []
+    for mat, items in sorted(groups.items()):
+        o = np.array([x[1] for x in items])
+        t = np.array([x[2] for x in items])
+        row = {"objects": [x[0] for x in items],
+               "ours_mean": float(np.exp(np.log(o).mean())),
+               "target_mean": float(np.exp(np.log(t).mean()))}
+        if len(items) >= 2 and o.min() > 0 and t.min() > 0:
+            lo, lt = float(np.log(o.max() / o.min())), float(np.log(t.max() / t.min()))
+            row["ours_span"] = float(o.max() / o.min())
+            row["target_span"] = float(t.max() / t.min())
+            # A material the TARGET does not modulate carries no information
+            # about our light: dividing by ~0 would manufacture a huge or tiny
+            # ratio out of noise, so it is reported and left out of the mean.
+            if lt > 0.15:
+                row["light_span"] = lo / lt
+                spans.append(lo / lt)
+                weights.append(lt)
+        mats[mat] = row
+    out = {"materials": mats,
+           "light_span": float(np.average(spans, weights=weights)) if spans else None,
+           "n_materials_spanned": len(spans)}
+    two = [(v["ours_mean"], v["target_mean"]) for v in mats.values()]
+    if len(two) >= 4:
+        lo = np.log(np.array([a for a, _b in two]))
+        lt = np.log(np.array([b for _a, b in two]))
+        var = float(((lt - lt.mean()) ** 2).sum())
+        out["between_material_slope"] = (float(((lt - lt.mean()) * (lo - lo.mean())).sum() / var)
+                               if var > 1e-12 else None)
+        out["n_materials"] = len(two)
+    return out
 
 
 def frame_range(path):
@@ -482,14 +711,51 @@ def main():
     print(f"RANGE          {'ours':>12s} {'target':>12s}")
     for k in ("p1", "p5", "p50", "p95", "p99", "range_99_1"):
         print(f"  {k:11s} {ro[k]:12.4f} {rt[k]:12.4f}")
+    if lad.get("absent"):
+        print(f"\n!! ABSENT FROM THE MASK ({len(lad['absent'])}) — these spec masses "
+              f"produced no id, so NO reading below can see them:\n   "
+              f"{', '.join(lad['absent'])}")
     ls = level_and_shape(lad)
     if ls:
         print(f"\nLEVEL {ls['level']:.3f}  (the room against {lad['reference']}; "
               f"1.00 = the reference is lit like the rest of the room)")
         print(f"SHAPE {ls['shape']:.4f}  (n={ls['n']} trustworthy rows, px-weighted; "
               f"0 = perfect, and NO choice of reference can move this)")
+        print(f"      {ls['shape_flat']:.4f} unweighted — every object counts once. "
+              f"The gap is {ls['weight_gap']:.2f}x: px weighting scores how much of "
+              f"the FRAME is right, not whether the OBJECTS are")
         if ls["dropped"]:
             print(f"      dropped as untrustworthy: {', '.join(ls['dropped'])}")
+    co = contrast_and_order(lad)
+    if co:
+        print(f"\nSLOPE {co['slope']:.3f}  (n={co['n']}; 1.00 = our objects span the "
+              f"target's range. Below 1 is what 'everything is the same material' "
+              f"measures as)")
+        print(f"RHO   {co['rho']:+.3f}  (the value ORDER; 1.00 = we rank every object "
+              f"where the target does)")
+        print(f"RANGE ours {co['range_ours']:.2f}x [{'/'.join(co['ours_extremes'])}]  "
+              f"target {co['range_target']:.2f}x [{'/'.join(co['target_extremes'])}]  "
+              f"— two-point, so read it beside SLOPE, never instead of it")
+    try:
+        bm = by_material(lad)
+    except ImportError:
+        bm = None
+    if bm and bm.get("light_span"):
+        print(f"\nLIGHT_SPAN   {bm['light_span']:.3f}  (over {bm['n_materials_spanned']} "
+              f"materials worn by >=2 measured objects. WITHIN one material the albedo "
+              f"is one number, so this is LIGHT with nothing else it can be)")
+        if bm.get("between_material_slope"):
+            print(f"BETWEEN_MAT  {bm['between_material_slope']:.3f}  (SLOPE recomputed "
+                  f"one point per MATERIAL, so within-material light averages out. "
+                  f"Albedo PLUS between-material light — the two are not separable "
+                  f"here, and the name says so)")
+        for mat, v in sorted(bm["materials"].items(),
+                             key=lambda kv: kv[1].get("light_span") or 9e9):
+            if "light_span" not in v:
+                continue
+            print(f"  {mat:20s} ours {v['ours_span']:5.2f}x  target "
+                  f"{v['target_span']:5.2f}x  -> {v['light_span']:.2f}   "
+                  f"{', '.join(v['objects'])}")
     print(f"\nLADDER (relative to {lad['reference']}; ladder_error 1.00 = our "
           f"light puts this surface at the target's own relative brightness)")
     print(f"  {'object':22s} {'n_px':>7s} {'ours_rel':>9s} {'tgt_rel':>9s} "
