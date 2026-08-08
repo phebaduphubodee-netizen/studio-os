@@ -54,6 +54,8 @@ import math
 KEY = {
     "name": "KEY_front_left", "kind": "AREA", "shape": "RECTANGLE",
     "loc_mm": (-3300, -8700, 2400), "size_mm": (3000, 2000),
+    # where this beam LANDS, re-solved at r24 and now CHECKED (aim_error_deg)
+    "aim_at_mm": (-2700.0, -3900.0, 0.0),
     # Aimed DOWN into the room, not across it. The first rig at 78 deg threw
     # the key flat down the room and lit the back wall directly, and the ladder
     # caught it: every object in the room came back at 0.4-0.65 of its target
@@ -161,6 +163,8 @@ KEY = {
 BLIND = {
     "name": "BLIND_left_wall", "kind": "AREA", "shape": "RECTANGLE",
     "loc_mm": (-4735, -1770, 1640), "size_mm": (1720, 1820),
+    # its own slats, which sit +x of it — the thing it could not light until r25
+    "aim_at_mm": (-3000.0, -1770.0, 1640.0),
     # 90 -> -90 in yaw (r25). An area light emits along its own -Z; at
     # (90, 0, 90) that resolves to (-1, 0, 0) — this emitter has been firing
     # into the left wall, 15 mm away, for every round of this lane. It is the
@@ -199,6 +203,69 @@ DOWNLIGHT = {
             "floor pool at all' — the parquet under dl_1 reads 0.184 and RISES "
             "to 0.220 a metre away, so a pool is not a tuning error here, it "
             "is the wrong sign)",
+}
+
+# THE DRESSING ROOM'S OWN LIGHT — r30, and it exists because r30 cut an opening
+# that had never been cut. `back_wall` was a single 4,750 mm slab standing IN the
+# partition, filling 53.4% of that zone by id mask, so for thirty rounds there
+# was nothing behind the frame to light and no reason to notice there was no
+# emitter there. The moment the hole existed the deficit was measurable and
+# large: through the opening the target reads 0.586 where ours read 0.109
+# (5.4x) on the far wall, and 0.483 against 0.050 (9.7x) on the white door.
+#
+# The target's dressing room is BRIGHTER than the bedroom — its far wall beats
+# our lit bedroom wall (0.48) — which is a daylight signature, not a downlight:
+# through the left leaf the target shows sheer curtains and a window. So this is
+# one broad soft AREA source standing for that aperture, not a ceiling fixture.
+# WHAT IS ASSUMED: everything except the value it is bracketed to hit. Its
+# position, size and colour are declared; only its POWER is measured, against
+# the closet back wall's own pixels, exactly the way this lane's window aperture
+# and its strips were set.
+CLOSET = {
+    "name": "CLOSET_daylight", "kind": "AREA", "shape": "RECTANGLE",
+    # POSITION re-solved the same round the aim was, because fixing the yaw
+    # exposed the next layer of the same error. At y=2300 facing -y this card
+    # stood 90 mm IN FRONT of `closet_back` pointing AWAY from it, and BEHIND
+    # `closet_oak`'s lit face pointing away from that too — every surface the
+    # camera sees through the opening was lit by bounce alone. The bracket then
+    # asked for 167-267 W to light a room whose own window runs 37 W, which is
+    # the same tell as before one level out: not under-powered, standing in the
+    # wrong place. It now sits just inside the opening, high, and looks back and
+    # down at the three surfaces the camera actually sees (back wall -y face,
+    # niche -y face, floor +z).
+    "loc_mm": (-3400.0, 400.0, 2500.0), "size_mm": (1600.0, 1400.0),
+    "aim_at_mm": (-3400.0, 2400.0, 700.0),
+    "rot_from_aim": True,
+    # AIM: -90, not +90, and this lane has now made this exact mistake THREE
+    # times. Blender's area normal is -z before rotation, and Rx(+90) sends it
+    # to +y — into the closet's own back wall 90 mm away, with the opening
+    # behind it. The BLIND aperture's prov records the identical defect ("its
+    # 38 W was set while it fired into a wall 15 mm away") and r25 found a third
+    # light yawed 180 degrees. THE TELL IS ALWAYS THE POWER: a bracket that
+    # wants 240 W where the room's own window runs 37 W is not under-powered,
+    # it is pointed at a wall. Check the normal before believing a wattage.
+    # rot_deg is DERIVED from aim_at_mm below, never typed — see rot_for_aim.
+    # 40 W, and the bracket that set it is the argument for the reposition.
+    # BEFORE the move the same three regions wanted 167-267 W; after it they
+    # want 24-47 W and the slopes are 7-10x steeper — a light standing behind
+    # the surfaces it must light is not under-powered, and the wattage was the
+    # only symptom either defect ever showed.
+    # Anchored on the two WHITE-PAINT regions, because those are white paint in
+    # both frames: far wall wants 38.4 W, white door 46.6 W. 40 W puts them at
+    # 1.03x and 0.88x. The oak niche wants 24 W and runs 1.42x here — see the
+    # gate: a flat panel cannot self-shadow the way the target's RECESS does,
+    # and that is a geometry residual, not a reason to de-tune the light.
+    "power_w": 40.0, "color": (1.000, 0.972, 0.940),
+    # NOT VISIBLE TO CAMERA RAYS. It stands INSIDE the view cone of the opening
+    # r30 cut, so at 30 W the first bracket came back with the whole far-wall
+    # region pinned at Ylin 1.0000 — the camera was photographing the emitter,
+    # not the room. It still lights everything; it is simply not an object in
+    # the frame, which is correct for a stand-in aperture: the target's window
+    # is not in this view either, only the daylight from it.
+    "camera_visible": False,
+    "prov": "A(position/size/colour: a declared stand-in for the aperture the "
+            "target shows through the left leaf) / M(POWER ONLY, bracketed on "
+            "the quick rung against the closet back wall's measured 0.586)",
 }
 
 # concealed LED strips under the etagere boards
@@ -251,7 +318,10 @@ def plan(spec=None):
                                      lb.get("loc_mm") or {},
                                      lb.get("size_mm") or {})
     spread_over = lb.get("spread_deg") or {}
-    out = [dict(KEY), dict(BLIND)]
+    out = [dict(KEY), dict(BLIND), dict(CLOSET)]
+    for f in out:
+        if f.pop("rot_from_aim", False):
+            f["rot_deg"] = rot_for_aim(f["loc_mm"], f["aim_at_mm"])
     for i, (x, y) in enumerate(DOWNLIGHT_XY, start=1):
         out.append({**DOWNLIGHT, "name": f"DL_{i}", "loc_mm": (x, y, DOWNLIGHT["z_mm"])})
     for i, z in enumerate(STRIP_Z, start=1):
@@ -259,7 +329,12 @@ def plan(spec=None):
                     "shape": "RECTANGLE",
                     "loc_mm": (STRIP["x_mm"], STRIP["y_mm"], z),
                     "size_mm": (STRIP["len_mm"], STRIP["depth_mm"]),
-                    "rot_deg": (0.0, 0.0, 0.0)})
+                    "rot_deg": (0.0, 0.0, 0.0),
+                    # straight down onto the board below — a concealed strip's
+                    # whole job. Declared per instance so the aim guard covers
+                    # them too: it found these three undeclared the hour it was
+                    # written, which is the point of having no opt-out.
+                    "aim_at_mm": (STRIP["x_mm"], STRIP["y_mm"], z - 400.0)})
     for f in out:
         n = f["name"]
         if n in over:
@@ -286,6 +361,76 @@ def report():
 
 
 # ------------------------------------------------------------- bpy builders --
+
+def rot_for_aim(loc_mm, aim_mm):
+    """The XYZ Euler that points an area light's -Z at `aim_mm`. PURE.
+
+    R9 applied to light: an aim that can be derived from a place must never be
+    typed. Three emitters in this lane were found firing 180 degrees from where
+    their comment said, and in every case the defect was a hand-written Euler
+    triple that nobody could read back. Declaring WHERE and solving for the
+    angles removes the class rather than the instance.
+    """
+    d = [a - b for a, b in zip(aim_mm, loc_mm)]
+    n = math.sqrt(sum(c * c for c in d)) or 1.0
+    dx, dy, dz = (c / n for c in d)
+    # Blender XYZ Euler is Rz.Ry.Rx applied to the light's own -Z, so with
+    # ry = 0 the normal is (-sin(rx)sin(rz), sin(rx)cos(rz), -cos(rx)). Inverted
+    # here rather than guessed: the first cut wrote atan2(dx, -dy), which is
+    # exactly 180 degrees out, and the guard caught it at 96 deg before it could
+    # reach a render. That is the guard paying for itself on the very function
+    # written to retire the defect it guards.
+    rx = math.acos(max(-1.0, min(1.0, -dz)))
+    rz = math.atan2(-dx, dy) if abs(math.sin(rx)) > 1e-9 else 0.0
+    return (math.degrees(rx), 0.0, math.degrees(rz))
+
+
+def normal_of(rot_deg):
+    """The direction an AREA light actually emits, from its Euler. PURE.
+
+    Blender's area light emits along its own -Z before rotation, and the XYZ
+    Euler is applied in that order. This function exists because THREE separate
+    emitters in this lane have been found firing 180 degrees from where their
+    own comment said, and in each case the Euler was read by a human who wrote
+    down what they intended rather than what the triple resolves to.
+    """
+    rx, ry, rz = (math.radians(a) for a in rot_deg)
+    v = [0.0, 0.0, -1.0]
+    cx, sx = math.cos(rx), math.sin(rx)
+    v = [v[0], v[1] * cx - v[2] * sx, v[1] * sx + v[2] * cx]
+    cy, sy = math.cos(ry), math.sin(ry)
+    v = [v[0] * cy + v[2] * sy, v[1], -v[0] * sy + v[2] * cy]
+    cz, sz = math.cos(rz), math.sin(rz)
+    return [v[0] * cz - v[1] * sz, v[0] * sz + v[1] * cz, v[2]]
+
+
+def aim_error_deg(f):
+    """Angle between where an emitter POINTS and where it CLAIMS to point.
+
+    `aim_at_mm` is the claim, written as a place in the room rather than as an
+    Euler, because a place can be checked and an Euler can only be believed.
+    Returns None for emitters that make no claim (points, and anything
+    omnidirectional).
+
+    WHY THIS IS A FUNCTION AND NOT A COMMENT. The defect it catches has now
+    happened three times in one lane — BLIND fired into a wall 15 mm away for
+    every round until r25, a third light was found yawed 180 degrees at r25, and
+    r30's new closet aperture fired into the closet's own back wall 90 mm behind
+    it. THE TELL IS ALWAYS THE POWER: r30's bracket was climbing toward 240 W to
+    light a room whose own window runs 37 W. A wattage that has to be absurd to
+    work is not under-powered, it is pointed at a wall. Nothing in this lane
+    checked that, because the aim was a raw Euler triple and every reader —
+    including the one who wrote it — read the comment instead of the maths.
+    """
+    aim = f.get("aim_at_mm")
+    if aim is None or f.get("kind") != "AREA":
+        return None
+    n = normal_of(f.get("rot_deg", (0.0, 0.0, 0.0)))
+    d = [a - b for a, b in zip(aim, f["loc_mm"])]
+    ln = math.sqrt(sum(c * c for c in d)) or 1.0
+    dot = sum(a * b / ln for a, b in zip(n, d))
+    return math.degrees(math.acos(max(-1.0, min(1.0, dot))))
+
 
 def build_world(spec=None):
     import bpy
@@ -316,4 +461,7 @@ def build_lights(spec=None):
         ob = bpy.data.objects.new(f["name"], data)
         ob.location = tuple(v * MM for v in f["loc_mm"])
         ob.rotation_euler = tuple(math.radians(a) for a in f.get("rot_deg", (0, 0, 0)))
+        # A source standing inside the frame is photographed, not just obeyed.
+        if not f.get("camera_visible", True):
+            ob.visible_camera = False
         bpy.context.scene.collection.objects.link(ob)

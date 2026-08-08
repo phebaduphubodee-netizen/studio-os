@@ -257,3 +257,69 @@ def test_a_band_with_too_few_pixels_is_None_rather_than_a_number():
     out = LC.contact_profile(lum, ids, 1, _CAM, _FOOT, wh=_WH, min_px=10**6,
                              bands=_BANDS, ref_band=_REF, erode_px=0)
     assert all(v is None for v in out.values()), out
+
+
+# ------------------------------------------------- aim, as a claim (r30) --
+# Three emitters in this lane have been found firing 180 degrees from where
+# their own comment said. An Euler triple can only be believed; a place can be
+# checked, so every aimed emitter now declares WHERE IT POINTS and this pins it.
+
+def test_every_aimed_emitter_points_where_it_says_it_does():
+    import trn002_light as L
+    checked = 0
+    for f in L.plan():
+        e = L.aim_error_deg(f)
+        if e is None:
+            continue
+        checked += 1
+        assert e < 45.0, f"{f['name']} points {e:.1f} deg from its own aim_at_mm"
+    assert checked >= 3, f"only {checked} emitters declare an aim"
+
+
+def test_every_area_emitter_declares_an_aim():
+    """No opt-out. A rule that names the emitters it applies to will exempt the
+    next one — R9b's lesson, and this lane's fourth aimed light is the one this
+    guard exists for."""
+    import trn002_light as L
+    missing = [f["name"] for f in L.plan()
+               if f.get("kind") == "AREA" and "aim_at_mm" not in f]
+    assert not missing, f"AREA emitters with no declared aim: {missing}"
+
+
+def test_the_normal_is_computed_and_not_assumed():
+    """Blender emits along -Z and applies XYZ in order. These four are the
+    cases the lane actually got wrong."""
+    import trn002_light as L
+    for rot, want in (((0, 0, 0), (0, 0, -1)),
+                      ((90, 0, 0), (0, 1, 0)),
+                      ((-90, 0, 0), (0, -1, 0)),
+                      ((90, 0, -90), (1, 0, 0))):
+        got = L.normal_of(rot)
+        assert all(abs(a - b) < 1e-9 for a, b in zip(got, want)), (rot, got, want)
+
+
+def test_a_light_fired_backwards_is_caught():
+    """Negative control: the exact r30 defect — +90 where -90 was meant.
+
+    Built from a literal rather than from CLOSET, because CLOSET no longer HAS
+    a typed rot_deg: it declares a place and `rot_for_aim` solves the angles, so
+    the defect is now unrepresentable there. The control has to keep existing
+    anyway — the guard's whole value is that it still fires on any emitter that
+    goes back to typing its Euler."""
+    import trn002_light as L
+    bad = {"kind": "AREA", "loc_mm": (0.0, 0.0, 0.0),
+           "aim_at_mm": (0.0, -1000.0, 0.0), "rot_deg": (90.0, 0.0, 0.0)}
+    assert L.aim_error_deg(bad) > 150.0, L.aim_error_deg(bad)
+
+
+def test_an_aim_solved_from_a_place_round_trips():
+    """rot_for_aim then normal_of must return the direction asked for, on aims
+    that are not axis-aligned — the first cut of the solver was 180 deg out and
+    only a non-trivial aim shows it."""
+    import trn002_light as L
+    for loc, aim in (((-3400.0, 400.0, 2500.0), (-3400.0, 2400.0, 700.0)),
+                     ((0.0, 0.0, 0.0), (1000.0, -500.0, -800.0)),
+                     ((100.0, 200.0, 300.0), (-900.0, 1200.0, 100.0))):
+        e = L.aim_error_deg({"kind": "AREA", "loc_mm": loc, "aim_at_mm": aim,
+                             "rot_deg": L.rot_for_aim(loc, aim)})
+        assert e < 1e-6, (loc, aim, e)
