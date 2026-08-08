@@ -1,0 +1,45 @@
+{
+  "_what": "What the reference frame SHOWS. Consumed by pipeline/scripts/coverage_check.py.",
+  "_provenance": "v1, 2026-08-08. Assembled from THIS LANE'S OWN WRITTEN RECORD — gates #15-#19, the R7 triage-debt ledger, and spec_r31's declared_gaps — NOT from a fresh reading of the target. Every entry here is something a gate or a critic already stated the reference shows, in writing, on a date.",
+  "_incomplete_by_construction": "An object nobody ever wrote down is absent from this list and therefore invisible to the check, exactly as it is invisible to every other instrument here. That is the honest limit and it is not a reason to skip the list: thirty rounds of per-pixel comparison never surfaced a missing doorway, and this file would have carried it from round one. The list GROWS when the target is read again; it is not a closed set.",
+  "_law": "Every entry resolves to BUILT (a mass) or to a declared gap WITH A REASON. `absent_baseline` may shrink and may never grow.",
+
+  "entries": [
+    {"id": "partition_glass", "what": "glazed leaf in the partition — sheers and a chair are visible through it, with reflections at the edge (gate #19)"},
+    {"id": "blind", "what": "horizontal slat blind at the window, pitch measured 29.4 mm from 89 peaks in the target's own column"},
+    {"id": "chair_leg", "what": "four dark chair legs — among the darkest things in the frame", "prefix": true},
+    {"id": "door_handle", "what": "handle on the near door leaf"},
+    {"id": "artwork", "what": "framed print on the wall"},
+    {"id": "artwork_relief", "what": "the print is an embossed letterform panel, not a flat image"},
+    {"id": "closet_niche_contents", "what": "objects standing in the oak niche"},
+    {"id": "duvet", "what": "duvet on the bed"},
+    {"id": "petcave_mouth_depth", "what": "the cave mouth reads as a cavity with depth, not a dark patch"},
+    {"id": "closet_oak_depth", "what": "the oak in the dressing room reads as a recess, not a flat panel (gate #19: our flat panel cannot self-shadow, 1.41x too bright)",
+     "built_as": ["closet_niche_back", "closet_stile_R"],
+     "_r34": "BUILT. The recess is now a cavity: a back panel 550 mm behind the front plane and a right-hand return 33.5 mm wide, both derived from the measured arris at u 362.3 that holds the same u at four heights. Dropped from `absent_baseline` — a SHRINK, which needs no sign-off. Whether the cavity actually produces the self-shadow gate #19 asked for is prediction 3 of r34 and is not claimed here."},
+
+    {"id": "mirror", "what": "dressing-table mirror. C3#11 at r23: 'the mirror is blown white and shows nothing reflected'. Accepted in the 2026-08-07 triage debt and never built — the shader has no transmission and no true specular path.",
+     "_r34_DISPUTED": "THIS ENTRY IS A CLAIM ABOUT THE TARGET AND THE MEASUREMENT REFUTES IT. Reflecting 24 bay rays about y=0 shows a plane mirror there would be OBLIGED to show the bedroom's herringbone at v 540-580 and the white rug over u 181-498; the bay shows straight parallel planks and a receding soffit arris instead. The entry's whole provenance is C3#11 at r23, and by R7b law that critic saw our own render alone — where an assumed blank `closet_back` rendered blown white. It described OUR FRAME correctly and the word was filed as a fact about the reference. Held in spec_r34's declared_gaps pending the owner: removing it edits a claim about the target, which the entries ratchet is there to stop happening silently."},
+    {"id": "wall_floor_junction", "what": "the wall meets the floor with SOMETHING — skirting, shadow gap, or scribe. C2#15 at r27 accepted into the craft lane; q7 (2026-08-08) adds that a timber floor's 10-15 mm expansion gap has to be concealed, so 'nothing at all' is not a candidate.",
+     "_r34_DISPUTED": "UNANSWERABLE AS WRITTEN, and this is a measurement rather than a deferral. All three bedroom walls are 100% occluded at their base — left u 17..72 behind the console, back u 72..731, right u 731..1128 — so no column in this frame shows a bedroom wall meeting a floor. Its own accepted triage made measurement a PRECONDITION and the answer is a fourth option nobody listed: you cannot see it. That moves the cure from missing-skirting (geometry) to missing-contact-shadow (light). `closet_plinth`, built this round, is NOT this entry: it is joinery on a cabinet, and the verifier flagged the category slide. Pending the owner: re-scope or declare."},
+    {"id": "garments", "what": "clothes hanging in the dressing room (gate #19 item 3)"},
+    {"id": "closet_shelf", "what": "shelving in the dressing room (gate #19 item 3)",
+     "_r34": "BUILT. Top surface z 822.9, fitted over 70 columns at rms 0.095 px with three disjoint column groups agreeing to 1.9 mm."},
+    {"id": "led_strip", "what": "LED strip lighting the oak niche (gate #19 item 3). Its PALETTE row was deleted in r30 as unreachable — deleting the declaration does not build the object.",
+     "_r34": "BUILT, in the order that sentence demands: the mass first (a line fitted to rms 0.124 px over 65 columns), then the PALETTE row, the EMISSIVE entry and the material rule for it. This lane's first emissive mass."},
+    {"id": "far_room", "what": "the room beyond the left leaf: sheer curtain, window, table, chair (gate #19 item 5). Our closet_back stands in for both a wall and a window, which are two different values.",
+     "_r34": "SPLIT BY MEASUREMENT and declared as a gap in spec_r34. The two bays show two different things: the RIGHT bay is the walk-through, floor running through it, and that is what this round's wardrobe stands in. The LEFT bay is a daylit sheer curtain with vertical folds and NOTHING behind it can be fitted — building a window or a table to it would be building to this manifest's wording rather than to the reference. The opening FRAME is measured and built (head top 2479.3 ± 0.4, soffit 2370.5, bays 695.6 / 685.6; verifier mean reprojection error 0.22 px over 34 checks)."},
+    {"id": "etagere_objects", "what": "objects on the etagere boards (outstanding from gate #18)"}
+  ],
+
+  "absent_baseline": [
+    "partition_glass",
+    "artwork_relief",
+    "closet_niche_contents",
+    "petcave_mouth_depth"
+  ],
+  "_absent_baseline_log": [
+    "2026-08-08 r34: `closet_oak_depth` REMOVED (shrink). Built as closet_niche_back + closet_stile_R. The ratchet cannot verify this shrink until the manifest has a committed predecessor — see `_ratchet_precondition`."
+  ],
+  "_ratchet_precondition": "SEEDED 2026-08-08 by owner order. This file was untracked, so `rule_gate.baseline_ratchet` failed closed and blocked every render in the lane — intended, not a bug: a ratchet with no committed history is a list. It was committed in TWO steps on purpose. Commit 1 seeds THIS state (four ids in `absent_baseline`, `closet_oak_depth` already dropped because r34 built it). Commit 2 adds the widening below. Doing both in one commit would have put the five new exemptions inside the seed, where the ratchet has nothing to compare them against — the widening would never have been checked, which is the only thing the ratchet exists to do."
+}
