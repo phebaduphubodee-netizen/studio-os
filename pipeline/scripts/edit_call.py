@@ -5,6 +5,10 @@ comes back, in a form `edge_drift.py` can judge.
     python pipeline/scripts/edit_call.py <render.png> <tag> --prompt-file <p.md>
                                          [--model pro|flash] [--aspect 4:3] [--size 2K]
 
+CLI-ONLY: the builder, by hand, when a round needs a generative frame — the same standing
+as `critique_call.py` next to it. It is a paid egress call, so it is deliberately NOT in
+any automatic path; what IS automatic is the guard it runs on its own output (D-011).
+
 Sibling of `critique_call.py`, which sends an image and receives TEXT. This one receives an
 IMAGE, so the egress rules are the same and the RETURN is the thing that has to be
 distrusted: a frame that came back is not evidence of anything until `edge_drift.py` has

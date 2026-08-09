@@ -3,6 +3,12 @@
 
     python pipeline/scripts/edge_drift.py <before.png> <after.png> <mask.png> <mask.json>
 
+CLI-ONLY: the builder, on any frame an image model returned — and `edit_call.py` runs it
+itself on every frame it fetches, which is the path that actually matters (D-011). It is
+declared here as well because `reachability_check` treats a CLI-ONLY module as a dead-end
+root and cannot see the call inside one; the declaration is the honest exit, not a claim
+that nothing calls this.
+
 `before.png` is the frame we SENT to an image model, `after.png` is what came back, and
 the mask/sidecar pair is `id_mask.py`'s output for `before`. Exit 0 = every checkable
 object HELD; exit 1 = at least one DRIFTed; exit 2 = the comparison could not be made.
