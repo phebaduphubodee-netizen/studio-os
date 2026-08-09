@@ -1978,5 +1978,48 @@
    "datum": "b",
    "why": "The mattress sits on the plinth. Declared because the plinth's 221 mm height is a measurement (base contact on the rug z=12 and the top arris z=221, two independent reads) and the mattress's z is derived from it — the same shape as the joint above, one axis over. placement_check reads this one off the built scene as a support; this register is what makes the SPEC state it."
   }
- ]
+ ],
+ "pixel_claims": [
+  {
+   "name": "headboard_near_end_silhouette",
+   "mass": "bed_headboard",
+   "kind": "v_edge",
+   "along": [
+    525,
+    625
+   ],
+   "step": 1,
+   "search_px": 8,
+   "tol_px": 2.0,
+   "target": {
+    "slope": -0.003436,
+    "intercept": 1029.141,
+    "rms": 0.371,
+    "n": 101,
+    "estimator": "pixel_check.fit_feature — DERIVED BY THIS CHECKER on the target file, not copied from a round's own probe. A stored number produced by a different operator makes the self-check meaningless, which is how the first cut of this block failed."
+   },
+   "why": "the panel's outer corner on the wall plane x=-1314 — the datum the whole r38 joint stands on"
+  },
+  {
+   "name": "headboard_near_end_front_arris",
+   "mass": "bed_headboard",
+   "kind": "v_edge",
+   "along": [
+    525,
+    625
+   ],
+   "step": 1,
+   "search_px": 8,
+   "tol_px": 3.0,
+   "target": {
+    "slope": -0.00676,
+    "intercept": 1012.875,
+    "rms": 0.678,
+    "n": 101,
+    "estimator": "pixel_check.fit_feature on the target file"
+   },
+   "why": "the panel's front corner. r37 BUILT IT 19.04 px AWAY AND NOTHING FAILED — that is why this rung exists. search_px 8 cannot reach the silhouette 20 px away, so a repeat of r37 fails as 'no feature found' rather than as a wrong number. tol 3.0 px covers the welt bead's own 2 px width, i.e. the whole 84-95 mm depth bracket"
+  }
+ ],
+ "_pixel_claims_note": "NOT CLAIMED, and refusing to claim it is the point: the panel's TOP arris. This checker's estimator (gradient-peak) cannot fit it — rms 1.37-1.77 px against 0.37 for the silhouette — because it swaps between the arris and the welt 3 px below, exactly the failure r37 documented and fixed with a SEEDED HALF-LEVEL CROSSING. Shipping a claim this estimator cannot measure would put a noisy number where a gate reads it. Owed: a second estimator kind in pixel_check, then the top arris becomes a claim and z_top 882.95 gets a pixel rung of its own."
 }

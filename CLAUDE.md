@@ -334,6 +334,67 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
     available locally at zero risk, and a judge shown the answer stops being a
     judge. That default is the builder's call and the owner can override it.
 
+- R11 EVERY MECHANISM MUST OPEN THE PICTURE (owner order 2026-08-09: *"ผมขอบังคับ
+  ให้ทุกกลไก ทุกขั้นตอนต้องมองรูปจริง"*, an hour after he looked at r38b and said
+  *"ในสายตาผมมันยังไม่ใกล้กับคำว่าเสร็จเลย"* — **on the very day all three of the
+  lane's closing conditions first held at once**).
+  - **THE COUNT THAT MAKES HIM RIGHT**, measured before the rule was written:
+    of the **8** modules the render gate calls, **0** ever opened an image; of the
+    **21** instruments in `pipeline/scripts` that do open images, **0** were
+    called by any gate module. Every rung deciding whether a frame ships was
+    reading DECLARATIONS ABOUT the picture — prov tags, a manifest of ids, a
+    markdown item count, a directory listing, AABBs of the built scene. All of
+    them can go green while the frame gets worse, and that day all of them did,
+    on a frame four independent critics read as a room with no headboard, no
+    styling, flat light and cloth like plastic.
+  - **THE SHARPEST INSTANCE WAS ALREADY IN THE SPEC**: `judge_lines` says in its
+    own words *"held out of every derivation above; the build is scored against
+    them (rule: a metric that can fail)"* — it names six features, stores no
+    values for any of them, and had **zero consumers in the repo**. A held-out
+    scoring set with no data and no reader.
+  - **AND THE FINISH LINE ITSELF WAS THE SAME DEFECT ONE LEVEL UP** (D-007, now
+    overruled and locked to him). Its three conditions were: coverage manifest
+    clean, seven gate halves pass, blind sheet built. *Not one looks at the
+    picture* — they measure whether every object is built **or declared**,
+    whether the rules the builder wrote are satisfied, and whether a **file
+    exists**. The one condition that did look — the owner answering the RANK
+    sheet — is the one the builder removed at r34 for having gone unanswered.
+    **The finish line was rewritten to drop the only rung that could say "not
+    close to done", and four rounds later he said exactly that.**
+  - **WHAT IS BUILT**: `spec["pixel_claims"]` + `pipeline/scripts/pixel_check.py`,
+    run OUT OF PROCESS after every full-fidelity render by `trn002_build.py`,
+    failing the build on exit 1. A claim names a feature, carries the TARGET's
+    fit **derived by this checker's own estimator**, and the rung re-measures the
+    same feature in both images and compares. Four refusals, each a defect this
+    lane shipped: the stored target fit no longer reproduces (SELF-CHECK); our
+    contrast is a fraction of the target's at the same feature (**the positive
+    control an absence test needs** — r38 quoted "no step at u=989" as proof
+    until a same-class corner that certainly exists scored the same 3.5 L); our
+    rms says the pixels are not one edge; or the position is outside tolerance.
+    **Proven on a real negative control before shipping**: run against
+    `trn002_mat_r32.png`, a full frame built with the invented 176 mm headboard,
+    it fails with *"the feature this claim names is not in our frame"* — it would
+    have caught at r32 what in fact survived to r38.
+  - **EXIT CODES ARE A CONTRACT**: 0 = claims hold, 1 = a claim is broken,
+    **2 = COULD NOT RUN**. An R5 playblast is not the reference's size and a
+    sub-pixel comparison at half resolution is a different measurement, so the
+    rung refuses rather than rescaling — and *"could not look" must never print
+    like "looked and it was fine"*. `rule_gate.enforce` now prints two lines on
+    every run: **OPENED THE PICTURE — …** and **declarations only — …**.
+  - **IT RUNS OUT OF PROCESS AND THAT IS THE LAYER LAW, not a workaround**:
+    Blender's bundled Python has no PIL. The fix is never to read pixels through
+    `bpy` inside a gate module — that drags layer-1 rule code into layer 2. It is
+    spawned, not printed, because this repo has already shipped the other version
+    ("the guard was declared mandatory and then printed as a suggestion for a
+    human to copy"), and an interpreter that cannot be found is a HARD STOP.
+  - **WHAT IT DOES NOT DO, said plainly so nobody reads it as compliance**: it
+    checks the features someone CLAIMED. On the day it shipped, **78 of 79 masses
+    carried no claim**, and that number prints on every gate run. This rung makes
+    the gate OPEN the picture; it does not yet make the gate SEE it, and the
+    difference is the remaining work. It also cannot judge beauty, styling or
+    believability — those stay with the critic ladder (R7/R7b/R7c) and his eye
+    (R3), which R11 does not replace.
+
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
 - Verify guard hooks:  `bash scripts/test_guards.sh`

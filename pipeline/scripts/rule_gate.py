@@ -993,10 +993,21 @@ def manifest_for(lane_dir, manifest_path=None):
     return None
 
 
+# R11 — WHICH RUNGS OPEN THE PICTURE. Owner order 2026-08-09: *"ผมขอบังคับให้ทุก
+# กลไก ทุกขั้นตอนต้องมองรูปจริง"*. Measured the same day, before this line existed:
+# of the 8 modules this gate calls, 0 ever opened an image, and of the 21
+# instruments in pipeline/scripts that do, 0 were called by any of them. Every
+# rung deciding whether a frame ships was reading DECLARATIONS ABOUT the picture.
+# The set below is not decoration: `enforce` prints the two groups separately on
+# every run, so a gate that did not look at the frame says so in the render path,
+# which is the channel the owner actually reads.
+PIXEL_RUNGS = {"R11 pixels"}
+
+
 def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
           lane_dir=None, spec_path=None, manifest_path=None, roster=None,
           advisories=None, render_dir=None, caps_path=None,
-          decisions_path=None):
+          decisions_path=None, frame_path=None, target_path=None):
     """Return [violation str]. `roster` and `advisories`, when given lists, are
     filled in so the caller can report WHAT RAN — see enforce()."""
     def note(name, ran_, why=""):
@@ -1128,6 +1139,27 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
     else:
         note("decision log", False, "no lane dir given, so no unit")
 
+    # R11 — THE ONE RUNG THAT OPENS THE PICTURE. It can only run where a frame
+    # exists, which is AFTER the render, so `trn002_build` calls the gate a
+    # second time with the frame it just wrote. Pre-render the rung is absent and
+    # the roster says so by name rather than staying quiet about it.
+    try:
+        import pixel_check as PIX
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"pixel_check is not importable ({e}) — refusing to call this a "
+                 f"gate while its only rung that looks at the frame is missing")
+        note("R11 pixels", False, "module not importable")
+    else:
+        claims = spec.get("pixel_claims") or []
+        if frame_path and target_path:
+            v += PIX.check(spec, frame_path, target_path)
+            note("R11 pixels", True,
+                 f"{len(claims)} claim(s) on {os.path.basename(str(frame_path))}")
+        else:
+            note("R11 pixels", False,
+                 "no frame given — this run of the gate did NOT open the picture"
+                 + (f" ({len(claims)} claims are waiting for one)" if claims else ""))
+
     if advisories is not None:
         advisories += audit_craft(spec)
         try:
@@ -1136,12 +1168,19 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
             pass
         else:
             advisories += CONTACT.undeclared(spec)
+        try:
+            import pixel_check as PIX
+        except ImportError:  # pragma: no cover
+            pass
+        else:
+            advisories += PIX.unclaimed(spec)
     return v
 
 
 def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=False,
             lane_dir=None, spec_path=None, manifest_path=None, render_dir=None,
-            caps_path=None, decisions_path=None):
+            caps_path=None, decisions_path=None, frame_path=None,
+            target_path=None):
     """Print and, if hard, refuse to continue. Called by the builder."""
     _utf8_stdout()
     roster, advisories = [], []
@@ -1149,7 +1188,8 @@ def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=Fals
               spec_path=spec_path, manifest_path=manifest_path,
               roster=roster, advisories=advisories,
               render_dir=render_dir, caps_path=caps_path,
-              decisions_path=decisions_path)
+              decisions_path=decisions_path, frame_path=frame_path,
+              target_path=target_path)
     # Name what was checked, not just that nothing failed — and name what was
     # NOT, on the pass path AND the fail path. A gate that prints the same
     # success line whether or not it ran a half of itself is indistinguishable
@@ -1160,13 +1200,20 @@ def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=Fals
         print("RULE GATE (advisory, not blocking):")
         for s in advisories:
             print(f"  ~~ {s}")
+    # R11 — SAY WHICH HALF LOOKED AT THE PICTURE, EVERY RUN. Owner order
+    # 2026-08-09. Printing one undifferentiated "checked: ..." list is what let a
+    # gate made entirely of declaration-readers go green on a frame four critics
+    # called unfinished: the roster read like coverage.
+    saw = [n for n in ran if n in PIXEL_RUNGS]
+    blind = [n for n in ran if n not in PIXEL_RUNGS]
     if not v:
-        print(f"RULE GATE: {len(spec.get('masses', []))} masses, all justified "
-              f"[checked: {', '.join(ran)}]")
+        print(f"RULE GATE: {len(spec.get('masses', []))} masses, all justified")
     else:
-        print(f"\nRULE GATE: {len(v)} violation(s) [checked: {', '.join(ran)}]")
+        print(f"\nRULE GATE: {len(v)} violation(s)")
         for s in v:
             print(f"  !! {s}")
+    print(f"RULE GATE: OPENED THE PICTURE — {', '.join(saw) if saw else 'NOTHING'}")
+    print(f"RULE GATE: declarations only — {', '.join(blind)}")
     for name, why in skipped:
         print(f"RULE GATE: !! {name} NOT checked ({why})")
 

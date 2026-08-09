@@ -804,6 +804,73 @@ def main():
     bpy.ops.render.render(write_still=True)
     print(f"wrote {out_png}")
 
+    # R11 — THE GATE OPENS THE PICTURE. Owner order 2026-08-09: "ผมขอบังคับให้ทุก
+    # กลไก ทุกขั้นตอนต้องมองรูปจริง". Every other rung in this build runs BEFORE a
+    # pixel exists, which is precisely why none of them could ever look at one:
+    # measured that day, 0 of the 8 modules the gate calls opened an image, and 0
+    # of the 21 instruments that do were called by any of them.
+    #
+    # It has to be HERE and not in the pre-render gate, and it FAILS THE BUILD
+    # rather than printing a note, because the whole finding is that a gate made
+    # of declarations goes green while the frame gets worse. Proven on a real
+    # negative control before it shipped: run against trn002_mat_r32.png — a full
+    # frame built with the invented 176 mm headboard — it fails with "the feature
+    # this claim names is not in our frame" (1.8 L of contrast against the
+    # target's 39.6), i.e. it would have caught at r32 the defect that in fact
+    # survived to r38.
+    #
+    # A spec with no `pixel_claims` passes silently, and that is not a loophole
+    # being left open: `pixel_check.unclaimed()` prints how many masses carry no
+    # claim on every gate run, so the hole is a number in the render path rather
+    # than a silence.
+    # IT RUNS OUT OF PROCESS, and that is the layer law rather than a workaround:
+    # Blender's bundled Python has no PIL (`ModuleNotFoundError` on the first
+    # attempt), and the fix is NOT to teach the checker to read pixels through
+    # `bpy.data.images` — that would drag a gate module into layer 2, which
+    # pipeline/CLAUDE.md forbids for exactly this kind of code. `pixel_check` is
+    # layer-1 rule code operating on layer-3 output, so it belongs in a plain
+    # python process. The build spawns it and dies on its exit code.
+    #
+    # AND IT IS SPAWNED, NOT PRINTED. This repo has already shipped the other
+    # version once ("the guard was declared mandatory and then printed as a
+    # suggestion for a human to copy"). An interpreter that cannot be found is a
+    # HARD STOP, not a note: a gate that cannot run must never read as a gate
+    # that passed.
+    import shutil
+    import subprocess
+    target = os.path.join(REPO, "_private", "benchmark", "reproduction",
+                          "TRN-002", "target.jpg")
+    if not os.path.isfile(target):
+        raise SystemExit(f"R11: the reference {target} is not readable, so this "
+                         f"run cannot compare the frame to anything. A gate that "
+                         f"cannot look must not report that it looked.")
+    py = next((p for p in (shutil.which("python3"), shutil.which("python"))
+               if p), None)
+    if py is None:
+        raise SystemExit("R11: no plain python interpreter on PATH to run "
+                         "pixel_check (Blender's has no PIL). Refusing to finish "
+                         "a render whose only rung that opens the picture could "
+                         "not be started.")
+    r = subprocess.run([py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                         "pixel_check.py"),
+                        "--spec", os.path.abspath(spec_path),
+                        "--render", out_png, "--target", target],
+                       capture_output=True, text=True, encoding="utf-8",
+                       errors="replace")
+    for ln in (r.stdout or "").splitlines():
+        print(f"PIXEL {ln}")
+    # 2 = COULD NOT RUN (an R5 playblast is not the reference's size, and a
+    # sub-pixel comparison at half resolution is a different measurement). It is
+    # a distinct code from 0 on purpose: the line above says NOT RUN in the
+    # render path, and only full fidelity was ever allowed to close a gate.
+    if r.returncode == 2:
+        pass
+    elif r.returncode:
+        for ln in (r.stderr or "").splitlines()[-4:]:
+            print(f"PIXEL !! {ln}")
+        raise SystemExit(f"R11 PIXEL GATE FAILED: the frame does not honour a "
+                         f"feature its own spec claims.")
+
 
 if __name__ == "__main__":
     main()
