@@ -1006,6 +1006,23 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
     v = audit_spec(spec, require_seen)
     note("R10 spec", True)
 
+    # R9, one level up from a position: a RELATIONSHIP that only two equal
+    # numbers record is not recorded at all. Blocking, and it belongs on the
+    # blocking side rather than beside audit_craft because a broken row is not a
+    # matter of degree — the spec is asserting a joint that its own numbers
+    # refuse. r37 is the case: the headboard's invented 176 mm died and the
+    # bed's head coordinate, derived from it, stayed perfectly legal 83 mm away.
+    try:
+        import contact_check as CONTACT
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"contact_check is not importable ({e}) — refusing to render "
+                 f"past a gate whose half is missing")
+        note("R9 contacts", False, "module not importable")
+    else:
+        v += CONTACT.check(spec)
+        rows = spec.get("contacts") or []
+        note("R9 contacts", True, f"{len(rows)} declared")
+
     if bundle_dir:
         v += audit_bundle(bundle_dir, lane_dir)
         note("R7 triage", True)
@@ -1113,6 +1130,12 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
 
     if advisories is not None:
         advisories += audit_craft(spec)
+        try:
+            import contact_check as CONTACT
+        except ImportError:  # pragma: no cover - reported as a violation above
+            pass
+        else:
+            advisories += CONTACT.undeclared(spec)
     return v
 
 
