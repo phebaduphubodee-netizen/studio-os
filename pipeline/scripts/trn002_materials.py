@@ -93,6 +93,16 @@ EXACT = {
     # Grain VERTICAL, which is what a tall lining panel shows and what the
     # target's own niche shows at 4x.
     "closet_oak": "veneer_oak",
+    # r34 splits that one panel into the unit it actually is, on the plane the
+    # floor contact puts it (y=1130, not the declared 2330). Listed one by one
+    # rather than as a `closet_` PREFIX on purpose: `closet_floor` and
+    # `closet_back` are NOT oak, so a prefix here would be a rule that has to
+    # carry two exceptions on the day it is written. `material_for` raises on an
+    # unmapped mass, so the next closet part fails loudly instead of defaulting.
+    "closet_body": "veneer_oak", "closet_head": "veneer_oak",
+    "closet_stile_R": "veneer_oak", "closet_niche_back": "veneer_oak",
+    "closet_shelf": "veneer_oak", "closet_plinth": "veneer_oak",
+    "led_strip": "strip_led",
     "desk": "veneer_oak", "console": "veneer_oak",
     "desk_pier": "veneer_oak",
     "shelf_col_base": "veneer_oak", "shelf_col_back": "veneer_oak",
@@ -135,7 +145,14 @@ EXACT = {
     # The two old names are KEPT so every historical spec still builds — a
     # rename that silently breaks a past round destroys the ability to
     # reproduce it, and reproducing past rounds is how regressions are found.
+    # r35: `lamp` was a fabricated 640.7 mm body standing where the reference
+    # shows lit oak wall. Deleted, not renamed — the shade it claimed to carry
+    # is now measured on its own (`pendant_shade`), and the post that carried
+    # nothing is simply gone. `lamp`/`lamp_shade`/`lamp_stem` stay listed so a
+    # spec that still names them keeps rendering black rather than defaulting.
     "lamp": "shade_black",
+    "pendant_shade": "shade_black",
+    "pendant_cord": "shade_black",
     "lamp_shade": "shade_black", "lamp_stem": "shade_black",
     "duvet_top": "linen_white", "duvet_drape": "linen_white",
     "shelf_col_base": "veneer_oak",
@@ -271,10 +288,20 @@ PALETTE = {
     # DO have already matches (16.30 vs 16.02). Not more saturation; more AREA.
     # Velvet swatch (520,640)=(173,155,135) sRGB, tail (540,700)=(147,129,110);
     # woven top (610,640)=(187,170,151), tail (620,740)=(173,152,131).
-    "velvet_taupe":      ((0.560, 0.470, 0.375), 0.42, 0.0, None, 0.0),
+    # RELIEF TURNED ON r33. Both this row and `upholstery_bed` below carried a
+    # NORMAL_STRENGTH that no code path could reach — `build_materials` returns
+    # early for a row with no map, so the relief was written and never built.
+    # Same class as the dead PALETTE rows r30 deleted, in a different table.
+    # Measured before turning it on (`texture_check.py`, σ=2, r32 frame): the
+    # throw reads 0.0162 against the target's 0.0749, and the four bed-upholstery
+    # objects 0.0073-0.0165 against 0.0291-0.0581. The map is `rough_linen`
+    # and it is DIFFUSE_OFF — normal only — so r32's freshly re-derived albedos
+    # are not moved by a texture round. Scale 0.30 for velvet (a finer pile than
+    # the woven bed cloth at 0.50), the same band the other linen rows use.
+    "velvet_taupe":      ((0.560, 0.470, 0.375), 0.42, 0.0, "rough_linen", 0.30),
     "woven_oat":         ((0.640, 0.548, 0.443), 0.88, 0.0,
                           "poly_wool_herringbone", 0.30),
-    "upholstery_bed":    ((0.855, 0.871, 0.863), 0.90, 0.0, None, 0.0),
+    "upholstery_bed":    ((0.855, 0.871, 0.863), 0.90, 0.0, "rough_linen", 0.50),
     "linen_white":       ((0.860, 0.855, 0.840), 0.95, 0.0, "rough_linen", 0.7),
     "upholstery_chair":  ((0.791, 0.768, 0.708), 0.90, 0.0, "rough_linen", 0.5),
     "frame_black":       ((0.117, 0.095, 0.078), 0.45, 0.0, None, 0.0),
@@ -309,6 +336,14 @@ PALETTE = {
     # it is lit by the aperture, so this is a plain matte white — the bright
     # bar / dark gap reading has to come from the GEOMETRY, not from a value.
     "blind_slat":        ((0.780, 0.775, 0.760), 0.62, 0.0, None, 0.0),
+    # THE ROW r30 DELETED, RE-DECLARED IN THE ROUND THAT BUILDS THE OBJECT.
+    # r30 was right to delete it: `strip_led` sat in EMISSIVE naming a material
+    # that had never existed here, so no code path could reach it. What it could
+    # not do was build the strip, and the manifest has carried `led_strip` as
+    # UNCOVERED ever since. The order matters and is the whole lesson: the mass
+    # exists first (spec_r34 `led_strip`, a line fitted to rms 0.124 px over 65
+    # columns), and the material is declared for it, not ahead of it.
+    "strip_led":         ((1.000, 0.905, 0.790), 0.50, 0.0, None, 0.0),
 }
 
 PALETTE_PROV = {
@@ -435,6 +470,18 @@ PALETTE_PROV = {
     "blind_slat": _A + " — the slats are ~6.5 px apart at this camera, far too fine to sample a value from; taken as the wall paint slightly warmed. What IS measured is their pitch (29.4 mm) and that the gaps are narrow.",
     "lens_warm": _M + "; the four lens cores are the frame's only legitimately "
                       "clipped pixels (273 px, 0.03%).",
+    "strip_led": _A + " (COLOUR) — carried verbatim from trn002_light.STRIP's "
+                      "measured warm white (1.000/0.905/0.790), the etagere "
+                      "strips in this same room. The target's own strip pixels "
+                      "read RGB 0.98/0.95/0.90, which is NOT usable as a hue: "
+                      "at Ylin 0.94-0.96 a JPEG is compressing what little "
+                      "chroma survives, and every near-clipped source in any "
+                      "frame reads near-white whatever its colour. What IS "
+                      "measurable is the WASH one pixel below the line — "
+                      "0.82/0.71/0.56 at v 330 — and that is oak reflectance "
+                      "times the strip, so it constrains the pair, not the "
+                      "row. The line's LEVEL (0.94-0.96, not clipping) is the "
+                      "bracket target; see EMISSIVE for the seed's derivation.",
 }
 
 # ------------------------------------------------------------- bpy builders --
@@ -460,7 +507,7 @@ ROUGH_MEAN = {
 }
 # Materials that keep a map set for its NORMAL (weave, grain relief) but must
 # NOT take its colour variation — measured texture near zero on that surface.
-DIFFUSE_OFF = {"rug_cream"}
+DIFFUSE_OFF = {"rug_cream", "upholstery_bed", "velvet_taupe"}
 # Materials whose mesh carries REAL UVs and must use them instead of box
 # projection. Only the herringbone floor: its planks each carry their own UV
 # frame so the grain turns with the chevron, which is what a box projection —
@@ -480,7 +527,29 @@ UV_MAPPED = {"floor_herringbone"}
 # approach that actually shipped; this was the abandoned other one, left behind
 # looking like a setting. A dead declaration is worse than no declaration:
 # it reads as a decision that was made.
-EMISSIVE = {"lens_warm": 34.0}
+EMISSIVE = {"lens_warm": 34.0, "strip_led": 23.0}
+# strip_led 23.0 is DERIVED FROM THIS LANE'S OWN SHIPPED STRIP, not chosen. The
+# etagere strips are AREA lights at 0.85 W over 452 x 26 mm, and that power was
+# itself set against a measured falloff (0.73 at 20 mm -> 0.40 at 90 -> 0.28 at
+# 250) rather than by eye. A Lambertian emitter of power P over area A has
+# radiance P/(pi*A) = 0.85 / (pi * 0.011752) = 23.0, which is what an emissive
+# SURFACE has to carry to be the same light. It is a SEED, and it is bracketed
+# on the quick rung like every other emitter here, because a box emits from six
+# faces where an area light emits from one -- the equivalence above is exact for
+# radiance and not for total power.
+# CROSS-CHECK from outside this repo, which is the point of paying for research:
+# 23.0 over the strip's 500 x 26 mm front face is ~0.94 W radiant, ~280 lm at a
+# warm-white 300 lm/W radiant, i.e. ~560 lm/m. Diode LED's VALENT cove tape runs
+# 436-2050 lm/m and Lutron's Lumaris 820-1640 lm/m
+# (docs/research/2026-08-08-upgrade-dr/ANSWER_gemini_q5-hero-light-practice.md:26,
+# both [MEASURED] against manufacturer spec sheets). So the seed sits at the dim
+# end of one range and below the other -- consistent, and the direction to
+# bracket in is UP.
+# WHY AN EMISSIVE MESH AND NOT A FOURTH AREA LIGHT: the etagere strips are
+# CONCEALED and only their wash is in frame. This one IS in frame -- a 1-2 px
+# line at Ylin 0.94-0.96, the brightest thing in that quarter of the target and
+# it does not clip. An area light with camera_visible off cannot produce a line;
+# a light that IS visible has to be a surface.
 
 # ------------------------------------------------------------------ fresnel --
 # {key: (ior, specular_ior_level)}. A SEPARATE table from PALETTE, and the

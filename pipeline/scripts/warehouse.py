@@ -1,5 +1,12 @@
 """warehouse.py — search and fetch models from SketchUp 3D Warehouse.
 
+CLI-ONLY: run by hand during an R8 ACQUIRE decision —
+`python pipeline/scripts/warehouse.py search "<generic query>"` then
+`... fetch <entity_id> --slug <slug> --assert-class <cls>`. It is deliberately
+NOT on an automatic path: every fetch is a licence decision and a spend
+decision, and R8 makes both the owner's. Queries are generic by the same
+privacy rule that governs the NLM lane — no client names, no room dimensions.
+
 WHY THIS EXISTS, and why it is a separate module from assets.py. The owner asked
 a working designer where furniture models come from and the answer was 3D
 Warehouse — a source our 2026-07-01 asset-sourcing DR does not mention at all,
@@ -134,6 +141,15 @@ def main(argv=None):
     f.add_argument("entity_id")
     f.add_argument("--slug", default=None)
     f.add_argument("--format", default="glb")
+    # THE ASSERTION RUNS HERE, IN THE PATH THAT ALREADY RUNS. This line used to
+    # print "the caller must check" and there was never a caller — the standing
+    # rule in pipeline/CLAUDE.md ("no external geometry reaches a spec until its
+    # unit is asserted, never assumed") had no program behind it, which is the
+    # only kind of rule this repo has ever failed to keep. A sidecar is written
+    # on EVERY fetch whether or not a class is named, so "unasserted" is a fact
+    # on disk rather than the absence of one.
+    f.add_argument("--assert-class", default=None, dest="cls",
+                   help="scale class from asset_scale.BANDS; refusal exits 1")
     a = ap.parse_args(argv)
 
     if a.cmd == "search":
@@ -142,9 +158,47 @@ def main(argv=None):
         return 0
     path = fetch(a.entity_id, a.slug, a.format)
     print(f"fetched {path} ({os.path.getsize(path)} bytes)")
-    print("SCALE IS NOT ASSERTED HERE — the caller must check the imported "
-          "bounds against a per-class band before any spec consumes this.")
-    return 0
+    return _assert_scale_sidecar(path, a.cls)
+
+
+def _assert_scale_sidecar(path, cls):
+    """Read the bounds, write `<asset>.scale.json`, and refuse a bad unit.
+
+    Kept out of `fetch()` so a cached re-fetch still runs it, and so the import
+    stays at the CLI edge: `asset_scale` is pure but this module is the network
+    one, and the layer law wants the pure thing importable without it.
+    """
+    import asset_scale as S
+    side = os.path.splitext(path)[0] + ".scale.json"
+    try:
+        if cls:
+            ok, rep = S.assert_scale(path, cls)
+        else:
+            ok, rep = None, {"file": os.path.basename(path), "class": None,
+                             "bbox_mm": {k: round(v, 1) for k, v in
+                                         S.bounds_mm(path).items() if k != "prims"},
+                             "ok": None,
+                             "note": "NO CLASS GIVEN — bounds recorded, unit NOT "
+                                     "asserted. Nothing may consume this until "
+                                     "a class is named."}
+    except (KeyError, ValueError) as e:
+        rep, ok = {"file": os.path.basename(path), "class": cls,
+                   "ok": False, "error": str(e)}, False
+    with open(side, "w", encoding="utf-8") as f:
+        json.dump(rep, f, indent=1, ensure_ascii=False)
+    print(f"  scale sidecar -> {os.path.basename(side)}")
+    if ok is None:
+        print("  UNIT NOT ASSERTED (no --assert-class). Bounds mm: "
+              + ", ".join(f"{k}={v}" for k, v in rep["bbox_mm"].items()))
+        return 0
+    if ok:
+        print(f"  SCALE ASSERTED as {cls}: {rep['measured_mm']} mm on "
+              f"{rep['axis']}, band {rep['band_mm']}")
+        return 0
+    print(f"  SCALE REFUSED: {rep.get('planar_refusal') or rep.get('error') or ''}"
+          f" measured {rep.get('measured_mm')} mm against band {rep.get('band_mm')}"
+          f"{' — would be in band under ' + str(rep['in_band_under']) if rep.get('in_band_under') else ''}")
+    return 1
 
 
 if __name__ == "__main__":

@@ -115,6 +115,44 @@ def oct_mesh(c, s, cut, axis="z", tilt_deg=0.0, seg=6, open_face=None):
     return vs, fs
 
 
+def cone_mesh(apex, radius, height, seg=24, point_up=True):
+    """(verts, faces) of a right circular cone in METRES from mm apex+size.
+
+    `apex` is the POINT, `height` the drop to the rim plane, `radius` the rim.
+    point_up=True is the shade idiom: apex at the top, flaring down.
+
+    Triangles only, and deliberately so. The base is a FAN from a centre vertex
+    rather than one n-gon cap: R8b's audit found the repo's hand-built geometry
+    carrying n-gons that every Blender-native path avoids, and a SketchUp
+    recipient sees them (pipeline/CLAUDE.md, the openings law). A 24-segment cap
+    as a single face would have been one line shorter and one defect worse.
+
+    Earned r35: the reference's bedside shade is a cone whose left flank fits a
+    straight line to 0.17 px over 24 rows — which is what SAYS it is a cone,
+    because under this lane's yaw-only camera a cylinder or an arris would hold
+    its u instead of drifting.
+    """
+    ax, ay, az = (v * MM for v in apex)
+    r, h = radius * MM, height * MM
+    rz = az - h if point_up else az + h
+    vs = [(ax, ay, az)]                                   # 0: apex
+    for i in range(seg):
+        a = 2.0 * math.pi * i / seg
+        vs.append((ax + r * math.cos(a), ay + r * math.sin(a), rz))
+    vs.append((ax, ay, rz))                               # seg+1: rim centre
+    cap = seg + 1
+    fs = []
+    for i in range(seg):
+        b, c = 1 + i, 1 + (i + 1) % seg
+        # Winding checked against `inward_faces`, not reasoned about: the first
+        # version had all 48 faces pointing at the centroid. rule_gate's own
+        # history says the mesh-winding defect survived five rounds because no
+        # critic, gate or LOOK can see it — only a test can.
+        fs.append((0, b, c) if point_up else (0, c, b))
+        fs.append((cap, c, b) if point_up else (cap, b, c))
+    return vs, fs
+
+
 def herringbone(w=132.1, length=619.6, anchor=(-5321.0, 422.2), joint=2.0,
                 x_range=(-4750.0, 60.0), y_range=(-6600.0, 60.0)):
     """Plank rectangles of a herringbone floor, as [(x,y) x4] in mm on z=0.

@@ -1,0 +1,152 @@
+"""Tests for asset_scale.py.
+
+The synthetic GLBs are built here rather than committed as fixtures: a fixture
+binary is a thing nobody reads, and the failure this module exists to catch is a
+UNIT error, which is one multiply away from a passing file. Building them makes
+the wrong-unit case a one-line edit instead of a new binary.
+"""
+import json
+import math
+import os
+import struct
+import sys
+
+import pytest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_scale as A
+
+
+def _glb(tmp, name, nodes, meshes, accessors, scene_roots=None):
+    gl = {"asset": {"version": "2.0"}, "accessors": accessors,
+          "meshes": meshes, "nodes": nodes,
+          "scenes": [{"nodes": scene_roots if scene_roots is not None
+                      else list(range(len(nodes)))}], "scene": 0}
+    blob = json.dumps(gl).encode("utf-8")
+    blob += b" " * ((4 - len(blob) % 4) % 4)
+    body = struct.pack("<II", len(blob), 0x4E4F534A) + blob
+    path = os.path.join(str(tmp), name)
+    with open(path, "wb") as f:
+        f.write(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
+    return path
+
+
+def _boxglb(tmp, name, size_m, translate=None, rot=None, scale=None):
+    """One box of the given size in glTF axes (x, y=up, z)."""
+    hx, hy, hz = (s / 2 for s in size_m)
+    acc = [{"type": "VEC3", "componentType": 5126, "count": 8,
+            "min": [-hx, -hy, -hz], "max": [hx, hy, hz]}]
+    node = {"mesh": 0}
+    if translate:
+        node["translation"] = list(translate)
+    if rot:
+        node["rotation"] = list(rot)
+    if scale:
+        node["scale"] = list(scale)
+    return _glb(tmp, name, [node], [{"primitives": [{"attributes": {"POSITION": 0}}]}], acc)
+
+
+# --------------------------------------------------------------- bounds --
+def test_metres_become_millimetres_and_axes_are_repo_axes(tmp_path):
+    # glTF is Y-up; the repo is Z-up. A 0.6 x 1.1 x 0.2 (x, up, depth) shirt
+    # must come back as z=1100 (height) and y=200 (depth), not the other way.
+    p = _boxglb(tmp_path, "a.glb", (0.6, 1.1, 0.2))
+    b = A.bounds_mm(p)
+    assert b["x_mm"] == pytest.approx(600.0)
+    assert b["z_mm"] == pytest.approx(1100.0)
+    assert b["y_mm"] == pytest.approx(200.0)
+
+
+def test_node_scale_is_applied(tmp_path):
+    p = _boxglb(tmp_path, "b.glb", (1.0, 1.0, 1.0), scale=(0.0254, 0.0254, 0.0254))
+    assert A.bounds_mm(p)["z_mm"] == pytest.approx(25.4)
+
+
+def test_rotation_uses_all_eight_corners(tmp_path):
+    # A flat plate rotated 45 deg about x: its Z-up extent must GROW. Transform
+    # only two corners and this comes back unchanged, which is the bug the
+    # eight-corner loop exists to prevent.
+    s = math.sin(math.pi / 8), math.cos(math.pi / 8)
+    p = _boxglb(tmp_path, "c.glb", (1.0, 0.1, 1.0), rot=(s[0], 0.0, 0.0, s[1]))
+    assert A.bounds_mm(p)["z_mm"] > 700.0
+
+
+def test_child_inherits_parent_transform(tmp_path):
+    acc = [{"type": "VEC3", "componentType": 5126, "count": 8,
+            "min": [-0.05, -0.05, -0.05], "max": [0.05, 0.05, 0.05]}]
+    nodes = [{"children": [1], "scale": [10.0, 10.0, 10.0]}, {"mesh": 0}]
+    p = _glb(tmp_path, "d.glb", nodes,
+             [{"primitives": [{"attributes": {"POSITION": 0}}]}], acc, scene_roots=[0])
+    assert A.bounds_mm(p)["z_mm"] == pytest.approx(1000.0)
+
+
+def test_missing_min_max_raises_rather_than_guessing(tmp_path):
+    acc = [{"type": "VEC3", "componentType": 5126, "count": 8}]
+    p = _glb(tmp_path, "e.glb", [{"mesh": 0}],
+             [{"primitives": [{"attributes": {"POSITION": 0}}]}], acc)
+    with pytest.raises(ValueError, match="min/max"):
+        A.bounds_mm(p)
+
+
+def test_not_a_glb_raises(tmp_path):
+    path = os.path.join(str(tmp_path), "f.glb")
+    with open(path, "wb") as f:
+        f.write(b"NOPE" + b"\x00" * 16)
+    with pytest.raises(ValueError, match="not a binary glTF"):
+        A.bounds_mm(path)
+
+
+# ------------------------------------------------------------ assertion --
+def test_in_band_passes(tmp_path):
+    p = _boxglb(tmp_path, "g.glb", (0.55, 1.10, 0.20))
+    ok, rep = A.assert_scale(p, "garment_hung")
+    assert ok and rep["measured_mm"] == pytest.approx(1100.0)
+    assert rep["in_band_under"] is None
+
+
+def test_imperial_export_is_caught_AND_named(tmp_path):
+    # The DR's named trap: authored in metres, exported as if inches. 1100 mm
+    # of shirt arrives as 43.3. Catching it is half the job; saying WHICH
+    # multiplier would land in band is what makes it actionable.
+    p = _boxglb(tmp_path, "h.glb", (0.0217, 0.0433, 0.0079))
+    ok, rep = A.assert_scale(p, "garment_hung")
+    assert not ok
+    assert "x25.4" in rep["in_band_under"]
+
+
+def test_a_cutout_is_refused_even_though_its_height_is_right(tmp_path):
+    # THE REAL CASE. The lane's first fetched asset: 715 mm tall, in band, and
+    # 11.7 mm deep. Scale alone calls this fine.
+    p = _boxglb(tmp_path, "i.glb", (0.616, 0.715, 0.0117))
+    ok, rep = A.assert_scale(p, "garment_hung")
+    assert rep["in_band"] is True
+    assert not ok
+    assert "CUTOUT" in rep["planar_refusal"]
+
+
+def test_a_class_with_no_planar_floor_is_not_silently_exempt(tmp_path):
+    # `None` must mean DECLARED-planar, and a class absent from the table must
+    # not read as exempt by accident. Every band has an explicit entry.
+    assert set(A.MIN_DEPTH_RATIO) == set(A.BANDS), (
+        "every band needs an explicit planar floor (or a declared None) — an "
+        "absent key makes 'exempt' and 'unchecked' look identical")
+
+
+def test_unknown_class_raises_and_does_not_pass(tmp_path):
+    p = _boxglb(tmp_path, "j.glb", (0.5, 0.5, 0.5))
+    with pytest.raises(KeyError, match="no scale band"):
+        A.assert_scale(p, "lamp_we_never_declared")
+
+
+def test_every_band_carries_a_source(tmp_path):
+    for cls, (lo, hi, axis, src) in A.BANDS.items():
+        assert lo < hi, cls
+        assert axis in ("x", "y", "z"), cls
+        assert src and len(src) > 20, f"{cls}: a band with no cited source is a preference"
+
+
+def test_cli_returns_nonzero_when_it_refuses(tmp_path):
+    p = _boxglb(tmp_path, "k.glb", (0.616, 0.715, 0.0117))
+    assert A.main([p, "garment_hung"]) == 1
+    q = _boxglb(tmp_path, "l.glb", (0.55, 1.10, 0.20))
+    assert A.main([q, "garment_hung"]) == 0
