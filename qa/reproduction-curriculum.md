@@ -75,8 +75,25 @@ not a criterion; it is a queue.
 > full text CLAUDE.md R3), which turns a dormant contradiction into a lane with
 > no finish line at all.
 >
-> **FINISH LINE (TRN-002, builder-decided, `qa/open-decisions.json` D-007).** A
-> reproduction closes when all three hold:
+> **⛔ OVERRULED BY THE OWNER 2026-08-09 — *"ในสายตาผมมันยังไม่ใกล้กับคำว่าเสร็จเลย"***
+> **on the very day all three conditions below first held at once.** The block is
+> kept, not deleted, because the way it failed is the lesson: **not one of the
+> three looks at the picture.** (1) measures whether every object is built *or
+> declared*, (2) measures whether the rules the builder wrote are satisfied, (3)
+> measures whether a *file exists*. The builder can satisfy all three without the
+> frame improving by a single pixel — and did. The one condition that did look at
+> the picture, *the owner answering the sheet*, is the one removed at r34 for
+> having gone unanswered 46 rounds. **The finish line was rewritten to remove the
+> only rung that could say "not close to done", and four rounds later the owner
+> said exactly that.** Same shape as every flattering scorer this repo has caught,
+> one level up: on the lane's finish line instead of on a metric.
+>
+> **THE FINISH LINE IS NOW HIS EYE ON THE FRAME.** The three below are demoted to
+> what they always were — necessary hygiene, never sufficient. R4's law already
+> said so: *แพ้งานส่งจริง = ขายไม่ได้*.
+>
+> **FINISH LINE (TRN-002, builder-decided r34, `qa/open-decisions.json` D-007 —
+> SUPERSEDED, see above).** A reproduction closes when all three hold:
 > 1. the coverage manifest has **no unresolved entry** — every object either
 >    built or a signed declared gap;
 > 2. a **full-fidelity** frame passes all seven gate halves;
