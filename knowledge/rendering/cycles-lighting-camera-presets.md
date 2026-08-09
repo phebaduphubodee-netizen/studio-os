@@ -169,7 +169,10 @@ and its partner practical is **2700 K**, i.e. almost exactly PH-03's forbidden p
 | **Brightest : darkest** (luminance ratio) | **no greater than 20 : 1** | "For **general spaces**, the IES recommends" — a DR-quoted IES figure, second-hand | DR:35 |
 
 - This is a **ceiling on overall contrast range**. It is **not** the same quantity
-  as the **accent : ambient ≈ 3 : 1** and **task : surround within 3 : 1** ratios in
+  as the **accent : ambient ≈ 3 : 1** [⚠ corrected — see
+  `knowledge/lighting/lighting-value-attribution-corrections.md` row (a): 3:1 is
+  the TASK : SURROUND ratio, and accent : ambient is 5 : 1] and
+  **task : surround within 3 : 1** ratios in
   `knowledge/lighting/lumen-method-and-fixture-placement.md` (§"Numeric ratios") —
   those are focal/comfort targets between two named layers. Neither figure
   overrides the other; they measure different things, and both are single-source.
@@ -310,6 +313,12 @@ value becomes a false rule:
   `knowledge/lighting/residential-lighting.md`.
 - **The 20:1 luminance ratio and the 2700–3000 K band are single-source REFERENCE**
   (and IES is quoted second-hand). Verify before either gates a client deliverable.
+  ⚠ **VERIFIED 2026-08-08 AND CORRECTED:** 20:1 is the ceiling between
+  **fenestration and its adjacent interior surfaces**, not within the field of
+  view — the field-of-view limit is **< 40:1**. See
+  `knowledge/lighting/lighting-value-attribution-corrections.md` row (b). This is
+  the "verify before it gates anything" above, carried out; the number survived
+  and the sentence around it did not.
 - **Exposure has no number** (DR:64) — do not manufacture one.
 - The DR's material/BSDF third is **out of scope for this file** — see
   `knowledge/materials/bsdf-material-presets.md`, which is the companion promoted

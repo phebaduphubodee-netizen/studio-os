@@ -220,6 +220,11 @@ set is studio gate evidence (§4 RESOLVED), not reference-sourced.
   538–861 lux; Home office desk 50–75 fc / 538–807 lux) and the numeric layering
   ratios (same file `:48–49` — accent : ambient **~3 : 1**; task surface : surround
   within **3 : 1**). Both are REFERENCE, single-source (Gemini DR) per that file.
+  ⚠ **CORRECTED 2026-08-08:** the accent : ambient figure is **5 : 1**; **3 : 1**
+  is the task : surround ratio, so the two lines above were the same number
+  serving two different pairs of surfaces. The bedroom lux rows quoted here are
+  also re-attributed. See
+  `knowledge/lighting/lighting-value-attribution-corrections.md`.
 - Colour-rendition thresholds, split:
   - **CRI floor — CLOSED.** **CRI ≥ 90** = residential professional floor
     (`knowledge/lighting/lumen-method-and-fixture-placement.md:94`, single-source),

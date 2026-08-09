@@ -75,6 +75,15 @@ statutory floor (Authority block above) still wins.
 | Bathroom | vanity/grooming (vertical on face) | 50–80 | 538–861 |
 | Home office | desk / paper task | 50–75 | 538–807 |
 
+> ⚠ **CORRECTION 2026-08-08 — two rows of this table are attached to the wrong
+> task.** A 315-source corpus (`knowledge/lighting/lighting-value-attribution-corrections.md`,
+> rows c and d) reads **10–20 fc / 108–215 lux** as *hotel-bedroom READING*, not
+> bedroom general — IES bedroom ambient is **6–15 fc ≈ 65–162 lux** — and finds
+> **30–50 fc / 323–538 lux** to be the *kitchen general* standard, with reading
+> areas at 20–50 fc and a bedroom reading task up to ~40 fc ≈ 430 lux. Both
+> numbers are real; the ROW LABELS are what is in question. Read that file
+> before quoting either row for a bedroom.
+
 > Pipeline note: the **general/circulation** band of this table is already
 > encoded (living/bedroom/dining 10–20, kitchen 30–50, bathroom 20–30 fc) in
 > `pipeline/scripts/dimensional_rules.v0.1.json → lighting.general_illuminance_fc`,
@@ -92,6 +101,12 @@ statutory floor (Authority block above) still wins.
   NLM-sourced 2200–3000K residential band; this adds the per-room split, which
   that file lists as a GAP. Single-source for the per-room split.*
 - **CRI ≥ 90** = residential professional floor (*single-source: Gemini*).
+  ⚠ **DISPUTED 2026-08-08:** a 315-source corpus gives **82 CRI** as the stated
+  minimum for occupied interiors and treats **> 80** as already "high colour
+  rendering", and does not support ≥ 90 as a general requirement — see
+  `knowledge/lighting/lighting-value-attribution-corrections.md` row (e). The
+  encoded `lighting.cri_min = 90` is UNCHANGED pending an owner decision, because
+  moving it changes what `clearance_check.py` passes.
 - **TM-30 currency flag:** CRI (8–15 pastel samples) is the legacy metric; the
   modern standard is **ANSI/IES TM-30-20** (99 samples → Rf fidelity + Rg gamut).
   Use CRI≥90 as the simple floor, prefer TM-30 Rf/Rg where the fixture sheet

@@ -89,6 +89,12 @@
   เดิมเป็นส่วนใหญ่ เพื่อให้สีดูธรรมชาติและอิ่มตัวพอเหมาะ — turn 2 [2]; ยืนยันซ้ำที่
   `knowledge/_inbox/id-project-corpus/Interior Design Knowledge Structuring.pdf` p.8.
   ค่าเป้าหมายเชิงตัวเลข Rf / Rg — **GAP**: not given.
+- ⚠ **CRI floor และค่า lux รายห้องด้านล่าง ถูกโต้แย้ง 2026-08-08** โดย corpus 315 แหล่ง
+  (notebook 79476082): **82 CRI** คือขั้นต่ำที่แหล่งระบุสำหรับพื้นที่ใช้งานจริง ไม่ใช่ 90;
+  และ **108–215 lux** คือค่า *อ่านหนังสือในห้องนอนโรงแรม* ไม่ใช่ ambient ทั่วไปของห้องนอน
+  (IES ambient ห้องนอน = 6–15 fc ≈ **65–162 lux**). อ่านตารางแก้ที่
+  `knowledge/lighting/lighting-value-attribution-corrections.md` ก่อนใช้ค่าใดค่าหนึ่ง —
+  ค่าที่ encode ไว้ยังไม่ถูกแก้ เพราะการแก้เปลี่ยนผลลัพธ์ที่ gate ตัดสิน (owner decision).
 - **CRI floor:** แหล่งของไฟล์นี้ (turn 2) ไม่ให้ค่า. ค่าพื้นที่สตูดิโอใช้อยู่ที่
   `knowledge/lighting/lumen-method-and-fixture-placement.md` หัวข้อ **§3 Light quality — CCT
   per zone + CRI floor** — **CRI ≥ 90** = residential professional floor

@@ -10,6 +10,13 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
 
 ## Queue
 
+> **2026-08-08 — the whole queue was fired in one run**, on the owner's order
+> *"ใช้ nlm DR, gemini DR ให้หมดเพื่อ upgrade ซะ"*. Bundle, prompts, answers,
+> grounding sidecars and triage: `docs/research/2026-08-08-upgrade-dr/`.
+> Two vendor-integrity findings came out of the run and are recorded there: a
+> Gemini thinking budget silently disables web search, and every NotebookLM DR
+> adds its OWN synthesised report as a citable source.
+
 - [ ] Deep-read paper **SEIG — "Thinking in Blender: Staged Executable Inverse
   Graphics with Vision-Language Models"** (Cornell; https://arxiv.org/html/2606.02580)
   — งานที่ใกล้เลน reproduction ของเราที่สุดเท่าที่เคยพบ: สร้างฉาก Blender แก้ไขได้
@@ -27,6 +34,8 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   queued 2026-08-04 — มาจาก landscape scan ของ C2 (Cowork session): หัวข้อที่ 7
   ของชุดเสนอ 2026-08-04; รอบ 5 ของ TRN-002 จะเปิดด้วยคำถาม C1-pattern ซึ่งข้อ (2)
   ของ paper นี้ชนตรงที่สุด
+  
+  **[x] CLOSED 2026-08-08 — and NOT by a DR.** The paper was fetched directly (arXiv 2606.02580) because a DR is the wrong instrument for a deep-read of ONE known paper. Ground truth now on file in `docs/research/2026-08-08-upgrade-dr/`: phase budgets geometry **5** / material **3** / composition **3** / lighting **2**; the verifier returns *"an explicit approval checklist: a concrete, actionable todo list of visual discrepancies"*, each one **scoped to its stage** and told to ignore defects assigned to other stages; init selects among sampled scaffolds by **most complete object coverage**; metrics PSNR/SSIM/LPIPS/DreamSim/DINO/CLIP (SEIG 13.58 PSNR vs VIGA 12.33); authors He, Luo, Ma & Averbuch-Elor (Cornell). Their reported failure mode is ours verbatim: early-stage errors propagate and later stages cannot recover. **Consumed by** `pipeline/scripts/coverage_check.py` (built same day). Also the source of a caught fabrication: the un-searched Gemini pass invented "3 rounds per phase" and a "3D IoU 0.42 vs 0.28" that appear nowhere in the paper.
 
 - [ ] **Inspection blindness / habituation ใน visual QA** — กลไก (change
   blindness, satisfaction of search, low-prevalence effect, label-induced
@@ -45,6 +54,8 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   รอบ 5) ยิงพร้อมกันที่จุดเปลี่ยน blockout→materials อย่างช้าสุดก่อน
   parameterise STRANGER SWEEP เป็นกฎมี test**. กติกา quarantine: ตัวเลขไม่มี
   section/URL = ไม่เข้า vault
+  
+  **[x] FIRED 2026-08-08 (Gemini, grounded, 31 sources) — answer: the key countermeasure has NO literature.** `NO SOURCED VALUE FOUND` for controlled evidence that inverting / mirror-flipping / blurring / rescaling an image restores a habituated viewer's detection, in proofreading, art, radiology or industrial inspection; and none for a time-away decay curve. Practice conventions exist (read backwards, read aloud, change the font) with no effect sizes. **So it stops being a research question and becomes a local experiment** — flip the next full frame, re-run the builder LOOK, count items the unflipped LOOK did not name. Do not write it into the rules until it fires twice. Answer: `ANSWER_gemini_q9-inspection-blindness_grounded.md`.
 
 - [ ] **มวลผ้านวม/หมอนแบบวัดได้ (bedding mass / drape feedstock)** — tog/fill
   weight/fill power → settled loft (mm), fold compression factor, drop
@@ -59,6 +70,8 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   แรก; ขาวัด anchor corpus (drop/stack/slump — local ฟรี) ยิงก่อนได้ทุก
   session. รับใช้ทั้ง sim และ ACQUIRE sizing (Peat แชร์ pillow collection บน
   3D Warehouse ไว้แล้ว). กติกา quarantine เดียวกัน
+  
+  **[x] FIRED 2026-08-08** — NLM DR (notebook `766052cb`, 139 sources) + Gemini grounded (13 sources). Staged: `knowledge/_inbox/nlm-bedding-mass/`. **Half of it is quarantined and the half matters:** the GSM-by-tog bands are corroborated by retrievable retailer sources, but the **settled-loft-in-millimetres** column — the one a mesh is built from — traces only to the DR's own synthesised report. The queue's own "measure the anchors first" ordering therefore survives intact and is now the only honest route for loft, drop, stack and slump.
 
 - [ ] **ค่าสี/สะท้อนแสงจริงของ palette ครีม-โอ๊ค-ดำ** — TOA/Beger/Jotun cream
   codes + LRV (~75-90 band) + สูตร LRV→Y→sRGB มีแหล่งอ้าง, oak veneer
@@ -72,6 +85,8 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   distinct). Fire: ตอนเปิดเฟส MATERIALS ของ TRN-002 ก่อน build รอบแรก; ขาวัด
   as-rendered ranges จาก anchors = local. **URL-mandatory ใน prompt** (ledger
   จับ DR กุค่าคลาสนี้มาแล้ว): ตัวเลขไม่มี URL = quarantine
+  
+  **[x] FIRED 2026-08-08** — NLM DR (notebook `941a2620`, 113 sources) + Gemini grounded (21 sources). Staged: `knowledge/_inbox/nlm-palette-anchors/`. **The two channels split the question cleanly:** NLM answered `NOT IN SOURCES` for every Thai brand, and the live-web pass returned them — with the structural finding that **Thai brands publish sRGB and not LRV** (TOA colour-details pages give hex; Beger publishes LRV>96 to BS 8493:2008+A1:2010 and no sRGB). So for Thai work sRGB is primary and LRV is derived, which is the reverse of the international brands' path. Six international (LRV, sRGB) pairs came back as ready-made test cases for whichever conversion we adopt.
 
 - [ ] **Lighting ภาพห้องนอนที่ขายได้ — ครึ่ง practice ที่เหลือ** (ครึ่ง
   lumen/CCT ตอบแล้วใน knowledge/lighting/): ช่างภาพเปิด/หรี่ไฟชั้นไหนใน hero
@@ -86,6 +101,8 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   `downlight_table`); ขาวัด practical:ambient จาก anchor pool = local ยิงก่อน
   ได้. คำตอบลง GAP list ของ residential-lighting.md ไม่เปิด unit ใหม่;
   statutory: mr39 = LAW เหนือทุกคำตอบ
+  
+  **[x] FIRED 2026-08-08** — as the triage prescribed: asks to the EXISTING corpora `79476082` and `a5a43395`, no new DR, plus a Gemini grounded pass. First result in hand: our own single-source **20:1 luminance ratio is AMENDED** — the second source gives 3:1 task-to-immediate-surround and 10:1 task-to-remote as the comfort ceilings and calls 20:1 excessive. 108–215 lux and 323–538 lux corroborate.
 
 - [ ] **ภาษากล้องของ interior sales photography** — per-room-type focal/
   height/shift presets สำหรับโปรเจกต์ไม่มี target — คำถาม 8 ข้อเต็มใน triage
@@ -99,6 +116,8 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   `nlm-camera-language` — queued 2026-08-04 — ชุดเสนอ C2 หัวข้อ 5. Fire: ขาวัด
   = idle slot หลัง TRN-002 ปิด; DR = กล้อง no-target ตัวแรก (โปรเจกต์ถัดไป
   04_visualization หรือ beauty pass ใหม่ของ PRJ-2026-002)
+  
+  **[ ] STILL DEFERRED, and the deferral is now better argued.** A Gemini grounded pass fired anyway (33 sources) and is on file, but the triage's ordering stands untouched: **measure first.** 704 delivered frames swept with tools we already own beat any document corpus for our own question, and TRN-002 solves its camera from the target regardless. Answer parked at `ANSWER_gemini_q6-camera-language_grounded.md` for the first camera that must be AUTHORED with no target.
 
 - 2026-08-04 **REROUTE, not a queued question** — ข้อ 6 ของชุดเสนอ C2 (asset
   source map + แบรนด์เฟอร์นิเจอร์ไทย) ไม่เข้าคิว NLM: ~70% ตอบแล้ว และเช็คลิสต์
