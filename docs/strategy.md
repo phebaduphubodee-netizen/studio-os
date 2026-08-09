@@ -3033,3 +3033,86 @@ currently holding shut by policy rather than by instrument — `edge_drift` answ
 "did anything move", not "is every mass in this frame in the spec". And no
 practitioner ask, which our own research law puts first and which is still the
 cheapest unspent rung here.
+
+## 2026-08-09b — r37: one object deleted, one derived, one refused, and a fix the suite refuted
+
+Owner picked option (b) from the previous wrap and closed the practitioner rung
+with an answer: **his designer friend has never used this AI workflow.** That is
+not a null result — our own research law puts the practitioner first, and the
+honest state of that lane is now "no practitioner input exists", so the ฿21 probe
+in the entry above is the whole evidence base for the generative question. Do not
+re-open it expecting a human to arrive.
+
+**r37 closed gate-23 items 2, 3b and 4, and its most useful output is a deletion.**
+
+- `desk_pier` LEFT THE FRAME. Its `seen` had said NOT FOUND since r34, but that
+  test was taken at a position r35 later moved 1.3 m — so it could have been the
+  location and not the object. Re-tested where it now stands: the strongest
+  luminance step anywhere along its foot line is **16-21 L and does not even fall
+  at the foot line**, against **40-93 L** for every real boundary measured in the
+  same frame this round. R10 applies literally; it is a declared gap, not a
+  smaller pier and not material absorbed into a neighbour.
+- `bed_headboard` z_top 915 -> **882.95, derived**. Top arris fitted to
+  **rms 0.102 px over 48 columns**, back-projected onto x=-1314 — a plane that is
+  itself a CONTACT (the front of `ward_band`, gap 0.0). Which arris it is was
+  settled by geometry, not by reading: the camera at z=1305 is above the top face,
+  so the upper silhouette can only be the top-BACK arris. Gate-23's independent
+  per-column estimate of 30-33 mm agrees.
+- `seg` 6 -> 8 on `bed_platform` and `bench`: **craft_check green for the first
+  time in this lane.**
+
+**The depth of the headboard is measured and deliberately NOT applied, which is
+the R9 lesson repeating in a new place.** Two line pairs — the top pair (3.05-3.32
+px apart, rms 0.348 px / 44 columns) and the near end's arris pair (outer
+rms 0.174, inner rms 0.440, 26 rows, separation 20.05 px) — give 101.2 and
+**92.7 mm** against a built 176 that carries no measurement anywhere in its
+provenance. The end pair is **6.8x more sensitive per mm**, so it carries. It is
+not applied because `bed_platform`'s head face is at x=-1490, which IS this
+panel's front face: they are in contact, and a 92.7 panel held at the wall opens
+an 83.3 mm gap. **The number is measured; which contact survives is a
+RELATIONSHIP nobody has declared**, and typing either coordinate is the defect.
+
+**`bench` depth 600 was REFUSED, and the refusal is itself a measurement:** of 59
+columns across the mass only 12 carry a >=60 L rise, and a line through them fits
+to **rms 11.56 px** — two orders worse than every fit this lane accepts
+(0.10-0.44 px), because a woven throw covers the whole visible top. Solving from
+that non-line returns 25.5 mm for an ottoman. `why` now carries the declaration
+in the open including what it costs (known wrong in the direction of too deep,
+~55 px proud at u=860), and it reverses when the soft-goods lane builds the
+throw. **The object occluding the datum is one we have not built yet.**
+
+> **Three things caught this round were caught by instruments, not by looking**,
+> and two of them were mine:
+> 1. `rule_gate` refused the first cut of the bench edit — writing the refusal
+>    into `prov` while leaving 600 sitting in `s` is exactly the shape R10's
+>    corollary names. The ottoman is not invented, so `declared_gaps` was the
+>    wrong home; what is assumed is one of its DIMENSIONS.
+> 2. `reachability_check` failed the guard suite on `edge_drift` and `edit_call`
+>    — the instrument built for "an instrument nothing calls is a defect", firing
+>    on the guard I had just built for the same class one commit earlier. Both now
+>    declare `CLI-ONLY:`, and `edge_drift`'s declaration says plainly that it IS
+>    called, by `edit_call` — the checker cannot see inside a CLI-ONLY root.
+> 3. `spec["id"]` had read `"TRN-002 r34"` for r34, r35 AND r36, and my line to
+>    fix it (`replace("r36", "r37")`) found no "r36" and did nothing. **A no-op
+>    that reads like a fix is worse than no fix.** The label is now derived from
+>    `round`. r34/r35's files are frozen records and stay wrong on purpose.
+
+**And one fix this session made was REFUTED by the suite in one run, which is the
+entry worth keeping.** Deleting the mass, I also removed `desk_pier` from
+`trn002_materials.MASS_MATERIAL` on the reasoning that a material rule outliving
+its mass is how a deleted object walks back in. `test_every_mass_in_the_spec_has_
+a_material` walks **every spec in the lane, not the newest** — deliberately, so
+that re-rendering a past round still works — and thirty-six specs still carry the
+pier. The removal broke r1..r36 to tidy r37. Reverted, with the reason written
+into both the table and the test so the next tidy-up hits it. **The guard against
+a deleted object returning is `declared_gaps` + the coverage manifest, which are
+checks about the SPEC; the material table is keyed across every round this lane
+can still render.**
+
+Green at close: pytest **2603**, guards **94/0**, `craft_check` 0, `rule_gate` 0
+(79 masses, all justified), `decisions_check` 0. Decisions D-014/015/016 filed and
+printing into the render path.
+
+Not done, deliberately: **no render.** Two known geometry defects remain open by
+measurement (the headboard's contact question, the bench's occluded datum), and a
+full frame now would spend an R1 cycle photographing them.
