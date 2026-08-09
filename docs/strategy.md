@@ -2863,3 +2863,89 @@ AABB bbox is the whole box including occluded and off-frame corners, so the two
 are not the same quantity. R9b already governs this: scope comes from the rule's
 own premise, never from choosing what silences false positives. It is named work
 for r36, not a bonus commit.
+
+## 2026-08-09 — r36 item 1: a height typed for 35 rounds, and the bound that was there all along
+
+**1. The defect was not that 550 mm was wrong. It was that the object's two
+measurements could not both describe it, and nothing looked.** `petcave` is the
+largest mass in the lower third of the frame; its height came from round 1 and
+its own prov said `A(x, z, and all three sizes still assumed)`. r35 measured the
+top ridge and found the roof 80-96 px high. What r36 found on the way to fixing
+that is sharper: back-projected onto the plane the spec itself declared, the
+measured roof sits at z 296.5 while the arch fitted at r29 over 76 points crowns
+at 349.5. **The roof was measured 53 mm BELOW the crown of its own mouth**, and
+`arch_pocket` has raised on exactly that condition, with a test pinning it, since
+r29. Only the never-measured 550 kept the guard quiet. Two measured features on
+one rigid object, each solved against its OWN separately-assumed plane, and the
+pair was never asked to agree.
+
+**2. "One view cannot separate size from depth" is true and is not the end of the
+sentence.** The image genuinely carries no depth information here — proven, not
+assumed: back-projection onto a parallel plane is a uniform scaling about the
+camera, so spread/(cam_z - z) is identically 0.01437 on all three candidate
+planes, and building the mass at every shell thickness in the legal range matched
+the measured columns at a flat rms 0.40-0.44 px. **But an object with a HOLE in
+it constrains itself.** The arch's crown must be under this roof and its jamb
+inside this face, which turns the free parameter into a bracket whose two ends
+are both measurements: z_top in [349.5, 398.1] mm, and the typed 550 sits 152 mm
+outside it. Only the point INSIDE the bracket is declared, by one falsifiable
+sentence (uniform shell), and the 36.3 mm it returns is the solve checking
+itself — a moulded boucle shell is a few tens of mm.
+
+> **The move, stated so it transfers:** when one view underdetermines a
+> dimension, stop hunting for a better pixel and look for a SECOND measured
+> feature on the same rigid body whose existence constrains the first. A bracket
+> from two measurements beats a point estimate from one, and it is the honest
+> shape of the answer.
+
+**3. A corroboration that was never evidence, retired three ways.** Since r29 the
+record has cited "the boucle silhouette edge at u~950" as confirming this
+object's y. It compared the SHARP corner's projection (u=935) of a mass whose
+built silhouette is at u=970.46 — the rounding does not close a 15 px gap, it
+opens a 19 px one the other way. Worse, a rigid object with a vertical arris
+there needs crown/roof = 1.097, and because moving an object along the camera
+rays scales crown and roof together that ratio is **scale-invariant** — no
+distance and no size fixes it. And built at every legal shell, this object never
+reaches left of u=989 while covering only 5-6 of the ten measured columns. The
+`seen` field's "body u 951..1080" was two objects read as one, which is what let
+a 550 mm height look supported.
+
+**4. R9's class has a level above coordinates: any tuple that encodes a RESULT.**
+The pocket's `face` — the hole its surround strips fill — was typed as the mouth
+centre +/- the CUT (250) where `oct_mesh` drops the quad at +/- (half-depth -
+cut) (200). Both strips overhung the host by 50 mm and hung in air, under an
+`arch_pocket` docstring promising the seam is "watertight by construction rather
+than by tolerance". **The construction was reading a hand-typed field no
+generator has ever emitted** — `_mk_r29.py` writes the pocket and not this
+field; it went into the JSON out of band, so no maker was ever in the path to be
+wrong. The height had three independent copies too (`s[2]`, `c[2]`, `face[2]`)
+with nothing cross-checking them. Now `open_face_quad` derives it and
+`pocket_face_violations` refuses the next one, on the BUILD path and outside the
+`--no-rule-gate` branch: a hand-editable field needs a guard where the file is
+consumed, not one that fires when somebody remembers to run a maker.
+
+**5. Both defects the wrap-time scrutinize caught were in the new code, and both
+were the reviewed change's own class.** (a) The bracket's far end was bisected on
+an interval nobody checked contained a root, and a bisection handed no root
+returns the interval's END — so the same object and the same pixels reported a
+low bound of 312.70 mm at `t_max=400` and 3.00 mm at `t_max=4000`. **A bound that
+moves when a search parameter moves is not a measurement of anything**, and the
+existing `gap(t_max) <= 0` check did not cover it because `gap` carries a `- t`
+term that goes negative long before the roof reaches the crown. (b) The seam
+checker defaulted a missing `cut` to 0 while `trn002_build.py` dispatches with
+`m.get("cut", 200)` — **the checker written to stop a seam's two halves coming
+from two different numbers took a different number than its own consumer.** Both
+now raise or mirror, both have a regression test naming the measurement.
+
+> **Wrap-time scrutinize earned its place again, and the pattern is worth
+> naming: the review found the change's own thesis violated inside the change.**
+> Writing a rule does not exempt the author from it; if anything it makes the
+> violation harder to see, because the author has just spent hours convincing
+> themselves they understand that class.
+
+Not done, deliberately: no render. r36 items 2-5 (desk_pier, bench,
+bed_headboard, seg) are still open geometry, and the owner's build order is
+dimension -> objects -> light — a frame now would spend an R1 cycle on a picture
+with three known defects left in it. The nightstand corner clip went 170 -> 21.4
+mm and was NOT chased, because r35 recorded in writing that neither end of the
+nightstand is measurable and moving it would swap one typed number for another.
