@@ -25,6 +25,39 @@ MODELS = {"flash": "gemini-2.5-flash", "pro": "gemini-2.5-pro"}
 FORBIDDEN = re.compile(r"target\.(jpg|png)|anchor|_private[\\/]+discord|clients[\\/]", re.I)
 
 
+def prompt_body(text):
+    """Everything the JUDGE is meant to read — the text below the first `---`.
+
+    THE API PATH MUST SEND WHAT THE PASTE PATH SENDS, and until r38 it did not.
+    Every bundle README tells the owner to paste *"ทุกบรรทัดใน PROMPT.md (ใต้เส้น
+    คั่น)"* — below the separator. `critique_call` sent the WHOLE file, and the
+    part above the separator is an HTML comment addressed to the operator that
+    carries build history by its nature: which C2 run caught which defect on
+    which round, which rungs exist, what a previous prompt got wrong. **That is
+    exactly the context R7 exists to keep away from the judge.** The rung's whole
+    claim is that the critic does not know how the work was made, and the
+    automated half of it had been quietly telling him.
+
+    It surfaced as a false refusal rather than as a leak: the comment explains
+    that the bundle *"refuses target/anchors by code"*, the word `anchor` is in
+    FORBIDDEN, and so the guard blocked r38's C3 on the prompt's own description
+    of the privacy rule. Widening the pattern would have been the wrong repair —
+    the pattern was right and the payload was wrong.
+
+    No separator: return the text unchanged. A prompt with no operator preamble
+    is all body, and inventing a split would be worse than sending one comment.
+    """
+    # Index arithmetic rather than splitlines(), so the body comes back BYTE FOR
+    # BYTE as it sits under the separator — a rejoin quietly eats the trailing
+    # newline, and "what is sent" must mean what is on disk.
+    pos = 0
+    for line in text.splitlines(keepends=True):
+        pos += len(line)
+        if line.strip() == "---":
+            return text[pos:].lstrip("\n")
+    return text
+
+
 def png_size(path):
     """(w, h) from the IHDR, or None. Stdlib — a 24-byte read, no decode."""
     try:
@@ -100,7 +133,11 @@ def main():
     prompt_path = text_dir / "PROMPT.md"
     if not prompt_path.exists():
         prompt_path = bundle / "PROMPT.md"
-    prompt = prompt_path.read_text(encoding="utf-8")
+    # SCAN WHAT IS SENT, not what is on disk. Scanning the operator preamble was
+    # how this guard produced a false refusal on the prompt's own account of the
+    # privacy rule — and a guard that blocks a clean send teaches the operator to
+    # route around it, which is worse than the leak it was protecting against.
+    prompt = prompt_body(prompt_path.read_text(encoding="utf-8"))
     m = FORBIDDEN.search(prompt)
     if m:
         sys.exit(f"PROMPT.md contains forbidden reference '{m.group(0)}' — refusing to send")

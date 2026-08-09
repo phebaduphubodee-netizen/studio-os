@@ -86,3 +86,52 @@ def test_the_real_r34_bundle_reads_as_a_playblast():
     if not r.exists():
         return  # private tree absent (fresh clone) — the synthetic cases cover it
     assert "PLAYBLAST" in CC.declare_mode(r)
+
+
+def _standing_prompt():
+    """The ONE standing cold-critic prompt, read from the repo (edits via PR only)."""
+    return (CC.REPO / "templates" / "cold-critic-prompt.md").read_text(encoding="utf-8")
+
+
+# --- what actually leaves the machine, r38 ------------------------------------
+# The whole file used to go out. The part above the `---` is an HTML comment
+# addressed to the OPERATOR and it is made of build history — which round caught
+# which defect, which rungs exist, what a previous version of the prompt got
+# wrong. R7's entire claim is that the judge does not know how the work was made.
+
+def test_the_operator_preamble_never_reaches_the_judge():
+    body = CC.prompt_body("<!-- notes for the builder -->\n\n---\n\nJudge this.\n")
+    assert body == "Judge this.\n"
+    assert "builder" not in body
+
+
+def test_a_prompt_with_no_separator_is_sent_whole():
+    text = "Judge this and nothing else.\n"
+    assert CC.prompt_body(text) == text
+
+
+def test_only_the_FIRST_separator_splits():
+    body = CC.prompt_body("<!-- x -->\n---\nA\n---\nB\n")
+    assert body == "A\n---\nB\n"
+
+
+def test_the_real_standing_prompt_loses_its_comment_and_keeps_its_ask():
+    body = CC.prompt_body(_standing_prompt())
+    assert "USAGE:" not in body, "the operator comment is still going to the judge"
+    assert "interior designer" in body, "the ask itself was cut off"
+    assert "ถ้าต้องเลือกแก้ข้อเดียว" in body, "the closing sentence was cut off"
+
+
+def test_the_standing_prompt_passes_the_forbidden_scan_as_SENT():
+    """r38: the guard refused the real prompt because its own explanation of the
+    privacy rule contains the word `anchor`. Scanning what is sent fixes it, and
+    this pin fails if either the scan or the split regresses."""
+    raw = _standing_prompt()
+    assert CC.FORBIDDEN.search(CC.prompt_body(raw)) is None
+    assert CC.FORBIDDEN.search(raw) is not None
+
+
+def test_the_forbidden_scan_still_bites_on_a_real_leak():
+    for bad in ("attach target.jpg beside it", "compare with the anchor pool",
+                "see clients/acme/plan.pdf"):
+        assert CC.FORBIDDEN.search(CC.prompt_body(f"<!-- x -->\n---\n{bad}\n"))
