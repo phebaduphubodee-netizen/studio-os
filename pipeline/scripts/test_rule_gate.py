@@ -350,3 +350,624 @@ def test_enforce_raises_when_hard():
     except SystemExit:
         return
     raise AssertionError("enforce(hard=True) must refuse to continue")
+
+
+# --- the notations this lane actually writes (added 2026-08-08) --------------
+#
+# The r32 bundle carried a 13 KB triage covering all 24 of its items and the gate
+# read it as empty, then refused the next render for 24 items that had all been
+# answered. Three separate format assumptions caused it, and each is pinned below.
+# A guard that fails on correct work is the one that gets switched off.
+
+def test_a_combined_TRIAGE_md_is_read_not_only_TRIAGE_critic_md(tmp_path):
+    b = _bundle(tmp_path, ANSWER_gemini25pro__md=C3_ANSWER,
+                TRIAGE__md="C3#1 accept\nC3#2 accept\nC3#3 refuted at 0.29\n")
+    assert RG.audit_bundle(b) == []
+
+
+def test_a_bold_table_row_counts(tmp_path):
+    b = _bundle(tmp_path, ANSWER_gemini25pro__md=C3_ANSWER,
+                TRIAGE__md="## C3 — Gemini\n\n| # | item | triage |\n|---|---|---|\n"
+                           "| **1** | a | accept |\n| **2** | b | accept |\n"
+                           "| **3** | c | refuted, 0.29 |\n")
+    assert RG.audit_bundle(b) == []
+
+
+def test_a_letter_prefixed_table_row_counts_under_its_critic_heading(tmp_path):
+    # The r32 triage numbered Gemini's items G1..G6 rather than C3#1..C3#6.
+    b = _bundle(tmp_path, ANSWER_gemini25pro__md=C3_ANSWER,
+                TRIAGE__md="## C3 — Gemini 2.5 Pro, cross-vendor\n\n"
+                           "| # | item | triage |\n|---|---|---|\n"
+                           "| **G1** | a | accept |\n| **G2** | b | accept |\n"
+                           "| **G3** | c | refuted, 0.29 |\n")
+    assert RG.audit_bundle(b) == []
+
+
+def test_tolerating_the_FORM_does_not_tolerate_ABSENCE(tmp_path):
+    # The whole risk of loosening a parser is that it starts passing empty work.
+    # Same table, one row short: the missing item must still be named.
+    b = _bundle(tmp_path, ANSWER_gemini25pro__md=C3_ANSWER,
+                TRIAGE__md="## C3 — Gemini\n\n| # | item | triage |\n|---|---|---|\n"
+                           "| **G1** | a | accept |\n| **G3** | c | refuted |\n")
+    v = RG.audit_bundle(b)
+    assert len(v) == 1 and "C3#2" in v[0]
+
+
+# --- R10's other half: the object that is NOT here ---------------------------
+# coverage_check could name `wall_floor_junction` on r31 and r32 and was wired
+# into nothing, so every render went through. These pin the wire, not the maths
+# (test_coverage_check.py owns the maths).
+
+def _manifest(tmp_path, entries, baseline=None, name="coverage-manifest.json"):
+    p = tmp_path / name
+    body = {"entries": entries}
+    if baseline is not None:
+        body["absent_baseline"] = baseline
+    p.write_text(json.dumps(body), encoding="utf-8")
+    return str(p)
+
+
+def test_a_lane_with_no_manifest_FAILS_rather_than_passing_quietly(tmp_path):
+    # The mute is the failure mode this whole file exists to prevent: from
+    # outside, "nothing to check" and "nothing wrong" print the same thing.
+    v = RG.audit_coverage(_spec([{"name": "wall", "prov": "M(1)"}]),
+                          str(tmp_path / "coverage-manifest.json"))
+    assert len(v) == 1 and "no coverage manifest at" in v[0]
+
+
+def test_coverage_with_no_manifest_path_at_all_is_a_violation():
+    v = RG.audit_coverage(_spec([]), None)
+    assert len(v) == 1 and "cannot run" in v[0]
+
+
+def test_an_empty_manifest_is_the_mute_it_exists_to_prevent(tmp_path):
+    v = RG.audit_coverage(_spec([{"name": "wall", "prov": "M(1)"}]),
+                          _manifest(tmp_path, []))
+    assert len(v) == 1 and "no entries" in v[0]
+
+
+def test_an_object_the_reference_shows_and_the_spec_lacks_blocks(tmp_path):
+    m = _manifest(tmp_path, [{"id": "wall_floor_junction", "what": "skirting"}])
+    v = RG.audit_coverage(_spec([{"name": "wall", "prov": "M(1)"}]), m)
+    assert len(v) == 1 and "wall_floor_junction" in v[0]
+
+
+def test_a_built_object_and_a_declared_gap_both_discharge(tmp_path):
+    m = _manifest(tmp_path, [{"id": "mirror"}, {"id": "led_strip"}])
+    spec = _spec([{"name": "mirror", "prov": "M(1)"}],
+                 declared_gaps={"led_strip": "no emissive path yet — gate #19"})
+    assert RG.audit_coverage(spec, m) == []
+
+
+def test_the_manifest_is_DERIVED_from_the_lane_so_no_call_site_can_forget_it(tmp_path):
+    # R7 was mute for 27 rounds because check() ran it only `if bundle_dir:`
+    # and the one call site passed none. Deriving beats passing.
+    assert RG.manifest_for(str(tmp_path)).endswith("coverage-manifest.json")
+    assert RG.manifest_for(str(tmp_path), "/explicit/x.json") == "/explicit/x.json"
+    assert RG.manifest_for(None) is None
+
+
+# --- Continuity: dropped by omission -----------------------------------------
+
+def test_the_chair_leg_class_is_caught(tmp_path):
+    prev = _spec([{"name": "chair_leg_1", "prov": "M(three feet backprojected)"}])
+    now = _spec([])
+    v = RG.audit_continuity(now, None, prev_spec=prev)
+    assert len(v) == 1
+    assert "DROPPED `chair_leg_1`" in v[0]
+    assert "was a MEASUREMENT" in v[0]
+
+
+def test_an_object_may_leave_the_frame_as_a_written_decision(tmp_path):
+    prev = _spec([{"name": "lamp_stem", "prov": "M(1)"}])
+    now = _spec([], declared_gaps={"lamp_stem": "removed: a bare post that only "
+                                                "existed to carry a shade (R10)"})
+    assert RG.audit_continuity(now, None, prev_spec=prev) == []
+
+
+def test_a_gap_with_no_reason_does_not_discharge_a_drop():
+    # r32 turned declared_gaps into a list and lost ten reasons. A bare name is
+    # not a decision here either.
+    prev = _spec([{"name": "lamp_stem", "prov": "M(1)"}])
+    now = _spec([], declared_gaps=["lamp_stem"])
+    v = RG.audit_continuity(now, None, prev_spec=prev)
+    assert len(v) == 1 and "DROPPED" in v[0]
+
+
+def test_a_VERIFIED_rename_discharges_a_drop():
+    prev = _spec([{"name": "back_wall", "prov": "M(1)"}])
+    now = _spec([{"name": "back_wall_L", "prov": "M(1)"},
+                 {"name": "back_wall_R", "prov": "M(2)"}],
+                renamed={"back_wall": ["back_wall_L", "back_wall_R"]})
+    assert RG.audit_continuity(now, None, prev_spec=prev) == []
+
+
+def test_a_rename_that_points_at_nothing_fails_louder_than_the_drop():
+    prev = _spec([{"name": "back_wall", "prov": "M(1)"}])
+    now = _spec([{"name": "something_else", "prov": "M(1)"}],
+                renamed={"back_wall": "back_wall_L"})
+    v = RG.audit_continuity(now, None, prev_spec=prev)
+    assert len(v) == 1 and "RENAME UNVERIFIED" in v[0]
+
+
+# --- why there is no DOWNGRADE rule ------------------------------------------
+# One lived here for an afternoon and was deleted the same day: 12 of its 13
+# lifetime events fired at r12, the round that IMPROVED provenance by rewriting
+# `M(...)` tags into prose audit notes carrying subpixel numbers. It keyed on
+# NOTATION, not on evidence. These two tests are what made the delete safe, and
+# they stay so that nobody re-adds it without re-checking the premise.
+
+def test_audit_spec_ALREADY_catches_a_real_downgrade_so_continuity_need_not():
+    for prov in ("A(bedding norm)", "A(seat 450 vanity norm; C2 range 450-480)"):
+        v = RG.audit_spec(_spec([{"name": "bolster", "prov": prov,
+                                  "seen": "u 1..2, v 1..2"}]))
+        assert len(v) == 1 and "NOTHING about this object is measured" in v[0], prov
+
+
+def test_a_prose_measurement_is_not_a_regression_and_nothing_convicts_it():
+    # The exact r12 rewrite, verbatim. The deleted rule called this a downgrade.
+    prev = _spec([{"name": "chair_back",
+                   "prov": "D(on seat; back top = old chair top 780 < desk 875)"}])
+    now = _spec([{"name": "chair_back", "seen": "u 1..2, v 1..2",
+                  "prov": "audit 2026-08-05 (sighted local critic, R10b): "
+                          "top 780 -> 774 (measured)."}])
+    assert RG.audit_continuity(now, None, prev_spec=prev) == []
+    assert RG.audit_spec(now) == []
+
+
+def test_a_new_object_is_not_a_continuity_violation():
+    prev = _spec([{"name": "wall", "prov": "M(1)"}])
+    now = _spec([{"name": "wall", "prov": "M(1)"}, {"name": "skirting", "prov": "M(2)"}])
+    assert RG.audit_continuity(now, None, prev_spec=prev) == []
+
+
+def test_the_first_round_of_a_line_has_nothing_to_compare_and_says_nothing():
+    assert RG.audit_continuity(_spec([]), None) == []
+
+
+# --- previous_spec_path: the two hazards that make N-1 wrong -----------------
+
+def test_the_previous_round_skips_a_number_that_was_never_written(tmp_path):
+    # spec_r13.json does not exist. A literal N-1 lookup no-ops exactly where
+    # the chair-leg drop happened.
+    for n in (11, 12, 14):
+        (tmp_path / f"spec_r{n}.json").write_text("{}", encoding="utf-8")
+    got = RG.previous_spec_path(str(tmp_path / "spec_r14.json"))
+    assert os.path.basename(got) == "spec_r12.json"
+
+
+def test_bracket_variants_are_not_the_line_of_record(tmp_path):
+    # r30 has thirteen of these; none of them is "the previous round".
+    for n in ("29", "30", "30w110", "30w240"):
+        (tmp_path / f"spec_r{n}.json").write_text("{}", encoding="utf-8")
+    assert os.path.basename(
+        RG.previous_spec_path(str(tmp_path / "spec_r30.json"))) == "spec_r29.json"
+    # and a variant itself has no line of record to compare against
+    assert RG.previous_spec_path(str(tmp_path / "spec_r30w110.json")) is None
+
+
+def test_the_earliest_round_has_no_predecessor(tmp_path):
+    (tmp_path / "spec_r1.json").write_text("{}", encoding="utf-8")
+    assert RG.previous_spec_path(str(tmp_path / "spec_r1.json")) is None
+
+
+# --- The roster: a half that did not run must say so -------------------------
+
+def test_the_roster_names_every_half_that_did_NOT_run():
+    roster = []
+    RG.check(_spec([{"name": "wall", "prov": "M(1)"}]), roster=roster)
+    skipped = {n for n, ok, _ in roster if not ok}
+    assert {"R7 triage", "charter distillation"} <= skipped
+    assert "R10 spec" in {n for n, ok, _ in roster if ok}
+
+
+def test_craft_is_advisory_and_never_reaches_the_violation_list():
+    # craft_check cannot see occlusion and says so; over-reporting is correct,
+    # vetoing on it is not. Same call R9b made for interpenetration.
+    spec = _spec([{"name": "bench", "prov": "M(1)", "kind": "oct", "cut": 200,
+                   "seg": 2, "c": [0, 0, 0]}],
+                 camera={"x_mm": 3000, "y_mm": 0, "z_mm": 0})
+    adv = []
+    v = RG.check(spec, advisories=adv)
+    assert any("silhouette shortfall" in a for a in adv)
+    assert not any("silhouette" in s for s in v)
+
+
+# --- the ratchet: "may shrink, may never grow" as a program ------------------
+# It was prose in three places (the manifest, coverage_check's docstring, the lane's own
+# plan) and enforced nowhere: audit() only tested membership, so declaring seven gaps and
+# adding seven ids to the baseline in one edit passed forever after.
+
+def _mf(tmp_path, baseline):
+    p = tmp_path / "coverage-manifest.json"
+    p.write_text(json.dumps({"entries": [{"id": "x"}], "absent_baseline": baseline}),
+                 encoding="utf-8")
+    return str(p)
+
+
+def test_a_baseline_that_grew_is_refused(tmp_path):
+    v = RG.baseline_ratchet(_mf(tmp_path, ["a", "b"]), previous={"absent_baseline": ["a"]})
+    assert len(v) == 1 and "GREW by ['b']" in v[0]
+
+
+def test_a_baseline_that_shrank_is_the_whole_point(tmp_path):
+    assert RG.baseline_ratchet(_mf(tmp_path, ["a"]),
+                               previous={"absent_baseline": ["a", "b"]}) == []
+
+
+def test_an_unchanged_baseline_passes(tmp_path):
+    assert RG.baseline_ratchet(_mf(tmp_path, ["a", "b"]),
+                               previous={"absent_baseline": ["b", "a"]}) == []
+
+
+def test_swapping_one_exemption_for_another_still_counts_as_growth(tmp_path):
+    # Same LENGTH, different content: a size check would pass this, and it is exactly how
+    # an inconvenient object gets quietly swapped in for one that was built.
+    v = RG.baseline_ratchet(_mf(tmp_path, ["a", "c"]),
+                            previous={"absent_baseline": ["a", "b"]})
+    assert len(v) == 1 and "'c'" in v[0]
+
+
+def test_an_uncommitted_manifest_cannot_be_ratcheted_and_says_so(tmp_path):
+    # No `previous` and a path git has never seen: a ratchet with no history is a list.
+    v = RG.baseline_ratchet(_mf(tmp_path, ["a"]))
+    assert len(v) == 1 and "not committed" in v[0]
+
+
+# --- Phase 0 repairs: the bypasses an adversarial pass drove through ----------
+
+def test_a_declared_aggregate_covers_the_masses_its_entry_names():
+    # declared_gaps['duvet'] covering duvet_top + duvet_drape is legitimate, and
+    # the COVERAGE half of the same run already accepts it. Without this the two
+    # halves contradict each other on one spec.
+    man = {"entries": [{"id": "duvet", "built_as": ["duvet_top", "duvet_drape"]}]}
+    prev = _spec([{"name": "duvet_top", "prov": "M(1)"},
+                  {"name": "duvet_drape", "prov": "M(2)"}])
+    now = _spec([], declared_gaps={"duvet": "REMOVED from the frame at r10, owner saw it"})
+    assert RG.audit_continuity(now, None, prev_spec=prev, manifest=man) == []
+
+
+def test_an_aggregate_gap_does_NOT_cover_masses_its_entry_never_named():
+    # The prefix-match version of this would let `chair` swallow chair_leg_1..4 —
+    # the exact defect the whole rule exists for.
+    man = {"entries": [{"id": "chair", "built_as": ["chair_seat"]}]}
+    prev = _spec([{"name": "chair_leg_1", "prov": "M(three feet backprojected)"}])
+    now = _spec([], declared_gaps={"chair": "not in frame"})
+    v = RG.audit_continuity(now, None, prev_spec=prev, manifest=man)
+    assert len(v) == 1 and "DROPPED `chair_leg_1`" in v[0]
+
+
+def test_a_zero_size_namesake_mass_cannot_resolve_an_entry(tmp_path):
+    # Seven 0x0x0 masses named after the seven entries passed the whole gate.
+    m = _manifest(tmp_path, [{"id": "mirror"}])
+    spec = _spec([{"name": "mirror", "c": [0, 0, 0], "s": [0, 0, 0],
+                   "prov": "M(px) placeholder", "seen": "u 1..2, v 1..2"}])
+    v = RG.audit_coverage(spec, m)
+    assert len(v) == 1 and "UNCOVERED `mirror`" in v[0]
+
+
+def test_a_real_sized_mass_still_resolves_its_entry(tmp_path):
+    m = _manifest(tmp_path, [{"id": "mirror"}])
+    spec = _spec([{"name": "mirror", "c": [0, 0, 0], "s": [600, 12, 900],
+                   "prov": "M(px)", "seen": "u 1..2, v 1..2"}])
+    assert RG.audit_coverage(spec, m) == []
+
+
+def test_one_mass_may_not_realise_two_entries(tmp_path):
+    m = _manifest(tmp_path, [{"id": "mirror", "built_as": ["floor"]},
+                             {"id": "led_strip", "built_as": ["floor"]}])
+    spec = _spec([{"name": "floor", "c": [0, 0, 0], "s": [5000, 5000, 20],
+                   "prov": "M(px)", "seen": "u 1..2, v 1..2"}])
+    v = RG.audit_coverage(spec, m)
+    assert any("claimed by 2 manifest entries" in s for s in v)
+
+
+def test_deleting_a_manifest_entry_is_refused_without_a_signoff(tmp_path):
+    now = {"entries": [{"id": "a"}], "absent_baseline": []}
+    was = {"entries": [{"id": "a"}, {"id": "wall_floor_junction"}], "absent_baseline": []}
+    (tmp_path / "coverage-manifest.json").write_text(json.dumps(now), encoding="utf-8")
+    v = RG.baseline_ratchet(str(tmp_path / "coverage-manifest.json"), now, previous=was)
+    assert len(v) == 1 and "LOST entries ['wall_floor_junction']" in v[0]
+
+
+def test_an_owner_signed_entry_removal_is_allowed(tmp_path):
+    now = {"entries": [{"id": "a"}], "absent_baseline": [],
+           "absent_baseline_signoff": {"wall_floor_junction":
+                                       "owner 2026-08-09: the target has no junction detail"}}
+    was = {"entries": [{"id": "a"}, {"id": "wall_floor_junction"}], "absent_baseline": []}
+    (tmp_path / "coverage-manifest.json").write_text(json.dumps(now), encoding="utf-8")
+    assert RG.baseline_ratchet(str(tmp_path / "coverage-manifest.json"), now, previous=was) == []
+
+
+def test_adding_a_manifest_entry_is_always_free(tmp_path):
+    now = {"entries": [{"id": "a"}, {"id": "b"}], "absent_baseline": []}
+    was = {"entries": [{"id": "a"}], "absent_baseline": []}
+    (tmp_path / "coverage-manifest.json").write_text(json.dumps(now), encoding="utf-8")
+    assert RG.baseline_ratchet(str(tmp_path / "coverage-manifest.json"), now, previous=was) == []
+
+
+def test_the_roster_admits_continuity_did_NOT_run_on_a_non_canonical_name(tmp_path):
+    # Renaming spec_r33.json to spec_r33a.json used to disable the diff silently
+    # while the roster reported it as RAN, "first of its line".
+    p = tmp_path / "spec_r33a.json"
+    p.write_text(json.dumps(_spec([])), encoding="utf-8")
+    roster = []
+    RG.check(_spec([{"name": "wall", "prov": "M(1)"}]), spec_path=str(p), roster=roster)
+    cont = [(ok, why) for n, ok, why in roster if n == "continuity"]
+    assert cont and cont[0][0] is False and "not a canonical" in cont[0][1]
+
+
+# --- R1, now that it is wired ------------------------------------------------
+# cap_check itself has had tests since the day it was written. What had NO tests,
+# and is the whole reason R1 went unenforced for 34 rounds, is everything AROUND
+# it: where the numbers come from, and whether check() calls it at all.
+
+def _png(path, w, h):
+    """Minimal valid PNG header — count_full_frames reads IHDR, never decodes."""
+    import struct
+    ihdr = b"IHDR" + struct.pack(">II", w, h) + b"\x08\x06\x00\x00\x00"
+    path.write_bytes(b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + ihdr)
+
+
+def _caps(tmp, **units):
+    p = tmp / "caps.json"
+    p.write_text(json.dumps({"units": units}), encoding="utf-8")
+    return str(p)
+
+
+def test_full_frames_are_counted_by_PIXELS_not_by_filename(tmp_path):
+    # The measured reason this matters: 137 of TRN-002's PNGs lack the `_quick`
+    # token and only 44 are full frames. A filename count was wrong by 3x.
+    _png(tmp_path / "trn002_r1.png", 1080, 821)
+    _png(tmp_path / "trn002_r2.png", 1080, 821)
+    _png(tmp_path / "trn002_r3_quick.png", 540, 410)
+    _png(tmp_path / "_zoom_partition.png", 400, 400)      # no _quick, not a frame
+    _png(tmp_path / "contactbands_tgt.png", 1050, 391)    # no _quick, not a frame
+    assert RG.count_full_frames(str(tmp_path), (1080, 821)) == 2
+
+
+def test_a_non_png_or_truncated_file_is_not_a_frame(tmp_path):
+    (tmp_path / "notes.txt").write_text("x", encoding="utf-8")
+    (tmp_path / "broken.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    assert RG.count_full_frames(str(tmp_path), (1080, 821)) == 0
+    assert RG._png_size(str(tmp_path / "broken.png")) is None
+
+
+def test_rounds_take_the_max_of_disk_and_the_specs_own_number(tmp_path):
+    # TRN-002 is at round 34 with 31 canonical specs (r13 never existed). Either
+    # reading alone is gameable; the max is not.
+    for n in (1, 2, 5):
+        (tmp_path / f"spec_r{n}.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "spec_r30w110.json").write_text("{}", encoding="utf-8")  # a variant
+    assert RG.count_rounds(str(tmp_path)) == 3                    # variant excluded
+    assert RG.count_rounds(str(tmp_path), {"round": 34}) == 34    # declaration floors it
+    assert RG.count_rounds(str(tmp_path), {"round": 2}) == 3      # disk floors it back
+
+
+def test_check_actually_calls_cap_check_and_the_cap_bites(tmp_path):
+    lane = tmp_path / "TRN-XXX"
+    lane.mkdir()
+    rd = tmp_path / "renders"
+    rd.mkdir()
+    for i in range(4):
+        _png(rd / f"f{i}.png", 1080, 821)
+    caps = _caps(tmp_path, **{"TRN-XXX": {"cap_rounds": 9, "cap_full_frames": 3}})
+    spec = _spec([{"name": "wall", "prov": "M(1)"}])
+    spec["image"] = {"w": 1080, "h": 821}
+    spec["round"] = 5
+    v = RG.check(spec, lane_dir=str(lane), render_dir=str(rd), caps_path=caps)
+    assert any("cap_full_frames exceeded: 4 > 3" in s for s in v), v
+    assert not any("cap_rounds exceeded" in s for s in v), v
+
+
+def test_an_undeclared_unit_may_not_render(tmp_path):
+    lane = tmp_path / "TRN-UNDECLARED"
+    lane.mkdir()
+    spec = _spec([{"name": "wall", "prov": "M(1)"}])
+    spec["image"] = {"w": 1080, "h": 821}
+    v = RG.check(spec, lane_dir=str(lane), render_dir=str(tmp_path),
+                 caps_path=_caps(tmp_path))
+    assert any("no ledger row" in s for s in v), v
+
+
+def test_a_missing_render_dir_is_a_VIOLATION_not_a_free_pass(tmp_path):
+    # 0 frames passes any cap. A count that cannot run must not read as a count
+    # that passed — the shape that left the R7 half silent for 27 rounds.
+    lane = tmp_path / "TRN-XXX"
+    lane.mkdir()
+    caps = _caps(tmp_path, **{"TRN-XXX": {"cap_rounds": 99, "cap_full_frames": 3}})
+    spec = _spec([{"name": "wall", "prov": "M(1)"}])
+    spec["image"] = {"w": 1080, "h": 821}
+    v = RG.check(spec, lane_dir=str(lane), caps_path=caps)
+    assert any("could not bite" in s for s in v), v
+
+
+def test_a_broken_caps_file_does_not_crash_the_render(tmp_path):
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    assert RG.load_caps("TRN-002", str(bad)) is None
+    assert RG.load_caps("TRN-002", str(tmp_path / "absent.json")) is None
+    # ...and the absence surfaces as cap_check's own message, not a traceback
+    assert any("no ledger row" in s for s in RG.cap_check(None, 0, 0))
+
+
+def test_the_live_caps_file_declares_TRN_002_and_the_lane_is_inside_it():
+    caps = RG.load_caps("TRN-002")
+    assert caps, "qa/curriculum-caps.json must declare TRN-002 or R1 is a document again"
+    lane = os.path.join(RG.REPO_ROOT, "training", "TRN-002")
+    rd = os.path.join(RG.REPO_ROOT, "_private", "benchmark", "reproduction",
+                      "TRN-002", "renders")
+    rounds = RG.count_rounds(lane, {"round": 34})
+    assert rounds <= caps["cap_rounds"], f"R1: {rounds} rounds vs cap {caps['cap_rounds']}"
+    if os.path.isdir(rd):
+        frames = RG.count_full_frames(rd, (1080, 821))
+        assert frames <= caps["cap_full_frames"], (
+            f"R1: {frames} full frames vs cap {caps['cap_full_frames']}")
+
+
+# --- the round token must survive a render-mode suffix -------------------------
+# r35: `critique-trn002_mat_r34_quick` produced NO token, so `_gate_text` found
+# no gate artifact and reported all 23 triaged items as untriaged. R5 renders a
+# `--quick` frame before any full one, so every playblast bundle was affected.
+
+def test_round_token_survives_a_render_mode_suffix():
+    for base, want in (("critique-trn002_mat_r34_quick", "r34"),
+                       ("critique-trn002_mat_r34_full", "r34"),
+                       ("critique-trn002_mat_r34", "r34"),
+                       ("critique-trn002_blockout_r5c", "r5c")):
+        m = RG.ROUND_TOKEN.search(base)
+        assert m and m.group(1).lower() == want, f"{base} -> {m and m.group(1)}"
+
+
+def test_a_bracket_variant_still_binds_to_nothing():
+    # The loose fix (`_\w+`) would have bound r30's wattage sweep to some round.
+    # A wrong binding lets one round's triage pay another's debt, which is the
+    # failure `_gate_text`'s docstring was written about.
+    assert RG.ROUND_TOKEN.search("critique-trn002_mat_r30w110") is None
+
+
+def test_the_r34_bundle_now_finds_its_own_gate_artifact():
+    import os
+    lane = os.path.join(RG.REPO_ROOT, "training", "TRN-002")
+    bundle = "critique-trn002_mat_r34_quick"
+    if not os.path.isfile(os.path.join(lane, "gate-22-r34.md")):
+        return  # artifact not present in this checkout
+    txt = RG._gate_text(bundle, lane)
+    assert "C3#1" in txt and "C2#3" in txt, "the round binding is broken again"
+
+
+# --- R7c: the gate never asked whether the blind rung was blind ----------------
+# It counted triage rows and nothing else. r35 fired C2 and C3 in parallel into
+# one directory; the C2 agent read a folder that held C3's answer. The seeded
+# list below is what keeps this from condemning twelve rounds it could not have
+# changed — and it can only grow through a diff.
+
+def _ask_bundle(tmp_path, name, c2=True, ask=None):
+    import os
+    d = tmp_path / name
+    d.mkdir()
+    (d / "PROMPT.md").write_text("judge this", encoding="utf-8")
+    (d / (name.replace("critique-", "") + ".png")).write_bytes(
+        b"\x89PNG\r\n\x1a\n" + b"\0" * 32)
+    if c2:
+        (d / "ANSWER_claude-local-c2.md").write_text("### 1. x\n", encoding="utf-8")
+    if ask is not None:
+        a = d / RG.C2_ASK_DIR
+        a.mkdir()
+        for n in ask:
+            (a / n).write_bytes(b"\x89PNG\r\n\x1a\n" + b"\0" * 32
+                                if n.endswith(".png") else b"x")
+    return str(d)
+
+
+def test_a_c2_answer_with_no_ask_dir_is_a_violation(tmp_path):
+    v = RG.audit_blind_ask(_ask_bundle(tmp_path, "critique-trn002_mat_r36"))
+    assert len(v) == 1 and RG.C2_ASK_DIR in v[0]
+
+
+def test_a_blind_ask_dir_clears_it(tmp_path):
+    d = _ask_bundle(tmp_path, "critique-trn002_mat_r36",
+                ask=["trn002_mat_r36.png", "PROMPT.md", "README.md"])
+    assert RG.audit_blind_ask(d) == []
+
+
+def test_another_critics_answer_inside_the_ask_dir_is_a_violation(tmp_path):
+    d = _ask_bundle(tmp_path, "critique-trn002_mat_r36",
+                ask=["trn002_mat_r36.png", "PROMPT.md", "ANSWER_gemini25pro.md"])
+    v = RG.audit_blind_ask(d)
+    assert len(v) == 1 and "ANSWER_gemini25pro.md" in v[0]
+
+
+def test_the_twelve_seeded_bundles_are_not_condemned_retroactively(tmp_path):
+    assert RG.audit_blind_ask(
+        _ask_bundle(tmp_path, "critique-trn002_mat_r35_quick")) == []
+    assert len(RG.BLIND_ASK_SEEDED) == 12
+
+
+def test_a_bundle_with_no_c2_answer_owes_nothing(tmp_path):
+    """C3-only bundles exist (r14, r15) and this rule is not about them."""
+    assert RG.audit_blind_ask(
+        _ask_bundle(tmp_path, "critique-trn002_mat_r36", c2=False)) == []
+
+
+def test_the_gate_runs_the_blind_ask_check_and_says_so(tmp_path):
+    """The R7 half was mute for 27 rounds because `check()` never called it.
+    The roster is what makes a mute visible, so pin the entry, not just the
+    function."""
+    d = _ask_bundle(tmp_path, "critique-trn002_mat_r36")
+    roster = []
+    v = RG.check({"masses": []}, bundle_dir=d, roster=roster)
+    assert any(n == "R7c blind ask" and ran for n, ran, _ in roster)
+    assert any(RG.C2_ASK_DIR in x for x in v)
+
+
+def test_the_gate_and_the_bundle_builder_agree_on_what_blind_means(tmp_path):
+    """Two definitions of one contract drift. This is the wire between them:
+    a dir the builder calls blind must pass the gate, and the gate's refusal
+    must name the same file the builder's does."""
+    import critique_bundle as CB
+    import os
+    import pytest
+    d = tmp_path / "critique-trn002_mat_r36"
+    d.mkdir()
+    (d / "PROMPT.md").write_text("judge this", encoding="utf-8")
+    (d / "trn002_mat_r36.png").write_bytes(b"\x89PNG\r\n\x1a\n" + b"\0" * 32)
+    (d / "ANSWER_claude-local-c2.md").write_text("### 1. x\n", encoding="utf-8")
+    ask = CB.c2_ask_dir(str(d), "trn002_mat_r36.png")
+    assert RG.audit_blind_ask(str(d)) == []
+    open(os.path.join(ask, "ANSWER_gemini25pro.md"), "w").write("x")
+    assert "ANSWER_gemini25pro.md" in RG.audit_blind_ask(str(d))[0]
+    with pytest.raises(CB.RefusedError):
+        CB.assert_blind(ask)
+
+
+# --- R1's frame cap was counting a directory that does not exist ---------------
+# The fail-closed guard tested `not render_dir` — the truthiness of a string —
+# and the render path was handing it `<lane>/renders/critique/renders`. A
+# non-empty string that names nothing passed the test, frames counted 0, and 0
+# passes every cap. Measured on the real tree 2026-08-09: that path yields 0
+# full frames, the real one yields 44.
+
+def _caps_file(tmp_path):
+    import json
+    p = tmp_path / "caps.json"
+    p.write_text(json.dumps({"units": {"TRN-002": {"cap_rounds": 42,
+                                                   "cap_full_frames": 55}}}),
+                 encoding="utf-8")
+    (tmp_path / "TRN-002").mkdir(exist_ok=True)
+    return str(p)
+
+
+def test_a_render_dir_that_does_not_exist_is_not_a_count_that_passed(tmp_path):
+    assert RG.cap_check({"cap_rounds": 42, "cap_full_frames": 55}, 35, 0) == [],         "the cap itself is happy with 0 frames — which is the whole problem"
+    roster = []
+    got = RG.check({"masses": [], "image": {"w": 1080, "h": 821}},
+                   lane_dir=str(tmp_path / "TRN-002"),
+                   caps_path=_caps_file(tmp_path),
+                   render_dir=str(tmp_path / "nope" / "renders"), roster=roster)
+    assert any("cap could not bite" in s for s in got), got
+    assert any(n == "R1 cap" and "NO READABLE RENDER DIR" in why
+               for n, _, why in roster), roster
+
+
+def test_a_readable_render_dir_still_counts(tmp_path):
+    caps = _caps_file(tmp_path)
+    rd = tmp_path / "renders"
+    rd.mkdir()
+    got = RG.check({"masses": [], "image": {"w": 1080, "h": 821}},
+                   lane_dir=str(tmp_path / "TRN-002"), caps_path=caps,
+                   render_dir=str(rd))
+    assert not any("cap could not bite" in s for s in got), got
+
+
+def test_the_lane_call_site_points_at_a_directory_that_exists():
+    """The bug was in the CALL SITE, so pin the call site, not only the guard."""
+    import os
+    import re
+    p = os.path.join(RG.REPO_ROOT, "pipeline", "scripts", "trn002_build.py")
+    src = open(p, encoding="utf-8").read()
+    m = re.search(r"render_dir=([^\n)]+)", src)
+    assert m, "no render_dir argument at the lane's gate call site"
+    assert "os.path.join(BUNDLE_ROOT" not in m.group(1), (
+        "BUNDLE_ROOT already ends in renders/critique — joining 'renders' onto "
+        "it names a path that has never existed, and 0 frames passes any cap")

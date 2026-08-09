@@ -1,0 +1,29 @@
+{
+  "_what": "R1 STOP-LOSS, as numbers a program can read. Consumed by pipeline/scripts/rule_gate.cap_check via load_caps().",
+
+  "_why_this_file_exists": "R1 is the first rule the owner adopted and it has never once been enforced. `cap_check` is a working function with four passing tests that `check()` did not call, for a reason no amount of code could fix: it takes a ledger row carrying `cap_rounds` / `cap_full_frames`, and NO UNIT HAS EVER DECLARED THEM. The curriculum ledger (qa/reproduction-curriculum.md) has a `rounds | full frames` column, but those are ACTUALS, it is a markdown table nothing parses, and it has no TRN-002 row at all. So the numbers lived nowhere a machine could reach and the rule stayed a document for 34 rounds. This file is the smallest thing that changes that.",
+
+  "_law": "R3 — only the owner sets or extends a cap, once per unit, with the new number AND its reason written here BEFORE the next render. A cap raised after the breach, without a reason, is not a cap.",
+
+  "_counting": "Both counts are derived from disk by rule_gate.count_rounds / count_full_frames, never typed. ROUNDS = canonical spec_r<N>.json files in the lane (bracket variants like spec_r30w110.json do not count — they are one round's experiments, not rounds). FULL FRAMES = PNGs in the lane's render dir at the spec's own image size. THE SECOND ONE IS COUNTED BY PIXELS, NOT BY FILENAME, and the difference is not pedantic: 137 of this lane's PNGs lack the `_quick` token and only 44 are actually full frames — the rest are crops, comparison sheets and target excerpts. A cap counted by filename would have been wrong by 3x on its first run.",
+
+  "units": {
+    "TRN-002": {
+      "cap_rounds": 42,
+      "cap_full_frames": 55,
+      "declared": "2026-08-08",
+      "declared_by": "owner order (`ลุยหมด`), on the builder's recommendation of 42/55",
+      "at_declaration": {"rounds": 34, "full_frames": 44},
+      "reason": "A FINISHING budget, not a fresh one, and it is already 170% of the rounds and 119% of the full frames that closed TRN-001 (20 / 37). What is left is countable: r34 is built and unrendered (1), the light has to be re-derived because the geometry moved under it (1-2), etagere_objects needs a measurement pass and a build (1-2), and garments needs a glTF ingest path before it needs anything else (1-2). That is 4-8 rounds and 42/55 sits at the top of it. IF IT RUNS OUT AND THE UNIT IS NOT CLOSED, THE PROBLEM IS NOT THE BUDGET. The alternative the owner declined was 34/44 — the current spend, which would fire R1 on the very next render and force the close-or-continue decision immediately; that reading of R1 is the stricter one and it remains available at the cost of one number.",
+      "quick_frames_uncapped": "Deliberate. R5 wants the playblast rung cheap and frequent, and this lane's ratio is 114 quick to 44 full (2.6:1), which is the behaviour the rule asks for. Capping quick renders would punish the thing that prevents full ones."
+    },
+    "TRN-001": {
+      "cap_rounds": 20,
+      "cap_full_frames": 37,
+      "declared": "2026-08-08 (RETROSPECTIVE — see below)",
+      "declared_by": "recorded from the closed unit's actuals, not set in advance",
+      "at_declaration": {"rounds": 20, "full_frames": 37},
+      "reason": "CLOSED 2026-08-02. These are what it COST, written down after the fact so the next unit has a reference point, and they are explicitly NOT an example of R1 working — R1 requires the cap before round 1 and this unit never had one. Kept here so `cap_check` has a real second row to be tested against and so the comparison in TRN-002's reason above is checkable rather than remembered."
+    }
+  }
+}

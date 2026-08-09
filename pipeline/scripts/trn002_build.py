@@ -85,8 +85,8 @@ def _slats(name, c, s, value, mat=None, pitch_mm=29.4, chord_mm=34.0,
 
 
 def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None,
-         open_face=None):
-    """Rounded prism: four true ARC corners of radius `cut` mm, 6 segments each.
+         open_face=None, seg=6):
+    """Rounded prism: four true ARC corners of radius `cut` mm, `seg` per quarter.
     Round 2 shipped this as a single 45-degree chamfer and the C3 critic read it
     as a faceted octagon, not a curve — a chamfer is not a radius. Name kept so
     specs don't churn.
@@ -102,8 +102,40 @@ def _oct(name, c, s, cut, value, axis="z", tilt_deg=0.0, mat=None,
     mattress contact. Earned in r3b: a "lying" pillow that still stands at 90
     degrees reads as a capsule, whatever its dimensions say.
     """
+    # `seg` MUST be forwarded. It was not, for every round this lane has run:
+    # `craft_check` read `m["seg"]` off the spec and the builder hard-coded 6,
+    # so the silhouette advisory named three masses every round and there was
+    # no edit to the spec that could have silenced it. Same shape as TRN-001's
+    # roughness column, which the table set and the material path overrode.
+    # A CHECKER THAT READS A FIELD THE BUILDER IGNORES MEASURES A FICTION.
     vs, fs = G.oct_mesh(c, s, cut, axis=axis, tilt_deg=tilt_deg,
-                        open_face=open_face)
+                        open_face=open_face, seg=seg)
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(vs, [], fs)
+    me.materials.append(_surface(value, mat))
+    ob = bpy.data.objects.new(f"SM_TRN002_{name}", me)
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
+def _cone(name, c, s, value, mat=None, seg=24):
+    """A cone described by its own AABB, so every existing guard still sees it.
+
+    Deliberately NOT a new pair of spec fields. `placement_check` reads the
+    built scene's boxes, `craft_check` reads `c`/`s`, R10's justification gate
+    reads `prov`/`why` — a cone carrying `apex`/`radius_mm` instead would have
+    been invisible to the first two, and the lane's own history says an object
+    invisible to a guard is the one that goes wrong (8 of 13 placements were
+    exempt from the two guards that preceded R9b, and every figure was among
+    them).
+
+    So: apex on top of the box, rim on its floor, radius from the plan half.
+    """
+    if abs(s[0] - s[1]) > 1e-6:
+        raise SystemExit(f"{name}: a right cone needs a circular plan, "
+                         f"got {s[0]} x {s[1]} — an ellipse is a different object")
+    apex = (c[0], c[1], c[2] + s[2] / 2.0)
+    vs, fs = G.cone_mesh(apex, s[0] / 2.0, s[2], seg=seg)
     me = bpy.data.meshes.new(name)
     me.from_pydata(vs, [], fs)
     me.materials.append(_surface(value, mat))
@@ -584,10 +616,29 @@ def main():
                 print(f"  !! {s}")
         # `hard` is handed to enforce only when there is nothing else to add, so
         # enforce prints its own list and no violation is ever printed twice.
+        # spec_path feeds the CONTINUITY diff (a mass that left the scene
+        # asserts nothing, so only a spec-to-spec comparison can see it) and
+        # LANE_DIR feeds the coverage manifest, which is derived rather than
+        # passed so that no call site can leave that half mute the way this one
+        # left R7 mute for 27 rounds.
+        # render_dir feeds R1's full-frame count. It is passed rather than
+        # derived inside the gate for the same reason `--out` is absolute here:
+        # this module is the only place that knows where this lane's frames
+        # land. Passing it is also what makes the cap bite — `check` treats a
+        # missing render dir as a violation when a frame cap is declared,
+        # because 0 frames would otherwise pass any cap and read as compliance.
         v = RULES.enforce(
             spec, bundle_dir=debt[-1] if debt else None,
             inbox_root=os.path.join(REPO, "knowledge", "_inbox"),
-            require_seen=True, lane_dir=LANE_DIR, hard=not older)
+            require_seen=True, lane_dir=LANE_DIR, hard=not older,
+            spec_path=spec_path,
+            # BUNDLE_ROOT already ends in `renders/critique`, so joining
+            # "renders" onto it named `renders/critique/renders`, which has
+            # never existed. `count_full_frames` returned 0 for it and 0 passes
+            # a cap of 55 — R1, the first rule the owner adopted, has been
+            # counting nothing on the render path while the CLI (which resolves
+            # this dir itself) reported 44. Measured both ways 2026-08-09.
+            render_dir=os.path.dirname(BUNDLE_ROOT))
         if older or v:
             raise SystemExit("RULE GATE FAILED (R10 / R7 / charter)")
 
@@ -702,12 +753,17 @@ def main():
                                        host_mat=mat_of(m["host"]),
                                        host_value=m.get("host_value"),
                                        **m["pocket"])
+        elif m.get("kind") == "cone":
+            built[m["name"]] = _cone(m["name"], m["c"], m["s"], m["value"],
+                                     mat=mat_of(m["name"]),
+                                     seg=int(m.get("seg", 24)))
         elif m.get("kind") == "oct":
             built[m["name"]] = _oct(m["name"], m["c"], m["s"], m.get("cut", 200),
                                     m["value"], axis=m.get("axis", "z"),
                                     tilt_deg=m.get("tilt_deg", 0.0),
                                     mat=mat_of(m["name"]),
-                                    open_face=m.get("open_face"))
+                                    open_face=m.get("open_face"),
+                                    seg=int(m.get("seg", 6)))
         else:
             built[m["name"]] = _box(m["name"], m["c"], m["s"], m["value"],
                                     mat=mat_of(m["name"]))
