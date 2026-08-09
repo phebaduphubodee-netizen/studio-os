@@ -10,6 +10,7 @@ What these protect (each was a live failure this round, not a hypothetical):
   - dark-stroke mode (an edge detector sees a thin frame bar as TWO edges and
     drops every station as ambiguous — art_L starved at n=1 until this mode).
 """
+import json
 import math
 import os
 import sys
@@ -368,3 +369,215 @@ def test_a_mouth_too_wide_for_its_host_face_raises():
 def test_a_crown_that_reaches_the_top_of_the_host_face_raises():
     with pytest.raises(ValueError):
         G.arch_pocket(**MOUTH, face=(-5714.8, -5214.8, 300.0))
+
+
+# ------------------------------- r36: the roof that was typed for 35 rounds --
+# `petcave` is the biggest mass in the lower third of the frame and its height
+# was 550 mm, typed at round 1 and never revisited, while its own prov read
+# "all three sizes still assumed". These pins hold both halves of the fix: the
+# seam that must be DERIVED from its host, and the roof that must be DERIVED
+# from measurement plus one declared sentence, with a stated bound.
+
+def _spec(name):
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     "..", "..", "training", "TRN-002", name)
+    with open(os.path.abspath(p), encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def _mass(spec, name):
+    return next(m for m in spec["masses"] if m["name"] == name)
+
+
+# r36's re-measurement: the top boundary of the lower-right pale mass, on the
+# stretch (u >= 985) that fits one line to 0.401 px. Left of u~977 the boundary
+# belongs to a different mass and bends away at -1.1 px/px.
+R36_COLS = [(985, 727.732), (1000, 725.525), (1015, 722.755), (1030, 720.781),
+            (1045, 718.892), (1060, 717.383), (1075, 715.709)]
+# the LINE is the measurement and the columns are its samples, so the solve is
+# fed points on the fit — the same way `_mk_r36.py` feeds it.
+_M, _B, _RMS = G.fit_line_uv(R36_COLS)
+R36_RIDGE = [(u, _M * u + _B) for u, _ in R36_COLS]
+
+
+@pytest.mark.parametrize("c,s,cut", [
+    ([-1750, -5464.8, 275], [700, 900, 550], 250),
+    ([-1856.85, -5464.8, 192.9], [486.3, 372.4, 385.8], 18.15),
+    ([0, 0, 250], [500, 500, 500], 240),          # cut clamped by the 0.95 rule
+    ([100, -200, 300], [900, 400, 600], 10),      # nearly square corners
+])
+def test_open_face_quad_is_the_quad_oct_mesh_actually_drops(c, s, cut):
+    """The seam's two halves must come from ONE expression.
+
+    r36 found them coming from two: the spec typed the mouth centre +/- the CUT
+    where the mesh drops the quad at +/- (half-depth - cut), so both surround
+    strips overhung the host by 50 mm and hung in air. Nothing could see it —
+    `arch_pocket` never meets its host, and an AABB check cannot tell a 50 mm
+    flap from the mass it is glued to."""
+    y_lo, y_hi, z_top = G.open_face_quad(c, s, cut)
+    solid, _ = G.oct_mesh(c, s, cut)
+    holed, _ = G.oct_mesh(c, s, cut, open_face="x_min")
+    assert len(solid) == len(holed)
+    x_face = (c[0] - s[0] / 2.0) / 1000.0
+    on_face = sorted({round(v[1] * 1000, 6) for v in holed
+                      if abs(v[0] - x_face) < 1e-9})
+    assert len(on_face) == 2, on_face
+    assert abs(on_face[0] - y_lo) < 1e-6, (on_face, y_lo)
+    assert abs(on_face[1] - y_hi) < 1e-6, (on_face, y_hi)
+    assert abs(z_top - (c[2] + s[2] / 2.0)) < 1e-9
+
+
+def test_the_derived_seam_is_watertight_and_the_typed_one_was_not():
+    """The r35 spec is kept as the negative case ON PURPOSE: a guard never shown
+    failing on the real defect is a guard nobody has tested."""
+    bad = G.pocket_face_violations(_spec("spec_r35.json"))
+    assert len(bad) == 2, bad
+    assert all("50.0 mm" in b for b in bad), bad
+    assert G.pocket_face_violations(_spec("spec_r36.json")) == []
+
+
+def test_a_pocket_whose_host_is_missing_or_solid_is_refused():
+    """Fails CLOSED. A surround authored against a host that does not drop its
+    face is a groove painted on a solid — the r29 defect where 450 mm of cavity
+    rendered as a 2 mm groove."""
+    spec = _spec("spec_r36.json")
+    _mass(spec, "petcave_mouth")["host"] = "no_such_mass"
+    assert any("not a mass" in v for v in G.pocket_face_violations(spec))
+    spec = _spec("spec_r36.json")
+    _mass(spec, "petcave")["open_face"] = None
+    assert any("groove" in v for v in G.pocket_face_violations(spec))
+
+
+def test_the_roof_closes_against_the_arch_it_contains():
+    """The solve's own residual. `z_top` and `crown + shell` are two different
+    computations of the same surface — one from the ridge pixels, one from the
+    arch fit — and they must agree to zero, not to a tolerance."""
+    spec = _spec("spec_r36.json")
+    sol = G.shell_closure(spec["camera"],
+                          (spec["image"]["w"], spec["image"]["h"]),
+                          _mass(spec, "petcave_mouth")["pocket"], R36_RIDGE)
+    assert sol["closure_residual_mm"] < 1e-6, sol
+    assert 20.0 < sol["t_mm"] < 60.0, sol["t_mm"]
+
+
+def test_the_bound_is_a_measurement_and_it_excludes_the_typed_height():
+    """The value inside the bracket is declared; the BRACKET is not. Both ends
+    come from the arch being a hole in this object — tangent to the far face at
+    one end, grazing the roof at the other. 550 mm sits outside it, and that is
+    the finding which depends on no declaration at all."""
+    spec = _spec("spec_r36.json")
+    sol = G.shell_closure(spec["camera"],
+                          (spec["image"]["w"], spec["image"]["h"]),
+                          _mass(spec, "petcave_mouth")["pocket"], R36_RIDGE)
+    lo, hi = sol["bound_z_mm"]
+    assert lo < sol["z_top_mm"] < hi, sol
+    assert hi - lo < 60.0, "the bracket is supposed to be tight"
+    assert 550.0 > hi + 100.0, (550.0, hi)
+    assert abs(lo - sol["crown_z_mm"]) < 1e-6, "the low end IS the crown"
+
+
+def test_the_petcave_height_in_the_spec_is_derived_not_typed():
+    """Re-run the derivation from the spec's OWN recorded arch and the measured
+    ridge, and demand the stored height back. Editing `s[2]` by hand now fails —
+    which is the point, because for 35 rounds that was the only way it had ever
+    been set."""
+    spec = _spec("spec_r36.json")
+    cave = _mass(spec, "petcave")
+    sol = G.shell_closure(spec["camera"],
+                          (spec["image"]["w"], spec["image"]["h"]),
+                          _mass(spec, "petcave_mouth")["pocket"], R36_RIDGE)
+    assert abs(cave["s"][2] - sol["z_top_mm"]) < 1e-9, (cave["s"][2], sol)
+    assert abs(cave["c"][2] - sol["z_top_mm"] / 2.0) < 1e-9, "it stands on z=0"
+    far = cave["c"][1] + cave["s"][1] / 2.0
+    assert abs(far - sol["y_far_mm"]) < 1e-9, (far, sol["y_far_mm"])
+    assert cave["cut"] < sol["max_plan_cut_mm"], (
+        "the flat face has to reach the arch's far jamb")
+
+
+def test_the_built_roof_lands_on_the_pixels_it_was_derived_from():
+    """END TO END. Build the mass the spec now describes, push its top boundary
+    back through the solved camera, and land on the measured ridge. r35's roof
+    missed the same columns by 80-96 px."""
+    spec = _spec("spec_r36.json")
+    cam, wh = spec["camera"], (spec["image"]["w"], spec["image"]["h"])
+    cave = _mass(spec, "petcave")
+    v, _ = G.oct_mesh(cave["c"], cave["s"], cave["cut"], open_face="x_min")
+    pts = [G.project(cam, (p[0] * 1000, p[1] * 1000, p[2] * 1000), wh) for p in v]
+
+    def top_at(u):
+        best = None
+        for i in range(len(pts)):
+            for j in range(i + 1, len(pts)):
+                a, b = pts[i], pts[j]
+                if (a[0] - u) * (b[0] - u) <= 0 and abs(a[0] - b[0]) > 1e-9:
+                    w = (u - a[0]) / (b[0] - a[0])
+                    q = a[1] + w * (b[1] - a[1])
+                    best = q if best is None else min(best, q)
+        return best
+
+    assert _RMS < 0.5, f"the adopted ridge stopped fitting a line: {_RMS}"
+    hit = [(u, top_at(u), vm) for u, vm in R36_COLS if top_at(u) is not None]
+    assert len(hit) >= 6, f"the mass covers only {len(hit)} measured columns"
+    res = [got - vm for _, got, vm in hit]
+    rms = (sum(r * r for r in res) / len(res)) ** 0.5
+    assert rms < 1.0, [(u, round(g, 2), vm) for u, g, vm in hit]
+
+
+def test_the_bound_does_not_move_when_the_search_ceiling_moves():
+    """A bound that depends on a search parameter is not a measurement.
+
+    Found reviewing this round's own code: the bracket's far end was bisected on
+    an interval nobody checked contained a root, and a bisection handed no root
+    returns the interval's END. The same object and the same pixels then reported
+    a low bound of 312.70 mm at t_max=400 and 3.00 mm at t_max=4000. `gap(t_max)
+    <= 0` does not cover it — gap carries a `- t` term that goes negative long
+    before the roof reaches the crown."""
+    spec = _spec("spec_r36.json")
+    cam, wh = spec["camera"], (spec["image"]["w"], spec["image"]["h"])
+    mouth = _mass(spec, "petcave_mouth")["pocket"]
+    a = G.shell_closure(cam, wh, mouth, R36_RIDGE, t_max_mm=500.0)
+    b = G.shell_closure(cam, wh, mouth, R36_RIDGE, t_max_mm=8000.0)
+    assert a["bound_z_mm"] == pytest.approx(b["bound_z_mm"], abs=1e-6)
+    assert a["z_top_mm"] == pytest.approx(b["z_top_mm"], abs=1e-9)
+
+    # and a ceiling genuinely too low must SAY so rather than report itself
+    shallow = dict(mouth, spring_z_mm=1.0, radius_mm=2.0)
+    with pytest.raises(ValueError, match="off the end of the search"):
+        G.shell_closure(cam, wh, shallow, R36_RIDGE, t_max_mm=400.0)
+
+
+def test_the_seam_checker_uses_the_same_cut_default_as_the_build():
+    """`trn002_build.py` dispatches oct with `m.get("cut", 200)`. This checker's
+    first draft defaulted to 0, so a host with no `cut` key was validated against
+    a face the build does not draw — the seam's two halves coming from two
+    different numbers, which is the defect the checker exists to refuse. A
+    checker may not invent a default its consumer does not share."""
+    host = {"name": "h", "kind": "oct", "c": [0, 0, 250], "s": [1000, 1000, 500],
+            "open_face": "x_min"}                      # no `cut` key on purpose
+    pocket = {"name": "p", "kind": "pocket", "host": "h", "pocket": {
+        "face_x_mm": -500.0, "y_centre_mm": 0.0, "spring_z_mm": 100.0,
+        "radius_mm": 80.0, "base_z_mm": 0.0, "depth_mm": 200.0,
+        "face": list(G.open_face_quad([0, 0, 250], [1000, 1000, 500], 200))}}
+    assert G.pocket_face_violations({"masses": [host, pocket]}) == []
+
+
+def test_a_host_extruded_the_wrong_way_is_refused():
+    """`open_face` only exists on a z-extruded oct — `oct_mesh` raises otherwise.
+    The checker must not silently compute a -x quad for a host that has none."""
+    spec = _spec("spec_r36.json")
+    _mass(spec, "petcave")["axis"] = "y"
+    assert any("no -x quad" in v for v in G.pocket_face_violations(spec))
+
+
+def test_an_arch_taller_than_its_own_measured_roof_raises():
+    """The r35 state, in one assertion. Read on the plane the spec then declared,
+    the roof sat 53 mm BELOW the crown of its own mouth — two measurements that
+    cannot both describe one object. The solve must refuse rather than
+    interpolate; only the never-measured 550 was hiding it."""
+    spec = _spec("spec_r36.json")
+    mouth = dict(_mass(spec, "petcave_mouth")["pocket"])
+    mouth["spring_z_mm"] = 900.0                      # a crown above any roof
+    with pytest.raises(ValueError, match="do not describe one object"):
+        G.shell_closure(spec["camera"],
+                        (spec["image"]["w"], spec["image"]["h"]),
+                        mouth, R36_RIDGE)

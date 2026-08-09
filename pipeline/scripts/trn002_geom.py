@@ -531,3 +531,248 @@ def arch_pocket(face_x_mm, y_centre_mm, spring_z_mm, radius_mm, base_z_mm,
             fs.append((prev[0], i, top, prev[1]))
         prev = (i, top)
     return vs, fs
+
+
+def open_face_quad(c, s, cut):
+    """(y_lo, y_hi, z_top) of the flat -x quad `oct_mesh(..., open_face="x_min")`
+    DROPS — the hole an `arch_pocket` is authored to fill.
+
+    DERIVED FROM THE SAME EXPRESSION THE MESH USES, because the typed version was
+    wrong and nothing could see it. `arch_pocket`'s own docstring promises the
+    seam is "watertight by construction rather than by tolerance" — and the
+    construction was reading a hand-typed `face` tuple that no generator ever
+    emitted (`_mk_r29.py` writes the pocket but not this field; it was added to
+    the JSON out of band). The spec said the quad spanned the mouth's centre
+    +/- the CUT (250) where the mesh spans +/- (half-depth - cut) (200), so both
+    surround strips overhung the host by 50 mm and hung in air: the patch did not
+    land on the geometry it replaced. Construction cannot be watertight while one
+    side of the seam is typed and the other is computed.
+
+    Same class as R9, one level up: a coordinate encodes a RESULT and a `face`
+    tuple encodes a RESULT, so resizing the host leaves both perfectly legal and
+    silently wrong.
+    """
+    r = min(cut, s[0] / 2.0 * 0.95, s[1] / 2.0 * 0.95)
+    return (c[1] - (s[1] / 2.0 - r), c[1] + (s[1] / 2.0 - r), c[2] + s[2] / 2.0)
+
+
+def pocket_face_violations(spec, tol_mm=1e-6):
+    """[str] — every pocket whose `face`/`base_z_mm` disagrees with the host it
+    NAMES. Fails closed on a host that is missing or is not an open-faced oct.
+
+    Spec-side, and that is the point: `placement_check.py` reads the built scene
+    and can see an object the spec forgot, but it measures whole masses and an
+    AABB cannot tell a 50 mm surround flap from the mass it is glued to. This one
+    cannot see the scene at all — it just refuses to let the two halves of a seam
+    be authored from two different numbers."""
+    out = []
+    by = {m.get("name"): m for m in spec.get("masses", []) if m.get("name")}
+    for m in spec.get("masses", []):
+        if m.get("kind") != "pocket":
+            continue
+        name = m.get("name", "<unnamed>")
+        pk = m.get("pocket") or {}
+        if "face" not in pk:
+            continue                       # a bare tube authors no surround
+        host_name = m.get("host")
+        host = by.get(host_name)
+        if host is None:
+            out.append(f"{name}: `host` names {host_name!r}, which is not a mass "
+                       f"in this spec — the seam has nothing to be checked against.")
+            continue
+        if host.get("open_face") != "x_min":
+            out.append(f"{name}: host `{host_name}` does not drop its -x quad "
+                       f"(`open_face` is {host.get('open_face')!r}), so this pocket "
+                       f"is a groove on a solid face, not an opening through it.")
+            continue
+        if host.get("axis", "z") != "z":
+            out.append(f"{name}: host `{host_name}` is extruded along "
+                       f"{host.get('axis')!r}; `open_face` only exists on a "
+                       f"z-extruded oct, so there is no -x quad to fill.")
+            continue
+        # DEFAULT 200 MIRRORS `trn002_build.py`'s oct dispatch, `m.get("cut", 200)`.
+        # Caught by this module's own review: the first draft defaulted to 0, so a
+        # host with no `cut` key would have been checked against a face the build
+        # does not draw — the seam's two halves coming from two different numbers,
+        # which is the exact defect this function exists to refuse. A checker may
+        # not invent a default its consumer does not share.
+        want = open_face_quad(host["c"], host["s"], host.get("cut", 200))
+        got = tuple(float(v) for v in pk["face"])
+        for i, axis in enumerate(("y_lo", "y_hi", "z_top")):
+            if abs(got[i] - want[i]) > tol_mm:
+                out.append(
+                    f"{name}: `face` {axis} is {got[i]:.1f} but `{host_name}` drops "
+                    f"its quad at {want[i]:.1f} ({got[i] - want[i]:+.1f} mm). The "
+                    f"surround is authored to a face the host does not have.")
+        floor = host["c"][2] - host["s"][2] / 2.0
+        if abs(float(pk.get("base_z_mm", 0.0)) - floor) > tol_mm:
+            out.append(
+                f"{name}: `base_z_mm` is {pk.get('base_z_mm')} but `{host_name}` "
+                f"starts at {floor:.1f} — the surround strips would not reach the "
+                f"bottom of the hole they fill.")
+        if abs(float(pk.get("face_x_mm", 0.0)) - (host["c"][0] - host["s"][0] / 2.0)) > tol_mm:
+            out.append(
+                f"{name}: `face_x_mm` is {pk.get('face_x_mm')} but `{host_name}`'s "
+                f"-x face is at {host['c'][0] - host['s'][0] / 2.0:.1f}.")
+    return out
+
+
+# ----------------------------------------------------------- one-view solves --
+# A single view cannot separate an object's SIZE from its DISTANCE: scaling the
+# whole thing about the camera centre leaves the image bit-identical. Everything
+# below therefore returns a value together with the DECLARATION it rests on and
+# the BOUND that measurement alone can prove — never a bare number.
+
+def fit_line_uv(pts):
+    """(slope, intercept, rms) of v = m*u + b through measured (u, v) columns.
+
+    Lives here rather than in the caller because the r36 spec's height is pinned
+    by a test that RE-DERIVES it, and a re-derivation running a second copy of
+    the arithmetic proves the copies agree, not that the number is right."""
+    n = len(pts)
+    if n < 2:
+        raise ValueError("a line needs at least two columns")
+    su = sum(u for u, _ in pts)
+    sv = sum(v for _, v in pts)
+    den = n * sum(u * u for u, _ in pts) - su * su
+    if abs(den) < 1e-12:
+        raise ValueError("all columns share one u: that is not a line in u")
+    m = (n * sum(u * v for u, v in pts) - su * sv) / den
+    b = (sv - m * su) / n
+    rms = (sum((m * u + b - v) ** 2 for u, v in pts) / n) ** 0.5
+    return m, b, rms
+
+
+def ridge_plane_z(cam, wh, ridge_uv, y_mm):
+    """(mean z, spread) in mm of measured ridge pixels back-projected onto y=`y_mm`.
+
+    Spread is diagnostic only, and specifically it is NOT evidence about which
+    plane is right: back-projection onto a parallel plane is a uniform scaling
+    about the camera, so the spread scales with the plane and its ratio to
+    (cam_z - z) is invariant. What the spread does catch is the pixels not being
+    one horizontal edge at all."""
+    zs = []
+    for u, v in ridge_uv:
+        w = backproject(cam, (u, v), ("y", y_mm), wh)
+        if w is None:
+            raise ValueError(f"ridge pixel {(u, v)} does not meet y={y_mm}")
+        zs.append(w[2])
+    return sum(zs) / len(zs), max(zs) - min(zs)
+
+
+def shell_closure(cam, wh, mouth, ridge_uv, t_max_mm=2000.0, iters=200):
+    """Solve a hollow object's ROOF from its measured OPENING and its measured
+    TOP RIDGE. Returns a dict; `z_top_mm` is DERIVED and must never be typed.
+
+    THE PROBLEM THIS EXISTS FOR. `petcave` carried a height of 550 mm typed at
+    round 1 and never questioned through 35 rounds, on the biggest mass in the
+    lower third of the frame — its own provenance said so: "A(x, z, and all three
+    sizes still assumed)". The ridge is measurable and the height is not, because
+    HEIGHT AND DEPTH ARE ONE UNKNOWN FROM ONE VIEW: the same pixels back-project
+    to z 296 / 449 / 601 on three planes the object could plausibly occupy, and
+    no amount of care with the pixels separates them.
+
+    WHAT BREAKS THE TIE, and it is not a preference. The object carries a SECOND
+    measured feature on a plane at right angles to the first — an arch fitted over
+    76 back-projected points — and the two are rigidly related by the one fact
+    that needs no view at all: THE ARCH IS A HOLE IN THIS OBJECT, so its crown is
+    under this object's roof and its jamb is inside this object's face. That
+    converts a free parameter into a bracket:
+
+        t = 0                 the arch is tangent to the far face; all the
+                              material is over the crown            -> z_top max
+        t = t_max             the roof grazes the crown; all the material is
+                              beside the jamb                       -> z_top min
+
+    Both ends are measurements, so the BRACKET is a measurement. Only the point
+    inside it is declared, and one sentence picks it: THE SHELL IS THE SAME
+    THICKNESS OVER THE CROWN AS BESIDE THE JAMB. That is a claim about a moulded
+    boucle shell, it is falsifiable, and the number it returns (~36 mm) is itself
+    the R10 question-3 sanity check — a solve that answered 4 mm or 300 mm would
+    be telling us the model is wrong.
+
+    WHAT IS STILL DECLARED, so nobody reads the output as measured: `mouth`'s own
+    plane. The arch was fitted by back-projecting onto the host's -x face, whose
+    x is assumed, and the fit's RADIUS scales with that choice while its SHAPE
+    does not. z_top moves about -0.38 mm per +1 mm of that plane, so the object
+    still hangs on exactly one declared scalar — which is the improvement: it used
+    to hang on two, and the two disagreed.
+
+    Raises rather than guessing when the bracket is empty (`f(0) <= 0`): a roof
+    measured BELOW the crown of its own opening is not a number to interpolate,
+    it is two measurements that cannot both describe one object.
+    """
+    y_c = float(mouth["y_centre_mm"])
+    radius = float(mouth["radius_mm"])
+    crown = float(mouth["spring_z_mm"]) + radius
+    if radius <= 0:
+        raise ValueError("shell_closure: the arch needs a positive radius")
+
+    def gap(t):
+        """roof height minus (crown + t) — strictly decreasing in t."""
+        return ridge_plane_z(cam, wh, ridge_uv, y_c + radius + t)[0] - (crown + t)
+
+    if gap(0.0) <= 0.0:
+        z0, _ = ridge_plane_z(cam, wh, ridge_uv, y_c + radius)
+        raise ValueError(
+            f"shell_closure: the measured ridge puts this object's roof at "
+            f"{z0:.1f} mm on the one plane where its own arch is tangent to the "
+            f"far face, but the arch's crown is at {crown:.1f} mm. No shell "
+            f"thickness closes that: the two measurements do not describe one "
+            f"object. Fix the reading, not the number.")
+    if gap(t_max_mm) > 0.0:
+        raise ValueError(f"shell_closure: no root below t={t_max_mm} mm — the "
+                         f"bracket is too small or the ridge is not this object's.")
+
+    def _root(f, lo, hi):
+        for _ in range(iters):
+            mid = (lo + hi) / 2.0
+            if f(mid) > 0.0:
+                lo = mid
+            else:
+                hi = mid
+        return hi
+
+    t = _root(gap, 0.0, t_max_mm)
+    # The far end of the bracket: where the roof grazes the crown. ITS BRACKET IS
+    # CHECKED TOO, and the first draft did not check it — a bisection handed an
+    # interval with no root in it returns the interval's END, silently, so the
+    # SEARCH CEILING leaks out as the answer. Measured on the first draft: the
+    # same object and the same pixels reported a low bound of 312.70 mm at
+    # t_max=400 and 3.00 mm at t_max=4000. A bound is the whole product of this
+    # function, and a bound that moves when you change a search parameter is not
+    # a measurement of anything. `gap(t_max) <= 0` does NOT imply this root is in
+    # range: gap carries a `- t` term that drags it negative long before the roof
+    # reaches the crown.
+    def to_crown(x):
+        return ridge_plane_z(cam, wh, ridge_uv, y_c + radius + x)[0] - crown
+
+    if to_crown(t_max_mm) > 0.0:
+        raise ValueError(
+            f"shell_closure: the roof still clears the crown at t={t_max_mm} mm, "
+            f"so the bracket's far end is off the end of the search. Raise "
+            f"t_max_mm — do NOT report the ceiling as the bound.")
+    t_hi = _root(to_crown, 0.0, t_max_mm)
+    z_lo, _ = ridge_plane_z(cam, wh, ridge_uv, y_c + radius + t_hi)
+    if abs(z_lo - crown) > 1e-6:
+        raise ValueError(f"shell_closure: the bracket's low end is {z_lo:.3f} mm "
+                         f"and the crown is {crown:.3f} mm — by construction they "
+                         f"are the same surface, so the solve is wrong.")
+    z_hi, spread = ridge_plane_z(cam, wh, ridge_uv, y_c + radius)
+    y_far = y_c + radius + t
+    z_top, ridge_spread = ridge_plane_z(cam, wh, ridge_uv, y_far)
+    return {
+        "t_mm": t,
+        "y_far_mm": y_far,
+        "z_top_mm": z_top,
+        "crown_z_mm": crown,
+        "bound_z_mm": (z_lo, z_hi),
+        "bound_t_mm": (0.0, t_hi),
+        "ridge_spread_mm": ridge_spread,
+        # the closure's own residual: the roof and (crown + shell) are two
+        # different computations of the same surface and must agree to zero.
+        "closure_residual_mm": abs(z_top - (crown + t)),
+        # a plan corner cannot be rounded past the material that holds the arch's
+        # far jamb: the flat face must still reach out to y_c + radius.
+        "max_plan_cut_mm": t,
+    }

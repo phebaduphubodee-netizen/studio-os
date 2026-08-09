@@ -642,6 +642,18 @@ def main():
         if older or v:
             raise SystemExit("RULE GATE FAILED (R10 / R7 / charter)")
 
+    # The seam between a pocket and the host face it fills. Checked HERE and not
+    # only in the tests because the defect it catches was written straight into
+    # the JSON with no generator behind it — `_mk_r29.py` emits the pocket but
+    # never its `face`, so no maker script was ever in the path to be wrong.
+    # A hand-editable field needs a check on the build path, not a check that
+    # only runs when someone remembers to run the makers. It sits OUTSIDE the
+    # `--no-rule-gate` branch on purpose: this one is not a judgement about the
+    # round, it is whether two halves of a seam were authored from one number.
+    seams = G.pocket_face_violations(spec)
+    if seams:
+        raise SystemExit("POCKET/HOST SEAM (r36):\n  " + "\n  ".join(seams))
+
     materials = None
     if "--materials" in argv:
         import trn002_materials as MAT
