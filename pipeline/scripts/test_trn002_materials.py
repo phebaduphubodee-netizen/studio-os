@@ -62,7 +62,13 @@ def test_the_left_run_is_one_material():
     """The critics' recurring 'it reads as two pieces stuck together' is answered
     by continuous material across the flush planes — so console, desk, pier and
     the etagere must resolve to the SAME key, and a change that splits them
-    should fail here rather than in a critique."""
+    should fail here rather than in a critique.
+
+    `desk_pier` is still in this tuple although r37 DELETED the mass, and that is
+    not an oversight: the rule table is keyed by name across every spec this lane
+    can still render, and r1..r36 all contain the pier. Taking it out of the
+    table was tried at r37 and `test_every_mass_in_the_spec_has_a_material`
+    refused it in one run."""
     keys = {MAT.material_for(n) for n in
             ("console", "desk", "desk_pier", "shelf_col_base", "shelf_col_back",
              "shelf_board2", "shelf_board3", "shelf_board4")}

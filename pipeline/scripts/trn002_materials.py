@@ -104,6 +104,13 @@ EXACT = {
     "closet_shelf": "veneer_oak", "closet_plinth": "veneer_oak",
     "led_strip": "strip_led",
     "desk": "veneer_oak", "console": "veneer_oak",
+    # `desk_pier` STAYS although r37 deleted the mass, and the reason is worth reading
+    # before tidying it: `test_every_mass_in_the_spec_has_a_material` walks EVERY spec in
+    # the lane, not the newest, because re-rendering a past round is how this lane catches
+    # regressions. Thirty-six specs still carry the mass, so dropping this rule breaks
+    # r1..r36 rather than cleaning up r37. It was removed at r37 and the suite refuted it
+    # in one run. The guard against a deleted object walking back in is `declared_gaps` +
+    # the coverage manifest, which is a check about the SPEC — not this table.
     "desk_pier": "veneer_oak",
     "shelf_col_base": "veneer_oak", "shelf_col_back": "veneer_oak",
     "tv": "screen_black",
