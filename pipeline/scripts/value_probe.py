@@ -145,6 +145,21 @@ def report(rows):
 
 # --------------------------------------------------------------------------- the real path
 
+def decode_ids(mask_rgb):
+    """HxWx3 mask pixels (0..255) -> HxW array of ids, by NEAREST palette level.
+
+    Extracted 2026-08-09 so `edge_drift.py` reads ids through the SAME code that
+    `decode()` uses. It was inline in `decode()`, and a second caller copying those four
+    lines is precisely how id 0's reservation, the nearest-level rule and the palette
+    width drift apart between two files that both claim to read the same mask.
+    """
+    import numpy as np
+    lv = np.abs(mask_rgb[..., None, :3].astype(np.int16)
+                - np.array(LEVELS, dtype=np.int16)[None, None, :, None]).argmin(axis=2)
+    n = len(LEVELS)
+    return lv[..., 0] * n * n + lv[..., 1] * n + lv[..., 2]
+
+
 def decode(beauty_rgb, mask_rgb, names, min_px=MIN_PIXELS):
     """Vectorised (numpy) equivalent of luma() + srgb_to_id() + aggregate(), for whole
     frames. `beauty_rgb` and `mask_rgb` are HxWx3 arrays of 0..255.
@@ -158,10 +173,7 @@ def decode(beauty_rgb, mask_rgb, names, min_px=MIN_PIXELS):
     import numpy as np
     lum = (0.2126 * beauty_rgb[..., 0] + 0.7152 * beauty_rgb[..., 1]
            + 0.0722 * beauty_rgb[..., 2])
-    lv = np.abs(mask_rgb[..., None, :3].astype(np.int16)
-                - np.array(LEVELS, dtype=np.int16)[None, None, :, None]).argmin(axis=2)
-    n = len(LEVELS)
-    ids = lv[..., 0] * n * n + lv[..., 1] * n + lv[..., 2]
+    ids = decode_ids(mask_rgb)
     rows = []
     for k, name in names.items():
         sel = ids == int(k)
