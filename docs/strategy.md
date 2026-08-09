@@ -2949,3 +2949,87 @@ dimension -> objects -> light — a frame now would spend an R1 cycle on a pictu
 with three known defects left in it. The nightstand corner clip went 170 -> 21.4
 mm and was NOT chased, because r35 recorded in writing that neither end of the
 nightstand is measurable and moving it would swap one typed number for another.
+
+## 2026-08-09 — a course trailer, a guard, and the frame that proved us wrong about which ask is dangerous
+
+Owner watched Rebelway's *AI For Interior Design* trailer and asked what is useful
+in it, on the explicit condition that he is NOT enrolling. Reconstructed the
+method from the public syllabus plus the model cards
+(`docs/research/2026-08-09-rebelway-ai-interior-workflow.md`), then — on "go" —
+built the admissibility guard the technique needs and spent USD 0.60 finding out
+whether any of it is real for us.
+
+**The research's first draft was wrong in the flattering direction and the
+correction is the finding.** It presented Qwen-Image-Edit's Apache-2.0 licence
+and Nunchaku's ~3 GiB footprint as news that voided our 2026-07-02 "stay Gemini
+hybrid" decision. Our OWN research file already said both, twenty lines below the
+sentence that parked the lane over FLUX's licence
+(`2026-07-02-comfyui-flux-feasibility.md:78-83`). The local lane was never gated
+on licence or on VRAM. It is gated on an unrun 1-day throughput spike, which that
+same file asks for in its own words. Fourth time an outside answer has landed on
+something already sitting on our disk. **A research file with no consumer is
+storage, not knowledge** — the same defect the DR subscription is being cancelled
+over.
+
+**Refused a DR before running the probe, and the reasons are worth keeping.**
+The two load-bearing questions — does the edit move OUR geometry, does the output
+stay sourceable — are not documented anywhere; the first is a measurement on our
+own frame and the second is a decision. Yesterday's own precedent (the SEIG entry
+closed "and NOT by a DR") plus the write-only-unit count made firing one actively
+harmful.
+
+**BUILT: `edge_drift.py`** (+ `test_edge_drift.py`, `test_edit_call.py`; suite
+2587 -> 2603). Per-object: what SHARE of an object's silhouette lost its edge
+between the frame we sent and the frame that came back. Two of its three
+constants were earned by the probe catching itself on its first run: a median
+distance misses a translation along a long straight run (the common case in a
+room, not a corner), and a bare 90th-percentile edge threshold on a flat frame
+marks EVERY pixel an edge and reports all-clear. It is one-sided by construction
+and says so: large drift proves movement, small drift proves nothing. An object
+whose outline was never visible reports UNCHECKABLE, never HELD.
+
+**THE PROBE INVERTED THE PREDICTION.** Three asks against `trn002_mat_r32`
+(73 objects, tol 3.4 px), full record in
+`training/TRN-002/probe/editprobe-2026-08-09/GATE.md`:
+
+- "change only the surface" — **4 DRIFT, 34.3 % invented edges.** It swapped the
+  bench for a different armchair, stocked the shelves with books and vases, and
+  painted a window into the closet mirror that exists nowhere in the room.
+- "relight, move nothing" — 4 DRIFT, **all false alarms**: nothing moved, the warm
+  light washed those junctions below threshold. The guard cannot separate "the
+  edge left because the mass moved" from "because the contrast did", so it is
+  ADVISORY under relight — and it errs toward the alarm, the correct side.
+- "add one crumpled linen throw" — **0 DRIFT**, and it produced folds, weight and
+  a contact shadow on the object class that previously cost five rounds and 785
+  hand-written lines of cloth physics and still ended at 3/12.
+
+**What every ask held is exactly what R8 says to BUILD; what they rewrote is
+exactly what R8 says to ACQUIRE.** Walls, ceiling, wardrobe, door, artwork,
+shelving, the bed's mass — pixel-held. Chair, soft goods, decor — reinvented. The
+line this studio drew from its own failures is the line these models already sit
+on. So the narrow adoption is generative INSERT of a declared R8 gap, one named
+object at a time, gated on `edge_drift` exit 0. Decided: D-011 (guard is
+mandatory), D-012 (AI relight is never a lighting OUTPUT — no luminaire, no watt,
+no photometry, nothing to buy), D-013 (a restyled frame is a MOOD frame, never a
+spec frame — 34.3 % of it is unbuyable).
+
+> **Wrap-time scrutinize earned its place a second time, on the same shape as
+> yesterday: the change violated its own thesis.** D-011 declared `edge_drift` a
+> gate while `edit_call.py` merely PRINTED the command to run it — an instrument
+> nothing calls, a fortnight after this repo committed a fix for exactly that
+> class. The producer now runs the guard and exits non-zero on drift, and the
+> test that proves it runs `main()` end-to-end against a faked API rather than
+> grepping the source for the call.
+
+Also learned, and it cost four dead API calls: the `google-genai` SDK cannot
+reach any Gemini IMAGE model on this machine (httpx RemoteProtocolError on a
+64x48 test image) while a text call on the same key in the same process
+succeeds and the identical request over urllib returns 200 — the transport is at
+fault, not the network. `edit_call.py` posts REST; `critique_call.py` stays on
+the SDK.
+
+Not done, deliberately: no object-inventory diff yet, which is what D-013 is
+currently holding shut by policy rather than by instrument — `edge_drift` answers
+"did anything move", not "is every mass in this frame in the spec". And no
+practitioner ask, which our own research law puts first and which is still the
+cheapest unspent rung here.
