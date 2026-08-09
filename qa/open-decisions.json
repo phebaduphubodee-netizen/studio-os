@@ -145,6 +145,48 @@
       "reverse_by": "แถว `seen` และวรรค RETIRED ใน prov ของ petcave ใน training/TRN-002/spec_r36.json — ถ้าจะกลับ ต้องอธิบายก่อนว่าก้อนแข็งอันเดียวมี crown/roof > 1 ได้ยังไง",
       "owner_override": null,
       "override_date": null
+    },
+    {
+      "id": "D-011",
+      "unit": "TRN-002",
+      "decided_round": 36,
+      "decided_date": "2026-08-09",
+      "decided_by": "builder",
+      "question": "ถ้าจะเอา image-edit model มาช่วยทำผิว/ของนุ่ม (ท่าของ Rebelway) จะรู้ได้ยังไงว่ามันไม่ขยับเรขาคณิตที่เราวัดมา",
+      "in_effect": "`pipeline/scripts/edge_drift.py` เป็นด่านรับเข้า: เฟรมที่ผ่านมือ generative model ห้ามเข้าเลนใด ๆ ก่อนถูกวัดด้วยตัวนี้ (exit 1 = DRIFT = ตก) · สถิติคือ **สัดส่วนของเส้นรอบรูปที่เสียขอบไป** ไม่ใช่ระยะ median (median พลาด translation ตามแกน — ทดสอบ pin ไว้แล้ว) · UNCHECKABLE ไม่ใช่ผ่าน · อ่านทางเดียว: drift มาก = พิสูจน์ว่าขยับ, drift น้อย = ไม่ได้พิสูจน์ว่านิ่ง",
+      "where": "pipeline/scripts/edge_drift.py, pipeline/scripts/test_edge_drift.py, training/TRN-002/probe/editprobe-2026-08-09/GATE.md",
+      "because": "R9 อนุญาตให้ proxy ถือตำแหน่งแล้วให้โมเดลทำผิว ก็ต่อเมื่อโมเดลไม่แตะเรขาคณิตจริง ๆ ซึ่งมันไม่มีพันธะจะทำตาม และ R10 บอกไว้แล้วว่าตาเราจับไม่ได้ (clay ทำให้ทุกก้อนมีศักดิ์เท่ากัน) · การวัดรอบนี้พิสูจน์ว่าจำเป็น: ask ที่สั่งว่า 'เปลี่ยนแค่ผิว' กลับเปลี่ยน chair_back 31% และ petcave_mouth 54%",
+      "reverse_by": "ลบ/ปิดการเรียก edge_drift ในเลน generative — แต่ต้องเขียนก่อนว่าจะจับก้อนที่ขยับด้วยอะไรแทน (ตาเปล่าถูกตัดสิทธิ์ไปแล้วโดย R10)",
+      "owner_override": null,
+      "override_date": null
+    },
+    {
+      "id": "D-012",
+      "unit": "TRN-002",
+      "decided_round": 36,
+      "decided_date": "2026-08-09",
+      "decided_by": "builder",
+      "question": "AI relight (Rebelway week 5) เอามาใช้ในเลนเราได้แค่ไหน",
+      "in_effect": "**ห้ามเป็น output ของขั้นแสง** — AI relight ให้ภาพที่แสงสวยแต่ไม่มีดวงโคม ไม่มีวัตต์ ไม่มี photometry สั่งซื้อไม่ได้ · อนุญาตเป็น **probe** อย่างเดียว: ส่องเฟรมตัวเองหลายแบบเพื่อถามคำถาม R10 ว่ามวลยังอ่านเป็นของที่สร้างได้จริงมั้ย · และ edge_drift ภายใต้ relight เป็น ADVISORY เท่านั้น (มันแยก 'ขอบหายเพราะก้อนขยับ' กับ 'ขอบหายเพราะ contrast หาย' ไม่ออก — รอบนี้ 4 DRIFT ของ B เป็น false alarm ทั้งหมด ยืนยันด้วยตาจากคู่ภาพ)",
+      "where": "training/TRN-002/probe/editprobe-2026-08-09/GATE.md, docs/research/2026-08-09-rebelway-ai-interior-workflow.md",
+      "because": "คำสั่งเจ้าของ 2026-08-08: แสงถูก SOLVE จากเรขาคณิต ไม่ใช่เลเยอร์ทับ — ทำแสงก่อนของครบคือย้ายความผิดเรขาคณิตไปฝังในตารางแสงที่มองไม่เห็น (240 W vs 37 W) · AI relight คือรูปแบบสุดขั้วของการทับเลเยอร์ · หลักฐานรอบนี้: B ใส่โป๊ะให้ lamp ที่ R10 เพิ่งจับได้ว่าเป็นเสาเปล่า — โมเดลกลบ defect ที่เราต้องแก้",
+      "reverse_by": "ย่อหน้านี้เอง — ถ้าจะให้ relight เป็น output ต้องมีทางแปลงภาพกลับเป็น luminaire schedule ที่สั่งซื้อได้ก่อน",
+      "owner_override": null,
+      "override_date": null
+    },
+    {
+      "id": "D-013",
+      "unit": "TRN-002",
+      "decided_round": 36,
+      "decided_date": "2026-08-09",
+      "decided_by": "builder",
+      "question": "เฟรมที่ image model ทำให้สวยขึ้นมาก (ask A) เอาไปใช้เป็นงานส่งได้มั้ย",
+      "in_effect": "**แยกสองทางเดินให้ขาด** — เฟรมจาก generative restyle = MOOD frame เท่านั้น ห้ามใช้เป็นเฟรมที่แบก spec · เหตุผลเป็นจำนวนนับ ไม่ใช่รสนิยม: ask A คืนภาพที่ 34.3% ของเส้นขอบเป็นของที่เราไม่ได้สร้าง — เก้าอี้ที่ไม่ได้ spec, หนังสือ/แจกันบนชั้น, และหน้าต่างในกระจกตู้ที่ห้องนี้ไม่มี · ของแบบนี้ลูกค้าซื้อไม่ได้ และมันละเมิด R10 ทั้งแผง",
+      "where": "training/TRN-002/probe/editprobe-2026-08-09/GATE.md, docs/research/2026-08-09-rebelway-ai-interior-workflow.md",
+      "because": "north star ของสตูดิโอคือ render ที่ visualize spec ที่ซื้อของได้ · การเติมของที่ไม่มีใน spec ทำให้ภาพอ่านเป็นค่าที่วัดมา ทั้งที่กุขึ้น — คลาสเดียวกับพิมพ์ 60 mm ให้มิติที่ measurement pass บอกว่า UNMEASURABLE",
+      "reverse_by": "ประโยคนี้ — จะยกเลิกได้เมื่อมีทางบังคับให้ทุกก้อนในเฟรมที่ส่งมี provenance กลับไปหา spec (เช่น edge_drift + object inventory diff ที่ปฏิเสธ invented mass)",
+      "owner_override": null,
+      "override_date": null
     }
   ]
 }
