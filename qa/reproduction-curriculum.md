@@ -65,6 +65,31 @@ round ended with "พร้อมให้ตัดสิน" and the only stopp
 owner running out of patience. A finish line that only one person can call is
 not a criterion; it is a queue.
 
+> **AMENDED 2026-08-08 — and this section wrote its own diagnosis a week early.**
+> "A finish line that only one person can call is not a criterion; it is a
+> queue" was left standing while the test below was defined as *the owner picks
+> a panel*, which is exactly a finish line only one person can call. It was
+> never once run to completion: **46 rounds across two lanes, zero answers**,
+> five sheets built and sitting on disk beside their answer keys. Then the owner
+> removed himself from the gate entirely (*"เอาผมออกจาก gate เลย ไม่ต้องรอผม"*,
+> full text CLAUDE.md R3), which turns a dormant contradiction into a lane with
+> no finish line at all.
+>
+> **FINISH LINE (TRN-002, builder-decided, `qa/open-decisions.json` D-007).** A
+> reproduction closes when all three hold:
+> 1. the coverage manifest has **no unresolved entry** — every object either
+>    built or a signed declared gap;
+> 2. a **full-fidelity** frame passes all seven gate halves;
+> 3. a **fresh-salt blind sheet has been BUILT** and left in the render folder.
+>
+> Note what changed in (3) and what did not. **Producing the sheet is required;
+> an answer to it is not.** The sheet's whole value was always that it puts our
+> frame beside delivered work in the one channel the owner actually uses — he
+> reads renders. Making his reply a gate condition is what kept it at zero for
+> 46 rounds. If he looks and says we lost, that is an owner override and it
+> outranks all three conditions; if he says nothing, the lane still terminates.
+> **Reverse by editing this block.**
+
 **THE TEST.** `python pipeline/scripts/look_bench.py <our frame> --blind` builds
 a panel of delivered anchors with our frame shuffled in UNLABELLED, and writes
 the answer to a separate `.ANSWER.txt` beside the sheet. The owner picks which
@@ -174,9 +199,16 @@ lane's to fake.
 
 ## Ledger
 
+> **CAPS ARE NOT IN THIS TABLE.** The `rounds` / `full frames` columns below are ACTUALS.
+> R1's caps live in `qa/curriculum-caps.json` because this table is markdown that nothing
+> parses, and `rule_gate.cap_check` needs a dict. That gap is exactly why R1 went unenforced
+> for 34 rounds: the function worked, the tests passed, and the numbers lived somewhere no
+> program could reach them.
+
 | id | picked | status | element | rounds | full frames | learnings distilled |
 |---|---|---|---|---|---|---|
 | TRN-001 | CLOSED 2026-08-02 (seed …-002; …-001 re-rolled: site photo, not render) | ACTIVE | 6: cubby POCKET built — the model had one depth where the unit has two (proud 100 CONFIRMED + pocket 176.5 NEW = cavity 276.5, measured 274.8); the wall now opens for it. Rounds 1–3 closed by owner; gates #4 (light), #5 (styling), #6 (depth) all OPEN. R1 STOP on cubby mouth brightness. Round 7: PALETTE's roughness column was dead for every mapped material (marble asked 0.18, rendered 0.506 — the hero object's polish reached no frame in four rounds); veneer wore the floor's micro-bevel relief; DR fired on veneer figure; step depth 311 taken back OFF the owner's queue as unconstrained rather than wrong. Round 8: the cubby was never too bright, it was too WARM (hue err 0.339 -> 0.095 at unchanged luminance); bookmatch built per the DR; the ID pass rebuilt to give every mass a unique decodable colour, which promptly acquitted a matcheck row the previous commit had convicted. Round 9 (owner order 1, take light OFF the floor): SHIPPED wall-wash tilt 7 deg + 5.ies + diffuse_bounces 4->16, aggregate |abs-1| 3.26 -> 2.01 and worst patch 1.18 -> 0.34, at the cost of header/plinth and p99/p1; found and fixed a 180-degree yaw error in every aimed light this lane ever built, which invalidates the FILL's two refutations; and measured the one thing no knob can move -- the target's floor carries a left-right ramp of +0.199/m that ours reports as -0.005/m in all 30 configs. Round 10 (florals): round 5's 'the CC0 pool holds 13 models' was a CACHE MISS -- the real pool is 521 and its conclusion survives on it; lilies BUILT (decision (kho)'s refusal was about religious statuary 'used respectfully as-is' and never covered cut flowers), Buddha figures still refused and now recorded as a STUDIO capability gap rather than a TRN-001 defect. Round 11 (11-agent fleet): the ROOM IS 105 mm TALLER than nine rounds assumed and nothing in the model ever disagreed; the floor's texture was in the map all along and being lost in delivery; and the finish line finally has a threshold the owner can run. Rounds 12-18: the figures, ACQUIRED after the owner asked where models come from and a working designer said 3D Warehouse — a source our own asset DR never mentions | 20 | 37 | VP-pinned camera solve (pin what the vanishing points measured — focal/yaw/horizon — solve only station; residual pattern read back as per-element mm); **a solved camera turns the target into a MEASURING INSTRUMENT** — back-project any probed pixel onto the face plane it lies on and read mm directly (`trn001_measure.py`), which found the 428mm shelf ladder, the five identical 513mm drawers and every depth without one proportion guess; **sweep a dimension against the landmark fit to tell a MEASUREMENT from an ASSUMPTION** — a real minimum means the image constrains it, a flat curve (plinth corner radius) means only a direct probe can; the rounded-mass SILHOUETTE trap recurred (a curved end's outline sits at y=-(d-r), not the face plane) and cost a wrong altar width until caught; foreign-object-in-scene class: spec-side projection checks can NEVER see an object the spec doesn't know (--factory-startup default cube corrupted 3 renders; ID-mask emission render = the catcher, now a standing rung); quarantine wired (look_bench.load_trained fail-loud) ; **ONE PARAMETER CARRYING TWO THINGS is the shape to hunt** — five rounds of light could not fix a cubby because `tower.d_mm` meant both 'how far the carcass stands proud' and 'how deep the cavity is', so proving the first read as proving the second (a note was CLOSED on it); the tell was a gating metric (p99/p1) that no amount of the lane's own knobs could move, and it moved 57.8→157.9 the moment the second dimension existed; **an instrument that cannot reproduce a value you already know must not be asked for one you don't** — two reads were disqualified here by their own controls (a horizontal-plane back-projection failing by 57-172mm, and a grazing side wall returning y=+323.7 for an arris that must be ~-100), which is cheaper than believing them; **plane≠surface paid for the 4th time** and is now the `first_hit` instrument rather than a memory — it reversed a conclusion from 'left tower fine, right dark' to 'both dark, consistently'; **coincident faces are not a style question** — the hero marble sat inside the wall body with front faces exactly flush and had been winning a BVH coin flip on every render since the recess landed ; **the cure you already wrote for one input is not applied to the next** — MAP_MEAN normalises the diffuse map so the map gives VARIATION and the table gives IDENTITY, and the roughness map two lines below was still linked raw, silently overriding a whole column of the table (found only because two roughness values gave byte-identical ladders: identical to three decimals is not a weak effect, it is NO effect); **one-parameter-carrying-two-things recurred twice in one day** — tower.d_mm (proud vs cavity) and NORMAL_STRENGTH keyed by map slug (a veneer forced to wear the floor's plank bevel), so hunt the SHAPE and not the instance; **a finding rejected on a broken measurement is not yet a finding** — the geometry fix invalidated the criterion that had killed the fill and the wide beam, so both went back on trial: the fill's refutation survived on an untouched metric and the beam's held too, and re-opening was still right; **a vault MISS is not a vault GAP until the search runs in the language the vault is written in** (an English grep for bookmatch/flitch found nothing in a file indexing them in Thai) |
+| TRN-002 | ACTIVE (drawn 2026-08-02) | ACTIVE | r34: the wardrobe re-derived on the plane it stands on — `closet_oak` had declared its front face at y=2330 for 34 rounds and the floor contact puts it at y=1130, wrong by ~1200 mm; one mass became six plus `led_strip` (this lane's first emissive mass, fitted to rms 0.124 px over 65 columns) and the partition mullion became the measured PAIR that hides the wardrobe's own left edge. Caps declared 2026-08-08 (42 / 55) — see qa/curriculum-caps.json | 34 | 44 | **a blind critic's reading of OUR OWN render entered the manifest as a fact about the target** (`mirror`, from C3#11 at r23 — deleted 2026-08-08 by reflection test); **an instrument's stated blind spot is a confession, not a guard** (`asset_scale` passed an 11.7 mm cutout because thickness is not scale, exactly as its docstring had predicted in advance); **a prose mention is not a call** (`reachability_check` counted any `foo.py` in any text as an invocation and produced its own false green the hour it was cited in a docstring — baseline 55 → 71 with the tree unchanged); **the ACQUIRE lane's blocker is the CONSUMER, not the source** (fetcher + scale assertion both exist; `trn002_build.py` has no glTF import path at all); **look at the image before trusting a chain of numbers** — a garment chart's "550" was reasoned into a 600 mm carcass, and one crop showed a shallow display niche instead (refit: ~200 mm, bound 100–350) |
 
 **Gate #2's open question — CLOSED 2026-07-31 by a third instrument.** The
 built-in is ~100 mm deep, not 360. A shelf board below the horizon shows its

@@ -1,24 +1,31 @@
-# Gate artifact — R2 standard hand-off (one per stop)
+# Gate artifact — R2 round RECORD (one per stop; it does not block)
 
 <!-- RULE (knowledge/brand-standards/iteration-control-and-review-gates.md R2,
-adopted 2026-07-28): every stop — scheduled gate or R1 stop-loss — hands the
-owner exactly this, nothing more. The lane BLOCKS until his verdict. Grounding:
-VFX dailies (~15 s per artist) + HITL context package (1,000-2,000 tokens,
-visual diff, reversibility, reject-with-edits). Fill ALL fields; "unsure" may
-never be empty — an empty unsure field is the round-2/3 failure shape (two
-"closed" declarations, four defects each). Spend (R6) is always reported.
+adopted 2026-07-28): every stop — scheduled gate or R1 stop-loss — writes
+exactly this, nothing more. Grounding: VFX dailies (~15 s per artist) + HITL
+context package (1,000-2,000 tokens, visual diff, reversibility,
+reject-with-edits). Fill ALL fields; "unsure" may never be empty — an empty
+unsure field is the round-2/3 failure shape (two "closed" declarations, four
+defects each). Spend (R6) is always reported.
+
+**"The lane BLOCKS until his verdict" IS REVOKED, 2026-08-08** (owner: *"เอาผม
+ออกจาก gate เลย ไม่ต้องรอผม"*). This file is a RECORD. Write it, then keep going.
+See CLAUDE.md R3 for what replaced the rung and what removing it costs.
 
 AMENDED 2026-08-07, from an outside structural audit of this repo. Three
 fields were added and one habit was removed, each for a measured reason:
 
   * VERDICT — `grep -l "VERDICT\|C4" training/TRN-002/gate-*.md` returned ONE
-    file out of ten. The owner's rung did not go missing; it was displaced by
-    the builder's own closing line drifting from "ถ้าไม่ค้านผมเดินตามนี้เลย"
-    (gate #9) to "คิวถัดไปที่ผมเห็น เรียงตามที่ผมจะเลือกเอง" (gate #14) to
-    "ที่เหลือข้างบนผมเลือกเองแล้ว" (gate #15) — against CLAUDE.md:50, "The lane
-    BLOCKS on an unanswered gate." A gate that proposes its own next round is
-    not a gate. The queue is now the owner's to order, and the builder's
-    ranking is advice with a heading that says so.
+    file out of ten. The 2026-08-07 reading was that the owner's rung had been
+    displaced by the builder's own closing line drifting from "ถ้าไม่ค้านผมเดิน
+    ตามนี้เลย" (gate #9) to "คิวถัดไปที่ผมเห็น เรียงตามที่ผมจะเลือกเอง" (gate #14)
+    to "ที่เหลือข้างบนผมเลือกเองแล้ว" (gate #15).
+    **SUPERSEDED 2026-08-08 — the drift was real and the diagnosis was wrong.**
+    The final count came to 2 verdicts in 21 gates, and the owner's explanation
+    was not that the builder had usurped him but that he **reads renders, not
+    documents**: the asks were landing in a channel he does not use. So the
+    field is gone rather than restored, and this template no longer proposes
+    that anyone wait. The builder's ranking is now simply the plan, recorded.
 
   * RANK — the charter's finish line (qa/reproduction-curriculum.md) has never
     been answered once in 46 rounds across two lanes, while five blind sheets
@@ -68,7 +75,30 @@ NOT ASKED และนับเป็นหนี้ ห้ามเว้นว
 
 **คิวที่ผมเสนอ (คำแนะนำ ไม่ใช่คำสั่ง):** <ranked, พร้อมเหตุผลต่อข้อ>
 
-**ขอ verdict:** ไปต่อ / แก้ตามนี้ / ฆ่าทิ้ง / ปิดเลน
-<!-- The round does not close and the next one does not open until this line is
-answered by the owner (R3). If the channel is down, write "OWNER UNREACHABLE
-<date>" here — never a builder default. -->
+**ตัดสินรอบนี้:** <the ids in `qa/open-decisions.json` this round ADDED or
+CHANGED, one line each: what is now true, and the one edit that undoes it.
+ไม่มีอะไรใหม่ → เขียนว่า "ไม่มี" — ห้ามเว้นว่าง>
+
+<!-- THIS FIELD ASKS NOTHING, AND THAT IS THE POINT, 2026-08-08.
+
+It has now been wrong twice in two directions, which is worth recording because
+the second wrong was a reaction to the first. Originally it read
+"ไปต่อ / แก้ตามนี้ / ฆ่าทิ้ง / ปิดเลน" — a menu naming no fork, pasted unchanged into
+nine gates, none of them answered. Counted across the lane: 21 gate artifacts,
+2 with a recorded owner verdict, 19 without, and not one of the 19 ever stopping
+the lane. The builder's fix was to make the ask BLOCKING. Owner, within the
+hour: "เอาผมออกจาก gate เลย ไม่ต้องรอผม สุดท้ายทุกขั้นตอนที่ render ออกมาผมก็นั่งดู
+ทุกรูปตลอดอยู่แล้ว".
+
+His reason is the part to keep: HE READS RENDERS, NOT DOCUMENTS. Nineteen
+unanswered gates were nineteen asks filed in a channel he does not use, and
+making that channel mandatory would have halted the lane over messages he was
+never going to see.
+
+So a gate artifact is a RECORD, not a request. It never blocks. The decisions
+live in `qa/open-decisions.json`, checked by `pipeline/scripts/decisions_check.py`
+from inside `rule_gate.check()`, which fails the render only on the BUILDER's
+side of the bargain: a row with no decider, a `where` naming a path that does
+not exist, a missing `reverse_by`, or an owner ruling relabelled as the
+builder's call. Every gate run prints the log into the render path — his
+channel — one line per decision, each naming its reversal. -->

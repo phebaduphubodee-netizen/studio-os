@@ -46,11 +46,43 @@ hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/
 - R1 STOP-LOSS: max 2 full build+render cycles per mechanism without a pass →
   forced stop + gate. Repeating the same fix-shape twice = halt signal.
   Stopping is always the CORRECT move (Andon law), never an admission.
-- R2 GATE: every stop hands the owner `templates/gate-artifact.md` (image pair +
-  3 lines + spend). The lane BLOCKS on an unanswered gate. Gate on decisions,
-  not keystrokes (no micro-iteration spam).
-- R3 DONE: only the owner closes a round. Reports end "พร้อมให้ตัดสิน", never
-  "เสร็จ" (builders catch 30-50% of their own defects).
+- R2 GATE: every stop writes `templates/gate-artifact.md` (image pair + 3 lines
+  + spend) as the ROUND'S RECORD. Gate on decisions, not keystrokes (no
+  micro-iteration spam). **"The lane BLOCKS on an unanswered gate" is REVOKED**
+  — see R3.
+- R3 DONE — **THE OWNER IS OUT OF THE GATE, owner order 2026-08-08:** *"เอาผม
+  ออกจาก gate เลย ไม่ต้องรอผม สุดท้ายทุกขั้นตอนที่ render ออกมาผมก็นั่งดูทุกรูป
+  ตลอดอยู่แล้ว"*. **The builder closes rounds. Nothing waits for his signature,
+  ever.** He overrules from the image, at any time, and an overruled decision is
+  then locked to him.
+  - **WHY, and it is not impatience.** The count that preceded the order: 21
+    gate artifacts across two lanes, **2** with a recorded owner verdict, **19**
+    without — and not one of the 19 ever stopped the lane, against R2's own
+    words. The first reading was that the closing phrase `พร้อมให้ตัดสิน` sat
+    where a question belongs, so the ask felt already made (retired for that
+    reason, and the phrase stays retired). **His sentence supplied the
+    load-bearing half: he reads RENDERS, not documents.** The nineteen were
+    nineteen asks filed in a channel he does not use. Enforcing that channel —
+    which is what the builder built an hour earlier — would have halted the lane
+    over messages he was never going to see. **A queue whose consumer never
+    visits it does not become correct by acquiring an enforcement clause.**
+  - **WHAT REPLACES THE RUNG:** `qa/open-decisions.json` +
+    `pipeline/scripts/decisions_check.py`, called from `rule_gate.check()`. It
+    blocks on NOTHING the owner owes. It fails the render when the BUILDER's
+    side slips: a row with no decider (`pending` is refused by name), a `where`
+    naming a path that does not exist (**a decision in force nowhere was never
+    taken** — R10's test applied to decisions), a missing `reverse_by`, or an
+    `owner_override` relabelled as the builder's call. Every gate run PRINTS
+    the log, one line per decision naming its reversal, **into the render path
+    — his channel** — so overruling costs him a sentence.
+  - **WHAT IT COSTS, so nobody rediscovers it:** R3 existed because builders
+    catch only 30-50% of their own defects. Removing the rung does not repeal
+    the statistic; it moves the load onto **C2 (fresh-context local) and C3
+    (Gemini), now the only independent rungs between a defect and a delivered
+    frame.** A round that skips them is no longer cutting a corner — it is
+    running with nothing.
+  - Reports end with what was DECIDED and how to undo it, never with a closing
+    phrase and never with a question the lane is waiting on.
 - R4 LOOK vs DELIVERED: judge crops beside the sellability anchor pool —
   `python pipeline/scripts/look_bench.py <render>` (LOCAL-ONLY sheet under
   `_private/`), not against our own previous frame.
