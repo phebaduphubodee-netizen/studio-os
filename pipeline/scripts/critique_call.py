@@ -25,6 +25,60 @@ MODELS = {"flash": "gemini-2.5-flash", "pro": "gemini-2.5-pro"}
 FORBIDDEN = re.compile(r"target\.(jpg|png)|anchor|_private[\\/]+discord|clients[\\/]", re.I)
 
 
+def png_size(path):
+    """(w, h) from the IHDR, or None. Stdlib — a 24-byte read, no decode."""
+    try:
+        head = path.read_bytes()[:24]
+    except OSError:
+        return None
+    if len(head) < 24 or head[:8] != b"\x89PNG\r\n\x1a\n" or head[12:16] != b"IHDR":
+        return None
+    return (int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big"))
+
+
+def declare_mode(render):
+    """Tell the judge whether it is looking at a playblast, DERIVED FROM PIXELS.
+
+    EARNED 2026-08-08, and it cost a whole C3 turn. r34's bundle went out as a
+    540x410 frame — R5's `--quick` rung, half res per axis and 64 samples — and
+    Gemini's number-one item, its "if you fix only one thing" item, was that the
+    image is blurry and looks unfinished. It was right, and about the playblast
+    rather than the work: measured at the size a viewer sees, the quick frame
+    carries 0.17x the high-frequency energy of this lane's full frames.
+
+    That is not a one-off. R7b fires C3 on EVERY render and R5 says the quick
+    frame comes first, so the standing procedure guaranteed a wasted top slot on
+    every playblast, forever. A judge cannot discount what it was not told.
+
+    Derived from the pixel counts on disk, never from the filename: this lane
+    has 137 PNGs without a `_quick` token of which only 44 are full frames, so
+    a name-based test would mislabel three frames in four. The comparison size
+    is the largest render sitting beside it, which is what "full" means here.
+    """
+    size = png_size(render)
+    if not size:
+        return ""
+    # Search the bundle dir AND its ancestors: the lane's frames live two levels
+    # up (renders/ -> critique/ -> the bundle). The first version globbed one
+    # level only, found no peers, and therefore declared a 540x410 playblast to
+    # be full-fidelity — this function's own failure mode, in its first run.
+    peers = [s for anc in [render.parent, *render.parents[:3]]
+             for s in (png_size(p) for p in anc.glob("*.png")) if s]
+    full = max(peers, key=lambda wh: wh[0] * wh[1]) if peers else size
+    if size[0] * size[1] >= full[0] * full[1]:
+        return (f"**MODE: full-fidelity frame, {size[0]}x{size[1]} px.** "
+                f"ตัดสินได้ทุกมิติรวมทั้งความคมและ noise\n\n")
+    return (
+        f"**MODE: PLAYBLAST — {size[0]}x{size[1]} px, ครึ่งความละเอียดต่อแกน "
+        f"64 samples. เฟรมส่งจริงของเลนนี้คือ {full[0]}x{full[1]} px.**\n"
+        f"ภาพนี้จงใจ render หยาบเพื่อดูโครงเร็ว ๆ **อย่าเสียข้อวิจารณ์ไปกับความคมชัด "
+        f"noise ความละเอียด หรือ 'ดูเหมือน render ไม่เสร็จ'** — ทั้งหมดนั้นเป็นผลของ "
+        f"โหมด ไม่ใช่ของงาน และเรารู้อยู่แล้ว\n"
+        f"สิ่งที่ playblast ตอบได้จริงและเราต้องการ: **วัตถุมีอะไรขาด/เกิน · สัดส่วนและ "
+        f"ขนาด · ตำแหน่งและการสัมผัสพื้น · องค์ประกอบภาพ · ทิศทางและความสมเหตุสมผล "
+        f"ของแสง · ของชิ้นไหนที่ไม่น่าจะสร้างได้จริง**\n\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("bundle", help="bundle dir name, e.g. critique-trn002_blockout_r2")
@@ -50,6 +104,7 @@ def main():
     m = FORBIDDEN.search(prompt)
     if m:
         sys.exit(f"PROMPT.md contains forbidden reference '{m.group(0)}' — refusing to send")
+    prompt = declare_mode(render) + prompt
 
     from dotenv import load_dotenv
     import os

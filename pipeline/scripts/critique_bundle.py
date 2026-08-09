@@ -46,6 +46,95 @@ class RefusedError(ValueError):
     """A bundle that would carry someone else's client work. Raised, never warned."""
 
 
+# --- R7c: the C2 rung's blindness is a property of the ASK -------------------
+# EARNED 2026-08-08 on the r35 bundle. C2 and C3 were fired IN PARALLEL into one
+# directory, so `ANSWER_gemini25pro.md` was sitting in the folder the C2 agent
+# had been pointed at while it was reading. The agent reported it never opened
+# the file and its items do not track C3's, so nothing is known to be
+# contaminated — and that is exactly the problem. R7c replaced the Cowork rung
+# with a bundle-scoped local agent BECAUSE a spawned subagent can be handed
+# anything, so blindness had to be enforced by what the ask CONTAINS. Compliance
+# restored the outcome; it did not restore the architecture.
+#
+# So the ask stops being "the bundle dir" and becomes a dir that provably holds
+# two files. Whatever else lands in the bundle afterwards — a second critic's
+# answer, a triage, a README — cannot be reached by an ask that names this dir,
+# because there is nothing else in it. The render is hard-linked where the
+# filesystem allows it, so the guarantee costs no bytes.
+C2_ASK = "c2-ask"
+C2_ASK_NOTE = """This directory IS the C2 ask (R7c). It holds the render and the
+standing cold-critic prompt, and nothing else, by construction — see
+`critique_bundle.assert_blind`. Point the fresh-context agent HERE, never at the
+bundle root: the bundle root also holds the other critics' answers, and a judge
+shown another judge's answer stops being a judge.
+"""
+
+
+def _link_or_copy(src, dst):
+    """Hard-link when the filesystem allows it; copy otherwise. Same bytes either
+    way — the point is that the ask dir holds a real render, not a pointer a
+    reader could follow back into the bundle."""
+    if os.path.exists(dst):
+        os.remove(dst)
+    try:
+        os.link(src, dst)
+    except (OSError, AttributeError, NotImplementedError):
+        shutil.copy2(src, dst)
+
+
+def c2_ask_dir(bundle_dir, render_name=None):
+    """Create/refresh <bundle>/c2-ask/ holding EXACTLY the render + PROMPT.md.
+
+    Refreshing DELETES anything else that has appeared in it. A dir that merely
+    started blind is the discipline story again; this one is blind every time it
+    is asked for."""
+    if render_name is None:
+        pngs = sorted(p for p in os.listdir(bundle_dir) if p.lower().endswith(".png"))
+        if len(pngs) != 1:
+            raise RefusedError(
+                f"{bundle_dir!r} holds {len(pngs)} PNGs — the C2 ask carries exactly "
+                f"one render, so name it explicitly rather than guessing")
+        render_name = pngs[0]
+    src = os.path.join(bundle_dir, render_name)
+    prompt = os.path.join(bundle_dir, "PROMPT.md")
+    for p in (src, prompt):
+        if not os.path.exists(p):
+            raise RefusedError(f"cannot build a blind C2 ask: {p!r} is missing")
+    ask = os.path.join(bundle_dir, C2_ASK)
+    os.makedirs(ask, exist_ok=True)
+    keep = {render_name, "PROMPT.md", "README.md"}
+    for name in os.listdir(ask):
+        if name not in keep:
+            p = os.path.join(ask, name)
+            shutil.rmtree(p) if os.path.isdir(p) else os.remove(p)
+    _link_or_copy(src, os.path.join(ask, render_name))
+    shutil.copy2(prompt, os.path.join(ask, "PROMPT.md"))
+    with open(os.path.join(ask, "README.md"), "w", encoding="utf-8") as fh:
+        fh.write(C2_ASK_NOTE)
+    assert_blind(ask)
+    return ask
+
+
+def assert_blind(ask_dir):
+    """Raise unless the ask dir holds one render, PROMPT.md and its own note.
+
+    An ANSWER file here is the failure this exists to make impossible, so it is
+    named in the message rather than lumped in with 'unexpected file'."""
+    if not os.path.isdir(ask_dir):
+        raise RefusedError(f"no C2 ask dir at {ask_dir!r}")
+    names = sorted(os.listdir(ask_dir))
+    pngs = [n for n in names if n.lower().endswith(".png")]
+    extra = [n for n in names if n not in set(pngs) | {"PROMPT.md", "README.md"}]
+    if len(pngs) != 1 or "PROMPT.md" not in names or extra:
+        answers = [n for n in extra if n.upper().startswith(("ANSWER", "TRIAGE"))]
+        raise RefusedError(
+            f"C2 ask dir {ask_dir!r} is not blind: {len(pngs)} render(s), "
+            f"PROMPT.md {'present' if 'PROMPT.md' in names else 'MISSING'}, "
+            f"extra {extra}." + (f" {answers} is another rung's work — R7c: a judge "
+                                 f"shown the answer stops being a judge." if answers else ""))
+    return ask_dir
+
+
 def check_sendable(path):
     """Our render may go out. The benchmark may not. Raises rather than filtering,
     because a bundle silently missing a file reads as a bundle that was built."""
@@ -104,6 +193,7 @@ def build(render, out_dir, note=""):
     with open(os.path.join(d, "README.md"), "w", encoding="utf-8") as fh:
         fh.write(README.format(render=os.path.basename(render),
                                note=("\n## หมายเหตุรอบนี้\n\n" + note) if note else ""))
+    c2_ask_dir(d, os.path.basename(render))
     return d
 
 
