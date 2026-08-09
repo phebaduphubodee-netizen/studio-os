@@ -2793,3 +2793,73 @@ measurement; I read that as "an acceptance need not" and accepted r26's C2#14
 joints land at u 810/873/949/1042 against the reference's 810/874/950/1043 — within
 1 px on all four — and the reference's own bays vary 231% of their mean. Accepting
 wrongly puts wrong work in the queue and nobody audits the queue.
+
+---
+
+## 2026-08-09 — TRN-002 r35 triage: a guard that checks whether an argument was PASSED is not checking whether it WORKS
+
+The round's assignment was a pure triage: 26 critic items (C2 21 + C3 5) owed a
+written accept-with-lane or a refutation carrying a measurement. Outcome:
+accepted 12, part-accepted 6, refuted by measurement 8, gate green
+(`training/TRN-002/gate-23-r35.md`). Three things are worth carrying past the
+round.
+
+**1. "Does it exist?" and "is it the right size?" are different questions, and
+R10 only ever asked the first.** Going to measure the blind critic's number-one
+item found `petcave` built 550 mm tall where the reference's own top edge
+back-projects to z = 296 ± 7 on the front plane we declared — four columns, a
+real horizontal arris, 80–96 px of silhouette that belongs to nothing, on the
+mass that owns most of the bottom third of the frame. Its provenance had read
+`A(x, z, and all three sizes still assumed — unchanged from r1)` for
+thirty-five rounds and passed every gate, because it is genuinely present in
+the reference, genuinely in the right place, and its mouth is genuinely
+measured. **An object-justification gate that asks "why is this here" will
+never ask "how big should it be".** Neither critic named it either: one said
+the mass had no identity, the other that its edges were too faceted — both
+describing its surface. The eye found WHERE to look; only the measurement could
+say WHAT was wrong there.
+
+**2. Blindness enforced by the judge's manners is not the rule that was
+written.** r35 fired C2 and C3 in parallel into one bundle dir, so C3's answer
+was on disk while the C2 agent read the folder it had been pointed at. The
+agent reported it never opened the file and its items do not track C3's — that
+is compliance, and R7c chose architecture on purpose when it retired the Cowork
+rung, precisely because a spawned subagent can be handed anything. Fixed by
+making the ask a directory that provably holds a render and PROMPT.md and
+nothing else (`critique_bundle.c2_ask_dir`, rebuilt rather than merely
+initialised on every call), with `rule_gate.audit_blind_ask` refusing a bundle
+whose C2 answer arrived without one, and the twelve pre-existing bundles seeded
+by name so the list can only grow through a readable diff. **Ordering the two
+calls would have been the same fix wearing discipline's clothes.**
+
+**3. The finding that only a wrap-time scrutinize could produce, and the class
+it belongs to.** Tracing whether the new rung would be mute on the render path
+(it is not) surfaced that a different half already was: `trn002_build.py` passed
+`os.path.join(BUNDLE_ROOT, "renders")` where `BUNDLE_ROOT` already ends in
+`renders/critique`, naming a directory that has never existed. `count_full_frames`
+returns 0 for it and **0 passes a cap of 55** — R1, the first rule the owner
+adopted. The fail-closed guard three lines above it tested `not render_dir`, the
+truthiness of a string; a non-empty string naming nothing sailed straight
+through the check written to prevent exactly this, under a comment calling it
+"a mute dressed as compliance, and the exact shape that left R7 silent for 27
+rounds". Measured both ways: the call-site path yields 0 full frames, the real
+one 44. The 44 that gate #22 reported came from the CLI, which resolves the
+directory itself — **the number we read and the number the gate enforced were
+never the same number.**
+
+> **The class, and it now has three members in this repo:** a checker that
+> validates the SHAPE of its input instead of its USABILITY. `craft_check` read
+> a `seg` field no spec has ever set; `reachability_check` counted a mention of
+> `<name>.py` as a call; this one counted "an argument was supplied" as "a
+> directory was read". All three print confident output. **A guard that cannot
+> distinguish 'ran and passed' from 'could not run' is decoration with
+> decimals** — so every fail-closed test must assert on the RESOURCE
+> (`os.path.isdir`, a parsed value, a real call edge), never on the argument.
+
+Not shipped, deliberately: a `seen`-window-vs-projection checker. It found the
+`petcave` defect, and it also produced 67 disagreements of which the first ones
+I checked were false — a `seen` line records the visible near arris while an
+AABB bbox is the whole box including occluded and off-frame corners, so the two
+are not the same quantity. R9b already governs this: scope comes from the rule's
+own premise, never from choosing what silences false positives. It is named work
+for r36, not a bonus commit.
