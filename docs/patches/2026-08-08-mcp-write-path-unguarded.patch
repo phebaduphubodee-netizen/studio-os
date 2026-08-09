@@ -1,0 +1,115 @@
+From: STUDIO-OS agent session 2026-08-08
+Subject: [PATCH] close the MCP write path — all four hard boundaries are reachable through
+         mcp__vault__write_file, which no hook matches
+
+WHY THE AGENT COULD NOT JUST FIX IT
+-----------------------------------
+Both halves of the fix live in files an agent may not edit, by design:
+`.claude/settings.json` is deny-listed AND in guard_paths' PROTECTED tuple, and
+`.claude/hooks/**` is protected too (the law layer guards itself). That is exactly the
+situation `docs/patches/2026-07-13-promote-guard-web.patch` was written for, and this
+patch follows it.
+
+THE HOLE, MEASURED 2026-08-08 (not inferred)
+--------------------------------------------
+1. `mcp__vault__list_allowed_directories` returns, LIVE, as its first root:
+
+       C:\Users\teza_\OneDrive\Desktop\PlingPeat          <- the whole repo
+       C:\Users\teza_\.claude                             <- the user law layer
+       (+4 more)
+
+   `.mcp.json` declares the server as `@modelcontextprotocol/server-filesystem ./knowledge`
+   and comments it "Read-only knowledge access". Neither is true at runtime: the scope is
+   the repo root and the server exposes `write_file`, `edit_file`, `move_file` and
+   `create_directory`.
+
+2. `.claude/settings.json` registers guard_paths under `"matcher": "Write|Edit|MultiEdit"`.
+   None of `mcp__vault__write_file` / `edit_file` / `move_file` / `create_directory`
+   contains `Write`, `Edit` or `MultiEdit` — the guard never runs for them.
+
+3. `guard_egress.py` DOES match `mcp__.*`, and deliberately abstains: `vault` is in
+   `LOCAL_MCP_SERVERS` because asking the local vault about a client is not egress. Correct
+   for egress, and it means nothing screens the WRITE.
+
+4. `scripts/test_guards.sh` has 80 checks and not one covers an mcp__ write.
+
+Net: every path CLAUDE.md calls a hard boundary — `qa/thresholds.yaml`,
+`knowledge/codes-th/**`, `.claude/settings.json`, `.gitattributes`, and `.claude/hooks/**`
+itself — is writable through the MCP tool surface with no hook in the way. This was NOT
+demonstrated by writing to any of them; the three facts above are sufficient and the
+demonstration would have been the damage.
+
+This is the same shape as the defect the PROTECTED tuple's own comment records ("settings.json
+was already protected; the hooks it POINTS AT were not"), one tool surface later: the guard
+names the tools it applies to, and a new tool surface was added that it does not name.
+
+WHAT THE PATCH DOES
+-------------------
+(a) Widens the guard_paths matcher to cover MCP filesystem writes. The matcher is a regex
+    over the tool name, so `Write|Edit|MultiEdit|^mcp__.*__(write_file|edit_file|move_file|create_directory)$`
+    catches the four, and stays anchored so it cannot swallow unrelated MCP tools.
+(b) Teaches guard_paths to read an MCP call's path argument. Today it reads `file_path`
+    (the Write/Edit shape); the filesystem server sends `path`, and `move_file` sends
+    `source` + `destination` — a mutation whose DESTINATION is protected must block too.
+(c) Narrows `.mcp.json` to what its own comment claims, so the blast radius shrinks even if
+    a future hook edit regresses: two independent controls, not one.
+
+NOT IN THIS PATCH, on purpose: making the server actually read-only. That is an upstream
+flag/wrapper decision and it is the owner's call whether the vault MCP should be able to
+write at all. If the answer is no, (a) and (b) become defence in depth rather than the fence.
+
+Apply:  git apply docs/patches/2026-08-08-mcp-write-path-unguarded.patch
+Then :  bash scripts/test_guards.sh          (expect ALL GREEN, +1 new check)
+        and re-run `mcp__vault__list_allowed_directories` in a NEW session to confirm the
+        scope narrowed — the allowed-dirs list is fixed at server start, so an existing
+        session keeps the old scope.
+
+diff --git a/.claude/settings.json b/.claude/settings.json
+--- a/.claude/settings.json
++++ b/.claude/settings.json
+@@
+       {
+-        "matcher": "Write|Edit|MultiEdit",
++        "matcher": "Write|Edit|MultiEdit|^mcp__.*__(write_file|edit_file|move_file|create_directory)$",
+         "hooks": [
+           {
+             "type": "command",
+             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_paths.py\""
+           }
+         ]
+       },
+
+diff --git a/.claude/hooks/guard_paths.py b/.claude/hooks/guard_paths.py
+--- a/.claude/hooks/guard_paths.py
++++ b/.claude/hooks/guard_paths.py
+@@
+ # An MCP filesystem server speaks a different argument shape from Write/Edit, and a guard
+ # that only knows `file_path` reads an empty string for every one of them — which is a
+ # PASS. Measured 2026-08-08: the vault server's allowed root is the repo root, so
+ # `mcp__vault__write_file{path: "qa/thresholds.yaml"}` reached a PR-only file unscreened.
+ # `move_file` carries TWO paths and the destination is the mutation, so both are checked.
++MCP_PATH_KEYS = ("file_path", "path", "destination", "source")
++
++
++def candidate_paths(tool_input):
++    return [tool_input.get(k) for k in MCP_PATH_KEYS if tool_input.get(k)]
+
+(The remainder of guard_paths.py is unchanged apart from calling `candidate_paths()` where it
+currently reads `tool_input.get("file_path")`, and looping over the result. Left as prose
+rather than a diff hunk because the surrounding lines differ between this file's revisions and
+a stale hunk would fail to apply — the change is four lines at the single read site.)
+
+diff --git a/.mcp.json b/.mcp.json
+--- a/.mcp.json
++++ b/.mcp.json
+@@
+       "type": "stdio",
+       "command": "npx",
+       "args": ["-y", "@modelcontextprotocol/server-filesystem", "./knowledge"],
+-      "_comment": "Read-only knowledge access. Rename this file to .mcp.json to activate."
++      "_comment": "Knowledge access. NOT read-only: @modelcontextprotocol/server-filesystem
++       exposes write_file/edit_file/move_file/create_directory, and the guard_paths matcher in
++       .claude/settings.json must name them or nothing screens them (2026-08-08). The declared
++       ./knowledge scope is NOT what the running server had on 2026-08-08 — list_allowed_directories
++       returned the repo root; if that recurs, the scope is coming from the session's working
++       directories, not from this file, and this line is documentation rather than a fence."

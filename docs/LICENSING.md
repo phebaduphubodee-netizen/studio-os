@@ -35,12 +35,40 @@ any public repo (`furniture_catalog.json` is gitignored; `raw/assets/*.skp` is g
 | **Häfele own portal** | ❌ until verified | EULA un-retrieved; "free of charge" ≠ a redistribution grant. Read it before relying. |
 | **XSurface** | n/a (materials) | Thai MATERIAL library (laminates/tiles/panels) — a finish/spec tool, **never** a geometry source. |
 | **HomePro** | facts only | Retail catalog; ToS forbids reuse of their images/spec text. The **dimensions** (uncopyrightable facts) are usable → re-model from measurements; never lift their images. |
+| **Poly Haven** | ✅ | CC0 — commercial use, redistribution and AI/ML all explicitly permitted on their own licence page. Already fetched by `pipeline/scripts/assets.py`; committable. |
+| **ambientCG** | ✅ (not yet used) | CC0 — "may be used for commercial purposes, even if that means redistributing them as files". No fetcher yet, **and deliberately not written yet** — see the note under Automation. |
+| **Poliigon** | ❌ **DECLINED 2026-08-08** | Not a legal finding — a **decision**, and the reason is below the table so it cannot be skimmed past. |
+| **BlenderKit** | ⚠️ CC0 tier only | Two licences: CC0 (free) and Royalty-Free (commercial OK, no resale as an asset). Only the CC0 tier may be committed; RF must be gitignored like 3D Warehouse. **Their docs are silent on AI/ML — treat that as unanswered, not as permitted.** |
+| **Sketchfab / Fab** | ⚠️ per-model | CC0 / CC-BY / CC-BY-NC / CC-BY-ND all coexist; **CC-BY-NC is unusable for client work**. Fab (Epic, incl. Quixel Megascans) forbids redistribution at every tier and its terms are still changing; Quixel's own licence page returned 403 on 2026-08-05, so the post-2024 "free" status is **unverified**. Read the individual model's licence, every time. |
+
+### Poliigon — DECLINED, and why a decision rather than a reading
+**Owner order 2026-08-08.** Poliigon's terms forbid AI/ML use without a separate licence.
+Our intent is a perceptual *metric*, not model training — but `pipeline/scripts/style_embed.py`
+is real, runs CLIP (open_clip, local CPU) over our renders, and **builds embedding banks**; a
+Poliigon texture would sit inside the images that get embedded. The interpretation risk is
+therefore not zero, and the community has reported terms being tightened without notice
+(no-cloud-render, no-bake-to-UV, no-embed-in-a-sold-model).
+
+**What decides it is the price of saying no, and the price is about zero:** ambientCG is CC0,
+carries the same `Fabric0xx` / `Carpet0xx` sets *with displacement*, may be committed, and we
+have never once used Poliigon. **We would be buying permanent uncertainty for something the
+public domain already gives us.** Revisit only if a specific material exists there and nowhere
+CC0 — and then buy the separate licence rather than reasoning about intent.
 
 ## Automation
 **Manual-download workflow by design.** Scripted/bulk fetch is independently ToS-banned on 3D
 Warehouse, BIMobject, CADENAS (account ban + legal risk) — even where the model license is
 permissive. **Exception: FurniMesh** may be fetched directly. At ~12 mapped kinds, hand-curation
 is fine.
+
+### No second fetcher before there is a consumer (2026-08-08)
+An `ambientcg.py` is worth writing and is **deliberately not written yet**. TRN-002 r34 ran this
+studio's first real acquisition and it failed in a place nobody had looked: sourcing worked on
+the first try, the licence was clean, `pipeline/scripts/asset_scale.py` asserted the unit — and
+then **`trn002_build.py` turned out to have no glTF import path at all.** `build_room.py` has the
+ingest; that builder never got one. **That, not licences and not "no CC0 wardrobe exists", is why
+26 assets sit unused in `assets/shared/`.** Writing a second fetcher before the ingest path exists
+would be the same mistake with a new logo. Order: **ingest path → then the fetcher.**
 
 ## Dimensional correctness
 Warehouse models are user-uploaded with **no accuracy/scale guarantee**. `build_room.rb`
