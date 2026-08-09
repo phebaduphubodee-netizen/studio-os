@@ -80,6 +80,40 @@ PROVENANCE_PATTERNS = [
     re.compile(r"^knowledge/_inbox/.*qa-history\.json$"),               # NLM turn transcripts
     re.compile(r"^knowledge/_inbox/nlm-design-systems/sources-manifest\.md$"),
 ]
+# ...AND THE NAME IS NOT ENOUGH. The qa-history pattern grants provenance by FILENAME, so
+# any file can claim the class by being called `qa-history.json` — the same tag-your-way-out
+# this allowlist doctrine exists to forbid, one level down, because the allowlist is
+# checking the LABEL rather than the thing. The pattern must be TRUE as well as matched.
+#
+# What makes a file provenance here is not a schema, it is ATTRIBUTION: it says which
+# notebook was asked and what came back, so a reader can go and check. TWO shapes carry
+# that, and both are real in this tree (checked over all 20 matching files, 2026-08-08):
+#   qa_pairs[{turn,question,answer}]       the transcript form CLAUDE.md documents  (19)
+#   asks[{notebook_id, answer_file, ...}]  the multi-ask index the 2026-08-08 corpus
+#                                          run wrote, one row per ask               (1)
+# The first draft of this check demanded `qa_pairs` alone and duly flagged
+# nlm-2026-08-08-corpus-asks/qa-history.json as a fake. OPENING IT REFUTED THAT: it carries
+# notebook_id, notebook_title, answer_file and a headline per ask — more attribution than a
+# bare transcript, not less. A guard that recognises only the shape it was written against
+# is the same defect as a classifier that knew `nlm-design-systems` and not `nlm-*`, which
+# this very file paid for once already, forty lines below.
+QA_HISTORY_PATTERN = PROVENANCE_PATTERNS[1]
+
+
+def _carries_attribution(path_rel):
+    """True when the file says WHICH notebook was asked and WHAT came back."""
+    try:
+        with open(os.path.join(ROOT, path_rel), encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        return False
+    if not isinstance(d, dict):
+        return False
+    if isinstance(d.get("qa_pairs"), list) and d["qa_pairs"]:
+        return True
+    asks = d.get("asks")
+    return (isinstance(asks, list) and bool(asks)
+            and any(isinstance(x, dict) and x.get("notebook_id") for x in asks))
 # RAISED 9 -> 16 on 2026-08-01, deliberately, which is the only way this number may move.
 # The freeze was "3 codes-th PDFs + 5 qa-history.json + 1 sources-manifest". Seven more
 # qa-history.json have landed since, and each is a real NLM/DR turn transcript staged by
@@ -91,7 +125,21 @@ PROVENANCE_PATTERNS = [
 # Three of those seven are ALSO reported as PROVENANCE-ORPHAN, and that is the honest
 # outcome, not a contradiction: being a genuine primary source and being uncited are
 # different facts, and this constant answers only the first.
-EXPECTED_PROVENANCE = 16
+#
+# RAISED 16 -> 20 on 2026-08-08, by the same deliberate route. Four qa-history.json landed
+# with the 2026-08-08 research run and each was OPENED before being counted: three are
+# single-turn transcripts carrying notebook_id + conversation_id (nlm-bedding-mass,
+# nlm-craft-cg-tells, nlm-palette-anchors) and the fourth is the corpus-asks INDEX, two
+# asks each naming their notebook and answer file. All four are real attribution; none is
+# debt wearing a provenance tag. `_carries_attribution` now enforces that by reading the
+# file rather than trusting its name — the constant catches ARRIVALS, the content check
+# catches IMPOSTORS, and neither one substitutes for the other.
+#
+# DO NOT derive this number from disk. Deriving it makes it agree with whatever is there,
+# which is the one thing it must never do: the whole value of the constant is that a new
+# provenance file cannot land without a human opening it. (Proposed 2026-08-08 by an audit
+# that read the drift as "the constant is stale". The constant was doing its job.)
+EXPECTED_PROVENANCE = 20
 
 # INFRA is pinned by FULL PATH (review 2026-07-13: a basename match let any stash hide a
 # staged file by naming it `nlm-queue.md` / `_index.md`). Only .gitkeep stays name-matched —
@@ -155,6 +203,9 @@ def classify(path_rel):
 
     for pat in PROVENANCE_PATTERNS:
         if pat.match(path_rel):
+            # The one pattern that grants the class by NAME has to prove it too.
+            if pat is QA_HISTORY_PATTERN and not _carries_attribution(path_rel):
+                break
             return "PROVENANCE-KEEP"
     if path_rel in INFRA_PATHS or name == ".gitkeep":
         return "INFRA"
@@ -182,7 +233,18 @@ def classify(path_rel):
     # integrity failures were this one missing generalisation. A classifier that recognises
     # one instance of a pattern and not the pattern is the same defect as a rule written for
     # one input and never applied to the next.
-    if re.match(r"^knowledge/_inbox/nlm-[^/]+/[^/]+\.md$", path_rel):
+    #
+    # ...AND THAT GENERALISATION DID NOT GO FAR ENOUGH, in exactly the way its own last
+    # sentence predicts. It replaced `nlm-design-systems` with `nlm-*` and stopped there, so
+    # every staged topic dir whose name does not begin `nlm-` was still unrecognised. Four
+    # files were sitting in UNCLASSIFIED on 2026-08-08 for that reason alone —
+    # `trn002-reference-study/` (three, one of them the 757-line, 45 KB record of what
+    # thirteen rounds of this lane's own instruments taught) and `trn002-r33-surface-texture/`
+    # — none of them staged by the NLM lane, all of them knowledge units by every other test.
+    # The pattern was never "nlm"; it is "a markdown answer one level down inside _inbox".
+    # Discord, id-project-corpus and interior-ai are matched ABOVE this line and keep their
+    # own shapes, so widening here cannot reach them.
+    if re.match(r"^knowledge/_inbox/[^/]+/[^/]+\.md$", path_rel):
         return "UNIT-ANCHOR"
     # loose staged answers at the _inbox root
     if re.match(r"^knowledge/_inbox/[^/]+\.md$", path_rel):
@@ -228,7 +290,7 @@ def scan():
 
 
 # ---------------------------------------------------------------- git ages ---------------
-def git_add_dates():
+def git_add_dates(path_rel=INBOX_REL):
     """Age is measured from the GIT FIRST-ADD date, never from mtime (see the docstring:
     mtime made the old instrument report a 2019-stamped vendor .IES as 6.8-year-old debt)."""
     try:
@@ -240,7 +302,7 @@ def git_add_dates():
         # merely RESETS the age (a new add-record) — a measurable value beats a lost one.
         out = subprocess.run(
             ["git", "-c", "core.quotepath=false", "log", "--diff-filter=A",
-             "--format=C|%at", "--name-only", "--", INBOX_REL],
+             "--format=C|%at", "--name-only", "--", path_rel],
             cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=60,
         ).stdout
@@ -318,6 +380,81 @@ def promoted_files():
     return out
 
 
+# ---------------------------------------------------------------- research debt ----------
+# docs/research/ is 1.15 MB of DR output that sits OUTSIDE this audit's reach and outside
+# the DISTILLATION-LEDGER, whose header scopes it to knowledge/_inbox -> knowledge/ only.
+# So the one lane whose whole purpose is to answer questions has never had a way to tell a
+# DR that changed something from a DR nobody read. Measured 2026-08-08: 39 of 61 research
+# units repo-wide are write-only, and the cleanest case is a 5.5 KB DR PLAN from 2026-07-10
+# whose only mention anywhere is the write log that recorded its own creation.
+#
+# A DR is the `--quick` rung of research (CLAUDE.md). This closes the other end: a DR is
+# DONE when it is distilled or consciously dropped, and until then it is debt with an age.
+RESEARCH_REL = "docs/research"
+
+# One top-level entry = one research unit: a file, or a run directory. Per-FILE would make
+# the 2026-08-08 run alone 63 units and drown the table; the round is what was asked and the
+# round is what gets distilled.
+RESEARCH_CITER_DIRS = ["knowledge", "docs", "pipeline", "training", "qa", "projects"]
+
+
+def research_units():
+    """[(unit_rel, n_files, n_bytes)] — one per top-level entry under docs/research."""
+    base = os.path.join(ROOT, RESEARCH_REL)
+    if not os.path.isdir(base):
+        return []
+    out = []
+    for name in sorted(os.listdir(base)):
+        p = os.path.join(base, name)
+        if os.path.isdir(p):
+            n, b = 0, 0
+            for dp, dns, fs in os.walk(p):
+                dns[:] = [d for d in dns if d != "__pycache__"]
+                for f in fs:
+                    n += 1
+                    try:
+                        b += os.path.getsize(os.path.join(dp, f))
+                    except OSError:
+                        pass
+            out.append((rel(p), n, b))
+        elif os.path.isfile(p):
+            try:
+                out.append((rel(p), 1, os.path.getsize(p)))
+            except OSError:
+                out.append((rel(p), 1, 0))
+    return out
+
+
+def research_citers(units):
+    """unit_rel -> [citing files OUTSIDE that unit].
+
+    Self-citation proves nothing — a DR run dir is full of files naming each other, and a
+    round that only its own README mentions is exactly the write-only case being counted.
+    Matched on the unit path AND on the bare basename, because prose cites both ways.
+    """
+    names = {u: (u, os.path.basename(u), os.path.splitext(os.path.basename(u))[0])
+             for u, _, _ in units}
+    hits = {u: [] for u, _, _ in units}
+    for base in RESEARCH_CITER_DIRS:
+        for dp, dns, fs in os.walk(os.path.join(ROOT, base)):
+            dns[:] = [d for d in dns if d not in ("__pycache__", ".git", "renders")]
+            for f in fs:
+                if not f.endswith((".md", ".py", ".json", ".sh")):
+                    continue
+                fr = rel(os.path.join(dp, f))
+                try:
+                    txt = open(os.path.join(ROOT, fr), encoding="utf-8",
+                               errors="replace").read()
+                except OSError:
+                    continue
+                for u, (full, bn, stem) in names.items():
+                    if fr == u or fr.startswith(u + "/"):
+                        continue  # inside the unit: not a citer
+                    if full in txt or bn in txt or (len(stem) > 12 and stem in txt):
+                        hits[u].append(fr)
+    return hits
+
+
 def backlink_map(files):
     """staged-path -> [citing files]. Backtick-quoted paths are matched greedily inside the
     backticks: staged filenames contain SPACES ('Interior Design Knowledge Structuring.pdf')
@@ -393,12 +530,25 @@ def _read(p):
         return None
 
 
-def provenance_is_anchored(f, blinks):
+def provenance_is_anchored(f, blinks, declared=frozenset()):
     """A provenance file earns its keep by being the citation anchor for something. A raw NLM
     turn transcript (`X-qa-history.json`) anchors the ANSWER it was produced with (`X.md`) —
     promoted files cite the answer, not the transcript. Counting the transcript as an orphan
     because nobody links the JSON directly would be the checker being pedantic instead of
-    right. So: a qa-history is anchored iff its sibling answer is cited."""
+    right. So: a qa-history is anchored iff its sibling answer is cited.
+
+    ...OR iff that answer carries a LEDGER ROW. Added 2026-08-08, and it is a correction to
+    what this check was CLASSIFYING, not a relaxation of it. Everything in `fails` means "the
+    bookkeeping is LYING" and fails the suite; debt is advisory and exits 2. This file's own
+    doctrine, forty lines up, is that OWED and UNTOUCHED must never read the same — "somebody
+    looked, found real value, and nobody has promoted it yet" versus "nobody has even looked".
+    An orphan test that ignores the ledger collapses exactly that distinction: two NLM answers
+    pulled 2026-08-08 are OWED with written rationales (both self-quarantine a column that
+    traces only to the DR's own synthesis) and were being reported as integrity lies.
+    A ledger row is a human decision that shows up in a diff — the same standard every other
+    debt-exit in this file is held to. No row anywhere still fails, which is the case the
+    check was written for.
+    """
     if blinks.get(f):
         return True
     if f.endswith("qa-history.json"):
@@ -408,6 +558,16 @@ def provenance_is_anchored(f, blinks):
         # nlm-design-systems/qa-history.json anchors every answer in its own dir
         d = os.path.dirname(f) + "/"
         if any(p.startswith(d) and p != f and cs for p, cs in blinks.items()):
+            return True
+        # SIBLING-DIR ONLY, and never from the _inbox ROOT. For a root-level
+        # `X-qa-history.json`, dirname is `knowledge/_inbox/`, which prefixes EVERY unit in
+        # the repo — so this branch was unconditionally true for 7 of the 20 provenance
+        # files and any unit anywhere laundered them. A root-level transcript is anchored
+        # by ITS OWN answer (matched above via the `-qa-history.json` -> `.md` sibling) or
+        # by that answer's ledger row, never by a directory prefix.
+        if d.rstrip("/") != INBOX_REL and any(p.startswith(d) and p != f for p in declared):
+            return True
+        if sib in declared:
             return True
     return False
 
@@ -613,8 +773,14 @@ def main(argv=None):
         fails.append(("PROVENANCE-DRIFT", f"{len(prov)} files",
                       f"expected {EXPECTED_PROVENANCE}; provenance is a hard-coded allowlist — "
                       f"if this is a real new primary source, edit PROVENANCE_PATTERNS deliberately"))
+    # LEDGERED units only — NOT `set(banded)`. banded carries EVERY unit anchor on disk,
+    # including ones it just banded UNTOUCHED, so passing it made "has a ledger row" mean
+    # "has any sibling .md at all" and the discharge became universal. Caught by an
+    # adversarial pass within the hour, and it is the exact defect this repo names most
+    # often: the check was reading a variable that looked like the thing it meant.
+    ledgered = {r["unit"] for r in rows if not r.get("malformed") and r.get("unit")}
     for f in prov:
-        if not provenance_is_anchored(f, blinks):
+        if not provenance_is_anchored(f, blinks, declared=ledgered):
             fails.append(("PROVENANCE-ORPHAN", f, "nothing cites it, and nothing cites the answer it "
                                                   "anchors — an anchor nobody drops is not an anchor"))
     for u in unclassified:
@@ -633,11 +799,31 @@ def main(argv=None):
     for u in units:
         bands.setdefault(banded.get(u, "UNTOUCHED"), []).append(u)
 
+    # docs/research: the OTHER end of the same lane. A DR that changed nothing and a DR
+    # nobody has got to yet look identical until somebody counts them.
+    runits = research_units()
+    rdates = git_add_dates(RESEARCH_REL)
+    rciters = research_citers(runits) if runits else {}
+    research = []
+    for u, nf, nb in runits:
+        cited = rciters.get(u) or []
+        ad = age_days(u, rdates, now)
+        if ad is None and nf > 1:
+            # a run DIR has no add-record of its own; take the oldest file inside it
+            inner = [v for k, v in rdates.items() if k.startswith(u + "/")]
+            if inner:
+                ad = (now - datetime.datetime.fromtimestamp(min(inner))).days
+        research.append({"unit": u, "files": nf, "bytes": nb,
+                         "citers": len(cited), "age_days": ad,
+                         "band": "CITED" if cited else "WRITE-ONLY"})
+    aging_research = [r for r in research
+                      if r["band"] == "WRITE-ONLY" and (r["age_days"] or 0) >= AGING_DAYS]
+
     # the aging advisory is part of the exit-code contract in BOTH output modes —
     # a scripted consumer must see the same 0/1/2 a human does
     aging = [u for u in bands.get("UNTOUCHED", [])
              if (age_days(units[u], dates, now) or 0) >= AGING_DAYS]
-    exit_code = 1 if fails else (2 if aging else 0)
+    exit_code = 1 if fails else (2 if (aging or aging_research) else 0)
 
     if a.json:
         print(json.dumps({
@@ -648,6 +834,8 @@ def main(argv=None):
             "classes": {k: len(v) for k, v in sorted(classes.items())},
             "failures": [{"kind": k, "where": w, "detail": d} for k, w, d in fails],
             "aging_untouched": sorted(aging),
+            "research": research,
+            "aging_research": [r["unit"] for r in aging_research],
             "exit_code": exit_code,
         }, ensure_ascii=False, indent=1))
         return exit_code
@@ -705,11 +893,33 @@ def main(argv=None):
         print(f"  knowledge/{d}: {inbound} inbound")
     print("  (codes-th is NOT a destination: Authority tier, PR-only, primary legal sources only)")
 
+    if research:
+        wo = [r for r in research if r["band"] == "WRITE-ONLY"]
+        tot = sum(r["bytes"] for r in research)
+        print(f"\n=== docs/research debt (the OTHER end of the lane — a DR is done when it "
+              f"is distilled or consciously dropped) ===")
+        print(f"  {len(research)} research units | {len(wo)} WRITE-ONLY | "
+              f"{tot / 1e6:.2f} MB total | citers counted OUTSIDE the unit itself")
+        for r in sorted(research, key=lambda r: (r["band"] == "CITED",
+                                                 -(r["age_days"] or 0))):
+            ads = "UNCOMMITTED" if r["age_days"] is None else f"{r['age_days']}d"
+            mark = "  " if r["band"] == "CITED" else "!!"
+            print(f"  {mark} {ads:>11}  {r['band']:<10} {r['citers']:>3} citer(s)  "
+                  f"{r['files']:>3} file(s)  {r['unit'].replace(RESEARCH_REL + '/', '')}")
+        print("  a WRITE-ONLY unit is not a bad DR — it is an UNSPENT one. Distil it into")
+        print("  knowledge/, cite it from the work it was asked for, or drop it in the ledger.")
+
     print("\n  staging is not knowledge: distill or consciously drop — don't let it ride.")
     if fails:
         print(f"  {len(fails)} integrity failure(s) — the bookkeeping is lying somewhere. exit 1")
-    elif aging:
-        print(f"  {len(aging)} unit(s) past {AGING_DAYS}d untouched — advisory. exit 2")
+    elif aging or aging_research:
+        parts = []
+        if aging:
+            parts.append(f"{len(aging)} staged unit(s) past {AGING_DAYS}d untouched")
+        if aging_research:
+            parts.append(f"{len(aging_research)} research unit(s) past {AGING_DAYS}d "
+                         f"write-only")
+        print(f"  {' and '.join(parts)} — advisory. exit 2")
     return exit_code
 
 

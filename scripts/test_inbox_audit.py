@@ -516,3 +516,79 @@ def test_json_mode_is_machine_readable_and_exit_parity_holds():
     t = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "inbox_audit.py")],
                        capture_output=True, cwd=ROOT)
     assert t.returncode == r.returncode, "text and json modes disagree on the exit code"
+
+
+# --- provenance: proven by content, and DEBT is not a LIE ---------------------
+
+def test_a_qa_history_must_carry_attribution_not_just_the_name(tmp_path):
+    good = tmp_path / "qa-history.json"
+    good.write_text(json.dumps({"qa_pairs": [{"turn": 1, "question": "q", "answer": "a"}]}),
+                    encoding="utf-8")
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({"fired": "2026-08-08", "asks": []}), encoding="utf-8")
+    rel_good = os.path.relpath(str(good), A.ROOT).replace("\\", "/")
+    rel_bad = os.path.relpath(str(bad), A.ROOT).replace("\\", "/")
+    assert A._carries_attribution(rel_good)
+    assert not A._carries_attribution(rel_bad)
+
+
+def test_the_multi_ask_index_shape_is_attribution_too(tmp_path):
+    # Opening the file refuted the first draft of this check, which demanded qa_pairs.
+    p = tmp_path / "qa-history.json"
+    p.write_text(json.dumps({"fired": "2026-08-08", "asks": [
+        {"notebook_id": "79476082", "answer_file": "NLM_lighting_ask.md"}]}),
+        encoding="utf-8")
+    assert A._carries_attribution(os.path.relpath(str(p), A.ROOT).replace("\\", "/"))
+
+
+def test_an_uncited_anchor_with_NO_ledger_row_is_still_a_failure():
+    f = "knowledge/_inbox/nlm-example/qa-history.json"
+    assert not A.provenance_is_anchored(f, {}, declared=frozenset())
+
+
+def test_an_uncited_anchor_whose_answer_is_LEDGERED_is_debt_not_a_lie():
+    # OWED = somebody looked, found value, and has not promoted it yet. Collapsing that
+    # into UNTOUCHED is the distinction this file forbids everywhere else.
+    f = "knowledge/_inbox/nlm-example/qa-history.json"
+    declared = {"knowledge/_inbox/nlm-example/2026-08-08-example.md"}
+    assert A.provenance_is_anchored(f, {}, declared=declared)
+
+
+def test_a_ledger_row_on_a_DIFFERENT_unit_does_not_launder_this_anchor():
+    f = "knowledge/_inbox/nlm-example/qa-history.json"
+    declared = {"knowledge/_inbox/nlm-other/2026-08-08-other.md"}
+    assert not A.provenance_is_anchored(f, {}, declared=declared)
+
+
+# --- docs/research: the other end of the lane --------------------------------
+
+def test_research_units_are_rounds_not_files():
+    units = A.research_units()
+    names = {u for u, _, _ in units}
+    assert "docs/research/2026-08-08-upgrade-dr" in names, "a run dir is ONE unit"
+    assert not any(u.startswith("docs/research/2026-08-08-upgrade-dr/") for u in names)
+
+
+def test_a_units_own_files_do_not_count_as_citers():
+    units = A.research_units()
+    hits = A.research_citers(units)
+    for u, citers in hits.items():
+        assert not any(c == u or c.startswith(u + "/") for c in citers), u
+
+
+def test_a_ROOT_level_transcript_is_not_laundered_by_an_unrelated_unit():
+    # The hole an adversarial pass found the hour the feature landed: for a root-level
+    # X-qa-history.json, dirname is `knowledge/_inbox/`, which prefixes EVERY unit — so the
+    # ledger branch was unconditionally true for 7 of the 20 provenance files.
+    f = "knowledge/_inbox/orphan-2026-08-08-qa-history.json"
+    assert not A.provenance_is_anchored(f, {}, declared={"knowledge/_inbox/nlm-other/x.md"})
+    # ...but its OWN answer still discharges it
+    assert A.provenance_is_anchored(f, {}, declared={"knowledge/_inbox/orphan-2026-08-08.md"})
+
+
+def test_declared_means_LEDGERED_not_merely_present_on_disk():
+    # main() passes the set of ledger-row unit paths. If it ever passes `banded` again
+    # (every unit anchor on disk, including UNTOUCHED ones) the discharge becomes universal.
+    src = open(os.path.join(A.ROOT, "scripts", "inbox_audit.py"), encoding="utf-8").read()
+    assert "declared=ledgered" in src
+    assert "declared=set(banded)" not in src

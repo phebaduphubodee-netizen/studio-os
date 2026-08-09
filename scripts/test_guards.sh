@@ -290,5 +290,65 @@ else
   echo "               be silently defaulting instead of deriving"; FAIL=$((FAIL+1))
 fi
 
+echo "== rule_gate.py : R10 coverage + continuity are IN the path, not beside it =="
+# Both halves added 2026-08-08 to instruments that already existed and were wired into
+# nothing: coverage_check could name `wall_floor_junction` on r31 and r32 while every
+# render went through, and no check anywhere compared a spec to the one before it, which
+# is how four measured chair legs left the scene at r14 and stayed wrong for eighteen
+# rounds. The tests include the negative controls -- a verified rename must NOT fire, a
+# better measurement must NOT read as a downgrade -- because a guard that fires on correct
+# work gets muted, and this repo has already lost one debt instrument that way.
+if python3 -m pytest "$ROOT/pipeline/scripts/test_rule_gate.py" -q >/dev/null 2>&1; then
+  echo "  R10 ok     : coverage fails closed, continuity catches drops + downgrades"; PASS=$((PASS+1))
+else
+  echo "  !! R10 BROKEN: pipeline/scripts/test_rule_gate.py fails -- an object the"
+  echo "                 reference shows may be missing, or a measurement may have been"
+  echo "                 dropped by omission, with the gate still printing 'all justified'"; FAIL=$((FAIL+1))
+fi
+
+echo "== vault_search.py : a staged inbox may not pass as domain truth =="
+# Measured 2026-08-08: asked about the wall/floor junction the DEFAULT corpus returns four
+# 2026-08-08 DR files above the distilled page that has held the numbers since 07-04. Raw
+# research outranking distilled truth on its own topic is how a settled number gets
+# re-researched -- which is exactly what happened to that junction. The tier LABEL is the
+# fix; the ranking is deliberately unchanged, and one test pins that too.
+if python3 -m pytest "$ROOT/scripts/test_vault_search.py" -q >/dev/null 2>&1; then
+  echo "  TIER ok    : every hit is labelled, --tier filters, default ranking unchanged"; PASS=$((PASS+1))
+else
+  echo "  !! TIER BROKEN: scripts/test_vault_search.py fails -- a knowledge/_inbox or"
+  echo "                  docs/research hit can be read as distilled domain truth"; FAIL=$((FAIL+1))
+fi
+
+echo "== inbox_audit.py : provenance is proven, not named =="
+# The qa-history allowlist granted the provenance class by FILENAME, so any file could take
+# it by being called qa-history.json. It now has to CARRY ATTRIBUTION (a notebook and what
+# came back) to keep the class. Same suite covers docs/research, which held 1.15 MB of DR
+# output outside every ledger and every audit until 2026-08-08.
+if python3 -m pytest "$ROOT/scripts/test_inbox_audit.py" -q >/dev/null 2>&1; then
+  echo "  PROV ok    : attribution is read from the file, research debt is counted"; PASS=$((PASS+1))
+else
+  echo "  !! PROV BROKEN: scripts/test_inbox_audit.py fails -- a file could hold the"
+  echo "                  provenance class on its name alone"; FAIL=$((FAIL+1))
+fi
+
+echo "== reachability_check.py : an instrument nothing calls is a defect =="
+# Measured 2026-08-08: 143 non-test instruments, 55 unreachable from any path anyone runs,
+# 29 of them carrying their own passing test suite. cap_check -- R1's stop-loss, the first
+# rule the owner adopted -- is one of them: a working function with four tests that
+# check() does not call. This is rule_gate's own law ("a rule is real exactly to the extent
+# that it is a program that fails in a path someone already has to run") applied to the
+# instruments instead of the rules. The baseline may SHRINK and may never GROW.
+if python3 "$ROOT/scripts/reachability_check.py" >/dev/null 2>&1; then
+  echo "  REACH ok   : no NEW unreached instrument, baseline did not grow"; PASS=$((PASS+1))
+else
+  echo "  !! REACH BROKEN: scripts/reachability_check.py fails -- an instrument was built"
+  echo "                   and left outside every path, or the unreached baseline GREW"; FAIL=$((FAIL+1))
+fi
+if python3 -m pytest "$ROOT/scripts/test_reachability_check.py" -q >/dev/null 2>&1; then
+  echo "  PINS ok    : reachability rules hold (incl. the CLI-ONLY escape + the ratchet)"; PASS=$((PASS+1))
+else
+  echo "  !! PINS BROKEN: scripts/test_reachability_check.py fails"; FAIL=$((FAIL+1))
+fi
+
 echo; echo "PASS=$PASS FAIL=$FAIL"
 [ $FAIL -eq 0 ] && echo "M0.1 guard test: ALL GREEN" || { echo "M0.1 guard test: FAILURES PRESENT"; exit 1; }
