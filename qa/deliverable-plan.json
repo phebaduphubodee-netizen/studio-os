@@ -33,14 +33,21 @@
     {
       "id": "SC-3",
       "claim": "He does not have 'only images' — he has the author. One question to the designer friend beat a 154-line DR (3D Warehouse, absent from that DR entirely). The whole project has asked him one question.",
-      "do": "Five questions are drafted and waiting on the owner: hours per bedroom frame; acquired vs modelled share and which pieces; light count / HDRI / IES; the most common client revision; render resolution, time and machine.",
+      "do": "TWO questions, not five — three were withdrawn once SC-5 was found. Withdrawn: light count/HDRI/IES (measured in the ground-truth study), resolution/time/machine (median 4.19 MP is measured from the 658-pool; the rest is findable and not load-bearing), hours per frame (the internet gives a usable range). SURVIVING: (1) which pieces does he MODEL rather than buy — the general half is findable but our own 154-line DR missed 3D Warehouse entirely while he named it in one sentence; (2) what do Thai residential clients send back most often — not on the internet, specific to his market and his practice.",
       "phase": "P0",
-      "owner_action_required": true
+      "owner_action_required": true,
+      "_why_the_other_three_went": "Asking a busy person a question you have already measured is how you stop getting answers."
     },
     {
       "id": "SC-4",
       "claim": "DR already helped and the plan did not read it. The 2026-08-08 craft/CG-tells unit carries a verified controlled experiment (Rademacher et al., EGRW 2001, n=18) that RERANKS this plan: surface roughness beats shadow softness as a realism cue (R .71 vs .39, p=.0003); shadow softening is flat above 5.21 deg and our area lights are already tens of degrees; more light SOURCES is not significant; more OBJECTS is not significant. Our texture-map coverage is 4.9% against 50-66% in delivered .blend files.",
       "do": "Texture/material work outranks light work and outranks styling density. Styling density stays, but justified as COMPLETENESS, never as realism. A new DR fires only when the phase and the code file that will consume it are named in the same commit.",
+      "phase": "P2"
+    },
+    {
+      "id": "SC-5",
+      "claim": "The fourth instance of the same defect, found while answering 'can't you just look it up': blender-ground-truth-study-2026-07-30.md opened five real production .blend files and measured the answer to three of the five questions drafted for the designer friend — light count, IES, HDRI strength, aperture, texture share, fabric maps, cloth poly counts, modifier usage, sample counts. It has been on disk since 30 July with zero consumers. It is a better answer than the internet can give and better than asking, because it is what practitioners DID rather than what they say they do.",
+      "do": "P2 and P3 take their targets from that table, not from priors: texture share 5% -> 50-66%; fabric 0 maps -> 3-8 with sheen <=0.4 (we currently compensate missing maps with 2x the max pro sheen); SUBSURF on soft forms and stop bevelling 81% of everything; f/9.0 -> f/2.0; light range 10:1 -> aim past 191:1. Samples are NOT a lever — 256 is already inside the pro band. And the exposure sign: the same-genre file grades UP a strong rig (+1.116) while we grade DOWN a weak one (-0.1).",
       "phase": "P2"
     }
   ],
@@ -202,9 +209,11 @@
   ],
   "trn002": {
     "recommendation": "Close as a unit at r39. Spend ONE round on the one free, accepted, unshipped item: merge the beauty.soft block bracketed and written up as ACCEPT at gate-16 on 2026-08-07 and never merged (beauty is null in all 10 specs r28-r38, so _soften is dead code in every shipping frame). Record 2 rounds and 7 frames as UNSPENT, not transferred.",
-    "why_not_the_earlier_reason": "The first draft closed it because the target is 0.89 MP and therefore unsendable. That answers the wrong question — the target was never the deliverable, it is the teacher, and judging a teacher by whether you can sell the homework is a category error. The correct reason is that a reproduction unit closes when its LEARNING RATE reaches zero, not when its pixel error does.",
+    "why_not_the_earlier_reason": "TWO reasons were withdrawn, not one. (1) The first draft closed it because the target is 0.89 MP and therefore unsendable — that answers the wrong question; the target was never the deliverable, it is the teacher, and judging a teacher by whether you can sell the homework is a category error. (2) The second draft said the learning rate had reached zero. CHECKED, AND IT IS NOT TRUE: rounds 35-38 produced contact_check.py, a working instrument, and r37 taught that deleting a mass deletes its material rule with it — a rate comparable to TRN-001's. That sentence was written to make the conclusion sound heavier than the evidence, which is the failure mode this plan exists to catch.",
     "standing_order_intact": "qa/reproduction-curriculum.md's one-reproduction-per-session order is NOT cancelled. TRN-003 opens when the deliverable frame ships, with a cap declared BEFORE round 1 — which R1 has never once had.",
-    "status": "proposed"
+    "status": "proposed",
+    "the_real_reason": "Every remaining gap in that frame is a BUILDER CAPABILITY, not a measurement: SUBSURF 0 against pros who subdivide soft forms, 5% of materials textured against 50-66%, 0 image maps on any fabric against 3-8, pillows at 156 polys against 3,124-88,374, f/9.0 against f/1.4-2.4, a 10:1 light range against ~2500:1, IES 0/30 against 4/5 point lights in the same-genre file. All measured in projects/PRJ-2026-002_c001-house/04_visualization/blender-ground-truth-study-2026-07-30.md. trn002_build.py has 7 generators, no mesh importer and 8 shader channels, so it cannot close any of them. Four more rounds there buy four more measurements of a room that cannot be improved. The lane taught measurement well and we are saturated on measurement — 22 image instruments, 94 guards, 2,659 tests. What is missing is production, and that lane cannot teach it.",
+    "condition": "CLOSING IS NOT DISCHARGING. ~248 accepted-and-unbuilt critic items is uncomfortably close to the declared_gaps channel that grew 0 -> 28. So the top-20 recurrence rows (faceting 26/28 answer files, cloth stiffness 28/28, flat light 26/28) DO NOT close with the unit — they cross into DELIV-001 as debt rows with due_round, in the lane that can actually build them. P0d seeds the ledger from them by name."
   },
   "reviews": [
     {
@@ -221,7 +230,23 @@
         "P5"
       ],
       "note": "First review, run because the commit that built the plan closed work. It found one real defect in the plan itself."
+    },
+    {
+      "commit": "6fcb0b0fba97160704cdff1ca8c122d60965258c",
+      "verdicts": {
+        "P0": "keep: unchanged. P0d now seeds the debt ledger from the top-20 TRN-002 recurrence rows by name, so closing that unit cannot discharge them.",
+        "P1": "keep: unchanged.",
+        "P2": "change: targets now come from blender-ground-truth-study-2026-07-30 (SC-5) instead of priors — texture 5 to 50-66 percent, fabric 0 to 3-8 maps with sheen at most 0.4, SUBSURF on soft forms, stop bevelling 81 percent of everything, f/9.0 to f/2.0.",
+        "P3": "change: the study names the exposure SIGN as the defect — the same-genre production file grades UP a strong rig at +1.116 while we grade DOWN a weak one at -0.1. Also pinned: samples are NOT a lever, 256 is already inside the professional band, so no round may spend itself there.",
+        "P4": "keep: unchanged.",
+        "P5": "keep: unchanged since the first review made the owner the terminal condition."
+      },
+      "changed": [
+        "P2",
+        "P3"
+      ],
+      "note": "Answering 'can you not just look it up': three of the five owner questions were already measured in-house and unused. Found the fourth instance of the repo's recurring defect, and corrected an overstatement I had written into this plan an hour earlier."
     }
   ],
-  "last_review_commit": "7bfdf28f6a06f62b25f571a02dcdfcccf9ba617c"
+  "last_review_commit": "6fcb0b0fba97160704cdff1ca8c122d60965258c"
 }
