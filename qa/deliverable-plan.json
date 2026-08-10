@@ -340,7 +340,20 @@
         "P1"
       ],
       "note": ""
+    },
+    {
+      "commit": "97ed78865d9bdced8ff919d656cd1c0fc13b775d",
+      "verdicts": {
+        "P0": "keep: this review CHANGES NOTHING, and says so in those words. The commit it follows (97ed788) was the plan update recording the previous review — no work landed after it, so there is no new evidence to move anything. P0 still has one thing between it and closed: exit-test item 6, the build_room render, now that P1b made that render pass through a gate instead of past nothing.",
+        "P1": "keep: unchanged since the fifth review an hour ago. P1b done, P1a is the phase. Nothing has been measured since that would move it.",
+        "P2": "keep: unchanged. P2a acquire with scale asserted, P2b replace _build_tub_chair rather than tune it. No new evidence this review.",
+        "P3": "keep: unchanged. Light RANGE not light count, still gated behind P2 by the build-order rule.",
+        "P4": "keep: unchanged. Styling density as completeness.",
+        "P5": "keep: unchanged. Judgement, still downstream of everything else being real."
+      },
+      "changed": [],
+      "note": "nothing changed this review"
     }
   ],
-  "last_review_commit": "85938cb72245433c80ca823cfdf8ce66900a226b"
+  "last_review_commit": "97ed78865d9bdced8ff919d656cd1c0fc13b775d"
 }
