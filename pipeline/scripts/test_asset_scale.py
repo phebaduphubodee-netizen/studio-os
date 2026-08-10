@@ -242,3 +242,88 @@ def test_a_known_asset_measures_like_the_object_it_is_named_after():
     assert b["x_mm"] == pytest.approx(848.0, abs=5.0)
     ok, _ = A.assert_scale(hits[0], "chair")
     assert ok
+
+
+# --- what an incoming asset actually BRINGS (2026-08-10) --------------------------
+# The plan's own re-ranking of P2 says acquiring "pays the texture bill in the same
+# move, because acquired meshes ship with 3-8 maps". Measured across the two shelves
+# that is true of one and false of the other, and the integration rule is derived from
+# the file rather than chosen: keep a surface that exists, replace one that does not.
+
+def _matglb(tmp, name, materials):
+    """A minimal glTF whose only interesting content is its material list."""
+    gl = {"asset": {"version": "2.0"}, "accessors": [], "meshes": [], "nodes": [],
+          "scenes": [{"nodes": []}], "scene": 0, "materials": materials}
+    blob = json.dumps(gl).encode("utf-8")
+    blob += b" " * ((4 - len(blob) % 4) % 4)
+    body = struct.pack("<II", len(blob), 0x4E4F534A) + blob
+    path = os.path.join(str(tmp), name)
+    with open(path, "wb") as f:
+        f.write(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
+    return path
+
+
+def test_base_colour_alone_is_a_colour_not_a_surface(tmp_path):
+    """The 3D Warehouse shape: flat colours, sometimes a diffuse image, and no relief
+    at all. Retinting that produces the moulded-plastic look the first acquired chair
+    rendered as."""
+    p = _matglb(tmp_path, "warehouse_like.glb", [
+        {"name": "Carpet_Plush_Charcoal",
+         "pbrMetallicRoughness": {"baseColorFactor": [0.471, 0.667, 0.204],
+                                  "baseColorTexture": {"index": 0}}},
+        {"name": "Color_006", "pbrMetallicRoughness": {"baseColorFactor": [.3, .3, .3]}},
+    ])
+    r = A.pbr_map_roles(p)
+    assert r["materials"] == 2 and r["base"] == 1
+    assert r["normal"] == 0 and r["metallicRoughness"] == 0
+    assert A.carries_a_pbr_surface(p) is False
+
+
+def test_normal_or_roughness_maps_mean_there_is_a_surface_worth_keeping(tmp_path):
+    """The Poly Haven shape: one material carrying base + normal + metallicRoughness."""
+    p = _matglb(tmp_path, "polyhaven_like.glb", [
+        {"name": "ArmChair_01",
+         "pbrMetallicRoughness": {"baseColorTexture": {"index": 0},
+                                  "metallicRoughnessTexture": {"index": 1}},
+         "normalTexture": {"index": 2}},
+    ])
+    r = A.pbr_map_roles(p)
+    assert r["normal"] == 1 and r["metallicRoughness"] == 1
+    assert A.carries_a_pbr_surface(p) is True
+
+
+def test_either_map_alone_is_enough_to_count_as_a_surface(tmp_path):
+    for mat in ({"normalTexture": {"index": 0}},
+                {"pbrMetallicRoughness": {"metallicRoughnessTexture": {"index": 0}}}):
+        p = _matglb(tmp_path, f"one{list(mat)[0]}.glb", [dict(mat, name="m")])
+        assert A.carries_a_pbr_surface(p) is True
+
+
+def test_an_unreadable_asset_is_unknown_not_assumed_bare(tmp_path):
+    """None means "could not look", and the caller must not treat it as "no surface" —
+    that would strip a real PBR set on a read error."""
+    bad = tmp_path / "nope.glb"
+    bad.write_bytes(b"not a gltf at all")
+    assert A.carries_a_pbr_surface(str(bad)) is None
+    assert A.carries_a_pbr_surface(str(tmp_path / "missing.glb")) is None
+
+
+def test_a_gltf_with_no_materials_block_is_bare_not_a_crash(tmp_path):
+    p = _matglb(tmp_path, "nomats.glb", [])
+    assert A.pbr_map_roles(p)["materials"] == 0
+    assert A.carries_a_pbr_surface(p) is False
+
+
+@pytest.mark.skipif(
+    not os.path.isfile(os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "assets", "shared", "cc0", "models", "ArmChair_01", "ArmChair_01_1k.gltf")),
+    reason="CC0 shelf not on this machine")
+def test_the_real_shelves_differ_the_way_the_rule_assumes():
+    """The measurement the rule rests on, run against the actual files. If a future
+    Poly Haven asset ever ships bare, this fails and the rule gets re-cut rather than
+    quietly mis-firing."""
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    cc0 = os.path.join(repo, "assets", "shared", "cc0", "models",
+                       "ArmChair_01", "ArmChair_01_1k.gltf")
+    assert A.carries_a_pbr_surface(cc0) is True, "the CC0 shelf ships real PBR"

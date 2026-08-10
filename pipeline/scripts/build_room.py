@@ -18,6 +18,7 @@ This is the MATERIALIZER. The differentiator (dimensional correctness) lives in 
 engine-agnostic clearance_check.py — run that on the spec for the PASS/WARN/FAIL report.
 """
 import bpy
+import math
 import os
 import sys
 import json
@@ -70,6 +71,7 @@ import bathroom       # bpy-free pure logic: ensuite sanitaryware massing (eleme
 import quicklook      # bpy-free pure logic: R5 playblast-ladder rung (--quick) — cheap
                       # first LOOK before any full-fidelity frame; kills bad work
                       # early, never certifies good work
+import asset_scale as _ascale   # bpy-free: glTF bounds, scale assertion, PBR map roles
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
@@ -2492,6 +2494,12 @@ def add_interior_lights(spec, h_m):
 # MODERN CC0 models (Poly Haven) per kind. Swapped 2026-07-01 off the vintage/gothic
 # Sofa_01/ArmChair_01 (which made the render read as antique) to modern seating that
 # matches the luxury-modern reference. Kinds not mapped fall back to furniture.py primitives.
+# Kinds whose material is upholstery: an acquired mesh of one of these gets the
+# signed textile retint so it joins the room's palette instead of arriving in whatever
+# colour a stranger's model was uploaded in.
+_UPHOLSTERED = ("sofa", "loveseat", "armchair", "chair", "lounge_chair", "stool",
+                "bench", "ottoman")
+
 MODEL_MAP = {
     # Poly Haven's CC0 sofas are dark leather / carved wood (traditional). We use the real
     # detailed sofa_02 (tufted) but RETINT its dark upholstery to cream boucle (retint_fabric
@@ -3446,7 +3454,7 @@ _UPHOLSTERY_KW = ("pillow", "cushion", "fabric", "upholst", "leather", "seat",
 
 
 def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all=False,
-                       rough=0.9):
+                       rough=0.9, ignore_metal=False):
     """Recolour a model's UPHOLSTERY to cream boucle (DR: #F5F0E9, rough 0.8-0.9, Sheen 0.7-1.0)
     while leaving wood frames and metal legs alone. Because CC0 models drive Base Color from a
     DIFFUSE TEXTURE, we DISCONNECT that texture and set a flat cream, KEEPING the roughness +
@@ -3454,6 +3462,8 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
     retints every non-metal material (for single-material models like sofa_02). rgba/sheen/
     rough are overridable so a spec-selected fabric preset (material_presets) can recolour
     per piece — defaults reproduce the legacy cream boucle exactly."""
+    n = 0
+    skipped_metal = []
     for m in mats:
         if not m or not getattr(m, "use_nodes", False):
             continue
@@ -3462,13 +3472,26 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
             continue
         met = b.inputs.get("Metallic")
         if met is not None and not met.is_linked and met.default_value > 0.5:
-            continue                                       # solid metal — keep
+            # SOLID METAL — KEEP, unless the caller has asserted the whole mesh is
+            # upholstery. THE TRAP THIS GUARD WALKED INTO (2026-08-10): glTF's
+            # `metallicFactor` DEFAULTS TO 1.0 when the exporter omits it, and
+            # SketchUp exports omit it. So an acquired fabric chair imports with
+            # Metallic 1.0 on its upholstery, this guard reads "solid metal", and the
+            # retint skips the one material it was called to change. The chair
+            # rendered fluorescent green through a retint that ran and matched
+            # nothing.
+            if not ignore_metal:
+                skipped_metal.append(m.name)
+                continue
         name = m.name.lower()
         if not (force_all or any(k in name for k in _UPHOLSTERY_KW)):
             continue                                       # e.g. '..._legs' (wood) — keep
         bc = b.inputs.get("Base Color")
         if bc is None:
             continue
+        if ignore_metal and met is not None and not met.is_linked:
+            met.default_value = 0.0        # a textile is not a metal; binary metalness
+        n += 1
         for l in list(bc.links):                           # drop the dark diffuse texture
             nt.links.remove(l)
         bc.default_value = rgba
@@ -3477,6 +3500,78 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
         rg = b.inputs.get("Roughness")
         if rg is not None and not rg.is_linked:
             rg.default_value = rough
+    return n, skipped_metal
+
+
+# The signed textile an ACQUIRED upholstered piece wears. Keys are the value-ladder
+# rungs the hand builders already use (`stool_uph` in _build_tub_chair, `bench_seat` in
+# _build_bench), so an acquired chair and a built bench stay in ONE textile family —
+# which is the spec's own words ("upholstery = greige stonewashed LINEN matching the bed
+# base + foot bench EXACTLY"), and the drift this repo has already found five copies of.
+_ACQUIRED_TEXTILE_RUNG = {"stool": "stool_uph", "bench": "bench_seat",
+                          "chair": "stool_uph", "armchair": "stool_uph",
+                          "lounge_chair": "stool_uph", "ottoman": "bench_seat",
+                          "sofa": "bench_seat", "loveseat": "bench_seat"}
+
+
+def _acquired_textile(kind):
+    """The room's own woven material for an acquired upholstered mesh."""
+    rung = _ACQUIRED_TEXTILE_RUNG.get(kind, "stool_uph")
+    return _woven(f"acq_{rung}", _vl.rgba(rung), 0.92,
+                  _matpre.cloth_args("linen"), sheen=0.45, spec=0.35)
+
+
+def _retint_kwargs(mat_sel, nm, kind, has_mesh):
+    """How an ACQUIRED mesh joins this room's decided palette — one definition.
+
+    THE DEFECT THAT PRODUCED IT (2026-08-10, P2f's first LOOK): the acquire-first
+    branch passed `retint_fabric` and nothing else, so the first mesh ever placed on
+    this lane rendered BRIGHT GREEN — the colour a stranger uploaded it in. The
+    MODEL_MAP path had resolved the element preset for weeks; the new path did not,
+    because the resolution was written inline at one call site instead of once.
+
+    Returns (kwargs, retint_fabric). A texture-set preset cannot be applied to a mesh
+    that keeps its own PBR, and that is REPORTED rather than silently dropped."""
+    retint = kind in _UPHOLSTERED
+    ep = _matpre.element_preset(mat_sel, nm, kind)
+    kw = {}
+    if ep:
+        ea = _matpre.factory_args(ep)
+        if "rgba" in ea:
+            kw = {"retint_rgba": ea["rgba"], "retint_sheen": ea.get("sheen", 0.0),
+                  "retint_rough": ea["rough"],
+                  # non-upholstery kinds carry no fabric name keywords — recolour all
+                  "retint_force": True if not retint else None}
+        elif has_mesh:
+            print(f"  (element preset '{ep}' on '{nm}': texture-set preset — the "
+                  f"imported model keeps its own PBR; noted, not applied)")
+    return kw, bool(retint or kw)
+
+
+# A NAME FROM A STRANGER IS NOT EVIDENCE ABOUT A COLOUR, and this is the measurement
+# that says so. tub_chair_c carries EIGHT materials and its upholstery is called
+# `Carpet_Plush_Charcoal` while its baseColorFactor is [0.471, 0.667, 0.204] —
+# fluorescent green. `_retint_upholstery` targets by NAME (_UPHOLSTERY_KW), and
+# "carpet"/"plush"/"charcoal" are in none of our keywords, so the first mesh this lane
+# ever acquired rendered green through a retint that ran and matched nothing.
+#
+# Widening the keyword list is the wrong fix twice over: it would have to grow for
+# every uploader's vocabulary (the rule-that-names-its-objects defect, R9b), and it
+# would still be trusting a field that has just been shown to lie.
+#
+# So for a DECLARED acquisition of an upholstered class the retint is FORCED: the
+# signed palette outranks whatever colour a stranger uploaded, and that is not a
+# preference — it is the same source-of-truth order the repo already runs on.
+#
+# WHAT IT COSTS, stated because it is visible the moment a leg shows: forcing paints
+# every non-metal material, legs included, and this chair's spec wants its legs in the
+# bench-leg tone rather than in linen. Splitting one mesh's materials by ROLE is
+# beyond this API, it is the question the 2026-08-10 DR was fired on, and until that
+# answer lands the split is a declared gap rather than a guess.
+_ACQUIRE_FORCE_RETINT_NOTE = ("forced: the model's material names cannot be trusted "
+                              "(tub_chair_c's upholstery is called Charcoal and is "
+                              "green); legs share the textile tint until the "
+                              "role-split lands")
 
 
 def _slot_pair(slug, kind):
@@ -3494,9 +3589,60 @@ def _slot_pair(slug, kind):
             _AC.kind_slot(kind) if kind else None)
 
 
+def _normalise_acquired(meshes, weld_mm=0.01, sharp_deg=30.0):
+    """The shading half of a studio's incoming-mesh checklist, applied to an acquired
+    model: WELD split vertices at a tight threshold, then shade SMOOTH while keeping
+    genuine hard edges sharp.
+
+    GROUNDED, not invented (DR 2026-08-10, notebook 1277ca41, turn 1, §"Shading
+    Normals and Smoothing"): *"Weld split vertex boundaries along smooth regions using
+    a tight threshold (0.001 mm to 0.01 mm), keeping sharp edges unwelded to preserve
+    clean corners"* and *"run normal unification"*. Staged at
+    knowledge/_inbox/dr-acquired-mesh-integration-2026-08-10.md.
+
+    WHY IT IS NEEDED HERE AND NOT A NICETY. A SketchUp-origin mesh arrives with every
+    face split and every polygon flat, so a curved shell renders as visible facets —
+    the acquired tub chair's rim showed them at 2x. That is D9's row ("curved forms
+    rendering flat-shaded") arriving through the acquire path, so the row this lane is
+    trying to clear would have been fed by the fix for the row above it.
+
+    DATA API ONLY — bmesh, never a geometry `bpy.ops` (pipeline/CLAUDE.md layer law).
+    Returns (welded, sharp_edges, smoothed_polys) so the build says what it changed."""
+    import bmesh
+    welded = sharp = smoothed = 0
+    for ob in meshes:
+        me = ob.data
+        if not me or not me.polygons:
+            continue
+        bm = bmesh.new()
+        bm.from_mesh(me)
+        before = len(bm.verts)
+        try:
+            bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=weld_mm / 1000.0)
+        except Exception:                                   # noqa: BLE001
+            pass
+        welded += before - len(bm.verts)
+        ct = math.cos(math.radians(sharp_deg))
+        for e in bm.edges:
+            if len(e.link_faces) == 2:
+                a, b = (f.normal for f in e.link_faces)
+                e.smooth = (a.dot(b) >= ct)                 # below the angle -> smooth
+                sharp += not e.smooth
+            else:
+                e.smooth = False                            # a boundary is an edge
+        for f in bm.faces:
+            f.smooth = True
+            smoothed += 1
+        bm.to_mesh(me)
+        bm.free()
+        me.update()
+    return welded, sharp, smoothed
+
+
 def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
                 retint_rgba=None, retint_sheen=None, retint_rough=None,
-                retint_force=None, model_slot=None, item_slot=None):
+                retint_force=None, model_slot=None, item_slot=None,
+                retint_ignore_metal=False, replace_material=None):
     """Import a gltf, UNIFORMLY scale it to fit the item footprint (undistorted), set it
     footprint-centred at (x,y) with its base at height z0 (0 = on the floor; >0 = on a
     table for decor), then rotate it `rot` degrees about world Z (so a chair can face the
@@ -3574,12 +3720,40 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
     bpy.context.view_layer.update()
     for o in news:
         o["ph_model"] = True                     # keep its own materials / skip bevel
-    if retint_fabric:
+    _wl, _sh, _sm = _normalise_acquired(meshes)
+    print(f"  mesh normalise: welded {_wl} split vert(s), {_sh} edge(s) kept sharp, "
+          f"{_sm} polygon(s) shaded smooth")
+    if replace_material is not None:
+        # THE INCOMING SURFACE DOES NOT EXIST, SO IT IS REPLACED RATHER THAN TINTED.
+        # Decided by measurement, not preference — see asset_scale.carries_a_pbr_surface:
+        # a Poly Haven asset arrives with normal + metallic-roughness maps and is a
+        # finished surface; a 3D Warehouse asset arrives with flat base colours and no
+        # relief at all. Tinting the second one produces a moulded-plastic look, which
+        # is what the first acquired chair on this lane rendered as.
+        n_slots = 0
+        for o in meshes:
+            o.data.materials.clear()
+            o.data.materials.append(replace_material)
+            n_slots += 1
+        print(f"  material REPLACED on {n_slots} mesh(es) with "
+              f"'{replace_material.name}': the mesh carried no normal or "
+              f"metallic-roughness map, so it brought a colour and not a surface")
+    elif retint_fabric:
         mats = {slot.material for o in meshes for slot in o.material_slots if slot.material}
         kw = {k: v for k, v in (("rgba", retint_rgba), ("sheen", retint_sheen),
                                 ("rough", retint_rough)) if v is not None}
         force = retint_force if retint_force is not None else (len(mats) == 1)
-        _retint_upholstery(mats, force_all=force, **kw)        # single-mat model = all one fabric
+        n_re, skipped = _retint_upholstery(mats, force_all=force,
+                                           ignore_metal=bool(retint_ignore_metal), **kw)
+        # A MECHANISM THAT RAN AND CHANGED NOTHING MUST SAY SO. This is the whole
+        # lesson of the green chair: the retint fired, matched zero materials, and was
+        # silent about it, so the render was the first thing that could tell anyone.
+        print(f"  retint: {n_re} of {len(mats)} material(s) taken to the signed palette"
+              + (f"; {len(skipped)} kept as metal ({', '.join(sorted(skipped)[:3])})"
+                 if skipped else ""))
+        if n_re == 0:
+            print("  !! retint MATCHED NOTHING — the mesh keeps the colour it was "
+                  "uploaded in. Name-matching cannot see this model's upholstery.")
     return True
 
 
@@ -3793,7 +3967,7 @@ def build_suite(spec, label="suite"):
                 and float(it["x"]) > 4000 and float(it["y"]) < 3000), None)
     _focal = ((float(_ct["x"]) + float(_ct["w"]) / 2.0, float(_ct["y"]) + float(_ct["d"]) / 2.0)
               if _ct else None)
-    n_reached = n_intercepted = 0
+    n_reached = n_intercepted = n_acquired = n_acq_fallback = 0
     for it in spec.get("items", []):
         kind = it.get("kind", "block")
         nm = it.get("name") or kind
@@ -3801,6 +3975,63 @@ def build_suite(spec, label="suite"):
         wm, dm = float(it["w"]) * MM, float(it["d"]) * MM
         hm = max(float(it.get("h", 400)) * MM, 0.05)
         rot = float(it.get("rot", 0.0))
+        # ---------------------------------------------------------- R8 ACQUIRE FIRST
+        # P2f. An item that DECLARES `model` is an acquisition decision, and it is
+        # tried BEFORE any bespoke builder — which is the whole change, because the
+        # order was the blocker rather than the capability. Measured before this
+        # existed: 0 of 6 items in the canonical suite reached `place_model`, since
+        # every kind in it is intercepted by a builder that `continue`s first. Both
+        # shelves, `model_fit`, the class gate and `place_model` all worked and were
+        # never asked.
+        #
+        # THE DECISION LIVES IN THE SPEC, NOT IN A MAP IN THIS FILE, and that is
+        # deliberate: R8 makes acquisition a recorded choice per object, MODEL_MAP is
+        # a global default by kind that has already gone dead twice without anyone
+        # noticing (bench 2026-07-11, side_table since), and a slug hard-coded here
+        # would be a third. No spec on disk carries `model` today, so nothing changes
+        # for anything already shipped.
+        #
+        # THE FALLBACK IS LOUD. R8 says a failed acquisition becomes a DECLARED GAP,
+        # not a modelling task — but removing the object mid-lane trades a wrong
+        # object for a hole, so the builder still runs and the fall-back is COUNTED
+        # and printed. D8 then catches whatever it produced: an R8-ACQUIRE class
+        # rendered as a primitive is exactly the row's definition.
+        _mdl = None if spec.get("_no_acquire") else it.get("model")
+        if _mdl:
+            _mp = _model_path(str(_mdl))
+            if not _mp:
+                print(f"  ACQUIRE MISS '{nm}': spec declares model {_mdl!r} and no "
+                      f"cached .gltf/.glb exists on either shelf -> builder")
+                n_acq_fallback += 1
+            else:
+                _ms, _is = _slot_pair(str(_mdl), kind)
+                _akw, _arf = _retint_kwargs(_mat_sel, nm, kind, True)
+                _has_surface = _ascale.carries_a_pbr_surface(_mp)
+                if kind in _UPHOLSTERED and _has_surface is False:
+                    # No relief, no gloss variation: our own signed textile is strictly
+                    # better than anything that can be done to a flat colour.
+                    _akw = {}
+                    _arf = False
+                    _akw["replace_material"] = _acquired_textile(kind)
+                elif kind in _UPHOLSTERED:
+                    _akw["retint_force"] = True          # see _ACQUIRE_FORCE_RETINT_NOTE
+                    _akw["retint_ignore_metal"] = True   # glTF metallicFactor defaults to 1.0
+                    print(f"  retint {_ACQUIRE_FORCE_RETINT_NOTE}")
+                    if _has_surface is None:
+                        print("  !! could not read the asset's map roles — retinting "
+                              "rather than replacing, which is the reversible half")
+                if place_model(_mp, xm, ym, wm, dm, hm,
+                               rot=model_rot(rot, str(_mdl)),
+                               retint_fabric=_arf,
+                               model_slot=_ms, item_slot=_is, **_akw):
+                    n_model += 1
+                    n_acquired += 1
+                    print(f"  ACQUIRED '{nm}' <- {_mdl}")
+                    continue
+                n_acq_fallback += 1
+                print(f"  ACQUIRE FELL BACK for '{nm}' ({kind}): the declared mesh "
+                      f"did not pass the gate; a hand-built free-form object is what "
+                      f"R8 forbids and D8 counts")
         if kind == "rug":
             _add_rug("rug__" + str(nm).replace(" ", "_"), xm, ym, wm, dm)
             continue
@@ -3872,21 +4103,10 @@ def build_suite(spec, label="suite"):
         # per-element preset (materials block): flat-colour presets recolour the imported
         # mesh via the retint path (keeping its rough/normal maps); texture-set presets
         # cannot be applied to a model that keeps its own PBR — say so, never silently.
-        ep = _matpre.element_preset(_mat_sel, nm, kind)
-        ekw = {}
-        if ep:
-            _ea = _matpre.factory_args(ep)
-            if "rgba" in _ea:
-                ekw = {"retint_rgba": _ea["rgba"], "retint_sheen": _ea.get("sheen", 0.0),
-                       "retint_rough": _ea["rough"],
-                       # non-upholstery kinds carry no fabric name keywords — recolour all
-                       "retint_force": True if not retint else None}
-            elif mpath:
-                print(f"  (element preset '{ep}' on '{nm}': texture-set preset — the "
-                      f"imported model keeps its own PBR; noted, not applied)")
+        ekw, _rf = _retint_kwargs(_mat_sel, nm, kind, bool(mpath))
         _ms, _is = _slot_pair(slug, kind)
         if mpath and place_model(mpath, xm, ym, wm, dm, hm, rot=mrot,
-                                 retint_fabric=retint or bool(ekw),
+                                 retint_fabric=_rf,
                                  model_slot=_ms, item_slot=_is, **ekw):
             n_model += 1
             continue
@@ -3920,9 +4140,12 @@ def build_suite(spec, label="suite"):
     # coffee_table_round_01` is dead in exactly the same way for any spec whose side
     # table carries a lamp, which is both of this room's. It is NOT deleted, because
     # two experiment specs still reach it; it is COUNTED, so the lie cannot be silent.
-    print(f"  acquire path (R8): {n_reached} of {len(spec.get('items', []))} item(s) "
-          f"reached place_model; {n_intercepted} carried a MODEL_MAP entry that a "
-          f"bespoke builder intercepted first")
+    _n_items = len(spec.get("items", []))
+    _n_decl = sum(1 for it in spec.get("items", []) if it.get("model"))
+    print(f"  acquire path (R8): {_n_decl} of {_n_items} item(s) DECLARE a model, "
+          f"{n_acquired} acquired, {n_acq_fallback} fell back to a builder; "
+          f"{n_reached} reached place_model via MODEL_MAP and {n_intercepted} "
+          f"carried a MODEL_MAP entry a bespoke builder intercepted first")
 
     # seating group bbox (the lounge, east half) — drives the rug + the hero camera.
     # the lounge conversation group = the big pieces in the SOUTH-EAST (x>4m, y<3m). Exclude
@@ -4174,6 +4397,11 @@ if __name__ == "__main__":
         # hero dimmer state over the signed e5 plan (lane A) — spec untouched
         _spec["_light_story"] = True
         globals()["_LIGHT_STORY"] = True
+    if "--no-acquire" in _post_dashdash():
+        # The A leg of every acquisition A/B: build every item the way the bespoke
+        # builders would, ignoring `model`. Same discipline as --no-fabric-maps — an
+        # A/B whose A leg needs a source edit is an A/B nobody re-runs.
+        _spec["_no_acquire"] = True
     if "--no-fabric-maps" in _post_dashdash():
         # the A leg of D-022's A/B, kept runnable so the decision can be re-tested
         # without editing source (R6) — and so "revert by omission" is impossible.

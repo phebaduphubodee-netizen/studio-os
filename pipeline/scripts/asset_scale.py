@@ -219,6 +219,54 @@ def bounds_mm(path):
             "prims": seen}
 
 
+def pbr_map_roles(path):
+    """Which PBR map roles this asset actually carries: {role: material count}.
+
+    WHY THIS IS A MEASUREMENT AND NOT A PREFERENCE (2026-08-10). The plan's own
+    re-ranking of P2 says "acquiring pays the texture bill in the same move, because
+    acquired meshes ship with 3-8 maps". Measured across both shelves, that is true of
+    one and false of the other:
+
+        Poly Haven ArmChair_01        1 material   normal 1   metallicRoughness 1
+        Poly Haven Nightstand_01      1 material   normal 1   metallicRoughness 1
+        3D Warehouse tub_chair_c      8 materials  normal 0   metallicRoughness 0
+        3D Warehouse th_d             7 materials  normal 0   metallicRoughness 0
+
+    A CC0 Poly Haven asset arrives as a finished PBR surface. A 3D Warehouse asset
+    arrives as SHAPE with flat colours on it — which is still exactly what R8 wants
+    from it (a real free-form silhouette we cannot model), but it means the surface
+    has to come from our own signed materials rather than be kept.
+
+    So an integration rule can be DERIVED instead of chosen: keep an incoming surface
+    that exists, replace one that does not.
+    """
+    gl = _gltf_json(path)
+    roles = {"base": 0, "normal": 0, "metallicRoughness": 0,
+             "occlusion": 0, "emissive": 0}
+    mats = gl.get("materials", []) or []
+    for m in mats:
+        pbr = m.get("pbrMetallicRoughness", {}) or {}
+        roles["base"] += bool(pbr.get("baseColorTexture"))
+        roles["metallicRoughness"] += bool(pbr.get("metallicRoughnessTexture"))
+        roles["normal"] += bool(m.get("normalTexture"))
+        roles["occlusion"] += bool(m.get("occlusionTexture"))
+        roles["emissive"] += bool(m.get("emissiveTexture"))
+    roles["materials"] = len(mats)
+    return roles
+
+
+def carries_a_pbr_surface(path):
+    """True when the asset brings a surface worth keeping — any normal or
+    metallic-roughness map. Base colour alone is a COLOUR, not a surface: it has no
+    relief and no gloss variation, so keeping it buys nothing our own material does
+    not do better."""
+    try:
+        r = pbr_map_roles(path)
+    except Exception:                                       # noqa: BLE001
+        return None                                         # unknown, never assumed
+    return bool(r["normal"] or r["metallicRoughness"])
+
+
 def assert_scale(path, cls, bands=None):
     """Returns (ok, report). FAILS CLOSED on an unknown class."""
     bands = BANDS if bands is None else bands

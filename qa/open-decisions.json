@@ -313,6 +313,20 @@
    "reverse_by": "ตั้ง `_FABRIC_MAPS = False` กลับที่ build_room.py:982 แล้วลบแถว D-022 นี้ทิ้ง (หรือรันด้วย --no-fabric-maps เพื่อดูขา A โดยไม่แก้อะไรเลย)",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-023",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-10",
+   "decided_by": "builder",
+   "question": "เก้าอี้ tub ที่โต๊ะเครื่องแป้ง — ใช้ของที่ปั้นเอง (_build_tub_chair) หรือของที่ acquire มา (tub_chair_c)",
+   "in_effect": "**ใช้ของที่ acquire มา** — spec ประกาศ `model: tub_chair_c` และ build_room ลองวางของที่ประกาศไว้ก่อน builder เสมอ · ขา A (ของปั้นเอง) ยังรันได้ด้วย `--no-acquire` โดยไม่ต้องแก้ source · **แต่พื้นผิวไม่ได้มาจากของที่ซื้อ**: mesh จาก 3D Warehouse ไม่มี normal/roughness map เลย (วัดแล้ว) จึงถูกแทนด้วยผ้าลินิน ที่เซ็นไว้ของห้องนี้ — **ได้รูปทรงจากการซื้อ ได้พื้นผิวจากของเรา**",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, pipeline/scripts/build_room.py",
+   "because": "**คู่ภาพตัดสิน ไม่ใช่ตัวเลข** (crop 2x กล้อง west_vanity): ของที่ปั้นเองเป็น ทรงกระบอกเกลี้ยง ไม่มีที่วางแขน ไม่มีพนัก ไม่มีเบาะ อ่านเป็นตะกร้าผ้า · ของที่ acquire มามีรูปทรงเก้าอี้จริง — พนักโค้งลาดลงมาเป็นแขน เบาะอยู่ในอ่าง เงาของ tub ครบ · **นี่คือข้ออ้างของ R8 ตรง ๆ**: ของ free-form ปั้นเองแล้วได้แค่ 'ใกล้เคียง' และรอบนี้ไม่ต้องเถียงเพราะเห็นคู่กัน · scale asserted class=chair (706 mm บน z, band 600-1300) และผ่านประตูคลาส+สัดส่วนที่ scale 1.019 คือขนาดจริง · mesh ถูก normalise ตาม DR: weld vertex ที่แตก 4,652 จุด แล้ว shade smooth โดยคงขอบคมไว้ (ก่อนหน้านั้นขอบ tub เป็นเหลี่ยม = แถว D9 เข้ามาทางประตู acquire เอง)",
+   "reverse_by": "ลบ `model` กับ `model_note` ออกจาก item stool ในสเปก แล้ว _build_tub_chair กลับมาทำงานเหมือนเดิม (หรือรัน --no-acquire เพื่อดูขา A โดยไม่แก้อะไร) แล้วลบแถว D-023 นี้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
