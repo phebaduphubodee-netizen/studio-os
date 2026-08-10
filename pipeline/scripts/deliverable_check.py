@@ -235,6 +235,20 @@ def cut_thresholds(rows):
     return out
 
 
+ACQUIRE_WORDS = ("pillow", "cushion", "bolster", "sham", "duvet", "throw",
+                 "blanket", "rug", "plant", "flower", "garment", "towel",
+                 "chair_seat", "chair_back", "sofa", "upholst")
+STYLING_WORDS = ("book", "vase", "tray", "bowl", "plant", "lamp", "candle",
+                 "figurine", "bird", "art", "towel", "bottle", "cup")
+PRIMITIVE_KINDS = (None, "box", "oct", "cone", "slats", "pocket", "herringbone")
+
+# scene-dump thresholds, calibrated in scene_dump.py's docstring against 14
+# synthetic controls. A box reads 6 whatever its bevel does; the smallest facetted
+# curve in the control set (an 8-gon cylinder) reads 9.
+CURVED_CLUSTERS_MIN = 8      # at or above this, the object is a facetted curve
+BOXLIKE_CLUSTERS_MAX = 6     # at or below this, the object is a box
+
+
 def measure_scene_spec(spec):
     """The three scene rows, read from a canonical mass spec.
 
@@ -244,25 +258,101 @@ def measure_scene_spec(spec):
     D9 counts curved forms that no beauty.soft entry smooths, which is why 15 `oct`
     masses have rendered flat-shaded for 10 straight rounds with the softening code
     present and never enabled.
+
+    IT REFUSES A SPEC IT CANNOT READ, and that refusal is the whole reason this
+    docstring is longer than the function. Pointed at a build_room ROOM spec — via
+    room_masses, which translates items/builtins into masses faithfully — every
+    count above comes back 0 and both MANDATORY rows PASS. Measured 2026-08-10:
+    with those zeros, 63 of the 96 eye frames on disk QUALIFY as delivered-level,
+    frames included that the owner looked at and called nowhere near done.
+
+    Nothing about that is a threshold problem. The vocabulary is TRN-002's: `kind`
+    in a primitive list, a `beauty.soft` block, English object names. A room spec
+    has none of them (its names are Thai, its kinds are bed/rug/vanity), so every
+    `any(...)` is False and every count is a true statement about a question that
+    was never asked. A 0 from a reader that cannot see is not a 0.
+
+    So: a mass grammar with no `kind` ON ANY MASS and no `beauty` block is refused
+    by name, and the caller gets NOT RUN. The built scene is where this lane's
+    answer lives — `measure_scene_built`, fed by scene_dump.py.
     """
-    acquire_words = ("pillow", "cushion", "bolster", "sham", "duvet", "throw",
-                     "blanket", "rug", "plant", "flower", "garment", "towel",
-                     "chair_seat", "chair_back", "sofa", "upholst")
-    styling_words = ("book", "vase", "tray", "bowl", "plant", "lamp", "candle",
-                     "figurine", "bird", "art", "towel", "bottle", "cup")
-    primitive_kinds = (None, "box", "oct", "cone", "slats", "pocket", "herringbone")
-    soft = ((spec.get("beauty") or {}).get("soft") or {})
     masses = spec.get("masses", [])
+    if masses and not any("kind" in m for m in masses) and "beauty" not in spec:
+        raise NotRun(
+            f"{len(masses)} mass(es), none carrying `kind`, and no `beauty` block: "
+            f"this is not the mass grammar these rows read. Every count would come "
+            f"back 0 because the vocabulary does not match — which is 'I could not "
+            f"look', not 'there are none'. Dump the BUILT scene "
+            f"(pipeline/scripts/scene_dump.py) and use measure_scene_built.")
+    soft = ((spec.get("beauty") or {}).get("soft") or {})
     loose = sum(1 for m in masses
-                if any(w in m["name"].lower() for w in styling_words))
+                if any(w in m["name"].lower() for w in STYLING_WORDS))
     prim_acquire = sum(1 for m in masses
-                       if any(w in m["name"].lower() for w in acquire_words)
-                       and m.get("kind") in primitive_kinds)
+                       if any(w in m["name"].lower() for w in ACQUIRE_WORDS)
+                       and m.get("kind") in PRIMITIVE_KINDS)
     flat_curved = sum(1 for m in masses
                       if m.get("kind") in ("oct", "cone")
                       and not (soft.get(m["name"]) or {}).get("smooth"))
     return {"loose_objects": loose, "primitive_acquire_class": prim_acquire,
             "flat_shaded_curved": flat_curved}
+
+
+def object_words(name, materials=()):
+    """An object's own name tokens, with the trailing material tag removed.
+
+    build_room names parts `<group>__<part>__<material>`, so a raw substring match
+    reads `mill__style_fold0_0__towel` — a folded knit stack finished in the towel
+    material — as a towel. The tail is not guessed away: it is dropped only when an
+    assigned MATERIAL's name ends with it (`m_mill_towel`), which is the convention
+    stating that the segment names a finish rather than the object.
+    """
+    parts = str(name).split("__")
+    if len(parts) > 1 and materials:
+        tail = parts[-1].lower()
+        if tail and any(str(m).lower().endswith(tail) for m in materials):
+            parts = parts[:-1]
+    return "__".join(parts).lower()
+
+
+def measure_scene_built(dump):
+    """The scene rows read from a BUILT scene (scene_dump.py's JSON).
+
+    D8 — an R8-ACQUIRE-class object that is BOX-LIKE is a primitive standing in for
+    a mesh that should have been acquired. "Box-like" is measured, not declared:
+    <= BOXLIKE_CLUSTERS_MAX normal clusters carry 90% of its area.
+
+    D9 — a facetted curve (>= CURVED_CLUSTERS_MIN clusters) with not one smooth
+    polygon. Both halves are read off the geometry that actually renders.
+
+    D7 IS NOT ANSWERED HERE AND THE ROW STAYS NOT RUN. A built scene exposes PARTS
+    (a rug plus its four bindings; a stack per shelf), and "twelve loose styling
+    objects" is an ITEM count. Collapsing parts into items needs a grouping
+    convention this repo does not have, and the two available guesses are wrong in
+    opposite directions — per-part over-counts, per-name-stem under-counts. The
+    part count is reported as `styling_parts` so the number is visible, under a key
+    no row reads: an unscored row is not a licence to report a number that would
+    pass it.
+    """
+    objs = [o for o in dump.get("objects", dump if isinstance(dump, list) else [])
+            if not o.get("hidden_render")]
+    if not objs:
+        raise NotRun("scene dump holds no visible mesh objects")
+    prim, flat, styling = [], [], []
+    for o in objs:
+        words = object_words(o.get("name", ""), o.get("materials") or ())
+        n90 = int(o.get("curved_clusters", 0))
+        if any(w in words for w in ACQUIRE_WORDS) and n90 <= BOXLIKE_CLUSTERS_MAX:
+            prim.append(o["name"])
+        if n90 >= CURVED_CLUSTERS_MIN and int(o.get("smooth_polys", 0)) == 0:
+            flat.append(o["name"])
+        if any(w in words for w in STYLING_WORDS):
+            styling.append(o["name"])
+    return {"primitive_acquire_class": len(prim),
+            "flat_shaded_curved": len(flat),
+            "styling_parts": len(styling),
+            "_primitive_acquire_names": prim,
+            "_flat_shaded_curved_names": flat,
+            "_visible_meshes": len(objs)}
 
 
 def qualifies(rows, standard):
@@ -329,23 +419,64 @@ def load_standard(path=None):
 
 
 def main(argv=None):
+    """EXIT CODES ARE A CONTRACT, and debt_check's docstring already cites it:
+    0 = qualifies, 1 = ran and does not qualify, 2 = COULD NOT RUN.
+
+    2 is about the CHECK, not about a row. A frame that cannot be opened, a scene
+    dump that cannot be read or that the reader refuses — those are "could not
+    look", and they must not print like "looked and it was fine". A row coming back
+    NOT RUN is a different thing and is handled where it belongs: a MANDATORY row
+    that did not run makes `qualifies` refuse, which is exit 1. D7 is NOT RUN on
+    every built scene by design and is unscored, so it decides nothing."""
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("frame", nargs="?", help="the image to score")
     ap.add_argument("--scene", default=None, help="JSON of scene-row measurements")
+    ap.add_argument("--scene-dump", default=None,
+                    help="JSON from pipeline/scripts/scene_dump.py — the BUILT "
+                         "scene, measured here rather than trusted")
     ap.add_argument("--standard", default=None)
     a = ap.parse_args(argv)
-    if not a.frame:
+    if not a.frame and not a.scene_dump and not a.scene:
         ap.print_help()
         return 2
-    std = load_standard(a.standard)
+    try:
+        std = load_standard(a.standard)
+    except OSError as e:
+        print(f"COULD NOT RUN: the standard is unreadable ({e})")
+        return 2
     scene = json.load(open(a.scene, encoding="utf-8")) if a.scene else None
+    if a.scene_dump:
+        try:
+            with open(a.scene_dump, encoding="utf-8") as f:
+                scene = measure_scene_built(json.load(f))
+        except (OSError, ValueError, NotRun) as e:
+            print(f"COULD NOT RUN: scene dump {a.scene_dump} — {e}")
+            return 2
+        print(f"scene: {scene['_visible_meshes']} visible mesh objects, "
+              f"{scene['styling_parts']} carrying a styling word "
+              f"(PARTS, not items — D7 stays NOT RUN)")
+        for k in ("_primitive_acquire_names", "_flat_shaded_curved_names"):
+            if scene[k]:
+                print(f"  {k[1:]}: {len(scene[k])}")
+                for n in scene[k][:12]:
+                    print(f"    - {n}")
+                if len(scene[k]) > 12:
+                    print(f"    ... and {len(scene[k]) - 12} more")
+    if a.frame:
+        try:
+            _load(a.frame)
+        except Exception as e:                          # noqa: BLE001
+            print(f"COULD NOT RUN: frame {a.frame} — {type(e).__name__}: {e}")
+            return 2
     rows = score(std, a.frame, scene)
     for rid, verdict, v, thr, why in rows:
         vs = "-" if v is None else f"{v}"
         print(f"{rid:4s} {verdict:8s} {vs:>10s} vs {thr}   {why[:60]}")
     s = summarise(rows)
     print(f"\n{s['pass']} pass / {s['fail']} fail / {s['not_run']} NOT RUN")
-    return 1 if s["fail"] or s["not_run"] else 0
+    ok, why = qualifies(rows, std)
+    print(f"{'QUALIFIES' if ok else 'DOES NOT QUALIFY'}: {why}")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

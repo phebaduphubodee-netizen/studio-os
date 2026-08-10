@@ -31,6 +31,43 @@ DESIGNER_BAND_M = (1.0, 1.2)
 RAY_BLOCK_MARGIN_M = 0.05              # a built-in blocks the level ray if taller than
                                        # eye + margin (the old 1.55 = 1.5 eye + 0.05)
 
+# --------------------------------------------------------------- DELIVERABLE RES --
+# DELIV-001 P1a. It lives beside the eye camera and not in the renderer because with
+# sensor_fit='HORIZONTAL' the ASPECT RATIO IS A FRAMING PARAMETER: horizontal FOV is
+# pinned by the lens, so changing h/w changes how much ceiling and floor the eye
+# camera sees. A resolution edited in the render call is a silent recompose.
+#
+# BOTH NUMBERS ARE READ OFF THE 658 DELIVERED FRAMES, not chosen (census
+# 2026-08-09, re-read 2026-08-10 for size because the census stores mp only):
+#     median mp                4.194      -> 2400x1800 = 4.320 MP
+#     median aspect            1.250      -> 1.333 is inside the delivered spread
+#                                            (p25 0.750 / p75 1.500; 60.3% landscape)
+# The eye path rendered 2000x1400 = 2.800 MP, which cleared the D1 floor of 2.796 by
+# 0.004 MP — a margin nobody chose and nothing was protecting. Hence the floor
+# argument below: this constant is now COUPLED to the row it exists to satisfy, so a
+# re-cut census that raises D1 fails the build instead of quietly producing a frame
+# that cannot qualify.
+DELIVERABLE_RES = (2400, 1800)
+
+
+def deliverable_res(d1_floor_mp=None):
+    """Full-fidelity resolution for the client-facing EYE frame.
+
+    Pass the standard's D1 threshold and this REFUSES to hand back a resolution
+    below it. Fail-closed on purpose: the failure mode it is built against is the
+    quiet one — a frame rendered under the floor scores NOT-qualified for a reason
+    that has nothing to do with the room.
+    """
+    w, h = DELIVERABLE_RES
+    if d1_floor_mp is not None:
+        mp = (w * h) / 1e6
+        if mp < float(d1_floor_mp):
+            raise ValueError(
+                f"DELIVERABLE_RES {w}x{h} = {mp:.3f} MP is below the standard's D1 "
+                f"floor of {float(d1_floor_mp):.3f} MP — raise the constant (and "
+                f"re-look at the framing: the aspect is a camera parameter here)")
+    return DELIVERABLE_RES
+
 
 def eye_cam_height_m():
     """Resolved eye height: env override (for a render A/B) else the designer default."""

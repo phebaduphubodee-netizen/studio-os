@@ -147,7 +147,30 @@
         }
       ],
       "exit_test": "The frame renders at >=3.19 MP and its scorecard reproduces P0's day-1 prediction exactly — the same rows fail, the same pass. A row predicted to fail that comes back green means the instrument is wrong and P0 is re-cut before P2 starts.",
-      "exit_result": null
+      "exit_result": null,
+      "prediction": {
+        "_what": "P1's exit test says the scorecard must reproduce 'P0's day-1 prediction'. No such prediction was ever written down — the phrase had no referent, which is R11's own defect one level up: a held-out scoring set with no data. This is that prediction, RECORDED BEFORE the full-fidelity frame exists (commit precedes the render), so it can be wrong.",
+        "_written": "2026-08-10, after the R5 quick rung (1200x900) and the built-scene dump of the SAME geometry, before the 2400x1800 frame",
+        "_what_it_is_derived_from": {
+          "image rows": "the quick frame's own numbers, declared: D2 18.35 / D3 3.524 / D4 0.0152 / D5 10.1234 / D6 2.7781 / D10 7.40. This is a peek and it is stated as one. The row it does NOT settle is D5: every image row is measured after resampling to a 1600 px long edge, so the quick frame was UPSAMPLED into the measurement and the deliverable will be DOWNSAMPLED into it. Those are different operations on the 4-32 px octave D5 reads.",
+          "scene rows": "the built-scene dump of the quick build. --quick changes the cloth SOLVER recipe and the sample count, not the object set, so the object list is the same 498; the garment count in D8 can move, because a garment that solves is not box-like and one that falls back to the analytic sheet is.",
+          "P0's own belief": "reconstructed from what P0 wrote rather than invented now: the standard's `_what_the_image_rows_CANNOT_do` says our frames are already at delivered level on tone, range and 4-32 px structure and that 'the rows that must carry the weight are the SCENE rows'; and P2's exit test asserts D5, D8 and D9 all PASS only AFTER P2's acquisition and smoothing work — which is P0 saying, in the plan's own words, that D8 and D9 FAIL at P1."
+        },
+        "rows": {
+          "D1": "PASS — 2400x1800 = 4.320 MP against a 2.796 floor. This row is arithmetic, not a prediction.",
+          "D2": "PASS",
+          "D3": "PASS",
+          "D4": "PASS",
+          "D6": "PASS",
+          "D10": "PASS",
+          "D5": "PASS, and this is the one image row that could come back FAIL. Least confident.",
+          "D7": "NOT RUN — a built scene exposes parts, not items, and no grouping convention exists to turn 498 parts into an item count.",
+          "D8": "FAIL, ~15 — four bathroom towels and a bath mat built as boxes, the rug plus its four bindings, and the garments whose cloth sim fell back to the analytic flat sheet.",
+          "D9": "FAIL, ~13 — the brass towel rail and its two posts, two robe hooks, six wardrobe hang rails and one opal task bar: cylinders with not one smooth polygon."
+        },
+        "verdict": "DOES NOT QUALIFY, refused on the mandatory scene rows D8 and D9 while every image row passes. That is the standard behaving as its own docstring says it should: the image rows are a floor, and the scene rows carry the weight.",
+        "_the_instrument_was_wrong_and_this_is_the_re_cut": "P1's exit test says a row predicted to fail that comes back green means the instrument is wrong and P0 is re-cut before P2 starts. It came back green: `measure_scene_spec` scored the DELIV-001 lane 0/0/0 and both mandatory rows PASSED, because its vocabulary is TRN-002's (`kind` in a primitive list, a `beauty.soft` block, English names) and a room spec has none of them. MEASURED: with those vacuous zeros, 63 of the 96 eye frames already on disk QUALIFY as delivered-level, rounds the owner looked at and called nowhere near done among them. The re-cut is in this commit: the spec reader REFUSES a grammar it cannot read, and scene_dump.py + measure_scene_built read the BUILT scene, where this lane's 498 meshes actually live."
+      }
     },
     {
       "id": "P2",

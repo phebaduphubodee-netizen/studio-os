@@ -181,6 +181,106 @@ def test_enabling_smooth_shading_clears_the_flat_shaded_row():
     assert DC.measure_scene_spec(spec)["flat_shaded_curved"] == 1
 
 
+# --- the vacuous pass, and the refusal that ends it -------------------------------
+
+def test_a_room_spec_is_refused_rather_than_scored_zero():
+    """THE DEFECT THIS COMMIT EXISTS FOR. A build_room room spec, faithfully
+    translated by room_masses, has no `kind` on any mass and no `beauty` block.
+    Every count came back 0 and both MANDATORY rows PASSED — 63 of the 96 eye
+    frames on disk qualified as delivered-level on the strength of it."""
+    room = {"masses": [{"name": "เตียง 7'x6.5' หัวตะวันออก", "prov": "M(ink: ...)"},
+                       {"name": "พรมใต้เตียง (rug, D1-A)", "prov": "M(ink: ...)"}]}
+    with pytest.raises(DC.NotRun):
+        DC.measure_scene_spec(room)
+
+
+def test_the_refusal_does_not_fire_on_the_grammar_it_can_read():
+    spec = {"beauty": None, "masses": [{"name": "pillow_L", "kind": "oct"}]}
+    assert DC.measure_scene_spec(spec)["flat_shaded_curved"] == 1
+
+
+# --- scene rows from the BUILT scene ---------------------------------------------
+
+def _obj(name, n90, smooth=0, mats=(), hidden=False):
+    return {"name": name, "curved_clusters": n90, "smooth_polys": smooth,
+            "materials": list(mats), "hidden_render": hidden}
+
+
+def test_the_material_tail_is_not_read_as_the_object():
+    """`mill__style_fold0_0__towel` is a folded knit stack finished in the towel
+    material. Substring matching read it as a towel; the tail is dropped because an
+    assigned MATERIAL name ends with it, which is the convention saying so."""
+    assert "towel" not in DC.object_words("mill__style_fold0_0__towel",
+                                          ["m_mill_towel"])
+    # ... and it stays when no material claims it
+    assert "towel" in DC.object_words("mill__acc_bath_towel0", [])
+    # a tail no material claims is part of the object's own name
+    assert "backer" in DC.object_words("mill__style_garment1_1__backer", ["m_mill_linen"])
+
+
+def test_built_scene_finds_the_box_shaped_textiles_and_the_facetted_brass():
+    dump = {"objects": [
+        _obj("mill__acc_bath_towel0__towel", 6, mats=["m_mill_towel"]),   # box towel
+        _obj("rug__under_bed", 2),                                        # box rug
+        _obj("bed__pillowsoft0", 54, smooth=624),                         # curved+smooth
+        _obj("mill__acc_towelbar_post0__brass", 24, mats=["m_mill_brass"]),  # flat cyl
+        _obj("wall_3z", 2),                                               # a wall
+    ]}
+    m = DC.measure_scene_built(dump)
+    assert m["primitive_acquire_class"] == 2          # the box towel and the box rug
+    assert "bed__pillowsoft0" not in m["_primitive_acquire_names"]
+    assert m["flat_shaded_curved"] == 1               # the brass post only
+    assert "wall_3z" not in m["_flat_shaded_curved_names"], "a bevelled box is not a curve"
+
+
+def test_a_smooth_shaded_curve_is_not_a_defect():
+    dump = {"objects": [_obj("stool__shell", 22, smooth=194)]}
+    assert DC.measure_scene_built(dump)["flat_shaded_curved"] == 0
+
+
+def test_objects_that_do_not_render_are_not_judged():
+    dump = {"objects": [_obj("mill__style_garment0__torso", 30, hidden=True)]}
+    with pytest.raises(DC.NotRun):
+        DC.measure_scene_built(dump)
+
+
+def test_d7_stays_not_run_because_a_built_scene_has_parts_not_items():
+    """The part count is reported under a key no row reads. An unscored row is not
+    a licence to report a number that would pass it."""
+    dump = {"objects": [_obj("deco__vase0", 20, smooth=20),
+                        _obj("deco__vase1", 20, smooth=20)]}
+    m = DC.measure_scene_built(dump)
+    assert m["styling_parts"] == 2 and "loose_objects" not in m
+    rows = {r[0]: r[1] for r in DC.score(_std(), None, m)}
+    assert rows["D7"] == "NOT RUN"
+
+
+def test_exit_2_is_could_not_run_and_is_not_the_same_as_did_not_qualify(tmp_path):
+    """debt_check's docstring already cites this contract; until now main() did not
+    implement it. 2 must be reachable ONLY when the check itself could not run."""
+    assert DC.main([str(tmp_path / "no-such.png")]) == 2          # unreadable frame
+    assert DC.main(["--scene-dump", str(tmp_path / "no-such.json")]) == 2
+    d = tmp_path / "d.json"
+    d.write_text(json.dumps({"objects": [_obj("rug__x", 2)]}), encoding="utf-8")
+    assert DC.main(["--scene-dump", str(d)]) == 1                 # ran, refused
+
+
+def test_a_dump_with_nothing_visible_is_could_not_run_not_a_clean_scene(tmp_path):
+    d = tmp_path / "d.json"
+    d.write_text(json.dumps({"objects": [_obj("x", 2, hidden=True)]}), encoding="utf-8")
+    assert DC.main(["--scene-dump", str(d)]) == 2
+
+
+def test_the_built_scene_rows_can_refuse_the_frame_the_spec_rows_waved_through():
+    """The whole point, as one assertion: the same scene that scored 0/0/0 through
+    the spec reader is FAILED by the built reader."""
+    dump = {"objects": [_obj("rug__under_bed", 2),
+                        _obj("mill__acc_towelbar_post0__brass", 24,
+                             mats=["m_mill_brass"])]}
+    rows = {r[0]: r[1] for r in DC.score(_std(), None, DC.measure_scene_built(dump))}
+    assert rows["D8"] == "FAIL" and rows["D9"] == "FAIL"
+
+
 # --- THE ACCEPTANCE CONTRACT -----------------------------------------------------
 # A standard our best frame already passes is not a standard; one that fails work
 # that was sold is measuring the wrong thing. It has to do both or be deleted.

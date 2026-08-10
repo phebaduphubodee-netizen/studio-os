@@ -159,6 +159,87 @@ def _outdir():
     return out
 
 
+def _d1_floor_mp():
+    """The standard's D1 resolution floor, in megapixels.
+
+    Read from `qa/deliverable-standard.json` — the file whose thresholds are
+    percentiles of 658 delivered frames — and NOT copied into this file, so a
+    re-cut census cannot leave the renderer pointing at a stale number. Missing or
+    unreadable is a HARD failure on the deliverable path: 'I could not find the
+    floor' must never render like 'the floor is fine' (R11's exit-code contract).
+    """
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    with open(os.path.join(repo, "qa", "deliverable-standard.json"), encoding="utf-8") as f:
+        return float(json.load(f)["rows"]["D1"]["threshold"])
+
+
+def _score_deliverable(name, quick=False, frame=True):
+    """R11 applied to the rows that carry the weight: the render path DUMPS the
+    built scene and SCORES it, instead of asserting things about it.
+
+    WHY IT IS HERE AND NOT LEFT TO A HUMAN. `deliverable_check`'s scene rows are
+    MANDATORY, and until this call existed nothing on this lane produced a scene for
+    them. The reader that did exist read a TRN-002 SPEC, scored the DELIV-001 lane
+    0/0/0, and passed both mandatory rows — on which 63 of the 96 eye frames on disk
+    qualified as delivered-level, rounds the owner called nowhere near done among
+    them. An instrument nothing calls is how that survives.
+
+    OUT OF PROCESS FOR THE SCORER, IN PROCESS FOR THE DUMP, and that split is the
+    layer law rather than a convenience: `scene_dump` needs bpy and we are already
+    inside Blender; `deliverable_check` needs numpy and PIL, which Blender's bundled
+    Python does not have, and teaching it to read pixels through `bpy` would drag a
+    layer-1 gate into layer 2. Spawned, not printed — an interpreter that cannot be
+    found is a hard stop, because a gate that could not run must never read like one
+    that passed (the same contract as R11's pixel rung).
+
+    IT DOES NOT FAIL THE BUILD ON A LOW SCORE, and that is deliberate. The standard
+    is an OUTCOME bar, not a pre-render rule: P2 through P4 exist precisely to climb
+    it, so failing the render while the frame is below it would stop the work that
+    raises it. Exit 2 — could not run — IS a hard stop.
+    """
+    import shutil
+    import subprocess
+    import scene_dump
+    out = _outdir()
+    dump_path = os.path.join(out, f"room_{name}.scene.json")
+    objs = scene_dump.dump()
+    with open(dump_path, "w", encoding="utf-8") as f:
+        json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@1",
+                   "objects": objs}, f, indent=1, ensure_ascii=False)
+    print(f"  scene dump: {len(objs)} mesh objects -> {dump_path}")
+    py = next((p for p in (shutil.which("python3"), shutil.which("python")) if p), None)
+    if py is None:
+        print("BUILD FAILED: no plain python interpreter on PATH to run "
+              "deliverable_check (Blender's has no PIL/numpy). Refusing to finish a "
+              "deliverable render whose scene rows could not be started.")
+        sys.stdout.flush()
+        os._exit(1)
+    cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "deliverable_check.py"), "--scene-dump", dump_path]
+    if frame and not quick:
+        cmd.insert(2, os.path.join(out, f"room_{name}.png"))
+    elif quick:
+        # The image rows are measured after a resample to a 1600 px long edge, so a
+        # half-size playblast is UPSAMPLED into the measurement while a deliverable
+        # is DOWNSAMPLED into it — a different operation on the octave D5 reads. And
+        # D1 is measured on the original, where a quick frame fails for a reason
+        # that says nothing about the room. The SCENE rows are geometry and hold at
+        # either rung, so those are what the quick run scores.
+        print("  SCORE -- quick rung: image rows NOT RUN (a playblast is not the "
+              "deliverable's size); scene rows below are valid at this rung")
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
+                       errors="replace")
+    for ln in (r.stdout or "").splitlines():
+        print(f"SCORE {ln}")
+    if r.returncode == 2:
+        for ln in (r.stderr or "").splitlines()[-4:]:
+            print(f"SCORE !! {ln}")
+        print("BUILD FAILED: deliverable_check COULD NOT RUN (exit 2). 'Could not "
+              "look' must never finish like 'looked and it was fine'.")
+        sys.stdout.flush()
+        os._exit(1)
+
+
 def configure_cycles(samples=128, res=None):
     """Pin the engine of record + device + sampling. CYCLES because EEVEE needs EGL/Xvfb
     and is unsafe headless (pipeline/CLAUDE.md).
@@ -3798,6 +3879,10 @@ def build_suite(spec, label="suite"):
 
     xs = [p[0] for p in outline_m]; ys = [p[1] for p in outline_m]
     hero = bool(spec.get("_hero") and seats)
+    # The eye branch's own condition, named once: `_eye` alone is not the eye path
+    # (a spec with no items falls through to the dollhouse overview), and the
+    # resolution below must follow the branch that actually ran, not the flag.
+    _eye_path = bool(not hero and spec.get("_eye") and spec.get("items"))
     if hero:
         cx = (gx0 + gx1) / 2.0; cy = (gy0 + gy1) / 2.0
         _hero_camera(gx0, gy0, gx1, gy1, h, min(xs), min(ys), max(xs), max(ys))
@@ -3848,6 +3933,11 @@ def build_suite(spec, label="suite"):
         name += "_" + str(spec["_suffix"])
     _samples = 400 if hero else 256
     _res = (2400, 1500) if hero else (2000, 1400)
+    if _eye_path:
+        # DELIV-001 P1a: the client-facing frame renders at the census resolution,
+        # and camera_config REFUSES a value under the standard's own D1 floor. The
+        # floor is read here rather than baked in so the two files cannot drift.
+        _res = camera_config.deliverable_res(_d1_floor_mp())
     if spec.get("_quick"):
         # R5 rung: distinct _ql name so the deliverable pair is never overwritten
         # by a cheap frame, and the .blend beside it records the SAME quick settings.
@@ -3858,6 +3948,9 @@ def build_suite(spec, label="suite"):
     save(name, samples=_samples, res=_res)        # ONE source, so the .blend matches the PNG
     if spec.get("render"):
         render(name, samples=_samples, res=_res)
+    if _eye_path:
+        _score_deliverable(name, quick=bool(spec.get("_quick")),
+                           frame=bool(spec.get("render")))
     print(f"  built SUITE '{name}' {(max(xs)-min(xs)):.1f}x{(max(ys)-min(ys)):.1f}m + "
           f"{len(spec.get('builtins',[]))} built-ins + {len(spec.get('items',[]))} items")
     return f"OK: {label}"

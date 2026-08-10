@@ -325,7 +325,40 @@ def test_manual_override_rejects_bad_lens():
         assert "lens_mm" in str(e)
 
 
+def test_deliverable_res_clears_the_standards_own_d1_floor():
+    """The renderer's resolution and the standard's D1 row must not drift apart.
+
+    The eye path used to render 2000x1400 = 2.800 MP against a 2.796 MP floor — a
+    0.004 MP margin nobody chose and nothing was protecting."""
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    with open(os.path.join(repo, "qa", "deliverable-standard.json"), encoding="utf-8") as f:
+        d1 = float(json.load(f)["rows"]["D1"]["threshold"])
+    w, h = C.deliverable_res(d1)
+    assert (w * h) / 1e6 >= d1, f"{w}x{h} is under the shipped D1 floor {d1}"
+
+
+def test_deliverable_res_refuses_a_floor_it_cannot_meet():
+    """Fail-closed: a re-cut census that raises D1 past the constant must break the
+    build, not quietly render a frame that cannot qualify."""
+    try:
+        C.deliverable_res(99.0)
+    except ValueError as e:
+        assert "below" in str(e) and "D1" in str(e)
+    else:
+        raise AssertionError("a floor above the constant must raise")
+
+
+def test_deliverable_res_is_landscape_and_inside_the_delivered_aspect_spread():
+    """Census 2026-08-09, 658 delivered frames: aspect p25 0.750 / p75 1.500, 60.3%
+    landscape. A resolution outside that is a composition change wearing a number."""
+    w, h = C.deliverable_res()
+    assert 0.750 <= (w / h) <= 1.500
+
+
 TESTS = [test_default_height_in_designer_band, test_ray_threshold_is_coupled_to_eye_height,
+         test_deliverable_res_clears_the_standards_own_d1_floor,
+         test_deliverable_res_refuses_a_floor_it_cannot_meet,
+         test_deliverable_res_is_landscape_and_inside_the_delivered_aspect_spread,
          test_env_override_enables_render_ab, test_bad_env_value_falls_back_to_default,
          test_height_change_is_solve_neutral_for_production_specs,
          test_eye_aim_unset_returns_none, test_eye_aim_exact_kind_beats_substring,
