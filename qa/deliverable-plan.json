@@ -238,6 +238,20 @@
           "where": "pipeline/scripts/build_room.py",
           "why": "Forcing the signed textile onto an acquired upholstered mesh paints every non-metal material, legs included, while the spec says 'upholstery = greige linen; legs = the bench leg tone'. On the vanity chair the legs are hidden under the counter so nothing is visibly wrong yet — which is exactly why it is filed now rather than after a bench makes it visible. The DR (knowledge/_inbox/dr-acquired-mesh-integration-2026-08-10.md) does not answer the role-split; it answers keep-vs-strip and normalisation.",
           "status": "todo"
+        },
+        {
+          "id": "P2i",
+          "what": "ergonomic RELATIONS, not just absolute bands: nightstand top vs mattress top",
+          "where": "pipeline/scripts/ergonomics_ref.py",
+          "why": "C2#10, with a number: bed h=600, both side tables h=520, so the nightstand top sits 80 mm BELOW the mattress top. `TABLE_H_MM[\"nightstand\"] = (380, 700)` and 520 is inside it — the band PASSES a nightstand nobody can reach from the bed. The band is not wrong, it answers a different question. A nightstand's height is a RELATION to the bed it serves, which is R9's law arriving in the ergonomics layer: a number encodes a result, never a relationship. Same file already admits the shape of this gap for seat height ('a chair/sofa spec h is the BACKREST, not the seat, so seat-height 400-450 is NOT checkable here').",
+          "status": "todo"
+        },
+        {
+          "id": "P2j",
+          "what": "the mirror-backed niche the spec decided and the build did not make",
+          "where": "pipeline/scripts/wardrobe_bay.py",
+          "why": "C2#14. The spec says the hero wall 'terminates in a MIRROR-BACKED open niche — the mirror doubles the niche depth and sparkles the lit shelves'. Built scene: `mill__bayBF09-1-1_niche_mirror__mirror` exists, while `mill__bayBF09-1-0_back_niche` and `mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__back_niche` both carry `m_millwork_oak_veneer`. ONE of three niches got the decided mirror. A decided element that did not get built is the revert-by-omission class this repo has a name for, and the blind critic found it by noticing a grey panel that reflects nothing.",
+          "status": "todo"
         }
       ],
       "exit_test": "D5 (band-limited 4-32 px), D8 and D9 all PASS; MODEL-FIT REJECT count = 0; imported-mesh objects >=8. Then two crops at 100%: a sewn seam ridge on the bed head with no polygon facet on any silhouette, and weave on the foot-of-bed throw (0.11x the target's detail energy today).",
@@ -278,6 +292,13 @@
           "what": "an item-id convention on built parts, emitted by scene_dump, so D7 can be read",
           "where": "pipeline/scripts/scene_dump.py",
           "why": "D7 is the only row in the standard that no reader can answer. It is unscored today and becomes mandatory when CATALOG.json's styling_short_by reaches 0 — at which point an unreadable row becomes a blocking one.",
+          "status": "todo"
+        },
+        {
+          "id": "P4c",
+          "what": "the ABSENT-object question: what must a room of this type contain that this frame has none of",
+          "where": "pipeline/scripts/rule_gate.py",
+          "why": "C2#9, counted in the built scene and every count is ZERO: sockets 0, switches 0, handles/pulls 0, AC vents 0, bedside reading lights 0, wall skirting 0 (the 5 plinths are cabinet plinths). NOTHING IN THIS REPO ASKS THIS QUESTION IN EITHER DIRECTION. R10 asks whether a PRESENT object justifies itself; deliverable_check scores what is in the frame; placement_check judges where built things sit. A missing required object is invisible to all three. That is the same shape as R10 was before the owner named it, one step further out — and it is why a frame can pass every rung and still read as a showroom nobody has moved into.",
           "status": "todo"
         }
       ],
