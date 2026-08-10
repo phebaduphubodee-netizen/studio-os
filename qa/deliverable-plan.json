@@ -277,7 +277,25 @@
         "P1"
       ],
       "note": "P0c closed. The census contradicted the belief that produced P0's exit test, so the test was replaced and the replacement is narrower — recorded rather than quietly swapped."
+    },
+    {
+      "commit": "dae78719f73a0d6a988a510775e88157640c0fbc",
+      "verdicts": {
+        "P0": "keep: P0d and P0e closed and exit-test item 5 holds — debt_check refuses spec_r38.json by name, exit 1. Only P0f (the deletion commit) is left, and item 6 is its test. The phase shape is unchanged; what changed is inside it, recorded in P0d.",
+        "P1": "change: THE RENDER PATH THIS PHASE DEPENDS ON HAS NO GATE. rule_gate is imported by trn002_build.py and by nothing else — build_room.py and make_all.py never call it — so a DELIV-001 frame at 2400x1800 would render past no R9 contact check, no decision log, no R11 pixel rung and no debt rung, and P1 would then score it with a standard nothing enforced. P1a must wire the gate into build_room path as well as produce the frame and the scene dump. Second addition, from the ledger: DEBT-17 (camera, 11/28) comes due at P1 and its blocked_on is that placement_dump writes no camera record, so two-point perspective can only be asserted against the spec, which is a declaration.",
+        "P2": "change: the ledger puts 12 of the 21 rows here, and FIVE of those twelve have no instrument that can see them — wood-texture (22/28), unidentifiable-mass (15/28), glass-dead (15/28), rug-decal (14/28), bed-monolith (11/28). P2 was scoped as building objects and materials; it must also BUILD THE INSTRUMENTS those rows name in blocked_on, or it will finish with the same defects filed a 23rd time and nothing able to say so. Texture-map coverage of our own scene is the first of them and SC-4 already ranks it the strongest lever.",
+        "P3": "change: the exit test is D2/D3/D4/D6 PASS, and the second-most-recurring defect in the entire corpus is invisible to all four. no-contact-shadow is filed in 25 of 28 answer files; D6 measures the share of the WHOLE FRAME below L=26, which a black TV screen satisfies while every object still floats. downlights-dead (12/28) is equally unseen. Of the three rows due here, only flat-light has an instrument. P3 must add the localised contact-luminance probe its debt row names, and its exit test must include it.",
+        "P4": "change: D7 is the exit test and the ledger shows it is INFLATED BY one of the defects it is meant to catch — empty-frame is filed in 23 of 28 files, the third most recurring in the corpus, and D7 counts `artwork` and `art_mat` as loose styling objects, so an empty picture frame scores as styling present. The exit test already required the instrument and the eye to agree on the count; that agreement now has a named way to fail, and the row that would catch it has no instrument.",
+        "P5": "keep: unchanged. The first review made the owner the terminal condition and the blind panel the screen, and nothing measured since touches that. If anything the debt census strengthens it — 9 of the 21 most-recurring defects have no instrument at all, so his eye and the critic ladder remain the only rungs that can see them."
+      },
+      "changed": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "note": "P0d and P0e closed. The debt census re-measured the plan's own recurrence figures and the ledger now names, per phase, which owed defects have no instrument at all — which is what changes P1 through P4."
     }
   ],
-  "last_review_commit": "cb521f6cf2dfa389788a7a1e2caae84cbcb1ae1a"
+  "last_review_commit": "dae78719f73a0d6a988a510775e88157640c0fbc"
 }
