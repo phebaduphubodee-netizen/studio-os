@@ -598,6 +598,8 @@ NATIVE = {
     "modern_arm_chair_01":     (0.820, 0.987, 1.023),
     "sofa_02":                 (1.807, 0.818, 0.709),
     "ClassicNightstand_01":    (0.568, 0.424, 0.700),
+    "ArmChair_01":             (0.848, 0.766, 1.065),
+    "Sofa_01":                 (1.572, 0.658, 0.796),
 }
 
 
@@ -671,7 +673,7 @@ def test_the_one_knife_edge_pair_in_the_corpus_is_pinned():
 
 def test_a_mesh_that_matches_its_slot_passes():
     s, ok, why = M.model_fit(0.500, 0.450, 0.600, 0.500, 0.450, 0.600)
-    assert ok and why == "ok" and s == pytest.approx(1.0)
+    assert ok and s == pytest.approx(1.0) and why.startswith("ok at scale 1.000")
 
 
 def test_a_mesh_too_tall_for_its_slot_is_refused():
@@ -691,7 +693,10 @@ def test_the_gate_takes_no_rot_because_the_slot_is_already_local():
     conventions". That was WRONG and is retracted — there is exactly one. See
     test_facing_convention.py.)"""
     import inspect
-    assert list(inspect.signature(M.model_fit).parameters) == ["mw", "md", "mh", "w", "d", "h"]
+    # The two slot arguments are KEYWORD-ONLY-by-position and carry no geometry: they
+    # answer "is this the right kind of object", which no rotation convention affects.
+    assert list(inspect.signature(M.model_fit).parameters) == [
+        "mw", "md", "mh", "w", "d", "h", "model_slot", "item_slot"]
 
 
 def test_degenerate_mesh_is_refused_not_divided_by_zero():
@@ -1001,3 +1006,50 @@ def test_tub_chair_fail_loud():
         M.tub_chair_curved(-0.5, 0.5, 0.75)                # negative dim
     with pytest.raises(ValueError):
         M.tub_chair_curved(0.5, 0.5, 0.75, opening_deg=200)  # not a tub
+
+
+# --- the class gate (2026-08-10) --------------------------------------------------
+# `model_fit` took six numbers and no class, so a bounding box was the only thing
+# standing between the acquire path and an armchair in a nightstand slot. Measured on
+# the live shelf against this room's own slots, all three of these were a FIT:
+# ArmChair_01 -> side_table at 0.591, Ottoman_01 -> side_table at 0.566,
+# coffee_table_round_01 -> bed base at 1.537. The class was in CATALOG.json the whole
+# time and nothing read it.
+
+def test_an_armchair_is_refused_for_a_nightstand_slot_at_any_scale():
+    s, ok, why = M.model_fit(*NATIVE["ArmChair_01"], 0.501, 0.498, 0.520)
+    assert ok, "the geometric fit is what made this dangerous — it passes"
+    s, ok, why = M.model_fit(*NATIVE["ArmChair_01"], 0.501, 0.498, 0.520,
+                             model_slot="seating", item_slot="case")
+    assert not ok and "class mismatch" in why and "No scale" in why
+
+
+def test_a_coffee_table_is_refused_for_the_bed_slot():
+    _, ok, _ = M.model_fit(*NATIVE["coffee_table_round_01"], 2.000, 2.149, 0.600)
+    assert ok
+    _, ok, why = M.model_fit(*NATIVE["coffee_table_round_01"], 2.000, 2.149, 0.600,
+                             model_slot="case", item_slot="bed")
+    assert not ok and "class mismatch" in why
+
+
+def test_the_right_class_still_fits_and_the_scale_is_reported():
+    s, ok, why = M.model_fit(*NATIVE["ClassicNightstand_01"], 0.501, 0.498, 0.520,
+                             model_slot="case", item_slot="case")
+    assert ok and f"{s:.3f}" in why and "case" in why
+
+
+def test_an_unresolved_class_is_reported_never_assumed_to_match():
+    """'Could not look' must not read like 'looked and it matched'. The geometric
+    verdict stands, and the reason says the class was not checked."""
+    for ms, isl in (("seating", None), (None, "case"), (None, None)):
+        s, ok, why = M.model_fit(*NATIVE["ClassicNightstand_01"], 0.501, 0.498, 0.520,
+                                 model_slot=ms, item_slot=isl)
+        assert ok and "CLASS NOT CHECKED" in why
+
+
+def test_the_class_check_runs_before_the_geometry():
+    """A wrong-class mesh must be refused by NAME, not incidentally by aspect — the
+    reject line is a SOURCING signal and it has to say the right thing."""
+    _, ok, why = M.model_fit(*NATIVE["Sofa_01"], 0.501, 0.498, 0.520,
+                             model_slot="seating", item_slot="case")
+    assert not ok and "class mismatch" in why and "aspect" not in why

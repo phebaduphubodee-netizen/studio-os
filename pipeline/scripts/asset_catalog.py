@@ -87,6 +87,42 @@ def slot_of(slug):
     return None
 
 
+def kind_slot(kind):
+    """The slot class a SPEC ITEM's `kind` belongs to — the same vocabulary, read
+    the other way round.
+
+    No new map is introduced on purpose. `SLOT_WORDS` already answers "what class
+    of thing is this word", and a spec kind and an asset slug are both words:
+    `stool` -> seating, `side_table` -> case, `bed` -> bed. A second table mapping
+    kinds to classes would be a second place for the answer to be wrong.
+    """
+    return slot_of(kind or "")
+
+
+def catalog_slot(slug, path=None):
+    """The slot class recorded for a model in CATALOG.json, or None if the catalog
+    does not name it.
+
+    THIS FIELD WAS WRITE-ONLY UNTIL 2026-08-10. This module's own docstring says
+    the catalog is what "P2's acquire step reads"; grep found no reader anywhere in
+    the repo, and the acquire path's only gate — `millwork.model_fit` — takes six
+    numbers and no class at all. Measured consequences on the live shelf, all of
+    which model_fit calls a FIT: ArmChair_01 into a side-table slot at scale 0.591,
+    Ottoman_01 into the same slot at 0.566, coffee_table_round_01 into the bed base
+    at 1.537. A bounding box cannot tell an armchair from a nightstand, and nothing
+    else was asking.
+    """
+    try:
+        with open(path or os.path.join(REPO, OUT_REL), encoding="utf-8") as f:
+            cat = json.load(f)
+    except (OSError, ValueError):
+        return None
+    for m in cat.get("models", []):
+        if m.get("slug") == slug:
+            return m.get("slot")
+    return None
+
+
 def model_file(d):
     hits = sorted(glob.glob(os.path.join(d, "*.gltf")) + glob.glob(os.path.join(d, "*.glb")))
     return hits[0] if hits else None

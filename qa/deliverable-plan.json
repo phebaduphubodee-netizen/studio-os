@@ -186,7 +186,8 @@
           "id": "P2a",
           "what": "acquire: chair, pillows/shams, nightstand, ottoman via place_model; assert scale on every import",
           "where": "pipeline/scripts/build_room.py",
-          "status": "todo"
+          "status": "blocked",
+          "_measured_2026-08-10": "BLOCKED, and on two independent findings — neither of which is a modelling task.\n\n(1) THE ACQUIRE PATH IS UNREACHABLE FROM THIS SPEC. Every kind in the canonical suite is intercepted by a bespoke procedural builder that `continue`s before MODEL_MAP is consulted: rug -> _add_rug, bed -> _build_bed, bench -> _build_bench, stool+style=tub_chair -> _build_tub_chair, side_table+lamp -> _build_nightstand. 0 of 6 items reach place_model, so `model_fit` has never seen an item on the lane whose plan calls acquisition its strongest lever. TWO of the six carry a MODEL_MAP entry that is therefore dead — `side_table -> coffee_table_round_01` — which is the SAME defect the MODEL_MAP comment already records for `bench` and calls 'a lie about what the renderer does'. It is not deleted (two experiment specs still reach it); it is COUNTED, and the count now prints on every build.\n\n(2) THE SHELF CANNOT SERVE ONE R8-ACQUIRE SLOT IN THIS ROOM. Measured with model_fit against the 14 usable models:\n    stool / tub_chair 510x546x750 — 3 seating models fit, ALL at scale 0.46-0.60. A 40-54% armchair has a seat around 270 mm off the floor. `ergonomics_ref` records in its own comment that seat height is not checkable from a spec, so no rule refuses this today; it is refused here by judgement and the judgement is recorded.\n    bench 498x1000x450 — NOTHING fits. Best aspect is 60% of the plan footprint against a 62% floor; this is a narrow 1 m bench and the shelf holds sofas.\n    bed base, pillows, shams, rug — NOTHING on either shelf at all. The catalog's own shortfall says usable_styling 4, styling_short_by 8.\n    garments — garments_set_a is out-of-band (a 4 m rack), shirt_hanger_a is PLANAR at 12 mm thick, which is the flat-cutout defect in acquired form.\n\nR8'S OWN INSTRUCTION FOR THIS CASE: 'Acquisition fails -> a DECLARED GAP handed to the owner as a procurement decision, never a modelling task.' So this is a SPEND question, and it is his per R8's licence half. It also answers SC-3's surviving question 1 from the other side: before asking which pieces he models rather than buys, the measured fact is that for THIS room the free shelves can supply none of the six."
         },
         {
           "id": "P2b",
@@ -212,6 +213,13 @@
           "what": "texture maps: 2 of 498 built objects carry an image texture (0.4%)",
           "where": "pipeline/scripts/build_room.py",
           "why": "MEASURED on the P1 frame's own scene dump, per OBJECT — the 4.9% in SC-4 is the material-side figure from the ground-truth study, and the object-side number is an order of magnitude worse. Delivered .blend files measure 50-66%. SC-4's controlled experiment (Rademacher, EGRW 2001, n=18) puts surface roughness above shadow softness as a realism cue, R .71 vs .39 — this is the largest measured gap in the frame and it has no row in the standard, which is why it needs an item rather than a hope.",
+          "status": "todo"
+        },
+        {
+          "id": "P2f",
+          "what": "make the acquire path reachable: try place_model BEFORE the bespoke builder for R8-ACQUIRE kinds",
+          "where": "pipeline/scripts/build_room.py",
+          "why": "Ordering, not capability. place_model, model_fit, the class gate and both shelves all exist and work; the item loop simply never asks them. Worth doing only once a mesh exists that is worth placing — P2a is the blocker, and inverting the order today would just add a reject line to the log.",
           "status": "todo"
         }
       ],

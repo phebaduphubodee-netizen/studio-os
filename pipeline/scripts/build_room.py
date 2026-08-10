@@ -1768,7 +1768,9 @@ def _dress_scene(spec):
         # and brass_vase_02 (ornate genie-lamp ewer) both dropped — they read as odd shapes.
         p = _model_path("ceramic_vase_01")
         if p and place_model(p, tx + 0.40 * tw - 0.065, ty + 0.54 * td - 0.065,
-                             0.13, 0.13, 0.30, z0=top):
+                             0.13, 0.13, 0.30, z0=top,
+                             model_slot=_slot_pair("ceramic_vase_01", None)[0],
+                             item_slot="styling"):
             placed += 1
         # a low stack of coffee-table books (procedural) — classic styling, adds muted colour
         book_cols = ((0.32, 0.30, 0.26, 1.0), (0.52, 0.30, 0.22, 1.0), (0.86, 0.83, 0.76, 1.0))
@@ -1791,7 +1793,9 @@ def _dress_scene(spec):
         pz = max(float(tbl.get("h", 350)) * MM, 0.05)
         px, py = tx + 0.15 * tw, ty + 0.12 * td
         p = _model_path("calathea_orbifolia_01")
-        if p and place_model(p, px, py, 0.22, 0.22, 0.3, z0=pz):
+        if p and place_model(p, px, py, 0.22, 0.22, 0.3, z0=pz,
+                             model_slot=_slot_pair("calathea_orbifolia_01", None)[0],
+                             item_slot="styling"):
             placed += 1
         else:
             pot_m = _solid("deco_pot", (0.78, 0.75, 0.70, 1.0), rough=0.85, spec=0.35)
@@ -3463,8 +3467,24 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
             rg.default_value = rough
 
 
+def _slot_pair(slug, kind):
+    """(model slot, slot for this kind) — the two classes model_fit compares.
+
+    The mesh's class comes from `assets/shared/CATALOG.json`, which recorded it for
+    all 29 models at P0b and which nothing has read since; the item's comes from the
+    same word vocabulary applied to the spec `kind`. Either may be None, and None is
+    reported by model_fit rather than treated as a match."""
+    try:
+        import asset_catalog as _AC
+    except Exception:                                   # noqa: BLE001
+        return None, None
+    return (_AC.catalog_slot(slug) if slug else None,
+            _AC.kind_slot(kind) if kind else None)
+
+
 def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
-                retint_rgba=None, retint_sheen=None, retint_rough=None, retint_force=None):
+                retint_rgba=None, retint_sheen=None, retint_rough=None,
+                retint_force=None, model_slot=None, item_slot=None):
     """Import a gltf, UNIFORMLY scale it to fit the item footprint (undistorted), set it
     footprint-centred at (x,y) with its base at height z0 (0 = on the floor; >0 = on a
     table for decor), then rotate it `rot` degrees about world Z (so a chair can face the
@@ -3493,7 +3513,14 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
     roots = [o for o in news if o.parent is None] or news
     mn, mx = _world_bbox(meshes)
     mw, md = mx[0] - mn[0], mx[1] - mn[1]
-    s, ok, why = millwork.model_fit(mw, md, mx[2] - mn[2], w, d, h)
+    s, ok, why = millwork.model_fit(mw, md, mx[2] - mn[2], w, d, h,
+                                    model_slot=model_slot, item_slot=item_slot)
+    if ok:
+        # The scale is PRINTED on every acquisition, not only on a reject. A uniform
+        # rescale of an ingest-asserted mesh is a second scaling that nothing asserts
+        # (pipeline/CLAUDE.md: "scale is ASSERTED on every ingest, never assumed"),
+        # and the band it should sit in is a declared gap — see model_fit's docstring.
+        print(f"  MODEL-FIT {os.path.basename(path)}: {why}")
     if not ok:
         # LOUD, not silent: this is the failure mode that produced a judged 2/5 and was read as a
         # mesh-quality problem for a week. It is a SOURCING signal — the slot wants a different mesh.
@@ -3754,6 +3781,7 @@ def build_suite(spec, label="suite"):
                 and float(it["x"]) > 4000 and float(it["y"]) < 3000), None)
     _focal = ((float(_ct["x"]) + float(_ct["w"]) / 2.0, float(_ct["y"]) + float(_ct["d"]) / 2.0)
               if _ct else None)
+    n_reached = n_intercepted = 0
     for it in spec.get("items", []):
         kind = it.get("kind", "block")
         nm = it.get("name") or kind
@@ -3781,6 +3809,7 @@ def build_suite(spec, label="suite"):
             _build_bed(xm, ym, wm, dm, hm, rot)
             continue
         if kind == "bench":
+            n_intercepted += kind in MODEL_MAP
             _build_bench(xm, ym, wm, dm, hm, rot)   # rot accepted, NOT applied — see above
             continue
         # ELEMENT 3: a side_table carrying a `lamp` block IS a bedside nightstand — a solid cabinet
@@ -3806,9 +3835,11 @@ def build_suite(spec, label="suite"):
             _g5 = _e5.lamp_glow(spec)
             _glow = (dict(_g5, rgb=_e5.lamp_rgb((it.get("lamp") or {}).get("cct_k", 2850)))
                      if _g5 else None)
+            n_intercepted += kind in MODEL_MAP
             _build_nightstand(xm, ym, wm, dm, hm, rot, it.get("lamp"), glow=_glow)
             continue
         slug = MODEL_MAP.get(kind)
+        n_reached += 1
         # BOTH rotation paths now go through THE LAW (see MODEL_FRONT_DEG): place_model is handed
         # (desired FRONT azimuth - the mesh's native front), never a raw angle. The auto-face branch
         # already did this and is the render-calibrated anchor; the plain path used to pass the spec
@@ -3841,8 +3872,10 @@ def build_suite(spec, label="suite"):
             elif mpath:
                 print(f"  (element preset '{ep}' on '{nm}': texture-set preset — the "
                       f"imported model keeps its own PBR; noted, not applied)")
+        _ms, _is = _slot_pair(slug, kind)
         if mpath and place_model(mpath, xm, ym, wm, dm, hm, rot=mrot,
-                                 retint_fabric=retint or bool(ekw), **ekw):
+                                 retint_fabric=retint or bool(ekw),
+                                 model_slot=_ms, item_slot=_is, **ekw):
             n_model += 1
             continue
         # PRIMITIVE FALLBACK. It used to be built AXIS-ALIGNED and rot was DROPPED on the floor —
@@ -3863,6 +3896,21 @@ def build_suite(spec, label="suite"):
         _rotate_about_z(prims, xm + wm / 2.0, ym + dm / 2.0, rot)
     if n_model:
         print(f"  placed {n_model} real CC0 furniture models (Poly Haven)")
+    # R8'S ACQUIRE HALF, AS A NUMBER IN THE RENDER PATH. Measured 2026-08-10: on the
+    # canonical suite this reads 0 of 6, because every kind in it is intercepted by a
+    # bespoke procedural builder that `continue`s before MODEL_MAP is consulted — so
+    # `place_model` and `model_fit` never see an item and the acquire path is
+    # unreachable from the lane whose plan calls acquisition its strongest lever.
+    #
+    # The second half is a lie this file has already told once and told again. The
+    # MODEL_MAP comment records the bench mapping going dead in 2026-07-11 and calls
+    # leaving it in "a lie about what the renderer does" — and `side_table ->
+    # coffee_table_round_01` is dead in exactly the same way for any spec whose side
+    # table carries a lamp, which is both of this room's. It is NOT deleted, because
+    # two experiment specs still reach it; it is COUNTED, so the lie cannot be silent.
+    print(f"  acquire path (R8): {n_reached} of {len(spec.get('items', []))} item(s) "
+          f"reached place_model; {n_intercepted} carried a MODEL_MAP entry that a "
+          f"bespoke builder intercepted first")
 
     # seating group bbox (the lounge, east half) — drives the rug + the hero camera.
     # the lounge conversation group = the big pieces in the SOUTH-EAST (x>4m, y<3m). Exclude

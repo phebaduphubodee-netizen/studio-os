@@ -137,3 +137,38 @@ def test_the_known_cutout_on_the_real_shelf_is_not_listed_as_stock():
     rows = {r["slug"]: r for r in AC.build()}
     if "shirt_hanger_a" in rows:
         assert rows["shirt_hanger_a"]["verdict"] == "planar"
+
+
+# --- the field that was write-only until 2026-08-10 -------------------------------
+
+def test_catalog_slot_reads_the_field_the_acquire_path_needs(tmp_path):
+    """This module's docstring says the catalog is what "P2's acquire step reads".
+    Nothing read it, and `millwork.model_fit` — the acquire path's only gate — took
+    six numbers and no class at all."""
+    f = tmp_path / "CATALOG.json"
+    f.write_text(json.dumps({"models": [
+        {"slug": "ArmChair_01", "slot": "seating"},
+        {"slug": "ClassicNightstand_01", "slot": "case"}]}), encoding="utf-8")
+    assert AC.catalog_slot("ArmChair_01", str(f)) == "seating"
+    assert AC.catalog_slot("ClassicNightstand_01", str(f)) == "case"
+    assert AC.catalog_slot("not_on_the_shelf", str(f)) is None
+
+
+def test_an_unreadable_catalog_is_none_not_a_guess(tmp_path):
+    """None means "the class is unknown", which model_fit reports rather than
+    treating as a match. A guessed class would be worse than no class."""
+    assert AC.catalog_slot("ArmChair_01", str(tmp_path / "missing.json")) is None
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    assert AC.catalog_slot("ArmChair_01", str(bad)) is None
+
+
+def test_a_spec_kind_resolves_through_the_same_vocabulary():
+    """No second map: a spec kind and an asset slug are both words, and SLOT_WORDS
+    already answers what class a word names."""
+    assert AC.kind_slot("stool") == "seating"
+    assert AC.kind_slot("side_table") == "case"
+    assert AC.kind_slot("bed") == "bed"
+    assert AC.kind_slot("bench") == "seating"
+    assert AC.kind_slot("rug") is None        # not a class this vocabulary names
+    assert AC.kind_slot(None) is None

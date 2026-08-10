@@ -739,9 +739,36 @@ MIN_FILL = 0.62                 # the mesh must fill >= 62% of EACH plan-footpri
 H_LO, H_HI = 0.65, 1.30         # resulting height vs the spec's declared height
 
 
-def model_fit(mw, md, mh, w, d, h):
+def model_fit(mw, md, mh, w, d, h, model_slot=None, item_slot=None):
     """PURE. Can a mesh with native bbox (mw, md, mh) be UNIFORMLY scaled into the spec slot
     (w, d, h) without lying about it? Returns (scale, ok, reason). Metres, rot-free BY DESIGN.
+
+    CLASS IS CHECKED FIRST, AND UNTIL 2026-08-10 IT WAS NOT CHECKED AT ALL. Everything
+    below this paragraph is geometry, and geometry cannot tell an armchair from a
+    nightstand. Measured on the live shelf against this room's own slots, every one of
+    these was a FIT: ArmChair_01 into a side-table slot at 0.591, Ottoman_01 into the
+    same slot at 0.566, coffee_table_round_01 into the bed base at 1.537. The class was
+    available the whole time — `asset_catalog` computes a `slot` for every model and its
+    own docstring says the acquire step reads it. Nothing read it.
+
+    The two slot strings are passed IN rather than looked up here, so this module stays
+    stdlib-pure and the caller owns where the classes come from (the catalog for the
+    mesh, the same word vocabulary for the spec kind).
+
+    A CLASS THAT CANNOT BE RESOLVED IS REPORTED, NEVER ASSUMED TO MATCH. An unknown
+    slot on either side leaves the geometric verdict standing and says in the reason
+    that the class was not checked — "could not look" must not read like "looked and
+    it matched".
+
+    WHAT THIS STILL DOES NOT CATCH, said plainly because it is the next question and
+    not a solved one: a class match at an extreme SCALE. ArmChair_01 is seating and so
+    is a vanity stool, so the pair survives this gate at scale 0.601 — a 40% smaller
+    armchair, whose seat would sit around 270 mm off the floor. A scale band cannot be
+    honestly set from here: `ergonomics_ref` records in its own comment that seat height
+    is not checkable from a spec (`h` is the backrest), and the spec's slot dimensions
+    come from the drawing, which outranks a general comfort band. So the scale is
+    REPORTED on every placement and the band is a declared gap, not a number invented
+    to look like a rule.
 
     ROT DOES NOT BELONG HERE, and the reason is a schema fact, not a caution.
     **A spec item's `w`/`d` are the piece's OWN, LOCAL, UN-ROTATED dims** — the generator pre-swaps
@@ -762,6 +789,9 @@ def model_fit(mw, md, mh, w, d, h):
     is why place_model's raw-rot pass-through is correct. See build_room.MODEL_FRONT_DEG.)"""
     if min(mw, md, mh) <= 1e-6 or min(w, d, h) <= 1e-6:
         return 0.0, False, "degenerate bbox"
+    if model_slot and item_slot and model_slot != item_slot:
+        return 0.0, False, (f"class mismatch — a '{model_slot}' mesh offered for a "
+                            f"'{item_slot}' slot. No scale makes it the right object")
     s = min(w / mw, d / md)                  # never exceed the plan footprint (the CAD invariant)
     fill = min((mw * s) / w, (md * s) / d)
     h_ratio = (mh * s) / h
@@ -772,4 +802,9 @@ def model_fit(mw, md, mh, w, d, h):
     if not (H_LO <= h_ratio <= H_HI):
         return s, False, (f"height mismatch — fits to {mh * s * 1000:.0f} mm vs the spec's "
                           f"{h * 1000:.0f} mm ({h_ratio:.2f}x)")
-    return s, True, "ok"
+    if not (model_slot and item_slot):
+        return s, True, (f"ok at scale {s:.3f} — CLASS NOT CHECKED "
+                         f"(mesh slot {model_slot or 'unknown'}, "
+                         f"slot for kind {item_slot or 'unknown'}): the bbox fits and "
+                         f"nothing confirmed it is the right kind of object")
+    return s, True, f"ok at scale {s:.3f}, class '{item_slot}'"
