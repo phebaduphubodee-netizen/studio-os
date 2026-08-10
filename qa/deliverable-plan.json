@@ -230,7 +230,8 @@
           "what": "photographic maps on the three biggest untextured materials: oak veneer (163 objects), plaster (34), cement (37)",
           "where": "pipeline/scripts/material_presets.py",
           "why": "HALF ONE IS DONE AND IT WAS ALREADY WRITTEN. Lane B put `maps=\"rough_linen\"` on seven soft-good materials on 2026-07-30 behind `_FABRIC_MAPS = False`, and no lane ever set it. Default is now ON (D-022, A leg still runnable via --no-fabric-maps). Textured objects 2/498 -> 13/498. The instruments could not decide it — octave energy moved 10.1222 -> 10.1223 — and the 2x crop at the bed head could: the euro shams read as woven cloth rather than matte slabs.\n\nHALF TWO IS THE BIG ONE AND IT IS SPECIFIED, NOT STARTED. `m_millwork_oak_veneer` is on 163 of 498 objects — the largest material in the room by three times — and it is built by the `proc_wood` factory, a two-colour procedural grain with no photograph in it. That is exactly Gemini's C3#4 ('วัสดุไม้ของตู้ดูเรียบและแบนเกินไป ไม่มีลายไม้'). Two more follow it: m_walls_cool_plaster (34 objects, `painted`) and m_mill_cement (37, `painted`).\n\nTHE MECHANISM EXISTS AND THE MAPS ARE ON DISK. `_pbr_material(name, slug, base_tint=...)` already builds a photographic PBR material and MULTIPLIES the albedo by a tint — which is how the signed colour survives a real grain, and it is what `feature_walnut` already does. assets/shared/cc0/textures holds nine complete 2k sets: wood_table_worn, wood_floor, plastered_wall_03, grey_cartago_01/03, marble_01, rough_linen, wool_boucle, poly_wool_herringbone.\n\nWHY IT IS NOT DONE IN THE SAME COMMIT: `oak_veneer` is tier DESIGN-INTENT with an owner-signed source (element1-oak-signature-wall_DD-2026-07-16, D2/D3/D5) and a hex chosen after a LOOK that specifically desaturated it because a saturated amber flooded the room orange. Swapping its factory is a material design change on a signed preset and needs its own A/B and its own recorded decision, not a side-effect of a texture-coverage number.",
-          "status": "todo"
+          "status": "todo",
+          "_progress_2026-08-10": "PART DONE BY A DIFFERENT ROUTE THAN THIS ITEM PROPOSED, and the item stays open for the half that is left.\n\nWHAT MEASURING FIRST FOUND. `_proc_wood` already generates plank bands. Its `Wave.Scale` was 1.6 against OBJECT coordinates, which are local metres here — a **625 mm plank pitch**. A 2 m wardrobe carcass showed three bands and a drawer front showed part of one, so 163 objects got a flat wash of a texture that was 3.5x too large to read as grain. The grain was never missing. Pitch is now physical and named: PLANK_PITCH_MM 180, GRAIN_FEATURE_MM 40. The A/B is unambiguous by eye.\n\nWHY THE PHOTOGRAPHIC HALF IS STILL OPEN, with the number that decides it: signed oak #C7B896 is linear (0.571, 0.479, 0.305); the mean of wood_floor_Diffuse_2k is linear (0.217, 0.117, 0.055). The tint route `_pbr_material` uses would need a multiply of (2.64, 4.10, 5.57) to reach the signed colour — brightening a dark map up to 5.6x, which crushes the light end of the grain to white. **The photographic route needs a texture whose mean is already near the target, and neither shelf has a light oak.** That is a fetch (Poly Haven has ~90 texture sets beyond our 9) or a different operator (modulate the signed colour by the map's luminance, the way `_woven` already does for fabric) — not a tint.\n\nAND A KNOB WAS BUILT AND DELETED IN THE SAME SITTING. A metric said our band contrast was 4.07x a photograph of real oak; a `grain_amp` of 0.25 moved it to 3.98x, which looked like the metric was stable. The crop was not: the 0.25 pass was visibly back to flat beige. The metric's high-pass window was wider than the bands it measured, so it subtracted its own signal. I believed the metric over the eye. The knob is gone and the story is in the code where the next person will read it."
         },
         {
           "id": "P2h",
@@ -502,7 +503,33 @@
         "P1/P1b",
         "P2/P2e"
       ]
+    },
+    {
+      "commit": "b0019eb7370c2ccf20af664d7a7b0cbe66b61050",
+      "verdicts": {
+        "P2": "change: kept as the phase, and it grew by five items this round because the work kept finding what it was standing on. P2f CLOSED (the acquire path is reachable; 0 of 6 items used to reach place_model). P2a is one of four done with the tub chair acquired, and its BLOCKED-as-procurement status is retracted — that was measured on our 29-model cache and concluded about free sources, which are different sets. P2g is part done by a route it did not propose: the wood grain existed and was 3.5x too big to be grain. ADDED P2h (role-split on acquired materials), P2i (ergonomic RELATIONS, from a nightstand 80 mm below the mattress that passes an absolute band), P2j (a mirror-backed niche the spec decided and the build never made). None of the five came from planning; all five came from looking.",
+        "P3": "keep: unchanged and the case for it strengthened. Two independent critics now name the same two things on the same frame — sconces that light nothing (C3#3, C2#3) and no contact shadows anywhere (C2#4) — and both map onto DEBT-15 and DEBT-02, which are rows this repo already records as having NO instrument. The caution from two reviews ago still stands verbatim: D2, D3 and D6 all PASS, so P3 must not close on rows that were green before it started.",
+        "P4": "change: exit test unchanged from the last rewrite, but P4c added and it is a different KIND of item from anything else in this plan. C2 counted the built scene: sockets 0, switches 0, handles 0, AC vents 0, bedside reading lights 0, wall skirting 0. Nothing in this repo asks what a room MUST contain and does not have — R10 asks whether a present object justifies itself, deliverable_check scores what is in the frame, placement_check judges where built things sit. A required object that is absent is invisible to all three. That is the same shape R10 had before the owner named it, one step further out.",
+        "P5": "keep: unchanged. Still the only phase whose test is sighted judges rather than an instrument, and this round is the reason it matters — the blind critic returned twenty items on a frame whose ten-row scorecard did not move at all."
+      },
+      "changed": [
+        "P2",
+        "P4"
+      ],
+      "note": "The round that the critic ladder paid for. C2 fired for the first time in three rounds and returned 20 items against C3s 5 on the same frame; nine of them land on the four critic-debt rows we already record as having no instrument. Two process defects were found by using the tools rather than by auditing them: a metric I built disagreed with the eye and I believed the metric (the knob is deleted and the story is in the code), and the acquire path named its meshes Mesh_0..Mesh_6, which every name-based instrument here is blind to. One DR fired, was consumed the same day by _normalise_acquired, and is staged REFERENCE tier with all 79 citations resolved.",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f"
+      ]
     }
   ],
-  "last_review_commit": "3dedc46e621b6eb93c26d7ccb79c41948523a0c7"
+  "last_review_commit": "b0019eb7370c2ccf20af664d7a7b0cbe66b61050"
 }
