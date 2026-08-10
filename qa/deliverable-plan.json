@@ -210,17 +210,24 @@
         },
         {
           "id": "P2e",
-          "what": "texture maps: 2 of 498 built objects carry an image texture (0.4%)",
+          "what": "fabric maps on soft goods: turn on the `maps=` code lane B wrote and never ran",
           "where": "pipeline/scripts/build_room.py",
           "why": "MEASURED on the P1 frame's own scene dump, per OBJECT — the 4.9% in SC-4 is the material-side figure from the ground-truth study, and the object-side number is an order of magnitude worse. Delivered .blend files measure 50-66%. SC-4's controlled experiment (Rademacher, EGRW 2001, n=18) puts surface roughness above shadow softness as a realism cue, R .71 vs .39 — this is the largest measured gap in the frame and it has no row in the standard, which is why it needs an item rather than a hope.",
-          "status": "part-done",
-          "_done_2026-08-10": "HALF ONE IS DONE AND IT WAS ALREADY WRITTEN. Lane B put `maps=\"rough_linen\"` on seven soft-good materials on 2026-07-30 behind `_FABRIC_MAPS = False`, and no lane ever set it. Default is now ON (D-022, A leg still runnable via --no-fabric-maps). Textured objects 2/498 -> 13/498. The instruments could not decide it — octave energy moved 10.1222 -> 10.1223 — and the 2x crop at the bed head could: the euro shams read as woven cloth rather than matte slabs.\n\nHALF TWO IS THE BIG ONE AND IT IS SPECIFIED, NOT STARTED. `m_millwork_oak_veneer` is on 163 of 498 objects — the largest material in the room by three times — and it is built by the `proc_wood` factory, a two-colour procedural grain with no photograph in it. That is exactly Gemini's C3#4 ('วัสดุไม้ของตู้ดูเรียบและแบนเกินไป ไม่มีลายไม้'). Two more follow it: m_walls_cool_plaster (34 objects, `painted`) and m_mill_cement (37, `painted`).\n\nTHE MECHANISM EXISTS AND THE MAPS ARE ON DISK. `_pbr_material(name, slug, base_tint=...)` already builds a photographic PBR material and MULTIPLIES the albedo by a tint — which is how the signed colour survives a real grain, and it is what `feature_walnut` already does. assets/shared/cc0/textures holds nine complete 2k sets: wood_table_worn, wood_floor, plastered_wall_03, grey_cartago_01/03, marble_01, rough_linen, wool_boucle, poly_wool_herringbone.\n\nWHY IT IS NOT DONE IN THE SAME COMMIT: `oak_veneer` is tier DESIGN-INTENT with an owner-signed source (element1-oak-signature-wall_DD-2026-07-16, D2/D3/D5) and a hex chosen after a LOOK that specifically desaturated it because a saturated amber flooded the room orange. Swapping its factory is a material design change on a signed preset and needs its own A/B and its own recorded decision, not a side-effect of a texture-coverage number."
+          "status": "done",
+          "closed_by": "D-022, `_FABRIC_MAPS` default ON. `maps=\"rough_linen\"` was written on seven soft-good materials on 2026-07-30 behind a flag no lane ever set, so `_woven`'s `if maps and _FABRIC_MAPS:` never fired once. Textured objects 2/498 -> 13/498. The instruments could not decide it (octave energy 10.1222 -> 10.1223); the 2x crop at the bed head could — the euro shams read as woven cloth instead of matte slabs. Surface half of Gemini C3#2. The GEOMETRY half is untouched and must not be read as fixed: the pillows have no seams and are too round, which is shape, not material. A leg stays runnable with --no-fabric-maps."
         },
         {
           "id": "P2f",
           "what": "make the acquire path reachable: try place_model BEFORE the bespoke builder for R8-ACQUIRE kinds",
           "where": "pipeline/scripts/build_room.py",
           "why": "Ordering, not capability. place_model, model_fit, the class gate and both shelves all exist and work; the item loop simply never asks them. Worth doing only once a mesh exists that is worth placing — P2a is the blocker, and inverting the order today would just add a reject line to the log.",
+          "status": "todo"
+        },
+        {
+          "id": "P2g",
+          "what": "photographic maps on the three biggest untextured materials: oak veneer (163 objects), plaster (34), cement (37)",
+          "where": "pipeline/scripts/material_presets.py",
+          "why": "HALF ONE IS DONE AND IT WAS ALREADY WRITTEN. Lane B put `maps=\"rough_linen\"` on seven soft-good materials on 2026-07-30 behind `_FABRIC_MAPS = False`, and no lane ever set it. Default is now ON (D-022, A leg still runnable via --no-fabric-maps). Textured objects 2/498 -> 13/498. The instruments could not decide it — octave energy moved 10.1222 -> 10.1223 — and the 2x crop at the bed head could: the euro shams read as woven cloth rather than matte slabs.\n\nHALF TWO IS THE BIG ONE AND IT IS SPECIFIED, NOT STARTED. `m_millwork_oak_veneer` is on 163 of 498 objects — the largest material in the room by three times — and it is built by the `proc_wood` factory, a two-colour procedural grain with no photograph in it. That is exactly Gemini's C3#4 ('วัสดุไม้ของตู้ดูเรียบและแบนเกินไป ไม่มีลายไม้'). Two more follow it: m_walls_cool_plaster (34 objects, `painted`) and m_mill_cement (37, `painted`).\n\nTHE MECHANISM EXISTS AND THE MAPS ARE ON DISK. `_pbr_material(name, slug, base_tint=...)` already builds a photographic PBR material and MULTIPLIES the albedo by a tint — which is how the signed colour survives a real grain, and it is what `feature_walnut` already does. assets/shared/cc0/textures holds nine complete 2k sets: wood_table_worn, wood_floor, plastered_wall_03, grey_cartago_01/03, marble_01, rough_linen, wool_boucle, poly_wool_herringbone.\n\nWHY IT IS NOT DONE IN THE SAME COMMIT: `oak_veneer` is tier DESIGN-INTENT with an owner-signed source (element1-oak-signature-wall_DD-2026-07-16, D2/D3/D5) and a hex chosen after a LOOK that specifically desaturated it because a saturated amber flooded the room orange. Swapping its factory is a material design change on a signed preset and needs its own A/B and its own recorded decision, not a side-effect of a texture-coverage number.",
           "status": "todo"
         }
       ],
@@ -443,7 +450,29 @@
         "P4"
       ],
       "note": "First review after P0 and P1 closed together. The lane advanced two phases and the critic-debt ledger went red on schedule: 15 of 21 rows are now DUE AND UNPAID and 9 of the 21 still have no instrument that can see them — that number is the honest state of this lane, not a side note. Nothing was dropped this review."
+    },
+    {
+      "commit": "3dedc46e621b6eb93c26d7ccb79c41948523a0c7",
+      "verdicts": {
+        "P2": "keep: unchanged in shape, and the first item closed inside it. P2e (fabric maps) is done, P2a is blocked as a PROCUREMENT decision with the measurement attached, P2f and P2g are opened and specified. The phase re-ranking that put surface ahead of light is still the right call and is now better evidenced than when it was made: the biggest single material in the room is on 163 of 498 objects and carries no photograph at all.",
+        "P3": "keep: unchanged, and the caution from the last review still stands word for word. D2 17.21, D3 3.618 and D6 2.8836 all PASS on the P1 frame, so P3 must not close on rows that were green before it started. One item was added to its evidence this round: Gemini C3#3 says the sconce pools have no hotspot and do not interact with the slat reveals, and DEBT-15 (an emissive mass must produce a measurable pool below it) is one of the nine debt rows with no instrument that can see them. That is P3 work, not P2 work.",
+        "P4": "keep: unchanged since the last review, which rewrote its exit test. No new evidence arrived this round.",
+        "P5": "keep: unchanged. Still the only phase whose test is three sighted judges rather than an instrument."
+      },
+      "changed": [],
+      "note": "NOTHING CHANGED THIS REVIEW, and that is the verdict rather than an omission — the previous review (one commit earlier) rewrote P2 and P4, and this round produced evidence that CONFIRMS those rewrites instead of revising them. What did change is inside P2 and is recorded there. Two process defects were found and fixed while doing the work rather than the plan: the review trigger re-armed itself a second time (fixed by diffing what the plan says closed, not by naming files), and I invented a work-item status the machine cannot read (part-done), which would have made real landed work invisible to that trigger — the item is split and plan_status now names any status outside its vocabulary.",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e"
+      ]
     }
   ],
-  "last_review_commit": "800d22b0e136b0c9ad8b71e7029cc45f8fd55fe7"
+  "last_review_commit": "3dedc46e621b6eb93c26d7ccb79c41948523a0c7"
 }

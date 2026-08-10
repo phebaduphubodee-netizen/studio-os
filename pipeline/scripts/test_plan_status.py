@@ -354,3 +354,76 @@ def test_the_gate_does_not_BLOCK_on_an_overdue_review():
     block = tail[:tail.index("if v and hard")]
     assert "REVIEW OVERDUE" in block
     assert "v.append" not in block and "raise SystemExit" not in block
+
+
+# --- a status the machine cannot read ---------------------------------------------
+# Written after inventing `part-done` on a work item that had genuinely half landed.
+# The review trigger counts items that became `done`, so an unknown status is a row
+# that can hold real work and never arm the ritual meant to follow it.
+
+def test_an_unknown_status_is_named_not_tolerated():
+    p = _plan()
+    p["phases"][0]["work"][0]["status"] = "part-done"
+    bad = PS.unreadable_statuses(p)
+    assert bad and bad[0][1] == "part-done"
+    out = PS.report(p)
+    assert "part-done" in out and "split it" in out
+
+
+def test_the_real_plan_uses_only_statuses_the_machine_can_read():
+    assert PS.unreadable_statuses(PS.load()) == []
+
+
+def test_a_clean_plan_prints_no_status_warning():
+    assert PS.unreadable_statuses(_plan()) == []
+    assert "does not name" not in PS.report(_plan())
+
+
+# --- the review's own record answers "what has closed since" ----------------------
+# Stamping HEAD had an ordering flaw no git-based version escapes: record_review runs
+# BEFORE the commit carrying the closures that triggered it, so the plan at that
+# commit lacks them and the next run counts them again — the self-re-arming review a
+# third time, one level down.
+
+def test_the_review_records_what_was_closed_at_the_time():
+    p = _plan()
+    p["phases"][0]["work"][0]["status"] = "done"
+    PS.record_review(p, {"P0": "keep: a", "P1": "keep: b"}, commit="abc")
+    assert p["reviews"][-1]["done_at_review"] == ["P0/P0a"]
+
+
+def test_closures_in_the_same_commit_as_the_review_do_not_re_arm_it(monkeypatch):
+    monkeypatch.setattr(PS, "_git", lambda *a: None)   # git must not be consulted
+    p = _plan()
+    p["phases"][0]["work"][0]["status"] = "done"
+    PS.record_review(p, {"P0": "keep: a", "P1": "keep: b"}, commit="abc")
+    for ph in p["phases"]:
+        ph["_reviewed"] = True
+    assert PS.work_closed_since_review(p) == []
+    assert PS.review_due(p)[0] is False
+
+
+def test_the_next_closure_arms_it_again(monkeypatch):
+    monkeypatch.setattr(PS, "_git", lambda *a: None)
+    p = _plan()
+    p["phases"][0]["work"][0]["status"] = "done"
+    PS.record_review(p, {"P0": "keep: a", "P1": "keep: b"}, commit="abc")
+    for ph in p["phases"]:
+        ph["_reviewed"] = True
+    p["phases"][0]["work"][1]["status"] = "done"
+    assert PS.work_closed_since_review(p) == ["P0/P0b"]
+    assert PS.review_due(p)[0] is True
+
+
+def test_git_output_is_decoded_as_utf8_not_the_locale_codec():
+    """The plan of record is written in Thai. `text=True` decodes with the LOCALE
+    codec — cp1252 here — so `git show <rev>:<plan>` raised inside subprocess's
+    reader thread and _git returned None for every call touching real content. It
+    failed safe and never worked."""
+    import inspect
+    code = [ln for ln in inspect.getsource(PS._git).splitlines()
+            if "subprocess.run" in ln or "decode(" in ln or "stdout" in ln]
+    assert not any("text=True" in ln for ln in code),         "the locale codec cannot read this repo's own data"
+    assert any('decode("utf-8"' in ln for ln in code)
+    # and the behaviour, on the actual Thai file that broke it
+    assert PS._git("show", f"HEAD:{PS.PLAN_REL}") is not None

@@ -31,6 +31,14 @@ REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 PLAN_REL = os.path.join("qa", "deliverable-plan.json")
 VERDICTS = ("keep", "change", "drop")
 
+# A STATUS THE MACHINE CANNOT READ IS PROGRESS THE MACHINE CANNOT SEE. Written after
+# inventing `part-done` on a work item that had genuinely half landed: the review
+# trigger counts items that became `done`, so a status outside this set makes real
+# work invisible to the ritual that is supposed to follow it. The fix for a half-done
+# item is to SPLIT it — an item that cannot be done or not-done is two items.
+WORK_STATUSES = ("todo", "done", "blocked", "dropped")
+PHASE_STATUSES = ("open", "done", "blocked", "dropped")
+
 
 def load(path=None):
     p = path or os.path.join(REPO, PLAN_REL)
@@ -87,10 +95,28 @@ def progress(plan):
 # --------------------------------------------------------------- review gating
 
 def _git(*args):
+    """git stdout, or None when it could not be read — decoded as UTF-8, explicitly.
+
+    THE THIRD INSTANCE OF ONE DEFECT IN ONE DAY, and this one was in code written an
+    hour earlier. `text=True` decodes with the LOCALE codec, which on this machine is
+    cp1252; the plan of record and half the specs in this repo are written in Thai, so
+    `git show <rev>:qa/deliverable-plan.json` raised UnicodeDecodeError inside
+    subprocess's reader thread and this function returned None for every call that
+    touched real content. The new review trigger then reported, correctly and
+    uselessly, "git could not read the plan at the last review" — it failed SAFE and
+    it never worked.
+
+    The other two instances the same day: `deliverable_check` DIED printing a Thai
+    object name through a cp1252 console, and its exit code 1 read as "ran and does
+    not qualify". THE PATTERN IS WORTH THE PARAGRAPH: this repo's data is Thai, and
+    every boundary that accepts a default encoding is a latent failure that presents
+    as "the tool found nothing" rather than as an error."""
     try:
         r = subprocess.run(["git", "-C", REPO] + list(args), capture_output=True,
-                           text=True, timeout=15)
-        return r.stdout.strip() if r.returncode == 0 else None
+                           timeout=15)
+        if r.returncode != 0:
+            return None
+        return r.stdout.decode("utf-8", errors="replace").strip()
     except Exception:
         return None
 
@@ -136,6 +162,24 @@ def commits_since_review(plan):
     return _work_commits("HEAD" if last is None else f"{last}..HEAD")
 
 
+def unreadable_statuses(plan):
+    """[(where, status)] for every status this module's vocabulary does not name.
+
+    Reported, never silently tolerated. The trigger for a review is "a work item
+    became done"; a status it does not know is a row that can hold real, landed
+    work and never arm anything."""
+    bad = []
+    for ph in (plan or {}).get("phases", []):
+        st = ph.get("status")
+        if st not in PHASE_STATUSES:
+            bad.append((str(ph.get("id")), st))
+        for w in ph.get("work", []):
+            ws = w.get("status")
+            if ws not in WORK_STATUSES:
+                bad.append((f"{ph.get('id')}/{w.get('id')}", ws))
+    return bad
+
+
 def _done_work_ids(plan):
     return {f"{ph.get('id')}/{w.get('id')}" for ph in (plan or {}).get("phases", [])
             for w in ph.get("work", []) if w.get("status") == "done"}
@@ -178,10 +222,19 @@ def work_closed_since_review(plan):
     commit at all. Three of the last eight reviews recorded that they changed
     nothing.
     """
+    reviews = plan.get("reviews") or []
+    if reviews and "done_at_review" in reviews[-1]:
+        # THE EXACT SOURCE, and it removes git from the question. Stamping HEAD had an
+        # ordering flaw the git version could not escape: `record_review` runs BEFORE
+        # the commit that carries the closures it was triggered by, so the plan at
+        # that commit does not contain them and the next run counts them a second
+        # time — the self-re-arming review for a third time, one level down. What
+        # closed is a fact about the plan, so the plan records it.
+        return sorted(_done_work_ids(plan) - set(reviews[-1]["done_at_review"]))
     last = plan.get("last_review_commit")
     if last is None:
         return sorted(_done_work_ids(plan))
-    before = _plan_at(last)
+    before = _plan_at(last)                 # reviews recorded before this change
     if before is None:
         return None
     return sorted(_done_work_ids(plan) - _done_work_ids(before))
@@ -227,6 +280,10 @@ def record_review(plan, verdicts, note="", commit=None):
         "verdicts": verdicts,
         "changed": changed,
         "note": note or ("nothing changed this review" if not changed else ""),
+        # What was closed AT THE MOMENT OF THE REVIEW. The next review is due when
+        # this set grows — a fact about the plan, answered by the plan, with no
+        # commit ordering and no git in it. See work_closed_since_review.
+        "done_at_review": sorted(_done_work_ids(plan)),
     })
     plan["last_review_commit"] = head
     for p in plan.get("phases", []):
@@ -303,6 +360,15 @@ def report(plan):
     # the queue had no consumer; a ledger with no consumer would be the fifth
     # instance, not the fix.
     lines += debt_lines(plan)
+
+    bad = unreadable_statuses(plan)
+    if bad:
+        lines.append("")
+        lines.append(f"!! {len(bad)} status(es) this file's vocabulary does not name — "
+                     f"work in these rows is invisible to the review trigger:")
+        for where, st in bad:
+            lines.append(f"     {where}: {st!r} (known: {', '.join(WORK_STATUSES)})")
+        lines.append("     an item that is neither done nor not-done is TWO items — split it.")
 
     due, why = review_due(plan)
     lines.append("")
