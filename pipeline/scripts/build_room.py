@@ -3642,7 +3642,7 @@ def _normalise_acquired(meshes, weld_mm=0.01, sharp_deg=30.0):
 def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
                 retint_rgba=None, retint_sheen=None, retint_rough=None,
                 retint_force=None, model_slot=None, item_slot=None,
-                retint_ignore_metal=False, replace_material=None):
+                retint_ignore_metal=False, replace_material=None, tag=None):
     """Import a gltf, UNIFORMLY scale it to fit the item footprint (undistorted), set it
     footprint-centred at (x,y) with its base at height z0 (0 = on the floor; >0 = on a
     table for decor), then rotate it `rot` degrees about world Z (so a chair can face the
@@ -3720,6 +3720,30 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
     bpy.context.view_layer.update()
     for o in news:
         o["ph_model"] = True                     # keep its own materials / skip bevel
+    # DROP THE EMPTY IMPORTS. A glTF routinely carries nodes with no geometry; they
+    # arrive as objects with 0 polygons, count in every census of the scene, and mean
+    # nothing. Three of the seven meshes in the first acquired chair were these.
+    _empty = [o for o in meshes if not o.data or not o.data.polygons]
+    for o in _empty:
+        bpy.data.objects.remove(o, do_unlink=True)
+    meshes = [o for o in meshes if o not in _empty]
+    if not meshes:
+        return False
+    # NAME THEM INTO THIS REPO'S CONVENTION. An imported mesh keeps the glTF's own
+    # names — `Mesh_0`, `Mesh_3` — and EVERY name-based instrument here is then blind
+    # to it: the material router keys on a `tag__` prefix, `deliverable_check`'s D7 and
+    # D8 read object words, `object_words` strips a material tail that is not there.
+    # An acquired chair called `Mesh_3` cannot be recognised as a chair in either
+    # direction, which would quietly hollow out the very rows this lane is trying to
+    # move. CLAUDE.md's own naming law says the same thing
+    # (`Prefix_Base_Variant_Suffix`), and so does the DR's §"Material Naming
+    # Conventions" ("avoid generic assignments... standardize names using a clear
+    # prefix system").
+    if tag:
+        for i, o in enumerate(meshes):
+            o.name = f"{tag}__acq{i}"
+        print(f"  named {len(meshes)} imported mesh(es) '{tag}__acq*'"
+              + (f"; dropped {len(_empty)} empty" if _empty else ""))
     _wl, _sh, _sm = _normalise_acquired(meshes)
     print(f"  mesh normalise: welded {_wl} split vert(s), {_sh} edge(s) kept sharp, "
           f"{_sm} polygon(s) shaded smooth")
@@ -4022,7 +4046,7 @@ def build_suite(spec, label="suite"):
                               "rather than replacing, which is the reversible half")
                 if place_model(_mp, xm, ym, wm, dm, hm,
                                rot=model_rot(rot, str(_mdl)),
-                               retint_fabric=_arf,
+                               retint_fabric=_arf, tag=kind,
                                model_slot=_ms, item_slot=_is, **_akw):
                     n_model += 1
                     n_acquired += 1
