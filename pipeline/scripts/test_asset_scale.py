@@ -150,3 +150,95 @@ def test_cli_returns_nonzero_when_it_refuses(tmp_path):
     assert A.main([p, "garment_hung"]) == 1
     q = _boxglb(tmp_path, "l.glb", (0.55, 1.10, 0.20))
     assert A.main([q, "garment_hung"]) == 0
+
+
+# ------------------------------------------------- the OTHER container form --
+# Added 2026-08-09. This module read only the BINARY form, and every Poly Haven
+# asset on the shelf ships the other one — a JSON .gltf beside an external .bin.
+# All 13 raised "not a binary glTF" on ingest, so the scale assertion that
+# pipeline/CLAUDE.md calls a MUST was dead for the whole CC0 shelf while reading
+# like a working guard. Nothing caught it because nothing had ever ingested one.
+
+CC0 = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__)))), "assets", "shared", "cc0", "models")
+
+
+def _gltf_json_file(tmp, name, nodes, meshes, accessors, scene_roots=None):
+    """A JSON .gltf whose buffer URI points at a .bin that is NEVER WRITTEN —
+    the point being that bounds come from the accessors' own min/max and the
+    binary is not needed. If this test ever needs the .bin, the reader started
+    decoding buffers and the 'refuse rather than guess' rule broke."""
+    doc = {"asset": {"version": "2.0"},
+           "scene": 0,
+           "scenes": [{"nodes": scene_roots if scene_roots is not None
+                       else list(range(len(nodes)))}],
+           "nodes": nodes, "meshes": meshes, "accessors": accessors,
+           "buffers": [{"byteLength": 1, "uri": "nowhere.bin"}]}
+    path = os.path.join(str(tmp), name)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(doc, f)
+    return path
+
+
+def test_a_json_gltf_with_an_external_bin_reads_without_the_bin(tmp_path):
+    acc = [{"min": [0.0, 0.0, 0.0], "max": [0.55, 1.10, 0.20]}]
+    p = _gltf_json_file(tmp_path, "shirt.gltf", [{"mesh": 0}],
+                        [{"primitives": [{"attributes": {"POSITION": 0}}]}], acc)
+    assert not os.path.exists(os.path.join(str(tmp_path), "nowhere.bin"))
+    b = A.bounds_mm(p)
+    assert b["x_mm"] == pytest.approx(550.0)
+    assert b["z_mm"] == pytest.approx(1100.0)
+
+
+def test_a_json_gltf_goes_through_the_band_assertion_too(tmp_path):
+    acc = [{"min": [0.0, 0.0, 0.0], "max": [0.55, 1.10, 0.20]}]
+    p = _gltf_json_file(tmp_path, "shirt.gltf", [{"mesh": 0}],
+                        [{"primitives": [{"attributes": {"POSITION": 0}}]}], acc)
+    ok, rep = A.assert_scale(p, "garment_hung")
+    assert ok and rep["measured_mm"] == pytest.approx(1100.0)
+
+
+def test_json_that_is_not_a_gltf_is_refused_not_read(tmp_path):
+    path = os.path.join(str(tmp_path), "notes.gltf")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"hello": "world"}, f)
+    with pytest.raises(ValueError, match="no glTF `asset` block"):
+        A.bounds_mm(path)
+
+
+def test_binary_garbage_still_raises_and_names_both_forms(tmp_path):
+    path = os.path.join(str(tmp_path), "f.glb")
+    with open(path, "wb") as f:
+        f.write(b"NOPE" + b"\x00" * 16)
+    with pytest.raises(ValueError, match="not readable as a JSON glTF either"):
+        A.bounds_mm(path)
+
+
+@pytest.mark.skipif(not os.path.isdir(CC0), reason="CC0 shelf not on this machine")
+def test_the_whole_cc0_shelf_now_ingests_and_none_of_it_raises():
+    """THE PIN THAT JUSTIFIES THE CHANGE. Before it, this loop raised 13 times."""
+    import glob as _glob
+    dirs = sorted(d for d in os.listdir(CC0) if os.path.isdir(os.path.join(CC0, d)))
+    assert len(dirs) >= 13
+    for d in dirs:
+        hits = (_glob.glob(os.path.join(CC0, d, "*.gltf"))
+                + _glob.glob(os.path.join(CC0, d, "*.glb")))
+        assert hits, f"{d} holds no model file"
+        b = A.bounds_mm(hits[0])
+        assert b["prims"] >= 1
+        assert max(b["x_mm"], b["y_mm"], b["z_mm"]) > 1.0, f"{d} measured as nothing"
+
+
+@pytest.mark.skipif(not os.path.isdir(CC0), reason="CC0 shelf not on this machine")
+def test_a_known_asset_measures_like_the_object_it_is_named_after():
+    """A bounds reader that returns numbers is not a bounds reader that returns
+    the RIGHT numbers. ArmChair_01 is an armchair, so it is roughly 850 wide and
+    roughly 1065 tall — if the Y-up to Z-up mapping were dropped, height and
+    depth would swap and this would read 766."""
+    import glob as _glob
+    hits = _glob.glob(os.path.join(CC0, "ArmChair_01", "*.gltf"))
+    b = A.bounds_mm(hits[0])
+    assert b["z_mm"] == pytest.approx(1065.0, abs=5.0), "height is not the tall axis"
+    assert b["x_mm"] == pytest.approx(848.0, abs=5.0)
+    ok, _ = A.assert_scale(hits[0], "chair")
+    assert ok

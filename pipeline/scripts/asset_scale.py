@@ -100,6 +100,39 @@ def _chunks(path):
         return out
 
 
+def _gltf_json(path):
+    """The glTF document, from either container form.
+
+    BOTH FORMS, BECAUSE ONE OF THEM WAS SILENTLY REFUSING THE ENTIRE SHELF. This
+    module only ever read the BINARY form (.glb, `glTF` magic), and every Poly
+    Haven asset in `assets/shared/cc0/models/` ships the OTHER one — a JSON
+    `.gltf` beside an external `.bin`. So all 13 of them raised "not a binary
+    glTF" on ingest, which means the scale assertion `pipeline/CLAUDE.md` calls a
+    MUST was dead for the whole CC0 shelf while reading like a working guard.
+    Found 2026-08-09 by a plan audit, not by the guard suite, because nothing had
+    ever tried to ingest one.
+
+    The `.bin` IS NEVER READ, and that is not a shortcut — the bounds come from
+    each accessor's own declared `min`/`max`, which live in the JSON in both
+    forms. `bounds_mm` already refuses when they are absent rather than decoding
+    a buffer and guessing, and that refusal is unchanged here.
+    """
+    with open(path, "rb") as f:
+        head = f.read(4)
+    if head == b"glTF":
+        return json.loads(_chunks(path)[0x4E4F534A].decode("utf-8"))
+    try:
+        with open(path, encoding="utf-8") as f:
+            doc = json.load(f)
+    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+        raise ValueError(f"{path} is not a binary glTF (magic {head!r}) and is not "
+                         f"readable as a JSON glTF either ({e})")
+    if not isinstance(doc, dict) or "asset" not in doc:
+        raise ValueError(f"{path} is not a binary glTF (magic {head!r}) and the JSON "
+                         f"it holds has no glTF `asset` block")
+    return doc
+
+
 def _node_matrix(node):
     """glTF node -> 4x4 row-major list. `matrix` is COLUMN-major in the file."""
     if "matrix" in node:
@@ -137,8 +170,7 @@ def bounds_mm(path):
     exported through a chain that ignored that lands 25.4x or 1000x out, and the
     declaration keeps saying metres.
     """
-    ch = _chunks(path)
-    gl = json.loads(ch[0x4E4F534A].decode("utf-8"))
+    gl = _gltf_json(path)
     acc, meshes, nodes = (gl.get("accessors", []), gl.get("meshes", []),
                           gl.get("nodes", []))
     lo = [math.inf] * 3

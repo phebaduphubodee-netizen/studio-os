@@ -63,14 +63,16 @@
           "what": "asset_scale.py:88-91 — accept JSON .gltf via accessor min/max, not only binary glTF magic",
           "where": "pipeline/scripts/asset_scale.py",
           "why": "all 13 CC0 models currently RAISE on ingest, so the scale assertion docs/LICENSING.md requires is dead for the whole shelf",
-          "status": "todo"
+          "status": "done",
+          "closed_by": "asset_scale._gltf_json — reads the JSON .gltf form; all 13 CC0 models raised before it, 0 after. 6 tests, incl. a pin on the whole shelf and one that a known asset measures like the object it is named after."
         },
         {
           "id": "P0b",
           "what": "assets/shared/CATALOG.json — bounds_mm, tris, licence, slot class, in-band verdict for all 29 on-disk models; publish the shortfall as a procurement number",
           "where": "assets/shared/CATALOG.json",
           "why": "D7 needs ~12 dressable objects; the shelf holds 3 vases + 1 plant and zero books, trays or figurines. A week-1 number, not a week-3 discovery.",
-          "status": "todo"
+          "status": "done",
+          "closed_by": "asset_catalog.py + assets/shared/CATALOG.json over 29 dirs. 12 tests. The procurement number is 8: D7 needs 12 styling objects, the shelf holds 4 usable ones."
         },
         {
           "id": "P0c",
