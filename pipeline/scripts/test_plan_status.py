@@ -126,11 +126,29 @@ def test_a_closed_phase_forces_a_review_until_one_is_recorded():
 
 def test_unknown_git_state_is_reported_as_unknown_not_as_zero(monkeypatch):
     """'could not look' must never print like 'looked and there was nothing' —
-    the same law pixel_check's exit code 2 was written for."""
+    the same law pixel_check's exit code 2 was written for.
+
+    The scenario moved when the trigger did (2026-08-10). With NO review ever
+    recorded, git is not consulted at all any more: the answer is every work item
+    already marked done, which is determinate. The law still binds in the case
+    where git IS the source — a plan that cannot be read at the last review."""
     monkeypatch.setattr(PS, "_git", lambda *a: None)
     p = _plan()
+    p["last_review_commit"] = "old"
+    for ph in p["phases"]:
+        ph["_reviewed"] = True
     due, why = PS.review_due(p)
     assert due is False and "unknown" in why and "not zero" in why
+
+
+def test_with_no_review_ever_recorded_closed_work_arms_it_without_git(monkeypatch):
+    """And the other half: never-reviewed is not the same as unknown. Nothing
+    needs to be read for it, so an unreadable git must not suppress it."""
+    monkeypatch.setattr(PS, "_git", lambda *a: None)
+    p = _plan()
+    p["phases"][0]["work"][0]["status"] = "done"
+    due, why = PS.review_due(p)
+    assert due and p["phases"][0]["work"][0]["id"] in why
 
 
 # --- the ritual that re-armed itself on completion -------------------------------
@@ -157,16 +175,14 @@ def test_a_plan_only_commit_does_not_arm_the_review(monkeypatch):
     p = _plan()
     p["last_review_commit"] = "old"
     assert PS.commits_since_review(p) == 0
-    assert PS.review_due(p)[0] is False
 
 
-def test_a_code_commit_still_arms_the_review(monkeypatch):
+def test_a_code_commit_still_counts_as_a_commit(monkeypatch):
     monkeypatch.setattr(PS, "_git", _git_stub(
         ["aaa"], {"aaa": ["pipeline/scripts/rule_gate.py"]}))
     p = _plan()
     p["last_review_commit"] = "old"
     assert PS.commits_since_review(p) == 1
-    assert PS.review_due(p)[0] is True
 
 
 def test_a_commit_touching_the_plan_AND_code_still_counts(monkeypatch):
@@ -189,6 +205,65 @@ def test_unreadable_file_list_is_unknown_not_zero(monkeypatch):
     p = _plan()
     p["last_review_commit"] = "old"
     assert PS.commits_since_review(p) is None
+
+
+# --- the SECOND instance of the self-re-arming review ---------------------------
+# The path-based fix above held for exactly one round. The review that followed it
+# committed the plan AND its gate artifact, and re-armed on the round that had just
+# been done — because the rule was stated in terms of WHICH FILES a commit touched,
+# and a rule that names the files it applies to always misses the next file. The
+# trigger is now the plan's own record of what closed, diffed against git.
+
+def _plan_stub(before):
+    """git that answers `show <rev>:<plan>` with a plan snapshot."""
+    def g(*a):
+        if a[0] == "show" and str(a[-1]).endswith("qa/deliverable-plan.json"):
+            return None if before is None else json.dumps(before)
+        return None
+    return g
+
+
+def test_the_review_that_wrote_itself_down_does_not_arm_the_next_one(monkeypatch):
+    p = _plan()
+    for ph in p["phases"]:
+        ph["_reviewed"] = True
+    p["last_review_commit"] = "old"
+    monkeypatch.setattr(PS, "_git", _plan_stub(p))       # nothing closed since
+    assert PS.work_closed_since_review(p) == []
+    assert PS.review_due(p)[0] is False
+
+
+def test_a_work_item_closing_arms_the_review_and_is_named(monkeypatch):
+    before = _plan()
+    after = json.loads(json.dumps(before))
+    for ph in after["phases"]:
+        ph["_reviewed"] = True
+    after["last_review_commit"] = "old"
+    ph0 = after["phases"][0]
+    ph0["work"][0]["status"] = "done"
+    monkeypatch.setattr(PS, "_git", _plan_stub(before))
+    closed = PS.work_closed_since_review(after)
+    assert closed == [f"{ph0['id']}/{ph0['work'][0]['id']}"]
+    due, why = PS.review_due(after)
+    assert due and closed[0] in why, "the trigger must name what closed"
+
+
+def test_an_unreadable_previous_plan_is_unknown_not_nothing_closed(monkeypatch):
+    p = _plan()
+    for ph in p["phases"]:
+        ph["_reviewed"] = True
+    p["last_review_commit"] = "old"
+    monkeypatch.setattr(PS, "_git", _plan_stub(None))
+    assert PS.work_closed_since_review(p) is None
+    assert "unknown" in PS.review_due(p)[1]
+
+
+def test_a_closed_phase_still_arms_regardless_of_work_items(monkeypatch):
+    p = _plan()
+    p["phases"][0]["status"] = "done"
+    p["last_review_commit"] = "old"
+    monkeypatch.setattr(PS, "_git", _plan_stub(p))
+    assert PS.review_due(p)[0] is True
 
 
 # --- the report ----------------------------------------------------------------

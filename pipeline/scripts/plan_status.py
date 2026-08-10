@@ -128,9 +128,63 @@ def _work_commits(rev_range):
 
 def commits_since_review(plan):
     """WORK commits landed since the last recorded review. None means git could
-    not answer — which is reported as unknown, never as zero."""
+    not answer — which is reported as unknown, never as zero.
+
+    REPORTED, NOT THE TRIGGER, since 2026-08-10 — see `work_closed_since_review`.
+    """
     last = plan.get("last_review_commit")
     return _work_commits("HEAD" if last is None else f"{last}..HEAD")
+
+
+def _done_work_ids(plan):
+    return {f"{ph.get('id')}/{w.get('id')}" for ph in (plan or {}).get("phases", [])
+            for w in ph.get("work", []) if w.get("status") == "done"}
+
+
+def _plan_at(rev):
+    """The plan file as of `rev`. None when git cannot answer or it will not parse
+    — never an empty plan, because an empty plan reads as "nothing was done yet"
+    and would arm a review for every item already closed."""
+    txt = _git("show", f"{rev}:{PLAN_REL.replace(os.sep, '/')}")
+    if txt is None:
+        return None
+    try:
+        return json.loads(txt)
+    except ValueError:
+        return None
+
+
+def work_closed_since_review(plan):
+    """Work-item ids whose status became `done` since the last recorded review.
+    None means git could not answer.
+
+    THE SECOND INSTANCE OF THE SELF-RE-ARMING REVIEW, and the first fix is why it
+    is worth writing down. `record_review` stamps HEAD, its own edit to the plan
+    lands at HEAD+1, and a review was due again forever. That was fixed by not
+    counting PLAN-ONLY commits — a rule stated in terms of WHICH FILES a commit
+    touched. The very next review round produced a commit touching the plan AND
+    its gate artifact, and the review re-armed on the round that had just done it.
+
+    A rule that names the files it applies to will always miss the next file
+    (R9b's law, arrived at here from the other end). So the proxy is retired: the
+    condition the owner actually stated is "after every commit that CLOSES WORK",
+    and whether work closed is not a guess about paths — the plan records it, item
+    by item, and git holds what it said last time. Diffing that is exact.
+
+    The cost is stated plainly: code that lands without ticking its item no longer
+    arms a review. By the plan's own bookkeeping no work closed, so that is a
+    plan-integrity failure rather than a review the trigger missed — and the old
+    behaviour was worse in the direction that actually happened, arming on any
+    commit at all. Three of the last eight reviews recorded that they changed
+    nothing.
+    """
+    last = plan.get("last_review_commit")
+    if last is None:
+        return sorted(_done_work_ids(plan))
+    before = _plan_at(last)
+    if before is None:
+        return None
+    return sorted(_done_work_ids(plan) - _done_work_ids(before))
 
 
 def review_due(plan):
@@ -138,12 +192,14 @@ def review_due(plan):
     is the owner's condition, 'every time work finishes, after commit'."""
     if any(p.get("status") == "done" and not p.get("_reviewed") for p in plan.get("phases", [])):
         return True, "a phase closed and has not been reviewed"
-    n = commits_since_review(plan)
-    if n is None:
-        return False, "git could not be read, so commit count is unknown (not zero)"
-    if plan.get("last_review_commit") is None:
-        return (n > 0), f"{n} commit(s) and no review has ever been recorded"
-    return (n > 0), f"{n} commit(s) since the last review"
+    closed = work_closed_since_review(plan)
+    if closed is None:
+        return False, ("git could not read the plan at the last review, so what "
+                       "closed is unknown (not zero)")
+    if not closed:
+        return False, "no work item has closed since the last review"
+    return True, f"{len(closed)} work item(s) closed since the last review: " \
+                 f"{', '.join(closed)}"
 
 
 def record_review(plan, verdicts, note="", commit=None):
