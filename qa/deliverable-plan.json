@@ -253,6 +253,13 @@
           "where": "pipeline/scripts/wardrobe_bay.py",
           "why": "C2#14. The spec says the hero wall 'terminates in a MIRROR-BACKED open niche — the mirror doubles the niche depth and sparkles the lit shelves'. Built scene: `mill__bayBF09-1-1_niche_mirror__mirror` exists, while `mill__bayBF09-1-0_back_niche` and `mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__back_niche` both carry `m_millwork_oak_veneer`. ONE of three niches got the decided mirror. A decided element that did not get built is the revert-by-omission class this repo has a name for, and the blind critic found it by noticing a grey panel that reflects nothing.",
           "status": "todo"
+        },
+        {
+          "id": "P2k",
+          "what": "smooth-shade the bevel strips on built millwork — the bevel exists and reads as a razor edge",
+          "where": "pipeline/scripts/build_room.py",
+          "why": "C3#4 on r3, and the measurement INVERTS the accusation rather than confirming it: every mill__ object IS bevelled (280 of 323 are 98-poly bevelled boxes; ZERO are unbevelled 6-poly boxes). At 5 mm and ~3 m from a 24 mm lens the chamfer is ~3 px, so it is visible. It reads as a blade because the three bevel strips are FLAT-SHADED — three tiny facets across 3 px read as one hard line instead of a roll.\n\nAND D9 CANNOT SEE THIS BY CONSTRUCTION. Its discriminator drops faces below 5% of the largest face, which is exactly the bevel rim — correct for 'is this a curved form' and blind to 'does this edge read as rounded'. The same `_normalise_acquired` treatment already written for acquired meshes (weld, then smooth with hard edges kept sharp) is the candidate fix, applied to built millwork.\n\nCheapest item in the queue by reach: it touches every panel in the room at once.",
+          "status": "todo"
         }
       ],
       "exit_test": "D5 (band-limited 4-32 px), D8 and D9 all PASS; MODEL-FIT REJECT count = 0; imported-mesh objects >=8. Then two crops at 100%: a sewn seam ridge on the bed head with no polygon facet on any silhouette, and weave on the foot-of-bed throw (0.11x the target's detail energy today).",
