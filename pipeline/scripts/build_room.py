@@ -700,9 +700,56 @@ def _mat_tag(kind):
     return "furn"
 
 
-def _proc_wood(name, base=(0.34, 0.22, 0.13, 1.0), dark=(0.20, 0.12, 0.06, 1.0), rough=0.4):
+# Real veneer/plank geometry, in millimetres, because a procedural texture's feature
+# size has to be PHYSICAL or it scales with whatever object wears it.
+PLANK_PITCH_MM = 180.0     # oak veneer leaf / plank width: 150-250 mm is the real range
+GRAIN_FEATURE_MM = 40.0    # the cathedral figure the eye reads as "grain" at room distance
+# A KNOB THAT WAS BUILT, MEASURED, LOOKED AT, AND DELETED IN ONE SITTING — recorded
+# because the deletion is the finding. After the pitch fix I measured our band contrast
+# against a photograph of real oak by collapsing a crop along the grain, removing the
+# lighting gradient with a moving average, and reading p90-p10 of the remainder. It said
+# ours was 4.07x the photograph, so I added a `grain_amp` that scaled the ramp to 0.25
+# and re-measured: 3.98x. Barely moved. The metric looked stable and the CROP DID NOT —
+# side by side, the 0.25 pass was visibly back to flat beige while the full-spread pass
+# read as wood.
+#
+# THE METRIC WAS WRONG, NOT THE CHANGE. Its high-pass window was len(profile)//4 = 75 px
+# on a 300 px crop, and the plank bands are WIDER than that, so the moving average
+# subtracted the very signal it was built to measure. What survived was noise-scale
+# variation from the bump, which no ramp change touches — identical across all three
+# legs, exactly as observed.
+#
+# So there is no grain_amp. The signed spread (#C7B896 -> #A5926B) stands as authored,
+# and this comment stands instead of a knob, because the knob would have been a defect
+# wearing a number. The eye's verdict also went further than the fix: the photographed
+# oak still carries MORE structure than our full-spread pass, so the remaining gap is
+# real and belongs to P2g's photographic half, not to a ramp multiplier.
+
+
+def _proc_wood(name, base=(0.34, 0.22, 0.13, 1.0), dark=(0.20, 0.12, 0.06, 1.0), rough=0.4,
+               plank_mm=PLANK_PITCH_MM, grain_mm=GRAIN_FEATURE_MM):
     """A procedural wood material (plank BANDS + noise grain + micro bump). No texture
-    files (no network here). Guarded: any node/socket mismatch falls back to a flat base."""
+    files (no network here). Guarded: any node/socket mismatch falls back to a flat base.
+
+    THE FEATURE SIZE IS PHYSICAL NOW, AND IT WAS NOT (2026-08-10). `Wave.Scale` was
+    1.6 and the vector is OBJECT coordinates, which in this build are local METRES —
+    so the plank pitch was 1/1.6 = **625 mm**. A 2 m wardrobe carcass showed three
+    bands and a drawer front showed part of one, which is why 163 objects wearing this
+    material read as flat colour to two independent critics ("วัสดุไม้ของตู้ดูเรียบและ
+    แบนเกินไป ไม่มีลายไม้", C3#4 twice; C2#6 "ไม้พื้นกับตู้อ่านเป็นเนื้อเดียวกัน").
+    The grain was there; it was 3.5x too big to be grain.
+
+    WHY NOT PHOTOGRAPHIC MAPS, which was the obvious answer and is what P2g proposed:
+    measured first. The signed oak is #C7B896, linear (0.571, 0.479, 0.305); the mean
+    of `wood_floor_Diffuse_2k` is linear (0.217, 0.117, 0.055). Reaching the signed
+    colour by the tint route `_pbr_material` uses would need a multiply of
+    **(2.64, 4.10, 5.57)** — brightening a dark map by up to 5.6x, which crushes the
+    light end of the grain toward white and strips the warmth on the way. The
+    photographic route needs a texture whose mean is already near the target, and the
+    shelf has none. Filed, not forced.
+
+    Both numbers are in millimetres and named, so the next person changes a plank
+    width rather than a magic 1.6."""
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     nt = m.node_tree
@@ -715,11 +762,11 @@ def _proc_wood(name, base=(0.34, 0.22, 0.13, 1.0), dark=(0.20, 0.12, 0.06, 1.0),
         mapp = nt.nodes.new("ShaderNodeMapping")
         wave = nt.nodes.new("ShaderNodeTexWave")
         wave.wave_type = 'BANDS'
-        wave.inputs["Scale"].default_value = 1.6
+        wave.inputs["Scale"].default_value = 1000.0 / max(plank_mm, 1.0)
         wave.inputs["Distortion"].default_value = 2.2
         wave.inputs["Detail"].default_value = 3.0
         noise = nt.nodes.new("ShaderNodeTexNoise")
-        noise.inputs["Scale"].default_value = 14.0
+        noise.inputs["Scale"].default_value = 1000.0 / max(grain_mm, 1.0)
         ramp = nt.nodes.new("ShaderNodeValToRGB")
         ramp.color_ramp.elements[0].color = dark
         ramp.color_ramp.elements[1].color = base
