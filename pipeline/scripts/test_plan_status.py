@@ -133,6 +133,64 @@ def test_unknown_git_state_is_reported_as_unknown_not_as_zero(monkeypatch):
     assert due is False and "unknown" in why and "not zero" in why
 
 
+# --- the ritual that re-armed itself on completion -------------------------------
+# record_review stamps last_review_commit = HEAD, and then the review's own edit
+# to the plan has to be COMMITTED — landing at HEAD+1 and making a review due
+# again, forever. Live since the plan's first commit: the only way to read "not
+# due" was to leave the plan of record uncommitted, so every session opened on a
+# REVIEW DUE that the previous session had in fact just done.
+
+def _git_stub(shas, files_by_sha):
+    def g(*a):
+        if a[0] == "rev-list" and "--count" not in a:
+            return "\n".join(shas)
+        if a[0] == "show":
+            return "\n".join(files_by_sha.get(a[-1], []))
+        return None
+    return g
+
+
+def test_a_plan_only_commit_does_not_arm_the_review(monkeypatch):
+    # The review writing itself down is not work closing.
+    monkeypatch.setattr(PS, "_git", _git_stub(
+        ["aaa"], {"aaa": ["qa/deliverable-plan.json"]}))
+    p = _plan()
+    p["last_review_commit"] = "old"
+    assert PS.commits_since_review(p) == 0
+    assert PS.review_due(p)[0] is False
+
+
+def test_a_code_commit_still_arms_the_review(monkeypatch):
+    monkeypatch.setattr(PS, "_git", _git_stub(
+        ["aaa"], {"aaa": ["pipeline/scripts/rule_gate.py"]}))
+    p = _plan()
+    p["last_review_commit"] = "old"
+    assert PS.commits_since_review(p) == 1
+    assert PS.review_due(p)[0] is True
+
+
+def test_a_commit_touching_the_plan_AND_code_still_counts(monkeypatch):
+    # P0f's commits edited the plan alongside the code they closed. Those are
+    # work, and exempting them would be the mute this fix exists to remove.
+    monkeypatch.setattr(PS, "_git", _git_stub(
+        ["aaa"], {"aaa": ["qa/deliverable-plan.json",
+                          "pipeline/scripts/build_room.py"]}))
+    p = _plan()
+    p["last_review_commit"] = "old"
+    assert PS.commits_since_review(p) == 1
+
+
+def test_unreadable_file_list_is_unknown_not_zero(monkeypatch):
+    # Same law as above: a commit whose contents git would not name must not be
+    # silently counted as "not work".
+    def g(*a):
+        return "\n".join(["aaa"]) if a[0] == "rev-list" else None
+    monkeypatch.setattr(PS, "_git", g)
+    p = _plan()
+    p["last_review_commit"] = "old"
+    assert PS.commits_since_review(p) is None
+
+
 # --- the report ----------------------------------------------------------------
 
 def test_report_names_the_phase_the_exit_test_and_the_next_files():

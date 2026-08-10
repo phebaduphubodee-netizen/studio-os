@@ -95,15 +95,42 @@ def _git(*args):
         return None
 
 
+PLAN_REL = "qa/deliverable-plan.json"
+
+
+def _work_commits(rev_range):
+    """Commits in `rev_range` that changed something OTHER than the plan file.
+
+    THE LOOP THIS CLOSES (found 2026-08-10, live since the plan's first commit):
+    `record_review` stamps `last_review_commit = HEAD`, and then the review's own
+    edit to this file has to be COMMITTED — which lands at HEAD+1 and makes a
+    review due again, forever. The ritual re-armed itself on completion, so the
+    only way to read "not due" was to leave the plan of record uncommitted. Every
+    session since has opened on a REVIEW DUE that the previous session had in
+    fact just done.
+
+    A plan-only commit is the review writing itself down; it is not work closing.
+    The docstring below already said the condition is "work has closed", so this
+    is the check finally measuring what it always claimed to."""
+    out = _git("rev-list", "--no-merges", rev_range)
+    if out is None:
+        return None
+    n = 0
+    for sha in [s for s in out.split() if s]:
+        files = _git("show", "--pretty=", "--name-only", sha)
+        if files is None:
+            return None
+        touched = [f for f in files.split("\n") if f.strip()]
+        if any(f.strip() != PLAN_REL for f in touched):
+            n += 1
+    return n
+
+
 def commits_since_review(plan):
-    """Commits landed since the last recorded review. None means git could not
-    answer — which is reported as unknown, never as zero."""
+    """WORK commits landed since the last recorded review. None means git could
+    not answer — which is reported as unknown, never as zero."""
     last = plan.get("last_review_commit")
-    if last is None:
-        out = _git("rev-list", "--count", "HEAD")
-        return int(out) if out and out.isdigit() else None
-    out = _git("rev-list", "--count", f"{last}..HEAD")
-    return int(out) if out and out.isdigit() else None
+    return _work_commits("HEAD" if last is None else f"{last}..HEAD")
 
 
 def review_due(plan):
