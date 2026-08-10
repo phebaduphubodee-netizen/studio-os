@@ -190,3 +190,28 @@ def test_every_phase_in_the_real_plan_has_an_exit_test_that_looks_at_something()
     for ph in PS.load()["phases"]:
         assert ph.get("exit_test"), f"{ph['id']} has no exit test"
         assert len(ph["exit_test"]) > 40, f"{ph['id']}'s exit test is too thin to fail"
+
+
+# --- the plan's consumer must itself have a consumer -----------------------------
+
+def test_the_render_gate_imports_plan_status():
+    """scripts/reachability_check.py caught this file as a NEW unwired instrument
+    minutes after it was written: its only consumer was a paragraph in CLAUDE.md
+    telling a reader to run it. That is the defect the plan exists to name, so the
+    wiring is pinned rather than trusted."""
+    src = open(os.path.join(REPO, "pipeline", "scripts", "rule_gate.py"),
+               encoding="utf-8").read()
+    assert "import plan_status" in src
+    assert "PLAN.next_work" in src and "PLAN.review_due" in src
+
+
+def test_the_gate_does_not_BLOCK_on_an_overdue_review():
+    """decisions_check blocks because a decision with no reversal is a defect in
+    the frame's provenance. An overdue plan review is not — halting a render over
+    owed paperwork is the enforcement clause R3 revoked, one level up."""
+    src = open(os.path.join(REPO, "pipeline", "scripts", "rule_gate.py"),
+               encoding="utf-8").read()
+    tail = src[src.index("WHERE ARE WE IN THE PLAN"):]
+    block = tail[:tail.index("if v and hard")]
+    assert "REVIEW OVERDUE" in block
+    assert "v.append" not in block and "raise SystemExit" not in block

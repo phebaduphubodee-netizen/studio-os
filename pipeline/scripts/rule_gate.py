@@ -1236,6 +1236,37 @@ def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=Fals
             for d in rows:
                 print(DEC.one_line(d))
 
+    # WHERE ARE WE IN THE PLAN — printed into the render path on every run, for
+    # the same reason the decision log is: that is the channel he actually uses.
+    #
+    # NOT BLOCKING, and the distinction is the whole point. `decisions_check`
+    # blocks because a decision with no reversal is a defect IN THE FRAME'S
+    # provenance. An overdue plan review is not — halting a render over owed
+    # paperwork is the enforcement clause R3 revoked, one level up. So this
+    # prints loudly and stops nothing.
+    #
+    # It is wired HERE because scripts/reachability_check.py caught `plan_status`
+    # as a NEW unwired instrument minutes after it was written: its only consumer
+    # was a paragraph in CLAUDE.md telling a reader to run it. That is the exact
+    # defect the plan file was created to name — a queue whose consumer never
+    # visits it — committed by the file that names it. The guard was right.
+    try:
+        import plan_status as PLAN
+        plan = PLAN.load()
+    except Exception as e:  # pragma: no cover - a missing plan must not stop a render
+        print(f"PLAN: could not be read ({e}) — that is unknown, not fine")
+    else:
+        cur = PLAN.current(plan)
+        done, total = PLAN.progress(plan)
+        due, why = PLAN.review_due(plan)
+        where = f"{cur['id']} — {cur['title']}" if cur else "ALL PHASES CLOSED"
+        print(f"\nPLAN {plan.get('unit', '?')}: {where}  ({done}/{total} items)")
+        for pid, w in PLAN.next_work(plan, n=2):
+            print(f"PLAN   next: [{pid}/{w['id']}] {w['what'][:88]}")
+        if due:
+            print(f"PLAN   !! REVIEW OVERDUE — {why}; "
+                  f"run plan_status.py --review (keep/change/drop per phase)")
+
     if v and hard:
         raise SystemExit("RULE GATE FAILED "
                          "(R10 / R7 / R2 / charter / coverage / continuity)")
