@@ -3281,12 +3281,36 @@ def _stage_lounge(spec):
 
 
 def _model_path(slug):
-    """Local cached .gltf for a slug, or None (no network inside Blender — assets.py
-    pre-downloads; here we only read the cache)."""
+    """Local cached .gltf/.glb for a slug, or None (no network inside Blender — assets.py
+    and warehouse.py pre-download; here we only read the cache).
+
+    TWO SHELVES, searched in order (P0e, 2026-08-10). The CC0 shelf is committed;
+    the Trimble/3D-Warehouse shelf is a gitignored cache (`.gitignore:50`) under
+    the licence rule in docs/LICENSING.md — the client gets the assembled SCENE,
+    never the asset bundle. Adding it here is what makes R8's ACQUIRE half
+    reachable from a build: `place_model` and `millwork.model_fit` already exist
+    and were only ever pointed at one directory.
+
+    WHY OPENING THIS DOOR IS SAFE DESPITE A SHELF WITH MIXED UNITS, and the
+    measurement rather than the assumption: the catalog verdicts call 10 of the 16
+    warehouse models "out-of-band", and dividing each by 25.4 lands ALL TEN inside
+    a plausible furniture band — bd_a becomes 320 x 540 x 654 mm (a nightstand),
+    bd_c 710 x 640 x 1005 (a chair). They are inch-authored, which is precisely the
+    trap pipeline/CLAUDE.md calls a MUST ("SketchUp exports IMPERIAL even when the
+    model was authored in metres"). It does not corrupt a render THROUGH THIS PATH
+    because `place_model` rescales UNIFORMLY to the slot's own w/d/h and
+    `model_fit` judges ASPECT, which is scale-invariant. What it does corrupt is
+    the CATALOG, which is why that is filed rather than silently worked around:
+    the shelf's usable count reads 1 of 16 when it should read 11.
+    """
     import glob
     here = os.path.dirname(os.path.abspath(bpy.data.filepath or __file__))
-    root = os.path.join(os.path.dirname(os.path.dirname(here)), "assets", "shared", "cc0", "models", slug)
-    hits = glob.glob(os.path.join(root, "*.gltf")) + glob.glob(os.path.join(root, "*.glb"))
+    shared = os.path.join(os.path.dirname(os.path.dirname(here)), "assets", "shared")
+    hits = []
+    for root in (os.path.join(shared, "cc0", "models", slug),
+                 os.path.join(shared, "warehouse", slug)):
+        hits += glob.glob(os.path.join(root, "*.gltf"))
+        hits += glob.glob(os.path.join(root, "*.glb"))
     return hits[0] if hits else None
 
 

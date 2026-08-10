@@ -152,6 +152,36 @@ def record_review(plan, verdicts, note="", commit=None):
     return plan
 
 
+# --------------------------------------------------------------- critic debt
+
+def debt_lines(plan):
+    """The critic-debt ledger in three lines: what is owed, what is due NOW, and
+    what no instrument can see.
+
+    A missing or unreadable ledger prints as UNKNOWN, never as nothing. Silence
+    and zero look identical from outside, and that confusion is the whole disease
+    this file was written against."""
+    try:
+        import debt_check as DEBT
+    except ImportError as e:                            # pragma: no cover
+        return ["", f"CRITIC DEBT unknown — debt_check is not importable ({e})"]
+    led = DEBT.load()
+    if led is None:
+        return ["", "CRITIC DEBT unknown — qa/critic-debt.json could not be read. "
+                    "That is unknown, not zero."]
+    out = ["", DEBT.one_line(led)]
+    phases = [p["id"] for p in plan.get("phases", [])]
+    cur = current(plan)
+    due = DEBT.due_now(led, phases, cur["id"]) if cur else []
+    if due:
+        out.append(f"            DUE NOW at {cur['id']}: {', '.join(due)} — "
+                   f"their due phase has arrived.")
+    bad = DEBT.check(led, plan_phases=phases)
+    for s in bad[:3]:
+        out.append(f"            !! {s}")
+    return out
+
+
 # --------------------------------------------------------------- the report
 
 def report(plan):
@@ -184,6 +214,12 @@ def report(plan):
         lines.append("WAITING ON THE OWNER (the lane does not block on these)")
         for c in oa:
             lines.append(f"  {c['id']}: {c['do']}")
+
+    # THE CRITIC DEBT, printed unasked at the top of every session — the same
+    # reason this file exists at all. 357 items were filed and ~22 built because
+    # the queue had no consumer; a ledger with no consumer would be the fifth
+    # instance, not the fix.
+    lines += debt_lines(plan)
 
     due, why = review_due(plan)
     lines.append("")

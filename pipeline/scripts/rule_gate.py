@@ -1139,6 +1139,30 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
     else:
         note("decision log", False, "no lane dir given, so no unit")
 
+    # THE CRITIC-DEBT LEDGER. Same split as the decision log above, and for the
+    # same reason: this blocks on the LEDGER BEING HONEST — a row closed with a
+    # sentence, refuted without a number, closed against a spec, or quietly
+    # deleted — and it blocks on nothing else. Whether the twenty-one debts are
+    # PAID is not a property of this frame's provenance; it is owed work, and
+    # halting a render over owed work is the enforcement clause R3 revoked.
+    # Payment is reported by `debt_check` and by `plan_status`, in the render
+    # path, which is the channel the owner actually reads.
+    try:
+        import debt_check as DEBT
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"debt_check is not importable ({e}) — refusing to render past "
+                 f"a gate whose half is missing")
+        note("critic debt", False, "module not importable")
+    else:
+        led = DEBT.load()
+        v += DEBT.check(led, plan_phases=DEBT._plan_phases())
+        if led is not None:
+            v += DEBT.ratchet(led)
+            t = DEBT.tally(led)
+            note("critic debt", True,
+                 f"{t['open']} open / {t['built']} built / {t['refuted']} "
+                 f"refuted, {t['none_yet']} with no instrument")
+
     # R11 — THE ONE RUNG THAT OPENS THE PICTURE. It can only run where a frame
     # exists, which is AFTER the render, so `trn002_build` calls the gate a
     # second time with the frame it just wrote. Pre-render the rung is absent and
@@ -1235,6 +1259,33 @@ def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=Fals
                   f"ไม่มีข้อไหนรอคุณอยู่:")
             for d in rows:
                 print(DEC.one_line(d))
+
+    # THE CRITIC DEBT — printed HERE, beside the decision log, because `check()`
+    # only put the tally into `note()`, and `note`'s detail is printed for SKIPPED
+    # rungs only. So the gate listed "critic debt" among the rungs that ran and
+    # said not one word about what it found, while the comment on that rung
+    # claimed it printed in the render path. That is this repo's oldest shape —
+    # "the guard was declared mandatory and then printed as a suggestion" — and
+    # the ledger exists precisely because a queue nobody surfaces is a queue
+    # nobody pays. NOT blocking: what is OWED prints, what is DISHONEST fails in
+    # `check()`.
+    try:
+        import debt_check as DEBT
+        _led = DEBT.load()
+    except Exception as e:  # pragma: no cover - a debt read must not stop a render
+        print(f"CRITIC DEBT: could not be read ({e}) — that is unknown, not fine")
+    else:
+        if _led is None:
+            print("CRITIC DEBT: qa/critic-debt.json could not be read — that is "
+                  "unknown, not zero.")
+        else:
+            print("\n" + DEBT.one_line(_led))
+            _phases = DEBT._plan_phases()
+            _here = DEBT._current_phase()
+            _due = DEBT.due_now(_led, _phases, _here) if _here else []
+            if _due:
+                print(f"  DUE NOW at {_here}: {', '.join(_due)} — their due phase "
+                      f"has arrived and the door still does not resolve.")
 
     # WHERE ARE WE IN THE PLAN — printed into the render path on every run, for
     # the same reason the decision log is: that is the channel he actually uses.
