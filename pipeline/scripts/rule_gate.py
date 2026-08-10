@@ -451,6 +451,87 @@ def audit_coverage(spec, manifest_path):
     return violations
 
 
+def pixel_exit_policy(returncode, quick):
+    """PURE. What a build must DO with pixel_check's exit code — ("ok"|"note"|
+    "stop", message). Layer-1 so it can be tested; the Blender module only obeys.
+
+    EXIT CODES ARE A CONTRACT (R11): 0 = the claims hold, 1 = a claim is broken,
+    2 = COULD NOT RUN. Two is a distinct code on purpose — an R5 playblast is
+    half the reference's size per axis and a sub-pixel comparison there is a
+    different measurement, so the checker refuses rather than rescaling.
+
+    THE MUTE THIS REPLACES lived in trn002_build.py as a bare `pass` on code 2,
+    for BOTH kinds of run, under a comment that reasoned correctly about why only
+    full fidelity closes a gate — and never tested `quick`. So a full-fidelity
+    frame whose only picture-opening rung could not run finished and printed
+    exactly like one that had passed it. R11's own sentence, broken inside R11's
+    own implementation.
+
+    It lives HERE rather than in the build because the build imports `bpy` and
+    pipeline/CLAUDE.md's layer law puts rule code in layer 1: a policy that
+    cannot be imported by a plain python process cannot be tested, and this one
+    went untested long enough to invert its own meaning.
+    """
+    if returncode == 0:
+        return "ok", ""
+    if returncode == 2:
+        if quick:
+            return "note", ("pixel_check COULD NOT RUN (exit 2): this is an R5 "
+                            "playblast, not the reference's size. Only a "
+                            "full-fidelity frame closes this rung.")
+        return "stop", ("R11: pixel_check COULD NOT RUN (exit 2) on a "
+                        "full-fidelity frame — the only rung in this build that "
+                        "opens the picture did not open it. `could not look` "
+                        "does not finish like `looked and it was fine`. Fix the "
+                        "claim it could not measure, or take the frame at the "
+                        "reference's size.")
+    return "stop", ("R11 PIXEL GATE FAILED: the frame does not honour a feature "
+                    "its own spec claims.")
+
+
+SIGNOFF_DATE = re.compile(r"\b20\d\d-[01]\d-[0-3]\d\b")
+# Placeholders that are non-empty strings and mean nothing. `pending` is refused
+# BY NAME for the same reason decisions_check refuses it: a word that reads like
+# an answer while naming no decider is the cheapest way past a check that only
+# tests for text.
+SIGNOFF_EMPTY = {"", "-", "--", "n/a", "na", "none", "todo", "tbd", "pending",
+                 "ok", "yes", "signed", "owner", "<reason + date>"}
+
+
+def signoff_ok(signoff, key):
+    """Is `signoff[key]` an owner sign-off, or merely a non-empty string?
+
+    THE DEFECT THIS REPLACES, and it was live on both halves of the ratchet:
+    `isinstance(v, str) and v.strip()` accepted ANY text. The message three lines
+    below it asks for `"<reason + date>"` — so the format was specified, printed
+    at the builder every time the rule fired, and never once enforced. A single
+    character discharged it, and so did pasting the message's own placeholder
+    back in. That is the same shape the P0d review found in debt_check's `built`
+    (os.path.exists plus a substring): a free pass sitting exactly where the
+    expensive, honest route is.
+
+    So enforce what the message already asks for — a DATE and a REASON — and
+    refuse the placeholder vocabulary by name.
+
+    HONEST RESIDUAL, stated because a guard whose blind spot is undocumented is
+    trusted for coverage it does not have: this CANNOT prove the owner wrote it.
+    The manifest is a file the builder can edit, and no check inside that file
+    can establish authorship. What it raises is the cost — from one character to
+    a dated sentence a person has to compose and that shows up in a diff with a
+    date on it. Same tier as the `built_as pointing anywhere` residual above.
+    """
+    v = signoff.get(key)
+    if not isinstance(v, str):
+        return False
+    s = v.strip()
+    if s.lower() in SIGNOFF_EMPTY:
+        return False
+    if not SIGNOFF_DATE.search(s):
+        return False
+    # a date alone is not a reason: require prose left over once the date is out
+    return len(SIGNOFF_DATE.sub("", s).strip(" :.-—,")) >= 12
+
+
 def baseline_ratchet(manifest_path, manifest=None, previous=None):
     """`absent_baseline` MAY SHRINK AND MAY NEVER GROW — as a program, not as prose.
 
@@ -511,8 +592,7 @@ def baseline_ratchet(manifest_path, manifest=None, previous=None):
     now_e = {e.get("id") for e in (manifest.get("entries") or []) if e.get("id")}
     was_e = {e.get("id") for e in (previous.get("entries") or []) if e.get("id")}
     signoff = manifest.get("absent_baseline_signoff") or {}
-    lost = sorted(e for e in (was_e - now_e)
-                  if not (isinstance(signoff.get(e), str) and signoff[e].strip()))
+    lost = sorted(e for e in (was_e - now_e) if not signoff_ok(signoff, e))
     if lost:
         out.append(
             f"the coverage manifest LOST entries {lost} with no owner sign-off. "
@@ -537,8 +617,7 @@ def baseline_ratchet(manifest_path, manifest=None, previous=None):
     # owner-only rule). The builder may not widen its own exemption list; the owner may, and
     # the note says why, in a diff.
     grown = sorted(now - was)
-    unsigned = [g for g in grown
-                if not (isinstance(signoff.get(g), str) and signoff[g].strip())]
+    unsigned = [g for g in grown if not signoff_ok(signoff, g)]
     if unsigned:
         out.append(
             f"`absent_baseline` GREW by {unsigned} with no owner sign-off. An object "
@@ -562,27 +641,45 @@ def baseline_ratchet(manifest_path, manifest=None, previous=None):
 
 
 def audit_craft(spec):
-    """ADVISORY, and loud. Returns [note] — never fed to the violation list.
+    """ADVISORY, and loud. Returns (ran, [note]) — never fed to the violation list.
 
     craft_check says in its own docstring that it cannot see occlusion, so a
     corner hidden behind the bed is charged the same as one in the open. It
     therefore reports and does not veto — the same call R9b already made for
     interpenetration, where an AABB cannot tell interlocking from intersecting.
-    Advisory is not silent: the count is printed and the roster names it, so it
-    cannot become the kind of half that runs for 27 rounds unnoticed.
+
+    P0f — WHAT WAS WRONG WITH THE PASS SIGNAL, and it is R11's law verbatim.
+    This returned a BARE `[]` for two different answers: "measured N masses and
+    every one is fine" and "there was nothing of this class in the spec, so no
+    measurement happened". Both printed as nothing, and an empty advisory block
+    reads as a clean bill. `could not look` must never print like `looked and it
+    was fine`. Worse, the docstring above claimed "the count is printed and the
+    roster names it" — and the caller passed no `note()` at all, so the roster
+    did not name this rung in any run. The claim was true of no version of this
+    code.
+
+    So: RAN is now returned separately from the notes, the caller rosters it, and
+    every branch emits a line. A rung that measured nothing says so.
     """
     try:
         import craft_check as CRAFT
     except ImportError as e:  # pragma: no cover - import path accident
-        return [f"craft_check is not importable ({e})"]
+        return False, [f"craft silhouette DID NOT RUN: craft_check is not "
+                       f"importable ({e})"]
     rows, short = CRAFT.audit_silhouette(spec)
     if not rows and short:
-        return short  # e.g. no solved camera — say so rather than report 0
+        # e.g. no solved camera — say so rather than report 0
+        return False, [f"craft silhouette DID NOT RUN: {s}" for s in short]
+    if not rows:
+        return False, ["craft silhouette DID NOT RUN: the spec declares no "
+                       "rounded mass (kind 'oct' carrying a `cut`), so nothing "
+                       "of this class was measured. This is not a clean result"]
     if not short:
-        return []
-    return [f"{len(short)} silhouette shortfall(s) of {len(rows)} rounded "
-            f"masses (advisory — occlusion is not modelled):"] + \
-           ["  " + s for s in short]
+        return True, [f"craft silhouette: {len(rows)} rounded mass(es) measured, "
+                      f"0 shortfalls (advisory — occlusion is not modelled)"]
+    return True, [f"{len(short)} silhouette shortfall(s) of {len(rows)} rounded "
+                  f"masses (advisory — occlusion is not modelled):"] + \
+                 ["  " + s for s in short]
 
 
 # --- Continuity: a measurement may be superseded, never dropped by omission ---
@@ -1185,7 +1282,9 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
                  + (f" ({len(claims)} claims are waiting for one)" if claims else ""))
 
     if advisories is not None:
-        advisories += audit_craft(spec)
+        craft_ran, craft_notes = audit_craft(spec)
+        advisories += craft_notes
+        note("craft silhouette", craft_ran, craft_notes[0] if craft_notes else "")
         try:
             import contact_check as CONTACT
         except ImportError:  # pragma: no cover - reported as a violation above

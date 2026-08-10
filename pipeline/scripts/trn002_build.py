@@ -863,13 +863,25 @@ def main():
     # sub-pixel comparison at half resolution is a different measurement). It is
     # a distinct code from 0 on purpose: the line above says NOT RUN in the
     # render path, and only full fidelity was ever allowed to close a gate.
-    if r.returncode == 2:
-        pass
-    elif r.returncode:
+    #
+    # P0f — THE MUTE THAT WAS HERE. This branch was a bare `pass`, for BOTH
+    # kinds of run. The reasoning written above it is sound and the code never
+    # implemented it: `quick` was in scope and never tested, so a FULL-FIDELITY
+    # frame whose pixel rung could not run for any reason at all — an unreadable
+    # claim, a size mismatch, a broken estimator — finished, printed, and closed
+    # exactly like a frame that had passed the rung. That is R11's own sentence
+    # ("could not look must never print like looked and it was fine") failing
+    # inside R11's own implementation, three lines under a comment asserting the
+    # opposite. On a full frame this is the same event as the missing target and
+    # the missing interpreter above, and it gets the same answer: a hard stop.
+    import rule_gate as _RG
+    action, msg = _RG.pixel_exit_policy(r.returncode, quick)
+    if action == "note":
+        print("PIXEL -- " + msg)
+    elif action == "stop":
         for ln in (r.stderr or "").splitlines()[-4:]:
             print(f"PIXEL !! {ln}")
-        raise SystemExit(f"R11 PIXEL GATE FAILED: the frame does not honour a "
-                         f"feature its own spec claims.")
+        raise SystemExit(msg)
 
 
 if __name__ == "__main__":

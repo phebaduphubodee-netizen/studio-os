@@ -15,14 +15,14 @@
   "shift_y": -0.002961,
   "_solved": "v004 pins + corner anchor + G1, unchanged from r1"
  },
- "gauges": {
+ "_gauges": {
   "G1": "door leaf 2000 + lever 1030 -> cam z 1305. SWEPT r3: NOT ROBUST — cam_z band 1278..1338, H_main 3038..3180, lever dominates 2.5:1. Horizon-basis bias found: record pins (horizon 407.3) give cam_z 1319/H 3120; 1305 belongs to horizon 409.4. DECISION r3: do NOT rescale mid-lane — camera+spec share one similarity, the render cannot see it; fix the basis only when the lane needs absolute mm (procurement).",
   "open_tension": "equal-modules gives wardrobe plane x=-1290 (cv 0.0046, four ~510 doors); run-to-ceiling-3102 wants -940; door standards want ~-960..-976. ADOPTED r2: wardrobe section x=-1290 with its top junction MEASURED at z~2920 (a bulkhead/lower junction over the run — the two eyes that read 'dropped' were right), entry-door section its own plane x=-976, open slot between them at y -1.15..-2.55. All three numbers are round-2-measured, sweep-tested next round.",
   "G3": "door module 510mm IS the gauge that selects x_wall=-1290 — declared r3. The r2 'equal-modules cv=0.0046 minimum' is REFUTED as an instrument: cv is 0.0046 at every x in -1400..-518; the module WIDTH standard did the choosing.",
   "downlight_table": "CLOSED r4 (C2 #3, third recurrence): ceiling fixtures in scene = EXACTLY 4 recessed downlights dl_1..dl_4, all prov M from the target blob grid at (199,9)(227,110)(551,135)(662,62); no other emitter or ceiling-fixture mass exists in the spec. Bright NON-fixture features a blind count picks up: the lit left-wall/TV patch at frame edge (u<15), the bulkhead face highlight, and dl side-face speculars. Any future 'N downlights' claim must name pixel positions to reopen this.",
   "console_float": "CLOSED r4 (C2 #5 [verify]): underside z=495 (M), floor 0 -> gap 495mm."
  },
- "provenance_legend": "M=measured via solved camera, D=derived from a measured contact, A=assumed (standard), tag on every mass",
+ "_provenance_legend": "M=measured via solved camera, D=derived from a measured contact, A=assumed (standard), tag on every mass",
  "shell": {
   "H_main": 3102,
   "left_wall_x": -4750,
@@ -1776,8 +1776,8 @@
    559.72
   ]
  },
- "judge_lines": {
-  "note": "held out of every derivation above; the build is scored against them (rule: a metric that can fail)",
+ "_held_out_note": {
+  "note": "SIX FEATURES HELD OUT of every derivation in this spec, and NOTHING SCORES AGAINST THEM. The key this replaces (`judge_lines`) said in its own words 'the build is scored against them (rule: a metric that can fail)'. It stored no VALUE for any of the six and had zero readers in the repo for its entire life — CLAUDE.md R11 names it as the sharpest instance of a gate made of declarations. `pixel_claims` is the rung that actually measures a feature in both images, and none of these six carries a claim. Kept as a NAMED HOLE rather than a silence, which is the same call pixel_check.unclaimed() makes for masses.",
   "rev_lo_set": [
    "rev_795_lo",
    "rev_874_lo",
@@ -1787,7 +1787,8 @@
   "others": [
    "tv_right",
    "chair_backtop"
-  ]
+  ],
+  "scored_by": null
  },
  "render": {
   "diffuse_bounces": 8,
@@ -1831,10 +1832,10 @@
   "petcave_class": "OPEN, and named rather than modelled away: six blind critics have each bound this object to something different, and R8 puts a free-form shell in ACQUIRE, not in a hand-built prism. What r36 settles is its SIZE, which is answerable from its own arch; what it does not settle is whether a flat-topped rounded box is the right class at all.",
   "desk_pier": "REMOVED at r37, not resized: whatever carries the far end of the 2995 mm worktop is NOT IN THIS PICTURE. Re-tested at the position r35 corrected it to (the earlier test was at a location 1.3 m away, so it could have been the location and not the object): the strongest luminance step anywhere along its foot line, u 115..146 scanning v 655..705, is 16-21 L and does not even fall at the foot line - against 40-93 L for every real boundary measured in this same frame this round (headboard arris 55-70, the wood block at u=80 +93). R10 then applies literally: an object invented to satisfy a structure is a declared assumption, and the absent thing is honest where the wrong thing fabricates a reading. REOPEN only on a datum for the console end panel's bottom, or an elevation from the owner - do NOT re-add a pier to hold the desk up."
  },
- "audit_conflicts": {
+ "_audit_conflicts": {
   "bed_width": "RESOLVED r16 by the method agreed at r14: fit the platform's own far long side and nothing else. Width = 2075 +/- 40 (near -4180, far -2105+/-20). Both priors die: 1595's anchors were a fabric silhouette that fails the plane test everywhere and a headboard end fitted at the room corner's own pixel column; the audit's 2100 came from an assumed rounded-corner plan and lands 50 mm long. Third constraint closes green: two measured 800 mm pillows need 1640 and the mattress is now 1719."
  },
- "STATUS": "r34 = the wardrobe re-derived on the plane it stands on. `closet_oak` declared its front face at y=2330; the floor contact puts it at y=1130, wrong by ~1200 mm, and on the declared plane z=0 lands on unbroken cabinet wood. It becomes six masses -- body, head, right stile/return, niche back, shelf (top z 822.9 measured), recessed plinth (106.2 measured) -- plus `led_strip`, the first emissive mass in this lane, on a line fitted to rms 0.124 px over 65 columns. `part_stile_M` becomes the measured mullion PAIR, because its right edge is the occluding contour that hides the wardrobe's own left edge and the modelled member fell 16 px short of it. THE LIGHT IS NOT TOUCHED: predictions 1-4 in this file's docstring are written down before the render precisely so the light's next round has something it can fail against.",
+ "_status": "r34 = the wardrobe re-derived on the plane it stands on. `closet_oak` declared its front face at y=2330; the floor contact puts it at y=1130, wrong by ~1200 mm, and on the declared plane z=0 lands on unbroken cabinet wood. It becomes six masses -- body, head, right stile/return, niche back, shelf (top z 822.9 measured), recessed plinth (106.2 measured) -- plus `led_strip`, the first emissive mass in this lane, on a line fitted to rms 0.124 px over 65 columns. `part_stile_M` becomes the measured mullion PAIR, because its right edge is the occluding contour that hides the wardrobe's own left edge and the modelled member fell 16 px short of it. THE LIGHT IS NOT TOUCHED: predictions 1-4 in this file's docstring are written down before the render precisely so the light's next round has something it can fail against.",
  "materials": {
   "art_relief": [
    [

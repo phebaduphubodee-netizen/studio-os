@@ -679,6 +679,178 @@ def test_an_owner_signed_entry_removal_is_allowed(tmp_path):
     assert RG.baseline_ratchet(str(tmp_path / "coverage-manifest.json"), now, previous=was) == []
 
 
+# --- P0f: reachability, applied to SPEC KEYS ------------------------------------
+# reachability_check.py covers .py modules; nothing covered the spec, and that is
+# where `judge_lines` lived — a key claiming "the build is scored against them"
+# that stored no value and had no reader, for its whole life. Six of the canonical
+# spec's 21 top-level keys had no production reader when this was measured.
+#
+# THE CONVENTION, which the spec already carried in two places (`_pixel_claims_note`,
+# `camera._solved`): a leading underscore DECLARES a note. Everything else is an
+# input and must be read by something.
+#
+# HONEST LIMIT: the search is repo-wide, so another dict using the same key name
+# would let a dead spec key pass. It can therefore only UNDER-report — it will
+# never fail a key that is genuinely wired, and it does catch the blatant case
+# that produced judge_lines: a name nothing in the repo ever subscripts.
+
+def _unread_spec_keys(spec):
+    """Top-level keys that no program subscripts and that are not declared notes."""
+    import glob as _g
+    import re as _re
+    src = []
+    for p in _g.glob(os.path.join(RG.REPO_ROOT, "pipeline", "scripts", "*.py")):
+        if os.path.basename(p).startswith("test_"):
+            continue
+        with open(p, encoding="utf-8", errors="ignore") as f:
+            src.append(f.read())
+    blob = "\n".join(src)
+    return [k for k in spec
+            if not k.startswith("_")
+            and not _re.search(r"""[\[\(]\s*["']""" + _re.escape(k) + r"""["']""", blob)]
+
+
+def test_the_spec_key_guard_can_fail():
+    # A guard that cannot fail is decoration. Negative control: a key no program
+    # could possibly subscript must be reported.
+    assert _unread_spec_keys({"masses": [], "zzz_no_reader_anywhere": 1}) == \
+        ["zzz_no_reader_anywhere"]
+
+
+def test_a_declared_note_is_exempt_from_the_spec_key_guard():
+    assert _unread_spec_keys({"_zzz_no_reader_anywhere": 1}) == []
+
+
+def test_every_non_underscore_spec_key_is_read_by_some_program():
+    spec_p = os.path.join(RG.REPO_ROOT, "training", "TRN-002", "spec_r38.json")
+    if not os.path.isfile(spec_p):          # lane archived: nothing to assert
+        return
+    with open(spec_p, encoding="utf-8") as f:
+        spec = json.load(f)
+    dead = _unread_spec_keys(spec)
+    assert dead == [], (
+        f"top-level spec key(s) {dead} are read by no program and are not "
+        f"declared notes. Either wire a reader or prefix with '_' — an input "
+        f"nothing consumes is the shape judge_lines had for its whole life.")
+
+
+# --- P0f: exit 2 (COULD NOT RUN) was a bare `pass` on a full-fidelity frame ---
+# The comment above it reasoned that only full fidelity closes a gate, and the
+# code never tested `quick`. R11's own law, broken inside R11's implementation.
+
+def test_a_clean_pixel_run_is_ok():
+    assert RG.pixel_exit_policy(0, False) == ("ok", "")
+
+
+def test_could_not_run_STOPS_a_full_fidelity_frame():
+    action, msg = RG.pixel_exit_policy(2, False)
+    assert action == "stop" and "COULD NOT RUN" in msg
+
+
+def test_could_not_run_is_only_a_note_on_a_playblast():
+    # Half resolution per axis is a different measurement; refusing to rescale
+    # is the checker being correct, not the build failing.
+    action, msg = RG.pixel_exit_policy(2, True)
+    assert action == "note" and "playblast" in msg
+
+
+def test_a_broken_claim_stops_either_way():
+    assert RG.pixel_exit_policy(1, True)[0] == "stop"
+    assert RG.pixel_exit_policy(1, False)[0] == "stop"
+
+
+# --- P0f: audit_craft returned a bare [] for "clean" AND for "never measured" ---
+# R11's own sentence, applied to an advisory rung: "could not look" must never
+# print like "looked and it was fine". The docstring also claimed the roster
+# named this rung; the caller passed no note() at all, in any version.
+
+_CAM = {"x_mm": 0, "y_mm": -3000, "z_mm": 1300}
+
+
+def test_craft_says_DID_NOT_RUN_when_the_spec_has_no_rounded_mass():
+    # Used to return [] — indistinguishable from a clean measurement.
+    ran, notes = RG.audit_craft(_spec([{"name": "wall"}], camera=_CAM))
+    assert ran is False
+    assert len(notes) == 1 and "DID NOT RUN" in notes[0]
+
+
+def test_craft_says_DID_NOT_RUN_with_no_solved_camera():
+    ran, notes = RG.audit_craft(_spec([{"name": "wall"}]))
+    assert ran is False and "DID NOT RUN" in notes[0]
+
+
+def test_craft_confirms_positively_when_it_measured_and_found_nothing():
+    # The other half of the same defect: a clean measurement must SAY it measured.
+    m = {"name": "post", "kind": "oct", "cut": 8.0, "seg": 64, "c": [0, 0, 500]}
+    ran, notes = RG.audit_craft(_spec([m], camera=_CAM))
+    assert ran is True
+    assert len(notes) == 1 and "0 shortfalls" in notes[0] and "1 rounded mass" in notes[0]
+
+
+def test_craft_still_reports_a_real_shortfall():
+    m = {"name": "post", "kind": "oct", "cut": 120.0, "seg": 2, "c": [0, 0, 500]}
+    ran, notes = RG.audit_craft(_spec([m], camera=_CAM))
+    assert ran is True and "shortfall" in notes[0] and len(notes) == 2
+
+
+def test_the_roster_names_the_craft_rung(tmp_path):
+    # It never did. The docstring said otherwise for as long as it existed.
+    roster, adv = [], []
+    RG.check(_spec([{"name": "wall", "prov": "M(u1)"}], camera=_CAM),
+             roster=roster, advisories=adv)
+    assert any(name == "craft silhouette" for name, _, _ in roster)
+
+
+# --- P0f: the sign-off was a string check, and a string check is a free pass ---
+# `isinstance(v, str) and v.strip()` guarded BOTH halves of the ratchet. The
+# message beside it asks for "<reason + date>", so the format was printed at the
+# builder on every fire and enforced never. One character discharged it.
+
+def _sign(tmp_path, value):
+    now = {"entries": [{"id": "a"}], "absent_baseline": [],
+           "absent_baseline_signoff": {"wall_floor_junction": value}}
+    was = {"entries": [{"id": "a"}, {"id": "wall_floor_junction"}], "absent_baseline": []}
+    (tmp_path / "coverage-manifest.json").write_text(json.dumps(now), encoding="utf-8")
+    return RG.baseline_ratchet(str(tmp_path / "coverage-manifest.json"), now, previous=was)
+
+
+def test_a_one_character_signoff_no_longer_discharges_a_lost_entry(tmp_path):
+    assert len(_sign(tmp_path, "x")) == 1
+
+
+def test_pasting_the_messages_own_placeholder_back_is_refused(tmp_path):
+    # The cheapest possible bypass: the guard prints the template and accepts it.
+    assert len(_sign(tmp_path, "<reason + date>")) == 1
+
+
+def test_pending_is_refused_by_name_as_it_is_in_decisions_check(tmp_path):
+    assert len(_sign(tmp_path, "pending")) == 1
+
+
+def test_a_date_with_no_reason_is_not_a_signoff(tmp_path):
+    assert len(_sign(tmp_path, "2026-08-10")) == 1
+
+
+def test_a_reason_with_no_date_is_not_a_signoff(tmp_path):
+    # Undated, so it cannot be placed in the record or matched to a diff.
+    assert len(_sign(tmp_path, "the target has no junction detail")) == 1
+
+
+def test_a_dated_reason_still_passes(tmp_path):
+    assert _sign(tmp_path, "owner 2026-08-09: the target has no junction detail") == []
+
+
+def test_the_growth_half_uses_the_same_rule_as_the_loss_half(tmp_path):
+    # Both halves read the same field and one used to be checkable while the
+    # other was not; they are now one function so they cannot drift apart.
+    now = {"entries": [{"id": "a"}], "absent_baseline": ["b"],
+           "absent_baseline_signoff": {"b": "x"}}
+    (tmp_path / "coverage-manifest.json").write_text(json.dumps(now), encoding="utf-8")
+    v = RG.baseline_ratchet(str(tmp_path / "coverage-manifest.json"), now,
+                            previous={"entries": [{"id": "a"}], "absent_baseline": []})
+    assert len(v) == 1 and "GREW" in v[0]
+
+
 def test_adding_a_manifest_entry_is_always_free(tmp_path):
     now = {"entries": [{"id": "a"}, {"id": "b"}], "absent_baseline": []}
     was = {"entries": [{"id": "a"}], "absent_baseline": []}

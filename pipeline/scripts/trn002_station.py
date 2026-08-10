@@ -162,9 +162,14 @@ def main():
         "image": {"w": WH[0], "h": WH[1]},
         "camera": {**{k: round(v, 6) if isinstance(v, float) else v for k, v in cam.items()},
                    "_solved": "v004 VP pins + corner anchor + G1 gauge 2026-08-04"},
-        "gauges": {"G1": "door leaf 2000 + lever 1030 -> cam z 1305",
-                   "G2": f"wardrobe depth {WARDROBE_D:.0f}",
-                   "H_main_mm": round(H_main, 1)},
+        # `_gauges`, underscored at P0f: nothing reads it and nothing should —
+        # these are the human record of how the camera height was pinned, not an
+        # input. The spec already carried that convention (`camera._solved`,
+        # `_pixel_claims_note`); applying it makes "no reader" a DECLARED
+        # property rather than the accident that made this key look dead.
+        "_gauges": {"G1": "door leaf 2000 + lever 1030 -> cam z 1305",
+                    "G2": f"wardrobe depth {WARDROBE_D:.0f}",
+                    "H_main_mm": round(H_main, 1)},
         "world": {k: [round(c, 1) for c in v] for k, v in W.items() if v},
         "downlights_xy": DL,
     }
