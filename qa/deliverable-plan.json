@@ -353,7 +353,20 @@
       },
       "changed": [],
       "note": "nothing changed this review"
+    },
+    {
+      "commit": "2f817c0ee537826dd83972e28e7d6be12437a1e8",
+      "verdicts": {
+        "P0": "keep: the commit under review (2f817c0) fixed the review counter itself, not a phase. P0 is unchanged — exit-test item 6, the build_room render, is still the only thing between it and closed. Worth recording that the instrument reporting on this plan was miscounting its own paperwork until an hour ago.",
+        "P1": "keep: unchanged. P1b done, P1a is the phase and is now a render that passes through a gate.",
+        "P2": "keep: unchanged. P2a acquire with scale asserted, P2b replace _build_tub_chair rather than tune it.",
+        "P3": "keep: unchanged. Light RANGE not light count, gated behind P2.",
+        "P4": "keep: unchanged. Styling density as completeness.",
+        "P5": "keep: unchanged. Judgement, downstream of the rest being real."
+      },
+      "changed": [],
+      "note": "nothing changed this review"
     }
   ],
-  "last_review_commit": "97ed78865d9bdced8ff919d656cd1c0fc13b775d"
+  "last_review_commit": "2f817c0ee537826dd83972e28e7d6be12437a1e8"
 }
