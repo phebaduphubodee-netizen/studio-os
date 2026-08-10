@@ -542,6 +542,47 @@ def pixel_exit_policy(returncode, quick):
                     "its own spec claims.")
 
 
+# The last line `deliverable_check` prints when it ran to the end. Defined HERE
+# because it is the one pure module both sides can import: the scorer needs numpy
+# and PIL so a Blender build cannot import it, and a constant copied into the build
+# is a constant that drifts.
+DELIVERABLE_VERDICT_PREFIX = "DELIVERABLE:"
+
+
+def score_exit_policy(returncode, stdout):
+    """PURE. What a build must DO with deliverable_check's result — ("ok"|"note"|
+    "stop", message). Same shape as `pixel_exit_policy`, and it exists for a defect
+    of exactly the same family, found the hour it was wired.
+
+    THE EXIT CODE IS A CLAIM; THE TERMINAL LINE IS EVIDENCE. On its first wired run
+    the scorer DIED printing a Thai object name (`rug__พรมใต้เตียง...`) through a
+    cp1252 console. Python exits 1 on an uncaught exception, and 1 is this tool's
+    code for "ran and does not qualify" — so a crashed gate printed exactly like a
+    completed one, inside the commit whose subject was that same defect. Pinning the
+    child's encoding fixes that instance. Requiring the tool's own last line is what
+    makes the next one loud, whatever kills it.
+
+    A LOW SCORE IS NOT A STOP, and that is the difference from the pixel rung. The
+    standard is an OUTCOME bar; P2 through P4 exist to climb it, so failing the
+    render while the frame sits below it would stop the work that raises it.
+    """
+    ran = any(ln.startswith(DELIVERABLE_VERDICT_PREFIX)
+              for ln in (stdout or "").splitlines())
+    if returncode == 2:
+        return "stop", ("deliverable_check COULD NOT RUN (exit 2) — the rows that "
+                        "carry the weight did not run. `could not look` does not "
+                        "finish like `looked and it was fine`.")
+    if not ran:
+        return "stop", (f"deliverable_check exited {returncode} without printing "
+                        f"'{DELIVERABLE_VERDICT_PREFIX}' — it did not reach the end, "
+                        f"so this build has no scorecard. An exit code is a claim; "
+                        f"the terminal line is the evidence.")
+    if returncode == 0:
+        return "ok", ""
+    return "note", ("the frame does not yet qualify. That is a score, not a "
+                    "failure: the phases after this one exist to raise it.")
+
+
 SIGNOFF_DATE = re.compile(r"\b20\d\d-[01]\d-[0-3]\d\b")
 # Placeholders that are non-empty strings and mean nothing. `pending` is refused
 # BY NAME for the same reason decisions_check refuses it: a word that reads like

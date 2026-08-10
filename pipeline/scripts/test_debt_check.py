@@ -604,8 +604,20 @@ def test_the_exit_codes_are_the_contract(capsys):
     """0 = the ledger is honest, 1 = it is not (or a spec was offered as
     discharge), 2 = COULD NOT RUN. The third one is the point of having them:
     `pixel_check` carries the same contract because a caller that cannot tell 2
-    from 0 eventually reads 'not run' as 'passed'."""
-    assert DC.main([]) == 0
+    from 0 eventually reads 'not run' as 'passed'.
+
+    IT USED TO ASSERT `DC.main([]) == 0` AND THAT WAS A SNAPSHOT, NOT A CONTRACT.
+    It went red on 2026-08-10 when P0 and P1 closed and the lane reached P2 —
+    fifteen rows came DUE AND UNPAID on schedule, which is the ledger doing its one
+    job. A test that turns a correct red into a broken build teaches its own
+    removal. So the assertion is now that the code AGREES with the ledger's own
+    reading of due-and-unpaid, which is what "the exit codes are the contract"
+    always meant, and which is true at any point in the lane."""
+    code = DC.main([])
+    capsys.readouterr()
+    due = DC.due_now(DC.load(), DC._plan_phases(), DC._current_phase())
+    assert code == (1 if due else 0), (
+        f"exit {code} with {len(due)} due-and-unpaid row(s)")
     spec = os.path.join(REPO, "training", "TRN-002", "spec_r38.json")
     assert DC.main(["--spec", spec]) == 1
     capsys.readouterr()

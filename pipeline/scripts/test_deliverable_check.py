@@ -255,6 +255,32 @@ def test_d7_stays_not_run_because_a_built_scene_has_parts_not_items():
     assert rows["D7"] == "NOT RUN"
 
 
+def test_a_crashed_scorer_does_not_read_like_a_completed_one():
+    """THE NEGATIVE CONTROL, and it is a defect this pair shipped rather than a
+    precaution. The scorer died printing a Thai object name through a cp1252
+    console; Python exits 1 on an uncaught exception and 1 is this tool's code for
+    'ran and does not qualify'. Half a scorecard read as a whole one."""
+    import rule_gate as RG
+    half = "D8   FAIL   15 vs 0\n"                      # died before the verdict
+    whole = half + RG.DELIVERABLE_VERDICT_PREFIX + " DOES NOT QUALIFY — D8\n"
+    assert RG.score_exit_policy(1, half)[0] == "stop"
+    assert RG.score_exit_policy(1, whole)[0] == "note", "a low score is not a stop"
+    assert RG.score_exit_policy(0, whole.replace("DOES NOT ", ""))[0] == "ok"
+    assert RG.score_exit_policy(2, whole)[0] == "stop", "could not run is a stop"
+    assert RG.score_exit_policy(0, "")[0] == "stop", "not even a clean exit is taken on trust"
+
+
+def test_the_verdict_line_survives_a_thai_object_name(tmp_path, capsys):
+    """The regression, named by the object that caused it."""
+    d = tmp_path / "d.json"
+    d.write_text(json.dumps({"objects": [
+        _obj("rug__พรมใต้เตียง_(anti-monopoly_rug,_D1-A)", 2)]}), encoding="utf-8")
+    assert DC.main(["--scene-dump", str(d)]) == 1
+    out = capsys.readouterr().out
+    assert "พรม" in out, "the report must be able to print the object it fails"
+    assert out.strip().splitlines()[-1].startswith(DC.VERDICT_PREFIX)
+
+
 def test_exit_2_is_could_not_run_and_is_not_the_same_as_did_not_qualify(tmp_path):
     """debt_check's docstring already cites this contract; until now main() did not
     implement it. 2 must be reachable ONLY when the check itself could not run."""

@@ -51,6 +51,18 @@ LONG_EDGE = 1600
 IMAGE_ROWS = ("D1", "D2", "D3", "D4", "D5", "D6", "D10")
 SCENE_ROWS = ("D7", "D8", "D9")
 
+# THE LAST LINE THIS TOOL PRINTS WHEN IT RAN TO THE END. A caller checks for it
+# instead of trusting the exit code, and that is not belt-and-braces — it is a
+# defect this file shipped. On the first wired run the scorer DIED on a Thai object
+# name (`rug__พรมใต้เตียง...` through a cp1252 console), exited 1, and build_room
+# read 1 as "ran and does not qualify". A crashed gate printed exactly like a
+# completed one, in the commit whose subject was that same defect. An exit code is
+# a claim; a terminal line is evidence.
+#
+# ONE definition, in the pure module the Blender build can also import — this file
+# needs numpy and PIL, so it is not importable there, and a copied constant drifts.
+from rule_gate import DELIVERABLE_VERDICT_PREFIX as VERDICT_PREFIX  # noqa: E402
+
 
 class NotRun(Exception):
     """A row that could not be measured. Never a pass."""
@@ -428,6 +440,14 @@ def main(argv=None):
     NOT RUN is a different thing and is handled where it belongs: a MANDATORY row
     that did not run makes `qualifies` refuse, which is exit 1. D7 is NOT RUN on
     every built scene by design and is unscored, so it decides nothing."""
+    # This lane's object names are Thai. A report that cannot print the name of the
+    # object it is failing is not a report, and the default Windows console
+    # encoding is cp1252 — so the stream is pinned rather than the names censored.
+    for _s in (sys.stdout, sys.stderr):
+        try:
+            _s.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):            # not a real stream (tests)
+            pass
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("frame", nargs="?", help="the image to score")
     ap.add_argument("--scene", default=None, help="JSON of scene-row measurements")
@@ -475,7 +495,7 @@ def main(argv=None):
     s = summarise(rows)
     print(f"\n{s['pass']} pass / {s['fail']} fail / {s['not_run']} NOT RUN")
     ok, why = qualifies(rows, std)
-    print(f"{'QUALIFIES' if ok else 'DOES NOT QUALIFY'}: {why}")
+    print(f"{VERDICT_PREFIX} {'QUALIFIES' if ok else 'DOES NOT QUALIFY'} — {why}")
     return 0 if ok else 1
 
 

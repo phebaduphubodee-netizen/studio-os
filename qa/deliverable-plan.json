@@ -62,7 +62,7 @@
       "id": "P0",
       "title": "Instruments and unlocks — no renders",
       "goal": "Build the standard that can fail our own best frame, the debt ledger that closes only on built objects, and open the asset door that R8 requires and no code provides.",
-      "status": "open",
+      "status": "done",
       "work": [
         {
           "id": "P0a",
@@ -120,13 +120,13 @@
         }
       ],
       "exit_test": "REPLACED AT THE SECOND REVIEW, and the reason is recorded because the replacement is narrower. The original read 'deliverable_check FAILS ld1 on >=5 of 10 rows' — a proxy invented before any measurement existed, when I believed our best frame was far from delivered on tone. The census says otherwise: ld1 passes five of six scored image rows, and its tone, range and 4-32 px structure ARE at delivered level. The criterion the proxy stood for is kept and stated directly: (1) the standard must NOT QUALIFY ld1, and at least one row that fails it must name a defect a person named independently — D10 catches the amber-monochrome cast a sighted judge wrote down before this row existed; (2) it must fail trn002_mat_r38c.png on >=8 of 10 rows — it fails 8; (3) it must fail target.jpg on D1 and pass it on D2-D6 — the reproduction target is good work that is 0.89 MP, which is the whole reason DELIV-001 exists; (4) ~half of the delivered pool must qualify — 51.4% does; (5) debt_check REFUSES spec_r38.json by name; (6) suite green before and after the deletion commit plus one build_room render.",
-      "exit_result": "1-5 HOLD as of 2026-08-10. Item 5 closed with P0d: `debt_check --spec training/TRN-002/spec_r38.json` exits 1 and names the file — a spec is a declaration and closes no row, 21 rows filed against that spec's own unit are open, and 2 of them name an object the spec does not contain at all. Only item 6 (suite green across the deletion commit) is left, and it is P0f."
+      "exit_result": "1-5 HOLD as of 2026-08-10. Item 5 closed with P0d: `debt_check --spec training/TRN-002/spec_r38.json` exits 1 and names the file — a spec is a declaration and closes no row, 21 rows filed against that spec's own unit are open, and 2 of them name an object the spec does not contain at all. Only item 6 (suite green across the deletion commit) is left, and it is P0f.\n\nCLOSED 2026-08-10. Item 6 was the only one outstanding and it is now run: the suite is green ACROSS the deletion commit (2954 passed, whole repo) and one build_room render has been taken through the whole path — room_bedroom_suite_eye_p1a.png at 4.320 MP, gated, dumped and scored.\n\nONE ITEM OF THIS EXIT TEST WAS TRUE FOR A REASON IT DID NOT NAME, and P1 found it. Item 1 says the standard must NOT QUALIFY ld1, and it did not — but only because ld1 had no scene dump, so D8 and D9 came back NOT RUN. The moment a scene WAS supplied through the spec reader, the two mandatory rows passed on zeros and 63 of the 96 eye frames on disk qualified, ld1's own siblings among them. The exit test was satisfied by an ABSENCE that read like a refusal. That is the same shape as everything else this plan has found, and it is recorded here rather than in P1 because it is P0's test that could not tell the two apart."
     },
     {
       "id": "P1",
       "title": "Baseline deliverable frame",
       "goal": "One render of PRJ-2026-002 master suite from build_room.py at >=3.19 MP, scored against the standard, to confirm the instrument predicted correctly.",
-      "status": "blocked",
+      "status": "done",
       "work": [
         {
           "id": "P1b",
@@ -143,11 +143,12 @@
           "id": "P1a",
           "what": "build_room.py --eye at 2400x1800 (fallback 2100x1600 = 3.36 MP, NOT 2048x1536 which is below the 3.19 MP floor)",
           "where": "pipeline/scripts/build_room.py",
-          "status": "todo"
+          "status": "done",
+          "closed_by": "2400x1800 = 4.320 MP, and NEITHER number is typed: both are read off the 658-frame census (median 4.194 MP, median aspect 1.250; p25/p75 aspect 0.750/1.500). It lives in camera_config, not in the render call, because with sensor_fit HORIZONTAL the aspect IS a framing parameter — a resolution edited at the renderer is a silent recompose. `deliverable_res` REFUSES a resolution under the D1 floor it is handed, and build_room reads that floor out of qa/deliverable-standard.json on every eye build, so a re-cut census fails the build instead of quietly making an unqualifiable frame. THE MARGIN IT REPLACES: the eye path rendered 2000x1400 = 2.800 MP against a floor of 2.796 — 0.004 MP that nobody chose and nothing was protecting."
         }
       ],
       "exit_test": "The frame renders at >=3.19 MP and its scorecard reproduces P0's day-1 prediction exactly — the same rows fail, the same pass. A row predicted to fail that comes back green means the instrument is wrong and P0 is re-cut before P2 starts.",
-      "exit_result": null,
+      "exit_result": "MET, 2026-08-10, and its own re-cut clause fired first.\n\nTHE FRAME: pipeline/output/room_bedroom_suite_eye_p1a.png, 2400x1800 = 4.320 MP, Cycles GPU 256 samples, 8m31s render, from master-suite.CANONICAL.spec.json through the now-gated build_room path (rule gate: R10 spec 11 objects / 0 violations, nine rungs declared not-applicable with reasons).\n\nTHE SCORECARD reproduces the prediction recorded in this file BEFORE the frame existed (commit 9d28449, 13:29; the render finished after) on ALL TEN ROWS, including both counts:\n  D1 PASS 4.32 · D2 PASS 17.21 · D3 PASS 3.618 · D4 PASS 0.0158 · D5 PASS 10.4383 · D6 PASS 2.8836 · D10 PASS 7.46\n  D7 NOT RUN · D8 FAIL 15 · D9 FAIL 13\n  DOES NOT QUALIFY — D8 is mandatory and came back FAIL.\nD5 was flagged in the prediction as the one image row that could move (the quick frame is UPSAMPLED into the 1600 px measurement and the deliverable is DOWNSAMPLED into it). It moved 10.1234 -> 10.4383 and stayed inside the band.\n\nTHE CLAUSE FIRED: 'a row predicted to fail that comes back green means the instrument is wrong and P0 is re-cut before P2 starts'. Before the render, measure_scene_spec scored this lane 0/0/0 and passed BOTH mandatory scene rows — on which 63 of the 96 eye frames already on disk qualified as delivered-level. P0 was re-cut in 9d28449: the spec reader refuses a grammar it cannot read, and scene_dump.py + measure_scene_built read the BUILT scene (498 meshes against the spec's 11 objects).\n\nAND THE WIRING FAILED ONCE, IN THE SAME FAMILY, ON ITS FIRST REAL RUN. The spawned scorer DIED printing the Thai rug name through a cp1252 console; Python exits 1 on an uncaught exception and 1 is this tool's code for 'ran and does not qualify', so a crashed gate printed exactly like a completed one. Fixed three ways: the child's encoding is pinned, the tool prints a terminal verdict line, and rule_gate.score_exit_policy STOPS the build when that line is absent whatever the exit code says. An exit code is a claim; the terminal line is evidence.\n\nSTALE NUMBER FOUND IN THIS PHASE'S OWN TEXT: P1's goal and P1a both say the floor is 3.19 MP. The standard of record says D1 = 2.796 (p25 of 658). 3.19 was written before the census existed and nothing consumed it. The frame clears both, so it changed no decision — it is recorded because the plan of record carrying a number that contradicts the standard of record is the drift this file exists to stop.",
       "prediction": {
         "_what": "P1's exit test says the scorecard must reproduce 'P0's day-1 prediction'. No such prediction was ever written down — the phrase had no referent, which is R11's own defect one level up: a held-out scoring set with no data. This is that prediction, RECORDED BEFORE the full-fidelity frame exists (commit precedes the render), so it can be wrong.",
         "_written": "2026-08-10, after the R5 quick rung (1200x900) and the built-scene dump of the SAME geometry, before the 2400x1800 frame",

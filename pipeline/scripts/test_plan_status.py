@@ -229,11 +229,17 @@ def test_review_without_verdicts_is_refused_at_the_cli(tmp_path):
 # --- and the real file ---------------------------------------------------------
 
 def test_the_repos_own_plan_loads_and_reports():
+    """It asserted `WE ARE AT   P0` and broke the day P0 closed — a test pinned to
+    a SNAPSHOT of the lane rather than to the report's contract, so the only way to
+    keep it green is to edit it every time work lands. Pin the invariant instead:
+    the header names whichever phase `current` resolves to."""
     p = PS.load()
     assert p["unit"] == "DELIV-001"
-    assert [x["id"] for x in p["phases"]] == ["P0", "P1", "P2", "P3", "P4", "P5"]
+    ids = [x["id"] for x in p["phases"]]
+    assert ids == ["P0", "P1", "P2", "P3", "P4", "P5"]
     out = PS.report(p)
-    assert "WE ARE AT   P0" in out
+    cur = PS.current(p)
+    assert f"WE ARE AT   {cur['id']}" in out and cur["id"] in ids
 
 
 def test_every_work_item_in_the_real_plan_names_a_file():

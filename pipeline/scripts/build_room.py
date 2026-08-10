@@ -227,15 +227,23 @@ def _score_deliverable(name, quick=False, frame=True):
         # either rung, so those are what the quick run scores.
         print("  SCORE -- quick rung: image rows NOT RUN (a playblast is not the "
               "deliverable's size); scene rows below are valid at this rung")
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")
     r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
-                       errors="replace")
-    for ln in (r.stdout or "").splitlines():
+                       errors="replace", env=env)
+    out = r.stdout or ""
+    for ln in out.splitlines():
         print(f"SCORE {ln}")
-    if r.returncode == 2:
-        for ln in (r.stderr or "").splitlines()[-4:]:
+    # The policy is layer-1 and lives in rule_gate beside pixel_exit_policy, for the
+    # reason that one records: a policy a plain python process cannot import is a
+    # policy nobody tests, and the last untested one inverted its own meaning.
+    import rule_gate as _RG
+    action, msg = _RG.score_exit_policy(r.returncode, out)
+    if action == "note":
+        print("SCORE -- " + msg)
+    elif action == "stop":
+        for ln in (r.stderr or "").splitlines()[-6:]:
             print(f"SCORE !! {ln}")
-        print("BUILD FAILED: deliverable_check COULD NOT RUN (exit 2). 'Could not "
-              "look' must never finish like 'looked and it was fine'.")
+        print("BUILD FAILED: " + msg)
         sys.stdout.flush()
         os._exit(1)
 
