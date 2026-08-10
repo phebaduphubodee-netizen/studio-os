@@ -979,7 +979,19 @@ def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.5, spec=0
     return m
 
 
-_FABRIC_MAPS = False       # --fabric-maps: lane-B A/B flag (ground-truth study 2026-07-30)
+_FABRIC_MAPS = True        # DEFAULT ON, D-022 2026-08-10. The A/B that decided it is
+#                            re-runnable with --no-fabric-maps; the flag stays so the
+#                            comparison never needs a source edit (R6). Lane B wrote
+#                            `maps=` on seven soft-good materials on 2026-07-30 and left
+#                            the flag False, so the bed, shams, coverlet, duvet, throw,
+#                            bench seat and stool carried texture code no lane ever ran —
+#                            2 of 498 built objects had an image map, against 50-66% in
+#                            delivered .blend files. THE INSTRUMENTS COULD NOT DECIDE IT:
+#                            octave energy moved 10.1222 -> 10.1223. The LOOK could — at
+#                            2x on the bed head the shams read as woven cloth instead of
+#                            matte slabs, which is Gemini's C3 item 2 ("หมอนดูเหมือน
+#                            ลูกโป่ง...แข็งและไร้น้ำหนัก") answered on its surface half.
+#                            The geometry half (no seams, too round) is NOT fixed by this.
 _FABRIC_TILE_M = 0.85      # physical metres one 2k fabric tile spans — cm-scale features,
 #                            NOT thread pitch (the 2026-07-22 probe killed thread-pitch maps
 #                            and stays honoured: nothing here is authored below the meso band)
@@ -4162,6 +4174,11 @@ if __name__ == "__main__":
         # hero dimmer state over the signed e5 plan (lane A) — spec untouched
         _spec["_light_story"] = True
         globals()["_LIGHT_STORY"] = True
+    if "--no-fabric-maps" in _post_dashdash():
+        # the A leg of D-022's A/B, kept runnable so the decision can be re-tested
+        # without editing source (R6) — and so "revert by omission" is impossible.
+        _spec["_fabric_maps"] = False
+        globals()["_FABRIC_MAPS"] = False
     if "--fabric-maps" in _post_dashdash():
         # lane B A/B flag: compose the CC0 2k weave maps onto the signed textile
         # signature (_woven block 6). Off = the exact procedural-only state, so the

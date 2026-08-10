@@ -299,6 +299,20 @@
    "reverse_by": "ลบการเรียก adapter + rule_gate ออกจาก build_room.py และลบแถว D-021 นี้ทิ้ง แล้ว build_room จะกลับไปเรนเดอร์โดยไม่ผ่าน gate เหมือนเดิม",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-022",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-10",
+   "decided_by": "builder",
+   "question": "lane B เขียน `maps=\"rough_linen\"` ไว้บนวัสดุ soft goods 7 ตัวตั้งแต่ 2026-07-30 แล้วปล่อย `_FABRIC_MAPS = False` — จะเปิดเป็นค่าตั้งต้นมั้ย",
+   "in_effect": "**เปิดเป็นค่าตั้งต้น (`_FABRIC_MAPS = True`)** · ขา A ของ A/B ยังรันได้ด้วย `--no-fabric-maps` เพื่อให้เถียงกลับได้โดยไม่ต้องแก้ source (R6) · ผลที่วัดได้: object ที่มี image map ขึ้นจาก **2/498 (0.4%) เป็น 13/498 (2.6%)** — ยังห่างจาก 50-66% ของไฟล์งานจริงมาก แต่เป็นครึ่งที่โค้ดเขียนไว้แล้ว",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "**เครื่องมือตัดสินไม่ได้ ตาตัดสินได้** — octave energy ขยับจาก 10.1222 เป็น 10.1223 ซึ่งคือไม่ขยับ (บทเรียน amplitude-bisect: การวัดพิสูจน์ REACHABILITY ได้ แต่พิสูจน์ VALUE ไม่ได้) · ดู crop 2x ที่หัวเตียง: euro sham อ่านเป็นผ้าทอจริง ไม่ใช่แผ่นด้านเรียบอีกต่อไป · ตรงกับ C3#2 ของ Gemini ครึ่งพื้นผิว · **SC-4 มีการทดลองคุมตัวแปรรองรับ** (Rademacher EGRW 2001, n=18) ว่าความหยาบของพื้นผิวเป็น cue ของความสมจริงที่แรงกว่าความนุ่มของเงา R .71 vs .39 · **สิ่งที่ยังไม่ถูกแก้และห้ามอ่านว่าแก้แล้ว: รูปทรงหมอน** — ไม่มีตะเข็บ ไม่มีขอบ กลมเกินไป นั่นเป็นเรขาคณิต ไม่ใช่วัสดุ",
+   "reverse_by": "ตั้ง `_FABRIC_MAPS = False` กลับที่ build_room.py:982 แล้วลบแถว D-022 นี้ทิ้ง (หรือรันด้วย --no-fabric-maps เพื่อดูขา A โดยไม่แก้อะไรเลย)",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
