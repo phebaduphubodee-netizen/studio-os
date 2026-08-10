@@ -4064,6 +4064,53 @@ if __name__ == "__main__":
               f"quick-look tail '_{quicklook.QUICK_SUFFIX}' (R5); pick another name")
         sys.stdout.flush()
         os._exit(1)
+    # D-021 — THE RENDER PATH THAT MAKES THE DELIVERABLE FRAME NOW CALLS A GATE.
+    # Measured 2026-08-10, before this line existed: `rule_gate` was imported by
+    # trn002_build.py and NOTHING ELSE, so a DELIV-001 frame rendered past no
+    # contact check, no decision log, no pixel rung and no debt rung — and P1
+    # would then have scored it with a standard nothing enforced.
+    #
+    # It is `check_room`, not `check`, and that is the decision rather than a
+    # convenience: `check` returns "no coverage manifest path given" as a
+    # VIOLATION, and on this lane that manifest is a READING OF A REFERENCE that
+    # does not exist. Blocking client work on the absence of an artefact that
+    # could never be correct to make is how a guard gets switched off. So the
+    # rungs that do not transfer are DECLARED in the roster with their reason —
+    # printed on every build, because the finding this whole phase rests on is
+    # that a rung which did not run must never read like one that passed.
+    #
+    # It BLOCKS. Report-only was the other option and CLAUDE.md already names it
+    # a mistake this repo has shipped once ("declared mandatory and then printed
+    # as a suggestion for a human to copy").
+    import room_masses as _RM
+    if _RM.is_room_spec(_spec):
+        if "--no-rule-gate" in _post_dashdash():
+            # Same shape as trn002_build's bypass: a bypass whose only cost is
+            # typing the flag is the default with extra steps.
+            if os.environ.get("BUILD_ROOM_ALLOW_RULE_GATE_BYPASS") != "1":
+                print("BUILD FAILED: --no-rule-gate requires "
+                      "BUILD_ROOM_ALLOW_RULE_GATE_BYPASS=1. It exists for "
+                      "bisecting an OLD spec, not for getting past a gate that "
+                      "is telling you something.")
+                sys.stdout.flush()
+                os._exit(1)
+            print("!! RULE GATE BYPASSED by --no-rule-gate")
+        else:
+            import rule_gate as _RG
+            _gs = _RM.as_gate_spec(_spec, _p)
+            _roster = []
+            _viol = _RG.check_room(_gs, roster=_roster)
+            print("RULE GATE (room lane) — what ran and what did not:")
+            for _n, _ran, _why in _roster:
+                print(f"  [{'x' if _ran else ' '}] {_n:26s} {_why}")
+            if _viol:
+                print(f"\nRULE GATE FAILED (R10): {len(_viol)} object(s) do not "
+                      f"justify their own existence")
+                for _s in _viol:
+                    print(f"  !! {_s}")
+                sys.stdout.flush()
+                os._exit(1)
+
     try:
         print(build(_spec, label=os.path.basename(_p) if _p else "DEFAULT_SPEC"))
     except BaseException as _e:  # noqa: BLE001 — incl. SystemExit (the --eye solver)

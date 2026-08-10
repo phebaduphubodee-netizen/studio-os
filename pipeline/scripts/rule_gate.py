@@ -451,6 +451,59 @@ def audit_coverage(spec, manifest_path):
     return violations
 
 
+# D-021: the rungs that DO NOT APPLY to a room lane, each with the reason. They
+# are DECLARED rather than skipped, because the whole finding of this phase is
+# that a rung which did not run must never read like a rung that passed. The
+# roster prints these; nothing here silently returns [].
+ROOM_LANE_NOT_APPLICABLE = (
+    ("R7 triage", "no critique bundle — a reproduction round's artefact, and this "
+                  "lane is client work rather than a reproduction"),
+    ("R7c blind ask", "same: no bundle, so no blind ask to audit"),
+    ("charter distillation", "the reproduction charter governs the curriculum "
+                             "lane, not the owner's own client project"),
+    ("R10 coverage", "no coverage manifest, and that is not an oversight: the "
+                     "manifest is a READING OF THE REFERENCE, and this lane has "
+                     "no reference"),
+    ("absent_baseline ratchet", "no manifest, so nothing to ratchet"),
+    ("continuity", "a client spec is not a spec_r<N> round series, so there is "
+                   "no previous round to diff against"),
+    ("R1 cap", "round/frame caps are declared per reproduction unit in "
+               "qa/curriculum-caps.json"),
+    ("R9 contacts", "the room grammar declares no `contacts`; this lane's "
+                    "placement derivation runs in placement_gate from build_room"),
+    ("R11 pixels", "STRUCTURALLY INAPPLICABLE — pixel_check measures a feature in "
+                   "our frame AND in a reproduction TARGET, and DELIV-001 is the "
+                   "owner's own client bedroom, so there is no target and never "
+                   "will be. deliverable_check is the rung that scores this lane, "
+                   "and it needs no target at all"),
+)
+
+
+def check_room(gate_spec, roster=None):
+    """R10's object half on a ROOM spec (see room_masses). Returns [violation].
+
+    D-021. `check()` cannot be pointed at a room lane as-is: it returns `no
+    coverage manifest path given` as a VIOLATION, and on this lane that manifest
+    is a reading of a reference that does not exist — so the lane would be
+    blocked by the absence of an artefact that could never be correct to make.
+
+    What runs here is the half that transfers: every object justifies its own
+    existence. `require_seen` stays OFF — R10 question 2 is "point at it in the
+    REFERENCE", which has no referent on client work; the authority that replaces
+    it is the source-of-truth order the repo already carries, and room_masses
+    translates it rather than inventing it.
+    """
+    def note(name, ran_, why=""):
+        if roster is not None:
+            roster.append((name, ran_, why))
+
+    v = audit_spec(gate_spec, require_seen=False)
+    note("R10 spec", True, f"{len(gate_spec.get('masses') or [])} object(s)")
+    for name, why in ROOM_LANE_NOT_APPLICABLE:
+        note(name, False, "not applicable to this lane: " + why)
+    return v
+
+
 def pixel_exit_policy(returncode, quick):
     """PURE. What a build must DO with pixel_check's exit code — ("ok"|"note"|
     "stop", message). Layer-1 so it can be tested; the Blender module only obeys.

@@ -679,6 +679,41 @@ def test_an_owner_signed_entry_removal_is_allowed(tmp_path):
     assert RG.baseline_ratchet(str(tmp_path / "coverage-manifest.json"), now, previous=was) == []
 
 
+# --- D-021: the room lane, where nine of thirteen rungs have no referent ---------
+
+def test_check_room_runs_R10_and_blocks_an_unjustified_object():
+    v = RG.check_room({"masses": [{"name": "mystery", "prov": ""}]})
+    assert len(v) == 1 and "no `prov`" in v[0]
+
+
+def test_check_room_does_NOT_fail_on_a_missing_coverage_manifest():
+    # The whole reason check() could not be pointed at this lane. That manifest
+    # is a READING OF THE REFERENCE, and client work has no reference — blocking
+    # on the absence of an artefact that could never be correct to make is how a
+    # guard gets switched off.
+    v = RG.check_room({"masses": [{"name": "bed", "prov": "M(ink x1)"}]})
+    assert v == []
+
+
+def test_every_inapplicable_rung_is_DECLARED_with_a_reason():
+    # Not skipped. A rung that did not run must never read like one that passed —
+    # the same law this phase repaired in audit_craft and in exit code 2.
+    roster = []
+    RG.check_room({"masses": [{"name": "bed", "prov": "M(ink x1)"}]}, roster=roster)
+    names = {n for n, _, _ in roster}
+    assert "R10 spec" in names
+    for rung, _why in RG.ROOM_LANE_NOT_APPLICABLE:
+        assert rung in names, rung
+    for name, ran, why in roster:
+        if not ran:
+            assert why.startswith("not applicable to this lane:") and len(why) > 40
+
+
+def test_the_pixel_rung_says_WHY_it_can_never_apply_here():
+    why = dict((n, w) for n, w in RG.ROOM_LANE_NOT_APPLICABLE)["R11 pixels"]
+    assert "no target" in why and "deliverable_check" in why
+
+
 # --- P0f: reachability, applied to SPEC KEYS ------------------------------------
 # reachability_check.py covers .py modules; nothing covered the spec, and that is
 # where `judge_lines` lived — a key claiming "the build is scored against them"
