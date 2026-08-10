@@ -366,7 +366,20 @@
       },
       "changed": [],
       "note": "nothing changed this review"
+    },
+    {
+      "commit": "0ed93f7456fab0e1c1a9727f28e17041ced9b945",
+      "verdicts": {
+        "P0": "keep: the commit under review added a test fixture, not a phase change. P0 unchanged — exit-test item 6, the build_room render, is still the only thing left. Worth noting it made two existing tests real everywhere instead of only on this machine.",
+        "P1": "keep: unchanged. P1b done, P1a is the render and it now passes through a gate.",
+        "P2": "keep: unchanged. P2a acquire with scale asserted, P2b replace _build_tub_chair rather than tune it.",
+        "P3": "keep: unchanged. Light RANGE not light count, gated behind P2.",
+        "P4": "keep: unchanged. Styling density as completeness.",
+        "P5": "keep: unchanged. Judgement, downstream of the rest being real."
+      },
+      "changed": [],
+      "note": "nothing changed this review"
     }
   ],
-  "last_review_commit": "2f817c0ee537826dd83972e28e7d6be12437a1e8"
+  "last_review_commit": "0ed93f7456fab0e1c1a9727f28e17041ced9b945"
 }
