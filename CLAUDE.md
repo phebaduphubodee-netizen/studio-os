@@ -4,6 +4,26 @@ AI interior design studio monorepo (Thai residential: condos, houses, townhomes)
 Claude Code is the orchestrator; the filesystem is the state machine; deterministic
 hooks are law. Full architecture: STUDIO-OS Implementation Blueprint v1.0 (docs/).
 
+## OPEN EVERY SESSION WITH THIS — owner order 2026-08-09
+```
+python pipeline/scripts/plan_status.py
+```
+Prints WHERE WE ARE in `qa/deliverable-plan.json` (the plan of record for reaching
+client-deliverable work), the next named work items with their files, what is
+waiting on the owner, and whether a REVIEW is overdue. **Report it to him at the
+top of the session, before anything else.**
+- **AFTER EVERY COMMIT THAT CLOSES WORK, review the plan and propose changes to it:**
+  `plan_status.py --review --verdicts '{"P1":"keep: …","P2":"change: …"}'`. It
+  REFUSES unless every remaining phase carries **keep / change / drop plus a
+  reason** — a review that changes nothing must say so in those words. **The plan
+  is allowed to be wrong; dropping a phase for a recorded reason is a correct
+  outcome, not a failure.**
+- Why it is a program and not a document: on 2026-08-09 this repo measured the same
+  defect three times — **357 critic items filed / ~22 built · ~61 DR units / 39
+  write-only · 21 gate artifacts / 2 with an owner verdict.** Every one is a queue
+  whose consumer never visits it. A plan carried as prose would have been the
+  fourth instance.
+
 ## Repository topology
 - `knowledge/`  — domain truth: Thai codes (`codes-th/`), ergonomics, materials,
   lighting, styles, classifications, brand-standards. Read + cite file paths.
