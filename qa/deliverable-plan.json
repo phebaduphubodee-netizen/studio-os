@@ -49,6 +49,12 @@
       "claim": "The fourth instance of the same defect, found while answering 'can't you just look it up': blender-ground-truth-study-2026-07-30.md opened five real production .blend files and measured the answer to three of the five questions drafted for the designer friend — light count, IES, HDRI strength, aperture, texture share, fabric maps, cloth poly counts, modifier usage, sample counts. It has been on disk since 30 July with zero consumers. It is a better answer than the internet can give and better than asking, because it is what practitioners DID rather than what they say they do.",
       "do": "P2 and P3 take their targets from that table, not from priors: texture share 5% -> 50-66%; fabric 0 maps -> 3-8 with sheen <=0.4 (we currently compensate missing maps with 2x the max pro sheen); SUBSURF on soft forms and stop bevelling 81% of everything; f/9.0 -> f/2.0; light range 10:1 -> aim past 191:1. Samples are NOT a lever — 256 is already inside the pro band. And the exposure sign: the same-genre file grades UP a strong rig (+1.116) while we grade DOWN a weak one (-0.1).",
       "phase": "P2"
+    },
+    {
+      "id": "SC-6",
+      "claim": "The image rows cannot fail our best frame, and that is a measurement rather than a disappointment. ld1 passes 5 of 6 scored image rows; a sighted judge looking at the same frame called it not sendable and named blob pillows, cut-out garments, white-box books, plasticky uniform roughness and an amber cast. The rows can see exactly one of those five. Separately: the first band-limited detail metric moved 3.45x on pure noise while being called band-limited, and only its negative control said so.",
+      "do": "Treat D1-D6 as a FLOOR, never as sufficient. D8/D9 are mandatory and require a scene dump, so P1 must produce one — without it the standard only checks tone, which is the half we already pass. The critic ladder and the owner's eye stay terminal (SC-2). And no threshold in deliverable-standard.json may be edited to make our frame pass: recut it from a fresh census or leave it alone.",
+      "phase": "P1"
     }
   ],
   "phases": [
@@ -79,7 +85,8 @@
           "what": "qa/deliverable-standard.json + pipeline/scripts/deliverable_check.py — ten rows, thresholds cut from the 658-anchor census",
           "where": "pipeline/scripts/deliverable_check.py",
           "why": "the first outcome gate in this repo whose thresholds come from delivered work rather than from the builder",
-          "status": "todo"
+          "status": "done",
+          "closed_by": "deliverable_check.py + qa/deliverable-standard.json, cut from a 658-frame census of delivered work. 17 tests."
         },
         {
           "id": "P0d",
@@ -103,8 +110,8 @@
           "status": "todo"
         }
       ],
-      "exit_test": "deliverable_check FAILS room_bedroom_suite_eye_ld1.png on >=5 of 10 rows, FAILS trn002_mat_r38c.png on >=8 of 10, FAILS target.jpg on D1, and PASSES >=4 of 5 delivered anchors on the image-only rows. debt_check REFUSES spec_r38.json by name. Test suite green before and after the deletion commit, plus one build_room.py render.",
-      "exit_result": null
+      "exit_test": "REPLACED AT THE SECOND REVIEW, and the reason is recorded because the replacement is narrower. The original read 'deliverable_check FAILS ld1 on >=5 of 10 rows' — a proxy invented before any measurement existed, when I believed our best frame was far from delivered on tone. The census says otherwise: ld1 passes five of six scored image rows, and its tone, range and 4-32 px structure ARE at delivered level. The criterion the proxy stood for is kept and stated directly: (1) the standard must NOT QUALIFY ld1, and at least one row that fails it must name a defect a person named independently — D10 catches the amber-monochrome cast a sighted judge wrote down before this row existed; (2) it must fail trn002_mat_r38c.png on >=8 of 10 rows — it fails 8; (3) it must fail target.jpg on D1 and pass it on D2-D6 — the reproduction target is good work that is 0.89 MP, which is the whole reason DELIV-001 exists; (4) ~half of the delivered pool must qualify — 51.4% does; (5) debt_check REFUSES spec_r38.json by name; (6) suite green before and after the deletion commit plus one build_room render.",
+      "exit_result": "1-4 HOLD as of 2026-08-09. 5 and 6 are P0d and P0f, still open."
     },
     {
       "id": "P1",
@@ -248,7 +255,23 @@
         "P3"
       ],
       "note": "Answering 'can you not just look it up': three of the five owner questions were already measured in-house and unused. Found the fourth instance of the repo's recurring defect, and corrected an overstatement I had written into this plan an hour earlier."
+    },
+    {
+      "commit": "cb521f6cf2dfa389788a7a1e2caae84cbcb1ae1a",
+      "verdicts": {
+        "P0": "change: exit test replaced. The original demanded ld1 fail >=5 of 10 rows — a proxy written before any measurement, on the belief that our best frame was far from delivered on tone. It is not: ld1 passes 5 of 6 scored image rows. The criterion is now stated directly and still fails what it was built to fail.",
+        "P1": "change: must now produce a SCENE DUMP as well as an image. Without it D8 and D9 are NOT RUN, and the standard is only checking tone, which is the half our frames already pass.",
+        "P2": "keep: unchanged, and the census strengthens it — the gap ld1 shows is objects, materials and colour, which is exactly what P2 builds.",
+        "P3": "keep: unchanged. ld1 already passes D2/D3/D4/D6, so light RANGE is closer to solved on build_room than the TRN-002 frames suggested; the remaining work is on the new frame, not a rebuild.",
+        "P4": "keep: unchanged, and D7 is now reported-not-scored until CATALOG.json shows the styling shortfall at zero. A row no amount of building can satisfy is a procurement decision, not a gate.",
+        "P5": "keep: unchanged, and SC-6 reinforces it — the image rows can see one of the five defects a sighted judge named, so the ladder and his eye stay terminal."
+      },
+      "changed": [
+        "P0",
+        "P1"
+      ],
+      "note": "P0c closed. The census contradicted the belief that produced P0's exit test, so the test was replaced and the replacement is narrower — recorded rather than quietly swapped."
     }
   ],
-  "last_review_commit": "6fcb0b0fba97160704cdff1ca8c122d60965258c"
+  "last_review_commit": "cb521f6cf2dfa389788a7a1e2caae84cbcb1ae1a"
 }
