@@ -7,15 +7,16 @@
     "The plan may be wrong. Dropping a phase with a recorded reason is a correct outcome, not a failure.",
     "No phase may be marked done because its work was performed. It is done when the test that could have failed did not."
   ],
-
   "goal": "One frame of the owner's own client bedroom (PRJ-2026-002 master suite) that three independent sighted judges rank as sendable when shuffled blind among four of the friend's delivered renders — and that the owner, looking at it, does not call unfinished.",
   "benchmark": "_private/ delivered anchor pool (658 renders). Never leaves this machine, never enters git.",
   "unit": "DELIV-001",
   "opened": "2026-08-09",
-  "cap": {"rounds": 12, "full_frames": 20, "_note": "self-bound by the builder, tighter than TRN-001's 20/37. Only the owner may raise it."},
-
+  "cap": {
+    "rounds": 12,
+    "full_frames": 20,
+    "_note": "self-bound by the builder, tighter than TRN-001's 20/37. Only the owner may raise it."
+  },
   "current_phase": "P0",
-
   "standing_corrections": [
     {
       "id": "SC-1",
@@ -43,7 +44,6 @@
       "phase": "P2"
     }
   ],
-
   "phases": [
     {
       "id": "P0",
@@ -51,12 +51,48 @@
       "goal": "Build the standard that can fail our own best frame, the debt ledger that closes only on built objects, and open the asset door that R8 requires and no code provides.",
       "status": "open",
       "work": [
-        {"id": "P0a", "what": "asset_scale.py:88-91 — accept JSON .gltf via accessor min/max, not only binary glTF magic", "where": "pipeline/scripts/asset_scale.py", "why": "all 13 CC0 models currently RAISE on ingest, so the scale assertion docs/LICENSING.md requires is dead for the whole shelf", "status": "todo"},
-        {"id": "P0b", "what": "assets/shared/CATALOG.json — bounds_mm, tris, licence, slot class, in-band verdict for all 29 on-disk models; publish the shortfall as a procurement number", "where": "assets/shared/CATALOG.json", "why": "D7 needs ~12 dressable objects; the shelf holds 3 vases + 1 plant and zero books, trays or figurines. A week-1 number, not a week-3 discovery.", "status": "todo"},
-        {"id": "P0c", "what": "qa/deliverable-standard.json + pipeline/scripts/deliverable_check.py — ten rows, thresholds cut from the 658-anchor census", "where": "pipeline/scripts/deliverable_check.py", "why": "the first outcome gate in this repo whose thresholds come from delivered work rather than from the builder", "status": "todo"},
-        {"id": "P0d", "what": "qa/critic-debt.json + pipeline/scripts/debt_check.py — seeded with the top-20 recurrence rows only", "where": "pipeline/scripts/debt_check.py", "why": "an item closes only when fix_where resolves to an object in the BUILT scene, or is refuted with a number. 357 filed / 22 built is what the current rule asks for.", "status": "todo"},
-        {"id": "P0e", "what": "build_room.py:3288 — add assets/shared/warehouse/<slug>/*.glb to _model_path's glob", "where": "pipeline/scripts/build_room.py", "why": "one line reaches 16 Trimble models; place_model and model_fit already exist", "status": "todo"},
-        {"id": "P0f", "what": "deletion commit — 2,256 orphan lines, four dead spec keys, five seed files, audit_bundle, craft_check's pass signal, the signoff string check, the returncode==2 mute", "where": "pipeline/scripts", "why": "the owner's own complaint: many rules, no result. placement_gate.py STAYS — 31 callers.", "status": "todo"}
+        {
+          "id": "P0a",
+          "what": "asset_scale.py:88-91 — accept JSON .gltf via accessor min/max, not only binary glTF magic",
+          "where": "pipeline/scripts/asset_scale.py",
+          "why": "all 13 CC0 models currently RAISE on ingest, so the scale assertion docs/LICENSING.md requires is dead for the whole shelf",
+          "status": "todo"
+        },
+        {
+          "id": "P0b",
+          "what": "assets/shared/CATALOG.json — bounds_mm, tris, licence, slot class, in-band verdict for all 29 on-disk models; publish the shortfall as a procurement number",
+          "where": "assets/shared/CATALOG.json",
+          "why": "D7 needs ~12 dressable objects; the shelf holds 3 vases + 1 plant and zero books, trays or figurines. A week-1 number, not a week-3 discovery.",
+          "status": "todo"
+        },
+        {
+          "id": "P0c",
+          "what": "qa/deliverable-standard.json + pipeline/scripts/deliverable_check.py — ten rows, thresholds cut from the 658-anchor census",
+          "where": "pipeline/scripts/deliverable_check.py",
+          "why": "the first outcome gate in this repo whose thresholds come from delivered work rather than from the builder",
+          "status": "todo"
+        },
+        {
+          "id": "P0d",
+          "what": "qa/critic-debt.json + pipeline/scripts/debt_check.py — seeded with the top-20 recurrence rows only",
+          "where": "pipeline/scripts/debt_check.py",
+          "why": "an item closes only when fix_where resolves to an object in the BUILT scene, or is refuted with a number. 357 filed / 22 built is what the current rule asks for.",
+          "status": "todo"
+        },
+        {
+          "id": "P0e",
+          "what": "build_room.py:3288 — add assets/shared/warehouse/<slug>/*.glb to _model_path's glob",
+          "where": "pipeline/scripts/build_room.py",
+          "why": "one line reaches 16 Trimble models; place_model and model_fit already exist",
+          "status": "todo"
+        },
+        {
+          "id": "P0f",
+          "what": "deletion commit — 2,256 orphan lines, four dead spec keys, five seed files, audit_bundle, craft_check's pass signal, the signoff string check, the returncode==2 mute",
+          "where": "pipeline/scripts",
+          "why": "the owner's own complaint: many rules, no result. placement_gate.py STAYS — 31 callers.",
+          "status": "todo"
+        }
       ],
       "exit_test": "deliverable_check FAILS room_bedroom_suite_eye_ld1.png on >=5 of 10 rows, FAILS trn002_mat_r38c.png on >=8 of 10, FAILS target.jpg on D1, and PASSES >=4 of 5 delivered anchors on the image-only rows. debt_check REFUSES spec_r38.json by name. Test suite green before and after the deletion commit, plus one build_room.py render.",
       "exit_result": null
@@ -67,7 +103,12 @@
       "goal": "One render of PRJ-2026-002 master suite from build_room.py at >=3.19 MP, scored against the standard, to confirm the instrument predicted correctly.",
       "status": "blocked",
       "work": [
-        {"id": "P1a", "what": "build_room.py --eye at 2400x1800 (fallback 2100x1600 = 3.36 MP, NOT 2048x1536 which is below the 3.19 MP floor)", "where": "pipeline/scripts/build_room.py", "status": "todo"}
+        {
+          "id": "P1a",
+          "what": "build_room.py --eye at 2400x1800 (fallback 2100x1600 = 3.36 MP, NOT 2048x1536 which is below the 3.19 MP floor)",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        }
       ],
       "exit_test": "The frame renders at >=3.19 MP and its scorecard reproduces P0's day-1 prediction exactly — the same rows fail, the same pass. A row predicted to fail that comes back green means the instrument is wrong and P0 is re-cut before P2 starts.",
       "exit_result": null
@@ -79,10 +120,30 @@
       "status": "blocked",
       "_reranked": "Moved ahead of light and density by SC-4. Acquiring pays the texture bill in the same move, because acquired meshes ship with 3-8 maps.",
       "work": [
-        {"id": "P2a", "what": "acquire: chair, pillows/shams, nightstand, ottoman via place_model; assert scale on every import", "where": "pipeline/scripts/build_room.py", "status": "todo"},
-        {"id": "P2b", "what": "_build_tub_chair is itself a hand-built free-form object and D8 will fail it — replace, do not tune", "where": "pipeline/scripts/build_room.py:3081", "status": "todo"},
-        {"id": "P2c", "what": "smooth-shade + subdivide every curved soft form; fabric maps on soft goods; Sheen, Transmission, Coat", "where": "pipeline/scripts/build_room.py", "status": "todo"},
-        {"id": "P2d", "what": "pillows: acquired sham first; if model_fit rejects, softgoods.cushion() (written 2026-07-28 on the owner's order, never called by any lane)", "where": "pipeline/scripts/softgoods.py:653", "status": "todo"}
+        {
+          "id": "P2a",
+          "what": "acquire: chair, pillows/shams, nightstand, ottoman via place_model; assert scale on every import",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        },
+        {
+          "id": "P2b",
+          "what": "_build_tub_chair is itself a hand-built free-form object and D8 will fail it — replace, do not tune",
+          "where": "pipeline/scripts/build_room.py:3081",
+          "status": "todo"
+        },
+        {
+          "id": "P2c",
+          "what": "smooth-shade + subdivide every curved soft form; fabric maps on soft goods; Sheen, Transmission, Coat",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        },
+        {
+          "id": "P2d",
+          "what": "pillows: acquired sham first; if model_fit rejects, softgoods.cushion() (written 2026-07-28 on the owner's order, never called by any lane)",
+          "where": "pipeline/scripts/softgoods.py:653",
+          "status": "todo"
+        }
       ],
       "exit_test": "D5 (band-limited 4-32 px), D8 and D9 all PASS; MODEL-FIT REJECT count = 0; imported-mesh objects >=8. Then two crops at 100%: a sewn seam ridge on the bed head with no polygon facet on any silhouette, and weave on the foot-of-bed throw (0.11x the target's detail energy today).",
       "exit_result": null
@@ -94,7 +155,12 @@
       "status": "blocked",
       "_evidence": "SC-4: more light sources is not significant for perceived realism, and shadow softening is flat above 5.21 deg while our area lights are already tens of degrees wide. Twelve gates ranked 'flat light' #1-2 and the obvious fix — add lamps, soften them — is measured to buy nothing. The defect is range.",
       "work": [
-        {"id": "P3a", "what": "contact occlusion and true darks; exposure and film response; HDRI world instead of a flat RGB background", "where": "pipeline/scripts/build_room.py", "status": "todo"}
+        {
+          "id": "P3a",
+          "what": "contact occlusion and true darks; exposure and film response; HDRI world instead of a flat RGB background",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        }
       ],
       "exit_test": "D2, D3, D4 and D6 PASS on the frame. Then look: the bed casts a contact shadow that reads, and the darkest region of the frame is not the same value as its mid-tone.",
       "exit_result": null
@@ -106,7 +172,12 @@
       "status": "blocked",
       "_evidence": "SC-4 says object count does not move perceived realism. It is here because the owner's own words were 'reads as unfinished file', which is a completeness judgement. Do not claim it makes the frame look real.",
       "work": [
-        {"id": "P4a", "what": "place >=12 loose objects; every position derived through placement.py contacts — nobody types a z", "where": "pipeline/scripts/styling.py", "status": "todo"}
+        {
+          "id": "P4a",
+          "what": "place >=12 loose objects; every position derived through placement.py contacts — nobody types a z",
+          "where": "pipeline/scripts/styling.py",
+          "status": "todo"
+        }
       ],
       "exit_test": "D7 PASSES counted from id_mask.py per-object IDs — >=12 distinct object IDs visible — AND the same number is countable by eye in the image. The instrument and the eye must agree.",
       "exit_result": null
@@ -118,20 +189,39 @@
       "status": "blocked",
       "_evidence": "SC-2. The blind panel SCREENS; it does not decide. Three sighted local judges, three draws, different anchor salts, ranking for sendability with a per-cell reason — never 'which one is ours', which measures the judge's memory of the build and has no passing state.",
       "work": [
-        {"id": "P5a", "what": "look_bench --blind, three draws, 3-for-3 required; then the frame and a one-page scorecard to the owner", "where": "pipeline/scripts/look_bench.py", "status": "todo"}
+        {
+          "id": "P5a",
+          "what": "look_bench --blind, three draws, 3-for-3 required; then the frame and a one-page scorecard to the owner",
+          "where": "pipeline/scripts/look_bench.py",
+          "status": "todo"
+        }
       ],
-      "exit_test": "Across three draws our cell never ranks last and no reason written against it names a defect. Then the owner looks at the image.",
+      "exit_test": "TERMINAL CONDITION IS THE OWNER: he looks at the frame and does not call it unfinished. The blind panel is the SCREEN that must clear first — across three draws our cell never ranks last and no reason written against it names a defect — and clearing it is what earns the right to show him, never a substitute for showing him. Found by the first review: the original exit test described only the panel and left his look as a trailing sentence, which is the same defect as a finish line whose three conditions never open the picture.",
       "exit_result": null
     }
   ],
-
   "trn002": {
     "recommendation": "Close as a unit at r39. Spend ONE round on the one free, accepted, unshipped item: merge the beauty.soft block bracketed and written up as ACCEPT at gate-16 on 2026-08-07 and never merged (beauty is null in all 10 specs r28-r38, so _soften is dead code in every shipping frame). Record 2 rounds and 7 frames as UNSPENT, not transferred.",
     "why_not_the_earlier_reason": "The first draft closed it because the target is 0.89 MP and therefore unsendable. That answers the wrong question — the target was never the deliverable, it is the teacher, and judging a teacher by whether you can sell the homework is a category error. The correct reason is that a reproduction unit closes when its LEARNING RATE reaches zero, not when its pixel error does.",
     "standing_order_intact": "qa/reproduction-curriculum.md's one-reproduction-per-session order is NOT cancelled. TRN-003 opens when the deliverable frame ships, with a cap declared BEFORE round 1 — which R1 has never once had.",
     "status": "proposed"
   },
-
-  "reviews": [],
-  "last_review_commit": null
+  "reviews": [
+    {
+      "commit": "7bfdf28f6a06f62b25f571a02dcdfcccf9ba617c",
+      "verdicts": {
+        "P0": "keep: exit test can fail our own best frame, which is the property nine previous flattering scorers lacked. P0f narrowed already — placement_gate.py stays, 31 callers.",
+        "P1": "keep: its only job is to prove the instrument predicted correctly before P2 spends on it.",
+        "P2": "keep: reranked ahead of light and density by the Rademacher result this repo already owned. Unchanged this review.",
+        "P3": "keep: scoped to RANGE not count, which is what the evidence supports. Unchanged.",
+        "P4": "keep: justification already corrected from realism to completeness. Unchanged.",
+        "P5": "change: the exit test described only the AI panel and left the owner look as a trailing sentence. That is the finish-line defect one level down — a terminal condition that never opens the picture. Panel is now the SCREEN, his verdict is the TERMINAL CONDITION."
+      },
+      "changed": [
+        "P5"
+      ],
+      "note": "First review, run because the commit that built the plan closed work. It found one real defect in the plan itself."
+    }
+  ],
+  "last_review_commit": "7bfdf28f6a06f62b25f571a02dcdfcccf9ba617c"
 }
