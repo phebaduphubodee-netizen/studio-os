@@ -120,7 +120,8 @@
         }
       ],
       "exit_test": "REPLACED AT THE SECOND REVIEW, and the reason is recorded because the replacement is narrower. The original read 'deliverable_check FAILS ld1 on >=5 of 10 rows' — a proxy invented before any measurement existed, when I believed our best frame was far from delivered on tone. The census says otherwise: ld1 passes five of six scored image rows, and its tone, range and 4-32 px structure ARE at delivered level. The criterion the proxy stood for is kept and stated directly: (1) the standard must NOT QUALIFY ld1, and at least one row that fails it must name a defect a person named independently — D10 catches the amber-monochrome cast a sighted judge wrote down before this row existed; (2) it must fail trn002_mat_r38c.png on >=8 of 10 rows — it fails 8; (3) it must fail target.jpg on D1 and pass it on D2-D6 — the reproduction target is good work that is 0.89 MP, which is the whole reason DELIV-001 exists; (4) ~half of the delivered pool must qualify — 51.4% does; (5) debt_check REFUSES spec_r38.json by name; (6) suite green before and after the deletion commit plus one build_room render.",
-      "exit_result": "1-5 HOLD as of 2026-08-10. Item 5 closed with P0d: `debt_check --spec training/TRN-002/spec_r38.json` exits 1 and names the file — a spec is a declaration and closes no row, 21 rows filed against that spec's own unit are open, and 2 of them name an object the spec does not contain at all. Only item 6 (suite green across the deletion commit) is left, and it is P0f.\n\nCLOSED 2026-08-10. Item 6 was the only one outstanding and it is now run: the suite is green ACROSS the deletion commit (2954 passed, whole repo) and one build_room render has been taken through the whole path — room_bedroom_suite_eye_p1a.png at 4.320 MP, gated, dumped and scored.\n\nONE ITEM OF THIS EXIT TEST WAS TRUE FOR A REASON IT DID NOT NAME, and P1 found it. Item 1 says the standard must NOT QUALIFY ld1, and it did not — but only because ld1 had no scene dump, so D8 and D9 came back NOT RUN. The moment a scene WAS supplied through the spec reader, the two mandatory rows passed on zeros and 63 of the 96 eye frames on disk qualified, ld1's own siblings among them. The exit test was satisfied by an ABSENCE that read like a refusal. That is the same shape as everything else this plan has found, and it is recorded here rather than in P1 because it is P0's test that could not tell the two apart."
+      "exit_result": "1-5 HOLD as of 2026-08-10. Item 5 closed with P0d: `debt_check --spec training/TRN-002/spec_r38.json` exits 1 and names the file — a spec is a declaration and closes no row, 21 rows filed against that spec's own unit are open, and 2 of them name an object the spec does not contain at all. Only item 6 (suite green across the deletion commit) is left, and it is P0f.\n\nCLOSED 2026-08-10. Item 6 was the only one outstanding and it is now run: the suite is green ACROSS the deletion commit (2954 passed, whole repo) and one build_room render has been taken through the whole path — room_bedroom_suite_eye_p1a.png at 4.320 MP, gated, dumped and scored.\n\nONE ITEM OF THIS EXIT TEST WAS TRUE FOR A REASON IT DID NOT NAME, and P1 found it. Item 1 says the standard must NOT QUALIFY ld1, and it did not — but only because ld1 had no scene dump, so D8 and D9 came back NOT RUN. The moment a scene WAS supplied through the spec reader, the two mandatory rows passed on zeros and 63 of the 96 eye frames on disk qualified, ld1's own siblings among them. The exit test was satisfied by an ABSENCE that read like a refusal. That is the same shape as everything else this plan has found, and it is recorded here rather than in P1 because it is P0's test that could not tell the two apart.",
+      "_reviewed": true
     },
     {
       "id": "P1",
@@ -171,7 +172,8 @@
         },
         "verdict": "DOES NOT QUALIFY, refused on the mandatory scene rows D8 and D9 while every image row passes. That is the standard behaving as its own docstring says it should: the image rows are a floor, and the scene rows carry the weight.",
         "_the_instrument_was_wrong_and_this_is_the_re_cut": "P1's exit test says a row predicted to fail that comes back green means the instrument is wrong and P0 is re-cut before P2 starts. It came back green: `measure_scene_spec` scored the DELIV-001 lane 0/0/0 and both mandatory rows PASSED, because its vocabulary is TRN-002's (`kind` in a primitive list, a `beauty.soft` block, English names) and a room spec has none of them. MEASURED: with those vacuous zeros, 63 of the 96 eye frames already on disk QUALIFY as delivered-level, rounds the owner looked at and called nowhere near done among them. The re-cut is in this commit: the spec reader REFUSES a grammar it cannot read, and scene_dump.py + measure_scene_built read the BUILT scene, where this lane's 498 meshes actually live."
-      }
+      },
+      "_reviewed": true
     },
     {
       "id": "P2",
@@ -188,9 +190,10 @@
         },
         {
           "id": "P2b",
-          "what": "_build_tub_chair is itself a hand-built free-form object and D8 will fail it — replace, do not tune",
+          "what": "_build_tub_chair: decide it on R8's own test, NOT on D8 — the stated reason is REFUTED by measurement",
           "where": "pipeline/scripts/build_room.py:3081",
-          "status": "todo"
+          "status": "todo",
+          "_refuted_2026-08-10": "This item said 'D8 will fail it'. D8 does not, and neither does D9. The built scene reads `stool__shell` at 22 normal clusters with 194 of 194 polygons smooth-shaded: it is neither box-like nor flat-shaded, so no row in the standard fires on it. The item was written when the scene rows read a SPEC, where a hand-built curve and an acquired one are indistinguishable. THE R8 QUESTION SURVIVES INTACT — a wrap-back upholstered shell is free-form, R8 says acquire it, and R8 needs no scorer to be right. What is deleted is the claim that an instrument agrees, which is the refutation-with-a-measurement R7 asks for and the one this repo most often skips."
         },
         {
           "id": "P2c",
@@ -202,6 +205,13 @@
           "id": "P2d",
           "what": "pillows: acquired sham first; if model_fit rejects, softgoods.cushion() (written 2026-07-28 on the owner's order, never called by any lane)",
           "where": "pipeline/scripts/softgoods.py:653",
+          "status": "todo"
+        },
+        {
+          "id": "P2e",
+          "what": "texture maps: 2 of 498 built objects carry an image texture (0.4%)",
+          "where": "pipeline/scripts/build_room.py",
+          "why": "MEASURED on the P1 frame's own scene dump, per OBJECT — the 4.9% in SC-4 is the material-side figure from the ground-truth study, and the object-side number is an order of magnitude worse. Delivered .blend files measure 50-66%. SC-4's controlled experiment (Rademacher, EGRW 2001, n=18) puts surface roughness above shadow softness as a realism cue, R .71 vs .39 — this is the largest measured gap in the frame and it has no row in the standard, which is why it needs an item rather than a hope.",
           "status": "todo"
         }
       ],
@@ -237,9 +247,16 @@
           "what": "place >=12 loose objects; every position derived through placement.py contacts — nobody types a z",
           "where": "pipeline/scripts/styling.py",
           "status": "todo"
+        },
+        {
+          "id": "P4b",
+          "what": "an item-id convention on built parts, emitted by scene_dump, so D7 can be read",
+          "where": "pipeline/scripts/scene_dump.py",
+          "why": "D7 is the only row in the standard that no reader can answer. It is unscored today and becomes mandatory when CATALOG.json's styling_short_by reaches 0 — at which point an unreadable row becomes a blocking one.",
+          "status": "todo"
         }
       ],
-      "exit_test": "D7 PASSES counted from id_mask.py per-object IDs — >=12 distinct object IDs visible — AND the same number is countable by eye in the image. The instrument and the eye must agree.",
+      "exit_test": "RESTATED 2026-08-10, because the original could not be checked. It read 'place >=12 loose objects; every position derived through placement.py contacts'. The count half is D7, and D7 is NOT RUN on every built scene by construction: a built scene exposes PARTS (a rug plus four bindings, a folded stack per shelf) and 'twelve loose objects' is an ITEM count. No grouping convention exists in this repo, and the two available guesses are wrong in opposite directions. So P4 now carries the convention as work: (1) an item-id convention exists and scene_dump emits it; (2) D7 reads a number rather than NOT RUN; (3) that number is >=12; (4) placement_check reports zero FLOATING/OVERHANG/OFF-AXIS on the built scene, and no z is typed. Condition 1 is the one that was missing, and without it conditions 2 and 3 are a count nobody can verify.",
       "exit_result": null
     },
     {
@@ -403,7 +420,21 @@
       },
       "changed": [],
       "note": "nothing changed this review"
+    },
+    {
+      "commit": "800d22b0e136b0c9ad8b71e7029cc45f8fd55fe7",
+      "verdicts": {
+        "P2": "change: KEEP as the next phase and it is now the phase with real numbers under it — D8 names 15 objects and D9 names 13, by name, in the built scene. CHANGED in two places. (1) P2b said D8 would fail the tub chair; it does not, and neither does D9 (stool__shell reads 22 normal clusters, 194 of 194 polygons smooth). The R8 build-vs-acquire question survives on its own test; the claim that an instrument agreed is deleted. (2) P2e added: 2 of 498 built objects carry an image texture, 0.4%, measured on the P1 frame own scene dump, against 50-66% in delivered .blend files. That is the largest measured gap in the frame and no row in the standard can see it.",
+        "P3": "keep: unchanged in content, with one caution recorded. The three rows P3 would move — D2 true darks, D3 dynamic range, D6 dark share — ALL PASS on the P1 frame already (17.21 / 3.618 / 2.8836). So P3 must not be allowed to close on rows that were green before it started; its own exit test has to name what it is for beyond them. Keeping it because the eye disagrees with the instrument here: the frame reads flat and evenly lit while every range row passes, which is exactly the case the standard own docstring warns is a floor and not a sufficient condition.",
+        "P4": "change: kept, exit test REWRITTEN because it could not be checked. It required >=12 loose objects and that count is D7, which is NOT RUN on every built scene by construction — a built scene exposes PARTS and the row wants ITEMS, and no grouping convention exists. P4b added to build the convention, and the exit test now makes condition 1 the existence of a readable number. Without that, P4 would have closed on a count nobody could verify, which is the shape of defect this plan exists to catch.",
+        "P5": "keep: unchanged. It is the only phase whose test is three sighted judges rather than an instrument, which is the whole point after a phase in which every image row passed on a frame that is plainly not finished."
+      },
+      "changed": [
+        "P2",
+        "P4"
+      ],
+      "note": "First review after P0 and P1 closed together. The lane advanced two phases and the critic-debt ledger went red on schedule: 15 of 21 rows are now DUE AND UNPAID and 9 of the 21 still have no instrument that can see them — that number is the honest state of this lane, not a side note. Nothing was dropped this review."
     }
   ],
-  "last_review_commit": "0ed93f7456fab0e1c1a9727f28e17041ced9b945"
+  "last_review_commit": "800d22b0e136b0c9ad8b71e7029cc45f8fd55fe7"
 }
