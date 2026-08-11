@@ -3930,6 +3930,16 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # because it wore the upholstery's tight material — colour was never the bug.
     thr_m = _woven("bed_throw", _vl.rgba("bed_base"), 0.94, _lin, sheen=0.2,
                    spec=0.25, maps="rough_linen", crumple=_crmp)
+    # p2r10 NULL RESULT, kept so nobody re-spends it (P2r-5 bed-cloth family):
+    # these written sheens (0.5/0.7/0.8) DO NOT REACH THE FRAME — _woven clamps
+    # to _SHEEN_CAP = 0.4 (build_room.py:1225, "ground-truth ceiling"), so the
+    # study's 2x compensation was already withdrawn when the cap landed. Proven
+    # by A/B: a build with these values edited to 0.4 rendered PIXEL-IDENTICAL
+    # to p2r9 (every scorecard row and crop percentile equal to the integer).
+    # Therefore the critics' "พลาสติก" read on the whites is NOT sheen weight.
+    # Named next suspects, in order: the rough-map amplitude (the amplitude-
+    # bisect law — an honest amplitude can render as NOTHING under soft light),
+    # sheen_rough, spec 0.35, and the two-instance identity of the pillow combo.
     matt_m = _woven("bed_mattress", _vl.rgba("bed_mattress"), 0.92, _lin, sheen=0.5, spec=0.35, maps="rough_linen")
     duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35, maps="rough_linen",
                     crumple=_crmp)

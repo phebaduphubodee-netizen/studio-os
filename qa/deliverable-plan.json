@@ -290,7 +290,8 @@
           "id": "P2r-5",
           "what": "MATERIAL RESPONSE audit (C3: whites still 'พลาสติก'): sheen/coat/transmission per material family vs the pro-file measurements already in the ground-truth study; every deviation is a recorded decision, not a default. INSTRUMENT: highlight-histogram crops on the three largest cloth planes; the study's sheen ceiling (0.4) as the reference line. CLOSE: no clipped-plastic highlight family on cloth + no critic 'plastic' item.",
           "where": "pipeline/scripts/material_presets.py, value_ladder.py",
-          "status": "todo"
+          "status": "todo",
+          "_progress_2026-08-11": "AUDIT OPENED WITH A PAID NULL RESULT. The call sites write pillow 0.8 / duvet 0.7 / mattress 0.5 against the study ceiling 0.4, and the study names 2x as the no-maps compensation — but _woven clamps to _SHEEN_CAP = 0.4 (build_room.py:1225), so the withdrawal already shipped and a 0.4-edited full A/B rendered PIXEL-IDENTICAL to p2r9. Bought with one quick + one full: sheen WEIGHT is eliminated as the plastic-whites mechanism. Next suspects named in the code at the call site: rough-map amplitude (amplitude-bisect law), sheen_rough, spec 0.35, pillow-combo instance identity. The audit table (every family vs study, deviation = recorded decision) is still the item's open work."
         },
         {
           "id": "P2r-6",
@@ -707,7 +708,32 @@
         "P2/P2f",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "b3a9cb8cfe0f89a98ebf03cb7ac431b6db3ae600",
+      "verdicts": {
+        "P2": "keep: mid-program and moving on its own instruments — tonight closed P2r-6 (census prints 83.5% on every gate run with a named shortfall; the 4.9-vs-50-66 story was the material-side number from before this camera's bill was paid) and P2r-7 (the four-crop bar is one command, calibrated on r7's own 1.126x and already catching its first instrument lie + counting 54 duplicate shells), while P2r-1 hit R1 after two cycles with the next mechanisms NAMED (sewing dart; P2r-5 micro-relief maps). Queue re-ranked by the critics' own voices: P2d pillows first (C3 #1), then P2r-2 (the unused nor_gl normal map is on disk — measured, not guessed), then P2r-5 which may pay the felt-slab read without touching the sim.",
+        "P4": "keep: still waits behind P2 per the owner's overrule — and its D7 baseline is now honest for the first time (6 vs 12 counted with ray-cast occlusion), so when P4 opens it starts from a number that cannot flatter.",
+        "P5": "keep: the reopened P2 bar already encodes P5's shape (two independent critics as the cut, the owner overruling from the image); RANK debt continues — 10th consecutive round NOT ASKED, owned by P5 as recorded."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "59107ae41b4a1932cb3041fe2b248c190e42e710"
+  "last_review_commit": "b3a9cb8cfe0f89a98ebf03cb7ac431b6db3ae600"
 }
