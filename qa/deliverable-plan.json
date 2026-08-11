@@ -740,7 +740,34 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "a4914a3b6d2d1ab1eb3d460c48226f4f33b44b3d",
+      "verdicts": {
+        "P2": "change: P2r-5's audit half closed on the study's own stats (every response channel now at the measured pro pole; D-035 recorded, near-silent on the whites and kept as alignment, not claimed as a fix). The item's second mechanism is now NAMED FROM MEASUREMENT: oriented crease/mottle in albedo at 20-80mm — the felt read is texture STRUCTURE, not response. P2r-8 (millwork filler strips, C2-r12#10) added. Queue unchanged otherwise: dart -> P2r-4 -> P2r-2 -> P2r-3.",
+        "P4": "keep: D7 FAIL 6 vs 12 on p2r12 and both critics independently filed emptiness (C2#11, C3 styling) — the phase's charter is confirmed by this round's instruments and eyes alike; it stays behind P2.",
+        "P5": "keep: this round strengthens its premise — C2's top-3 became pure perspective misreads all refuted by the built scene (bench Δ1mm, sconce symmetric to the mm, headboard 90mm proud each side), which is exactly the camera/composition question P5 owns, and the owner's eye stays terminal."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "b3a9cb8cfe0f89a98ebf03cb7ac431b6db3ae600"
+  "last_review_commit": "a4914a3b6d2d1ab1eb3d460c48226f4f33b44b3d"
 }
