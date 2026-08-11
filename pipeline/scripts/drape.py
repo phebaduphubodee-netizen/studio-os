@@ -238,7 +238,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                quality=8, collide_dist=0.004, min_motion=0.010, tol=1e-4,
                hem_min=None, slack=0.0, slack_verts=None, sim_surface=False,
                shred_guard=False, collision_quality=4, bend_scale=1.0,
-               self_friction=None):
+               self_friction=None, bend_verts=None, bend_floor=0.15):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -276,6 +276,33 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     s.shear_stiffness = shr
     s.bending_stiffness = ben * bend_scale     # ladders may stiffen a wad-prone piece
     s.air_damping = air
+    # LOCAL bending relief — DR blender-cloth-corner-drape rank 3 (the half whose
+    # slot is still free: vertex_group_shrink is spent on slack, the BENDING group
+    # is not). A standing corner ear is double curvature refused: the ANGULAR
+    # model resists bending in two directions at once, so the flank tip holds its
+    # crease in mid-air instead of falling. Dropping stiffness GLOBALLY (DR rank
+    # 1, LINEAR) would also soften the large standing folds the duvet preset
+    # exists to buy — so the relief is painted: weight 1 (body) = the preset
+    # stiffness via bending_stiffness_max, weight 0 (corner tip) = bend_floor of
+    # it. Blender semantics: with vertex_group_bending set, weight lerps base ->
+    # max, so the BASE carries the floor and the MAX carries the preset. Pieces
+    # that do not pass bend_verts keep the scalar path byte-identical.
+    # Named failure mode (DR): corner shard collapse if the floor is too low for
+    # the vertex mass — judged by LOOK on the quick rung before any full frame.
+    if bend_verts:
+        vgb = obj.vertex_groups.new(name="drape_bend")
+        vgb.add(list(range(len(me.vertices))), 1.0, 'REPLACE')
+        if isinstance(bend_verts, dict):
+            by_w = {}
+            for i, w in bend_verts.items():
+                by_w.setdefault(float(w), []).append(i)
+            for w, idxs in sorted(by_w.items()):
+                vgb.add(idxs, w, 'REPLACE')
+        else:
+            vgb.add(list(bend_verts), 0.0, 'REPLACE')
+        s.vertex_group_bending = vgb.name
+        s.bending_stiffness_max = ben * bend_scale
+        s.bending_stiffness = ben * bend_scale * float(bend_floor)
     # SLACK — the single thing that separates simulated cloth from a simulated PANEL.
     # A sheet cut to exactly fit its bed hangs perfectly flat: physically correct, and
     # still a box. That was the first three bakes here, and it is the same wrong answer

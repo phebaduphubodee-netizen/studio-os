@@ -525,6 +525,17 @@ def main(argv=None):
         except Exception as e:                          # noqa: BLE001
             print(f"COULD NOT RUN: frame {a.frame} — {type(e).__name__}: {e}")
             return 2
+    if a.frame:
+        # P2r-6 — the phase's own headline number, on every gate run. A frame
+        # with no mask prints NOT RUN, never 0% (absence is not a measurement).
+        import map_census as _mc
+        _c = _mc.census(_mc.mask_sidecar(a.frame))
+        if _c is None:
+            print("MAP-COVERAGE census NOT RUN — no material mask beside the "
+                  "render (full build writes room_<name>.matmask.png)")
+        else:
+            for _ln in _mc.report_lines(_c):
+                print(_ln)
     rows = score(std, a.frame, scene)
     for rid, verdict, v, thr, why in rows:
         vs = "-" if v is None else f"{v}"

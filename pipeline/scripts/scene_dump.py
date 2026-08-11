@@ -143,6 +143,15 @@ def dump(scene=None):
                     if s.material and s.material.use_nodes),
                 "item_id": _ic.item_id(ob.name),
             }
+            # World AABB of the EVALUATED object (additive @2 key). First
+            # consumer: p2_exit's coincident-duplicate-shell rung — the p3r2
+            # .blend probe found glTF garment sets importing the same shell
+            # twice (acq0==acq10), and a rung that reads the spec would never
+            # see them. 0.1 mm agreement on all six numbers = one mesh twice.
+            _pts = [ev.matrix_world @ _V(c) for c in ev.bound_box]
+            rec["aabb"] = [
+                [round(min(p[i] for p in _pts), 6) for i in range(3)],
+                [round(max(p[i] for p in _pts), 6) for i in range(3)]]
             if cam is not None:
                 rec["in_frustum"] = any(
                     0.0 <= p.x <= 1.0 and 0.0 <= p.y <= 1.0 and p.z > 0.0

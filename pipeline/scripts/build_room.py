@@ -209,6 +209,21 @@ def _score_deliverable(name, quick=False, frame=True):
         json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@2",
                    "objects": objs}, f, indent=1, ensure_ascii=False)
     print(f"  scene dump: {len(objs)} mesh objects -> {dump_path}")
+    if frame and not quick:
+        # P2r-6 — per-material id mask for the MAP-COVERAGE census. Runs ONLY
+        # here, i.e. after save() and render(): build_material_mask mutates
+        # every material slot in the in-memory scene and never saves (the
+        # id_mask law), so the .blend on disk stays the deliverable. ~2 s at
+        # 1 sample / 0 bounces. A failure is loud but does not kill the build:
+        # deliverable_check prints census NOT RUN for a missing mask, which is
+        # the honest state — never a fabricated 0%.
+        try:
+            import map_census_mask
+            map_census_mask.build_material_mask(
+                os.path.join(out, f"room_{name}.matmask.png"))
+        except Exception as _e:                         # noqa: BLE001
+            print(f"  MAT MASK FAILED ({type(_e).__name__}: {_e}) — census "
+                  f"will print NOT RUN")
     py = next((p for p in (shutil.which("python3"), shutil.which("python")) if p), None)
     if py is None:
         print("BUILD FAILED: no plain python interpreter on PATH to run "
@@ -4058,6 +4073,28 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         # with per-corner bias so each corner settles its own way
         vs, fs = softgoods.folded_sheet(_dv_x, _dv_y, _dv_dx, _dv_dy, H + 0.03,
                                         band=0.28, head=_head_side, cell=0.042, salt=7)
+        # p2r9 — the LEFT-FLANK EAR (P2r-1 half b; C2#3 "corner fold sticks up
+        # like bent card", id-mask decoded the pixels to bed__duvet). Bending
+        # relief painted at the two FREE FOOT corners only: corner positions
+        # derive from the duvet rect + head side the spec already owns (R9 — no
+        # typed coordinate), taper radius derives from the grid's own cell
+        # (4 x 0.042). Weight 0 at the tip lets the ear double-curve and fall;
+        # the body keeps the duvet preset's stiffness via bending_stiffness_max.
+        _cell = 0.042
+        _ax, _sgn = _head_side[0], _head_side[1]
+        if _ax == "x":
+            _fx = _dv_x if _sgn == "+" else _dv_x + _dv_dx
+            _corners = ((_fx, _dv_y), (_fx, _dv_y + _dv_dy))
+        else:
+            _fy = _dv_y if _sgn == "+" else _dv_y + _dv_dy
+            _corners = ((_dv_x, _fy), (_dv_x + _dv_dx, _fy))
+        _R = 4.0 * _cell
+        _bendw = {}
+        for _i, _v in enumerate(vs):
+            _d = min(((_v[0] - _cx) ** 2 + (_v[1] - _cy) ** 2) ** 0.5
+                     for _cx, _cy in _corners)
+            if _d < _R:
+                _bendw[_i] = _d / _R
         # THE CLOTH-STACK CONTACT LAW (earned across fx6→fx8, three failed reads):
         # collide against the coverlet's SINGLE-SHELL sim surface, never its
         # solidified render mesh — a sheet that tunnels between a frozen collider's
@@ -4087,7 +4124,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                 quality=12, collision_quality=8,
                                 self_friction=12.0,
                                 thickness=0.018, slack=sl, collide_dist=0.016,
-                                sim_surface=True)
+                                sim_surface=True, bend_verts=_bendw)
     _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
                                top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
                                bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
