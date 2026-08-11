@@ -311,7 +311,10 @@ def test_the_repos_own_plan_loads_and_reports():
     p = PS.load()
     assert p["unit"] == "DELIV-001"
     ids = [x["id"] for x in p["phases"]]
-    assert ids == ["P0", "P1", "P2", "P3", "P4", "P5"]
+    # P0..P5 is the spine and its ORDER is the invariant; the plan may grow
+    # named programs after it (DRW, 2026-08-11 owner order) — an exact-list
+    # assert here was this test's own docstring defect one line down.
+    assert ids[:6] == ["P0", "P1", "P2", "P3", "P4", "P5"]
     out = PS.report(p)
     cur = PS.current(p)
     assert f"WE ARE AT   {cur['id']}" in out and cur["id"] in ids

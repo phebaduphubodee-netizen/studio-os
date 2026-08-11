@@ -331,6 +331,31 @@ def debt_lines(plan):
     return out
 
 
+# --------------------------------------------------------------- sheet recon
+
+def sheet_lines():
+    """DRW-1's one line: is everything the drawing draws either built or a signed
+    gap? Printed unasked for the same reason the debt is — the headboard sat
+    derived-away for three weeks because no opener ever said so. Reads the
+    ledger's STORED verdicts (no scene dump needed at session open); unreadable
+    prints UNKNOWN, never nothing."""
+    try:
+        import sheet_recon as SR
+        with open(SR.LEDGER, encoding="utf-8") as f:
+            led = json.load(f)
+    except ImportError as e:                            # pragma: no cover
+        return ["", f"SHEET-RECON unknown — sheet_recon is not importable ({e})"]
+    except (OSError, ValueError):
+        return ["", "SHEET-RECON unknown — qa/sheet-recon.json could not be read. "
+                    "That is unknown, not zero."]
+    s, frame, warns = SR.ledger_summary(led)
+    out = ["", SR.gate_line(s) + (f" — last vs {frame}" if frame else
+                                  " — NEVER RUN against a scene dump")]
+    for w in warns[:3]:
+        out.append(f"            !! {w}")
+    return out
+
+
 # --------------------------------------------------------------- the report
 
 def report(plan):
@@ -369,6 +394,7 @@ def report(plan):
     # the queue had no consumer; a ledger with no consumer would be the fifth
     # instance, not the fix.
     lines += debt_lines(plan)
+    lines += sheet_lines()
 
     bad = unreadable_statuses(plan)
     if bad:

@@ -261,6 +261,33 @@ def run_controls():
     return 1 if bad else 0
 
 
+def camera_floor_poly_mm(sc=None, far_m=30.0):
+    """The active camera's frustum projected onto the floor plane (z=0), as a
+    convex quad in SHEET-MM (world m x1000 — the frame sheet_recon reconciles in).
+    Consumer: sheet_recon's drawn-side frustum test — a DRAWN rect has no object
+    to carry an `in_frustum` flag, so the camera's floor coverage must ship with
+    the dump. Rays that do not descend (camera tilted up past a corner) are
+    clamped at `far_m`, which keeps the quad convex and errs INCLUSIVE — a drawn
+    row wrongly counted in-frustum blocks a gate, never clears one. No camera ->
+    None, and sheet_recon treats unknown as blocking (vacuous-zero law)."""
+    from mathutils import Vector as _V
+    sc = sc or bpy.context.scene
+    cam = sc.camera
+    if cam is None:
+        return None
+    origin = cam.matrix_world.translation
+    poly = []
+    for corner in cam.data.view_frame(scene=sc):
+        d = (cam.matrix_world @ corner) - origin
+        if d.length < 1e-9:
+            return None
+        d = d.normalized()
+        t = (-origin.z / d.z) if d.z < -1e-6 else far_m
+        p = origin + d * min(t, far_m)
+        poly.append([round(p.x * 1000.0, 1), round(p.y * 1000.0, 1)])
+    return poly
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     if argv and argv[0] == "--controls":
@@ -268,10 +295,14 @@ def main():
     if not argv:
         raise SystemExit("scene_dump: need an output .json path (or --controls)")
     objs = dump()
+    poly = camera_floor_poly_mm()
+    out = {"blend": bpy.data.filepath, "schema": "scene-dump@2", "objects": objs}
+    if poly:
+        out["camera"] = {"floor_poly_mm": poly}
     with open(argv[0], "w", encoding="utf-8") as f:
-        json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@2",
-                   "objects": objs}, f, indent=1, ensure_ascii=False)
-    print(f"scene_dump: {len(objs)} mesh objects -> {argv[0]}")
+        json.dump(out, f, indent=1, ensure_ascii=False)
+    print(f"scene_dump: {len(objs)} mesh objects -> {argv[0]}"
+          + ("" if poly else "  (no camera: floor_poly omitted)"))
 
 
 if __name__ == "__main__":

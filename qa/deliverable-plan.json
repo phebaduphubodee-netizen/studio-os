@@ -387,6 +387,57 @@
       ],
       "exit_test": "TERMINAL CONDITION IS THE OWNER: he looks at the frame and does not call it unfinished. The blind panel is the SCREEN that must clear first — across three draws our cell never ranks last and no reason written against it names a defect — and clearing it is what earns the right to show him, never a substitute for showing him. Found by the first review: the original exit test described only the panel and left his look as a trailing sentence, which is the same defect as a finish line whose three conditions never open the picture.",
       "exit_result": null
+    },
+    {
+      "id": "DRW",
+      "title": "อ่านแบบ — drawing-to-build reconciliation (standing program, runs interleaved with P2+)",
+      "goal": "Nothing the drawing of record draws can be absent from the build without a human-signed reason, and no derived doc of ours can outrank the sheet again.",
+      "status": "open",
+      "_opened_by": "owner 2026-08-11: asked 'คุณมองแบบออกมั้ย?', ordered a long-term multi-session fix as project director, and เคาะ 'ลุย' on the proposed exit bar. Two companion facts he supplied became decisions: the source drawing has changed with no per-piece backup, so our snapshot IS the drawing of record (D-036); and BF code semantics are permanently a guess (D-037).",
+      "_diagnosis": "Not a missing capability — a missing wire. plan_cluster (complete by construction, floor2 lane 2026-07-05), the plan-reading DR (distilled into knowledge/classifications/plan-reading-conventions.md that same week), and the element derivations all existed; the build consumed only the derivations. The headboard vanished for three weeks past eight blind critic voices because the two readers of the same sheet were never reconciled — the queue-with-no-consumer defect, with the queue being our own reading of the drawing.",
+      "work": [
+        {
+          "id": "DRW-1",
+          "what": "sheet_recon.py + qa/sheet-recon.json: every drawn mass in the master-suite zone matched to a built assembly, or human-signed as a gap, or UNRESOLVED failing the gate; SHEET-RECON line at every session open",
+          "where": "pipeline/scripts/sheet_recon.py",
+          "status": "done",
+          "closed_by": "Built and run 2026-08-11, same night the owner เคาะ. 18 drawn rows (7 fresh clusters reproduced from the PDF + 6 BF-label elements + bed/ensuite from the floor2 lane's owner-reviewed reading + the headboard band + 2 never-before-accounted ink rects) reconciled against the p2r11 scene: 17 matched with named part evidence — bed__headboard covers the drawn band at 0.83, the two mystery rects are the west-facade glazing symbols and the build HAS glass exactly there — and 1 UNRESOLVED (SR-02: the built BF11 counter sits ~306mm east of the drawn band, a real divergence between two derived readings, off-camera so open-not-blocking). Gate exits 0 on the frame of record; 18 tests green including regression pins on the instrument's own first-night lies (an L-assembly's union bbox 'covering' the bed drawn inside its elbow; the ratio cap hiding bed__headboard because its parent assembly was big). Frustum is the camera's real floor polygon, exported by scene_dump from the .blend and verified byte-identical on re-dump (612 objects, 0 aabb moved).",
+          "_two_layer_law": "the machine owns completeness and match refresh; identity and gaps are human-signed and 'pending' is refused by name. Rows never leave the ledger."
+        },
+        {
+          "id": "DRW-1b",
+          "what": "residuals with names: (a) re-measure the BF11 band ink by scanline — SR-02's 306mm x-divergence, the drawing outranks both readings; (b) one-line wire of scene_dump.camera_floor_poly_mm into build_room's inline dump writer once the parallel session's build_room commit lands — until then fresh frames fall back to per-object frustum flags, honestly labelled",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        },
+        {
+          "id": "DRW-2",
+          "what": "the dimension the plan cannot give: a written source ladder for every height (BF label H > ergonomics/codes > declared assumption D-034-style), and the identity divergences the recon surfaced (BF11 desk-vs-vanity, BF10 vanity-vs-dressing, SR-12 TV-console-vs-bookshelf) packaged for the owner's eye without blocking the lane",
+          "where": "qa/sheet-recon.json",
+          "status": "todo",
+          "_constraint": "cd-set_v01 elevations are OUR OWN generated output (2026-07-02, from our spec) and may never serve as a height authority — self-consistency. Owner confirmed 2026-08-11 no source elevations exist."
+        },
+        {
+          "id": "DRW-3",
+          "what": "provenance ratchet: every NEW or EDITED mass in the canonical spec carries sheet_ref (a recon row id, or 'not-in-drawing: <styling/decision>'); existing masses backfill zone by zone through the recon, never big-bang",
+          "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+          "status": "todo"
+        },
+        {
+          "id": "DRW-4",
+          "what": "DR one unit, scoped to the gaps the vault audit NAMED (elevation/section conventions, hatch semantics, ASA ch.8 cut-plane linetypes) — fired when DRW-2 opens, distilled in the same session (the 39/61 write-only warning). The BF-semantics practitioner question is CLOSED: owner answered 'ต้องเดาเอาจริง ๆ' (D-037)",
+          "where": "knowledge/_inbox/",
+          "status": "todo"
+        },
+        {
+          "id": "DRW-5",
+          "what": "two standing laws into CLAUDE.md once the program has proven itself over >=2 sessions: sheet-first (open the element's sheet crop before any build round that touches it — R4b with the client's drawing as reference #1) and sheet-outranks-derivations (a conflict reopens the derivation, never the sheet)",
+          "where": "CLAUDE.md",
+          "status": "todo"
+        }
+      ],
+      "exit_test": "sheet_recon --gate exits 0 on the deliverable frame of record (UNRESOLVED = 0 among rows in or possibly in the DELIV-001 frustum; exit 2 could-not-run never counts as clear), the SHEET-RECON line prints at every session open, and every DRW item closes on a recorded run of its own test.",
+      "exit_result": "first gate run 2026-08-11 vs p2r11: 18 drawn | 17 matched | 0 declared gaps | 1 UNRESOLVED (0 blocking) [floor_poly] — exit 0. The bar holds on the current frame; the program stays open for DRW-1b..5 and for every future frame the line must keep holding on."
     }
   ],
   "trn002": {

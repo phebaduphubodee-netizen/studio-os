@@ -495,6 +495,34 @@
    "reverse_by": "รันด้วย --cloth-rough-band (A leg, ไม่ต้องแก้ source) หรือพลิก _CLOTH_ROUGH_LINKED = False บรรทัดเดียว",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-036",
+   "unit": "DELIV-001",
+   "decided_round": 12,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "แบบต้นทางของเพื่อนถูกแก้ต่อไปแล้วและไม่มี backup รายชิ้น — อะไรคือ 'แบบ' ที่เป็น authority ของโปรเจ็กต์นี้",
+   "in_effect": "PDF snapshot ใน 00_intake/raw-local (Plan funiture 02) คือแบบของ record ตัวเดียว — outranks ทุก derived doc ของเรา และ outranks ไฟล์ต้นทางเวอร์ชันปัจจุบันด้วย (เวอร์ชันปัจจุบันเปลี่ยนไปเป็นงานคนละรอบแล้ว) · ผูกเป็น source_sheet ใน qa/sheet-recon.json ที่ DRW-1 อ่านทุกครั้ง",
+   "because": "owner 2026-08-11: 'แบบต้นทางมันเปลี่ยนไปแล้ว ไม่ได้สำรองข้อมูลแต่ละชิ้นไว้' — สถานะของไฟล์เป็นข้อเท็จจริงที่เขาแจ้ง ไม่ใช่การตัดสินของ builder; ผลคือ drawing-tier law ชี้ที่ snapshot นี้ถาวร",
+   "where": "qa/sheet-recon.json",
+   "reverse_by": "เขาส่งแบบเวอร์ชันที่ถูกต้อง/backup มาใหม่ → แก้ source_sheet แถวเดียวแล้วรัน sheet_recon --extract ซ้ำ",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-037",
+   "unit": "DELIV-001",
+   "decided_round": 12,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "รหัส BF (BF09/BF10/BF11/BF14...) หมายถึงเฟอร์นิเจอร์ชนิดไหน — ถามคนเขียนแบบได้ไหม",
+   "in_effect": "ความหมายรหัส BF ทุกตัวในทุก doc = เดาจากขนาด+ตำแหน่ง เป็น DECLARED ASSUMPTION ถาวร (ไม่มีทางยืนยันแล้ว) · ทุก identity ใน qa/sheet-recon.json เซ็นพร้อมที่มาของการเดา · เขา overrule จากภาพได้ทีละแถว และแถวที่ derived docs สองฉบับเดาไม่ตรงกัน (BF11 desk-vs-vanity, BF10 vanity-vs-dressing) ถูกยกให้ตาเขาโดยไม่ block เลน",
+   "because": "owner 2026-08-11 ตอบคำถาม practitioner เรื่อง BF: 'ต้องเดาเอาจริง ๆ เพราะแบบต้นทางมันเปลี่ยนไปแล้ว ไม่ได้สำรองข้อมูลแต่ละชิ้นไว้' — ปิดช่องทาง practitioner rung สำหรับคำถามนี้ถาวร; รหัสเป็น firm-specific ไม่มีมาตรฐานสาธารณะ (vault ยืนยัน gap นี้)",
+   "where": "qa/sheet-recon.json",
+   "reverse_by": "เขาระบุความหมายจริงของรหัสใด → แก้ identity แถวนั้นใน ledger (แถวละบรรทัด)",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
