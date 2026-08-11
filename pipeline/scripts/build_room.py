@@ -857,12 +857,27 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
         va.operation = 'ADD'
         nt.links.new(mp.outputs["Vector"], va.inputs[0])
         nt.links.new(cmb.outputs["Vector"], va.inputs[1])
+        # P2g-3 (r6 — C2-r5#9 + C3-r5#3 named the MECHANISM: at feature_scale 0.65 the
+        # 1.19m tile repeats ~2x on a 2.4m panel, and the same cathedral feature stamps
+        # twice on one board). Every repeat is now BOOK-MATCHED: the mapped coordinate
+        # ping-pongs with period one tile, so tile n+1 is tile n mirrored — which is a
+        # real veneer lay-up (mirrored leaves at every joint), and an identical-feature
+        # repeat becomes geometrically impossible. Grain direction survives a mirror.
+        sxyz = nt.nodes.new("ShaderNodeSeparateXYZ")
+        nt.links.new(va.outputs["Vector"], sxyz.inputs["Vector"])
+        cpp = nt.nodes.new("ShaderNodeCombineXYZ")
+        for _ax in ("X", "Y", "Z"):
+            pp = nt.nodes.new("ShaderNodeMath")
+            pp.operation = 'PINGPONG'
+            pp.inputs[1].default_value = 1.0
+            nt.links.new(sxyz.outputs[_ax], pp.inputs[0])
+            nt.links.new(pp.outputs["Value"], cpp.inputs[_ax])
 
         def _img(path, non_color):
             n = _img_node(nt, path, non_color=non_color)
             n.projection = 'BOX'
             n.projection_blend = 0.3
-            nt.links.new(va.outputs["Vector"], n.inputs["Vector"])
+            nt.links.new(cpp.outputs["Vector"], n.inputs["Vector"])
             return n
 
         di = _img(ts["Diffuse"], False)
@@ -1172,7 +1187,8 @@ _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro
 #                            highlight it bought is half the "clay" verdict.
 
 
-def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, maps=None):
+def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, maps=None,
+           crumple=None):
     """TEXTILE: _solid's signed colour + the surface signature that makes cloth read as
     cloth instead of painted vinyl. `cloth` is material_presets.cloth_args(kind).
 
@@ -1268,6 +1284,23 @@ def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, map
     # bedsheet. A missing socket means the API moved and the build must say so.
     bump.inputs["Distance"].default_value = cloth["relief_m"]
     nt.links.new(field, bump.inputs["Height"])
+    if crumple:
+        # (4b) the CRUMPLE band (P2c-2, C2-r5#3 + C3-r5#2 "ผิวช่วงว่างเกลี้ยง"): stonewashed
+        # bedding is never IRONED — between the solver's 100mm+ folds and the slub band
+        # lives a 30-150mm soft-crease field the flat expanses were missing entirely.
+        # OPT-IN PER CALLER, not per cloth kind: the bench and bed base wear the same
+        # linen TIGHT (stretched upholstery does not crumple), so only loose bedding
+        # asks for it. Normal-scale only — chained under the slub bump, no albedo touch.
+        c_scale, c_relief = crumple
+        cr = nt.nodes.new("ShaderNodeTexNoise")
+        cr.inputs["Scale"].default_value = 1.0 / c_scale
+        cr.inputs["Detail"].default_value = 3.0
+        nt.links.new(tc.outputs["Object"], cr.inputs["Vector"])
+        crb = nt.nodes.new("ShaderNodeBump")
+        crb.inputs["Strength"].default_value = 0.55
+        crb.inputs["Distance"].default_value = c_relief
+        nt.links.new(cr.outputs["Fac"], crb.inputs["Height"])
+        nt.links.new(crb.outputs["Normal"], bump.inputs["Normal"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     # (5) ROUGHNESS break-up on the SAME field: a slub that stands proud also catches light
     #     differently. SYMMETRIC about the preset's own value, unlike _painted's
@@ -1409,12 +1442,14 @@ def _veneer(name, rgba, rough):
     return m
 
 
-def _burnish(m, band=(0.10, 0.05), bump=0.06, scale=1.6):
+def _burnish(m, band=(0.10, 0.05), bump=0.06, scale=1.6, albedo_var=0.0):
     """Trowel-burnish breakup for cement/plaster finishes (round-6 B2 — C2 on lb1
     read the white drawer stack as untreated board: SIGNED microcement must read
     as microcement, which is a TROWELLED surface — burnish patches where the
-    float pressed harder). Signed colour untouched: roughness band + faint bump
-    only, same discipline as _painted's three non-uniformities."""
+    float pressed harder). Signed colour is the CEILING: roughness band + faint
+    bump, plus (P2 r6, R10 mass 3 — the flat towerback read as a VOID three
+    rounds running) an opt-in `albedo_var` tonal cloud, MULTIPLY so the signed
+    colour only ever deepens — the same trade _woven and _painted already make."""
     nt, bsdf = _principled(m)
     if not bsdf:
         return m
@@ -1437,6 +1472,30 @@ def _burnish(m, band=(0.10, 0.05), bump=0.06, scale=1.6):
         pass
     nt.links.new(nz.outputs["Fac"], bp.inputs["Height"])
     nt.links.new(bp.outputs["Normal"], bsdf.inputs["Normal"])
+    if albedo_var > 0.0:
+        # trowel clouds: the LARGE band (the same field as the roughness patches)
+        # dims the signed colour by at most `albedo_var`; a finer streak band
+        # (scale x6, stretched by Detail) rides on top at a third the depth.
+        base = tuple(bsdf.inputs["Base Color"].default_value)
+        st = nt.nodes.new("ShaderNodeTexNoise")
+        st.inputs["Scale"].default_value = scale * 6.0
+        st.inputs["Detail"].default_value = 4.0
+        nt.links.new(tc.outputs["Object"], st.inputs["Vector"])
+        mixn = nt.nodes.new("ShaderNodeMixRGB")
+        mixn.blend_type = "MIX"
+        mixn.inputs["Fac"].default_value = 0.25
+        nt.links.new(nz.outputs["Fac"], mixn.inputs["Color1"])
+        nt.links.new(st.outputs["Fac"], mixn.inputs["Color2"])
+        amr = nt.nodes.new("ShaderNodeMapRange")
+        amr.inputs["To Min"].default_value = 1.0 - albedo_var
+        amr.inputs["To Max"].default_value = 1.0
+        nt.links.new(mixn.outputs["Color"], amr.inputs["Value"])
+        amul = nt.nodes.new("ShaderNodeMixRGB")
+        amul.blend_type = "MULTIPLY"
+        amul.inputs["Fac"].default_value = 1.0
+        amul.inputs["Color1"].default_value = base
+        nt.links.new(amr.outputs["Result"], amul.inputs["Color2"])
+        nt.links.new(amul.outputs["Color"], bsdf.inputs["Base Color"])
     return m
 
 
@@ -1595,25 +1654,123 @@ def _exterior_world_args(spec, slug, strength, rot_deg, exposure, look=""):
 
 
 def _add_rug(name, x, y, w, d, thick=0.014):
-    """A thin textured rug slab under a seating group (own planar UV + wool/herringbone
-    PBR). Sits just above the floor to avoid z-fighting. Anchors the furniture group so the
-    floor doesn't read as an empty plane (KB scene-dressing)."""
-    obj = add_box(name, x, y, 0.004, w, d, thick)
+    """ONE displaced-pile rug mesh (P2 r6, D8's last five rows + DEBT-14 + C2-r5#9
+    "พรมสติ๊กเกอร์").
+
+    R8 classifies a rug as (c) an extruded measured outline, so it is BUILT — but what
+    was built before was the classifier's letter and not its spirit: a 98-poly box plus
+    four binding boxes, which D8 correctly counted five times as primitives standing in
+    for soft goods. A rug's identity is a PILE: a ~25mm vertex grid whose top surface
+    carries a deterministic two-band displacement (a low household undulation + a
+    per-tuft sparkle), so the silhouette's edge is never a die-straight line and the
+    surface catches light per-tuft. Thickness stays 14mm — inside DEBT-14's measured
+    8-20mm band for a woven wool rug.
+
+    The sewn edge binding is now a MATERIAL ZONE of the same mesh (faces within ~32mm of
+    the perimeter), not four loose boxes: one object, two slots, zero primitives.
+    Furniture presses into the pile via _rug_contact_press (called after the item loop —
+    positions DERIVE from the contacts, R9)."""
+    z0 = 0.004
+    nx = max(24, int(w / 0.025))
+    ny = max(24, int(d / 0.025))
+
+    def _n2(i, j, s):
+        v = math.sin(i * 12.9898 + j * 78.233 + s * 37.719) * 43758.5453
+        return v - math.floor(v)
+
+    verts, faces = [], []
+    for j in range(ny + 1):
+        for i in range(nx + 1):
+            px = x + w * i / nx
+            py = y + d * j / ny
+            edge = min(i, nx - i, j, ny - j)
+            if edge == 0:
+                pz = z0 + thick * 0.55           # perimeter dips — a bound, rolled edge
+            else:
+                und = 0.0020 * math.sin(i * 0.23 + j * 0.11) * math.sin(j * 0.17 - i * 0.05)
+                tuft = 0.0016 * (_n2(i, j, 1.0) - 0.5)
+                pz = z0 + thick + und + tuft
+            verts.append((px, py, pz))
+    row = nx + 1
+    for j in range(ny):
+        for i in range(nx):
+            a = j * row + i
+            faces.append((a, a + 1, a + row + 1, a + row))
+    # skirt: perimeter ring down to the floor line (open underside — nothing sees it)
+    per = ([j * row for j in range(ny + 1)] + [ny * row + i for i in range(1, nx + 1)]
+           + [j * row + nx for j in range(ny - 1, -1, -1)] + [i for i in range(nx - 1, 0, -1)])
+    base_ix = len(verts)
+    for p in per:
+        vx, vy, _vz = verts[p]
+        verts.append((vx, vy, z0 - 0.002))
+    np_ = len(per)
+    for k in range(np_):
+        a, b = per[k], per[(k + 1) % np_]
+        faces.append((b, a, base_ix + k, base_ix + (k + 1) % np_))
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts, [], faces)
+    me.validate()
+    me.update()
+    import bmesh as _bm
+    bm = _bm.new(); bm.from_mesh(me)
+    _bm.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me); bm.free()
+    for p in me.polygons:
+        p.use_smooth = True
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(obj)
     _planar_uv(obj, tile_m=1.3)
     obj.data.materials.append(_pbr_material("rug_" + name, RUG_SLUG))
-    # EDGE BINDING (round-6 B2, C2 on lb1: "พรมเป็น noise เนื้อเดียวทั้งผืน ไม่มีขอบ
-    # เก็บริม"): a real area rug is finished with a sewn tape band around its
-    # perimeter — the one manufactured line that says 'rug', not 'carpet patch'.
-    # Four slim boxes, a shade darker than the pile, sitting 2mm proud.
     bind_m = _solid(name + "_binding", (0.42, 0.40, 0.37, 1.0), rough=0.85, sheen=0.15)
-    bw, bt = 0.032, thick + 0.002
-    for tag, bx, by, bdx, bdy in (("s", x, y, w, bw), ("n", x, y + d - bw, w, bw),
-                                  ("w", x, y + bw, bw, d - 2 * bw),
-                                  ("e", x + w - bw, y + bw, bw, d - 2 * bw)):
-        bo = add_box(f"{name}__bind_{tag}", bx, by, 0.004, bdx, bdy, bt)
-        bo.data.materials.append(bind_m)
-        bo["ph_model"] = True                     # keeps its own material, no router
+    obj.data.materials.append(bind_m)
+    bw = 0.032
+    for p in me.polygons:
+        cx_, cy_ = p.center.x, p.center.y
+        if (min(cx_ - x, x + w - cx_) < bw) or (min(cy_ - y, y + d - cy_) < bw):
+            p.material_index = 1
+    obj["ph_model"] = True            # keeps its two slots; no router, no global bevel
     return obj
+
+
+def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.006, 0.05),
+                              (("bed__base",), 0.008, 0.07),
+                              (("nightstand__toe",), 0.006, 0.05))):
+    """DEBT-14's second half: pile COMPRESSES under what stands on it. Runs after the
+    item loop; every dent DERIVES from a real contact footprint (R9 — the rug never
+    learns a coordinate). For each presser AABB overlapping a rug, verts inside the
+    footprint drop by `depth`, feathering to zero across `feather` beyond it."""
+    from mathutils import Vector as _V
+    rugs = [o for o in bpy.data.objects
+            if o.type == 'MESH' and o.name.startswith("rug__")]
+    if not rugs:
+        return
+    boxes = []
+    for pfx, depth, feather in ((p, d_, f_) for p, d_, f_ in press):
+        for o in bpy.data.objects:
+            if o.type == 'MESH' and any(o.name.startswith(s) for s in pfx):
+                cs = [o.matrix_world @ _V(c) for c in o.bound_box]
+                boxes.append((min(c.x for c in cs), min(c.y for c in cs),
+                              max(c.x for c in cs), max(c.y for c in cs),
+                              min(c.z for c in cs), depth, feather))
+    n_dent = 0
+    for ro in rugs:
+        top = max(v.co.z for v in ro.data.vertices)
+        for bx0, by0, bx1, by1, bz0, depth, feather in boxes:
+            if bz0 > top + 0.02:                 # not standing on the rug
+                continue
+            hit = False
+            for v in ro.data.vertices:
+                dx = max(bx0 - v.co.x, 0.0, v.co.x - bx1)
+                dy = max(by0 - v.co.y, 0.0, v.co.y - by1)
+                dist = math.hypot(dx, dy)
+                if dist < feather:
+                    v.co.z -= depth * (1.0 - dist / feather)
+                    hit = True
+            n_dent += hit
+        ro.data.update()
+    if n_dent:
+        print(f"  rug pile: {n_dent} contact footprint(s) pressed into the pile "
+              f"(derived from the built scene, DEBT-14)")
 
 
 def _curtain_sheer(name, rgba, alpha):
@@ -2118,7 +2275,68 @@ def _garment_rail_salt(name):
     return None
 
 
-def _place_garment_rails(models, parts):
+def _split_loose_parts(o):
+    """Split a mesh object into its connected islands as separate objects (DATA API —
+    no bpy.ops, the headless law). Returns the new objects; [o] if single-island.
+
+    WHY (r6, per-garment tokens): probed 2026-08-10, cce50840 carries ALL THREE shirts
+    in ONE mesh (17.9k verts spanning the whole set), so object-level clustering can
+    never see its garments — the probe's lesson: geometry decides the mechanism, not
+    the other way round. The world transform is COPIED, materials are copied, and the
+    original is removed; island names keep the parent's stem (and its __acq marker)."""
+    me = o.data
+    nv = len(me.vertices)
+    if nv == 0:
+        return [o]
+    adj = [[] for _ in range(nv)]
+    for e in me.edges:
+        a, b = e.vertices
+        adj[a].append(b)
+        adj[b].append(a)
+    comp = [-1] * nv
+    nc = 0
+    for s in range(nv):
+        if comp[s] >= 0:
+            continue
+        stack = [s]
+        comp[s] = nc
+        while stack:
+            u = stack.pop()
+            for w in adj[u]:
+                if comp[w] < 0:
+                    comp[w] = nc
+                    stack.append(w)
+        nc += 1
+    if nc <= 1:
+        return [o]
+    isl_faces = [[] for _ in range(nc)]
+    for p in me.polygons:
+        isl_faces[comp[p.vertices[0]]].append(tuple(p.vertices))
+    out = []
+    co = [v.co.copy() for v in me.vertices]
+    for k in range(nc):
+        if not isl_faces[k]:
+            continue
+        vids = sorted({vi for f in isl_faces[k] for vi in f})
+        remap = {vi: i for i, vi in enumerate(vids)}
+        nme = bpy.data.meshes.new(f"{o.name}_i{k}")
+        nme.from_pydata([co[vi] for vi in vids], [],
+                        [tuple(remap[vi] for vi in f) for f in isl_faces[k]])
+        nme.validate()
+        nme.update()
+        for pl in nme.polygons:
+            pl.use_smooth = True
+        for m in me.materials:
+            nme.materials.append(m)
+        no = bpy.data.objects.new(f"{o.name}_i{k}", nme)
+        no.matrix_world = o.matrix_world.copy()
+        bpy.context.scene.collection.objects.link(no)
+        out.append(no)
+    bpy.data.objects.remove(o, do_unlink=True)
+    return out
+
+
+def _place_garment_rails(models, parts, cut_first=None):
     """R8 for the hang rails (D-025 queue item 1, executed r5): hanging garments are
     FREE FORM and are ACQUIRED — four rounds of critics read the simmed sheets as
     'wet paper', and the clay probes of these meshes show shoulders, sleeves and
@@ -2190,7 +2408,10 @@ def _place_garment_rails(models, parts):
         # a rail 60% bare read as a boutique display, the very C2-r4#4/#7 complaint.
         s_fit = min(1.0, run / nx, depth / ny, (z1 - z0) / nz)
         sw, sd, sh = nx * s_fit, ny * s_fit, nz * s_fit
-        n_cp = max(1, min(3, int((run + 0.10) // (sw + 0.02))))
+        # r6 (LOOK r5 + C2-r5#8): the slack term was `run + 0.10`, which let the
+        # placed span exceed the rail run by up to ~100mm — hangers past the end of
+        # the SHORT rails. A copy count must fit the run it hangs from, full stop.
+        n_cp = max(1, min(3, int((run + 0.02) // (sw + 0.02))))
         placed_ms = []
         copies = []
         for k in range(n_cp):
@@ -2204,14 +2425,14 @@ def _place_garment_rails(models, parts):
                            sh, rot=kyaw, z0=z0, tag=tagk):
                 cms = [o for o in bpy.data.objects
                        if o.type == 'MESH' and o.name.startswith(f"{tagk}__acq")]
-                copies.append(cms)
+                copies.append((cms, kyaw))
                 placed_ms += cms
         if not placed_ms:
             print(f"  garment rail {salt}: no instance placed -> loft")
             continue
         # hang FROM the rail: ONE dz per copy (multi-root glTFs must move as a unit),
         # shifting every root of that copy so the copy's top lands at the slot top
-        for cms in copies:
+        for cms, _kyaw in copies:
             top = max((o.matrix_world @ Vector(c)).z for o in cms for c in o.bound_box)
             dz = z1 - top
             roots = set()
@@ -2224,13 +2445,222 @@ def _place_garment_rails(models, parts):
                 r = bpy.data.objects[rname]
                 r.location = (r.location.x, r.location.y, r.location.z + dz)
         bpy.context.view_layer.update()
-        tok = toks[salt % len(toks)]
-        for o in placed_ms:
-            o["style_tok"] = tok
+        # r6 (C2-r5#8 + C3-r5#1): PER-GARMENT tokens, not per-set — one token across a
+        # whole set swallowed every dark garment's detail (the black polo read flat)
+        # and made neighbouring rails read as clones. Sub-meshes cluster into GARMENTS
+        # by their centre along the rail run: one garment's panels + its hanger share
+        # a centre within ~2cm, neighbouring hangers sit ~10cm apart, so a 45mm gap
+        # splits garments without splitting a garment. A degenerate clustering (all
+        # fused, or shards) keeps the r5 per-set token — loudly, never silently.
+        _axi = 0 if along_x else 1
+        n_tok = 0
+        n_cut = 0
+        for _ci_copy, (cms, _kyaw) in enumerate(copies):
+            def _extent(o, ax):
+                cs = [(o.matrix_world @ Vector(c))[ax] for c in o.bound_box]
+                return min(cs), max(cs)
+            # a WIDE mesh is either the set's own rod OR several garments JOINED in
+            # one mesh (probed: cce50840 carries all three shirts in one 17.9k-vert
+            # mesh) — split it into connected islands first; a rod stays one island
+            # and is excluded below, garments become clusterable objects.
+            split_cms = []
+            for o in cms:
+                lo, hi = _extent(o, _axi)
+                if (hi - lo) > 0.5 * sw and len(o.data.vertices) > 400:
+                    split_cms += _split_loose_parts(o)
+                else:
+                    split_cms.append(o)
+            cms = split_cms
+            bpy.context.view_layer.update()
+            # SEPARATION AXIS IS MEASURED, NOT ASSUMED (r6c probe): c25de786 hangs
+            # its garments ALONG the rail, cce50840 stacks its three shirts in
+            # DEPTH with near-identical run centres — so the axis that actually
+            # separates garments is whichever horizontal axis spreads the centres
+            # more. The rod stays excluded on the RUN axis either way.
+            _cx = [[], []]
+            for o in cms:
+                for ax in (0, 1):
+                    lo, hi = _extent(o, ax)
+                    _cx[ax].append((lo + hi) / 2.0)
+            _spread = [max(c) - min(c) if c else 0.0 for c in _cx]
+            _sep = 0 if _spread[0] >= _spread[1] else 1
+            _cent = _cx[_sep]
+            wide = [i for i in range(len(cms))
+                    if (_extent(cms[i], _axi)[1] - _extent(cms[i], _axi)[0]) > 0.5 * sw]
+            body = [i for i in range(len(cms)) if i not in wide]
+            # split threshold from the DATA: within-garment consecutive centres sit
+            # a few mm apart (panels of one shirt), between-garment several times
+            # that — 4x the median consecutive gap with a 10mm floor splits both
+            # cached sets and cannot be fooled by the fit scale (the fixed-45mm
+            # first cut was).
+            order = sorted(body, key=lambda i: _cent[i])
+            _gaps = sorted(_cent[b] - _cent[a] for a, b in zip(order, order[1:]))
+            _med = _gaps[len(_gaps) // 2] if _gaps else 0.0
+            _gap = max(0.010, 4.0 * _med)
+            clusters = [[order[0]]] if order else []
+            for i in order[1:]:
+                if _cent[i] - _cent[clusters[-1][-1]] > _gap:
+                    clusters.append([i])
+                else:
+                    clusters[-1].append(i)
+            for i in wide:
+                cms[i]["style_tok"] = toks[salt % len(toks)]
+            if not (2 <= len(clusters) <= 14):
+                tok = toks[salt % len(toks)]
+                for o in cms:
+                    o["style_tok"] = tok
+                print(f"  garment rail {salt} copy: clustering degenerate "
+                      f"({len(clusters)} cluster(s) on axis {'xy'[_sep]}) "
+                      f"-> per-set token '{tok}'")
+                continue
+            # cut-first (D-028, C2-r5#8 "ก้อนดำไร้ไหล่" = the set's first piece):
+            # the spec names slugs whose first NATIVE garment is dropped. Native
+            # order maps to world through this copy's own yaw — nothing re-typed.
+            if slug in (cut_first or ()) and _sep == _axi:
+                # "first" is a NATIVE-run-order word — only defined when the
+                # clusters actually lie along the run; a depth-stacked set has
+                # no first garment and the cut must not guess one.
+                _dir = math.cos(math.radians(_kyaw)) if along_x \
+                    else math.sin(math.radians(_kyaw))
+                _kill = clusters[0] if _dir >= 0 else clusters[-1]
+                for i in _kill:
+                    bpy.data.objects.remove(cms[i], do_unlink=True)
+                    n_cut += 1
+                clusters = [c for c in clusters if c is not _kill]
+            for ci, cl in enumerate(clusters):
+                tok = toks[(salt + ci) % len(toks)]
+                for i in cl:
+                    cms[i]["style_tok"] = tok
+                n_tok += 1
         swapped.add(salt)
+        _cutnote = f", cut first piece x{n_cut // max(1, len(copies))}" if n_cut else ""
         print(f"  ACQUIRED garment rail {salt} <- {slug} x{n_cp} "
-              f"(replaces {len(by_rail[salt])} loft part(s); cloth token '{tok}')")
+              f"(replaces {len(by_rail[salt])} loft part(s); {n_tok} garment "
+              f"cluster(s) on rotating tokens{_cutnote})")
     return swapped
+
+
+def _place_towels(parts, models):
+    """R8 for the ensuite soft towels — D8's last four non-rug rows (P2 r6). The census
+    and every position stay bathroom.py's (pure, derived); only the MATERIALIZATION of
+    the four soft masses changes, box -> acquired cloth mesh, exactly the garment-rail
+    precedent (one acquired unit replaces one derived group).
+
+    Clay-probed before wiring (the r4 pillow lesson): the hung mesh (8c7ed2ed) is a PAIR
+    of draped towels on its own thin rod — so ONE placement replaces BOTH bar-towel
+    parts, and the mesh's rod is DELETED after import (the suite's brass bar is already
+    built; two rods is a render lie). The hook towel keeps one towel of the pair; the
+    counter towel is a folded pair (1ee77762) laid on the vanity — its natural fold
+    stack is taller than the census's 35mm board, a declared honest deviation.
+
+    Scale law unchanged: sidecar ASSERTED bounds, uniform fit, never past natural size.
+    Every failure falls back to the census box, loudly — D8 then counts it."""
+    if not models:
+        return set()
+    import json as _json
+    from mathutils import Vector as _V
+
+    def _load(slug):
+        mp = _model_path(str(slug))
+        if not mp:
+            print(f"  towels: no cached mesh for {slug!r} -> census boxes")
+            return None, None
+        try:
+            with open(os.path.join(os.path.dirname(mp), f"{slug}.scale.json"),
+                      encoding="utf-8") as f:
+                sj = _json.load(f)
+        except OSError:
+            sj = None
+        if not (sj and sj.get("ok")):
+            print(f"  towels: {slug} has NO ASSERTED scale sidecar -> census boxes")
+            return None, None
+        return mp, sj
+
+    def _meshes(tag):
+        return [o for o in bpy.data.objects
+                if o.type == 'MESH' and o.name.startswith(f"{tag}__acq")]
+
+    def _span(o, ax):
+        cs = [(o.matrix_world @ _V(c))[ax] for c in o.bound_box]
+        return min(cs), max(cs)
+
+    consumed = set()
+    hung_mp, hung_sj = _load(models.get("hung")) if models.get("hung") else (None, None)
+    fold_mp, fold_sj = _load(models.get("folded")) if models.get("folded") else (None, None)
+
+    def _hung_place(group, tag, keep_one):
+        """One hung placement into the union envelope of `group` (parts, mm)."""
+        bb = hung_sj["bbox_mm"]
+        nx, ny, nz = bb["x_mm"] / 1000.0, bb["y_mm"] / 1000.0, bb["z_mm"] / 1000.0
+        x0 = min(p["x"] for p in group) * MM
+        x1 = max(p["x"] + p["dx"] for p in group) * MM
+        y0 = min(p["y"] for p in group) * MM
+        y1 = max(p["y"] + p["dy"] for p in group) * MM
+        z0 = min(p["z"] for p in group) * MM
+        z1 = max(p["z"] + p["dz"] for p in group) * MM
+        run, drop = (y1 - y0), (z1 - z0)
+        s = min(1.0, run / nx, drop / nz)
+        sw, sd, sh = nx * s, ny * s, nz * s
+        cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+        # pre-rotation slot (the garment law): native x carries the pair's run; yaw 90
+        # turns it along the wall's y. Bottom so the TOP lands at the envelope top.
+        if not place_model(hung_mp, cx - sw / 2.0, cy - sd / 2.0, sw, sd, sh,
+                           rot=90.0, z0=z1 - sh, tag=tag):
+            return False
+        ms = _meshes(tag)
+        # the mesh's own rod: near-zero height, near-full run (world y after yaw)
+        for o in list(ms):
+            zl, zh = _span(o, 2)
+            yl, yh = _span(o, 1)
+            if (zh - zl) < 0.14 * sh and (yh - yl) > 0.65 * sw:
+                bpy.data.objects.remove(o, do_unlink=True)
+                ms.remove(o)
+                print(f"  towels: {tag} — the acquired mesh's own rod deleted "
+                      f"(the suite's brass bar is the rod of record)")
+        if keep_one and len(ms) > 1:
+            ms.sort(key=lambda o: abs((_span(o, 1)[0] + _span(o, 1)[1]) / 2.0 - cy))
+            for o in ms[1:]:
+                bpy.data.objects.remove(o, do_unlink=True)
+            keep = ms[0]
+            kl, kh = _span(keep, 1)
+            root = keep
+            while root.parent is not None:
+                root = root.parent
+            root.location.y += cy - (kl + kh) / 2.0   # recentre the kept towel (derived)
+            ms = [keep]
+        for o in ms:
+            o["style_tok"] = "towel"
+        return bool(ms)
+
+    bt = [p for p in parts if str(p["name"]).startswith("acc_bath_towel")]
+    if bt and hung_mp:
+        if _hung_place(bt, "mill__acc_bathtowelpair", keep_one=False):
+            consumed.update(p["name"] for p in bt)
+            print(f"  ACQUIRED bath towel pair <- {models['hung']} "
+                  f"(replaces {len(bt)} census box(es))")
+    hk = [p for p in parts if str(p["name"]).startswith("acc_hand_towel_hook")]
+    if hk and hung_mp:
+        if _hung_place(hk, "mill__acc_handtowelhook", keep_one=True):
+            consumed.update(p["name"] for p in hk)
+            print(f"  ACQUIRED hook hand towel <- {models['hung']} (one towel kept)")
+    ct = [p for p in parts if str(p["name"]).startswith("acc_hand_towel_counter")]
+    if ct and fold_mp:
+        bb = fold_sj["bbox_mm"]
+        nx, ny, nz = bb["x_mm"] / 1000.0, bb["y_mm"] / 1000.0, bb["z_mm"] / 1000.0
+        p = ct[0]
+        px, py = p["x"] * MM, p["y"] * MM
+        pdx, pdy, pz0 = p["dx"] * MM, p["dy"] * MM, p["z"] * MM
+        s = min(1.0, pdx / ny, pdy / nx)     # long native y lies along the part's x
+        sw, sd, sh = nx * s, ny * s, nz * s
+        ccx, ccy = px + pdx / 2.0, py + pdy / 2.0
+        if place_model(fold_mp, ccx - sw / 2.0, ccy - sd / 2.0, sw, sd, sh,
+                       rot=90.0, z0=pz0, tag="mill__acc_countertowel"):
+            for o in _meshes("mill__acc_countertowel"):
+                o["style_tok"] = "towel"
+            consumed.update(q["name"] for q in ct)
+            print(f"  ACQUIRED counter towel <- {models['folded']} (folded pair, "
+                  f"{sh * 1000:.0f}mm stack vs the census's 35mm board — declared)")
+    return consumed
 
 
 def _add_styling(spec):
@@ -2264,7 +2694,9 @@ def _add_styling(spec):
     parts = (styling.dress_rails(_STYLE_ANCHORS, min_rails=_declared_open)
              + styling.dress_shelves(_STYLE_ANCHORS))
     _gm = None if spec.get("_no_acquire") else spec.get("garment_models")
-    _swapped = _place_garment_rails(list(_gm), parts) if _gm else set()
+    _swapped = (_place_garment_rails(list(_gm), parts,
+                                     cut_first=spec.get("garment_cut_first"))
+                if _gm else set())
     for p in parts:
         if _swapped and _garment_rail_salt(p["name"]) in _swapped:
             continue                # the acquired set took this rail's whole group
@@ -2381,7 +2813,13 @@ def _suite_materials(spec=None):
     # material_presets.mill_object_role); a closed door run references none of them. Built from the
     # signed presets so the render's material story stays true to the decision record.
     brass = _material_from_preset("m_mill_brass", "satin_brass")
-    cement = _burnish(_material_from_preset("m_mill_cement", "microcement_cool"))
+    # P2 r6 (R10 mass 3 — "ช่องเทาเหนือลิ้นชัก" three rounds running): the towerback IS
+    # the signed D6-A microcement — the mass is right and stays — but a flat #AEB2B2
+    # panel in a shadowed oak bay reads as a HOLE, not a material. Scale 1.6 put one
+    # noise feature across the whole 500mm panel; the burnish now carries a visible
+    # trowel cloud (albedo_var 5%, the terry/boucle amplitude) + finer patches.
+    cement = _burnish(_material_from_preset("m_mill_cement", "microcement_cool"),
+                      band=(0.10, 0.05), bump=0.10, scale=2.6, albedo_var=0.05)
     backing = _material_from_preset("m_mill_backing", "matte_black_ply")
     # ELEMENT 2 (west wall): the Caesarstone vanity counter + the frameless makeup mirror.
     # Routed to mill__ parts by 'counter*' -> caesarstone, 'mirror*' -> mirror (material_presets
@@ -2699,12 +3137,28 @@ def _add_e5_lights(spec, h_m):
     # judges unanimous: pools need a FINDABLE fixture). Geometry + light for the
     # cove and the sconce pair; positions all derive from the plan's own numbers.
     cv = plan["cove"]
-    _pel_m = _solid("e5_pelmet", (0.32, 0.21, 0.13, 1.0), rough=0.5, spec=0.4)
+    # P2 r6 (R10 mass 2 — "แถบครอบแซลมอนตายกลางอากาศ", filed three rounds running).
+    # The 4-question record: IDENTITY = this cove fascia (gate-#8 amendment, "the
+    # fixture the eye finds when it asks where the wall graze comes from" — that
+    # need is real and stays). EXISTS = the amendment decided a fascia; nothing
+    # decided its colour or its ends. SENSE failed twice: (a) the board wore an
+    # invented brown (0.32,0.21,0.13) that reads salmon under the warm cove — a
+    # fifth material belonging to no signed family, when a dropped pelmet is
+    # CEILING JOINERY and delivered rooms paint it as ceiling; (b) it ran the
+    # full BF14 length and STOPPED — a raw end face floating in front of the
+    # corner niche void, carpentry that could not be built. VERDICT = fix with
+    # numbers: cool_plaster (the signed ceiling family), and RETURN both ends to
+    # the slat face the way a real pelmet lands on its wall.
+    _pel_m = _material_from_preset("e5_pelmet", "cool_plaster")
     _rbox("e5_cove_pelmet", (cv["face_x"] - cv["off"] - 20.0) * MM, cv["y0"] * MM,
           cv["z"] * MM, 0.020, cv["len"] * MM, 0.140, _pel_m, bevw=0.003)
     #      20mm board from the cove line up to a 10mm ceiling shadow gap (COVE_DROP
     #      is 150 by construction) — the fascia the eye finds when it asks where
     #      the wall graze comes from
+    for _tag, _ry in (("s", cv["y0"]), ("n", cv["y0"] + cv["len"] - 20.0)):
+        _rbox(f"e5_cove_pelmet_ret_{_tag}", (cv["face_x"] - cv["off"] - 20.0) * MM,
+              _ry * MM, cv["z"] * MM, (cv["off"] + 20.0) * MM, 0.020, 0.140,
+              _pel_m, bevw=0.003)
     cld = bpy.data.lights.new("e5_cove", type='AREA')
     cld.shape = 'RECTANGLE'
     cld.size = 0.04
@@ -3048,8 +3502,14 @@ def _place_pillow_combo(slug, bank_parts, axis, sign, sham_mat, pillow_mat):
         else:
             cx_i = zx0 + i * (half_w + gap) + half_w / 2.0
             cy_i = zy0 + zone_d / 2.0
-        if place_model(_mp, cx_i - half_w / 2.0, cy_i - zone_d / 2.0,
-                       half_w, zone_d, h_cap, rot=yaw, z0=z_top0,
+        # r6 (C2-r5#3 + C3-r5#2 "หมอนเหมือน copy"): two identical instances at one yaw
+        # read as a mirror stamp. A hand-placed pair differs by a few degrees and a few
+        # percent — CONVENTION constants (the fold-amplitude class), not typed positions;
+        # both stay inside the bank envelope (the 4% gap absorbs the swing).
+        _jyaw = yaw + (-2.5 if i == 0 else 3.5)
+        _hw = half_w * (0.965 if i == 0 else 1.0)
+        if place_model(_mp, cx_i - _hw / 2.0, cy_i - zone_d / 2.0,
+                       _hw, zone_d, h_cap, rot=_jyaw, z0=z_top0,
                        tag=f"bed__headset{i}", replace_material=sham_mat):
             ok_any += 1
     if ok_any < 2:
@@ -3166,10 +3626,15 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     _lin = _matpre.cloth_args("linen")
     # maps="rough_linen" (lane B): the CC0 2k linen set fetched 2026-07-2x and never
     # consumed — the study found the store itself was distilled-but-never-wired
+    # crumple (P2c-2, r6): loose bedding only — 90mm soft creases at 1.2mm relief; the
+    # base/mattress/bench stay tight (stretched upholstery does not crumple).
+    _crmp = (0.09, 0.0012)
     base_m = _woven("bed_base",     _vl.rgba("bed_base"),     0.94, _lin, sheen=0.2, spec=0.25, maps="rough_linen")
     matt_m = _woven("bed_mattress", _vl.rgba("bed_mattress"), 0.92, _lin, sheen=0.5, spec=0.35, maps="rough_linen")
-    duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35, maps="rough_linen")
-    pill_m = _woven("bed_pillow",   _vl.rgba("bed_pillow"),   0.95, _lin, sheen=0.8, spec=0.35, maps="rough_linen")
+    duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35, maps="rough_linen",
+                    crumple=_crmp)
+    pill_m = _woven("bed_pillow",   _vl.rgba("bed_pillow"),   0.95, _lin, sheen=0.8, spec=0.35, maps="rough_linen",
+                    crumple=_crmp)
     # THE EURO SHAMS JOIN THE DUVET SET. They were sharing pill_m, so the head's three-rank
     # ladder — built in element 8 because "three heights is the single most recognisable
     # signal of a styled bed" — rendered as three heights of ONE value: sham0 199.6 against
@@ -3185,11 +3650,28 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # sides to just above the plinth — breaking the hard vertical faces into draped fabric and leaving
     # a shadow reveal beneath. That silhouette reads "a made bed", not "a foam cube".
     cov_m = _woven("bed_coverlet", _vl.rgba("bed_coverlet"), 0.96, _lin, sheen=0.3, spec=0.3,
-                   maps="rough_linen")
+                   maps="rough_linen", crumple=_crmp)
     base_h = H * 0.34                                   # a LOW recessed plinth (a hidden toe)
     binset = 0.10                                       # pulled well IN — the coverlet drapes PAST it
     _base_o = _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset,
                     base_h, base_m, bevw=0.03, seg=4)
+    # P2c-2 (r6, C2-r5#1 accepted half): the base is SIGNED upholstered linen and rendered
+    # with zero upholstery cues — no seam, no piping, nothing a sewn box carries. WELTS,
+    # the same fabric, derived from the base's own rect (R9: nothing typed): a piped cord
+    # ringing the top edge + a vertical welt down each corner. Cue, not redesign.
+    _bx0, _by0 = x0 + binset, y0 + binset
+    _bW, _bD = W - 2 * binset, D - 2 * binset
+    for _wt, _wx, _wy, _wdx, _wdy in (
+            ("s", _bx0 - 0.006, _by0 - 0.006, _bW + 0.012, 0.016),
+            ("n", _bx0 - 0.006, _by0 + _bD - 0.010, _bW + 0.012, 0.016),
+            ("w", _bx0 - 0.006, _by0 + 0.006, 0.016, _bD - 0.012),
+            ("e", _bx0 + _bW - 0.010, _by0 + 0.006, 0.016, _bD - 0.012)):
+        _rbox(f"bed__base_welt_{_wt}", _wx, _wy, base_h - 0.019, _wdx, _wdy, 0.016,
+              base_m, bevw=0.0075, seg=3)
+    for _wi, (_wcx, _wcy) in enumerate(((_bx0, _by0), (_bx0 + _bW, _by0),
+                                        (_bx0, _by0 + _bD), (_bx0 + _bW, _by0 + _bD))):
+        _cyl_frustum(f"bed__base_welt_c{_wi}", _wcx, _wcy, 0.009, 0.009,
+                     0.02, base_h - 0.02, base_m, seg=12, cap=False)
     mins = 0.09                                         # mattress inset — hides UNDER the coverlet
     # bevw 0.05 -> 0.075, seg 5 (round-6 lane C, Gemini: "ฟูกหนาและขอบคมเป็นกล่อง") — the
     # visible sliver of mattress between coverlet and duvet is all EDGE, so its radius
@@ -3500,7 +3982,11 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
     seat_m = _woven("bench_seat", _vl.rgba("bench_seat"), 0.94,
                     _matpre.cloth_args("linen"), sheen=0.25, spec=0.3,
                     maps="rough_linen")                                  # D3-4: same linen
-    leg_m  = _solid("bench_leg",  _DARK_LEG, rough=0.45, sheen=0.1, spec=0.5)
+    # r6 (C2-r5#11 "ขา bench เงาพลาสติก"): a uniform 0.5-spec lobe on a flat colour IS
+    # the plastic read. Stained timber: lower spec + a fine finish breakup (the burnish
+    # machinery at wood-finish scale — grain-band roughness variation, sub-mm bump).
+    leg_m  = _burnish(_solid("bench_leg", _DARK_LEG, rough=0.5, sheen=0.05, spec=0.3),
+                      band=(0.08, 0.05), bump=0.05, scale=30.0)
     leg_h = H * 0.62                                    # tall legs + a SLIM cushion = a bench;
     seat_h = H - leg_h                                  # a fat pad on stubs is just a box again
     lt = min(0.05, W * 0.12, D * 0.12)                  # leg thickness
@@ -3642,7 +4128,8 @@ def _build_tub_chair(x0, y0, W, D, H, rot=0.0):
     # ONE leg tone, from one place. This was `(0.24, 0.19, 0.14)` beside a docstring saying
     # "legs = the bench leg tone", while _build_bench used `(0.26, 0.21, 0.16)`. Same drift,
     # smaller stakes — and the same fix.
-    leg_m = _solid("stool_leg", _DARK_LEG, rough=0.42, sheen=0.1, spec=0.5)
+    leg_m = _burnish(_solid("stool_leg", _DARK_LEG, rough=0.5, sheen=0.05, spec=0.3),
+                     band=(0.08, 0.05), bump=0.05, scale=30.0)   # same timber as the bench
     cx, cy = x0 + lay["cx"], y0 + lay["cy"]
     sh = lay["shell"]
     # swept rim: low arms at the opening rising to the tall back = the tub-chair silhouette
@@ -3683,39 +4170,22 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
                      #              look and it is why the only metal in the frame reads as
                      #              plastic (vault audit 2026-07-22; the 10% accent layer is
                      #              supposed to be what catches the light).
-    shade_m = _solid("lamp_shade",      (0.93, 0.86, 0.72, 1.0), rough=0.85, sheen=0.4, spec=0.3)
+    # P2 r6 (R10 mass 1, C2-r5#2+#10 — the third round this zone was filed): the spec's lamp
+    # block says {"kind": "dome", "finish": "brass"} and what rendered was a CREAM DRUM on a
+    # thin stem — an empire cone, the wrong lamp KIND, and under it the critics read the whole
+    # zone as "a cone lamp on a low stool". The shade becomes what the spec says it is: a spun
+    # BRASS DOME (surface of revolution, open mouth down), and the light source becomes an
+    # emissive BULB under the dome — a metal shade does not transmit, so the old
+    # shade-as-lightbox gradient is gone with the fabric it belonged to. The material name
+    # "lamp_shade" stays, ON THE BULB, so every consumer of the name keeps resolving.
+    shade_m = _solid("lamp_shade", (0.93, 0.86, 0.72, 1.0), rough=0.4, sheen=0.0, spec=0.4)
     if glow:
         _sb = _principled(shade_m)[1]
         if _sb:
             _set(_sb, "Emission Color", (*glow["rgb"], 1.0))
-            _set(_sb, "Emission Strength", 1.0)
-            # LOOK round-3 (owner: "โคมไฟเป็นเหลี่ยม ดูไม่มีจริง") — half of the unreal
-            # read was a SINGLE flat emission value edge-to-edge (measured 221±1, no
-            # bulb hotspot, no falloff; verdict #11). A shade lit from a bulb inside
-            # its mouth is brightest at the mouth and dies toward the closed top, so
-            # the strength is driven by shade-height: z → [0,1] → 1.5 at the mouth
-            # down to ~0.4 at the top. One MapRange + one Math node, added ONCE (the
-            # material is shared by both nightstands; their lamps sit at one height).
-            nt = shade_m.node_tree
-            if "lamp_grad" not in nt.nodes:
-                # shade mouth/top from millwork's OWN published stack — the hand-copied
-                # 0.035/0.17/0.15 here went stale the day the lamp rescaled (lane C)
-                _z0 = H + millwork.LAMP_BASE_H + millwork.LAMP_STEM_H - 0.02
-                _z1 = _z0 + millwork.LAMP_SHADE_H
-                tc = nt.nodes.new("ShaderNodeTexCoord")
-                sx = nt.nodes.new("ShaderNodeSeparateXYZ")
-                mr = nt.nodes.new("ShaderNodeMapRange")
-                mr.name = "lamp_grad"
-                mr.inputs["From Min"].default_value = _z0
-                mr.inputs["From Max"].default_value = _z1
-                mm = nt.nodes.new("ShaderNodeMath")
-                mm.operation = 'MULTIPLY_ADD'
-                mm.inputs[1].default_value = -1.1        # t*-1.1 + 1.5: mouth 1.5 -> top 0.4
-                mm.inputs[2].default_value = 1.5
-                nt.links.new(tc.outputs["Object"], sx.inputs["Vector"])
-                nt.links.new(sx.outputs["Z"], mr.inputs["Value"])
-                nt.links.new(mr.outputs["Result"], mm.inputs[0])
-                nt.links.new(mm.outputs["Value"], _sb.inputs["Emission Strength"])
+            # a small bulb needs more strength than the old whole-drum lightbox to
+            # read as lit; PH-02 still holds (tuned down until the windows win)
+            _set(_sb, "Emission Strength", 4.0)
     # LOOK round-3: the lamp was a stack of BOXES wearing a "dome/mushroom" docstring —
     # the literal ก้อนเหลี่ยม the owner named. The pure part list (envelopes + the
     # containment proof) is untouched; each lamp part is now materialised as a turned
@@ -3741,8 +4211,30 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
             _cyl_frustum("nightstand__lamp_stem", ccx, ccy, r, r * 0.90, oz, oz + dz,
                          brass_m, seg=16)
         else:
-            _cyl_frustum("nightstand__lamp_shade", ccx, ccy, r, r * 0.80, oz, oz + dz,
-                         shade_m, seg=32)
+            # the DOME (spec lamp kind): a spun brass cap inscribed in the pure layer's
+            # shade envelope — rim at the envelope's bottom, mouth OPEN downward so the
+            # point light still pools onto the cabinet. Height is the mushroom
+            # proportion (~0.62 r), not the envelope's drum height: the envelope is an
+            # outer bound, and filling it produced the bullet the drum already was.
+            _dome_h = min(dz, r * 0.62)
+            _rings, _seg = 9, 40
+            _dvs, _dfs = [], []
+            for i in range(_rings + 1):
+                t = (i / _rings) * (math.pi / 2.0)
+                rr = max(r * 0.98 * math.cos(t), 0.0015)
+                zz = oz + _dome_h * math.sin(t)
+                for k in range(_seg):
+                    a = 2.0 * math.pi * k / _seg
+                    _dvs.append((ccx + rr * math.cos(a), ccy + rr * math.sin(a), zz))
+            for i in range(_rings):
+                for k in range(_seg):
+                    a0, a1 = i * _seg + k, i * _seg + (k + 1) % _seg
+                    b0, b1 = a0 + _seg, a1 + _seg
+                    _dfs.append((a0, a1, b1, b0))
+            _smooth_mesh_obj("nightstand__lamp_shade", _dvs, _dfs, brass_m)
+            # the BULB under the dome: what actually glows now that the shade is metal
+            _cyl_frustum("nightstand__lamp_bulb", ccx, ccy, 0.024, 0.019,
+                         oz - 0.005, oz + 0.045, shade_m, seg=16)
     if glow and lamp:
         ld = bpy.data.lights.new("lamp_glow", type='POINT')
         # lane-A story: practicals CARRY the hero frame (Kelly focal glow)
@@ -4327,7 +4819,13 @@ def build_suite(spec, label="suite"):
             # never swallow a decided accessory set (DD build-consequence 8).
             _parts = bathroom.fixture_parts(fx, taskbar=_e5.applies(spec), subroom=sr)
             if _parts:
+                # P2 r6 (D8 -> 0): the four soft towel masses acquire; hardware +
+                # census positions stay bathroom.py's. Consumed parts skip add_box.
+                _twm = None if spec.get("_no_acquire") else spec.get("towel_models")
+                _tw_consumed = _place_towels(_parts, _twm) if _twm else set()
                 for _p in _parts:
+                    if _p["name"] in _tw_consumed:
+                        continue
                     add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
                             _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
                             _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
@@ -4579,6 +5077,7 @@ def build_suite(spec, label="suite"):
         _rotate_about_z(prims, xm + wm / 2.0, ym + dm / 2.0, rot)
     if n_model:
         print(f"  placed {n_model} real CC0 furniture models (Poly Haven)")
+    _rug_contact_press()           # DEBT-14: dents derive from what actually stands on it
     # R8'S ACQUIRE HALF, AS A NUMBER IN THE RENDER PATH. Measured 2026-08-10: on the
     # canonical suite this reads 0 of 6, because every kind in it is intercepted by a
     # bespoke procedural builder that `continue`s before MODEL_MAP is consulted — so

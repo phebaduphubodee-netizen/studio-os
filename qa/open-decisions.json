@@ -383,6 +383,48 @@
    "reverse_by": "ลบ `garment_models` ออกจาก spec (หรือ --no-acquire) → sim loft เดิมกลับทั้ง 9 ราวรวมตะขอเปล่า แล้วลบแถว D-027 นี้",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-028",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-10",
+   "decided_by": "builder",
+   "question": "D8 เหลือ 9 แถว (towels 4 + พรม 5) — towels เป็น drapery (R8 ACQUIRE) แต่พรมผ่านเทสต์ R8 ข้อ (c) extrude-outline = BUILD แล้วแถวพรมจะเคลียร์ยังไงโดยไม่หลอกตัวนับ",
+   "in_effect": "**towels: ACQUIRE ทั้งสี่** — search log ก่อน (5 คำ, _private/deliv-001/warehouse-towel-search-2026-08-10.log), clay probe ก่อน wire (บทเรียนหมอน r4): ตัวแขวน `8c7ed2ed` เป็นคู่ผ้าพาดราว+ก้านของตัวเอง → หนึ่ง placement แทนสองช่อง census และ**ก้านของ mesh ถูกลบ** (ราว brass ของ suite คือก้านทางการ) · hook เก็บผ้าผืนเดียว recentre · counter ใช้ `1ee77762` ผ้าพับคู่ ~120mm สูงกว่ากล่อง census 35mm = declared deviation · ทุกผืนใส่ token terry ที่เซ็น · band ใหม่สอง class ใน asset_scale cite ตาราง schedule ของ bathroom.py เอง · gate ปฏิเสธของจริงสองตัวระหว่างทาง (2336mm ยักษ์ / 83mm จิ๋ว) · **พรม: BUILD จริง** — mesh เดียว 12k โพลี grid 25mm, displacement สองย่าน (undulation ครัวเรือน + tuft), หนา 14mm ในย่าน DEBT-14 (8-20), ขอบ binding เป็น material zone ของ mesh เดียวกัน (กล่องลอย 4 ใบหายไป), และ**รอยยุบใต้ contact derive จาก scene ที่สร้างจริง** (ขา bench/stool, ฐานเตียง, toe nightstand — R9 ไม่มีพิกัดพิมพ์มือ) · **instrument แก้ครึ่งเดียวพร้อมกัน**: D8 นิยาม 'primitive' = ทิศ normal น้อย **และ** โพลีน้อย (PRIM_POLYS_MAX 500) — พรมทอแบนของจริง relief ~4° ไม่มีวันเกิน 15° cluster tolerance ต่อให้ acquire มาก็ไม่ผ่าน กล่อง 98 โพลียังโดนจับด้วย margin 5 เท่า · test ใหม่ pin ทั้งสองขา (box จับได้ / displaced ไม่จับ)",
+   "where": "pipeline/scripts/build_room.py, pipeline/scripts/asset_scale.py, pipeline/scripts/deliverable_check.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, _private/deliv-001/warehouse-towel-search-2026-08-10.log",
+   "because": "R8 แยกสอง class ตามเทสต์ของมันเอง: ผ้าพาด = drapery → acquire; พรม = extruded outline → build (คิว gate r5 เองสั่ง build-fix: หนา + pile ยุบ) · การแก้ instrument พร้อมกับแถวที่มันเคลียร์คือรูปแบบ flattering-scorer — จึงบันทึกเป็น decision แยกพร้อมทางกลับ ไม่ใช่แก้เงียบ: เกณฑ์ polycount มาจาก premise ของแถว ('primitive standing in') ไม่ใช่จากผลลัพธ์ที่อยากได้ และมี negative control ใน test (กล่อง 98 โพลียังโดนนับ)",
+   "reverse_by": "spec: ลบ towel_models (หรือ --no-acquire) → กล่อง census กลับทั้งสี่ · พรม: git revert _add_rug/_rug_contact_press → กล่อง+ขอบ 5 ชิ้นกลับ · instrument: ลบเงื่อนไข polys ใน deliverable_check.py บรรทัดเดียว + ลบ test ใหม่ แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-030",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-10",
+   "decided_by": "builder",
+   "question": "แถบครอบแซลมอนบนหัวผนังระแนง (C2 ชี้ซ้ำสามรอบ r3/r4/r5) — R10 สี่คำถามตัดสินว่าอะไร: เก็บ แก้ หรือเอาออก",
+   "in_effect": "**เก็บ-และ-แก้ด้วยตัวเลข** ตาม R10: (1) IDENTITY = e5_cove_pelmet, fascia บังไฟ cove หน้า BF14 (ของแถม gate #8 เดิม — 4 กรรมการ 3 gate ขอ 'fixture ที่หาเจอได้' ความจำเป็นยังอยู่) (2) EXISTS = การ amend ตัดสินให้มี fascia แต่ไม่เคยตัดสินสีและปลาย (3) SENSE พังสองที่: สีน้ำตาล (0.32,0.21,0.13) เป็นวัสดุที่ห้าที่ไม่อยู่ในตระกูลที่เซ็นไหน อ่านเป็นแซลมอนใต้ไฟ warm; ปลายเหนือหน้าตัดโล่งลอยหน้าโพรง niche = งานไม้ที่สร้างจริงไม่ได้ (4) VERDICT: ทาสี **cool_plaster ตระกูลฝ้าที่เซ็น** (pelmet ฝ้าจริงทาสีฝ้า) + **return board ปิดปลายทั้งสองข้าง** วิ่งกลับไปชนหน้าระแนง",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "R10: ก้อนที่ตอบสี่คำถามไม่ได้ต้องแก้หรือออก — ก้อนนี้ตอบได้สามข้อ พังที่ SENSE จึงแก้ · ห้ามค้างรอบสี่ตามคิว gate r5",
+   "reverse_by": "คืนสองบรรทัด: _solid สีเดิม + ลบ _rbox return สองใบ แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-029",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-10",
+   "decided_by": "builder",
+   "question": "garment residual (C2-r5#8 + C3-r5#1): token เดียวต่อชุดกลืนรายละเอียดผ้าเข้ม + ก้อนดำไร้ไหล่ + ชุดล้นปลายราวสั้น — คละ token ต่อชิ้นทำยังไงเมื่อ mesh นำเข้าไม่มีขอบเขตชิ้น",
+   "in_effect": "**per-garment token ด้วยเรขาคณิตล้วน สามชั้นตามที่ probe บังคับ**: (1) mesh กว้าง (>50% ของชุด) ถูก split เป็น connected islands ก่อน (data API ไม่มี bpy.ops — probe พบ cce50840 รวมเสื้อสามตัวใน mesh 17.9k verts เดียว) (2) แกนแยกวัดจาก spread จริง ไม่ใช่สมมติตามราว (c25de786 เรียงตามราว / cce50840 ซ้อนตามแกนลึก) (3) threshold จาก median gap ของข้อมูลเอง x4 พื้น 10mm — ค่าคงที่ 45mm รอบแรกโดน fit scale หลอก · ผล: c25de786 = 9 กลุ่ม/ราว หมุน token ต่อกลุ่ม + **ตัดกลุ่มแรก native (ก้อนดำ 15 mesh) ทุก copy ผ่าน yaw ของ copy เอง** (spec: garment_cut_first) · cce50840 = degenerate โดยถูกต้อง (เสื้อซ้อนกันใน ~10mm — per-garment ไม่มีความหมายทางเรขาคณิต) → per-set token ยืนตามเดิมพร้อม print เหตุผล · **ล้นราว: ตัด slack 100mm ใน n_cp** — span ต้อง <= run เสมอ · ราวจึงถือชุดเดียว (boutique read) = ราคาที่ประกาศ ไม่ใช่ bug · rod ของชุด: ยกเว้นจาก clustering (hardware ไม่ใช่ผ้า) คง token ชุด",
+   "where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "because": "R7 triage r5 รับข้อนี้เข้า r6 · กลไกทุกชั้นถูกบังคับโดยการวัด (สอง probe + สอง quick) ไม่ใช่ออกแบบล่วงหน้า — ชั้นที่เดาเอา (threshold คงที่) คือชั้นที่ผิด",
+   "reverse_by": "ลบ garment_cut_first จาก spec (ชิ้นแรกกลับมา) · คืน token ต่อชุด: ลบบล็อก clustering ใน _place_garment_rails เหลือ tok เดียวตาม salt (โค้ด r5 ใน git log dff0759) แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

@@ -73,6 +73,19 @@ BANDS = {
                             "pipeline/scripts/styling.py SHAM_H=0.44 (a 650mm "
                             "euro sham leaning upright presents ~450) + king "
                             "sham 500x900 case note at SHAM_W"),
+    # Towels are diagnosed by PRESENTED height, like garments. The band cites the
+    # lane's own signed accessory schedule (bathroom.py): a hand towel presents
+    # HAND_DROP=300 on a hook, a bath towel TOWEL_DROP=350 folded over the bar
+    # (i.e. a ~700-1500mm towel presenting half or less), a robe ROBE_DROP=750 —
+    # so a HUNG towel-class mesh lands 200..1000 with margin either side.
+    "towel_hung": (200.0, 1000.0, "z",
+                   "pipeline/scripts/bathroom.py HAND_DROP=300 / TOWEL_DROP=350 "
+                   "/ ROBE_DROP=750 (the e6 accessory schedule, D-E6-3)"),
+    # A folded towel on a counter presents its PLY STACK: bathroom.py builds the
+    # counter towel 35mm tall; a plusher fold runs to ~120.
+    "towel_folded": (20.0, 160.0, "z",
+                     "pipeline/scripts/bathroom.py acc_hand_towel_counter part "
+                     "(300x200x35, D-E6-3) with plush-fold margin"),
 }
 
 # ------------------------------------------------------------- planar refusal --
@@ -96,6 +109,8 @@ MIN_DEPTH_RATIO = {
     "chair": 0.35,
     "pillow_set_lying": 0.10,     # a lying pair is flat-ish but never a billboard
     "pillow_set_standing": 0.30,  # a leaning sham group has real plan depth
+    "towel_hung": 0.04,           # two plies over a bar are thin but never zero
+    "towel_folded": 0.10,         # a folded stack has real plan depth
 }
 
 

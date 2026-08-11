@@ -259,6 +259,17 @@ PRIMITIVE_KINDS = (None, "box", "oct", "cone", "slats", "pocket", "herringbone")
 # curve in the control set (an 8-gon cylinder) reads 9.
 CURVED_CLUSTERS_MIN = 8      # at or above this, the object is a facetted curve
 BOXLIKE_CLUSTERS_MAX = 6     # at or below this, the object is a box
+# A PRIMITIVE is few normal directions AND few polygons — both, from the row's own
+# premise ("a primitive standing in for a mesh"). Added P2 r6, when the rug became
+# a 12k-poly displaced-pile mesh and still counted: a FLAT-WOVEN rug's true relief
+# is millimetric (~4 deg), so no honest build of one can ever exceed the 15 deg
+# cluster tolerance — the cluster test alone cannot tell "slab" from "slab-shaped
+# textile with real pile", but polycount can: every primitive box in this repo is
+# 98 polys, and 500 clears them with 5x margin while a subdivided displaced mesh
+# sits two orders above. (R8's own test classes a rug as (c) extrude-a-measured-
+# outline = BUILD, so acquisition was never the ask for it; the ask was real pile,
+# thickness in DEBT-14's band, and contact compression — all now geometry.)
+PRIM_POLYS_MAX = 500
 
 
 def measure_scene_spec(spec):
@@ -363,7 +374,8 @@ def measure_scene_built(dump):
         # an allowlist — D9/D7 still see these objects.
         acquired = "__acq" in o.get("name", "")
         if (not acquired and any(w in words for w in ACQUIRE_WORDS)
-                and n90 <= BOXLIKE_CLUSTERS_MAX):
+                and n90 <= BOXLIKE_CLUSTERS_MAX
+                and int(o.get("polys", 0)) <= PRIM_POLYS_MAX):
             prim.append(o["name"])
         if n90 >= CURVED_CLUSTERS_MIN and int(o.get("smooth_polys", 0)) == 0:
             flat.append(o["name"])

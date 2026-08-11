@@ -238,6 +238,18 @@ def test_a_smooth_shaded_curve_is_not_a_defect():
     assert DC.measure_scene_built(dump)["flat_shaded_curved"] == 0
 
 
+def test_a_displaced_pile_rug_is_not_a_primitive_but_a_box_rug_still_is():
+    """P2 r6: a flat-woven rug's honest relief is millimetric (~4 deg), so the 15 deg
+    cluster test alone can never clear one — a PRIMITIVE is few normal directions AND
+    few polygons, both from the row's own premise. The 98-poly box rug stays caught;
+    the 12k-poly displaced mesh (real pile + contact dents) is not "a primitive
+    standing in" by any reading of the words."""
+    box = dict(_obj("rug__under_bed", 2), polys=98)
+    pile = dict(_obj("rug__under_bed_pile", 5, smooth=12276), polys=12276)
+    m = DC.measure_scene_built({"objects": [box, pile]})
+    assert m["_primitive_acquire_names"] == ["rug__under_bed"]
+
+
 def test_objects_that_do_not_render_are_not_judged():
     dump = {"objects": [_obj("mill__style_garment0__torso", 30, hidden=True)]}
     with pytest.raises(DC.NotRun):
