@@ -878,7 +878,36 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "0244c445f4eec9f8e56d2f59302980311696aab0",
+      "verdicts": {
+        "P2": "change: P2r-4's dedup half closed and with it the reopened bar's MACHINE half holds whole for the first time — every p2_exit rung runs and passes (shells 54->0), so the phase's remaining exit distance is the judge clause alone. C3's raw count hit 5, the lane low. Open halves stay by name: folded stacks, wire gauge, cross-rail variety (D-031), P2r-2 wood, P2r-3 rug, P2d pillows, P2r-5 mech-2, P2r-8, P2j (6th confirmation), plus a new construction-detail candidate from C2: sconce backplate across the slats.",
+        "P4": "keep: emptiness filed by both critics again and D7 still 6 vs 12 — confirmed, waits behind P2.",
+        "P5": "keep: the bench-off-centre and sealed-room reads recurred from the same diagonal camera and were refuted by the same built-scene numbers — five rounds of the same misread is itself P5 data about this framing; owner's eye terminal. THREE consecutive independent blind reads of the headboard zone (sunk/narrow) all trace to D-034's declared 1.10m — filed as accumulated evidence for the owner's one-line knob, not a block.",
+        "DRW": "keep: the parallel lane's standing program, untouched by this round; its files remain uncommitted by this session on purpose."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "59b63e7951531ec742e4925f920d70ee1e9eb0c8"
+  "last_review_commit": "0244c445f4eec9f8e56d2f59302980311696aab0"
 }
