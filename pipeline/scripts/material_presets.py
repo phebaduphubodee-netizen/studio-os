@@ -206,6 +206,11 @@ PRESETS = {
         factory="image_wood", space="srgb", hex="#C7B896", rough=0.38,
         slug="oak_veneer_01", tile_m=1.83,
         map_mean=(0.3604, 0.2117, 0.0988), rough_mean=0.5304,
+        # feature_scale 0.65: C2-r4#5 measured a flat-cut veneer leaf at 200-300 mm
+        # against our ~450 mm cathedral arcs — a deliberate, cited divergence from the
+        # asset's native tile, NOT a fudge. coat 0.25: the signed satin FILM finish
+        # is a second specular lobe (C3-r4#4 named its absence).
+        feature_scale=0.65, coat=0.25,
         tier="DESIGN-INTENT",
         desc="signed light warm-oak (D5-A) as photographed CC0 veneer (Poly Haven "
              "oak_veneer_01), box-projected so grain breaks at panel arrises; "
@@ -698,6 +703,8 @@ def factory_args(preset_name):
         a["map_mean"] = tuple(p["map_mean"])
         if "rough_mean" in p:
             a["rough_mean"] = float(p["rough_mean"])
+        a["feature_scale"] = float(p.get("feature_scale", 1.0))
+        a["coat"] = float(p.get("coat", 0.0))
         return a
     # dielectric albedo band applies to sRGB-authored non-metal, non-glass presets
     exempt = metallic == 1.0 or p["factory"] == "glass"

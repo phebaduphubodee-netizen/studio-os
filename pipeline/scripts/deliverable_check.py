@@ -353,7 +353,17 @@ def measure_scene_built(dump):
     for o in objs:
         words = object_words(o.get("name", ""), o.get("materials") or ())
         n90 = int(o.get("curved_clusters", 0))
-        if any(w in words for w in ACQUIRE_WORDS) and n90 <= BOXLIKE_CLUSTERS_MAX:
+        # `__acq` is place_model's own machine-written marker (the ca8f412 naming law:
+        # acquired meshes are named INTO the repo convention so instruments can see
+        # them — this is the seeing). An acquired import is definitionally not "a
+        # primitive standing in for a mesh that should have been acquired", however
+        # box-like its individual sub-meshes measure: a sleeve panel of a real
+        # garment set has 2-3 normal clusters and was tripping this row 232 times on
+        # the first acquired-garment build. Derived from the row's own premise, not
+        # an allowlist — D9/D7 still see these objects.
+        acquired = "__acq" in o.get("name", "")
+        if (not acquired and any(w in words for w in ACQUIRE_WORDS)
+                and n90 <= BOXLIKE_CLUSTERS_MAX):
             prim.append(o["name"])
         if n90 >= CURVED_CLUSTERS_MIN and int(o.get("smooth_polys", 0)) == 0:
             flat.append(o["name"])

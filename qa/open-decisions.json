@@ -369,6 +369,20 @@
    "reverse_by": "ลบ `pillow_models` ออกจาก item เตียงใน spec → loft สาม rank กลับมาครบทั้ง lumbar (หรือรัน --no-acquire ดูขา A โดยไม่แก้อะไร) แล้วลบแถว D-026 นี้ · ถ้าจะเอา lumbar กลับโดยคง combo: ต้อง derive contact ของ lumbar กับหน้าหมอน combo ก่อน (R9) ห้ามพิมพ์ z",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-027",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-10",
+   "decided_by": "builder",
+   "question": "เสื้อผ้าบนราว (ข้อ 1 ของทั้งสองกรรมการ สี่รอบติด): sim sheet ของเราอ่านเป็นกระดาษเปียกตลอด — จะ sim ต่อรอบที่ห้า หรือ acquire ชุดแขวนจริง และถ้า acquire จะเอา 'ตะขอเปล่าที่จอดไว้' กับกติกา shoulder-to-shoulder ของ spec ไปไว้ไหน",
+   "in_effect": "**ACQUIRE ทั้ง 9 ราว** — ชุดละราว สลับสองชุด (`cce50840` เชิ้ต 3 ตัว / `c25de786` คละเดรส-กางเกง), scale ASSERTED ที่ ingest (garment_hung band เดิม), **cap ที่ natural scale เสมอ** (mm ใน sidecar คือเสื้อจริง — ย่อคือเสื้อเด็ก ขยายคือเสื้อยักษ์), slot = union AABB ของ loft parts ที่ styling derive ไว้เอง (R9), แขวนโดยยอดชุดชนราว · **cloth: ทั้งชุดได้ token เดียว หมุน linen→backing→towel ตามกฎสามค่าเดิมของ styling** ผ่าน hook `style_tok` ใน router (วัสดุนำเข้าเป็นสีแบนไร้ relief — ผ้าที่เซ็นชนะ tint เสมอ ตามกฎเดียวกับ tub chair) · **สองอย่างที่หายไปโดยประกาศ:** (1) ตะขอเปล่าที่จอดไว้ (ของ round-6 lane C) — C2-r4#1 เรียกมันว่า defect ('ตะขอเปล่าเอียง ๆ ค้าง') กรรมการใหม่ชนะของเก่า (2) ความแน่น shoulder-to-shoulder ตามร้อยแก้วของ spec — ชุดจริงที่ natural scale วางได้ราวละ 1 ชุด (2-3 ตัว) ราวไม่โล่งแต่ไม่แน่นเท่าร้อยแก้ว · **model_fit fill-share gate ถูก bypass อย่างประกาศ**: semantic ของมันคือเฟอร์นิเจอร์ต้องเต็ม slot ซึ่งไม่ใช่ semantic ของราวเสื้อผ้า — uniform scale คำนวณจาก sidecar เอง containment ยังครบด้วย min-ratio เดิม",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, pipeline/scripts/build_room.py, _private/deliv-001/warehouse-garment-search-2026-08-10.log",
+   "because": "R8: garment เป็น free-form ตัวอย่างแรกในตาราง (5 รอบ + 785 บรรทัด cloth physics ใน TRN-001) · acquire-first ตาม D-025 พร้อม log (ค้น 5 คำ มีของหลายสิบ) · clay probe เห็นไหล่/แขน/คอปกที่ solver เราไม่เคยให้ · กรรมการซ้ำสี่รอบและ C2-r4 ปิดท้ายว่า 'เมื่อความเชื่อถูกทำลายตรงนั้น ทุกอย่างที่เหลือถูกอ่านว่าปลอมตามไปด้วย'",
+   "reverse_by": "ลบ `garment_models` ออกจาก spec (หรือ --no-acquire) → sim loft เดิมกลับทั้ง 9 ราวรวมตะขอเปล่า แล้วลบแถว D-027 นี้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

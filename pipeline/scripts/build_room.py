@@ -798,7 +798,8 @@ def _proc_wood(name, base=(0.34, 0.22, 0.13, 1.0), dark=(0.20, 0.12, 0.06, 1.0),
     return m
 
 
-def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None):
+def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
+                feature_scale=1.0, coat=0.0):
     """Photographed veneer for UV-less millwork boxes (P2g, D-024). BOX projection on
     Object coords — each face gets its own planar projection, so grain DIRECTION
     breaks at every 90° arris the way a real veneer lay-up does. That break is the
@@ -829,15 +830,39 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None):
             raise RuntimeError(f"no Diffuse map cached for {slug!r}")
         tc = nt.nodes.new("ShaderNodeTexCoord")
         mp = nt.nodes.new("ShaderNodeMapping")
-        s = 1.0 / max(tile_m, 1e-6)
+        # feature_scale < 1 is a DELIBERATE divergence from the asset's native
+        # physical tile, carried by the preset with its reason (C2-r4#5 measured a
+        # flat-cut veneer leaf at 200-300 mm against our ~450 mm cathedral arcs) —
+        # a named, cited knob, not a fudge.
+        s = 1.0 / max(tile_m * feature_scale, 1e-6)
         mp.inputs["Scale"].default_value = (s, s, s)
         nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+        # PER-OBJECT DECORRELATION (C2-r4#5 / C3-r4#4: the same cathedral arc repeats
+        # across neighbouring panels): every object samples a different window of the
+        # same field, driven by Object Info's stable per-object Random — the same cure
+        # _planar_uv's u_off applies on the UV route.
+        oi = nt.nodes.new("ShaderNodeObjectInfo")
+        cmb = nt.nodes.new("ShaderNodeCombineXYZ")
+        m1 = nt.nodes.new("ShaderNodeMath")
+        m1.operation = 'MULTIPLY'
+        m1.inputs[1].default_value = 137.0
+        m2 = nt.nodes.new("ShaderNodeMath")
+        m2.operation = 'MULTIPLY'
+        m2.inputs[1].default_value = 61.0
+        nt.links.new(oi.outputs["Random"], m1.inputs[0])
+        nt.links.new(oi.outputs["Random"], m2.inputs[0])
+        nt.links.new(m1.outputs["Value"], cmb.inputs["X"])
+        nt.links.new(m2.outputs["Value"], cmb.inputs["Y"])
+        va = nt.nodes.new("ShaderNodeVectorMath")
+        va.operation = 'ADD'
+        nt.links.new(mp.outputs["Vector"], va.inputs[0])
+        nt.links.new(cmb.outputs["Vector"], va.inputs[1])
 
         def _img(path, non_color):
             n = _img_node(nt, path, non_color=non_color)
             n.projection = 'BOX'
             n.projection_blend = 0.3
-            nt.links.new(mp.outputs["Vector"], n.inputs["Vector"])
+            nt.links.new(va.outputs["Vector"], n.inputs["Vector"])
             return n
 
         di = _img(ts["Diffuse"], False)
@@ -869,6 +894,12 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None):
             bump.inputs["Distance"].default_value = 0.0004
             nt.links.new(hi.outputs["Color"], bump.inputs["Height"])
             nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+        if coat:
+            # the signed finish is a SATIN FILM (rough 0.38): the film is a real
+            # second specular lobe, which C3-r4#4 read as missing ("ขาดการสะท้อน
+            # ของผิวที่เคลือบแล้ว") — version-robust setter, absent socket = no-op
+            _set(bsdf, "Coat Weight", float(coat))
+            _set(bsdf, "Coat Roughness", 0.15)
     except Exception as e:
         bsdf.inputs["Base Color"].default_value = tuple(albedo[:3]) + (1.0,)
         bsdf.inputs["Roughness"].default_value = rough
@@ -2069,6 +2100,139 @@ def _emit_style_part(p, quick=False):
     raise ValueError(f"_emit_style_part: unknown shape {p['shape']!r} on {p['name']!r}")
 
 
+def _garment_rail_salt(name):
+    """The rail index a styling part belongs to, or None for non-rail parts.
+    Parsed from styling's own naming contract (`mill__style_garment{salt}_{i}__{tok}`,
+    `mill__style_hanger{salt}_{i}__…`, `mill__style_hangerempty{salt}__…`)."""
+    for stem in ("style_garment", "style_hangerempty", "style_hanger"):
+        ix = name.find(stem)
+        if ix < 0:
+            continue
+        digits = ""
+        for ch in name[ix + len(stem):]:
+            if ch.isdigit():
+                digits += ch
+            else:
+                break
+        return int(digits) if digits else None
+    return None
+
+
+def _place_garment_rails(models, parts):
+    """R8 for the hang rails (D-025 queue item 1, executed r5): hanging garments are
+    FREE FORM and are ACQUIRED — four rounds of critics read the simmed sheets as
+    'wet paper', and the clay probes of these meshes show shoulders, sleeves and
+    collars no sheet solver of ours has produced. One acquired SET replaces one
+    rail's whole loft group (garments + hangers + the parked empty hanger — the
+    sets carry their own hangers).
+
+    R9: the slot is the union AABB of the rail's OWN loft parts, which styling
+    derived from the rail anchor and its carcass — nothing here types a coordinate.
+    After placement the set is shifted so its TOP sits at the slot top (garments
+    hang FROM the rail; a footprint-based z0 would leave them floating below it).
+
+    Cloth: each rail's whole set is tagged with ONE suite token (rotating
+    linen → backing → towel, the same three-value law styling's own tok chooser
+    uses), applied later by the router via the `style_tok` hook — the imported
+    materials are flat colours with no relief (3D Warehouse class), and the
+    signed textile is strictly better than a tint of a flat colour.
+
+    Returns the set of rail salts successfully swapped; the caller lofts the rest."""
+    from mathutils import Vector
+    by_rail = {}
+    for p in parts:
+        s = _garment_rail_salt(p["name"])
+        if s is not None and p.get("verts"):
+            by_rail.setdefault(s, []).append(p)
+    toks = ("linen", "backing", "towel")
+    swapped = set()
+    import json as _json
+    for salt in sorted(by_rail):
+        slug = str(models[salt % len(models)])
+        _mp = _model_path(slug)
+        if not _mp:
+            print(f"  garment rail {salt}: no cached mesh for {slug!r} -> loft")
+            continue
+        _sc = os.path.join(os.path.dirname(_mp), f"{slug}.scale.json")
+        try:
+            with open(_sc, encoding="utf-8") as f:
+                _sj = _json.load(f)
+        except OSError:
+            _sj = None
+        if not (_sj and _sj.get("ok")):
+            print(f"  garment rail {salt}: {slug} has NO ASSERTED scale sidecar -> loft")
+            continue
+        vs = [v for p in by_rail[salt] for v in p["verts"]]
+        x0, x1 = min(v[0] for v in vs), max(v[0] for v in vs)
+        y0, y1 = min(v[1] for v in vs), max(v[1] for v in vs)
+        z0, z1 = min(v[2] for v in vs), max(v[2] for v in vs)
+        along_x = (x1 - x0) >= (y1 - y0)
+        # pre-rotation slot: the set's row runs its native x; yaw turns it onto the rail
+        run, depth = (x1 - x0, y1 - y0) if along_x else (y1 - y0, x1 - x0)
+        cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+        yaw = (0.0 if along_x else 90.0) + (180.0 if salt % 2 else 0.0)
+        tag = f"mill__style_garmentacq{salt}"
+        # model_fit's fill-share gate encodes the FURNITURE slot semantic (a chair must
+        # fill its slot); a rail dressing does not — a set occupying 60% of a rail's run
+        # is a real closet. So the uniform scale is solved HERE by the same min-ratio,
+        # from the ASSERTED sidecar bounds, and place_model is handed a slot of exactly
+        # the scaled set's own size (containment inside the rail's loft envelope is
+        # guaranteed by the min() below; nothing is squashed — the scale stays uniform).
+        bb = _sj.get("bbox_mm") or {}
+        nx, ny, nz = (bb.get("x_mm", 0) / 1000.0, bb.get("y_mm", 0) / 1000.0,
+                      bb.get("z_mm", 0) / 1000.0)
+        if not (nx > 0 and ny > 0 and nz > 0):
+            print(f"  garment rail {salt}: sidecar carries no bounds -> loft")
+            continue
+        # NEVER scale past natural size (the sidecar's mm are ASSERTED real garments;
+        # upscaling makes giant clothes, downscaling makes children's) — and fill the
+        # rail by REPEATING the set along the run instead of stretching one instance:
+        # a rail 60% bare read as a boutique display, the very C2-r4#4/#7 complaint.
+        s_fit = min(1.0, run / nx, depth / ny, (z1 - z0) / nz)
+        sw, sd, sh = nx * s_fit, ny * s_fit, nz * s_fit
+        n_cp = max(1, min(3, int((run + 0.10) // (sw + 0.02))))
+        placed_ms = []
+        copies = []
+        for k in range(n_cp):
+            span = n_cp * sw + (n_cp - 1) * 0.02
+            a0 = -span / 2.0 + sw / 2.0 + k * (sw + 0.02)
+            kx = cx + (a0 if along_x else 0.0)
+            ky = cy + (0.0 if along_x else a0)
+            tagk = f"{tag}_{k}"
+            kyaw = yaw + (180.0 if k % 2 else 0.0)
+            if place_model(_mp, kx - sw / 2.0, ky - sd / 2.0, sw, sd,
+                           sh, rot=kyaw, z0=z0, tag=tagk):
+                cms = [o for o in bpy.data.objects
+                       if o.type == 'MESH' and o.name.startswith(f"{tagk}__acq")]
+                copies.append(cms)
+                placed_ms += cms
+        if not placed_ms:
+            print(f"  garment rail {salt}: no instance placed -> loft")
+            continue
+        # hang FROM the rail: ONE dz per copy (multi-root glTFs must move as a unit),
+        # shifting every root of that copy so the copy's top lands at the slot top
+        for cms in copies:
+            top = max((o.matrix_world @ Vector(c)).z for o in cms for c in o.bound_box)
+            dz = z1 - top
+            roots = set()
+            for o in cms:
+                r = o
+                while r.parent is not None:
+                    r = r.parent
+                roots.add(r.name)
+            for rname in roots:
+                r = bpy.data.objects[rname]
+                r.location = (r.location.x, r.location.y, r.location.z + dz)
+        bpy.context.view_layer.update()
+        tok = toks[salt % len(toks)]
+        for o in placed_ms:
+            o["style_tok"] = tok
+        swapped.add(salt)
+        print(f"  ACQUIRED garment rail {salt} <- {slug} x{n_cp} "
+              f"(replaces {len(by_rail[salt])} loft part(s); cloth token '{tok}')")
+    return swapped
+
+
 def _add_styling(spec):
     """ELEMENT 8: hang the garments and dress the open shelves, DERIVED from the parts the
     build actually emitted (`_STYLE_ANCHORS`).
@@ -2099,7 +2263,11 @@ def _add_styling(spec):
               for f in (sr.get("fixtures") or ()) if f.get("open")))
     parts = (styling.dress_rails(_STYLE_ANCHORS, min_rails=_declared_open)
              + styling.dress_shelves(_STYLE_ANCHORS))
+    _gm = None if spec.get("_no_acquire") else spec.get("garment_models")
+    _swapped = _place_garment_rails(list(_gm), parts) if _gm else set()
     for p in parts:
+        if _swapped and _garment_rail_salt(p["name"]) in _swapped:
+            continue                # the acquired set took this rail's whole group
         _emit_style_part(p, quick=bool(spec.get("_quick")))
     n_g = sum(1 for p in parts if "garment" in p["name"])
     n_s = sum(1 for p in parts if "fold" in p["name"])
@@ -2129,7 +2297,9 @@ def _material_from_preset(mat_name, preset_key):
     if f == "image_wood":
         return _image_wood(mat_name, slug=a["slug"], tile_m=a["tile_m"],
                            albedo=a["rgba"], map_mean=a["map_mean"],
-                           rough=a["rough"], rough_mean=a.get("rough_mean"))
+                           rough=a["rough"], rough_mean=a.get("rough_mean"),
+                           feature_scale=a.get("feature_scale", 1.0),
+                           coat=a.get("coat", 0.0))
     if f == "glass":
         # built WITHOUT _solid: a glass Base Color is a TRANSMISSION TINT, not a
         # dielectric albedo — routing it through _solid fires a false '!! albedo WARN'
@@ -2290,7 +2460,19 @@ def _suite_materials(spec=None):
     if sel:
         print(f"  materials: spec-selected presets -> {_matpre.material_story(sel, spec, _SOFT_BAKED)}")
     for obj in bpy.data.objects:
-        if obj.type != 'MESH' or obj.get("ph_model"):   # imported models keep their own PBR
+        if obj.type != 'MESH':
+            continue
+        _stok = obj.get("style_tok")
+        if _stok:
+            # ACQUIRED garment sets (r5): ph_model keeps them out of bevel/repaint, but
+            # their imported surfaces are flat colours with no relief (3D Warehouse
+            # class) — the signed suite cloth is strictly better, applied by the same
+            # token vocabulary the loft router below uses.
+            obj.data.materials.clear()
+            obj.data.materials.append({"linen": linen, "backing": backing,
+                                       "towel": towel}.get(_stok, linen))
+            continue
+        if obj.get("ph_model"):                          # imported models keep their own PBR
             continue
         n = obj.name
         if n == "floor":
