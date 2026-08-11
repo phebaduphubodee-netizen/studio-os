@@ -179,7 +179,7 @@
       "id": "P2",
       "title": "Surface and real objects — the strongest measured lever",
       "goal": "Texture-map coverage from 4.9% toward the 50-66% measured in delivered work; every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps; no flat-shaded curved silhouette survives.",
-      "status": "done",
+      "status": "open",
       "_reranked": "Moved ahead of light and density by SC-4. Acquiring pays the texture bill in the same move, because acquired meshes ship with 3-8 maps.",
       "work": [
         {
@@ -260,11 +260,36 @@
           "where": "pipeline/scripts/build_room.py",
           "why": "C3#4 on r3, and the measurement INVERTS the accusation rather than confirming it: every mill__ object IS bevelled (280 of 323 are 98-poly bevelled boxes; ZERO are unbevelled 6-poly boxes). At 5 mm and ~3 m from a 24 mm lens the chamfer is ~3 px, so it is visible. It reads as a blade because the three bevel strips are FLAT-SHADED — three tiny facets across 3 px read as one hard line instead of a roll.\n\nAND D9 CANNOT SEE THIS BY CONSTRUCTION. Its discriminator drops faces below 5% of the largest face, which is exactly the bevel rim — correct for 'is this a curved form' and blind to 'does this edge read as rounded'. The same `_normalise_acquired` treatment already written for acquired meshes (weld, then smooth with hard edges kept sharp) is the candidate fix, applied to built millwork.\n\nCheapest item in the queue by reach: it touches every panel in the room at once.",
           "status": "todo"
+        },
+        {
+          "id": "P2r-1",
+          "what": "bedding stops reading as felt: duvet -> fabric='duvet' preset (TRN-002 r21 mechanism, compression 1.0 buckles standing folds) + clear the left-flank flap the solver leaves standing",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        },
+        {
+          "id": "P2r-2",
+          "what": "wood figure stops tiling: per-panel mapping offset/rotation so the cathedral figure never repeats across boards (C3-p3r2#2, crop-confirmed)",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        },
+        {
+          "id": "P2r-3",
+          "what": "rug stops reading printed: edge rollover + pile at the boundary; dents already exist and do not read at frame scale (C2-p3r2#10 + C3-p3r2#5)",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
+        },
+        {
+          "id": "P2r-4",
+          "what": "garment realism within the acquired ceiling: delete coincident duplicate shells found by the .blend probe (acq0==acq10 class); folded shelf stacks stop being slabs; the true lever stays procurement D-031 (owner's hands)",
+          "where": "pipeline/scripts/build_room.py",
+          "status": "todo"
         }
       ],
       "exit_test": "D5 (band-limited 4-32 px), D8 and D9 all PASS; MODEL-FIT REJECT count = 0; imported-mesh objects >=8. Then two crops at 100%: a sewn seam ridge on the bed head with no polygon facet on any silhouette, and weave on the foot-of-bed throw (0.11x the target's detail energy today).",
       "exit_result": "MET, 2026-08-11, P2 r7 (gate-DELIV001-P2r7-2026-08-11.md).\n\nTHE NUMBERS: D5 10.5045 in the two-sided band [6.4508, 12.7998] · D8 = 0 · D9 = 0 · MODEL-FIT REJECT = 0 · imported placements 15 >= 8 · scorecard 9 PASS / 0 FAIL / D7 NOT-RUN — 'DELIVERABLE: QUALIFIES' held for a second consecutive round.\n\nTHE TWO 100% CROPS (projects/PRJ-2026-002_c001-house/04_visualization/p2-exit-crops/): bed-head seam — the sewn flange ridge reads on both pillows, no polygon facet on any silhouette; throw weave — detail energy 1.126x of the delivered anchor's textile crop vs the 0.11x baseline the plan recorded at authoring. The baseline carried NO method, so this exit DECLARED one and it is reproducible: both frames resampled to long-edge 1600 (deliverable_check's own normalisation law; ours 2400px, the anchor 3840px — resolution must not buy detail), textile-only crops (ours (0.45,0.52,0.68,0.68), anchor I-23-023 499473_Bedroom_1_main (0.30,0.80,0.47,0.95)), _octave_energy = mean|band 4-32px| 3-pass box — the variant that survived its own noise negative control. Comparison ran LOCAL only (R10b).\n\nWORK-ITEM DISPOSITION at close (the todo rows a done phase would otherwise silently bury): P2a/P2b/P2d closed by fact along the way (pillow combo + tub chair acquired r4-r5, towels+rug r6) · P2c/P2e/P2f/P2g closed (fabric maps lane, acquire-first path, oak_veneer_photo + feature_scale 0.46) · P2k STILL OPEN and re-found by C3-r7#7 (razor edges) -> rides r8 · P2h (materials by role) folds into the same r8 pass · P2i (ergonomic relations) and P2j (mirror niche) move to P4's residual list — neither gates light.\n\nCARRIED OUT OF P2, named: duvet/coverlet solver stiffness (BOTH r7 critics rank it #1; r6 owed it), wood tile periodicity at 0.46 (C3-r7#4 — per-object u_off jitter), rug legibility (built 14mm pile + 12-15mm dents vs a still-flat read — light first, nap second), garment variety = D-031's declared price (procurement: flat-file full-hang set). The headboard question stands at FOUR independent voices, parked with the owner's eye, never blocking.",
-      "_reviewed": true
+      "_reviewed": true,
+      "_owner_reopen": "OWNER OVERRULE 2026-08-11 (R3 — locked to him): ผมไม่เห็นด้วยที่ข้าม phase 2 ไป. The r7 close stood on its exit test (crops + QUALIFIES), but the p3r2 critique tables are still dominated by SURFACE-REALISM findings — bedding reads as felt (both critics' #1), wood figure tiles, rug edge reads printed, garments read cardboard — and the builder's review routed them to P4 (density), which relabels P2-class work instead of doing it. The owner overruled that routing from the image. P2 reopens with those findings as its work list; P4 waits behind it. The exit test below was too narrow and is allowed to be wrong (plan law); it is superseded by the reopen list."
     },
     {
       "id": "P3",
@@ -281,7 +306,8 @@
         }
       ],
       "exit_test": "D2, D3, D4 and D6 PASS on the frame. Then look: the bed casts a contact shadow that reads, and the darkest region of the frame is not the same value as its mid-tone.",
-      "exit_result": "MET, 2026-08-11, P3 r2 (gate-DELIV001-P3r2-2026-08-11.md).\n\nTHE NUMBERS: D2 1.0 (true darks, p1=1 vs p50~140) · D3 7.81 stops · D4 0.0195 · D6 2.2028 — the four exit rows PASS on the full frame; scorecard 9 PASS / 0 FAIL / D7 NOT-RUN (P4 owns it) — 'DELIVERABLE: QUALIFIES'. The LOOK half: the bed's contact shadow was independently named by the blind C2 critic as one of the three things that genuinely work ('nothing large floats'), and the darkest region is not the mid-tone.\n\nTHE PHASE'S OWN DEBT, PAID: r1 refused to close on D10 (chroma spread 2.45 < 3.69 — the warm story was one pole with no counterweight). r2 landed the counterweight the spec itself specifies ('the scene's second CCT is the garden DAYLIGHT, by KIND'): derived glass portals behind the eye frustum, amplitude-bisected 16 -> 11 W/m2 (D-033). D10 2.45 -> 9.04 with the true darks intact.\n\nWHAT MOVED OFF THE CRITICS' TABLE THIS ROUND: flat light, dead lamps, single-pole CCT, the corner-held-open read (3 rounds standing; closed by the DR-informed solver settle package, notebook ae3dd665), and impossible-hanger mechanics (depth-derived per-piece swing; the clone mechanism was a silently-degenerate clustering pass, found by probing the built .blend). Every surviving item is material-realism or styling density — P4's charter."
+      "exit_result": "MET, 2026-08-11, P3 r2 (gate-DELIV001-P3r2-2026-08-11.md).\n\nTHE NUMBERS: D2 1.0 (true darks, p1=1 vs p50~140) · D3 7.81 stops · D4 0.0195 · D6 2.2028 — the four exit rows PASS on the full frame; scorecard 9 PASS / 0 FAIL / D7 NOT-RUN (P4 owns it) — 'DELIVERABLE: QUALIFIES'. The LOOK half: the bed's contact shadow was independently named by the blind C2 critic as one of the three things that genuinely work ('nothing large floats'), and the darkest region is not the mid-tone.\n\nTHE PHASE'S OWN DEBT, PAID: r1 refused to close on D10 (chroma spread 2.45 < 3.69 — the warm story was one pole with no counterweight). r2 landed the counterweight the spec itself specifies ('the scene's second CCT is the garden DAYLIGHT, by KIND'): derived glass portals behind the eye frustum, amplitude-bisected 16 -> 11 W/m2 (D-033). D10 2.45 -> 9.04 with the true darks intact.\n\nWHAT MOVED OFF THE CRITICS' TABLE THIS ROUND: flat light, dead lamps, single-pole CCT, the corner-held-open read (3 rounds standing; closed by the DR-informed solver settle package, notebook ae3dd665), and impossible-hanger mechanics (depth-derived per-piece swing; the clone mechanism was a silently-degenerate clustering pass, found by probing the built .blend). Every surviving item is material-realism or styling density — P4's charter.",
+      "_reviewed": true
     },
     {
       "id": "P4",
@@ -585,7 +611,55 @@
         "P2/P2e",
         "P2/P2f"
       ]
+    },
+    {
+      "commit": "bcb0263b8b7c37ae027fb16a1a4d66dc8a144934",
+      "verdicts": {
+        "P4": "keep: ตารางกรรมการ p3r2 เองคือหลักฐาน — ทุกข้อที่รอด triage เป็นคลาส material-realism/styling (เครื่องนอนสักหลาด, กองพับเป็นแท่ง, ตู้โชว์รูมว่าง, พรมขอบคม, legibility ของ pelmet/tower ที่ contents ต้องตอบ) ซึ่งคือ charter ของ P4 ตรง ๆ · คิว p4r1 มีข้อนำที่กรรมการสองรายเลือกตรงกันโดยไม่เห็นกัน (เครื่องนอน → fabric='duvet' preset ที่จ่ายแล้วของ TRN-002 + เก็บชายผ้าค้าง) และมี rider มีชื่อ: duplicate-shell cleanup ตอน ingest, wood mapping ต่อแผ่น, rug edge rollover, sconce IES norm ถ้ายังไม่อ่านหลัง styling ลง",
+        "P5": "keep: หนี้ RANK ต่อเนื่องถึงรอบที่ 9 และคำถามหัวเตียง-คือ-ผนังระแนงสะสมหกเสียงอิสระ — สองอย่างนี้คือเนื้องาน P5 (judgement: blind sheet + ตาเจ้าของ) พอดี ยังไม่มีข้อมูลใหม่ที่บอกให้เปลี่ยนรูปเฟส · ข้อสังเกตองค์ประกอบภาพจาก C2 (กล้องไม่เห็นระนาบข้างเตียง + grazing sliver ริมซ้าย) จดให้เป็น input ของเฟสนี้ตอนถึง"
+      },
+      "changed": [],
+      "note": "P3 closed at r2 (gate-DELIV001-P3r2): exit rows + D10 debt paid; commit bcb0263",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P3/P3a"
+      ]
+    },
+    {
+      "commit": "bcb0263b8b7c37ae027fb16a1a4d66dc8a144934",
+      "verdicts": {
+        "P2": "change: เปิดกลับตามคำสั่งเจ้าของ 2026-08-11 ('ผมไม่เห็นด้วยที่ข้าม phase 2 ไป' — R3 lock) — exit เดิมที่ r7 แคบกว่าความจริง: กรรมการ p3r2 ทั้งสองยังชี้ surface realism เป็นหัวตาราง (เครื่องนอนสักหลาด #1 เอกฉันท์, ไม้ tiling, พรม printed, เสื้อกระดาษ) ซึ่ง review ของ builder เพิ่ง route ไป P4 ผิดชั้น — งานคลาสนี้คือ P2 · work list ใหม่ 4 ข้อ (P2r-1..4) มีกลไกมีชื่อครบ และ P2r-1 กำลังรันบน quick อยู่แล้ว",
+        "P4": "change: รอหลัง P2 ที่เปิดกลับ — charter (density ≥12 + item-id) ไม่เปลี่ยน และโครงสร้าง P4b ที่เพิ่งสร้าง (item_convention + frustum D7) ใช้ได้ทันทีเมื่อถึงคิว แต่ห้ามเริ่ม P4a ก่อน P2r ปิด (คำสั่งเจ้าของ: อย่าข้าม realism ไปหา density)",
+        "P5": "keep: ไม่กระทบจากการ reopen — หนี้ RANK และคำถามหัวเตียงยังเป็นเนื้องานเฟสนี้ตามเดิม"
+      },
+      "changed": [
+        "P2",
+        "P4"
+      ],
+      "note": "OWNER OVERRULE: P2 reopened; P4 waits. p4r1-in-flight quick re-labelled as P2r-1 work.",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "57609ee0698374efbc26e2a66021aeab9aa02b00"
+  "last_review_commit": "bcb0263b8b7c37ae027fb16a1a4d66dc8a144934"
 }
