@@ -453,6 +453,20 @@
    "reverse_by": "ลบ key `light_story` + `light_story_note` ออกจาก canonical spec — เลนกลับสู่ CD state แบน · ธง --light-story ยังใช้ได้ครั้งต่อครั้งเหมือนเดิม แล้วลบแถวนี้",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-033",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "P3 r2: D10 (chroma spread) ตกเพราะ story เป็น warm ขั้วเดียว — CCT ที่สองของห้องมาจากไหน โดยไม่ละเมิดกฎ one-electric-family (PH-03)",
+   "in_effect": "**ขั้ว DAYLIGHT สวน = CCT ที่สองของเฟรม โดย KIND ตามประโยค provenance ของ e5 เอง** — AREA portal ต่อบานกระจกที่อยู่นอก frustum ของกล้อง eye (7 บาน 21.6 m²) ทุกตัวเลข derive จาก room.openings + eye_camera ของ spec (element5_lighting.daylight_portals — ไม่มีพิกัดพิมพ์มือ) · สี (0.76,0.87,1.0) ~6500K shade-sky · กำลัง 11 W/m² จาก amplitude-bisect เต็มคู่ (loud 16 พิสูจน์ถึงเฟรมแต่กลบ story · settle 11 = ขั้วอยู่ story อยู่) · เปิดเฉพาะ story mode (D-032) — story ปิด = CD state เดิม byte-identical · ผลวัด: D10 2.45 → 9.04 (band ≥3.69) โดย D2 1.0 / D6 2.20 ยังยืน (ดำจริงไม่หาย)",
+   "where": "pipeline/scripts/element5_lighting.py, pipeline/scripts/build_room.py",
+   "because": "คิว p3r2 ตัดสินไว้ที่ gate-DELIV001-P3r1 (R3) · spec เขียนเองว่า 'the scene's second CCT is the garden DAYLIGHT, by KIND — never a second electric CCT in a zone' · กรรมการ p3r2 ทั้งสองราย ไม่มีข้อแสงแบน/ขั้วเดียวเหลือในตาราง",
+   "reverse_by": "ลบการเรียก _add_story_daylight ใน build_room (บรรทัดเดียวใต้ exposure trim) — เลนกลับสู่ warm ขั้วเดียวของ p3r1 · แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

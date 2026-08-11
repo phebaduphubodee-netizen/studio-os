@@ -270,18 +270,18 @@
       "id": "P3",
       "title": "Light RANGE, not light count",
       "goal": "p1 luminance from 51 toward the target's 13. This is occlusion and exposure, not more lamps.",
-      "status": "blocked",
+      "status": "done",
       "_evidence": "SC-4: more light sources is not significant for perceived realism, and shadow softening is flat above 5.21 deg while our area lights are already tens of degrees wide. Twelve gates ranked 'flat light' #1-2 and the obvious fix — add lamps, soften them — is measured to buy nothing. The defect is range.",
       "work": [
         {
           "id": "P3a",
           "what": "contact occlusion and true darks; exposure and film response; HDRI world instead of a flat RGB background",
           "where": "pipeline/scripts/build_room.py",
-          "status": "todo"
+          "status": "done"
         }
       ],
       "exit_test": "D2, D3, D4 and D6 PASS on the frame. Then look: the bed casts a contact shadow that reads, and the darkest region of the frame is not the same value as its mid-tone.",
-      "exit_result": null
+      "exit_result": "MET, 2026-08-11, P3 r2 (gate-DELIV001-P3r2-2026-08-11.md).\n\nTHE NUMBERS: D2 1.0 (true darks, p1=1 vs p50~140) · D3 7.81 stops · D4 0.0195 · D6 2.2028 — the four exit rows PASS on the full frame; scorecard 9 PASS / 0 FAIL / D7 NOT-RUN (P4 owns it) — 'DELIVERABLE: QUALIFIES'. The LOOK half: the bed's contact shadow was independently named by the blind C2 critic as one of the three things that genuinely work ('nothing large floats'), and the darkest region is not the mid-tone.\n\nTHE PHASE'S OWN DEBT, PAID: r1 refused to close on D10 (chroma spread 2.45 < 3.69 — the warm story was one pole with no counterweight). r2 landed the counterweight the spec itself specifies ('the scene's second CCT is the garden DAYLIGHT, by KIND'): derived glass portals behind the eye frustum, amplitude-bisected 16 -> 11 W/m2 (D-033). D10 2.45 -> 9.04 with the true darks intact.\n\nWHAT MOVED OFF THE CRITICS' TABLE THIS ROUND: flat light, dead lamps, single-pole CCT, the corner-held-open read (3 rounds standing; closed by the DR-informed solver settle package, notebook ae3dd665), and impossible-hanger mechanics (depth-derived per-piece swing; the clone mechanism was a silently-degenerate clustering pass, found by probing the built .blend). Every surviving item is material-realism or styling density — P4's charter."
     },
     {
       "id": "P4",

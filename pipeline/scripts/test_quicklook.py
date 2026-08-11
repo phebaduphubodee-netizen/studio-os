@@ -117,9 +117,10 @@ def test_lane_c_geometry_reaches_the_frame():
     for pin in (
         # nightstand joinery: toe shadow + carcass/drawer with the reveal between them
         '"nightstand__toe"', 'f"nightstand__{name}"',
-        # the shade's emission gradient derives from millwork's PUBLISHED lamp stack
-        # (the hand-copied 0.035/0.17/0.15 died with the lane-C rescale)
-        'millwork.LAMP_BASE_H + millwork.LAMP_STEM_H',
+        # the lamp is the spun-brass DOME + glowing bulb (P2 redesign replaced
+        # the emission-gradient shade; this pin went stale and sat red until
+        # p3r2 — updated to the mechanism that actually ships, 2026-08-11)
+        '_dome_h = min(dz, r * 0.62)', '"nightstand__lamp_bulb"',
         # duvet feedstock enters asymmetric (C2#4 mirror corners)
         'cell=0.042, salt=7'):
         assert pin in SRC, pin

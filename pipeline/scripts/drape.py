@@ -237,7 +237,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                bounds=None, mat=None, pin=(), thickness=0.006, self_collide=True,
                quality=8, collide_dist=0.004, min_motion=0.010, tol=1e-4,
                hem_min=None, slack=0.0, slack_verts=None, sim_surface=False,
-               shred_guard=False, collision_quality=4, bend_scale=1.0):
+               shred_guard=False, collision_quality=4, bend_scale=1.0,
+               self_friction=None):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -320,6 +321,14 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     c.distance_min = collide_dist
     c.use_self_collision = self_collide
     c.self_distance_min = max(0.002, thickness * 0.5)
+    # p3r2 (DR blender-cloth-corner-drape, notebook ae3dd665 — REFERENCE tier,
+    # staged in knowledge/_inbox/): folds that have gathered SLIDE APART again
+    # under the default self-friction (5.0), which is half of why a settled
+    # corner re-opens by the last frame. Callers that fight the held-open
+    # corner raise it toward the DR's linen band (~12); None = Blender default,
+    # so every lane that does not opt in is byte-identical.
+    if self_friction is not None:
+        c.self_friction = float(self_friction)
 
     for ob in colliders:
         _collider(ob, thickness=collide_dist)
@@ -420,7 +429,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
 
 def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="linen",
                    cell=0.028, frames=55, bounds=None, thickness=0.006, slack=0.05,
-                   sim_surface=False, salt=0):
+                   sim_surface=False, salt=0, quality=8, collision_quality=4,
+                   self_friction=None):
     """A coverlet: a sheet lying on the mattress that OVERHANGS three sides and
     falls under gravity — the fold at the mattress edge is solved, not authored.
 
@@ -485,7 +495,9 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
         # things a search cannot fix — a sim that never advanced, and n-gons.
         return bake_sheet(name, verts, faces, colliders, frames=frames, fabric=fabric,
                           mat=mat, pin=pin, thickness=thickness, slack=sl,
-                          sim_surface=sim_surface)
+                          sim_surface=sim_surface, quality=quality,
+                          collision_quality=collision_quality,
+                          self_friction=self_friction)
 
     # The ladder that solves the cut lives in search_bake — the throw needs the very
     # same one, and a second copy of it would be the next thing to drift.

@@ -665,7 +665,13 @@ if __name__ == "__main__":
 # Per-zone dimming is exactly what real scene controllers do.
 # 0.40 -> 0.48 at the C2 re-critic ("ยังจมมืดหม่นเหมือน draft"): the story keeps
 # its 3:1 focal floor (1.50/0.48 = 3.1) while the room reads finished-bright.
-STORY_SCALES = {"ambient": 0.48, "ambient_wardrobe": 0.70,
+STORY_SCALES = {"ambient": 0.48,
+                # 0.70 -> 0.60 (p3r2, C3-p3r1#4 "สว่างเสมอเกิน"): the dressing zone
+                # keeps its lit-brighter-than-the-room standing, but 0.70 of ambient
+                # was washing the carcass so evenly the garments cast no readable
+                # shadow on the back panel. Paired with the smaller story-mode can
+                # aperture (build_room) so the loss is modelling, not brightness.
+                "ambient_wardrobe": 0.60,
                 "strips": 0.95, "bar": 0.95, "spots": 1.50, "lamps": 1.50,
                 # LANE B (ground-truth study 2026-07-30): the measured flat-light
                 # mechanism was NO KEY — our energy range was 10:1 with a 60W COOL
@@ -680,7 +686,14 @@ STORY_SCALES = {"ambient": 0.48, "ambient_wardrobe": 0.70,
                 "fill": 0.25, "hdri": 2.3,
                 # amendment fixtures (gate #8): the cove holds its CD level; the
                 # sconces lean in with the practicals (Kelly focal-glow family)
-                "cove": 1.0, "sconces": 1.25}
+                # 1.25 -> 1.70 (p3r2, C2-p3r1#5 measured half: sconce lens 178 vs
+                # its wall 169 = +9 codes — a fixture that barely out-shines the
+                # surface it decorates reads unlit; the cans prove the target
+                # band, 255 vs ceiling 71)
+                "cove": 1.0, "sconces": 1.70,
+                # the garden daylight pole (p3r2 queue 1) — dimmer only; the
+                # portal itself exists only in story mode (build_room)
+                "daylight": 1.0}
 
 # Story-mode aperture (ground-truth study: every pro scene camera sits at
 # f/1.4-2.4 — even asset turnarounds stop at f/8 — while our deliverable ran
@@ -701,3 +714,78 @@ def story_scales(enabled):
     if not enabled:
         return {k: 1.0 for k in STORY_SCALES}
     return dict(STORY_SCALES)
+
+
+# ---------------------------------------------------------------------------
+# THE GARDEN DAYLIGHT POLE (p3r2 queue 1, gate-DELIV001-P3r1). The spec's own
+# e5 provenance sentence is the licence and the limit: "the scene's second CCT
+# is the garden DAYLIGHT, by KIND — never a second electric CCT in a zone"
+# (PH-03). So this is NOT a lamp and does not pass lamp_rgb's electric family
+# check: it is the sky the glass-L already shows (spec.exterior, rainforest
+# garden), given enough directional presence to read as the frame's cool pole.
+# D10 (chroma spread) fell from 7.63 to 2.45 the round the warm story landed —
+# the story is one warm pole with no counterweight, and its counterweight was
+# always specified: garden daylight through the glass behind the eye camera.
+#
+# RGB is a shade-sky stand-in (~6500 K by the same convention as _CCT_ANCHORS'
+# warm stand-ins — deliberately cooler than the eye camera's 60 W fill
+# (0.85,0.90,1.0), which the story demotes to a whisper; a pole must be
+# READABLY cool against the 2850-3000 K electrics, not a hint of it).
+DAYLIGHT_RGB = (0.76, 0.87, 1.0)
+# W/m² of glass. Amplitude-bisect, both rungs recorded (p3r2 quick pair,
+# 2026-08-11): the LOUD rung at 16 proved the pole reaches the frame — the
+# room read day-lit, whites returned to white, oak separated from cloth — and
+# also proved 16 is past the story: the slat scallops and sconce pools sank
+# into the lift and the foot throw (the frame's deepest mass, its whole job)
+# came back mid-grey. Settled at ~70%: the pole stays, the warm story stays
+# on top. Judged by LOOK + D2/D6/D10 at the full pair, never asserted.
+DAYLIGHT_W_PER_M2 = 11.0
+
+
+def daylight_portals(spec, stand_mm, aim_mm):
+    """Glass openings BEHIND the eye camera, as portal rects for the daylight
+    pole. Pure derivation (R9): every number comes from the spec's own
+    room.openings and the camera the spec already declares — nothing typed.
+
+    behind  = OUTSIDE the eye camera's horizontal frustum (photographic
+              "behind the camera": glass the frame never shows — the p3r1
+              frame shows 0 glass pixels — whose light rakes the room from
+              off-frame). The half-angle derives from the spec's own
+              eye_camera.lens_mm against Blender's 36 mm default sensor; a
+              strict half-space test was tried first and excluded most of the
+              south band, whose centre sits millimetres FORWARD of the stand
+              plane yet 49-86 degrees off the view axis.
+    normal  = the segment perpendicular that points toward the camera stand
+              (the stand is inside the room, so this is the into-room side).
+
+    Returns [{name, cx, cy, z0, z1 (mm), len_mm, nx, ny (unit), area_m2}].
+    """
+    sx, sy = float(stand_mm[0]), float(stand_mm[1])
+    ax, ay = float(aim_mm[0]), float(aim_mm[1])
+    vx, vy = ax - sx, ay - sy
+    vlen = math.hypot(vx, vy) or 1.0
+    lens = float((spec.get("eye_camera") or {}).get("lens_mm", 50.0))
+    half_hfov = math.atan(36.0 / (2.0 * lens))      # Blender default sensor
+    out = []
+    for o in (spec.get("room") or {}).get("openings") or ():
+        if o.get("type") != "glass":
+            continue
+        x0, y0, x1, y1 = (float(v) for v in o["rect"])
+        cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+        dx, dy = cx - sx, cy - sy
+        dlen = math.hypot(dx, dy) or 1.0
+        cosang = (dx * vx + dy * vy) / (dlen * vlen)
+        if math.acos(max(-1.0, min(1.0, cosang))) <= half_hfov:
+            continue                       # inside the frame: not a back light
+        length = math.hypot(x1 - x0, y1 - y0)
+        if length < 1.0:
+            continue
+        nx, ny = -(y1 - y0) / length, (x1 - x0) / length
+        if (sx - cx) * nx + (sy - cy) * ny < 0.0:
+            nx, ny = -nx, -ny              # face into the room, not the garden
+        z0 = float(o.get("sill_mm") or 0.0)
+        z1 = float(o.get("head_mm") or (spec["room"].get("ceiling_mm", 2800)))
+        out.append({"name": str(o.get("id", "glass")), "cx": cx, "cy": cy,
+                    "z0": z0, "z1": z1, "len_mm": length, "nx": nx, "ny": ny,
+                    "area_m2": (length / 1000.0) * ((z1 - z0) / 1000.0)})
+    return out

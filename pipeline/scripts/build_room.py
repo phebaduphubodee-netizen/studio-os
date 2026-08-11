@@ -2654,6 +2654,42 @@ def _place_garment_rails(models, parts, cut_first=None):
             for i in wide:
                 cms[i]["style_tok"] = toks[salt % len(toks)]
             if not (2 <= len(clusters) <= 14):
+                # p3r2 FALLBACK — the DEPTH-ROD set class (probed from the
+                # p3r2 quick .blend, 2026-08-11): cce50840 separates its
+                # garments ACROSS the carcass depth — every garment spans most
+                # of the run, so the run-axis "wide = rod" heuristic above
+                # classifies ALL of them as rod and the body clusters
+                # degenerate to the hooks, whose run centres coincide. That is
+                # the mechanism behind the judges' clone read at r7 AND p3r1:
+                # r6's per-garment tokens never actually reached this set, and
+                # the failure printed as a note nobody re-read. The fallback
+                # re-clusters over ALL meshes on the axis their centres
+                # actually spread along; it fires only when the primary pass
+                # degenerated, so a run-separated set (whose rod must stay
+                # excluded) never takes this path.
+                _c2 = [[], []]
+                for o in cms:
+                    for ax in (0, 1):
+                        lo, hi = _extent(o, ax)
+                        _c2[ax].append((lo + hi) / 2.0)
+                _sp2 = [max(c) - min(c) if c else 0.0 for c in _c2]
+                _sep2 = 0 if _sp2[0] >= _sp2[1] else 1
+                _cent = _c2[_sep2]
+                order = sorted(range(len(cms)), key=lambda i: _cent[i])
+                _g2 = sorted(_cent[b] - _cent[a] for a, b in zip(order, order[1:]))
+                _med2 = _g2[len(_g2) // 2] if _g2 else 0.0
+                _gap2 = max(0.010, 4.0 * _med2)
+                clusters = [[order[0]]] if order else []
+                for i in order[1:]:
+                    if _cent[i] - _cent[clusters[-1][-1]] > _gap2:
+                        clusters.append([i])
+                    else:
+                        clusters[-1].append(i)
+                if 2 <= len(clusters) <= 14:
+                    print(f"  garment rail {salt} copy: depth-axis fallback -> "
+                          f"{len(clusters)} garment plane(s) on axis "
+                          f"{'xy'[_sep2]} (primary run-axis pass degenerate)")
+            if not (2 <= len(clusters) <= 14):
                 tok = toks[salt % len(toks)]
                 for o in cms:
                     o["style_tok"] = tok
@@ -2680,6 +2716,55 @@ def _place_garment_rails(models, parts, cut_first=None):
                 for i in cl:
                     cms[i]["style_tok"] = tok
                 n_tok += 1
+            # p3r2 (C2-p3r1#3 — second independent judge, second round, calling
+            # chest-out hanging mechanically impossible; the r7 A/B killed the
+            # whole-set +90 leg as a run of aligned shapeless profiles): each
+            # garment cluster swings about ITS OWN hanger's vertical axis. The
+            # ANGLE IS DERIVED, never typed (R9): a piece swings toward
+            # rod-perpendicular (90°) minus a deterministic per-piece deviation
+            # that keeps shoulders legible, then yields until its rotated
+            # footprint fits the rail slot — a deep bay turns further than a
+            # shallow one, and a piece that cannot swing stays put, which is
+            # the honest physics of these 184-342 mm bays (D-031: too shallow
+            # for true perpendicular hang; the angle the depth allows is the
+            # angle a real hanger could sit at).
+            from mathutils import Matrix as _Mx
+            _lo_a, _hi_a = (y0, y1) if along_x else (x0, x1)  # across-run bounds
+            _n_sw, _degs = 0, []
+            for ci, cl in enumerate(clusters):
+                objs = [cms[i] for i in cl]
+                cs = [(o.matrix_world @ Vector(c)) for o in objs for c in o.bound_box]
+                px = (min(c.x for c in cs) + max(c.x for c in cs)) / 2.0
+                py = (min(c.y for c in cs) + max(c.y for c in cs)) / 2.0
+                hw = (max(c.x for c in cs) - min(c.x for c in cs)) / 2.0
+                hd = (max(c.y for c in cs) - min(c.y for c in cs)) / 2.0
+                th = math.radians(90.0 - (14.0 + 30.0 * _det01(
+                    f"gyaw{salt}_{_ci_copy}_{ci}")))
+                while th >= math.radians(12.0):
+                    ca, sa = abs(math.cos(th)), abs(math.sin(th))
+                    ext = (hw * sa + hd * ca) if along_x else (hw * ca + hd * sa)
+                    ctr = py if along_x else px
+                    if ctr - ext >= _lo_a - 0.012 and ctr + ext <= _hi_a + 0.012:
+                        break
+                    th *= 0.8               # yield to the bay's own depth
+                else:
+                    continue                # too shallow: the piece stays put
+                _sgn = 1.0 if (salt + _ci_copy + ci) % 2 else -1.0
+                rot = (_Mx.Translation((px, py, 0.0))
+                       @ _Mx.Rotation(_sgn * th, 4, 'Z')
+                       @ _Mx.Translation((-px, -py, 0.0)))
+                for o in objs:
+                    o.matrix_world = rot @ o.matrix_world
+                _n_sw += 1
+                _degs.append(round(math.degrees(_sgn * th)))
+            if _n_sw:
+                bpy.context.view_layer.update()
+                print(f"  garment rail {salt} copy {_ci_copy}: {_n_sw}/"
+                      f"{len(clusters)} garment(s) swung on their hanger axes "
+                      f"{_degs} deg (depth-derived)")
+            elif clusters:
+                print(f"  garment rail {salt} copy {_ci_copy}: 0/{len(clusters)} "
+                      f"swung — bay too shallow at every tried angle (D-031)")
         swapped.add(salt)
         _cutnote = f", cut first piece x{n_cut // max(1, len(copies))}" if n_cut else ""
         print(f"  ACQUIRED garment rail {salt} <- {slug} x{n_cp} "
@@ -3232,7 +3317,13 @@ def _add_e5_lights(spec, h_m):
         # can at one exact output/colour); positions come mass-clipped from the plan
         ld = bpy.data.lights.new(f"e5_dl_{i}", type='AREA')
         ld.shape = 'DISK'
-        ld.size = 0.22
+        # p3r2 (C3-p3r1#4): in story mode the WARDROBE-zone cans shrink to a
+        # real recessed-trim aperture, so the garments cast a readable shadow
+        # on the carcass back — 0.22 m is a soft studio disk, and a source
+        # that big a hand-span above a rail lights the bay shadowless. Story
+        # only: the CD state keeps its signed 0.22 everywhere.
+        ld.size = 0.11 if (spec.get("_light_story")
+                           and "wardrobe" in str(f["zone"])) else 0.22
         ld.energy = f["watts"] * (0.88 + 0.24 * _det01(f"e5a{i}")) * _e5.ambient_scale(_sc, f["zone"])
         if spec.get("_light_story"):
             _ies_beam(ld, "5.ies", norm=0.20)    # Halo H7t-301 recessed open trim —
@@ -3345,6 +3436,44 @@ def _add_e5_lights(spec, h_m):
           f"lamps glow via _build_nightstand); "
           f"clipped {len(drops)} grid can(s) inside full-height masses: "
           f"{sorted({d['mass'] for d in drops})}")
+    return n
+
+
+def _add_story_daylight(spec):
+    """p3r2 queue 1 (gate-DELIV001-P3r1): the garden DAYLIGHT pole — the scene's
+    second CCT, by KIND, per the spec's own e5 provenance sentence (PH-03). One
+    AREA portal per glass rect outside the eye frame, every number derived by
+    element5_lighting.daylight_portals from openings + the declared camera (R9:
+    nothing typed). Story-only by construction: the signed CD state has no
+    portal at all, so story-off stays byte-identical."""
+    from mathutils import Vector
+    cam = spec.get("eye_camera") or {}
+    stand, aim = cam.get("stand_mm"), cam.get("aim_mm")
+    if not (stand and aim):
+        print("  story daylight: no eye_camera stand/aim in spec -> no portals")
+        return 0
+    _sc = _e5.story_scales(True)
+    n, watts = 0, 0.0
+    for p in _e5.daylight_portals(spec, stand, aim):
+        ld = bpy.data.lights.new(f"story_daylight_{p['name']}", type='AREA')
+        ld.shape = 'RECTANGLE'
+        ld.size = p["len_mm"] * MM * 0.98            # along the glass run
+        ld.size_y = (p["z1"] - p["z0"]) * MM * 0.96  # sill to head
+        ld.energy = p["area_m2"] * _e5.DAYLIGHT_W_PER_M2 * _sc.get("daylight", 1.0)
+        ld.color = _e5.DAYLIGHT_RGB
+        lo = bpy.data.objects.new(ld.name, ld)
+        lo.location = (p["cx"] * MM + p["nx"] * 0.03,
+                       p["cy"] * MM + p["ny"] * 0.03,
+                       (p["z0"] + p["z1"]) / 2.0 * MM)
+        # an AREA light emits along its local -Z: face the into-room normal
+        lo.rotation_euler = Vector((p["nx"], p["ny"], 0.0)).to_track_quat(
+            '-Z', 'Y').to_euler()
+        bpy.context.scene.collection.objects.link(lo)
+        n += 1
+        watts += ld.energy
+    print(f"  story daylight: {n} glass portal(s) outside the eye frame, "
+          f"{watts:.0f} W total ({_e5.DAYLIGHT_W_PER_M2:.0f} W/m2 x "
+          f"{_sc.get('daylight', 1.0):.2f})")
     return n
 
 
@@ -3868,6 +3997,17 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         colliders=[o for o in (_matt_o, _base_o) if o],
         mat=cov_m, head=_head_side, fabric="linen",
         bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.30),
+        # p3r2 CORNER SETTLE PACKAGE (the held-open corner, judged 3 rounds
+        # running -> DR blender-cloth-corner-drape, notebook ae3dd665, staged
+        # in knowledge/_inbox/): 55 frames leaves corner kinetic energy
+        # frozen mid-splay (DR rank 6), the default self-friction lets
+        # gathered folds slide open again (rank 2), and quality 8 / collision
+        # 4 resolves corner self-compression with premature repulsion that
+        # SPLAYS the corner (rank 7). Bending-model LINEAR (rank 1) and
+        # sewing-spring darts (rank 4 — the literal "solver corner
+        # constraint") are the recorded NEXT mechanisms if this package does
+        # not close the read; failure mode to watch here is wall time.
+        frames=120, quality=12, collision_quality=8, self_friction=12.0,
         sim_surface=True, salt=5)     # B2: per-corner bias — the owed lane-C debt
         #                               (C2 twice: corner gathers mirrored L/R)                       # the duvet + throw collide with the
     #                                             SINGLE-SHELL surface, not the
@@ -3929,7 +4069,13 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         _cprx = drape.sim_surface_of("bed__coverlet")
         return drape.bake_sheet("bed__duvet", vs, fs,
                                 [o for o in (_cprx or _cov_o, _matt_o, _base_o) if o],
-                                frames=55, fabric="linen", mat=duvt_m,
+                                # p3r2 corner settle package (see the coverlet
+                                # call for the DR record) — same three knobs,
+                                # same reason: this sheet's foot corners are
+                                # half of the "มุมกางค้าง" read
+                                frames=120, fabric="linen", mat=duvt_m,
+                                quality=12, collision_quality=8,
+                                self_friction=12.0,
                                 thickness=0.018, slack=sl, collide_dist=0.016,
                                 sim_surface=True)
     _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
@@ -4097,7 +4243,10 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                 # 0.015 above the single-shell proxy = this sheet's −3 mm render
                 # half + the duvet's +9 mm (thickness 0.018 at round 4-ref), with
                 # 3 mm to spare (the contact law)
-                frames=70, fabric="knit", mat=thr_m, thickness=0.006, slack=sl,
+                # p3r2 corner settle package (see the coverlet call for the DR
+                # record): the throw's free tails are the third "มุมกางค้าง" site
+                frames=120, fabric="knit", mat=thr_m, thickness=0.006, slack=sl,
+                quality=12, collision_quality=8, self_friction=12.0,
                 slack_verts=_wts, collide_dist=0.015)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
@@ -4396,7 +4545,11 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
         # lane-A story: practicals CARRY the hero frame (Kelly focal glow)
         ld.energy = glow["watts"] * _e5.story_scales(_LIGHT_STORY)["lamps"]
         ld.color = tuple(glow["rgb"])
-        ld.shadow_soft_size = 0.025                      # a real bulb, not a point singularity
+        # 0.025 -> 0.05 (p3r2, C3-p3r1#7 "falloff โคมไม่นุ่ม แสงเป็นจุดสร้าง"):
+        # under the dome the effective emitter is the frosted G95 globe
+        # (Ø95 mm -> r 0.0475), not the filament — the pool keeps its centre
+        # and gains a soft penumbra instead of a stamped edge
+        ld.shadow_soft_size = 0.05
         lo = bpy.data.objects.new("lamp_glow", ld)
         lo.location = (x0 + W / 2.0, y0 + D / 2.0, H + glow["z_off_m"])
         bpy.context.scene.collection.objects.link(lo)
@@ -5313,6 +5466,9 @@ def build_suite(spec, label="suite"):
             # pools and slat-wash accents read as pools (the whole point of
             # the 3:1 focal ratio) instead of being lifted back to a wash
             bpy.context.scene.view_settings.exposure -= 0.10
+            # p3r2: the cool garden pole through the glass the frame never
+            # shows — D10's road back after the warm story dropped it to 2.45
+            _add_story_daylight(spec)
     else:
         # OVERVIEW = the open-top dollhouse QA / hybrid CONTROL leg (make_all): kept on
         # the studio env so the exterior override never silently shifts the control
