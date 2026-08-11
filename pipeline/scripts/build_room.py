@@ -947,7 +947,17 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
         if hits:
             hi = _img(hits[0], True)
             bump = nt.nodes.new("ShaderNodeBump")
-            bump.inputs["Strength"].default_value = 0.25
+            # p2 wood "แบน" half (C3 twice) — BRACKETED 2026-08-11 AND THE KNOB
+            # CANNOT REACH: --wood-bump=1.0 (4x) moved the declared wood crop's
+            # band energy by 0.002 of 5.868 (quick pair, same camera) — at ~3 m
+            # under this room's diffuse light a 0.4 mm bump is sub-quantization
+            # at ANY strength. Do not bisect this again; the surviving suspect
+            # for the flat read is the ROUGH-MAP's contrast (C3's own words are
+            # "แสงสะท้อนสม่ำเสมอเกินไป" — a specular break-up claim, not a
+            # relief claim). --wood-bump=X stays as the calibration override;
+            # the committed value moves only with a recorded verdict.
+            bump.inputs["Strength"].default_value = float(
+                globals().get("_WOOD_BUMP", 0.25))
             bump.inputs["Distance"].default_value = 0.0004
             nt.links.new(hi.outputs["Color"], bump.inputs["Height"])
             nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
@@ -5725,6 +5735,12 @@ if __name__ == "__main__":
     if "--garment-yaw90" in _post_dashdash():
         # B leg of the r7 rail-yaw A/B (C2-r6#6): garments face along the run
         globals()["_GARMENT_YAW90"] = True
+    _wb = next((a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--wood-bump=")), None)
+    if _wb:
+        # amplitude-bisect bracket for the millwork wood relief (LOOK-only rung)
+        globals()["_WOOD_BUMP"] = float(_wb)
+        print(f"  [calibration] millwork wood bump strength overridden to {_wb}")
     _crl = next((a.split("=", 1)[1] for a in _post_dashdash()
                  if a.startswith("--crumple-relief=")), None)
     if _crl:
