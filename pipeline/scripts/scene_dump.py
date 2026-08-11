@@ -102,10 +102,25 @@ def curved_clusters(me, tol_deg=CLUSTER_TOL_DEG, min_face_frac=MIN_FACE_FRAC,
 def dump(scene=None):
     """One record per MESH object, read from the EVALUATED depsgraph so modifiers
     (solidify / subsurf / array / bevel) are in what gets measured — judging the
-    cage would be judging a different object from the one that renders."""
+    cage would be judging a different object from the one that renders.
+
+    P4b (scene-dump@2): each record now carries `item_id` (the ONE loose-item
+    convention, from item_convention.py — the same pure module deliverable_check
+    counts with, so the two sides cannot drift) and `in_frustum` (any bbox
+    corner of the object inside the ACTIVE CAMERA's frustum). No camera in the
+    scene -> the key is omitted entirely, so D7 reads NOT RUN rather than a
+    confident 0 from a reader that could not see (the vacuous-zero class)."""
+    import os as _os
+    import sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+    import item_convention as _ic
+    from bpy_extras.object_utils import world_to_camera_view as _w2cv
+    from mathutils import Vector as _V
+    sc = scene or bpy.context.scene
+    cam = sc.camera
     dg = bpy.context.evaluated_depsgraph_get()
     out = []
-    for ob in (scene or bpy.context.scene).objects:
+    for ob in sc.objects:
         if ob.type != "MESH":
             continue
         ev = ob.evaluated_get(dg)
@@ -113,7 +128,7 @@ def dump(scene=None):
         try:
             n90, area = curved_clusters(me)
             mats = [s.material.name for s in ev.material_slots if s.material]
-            out.append({
+            rec = {
                 "name": ob.name,
                 "hidden_render": bool(ob.hide_render),
                 "polys": len(me.polygons),
@@ -126,7 +141,38 @@ def dump(scene=None):
                         if nd.type == "TEX_IMAGE")
                     for s in ev.material_slots
                     if s.material and s.material.use_nodes),
-            })
+                "item_id": _ic.item_id(ob.name),
+            }
+            if cam is not None:
+                rec["in_frustum"] = any(
+                    0.0 <= p.x <= 1.0 and 0.0 <= p.y <= 1.0 and p.z > 0.0
+                    for p in (_w2cv(sc, cam, ob.matrix_world @ _V(c))
+                              for c in ob.bound_box))
+                # OCCLUSION, for item-carrying objects only (the first live D7
+                # count let two ensuite robe hooks through the west wall into a
+                # BEDROOM styling count — a frustum cone does not stop at
+                # masonry). One ray per sample point, camera -> point; the item
+                # is visible if any sample's FIRST hit is the item itself or a
+                # sibling part of the same item. ~70 objects, cheap.
+                if rec["item_id"] and rec["in_frustum"]:
+                    co = cam.matrix_world.translation
+                    pts = [ob.matrix_world @ _V(c) for c in ob.bound_box]
+                    ctr = sum(pts, _V((0, 0, 0))) / 8.0
+                    seen = False
+                    for tgt in [ctr] + pts[::2]:
+                        d = tgt - co
+                        if d.length < 1e-6:
+                            continue
+                        hit, _loc, _n, _i, hob, _m = sc.ray_cast(
+                            dg, co, d.normalized(), distance=d.length + 0.05)
+                        if not hit or hob is None:
+                            continue
+                        if (hob.name == ob.name
+                                or _ic.item_id(hob.name) == rec["item_id"]):
+                            seen = True
+                            break
+                    rec["occluded"] = not seen
+            out.append(rec)
         finally:
             ev.to_mesh_clear()
     return out
@@ -214,7 +260,7 @@ def main():
         raise SystemExit("scene_dump: need an output .json path (or --controls)")
     objs = dump()
     with open(argv[0], "w", encoding="utf-8") as f:
-        json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@1",
+        json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@2",
                    "objects": objs}, f, indent=1, ensure_ascii=False)
     print(f"scene_dump: {len(objs)} mesh objects -> {argv[0]}")
 

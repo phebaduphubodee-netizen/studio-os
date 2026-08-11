@@ -206,7 +206,7 @@ def _score_deliverable(name, quick=False, frame=True):
     dump_path = os.path.join(out, f"room_{name}.scene.json")
     objs = scene_dump.dump()
     with open(dump_path, "w", encoding="utf-8") as f:
-        json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@1",
+        json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@2",
                    "objects": objs}, f, indent=1, ensure_ascii=False)
     print(f"  scene dump: {len(objs)} mesh objects -> {dump_path}")
     py = next((p for p in (shutil.which("python3"), shutil.which("python")) if p), None)
@@ -4073,7 +4073,17 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                 # call for the DR record) — same three knobs,
                                 # same reason: this sheet's foot corners are
                                 # half of the "มุมกางค้าง" read
-                                frames=120, fabric="linen", mat=duvt_m,
+                                #
+                                # p4r1 — fabric "linen" -> "duvet": BOTH p3r2
+                                # critics, blind to each other, chose the same
+                                # #1 ("the bedding reads as felt sheet"). The
+                                # mechanism was already built and paid for at
+                                # TRN-002 r21: linen's compression 15 pulls a
+                                # quilt flat against the mattress, while the
+                                # duvet preset (compression 1.0, bending 2.6)
+                                # buckles into the LARGE standing folds a made
+                                # bed actually carries.
+                                frames=120, fabric="duvet", mat=duvt_m,
                                 quality=12, collision_quality=8,
                                 self_friction=12.0,
                                 thickness=0.018, slack=sl, collide_dist=0.016,

@@ -194,8 +194,9 @@ ROWS = [
     ("D6", "image", "dark_share_pct", "min", 25, "share of the frame below L=26"),
     ("D10", "image", "chroma_iqr_deg", "min", 25, "PROVISIONAL — the room has a "
      "colour story rather than one cast"),
-    ("D7", "scene", "loose_objects", "min", None, "loose styling objects, counted "
-     "from per-object ids, not from gradient blobs"),
+    ("D7", "scene", "loose_objects", "min", None, "loose styling objects in the "
+     "camera frustum, counted by item_convention.py ids (declared limit: no "
+     "occlusion test)"),
     ("D8", "scene", "primitive_acquire_class", "max", None, "R8-ACQUIRE-class "
      "objects built as primitives"),
     ("D9", "scene", "flat_shaded_curved", "max", None, "curved forms rendering "
@@ -347,19 +348,21 @@ def measure_scene_built(dump):
     D9 — a facetted curve (>= CURVED_CLUSTERS_MIN clusters) with not one smooth
     polygon. Both halves are read off the geometry that actually renders.
 
-    D7 IS NOT ANSWERED HERE AND THE ROW STAYS NOT RUN. A built scene exposes PARTS
-    (a rug plus its four bindings; a stack per shelf), and "twelve loose styling
-    objects" is an ITEM count. Collapsing parts into items needs a grouping
-    convention this repo does not have, and the two available guesses are wrong in
-    opposite directions — per-part over-counts, per-name-stem under-counts. The
-    part count is reported as `styling_parts` so the number is visible, under a key
-    no row reads: an unscored row is not a licence to report a number that would
-    pass it.
+    D7 (P4b, 2026-08-11): the grouping convention now EXISTS — item_convention.py,
+    ONE pure module imported by both scene_dump (which stamps `item_id` +
+    `in_frustum` per record, schema scene-dump@2) and this reader (which counts
+    distinct in-frustum items). An @1 dump carries no `in_frustum`, and
+    count_items returns ran=False for it -> the row stays NOT RUN there: a 0
+    from a reader that cannot see is not a 0 (the vacuous-zero class this file's
+    own header documents). DECLARED LIMIT, printed with the row: frustum only,
+    no occlusion test — an item fully hidden behind the bed still counts.
     """
+    from item_convention import count_items
     objs = [o for o in dump.get("objects", dump if isinstance(dump, list) else [])
             if not o.get("hidden_render")]
     if not objs:
         raise NotRun("scene dump holds no visible mesh objects")
+    n_items, item_ids, items_ran = count_items(objs)
     prim, flat, styling = [], [], []
     for o in objs:
         words = object_words(o.get("name", ""), o.get("materials") or ())
@@ -381,12 +384,16 @@ def measure_scene_built(dump):
             flat.append(o["name"])
         if any(w in words for w in STYLING_WORDS):
             styling.append(o["name"])
-    return {"primitive_acquire_class": len(prim),
-            "flat_shaded_curved": len(flat),
-            "styling_parts": len(styling),
-            "_primitive_acquire_names": prim,
-            "_flat_shaded_curved_names": flat,
-            "_visible_meshes": len(objs)}
+    out = {"primitive_acquire_class": len(prim),
+           "flat_shaded_curved": len(flat),
+           "styling_parts": len(styling),
+           "_primitive_acquire_names": prim,
+           "_flat_shaded_curved_names": flat,
+           "_visible_meshes": len(objs)}
+    if items_ran:
+        out["loose_objects"] = n_items
+        out["_loose_item_ids"] = item_ids
+    return out
 
 
 def qualifies(rows, standard):
@@ -460,8 +467,10 @@ def main(argv=None):
     dump that cannot be read or that the reader refuses — those are "could not
     look", and they must not print like "looked and it was fine". A row coming back
     NOT RUN is a different thing and is handled where it belongs: a MANDATORY row
-    that did not run makes `qualifies` refuse, which is exit 1. D7 is NOT RUN on
-    every built scene by design and is unscored, so it decides nothing."""
+    that did not run makes `qualifies` refuse, which is exit 1. D7 runs on
+    scene-dump@2 dumps (item_convention.py, P4b) and stays NOT RUN on @1 dumps,
+    which carry no frustum bit; it is unscored either way, so it gates nothing
+    until the plan promotes it."""
     # This lane's object names are Thai. A report that cannot print the name of the
     # object it is failing is not a report, and the default Windows console
     # encoding is cp1252 — so the stream is pinned rather than the names censored.
@@ -494,9 +503,15 @@ def main(argv=None):
         except (OSError, ValueError, NotRun) as e:
             print(f"COULD NOT RUN: scene dump {a.scene_dump} — {e}")
             return 2
-        print(f"scene: {scene['_visible_meshes']} visible mesh objects, "
-              f"{scene['styling_parts']} carrying a styling word "
-              f"(PARTS, not items — D7 stays NOT RUN)")
+        if "loose_objects" in scene:
+            print(f"scene: {scene['_visible_meshes']} visible mesh objects, "
+                  f"{scene['loose_objects']} loose item(s) in frustum "
+                  f"[{', '.join(scene.get('_loose_item_ids', []))}] "
+                  f"(item_convention@P4b; no occlusion test)")
+        else:
+            print(f"scene: {scene['_visible_meshes']} visible mesh objects, "
+                  f"{scene['styling_parts']} carrying a styling word "
+                  f"(@1 dump: PARTS, not items — D7 stays NOT RUN)")
         for k in ("_primitive_acquire_names", "_flat_shaded_curved_names"):
             if scene[k]:
                 print(f"  {k[1:]}: {len(scene[k])}")
