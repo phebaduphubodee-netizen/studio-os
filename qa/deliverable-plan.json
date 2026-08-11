@@ -909,7 +909,37 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "65263b25861a1ec167fd36833dbd2754fc2e0641",
+      "verdicts": {
+        "P2": "keep: untouched by the DRW slice; the parallel session is mid-P2r-2 on its own instruments and nothing tonight changes its queue or bar",
+        "P4": "keep: still waits behind P2 per the owner overrule — and the recon board it will inherit is now cleaner: every drawn mass in the suite is matched or signed, so styling density lands on drawn-true geometry",
+        "P5": "keep: owner remains the terminal condition; the DRW-2 eye-pack (BF09-2 referent, BF09-3 west end, TV-vs-bookshelf) is exactly the judgement-input channel this phase already owns",
+        "DRW": "change: DRW-1b closed same-day and inverted its own expectation — the build was ink-true at BF11 and the drifted reading was the floor2 scene-graph's label-guess; owner ruled BF11 = vanity (locked). Next slice is DRW-2: the height source ladder plus the divergence pack for his eye (BF09-2 SR-19, BF09-3 west end, SR-12 TV-vs-bookshelf), then DRW-3 sheet_ref ratchet. DRW-4's DR fires when DRW-2 opens"
+      },
+      "changed": [
+        "DRW"
+      ],
+      "note": "DRW-1b closed same-day; the recon board reads 19/18/1/0 and the divergence pack for the owner eye is named",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "0244c445f4eec9f8e56d2f59302980311696aab0"
+  "last_review_commit": "65263b25861a1ec167fd36833dbd2754fc2e0641"
 }
