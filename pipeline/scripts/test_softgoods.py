@@ -373,3 +373,60 @@ def test_garment_collar_rises_at_the_neck_only():
     tip_b = min(top_b, key=lambda p: -abs(p[0]))
     tip_c = min(top_c, key=lambda p: -abs(p[0]))
     assert abs(tip_b[2] - tip_c[2]) < 0.001          # gaussian tail = float dust, not lift
+
+
+# --------------------------------------------------------------------------- dart
+# P2r-1 mechanism 3 (p2r13): the DR rank-4 sewing dart as pure feedstock.
+
+def test_corner_dart_cuts_a_wedge_and_pairs_the_banks():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    v2, f2, sew = sg.corner_dart(v, f, (0.0, 0.0), length=0.3)
+    assert len(f2) < len(f)                          # the wedge is really gone
+    assert all(len(q) == 4 for q in f2)              # quads survive (no n-gons)
+    assert sew and all(a != b for a, b in sew)
+    n = len(v2)
+    assert all(0 <= k < n for q in f2 for k in q)
+    assert all(0 <= a < n and 0 <= b < n for a, b in sew)
+
+
+def test_corner_dart_sew_edges_are_loose_and_span_the_gap():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    v2, f2, sew = sg.corner_dart(v, f, (1.0, 0.0), length=0.25)
+    face_edges = {frozenset((q[i], q[(i + 1) % 4])) for q in f2 for i in range(4)}
+    assert all(frozenset(e) not in face_edges for e in sew)   # loose by construction
+    # every pair spans the wedge: the two ends sit apart, not coincident
+    assert all((v2[a][0] - v2[b][0]) ** 2 + (v2[a][1] - v2[b][1]) ** 2 > 1e-8
+               for a, b in sew)
+
+
+def test_corner_dart_refuses_a_silent_noop():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    with pytest.raises(ValueError):
+        sg.corner_dart(v, f, (5.0, 5.0), length=0.1)   # fan never touches the sheet
+
+
+def test_corner_dart_keeps_untouched_geometry_verbatim():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    v2, f2, sew = sg.corner_dart(v, f, (0.0, 1.0), length=0.3)
+    orig = {tuple(p) for p in v}
+    assert all(tuple(p) in orig for p in v2)          # a dart cuts, it never moves cloth
+
+
+def test_corner_dart_is_deterministic():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.2, 0.8, 0.5, cell=0.04)
+    a = sg.corner_dart(v, f, (1.2, 0.8), length=0.2)
+    b = sg.corner_dart(v, f, (1.2, 0.8), length=0.2)
+    assert a == b
+
+
+def test_corner_dart_chains_two_corners_without_detaching_the_first_seam():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    v1, f1, s1 = sg.corner_dart(v, f, (0.0, 0.0), length=0.25)
+    v2, f2, s2 = sg.corner_dart(v1, f1, (1.0, 0.0), length=0.25, sew=s1)
+    assert len(s2) >= len(s1) + 3          # first seam survived + second added
+    n = len(v2)
+    assert all(0 <= a < n and 0 <= b < n and a != b for a, b in s2)
+    # first seam's pairs still span a real gap after the second remap
+    import math
+    assert all(math.hypot(v2[a][0] - v2[b][0], v2[a][1] - v2[b][1]) > 1e-4
+               for a, b in s2)

@@ -264,6 +264,113 @@ def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016, salt=0):
     return verts, faces
 
 
+def corner_dart(verts, faces, corner_xy, length, angle_deg=24.0, sew=()):
+    """A TAILOR'S DART at a sheet corner — the DR's rank-4 "solver corner
+    constraint" (dr-cloth-corner-drape-2026-08-11, sewing springs 10-25), made
+    into feedstock. Returns (verts2, faces2, sew_edges): the wedge of faces
+    inside the dart fan is REMOVED, the two cut boundaries are PAIRED with
+    loose edges, and the cloth solver's sewing springs pull each pair together
+    so the flat sheet closes into a shallow CONE at the corner — which is what
+    a sewn corner dart physically is. The corner excess then hangs DOWN as a
+    tailored cowl instead of standing as the card-fold ear three rounds of
+    stiffness tuning could not drop.
+
+    Geometry, all in plan XY (the pre-bake sheet is flat there): the dart apex
+    sits `length` in from `corner_xy` along the corner bisector (derived from
+    the sheet's own bbox — R9: the caller types no direction); the fan opens
+    ±angle_deg/2 about the apex→corner ray. Faces whose centre falls inside
+    the fan are dropped; boundary verts are classified by the SIGN of their
+    cross product against the bisector and paired A↔B by radial order from the
+    apex. Orphans are remapped away (a loose vertex is a free particle).
+
+    Sew edges are LOOSE (no face) by construction — Blender treats faceless
+    edges as sewing springs when use_sewing_springs is on; they never render.
+    Contract unchanged for faces: quads only, no n-gons.
+
+    `sew` carries a PREVIOUS dart's pairs through this cut: every call remaps
+    vertex indices, so chaining two corners without threading the first pairs
+    through the second call silently detaches the first seam — the trap this
+    parameter exists to close. Pairs whose verts the new cut orphaned are
+    dropped (their cloth is gone; a spring to nowhere would pin air)."""
+    if length <= 0:
+        raise ValueError(f"corner_dart: degenerate length {length}")
+    xs = [v[0] for v in verts]
+    ys = [v[1] for v in verts]
+    cx, cy = corner_xy
+    # bisector points INTO the sheet: toward the bbox centre, axis-diagonal
+    bx = 1.0 if cx <= (min(xs) + max(xs)) * 0.5 else -1.0
+    by = 1.0 if cy <= (min(ys) + max(ys)) * 0.5 else -1.0
+    inv = 1.0 / math.sqrt(2.0)
+    ax, ay = cx + bx * length * inv, cy + by * length * inv   # dart apex
+    rx, ry = (cx - ax) / length, (cy - ay) / length           # apex -> corner ray
+    half = math.radians(angle_deg) * 0.5
+
+    def _polar(px, py):
+        dx, dy = px - ax, py - ay
+        r = math.hypot(dx, dy)
+        if r < 1e-12:
+            return 0.0, 0.0, 0.0
+        ang = math.atan2(dx * ry - dy * rx, dx * rx + dy * ry)  # signed vs ray
+        return r, ang, dx * ry - dy * rx
+
+    drop = []
+    for f in faces:
+        fx = sum(verts[k][0] for k in f) / len(f)
+        fy = sum(verts[k][1] for k in f) / len(f)
+        r, ang, _ = _polar(fx, fy)
+        drop.append(r <= length * 1.05 and abs(ang) < half)
+    if not any(drop):
+        raise ValueError("corner_dart: fan removed no face — corner/length do "
+                         "not touch this sheet (a silent no-op dart would read "
+                         "as a mechanism that ran)")
+    kept = [f for f, d in zip(faces, drop) if not d]
+    used_kept = {k for f in kept for k in f}
+    cut_verts = ({k for f, d in zip(faces, drop) if d for k in f} & used_kept)
+    # pair the two cut banks. Two traps found by the first test run, both at
+    # the APEX end where the fan is narrower than one cell: (1) the two banks
+    # touch there, so a naive sign-split pairs same-bank NEIGHBOURS — filtered
+    # by refusing any pair that shares a kept face (a real dart pair spans the
+    # hole, so it can never share one); (2) banks come out unequal length, so
+    # a zip mismatches radii — pair each A-vert to the NEAREST-radius free
+    # B-vert instead.
+    kept_at = {}
+    for fi, f in enumerate(kept):
+        for k in f:
+            kept_at.setdefault(k, set()).add(fi)
+    banks = {False: [], True: []}
+    for k in cut_verts:
+        r, ang, cross_s = _polar(*verts[k][:2])
+        if r < 1e-9:
+            continue
+        banks[cross_s >= 0.0].append((r, k))
+    a_bank = sorted(banks[False])
+    b_free = sorted(banks[True])
+    new_sew = []
+    for ra, ka in a_bank:
+        best = None
+        for bi, (rb, kb) in enumerate(b_free):
+            if kept_at.get(ka, set()) & kept_at.get(kb, set()):
+                continue                      # shares a face -> same bank edge
+            if best is None or abs(rb - ra) < abs(b_free[best][0] - ra):
+                best = bi
+        if best is not None and abs(b_free[best][0] - ra) < length * 0.5:
+            new_sew.append((ka, b_free.pop(best)[1]))
+    if not new_sew:
+        raise ValueError("corner_dart: cut has no pairable banks — the fan ate "
+                         "a whole strip; shrink angle or length")
+    # remap to the kept population, dropping orphans
+    remap, verts2 = {}, []
+    for f in kept:
+        for k in f:
+            if k not in remap:
+                remap[k] = len(verts2)
+                verts2.append(verts[k])
+    faces2 = [tuple(remap[k] for k in f) for f in kept]
+    sew2 = [(remap[a], remap[b]) for a, b in list(sew) + new_sew
+            if a in remap and b in remap and remap[a] != remap[b]]
+    return verts2, faces2, sew2
+
+
 def verts_in_rect(verts, x0, y0, x1, y1, tol=1e-9):
     """Indices of `verts` whose XY falls inside a world rect — how a caller names
     the region a solver PINS.

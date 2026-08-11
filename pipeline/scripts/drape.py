@@ -238,7 +238,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                quality=8, collide_dist=0.004, min_motion=0.010, tol=1e-4,
                hem_min=None, slack=0.0, slack_verts=None, sim_surface=False,
                shred_guard=False, collision_quality=4, bend_scale=1.0,
-               self_friction=None, bend_verts=None, bend_floor=0.15):
+               self_friction=None, bend_verts=None, bend_floor=0.15,
+               sew_edges=None, sewing_force=15.0):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -257,7 +258,10 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         raise DrapeError(f"{name}: cloth with no collider AND no pins would fall "
                          f"through the world — pass surfaces or a pin group")
     me = bpy.data.meshes.new(name)
-    me.from_pydata(list(verts), [], list(faces))
+    # sew_edges are LOOSE edges (no face) — Blender's cloth solver treats a
+    # faceless edge as a SEWING SPRING when use_sewing_springs is on. They are
+    # feedstock only: loose edges do not render and Solidify ignores them.
+    me.from_pydata(list(verts), list(sew_edges or []), list(faces))
     me.update()
     obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
@@ -289,6 +293,20 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     # that do not pass bend_verts keep the scalar path byte-identical.
     # Named failure mode (DR): corner shard collapse if the floor is too low for
     # the vertex mass — judged by LOOK on the quick rung before any full frame.
+    # SEWING DART (P2r-1 mechanism 3, p2r13 — DR rank 4 "solver corner
+    # constraint", dr-cloth-corner-drape-2026-08-11: use_sewing_springs +
+    # sewing_force_max 10-25; dart cuts come from softgoods.corner_dart).
+    # Fails LOUD if the API surface moved — a swallowed miss here would be a
+    # mechanism that silently never ran (the --factory-startup default-cube
+    # family of lie).
+    if sew_edges:
+        if not hasattr(s, "use_sewing_springs") or \
+                not hasattr(s, "sewing_force_max"):
+            raise DrapeError(f"{name}: cloth API has no sewing springs on this "
+                             f"Blender — the dart mechanism cannot run; do not "
+                             f"bake as if it did")
+        s.use_sewing_springs = True
+        s.sewing_force_max = float(sewing_force)
     if bend_verts:
         vgb = obj.vertex_groups.new(name="drape_bend")
         vgb.add(list(range(len(me.vertices))), 1.0, 'REPLACE')

@@ -1248,6 +1248,15 @@ _FABRIC_TILE_M = 0.85      # physical metres one 2k fabric tile spans — cm-sca
 # unmapped cloth keeps the banded path untouched. A leg: --cloth-rough-band.
 _CLOTH_ROUGH_LINKED = True
 
+# P2r-1 mechanism 3 (p2r13): the DR rank-4 SEWING DART at the duvet's two free
+# foot corners — softgoods.corner_dart cuts the wedge, drape.bake_sheet turns
+# the loose pair edges into sewing springs (dr-cloth-corner-drape-2026-08-11,
+# force band 10-25). The corner ear survived stiffness tuning (p2r9 relief let
+# it FOLD; the facet read stayed) because the flat sheet simply has more cloth
+# at the corner than a tailored corner carries — a dart REMOVES it, which is
+# how real bedding solves it. A leg: --no-sewing-dart.
+_SEWING_DART = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -4162,6 +4171,19 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         else:
             _fy = _dv_y if _sgn == "+" else _dv_y + _dv_dy
             _corners = ((_dv_x, _fy), (_dv_x + _dv_dx, _fy))
+        # p2r13 — SEWING DART at the same two corners (mechanism 3; see the
+        # _SEWING_DART flag comment). Cut BEFORE the bend weights are painted:
+        # corner_dart REMAPS vertex indices, so weights computed on the uncut
+        # lattice would land on the wrong verts — the exact index-shift trap
+        # the function's `sew` parameter documents. Dart length derives from
+        # the grid's own cell (5x), the same derivation family as the relief
+        # radius below; nothing is typed in millimetres (R9).
+        _sew = []
+        if _SEWING_DART:
+            for _c in _corners:
+                vs, fs, _sew = softgoods.corner_dart(vs, fs, _c,
+                                                     length=5.0 * _cell,
+                                                     sew=_sew)
         _R = 4.0 * _cell
         _bendw = {}
         for _i, _v in enumerate(vs):
@@ -4198,7 +4220,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                 quality=12, collision_quality=8,
                                 self_friction=12.0,
                                 thickness=0.018, slack=sl, collide_dist=0.016,
-                                sim_surface=True, bend_verts=_bendw)
+                                sim_surface=True, bend_verts=_bendw,
+                                sew_edges=_sew, sewing_force=15.0)
     _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
                                top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
                                bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
@@ -5807,6 +5830,10 @@ if __name__ == "__main__":
         # builders would, ignoring `model`. Same discipline as --no-fabric-maps — an
         # A/B whose A leg needs a source edit is an A/B nobody re-runs.
         _spec["_no_acquire"] = True
+    if "--no-sewing-dart" in _post_dashdash():
+        # A leg of the p2r13 dart A/B — the exact p2r12 duvet, no source edit
+        globals()["_SEWING_DART"] = False
+        print("  [A/B] duvet corners: no sewing dart (pre-p2r13) leg")
     if "--cloth-rough-band" in _post_dashdash():
         # A leg of D-035's A/B: mapped textiles go back to the banded
         # roughness read (const ± _rvar). No source edit to re-run the pair.
