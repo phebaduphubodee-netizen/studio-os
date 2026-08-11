@@ -848,7 +848,36 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "59b63e7951531ec742e4925f920d70ee1e9eb0c8",
+      "verdicts": {
+        "P2": "change: P2r-1's corner class closed at the corner — the DR rank-4 dart landed and both independent critics dropped the paper read unprompted (C3 removed the item; C2's word changed to a cloth word). The item's residual moved SITE to the head fold-back crease, hem cues and pillows — named in the plan, not respun this round. Evidence filed for the owner's D-034 knob: the headboard clears the sham tops by only 93mm, which is why blind eyes read it sunk; one line to change when he calls the number from the image.",
+        "P4": "keep: both critics again filed emptiness (C2 pick-one is the sparse cloned wardrobe; D7 FAIL 6 vs 12) — the phase is confirmed and stays behind P2's queue: P2r-4 duplicates, P2r-2 wood, P2r-3 rug.",
+        "P5": "keep: the camera/perspective class grew again (bench opinion-marked, sealed-room read, left-edge grazing strip identified by crop) — all recorded for the phase that owns framing; the owner's eye stays terminal.",
+        "DRW": "keep: the reconciliation lane is another session's standing program (DRW-1 done, 18 drawn / 17 matched / 1 unresolved on its own print) and nothing this round measured touches it — no change from here, and its files stay uncommitted by this session on purpose."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "f69087e1f9c9bbe627d81209b57e1923fc8bc078"
+  "last_review_commit": "59b63e7951531ec742e4925f920d70ee1e9eb0c8"
 }
