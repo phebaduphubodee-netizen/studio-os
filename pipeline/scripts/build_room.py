@@ -872,6 +872,26 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
             pp.inputs[1].default_value = 1.0
             nt.links.new(sxyz.outputs[_ax], pp.inputs[0])
             nt.links.new(pp.outputs["Value"], cpp.inputs[_ax])
+        # PER-LEAF TONE (r8, C3-r7#4 "ลายไม้ซ้ำ... ขาดความเข้มของสีที่ไม่สม่ำเสมอ"):
+        # book-match makes an identical-FEATURE repeat impossible, but every mirrored
+        # leaf still carried an identical VALUE, and a periodic value IS a visible
+        # period. Real veneer leaves differ in tone leaf-to-leaf; so the mapped
+        # coordinate is SNAPPED to its tile id and a white-noise of that id scales
+        # brightness ±4% — each leaf its own tone, stepped at the joint like the
+        # lay-up it imitates, deterministic (pure function of world position).
+        snp = nt.nodes.new("ShaderNodeVectorMath")
+        snp.operation = 'SNAP'
+        snp.inputs[1].default_value = (1.0, 1.0, 1.0)
+        nt.links.new(va.outputs["Vector"], snp.inputs[0])
+        wn = nt.nodes.new("ShaderNodeTexWhiteNoise")
+        wn.noise_dimensions = '3D'
+        nt.links.new(snp.outputs["Vector"], wn.inputs["Vector"])
+        tone = nt.nodes.new("ShaderNodeMapRange")
+        tone.inputs["From Min"].default_value = 0.0
+        tone.inputs["From Max"].default_value = 1.0
+        tone.inputs["To Min"].default_value = 0.96
+        tone.inputs["To Max"].default_value = 1.04
+        nt.links.new(wn.outputs["Value"], tone.inputs["Value"])
 
         def _img(path, non_color):
             n = _img_node(nt, path, non_color=non_color)
@@ -889,7 +909,14 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
                                               albedo[1] / max(map_mean[1], 1e-6),
                                               albedo[2] / max(map_mean[2], 1e-6), 1.0)
         nt.links.new(di.outputs["Color"], mul.inputs["Color1"])
-        nt.links.new(mul.outputs["Color"], bsdf.inputs["Base Color"])
+        # per-leaf tone rides AFTER the mean-normalising multiply: ±4% symmetric
+        # about 1.0, so the signed-albedo-as-mean law survives to first order
+        tmul = nt.nodes.new("ShaderNodeMixRGB")
+        tmul.blend_type = "MULTIPLY"
+        tmul.inputs["Fac"].default_value = 1.0
+        nt.links.new(mul.outputs["Color"], tmul.inputs["Color1"])
+        nt.links.new(tone.outputs["Result"], tmul.inputs["Color2"])
+        nt.links.new(tmul.outputs["Color"], bsdf.inputs["Base Color"])
         if ts.get("Rough") and rough_mean:
             ri = _img(ts["Rough"], True)
             rm = nt.nodes.new("ShaderNodeMath")
@@ -2217,6 +2244,16 @@ _SHRED_MODE = ""
 # rail run (hanger-on-rod orientation) instead of out at the aisle (boutique
 # display). A flag, not a source edit, so both legs re-render identically (R6).
 _GARMENT_YAW90 = False
+
+# --crumple-relief=<m> (r8, C2-r7#1 + C3-r7#2 "เครื่องนอนไร้ยับ"): the bedding
+# crumple bump shipped at 1.2 mm — ~0.3 px at this camera, the same
+# built-but-invisible shape as the r6 rug dents. Bisected under the story light
+# (amplitude-bisect law, p3a 1.2mm vs p3c 6mm quicks): 6 mm is the first value
+# that READS, it sits inside the physical band for loose bedding (5-15 mm), and
+# it did not overshoot (no clip, no fake-noise normal), so the 70% retreat the
+# law prescribes for an overshooting loud leg was not owed. VERDICT RECORDED
+# HERE: default moves 0.0012 -> 0.006; the flag stays the bracket knob.
+_CRUMPLE_RELIEF = 0.006
 
 
 def _emit_style_part(p, quick=False):
@@ -3737,10 +3774,18 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     _lin = _matpre.cloth_args("linen")
     # maps="rough_linen" (lane B): the CC0 2k linen set fetched 2026-07-2x and never
     # consumed — the study found the store itself was distilled-but-never-wired
-    # crumple (P2c-2, r6): loose bedding only — 90mm soft creases at 1.2mm relief; the
+    # crumple (P2c-2, r6): loose bedding only — 90mm soft creases; the
     # base/mattress/bench stay tight (stretched upholstery does not crumple).
-    _crmp = (0.09, 0.0012)
+    # relief rides _CRUMPLE_RELIEF (r8 bisect knob — see the flag block)
+    _crmp = (0.09, _CRUMPLE_RELIEF)
     base_m = _woven("bed_base",     _vl.rgba("bed_base"),     0.94, _lin, sheen=0.2, spec=0.25, maps="rough_linen")
+    # the foot throw: SAME tone as the base (one cloth — the ladder's own comment:
+    # "a second tone would be a decision the light already made for free") but a
+    # LOOSE surface: a thrown cloth crumples where stretched upholstery cannot.
+    # r8 (C2-r7#1 + C3-r7#2): the largest cloth plane in the frame read unwrinkled
+    # because it wore the upholstery's tight material — colour was never the bug.
+    thr_m = _woven("bed_throw", _vl.rgba("bed_base"), 0.94, _lin, sheen=0.2,
+                   spec=0.25, maps="rough_linen", crumple=_crmp)
     matt_m = _woven("bed_mattress", _vl.rgba("bed_mattress"), 0.92, _lin, sheen=0.5, spec=0.35, maps="rough_linen")
     duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35, maps="rough_linen",
                     crumple=_crmp)
@@ -4052,7 +4097,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                 # 0.015 above the single-shell proxy = this sheet's −3 mm render
                 # half + the duvet's +9 mm (thickness 0.018 at round 4-ref), with
                 # 3 mm to spare (the contact law)
-                frames=70, fabric="knit", mat=base_m, thickness=0.006, slack=sl,
+                frames=70, fabric="knit", mat=thr_m, thickness=0.006, slack=sl,
                 slack_verts=_wts, collide_dist=0.015)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
@@ -5458,9 +5503,22 @@ if __name__ == "__main__":
         # hero dimmer state over the signed e5 plan (lane A) — spec untouched
         _spec["_light_story"] = True
         globals()["_LIGHT_STORY"] = True
+    if _spec.get("light_story"):
+        # r8 (P3 opener, D-032): the story dimmer state is the LANE DEFAULT when the
+        # spec declares it — a render state that lives only in a command line is
+        # reverted by omission, which is the exact defect --no-fabric-maps guards.
+        _spec["_light_story"] = True
+        globals()["_LIGHT_STORY"] = True
     if "--garment-yaw90" in _post_dashdash():
         # B leg of the r7 rail-yaw A/B (C2-r6#6): garments face along the run
         globals()["_GARMENT_YAW90"] = True
+    _crl = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--crumple-relief=")), None)
+    if _crl:
+        # r8 bisect bracket (LOOK-only rung; the committed default moves only
+        # with a recorded verdict — same contract as --shred-max)
+        globals()["_CRUMPLE_RELIEF"] = float(_crl)
+        print(f"  [calibration] bedding crumple relief overridden to {_crl} m")
     if "--no-acquire" in _post_dashdash():
         # The A leg of every acquisition A/B: build every item the way the bespoke
         # builders would, ignoring `model`. Same discipline as --no-fabric-maps — an

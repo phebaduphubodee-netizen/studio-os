@@ -439,6 +439,20 @@
    "reverse_by": "คืนบรรทัดเลือกชุดเป็น models[salt % len(models)] + ลบ GARMENT_SCALE_FLOOR block ใน _place_garment_rails (โค้ด r6 ใน git log bfd1dcd) แล้วลบแถวนี้ · ถ้าจะได้เสื้อยาวกลับ: จัดซื้อชุด full-hang แบบแบนตามสเปกใน gap print แล้ว floor จะปล่อยผ่านเอง",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-032",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "P3 opener: แสงแบนไร้ key เป็นข้อหัวตารางของกรรมการสองรอบติด (C2-r6#3, C2-r7#7, C3-r7#3) — เลน eye จะได้ key/story ยังไง",
+   "in_effect": "**เปิด lane-A light story เป็น default ของเลน eye ผ่าน spec key `light_story: true`** — state ที่สร้างและ calibrate เสร็จแล้วตั้งแต่ verdict-round6 (STORY_SCALES: ambient 0.48 = focal 3.1:1, fill 0.25, HDRI 2.3, IES จริงทั้ง downlight/spot/sconce) แต่ไม่เคยถูกเปิดบนเลนนี้ · ลำดับถูกตามกฎ build order: ของครบ (P2 exit) ก่อน แสงจึง solve จากเรขาคณิตจริง · p3a quick พิสูจน์: scallop ไล่ระแนง, cove graze อธิบาย pelmet, can ติดทั้งคู่ (ปม 'ดาวน์ไลท์ดับ 2' ของ r5 คือ lens เปล่งกลืนใน ambient แบน — แก้ด้วยการหรี่ ambient ไม่ใช่แก้ดวงโคม), โคม dome เปล่ง+มี pool anchor มุมตู้ที่กล้องบัง · **ประกาศใน SPEC ไม่ใช่ธง** — render state ที่อยู่แค่ใน command line ถูก revert ด้วยการลืมพิมพ์ (defect class เดียวกับ --no-fabric-maps)",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, pipeline/scripts/build_room.py",
+   "because": "R7 triage r6+r7 route คลัสเตอร์แสงทั้งหมดเข้า P3 opener · rig เป็นของที่ lane A จ่ายไปแล้ว — เปิดใช้คือ zero-cost ต่อ spec ที่เซ็น (story_scales(False) = unity ตาม docstring ของมันเอง)",
+   "reverse_by": "ลบ key `light_story` + `light_story_note` ออกจาก canonical spec — เลนกลับสู่ CD state แบน · ธง --light-story ยังใช้ได้ครั้งต่อครั้งเหมือนเดิม แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
