@@ -467,6 +467,20 @@
    "reverse_by": "ลบการเรียก _add_story_daylight ใน build_room (บรรทัดเดียวใต้ exposure trim) — เลนกลับสู่ warm ขั้วเดียวของ p3r1 · แล้วลบแถวนี้",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-034",
+   "unit": "DELIV-001",
+   "decided_round": 11,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "เจ้าของชี้จาก floor2_TRUE_sheet ว่าต้องมีแผงหัวเตียง (คำตัดสินนั้นเป็นของเขา ล็อกแล้ว — R3) · แผน view ไม่มีความสูง: แผงสูงเท่าไหร่ และหนา/กว้างเท่าไหร่",
+   "in_effect": "bed__headboard: หนา 60mm (ink ที่ calibration ของ sheet เอง ~1px/ซม. — เตียง 7'=210px, BF09 60ซม.=60px ยืนยันสองทาง) · กว้างเต็ม across ของเตียง (= ระหว่าง nightstand ตามแบบ, derive จาก rect) · **สูง 1.10m = DECLARED ASSUMPTION** (plan ไม่มี elevation; แหล่งอ้าง: ergonomics seated-back ~1100 ใน asset_scale + ยอด sham ~1.05 ซุกใต้พอดี) · บุ linen ตระกูล bed_base (rung ลึกสุด, ไม่ใช่โอ๊ค — D1-A) · ยืนชิดหน้าแผง BF14",
+   "because": "element3 เขียนเอง 'headboard = the wall' = derivation เราหลุดจากแบบ; sheet วาดแถบ ~6ซม.ที่หัวเตียงแยกจาก BF14 และกรรมการ blind 8 เสียงข้ามรอบอ่านโซนนี้ว่า ไม่เสร็จ — เจ้าของอ่านแบบแล้วสั่ง; ที่เหลือ (สูง) เป็นการตัดสินแทนของ builder",
+   "where": "pipeline/scripts/build_room.py (_build_bed, emit bed__headboard)",
+   "reverse_by": "ลบบรรทัด emit('bed__headboard', ...) บรรทัดเดียว — หรือแก้เลข 1.10 เมื่อพี่เคาะความสูงจากภาพ/แบบขยาย",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

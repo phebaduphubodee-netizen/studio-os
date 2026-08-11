@@ -3998,6 +3998,25 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # is the whole read; 75mm on a ~400mm side is a real mattress roll, not a box arris
     _matt_o = _rbox("bed__mattress", x0 + mins, y0 + mins, base_h, W - 2 * mins, D - 2 * mins,
                     H - base_h, matt_m, bevw=0.075, seg=5)
+    # p2r11 — THE HEADBOARD THE SHEET ALWAYS HAD (owner, 2026-08-11: "ตาม
+    # floor2_TRUE_sheet จริง ๆ มันต้องมีแผงหัวเตียงนะ" — R3, locked to him).
+    # element3's own line "headboard = the wall" was OUR mis-derivation; the
+    # TRUE sheet draws a distinct band at the bed head in front of BF14, and
+    # eight independent blind critics read the built zone as an unfinished
+    # install before the owner pointed at the ink. Measured on the sheet at its
+    # own calibration (bed 7' = 210 px, BF09 depth 60 cm = 60 px -> ~1 px/cm):
+    # head band ~6 cm thick, spanning the bed width between the two nightstand
+    # blocks; BF14 (10 cm x 3.25 m) sits BEHIND it, with the ~26 cm cavity to
+    # masonry that houses the pelmet cove we already build. Placement is fully
+    # DERIVED (R9): from_head 0, full across, so it stands flush against the
+    # BF14 face the bed rect already abuts. HEIGHT IS NOT ON A PLAN VIEW — a
+    # DECLARED ASSUMPTION, not a fabricated reading (R10): 1.10 m from the
+    # ergonomics seated-back band (asset_scale's own chair citation, "back to
+    # ~1100"), sham tops (~1.05 m) tuck just under it; the owner overrules from
+    # the image. Upholstered in the bed-base linen (deepest soft rung — grounds
+    # the bed; NOT oak, D1-A anti-monopoly), soft 20 mm arris.
+    emit("bed__headboard", 0.0, 0.0, 0.06, across, 0.0, 1.10,
+         base_m, bevw=0.02, seg=5)
     # ELEMENT 8 (2026-07-22) — THE COVERLET STOPS BEING A SOLID.
     # The DD's ground phase looked at the render and named one mechanism behind "แข็ง",
     # "เหลี่ยม" and "ไม่มี style": nothing in this room DEFORMS, because every soft good was

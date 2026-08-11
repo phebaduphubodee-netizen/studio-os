@@ -67,3 +67,17 @@ flush to BF14). Tests: 218 pure (millwork+materials, incl. 10 new) + the full 17
   adopted from the ink; a designer/owner nudge is a furniture edit, not a rebuild.
 
 NEXT (element 3+ remaining): ensuite (ห้องน้ำ) · 3-layer lighting (ไฟ) · textiles (ผ้า) → assemble → hero.
+
+---
+
+## AMENDMENT 2026-08-11 — "headboard = the wall" ถูกแบบหักล้าง (owner จาก TRUE sheet)
+
+บรรทัด "head flush to the BF09/BF14 oak slats (headboard = the wall)" ของเอกสารนี้
+เป็น mis-derivation: **floor2_TRUE_sheet วาดแผงหัวเตียงแยกจริง** — แถบ ~6ซม.
+ที่หัวเตียง หน้าแผง BF14 (325x10x280 ตามป้าย) กว้างช่วงระหว่าง nightstand
+(calibration ยันสองทาง: เตียง 7'=210px, BF09 60ซม.=60px → ~1px/ซม.)
+กรรมการ blind อิสระอ่านโซนนี้ว่า "ยังไม่เสร็จ" สะสม 8 เสียงก่อนเจ้าของชี้ ink
+
+BUILT p2r11: `bed__headboard` 60mm × เต็ม across × สูง 1.10m (สูง = DECLARED
+ASSUMPTION, D-034 — plan ไม่มี elevation; เจ้าของ overrule จากภาพได้) · บุ linen
+ตระกูล bed_base (ไม่ใช่โอ๊ค — D1-A) · placement derive จาก rect+head (R9)
