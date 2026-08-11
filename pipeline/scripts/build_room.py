@@ -1721,7 +1721,12 @@ def _add_rug(name, x, y, w, d, thick=0.014):
     bpy.context.scene.collection.objects.link(obj)
     _planar_uv(obj, tile_m=1.3)
     obj.data.materials.append(_pbr_material("rug_" + name, RUG_SLUG))
-    bind_m = _solid(name + "_binding", (0.42, 0.40, 0.37, 1.0), rough=0.85, sheen=0.15)
+    # r7 (C2-r6#12 + C3-r6#5 + C1-r6 LOOK, all three: "กุ๊นพลาสติกซีด"): the binding is
+    # SEWN TAPE — a tight plain weave, not a painted solid. Darker than the pile so the
+    # sewn edge reads as an edge at frame distance (the pale 0.42 tape dissolved into
+    # the pile's own value band).
+    bind_m = _woven(name + "_binding", (0.30, 0.28, 0.25, 1.0), 0.85,
+                    _matpre.cloth_args("plain"), sheen=0.15, spec=0.4)
     obj.data.materials.append(bind_m)
     bw = 0.032
     for p in me.polygons:
@@ -1732,13 +1737,21 @@ def _add_rug(name, x, y, w, d, thick=0.014):
     return obj
 
 
-def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.006, 0.05),
-                              (("bed__base",), 0.008, 0.07),
-                              (("nightstand__toe",), 0.006, 0.05))):
+def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.012, 0.06),
+                              (("bed__base",), 0.015, 0.09),
+                              (("nightstand__toe",), 0.012, 0.06))):
     """DEBT-14's second half: pile COMPRESSES under what stands on it. Runs after the
     item loop; every dent DERIVES from a real contact footprint (R9 — the rug never
     learns a coordinate). For each presser AABB overlapping a rug, verts inside the
-    footprint drop by `depth`, feathering to zero across `feather` beyond it."""
+    footprint drop by `depth`, feathering to zero across `feather` beyond it.
+
+    Depths 12-15 mm (r7): the r6 6-8 mm dents were REAL and INVISIBLE — ~1.5 px at
+    this camera distance, which three critics independently read as "no dent at all"
+    (C2-r6#12, C3-r6#5, C1-r6 LOOK). A dent the eye cannot read fails R11's own law
+    one level down: geometry that never reaches the picture is a declaration. 12-15 mm
+    is near-full compression of the 14 mm pile — what a bed base actually does — and
+    the clamp below keeps a crushed vert at backing level rather than through the
+    floor."""
     from mathutils import Vector as _V
     rugs = [o for o in bpy.data.objects
             if o.type == 'MESH' and o.name.startswith("rug__")]
@@ -1755,6 +1768,9 @@ def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.006, 0.05),
     n_dent = 0
     for ro in rugs:
         top = max(v.co.z for v in ro.data.vertices)
+        # backing level, DERIVED from the rug's own mesh (skirt bottom + 4 mm), never
+        # typed from _add_rug's constants: a crushed pile stops at its backing.
+        crush_floor = min(v.co.z for v in ro.data.vertices) + 0.004
         for bx0, by0, bx1, by1, bz0, depth, feather in boxes:
             if bz0 > top + 0.02:                 # not standing on the rug
                 continue
@@ -1764,7 +1780,9 @@ def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.006, 0.05),
                 dy = max(by0 - v.co.y, 0.0, v.co.y - by1)
                 dist = math.hypot(dx, dy)
                 if dist < feather:
-                    v.co.z -= depth * (1.0 - dist / feather)
+                    # a pile crushes TO its backing, never past it (without the clamp
+                    # a 15 mm press under the bed pushes verts through the floor)
+                    v.co.z = max(v.co.z - depth * (1.0 - dist / feather), crush_floor)
                     hit = True
             n_dent += hit
         ro.data.update()
@@ -2065,14 +2083,39 @@ def _dress_scene(spec):
         bx, by = float(bench["x"]) * MM, float(bench["y"]) * MM
         bw, bd = float(bench["w"]) * MM, float(bench["d"]) * MM
         bh = float(bench.get("h", 450)) * MM
-        # [1] two leaning books at the south end — the bedroom's own muted boards
+        # [1] two stacked books at the south end — the bedroom's own muted boards,
         # dark board ON TOP (d1 quick: the cream book uppermost read as a tissue
-        # box — an ink cover over a cream base reads "books" at one glance)
-        for bi, bc in enumerate(((0.78, 0.74, 0.68, 1.0), (0.20, 0.18, 0.16, 1.0))):
+        # box — an ink cover over a cream base reads "books" at one glance).
+        # r7 (C2-r6#7 + C3-r6#1 "หนังสือไร้สัน"): each book is a CONSTRUCTION now,
+        # not a tinted slab — two boards + a cream page block inset at fore-edge/
+        # head/tail + a spine wall on the SOUTH face (the face this camera sees;
+        # stand [1400,-120] aims NE, so south+west faces carry the read). R8: all
+        # boxes with radii -> BUILD. The page band between dark boards is the one
+        # cue that says "book" at 3 m.
+        pg_m = _solid("bench_book_pages", (0.88, 0.86, 0.80, 1.0), rough=0.75, spec=0.3)
+        # top cover 0.045 linear (r7, C3-r7#6): the "ink" board was authored at 0.20
+        # LINEAR, which displays as sRGB ~0.48 — a mid-grey wearing the word "dark".
+        # A cover that reads ink needs ~0.04-0.05 linear; the one-glance "books" cue
+        # is the VALUE CONTRAST between board and page block, and 0.20 never had it.
+        for bi, bc in enumerate(((0.78, 0.74, 0.68, 1.0), (0.045, 0.042, 0.040, 1.0))):
             bm = _solid(f"bench_book{bi}", bc, rough=0.55, spec=0.4)
-            _rbox(f"deco__bench_book{bi}", bx + (bw - 0.215) * 0.5 + bi * 0.010,
-                  by + 0.085 + bi * 0.007, bh + bi * 0.030,
-                  0.215 - bi * 0.013, 0.155 - bi * 0.010, 0.030, bm, bevw=0.004, seg=2)
+            bL = 0.215 - bi * 0.013
+            bW = 0.155 - bi * 0.010
+            bT = 0.030
+            bx0 = bx + (bw - 0.215) * 0.5 + bi * 0.010
+            by0 = by + 0.085 + bi * 0.007
+            bz0 = bh + bi * bT
+            brd = 0.0028                       # a hardcover board
+            _rbox(f"deco__bench_book{bi}_b0", bx0, by0, bz0, bL, bW, brd,
+                  bm, bevw=0.001, seg=1)
+            # pages: 1 mm clear of the spine wall's inner face (no coplanar seam),
+            # boards overhang them 4-5 mm on the three open sides like a real case
+            _rbox(f"deco__bench_book{bi}_pg", bx0 + 0.004, by0 + 0.006, bz0 + brd,
+                  bL - 0.008, bW - 0.011, bT - 2 * brd, pg_m, bevw=0.001, seg=1)
+            _rbox(f"deco__bench_book{bi}_b1", bx0, by0, bz0 + bT - brd, bL, bW, brd,
+                  bm, bevw=0.001, seg=1)
+            _rbox(f"deco__bench_book{bi}_sp", bx0, by0, bz0, bL, 0.005, bT,
+                  bm, bevw=0.002, seg=2)
             placed += 1
         # [2] the throw: a sheet lying on the north half, overhanging the end,
         # dropped by the solver onto the seat it must fall past — pinned on its
@@ -2168,6 +2211,12 @@ _LIGHT_STORY = False
 # "report" = print profiles instead of raising (--shred-report; used to measure
 # the healthy-vs-shredded gap the thresholds are calibrated on)
 _SHRED_MODE = ""
+
+# --garment-yaw90 (r7, C2-r6#6 "โปโลหันหน้าเข้ากล้อง"): the B leg of the rail-yaw
+# A/B — every acquired garment set turns a further 90° so garments face ALONG the
+# rail run (hanger-on-rod orientation) instead of out at the aisle (boutique
+# display). A flag, not a source edit, so both legs re-render identically (R6).
+_GARMENT_YAW90 = False
 
 
 def _emit_style_part(p, quick=False):
@@ -2365,21 +2414,26 @@ def _place_garment_rails(models, parts, cut_first=None):
     toks = ("linen", "backing", "towel")
     swapped = set()
     import json as _json
-    for salt in sorted(by_rail):
-        slug = str(models[salt % len(models)])
-        _mp = _model_path(slug)
-        if not _mp:
-            print(f"  garment rail {salt}: no cached mesh for {slug!r} -> loft")
-            continue
-        _sc = os.path.join(os.path.dirname(_mp), f"{slug}.scale.json")
+
+    def _sidecar(slug):
+        """(mesh path, native metres) from the ASSERTED sidecar, or (None, None)."""
+        mp = _model_path(slug)
+        if not mp:
+            return None, None
         try:
-            with open(_sc, encoding="utf-8") as f:
-                _sj = _json.load(f)
+            with open(os.path.join(os.path.dirname(mp), f"{slug}.scale.json"),
+                      encoding="utf-8") as f:
+                sj = _json.load(f)
         except OSError:
-            _sj = None
-        if not (_sj and _sj.get("ok")):
-            print(f"  garment rail {salt}: {slug} has NO ASSERTED scale sidecar -> loft")
-            continue
+            sj = None
+        if not (sj and sj.get("ok")):
+            return None, None
+        bb = sj.get("bbox_mm") or {}
+        n = (bb.get("x_mm", 0) / 1000.0, bb.get("y_mm", 0) / 1000.0,
+             bb.get("z_mm", 0) / 1000.0)
+        return (mp, n) if all(v > 0 for v in n) else (None, None)
+
+    for salt in sorted(by_rail):
         vs = [v for p in by_rail[salt] for v in p["verts"]]
         x0, x1 = min(v[0] for v in vs), max(v[0] for v in vs)
         y0, y1 = min(v[1] for v in vs), max(v[1] for v in vs)
@@ -2388,7 +2442,8 @@ def _place_garment_rails(models, parts, cut_first=None):
         # pre-rotation slot: the set's row runs its native x; yaw turns it onto the rail
         run, depth = (x1 - x0, y1 - y0) if along_x else (y1 - y0, x1 - x0)
         cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
-        yaw = (0.0 if along_x else 90.0) + (180.0 if salt % 2 else 0.0)
+        yaw = (0.0 if along_x else 90.0) + (90.0 if _GARMENT_YAW90 else 0.0) \
+            + (180.0 if salt % 2 else 0.0)
         tag = f"mill__style_garmentacq{salt}"
         # model_fit's fill-share gate encodes the FURNITURE slot semantic (a chair must
         # fill its slot); a rail dressing does not — a set occupying 60% of a rail's run
@@ -2396,27 +2451,81 @@ def _place_garment_rails(models, parts, cut_first=None):
         # from the ASSERTED sidecar bounds, and place_model is handed a slot of exactly
         # the scaled set's own size (containment inside the rail's loft envelope is
         # guaranteed by the min() below; nothing is squashed — the scale stays uniform).
-        bb = _sj.get("bbox_mm") or {}
-        nx, ny, nz = (bb.get("x_mm", 0) / 1000.0, bb.get("y_mm", 0) / 1000.0,
-                      bb.get("z_mm", 0) / 1000.0)
-        if not (nx > 0 and ny > 0 and nz > 0):
-            print(f"  garment rail {salt}: sidecar carries no bounds -> loft")
+        #
+        # r7 (C2-r6#5): THE SET IS CHOSEN BY THE RAIL'S OWN MEASURED DROP, not by salt
+        # parity. cce50840 is an 879 mm short-hang set, c25de786 a 1309 mm full-hang
+        # set (both ASSERTED), and parity had been hanging either on either tier — a
+        # full-hang set shrunk 24% onto a short rail is the "natural scale ไม่ match
+        # tier" read by name. TIER = DROP CLASS: the winning candidate is the one
+        # whose NATURAL drop lies closest to the rail's own measured drop; s_fit then
+        # handles containment only. The first cut of this rule ranked by max s_fit
+        # ("least fit-clamp loss") and its own probe render refuted it the same hour:
+        # c25de786 loses ~8% to the carcass DEPTH clamp on every rail, so cce50840
+        # scored 1.0 everywhere and all nine rails hung the same three shirts — the
+        # closet lost every long garment to a depth technicality. Fit-loss measures
+        # CONTAINMENT; the tier question is the DROP, and conflating the two axes is
+        # the one-parameter-carrying-two-things shape again.
+        # NEVER scale past natural size (upscaling makes giant clothes, downscaling
+        # makes children's); fill the rail by REPEATING the set along the run, never
+        # by stretching one instance (a 60% bare rail read as a boutique display,
+        # C2-r4#4/#7).
+        # RUN DATUM, measured before anyone "fixes" it again: an r7 probe assumed the
+        # physical bar was ~2x the loft group's span and wrote a scene lookup to use
+        # it — the bars' own dump refuted the premise (98-poly bar, 0.0305 m² of
+        # Ø20 surface ≈ a 0.45-0.49 m bar; the printed runs are 0.400-0.466). This
+        # closet is nine ~0.5 m bays, so the loft-group AABB ≈ the bar and IS a fair
+        # run datum. The lookup was removed as a guard for a class that does not
+        # exist here; what remains is what the probe proved matters — the floor.
+        #
+        # SENSE floor (R10): a garment set below this fraction of its ASSERTED natural
+        # size reads as children's clothes on an adult rail — hanging it fabricates a
+        # wrong object where an absence would be honest. A tier-matched set that only
+        # fits sub-floor is a DECLARED GAP (R8: procurement, never a modelling task).
+        GARMENT_SCALE_FLOOR = 0.6
+        best, gap = None, None
+        for _slug_c in (str(m) for m in models):
+            _mp_c, _n_c = _sidecar(_slug_c)
+            if not _mp_c:
+                continue
+            _nx, _ny, _nz = _n_c
+            # yaw90 leg: native y lies along the run, native x across the depth
+            _ra, _da = (_ny, _nx) if _GARMENT_YAW90 else (_nx, _ny)
+            _s = min(1.0, run / _ra, depth / _da, (z1 - z0) / _nz)
+            _key = (-abs(_nz - (z1 - z0)), round(_s, 3))
+            if _s < GARMENT_SCALE_FLOOR:
+                if gap is None or _key > gap[0]:
+                    gap = (_key, _slug_c, _s)
+                continue
+            if best is None or _key > best[0]:
+                best = (_key, _slug_c, _mp_c, _n_c, _s)
+        if gap is not None and (best is None or gap[0][0] > best[0][0]):
+            print(f"  garment rail {salt}: DECLARED GAP — the tier-matched set "
+                  f"{gap[1][:8]} fits this slot only at {gap[2]:.2f} of natural "
+                  f"(< {GARMENT_SCALE_FLOOR}); "
+                  f"{'the next class hangs instead' if best else 'the rail lofts'} "
+                  f"(procurement: a FLAT-FILE full-hang set for a "
+                  f"{depth * 1000:.0f}mm-deep bay)")
+        if best is not None:
+            print(f"  garment rail {salt}: drop {z1 - z0:.3f} run {run:.3f} "
+                  f"depth {depth:.3f} -> tier pick {best[1][:8]} "
+                  f"(natural z {best[3][2]:.3f}, s_fit {best[4]:.3f})")
+        else:
+            print(f"  garment rail {salt}: no candidate hangs at adult scale -> loft")
             continue
-        # NEVER scale past natural size (the sidecar's mm are ASSERTED real garments;
-        # upscaling makes giant clothes, downscaling makes children's) — and fill the
-        # rail by REPEATING the set along the run instead of stretching one instance:
-        # a rail 60% bare read as a boutique display, the very C2-r4#4/#7 complaint.
-        s_fit = min(1.0, run / nx, depth / ny, (z1 - z0) / nz)
+        _key, slug, _mp, (nx, ny, nz), s_fit = best
         sw, sd, sh = nx * s_fit, ny * s_fit, nz * s_fit
+        sr = sd if _GARMENT_YAW90 else sw        # run-aligned extent of one copy
         # r6 (LOOK r5 + C2-r5#8): the slack term was `run + 0.10`, which let the
         # placed span exceed the rail run by up to ~100mm — hangers past the end of
         # the SHORT rails. A copy count must fit the run it hangs from, full stop.
-        n_cp = max(1, min(3, int((run + 0.02) // (sw + 0.02))))
+        # r7 (C2-r6#5 "ตู้โล่ง"): the min(3, …) cap is GONE — it was the builder's
+        # number, not the rail's. The run divides, D-029's span<=run law guards.
+        n_cp = max(1, int((run + 0.02) // (sr + 0.02)))
         placed_ms = []
         copies = []
         for k in range(n_cp):
-            span = n_cp * sw + (n_cp - 1) * 0.02
-            a0 = -span / 2.0 + sw / 2.0 + k * (sw + 0.02)
+            span = n_cp * sr + (n_cp - 1) * 0.02
+            a0 = -span / 2.0 + sr / 2.0 + k * (sr + 0.02)
             kx = cx + (a0 if along_x else 0.0)
             ky = cy + (0.0 if along_x else a0)
             tagk = f"{tag}_{k}"
@@ -2466,7 +2575,9 @@ def _place_garment_rails(models, parts, cut_first=None):
             split_cms = []
             for o in cms:
                 lo, hi = _extent(o, _axi)
-                if (hi - lo) > 0.5 * sw and len(o.data.vertices) > 400:
+                # threshold on the RUN-aligned extent (sr == sw on the normal leg;
+                # on the yaw90 leg the set presents its native y here)
+                if (hi - lo) > 0.5 * sr and len(o.data.vertices) > 400:
                     split_cms += _split_loose_parts(o)
                 else:
                     split_cms.append(o)
@@ -2486,7 +2597,7 @@ def _place_garment_rails(models, parts, cut_first=None):
             _sep = 0 if _spread[0] >= _spread[1] else 1
             _cent = _cx[_sep]
             wide = [i for i in range(len(cms))
-                    if (_extent(cms[i], _axi)[1] - _extent(cms[i], _axi)[0]) > 0.5 * sw]
+                    if (_extent(cms[i], _axi)[1] - _extent(cms[i], _axi)[0]) > 0.5 * sr]
             body = [i for i in range(len(cms)) if i not in wide]
             # split threshold from the DATA: within-garment consecutive centres sit
             # a few mm apart (panels of one shirt), between-garment several times
@@ -5347,6 +5458,9 @@ if __name__ == "__main__":
         # hero dimmer state over the signed e5 plan (lane A) — spec untouched
         _spec["_light_story"] = True
         globals()["_LIGHT_STORY"] = True
+    if "--garment-yaw90" in _post_dashdash():
+        # B leg of the r7 rail-yaw A/B (C2-r6#6): garments face along the run
+        globals()["_GARMENT_YAW90"] = True
     if "--no-acquire" in _post_dashdash():
         # The A leg of every acquisition A/B: build every item the way the bespoke
         # builders would, ignoring `model`. Same discipline as --no-fabric-maps — an

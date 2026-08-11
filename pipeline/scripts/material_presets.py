@@ -206,11 +206,12 @@ PRESETS = {
         factory="image_wood", space="srgb", hex="#C7B896", rough=0.38,
         slug="oak_veneer_01", tile_m=1.83,
         map_mean=(0.3604, 0.2117, 0.0988), rough_mean=0.5304,
-        # feature_scale 0.65: C2-r4#5 measured a flat-cut veneer leaf at 200-300 mm
-        # against our ~450 mm cathedral arcs — a deliberate, cited divergence from the
-        # asset's native tile, NOT a fudge. coat 0.25: the signed satin FILM finish
-        # is a second specular lobe (C3-r4#4 named its absence).
-        feature_scale=0.65, coat=0.25,
+        # feature_scale 0.46 (r7): the 0.65 cut answered C2-r4#5's 200-300 mm leaf but
+        # C1-r6 measured the RESULT off the frame at ~300-450 mm — still past the real
+        # band. 0.46 = 0.65 x 300/420, scaling the measured arc's midpoint onto the
+        # band's midpoint; the knob moves by the measurement, never by taste.
+        # coat 0.25: the signed satin FILM finish is a second specular lobe (C3-r4#4).
+        feature_scale=0.46, coat=0.25,
         tier="DESIGN-INTENT",
         desc="signed light warm-oak (D5-A) as photographed CC0 veneer (Poly Haven "
              "oak_veneer_01), box-projected so grain breaks at panel arrises; "

@@ -280,24 +280,36 @@ def test_a_rail_running_along_y_orients_the_same_way():
 # ------------------------------------------------------------------- shelves / stacks
 
 def test_a_stack_sits_ON_its_shelf():
+    # r7: fold items are cushion MESHES now (C2-r6#7 "ผ้าพับกล่อง") — the laws are
+    # unchanged, measured on the vert bbox instead of box keys.
     sh = shelf()
     for p in st.stack_on_shelf(sh):
-        assert p["z"] >= sh["z"] + sh["dz"] - 1e-9
+        z0 = sg.bbox(p["verts"])[2]
+        assert z0 >= sh["z"] + sh["dz"] - 1e-9
 
 
 def test_a_stack_never_overhangs_its_shelf():
     sh = shelf()
     for p in st.stack_on_shelf(sh, salt=3):
-        assert p["x"] >= sh["x"] - 1e-9
-        assert p["x"] + p["dx"] <= sh["x"] + sh["dx"] + 1e-9
-        assert p["y"] >= sh["y"] - 1e-9
-        assert p["y"] + p["dy"] <= sh["y"] + sh["dy"] + 1e-9
+        x0, y0, _, x1, y1, _ = sg.bbox(p["verts"])
+        assert x0 >= sh["x"] - 1e-9
+        assert x1 <= sh["x"] + sh["dx"] + 1e-9
+        assert y0 >= sh["y"] - 1e-9
+        assert y1 <= sh["y"] + sh["dy"] + 1e-9
 
 
 def test_a_stack_moves_with_its_shelf():
     a = st.stack_on_shelf(shelf())[0]
     b = st.stack_on_shelf(shelf(z=1.05))[0]
-    assert abs((b["z"] - a["z"]) - 0.65) < 1e-9
+    assert abs((sg.bbox(b["verts"])[2] - sg.bbox(a["verts"])[2]) - 0.65) < 1e-9
+
+
+def test_a_stack_item_is_a_soft_form_not_a_box():
+    """The r6 critics' box read came from literal boxes; a fold item must now carry a
+    lofted surface (mesh with enough faces to round an edge), never a 6-face slab."""
+    for p in st.stack_on_shelf(shelf()):
+        assert p["shape"] == "mesh"
+        assert len(p["faces"]) > 24
 
 
 def test_stack_rejects_a_bad_fraction():

@@ -425,6 +425,20 @@
    "reverse_by": "ลบ garment_cut_first จาก spec (ชิ้นแรกกลับมา) · คืน token ต่อชุด: ลบบล็อก clustering ใน _place_garment_rails เหลือ tok เดียวตาม salt (โค้ด r5 ใน git log dff0759) แล้วลบแถวนี้",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-031",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "C2-r6#5: ราวคือ tier (short-hang double / full-hang) แต่ชุด acquired ถูกเลือกด้วย salt parity — ชุดยาว 1309mm โดนย่อ 0.29-0.48 ลงราวสั้น อ่านเป็นชุดตุ๊กตา จับคู่ class ชุดกับ tier ราวยังไง และทำอะไรกับชุดที่ fit ไม่ถึงสเกลผู้ใหญ่",
+   "in_effect": "**tier = drop class + SENSE floor**: (1) ชุดถูกเลือกด้วย |natural z ของชุด − drop ราวที่วัดจริง| ต่อราว — สั้น(0.74-0.86)→cce50840(879mm) ยาว(1.28-1.67)→c25de786(1309mm) ตาม log ทุกเส้น (2) **floor 0.6 ของ natural**: ชุดที่ fit ต่ำกว่านี้คือชุดเด็กบนราวผู้ใหญ่ (R10 SENSE) → ไม่แขวน ประกาศเป็น DECLARED GAP พร้อมสเปกจัดซื้อ (ชุด full-hang แบบแบนเรียงระนาบเดียว สำหรับช่องลึก 184-342mm) — ราว full สามเส้นจึงแขวนเชิ้ต cce ที่ 0.70-0.76 แทน (ตู้จริงแขวนเสื้อสั้นบนราวยาวได้ ของผิดสเกลคือ fabrication) (3) **เกณฑ์แรกที่ลอง (max s_fit) ถูก probe หักล้างในชั่วโมงเดียว**: c25 เสีย ~8% ให้ depth clamp ทุกราว → cce ชนะทั้ง 9 ราว ตู้เสียเสื้อยาวทั้งหมดให้เทคนิค — containment กับ tier เป็นคนละแกน (one-parameter-carrying-two-things) (4) **สมมติฐาน 'ราวจริงยาว 2 เท่าของ loft group' ถูกหักล้างด้วย scene เอง**: แท่งราว 98 โพลี 0.0305 m² ≈ ยาว 0.45-0.49m — ตู้นี้คือช่องแคบ ~0.5m เก้าช่อง loft AABB จึงเป็น run datum ที่ยุติธรรมแล้ว block ค้นแท่งถูกลบเป็นโค้ดตาย (5) yaw A/B (C2-r6#6): เลก B (+90°) แพ้ด้วย cue ของ reference board — เสื้อกลายเป็นก้อนไร้ไหล่+ตะขอหาย — คง yaw เดิม ธง --garment-yaw90 เก็บไว้รันซ้ำได้ (6) n_cp ปลดเพดาน min(3) — run หาร, กฎ span<=run (D-029) คุม; ช่อง 0.45m ได้ 1 copy ต่อราวเท่าเดิมโดยเรขาคณิต ไม่ใช่โดยเพดาน",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "R7 triage r6 รับ C2#5+C2#6 เข้า r7 · ทุกชั้นถูกบังคับ/หักล้างโดย probe log ไม่ใช่รสนิยม (สอง quick A/B + สอง quick criterion) · ของที่หายอย่างประกาศซื่อสัตย์กว่าของผิดสเกลที่ยัดไว้ (R10/R8)",
+   "reverse_by": "คืนบรรทัดเลือกชุดเป็น models[salt % len(models)] + ลบ GARMENT_SCALE_FLOOR block ใน _place_garment_rails (โค้ด r6 ใน git log bfd1dcd) แล้วลบแถวนี้ · ถ้าจะได้เสื้อยาวกลับ: จัดซื้อชุด full-hang แบบแบนตามสเปกใน gap print แล้ว floor จะปล่อยผ่านเอง",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

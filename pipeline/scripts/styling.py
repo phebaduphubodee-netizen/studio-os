@@ -554,14 +554,19 @@ def stack_on_shelf(shelf, n=4, item_h=0.042, salt=0, frac_w=0.46, frac_d=0.62):
     for k, (ox, oy, oz, dx, dy, dz) in enumerate(
             sg.folded_stack(w, d, n, item_h, salt=salt)):
         tok = TOK_TERRY if k % 2 == 0 else TOK_LINEN
+        # r7 (C2-r6#7 + C3-r6#1 "ผ้าพับกล่อง", the beveled-box read at 100%): each
+        # folded item is now a CUSHION loft, not a box — the same generator whose
+        # rounded-slab silhouette already carries the bed pillows. edge 0.22 holds
+        # nearly full width then turns a small soft roll (a folded knit's edge IS
+        # that roll); pinch 0.06 keeps folded corners square-ish. Footprint contract
+        # unchanged: cushion() fills exactly (0..dx, 0..dy, 0..dz). Same class of fix
+        # as the rug this round follows (box -> displaced form, D-028's other half).
+        cv, cf = sg.cushion(dx, dy, dz, nu=13, nv=7, pinch=0.06, edge=0.22,
+                            salt=salt * 7 + k)
         parts.append({
-            "name": f"mill__style_fold{salt}_{k}__{tok}", "shape": "box",
-            "x": x0 + ox, "y": y0 + oy, "z": z0 + oz,
-            # bevel 0.008 -> 0.014 (round-6 lane C, C2#9): on a ~42mm item an 8mm
-            # radius left ~26mm of dead-flat face — the "perfect boxes" read. 14mm
-            # rounds a folded edge the way a knit actually rolls, and the per-item
-            # height variance (softgoods.folded_stack) breaks the extruded-block line.
-            "dx": dx, "dy": dy, "dz": dz, "bevel": 0.014,
+            "name": f"mill__style_fold{salt}_{k}__{tok}", "shape": "mesh",
+            "verts": _xlate(cv, x0 + ox, y0 + oy, z0 + oz),
+            "faces": cf, "subsurf": 1,
         })
     return parts
 
