@@ -285,7 +285,8 @@
           "id": "P2r-4",
           "what": "GARMENT SHELLS inside the acquired ceiling: delete coincident duplicate shells at ingest (probe found acq0==acq10 class pairs); folded shelf stacks stop being slabs (softgoods folded cloth, not boxes); hanger wire gauge check. The true stiffness lever stays procurement D-031 (owner's hands — declared, not worked around). INSTRUMENT: built-scene probe counts coincident-AABB shell pairs. CLOSE: count == 0 and stacks read as cloth in the crop.",
           "where": "pipeline/scripts/build_room.py (_place_garment_rails / ingest normalise)",
-          "status": "todo"
+          "status": "todo",
+          "_progress_2026-08-11": "DEDUP HALF CLOSED (p2r14, gate-DELIV001-P2r14). Measured before deleting: all 54 pairs in the p2r13 dump are true twins (AABB <0.1mm on six numbers + equal polys + same material + equal area — the 3D Warehouse glTF carries every mesh twice). place_model now drops coincident duplicate shells at the shared ingest door for EVERY acquisition (R9b no allowlist), with a rule deliberately STRICTER than the exit rung (AABB tolerance AND equal polycount, so a panel/lining pair that merely shares a box is never eaten — if one exists the rung still names it and the print explains the disagreement). Result: 54 dropped (9 imports x 6, exactly the measured count), rung garment_shells 0 -> PASS, wardrobe visually identical, acq meshes 156 -> 102. THE MACHINE HALF OF THE REOPENED BAR NOW HOLDS: every p2_exit rung runs and the declared cuts pass for the first time in the lane — the remaining exit condition is the judge clause alone. OPEN HALVES unchanged by name: folded shelf stacks still read as slabs (softgoods folded cloth), hanger wire gauge, and cross-rail set repetition (variety = D-031 procurement + rhythm jitter). C3 raw count hit 5 this round — the lane low."
         },
         {
           "id": "P2r-5",

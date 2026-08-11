@@ -5099,6 +5099,41 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
     meshes = [o for o in meshes if o not in _empty]
     if not meshes:
         return False
+    # DROP COINCIDENT DUPLICATE SHELLS (P2r-4, p2r14). The garment sets arrive
+    # with every mesh IN THE FILE TWICE — measured on the p2r13 dump: 54 pairs,
+    # every pair identical in world AABB (<0.1 mm on all six numbers), polygon
+    # count, material and surface area. One shell renders identically to two
+    # (Cycles has no backface culling), so the twin buys z-fighting risk and a
+    # doubled poly count and nothing else. The rule is UNIVERSAL for every
+    # import through this door (R9b: no allowlist) and STRICTER than the exit
+    # rung's AABB-only read: it also demands an equal polygon count, so two
+    # DIFFERENT meshes that happen to share a box (a panel and its lining) are
+    # never eaten — if such a pair exists the rung will still name it and this
+    # print explains the disagreement instead of a silent gap.
+    _dup = []
+    _seen = []
+    for o in sorted(meshes, key=lambda m: m.name):
+        bb = [(o.matrix_world @ Vector(c)) for c in o.bound_box]
+        key = tuple(f(v[i] for v in bb) for i in range(3) for f in (min, max))
+        np_ = len(o.data.polygons)
+        # tolerance compare (the rung's own 1e-4 m), not a rounded dict key —
+        # a pair straddling a rounding boundary must not slip through
+        hit = next((s for s in _seen
+                    if s[1] == np_ and all(abs(s[0][i] - key[i]) < 1e-4
+                                           for i in range(6))), None)
+        if hit:
+            _dup.append(o)
+        else:
+            _seen.append((key, np_))
+    if _dup:
+        print(f"  dropped {len(_dup)} coincident duplicate shell(s) "
+              f"(same world AABB + polygon count as a kept mesh — the file "
+              f"carried them twice)")
+        for o in _dup:
+            bpy.data.objects.remove(o, do_unlink=True)
+        meshes = [o for o in meshes if o not in _dup]
+    if not meshes:
+        return False
     # NAME THEM INTO THIS REPO'S CONVENTION. An imported mesh keeps the glTF's own
     # names — `Mesh_0`, `Mesh_3` — and EVERY name-based instrument here is then blind
     # to it: the material router keys on a `tag__` prefix, `deliverable_check`'s D7 and
