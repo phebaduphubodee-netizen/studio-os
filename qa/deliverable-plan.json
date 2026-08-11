@@ -818,7 +818,36 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "f69087e1f9c9bbe627d81209b57e1923fc8bc078",
+      "verdicts": {
+        "P2": "keep: untouched by this commit and mid-program on its own instruments — the parallel session closed the cloth response audit (D-035) the same hour, and the P2r queue stands as ranked",
+        "P4": "keep: still waits behind P2 per the owner overrule; the recon adds one comfort P4 will inherit — the suite the density work will dress is now proven to contain everything the drawing draws, so density lands on complete geometry",
+        "P5": "keep: unchanged, the owner terminal condition — and DRW feeds it directly: the three identity divergences (BF11 desk-vs-vanity, BF10 vanity-vs-dressing, TV-vs-bookshelf) are packaged as his-eye questions that never block the lane",
+        "DRW": "change: created this round by owner order and DRW-1 closed the same night on its own gate (17/18 matched, exit 0, 18 tests, two self-caught instrument lies pinned as regressions). Next slice is DRW-1b: the 306mm BF11 ink re-measure plus the one-line camera-poly wire into build_room once the parallel session settles"
+      },
+      "changed": [
+        "DRW"
+      ],
+      "note": "DRW program opened and its first rung closed in the same session the owner ordered it",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "a4914a3b6d2d1ab1eb3d460c48226f4f33b44b3d"
+  "last_review_commit": "f69087e1f9c9bbe627d81209b57e1923fc8bc078"
 }
