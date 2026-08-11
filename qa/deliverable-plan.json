@@ -273,7 +273,8 @@
           "id": "P2r-2",
           "what": "WOOD FIGURE (C3 twice: tiling): per-panel mapping offset/rotation so no two boards repeat the cathedral figure; per-leaf tone drift stays. INSTRUMENT: autocorrelation across a two-board 100% crop — no periodic peak above noise floor at the tile pitch; crop pair archived in the gate. CLOSE: no peak + no critic wood-repeat item.",
           "where": "pipeline/scripts/build_room.py (veneer mapping)",
-          "status": "todo"
+          "status": "todo",
+          "_progress_2026-08-11": "OPENED WITH TWO PAID MEASUREMENTS, NO BUILD YET. (1) The queued suspect 'rough-map contrast' is ANSWERED for wood without a render: unlike the cloth case (D-035), the veneer's Rough map already reaches the frame at full amplitude — _image_wood multiplies map (mean 0.530, sigma 0.143) by rough/rough_mean = 0.717, so effective roughness is mean 0.38 with sigma ~0.10, p5-p95 0.21-0.54 per pixel. The pro recipe ('pros vary roughness per-pixel') already holds here; do not respin this knob. The uniform-reflection read under tens-of-degrees area lights is a LIGHTING-geometry property, not a material amplitude one. (2) The periodicity half is dead four rounds running (rung 0.195 under floor 0.447 at the declared crop on r8/r12/r13/r14). WHAT REMAINS is figure LEGIBILITY, and its next measurement is named: the cathedral arc pitch measured OFF THE FRAME at the gable/back panels vs the real flat-cut band — feature_scale has moved only by measurement twice (0.65 at r4, 0.46 at r7 from C1-r6's 300-450mm read) and C2-r14#10 still reads arcs near half a panel width with near-identical figure across panels. Open the next round with that number, then decide the knob (feature_scale re-derive, or per-panel figure variety beyond book-match tone)."
         },
         {
           "id": "P2r-3",
