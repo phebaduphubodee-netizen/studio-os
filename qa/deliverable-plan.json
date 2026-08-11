@@ -269,20 +269,38 @@
         },
         {
           "id": "P2r-2",
-          "what": "wood figure stops tiling: per-panel mapping offset/rotation so the cathedral figure never repeats across boards (C3-p3r2#2, crop-confirmed)",
-          "where": "pipeline/scripts/build_room.py",
+          "what": "WOOD FIGURE (C3 twice: tiling): per-panel mapping offset/rotation so no two boards repeat the cathedral figure; per-leaf tone drift stays. INSTRUMENT: autocorrelation across a two-board 100% crop — no periodic peak above noise floor at the tile pitch; crop pair archived in the gate. CLOSE: no peak + no critic wood-repeat item.",
+          "where": "pipeline/scripts/build_room.py (veneer mapping)",
           "status": "todo"
         },
         {
           "id": "P2r-3",
-          "what": "rug stops reading printed: edge rollover + pile at the boundary; dents already exist and do not read at frame scale (C2-p3r2#10 + C3-p3r2#5)",
-          "where": "pipeline/scripts/build_room.py",
+          "what": "RUG (both critics: printed plane): edge rollover geometry + pile fringe at the boundary + dent legibility at frame scale. INSTRUMENT: edge-profile 100% crop — the boundary is a rolled gradient, not a 90-degree step; luminance cross-section archived. CLOSE: profile reads rolled + no critic rug item in top 3.",
+          "where": "pipeline/scripts/build_room.py (rug builder)",
           "status": "todo"
         },
         {
           "id": "P2r-4",
-          "what": "garment realism within the acquired ceiling: delete coincident duplicate shells found by the .blend probe (acq0==acq10 class); folded shelf stacks stop being slabs; the true lever stays procurement D-031 (owner's hands)",
-          "where": "pipeline/scripts/build_room.py",
+          "what": "GARMENT SHELLS inside the acquired ceiling: delete coincident duplicate shells at ingest (probe found acq0==acq10 class pairs); folded shelf stacks stop being slabs (softgoods folded cloth, not boxes); hanger wire gauge check. The true stiffness lever stays procurement D-031 (owner's hands — declared, not worked around). INSTRUMENT: built-scene probe counts coincident-AABB shell pairs. CLOSE: count == 0 and stacks read as cloth in the crop.",
+          "where": "pipeline/scripts/build_room.py (_place_garment_rails / ingest normalise)",
+          "status": "todo"
+        },
+        {
+          "id": "P2r-5",
+          "what": "MATERIAL RESPONSE audit (C3: whites still 'พลาสติก'): sheen/coat/transmission per material family vs the pro-file measurements already in the ground-truth study; every deviation is a recorded decision, not a default. INSTRUMENT: highlight-histogram crops on the three largest cloth planes; the study's sheen ceiling (0.4) as the reference line. CLOSE: no clipped-plastic highlight family on cloth + no critic 'plastic' item.",
+          "where": "pipeline/scripts/material_presets.py, value_ladder.py",
+          "status": "todo"
+        },
+        {
+          "id": "P2r-6",
+          "what": "MAP-COVERAGE CENSUS — the phase's own headline number finally gets an instrument: % of VISIBLE FRAME AREA whose material carries image maps (the study measured us 4.9% vs 50-66% in pro files, and nothing in the repo can print that number today). scene_dump already counts image_tex per object; add projected-area weighting so the census reads the FRAME, not the object list. CLOSE: the number prints on every gate run and sits inside the study band, or the shortfall is a named list of surfaces.",
+          "where": "pipeline/scripts/scene_dump.py, deliverable_check.py",
+          "status": "todo"
+        },
+        {
+          "id": "P2r-7",
+          "what": "EXIT HARNESS: the four 100% crops of the reopened bar become a COMMAND (crop registry + per-crop method + anchor refs, local-only), so closing P2 is reproducible and the bar cannot drift back to two pre-chosen spots. Also triage the 15 critic-DEBT rows due at P2 against this program: each is either covered by an item above (name it), becomes its own instrument, or is refuted with a measurement.",
+          "where": "pipeline/scripts (new p2_exit.py), qa/",
           "status": "todo"
         }
       ],
@@ -290,7 +308,8 @@
       "exit_result": "SUPERSEDED — the r7 MET record moved to exit_result_superseded_r7; the reopened bar above is unmet as of 2026-08-11.",
       "_reviewed": true,
       "_owner_reopen": "OWNER OVERRULE 2026-08-11 (R3 — locked to him): ผมไม่เห็นด้วยที่ข้าม phase 2 ไป. The r7 close stood on its exit test (crops + QUALIFIES), but the p3r2 critique tables are still dominated by SURFACE-REALISM findings — bedding reads as felt (both critics' #1), wood figure tiles, rug edge reads printed, garments read cardboard — and the builder's review routed them to P4 (density), which relabels P2-class work instead of doing it. The owner overruled that routing from the image. P2 reopens with those findings as its work list; P4 waits behind it. The exit test below was too narrow and is allowed to be wrong (plan law); it is superseded by the reopen list.",
-      "exit_test_superseded_r7": "D5 (band-limited 4-32 px), D8 and D9 all PASS; MODEL-FIT REJECT count = 0; imported-mesh objects >=8. Then two crops at 100%: a sewn seam ridge on the bed head with no polygon facet on any silhouette, and weave on the foot-of-bed throw (0.11x the target's detail energy today)."
+      "exit_test_superseded_r7": "D5 (band-limited 4-32 px), D8 and D9 all PASS; MODEL-FIT REJECT count = 0; imported-mesh objects >=8. Then two crops at 100%: a sewn seam ridge on the bed head with no polygon facet on any silhouette, and weave on the foot-of-bed throw (0.11x the target's detail energy today).",
+      "_owner_expand": "OWNER ORDER 2026-08-11 (second, an hour after the reopen): ปรับแผนขยาย p2 ให้เข้มงวดและ meaningful มากกว่านี้ (แบ่งทำหลาย session ก็ได้) เพราะมันสำคัญมาก. The thin 4-rider list is replaced by the multi-session program below: one work item per judged surface class, each carrying its own MECHANISM, its own INSTRUMENT (how the claim is measured, declared before the build), and its own CLOSE CONDITION. One item per session-scale round, R1 stop-loss per mechanism, full critic ladder on every full frame. The phase exit stays the three-part reopened bar (rows + four 100% crops + critic-top3), plus the map-coverage band once P2s-6's instrument exists."
     },
     {
       "id": "P3",
@@ -660,7 +679,32 @@
         "P2/P2f",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "59107ae41b4a1932cb3041fe2b248c190e42e710",
+      "verdicts": {
+        "P2": "change: ขยายตามคำสั่งเจ้าของครั้งที่สอง ('ปรับแผนขยาย p2 ให้เข้มงวดและ meaningful มากกว่านี้ แบ่งทำหลาย session ก็ได้ เพราะมันสำคัญมาก') — โปรแกรม 7 ข้อ P2r-1..7 หนึ่งข้อต่อคลาสผิวที่กรรมการชี้ ทุกข้อมี MECHANISM+INSTRUMENT+CLOSE ของตัวเอง หนึ่งข้อต่อรอบ session-scale · เพิ่มของที่แผนไม่เคยมี: เครื่องวัด map-coverage % ของเฟรม (ช่องว่าง 4.9 vs 50-66% ที่วัดไว้แต่ไม่มีใครพิมพ์ได้) และ exit harness ที่ทำให้ bar 4-crop รันซ้ำได้เป็นคำสั่ง + triage DEBT 15 แถวที่ due ที่ P2",
+        "P4": "keep: รอหลัง P2 ตามคำสั่ง reopen — ไม่มีข้อมูลใหม่",
+        "P5": "keep: ไม่กระทบ — หนี้ RANK/คำถามหัวเตียงยังเป็นเนื้องานเฟสนี้"
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "OWNER ORDER #2: P2 expanded to 7-item multi-session program with per-item instruments.",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "bcb0263b8b7c37ae027fb16a1a4d66dc8a144934"
+  "last_review_commit": "59107ae41b4a1932cb3041fe2b248c190e42e710"
 }
