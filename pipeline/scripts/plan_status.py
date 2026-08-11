@@ -316,7 +316,16 @@ def debt_lines(plan):
     if due:
         out.append(f"            DUE NOW at {cur['id']}: {', '.join(due)} — "
                    f"their due phase has arrived.")
-    bad = DEBT.check(led, plan_phases=phases)
+    # The standard is passed so image_row doors can actually RE-RUN. Without it
+    # they return NOT RUN, and the opener printed "!! DEBT-09: marked built ...
+    # no standard loaded" on a row whose door resolves fine — a false alarm at
+    # the top of every session is how a warning column gets ignored.
+    try:
+        import deliverable_check as _DCH
+        _std = _DCH.load_standard()
+    except Exception:                                   # noqa: BLE001
+        _std = None
+    bad = DEBT.check(led, plan_phases=phases, standard=_std)
     for s in bad[:3]:
         out.append(f"            !! {s}")
     return out
