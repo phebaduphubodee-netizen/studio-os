@@ -205,9 +205,22 @@ def _score_deliverable(name, quick=False, frame=True):
     out = _outdir()
     dump_path = os.path.join(out, f"room_{name}.scene.json")
     objs = scene_dump.dump()
+    _dump_doc = {"blend": bpy.data.filepath, "schema": "scene-dump@2",
+                 "objects": objs}
+    # DRW-1b: the camera's floor polygon rides every dump so sheet_recon can
+    # frustum-test DRAWN rects (which carry no object flag). No camera -> key
+    # absent -> the recon treats frustum as unknown, which BLOCKS (vacuous-zero
+    # law) — absence must never read as clearance.
+    try:
+        _poly = scene_dump.camera_floor_poly_mm()
+    except Exception as _pe:                            # noqa: BLE001
+        _poly = None
+        print(f"  !! camera_floor_poly failed ({_pe}) — dump ships without it; "
+              f"sheet_recon will read frustum as unknown, which blocks (honest)")
+    if _poly:
+        _dump_doc["camera"] = {"floor_poly_mm": _poly}
     with open(dump_path, "w", encoding="utf-8") as f:
-        json.dump({"blend": bpy.data.filepath, "schema": "scene-dump@2",
-                   "objects": objs}, f, indent=1, ensure_ascii=False)
+        json.dump(_dump_doc, f, indent=1, ensure_ascii=False)
     print(f"  scene dump: {len(objs)} mesh objects -> {dump_path}")
     if frame and not quick:
         # P2r-6 — per-material id mask for the MAP-COVERAGE census. Runs ONLY

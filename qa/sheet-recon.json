@@ -63,40 +63,40 @@
    "key": "BF11_desk",
    "source": "BF label + floor2 scene-graph",
    "rect_mm": [
-    0,
-    2900,
-    600,
-    3200
+    306,
+    2850,
+    498,
+    3250
    ],
    "drawn_as": "โต๊ะทำงาน built-in BF11.320x60x280",
    "identity": {
-    "read": "built-in work desk (canonical spec re-read it as vanity โต๊ะเครื่องแป้ง — divergence recorded, both are BF11 at this wall)",
-    "by": "floor2 lane; canonical derivation differs",
-    "date": "2026-07-05"
+    "read": "โต๊ะเครื่องแป้ง (vanity) — OWNER RULED 2026-08-11, locked (R3). The floor2 lane read it as a work desk; his word ends the divergence.",
+    "by": "owner",
+    "date": "2026-08-11"
    },
    "gap": null,
-   "note": "FIRST RECON 2026-08-11: cov 0.45 — the built counter starts x306 while the drawn band starts x0, a ~306mm x-shift between two DERIVED readings of the same wall (floor2 lane put BF11 against x0; canonical element read moved it). NEXT ACTION (DRW-1 r2): re-measure the BF11 band ink by scanline on the TRUE sheet; the drawing outranks both readings (D-036). Also identity desk-vs-vanity rides this row for the owner's eye. Off-camera in the DELIV-001 frustum, so open-not-blocking",
+   "note": "RECT CORRECTED 2026-08-11 by vector measure (DRW-1b): the drawn band's principal verticals are x=306 (4399mm of ink) and x=804 (3799mm) — the canonical build (counter 306..804) was ink-true all along, and the refuted reading was the floor2 scene-graph's [0..600], which had placed the LABEL size against the wall instead of reading the strokes. My own low-zoom eyeball agreed with the wrong one; the histogram decided. Old rect [0,2900,600,3200] kept here for the record. Label-vs-drawn depth flag: BF11 label says 60cm, ink draws 498mm — same ป้าย≠วาด class the floor2 lane flagged on BF14/BF09-1.",
    "match": {
     "frame": "room_bedroom_suite_eye_p2r11.scene.json",
     "candidates": [
      {
-      "assembly": "mill@306,2600/mill__โต๊ะเครื่องแป้ง_BF11__counter",
-      "kind": "part",
-      "coverage": 0.45,
-      "footprint_m2": 1.593,
-      "in_frustum": false
-     },
-     {
       "assembly": "mill@306,2600",
       "kind": "assembly",
-      "coverage": 0.45,
+      "coverage": 0.907,
       "footprint_m2": 6.304,
       "in_frustum": true
      },
      {
+      "assembly": "mill@306,2600/mill__โต๊ะเครื่องแป้ง_BF11__counter",
+      "kind": "part",
+      "coverage": 0.9,
+      "footprint_m2": 1.593,
+      "in_frustum": false
+     },
+     {
       "assembly": "mill@306,2600/mill__โต๊ะเครื่องแป้ง_BF11__cool_body1",
       "kind": "part",
-      "coverage": 0.125,
+      "coverage": 0.231,
       "footprint_m2": 0.389,
       "in_frustum": false
      }
@@ -104,7 +104,7 @@
     "checked": "2026-08-11",
     "in_frustum": false
    },
-   "verdict": "UNRESOLVED",
+   "verdict": "matched",
    "warning": null
   },
   {
@@ -124,7 +124,7 @@
     "date": "2026-07-05"
    },
    "gap": null,
-   "note": "",
+   "note": "WEST-END DIVERGENCE noted 2026-08-11 (suite render read): the drawn band runs from x~1750-1800 while the built BF09-3 starts x2353 — ~550mm of drawn casework missing at the west end. Matched above bar (plinth cov 0.62) so the gate stays green; the fix is a build-lane geometry decision routed with the DRW-2 divergence pack. In-frustum.",
    "match": {
     "frame": "room_bedroom_suite_eye_p2r11.scene.json",
     "candidates": [
@@ -168,12 +168,12 @@
    ],
    "drawn_as": "อ่างล้างหน้าคู่ BF10.250x60x280 (ensuite south wall per floor2 reading; canonical spec places a BF10 dressing cabinet at y5250 — divergence)",
    "identity": {
-    "read": "double vanity (floor2 reading) — BF code semantics are guessed per D-037",
-    "by": "floor2 lane",
-    "date": "2026-07-05"
+    "read": "ตู้/ชั้นฝั่ง dressing — the ink label BF10.250x60x280CM attaches to the band south of the ensuite wall (y~5400-5950), which is the CANONICAL reading; the floor2 scene-graph's \"double basin counter\" guess pointed one wall north at the unlabeled ensuite fixture. D-037 still governs what the code MEANS.",
+    "by": "builder, from the label leader line in the drawing of record",
+    "date": "2026-08-11"
    },
    "gap": null,
-   "note": "BF10 appears twice in derived docs at different y — the recon judges the drawn rect only",
+   "note": "identity corrected 2026-08-11 from the label leader; rect kept (matched 0.76 against the built band either way). BF10 appears once in ink, twice in derived docs — the derived duplication is resolved in favour of the label position.",
    "match": {
     "frame": "room_bedroom_suite_eye_p2r11.scene.json",
     "candidates": [
@@ -521,7 +521,7 @@
     "date": "2026-07-05"
    },
    "gap": null,
-   "note": "",
+   "note": "with BF11 owner-ruled as vanity (SR-02), the drawn chair pulled up to it is a vanity seat — the built stool (D-023 tub chair) is the consistent identity, not a divergence.",
    "match": {
     "frame": "room_bedroom_suite_eye_p2r11.scene.json",
     "candidates": [
@@ -894,6 +894,55 @@
     "in_frustum": true
    },
    "verdict": "matched",
+   "warning": null
+  },
+  {
+   "id": "SR-19",
+   "key": "BF09-2_unit",
+   "source": "ink label BF09-2.150x60x280CM (vertical, at x~3620-3700, y~5350-6800) — revived from the floor2 lane's OWN July pending: \"เห็นป้ายแต่ผนังยังไม่ชัด → ไม่วางมั่ว รอ owner ชี้\" — the pending fell out of every queue for five weeks",
+   "rect_mm": [
+    3124,
+    5350,
+    178,
+    1500
+   ],
+   "drawn_as": "BF09-2.150x60x280CM — referent ambiguous",
+   "identity": null,
+   "gap": {
+    "reason": "the label exists but its referent cannot be read from the ink: the only candidate is the thin bundle beside the ensuite east wall (x3124-3302, run ~1.5-2.1m) and nothing 600 deep is drawn there — placing a 1.5x0.6m unit would be typing an unmeasurable number (R10). Declared, packaged for the owner's eye with the DRW-2 divergence pack; not built.",
+    "decided_by": "builder",
+    "date": "2026-08-11"
+   },
+   "note": "rect_mm records the LABEL EVIDENCE ZONE (the drawn bundle), not a claimed footprint — the label says 150x60 and the bundle is neither.",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r11.scene.json",
+    "candidates": [
+     {
+      "assembly": "wall_s0_1p0",
+      "kind": "assembly",
+      "coverage": 0.3,
+      "footprint_m2": 0.083,
+      "in_frustum": true
+     },
+     {
+      "assembly": "wall_s0_1p0/wall_s0_1p0",
+      "kind": "part",
+      "coverage": 0.3,
+      "footprint_m2": 0.083,
+      "in_frustum": true
+     },
+     {
+      "assembly": "wall_s1_3z",
+      "kind": "assembly",
+      "coverage": 0.101,
+      "footprint_m2": 0.094,
+      "in_frustum": true
+     }
+    ],
+    "checked": "2026-08-11",
+    "in_frustum": true
+   },
+   "verdict": "declared_gap",
    "warning": null
   }
  ]
