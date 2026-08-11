@@ -416,6 +416,18 @@ def _bevel_edges(width_m=BEVEL_WIDTH_M, segments=2):
         mod.segments = segments
         mod.limit_method = 'ANGLE'
         mod.angle_limit = 0.5236   # ~30deg: only bevel sharp-ish edges
+        # P2k (C3#4 on r3): the bevel existed on every box and still read as a knife
+        # edge, because its strips were FLAT-shaded — three facets inside ~3 px render
+        # as a hard line, not a round-over. Same recipe _rbox already ships: smooth
+        # every base face (they are planar, so smoothing costs the flats nothing, and
+        # the unapplied Bevel inherits face smoothness into its strips), then
+        # harden_normals so the wide faces stay flat instead of pillowing.
+        for p in obj.data.polygons:
+            p.use_smooth = True
+        try:
+            mod.harden_normals = True
+        except Exception:
+            pass
 
 
 MM = 0.001   # millimetres -> metres (room-spec@0.2 is metric)
@@ -783,6 +795,84 @@ def _proc_wood(name, base=(0.34, 0.22, 0.13, 1.0), dark=(0.20, 0.12, 0.06, 1.0),
         bsdf.inputs["Base Color"].default_value = base
         bsdf.inputs["Roughness"].default_value = rough
         print(f"  (proc wood '{name}' fallback: {e})")
+    return m
+
+
+def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None):
+    """Photographed veneer for UV-less millwork boxes (P2g, D-024). BOX projection on
+    Object coords — each face gets its own planar projection, so grain DIRECTION
+    breaks at every 90° arris the way a real veneer lay-up does. That break is the
+    point: C2-r3's mechanism read on the procedural wood was bands flowing
+    continuously across the carcass corner, a signature no veneer can produce.
+
+    COLOUR LAW: the signed albedo stays the mean BY CONSTRUCTION — the map is
+    multiplied by (albedo / map_mean), so its mean lands exactly on the signed
+    colour and the grain's light end scales proportionally. Measured on
+    oak_veneer_01's 2k set before wiring: multiply (1.58, 2.26, 3.09), clipped
+    pixels 0.00%, p99 ≤ 0.78 — the refusal recorded at _proc_wood's docstring was
+    measured on wood_floor's darker map and does not transfer to this one.
+    map_mean and tile_m are MEASURED constants carried by the preset (tile_m from
+    Poly Haven's own dimension metadata), never re-derived at build time.
+
+    Relief is Bump from the Displacement map, not NormalMap — from_pydata boxes
+    carry no UVs, so tangent-space normals are undefined (same law as _woven's
+    maps block). Guarded like every factory here: node failure → flat signed
+    colour, loudly."""
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt, bsdf = _principled(m)
+    if not bsdf:
+        return m
+    try:
+        ts = _texset(slug)
+        if not ts.get("Diffuse"):
+            raise RuntimeError(f"no Diffuse map cached for {slug!r}")
+        tc = nt.nodes.new("ShaderNodeTexCoord")
+        mp = nt.nodes.new("ShaderNodeMapping")
+        s = 1.0 / max(tile_m, 1e-6)
+        mp.inputs["Scale"].default_value = (s, s, s)
+        nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+
+        def _img(path, non_color):
+            n = _img_node(nt, path, non_color=non_color)
+            n.projection = 'BOX'
+            n.projection_blend = 0.3
+            nt.links.new(mp.outputs["Vector"], n.inputs["Vector"])
+            return n
+
+        di = _img(ts["Diffuse"], False)
+        mul = nt.nodes.new("ShaderNodeMixRGB")
+        mul.blend_type = "MULTIPLY"
+        mul.inputs["Fac"].default_value = 1.0
+        mul.use_clamp = True
+        mul.inputs["Color2"].default_value = (albedo[0] / max(map_mean[0], 1e-6),
+                                              albedo[1] / max(map_mean[1], 1e-6),
+                                              albedo[2] / max(map_mean[2], 1e-6), 1.0)
+        nt.links.new(di.outputs["Color"], mul.inputs["Color1"])
+        nt.links.new(mul.outputs["Color"], bsdf.inputs["Base Color"])
+        if ts.get("Rough") and rough_mean:
+            ri = _img(ts["Rough"], True)
+            rm = nt.nodes.new("ShaderNodeMath")
+            rm.operation = 'MULTIPLY'
+            rm.use_clamp = True
+            rm.inputs[1].default_value = rough / max(rough_mean, 1e-6)
+            nt.links.new(ri.outputs["Color"], rm.inputs[0])
+            nt.links.new(rm.outputs["Value"], bsdf.inputs["Roughness"])
+        else:
+            bsdf.inputs["Roughness"].default_value = rough
+        import glob as _g
+        hits = _g.glob(os.path.join(_cc0_root(), "textures", slug, "*_Displacement_*"))
+        if hits:
+            hi = _img(hits[0], True)
+            bump = nt.nodes.new("ShaderNodeBump")
+            bump.inputs["Strength"].default_value = 0.25
+            bump.inputs["Distance"].default_value = 0.0004
+            nt.links.new(hi.outputs["Color"], bump.inputs["Height"])
+            nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    except Exception as e:
+        bsdf.inputs["Base Color"].default_value = tuple(albedo[:3]) + (1.0,)
+        bsdf.inputs["Roughness"].default_value = rough
+        print(f"  (image wood '{name}' fallback: {e})")
     return m
 
 
@@ -2036,6 +2126,10 @@ def _material_from_preset(mat_name, preset_key):
     if f == "proc_wood":
         return _proc_wood(mat_name, base=a["rgba"], dark=a.get("dark", a["rgba"]),
                           rough=a["rough"])
+    if f == "image_wood":
+        return _image_wood(mat_name, slug=a["slug"], tile_m=a["tile_m"],
+                           albedo=a["rgba"], map_mean=a["map_mean"],
+                           rough=a["rough"], rough_mean=a.get("rough_mean"))
     if f == "glass":
         # built WITHOUT _solid: a glass Base Color is a TRANSMISSION TINT, not a
         # dielectric albedo — routing it through _solid fires a false '!! albedo WARN'
@@ -2709,7 +2803,99 @@ def _head_dir(rot):
     return "y", (1 if hy > 0 else -1)
 
 
-def _build_bed(x0, y0, W, D, H, rot=0.0):
+def _place_pillow_combo(slug, bank_parts, axis, sign, sham_mat, pillow_mat):
+    """R8 for the bed head (D-025 queue item 2): a styled pillow group is FREE FORM and
+    is ACQUIRED, never hand-lofted — three critics across three rounds read the lofts as
+    pebbles/balloons, and the clay probe of this mesh shows crumple, flanged sham edges
+    and gathered corners no loft parameter of ours expresses. The acquired unit is a
+    COMBO (one standing sham + one lying pillow, measured from its own top view), so TWO
+    instances replace the WHOLE head zone. The terry lumbar loft is skipped when the
+    combo places: its sprawl needs the full three-rank depth (fitting it into the two
+    front ranks alone scales the sham to 300 mm — a throw pillow, not a sham), and the
+    loft it displaces is the very "หมอนใบหน้าสุด" C3 called a balloon three rounds
+    running. The absent terry accent is DECLARED in the gate, not silently traded.
+
+    R9: every number here is DERIVED from pillow_bank's own parts (which derive from the
+    coverlet) — the row width, the zone depth, the rank height, the head edge. Nothing
+    types a coordinate. Fail → False, caller lofts loudly, D8 counts it.
+
+    Cloth: the combo's two meshes are told apart by their evaluated HEIGHT (the sham
+    stands ~2x the lying pillow) and dressed per the value ladder — sham cloth on the
+    standing mesh, pillowcase on the lying one — so acquisition does not flatten the
+    three-cloth ladder the DD signed."""
+    _mp = _model_path(slug)
+    if not _mp:
+        print(f"  pillow combo: no cached mesh for {slug!r} on either shelf -> loft")
+        return False
+    import json as _json
+    _sc = os.path.join(os.path.dirname(_mp), f"{slug}.scale.json")
+    try:
+        with open(_sc, encoding="utf-8") as f:
+            _sj = _json.load(f)
+    except OSError:
+        _sj = None
+    if not (_sj and _sj.get("ok")):
+        print(f"  pillow combo: {slug} has NO ASSERTED scale sidecar (asset_scale law: "
+              f"nothing may be consumed until a class is named) -> loft")
+        return False
+    xs = [v[0] for p in bank_parts for v in p["verts"]]
+    ys = [v[1] for p in bank_parts for v in p["verts"]]
+    zs = [v[2] for p in bank_parts for v in p["verts"]]
+    if not xs:
+        return False
+    zx0, zx1 = min(xs), max(xs)
+    zy0, zy1 = min(ys), max(ys)
+    z_top0 = min(zs)
+    h_cap = (max(zs) - z_top0) * 1.15          # sham rank height + lean margin
+    if axis == "x":                            # bed runs x; pillow row runs y
+        row_w, zone_d = zy1 - zy0, zx1 - zx0
+        yaw = -90.0 if sign > 0 else 90.0
+    else:                                      # bed runs y; row runs x
+        row_w, zone_d = zx1 - zx0, zy1 - zy0
+        yaw = 0.0 if sign > 0 else 180.0
+    gap = row_w * 0.04
+    half_w = (row_w - gap) / 2.0
+    ok_any = 0
+    for i in range(2):
+        # place_model FITS BEFORE it rotates, so the slot it receives must be the
+        # PRE-rotation rect: same centre as the final slot, extents (row, zone) in
+        # the model's native axes (its row runs native x; yaw turns it into place).
+        if axis == "x":
+            cx_i = zx0 + zone_d / 2.0
+            cy_i = zy0 + i * (half_w + gap) + half_w / 2.0
+        else:
+            cx_i = zx0 + i * (half_w + gap) + half_w / 2.0
+            cy_i = zy0 + zone_d / 2.0
+        if place_model(_mp, cx_i - half_w / 2.0, cy_i - zone_d / 2.0,
+                       half_w, zone_d, h_cap, rot=yaw, z0=z_top0,
+                       tag=f"bed__headset{i}", replace_material=sham_mat):
+            ok_any += 1
+    if ok_any < 2:
+        print(f"  pillow combo: only {ok_any}/2 instances placed -> loft fallback "
+              f"for the whole head (a half-acquired head reads as a mismatch)")
+        for o in [o for o in bpy.data.objects if o.name.startswith("bed__headset")]:
+            bpy.data.objects.remove(o, do_unlink=True)
+        return False
+    # value ladder: within each instance the STANDING mesh is the sham, the LYING one
+    # the pillowcase — classified by each mesh's own evaluated height, not by name.
+    for i in range(2):
+        ms = [o for o in bpy.data.objects
+              if o.type == 'MESH' and o.name.startswith(f"bed__headset{i}__acq")]
+        if len(ms) < 2:
+            continue                            # single-mesh import keeps sham cloth
+        def _zspan(o):
+            wc = [o.matrix_world @ v.co for v in o.data.vertices]
+            return (max(c.z for c in wc) - min(c.z for c in wc)) if wc else 0.0
+        ms.sort(key=_zspan)
+        for low in ms[:-1]:                     # every mesh but the tallest lies flat
+            low.data.materials.clear()
+            low.data.materials.append(pillow_mat)
+    print(f"  ACQUIRED bed head <- {slug} x2 (sham+pillow combo per side; the terry "
+          f"lumbar loft is skipped — a DECLARED absence, recorded in the gate)")
+    return True
+
+
+def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     """A real platform bed massed from beveled primitives, ROT-AWARE — base + inset mattress +
     draped duvet + two pillows at the HEAD.
 
@@ -2956,7 +3142,17 @@ def _build_bed(x0, y0, W, D, H, rot=0.0):
                 f"bed head: value_ladder.HEAD_CLOTH maps {_stem!r} to material "
                 f"{_matname!r}, which _build_bed does not weave (has: {sorted(_by_name)})")
         _mats[_stem] = _by_name[_matname]
-    for _p in styling.pillow_bank(_cov_full, axis, sign):
+    _bank = styling.pillow_bank(_cov_full, axis, sign)
+    _acq_head = False
+    _combo = (pillow_models or {}).get("head_combo")
+    if _combo:
+        _acq_head = _place_pillow_combo(str(_combo), _bank, axis, sign,
+                                        _mats["sham"], _mats["pillowsoft"])
+        if not _acq_head:
+            print("  ACQUIRE FELL BACK for the bed head -> lofts (D8 counts them)")
+    for _p in _bank:
+        if _acq_head:
+            continue        # the combo took the whole head zone (lumbar declared absent)
         _stem = _p["name"].split("__")[1].rstrip("01")
         if _p["name"].startswith("bed__"):
             # RAISE, never default. This was `_mats.get(_stem, pill_m)`: a new head piece
@@ -4120,7 +4316,9 @@ def build_suite(spec, label="suite"):
         # becomes the same wrong-way bug _build_bed exists to fix). Named, not silently "fixed":
         # rotating it now would change a shipped render for no verified gain.
         if kind == "bed":
-            _build_bed(xm, ym, wm, dm, hm, rot)
+            _build_bed(xm, ym, wm, dm, hm, rot,
+                       pillow_models=(None if spec.get("_no_acquire")
+                                      else it.get("pillow_models")))
             continue
         if kind == "bench":
             n_intercepted += kind in MODEL_MAP

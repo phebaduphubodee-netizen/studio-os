@@ -194,6 +194,23 @@ PRESETS = {
              "dark-walnut mono-timber the eye-render exposed). DESATURATED off the first "
              "build render, where a saturated amber flooded the enclosed room orange (LOOK 2026-07-16)",
         source="element1-oak-signature-wall_DD-2026-07-16.md D2/D3/D5"),
+    "oak_veneer_photo": dict(
+        # The SAME signed D5-A oak (#C7B896 satin 0.38) carried by a PHOTOGRAPHED veneer
+        # instead of the procedural wave (P2g, D-024): the wave's bands flow continuously
+        # across 90° arrises, which no real veneer lay-up can do — C2-r3 named that
+        # mechanism unprompted and ranked it the frame's #1 defect. map_mean/rough_mean
+        # are MEASURED on the cached 2k set (2026-08-10) so the signed colour stays the
+        # albedo MEAN by construction — multiply (1.58, 2.26, 3.09), clipped pixels
+        # 0.00%, p99 ≤ 0.78. tile_m = 1.83 from Poly Haven's own dimension metadata
+        # (scale asserted at ingest, never assumed).
+        factory="image_wood", space="srgb", hex="#C7B896", rough=0.38,
+        slug="oak_veneer_01", tile_m=1.83,
+        map_mean=(0.3604, 0.2117, 0.0988), rough_mean=0.5304,
+        tier="DESIGN-INTENT",
+        desc="signed light warm-oak (D5-A) as photographed CC0 veneer (Poly Haven "
+             "oak_veneer_01), box-projected so grain breaks at panel arrises; "
+             "mean-normalised to the signed #C7B896",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D5 + qa/open-decisions.json D-024"),
     "cool_plaster": dict(
         factory="painted", space="srgb", hex="#EAEDEF", rough=0.85, tier="DESIGN-INTENT",
         desc="matte COOL off-white limewash/plaster wall — the 60% ground kept cool so a "
@@ -667,6 +684,20 @@ def factory_args(preset_name):
         a["slug"] = p["slug"]
         a["tint"] = p.get("tint")
         a["variation"] = float(p.get("variation", 0.0))
+        return a
+    if p["factory"] == "image_wood":
+        # explicit branch, not the generic tail: the whitelist below SILENTLY DROPS
+        # unknown keys (its own comment says so), and slug/tile_m/map_mean are the
+        # material — losing them quietly would render the fallback and look like a
+        # texture bug. Same fail-shape the aniso note at that whitelist records.
+        a["rgba"] = srgb_hex_to_linear_rgba(p["hex"], clamp_band=True)
+        a["rough"] = min(max(float(p["rough"]), ROUGH_FLOOR), ROUGH_CEIL)
+        a["metallic"] = 0.0
+        a["slug"] = p["slug"]
+        a["tile_m"] = float(p["tile_m"])
+        a["map_mean"] = tuple(p["map_mean"])
+        if "rough_mean" in p:
+            a["rough_mean"] = float(p["rough_mean"])
         return a
     # dielectric albedo band applies to sRGB-authored non-metal, non-glass presets
     exempt = metallic == 1.0 or p["factory"] == "glass"

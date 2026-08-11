@@ -355,6 +355,20 @@
    "reverse_by": "แก้ลำดับคิวใน addendum ของ gate r3 แล้วลบแถวนี้ — ไม่มี code ผูกกับลำดับ",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-026",
+   "unit": "DELIV-001",
+   "decided_round": 0,
+   "decided_date": "2026-08-10",
+   "decided_by": "builder",
+   "question": "หมอนหัวเตียง: acquire เจอ combo ที่เป็น 'sham ตั้ง + หมอนนอน' ต่อชุด และการ fit มันลงสาม rank แคบ ๆ ของ DD จะย่อ sham เหลือ 300 มม. — จะยัดให้เข้าโครงเดิม หรือให้ combo แทนโซนหัวเตียงทั้งหมดแล้วเสีย lumbar terry ไป",
+   "in_effect": "**combo `8a57766d` ×2 ชุดแทนโซนหัวเตียงทั้งหมด** (สอง mesh/ชุด: sham มี flange + หมอนนอนมี crumple — clay probe ตัดสิน) · slot ทุกตัว DERIVE จาก pillow_bank ซึ่ง derive จาก coverlet (R9 — ไม่มีพิกัดพิมพ์มือ) · scale ASSERTED ที่ ingest (class ใหม่ `pillow_set_standing`, 501.3 มม. บน z, band 350-800 อ้าง SHAM_H/SHAM_W ของเลนเอง) · cloth ladder ของ DD รอด: mesh ตั้ง = sham cloth, mesh นอน = pillowcase, แยกด้วยความสูง mesh ไม่ใช่ชื่อ · **lumbar terry = DECLARED ABSENCE** — สามเหตุผล: (1) fit ลงสอง rank หน้าย่อ sham เหลือ 300 มม. = throw pillow ไม่ใช่ sham (2) วัตถุที่มันแทนที่คือ 'หมอนใบหน้าสุด' ที่ C3 เรียกลูกโป่งสามรอบติด (3) ของที่หายอย่างประกาศซื่อสัตย์กว่าของผิดที่ยัดไว้ (R10) · ผลอิสระยืนยัน: C2-r4 เก้าข้อไม่มีคำบ่นหมอนเลย (จากที่เป็นข้อ 1 ของ C2-p2a)",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, pipeline/scripts/build_room.py, pipeline/scripts/asset_scale.py",
+   "because": "R8: pillow เป็น free-form → ACQUIRE ห้ามปั้น และ acquire-first ต้องมี log การค้นก่อนอ้างว่าไม่มีของ (D-025, บทเรียน 592db33 — search จริงเจอของหลายสิบตัว) · การยัด combo ลงโครง rank เดิมคือการเอา parameterisation ของเราไปบังคับของจริง ซึ่งเป็น family เดียวกับที่ R8 บันทึกว่า 'the parameterisation IS the guess' · DD สาม-ความสูงเป็นของเซ็นไว้ จึงต้องบันทึกการเบี่ยงเป็น decision ที่เจ้าของ overrule ได้จากภาพ",
+   "reverse_by": "ลบ `pillow_models` ออกจาก item เตียงใน spec → loft สาม rank กลับมาครบทั้ง lumbar (หรือรัน --no-acquire ดูขา A โดยไม่แก้อะไร) แล้วลบแถว D-026 นี้ · ถ้าจะเอา lumbar กลับโดยคง combo: ต้อง derive contact ของ lumbar กับหน้าหมอน combo ก่อน (R9) ห้ามพิมพ์ z",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

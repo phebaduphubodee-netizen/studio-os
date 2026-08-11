@@ -61,6 +61,18 @@ BANDS = {
     "chair": (600.0, 1300.0, "z", _GARMENT_SRC.split("(")[0]
               + "knowledge/ergonomics/residential-clearances.md (seat 406-432, "
                 "back to ~1100)"),
+    # Two pillow classes because the useful axis follows the POSTURE, not the
+    # object: a sleeping pillow is diagnosed lying (z = loft thickness), a
+    # styled sham group standing (z = presented height). Bands cite the lane's
+    # own signed rank dimensions, which themselves derive from the delivered-bed
+    # reference (I-23-023 #499473).
+    "pillow_set_lying": (120.0, 420.0, "z",
+                         "pipeline/scripts/styling.py PILLOW_H=0.15 (a plump "
+                         "sleeping pillow lying flat) with case-loft margin"),
+    "pillow_set_standing": (350.0, 800.0, "z",
+                            "pipeline/scripts/styling.py SHAM_H=0.44 (a 650mm "
+                            "euro sham leaning upright presents ~450) + king "
+                            "sham 500x900 case note at SHAM_W"),
 }
 
 # ------------------------------------------------------------- planar refusal --
@@ -82,6 +94,8 @@ MIN_DEPTH_RATIO = {
     "vase": 0.25,           # a lathed body is near-square in plan
     "branch_dried": 0.05,
     "chair": 0.35,
+    "pillow_set_lying": 0.10,     # a lying pair is flat-ish but never a billboard
+    "pillow_set_standing": 0.30,  # a leaning sham group has real plan depth
 }
 
 

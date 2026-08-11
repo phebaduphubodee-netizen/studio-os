@@ -51,7 +51,8 @@ def test_every_preset_resolves_and_metalness_is_binary():
     everywhere (pbr-material-behavior.md:57). Kills a mid-grey-metal preset sneaking in."""
     for name in mp.PRESETS:
         a = mp.factory_args(name)
-        assert a["factory"] in ("pbr", "solid", "painted", "veneer", "proc_wood", "glass")
+        assert a["factory"] in ("pbr", "solid", "painted", "veneer", "proc_wood",
+                                "image_wood", "glass")
         if a["factory"] != "pbr":
             assert a.get("metallic", 0.0) in (0.0, 1.0), name
 
