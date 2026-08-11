@@ -536,7 +536,30 @@
         "P2/P2e",
         "P2/P2f"
       ]
+    },
+    {
+      "commit": "bfd1dcdc21097e4e712320c9c47a2bd172215b7a",
+      "verdicts": {
+        "P2": "keep: exit test เกือบครบ — D5/D8/D9 PASS แล้วรอบนี้ (D8 9→0), MODEL-FIT REJECT 0, imported 15 ≥ 8; เหลือสอง crop 100% (สัน seam หัวเตียง / weave ผ้าปลายเตียงเทียบ 0.11x) ที่ r7 ต้องรันตรง ๆ ก่อนปิดเฟส — เฟสยังถูกต้อง ไม่แตะ",
+        "P3": "keep: triage r6 ผูก opener ให้แล้ว — สามข้อหัวตาราง C2 (แสงแบนไร้ key, โคมอ่านลอยเพราะ pool ไม่ anchor ตู้ที่กล้องบัง, pelmet ขาวอ่านไม่ออกหน้าที่เพราะ cove ไม่สว่าง) + ดาวน์ไลท์ดับ 2 จาก r5 + contact AO จาก C3 — ล้วนเป็นงานแสง เฟสนี้คือคานถัดไปจริงตามกฎ build order",
+        "P4": "keep: C2#5 (ตู้โล่ง ไม่มีรองเท้า/กล่อง) + C2#7 (style_fold/หนังสือแข็ง) + legibility ของ towerback ผ่าน contents คือ scope P4 พอดี — triage รอบนี้ route ไปแล้วสามรายการ",
+        "P5": "keep: RANK debt ค้างสะสม 6 รอบยังเป็นของ P5 · เพิ่ม input ใหม่: สามเสียง C2 อิสระอ่านหัวเตียง-คือ-ระแนงว่ายังไม่เสร็จ — คำถามที่ยกให้ตาเจ้าของแล้วเป็นข้อมูล judgement ของเฟสนี้"
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f"
+      ]
     }
   ],
-  "last_review_commit": "b0019eb7370c2ccf20af664d7a7b0cbe66b61050"
+  "last_review_commit": "bfd1dcdc21097e4e712320c9c47a2bd172215b7a"
 }
