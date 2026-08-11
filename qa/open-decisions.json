@@ -475,10 +475,24 @@
    "decided_date": "2026-08-11",
    "decided_by": "builder",
    "question": "เจ้าของชี้จาก floor2_TRUE_sheet ว่าต้องมีแผงหัวเตียง (คำตัดสินนั้นเป็นของเขา ล็อกแล้ว — R3) · แผน view ไม่มีความสูง: แผงสูงเท่าไหร่ และหนา/กว้างเท่าไหร่",
-   "in_effect": "bed__headboard: หนา 60mm (ink ที่ calibration ของ sheet เอง ~1px/ซม. — เตียง 7'=210px, BF09 60ซม.=60px ยืนยันสองทาง) · กว้างเต็ม across ของเตียง (= ระหว่าง nightstand ตามแบบ, derive จาก rect) · **สูง 1.10m = DECLARED ASSUMPTION** (plan ไม่มี elevation; แหล่งอ้าง: ergonomics seated-back ~1100 ใน asset_scale + ยอด sham ~1.05 ซุกใต้พอดี) · บุ linen ตระกูล bed_base (rung ลึกสุด, ไม่ใช่โอ๊ค — D1-A) · ยืนชิดหน้าแผง BF14",
+   "in_effect": "bed__headboard: หนา 60mm (ink ที่ calibration ของ sheet เอง ~1px/ซม. — เตียง 7'=210px, BF09 60ซม.=60px ยืนยันสองทาง) · กว้างเต็ม across ของเตียง (= ระหว่าง nightstand ตามแบบ, derive จาก rect) · **สูง 1.10m = DECLARED ASSUMPTION** (plan ไม่มี elevation; แหล่งอ้าง: ergonomics seated-back ~1100 ใน asset_scale + ยอด sham ~1.05 ซุกใต้พอดี) · บุ linen ตระกูล bed_base (rung ลึกสุด, ไม่ใช่โอ๊ค — D1-A) · ยืนชิดหน้าแผง BF14 · จุดโค้ด: _build_bed → emit bed__headboard",
    "because": "element3 เขียนเอง 'headboard = the wall' = derivation เราหลุดจากแบบ; sheet วาดแถบ ~6ซม.ที่หัวเตียงแยกจาก BF14 และกรรมการ blind 8 เสียงข้ามรอบอ่านโซนนี้ว่า ไม่เสร็จ — เจ้าของอ่านแบบแล้วสั่ง; ที่เหลือ (สูง) เป็นการตัดสินแทนของ builder",
-   "where": "pipeline/scripts/build_room.py (_build_bed, emit bed__headboard)",
+   "where": "pipeline/scripts/build_room.py",
    "reverse_by": "ลบบรรทัด emit('bed__headboard', ...) บรรทัดเดียว — หรือแก้เลข 1.10 เมื่อพี่เคาะความสูงจากภาพ/แบบขยาย",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-035",
+   "unit": "DELIV-001",
+   "decided_round": 12,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "P2r-5: ผ้าขาว hero อ่านเป็น felt/พลาสติก ทั้งที่ sheen ถูก cap และ bump ไม้พิสูจน์แล้วเอื้อมไม่ถึง — ช่อง response ไหนของผ้าที่เบี่ยงจากไฟล์ pro จริง",
+   "in_effect": "ผ้าที่มี maps (เตียง 6 วัสดุ + bench_seat): Roughness = Rough map เต็ม amplitude, clamp แค่ studio band [0.03,0.97] (_CLOTH_ROUGH_LINKED, build_room.py) — ค่า signed 0.92-0.96 ของยุคก่อน-map ถูก SUPERSEDE เฉพาะผ้า mapped; ผ้าไม่มี map ใช้ path เดิมทุกตัว · audit ที่เหลือปิดโดยไม่แตะเฟรม: sheen_rough 0.5 = pro ทุกไฟล์, spec 0.35 = Italian Fabric เป๊ะ, sheen 0.4 = เพดาน Italian (PH pole 0.0 ยังเป็นคำถาม A/B ที่ study เปิดไว้ — ไม่หมุนรอบนี้ กลไกเดียวต่อรอบ)",
+   "because": "วัดแล้วทุกทาง: stats ของ study — PH pillows/bed R=LINKED · Italian Fabric R=LINKED + Sheen 0.4 + ShR 0.5 + Spec 0.35 (ช่องอื่นตรงเราหมด) · pillow ที่พิมพ์มือ = 0.75 · Rough map ของเราเอง mean 0.718/σ 0.136 — ทุก pole ชี้เลขเดียว ส่วนของเรา const 0.94-0.96 ± 0.01-0.02 เพราะชนเพดาน 0.97 = knob เอื้อมไม่ถึงที่ clamp เราสร้างเอง · instrument ใหม่ (cloth_highlights.py) เห็น: duvet p50→p99 = 10 codes vs ไม้ 62",
+   "where": "pipeline/scripts/build_room.py, pipeline/scripts/cloth_highlights.py",
+   "reverse_by": "รันด้วย --cloth-rough-band (A leg, ไม่ต้องแก้ source) หรือพลิก _CLOTH_ROUGH_LINKED = False บรรทัดเดียว",
    "owner_override": null,
    "override_date": null
   }

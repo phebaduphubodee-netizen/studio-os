@@ -1232,6 +1232,22 @@ _FABRIC_MAPS = True        # DEFAULT ON, D-022 2026-08-10. The A/B that decided 
 _FABRIC_TILE_M = 0.85      # physical metres one 2k fabric tile spans — cm-scale features,
 #                            NOT thread pitch (the 2026-07-22 probe killed thread-pitch maps
 #                            and stays honoured: nothing here is authored below the meso band)
+# P2r-5 mechanism (p2r12, D-035): on map-carrying textiles the Rough map drives
+# Roughness at FULL amplitude (clamped to the studio band) instead of being
+# squeezed into the ±_rvar band around the LOOK-tuned constant. MEASURED, not
+# taste: every pro fabric in the ground-truth stats is R=LINKED (PH pillows/bed,
+# Italian "Fabric" — which also carries EXACTLY our other channels: Sheen 0.4,
+# ShR 0.5, Spec 0.35) or a typed 0.75 (Italian's three velvet pillows); our
+# rough_linen Rough map itself measures mean 0.718 / σ 0.136 — the same pole.
+# Ours shipped const 0.92-0.96 ± 0.01-0.02: the signed values sit against
+# ROUGH_CEIL 0.97, so the symmetric-band clamp pinched the map's amplitude to
+# nothing exactly on the hero whites — a knob that could not reach, built by
+# our own clamp. The instrument sees it: p2r11 duvet p50→p99 spans 10 codes
+# while the photo veneer spans 62. The LOOK-tuned constants date from the
+# no-map sheen-compensation era and are SUPERSEDED for mapped cloth only;
+# unmapped cloth keeps the banded path untouched. A leg: --cloth-rough-band.
+_CLOTH_ROUGH_LINKED = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -1430,11 +1446,30 @@ def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, map
             nt.links.new(bmp2.outputs["Normal"], bump.inputs["Normal"])
             if ts.get("Rough"):
                 ri = _img(ts["Rough"], True)
-                rmx = nt.nodes.new("ShaderNodeMixRGB")
-                rmx.inputs["Fac"].default_value = 0.5
-                nt.links.new(field, rmx.inputs["Color1"])
-                nt.links.new(ri.outputs["Color"], rmx.inputs["Color2"])
-                nt.links.new(rmx.outputs["Color"], mr2.inputs["Value"])
+                if _CLOTH_ROUGH_LINKED:
+                    # D-035: the map at FULL amplitude, studio band as the only
+                    # clamp — the measured pro pole (see the flag's comment).
+                    # Relinking Roughness replaces mr2's link, so block 5's
+                    # ±_rvar band is deliberately out of the chain here: its
+                    # job (break the uniform lobe) is what the map now does
+                    # with real woven structure instead of isotropic noise.
+                    hi = nt.nodes.new("ShaderNodeMath")
+                    hi.operation = 'MINIMUM'
+                    hi.inputs[1].default_value = _matpre.ROUGH_CEIL
+                    lo = nt.nodes.new("ShaderNodeMath")
+                    lo.operation = 'MAXIMUM'
+                    lo.inputs[1].default_value = _matpre.ROUGH_FLOOR
+                    nt.links.new(ri.outputs["Color"], hi.inputs[0])
+                    nt.links.new(hi.outputs["Value"], lo.inputs[0])
+                    nt.links.new(lo.outputs["Value"], bsdf.inputs["Roughness"])
+                else:
+                    # A leg (--cloth-rough-band): the pre-D-035 banded read —
+                    # map co-drives mr2's Value inside [rough ± _rvar]
+                    rmx = nt.nodes.new("ShaderNodeMixRGB")
+                    rmx.inputs["Fac"].default_value = 0.5
+                    nt.links.new(field, rmx.inputs["Color1"])
+                    nt.links.new(ri.outputs["Color"], rmx.inputs["Color2"])
+                    nt.links.new(rmx.outputs["Color"], mr2.inputs["Value"])
     return m
 
 
@@ -5772,6 +5807,11 @@ if __name__ == "__main__":
         # builders would, ignoring `model`. Same discipline as --no-fabric-maps — an
         # A/B whose A leg needs a source edit is an A/B nobody re-runs.
         _spec["_no_acquire"] = True
+    if "--cloth-rough-band" in _post_dashdash():
+        # A leg of D-035's A/B: mapped textiles go back to the banded
+        # roughness read (const ± _rvar). No source edit to re-run the pair.
+        globals()["_CLOTH_ROUGH_LINKED"] = False
+        print("  [A/B] cloth roughness: banded (pre-D-035) leg")
     if "--no-fabric-maps" in _post_dashdash():
         # the A leg of D-022's A/B, kept runnable so the decision can be re-tested
         # without editing source (R6) — and so "revert by omission" is impossible.
