@@ -1304,6 +1304,19 @@ _SEWING_DART = True
 # A leg --no-coverlet-dart = the exact r18 coverlet, no source edit.
 _COVERLET_DART = True
 
+# P2r-5 (p2r22): DR blender-cloth-corner-drape RANK 1, deferred since 2026-08-11
+# ("re-tunes the whole fold family") and consumed tonight PER-PIECE, not globally:
+# LINEAR bending on the two LOOSE grey planes only — bed__throw and bed__coverlet.
+# WHY NOW AND WHY THESE TWO: C2's pick-one has been the same wording three rounds
+# ("one big smooth curve, no secondary folds", the ruler top edge, the left tent),
+# and that wording IS the DR's diagnosis of ANGULAR — the model resists double
+# curvature at any stiffness, so no value of `bending` can buy a secondary fold.
+# Tonight's bench-throw bake is the pilot: a fabric-row change moved it from shell
+# to cloth in one bake. The duvet DELIBERATELY keeps ANGULAR — its standing-fold
+# preset (compression 1.0 + bending 2.6) is the r8 win drape.py's own comment
+# protects, and this flag never touches it. A leg: --no-linear-bend = p2r21 exact.
+_LINEAR_BEND = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -4313,6 +4326,9 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         # solidify-only, so the sim is untouched by it. A leg: --no-coverlet-dart.
         corner_darts=_COVERLET_DART, sewing_force=15.0,
         hem_factor=2.0 if _COVERLET_DART else None,
+        # p2r22: DR rank 1 arrives — the line above this call has named LINEAR
+        # as the recorded NEXT mechanism since p3r2; see _LINEAR_BEND's comment
+        bending_model='LINEAR' if _LINEAR_BEND else None,
         sim_surface=True, salt=5)     # B2: per-corner bias — the owed lane-C debt
         #                               (C2 twice: corner gathers mirrored L/R)                       # the duvet + throw collide with the
     #                                             SINGLE-SHELL surface, not the
@@ -4598,6 +4614,9 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                 # record): the throw's free tails are the third "มุมกางค้าง" site
                 frames=120, fabric="knit", mat=thr_m, thickness=0.006, slack=sl,
                 quality=12, collision_quality=8, self_friction=12.0,
+                # p2r22: the throw is C2's pick-one three rounds running, in the
+                # DR's own ANGULAR words ("one big smooth curve") — see _LINEAR_BEND
+                bending_model='LINEAR' if _LINEAR_BEND else None,
                 slack_verts=_wts, collide_dist=0.015)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
@@ -6080,6 +6099,10 @@ if __name__ == "__main__":
         # A leg of the p2r19 coverlet dart+hem A/B — the exact r18 coverlet
         globals()["_COVERLET_DART"] = False
         print("  [A/B] coverlet corners: no dart/hem (pre-p2r19) leg")
+    if "--no-linear-bend" in _post_dashdash():
+        # A leg of the p2r22 bending-model A/B — the exact p2r21 throw+coverlet
+        globals()["_LINEAR_BEND"] = False
+        print("  [A/B] throw+coverlet bending: ANGULAR (pre-p2r22) leg")
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True

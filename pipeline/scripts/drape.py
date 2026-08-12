@@ -261,7 +261,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                shred_guard=False, collision_quality=4, bend_scale=1.0,
                self_friction=None, bend_verts=None, bend_floor=0.15,
                sew_edges=None, sewing_force=15.0,
-               hem_verts=None, hem_factor=2.0):
+               hem_verts=None, hem_factor=2.0, bending_model=None):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -302,6 +302,16 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     s.shear_stiffness = shr
     s.bending_stiffness = ben * bend_scale     # ladders may stiffen a wad-prone piece
     s.air_damping = air
+    if bending_model:
+        # DR blender-cloth-corner-drape rank 1, consumed PER-CALL only (p2r22):
+        # the ANGULAR default resists double curvature at ANY stiffness, so a
+        # loose sheet ends as one smooth curve — the exact critic read on the
+        # throw/coverlet three rounds running. LINEAR lets a plane buckle in two
+        # directions and form secondary folds. Global consumption was refused
+        # twice in this file's own comments (it would soften the duvet's
+        # standing-fold preset), which is why this is an opt-in parameter and
+        # never a default. Fails LOUD on an unknown value (API enum).
+        s.bending_model = bending_model
     # LOCAL bending relief — DR blender-cloth-corner-drape rank 3 (the half whose
     # slot is still free: vertex_group_shrink is spent on slack, the BENDING group
     # is not). A standing corner ear is double curvature refused: the ANGULAR
@@ -510,7 +520,7 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
                    cell=0.028, frames=55, bounds=None, thickness=0.006, slack=0.05,
                    sim_surface=False, salt=0, quality=8, collision_quality=4,
                    self_friction=None, corner_darts=False, sewing_force=15.0,
-                   hem_factor=None):
+                   hem_factor=None, bending_model=None):
     """A coverlet: a sheet lying on the mattress that OVERHANGS three sides and
     falls under gravity — the fold at the mattress edge is solved, not authored.
 
@@ -607,7 +617,8 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
                           collision_quality=collision_quality,
                           self_friction=self_friction,
                           sew_edges=_sew or None, sewing_force=sewing_force,
-                          hem_verts=_hem, hem_factor=hem_factor or 2.0)
+                          hem_verts=_hem, hem_factor=hem_factor or 2.0,
+                          bending_model=bending_model)
 
     # The ladder that solves the cut lives in search_bake — the throw needs the very
     # same one, and a second copy of it would be the next thing to drift.

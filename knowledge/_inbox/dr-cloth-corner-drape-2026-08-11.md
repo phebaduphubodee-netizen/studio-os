@@ -30,8 +30,14 @@ kept iterating were never the mechanism.
 
 1. **`settings.bending_model = 'LINEAR'`** + bending 0.15-0.35 with mass
    ~0.12 — the biggest lever; failure mode: corner shard collapse if bending
-   falls too low for the vertex mass. **NOT consumed yet** — it re-tunes the
-   whole fold family mid-phase; recorded as the NEXT mechanism.
+   falls too low for the vertex mass. **CONSUMED 2026-08-12 (p2r22,
+   gate-DELIV001-P2r22) — PER-PIECE, not globally:** `bending_model` param on
+   `drape.bake_sheet`/`bake_bed_cover`, set on bed__throw + bed__coverlet
+   only; the duvet deliberately keeps ANGULAR (its standing-fold preset is
+   the r8 win the global form would have destroyed — the very reason this
+   row sat deferred). Fabric-row bending values kept (no re-tune); no shard
+   collapse at either quick or full. Result: C2 dropped the cloth from #1
+   for the first time in four rounds.
 2. **Self-collision distance 1-3 mm + `self_friction` 5→~12-15** — we already
    had the distance (0.003); the friction half was never set. CONSUMED.
    Failure mode: tunnelling if distance shrinks further.
