@@ -621,6 +621,20 @@
    "reverse_by": "เปิด P2k กลับเป็น item เรขาคณิตของ P2 ถ้าหลัง P4 ships directional-light pass แล้ว C3 ยังไฟล์ arris read ในสามรอบแรกหลังจากนั้น — หรือพี่ overrule จากภาพเมื่อไหร่ก็ได้",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-044",
+   "unit": "DELIV-001",
+   "decided_round": 23,
+   "decided_date": "2026-08-12",
+   "decided_by": "builder",
+   "question": "ค่าที่สามของผ้า wardrobe ('matte-black' ใน spec) ถูก deliver ด้วย m_mill_backing — material ของแผ่นหลังระแนงที่ถูกออกแบบให้เป็นตัวดูดแสง (D2-A) — เสื้อดำจึงวัดได้ p50 = 7 sRGB codes (fold contrast ~0) และ C3 อ่านเป็น 'หลุมดำ' สองรอบติด: เสื้อดำควรใส่อะไร",
+   "in_effect": "garment ที่ได้ token 'backing' ใส่ m_mill_garment_black — ผ้าทอดำจริงผ่าน _woven: albedo linear (0.032,0.032,0.035) ~ พื้น reflectance ของผ้าดำจริง (ใต้ KB §8.1 dielectric floor 0.04 เล็กน้อย), cloth signature แถว linen, sheen 0.4 (เพดาน ground-truth), spec 0.35 (pro pole) — รอยพับอ่านด้วย response ไม่ใช่ albedo · backer ของระแนงไม่ถูกแตะ (ค่า signed เดิมยืนทุกตัว) · นี่คือการตีความค่า signed 'matte-black' ให้เป็น TEXTILE ไม่ใช่การแก้ค่า signed ใด",
+   "because": "วัดก่อนตัดสิน: หน้าอกเสื้อดำใน p2r21/p2r22 p50=7 codes p5=1 — ระดับที่รอยพับหายทั้งหมดโดย construction เพราะ backer ถูกจูนให้ shadow gap อ่านดำสนิท (คนละ job) · ผ้าดำจริงสะท้อน ~2-5% และยังเห็น weave/fold — คำ C3 สองรอบ ('ดำสนิทเกินจนไม่เห็นรายละเอียด เหมือนวัตถุดำทึบ/หลุมดำ') คือการอ่านที่ตรงกับกลไกที่วัดได้",
+   "where": "pipeline/scripts/build_room.py (_GARMENT_BLACK + m_mill_garment_black + router style_tok)",
+   "reverse_by": "--no-garment-black (map token กลับไป backer เหมือน pre-p2r23 โดยไม่แก้ source) หรือ revert commit ของ p2r23 — พี่ overrule จากภาพได้เสมอ",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

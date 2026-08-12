@@ -68,7 +68,7 @@ import math
 # ---------------------------------------------------------------------------
 
 def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6,
-               salt=0, salt_rect=None):
+               salt=0, salt_rect=None, salt_amp=0.005):
     """A flat QUAD grid in world XY at height `z` — the undeformed state of a
     simulated sheet. Returns (verts, faces) in WORLD metres.
 
@@ -171,11 +171,15 @@ def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6,
     # settled; salt=0 = the exact prior sheet.
     if salt and salt_rect:
         rx0, ry0, rx1, ry1 = salt_rect
+        # `salt_amp` (p2r23): the deviation bound, default = the constant this block
+        # always used, so every existing caller is byte-identical. A LAID edge (the
+        # throw's on-bed head edge) wanders more than a falling hem's in-plane bias
+        # — the caller passes its own bound, capped well under MAX_HEM_WANDER.
         for n_, (vx, vy, vz) in enumerate(verts):
             g = min(1.0, max(rx0 - vx, vx - rx1, ry0 - vy, vy - ry1, 0.0) / 0.15)
             if g > 0.0:
-                verts[n_] = (vx + dev(n_ * 131, 0.005, salt) * g,
-                             vy + dev(n_ * 137, 0.005, salt + 7) * g, vz)
+                verts[n_] = (vx + dev(n_ * 131, salt_amp, salt) * g,
+                             vy + dev(n_ * 137, salt_amp, salt + 7) * g, vz)
     return verts, faces
 
 
@@ -202,7 +206,8 @@ def _mitre_radius(u, v, keep):
     return keep + (1.0 - keep) * (c2 * c2) ** 3
 
 
-def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016, salt=0):
+def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016, salt=0,
+                 crease_wander=0.0):
     """A quad-grid sheet whose HEAD edge is already TURNED BACK over itself — the
     feedstock of a made bed's duvet. Returns (verts, faces) in WORLD metres.
 
@@ -242,17 +247,28 @@ def folded_sheet(x0, y0, w, d, z, band, head, cell=0.028, lift=0.016, salt=0):
     t0 = y0 if axis == "x" else x0
     ns = max(MIN_SEGMENTS, int(round((band + main) / float(cell))))
     nt = max(MIN_SEGMENTS, int(round(cross / float(cell))))
+    if not 0.0 <= crease_wander <= 2.0 * cell:
+        raise ValueError(f"folded_sheet: crease_wander {crease_wander} outside "
+                         f"0..2*cell ({2.0 * cell:.3f}) — beyond that the hinge "
+                         f"cells shear and the crease reads torn, not sewn")
     verts = []
     for i in range(ns + 1):
         s = -band + (band + main) * i / ns          # s<0 = the folded-back top layer
-        u = c0 + into * abs(s)
-        # the top layer rises to `lift` over ~2 cells so the crease is a bendable
-        # hinge for the solver, not a zero-thickness pinch it must tear open
-        zz = z + (lift * min(1.0, -s / (2.0 * cell)) if s < 0 else 0.0)
         for j in range(nt + 1):
             t = t0 + cross * j / nt
-            if salt and s > 0:
-                g = s / main                      # 0 at the fold, 1 at the free foot edge
+            # crease wander (p2r23, C2 r19-r22 on the bench fold: the 180° crease
+            # renders as a RULER because the fold line is geometrically straight).
+            # A per-COLUMN shift of the arc-length origin moves where the fold
+            # sits while both layers stay paired by construction (u depends on
+            # |s_eff|, so the doubled plan and the crease move together and total
+            # cloth length is untouched). 0.0 = the exact prior sheet.
+            se = s + (dev(j, crease_wander, salt + 13) if crease_wander else 0.0)
+            u = c0 + into * abs(se)
+            # the top layer rises to `lift` over ~2 cells so the crease is a bendable
+            # hinge for the solver, not a zero-thickness pinch it must tear open
+            zz = z + (lift * min(1.0, -se / (2.0 * cell)) if se < 0 else 0.0)
+            if salt and se > 0:
+                g = se / main                     # 0 at the fold, 1 at the free foot edge
                 u2 = u + into * dev(i * 131 + j, 0.006, salt) * g
                 t2 = t + dev(i * 137 + j, 0.006, salt + 7) * g
             else:

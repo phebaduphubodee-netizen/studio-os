@@ -1304,6 +1304,31 @@ _SEWING_DART = True
 # A leg --no-coverlet-dart = the exact r18 coverlet, no source edit.
 _COVERLET_DART = True
 
+# P2r-5 (p2r23): THE RULER EDGES DIE IN THE FEEDSTOCK. Two of C2's three named
+# residual sites on the cloth are straight LINES a solver never bends away: the
+# throw's on-bed head edge (a straight feedstock cut lying flat, read as "รีดมา
+# ทั้งแผ่น" at r22) and the bench fold's 180° crease (geometrically straight since
+# birth, read knife/paper four rounds). Both get bounded dev-based wander at the
+# SOURCE — flat_sheet salt_amp on the throw's head strip, folded_sheet
+# crease_wander on the bench fold — never a typed shape (R9: derived deviation,
+# deterministic salt). The duvet's own folded_sheet call passes NO wander and is
+# byte-identical. A leg: --no-edge-wander = the exact p2r22 feedstock.
+_EDGE_WANDER = True
+
+# P2r-5 (p2r23) the BLACK GARMENT: the spec's third signed textile value is
+# "matte-black", and the implementation borrowed m_mill_backing — the slat-wall
+# BACKER, a material whose whole job (D2-A) is to be the light-sink the shadow
+# gaps read against. On a garment that job is the defect: measured p50 = 7 sRGB
+# codes in the black shirt's body (fold contrast ~0), C3's "หลุมดำ" verbatim, two
+# rounds running. Garments tokenised "backing" now wear m_mill_garment_black — a
+# WOVEN black textile at the real-black-cloth floor (linear ~0.033; KB §8.1 puts
+# the plausible dielectric floor at 0.04 and real black fabric reflectance sits
+# just under it) with the linen cloth signature, sheen at the 0.4 ceiling and
+# spec 0.35 (the measured pro pole) so folds read by response, not by albedo.
+# The backer itself is UNTOUCHED — no signed tone edited (D-044 records this;
+# reverse: --no-garment-black maps the token back to the backer).
+_GARMENT_BLACK = True
+
 # P2r-5 (p2r22): DR blender-cloth-corner-drape RANK 1, deferred since 2026-08-11
 # ("re-tunes the whole fold family") and consumed tonight PER-PIECE, not globally:
 # LINEAR bending on the two LOOSE grey planes only — bed__throw and bed__coverlet.
@@ -2402,7 +2427,12 @@ def _dress_scene(spec):
         if _seat is not None:
             tv, tf = softgoods.folded_sheet(bx + 0.045, by + bd - 0.46, bw - 0.09,
                                             0.66, bh + 0.02, band=0.18, head="y-",
-                                            cell=0.035, salt=11)
+                                            cell=0.035, salt=11,
+                                            # p2r23 (_EDGE_WANDER): the 180° crease
+                                            # line wanders per column — the fourth
+                                            # round of "สันตรง" dies in the feedstock
+                                            crease_wander=(0.010 if _EDGE_WANDER
+                                                           else 0.0))
             _pin = [k for k, p in enumerate(tv) if p[1] < by + bd - 0.28]
             try:
                 # fabric "knit", not "linen" (p2r21, C2-r19/r20 "slab-crisp knife
@@ -3359,6 +3389,17 @@ def _suite_materials(spec=None):
     # three places", and it did not: it made a FOURTH copy. One tone, one source.
     linen = _woven("m_mill_linen", _vl.rgba("m_mill_linen"), rough=0.94,
                    cloth=_matpre.cloth_args("linen"), sheen=0.2, spec=0.25)
+    # p2r23 (_GARMENT_BLACK, D-044): the wardrobe's third signed textile VALUE is
+    # matte-black, and it was delivered by the slat BACKER's material — a light
+    # sink by design (D2-A), measured p50 = 7 sRGB codes on the shirt body =
+    # C3's "หลุมดำ". A black GARMENT is woven cloth at the real-black-fabric
+    # floor: albedo linear ~0.033 (just under KB §8.1's 0.04 dielectric floor,
+    # where real black cloth reflectance sits), the linen cloth signature, sheen
+    # at the 0.4 ceiling + spec 0.35 (the measured pro pole) — folds read by
+    # RESPONSE, which a light sink by definition cannot give. Backer untouched.
+    garment_black = _woven("m_mill_garment_black", (0.032, 0.032, 0.035, 1.0),
+                           rough=0.90, cloth=_matpre.cloth_args("linen"),
+                           sheen=0.4, spec=0.35)
     _opb = _principled(opal)[1]
     if _opb:
         _set(_opb, "Emission Color", (1.0, 0.97, 0.92, 1.0))
@@ -3412,8 +3453,14 @@ def _suite_materials(spec=None):
             # class) — the signed suite cloth is strictly better, applied by the same
             # token vocabulary the loft router below uses.
             obj.data.materials.clear()
-            obj.data.materials.append({"linen": linen, "backing": backing,
-                                       "towel": towel}.get(_stok, linen))
+            # "backing" ON A GARMENT means the matte-black TEXTILE, not the slat
+            # backer (p2r23, D-044) — style_tok is only ever set on soft styling
+            # objects, so the backer itself (painted by name, not by token) is
+            # untouched. --no-garment-black restores the pre-p2r23 mapping.
+            obj.data.materials.append({
+                "linen": linen,
+                "backing": garment_black if _GARMENT_BLACK else backing,
+                "towel": towel}.get(_stok, linen))
             continue
         if obj.get("ph_model"):                          # imported models keep their own PBR
             continue
@@ -4557,7 +4604,14 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
             # exactly collide_dist from the duvet's roll starts inside the repulsion
             # zone and the ejection impulse crumples the whole band into shards
             # (fx7's torn-cloth read — the bbox guards cannot see a contained crumple)
-            vs, fs = softgoods.flat_sheet(tx, ty, tdx, tdy, _z_top + 0.020, cell=0.022)
+            # p2r23 (_EDGE_WANDER): the head-edge strip gets bounded in-plane wander
+            # so the laid edge stops rendering as a ruler — salt_rect excludes all
+            # but the ~0.12 m head strip, amp 0.012 stays well under MAX_HEM_WANDER
+            vs, fs = softgoods.flat_sheet(
+                tx, ty, tdx, tdy, _z_top + 0.020, cell=0.022,
+                salt=13 if _EDGE_WANDER else 0,
+                salt_rect=(tx + 0.12, ty - 1.0, tx + tdx + 1.0, ty + tdy + 1.0),
+                salt_amp=0.012)
             # FULL slack only on the part lying on the bed; the FALL gets a PARTIAL
             # weight, not zero. Zero was the first cut, and LOOK round-2 #2 read the
             # result off the render: the largest cloth face in both frames (~1.4 m of
@@ -6103,6 +6157,14 @@ if __name__ == "__main__":
         # A leg of the p2r22 bending-model A/B — the exact p2r21 throw+coverlet
         globals()["_LINEAR_BEND"] = False
         print("  [A/B] throw+coverlet bending: ANGULAR (pre-p2r22) leg")
+    if "--no-edge-wander" in _post_dashdash():
+        # A leg of the p2r23 feedstock-wander A/B — the exact p2r22 edges
+        globals()["_EDGE_WANDER"] = False
+        print("  [A/B] throw head edge + bench crease: straight (pre-p2r23) leg")
+    if "--no-garment-black" in _post_dashdash():
+        # A leg of the p2r23 black-garment A/B — the backer material as before
+        globals()["_GARMENT_BLACK"] = False
+        print("  [A/B] black garment: slat-backer material (pre-p2r23) leg")
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True

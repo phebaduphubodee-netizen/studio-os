@@ -275,6 +275,67 @@ def test_folded_knit_rejects_degenerate_and_bad_roll():
         sg.folded_knit(0.17, 0.25, 0.042, roll=0.7)
 
 
+# --------------------------------------------------------- feedstock edge wander
+
+def test_flat_sheet_salt_amp_default_is_byte_identical():
+    """salt_amp defaults to the constant the salt block always used — every
+    existing caller must get the exact same sheet."""
+    kw = dict(salt=5, salt_rect=(0.2, 0.2, 1.8, 1.0))
+    a, _ = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, **kw)
+    b, _ = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, salt_amp=0.005, **kw)
+    assert a == b
+
+
+def test_flat_sheet_salt_amp_scales_the_wander():
+    base, _ = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5)
+    loud, _ = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, salt=5,
+                            salt_rect=(0.3, -1, 3.0, 2.0), salt_amp=0.012)
+    # only verts within the 0.15m ramp outside salt_rect (x < 0.3) may move
+    moved = [abs(a[0] - b[0]) + abs(a[1] - b[1]) for a, b in zip(base, loud)]
+    assert max(moved) > 1e-4, "no vert wandered"
+    assert max(moved) <= 2 * 0.012 + 1e-9, "wander exceeded its own bound"
+    for (vx, vy, vz), m in zip(base, moved):
+        if vx > 0.45:                      # deep inside salt_rect: untouched
+            assert m < 1e-12
+
+
+def test_folded_sheet_crease_wander_moves_the_fold_line():
+    """The crease (the u-extreme per column) must vary along the width with
+    wander on, be dead straight with it off, and keep vert/face counts equal
+    (both layers move together — the pairing is the whole point)."""
+    kw = dict(band=0.18, head="y-", cell=0.035, salt=11)
+    a, fa = sg.folded_sheet(0.0, 0.0, 1.0, 0.66, 0.45, **kw)
+    b, fb = sg.folded_sheet(0.0, 0.0, 1.0, 0.66, 0.45, crease_wander=0.010, **kw)
+    assert len(a) == len(b) and fa == fb
+    # crease = min y per column, sampled only NEAR the fold (y < 0.03) where the
+    # foot-ward salt deviation is ~zero, so x stations identify columns cleanly
+    import collections
+    def crease_ys(verts):
+        cols = collections.defaultdict(list)
+        for x, y, z in verts:
+            if y < 0.03:
+                cols[int(round(x * 29))].append(y)   # nearest x-station (nt=29)
+        return [min(v) for _, v in sorted(cols.items())]
+    ca, cb = crease_ys(a), crease_ys(b)
+    assert len(ca) >= 10
+    assert max(ca) - min(ca) < 1e-9, "baseline crease must be straight"
+    spread = max(cb) - min(cb)
+    assert 1e-4 < spread <= 2 * 0.010 + 1e-9, f"crease spread {spread:.4f} out of band"
+
+
+def test_folded_sheet_crease_wander_zero_is_byte_identical():
+    kw = dict(band=0.18, head="y-", cell=0.035, salt=11)
+    a, _ = sg.folded_sheet(0.0, 0.0, 1.0, 0.66, 0.45, **kw)
+    b, _ = sg.folded_sheet(0.0, 0.0, 1.0, 0.66, 0.45, crease_wander=0.0, **kw)
+    assert a == b
+
+
+def test_folded_sheet_crease_wander_rejects_hinge_shear():
+    with pytest.raises(ValueError):
+        sg.folded_sheet(0.0, 0.0, 1.0, 0.66, 0.45, band=0.18, head="y-",
+                        cell=0.035, crease_wander=0.09)
+
+
 # ------------------------------------------------------------------ stack + throw
 
 def test_folded_stack_is_not_perfectly_aligned():
