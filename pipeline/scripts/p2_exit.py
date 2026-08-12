@@ -25,9 +25,10 @@ EXIT CODES ARE A CONTRACT (R11): 0 = every rung ran and every DECLARED cut
 holds · 1 = a declared cut is broken · 2 = COULD NOT RUN (missing file, a _ql
 playblast, a scene dump without aabb) — and "could not look" must never print
 like "looked and it was fine". Rungs whose bar is judged-beside-anchor (the
-two energy crops, the rug profile trend) print their numbers and archive their
-crops; they cut nothing here because the reopened bar cuts them at the critic
-clause, not at a number.
+two energy crops) print their numbers and archive their crops; they cut
+nothing here because the reopened bar cuts them at the critic clause, not at
+a number. The rug edge graduated from that list at P2r-3: its cut is declared
+on the crop registry with its grounding.
 """
 from __future__ import annotations
 
@@ -85,6 +86,12 @@ CROPS = {
         "asks": "rug boundary reads as a rolled-over edge, not a 90-degree step",
         "ours_box": (0.06, 0.82, 0.32, 0.99),    # binding + floor, bottom-left
         "declared": "2026-08-11 from the p3r2 frame",
+        # CUT DECLARED at P2r-3 (was report-only): an ideal step reads 0-1 px by
+        # this rung's own first-crossing rule and a resample-sharp real step
+        # 1-2 px (edge_rise_width docstring), so >= 3.0 px sits strictly above
+        # the whole step band. Grounded before the cut went live: the frame it
+        # judges read 5.0 px two consecutive rounds (p2r14/p2r15).
+        "cut_rise_px": 3.0,
     },
     "garment_shells": {
         "kind": "dup_shells",
@@ -207,7 +214,7 @@ def rung_autocorr(ours_im, spec):
 def edge_rise_width(L, lo_frac=0.1, hi_frac=0.9):
     """Median 10-90% rise width (px) of the strongest vertical transition per
     column. A resample-sharp 90-degree step reads ~1-2 px; a rolled-over edge
-    reads wider and asymmetric. Report-only until P2r-3 runs its own A/B."""
+    reads wider and asymmetric. Cut declared at P2r-3 (see the crop registry)."""
     H, W = L.shape
     widths = []
     for x in range(W):
@@ -343,9 +350,23 @@ def run(render_path, scene_path=None, only=None, tag=None):
         elif kind == "edge_profile":
             c, _, res = rung_edge(ours_im, spec)
             p1 = _save(c, STAGE_DIR, tag, f"{key}-ours-100pct.png")
-            print(f"[{key}] edge 10-90% rise width median = "
-                  f"{res['rise_px_median']} px  (report-only; step ~1-2 px, "
-                  f"rolled reads wider; crop: {p1})")
+            w = res["rise_px_median"]
+            cut = spec.get("cut_rise_px")
+            if w is None:
+                # no measurable transition inside a box declared to hold one —
+                # "could not look" must never print like "looked and it was fine"
+                could_not.append((key, "no luminance transition found in the box"))
+                print(f"[{key}] COULD NOT RUN — no transition in the declared box")
+            elif cut is not None:
+                ok = w >= cut
+                if not ok:
+                    broken.append(key)
+                print(f"[{key}] edge 10-90% rise width median = {w} px vs cut "
+                      f">= {cut} -> {'ROLLED (pass)' if ok else 'STEP (cut broken)'}"
+                      f"  (crop: {p1})")
+            else:
+                print(f"[{key}] edge 10-90% rise width median = {w} px  "
+                      f"(report-only; crop: {p1})")
 
     print()
     if could_not:
@@ -355,8 +376,8 @@ def run(render_path, scene_path=None, only=None, tag=None):
     if broken:
         print(f"P2-EXIT: declared cut broken on: {', '.join(broken)}")
         return 1
-    print("P2-EXIT: every rung ran; declared cuts hold (energy/profile rungs "
-          "are judged beside anchors at the critic clause, not here)")
+    print("P2-EXIT: every rung ran; declared cuts hold (energy rungs are "
+          "judged beside anchors at the critic clause, not here)")
     return 0
 
 

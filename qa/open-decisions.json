@@ -537,6 +537,34 @@
    "reverse_by": "รัน --wood-fold-legacy (A leg = p2r14 เป๊ะ) หรือ revert commit p2r15 คอมมิตเดียว; เลข grain_run_m/feature_scale อยู่ที่ preset oak_veneer_photo แก้บรรทัดเดียว",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-039",
+   "unit": "DELIV-001",
+   "decided_round": 16,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "P2r-3 พรม: dent 12-15มม. อยู่ในเมชแล้วแต่ตา blind ยังอ่าน 'ไม่ยุบเลย' (C2-r15#11) — เพิ่ม depth อีกหรือเปลี่ยนกลไก · fringe ต้องสร้างไหม · rug_edge cut ตั้งที่ไหน",
+   "in_effect": "(1) CRUSH -> TONE ไม่ใช่ depth: attribute 'crush' เขียนจาก footprint ที่ derive จริงใน _rug_contact_press (R9 — พรมไม่เคยรู้พิกัด) -> shader mix สีเข้ม (fibre-root) ด้วย Fac = crush^2 x 0.6 · เหตุ: แสงนุ่มห้องนี้ฆ่า relief cue (วัดแล้วสองครั้ง: wood-bump 4x ขยับ energy 0.002; cloth bump สุจริต render เป็นศูนย์) และ depth เคยหมุนแล้วครั้งหนึ่ง r7 (6-8->12-15มม.) — หมุนซ้ำ = R1 halt · รูปทรง rim มาจาก reference pool อ่านสด 5 hit/3 โปรเจ็กต์: งานส่งจริงไม่ปั้น dent เลย ใช้ rim มืดแคบชิดฐาน ~10-20% ของความกว้างฐาน -> ^2 บีบ rim เข้า inner ~40% ของ feather · ค่า 0.6 = ~70% ของ loud 0.9 (กฎ amplitude-bisect; diff วัดที่ loud: rim เข้มขึ้น 10-12L เฉพาะโซน contact) (2) FRINGE ประกาศตัดออกโดย reference: ทั้ง pool เจอ edge treatment ครั้งเดียวแบบจาง — การสร้าง fringe คือเกินมาตรฐานงานส่ง ไม่ใช่เข้าใกล้ (3) rug_edge rung เลื่อนขั้นจาก report-only เป็น CUT >= 3.0px (step ในอุดมคติ 0-1px, resample-sharp 1-2px; เฟรมจริงอ่าน 5.0px สองรอบก่อนตั้ง cut) + NaN = COULD NOT RUN ไม่ใช่ผ่านเงียบ",
+   "because": "C2-r15#11 (คลาส 'ของลอยบนพรม' ที่ critic อ่านซ้ำ) + R4b reference-before-build: กติกา rim จาก pool ที่เป็น sellability bar จริงของ DELIV-001; anchors judge never dictate — ไม่มี pixel ไหนถูก copy, เอาแค่ band",
+   "where": "pipeline/scripts/build_room.py",
+   "reverse_by": "--no-crush-shade = A leg (เรขาคณิต dent ล้วนแบบ p2r15) · --crush-shade=X ปรับ LOOK-only · ค่า committed อยู่ที่ _wire_crush_shade default 0.6 บรรทัดเดียว · cut ของ rug_edge อยู่ที่ CROPS['rug_edge']['cut_rise_px'] ใน p2_exit.py ลบคีย์เดียวกลับเป็น report-only",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-038",
+   "unit": "DELIV-001",
+   "decided_round": 12,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "canonical BF10 [650,5250,2500] ไม่ตรงกับที่แบบวาด (element 7 จดเป็น watch-item #9c: ช่อง ~152มม. ที่แบบวาดปิด) — ตำแหน่งจริงตาม ink คือเท่าไหร่",
+   "in_effect": "BF10 ink-trued เป็น [804, 5200, 2498, 600]: vector วัด แนวนอน y5200 (run 2596มม.)/y5800 (หน้าผนัง ensuite) · แนวตั้ง x804 (= ระนาบหน้า BF11, ต่อเป็นมุม L) / x3302 (= หน้าตะวันตก BF09-2) — ก้อน 2498×600 ตรงป้าย BF10.250x60x280CM ถึง 2มม. ทั้งสองแกน และ y5200 ทำให้ derivation ของ BF09-2 (south end = 'BF10 south-face plane' y5199.5) กลับมา consistent · เป็น mass แรกที่แก้ภายใต้ DRW-3 ratchet จึงพก sheet_ref SR-20",
+   "because": "drawing-tier law: นี่คือการวัด ไม่ใช่คำถามดีไซน์ — builder แก้เองจาก ink ได้ (R3: builder ปิดรอบ, เขา overrule จากภาพได้เสมอ) · ราคาของการไม่แก้: ช่องว่างที่แบบวาดปิด + ก้อนเหลื่อมหน้า BF11 154มม. ที่ไม่มีใครสั่ง",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "reverse_by": "พิมพ์ x650/y5250/w2500 คืนที่ builtin BF10 แถวเดียว แล้วลบแถวนี้ (sheet_ref SR-20 คงไว้ได้ — แถว ledger ไม่หาย)",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

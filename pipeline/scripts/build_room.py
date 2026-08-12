@@ -1852,7 +1852,9 @@ def _add_rug(name, x, y, w, d, thick=0.014):
     obj = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(obj)
     _planar_uv(obj, tile_m=1.3)
-    obj.data.materials.append(_pbr_material("rug_" + name, RUG_SLUG))
+    pile_m = _pbr_material("rug_" + name, RUG_SLUG)
+    obj.data.materials.append(pile_m)
+    _wire_crush_shade(pile_m)
     # r7 (C2-r6#12 + C3-r6#5 + C1-r6 LOOK, all three: "กุ๊นพลาสติกซีด"): the binding is
     # SEWN TAPE — a tight plain weave, not a painted solid. Darker than the pile so the
     # sewn edge reads as an edge at frame distance (the pale 0.42 tape dissolved into
@@ -1867,6 +1869,58 @@ def _add_rug(name, x, y, w, d, thick=0.014):
             p.material_index = 1
     obj["ph_model"] = True            # keeps its two slots; no router, no global bevel
     return obj
+
+
+def _wire_crush_shade(m):
+    """P2r-3 crush LEGIBILITY (C2-r15#11 — the dents derived and pressed at r7
+    still read as 'ขนพรมไม่ยุบแม้แต่จุดเดียว' to a fresh blind eye): the 12-15 mm
+    crush IS in the mesh; what dies is the CUE. Under this room's tens-of-degrees
+    area light a pure relief signal is sub-quantization — measured twice (wood
+    bump at 4x moved the declared crop's band energy 0.002 of 5.868; an honest
+    cloth bump rendered as literally nothing, the amplitude-bisect record). So
+    the crush field is bound to TONE, the channel that survives soft light:
+    crushed verts mix toward a darker fibre-root shade, Fac = crush^2 x
+    _CRUSH_SHADE. The attribute is written by _rug_contact_press from the same
+    derived footprints (R9 — the rug never learns a coordinate), and an absent
+    attribute reads 0, so an unpressed rug renders byte-identical. Raising the
+    press DEPTH again instead was the refused move: that knob moved once already
+    (r7, 6-8 -> 12-15 mm) and a second spin on the same knob is R1's halt signal.
+
+    THE REFERENCE SET THE SHAPE (R4b, pool read 2026-08-11, five hits across
+    three projects): delivered renders NEVER model pile compression — contact is
+    a darker rim TIGHT to the base (~10-20% of the base width beyond the
+    silhouette, fading fast), never a light crush zone. Hence DARKER (not
+    sheen-lighter), and hence the ^2 on the linear crush cone: it pulls the
+    visible rim into the inner ~40% of the press feather, matching the pool's
+    tight-rim band instead of painting the whole feather. Anchors judge, never
+    dictate — no pool pixel is sampled, only the band.
+    A leg: --no-crush-shade. Calibration: --crush-shade=X (the committed value
+    moves only with a recorded verdict)."""
+    if globals().get("_CRUSH_SHADE_OFF"):
+        print("  [A/B] rug crush shade: OFF (pre-p2r16) leg")
+        return
+    nt = m.node_tree
+    bsdf = next((n for n in nt.nodes if n.type == 'BSDF_PRINCIPLED'), None)
+    if not bsdf or not bsdf.inputs["Base Color"].links:
+        return                      # flat-colour fallback path: nothing to shade
+    src = bsdf.inputs["Base Color"].links[0].from_socket
+    att = nt.nodes.new("ShaderNodeAttribute")
+    att.attribute_name = "crush"
+    sq = nt.nodes.new("ShaderNodeMath")
+    sq.operation = 'POWER'
+    sq.inputs[1].default_value = 2.0
+    nt.links.new(att.outputs["Fac"], sq.inputs[0])
+    fac = nt.nodes.new("ShaderNodeMath")
+    fac.operation = 'MULTIPLY'
+    fac.use_clamp = True
+    fac.inputs[1].default_value = float(globals().get("_CRUSH_SHADE", 0.6))
+    nt.links.new(sq.outputs["Value"], fac.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMixRGB")
+    mix.blend_type = 'MULTIPLY'
+    mix.inputs["Color2"].default_value = (0.52, 0.52, 0.55, 1.0)
+    nt.links.new(src, mix.inputs["Color1"])
+    nt.links.new(fac.outputs["Value"], mix.inputs["Fac"])
+    nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
 
 
 def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.012, 0.06),
@@ -1903,6 +1957,7 @@ def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.012, 0.06),
         # backing level, DERIVED from the rug's own mesh (skirt bottom + 4 mm), never
         # typed from _add_rug's constants: a crushed pile stops at its backing.
         crush_floor = min(v.co.z for v in ro.data.vertices) + 0.004
+        z_orig = [v.co.z for v in ro.data.vertices]
         for bx0, by0, bx1, by1, bz0, depth, feather in boxes:
             if bz0 > top + 0.02:                 # not standing on the rug
                 continue
@@ -1917,6 +1972,16 @@ def _rug_contact_press(press=((("bench__leg", "stool__leg"), 0.012, 0.06),
                     v.co.z = max(v.co.z - depth * (1.0 - dist / feather), crush_floor)
                     hit = True
             n_dent += hit
+        # crush fraction -> POINT attribute, from how far each vert actually
+        # dropped (never typed): _wire_crush_shade turns it into the tone cue.
+        span = max(top - crush_floor, 1e-6)
+        vals = [max(0.0, min(1.0, (z_orig[i] - v.co.z) / span))
+                for i, v in enumerate(ro.data.vertices)]
+        if any(vals):
+            att = ro.data.attributes.get("crush")
+            if att is None:
+                att = ro.data.attributes.new("crush", 'FLOAT', 'POINT')
+            att.data.foreach_set("value", vals)
         ro.data.update()
     if n_dent:
         print(f"  rug pile: {n_dent} contact footprint(s) pressed into the pile "
@@ -5911,6 +5976,16 @@ if __name__ == "__main__":
         # 0.46 uniform, grain folding at z = k*842 mm). B leg = committed default.
         globals()["_WOOD_FOLD_LEGACY"] = True
         print("  [A/B] veneer mapping: legacy folded (pre-p2r15) leg")
+    if "--no-crush-shade" in _post_dashdash():
+        # A leg of the p2r16 rug A/B: dents stay geometry-only (pre-p2r16 read)
+        globals()["_CRUSH_SHADE_OFF"] = True
+    _cs = next((a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--crush-shade=")), None)
+    if _cs:
+        # amplitude-bisect bracket for the crush tone (LOOK-only rung; committed
+        # value moves only with a recorded verdict — same contract as --wood-bump)
+        globals()["_CRUSH_SHADE"] = float(_cs)
+        print(f"  [calibration] rug crush shade overridden to {_cs}")
     if "--cloth-rough-band" in _post_dashdash():
         # A leg of D-035's A/B: mapped textiles go back to the banded
         # roughness read (const ± _rvar). No source edit to re-run the pair.

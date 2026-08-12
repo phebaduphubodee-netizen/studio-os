@@ -111,6 +111,18 @@ def test_edge_with_no_transition_is_nan():
     assert w != w  # NaN — "no edge found" must not print like a number
 
 
+def test_rug_edge_cut_is_declared_above_the_whole_step_band():
+    """P2r-3 graduated rug_edge from report-only to a declared cut. The cut
+    must sit strictly above what BOTH step controls read (ideal 0-1 px,
+    resample-sharp ~1-2 px) so a die-cut edge can never pass, and at/below the
+    rolled control so a real rollover never fails."""
+    cut = PE.CROPS["rug_edge"]["cut_rise_px"]
+    step = PE.edge_rise_width(_edge_img(1))
+    ramp = PE.edge_rise_width(_edge_img(10))
+    assert step < cut, "a sharp step must break the cut"
+    assert ramp >= cut, "a rolled edge must hold the cut"
+
+
 # ---------------------------------------------------------------- dup shells
 
 def _scene(tmp_path, objs):
