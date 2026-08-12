@@ -68,7 +68,7 @@ import math
 # ---------------------------------------------------------------------------
 
 def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6,
-               salt=0, salt_rect=None, salt_amp=0.005):
+               salt=0, salt_rect=None, salt_amp=0.005, jitter=0.0):
     """A flat QUAD grid in world XY at height `z` — the undeformed state of a
     simulated sheet. Returns (verts, faces) in WORLD metres.
 
@@ -180,6 +180,24 @@ def flat_sheet(x0, y0, w, d, z, cell=0.028, cut=(), mitre=(), mitre_keep=0.6,
             if g > 0.0:
                 verts[n_] = (vx + dev(n_ * 131, salt_amp, salt) * g,
                              vy + dev(n_ * 137, salt_amp, salt + 7) * g, vz)
+    # STATION JITTER (p2r26 — DR dr-cloth-hem-serration-2026-08-12 lever 2,
+    # consumed the round after the R1 stop bought it): a UNIFORM grid draping
+    # under gravity is a resonator with ONE dominant buckling eigenmode, which
+    # is why a free hem serrates at a single machine-cut wavelength — two spent
+    # mechanisms (slack field p2r24, hem bending p2r25) modulated amplitude and
+    # stiffness and left the SYMMETRY intact. This breaks the symmetry itself:
+    # every vertex's in-plane position deviates by a bounded fraction of the
+    # cell (independent dev streams per axis; z untouched, so the sheet stays
+    # FLAT and the enter-smooth law holds — the solver remains the only
+    # wrinkle author). Bound 0.45: above ~half a cell, adjacent stations can
+    # swap order and a quad can fold over itself in feedstock.
+    if jitter:
+        if not 0.0 < jitter <= 0.45:
+            raise ValueError(f"flat_sheet: jitter {jitter} outside (0, 0.45] — "
+                             f"above half a cell the grid self-intersects")
+        for n_, (vx, vy, vz) in enumerate(verts):
+            verts[n_] = (vx + dev(n_ * 149, jitter * cell, salt + 23),
+                         vy + dev(n_ * 151, jitter * cell, salt + 29), vz)
     return verts, faces
 
 

@@ -1390,6 +1390,22 @@ _SWING_CLAMP = True
 # p2r24 throw exactly.
 _HEM_BEND = True
 
+# P2r-5 (p2r26): BREAK THE EIGENMODE, THEN DAMP WHAT IT LEAVES. The R1 stop at
+# p2r25 bought the diagnosis (DR dr-cloth-hem-serration-2026-08-12, notebook
+# ae3dd665): a uniform quad grid is a resonator with ONE dominant buckling
+# eigenmode — the sawtooth's cause is SYMMETRY, which neither spent mechanism
+# (where the fullness goes, p2r24; how stiff the edge bends, p2r25) ever
+# touched. Two of the DR's levers are reachable in Blender's API and ship
+# together as one package: STATION JITTER (flat_sheet jitter=0.30 — every
+# station deviates in-plane by up to 30% of the cell, sheet stays flat, the
+# enter-smooth law holds) and a HEM-SCOPED SMOOTH (factor 0.5 x 10 iterations
+# on the boundary group, post-sim, the DR's stack order) that removes the
+# residual high-frequency serration the discretisation invented. The DR's
+# rank-1 lever (hem MASS 2-4x) is NOT reachable: Blender's cloth exposes
+# vertex_group_mass as the PIN group, not a density paint — recorded here so
+# nobody buys that null twice. A leg: --no-hem-break = the exact p2r25 throw.
+_HEM_BREAK = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -4738,7 +4754,10 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                 tx, ty, tdx, tdy, _z_top + 0.020, cell=0.022,
                 salt=13 if _EDGE_WANDER else 0,
                 salt_rect=(tx + 0.12, ty - 1.0, tx + tdx + 1.0, ty + tdy + 1.0),
-                salt_amp=0.012)
+                salt_amp=0.012,
+                # p2r26 (_HEM_BREAK): break the grid's buckling eigenmode at
+                # the feedstock — see the flag's comment for the DR record
+                jitter=0.30 if _HEM_BREAK else 0.0)
             # FULL slack only on the part lying on the bed; the FALL gets a PARTIAL
             # weight, not zero. Zero was the first cut, and LOOK round-2 #2 read the
             # result off the render: the largest cloth face in both frames (~1.4 m of
@@ -4812,6 +4831,10 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                 # DR's own ANGULAR words ("one big smooth curve") — see _LINEAR_BEND
                 bending_model='LINEAR' if _LINEAR_BEND else None,
                 hem_verts=_thr_hem, hem_bend=(_thr_hem, 8.0) if _thr_hem else None,
+                # p2r26 (_HEM_BREAK): damp the residual serration on the hem
+                # ring post-sim (DR stack order: Cloth -> Smooth -> Solidify)
+                hem_smooth=((_thr_hem, 0.5, 10)
+                            if _HEM_BREAK and _thr_hem else None),
                 slack_verts=_wts, collide_dist=0.015)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
@@ -6325,6 +6348,10 @@ if __name__ == "__main__":
         # A leg of the p2r25 sewn-hem A/B — the exact p2r24 throw boundary
         globals()["_HEM_BEND"] = False
         print("  [A/B] throw hem: unsewn (pre-p2r25) leg")
+    if "--no-hem-break" in _post_dashdash():
+        # A leg of the p2r26 eigenmode-break A/B — the exact p2r25 throw
+        globals()["_HEM_BREAK"] = False
+        print("  [A/B] throw grid: uniform stations, no hem smooth (pre-p2r26) leg")
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True

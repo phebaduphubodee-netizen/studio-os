@@ -262,7 +262,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                self_friction=None, bend_verts=None, bend_floor=0.15,
                sew_edges=None, sewing_force=15.0,
                hem_verts=None, hem_factor=2.0, bending_model=None,
-               hem_bend=None):
+               hem_bend=None, hem_smooth=None):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -500,6 +500,29 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         bpy.context.collection.objects.link(prx)
         prx.hide_render = True
         prx["ph_model"] = True                    # no material pass, no bevel pass
+
+    # p2r26 — HEM-SCOPED SMOOTH (DR dr-cloth-hem-serration-2026-08-12 lever 4):
+    # damp the residual high-frequency serration on the hem ring AFTER the
+    # physics and BEFORE the solidify — the DR's prescribed stack order
+    # (Cloth -> Smooth -> Solidify/Subdiv). Scoped by vertex group so the
+    # primary aperiodic folds in the body are untouched; post-sim, so the
+    # solver stays the only wrinkle AUTHOR and this only removes what the
+    # discretisation invented. None = byte-identical.
+    if hem_smooth:
+        _sv, _sf, _si = hem_smooth
+        if not _sv:
+            raise DrapeError(f"{name}: hem_smooth with no hem verts would be "
+                             f"a mechanism that silently never ran")
+        vgs = obj.vertex_groups.new(name="drape_hemsmooth")
+        vgs.add(list(_sv), 1.0, 'REPLACE')
+        smm = obj.modifiers.new("drape_smooth", 'SMOOTH')
+        if not hasattr(smm, "vertex_group") or not hasattr(smm, "iterations"):
+            raise DrapeError(f"{name}: Smooth modifier API surface moved — "
+                             f"the hem de-serration cannot run; do not freeze "
+                             f"as if it did")
+        smm.vertex_group = vgs.name
+        smm.factor = float(_sf)
+        smm.iterations = int(_si)
 
     _freeze(obj, thickness, hem=hem)
     sc.frame_set(1)          # the render must not inherit the bake's frame

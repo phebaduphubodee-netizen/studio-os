@@ -397,6 +397,42 @@ def test_modulate_slack_clamps_and_depth_zero_identity():
     assert all(0.30 * 0.5 - 1e-9 <= mod[i] <= 0.30 * 1.5 + 1e-9 for i in lo)
 
 
+# ----------------------------------------------------------- station jitter
+
+def test_flat_sheet_jitter_zero_is_byte_identical():
+    a, fa = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, cell=0.022, salt=13)
+    b, fb = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, cell=0.022, salt=13, jitter=0.0)
+    assert a == b and fa == fb
+
+
+def test_flat_sheet_jitter_bounds_topology_and_flatness():
+    """The jitter breaks the grid's buckling eigenmode (DR 2026-08-12) but may
+    not break anything else: same topology, in-plane only (the sheet stays
+    FLAT — enter-smooth law), every deviation within jitter x cell per axis."""
+    a, fa = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, cell=0.022, salt=13)
+    b, fb = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, cell=0.022, salt=13, jitter=0.30)
+    assert fa == fb and len(a) == len(b)
+    bound = 0.30 * 0.022 + 1e-12
+    moved = 0
+    for (ax, ay, az), (bx, by, bz) in zip(a, b):
+        assert bz == az, "jitter must never leave the plane"
+        assert abs(bx - ax) <= bound and abs(by - ay) <= bound
+        if abs(bx - ax) + abs(by - ay) > 1e-9:
+            moved += 1
+    assert moved > len(a) * 0.9, "jitter must actually move the stations"
+
+
+def test_flat_sheet_jitter_refuses_self_intersection_band():
+    with pytest.raises(ValueError):
+        sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, jitter=0.6)
+
+
+def test_flat_sheet_jitter_is_deterministic():
+    a, _ = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, salt=13, jitter=0.3)
+    b, _ = sg.flat_sheet(0, 0, 2.0, 1.2, 0.5, salt=13, jitter=0.3)
+    assert a == b
+
+
 # ------------------------------------------------------ garment swing clamp
 
 def test_rot_aabb_half_axis_swap_and_identity():
