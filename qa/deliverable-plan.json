@@ -427,7 +427,8 @@
           "id": "DRW-3",
           "what": "provenance ratchet: every NEW or EDITED mass in the canonical spec carries sheet_ref (a recon row id, or 'not-in-drawing: <styling/decision>'); existing masses backfill zone by zone through the recon, never big-bang",
           "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
-          "status": "todo"
+          "status": "done",
+          "closed_by": "2026-08-11, and its first live customer arrived the same hour it was built. THE MECHANISM: sheet_recon --spec + spec_ratchet in the ledger — a baseline fingerprint of all 20 canonical masses; a mass NEW or EDITED versus it must carry sheet_ref (an SR-id that exists, or 'not-in-drawing: <real reason>' — thin reasons refused); grandfathered masses are never violations but the uncovered ones COUNT and PRINT (17 covered / 3 named debts: glass partition, rug, bath accessories) — a silent grandfather clause is how the next headboard gets derived away. Printed at every session open beside SHEET-RECON and the heights line; 6 ratchet tests, 24 green total. THE FIRST CUSTOMER: measuring the BF10 band for its ledger row (SR-20 — split out of SR-04, which had been carrying the basin counter AND the BF10 label in one rect, R9's one-parameter defect in ledger form) found the drawn band at [804,5200,2498,600] — label-true to 2mm both axes, west face ON BF11's front plane, east face ON BF09-2's west face — while canonical had it at [650,5250]: element 7's watch-item #9c was real and mis-prescribed (the whole band SLIDES ~150, not stretches). Ink-trued under D-038, carrying sheet_ref SR-20 as the ratchet's exemplar; eye-pack Q3 DISSOLVED (third question measurement answered before his eye had to). Board: 20 drawn | 20 matched | 0 UNRESOLVED; BF10's coverage reads 0.88 against the still-stale built scene and rises when the next build reads the corrected spec."
         },
         {
           "id": "DRW-4",
@@ -1002,7 +1003,40 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "0b98b98060b8611560680b79fe0318512a4fea79",
+      "verdicts": {
+        "P2": "keep: the parallel session is deep in its own rounds (p2r16 crops on disk as this review runs) and nothing in the DRW slice touches its queue — the BF10 ink-true will simply be in the spec its next build reads",
+        "P4": "keep: waits behind P2; the floor it inherits improved again tonight — all 20 drawn masses matched, all 20 spec masses fingerprinted under the ratchet, so styling lands on geometry whose provenance is closed",
+        "P5": "keep: the owner terminal condition; his eye-pack is now two questions instead of three because measurement kept dissolving them before his eye was needed — which is the correct direction: his attention spent only where a drawing cannot answer",
+        "DRW": "change: DRW-3 closed same-day with its first live customer (BF10 ink-true under D-038, carrying sheet_ref SR-20). The program is now DRW-5 only: the two standing laws go into CLAUDE.md after the program holds through a SECOND session — tonight is still night one, so the phase stays open with a single named item and the gate lines keep printing"
+      },
+      "changed": [
+        "DRW"
+      ],
+      "note": "DRW-3 closed with its first live customer; the program is one item (DRW-5) from complete and holds through night two before the laws land in CLAUDE.md",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "9549456524c6b652fc6b0e519604b932b678de6a"
+  "last_review_commit": "0b98b98060b8611560680b79fe0318512a4fea79"
 }
