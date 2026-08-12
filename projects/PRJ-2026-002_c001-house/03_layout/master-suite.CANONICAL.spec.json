@@ -766,6 +766,7 @@
    "y": -350,
    "w": 3100,
    "d": 2500,
+   "sheet_ref": "not-in-drawing: D1-A owner-signed styling decision (anti-monopoly rug) — the furniture plan draws no rug",
    "note": "D1-A owner-signed: a large soft neutral rug DEMOTES the oak floor's visual weight so oak reads as the 30% secondary, not a 60% co-monopolist (Albers 60-30-10). Also cuts the warm floor-bounce that kept the cool-plaster ground reading beige (LOOK 2026-07-16). Poly-wool herringbone; footprint wraps under the bed + the foreground."
   },
   {
@@ -987,11 +988,13 @@
      "w": 12,
      "d": 1266,
      "h": 2000,
+     "sheet_ref": "SR-21",
      "note": "ELEMENT 4 INK-TRUED + MISSING FROM v4 SPEC 2026-07-18. The frameless glass partition at x1125 (ink x1124.7-1134.2) from the N wall (y8595.7) south to y7329.3, dividing the WET zone into shower (W) + tub (E). glass-vs-stud = render-tier; h2000 [est]."
     },
     {
      "name": "อุปกรณ์ Purist + ผ้า (towels/mat/accessories)",
      "kind": "bath_accessories",
+     "sheet_ref": "not-in-drawing: FFE styling census per element 6 (Purist accessories) — a furniture plan draws no towels",
      "design": {
       "element": 6,
       "census": {

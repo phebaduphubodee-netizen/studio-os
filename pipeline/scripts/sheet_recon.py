@@ -372,6 +372,13 @@ def spec_ratchet_check(ledger, spec):
     ids = {r["id"] for r in ledger.get("rows", [])}
     covered = {r.get("spec_mass") for r in ledger.get("rows", [])
                if r.get("spec_mass")}
+
+    def _valid_ref(ref):
+        return isinstance(ref, str) and (
+            ref in ids
+            or (ref.startswith("not-in-drawing:")
+                and len(ref.split(":", 1)[1].strip()) >= 10))
+
     viol = []
     stats = {"masses": 0, "covered": 0, "backfill_debt": 0,
              "edited_ok": 0, "new_ok": 0}
@@ -379,17 +386,16 @@ def spec_ratchet_check(ledger, spec):
         stats["masses"] += 1
         name = m.get("name", "?")
         fp = [m.get("x"), m.get("y"), m.get("w"), m.get("d"), m.get("h")]
+        ref = m.get("sheet_ref")
         if name in base and base[name] == fp:
-            if name in covered:
+            # a grandfathered mass is covered by a ledger row OR by carrying a
+            # valid declared ref of its own (backfill lands either way)
+            if name in covered or _valid_ref(ref):
                 stats["covered"] += 1
             else:
                 stats["backfill_debt"] += 1
             continue
-        ref = m.get("sheet_ref")
-        ok = isinstance(ref, str) and (
-            ref in ids
-            or (ref.startswith("not-in-drawing:")
-                and len(ref.split(":", 1)[1].strip()) >= 10))
+        ok = _valid_ref(ref)
         if ok:
             stats["new_ok" if name not in base else "edited_ok"] += 1
         else:

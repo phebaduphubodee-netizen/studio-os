@@ -266,6 +266,13 @@ def test_ratchet_refuses_bogus_ref_and_empty_reason():
     assert len(viol) == 2
 
 
+def test_ratchet_backfill_lands_via_declared_ref_on_unchanged_mass():
+    spec = {"items": [_mass("old_lamp", 9, 9, 9, 9, 9,
+                            ref="not-in-drawing: styling decision, lamp rides D3-3")]}
+    viol, stats = sr.spec_ratchet_check(_ratchet_ledger(), spec)
+    assert viol == [] and stats["covered"] == 1 and stats["backfill_debt"] == 0
+
+
 def test_ratchet_without_baseline_is_could_not_run():
     viol, stats = sr.spec_ratchet_check({"rows": []}, {"items": [_mass("bed")]})
     assert viol is None and stats is None

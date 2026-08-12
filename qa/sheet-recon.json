@@ -1013,6 +1013,50 @@
    },
    "verdict": "matched",
    "warning": null
+  },
+  {
+   "id": "SR-21",
+   "key": "wet_dry_glass_partition",
+   "source": "element 4 ink-read 2026-07-18 (ink x1124.7-1134.2, y7329.3-8595.7) — re-verified by vector probe 2026-08-11: verticals x1124/x1134 present, run ~1276mm, exactly the canonical rect",
+   "rect_mm": [
+    1124,
+    7329,
+    10,
+    1267
+   ],
+   "drawn_as": "เส้นกระจกกั้นเปียก/แห้ง ระหว่างฝักบัว (W) กับอ่าง (E)",
+   "floor_standing": true,
+   "identity": {
+    "read": "frameless wet/dry glass partition (glass-vs-stud = render-tier per element 4; h2000 stays a declared [est] — see the DRW-2 ladder)",
+    "by": "element 4 ink-read + vector re-verify",
+    "date": "2026-07-18"
+   },
+   "gap": null,
+   "spec_mass": "ผนังกระจกกั้นเปียก/แห้ง (wet/dry glass partition)",
+   "note": "the last backfill-debt mass to get a measured row — board and ratchet both close to zero debt with it",
+   "match": {
+    "frame": "room_bedroom_suite_eye_p2r11.scene.json",
+    "candidates": [
+     {
+      "assembly": "glass@1125,7329",
+      "kind": "assembly",
+      "coverage": 0.9,
+      "footprint_m2": 0.015,
+      "in_frustum": false
+     },
+     {
+      "assembly": "glass@1125,7329/glass__wet_partition",
+      "kind": "part",
+      "coverage": 0.9,
+      "footprint_m2": 0.015,
+      "in_frustum": false
+     }
+    ],
+    "checked": "2026-08-11",
+    "in_frustum": false
+   },
+   "verdict": "matched",
+   "warning": null
   }
  ],
  "heights": {
