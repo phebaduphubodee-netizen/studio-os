@@ -1105,7 +1105,41 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "fd7fa9fd07974d9a9dc952f526bacc0921466ea1",
+      "verdicts": {
+        "P2": "keep: P2r-8 closed by fixing the premise instead of the prescribed patch (a recorded supersede, D-041) and C3 hit a new lane minimum of 4 items with the slot class absent from both critics - the phase queue now reads dart/hem geometry, P2r-4 second half, fabric-map legibility, construction details, all named by at least two independent critics",
+        "P4": "keep: styling density and prop fidelity (books, accents, outlets) remain the largest shared block in every critic list and D7 still fails 6 vs 12 - lands after P2 surfaces as planned",
+        "P5": "keep: the drawer-aisle read recurred at C2-r18 number 3 against the measured 5.9 m and the owner-inked layout - one more specimen in the camera-class file, refuted by number not dropped",
+        "DRW": "keep: parallel lane advanced its provenance constant 21 to 23 this hour on its own commits - untouched by this lane, verdict unchanged"
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-3",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "8ec79a0637898be17c2adcc9df289d942586f91a"
+  "last_review_commit": "fd7fa9fd07974d9a9dc952f526bacc0921466ea1"
 }
