@@ -1416,7 +1416,46 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "5bce645166628b031ad746605efe14f45920aefe",
+      "verdicts": {
+        "P2": "keep: sine-hem + ขอบบนปิดแบบวัดได้+judged ในรอบเดียวหลัง DR (0.489→0.072; ภาษาลอนหายจาก C3 ทั้งตระกูล; C2 top-3 ไม่มี surface ครั้งแรกของเลน) — แต่ exit clause ครึ่ง top-3 ยังไม่ผ่านที่ฝั่ง C3 (หมอน=no-dent decided, เสื้อ=D-031) ซึ่ง**เป็นแดนที่ builder ห้ามแตะทั้งคู่** และ clause เป็น owner-ratified นอกมือ builder — P2 จึงเปิดค้างรอสองทาง: ตาพี่ overrule จากภาพ หรือ C3 เปลี่ยน top-3 เอง · ระยะ builder-side ที่เหลือ: bench crease (รอกลไกใหม่) + fold-family ซึ่งครึ่งหนึ่ง triage ผูกกับแสงแบน — จดตรง ๆ ว่างาน surface ที่เหลือส่วนใหญ่วัดผลไม่ได้แฟร์ ๆ ใต้แสงปัจจุบัน",
+        "P4": "keep: คิวสมบูรณ์ที่สุดที่เฟสไหนเคยมี — แสงเป็น pick-one ของ C2 สามรอบติด (เส้นหลักฐานที่ 7), item มีชื่อพร้อมเข้า: sconce ดับ/emission ไม่ cast · slat-gap bounce · contact shadows · identity cues ใต้แสงแบน (bulkhead/กล่องขาว) · ตะเข็บหัวเตียง piping · microcement blur 0.86 · variety ของ set-repeat — และ fold-family ครึ่งแสงของ P2 จะถูกตัดสินได้จริงก็ต่อเมื่อเฟสนี้วิ่ง — ทั้งหมดสอดคล้อง build-order law ของเจ้าของเป๊ะ (dimension → objects → light)",
+        "P5": "keep: เฟสเดียวที่ปิดแผนได้ — ไม่ขยับ แต่จดว่า RANK debt ของมันจะยิ่งมีความหมายเมื่อ P4 เปลี่ยนแสงแล้ว (เฟรมที่ต่างกันจริงถึงตาพี่ = ตัวชี้วัดที่ standing_corrections สั่งให้ optimize)"
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "fc1e8cb14c70f1e355059351f96399d7beea548d"
+  "last_review_commit": "5bce645166628b031ad746605efe14f45920aefe"
 }
