@@ -1216,7 +1216,46 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "102851790b89a9cfc7689fc21a3027e1228b3cb4",
+      "verdicts": {
+        "P2": "change: two closes tonight moved the clause distance onto exactly three named items and nothing else — P2j superseded by measurement (D-042: the jewel was built and invisible, the hole was the census top-2 unmapped) and P2g closed on its own headline (4.9 -> 92.66 coverage, walls below the census own cut line). The queue is now P2r-4 folded half (filed by both critics two rounds running), P2r-5 bedding surface (its mechanism named since r13: oriented crease/mottle albedo — and the r19/r20 C2 flip on IDENTICAL coverlet pixels is recorded evidence that the remaining read is surface, not geometry), then P2k arris (C3#5 landed on an item that already existed). No solver work remains anywhere in the phase.",
+        "P4": "keep: unchanged by two material closes; D7 printed 6 vs 12 identical for the tenth round, it still holds P2i routing, and tonight added one more one-line owner question to its eventual styling pass (jewel visibility / the aperture behind the record camera).",
+        "P5": "keep: owner terminal; his queue grew by the composition question (jewel + aperture, one sentence) while D-034 reaches eight rounds accumulated — every item on his list is still a one-line spec edit that any session can receive."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "Review after P2j (superseded, D-042) and P2g (92.66% coverage) closed at p2r20, gate-DELIV001-P2r20. P2 progress tonight: DRW program complete (R12 enshrined), P2r-1 + P2j + P2g closed, judge-clause distance reduced to P2r-4 + P2r-5 + P2k.",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "c46430d5eac788a894d9ca81e0e85c44b2c8bddd"
+  "last_review_commit": "102851790b89a9cfc7689fc21a3027e1228b3cb4"
 }
