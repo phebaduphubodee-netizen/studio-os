@@ -507,31 +507,52 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         z_shelf = H - 0.30
         bay_mid = bay_w * 0.5
         part("gable_bay", min(bay_mid, run - CARC_T), CARC_T, 0.0, depth, 0.0, H)   # splits the bay
-        # left sub-bay = double short-hang
-        l0, lw = CARC_T, max(bay_mid - 2 * CARC_T, 0.0)
+        # CELL ARITHMETIC (P2r-8, measured off the built scene 2026-08-11): every
+        # cell's internals were sized `span - 2*CARC_T` as if BOTH flanking gable
+        # thicknesses lay inside the span — but each span already starts at its
+        # left gable's inner face, so only the RIGHT boundary needs clearing, and
+        # only when a gable's slab actually starts there. The result was a
+        # systematic 18 mm slot at every cell's right edge (drawer tower 7.0778
+        # vs gable face 7.0958; bay-1-0 tower 4.553 vs 4.5706 — C2-r12#10's
+        # "dark shadow slot beside the white drawer stack"). Internals now end AT
+        # the cell's true boundary; carcass members touching carcass is how the
+        # LEFT side already stood, so no new coincident-face class is introduced.
+        # The plan item prescribed a filler strip — superseded for a recorded
+        # reason (gate #17): these units are custom-drawn to the cell, so the gap
+        # was an arithmetic slip, not a module remainder a filler would close.
+        # left sub-bay = double short-hang; cell = [CARC_T, bay_mid]
+        l0, lw = CARC_T, max(bay_mid - CARC_T, 0.0)
         part("shelf_sh", l0, lw, 0.0, depth, z_shelf, CARC_T)
         for i, rz in enumerate((1.05, 2.05)):
             part(f"rail_short{i}", l0 + 0.04, max(lw - 0.08, 0.0), depth * 0.45, RAIL_D, rz, RAIL_D)
-        # right sub-bay = single full-hang (rail at 1.85 m -> ~1.75 m clear drop)
+        # right sub-bay = single full-hang (rail at 1.85 m -> ~1.75 m clear drop);
+        # cell ends where the next slab STARTS: at bay_w with a tower (gable1
+        # begins there), at run - CARC_T without one (the end gable's slab —
+        # the old `bay_w - 0` form ran the shelf INTO that end gable)
         r0 = bay_mid + CARC_T
-        rw = max(bay_w - (CARC_T if tower_w else 0.0) - r0, 0.0)
+        rw = max((bay_w if tower_w else bay_w - CARC_T) - r0, 0.0)
         part("shelf_fh", r0, rw, 0.0, depth, z_shelf, CARC_T)
         part("rail_full", r0 + 0.04, max(rw - 0.08, 0.0), depth * 0.45, RAIL_D, 1.85, RAIL_D)
 
         if tower_w:
             # [2] floating-drawer + open-shelf tower — microcement fronts + a microcement back,
             # both INSET between the two gables (t_off/t_w) so no cross-material face coincides.
+            # tower cell = [bay_w + CARC_T, bay_w + tower_w] (gable2's slab
+            # starts at bay_w + tower_w): one CARC_T inside the span, not two
             t_off = bay_w + CARC_T
-            t_w = tower_w - 2 * CARC_T
+            t_w = tower_w - CARC_T
             part("towerback", t_off, t_w, depth - CARC_T, CARC_T, z_lo, (H - CARC_T) - z_lo)
             n_dr = 3
             for i in range(n_dr):
                 z_i = FLOAT_Z + i * DRAWER_H
                 part(f"drawer_box{i}", t_off, t_w, 0.02, depth - 0.04, z_i + 0.01, DRAWER_H - 0.02)
-                part(f"drawer_front{i}", t_off, t_w, 0.0, 0.02, z_i, DRAWER_H - DRAWER_REV)
+                # fronts carry a real handleless SIDE reveal (2 mm/side) so the
+                # microcement face never lands coplanar on an oak gable face
+                part(f"drawer_front{i}", t_off + 0.002, t_w - 0.004, 0.0, 0.02,
+                     z_i, DRAWER_H - DRAWER_REV)
             for i, z in enumerate((FLOAT_Z + n_dr * DRAWER_H + 0.10,
                                    FLOAT_Z + n_dr * DRAWER_H + 0.60)):
-                part(f"shelf_tw{i}", t_off, t_w, 0.0, depth, z, CARC_T)
+                part(f"shelf_tw{i}", t_off, t_w, 0.0, depth, z, CARC_T)  # spans the true cell
 
             # [3] corner display niche — open oak shelves
             n_off = bay_w + tower_w + CARC_T

@@ -579,6 +579,20 @@
    "reverse_by": "--no-cloth-crease = A leg (p2r16 เป๊ะ) · --cloth-crease=X bracket · ค่า committed ที่ _crs ใน _build_bed บรรทัดเดียว · revert commit เดียว",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-041",
+   "unit": "DELIV-001",
+   "decided_round": 18,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "P2r-8 ช่องเงาดำข้างลิ้นชักขาว — แผนสั่งสร้าง filler strip แต่กลไกที่วัดได้คืออะไร",
+   "in_effect": "แก้เลข cell ที่ต้นเหตุแทนการแปะ filler: internals ทุกตัวเคยถูกลบ 2*CARC_T ทั้งที่ span เริ่มที่หน้าใน gable ซ้ายอยู่แล้ว -> จบสั้น 18มม. ฝั่งขวาเป็นระบบทุก cell (tower 7.0778 vs 7.0958; bay1-0 4.553 vs 4.5706; shelf ของ hang bays คลาสเดียวกัน) · ตอนนี้ internals จบที่ขอบ cell จริง (วัดหลังแก้: gap 0.000มม.) · drawer fronts ได้ side reveal 2มม./ข้างตามงาน handleless จริง (วัดหลังแก้: 2.0/2.0มม.) กัน microcement โคปลานาร์กับหน้า gable · without-tower branch ที่เคยให้ shelf วิ่งทะลุ end gable 18มม. แก้พร้อมกัน (premise เดียวกัน) · FILLER ของแผนถูก supersede ด้วยเหตุ บันทึก: unit พวกนี้ custom-drawn เข้า cell ไม่ใช่ module สำเร็จรูป — 18มม. คือเลขคูณพลาด ไม่ใช่เศษ module ที่ filler ควรปิด (R9b: แก้ที่ premise ไม่แก้เฉพาะตัวที่ critic เห็น) · regression test pin ทั้ง gap=0 และ reveal 2มม. (test_millwork 186 เขียว)",
+   "because": "C2-r12#10 (ช่องดำข้างลิ้นชัก) + เงื่อนไข instrument ของ item เอง (วัด gap จาก AABB scene จริง); ปิดตามเงื่อนไข: gap 0.000 + ไม่มี critic item บน slot จากทั้งสองรายที่ p2r18 (C3 4 ข้อ = ต่ำสุดใหม่ของเลน)",
+   "where": "pipeline/scripts/millwork.py",
+   "reverse_by": "revert commit เดียว; เลขทั้งหมดอยู่สามบรรทัด (lw, rw, t_w) + reveal ที่ drawer_front",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

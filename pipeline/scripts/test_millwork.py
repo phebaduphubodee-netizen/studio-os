@@ -484,6 +484,33 @@ def test_open_display_shelves_respect_the_span_rule():
         assert span <= M.MAX_SPAN + 1e-9, f"{p[0]} span {span:.3f} exceeds MAX_SPAN {M.MAX_SPAN}"
 
 
+def test_cell_internals_reach_their_right_gable_no_18mm_slot():
+    """P2r-8 regression, measured off the built p2r17 scene before the fix:
+    every cell's internals ended exactly one CARC_T (18 mm) short of the gable
+    on their right (tower 7.0778 vs gable face 7.0958; bay-1-0 tower 4.553 vs
+    4.5706) — C2-r12#10's 'dark shadow slot beside the white drawer stack'.
+    The old arithmetic sized internals `span - 2*CARC_T` as if both flanking
+    gable slabs lay inside the span; each span already starts at its left
+    gable's inner face. An internal must END where the next slab STARTS."""
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
+    by = {p[0]: p for p in parts}
+    gable_starts = sorted(p[1] for p in parts if p[0].startswith("gable"))
+    for nm in ("shelf_sh", "shelf_fh", "shelf_tw0", "shelf_tw1", "towerback",
+               "drawer_box0"):
+        p = by.get(nm)
+        assert p is not None, nm
+        edge = p[1] + p[4]
+        nxt = [g for g in gable_starts if g >= edge - 1e-6]
+        assert nxt, f"{nm} has no gable to its right"
+        assert abs(edge - nxt[0]) < 1e-6, \
+            f"{nm} ends {1000 * (nxt[0] - edge):.1f} mm short of its gable"
+    # microcement fronts keep exactly the 2 mm/side handleless reveal — never
+    # coplanar with an oak gable face, never the old 18 mm void
+    f, tb = by["drawer_front0"], by["towerback"]
+    assert f[1] == pytest.approx(tb[1] + 0.002)
+    assert f[1] + f[4] == pytest.approx(tb[1] + tb[4] - 0.002)
+
+
 def test_a_typo_in_a_slat_design_block_FAILS_LOUD():
     """Review 2026-07-16: the slat overrides guarded only truthiness, so a metre/mm slip
     (slat_face_mm=0.04 -> 42k slivers), a sign-flip (-40), or an extra zero (4000) rendered wrong
