@@ -139,7 +139,7 @@ def _carries_attribution(path_rel):
 # which is the one thing it must never do: the whole value of the constant is that a new
 # provenance file cannot land without a human opening it. (Proposed 2026-08-08 by an audit
 # that read the drift as "the constant is stale". The constant was doing its job.)
-EXPECTED_PROVENANCE = 21
+EXPECTED_PROVENANCE = 23
 # 20 -> 21 on 2026-08-10, and the file was OPENED before the number moved, which is the
 # only reason this constant is worth having. The new one is
 # `dr-acquired-mesh-integration-2026-08-10.qa-history.json`: notebook id, title,
@@ -147,6 +147,13 @@ EXPECTED_PROVENANCE = 21
 # census (86 imported / 77 ready / 9 error / 2 synthesised), a provenance warning naming
 # the 21 forum sources, and `qa_pairs[{turn,question,answer}]`. It carries attribution,
 # not just the filename — which is the test two paragraphs above.
+# 21 -> 23 on 2026-08-12, both files OPENED first:
+# `drw4-elevation-section-conventions-DR-2026-08-11.qa-history.json` — notebook e1d577ea,
+#   conversation 66e5cca2, 3 qa_pairs; cited by name from its distillation .md (DRW-4).
+# `nlm-cloth-corner-drape/qa-history.json` — notebook ae3dd665, 1 qa_pair (Blender cloth
+#   corner drape; the parallel P2 session's DR). Attribution real; its ORPHAN failure is
+#   separate and stays loud until that unit cites its own anchor — this bump does not
+#   discharge it.
 
 # INFRA is pinned by FULL PATH (review 2026-07-13: a basename match let any stash hide a
 # staged file by naming it `nlm-queue.md` / `_index.md`). Only .gitkeep stays name-matched —
