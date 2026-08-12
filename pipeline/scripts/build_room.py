@@ -827,7 +827,7 @@ def _proc_wood(name, base=(0.34, 0.22, 0.13, 1.0), dark=(0.20, 0.12, 0.06, 1.0),
 
 
 def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
-                feature_scale=1.0, coat=0.0):
+                feature_scale=1.0, coat=0.0, grain_run_m=None):
     """Photographed veneer for UV-less millwork boxes (P2g, D-024). BOX projection on
     Object coords — each face gets its own planar projection, so grain DIRECTION
     breaks at every 90° arris the way a real veneer lay-up does. That break is the
@@ -858,12 +858,27 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
             raise RuntimeError(f"no Diffuse map cached for {slug!r}")
         tc = nt.nodes.new("ShaderNodeTexCoord")
         mp = nt.nodes.new("ShaderNodeMapping")
-        # feature_scale < 1 is a DELIBERATE divergence from the asset's native
-        # physical tile, carried by the preset with its reason (C2-r4#5 measured a
-        # flat-cut veneer leaf at 200-300 mm against our ~450 mm cathedral arcs) —
-        # a named, cited knob, not a fudge.
+        # ACROSS grain the map samples at the preset's feature_scale (1.0 = the
+        # photographed artefact's own asserted physical scale). ALONG grain (world
+        # z — the v axis of both wall-face box projections) the mapping stretches
+        # so ONE tile covers grain_run_m: real leaves run continuous to the full
+        # panel height (veneer-figure §4), so the pingpong below must never fold
+        # inside a panel — p2r14's file of record folded every panel at
+        # z = k*842 mm (uniform 1.18793 scale, z offset unwired), a horizontal
+        # book-match joint no real veneer can carry, and the fold-lenses it
+        # stamped are what two rounds of feature_scale squeezes were chasing.
+        # The pingpong STAYS as the fail-soft: a panel taller than the declared
+        # run folds once at its top instead of tiling.
         s = 1.0 / max(tile_m * feature_scale, 1e-6)
-        mp.inputs["Scale"].default_value = (s, s, s)
+        s_z = (1.0 / max(float(grain_run_m), tile_m * feature_scale, 1e-6)
+               if grain_run_m else s)
+        if globals().get("_WOOD_FOLD_LEGACY"):
+            # A leg of the p2r15 A/B: the exact p2r14 mapping (0.46 uniform,
+            # folded grain) — no source edit to re-run the pair.
+            s = 1.0 / max(tile_m * 0.46, 1e-6)
+            s_z = s
+            print("  [A/B] veneer mapping: legacy folded (pre-p2r15) leg")
+        mp.inputs["Scale"].default_value = (s, s, s_z)
         nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
         # PER-OBJECT DECORRELATION (C2-r4#5 / C3-r4#4: the same cathedral arc repeats
         # across neighbouring panels): every object samples a different window of the
@@ -1046,14 +1061,22 @@ def _cc0_root():
 
 
 def _texset(slug):
-    """{logical_map: local_path} for a cached Poly Haven texture set, or {} if absent."""
+    """{logical_map: local_path} for a cached Poly Haven texture set, or {} if absent.
+
+    Highest cached resolution wins. hits[0] was alphabetical, so a cache holding
+    both sizes served `_1k` while its siblings served `_2k` — the p2r14 .blend
+    carried Diffuse_1k beside Rough_2k, and the preset's map_mean (measured on
+    the 2k set) was normalising a map it never saw. Found reading the file of
+    record at P2r-2."""
     import glob
+    import re
     d = os.path.join(_cc0_root(), "textures", slug)
     out = {}
     for m in ("Diffuse", "nor_gl", "Rough", "Metal", "arm", "AO"):
         hits = glob.glob(os.path.join(d, f"*_{m}_*"))
         if hits:
-            out[m] = hits[0]
+            out[m] = max(hits, key=lambda p: (
+                int((re.search(r"_(\d+)k", os.path.basename(p)) or [0, 0])[1]), p))
     return out
 
 
@@ -3046,7 +3069,8 @@ def _material_from_preset(mat_name, preset_key):
                            albedo=a["rgba"], map_mean=a["map_mean"],
                            rough=a["rough"], rough_mean=a.get("rough_mean"),
                            feature_scale=a.get("feature_scale", 1.0),
-                           coat=a.get("coat", 0.0))
+                           coat=a.get("coat", 0.0),
+                           grain_run_m=a.get("grain_run_m"))
     if f == "glass":
         # built WITHOUT _solid: a glass Base Color is a TRANSMISSION TINT, not a
         # dielectric albedo — routing it through _solid fires a false '!! albedo WARN'
@@ -5882,6 +5906,11 @@ if __name__ == "__main__":
         # A leg of the p2r13 dart A/B — the exact p2r12 duvet, no source edit
         globals()["_SEWING_DART"] = False
         print("  [A/B] duvet corners: no sewing dart (pre-p2r13) leg")
+    if "--wood-fold-legacy" in _post_dashdash():
+        # A leg of the p2r15 veneer-mapping A/B: exact p2r14 state (feature_scale
+        # 0.46 uniform, grain folding at z = k*842 mm). B leg = committed default.
+        globals()["_WOOD_FOLD_LEGACY"] = True
+        print("  [A/B] veneer mapping: legacy folded (pre-p2r15) leg")
     if "--cloth-rough-band" in _post_dashdash():
         # A leg of D-035's A/B: mapped textiles go back to the banded
         # roughness read (const ± _rvar). No source edit to re-run the pair.

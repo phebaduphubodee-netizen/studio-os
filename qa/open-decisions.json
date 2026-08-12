@@ -523,6 +523,20 @@
    "reverse_by": "เขาระบุความหมายจริงของรหัสใด → แก้ identity แถวนั้นใน ledger (แถวละบรรทัด)",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-038",
+   "unit": "DELIV-001",
+   "decided_round": 15,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "P2r-2 วีเนียร์: cathedral/arc อ่านใหญ่และซ้ำข้ามแผง — knob ไหนถูก (บีบ feature_scale ต่อ หรือกลไกอื่น)",
+   "in_effect": "feature_scale 0.46 -> 1.0 (สเกลจริงของ artefact) + grain_run_m 2.8: แกนตาม grain ยืดให้ tile เดียวคลุมความสูงแผงเต็ม -> ไม่มี horizontal fold/joint ในแผงใดเลย · กลไกที่พิสูจน์: shader ping-pong ทั้งสามแกน + z offset ไม่ถูกต่อ ทำให้ทุกแผงเต็มความสูงพับ grain ที่ z = k*842มม. (อ่านจาก p2r14.blend: Mapping 1.18793 uniform, PINGPONG xyz, identity transforms) = รอยต่อ book-match แนวนอนกลางหน้าบาน ซึ่งไม้จริงไม่มี (vault veneer-figure §4) · 'arc 300-450มม.' ที่วัดได้รอบก่อนคือเลนส์จาก fold ไม่ใช่ figure ของไม้ · การบีบสเกลสองครั้ง (0.65->0.46) เพิ่ม fold ต่อแผง 2->3 = fix-shape ขยาย defect · native map ที่ 1.83ม.จริง: โซน figure 21-126มม. ระยะกลางโซน median 108มม. แถบ leaf ~180-270มม. เข้า band vault §2 (152-305) ทุกตัว · แถม _texset เลือก Diffuse_1k เพราะเรียงอักษร (Rough เป็น 2k) — แก้เป็น max-resolution แล้ว; map_mean ที่จดไว้ = ค่า 2k เป๊ะ (วัดยืนยัน 0.3604/0.2117/0.0988) กฎสีไม่ขยับ",
+   "because": "R11/R4b: ตัดสินจากการวัด artefact + ไฟล์ที่ render จริง ไม่ใช่ taste — ข้อวิจารณ์ C3-r14#4 (tiling/ขาด variety) + แผน P2r-2 ที่สั่งวัด arc pitch เทียบ band จริง; band จริงมาจากไม้จริงในเครื่อง (photo scale asserted 1.83ม.) + vault §2/§4; DR พิจารณาแล้วไม่ยิง — vault+artefact ตอบครบ (กติกา vault-first)",
+   "where": "pipeline/scripts/material_presets.py",
+   "reverse_by": "รัน --wood-fold-legacy (A leg = p2r14 เป๊ะ) หรือ revert commit p2r15 คอมมิตเดียว; เลข grain_run_m/feature_scale อยู่ที่ preset oak_veneer_photo แก้บรรทัดเดียว",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

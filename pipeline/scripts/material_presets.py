@@ -206,12 +206,30 @@ PRESETS = {
         factory="image_wood", space="srgb", hex="#C7B896", rough=0.38,
         slug="oak_veneer_01", tile_m=1.83,
         map_mean=(0.3604, 0.2117, 0.0988), rough_mean=0.5304,
-        # feature_scale 0.46 (r7): the 0.65 cut answered C2-r4#5's 200-300 mm leaf but
-        # C1-r6 measured the RESULT off the frame at ~300-450 mm — still past the real
-        # band. 0.46 = 0.65 x 300/420, scaling the measured arc's midpoint onto the
-        # band's midpoint; the knob moves by the measurement, never by taste.
+        # feature_scale 0.65 (r4) -> 0.46 (r7) -> 1.0 (p2r15): the two squeezes were
+        # chasing MIRROR LENSES, not the artefact's figure. The shader ping-pongs all
+        # three axes with the z offset unwired, so every full-height panel folded the
+        # grain at z = k * tile_m * feature_scale — a horizontal book-match joint
+        # mid-panel, which real veneer cannot carry (veneer-figure-and-panel-layout.md
+        # §4: leaves run continuous to 2.4-3.0 m). Read from the file of record
+        # (p2r14.blend: Mapping 1.18793 uniform = 1/(1.83*0.46), PINGPONG xyz, z
+        # offset 0, all transforms identity => folds at 842/1684/2526 mm on every
+        # panel). The native map measured at its asserted 1.83 m: figure zones
+        # 21-126 mm wide across grain, centre spacing median 108 mm, leaf strips
+        # ~180-270 mm, NO repeat along grain — every across-grain number already
+        # inside the vault's real band (leaf 152-305 mm), so the artefact-true scale
+        # IS the fix; shrinking it was the defect wearing a knob (R9's law, material
+        # edition). Each earlier squeeze RAISED the fold count per panel (2 -> 3).
+        feature_scale=1.0,
+        # grain_run_m: longest continuous veneer run in the suite (wall height 2.8 m,
+        # master-suite.CANONICAL.spec.json). _image_wood stretches the along-grain
+        # axis so ONE tile covers this run (2.8/1.83 = 1.53x, along grain only —
+        # mild on an axis where this map's figure is already 5-10:1 elongated), so
+        # the ping-pong folds nothing below 2.8 m and the frame carries zero
+        # horizontal joints. Across grain stays at the artefact's own scale.
+        grain_run_m=2.8,
         # coat 0.25: the signed satin FILM finish is a second specular lobe (C3-r4#4).
-        feature_scale=0.46, coat=0.25,
+        coat=0.25,
         tier="DESIGN-INTENT",
         desc="signed light warm-oak (D5-A) as photographed CC0 veneer (Poly Haven "
              "oak_veneer_01), box-projected so grain breaks at panel arrises; "
@@ -705,6 +723,8 @@ def factory_args(preset_name):
         if "rough_mean" in p:
             a["rough_mean"] = float(p["rough_mean"])
         a["feature_scale"] = float(p.get("feature_scale", 1.0))
+        if "grain_run_m" in p:
+            a["grain_run_m"] = float(p["grain_run_m"])
         a["coat"] = float(p.get("coat", 0.0))
         return a
     # dielectric albedo band applies to sRGB-authored non-metal, non-glass presets
