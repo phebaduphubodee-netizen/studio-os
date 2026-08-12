@@ -593,6 +593,20 @@
    "reverse_by": "revert commit เดียว; เลขทั้งหมดอยู่สามบรรทัด (lw, rw, t_w) + reveal ที่ drawer_front",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-042",
+   "unit": "DELIV-001",
+   "decided_round": 19,
+   "decided_date": "2026-08-12",
+   "decided_by": "builder",
+   "question": "P2j เขียนว่า \"กระจก niche ที่ spec ตัดสินแล้ว build ไม่ได้สร้าง\" — จริงไหม และแผ่นฟ้าเทาที่ C2 อ่านเป็นรูโหว่ (pick-one ของ r19) คืออะไรกันแน่",
+   "in_effect": "P2j ปิดแบบ SUPERSEDED-BY-MEASUREMENT (ตระกูลเดียวกับ D-041): กระจก jewel ถูกสร้างแล้ว (mill__bayBF09-1-1_niche_mirror__mirror, m_mill_mirror, in-frustum) แต่ถูกบังจนเหลือ 0 พิกเซลใน matmask ของเฟรม record — และแผ่นที่ C2 ชี้ decode ได้เป็น m_mill_cement + m_mill_backing ซึ่งเป็นสองอันดับแรกของ uncovered-by-share ใน census (6.0% + 2.4% ของเฟรม) ไม่ใช่ niche ไม่ใช่กระจกหาย · การแก้จริงจึงเป็น P2g half three: ทั้งสอง render ผ่าน photographed-surface law เดียวกับ oak (preset _photo แยก key, ของ signed เดิมไม่แตะ, A leg --flat-accents) · คำถาม composition ที่เหลือ (อยากให้ jewel มองเห็นจากกล้อง record ไหม — ขยับกล้อง = crop registry ทั้งชุดต้อง recalibrate) เป็นของตาพี่ ไม่ block",
+   "because": "สาม instrument ชี้ทางเดียวกัน: ตา C2 (WHAT: ระนาบอ่านเป็นรู) · matmask decode (WHICH: m_mill_cement/m_mill_backing เป๊ะพิกเซล) · census (HOW MUCH: top-2 uncovered) · ส่วน premise ของ P2j หักล้างด้วย scene dump: part กระจกมีจริง วัสดุถูก in-frustum จริง — \"ไม่ได้สร้าง\" เป็นการอ่านที่ล้าสมัยไปแล้วในคืนที่ item ถูกไฟล์",
+   "where": "pipeline/scripts/material_presets.py, qa/deliverable-plan.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r19-2026-08-12.md",
+   "reverse_by": "reopen P2j ในแผน (หนึ่งบรรทัด) และ/หรือ render ด้วย --flat-accents เพื่อกลับไปคู่ p2r19 เป๊ะ; พี่ overrule จากภาพได้ทุกเมื่อ",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

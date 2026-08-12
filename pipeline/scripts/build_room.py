@@ -3289,9 +3289,23 @@ def _suite_materials(spec=None):
     # panel in a shadowed oak bay reads as a HOLE, not a material. Scale 1.6 put one
     # noise feature across the whole 500mm panel; the burnish now carries a visible
     # trowel cloud (albedo_var 5%, the terry/boucle amplitude) + finer patches.
-    cement = _burnish(_material_from_preset("m_mill_cement", "microcement_cool"),
-                      band=(0.10, 0.05), bump=0.10, scale=2.6, albedo_var=0.05)
-    backing = _material_from_preset("m_mill_backing", "matte_black_ply")
+    # p2r20 — P2g half three: the r6 burnish was compensation for a mapless flat
+    # panel and 13 further rounds of critics kept reading the panel as a hole
+    # (C2-r19 made it its pick-one). The census's own uncovered-by-share line put
+    # m_mill_backing (6.0%) and m_mill_cement (2.4%) at the top, so both now render
+    # through the SAME photographed-surface law as the oak (signed colour = albedo
+    # mean by construction; constants measured in the preset). The burnish goes WITH
+    # the map's arrival — a compensation kept beside the thing it compensated for
+    # would double the relief (the sheen-compensation precedent at _woven's maps
+    # block). A leg: --flat-accents = the exact p2r19 pair, burnish and all.
+    if globals().get("_FLAT_ACCENTS"):
+        cement = _burnish(_material_from_preset("m_mill_cement", "microcement_cool"),
+                          band=(0.10, 0.05), bump=0.10, scale=2.6, albedo_var=0.05)
+        backing = _material_from_preset("m_mill_backing", "matte_black_ply")
+        print("  [A/B] accents: flat painted cement + solid backing (pre-p2r20) leg")
+    else:
+        cement = _material_from_preset("m_mill_cement", "microcement_cool_photo")
+        backing = _material_from_preset("m_mill_backing", "matte_black_ply_photo")
     # ELEMENT 2 (west wall): the Caesarstone vanity counter + the frameless makeup mirror.
     # Routed to mill__ parts by 'counter*' -> caesarstone, 'mirror*' -> mirror (material_presets
     # .mill_object_role). Built from the signed presets like the element-1 sub-part materials.
@@ -6059,6 +6073,9 @@ if __name__ == "__main__":
         # A leg of the p2r19 coverlet dart+hem A/B — the exact r18 coverlet
         globals()["_COVERLET_DART"] = False
         print("  [A/B] coverlet corners: no dart/hem (pre-p2r19) leg")
+    if "--flat-accents" in _post_dashdash():
+        # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
+        globals()["_FLAT_ACCENTS"] = True
     if "--wood-fold-legacy" in _post_dashdash():
         # A leg of the p2r15 veneer-mapping A/B: exact p2r14 state (feature_scale
         # 0.46 uniform, grain folding at z = k*842 mm). B leg = committed default.

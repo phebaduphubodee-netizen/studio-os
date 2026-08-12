@@ -283,6 +283,48 @@ PRESETS = {
              "shadow-gaps read against, so the module reads as slats and not as a flat panel "
              "(D2-A backing, delivered by AKUWALL's own black backing)",
         source="element1-oak-signature-wall_DD-2026-07-16.md D2-A backing + D7-B item 6"),
+    # -- P2g half three (p2r20): the census's own top-2 uncovered materials get the oak
+    # -- treatment. On p2r19 the frame's biggest unmapped shares were m_mill_backing 6.0%
+    # -- and m_mill_cement 2.4% (census uncovered-by-share line), and C2-r19's pick-one
+    # -- was exactly these two planes read as "a hole in the build" — three instruments
+    # -- agreeing (eye WHAT, matmask WHICH, census HOW MUCH). Same law as oak_veneer_photo:
+    # -- the SIGNED colour stays the albedo mean by construction; the original signed
+    # -- presets above stay untouched and the A leg (--flat-accents) still renders them.
+    "microcement_cool_photo": dict(
+        # SAME signed D6-A microcement (#AEB2B2 matte 0.90) carried by a photographed
+        # plaster surface instead of the r6 procedural burnish (which the r6 note itself
+        # called compensation for a flat panel, and which 13 rounds of critics kept
+        # reading as a hole). Poly Haven plastered_wall_03 — its own tags say "plaster,
+        # cement" — dimensions [4000,4000] from the API on 2026-08-12 (scale asserted,
+        # never assumed). map_mean/rough_mean MEASURED on the cached 2k set 2026-08-12:
+        # multiply (1.70, 2.17, 2.65), clipped pixels 0.00%, p99 0.631 — same class as
+        # oak's measured (1.58, 2.26, 3.09). rough_mean 0.9111 lands within 0.011 of the
+        # signed 0.90, so the roughness story barely moves; what the map adds is the
+        # trowel-cloud VARIATION a real microcement carries.
+        factory="image_wood", space="srgb", hex="#AEB2B2", rough=0.90,
+        slug="plastered_wall_03", tile_m=4.0,
+        map_mean=(0.2486, 0.2057, 0.1683), rough_mean=0.9111,
+        feature_scale=1.0, tier="DESIGN-INTENT",
+        desc="cool matte microcement contrast (drawer fronts / dressing-tower back) — reads "
+             "intentional against oak + black-alu glass (D6-A); photographed trowelled-plaster "
+             "surface, signed colour preserved as the albedo mean",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D6-A + gate-DELIV001-P2r19 C2#1"),
+    "matte_black_ply_photo": dict(
+        # SAME signed D7-B backer (#3A3C3E matte 0.82) carried by the suite's own veneer
+        # photograph stained near-black — which is what AKUWALL's black backing physically
+        # is (the same substrate, dark-stained). oak_veneer_01's measured constants reused
+        # verbatim (map_mean/tile_m/grain_run asserted at its own ingest); the multiply is
+        # a DARKENING (0.117, 0.213, 0.488) so clipping is impossible by construction.
+        # At 6.0% of frame in shadow gaps, the payload is the Rough/Displacement response
+        # (grazing-sheen break-up), not the albedo grain.
+        factory="image_wood", space="srgb", hex="#3A3C3E", rough=0.82,
+        slug="oak_veneer_01", tile_m=1.83,
+        map_mean=(0.3604, 0.2117, 0.0988), rough_mean=0.5304,
+        feature_scale=1.0, grain_run_m=2.8, tier="DESIGN-INTENT",
+        desc="near-black slightly-cool matte backer behind the slat battens — the dark ground the "
+             "shadow-gaps read against (D2-A backing); dark-stained veneer photograph, signed "
+             "colour preserved as the albedo mean",
+        source="element1-oak-signature-wall_DD-2026-07-16.md D2-A + gate-DELIV001-P2r19 C2#1"),
 
     # -- ELEMENT-2 palette (PRJ-2026-002 master suite WEST wall, 2026-07-17). The west wall is the
     # -- COOL counterpoint to the warm oak signature: a Caesarstone vanity counter + a frameless
