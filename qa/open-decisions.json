@@ -607,6 +607,20 @@
    "reverse_by": "reopen P2j ในแผน (หนึ่งบรรทัด) และ/หรือ render ด้วย --flat-accents เพื่อกลับไปคู่ p2r19 เป๊ะ; พี่ overrule จากภาพได้ทุกเมื่อ",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-043",
+   "unit": "DELIV-001",
+   "decided_round": 22,
+   "decided_date": "2026-08-12",
+   "decided_by": "builder",
+   "question": "P2k (arris อ่านเป็นมีดทั้งที่ bevel มีจริง) — smooth-shade เข้าไปแล้วตั้งแต่ 08-10 แต่ C3 ยังไฟล์ที่ r20 และไฟล์กลับที่ r22 หลังถอนที่ r21: เหลืองาน geometry จริงไหม หรือกลไกที่ขาดอยู่เฟสอื่น",
+   "in_effect": "P2k ปิดแบบ MEASURED-AND-RELANED (ตระกูล D-041/D-042): ครึ่ง geometry จ่ายแล้วและวัดได้ — transition ที่ edge ที่ถูกชี้เป็น ramp 2-3px (ไม่ใช่ step 1px; smooth-shade+harden ของ dff0759 ถึงเฟรมจริง) · ครึ่งที่เหลือ (เส้น specular ที่ arris จริงมีใต้แสง) วัดจากเฟรม p2r22 เองว่าเป็นของเฟสแสง: gable ที่แสงมีทิศ มี highlight-above-faces 7-18 codes, partition ใต้แสงแบนหน้าตรง = 0.0 ทุกแถวที่วัด — เฟรมเดียวกัน geometry เดียวกัน ต่างกันที่ทิศแสง · ข้อ arris ของ critic จึงย้าย lane: accepted → P4/lighting queue (IES norm + directional key) และไม่ใช่ item เรขาคณิตของ P2 อีก — ตรง build-order law ของเจ้าของ (dimension → objects → light)",
+   "because": "การวัดสองชุดในคืนเดียว: (1) edge-profile scanlines ที่ partition x830-880 และ gable x420-470 ของ p2r21/p2r22 — ramp 2-3px ทุกจุด ไม่มีจุดไหนเป็นมีด 1px; (2) highlight probe ตามความสูง 7 จุดบน gable (7.2-18.2 codes เหนือทั้งสองหน้า) vs 4 จุดบน partition (0.0 ทุกจุด) — cue มีอยู่จริงตรงที่แสงเอื้อ และเป็นศูนย์ตรงที่แสงแบน ดังนั้นปุ่มที่เหลือไม่ใช่ bevel width/segments (เพิ่ม = ขัดความจริงงาน joinery ที่ MILL_BEVEL_M จดไว้)",
+   "where": "qa/deliverable-plan.json (P2k -> done+relaned) + projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r22-2026-08-12.md (addendum)",
+   "reverse_by": "เปิด P2k กลับเป็น item เรขาคณิตของ P2 ถ้าหลัง P4 ships directional-light pass แล้ว C3 ยังไฟล์ arris read ในสามรอบแรกหลังจากนั้น — หรือพี่ overrule จากภาพเมื่อไหร่ก็ได้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
