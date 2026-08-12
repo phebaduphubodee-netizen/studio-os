@@ -1071,7 +1071,40 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "8ec79a0637898be17c2adcc9df289d942586f91a",
+      "verdicts": {
+        "P2": "keep: three mechanism rounds closed today (wood fold, rug rim, cloth crease) plus two bookkeeping closes (P2d executed, P2r-3), C3 back at its lane minimum of 5 with bedding off its top for the first time, and the remaining distance to the bar is now three NAMED sites (dart/hem geometry, fabric-map legibility at close range, sham surface) all inside the existing P2 queue - the phase is converging, do not widen it",
+        "P4": "keep: the accepted functional-detail family grew again (upholstery seams joined outlets/switches/backplate/drawer-pull) and D7 still fails 6 vs 12 every round - P4 remains the phase where all of it lands, correctly after surfaces",
+        "P5": "keep: two more camera-class specimens this round (drawer clearance vs a measured 5.9 m aisle at r16, sconce heights vs measured dz 0.000) - the file for the camera phase keeps growing and every entry is refuted-by-number, not dropped",
+        "DRW": "keep: parallel lane untouched by these rounds; its own last review says one rung from complete - verdict unchanged"
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-3",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "1b481ef6b1e1f30580df69487c5fa499bb117d0e"
+  "last_review_commit": "8ec79a0637898be17c2adcc9df289d942586f91a"
 }
