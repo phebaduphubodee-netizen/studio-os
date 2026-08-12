@@ -112,9 +112,9 @@
    "key": "BF09-3_overbed_wardrobe",
    "source": "BF label + floor2 scene-graph",
    "rect_mm": [
-    1800,
-    2950,
-    3300,
+    2352,
+    2800,
+    3301,
     600
    ],
    "drawn_as": "ตู้เสื้อผ้าเหนือเตียง BF09-3.330x60x280",
@@ -124,29 +124,29 @@
     "date": "2026-07-05"
    },
    "gap": null,
-   "note": "WEST-END DIVERGENCE noted 2026-08-11 (suite render read): the drawn band runs from x~1750-1800 while the built BF09-3 starts x2353 — ~550mm of drawn casework missing at the west end. Matched above bar (plinth cov 0.62) so the gate stays green; the fix is a build-lane geometry decision routed with the DRW-2 divergence pack. In-frustum.",
+   "note": "WEST-END ACCUSATION RETRACTED 2026-08-11, same night it was filed: the vector probe finds exactly ONE vertical in x[1300,2900] within the band — x=2352, len 600, the drawn west cap — and band edges y2800/y3400 with ~3.1m runs. The built band (x2353, 3301 long = label 330 to 1mm) is INK-EXACT. My low-zoom eyeball had read the pelmet/leader linework at ~x1750 as the band edge — third eyeball error of the night, third vector correction. Rect corrected from the floor2 scene-graph guess [1800,2950] to the ink; the scene-graph is now 0-for-3 on BF band placements (BF11, BF10, BF09-3).",
    "match": {
     "frame": "room_bedroom_suite_eye_p2r11.scene.json",
     "candidates": [
      {
-      "assembly": "mill@2353,-450/mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__plinth",
-      "kind": "part",
-      "coverage": 0.619,
-      "footprint_m2": 1.921,
-      "in_frustum": true
-     },
-     {
       "assembly": "mill@2353,-450/mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__top",
       "kind": "part",
-      "coverage": 0.619,
+      "coverage": 1.0,
       "footprint_m2": 1.981,
       "in_frustum": true
      },
      {
       "assembly": "mill@2353,-450",
       "kind": "assembly",
-      "coverage": 0.619,
+      "coverage": 1.0,
       "footprint_m2": 11.859,
+      "in_frustum": true
+     },
+     {
+      "assembly": "mill@2353,-450/mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__plinth",
+      "kind": "part",
+      "coverage": 0.975,
+      "footprint_m2": 1.921,
       "in_frustum": true
      }
     ],
@@ -901,49 +901,188 @@
    "key": "BF09-2_unit",
    "source": "ink label BF09-2.150x60x280CM (vertical, at x~3620-3700, y~5350-6800) — revived from the floor2 lane's OWN July pending: \"เห็นป้ายแต่ผนังยังไม่ชัด → ไม่วางมั่ว รอ owner ชี้\" — the pending fell out of every queue for five weeks",
    "rect_mm": [
-    3124,
-    5350,
-    178,
-    1500
+    3302,
+    5199,
+    502,
+    1498
    ],
-   "drawn_as": "BF09-2.150x60x280CM — referent ambiguous",
-   "identity": null,
-   "gap": {
-    "reason": "the label exists but its referent cannot be read from the ink: the only candidate is the thin bundle beside the ensuite east wall (x3124-3302, run ~1.5-2.1m) and nothing 600 deep is drawn there — placing a 1.5x0.6m unit would be typing an unmeasurable number (R10). Declared, packaged for the owner's eye with the DRW-2 divergence pack; not built.",
-    "decided_by": "builder",
-    "date": "2026-08-11"
+   "drawn_as": "ตู้เสื้อผ้า BF09-2.150x60x280CM",
+   "identity": {
+    "read": "wardrobe BF09-2, the cool closed anchor of the dressing gallery (D-E7-4) — INK-TRUED by element 7 on 2026-07-21: drawn length 1498.1 matches the label to 1.9mm; position derived from ink_faces (47.6mm off the party-wall bay face, the ensuite door slide lane)",
+    "by": "element7 refinement-wardrobe-dressing-gallery_2026-07-22.md, adopted into this row 2026-08-11",
+    "date": "2026-07-21"
    },
-   "note": "rect_mm records the LABEL EVIDENCE ZONE (the drawn bundle), not a claimed footprint — the label says 150x60 and the bundle is neither.",
+   "gap": null,
+   "note": "GAP RETRACTED 2026-08-11, two hours after it was signed. The July \"รอ owner ชี้\" pending WAS resolved — by element 7 on 07-21, with a 1.9mm label re-proof — and the unit is BUILT (8 mill parts at x3302-3803). My re-read failed to find it because I searched for a 600-deep rect; x=3302/len 2097 was the TOP LINE of my own histogram and I read past it. What actually fell out of the queues was only the floor2 README cross-reference. The real open half survives narrower: drawn depth 501.5 vs label 600 — the spec's own recorded \"designer question, never machine-resolved\", paired with BF11's 498-vs-600 (rides the DRW-2 eye-pack). Also adopted from the spec: BF10 stale-position WATCH-ITEM #9c (canonical BF10 still at old x650-3150; ink draws its east end MEETING this unit's west face — ~152mm apparent slit the ink draws closed).",
    "match": {
     "frame": "room_bedroom_suite_eye_p2r11.scene.json",
     "candidates": [
      {
-      "assembly": "wall_s0_1p0",
+      "assembly": "mill@3302,5199",
       "kind": "assembly",
-      "coverage": 0.3,
-      "footprint_m2": 0.083,
+      "coverage": 1.0,
+      "footprint_m2": 1.505,
       "in_frustum": true
      },
      {
-      "assembly": "wall_s0_1p0/wall_s0_1p0",
+      "assembly": "mill@3302,5199/mill__bayBF09-2-2_plinth__cool",
       "kind": "part",
-      "coverage": 0.3,
-      "footprint_m2": 0.083,
+      "coverage": 0.975,
+      "footprint_m2": 0.724,
       "in_frustum": true
      },
      {
-      "assembly": "wall_s1_3z",
-      "kind": "assembly",
-      "coverage": 0.101,
-      "footprint_m2": 0.094,
+      "assembly": "mill@3302,5199/mill__bayBF09-2-2_carcass__cool",
+      "kind": "part",
+      "coverage": 0.95,
+      "footprint_m2": 0.721,
       "in_frustum": true
      }
     ],
     "checked": "2026-08-11",
     "in_frustum": true
    },
-   "verdict": "declared_gap",
+   "verdict": "matched",
    "warning": null
   }
- ]
+ ],
+ "heights": {
+  "_what": "DRW-2 height ladder — the z a plan cannot give. Source ladder: bf_label (owner-confirmed printed labels) > owner_sign (signed element decision) > ergonomics_band (named band in knowledge/, value inside it) > ASSUMPTION (a typed number with no artifact behind it — legal only when declared). Traced+adversarially verified 2026-08-11 (workflow: 5 trace + 5 verify agents; one trace verdict was overturned by its verifier — bench).",
+  "_headline": "11 of 19 sourced / 8 assumptions. Of the 8, two are worse than unsourced: nightstands 520 sit OUTSIDE the vault side-table band 380-480 that does exist, and the stool 750 equals the BF11 counter height it serves.",
+  "rows": [
+   {
+    "mass": "เตียง (bed)",
+    "h_mm": 600,
+    "tier": "owner_sign",
+    "source": "element3-bed_DD-2026-07-18.md D3-1 (~300 plinth + ~300 mattress, owner-signed)",
+    "note": "numeric root was a takeoff literal (gen_floor2_specs.py:288); the signature fixes it forward — DD itself admits the vault has no bed-height band"
+   },
+   {
+    "mass": "ม้านั่งปลายเตียง (bench)",
+    "h_mm": 450,
+    "tier": "ergonomics_band",
+    "source": "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:36 seat band 400-450",
+    "note": "trace filed none; VERIFY OVERTURNED it by finding the band — the verify rung paying for itself"
+   },
+   {
+    "mass": "โต๊ะข้างเตียง เหนือ",
+    "h_mm": 520,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, gen_floor2_specs.py:303 (takeoff 6b670d8)",
+    "note": "OUTSIDE the vault side/end-table band 380-480 (ergonomics_ref side_table agrees); FFE note says most nightstands 590-650; P2i already measured the top 80mm BELOW the mattress top — three artifacts disagree, a DESIGN question owned by P2i, in-frustum"
+   },
+   {
+    "mass": "โต๊ะข้างเตียง ใต้",
+    "h_mm": 520,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, gen_floor2_specs.py:305 (twin inheritance)",
+    "note": "same as the N twin"
+   },
+   {
+    "mass": "สตูลโต๊ะเครื่องแป้ง (stool)",
+    "h_mm": 750,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, v4/gen_floor2_v4_specs.py:355",
+    "note": "750 (backrest) == BF11 counter 750 — no doc reconciles the tuck-under; off-camera today, surfaces when the vanity enters a frame"
+   },
+   {
+    "mass": "BF14",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF14.325x10x280CM (canonical note reproduces it to 0.2mm)",
+    "note": ""
+   },
+   {
+    "mass": "BF09-3",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF09-3.330x60x280CM (run reproduces to 1mm)",
+    "note": ""
+   },
+   {
+    "mass": "BF11",
+    "h_mm": 750,
+    "tier": "owner_sign",
+    "source": "element2 DD D2-2 owner-signed low vanity; band 711-762 contains it (casework §4.1)",
+    "note": "the label's 280 full-height default explicitly overridden by the owner re-type"
+   },
+   {
+    "mass": "BF10",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "floor2-README BF label law (สูง 2800, owner-confirmed)",
+    "note": ""
+   },
+   {
+    "mass": "ชั้นหนังสือ ex-TV",
+    "h_mm": 1800,
+    "tier": "owner_sign",
+    "source": "owner-set TALL 2026-07-06 (v4 generator records \"height owner-set\"); reach band 1800-2100 ratifies",
+    "note": ""
+   },
+   {
+    "mass": "อ่างล้างหน้าคู่",
+    "h_mm": 850,
+    "tier": "ergonomics_band",
+    "source": "element4 DD §7: standing-lavatory band 850-904 (residential-clearances.md:104)",
+    "note": ""
+   },
+   {
+    "mass": "โถสุขภัณฑ์ WC",
+    "h_mm": 800,
+    "tier": "ASSUMPTION",
+    "source": "typed cistern estimate; spec declares wall-hung/cistern config an owner/MEP [GAP]",
+    "note": "v4 had h=400 — the number has already silently doubled once; off-camera"
+   },
+   {
+    "mass": "อ่างอาบน้ำ",
+    "h_mm": 560,
+    "tier": "ASSUMPTION",
+    "source": "ink-read claude_reco \"tub deck ~550-600 [est], owner-vetoable\"",
+    "note": "self-declared [est] in the spec — the honest form; off-camera"
+   },
+   {
+    "mass": "ฝักบัว (enclosure)",
+    "h_mm": 2200,
+    "tier": "ASSUMPTION",
+    "source": "typed literal, v4 generator; every other 2200 in 03_layout is a casement head",
+    "note": "off-camera"
+   },
+   {
+    "mass": "ผนังกระจกเปียก/แห้ง",
+    "h_mm": 2000,
+    "tier": "ASSUMPTION",
+    "source": "spec self-declares h2000 [est]",
+    "note": "off-camera"
+   },
+   {
+    "mass": "BF09-1 ขาเหนือ",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF09-1.520x60x280CM + label law",
+    "note": ""
+   },
+   {
+    "mass": "BF09-1 ขาตะวันออก",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "same label (one label, one L-run)",
+    "note": ""
+   },
+   {
+    "mass": "BF09-2",
+    "h_mm": 2800,
+    "tier": "bf_label",
+    "source": "label BF09-2.150x60x280CM (H unquestioned; W/D are the Q1 designer question)",
+    "note": ""
+   },
+   {
+    "mass": "bed__headboard",
+    "h_mm": 1100,
+    "tier": "ASSUMPTION",
+    "source": "D-034 declared assumption; chair-band analogy (asset_scale \"back to ~1100\")",
+    "note": "verify graded the citation PARTIAL: the ~1100 lives only in asset_scale's comment — residential-clearances.md contains no 1100. The assumption is DECLARED, which is its legal form; owner knob stands"
+   }
+  ]
+ }
 }

@@ -396,6 +396,14 @@ def _save_ledger(ledger):
 
 
 def main(argv):
+    # The rows carry Thai names and this tool's exit codes are a CONTRACT: a
+    # cp1252 console must not turn a successful run into exit 1 by crashing the
+    # table print — the exact defect P1's scorer shipped once (a crashed gate
+    # printing like a completed one).
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:                                   # noqa: BLE001
+        pass
     if len(argv) < 2 or argv[1] not in ("--recon", "--gate", "--extract"):
         raise SystemExit(__doc__)
     ledger = _load(LEDGER, "ledger qa/sheet-recon.json")

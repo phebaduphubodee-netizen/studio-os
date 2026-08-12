@@ -198,6 +198,30 @@ def test_frames_agree_and_disagree():
     assert sr._frames_agree(rows, {"objects": shifted}) is False
 
 
+def test_thai_row_names_survive_a_cp1252_stdout(tmp_path, monkeypatch):
+    """REGRESSION: --recon crashed printing Thai names through a cp1252 console,
+    and the crash exited 1 — the code that means 'a claim is broken'. A console
+    encoding must never be able to forge a verdict."""
+    import io
+    import json as _json
+    import os as _os
+    led = {"source_sheet": {"pdf": "x.pdf", "page": 1},
+           "extract_params": {"zone": [0, 0, 1, 1], "close_mm": 18},
+           "rows": [{"id": "SR-01", "key": "k", "rect_mm": [2646, 626, 504, 1008],
+                     "drawn_as": "ม้านั่งปลายเตียง", "floor_standing": True,
+                     "gap": None}]}
+    lp = tmp_path / "led.json"
+    lp.write_text(_json.dumps(led, ensure_ascii=False), encoding="utf-8")
+    dp = tmp_path / "dump.json"
+    dp.write_text(_json.dumps({"objects": [
+        _obj("bench__seat", 2.6, 0.6, 0.0, 3.15, 1.65, 0.45)]}), encoding="utf-8")
+    monkeypatch.setattr(sr, "LEDGER", str(lp))
+    fake = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")
+    monkeypatch.setattr(sr.sys, "stdout", fake)
+    rc = sr.main(["sheet_recon", "--recon", str(dp)])
+    assert rc == 0
+
+
 def test_gate_line_names_the_counts():
     line = sr.gate_line({"drawn": 18, "matched": 17, "gaps": 0, "unresolved": 1,
                          "blocking": 0, "frustum_source": "floor_poly"})

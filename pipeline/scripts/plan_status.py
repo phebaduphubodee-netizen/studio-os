@@ -351,6 +351,11 @@ def sheet_lines():
     s, frame, warns = SR.ledger_summary(led)
     out = ["", SR.gate_line(s) + (f" — last vs {frame}" if frame else
                                   " — NEVER RUN against a scene dump")]
+    hrows = (led.get("heights") or {}).get("rows") or []
+    if hrows:
+        n_asm = sum(1 for r in hrows if r.get("tier") == "ASSUMPTION")
+        out.append(f"            heights: {len(hrows) - n_asm}/{len(hrows)} sourced, "
+                   f"{n_asm} declared assumptions (DRW-2 ladder)")
     for w in warns[:3]:
         out.append(f"            !! {w}")
     return out
