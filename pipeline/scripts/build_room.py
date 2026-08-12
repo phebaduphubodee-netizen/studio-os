@@ -2392,8 +2392,15 @@ def _dress_scene(spec):
                                             cell=0.035, salt=11)
             _pin = [k for k, p in enumerate(tv) if p[1] < by + bd - 0.28]
             try:
+                # fabric "knit", not "linen" (p2r21, C2-r19/r20 "slab-crisp knife
+                # edges" on this object two rounds running): this piece IS a throw,
+                # and drape's own FABRIC table gives throws the knit row ("heavy but
+                # LIMP", bending 0.35) — the bed throw already bakes with it. Linen's
+                # bending 1.2 held the pre-bent 180° crease as a stiff shell, which
+                # is exactly the ruler-straight double ridge in the crop. No new
+                # knob: the object was wearing another class's fabric row.
                 _to = drape.bake_sheet("deco__bench_throw", tv, tf, [_seat],
-                                       frames=45, fabric="linen",
+                                       frames=45, fabric="knit",
                                        mat=bpy.data.materials.get("bed_duvet"),
                                        pin=_pin, thickness=0.010, collide_dist=0.012,
                                        shred_guard=True)

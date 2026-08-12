@@ -908,6 +908,68 @@ def cushion(w, d, h, nu=13, nv=9, pinch=0.30, dent=0.0, salt=0, edge=0.30,
 # 4. FOLDED STACK — what sits on an open shelf.
 # ---------------------------------------------------------------------------
 
+def folded_knit(w, d, h, nu=17, salt=0, roll=0.42, sq=6.0):
+    """ONE folded knit/towel: a soft-cornered RECTANGULAR slab — flat top and bottom,
+    near-vertical sides, and a fold-roll radius (`roll*h`) where face meets side.
+
+    WHY THIS EXISTS BESIDE `cushion` (P2r-4 folded half, LOOK 2026-08-12 on p2r20 at
+    3x): the shelf stacks wore `cushion(pinch=0.06, edge=0.22)`, whose plan is a
+    near-ellipse and whose radius profile `sin(phi)**edge` reaches full width only at
+    mid-height — four of those stacked read as PANCAKES, and the reference of record
+    (anchor I-24-062 file 206336_09-2-open.jpg, a delivered dressing room) shows
+    folded knits as rectangles: flat top, sides that stay full-width, a small roll at
+    the fold edges, silhouette lines that waver a millimetre — never ruler-straight,
+    never domed. `cushion` cannot express a vertical side by its own math (a power of
+    sin always domes), so the folded item gets its own profile rather than a cushion
+    bent to a parameter corner the next reader has to decode.
+
+    The cross-section is authored as a PROFILE SCHEDULE (R8 case (c), an extruded
+    outline): flat bottom face -> quarter-round roll -> vertical side -> quarter-round
+    roll -> flat top face, swept around a superellipse plan (exponent `sq`; corners
+    soft but square). Stays INSIDE (0..w, 0..d) — the waver is inward-only — and
+    fills 0..h EXACTLY (the stack's headroom contract); deterministic via
+    `dev`/golden-phase; `salt` de-twins the edge waver between items."""
+    if w <= 0 or d <= 0 or h <= 0:
+        _fail(f"folded_knit: degenerate {w}x{d}x{h}")
+    if not 0.05 <= roll <= 0.5:
+        _fail(f"folded_knit: roll {roll} outside 0.05..0.5")
+    cx, cy = w * 0.5, d * 0.5
+    rr = min(roll * h, 0.4 * min(cx, cy))   # roll can never eat the plan
+    # Row schedule down the cross-section boundary: (kind, t) where kind "face" rows
+    # carry t = plan-scale s (0 = centre pole), and "roll"/"side" rows carry t = the
+    # ABSOLUTE inset from the full outline (a real fold-roll is millimetres of inset,
+    # not a proportion — a proportional roll on the long axis reads as a dome again).
+    quarter = [(math.radians(q)) for q in (28.0, 58.0, 90.0)]
+    rows = ([("face", 0.0, 0.0), ("face", 0.55, 0.0), ("face", 0.92, 0.0)]
+            + [("roll", rr * (1.0 - math.sin(t)), rr * (1.0 - math.cos(t)))
+               for t in quarter]
+            + [("side", 0.0, h * 0.5)]
+            + [("roll", rr * (1.0 - math.sin(t)), h - rr * (1.0 - math.cos(t)))
+               for t in reversed(quarter)]
+            + [("face", 0.92, h), ("face", 0.55, h), ("face", 0.0, h)])
+    ph = 2.0 * math.pi * ((salt + 1) * PHI_INV % 1.0)
+    verts = []
+    for j, (kind, t, z) in enumerate(rows):
+        for i in range(nu + 1):
+            u = i / float(nu)
+            a = 2.0 * math.pi * u
+            ca, sa = math.cos(a), math.sin(a)
+            sx = math.copysign(abs(ca) ** (2.0 / sq), ca)
+            sy = math.copysign(abs(sa) ** (2.0 / sq), sa)
+            if kind == "face":
+                ex, ey = (cx - rr) * t, (cy - rr) * t
+            else:
+                ex, ey = cx - t, cy - t
+            # edge waver, INWARD-only so the footprint stays exact: strongest on the
+            # side/roll rows (the visible silhouette), zero at the centre poles
+            wav = (0.5 - 0.5 * math.cos(math.pi * min(z, h - z) / max(h * 0.5, 1e-9))
+                   if kind != "face" else t * 0.3)
+            wob = 1.0 - 0.02 * wav * (1.0 + math.sin(2.0 * a + ph)) * 0.5 \
+                - abs(dev(i * 13 + j, 0.008, salt=salt + 3)) * wav
+            verts.append((cx + ex * sx * wob, cy + ey * sy * wob, z))
+    return verts, _loft_faces(len(rows) - 1, nu)
+
+
 def folded_stack(w, d, n, item_h, salt=0, jitter_xy=0.012, jitter_rot=0.0):
     """`n` folded items stacked, each offset by a bounded deterministic deviation so the
     stack leans slightly rather than reading as one extruded block.

@@ -554,15 +554,15 @@ def stack_on_shelf(shelf, n=4, item_h=0.042, salt=0, frac_w=0.46, frac_d=0.62):
     for k, (ox, oy, oz, dx, dy, dz) in enumerate(
             sg.folded_stack(w, d, n, item_h, salt=salt)):
         tok = TOK_TERRY if k % 2 == 0 else TOK_LINEN
-        # r7 (C2-r6#7 + C3-r6#1 "ผ้าพับกล่อง", the beveled-box read at 100%): each
-        # folded item is now a CUSHION loft, not a box — the same generator whose
-        # rounded-slab silhouette already carries the bed pillows. edge 0.22 holds
-        # nearly full width then turns a small soft roll (a folded knit's edge IS
-        # that roll); pinch 0.06 keeps folded corners square-ish. Footprint contract
-        # unchanged: cushion() fills exactly (0..dx, 0..dy, 0..dz). Same class of fix
-        # as the rug this round follows (box -> displaced form, D-028's other half).
-        cv, cf = sg.cushion(dx, dy, dz, nu=13, nv=7, pinch=0.06, edge=0.22,
-                            salt=salt * 7 + k)
+        # p2r21 (P2r-4 folded half): the r7 CUSHION loft fixed the beveled-box read
+        # and introduced the next one — an elliptical-plan dome, and four of them
+        # stacked read as PANCAKES at 3x (LOOK 2026-08-12 beside the delivered
+        # dressing-room reference, anchor I-24-062 #206336). A folded knit is a
+        # soft-cornered RECTANGLE — flat top, full-width sides, a fold-roll at the
+        # edges — which is `folded_knit`'s authored profile (R8 case (c): an
+        # extruded outline; cushion's sin**edge math can never hold a vertical
+        # side). Footprint contract unchanged: fills the AABB, exact in z.
+        cv, cf = sg.folded_knit(dx, dy, dz, nu=17, salt=salt * 7 + k)
         parts.append({
             "name": f"mill__style_fold{salt}_{k}__{tok}", "shape": "mesh",
             "verts": _xlate(cv, x0 + ox, y0 + oy, z0 + oz),

@@ -48,6 +48,7 @@ ALL_MESHES = [
     ("garment", lambda: sg.garment(0.46, 0.95)),
     ("hanger", lambda: sg.hanger(0.40)),
     ("cushion", lambda: sg.cushion(0.70, 0.70, 0.19, dent=0.02)),
+    ("folded_knit", lambda: sg.folded_knit(0.17, 0.25, 0.042, salt=3)),
 ]
 
 
@@ -183,6 +184,95 @@ def test_cushion_dent_lowers_the_top_centre():
 def test_cushion_rejects_bad_pinch():
     with pytest.raises(ValueError):
         sg.cushion(0.7, 0.7, 0.19, pinch=1.8)
+
+
+# ------------------------------------------------------------- folded knit physics
+
+def _fk_rings(w=0.17, d=0.25, h=0.042, nu=17, salt=3):
+    verts, _ = sg.folded_knit(w, d, h, nu=nu, salt=salt)
+    n_rows = len(verts) // (nu + 1)
+    return [verts[j * (nu + 1):(j + 1) * (nu + 1)] for j in range(n_rows)]
+
+
+def test_folded_knit_is_a_slab_not_a_pancake():
+    """The defect this generator replaces: cushion's sin**edge profile reaches full
+    width only at mid-height, so a stack of them reads as pancakes. A folded knit's
+    side must hold near-full width from just above the fold-roll to just below it —
+    the quarter-height span must be >= 92% of the mid-height span (cushion at the
+    old stack settings measures ~83% at the same station, and an ellipse-plan
+    cushion never passes the 45-degree test below)."""
+    w, d, h = 0.17, 0.25, 0.042
+    rings = _fk_rings(w, d, h)
+    spans = [max(v[0] for v in r) - min(v[0] for v in r) for r in rings]
+    mid = max(spans)
+    zs = [r[0][2] for r in rings]
+    # ring nearest quarter height
+    jq = min(range(len(zs)), key=lambda j: abs(zs[j] - h * 0.25))
+    assert spans[jq] >= 0.92 * mid, (
+        f"quarter-height span {spans[jq]:.4f} < 92% of mid {mid:.4f} — profile domes")
+
+
+def test_folded_knit_plan_is_rectangular_not_elliptical():
+    """An ellipse's 45-degree radius is 71% of its axis radius — the oval-pill plan
+    that read as pebbles. A soft-cornered rectangle holds >= 85%."""
+    w = d = 0.20
+    rings = _fk_rings(w, d, 0.042)
+    # widest ring (the side row at mid height)
+    ring = max(rings, key=lambda r: max(v[0] for v in r) - min(v[0] for v in r))
+    cx = cy = 0.10
+    r_axis = max(abs(v[0] - cx) for v in ring)
+    r_diag = max(min(abs(v[0] - cx), abs(v[1] - cy)) * math.sqrt(2.0) for v in ring)
+    assert r_diag >= 0.85 * r_axis, (
+        f"45-degree radius {r_diag:.4f} vs axis {r_axis:.4f} — plan is an oval")
+
+
+def test_folded_knit_top_is_a_flat_face_not_a_pole():
+    """cushion ends in a point pole; a folded item ends in a FLAT top face. The
+    verts at exactly z=h must span a real area, not collapse to a point."""
+    w, d, h = 0.17, 0.25, 0.042
+    verts, _ = sg.folded_knit(w, d, h)
+    top = [v for v in verts if abs(v[2] - h) < 1e-12]
+    assert len(top) > 1
+    span_x = max(v[0] for v in top) - min(v[0] for v in top)
+    assert span_x >= 0.5 * w, f"top face spans {span_x:.4f} of {w} — still a dome"
+
+
+def test_folded_knit_stays_inside_footprint_and_fills_height():
+    w, d, h = 0.17, 0.25, 0.042
+    verts, _ = sg.folded_knit(w, d, h, salt=9)
+    x0, y0, z0, x1, y1, z1 = sg.bbox(verts)
+    assert x0 >= -1e-9 and x1 <= w + 1e-9
+    assert y0 >= -1e-9 and y1 <= d + 1e-9
+    assert abs(z0) < 1e-12 and abs(z1 - h) < 1e-12, "z must fill 0..h exactly"
+
+
+def test_folded_knit_salt_de_twins_the_silhouette():
+    a, _ = sg.folded_knit(0.17, 0.25, 0.042, salt=1)
+    b, _ = sg.folded_knit(0.17, 0.25, 0.042, salt=2)
+    assert a != b
+
+
+def test_folded_knit_edges_waver_not_ruler_straight():
+    """The reference's silhouette lines waver ~a millimetre; a laser-straight edge is
+    the CAD tell. Along the widest ring, the outline radius must vary, but never by
+    more than ~4% (more reads as damage, not a fold)."""
+    rings = _fk_rings(0.30, 0.25, 0.042, salt=5)
+    ring = max(rings, key=lambda r: max(v[0] for v in r) - min(v[0] for v in r))
+    cx, cy = 0.15, 0.125
+    # sample only the flat middle of the long sides (reach > 97% of max), where the
+    # superellipse's own curvature contributes ~0, so spread ~= waver alone
+    reach = [abs(v[1] - cy) for v in ring]
+    side = [r for r in reach if r > 0.97 * max(reach)]
+    assert len(side) >= 3, "no side verts sampled"
+    spread = max(side) - min(side)
+    assert 1e-4 < spread < 0.02 * 0.25, f"side spread {spread:.5f} out of band"
+
+
+def test_folded_knit_rejects_degenerate_and_bad_roll():
+    with pytest.raises(ValueError):
+        sg.folded_knit(0.0, 0.25, 0.042)
+    with pytest.raises(ValueError):
+        sg.folded_knit(0.17, 0.25, 0.042, roll=0.7)
 
 
 # ------------------------------------------------------------------ stack + throw
