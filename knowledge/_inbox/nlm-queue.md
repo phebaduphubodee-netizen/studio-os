@@ -140,3 +140,5 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   (4 units, 8 of the audit's 11 integrity failures). The staging is correct and
   the CLASSIFIER is behind the convention. NOT FIXED HERE: inbox_audit.py is
   uncommitted-modified by a parallel session and belongs to that lane.
+
+- [2026-08-12, p2r26 tick] notebook ae3dd665: folded cloth stack on soft upholstered bench - fold crease radius vs thickness, layer bulge at folded edge, cushion dent + over-edge sag, practitioner techniques. ASKED turn 3 but answer came back EMPTY (stranded generation, conversation 919224b9) - RE-ASK before the bench crease round opens (DR criterion 2: class entering its 2nd build round); vault partial answer already in knowledge/rendering/cloth-sim-closed-tube-garments.md + dr-cloth-corner-drape-2026-08-11.md
