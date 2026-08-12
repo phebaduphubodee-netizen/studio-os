@@ -1296,7 +1296,48 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "fa46f5c8caade8f7fd75869f4ea219d6500fc1e5",
+      "verdicts": {
+        "P2": "keep: the phase distance is now ONE named item and nothing else — P2k closed measured-and-relaned (D-043: its geometry half shipped 08-10 and measures as 2-3px ramps at every probed edge; the residual blade read is a lighting-phase mechanism, proven from the p2r22 frame itself where the same edges carry a 7-18 code highlight wherever light has direction and 0.0 where it is flat). P2r-5 holds three named geometry/feedstock sites plus the black-textile value floor measured tonight at p50=7 codes — every remaining site has a name and a number, so the next round starts with zero scouting.",
+        "P4": "change: its INTERNAL queue re-ranks — lighting moves to the head. Tonight both independent critics put light above cloth for the first time (C2 made it the pick-one and said a directional key would reveal-or-cover most of its other items), the P2k close routes the accepted arris read into this queue by measurement, and C3 refiled brass-response which the triage tied to the same missing directionality. The phase bar itself (D7 7-vs-12 styling completeness) is unchanged and still correct — but when P4 opens, the lighting pass now has three independent evidence lines saying it pays the most.",
+        "P5": "keep: still untouched by rounds that close under it, still the only phase that can end the plan — no evidence tonight moved its bar."
+      },
+      "changed": [
+        "P4"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "9b502960e46ff6225840f4054ec551c512f5d76c"
+  "last_review_commit": "fa46f5c8caade8f7fd75869f4ea219d6500fc1e5"
 }
