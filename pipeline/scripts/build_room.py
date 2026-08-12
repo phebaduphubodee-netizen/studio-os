@@ -1377,6 +1377,19 @@ _SLACK_WAVES_DEPTH = 0.4
 # units. A leg: --no-swing-clamp = p2r23 exact.
 _SWING_CLAMP = True
 
+# P2r-5 (p2r25): THE THROW GETS THE HEM A TAILOR SEWS. p2r24's crop named the
+# residual cause itself: the sawtooth on the throw's free hem has the CELL's
+# pitch — LINEAR bending buckling at the shortest wavelength the mesh can
+# represent — and the throw is the one bed cloth that never got a hem cue
+# (the coverlet's dates to p2r19). Two halves of one physical fact, a
+# turned-under sewn hem is 2-3 layers of cloth: (sim) drape.bake_sheet
+# hem_bend stiffens the boundary ~t^3 (factor 8 = doubled cloth, derived not
+# tuned) so the edge cannot buckle at cell scale; (render) hem_verts +
+# hem_factor 2.0 thickens the same boundary through _freeze's solidify, the
+# exact machinery the coverlet already wears. A leg: --no-hem-bend = the
+# p2r24 throw exactly.
+_HEM_BEND = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -4759,6 +4772,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
             else:
                 py = (ty + tdy - pw) if sign > 0 else ty
                 tpin = softgoods.verts_in_rect(vs, tx, py, tx + tdx, py + pw)
+            # p2r25 (_HEM_BEND): the throw's whole free boundary is a SEWN HEM
+            # — see the flag's comment. Sim half stiffens it (doubled cloth,
+            # t^3 -> 8x), render half doubles its thickness through _freeze's
+            # solidify, both on the same derived vert set; nothing typed.
+            _thr_hem = sorted(softgoods.boundary_verts(fs)) if _HEM_BEND else None
             return drape.bake_sheet(
                 "bed__throw", vs, fs,
                 # single-shell sim surfaces of both cloths beneath (the contact law
@@ -4793,6 +4811,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                 # p2r22: the throw is C2's pick-one three rounds running, in the
                 # DR's own ANGULAR words ("one big smooth curve") — see _LINEAR_BEND
                 bending_model='LINEAR' if _LINEAR_BEND else None,
+                hem_verts=_thr_hem, hem_bend=(_thr_hem, 8.0) if _thr_hem else None,
                 slack_verts=_wts, collide_dist=0.015)
         # Same ladder as the coverlet, for the same reason: this piece also failed on a
         # hand-picked length (2.7 mm past the plan line at the foot) and the number that
@@ -6302,6 +6321,10 @@ if __name__ == "__main__":
         # A leg of the p2r24 garment-swing clamp A/B — the exact p2r23 swings
         globals()["_SWING_CLAMP"] = False
         print("  [A/B] garment swing: unclamped (pre-p2r24) leg")
+    if "--no-hem-bend" in _post_dashdash():
+        # A leg of the p2r25 sewn-hem A/B — the exact p2r24 throw boundary
+        globals()["_HEM_BEND"] = False
+        print("  [A/B] throw hem: unsewn (pre-p2r25) leg")
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True

@@ -261,7 +261,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                shred_guard=False, collision_quality=4, bend_scale=1.0,
                self_friction=None, bend_verts=None, bend_floor=0.15,
                sew_edges=None, sewing_force=15.0,
-               hem_verts=None, hem_factor=2.0, bending_model=None):
+               hem_verts=None, hem_factor=2.0, bending_model=None,
+               hem_bend=None):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -339,6 +340,36 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                              f"bake as if it did")
         s.use_sewing_springs = True
         s.sewing_force_max = float(sewing_force)
+    # p2r25 — HEM BENDING (the sim half of the sewn-hem cue; the solidify half
+    # below is render-only and "the sim never sees it" by its own comment).
+    # WHY: the throw's free hem buckles at CELL wavelength under LINEAR bending
+    # (p2r24 measured the sawtooth: autocorr 0.591 -> 0.434 after the slack
+    # field — reduced, still periodic; the tooth pitch IS the cell). A real
+    # throw is hemmed: a turned-under hem is 2-3 layers, and plate bending
+    # stiffness scales with t^3, so the boundary is ~8-27x stiffer than the
+    # body — it physically cannot buckle at cell scale. Painted through the
+    # ONE bending group Blender gives us: base carries 0, max carries
+    # factor x preset, body weight 1/factor lands exactly on the preset, hem
+    # weight 1.0 carries the doubled cloth. Refuses to share the slot with
+    # bend_verts (one group, two owners = a silent half-mechanism).
+    if hem_bend:
+        if bend_verts:
+            raise DrapeError(f"{name}: hem_bend and bend_verts both paint the "
+                             f"one bending vertex group — a piece gets corner "
+                             f"relief or a stiff hem, not both silently")
+        hverts, hfac = hem_bend
+        if hfac <= 1.0:
+            raise DrapeError(f"{name}: hem_bend factor {hfac} <= 1 — a hem "
+                             f"softer than the body is not a sewn hem")
+        if not hverts:
+            raise DrapeError(f"{name}: hem_bend with no hem verts would be a "
+                             f"mechanism that silently never ran")
+        vgh = obj.vertex_groups.new(name="drape_hembend")
+        vgh.add(list(range(len(me.vertices))), 1.0 / float(hfac), 'REPLACE')
+        vgh.add(list(hverts), 1.0, 'REPLACE')
+        s.vertex_group_bending = vgh.name
+        s.bending_stiffness_max = ben * bend_scale * float(hfac)
+        s.bending_stiffness = 0.0
     if bend_verts:
         vgb = obj.vertex_groups.new(name="drape_bend")
         vgb.add(list(range(len(me.vertices))), 1.0, 'REPLACE')
