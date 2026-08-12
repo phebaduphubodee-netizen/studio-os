@@ -207,7 +207,8 @@
           "id": "P2d",
           "what": "pillows: acquired sham first; if model_fit rejects, softgoods.cushion() (written 2026-07-28 on the owner's order, never called by any lane)",
           "where": "pipeline/scripts/softgoods.py:653",
-          "status": "todo"
+          "status": "done",
+          "_closed_2026-08-11_r17": "CLOSED AS EXECUTED — found already paid while opening the round: the spec carries pillow_models.head_combo (D-025, 2026-08-10), the build imports it x2 (MODEL-FIT ok at 0.8, 'ACQUIRED bed head x2' in every build log), so the item's own letter (acquired sham first; cushion() only if model_fit rejects) was satisfied before this session. The class's residual is SURFACE, not mesh (critics read 'inflated/plastic', not 'wrong shape') — that residual lives in P2r-5's program (mechanism 2 paid at r17) and P2d has nothing left to spend. cushion() remains never-called: correct, its trigger never fired."
         },
         {
           "id": "P2e",
@@ -297,7 +298,8 @@
           "where": "pipeline/scripts/material_presets.py, value_ladder.py",
           "status": "todo",
           "_progress_2026-08-11": "AUDIT OPENED WITH A PAID NULL RESULT. The call sites write pillow 0.8 / duvet 0.7 / mattress 0.5 against the study ceiling 0.4, and the study names 2x as the no-maps compensation — but _woven clamps to _SHEEN_CAP = 0.4 (build_room.py:1225), so the withdrawal already shipped and a 0.4-edited full A/B rendered PIXEL-IDENTICAL to p2r9. Bought with one quick + one full: sheen WEIGHT is eliminated as the plastic-whites mechanism. Next suspects named in the code at the call site: rough-map amplitude (amplitude-bisect law), sheen_rough, spec 0.35, pillow-combo instance identity. The audit table (every family vs study, deviation = recorded decision) is still the item's open work.",
-          "_progress_2026-08-11b": "AUDIT HALF CLOSED (p2r12, gate-DELIV001-P2r12). The table is complete against the study stats and every channel now sits at the measured pro pole: sheen 0.4 = Italian ceiling (null p2r10), sheen_rough 0.5 and spec 0.35 MATCH pro exactly (crossed off with stats, zero renders), and the one deviation — roughness const 0.92-0.96 with the map amplitude pinched to ±0.01-0.02 by our own symmetric-band clamp against ROUGH_CEIL — is closed by D-035 (Rough map at FULL amplitude on mapped textiles, the R=LINKED recipe every pro fabric uses; A leg --cloth-rough-band). MEASURED RESULT: reached the frame (quick A/B 8.6% of duvet pixels >2 codes) and is VISUALLY NEAR-SILENT on the whites (full A/B duvet mean |d| 1.1 codes, value spread unchanged at 10 codes p50-p99) — kept as alignment, not claimed as the felt fix. THE ITEM STAYS OPEN and its next mechanism is now NAMED FROM MEASUREMENT, not guessed: the felt read lives in texture STRUCTURE, not response — beside the anchor comforter our interior-patch contrast is already inside the anchor band (2.0% of mean vs 1.6-3.9%) but ISOTROPIC stipple where the real cloth shows ORIENTED weave lines, long creases and 20-80mm stonewash mottle; at this camera (~2mm/px at LE1600) mottle+crease is the readable band. Mechanism 2 = oriented (anisotropic) crease/mottle in ALBEDO on the hero whites, material-side, no sim. Instrument born this round: cloth_highlights.py (per-material highlight histogram via matmask, 7 tests) — close condition half ALREADY HOLDS (clip 0.000% on all cloth, both r11 and r12); the open half is the critic plastic item (C3#1 still files it)."
+          "_progress_2026-08-11b": "AUDIT HALF CLOSED (p2r12, gate-DELIV001-P2r12). The table is complete against the study stats and every channel now sits at the measured pro pole: sheen 0.4 = Italian ceiling (null p2r10), sheen_rough 0.5 and spec 0.35 MATCH pro exactly (crossed off with stats, zero renders), and the one deviation — roughness const 0.92-0.96 with the map amplitude pinched to ±0.01-0.02 by our own symmetric-band clamp against ROUGH_CEIL — is closed by D-035 (Rough map at FULL amplitude on mapped textiles, the R=LINKED recipe every pro fabric uses; A leg --cloth-rough-band). MEASURED RESULT: reached the frame (quick A/B 8.6% of duvet pixels >2 codes) and is VISUALLY NEAR-SILENT on the whites (full A/B duvet mean |d| 1.1 codes, value spread unchanged at 10 codes p50-p99) — kept as alignment, not claimed as the felt fix. THE ITEM STAYS OPEN and its next mechanism is now NAMED FROM MEASUREMENT, not guessed: the felt read lives in texture STRUCTURE, not response — beside the anchor comforter our interior-patch contrast is already inside the anchor band (2.0% of mean vs 1.6-3.9%) but ISOTROPIC stipple where the real cloth shows ORIENTED weave lines, long creases and 20-80mm stonewash mottle; at this camera (~2mm/px at LE1600) mottle+crease is the readable band. Mechanism 2 = oriented (anisotropic) crease/mottle in ALBEDO on the hero whites, material-side, no sim. Instrument born this round: cloth_highlights.py (per-material highlight histogram via matmask, 7 tests) — close condition half ALREADY HOLDS (clip 0.000% on all cloth, both r11 and r12); the open half is the critic plastic item (C3#1 still files it).",
+          "_progress_2026-08-11_r17": "MECHANISM 2 PAID (gate #16, D-040): oriented crease field in the albedo of the four loose-bedding cloths — the site the p2r12 audit named by measurement (contrast in-band, structure directionless). Committed amp 0.06 (loud 0.10 bracket; mean spend ~3% disclosed). cloth_highlights still clip 0.000% on every cloth; D5 in band. CRITIC MOVEMENT: C3 dropped bedding from #1 for the first time in the lane (wording moved from 'no wrinkles' to 'wrinkles too shallow/patterned'); C2 #1 wording narrowed to the machine-straight corner foldline + no visible weave at close range — BOTH remaining sites are named and neither is this mechanism re-spun: (a) corner foldline = dart/hem geometry family (P2r-1 residual), (b) close-range weave legibility = fabric maps family. Do not raise amp on a critic ask alone; the calibration flag exists for a LOOK-verdict bracket."
         },
         {
           "id": "P2r-6",
@@ -1037,7 +1039,39 @@
         "P2/P2r-7",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "1b481ef6b1e1f30580df69487c5fa499bb117d0e",
+      "verdicts": {
+        "P2": "keep: two work items closed today by mechanism-not-knob (wood fold removed, rug rim per delivered look) and the bar now hangs on exactly one class both critics agree on - bedding - which is the next two queue items (P2d shams, P2r-5-2 crease); the phase is doing what it was written to do",
+        "P4": "keep: styling density and functional details (outlets/switches, nightstand contents, books) grew again this round in both critics lists - P4 is where every one of those accepted items lands, and it stays sequenced after P2 so props land on believable surfaces",
+        "P5": "keep: this round added a clean new specimen to the camera-class file (drawer clearance read as cramped while the measured aisle is ~5.9 m) - the class is real, recorded, and correctly parked until the camera phase",
+        "DRW": "keep: the parallel session closed DRW-2/3/4 and its ratchet caught BF10 the hour it was built - its own review says one rung from complete; not mine to steer, verdict unchanged"
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-3",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "0b98b98060b8611560680b79fe0318512a4fea79"
+  "last_review_commit": "1b481ef6b1e1f30580df69487c5fa499bb117d0e"
 }

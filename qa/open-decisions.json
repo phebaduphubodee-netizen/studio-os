@@ -565,6 +565,20 @@
    "reverse_by": "พิมพ์ x650/y5250/w2500 คืนที่ builtin BF10 แถวเดียว แล้วลบแถวนี้ (sheet_ref SR-20 คงไว้ได้ — แถว ledger ไม่หาย)",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-040",
+   "unit": "DELIV-001",
+   "decided_round": 17,
+   "decided_date": "2026-08-11",
+   "decided_by": "builder",
+   "question": "P2r-5 กลไก 2: เครื่องนอนยังอ่าน 'แผ่นแข็ง/ถุงลม' ทั้งที่ response channels ตรง pro หมด (p2r12) — knob ไหน",
+   "in_effect": "ORIENTED CREASE FIELD ใน albedo ของ bedding หลวม (_woven crease=; caller เดียวกับ crumple: throw/duvet/pillow/coverlet): noise ยืด 7:1 สองทิศ (0°/~55°) เลือกด้วย selector ~0.9ม. ให้ทิศพัดกระจาย ไม่ขนานกลไก · MULTIPLY เท่านั้น (กฎ ceiling ของโทนที่เซ็นยังศักดิ์สิทธิ์) · amp committed 0.06 (loud 0.10 ไม่ overshoot ที่ ql แต่กินงบ mean ~5%; 0.06 = เทรด ~3% ตามที่ disclose ใน comment) · เหตุที่เลือก albedo: p2r12 วัดว่า contrast อยู่ใน band แต่โครงสร้างเป็น stipple ไร้ทิศ vs เส้นมีทิศของงานจริง และแสงนุ่มห้องนี้ฆ่า relief cue (วัดแล้วสองครั้ง) — ทิศต้องวิ่งช่อง albedo · ผลที่ critic: C3 bedding หลุด #1 ครั้งแรกของเลน (คำเปลี่ยนจาก 'ไม่มีรอยยับ' เป็น 'รอยยับตื้น') · หมายเหตุ P2d: การ acquire sham จ่ายไปแล้ว 2026-08-10 (D-025, MODEL-FIT ok 0.8, ×2 ในเฟรม) — residual ของคลาสเครื่องนอนคือผิว ไม่ใช่ mesh; P2d ปิดเป็น executed",
+   "because": "R7 triage สามรอบชี้ไซต์เดียวกัน (p2r12 ตั้งชื่อกลไก, p2r13/p2r14 จดคิว); กลไกตาม record ของ repo เอง ไม่ยิง DR (rule R5-of-knowledge: อย่าซื้อคำตอบที่วัดไว้แล้ว)",
+   "where": "pipeline/scripts/build_room.py",
+   "reverse_by": "--no-cloth-crease = A leg (p2r16 เป๊ะ) · --cloth-crease=X bracket · ค่า committed ที่ _crs ใน _build_bed บรรทัดเดียว · revert commit เดียว",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

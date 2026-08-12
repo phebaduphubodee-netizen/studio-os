@@ -1301,7 +1301,7 @@ _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro
 
 
 def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, maps=None,
-           crumple=None):
+           crumple=None, crease=None):
     """TEXTILE: _solid's signed colour + the surface signature that makes cloth read as
     cloth instead of painted vinyl. `cloth` is material_presets.cloth_args(kind).
 
@@ -1386,7 +1386,63 @@ def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, map
     mix.inputs["Color1"].default_value = rgba
     nt.links.new(field, mr.inputs["Value"])
     nt.links.new(mr.outputs["Result"], mix.inputs["Color2"])
-    nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    col_out = mix.outputs["Color"]
+    if crease and not globals().get("_CLOTH_CREASE_OFF"):
+        # (3b) ORIENTED CREASE FIELD in the ALBEDO (P2r-5 mechanism 2 — named by
+        # the p2r12 audit's own measurement, not by taste: our cloth's tonal
+        # structure sat IN the contrast band beside the anchor but was the wrong
+        # KIND — directionless stipple where the delivered comforter carries
+        # directional weave/crease lines. And this room's soft light kills
+        # relief cues (wood-bump 4x moved 0.002; honest cloth bump rendered as
+        # nothing), so direction must ride the ALBEDO, the channel that reaches
+        # the frame — the same law the rug's crush rim used at P2r-3).
+        # Two anisotropically-stretched noises at two headings, chosen by a
+        # ~0.9 m selector so the crease direction FANS across the cloth instead
+        # of running mechanically parallel. MULTIPLY into the signed tone:
+        # darken-only, the ceiling law above stays intact. DISCLOSED SPEND on
+        # the mean, same trade as albedo_var's paragraph: mean darkens ~amp/2
+        # (committed 0.06 -> ~3%), and if a retune raises amp this trade must
+        # be re-argued, not inherited. Opt-in per CALLER like crumple: loose
+        # bedding only — stretched upholstery holds no creases.
+        # A leg: --no-cloth-crease. Calibration: --cloth-crease=AMP.
+        cr_scale, cr_aniso, cr_amp = crease
+        cr_amp = float(globals().get("_CLOTH_CREASE_AMP", cr_amp))
+
+        def _aniso_noise(rot_z):
+            mpn = nt.nodes.new("ShaderNodeMapping")
+            mpn.inputs["Scale"].default_value = (
+                1.0 / cr_scale, 1.0 / (cr_scale * cr_aniso), 1.0 / cr_scale)
+            mpn.inputs["Rotation"].default_value = (0.0, 0.0, rot_z)
+            nz = nt.nodes.new("ShaderNodeTexNoise")
+            nz.inputs["Scale"].default_value = 1.0
+            nz.inputs["Detail"].default_value = 2.0
+            nt.links.new(tc.outputs["Object"], mpn.inputs["Vector"])
+            nt.links.new(mpn.outputs["Vector"], nz.inputs["Vector"])
+            return nz
+
+        nA = _aniso_noise(0.0)
+        nB = _aniso_noise(0.96)              # second heading ~55 degrees
+        sel = nt.nodes.new("ShaderNodeTexNoise")
+        sel.inputs["Scale"].default_value = 1.0 / 0.9
+        nt.links.new(tc.outputs["Object"], sel.inputs["Vector"])
+        dmix = nt.nodes.new("ShaderNodeMixRGB")
+        dmix.blend_type = "MIX"
+        nt.links.new(sel.outputs["Fac"], dmix.inputs["Fac"])
+        nt.links.new(nA.outputs["Fac"], dmix.inputs["Color1"])
+        nt.links.new(nB.outputs["Fac"], dmix.inputs["Color2"])
+        mrC = nt.nodes.new("ShaderNodeMapRange")
+        mrC.inputs["To Min"].default_value = 1.0 - cr_amp
+        mrC.inputs["To Max"].default_value = 1.0
+        nt.links.new(dmix.outputs["Color"], mrC.inputs["Value"])
+        cmul = nt.nodes.new("ShaderNodeMixRGB")
+        cmul.blend_type = "MULTIPLY"
+        cmul.inputs["Fac"].default_value = 1.0
+        nt.links.new(col_out, cmul.inputs["Color1"])
+        nt.links.new(mrC.outputs["Result"], cmul.inputs["Color2"])
+        col_out = cmul.outputs["Color"]
+    elif crease:
+        print(f"  [A/B] cloth crease: OFF (pre-p2r17) leg on {name}")
+    nt.links.new(col_out, bsdf.inputs["Base Color"])
     # (4) RELIEF via Bump — not a NormalMap node: tangent-space normals need a UV map for
     #     their tangents and these meshes have none, while Bump works from screen-space
     #     derivatives on any mesh. Distance is a real height in metres (cloth.relief_m).
@@ -4078,6 +4134,10 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # base/mattress/bench stay tight (stretched upholstery does not crumple).
     # relief rides _CRUMPLE_RELIEF (r8 bisect knob — see the flag block)
     _crmp = (0.09, _CRUMPLE_RELIEF)
+    # oriented crease field for the SAME loose-bedding callers (P2r-5 mech 2):
+    # streaks ~0.35 m long at 7:1 anisotropy, committed amp 0.06 (settled from
+    # the 0.10 loud bracket; mean spend ~3%, disclosed at the _woven block)
+    _crs = (0.35, 7.0, 0.06)
     base_m = _woven("bed_base",     _vl.rgba("bed_base"),     0.94, _lin, sheen=0.2, spec=0.25, maps="rough_linen")
     # the foot throw: SAME tone as the base (one cloth — the ladder's own comment:
     # "a second tone would be a decision the light already made for free") but a
@@ -4085,7 +4145,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # r8 (C2-r7#1 + C3-r7#2): the largest cloth plane in the frame read unwrinkled
     # because it wore the upholstery's tight material — colour was never the bug.
     thr_m = _woven("bed_throw", _vl.rgba("bed_base"), 0.94, _lin, sheen=0.2,
-                   spec=0.25, maps="rough_linen", crumple=_crmp)
+                   spec=0.25, maps="rough_linen", crumple=_crmp, crease=_crs)
     # p2r10 NULL RESULT, kept so nobody re-spends it (P2r-5 bed-cloth family):
     # these written sheens (0.5/0.7/0.8) DO NOT REACH THE FRAME — _woven clamps
     # to _SHEEN_CAP = 0.4 (build_room.py:1225, "ground-truth ceiling"), so the
@@ -4098,9 +4158,9 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # sheen_rough, spec 0.35, and the two-instance identity of the pillow combo.
     matt_m = _woven("bed_mattress", _vl.rgba("bed_mattress"), 0.92, _lin, sheen=0.5, spec=0.35, maps="rough_linen")
     duvt_m = _woven("bed_duvet",    _vl.rgba("bed_duvet"),    0.95, _lin, sheen=0.7, spec=0.35, maps="rough_linen",
-                    crumple=_crmp)
+                    crumple=_crmp, crease=_crs)
     pill_m = _woven("bed_pillow",   _vl.rgba("bed_pillow"),   0.95, _lin, sheen=0.8, spec=0.35, maps="rough_linen",
-                    crumple=_crmp)
+                    crumple=_crmp, crease=_crs)
     # THE EURO SHAMS JOIN THE DUVET SET. They were sharing pill_m, so the head's three-rank
     # ladder — built in element 8 because "three heights is the single most recognisable
     # signal of a styled bed" — rendered as three heights of ONE value: sham0 199.6 against
@@ -4116,7 +4176,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # sides to just above the plinth — breaking the hard vertical faces into draped fabric and leaving
     # a shadow reveal beneath. That silhouette reads "a made bed", not "a foam cube".
     cov_m = _woven("bed_coverlet", _vl.rgba("bed_coverlet"), 0.96, _lin, sheen=0.3, spec=0.3,
-                   maps="rough_linen", crumple=_crmp)
+                   maps="rough_linen", crumple=_crmp, crease=_crs)
     base_h = H * 0.34                                   # a LOW recessed plinth (a hidden toe)
     binset = 0.10                                       # pulled well IN — the coverlet drapes PAST it
     _base_o = _rbox("bed__base", x0 + binset, y0 + binset, 0.0, W - 2 * binset, D - 2 * binset,
@@ -5979,6 +6039,16 @@ if __name__ == "__main__":
     if "--no-crush-shade" in _post_dashdash():
         # A leg of the p2r16 rug A/B: dents stay geometry-only (pre-p2r16 read)
         globals()["_CRUSH_SHADE_OFF"] = True
+    if "--no-cloth-crease" in _post_dashdash():
+        # A leg of the p2r17 A/B: bedding albedo stays directionless (pre-p2r17)
+        globals()["_CLOTH_CREASE_OFF"] = True
+    _cca = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--cloth-crease=")), None)
+    if _cca:
+        # amplitude-bisect bracket for the crease amp (LOOK-only rung; committed
+        # value moves only with a recorded verdict)
+        globals()["_CLOTH_CREASE_AMP"] = float(_cca)
+        print(f"  [calibration] cloth crease amp overridden to {_cca}")
     _cs = next((a.split("=", 1)[1] for a in _post_dashdash()
                 if a.startswith("--crush-shade=")), None)
     if _cs:
