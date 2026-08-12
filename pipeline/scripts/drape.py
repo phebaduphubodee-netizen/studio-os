@@ -187,7 +187,7 @@ def _collider(obj, thickness=0.004, friction=40.0, damping=0.6):
     return m
 
 
-def _freeze(obj, solid_thickness):
+def _freeze(obj, solid_thickness, hem=None):
     """Evaluated cloth -> plain static mesh. Everything downstream (materials,
     the suite material router, glTF export, Cycles) then treats it as ordinary
     geometry, and no solver state can re-run at render time.
@@ -195,10 +195,31 @@ def _freeze(obj, solid_thickness):
     SOLIDIFY rides along so a zero-thickness sheet gains a real edge — a bare
     simulated plane renders as an infinitely thin blade wherever the hem is seen
     against the light, which is its own CAD tell. Solidify on quads yields quads
-    (the SketchUp n-gon law holds; asserted by the caller's face check)."""
+    (the SketchUp n-gon law holds; asserted by the caller's face check).
+
+    `hem` = (vertex_group_name, factor): the named group rides the solidify at
+    factor x thickness while everything else keeps the plain thickness — a
+    turned-under stitched hem IS two-to-three layers of cloth, so the cue is the
+    physics, not a decal (bed_base welts precedent: cue derived from what
+    exists). Solidify semantics: weight 1 gets full modifier thickness, weight 0
+    gets thickness x thickness_vertex_group — so the modifier carries
+    factor x base and the zero-weight factor carries 1/factor, which lands body
+    verts exactly on the plain thickness. Fails LOUD if the API surface moved
+    (a swallowed miss would be a hem that silently never thickened)."""
     if solid_thickness:
         sm = obj.modifiers.new("drape_solid", 'SOLIDIFY')
-        sm.thickness = solid_thickness
+        if hem:
+            gname, factor = hem
+            if not hasattr(sm, "vertex_group") or \
+                    not hasattr(sm, "thickness_vertex_group"):
+                raise DrapeError(f"{obj.name}: Solidify has no vertex-group "
+                                 f"thickness on this Blender — the hem cue "
+                                 f"cannot run; do not freeze as if it did")
+            sm.vertex_group = gname
+            sm.thickness = solid_thickness * float(factor)
+            sm.thickness_vertex_group = 1.0 / float(factor)
+        else:
+            sm.thickness = solid_thickness
         sm.offset = 0.0
         sm.use_quality_normals = True
     dg = bpy.context.evaluated_depsgraph_get()
@@ -239,7 +260,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                hem_min=None, slack=0.0, slack_verts=None, sim_surface=False,
                shred_guard=False, collision_quality=4, bend_scale=1.0,
                self_friction=None, bend_verts=None, bend_floor=0.15,
-               sew_edges=None, sewing_force=15.0):
+               sew_edges=None, sewing_force=15.0,
+               hem_verts=None, hem_factor=2.0):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -361,6 +383,18 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         vg.add(list(pin), 1.0, 'REPLACE')
         s.vertex_group_mass = vg.name
         s.pin_stiffness = 5.0
+    # HEM/SEAM CUE (P2r-1 residual "no hem/seam cue on sewn goods"; r18 C2 #1 /
+    # C3 #1 filed the missing cue from both sides). The group is created BEFORE
+    # the bake but consumed only by _freeze's solidify AFTER it — thickness is
+    # not a solver input, so the sim is byte-identical with or without it. The
+    # indices are the CALLER's (softgoods.boundary_verts on the post-dart
+    # faces); computing them here from pre-dart topology would be the exact
+    # index-shift trap corner_dart documents.
+    hem = None
+    if hem_verts:
+        vgh = obj.vertex_groups.new(name="drape_hem")
+        vgh.add(list(hem_verts), 1.0, 'REPLACE')
+        hem = (vgh.name, float(hem_factor))
     c = md.collision_settings
     c.collision_quality = collision_quality
     c.distance_min = collide_dist
@@ -426,7 +460,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         prx.hide_render = True
         prx["ph_model"] = True                    # no material pass, no bevel pass
 
-    _freeze(obj, thickness)
+    _freeze(obj, thickness, hem=hem)
     sc.frame_set(1)          # the render must not inherit the bake's frame
 
     mw = obj.matrix_world
@@ -475,7 +509,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
 def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="linen",
                    cell=0.028, frames=55, bounds=None, thickness=0.006, slack=0.05,
                    sim_surface=False, salt=0, quality=8, collision_quality=4,
-                   self_friction=None):
+                   self_friction=None, corner_darts=False, sewing_force=15.0,
+                   hem_factor=None):
     """A coverlet: a sheet lying on the mattress that OVERHANGS three sides and
     falls under gravity — the fold at the mattress edge is solved, not authored.
 
@@ -524,6 +559,34 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
                                      # rect stays exact, so the pin band + reveal
                                      # arithmetic below are untouched
                                      salt=salt, salt_rect=(x0, y0, x0 + dx, y0 + dy))
+        # SEWING DART on the ROUND-CUT corners (P2r-1, the coverlet half — r18
+        # C2 #1: the corner cascades read as balloons, "ไม่มีรอยหักแม้แต่รอยเดียว";
+        # DR rank 4, sewing force in the DR's 10-25 band, same mechanism the
+        # duvet's square corners paid for at p2r13. DR of record:
+        # knowledge/_inbox/dr-cloth-corner-drape-2026-08-11.md, raw turn
+        # knowledge/_inbox/nlm-cloth-corner-drape/qa-history.json — this call
+        # consumes the distillation's rank-4 row, the second of its two
+        # recorded NEXT mechanisms). Sites are DERIVED from the mitre's own
+        # geometry — anchor at
+        # the arc's diagonal dip, length sized so the apex lands on the
+        # mattress corner, so the seam closes only HANGING cloth into a cone
+        # (softgoods.corner_dart_sites). Cut BEFORE the pin band is computed:
+        # corner_dart remaps vertex indices, the trap its `sew` param documents.
+        # A sub-resolution site (ladder shrank the overhang) prints its skip —
+        # never a silent no-op.
+        _sew = []
+        if corner_darts:
+            _sites, _skips = sg.corner_dart_sites(mit, sg.COVERLET_MITRE_KEEP,
+                                                  cell)
+            for _msg in _skips:
+                print("  drape: %s %s" % (name, _msg))
+            for _dip, _dlen in _sites:
+                verts, faces, _sew = sg.corner_dart(verts, faces, _dip, _dlen,
+                                                    sew=_sew)
+        # HEM CUE — the free boundary of the post-dart sheet (every single-face
+        # edge, dart banks included, so the sewn seam inherits the doubled
+        # read). Consumed by _freeze's solidify only; the sim never sees it.
+        _hem = sorted(sg.boundary_verts(faces)) if hem_factor else None
         # Pin the band trapped under the pillows at the headboard — and ONLY the part
         # of it lying ON the mattress, never the full grid row (softgoods.verts_in_rect).
         band = min(0.12, dx * 0.2 if ax == "x" else dy * 0.2)
@@ -542,7 +605,9 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
                           mat=mat, pin=pin, thickness=thickness, slack=sl,
                           sim_surface=sim_surface, quality=quality,
                           collision_quality=collision_quality,
-                          self_friction=self_friction)
+                          self_friction=self_friction,
+                          sew_edges=_sew or None, sewing_force=sewing_force,
+                          hem_verts=_hem, hem_factor=hem_factor or 2.0)
 
     # The ladder that solves the cut lives in search_bake — the throw needs the very
     # same one, and a second copy of it would be the next thing to drift.

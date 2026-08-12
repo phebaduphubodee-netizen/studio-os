@@ -430,3 +430,74 @@ def test_corner_dart_chains_two_corners_without_detaching_the_first_seam():
     import math
     assert all(math.hypot(v2[a][0] - v2[b][0], v2[a][1] - v2[b][1]) > 1e-4
                for a, b in s2)
+
+
+# ---------------------------------------------------------------- dart sites + hem
+# P2r-1, the coverlet half (p2r19): the round-cut corner's dart is DERIVED from
+# the mitre's own arc, and the hem cue names the sheet's free boundary.
+
+def _foot_mitre(over=0.30, x0=1.0, y0=1.0, dx=2.0, dy=1.6):
+    """Two free foot-corner blocks the way bake_bed_cover builds them
+    (head on x+ so the x0 side carries the overhang)."""
+    return [(x0 - over, y0 - over, x0, y0, x0, y0),
+            (x0 - over, y0 + dy, x0, y0 + dy + over, x0, y0 + dy)]
+
+
+def test_corner_dart_sites_apex_lands_on_the_mattress_corner():
+    import math
+    inv = 1.0 / math.sqrt(2.0)
+    sites, skipped = sg.corner_dart_sites(_foot_mitre(), sg.COVERLET_MITRE_KEEP, 0.028)
+    assert len(sites) == 2 and not skipped
+    for (dipx, dipy), length, (ix, iy) in [
+            (*s, c) for s, c in zip(sites, [(1.0, 1.0), (1.0, 2.6)])]:
+        # reproduce corner_dart's own apex arithmetic: bisector toward the
+        # sheet interior is +x for both (overhang west), +/-y by corner
+        bx = 1.0
+        by = 1.0 if dipy <= iy else -1.0
+        ax = dipx + bx * length * inv
+        ay = dipy + by * length * inv
+        assert abs(ax - ix) < 1e-9 and abs(ay - iy) < 1e-9
+
+
+def test_corner_dart_sites_skip_subresolution_loudly():
+    sites, skipped = sg.corner_dart_sites(_foot_mitre(over=0.05),
+                                          sg.COVERLET_MITRE_KEEP, 0.028)
+    assert not sites and len(skipped) == 2
+    assert all("SKIPPED" in m for m in skipped)
+
+
+def test_corner_dart_sites_feed_a_real_cut():
+    over = 0.30
+    mit = _foot_mitre(over)
+    v, f = sg.flat_sheet(1.0 - over, 1.0 - over, over + 2.0, 1.6 + 2 * over, 0.5,
+                         cell=0.028, mitre=mit,
+                         mitre_keep=sg.COVERLET_MITRE_KEEP)
+    sites, skipped = sg.corner_dart_sites(mit, sg.COVERLET_MITRE_KEEP, 0.028)
+    assert sites and not skipped
+    sew = []
+    for dip, length in sites:
+        v, f, sew = sg.corner_dart(v, f, dip, length, sew=sew)
+    assert sew                                  # both cuts paired banks on arc cloth
+
+
+def test_boundary_verts_names_the_rim_and_only_the_rim():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.1)
+    rim = sg.boundary_verts(f)
+    for k in rim:
+        x, y, _ = v[k]
+        assert min(x, y) < 1e-9 or max(x, y) > 1.0 - 1e-9
+    inner = [k for k in range(len(v)) if k not in rim]
+    assert inner                                # a sheet has an interior
+    for k in inner:
+        x, y, _ = v[k]
+        assert 0.0 < x < 1.0 and 0.0 < y < 1.0
+
+
+def test_boundary_verts_includes_dart_banks_after_the_cut():
+    v, f = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    rim0 = sg.boundary_verts(f)
+    v2, f2, sew = sg.corner_dart(v, f, (0.0, 0.0), length=0.3)
+    rim2 = sg.boundary_verts(f2)
+    # every sewn bank vert is boundary now — the seam inherits the hem read
+    assert all(a in rim2 and b in rim2 for a, b in sew)
+    assert len(rim2) > 0 and len(rim0) > 0

@@ -1293,6 +1293,17 @@ _CLOTH_ROUGH_LINKED = True
 # how real bedding solves it. A leg: --no-sewing-dart.
 _SEWING_DART = True
 
+# P2r-1, the COVERLET half (p2r19): dart + hem as ONE tailoring package on the
+# round-cut corners — the r18 critics' shared #1. The duvet's dart anchored to
+# a square corner point; the coverlet's corner is an ARC, so the sites derive
+# from the mitre's own geometry (softgoods.corner_dart_sites — apex lands on
+# the mattress corner by the dart's own arithmetic, R9: nothing typed) and the
+# hem cue rides _freeze's solidify (boundary band at 2x thickness = the two
+# layers a turned-under hem physically is; the dart banks inherit it, so the
+# seam reads sewn). One flag for the package because it ships as one verdict:
+# A leg --no-coverlet-dart = the exact r18 coverlet, no source edit.
+_COVERLET_DART = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -4268,6 +4279,19 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         # constraint") are the recorded NEXT mechanisms if this package does
         # not close the read; failure mode to watch here is wall time.
         frames=120, quality=12, collision_quality=8, self_friction=12.0,
+        # p2r19 — DART + HEM, the coverlet half of P2r-1 (r18: BOTH critics'
+        # #1 is this sheet — C2 "มุมโค้งเนียนเป็นทรงบอลลูนไม่มีรอยหักแม้แต่รอยเดียว" +
+        # no hem/seam cue on any sewn good; C3 "รอยพับคมและแข็งเหมือนแผ่นพลาสติก").
+        # DR dr-cloth-corner-drape-2026-08-11 rank 4 (sewing springs 10-25,
+        # force 15 — the same band the duvet's p2r13 darts shipped at): the
+        # round cut turned the corner into ONE smooth cascade and the critics
+        # read exactly that smoothness; the dart adds the BREAK a sewn corner
+        # carries. Sites derive from the mitre's own arc (apex on the mattress
+        # corner by construction — softgoods.corner_dart_sites, R9: nothing
+        # typed). hem_factor 2.0 = a turned-under hem is two layers of cloth;
+        # solidify-only, so the sim is untouched by it. A leg: --no-coverlet-dart.
+        corner_darts=_COVERLET_DART, sewing_force=15.0,
+        hem_factor=2.0 if _COVERLET_DART else None,
         sim_surface=True, salt=5)     # B2: per-corner bias — the owed lane-C debt
         #                               (C2 twice: corner gathers mirrored L/R)                       # the duvet + throw collide with the
     #                                             SINGLE-SHELL surface, not the
@@ -6031,6 +6055,10 @@ if __name__ == "__main__":
         # A leg of the p2r13 dart A/B — the exact p2r12 duvet, no source edit
         globals()["_SEWING_DART"] = False
         print("  [A/B] duvet corners: no sewing dart (pre-p2r13) leg")
+    if "--no-coverlet-dart" in _post_dashdash():
+        # A leg of the p2r19 coverlet dart+hem A/B — the exact r18 coverlet
+        globals()["_COVERLET_DART"] = False
+        print("  [A/B] coverlet corners: no dart/hem (pre-p2r19) leg")
     if "--wood-fold-legacy" in _post_dashdash():
         # A leg of the p2r15 veneer-mapping A/B: exact p2r14 state (feature_scale
         # 0.46 uniform, grain folding at z = k*842 mm). B leg = committed default.

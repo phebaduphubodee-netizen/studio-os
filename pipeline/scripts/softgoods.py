@@ -371,6 +371,69 @@ def corner_dart(verts, faces, corner_xy, length, angle_deg=24.0, sew=()):
     return verts2, faces2, sew2
 
 
+def corner_dart_sites(mitre, keep, cell, min_cells=3.0):
+    """Where a ROUND-CUT corner's dart goes — derived from the mitre's own
+    geometry, nothing typed (R9). dr-cloth-corner-drape-2026-08-11 rank 4 put
+    the dart on the duvet's SQUARE corners at p2r13 and the corner read moved
+    class the same round; the coverlet's corners are cut round (mitre), so the
+    corner point the duvet anchored to does not exist here — the cloth's own
+    corner is the arc's diagonal DIP point (_mitre_radius dips to `keep` on the
+    diagonal). Anchor there, and size the dart so corner_dart's own arithmetic
+    (apex = anchor + length/sqrt(2) per axis, inward) lands the apex EXACTLY on
+    the inner corner (ix, iy) — the mattress corner the drape pivots around, so
+    the seam closes the hanging corner cloth into a cone and eats no lying
+    cloth. A dart under `min_cells` grid cells is below the lattice's own
+    resolution: it is SKIPPED and reported, because a sub-resolution dart is a
+    mechanism that pretends to run (the --factory-startup family of lie).
+
+    Returns (sites, skipped): sites as [((x, y), length)], skipped as
+    human-readable strings the caller must PRINT, not swallow."""
+    inv = 1.0 / math.sqrt(2.0)
+    sites, skipped = [], []
+    for (cx0, cy0, cx1, cy1, ix, iy) in mitre:
+        sx, sy = cx1 - cx0, cy1 - cy0
+        sgx = -1.0 if cx0 < ix else 1.0     # which way the corner block sticks out
+        sgy = -1.0 if cy0 < iy else 1.0
+        dip = (ix + sgx * keep * inv * sx, iy + sgy * keep * inv * sy)
+        length = keep * 0.5 * (sx + sy)     # square by construction; mean is exact there
+        if length < min_cells * cell:
+            skipped.append("corner dart SKIPPED at (%.2f, %.2f) — derived length "
+                           "%.0f mm is under %.0f cells; a sub-resolution dart "
+                           "would read as a mechanism that ran"
+                           % (ix, iy, length * 1000.0, min_cells))
+            continue
+        sites.append((dip, length))
+    return sites, skipped
+
+
+def boundary_verts(faces):
+    """Vertex indices on the FREE BOUNDARY of a sheet — every edge used by
+    exactly ONE face. Pure topology, so it is still right after corner_dart
+    remaps indices (recompute AFTER the cut, never before — the same
+    index-shift trap corner_dart's `sew` parameter documents).
+
+    This is where a sewn hem physically lives: real bedding is hemmed on every
+    free edge (turned under, stitched — two to three layers of cloth), and a
+    dart's two cut banks are boundary edges too, so the seam that closes them
+    inherits the same doubled read. The r18 critics filed the missing cue from
+    both sides — C2: no hem/seam cue on any sewn good; C3: fold edges 'คมและ
+    แข็งเหมือนแผ่นพลาสติก' — and the bed_base welts are the precedent: a CUE
+    derived from what exists, never a redesign."""
+    cnt = {}
+    for f in faces:
+        n = len(f)
+        for i in range(n):
+            a, b = f[i], f[(i + 1) % n]
+            e = (a, b) if a < b else (b, a)
+            cnt[e] = cnt.get(e, 0) + 1
+    out = set()
+    for (a, b), c in cnt.items():
+        if c == 1:
+            out.add(a)
+            out.add(b)
+    return out
+
+
 def verts_in_rect(verts, x0, y0, x1, y1, tol=1e-9):
     """Indices of `verts` whose XY falls inside a world rect — how a caller names
     the region a solver PINS.

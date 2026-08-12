@@ -40,7 +40,8 @@
    },
    "_why_this_door": "D8 counts R8-ACQUIRE-class masses built as primitives, and its word list IS this defect's object list: pillow, cushion, bolster, sham, duvet, throw, blanket. r38 scores 7 against a threshold of 0.",
    "status": "open",
-   "p2_triage_2026-08-11": "D8 reads 0 on the BUILT DELIV-001 p2r8 scene dump — the defect is PAID ON THIS LANE (soft goods are solver cloth / curved forms smooth-shaded). Stays open as a LANE SPLIT, twice over: the ledger pins this row against the TRN-002 r38 frame where it does not resolve (7 primitives / 16 faceted), and a scene_row door needs spec+dump evidence while this lane speaks item-specs, not masses. Same shape as DEBT-10."
+   "p2_triage_2026-08-11": "D8 reads 0 on the BUILT DELIV-001 p2r8 scene dump — the defect is PAID ON THIS LANE (soft goods are solver cloth / curved forms smooth-shaded). Stays open as a LANE SPLIT, twice over: the ledger pins this row against the TRN-002 r38 frame where it does not resolve (7 primitives / 16 faceted), and a scene_row door needs spec+dump evidence while this lane speaks item-specs, not masses. Same shape as DEBT-10.",
+   "p2_triage_2026-08-12": "door re-ran vs the BUILT p2r19 placement dump: D8 reads 0 (DECLARED-ONLY print is the door asking for the guard-side read; the r19 build scorecard D8 PASS 0 vs 0 is the built answer). Lane conclusion of 08-11 unchanged; TRN pin stands."
   },
   {
    "id": "DEBT-02",
@@ -107,7 +108,8 @@
    },
    "_why_this_door": "SC-4 ranks this the strongest measured realism lever in the plan, and nothing in the repo can score it without a target image.",
    "status": "open",
-   "p2_triage_2026-08-11": "the named blocked_on INSTRUMENT NOW EXISTS: map_census prints the coverage number on every gate run (p2r8: 83.5% of frame on image-mapped materials, band 50-66%, shortfall named) and p2_exit.wood_boards reads figure repetition (peak 0.195 @ lag 174px = the two-bay pitch, below the 0.447 floor). The TILING half stays open, owned by P2r-2; the 'no coverage measure' half is paid."
+   "p2_triage_2026-08-11": "the named blocked_on INSTRUMENT NOW EXISTS: map_census prints the coverage number on every gate run (p2r8: 83.5% of frame on image-mapped materials, band 50-66%, shortfall named) and p2_exit.wood_boards reads figure repetition (peak 0.195 @ lag 174px = the two-bay pitch, below the 0.447 floor). The TILING half stays open, owned by P2r-2; the 'no coverage measure' half is paid.",
+   "p2_triage_2026-08-12": "both named instruments ran on p2r19: MAP-COVERAGE 84.28% of frame on image-mapped materials (band 50-66 — above, reporting line) and wood_boards autocorr peak 0.0 vs floor 0.417 (9th consecutive clean read). C3 filed generic tiling again the same night (6th round, near-verbatim) — the vendor-prior read stands refuted by the same numbers it was refuted with at r18."
   },
   {
    "id": "DEBT-05",
@@ -152,7 +154,8 @@
    },
    "_why_this_door": "D9 counts curved masses that no beauty.soft entry smooths. r38 scores 16, and `beauty` is null in all ten specs r28-r38, so the softening code is dead in every shipping frame.",
    "status": "open",
-   "p2_triage_2026-08-11": "D9 reads 0 on the BUILT DELIV-001 p2r8 scene dump — the defect is PAID ON THIS LANE (soft goods are solver cloth / curved forms smooth-shaded). Stays open as a LANE SPLIT, twice over: the ledger pins this row against the TRN-002 r38 frame where it does not resolve (7 primitives / 16 faceted), and a scene_row door needs spec+dump evidence while this lane speaks item-specs, not masses. Same shape as DEBT-10."
+   "p2_triage_2026-08-11": "D9 reads 0 on the BUILT DELIV-001 p2r8 scene dump — the defect is PAID ON THIS LANE (soft goods are solver cloth / curved forms smooth-shaded). Stays open as a LANE SPLIT, twice over: the ledger pins this row against the TRN-002 r38 frame where it does not resolve (7 primitives / 16 faceted), and a scene_row door needs spec+dump evidence while this lane speaks item-specs, not masses. Same shape as DEBT-10.",
+   "p2_triage_2026-08-12": "door re-ran vs p2r19: D9 flat-shaded-curved 0; build scorecard D9 PASS 0 vs 0. Unchanged."
   },
   {
    "id": "DEBT-07",
@@ -326,7 +329,8 @@
    },
    "_why_this_door": "'A detached leaning slab touching neither mattress nor wall' is FLOATING verbatim. r37 deleted the invented 176 mm headboard and r38b's critic then read the bed as having no headboard at all.",
    "status": "open",
-   "p2_triage_2026-08-11": "OVERTURNED BY THE SHEET, THEN BUILT. The earlier note called ABSENT a design decision — WRONG: the owner read floor2_TRUE_sheet (2026-08-11) and the ink draws a ~6 cm headboard band at the bed head in front of BF14; element3's \"headboard = the wall\" was our mis-derivation, and eight independent blind critic voices had been right about the zone all along. bed__headboard exists in the built scene from p2r11 (60mm x bed width x 1.10m declared-assumption height, D-034). Row stays open only because a guard door alone is PARTIAL by this ledger's law; the mass and its support are now in every placement dump."
+   "p2_triage_2026-08-11": "OVERTURNED BY THE SHEET, THEN BUILT. The earlier note called ABSENT a design decision — WRONG: the owner read floor2_TRUE_sheet (2026-08-11) and the ink draws a ~6 cm headboard band at the bed head in front of BF14; element3's \"headboard = the wall\" was our mis-derivation, and eight independent blind critic voices had been right about the zone all along. bed__headboard exists in the built scene from p2r11 (60mm x bed width x 1.10m declared-assumption height, D-034). Row stays open only because a guard door alone is PARTIAL by this ledger's law; the mass and its support are now in every placement dump.",
+   "p2_triage_2026-08-12": "first run against a REAL placement dump of the deliverable scene (r19): headboard exists, supported, no FLOATING finding — door moves to PARTIAL by its own covers-text; the visibility/size half stays uninstrumented and C2-r19 no longer files a headboard-absence item (its #10-at-r18 headboard flatness note also did not recur)."
   },
   {
    "id": "DEBT-14",
@@ -349,7 +353,8 @@
    },
    "_why_this_door": "Cheap to build and it needs the dump, not the spec.",
    "status": "open",
-   "p2_triage_2026-08-11": "the THICKNESS half is REFUTED WITH A NUMBER from the built scene: rug AABB thickness 18.7 mm, inside the row's own 8-20 mm real range (aabb now written by scene_dump on every build). The PILE/EDGE READ half (edge rollover, pile fringe, dent legibility) stays open, owned by P2r-3 — p2_exit.rug_edge baselines the edge at 5.0 px rise width on p2r8."
+   "p2_triage_2026-08-11": "the THICKNESS half is REFUTED WITH A NUMBER from the built scene: rug AABB thickness 18.7 mm, inside the row's own 8-20 mm real range (aabb now written by scene_dump on every build). The PILE/EDGE READ half (edge rollover, pile fringe, dent legibility) stays open, owned by P2r-3 — p2_exit.rug_edge baselines the edge at 5.0 px rise width on p2r8.",
+   "p2_triage_2026-08-12": "p2r19: rug AABB thickness 18.7mm (band 8-20, scene dump) and rug_edge rise 5.0px >= cut 3.0 -> ROLLED, second frame running. Pile-dent half: C2-r19 files it at rank 11 of 13 (bench legs), trend read only — fluctuating blind rank continues (r16 absent, r17 #8, r18 #11, r19 #12)."
   },
   {
    "id": "DEBT-15",
@@ -440,7 +445,8 @@
     "covers": "whether bedside lamps exist as drawable masses. NOT covered: whether they are BESIDE THE BED — the dump carries AABBs and a proximity test against the bed would say so, and nothing here asks. min_count is 2 because a bed has two sides."
    },
    "_why_this_door": "An absence with a functional consequence a client sees: a bed with no bedside lamp cannot be switched off from the bed.",
-   "status": "open"
+   "status": "open",
+   "p2_triage_2026-08-12": "door RESOLVED vs the r19 placement dump: 8 lamp objects (need 2). The 08-11 blocker was the dump format, not the scene."
   },
   {
    "id": "DEBT-19",
@@ -465,7 +471,8 @@
    },
    "_why_this_door": "OVERHANG is this defect's name in the guard that already reads the built scene. No `match`, because the defect is about ANY slab — naming the objects it applies to is what R9b says a rule must never do.",
    "status": "open",
-   "p2_triage_2026-08-11": "placement_check ran on the BUILT p2r8 scene: zero unsupported FURNITURE slabs (the desk_pier class this row was filed for). NOT closed: the door's own covers-text spans ANY overhanging group, and the run returns OVERHANG on two non-furniture families (folded-stack lofts — cloth genuinely overhangs its own lower layers; ceiling-recessed e5 trims — braced by the ceiling they embed in). The guard needs R9b scoping derived from those premises before this door can resolve."
+   "p2_triage_2026-08-11": "placement_check ran on the BUILT p2r8 scene: zero unsupported FURNITURE slabs (the desk_pier class this row was filed for). NOT closed: the door's own covers-text spans ANY overhanging group, and the run returns OVERHANG on two non-furniture families (folded-stack lofts — cloth genuinely overhangs its own lower layers; ceiling-recessed e5 trims — braced by the ceiling they embed in). The guard needs R9b scoping derived from those premises before this door can resolve.",
+   "p2_triage_2026-08-12": "door re-ran vs r19 dump: zero unsupported FURNITURE slabs; the 53 OVERHANG findings are the same folded-stack loft family as r8 (mill__style_fold*) — contents overhang their shelves by construction. Row stays open on its own covers-text; conclusion of 08-11 unchanged."
   },
   {
    "id": "DEBT-20",
