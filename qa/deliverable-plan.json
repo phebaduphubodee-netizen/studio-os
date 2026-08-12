@@ -1176,7 +1176,44 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "c46430d5eac788a894d9ca81e0e85c44b2c8bddd",
+      "verdicts": {
+        "P2": "change: P2r-1 closed on both critics own words (C3 dropped the coverlet item entirely; C2 moved bedding off #1 for the first time in the lane) and the remaining clause distance CHANGED CLASS — no solver work is left in it. Queue re-ranks by the critics voices tonight: P2j towerback first (C2 pick-one, promoted from its own r18 #9-opinion), then P2r-4 folded half (filed by both critics), then P2r-5 material response (which now owes three C3 items by name: duvet surface, brass response, upholstery weave legibility). The throw-ladder residual is named in the gate with a detectable signature and rides P2r-5 round hygiene, not a new item.",
+        "P4": "keep: still blocked on P2 judge clause and correctly so — tonight moved the clause distance to albedo/detail classes without touching P4 charter; it still holds P2i (three-artifact nightstand height — C2 filed the bedside block again tonight at rank 6) and P2j residual routing, and D7 6-vs-12 printed identical for the ninth round.",
+        "P5": "keep: owner terminal, unchanged; D-034 headboard height is now SEVEN rounds accumulated (C2 no longer files headboard absence — the sheet-derived band closed that — but height stays his one-line call), plus Q1 vanity depth and Q2 bookshelf-vs-TV riding unchanged."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "Review after P2r-1 close at p2r19 (gate-DELIV001-P2r19). The dart/hem round also ran the second-night DRW exam at open (separate review), re-ran the debt doors against a real placement dump of the built deliverable for the first time (DEBT-18 RESOLVED, DEBT-13 PARTIAL), and cleared the last inbox provenance orphan by consuming the cloth DR rank-4 row in real work.",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "07f15702cdebbdfad60f82589574e1b52d45ec23"
+  "last_review_commit": "c46430d5eac788a894d9ca81e0e85c44b2c8bddd"
 }
