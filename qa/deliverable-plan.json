@@ -1256,7 +1256,45 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "9b502960e46ff6225840f4054ec551c512f5d76c",
+      "verdicts": {
+        "P2": "keep: the clause distance shrank by a whole named item tonight and the mechanism queue did not change shape — P2r-4 closed on its own CLOSE conditions (both independent critics filed zero folded-stack items for the first time, shells 0 a seventh round, hanger gauge measured in-band), and what its residual left behind re-classed into P2r-5 whose mechanisms were already named (crease amp bracket + mottle + secondary folds, now carrying the bench fold and the black-value site too). Two named items remain (P2r-5, P2k) and neither holds solver work; P2k must OPEN with a measurement because its smooth-shade fix shipped 08-10 yet was filed at r20 and withdrawn at r21 — variance vs threshold is an empirical question, not a build one.",
+        "P4": "keep: unchanged and correctly blocked — tonight added to its queue rather than moved it (sconce read hardened from lit-but-lighting-nothing to off-entirely, DEBT-14 pile dent reached its 6th read, closet floor emptiness stood a fourth round), and D7 FAIL 7-vs-12 still names its bar exactly.",
+        "P5": "keep: untouched by a round that closed under it, as designed — judgement stays last and its bar (three sighted judges rank us sellable) is still the only phase that can end the plan."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "102851790b89a9cfc7689fc21a3027e1228b3cb4"
+  "last_review_commit": "9b502960e46ff6225840f4054ec551c512f5d76c"
 }
