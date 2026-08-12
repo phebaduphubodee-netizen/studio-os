@@ -514,6 +514,86 @@ def _crease(u, i_salt, waves):
     return s
 
 
+# --------------------------------------------------------------------------
+# De-periodised slack (p2r24). Published so tests, drape.py and build_room.py
+# share one truth. ENVELOPE scale on purpose: every wavelength sits well above
+# the solved fold pitch (~60-100 mm at cell 0.022-0.028), so the field steers
+# WHERE the solver spends its rest-length excess and never authors a wrinkle
+# itself — the enter-smooth law (sim feedstock is FLAT; the solver is the only
+# wrinkle author, round 5c) is untouched. Three incommensurate wavelengths for
+# _crease's own reason: ONE frequency is a corrugation, several that never
+# re-align read as cloth.
+SLACK_WAVELENGTHS = (1.13, 0.47, 0.23)   # m, plan-space plane waves
+SLACK_WAVE_AMPS = (0.5, 0.33, 0.22)
+
+
+def slack_field(verts, salt=0, depth=0.5):
+    """Per-vertex slack MULTIPLIER over the plan: 1 + depth * m(x, y) with
+    m in [-1, 1] summed from three plane waves at incommensurate wavelengths,
+    directions and phases drawn from the dev() recurrence family per `salt`.
+
+    WHY (p2r24 — C2 and C3 at r23, independently): LINEAR bending bought the
+    fall its secondary folds, but UNIFORM slack on a UNIFORM grid buckles at
+    one wavelength, and both critics read the free hem as "a deliberate,
+    perfectly regular sine". Real folds run in structured families along the
+    drape's tension lines, not at a metronome pitch (trn002 reference study,
+    knowledge/_inbox/trn002-reference-study). Modulating the excess across the
+    sheet moves where buckles seed and how deep they grow — amplitude AND
+    spacing stop being periodic while the solver stays the only wrinkle
+    author. Deterministic, bounded, pure."""
+    if not 0.0 <= depth < 1.0:
+        _fail(f"slack_field: depth {depth} outside [0, 1) — a multiplier "
+              f"crossing zero would flip slack into stretch")
+    if depth == 0.0:
+        return [1.0] * len(verts)
+    waves = []
+    norm = float(sum(SLACK_WAVE_AMPS))
+    for k, (lam, amp) in enumerate(zip(SLACK_WAVELENGTHS, SLACK_WAVE_AMPS)):
+        ang = 2.0 * math.pi * (((k + 1) * PHI_INV + salt * _SALT) % 1.0)
+        ph = 2.0 * math.pi * (((k + 3) * PHI_INV + (salt + 11) * _SALT) % 1.0)
+        waves.append((math.cos(ang), math.sin(ang),
+                      2.0 * math.pi / lam, ph, amp / norm))
+    return [1.0 + depth * sum(a * math.sin((dx * x + dy * y) * w + ph)
+                              for dx, dy, w, ph, a in waves)
+            for (x, y, _z) in verts]
+
+
+def modulate_slack(weights, verts, salt=0, depth=0.5):
+    """Apply slack_field to a {vertex index: weight} dict. Weights clamp to
+    [0, 1] — they are vertex-group weights; bake_sheet lerps shrink from 0 to
+    the full slack across them, so a weight above 1 has no meaning. depth=0
+    returns an EQUAL dict: a disabled flag is byte-identical by construction."""
+    field = slack_field(verts, salt=salt, depth=depth)
+    return {i: min(1.0, max(0.0, w * field[i])) for i, w in weights.items()}
+
+
+# --------------------------------------------------------------------------
+# Plan-slab penetration (p2r24 garment-swing clamp). Pure: hanging garments on
+# one rail share the same z band by construction, so PLAN penetration is volume
+# penetration, and the clamp can be unit-tested without a scene.
+
+def rot_aabb_half(hw, hd, theta):
+    """Half-extents of the world AABB of a plan slab (half-width hw along its
+    own long axis, half-depth hd) rotated by theta about its centre."""
+    ca, sa = abs(math.cos(theta)), abs(math.sin(theta))
+    return (hw * ca + hd * sa, hw * sa + hd * ca)
+
+
+def aabb_penetration(c1, h1, c2, h2):
+    """Min-axis penetration depth of two plan AABBs ((cx, cy), (hx, hy));
+    0.0 when separated or touching.
+
+    This is the SAME instrument the r23 triage used to confirm C2's garment
+    interpenetration claim (thin-axis overlap 36-42 mm, three pairs), so the
+    clamp drives the number the defect was measured in. An AABB over-reads a
+    scissor crossing (R9b: an AABB cannot tell interlocking from
+    intersecting) — over-reading here only opens slightly more air between
+    garments, which is the safe side of the estimate."""
+    ox = h1[0] + h2[0] - abs(c1[0] - c2[0])
+    oy = h1[1] + h2[1] - abs(c1[1] - c2[1])
+    return min(ox, oy) if (ox > 0.0 and oy > 0.0) else 0.0
+
+
 def _grid_faces(nu, nv, wrap_u=False):
     """Quad indices for an (nu+1) x (nv+1) vertex lattice laid out v-major."""
     faces = []

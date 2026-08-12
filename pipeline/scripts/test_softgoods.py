@@ -330,6 +330,96 @@ def test_folded_sheet_crease_wander_zero_is_byte_identical():
     assert a == b
 
 
+# --------------------------------------------------------- de-periodised slack
+
+def test_slack_field_depth_zero_is_identity():
+    """A disabled flag must be byte-identical: depth 0 returns exact 1.0s."""
+    vs = [(x * 0.1, x * 0.03, 0.5) for x in range(50)]
+    assert sg.slack_field(vs, salt=7, depth=0.0) == [1.0] * 50
+
+
+def test_slack_field_bounds_and_determinism():
+    vs = [(x * 0.05, (x * 13 % 7) * 0.2, 0.0) for x in range(300)]
+    a = sg.slack_field(vs, salt=3, depth=0.4)
+    b = sg.slack_field(vs, salt=3, depth=0.4)
+    assert a == b
+    assert all(0.6 - 1e-9 <= m <= 1.4 + 1e-9 for m in a)
+    c = sg.slack_field(vs, salt=4, depth=0.4)
+    assert a != c, "salt must pick an independent field"
+
+
+def test_slack_field_refuses_stretch():
+    """depth >= 1 would let the multiplier cross zero — slack flipping into
+    stretch is a different physics, refused by name."""
+    with pytest.raises(ValueError):
+        sg.slack_field([(0, 0, 0)], depth=1.0)
+
+
+def test_slack_field_is_aperiodic_where_a_sine_is_not():
+    """THE POINT OF THE MECHANISM (r23, both critics independently: the hem
+    reads as 'a deliberate sine'). Sampled along a line, the field's
+    autocorrelation must have no strong secondary peak, while a single-
+    frequency control — the defect — re-aligns with itself almost exactly."""
+    n, step = 700, 0.005                       # 3.5 m at 5 mm
+    vs = [(i * step, 0.0, 0.0) for i in range(n)]
+    field = sg.slack_field(vs, salt=5, depth=0.4)
+    sine = [1.0 + 0.4 * math.sin(2 * math.pi * i * step / 0.47) for i in range(n)]
+
+    def max_secondary(sig):
+        mean = sum(sig) / len(sig)
+        d = [s - mean for s in sig]
+        var = sum(x * x for x in d)
+        best = 0.0
+        # lags from half the shortest wavelength out to 1.5 m
+        for lag in range(int(0.115 / step), int(1.5 / step)):
+            num = sum(d[i] * d[i + lag] for i in range(len(d) - lag))
+            den = var * (len(d) - lag) / len(d)
+            best = max(best, num / den)
+        return best
+
+    assert max_secondary(sine) > 0.95, "control failed: a sine must self-align"
+    assert max_secondary(field) < 0.85, \
+        "field re-aligns with itself like a sine — de-periodisation failed"
+
+
+def test_modulate_slack_clamps_and_depth_zero_identity():
+    vs = [(x * 0.07, x * 0.011, 0.0) for x in range(80)]
+    w = {i: (1.0 if i % 3 else 0.30) for i in range(80)}
+    same = sg.modulate_slack(w, vs, salt=9, depth=0.0)
+    assert same == w
+    mod = sg.modulate_slack(w, vs, salt=9, depth=0.5)
+    assert set(mod) == set(w)
+    assert all(0.0 <= v <= 1.0 for v in mod.values())
+    assert any(mod[i] < 1.0 for i in w if w[i] == 1.0), \
+        "the 1.0 band must dip (clamped above) or the laid edge stays uniform"
+    lo = [i for i in w if w[i] == 0.30]
+    assert any(abs(mod[i] - 0.30) > 0.01 for i in lo), "the fall never varied"
+    assert all(0.30 * 0.5 - 1e-9 <= mod[i] <= 0.30 * 1.5 + 1e-9 for i in lo)
+
+
+# ------------------------------------------------------ garment swing clamp
+
+def test_rot_aabb_half_axis_swap_and_identity():
+    assert sg.rot_aabb_half(0.4, 0.1, 0.0) == (0.4, 0.1)
+    hx, hy = sg.rot_aabb_half(0.4, 0.1, math.pi / 2)
+    assert abs(hx - 0.1) < 1e-9 and abs(hy - 0.4) < 1e-9
+
+
+def test_aabb_penetration_separated_touching_overlapping():
+    assert sg.aabb_penetration((0, 0), (0.2, 0.1), (0.5, 0), (0.2, 0.1)) == 0.0
+    assert sg.aabb_penetration((0, 0), (0.2, 0.1), (0.4, 0), (0.2, 0.1)) == 0.0
+    # 40 mm overlap along x, fat overlap in y -> min-axis = 0.04 (the r23
+    # triage's own 36-42 mm family)
+    pen = sg.aabb_penetration((0, 0), (0.2, 0.1), (0.36, 0), (0.2, 0.1))
+    assert abs(pen - 0.04) < 1e-9
+
+
+def test_aabb_penetration_thin_axis_wins():
+    """min() must pick the thin axis when it is the smaller escape."""
+    pen = sg.aabb_penetration((0, 0), (0.3, 0.05), (0.1, 0.08), (0.3, 0.05))
+    assert abs(pen - 0.02) < 1e-9      # y: 0.05+0.05-0.08 < x: 0.5
+
+
 def test_folded_sheet_crease_wander_rejects_hinge_shear():
     with pytest.raises(ValueError):
         sg.folded_sheet(0.0, 0.0, 1.0, 0.66, 0.45, band=0.18, head="y-",

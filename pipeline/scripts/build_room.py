@@ -1342,6 +1342,41 @@ _GARMENT_BLACK = True
 # protects, and this flag never touches it. A leg: --no-linear-bend = p2r21 exact.
 _LINEAR_BEND = True
 
+# P2r-5 (p2r24): THE SINE DIES IN THE SLACK. r23's wander bought the naming:
+# both critics, independently, read the free hem's waves as "a deliberate,
+# perfectly regular sine" — so the lever is PERIODICITY, not amplitude (their
+# own words, gate #22). The waves are the solver's: LINEAR bending buckles the
+# fall's excess width, and UNIFORM slack on a UNIFORM grid buckles at one
+# wavelength. softgoods.slack_field modulates the rest-length excess across
+# throw + coverlet at three incommensurate envelope wavelengths (all above the
+# fold pitch — the field steers where fullness goes, the solver stays the only
+# wrinkle author; enter-smooth law untouched). The throw's ON-BED band rides
+# the same field, which is the ขอบหน้า fix: local fullness variation is what
+# lets a laid edge bunch and un-level instead of lying ruler-flat (r23's
+# in-plane wander alone read straight because it never changed how much cloth
+# the edge had). The duvet is NOT touched — its standing-fold preset is the r8
+# win drape.py's own comment protects. A leg: --no-slack-waves = p2r23 exact;
+# depth bisect: --slack-waves=<d> (LOOK-only rung, committed value moves only
+# with a recorded verdict).
+_SLACK_WAVES = True
+_SLACK_WAVES_DEPTH = 0.4
+
+# P2r-5 (p2r24): GARMENT-SWING COLLISION CLAMP (C2-r23#3; claim CONFIRMED by
+# measurement at triage — three adjacent pairs interpenetrating 36-42 mm on
+# the thin axis). The p3r2 swing yields until a piece fits its bay ACROSS the
+# run; nothing ever bounded the pair ALONG it, so alternating-sign neighbours
+# scissor through each other. Resolution order is the physics of a real rail:
+# SLIDE apart first (a hanger makes room by sliding — and variable pitch also
+# answers C2's "ระยะห่างเท่ากันเป๊ะเหมือน copy วาง"), capped inside the rail
+# slot (D-029: span <= run); only when the rail has no room left does the
+# ANGLE yield further, and a piece that cannot swing stays put (D-031's own
+# honest physics). Allowance = the bay check's existing 12 mm graze: cloth
+# compresses, a brush reads as touching garments, a 40 mm merge reads as one
+# mass. Measured in softgoods.aabb_penetration — the same instrument that
+# confirmed the claim, so the gate prints before/after in the claim's own
+# units. A leg: --no-swing-clamp = p2r23 exact.
+_SWING_CLAMP = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -3017,7 +3052,9 @@ def _place_garment_rails(models, parts, cut_first=None):
             # angle a real hanger could sit at).
             from mathutils import Matrix as _Mx
             _lo_a, _hi_a = (y0, y1) if along_x else (x0, x1)  # across-run bounds
+            _lo_r, _hi_r = (x0, x1) if along_x else (y0, y1)  # along-run bounds
             _n_sw, _degs = 0, []
+            _prop = []          # (objs, px, py, hw, hd, signed_th) — 0.0 = stays put
             for ci, cl in enumerate(clusters):
                 objs = [cms[i] for i in cl]
                 cs = [(o.matrix_world @ Vector(c)) for o in objs for c in o.bound_box]
@@ -3035,15 +3072,89 @@ def _place_garment_rails(models, parts, cut_first=None):
                         break
                     th *= 0.8               # yield to the bay's own depth
                 else:
-                    continue                # too shallow: the piece stays put
+                    # too shallow: the piece stays put — but it still occupies
+                    # its slab, so the clamp below must see it (p2r24)
+                    _prop.append((objs, px, py, hw, hd, 0.0))
+                    continue
                 _sgn = 1.0 if (salt + _ci_copy + ci) % 2 else -1.0
-                rot = (_Mx.Translation((px, py, 0.0))
-                       @ _Mx.Rotation(_sgn * th, 4, 'Z')
-                       @ _Mx.Translation((-px, -py, 0.0)))
-                for o in objs:
-                    o.matrix_world = rot @ o.matrix_world
-                _n_sw += 1
-                _degs.append(round(math.degrees(_sgn * th)))
+                _prop.append((objs, px, py, hw, hd, _sgn * th))
+            # p2r24 SWING CLAMP — see _SWING_CLAMP's comment for the record.
+            # Greedy left-to-right in run order (clusters already sort along the
+            # run — cut-first relies on the same fact): each pair's penetration
+            # is re-measured against the neighbour's ALREADY-SLID centre.
+            _GRAZE = 0.012
+            _slid = [0.0] * len(_prop)
+            if _SWING_CLAMP and len(_prop) > 1:
+                for i in range(1, len(_prop)):
+                    _po, ppx, ppy, phw, phd, pth = _prop[i - 1]
+                    _co, cpx, cpy, chw, chd, cth = _prop[i]
+                    _pc = ((ppx + _slid[i - 1], ppy) if along_x
+                           else (ppx, ppy + _slid[i - 1]))
+                    _ph = softgoods.rot_aabb_half(phw, phd, pth)
+                    _ch = softgoods.rot_aabb_half(chw, chd, cth)
+                    pen = softgoods.aabb_penetration(_pc, _ph, (cpx, cpy), _ch)
+                    if pen <= _GRAZE:
+                        continue
+                    # the slide separates along the RUN, so the amount that
+                    # clears the pair is the RUN-axis overlap (min() may be
+                    # the thin axis, which a run-slide never shrinks)
+                    _need = ((_ph[0] + _ch[0] - abs(_pc[0] - cpx)) if along_x
+                             else (_ph[1] + _ch[1] - abs(_pc[1] - cpy))) - _GRAZE
+                    # room left in the slot for this piece to slide run-ward
+                    # (its own rotated extent decides where its edge lands)
+                    _ext_r = _ch[0] if along_x else _ch[1]
+                    _ctr_r = cpx if along_x else cpy
+                    _room = max(0.0, (_hi_r + _GRAZE) - (_ctr_r + _ext_r))
+                    _slid[i] = min(max(0.0, _need), _room)
+                    if _slid[i] >= _need - 1e-9:
+                        continue
+                    # rail is full: the ANGLE yields further; a piece that
+                    # cannot swing stays put (D-031's honest physics). The
+                    # across-run fit only improves as th shrinks.
+                    _cc = ((cpx + _slid[i], cpy) if along_x
+                           else (cpx, cpy + _slid[i]))
+                    while cth and abs(cth) >= math.radians(12.0):
+                        _ch = softgoods.rot_aabb_half(chw, chd, cth)
+                        if softgoods.aabb_penetration(_pc, _ph, _cc, _ch) <= _GRAZE:
+                            break
+                        cth *= 0.8
+                    else:
+                        cth = 0.0           # parallel layering — always legal
+                    _prop[i] = (_co, cpx, cpy, chw, chd, cth)
+            for (objs, px, py, hw, hd, sth), _sl in zip(_prop, _slid):
+                if sth:
+                    rot = (_Mx.Translation((px, py, 0.0))
+                           @ _Mx.Rotation(sth, 4, 'Z')
+                           @ _Mx.Translation((-px, -py, 0.0)))
+                    for o in objs:
+                        o.matrix_world = rot @ o.matrix_world
+                    _n_sw += 1
+                    _degs.append(round(math.degrees(sth)))
+                if _sl:
+                    _off = Vector((_sl, 0.0, 0.0)) if along_x \
+                        else Vector((0.0, _sl, 0.0))
+                    for o in objs:
+                        o.matrix_world = _Mx.Translation(_off) @ o.matrix_world
+            if _SWING_CLAMP and len(_prop) > 1:
+                # re-measure what was PLACED, in the claim's own units (r23
+                # triage measured 36-42 mm on three pairs) — a residual pair
+                # prints its number, never a silent pass
+                _pens = []
+                for i in range(1, len(_prop)):
+                    _, ppx, ppy, phw, phd, pth = _prop[i - 1]
+                    _, cpx, cpy, chw, chd, cth = _prop[i]
+                    _pc = ((ppx + _slid[i - 1], ppy) if along_x
+                           else (ppx, ppy + _slid[i - 1]))
+                    _cc = ((cpx + _slid[i], cpy) if along_x
+                           else (cpx, cpy + _slid[i]))
+                    _pens.append(softgoods.aabb_penetration(
+                        _pc, softgoods.rot_aabb_half(phw, phd, pth),
+                        _cc, softgoods.rot_aabb_half(chw, chd, cth)))
+                _over = sum(1 for p in _pens if p > _GRAZE + 1e-9)
+                print(f"  garment rail {salt} copy {_ci_copy}: swing clamp — "
+                      f"max neighbour penetration {max(_pens) * 1000:.0f} mm "
+                      f"(allowance {_GRAZE * 1000:.0f}), {_over} pair(s) over, "
+                      f"slides {[round(s * 1000) for s in _slid]} mm")
             if _n_sw:
                 bpy.context.view_layer.update()
                 print(f"  garment rail {salt} copy {_ci_copy}: {_n_sw}/"
@@ -4376,6 +4487,9 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         # p2r22: DR rank 1 arrives — the line above this call has named LINEAR
         # as the recorded NEXT mechanism since p3r2; see _LINEAR_BEND's comment
         bending_model='LINEAR' if _LINEAR_BEND else None,
+        # p2r24: de-periodised slack on the skirt (see _SLACK_WAVES) — the
+        # r23 critics' "deliberate sine" hem; None = the exact prior sheet
+        slack_waves=_SLACK_WAVES_DEPTH if _SLACK_WAVES else None,
         sim_surface=True, salt=5)     # B2: per-corner bias — the owed lane-C debt
         #                               (C2 twice: corner gathers mirrored L/R)                       # the duvet + throw collide with the
     #                                             SINGLE-SHELL surface, not the
@@ -4630,6 +4744,14 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                           min(tx + tdx, x0 + W), min(ty + tdy, y0 + D))
             _wts = {i: 0.30 for i in range(len(vs))}
             _wts.update({i: 1.0 for i in _on})
+            # p2r24 (_SLACK_WAVES): de-periodise where the fullness goes — the
+            # fall's 0.30 rides the field both ways, the band's 1.0 only dips
+            # (weights clamp at 1), so the laid edge gains patches of genuine
+            # extra-vs-less cloth and stops lying ruler-flat. See the flag's
+            # own comment for the full record.
+            if _SLACK_WAVES:
+                _wts = softgoods.modulate_slack(_wts, vs, salt=29,
+                                                depth=_SLACK_WAVES_DEPTH)
             pw = 0.05
             if axis == "x":
                 px = (tx + tdx - pw) if sign > 0 else tx
@@ -6165,6 +6287,21 @@ if __name__ == "__main__":
         # A leg of the p2r23 black-garment A/B — the backer material as before
         globals()["_GARMENT_BLACK"] = False
         print("  [A/B] black garment: slat-backer material (pre-p2r23) leg")
+    if "--no-slack-waves" in _post_dashdash():
+        # A leg of the p2r24 de-periodise A/B — uniform slack, the exact p2r23
+        globals()["_SLACK_WAVES"] = False
+        print("  [A/B] throw+coverlet slack: uniform (pre-p2r24) leg")
+    _swd = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--slack-waves=")), None)
+    if _swd:
+        # amplitude-bisect bracket for the slack field depth (LOOK-only rung;
+        # the committed default moves only with a recorded verdict)
+        globals()["_SLACK_WAVES_DEPTH"] = float(_swd)
+        print(f"  [calibration] slack-wave depth overridden to {_swd}")
+    if "--no-swing-clamp" in _post_dashdash():
+        # A leg of the p2r24 garment-swing clamp A/B — the exact p2r23 swings
+        globals()["_SWING_CLAMP"] = False
+        print("  [A/B] garment swing: unclamped (pre-p2r24) leg")
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True

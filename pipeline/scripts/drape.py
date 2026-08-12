@@ -520,7 +520,7 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
                    cell=0.028, frames=55, bounds=None, thickness=0.006, slack=0.05,
                    sim_surface=False, salt=0, quality=8, collision_quality=4,
                    self_friction=None, corner_darts=False, sewing_force=15.0,
-                   hem_factor=None, bending_model=None):
+                   hem_factor=None, bending_model=None, slack_waves=None):
     """A coverlet: a sheet lying on the mattress that OVERHANGS three sides and
     falls under gravity — the fold at the mattress edge is solved, not authored.
 
@@ -608,11 +608,25 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
             pin = sg.verts_in_rect(verts, x0, py0, x0 + dx, py0 + band)
         if not pin:
             raise DrapeError(f"{name}: pin band is empty — the sheet would creep off the bed")
+        # p2r24 — DE-PERIODISED SLACK (C2 + C3 at r23, independently: the
+        # skirt's hem waves read as "a deliberate sine"). Uniform slack on a
+        # uniform grid buckles at ONE wavelength; softgoods.slack_field
+        # modulates the rest-length excess at three incommensurate envelope
+        # wavelengths, so where the solver spends the fullness stops being
+        # periodic. Computed on the POST-DART verts (the dart remaps indices —
+        # the same trap corner_dart's `sew` param documents). Weights cap at
+        # 1.0 = the scalar path's own value, the ladder still owns the total,
+        # and None = the exact prior sheet, byte-identical.
+        _sw = None
+        if slack_waves:
+            _f = sg.slack_field(verts, salt=salt + 17, depth=slack_waves)
+            _sw = {i: min(1.0, m) for i, m in enumerate(_f)}
         # No bounds/hem_min here: search_bake owns those constraints and needs the bake
         # to RETURN so it can measure and re-cut. bake_sheet's own guards still cover the
         # things a search cannot fix — a sim that never advanced, and n-gons.
         return bake_sheet(name, verts, faces, colliders, frames=frames, fabric=fabric,
                           mat=mat, pin=pin, thickness=thickness, slack=sl,
+                          slack_verts=_sw,
                           sim_surface=sim_surface, quality=quality,
                           collision_quality=collision_quality,
                           self_friction=self_friction,
