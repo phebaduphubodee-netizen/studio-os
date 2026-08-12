@@ -356,6 +356,20 @@ def sheet_lines():
         n_asm = sum(1 for r in hrows if r.get("tier") == "ASSUMPTION")
         out.append(f"            heights: {len(hrows) - n_asm}/{len(hrows)} sourced, "
                    f"{n_asm} declared assumptions (DRW-2 ladder)")
+    rat = led.get("spec_ratchet") or {}
+    if rat.get("baseline"):
+        try:
+            sp = rat["spec_path"]
+            with open(sp if os.path.isabs(sp) else os.path.join(SR.REPO, sp),
+                      encoding="utf-8") as f:
+                spec = json.load(f)
+            viol, stats = SR.spec_ratchet_check(led, spec)
+            out.append("            " + SR.ratchet_line(viol, stats))
+            for v in (viol or [])[:3]:
+                out.append(f"            !! {v}")
+        except (OSError, ValueError):
+            out.append("            SPEC-RATCHET unknown — spec unreadable. "
+                       "Unknown, not zero.")
     for w in warns[:3]:
         out.append(f"            !! {w}")
     return out

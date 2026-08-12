@@ -222,6 +222,55 @@ def test_thai_row_names_survive_a_cp1252_stdout(tmp_path, monkeypatch):
     assert rc == 0
 
 
+# --------------------------------------------------------------- spec ratchet --
+def _ratchet_ledger():
+    return {"rows": [{"id": "SR-01", "spec_mass": "bed"}],
+            "spec_ratchet": {"baseline": {"bed": [1, 2, 3, 4, 5],
+                                          "old_lamp": [9, 9, 9, 9, 9]}}}
+
+
+def _mass(name, x=1, y=2, w=3, d=4, h=5, ref=None):
+    m = {"name": name, "x": x, "y": y, "w": w, "d": d, "h": h}
+    if ref is not None:
+        m["sheet_ref"] = ref
+    return m
+
+
+def test_ratchet_grandfathers_unchanged_and_counts_debt():
+    spec = {"items": [_mass("bed"), _mass("old_lamp", 9, 9, 9, 9, 9)]}
+    viol, stats = sr.spec_ratchet_check(_ratchet_ledger(), spec)
+    assert viol == []
+    assert stats["covered"] == 1 and stats["backfill_debt"] == 1
+
+
+def test_ratchet_bites_on_edit_and_on_new():
+    spec = {"items": [_mass("bed", x=999),              # edited, no ref
+                      _mass("new_chair")]}              # new, no ref
+    viol, _ = sr.spec_ratchet_check(_ratchet_ledger(), spec)
+    assert len(viol) == 2
+    assert any("EDITED" in v for v in viol) and any("NEW" in v for v in viol)
+
+
+def test_ratchet_accepts_sr_ref_and_declared_not_in_drawing():
+    spec = {"items": [_mass("bed", x=999, ref="SR-01"),
+                      _mass("rug", ref="not-in-drawing: styling decision D1-A")]}
+    viol, stats = sr.spec_ratchet_check(_ratchet_ledger(), spec)
+    assert viol == []
+    assert stats["edited_ok"] == 1 and stats["new_ok"] == 1
+
+
+def test_ratchet_refuses_bogus_ref_and_empty_reason():
+    spec = {"items": [_mass("bed", x=999, ref="SR-99"),        # id not in ledger
+                      _mass("thing", ref="not-in-drawing: x")]}  # reason too thin
+    viol, _ = sr.spec_ratchet_check(_ratchet_ledger(), spec)
+    assert len(viol) == 2
+
+
+def test_ratchet_without_baseline_is_could_not_run():
+    viol, stats = sr.spec_ratchet_check({"rows": []}, {"items": [_mass("bed")]})
+    assert viol is None and stats is None
+
+
 def test_gate_line_names_the_counts():
     line = sr.gate_line({"drawn": 18, "matched": 17, "gaps": 0, "unresolved": 1,
                          "blocking": 0, "frustum_source": "floor_poly"})

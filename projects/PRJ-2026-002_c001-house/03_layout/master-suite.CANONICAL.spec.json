@@ -732,13 +732,14 @@
   {
    "name": "ตู้/ชั้น BF10 (dressing)",
    "kind": "cabinet",
-   "x": 650,
-   "y": 5250,
-   "w": 2500,
+   "x": 804,
+   "y": 5200,
+   "w": 2498,
    "d": 600,
    "h": 2800,
    "bf": "BF10",
-   "note": "dressing cabinet between BF11 and BF09-2, against ensuite south wall (NOT the ensuite vanity)"
+   "sheet_ref": "SR-20",
+   "note": "INK-TRUED 2026-08-11 (D-038, DRW-3's first edited mass): vector measure puts the drawn band at x804..3302 (2498 = label 250 to 2mm) x y5200..5800 (600 = label 60 exactly) — the stale x650/y5250/w2500 was element 7's disclosed watch-item #9c, never a decision. Both ends now close the junctions the ink draws closed: WEST face x804 = BF11's front plane (an L), EAST face x3302 = BF09-2's west face (the 152mm slit gone). y5200 also makes BF09-2's own derivation consistent — its south end y5199.5 is DERIVED as 'BF10's south-face plane' and finally lands on it. Reverse: retype x650/y5250/w2500 and delete D-038."
   },
   {
    "name": "ชั้นหนังสือ/โชว์ ผนังตะวันตก (ex-TV)",

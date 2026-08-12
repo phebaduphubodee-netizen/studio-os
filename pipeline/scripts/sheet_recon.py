@@ -347,6 +347,66 @@ def extract_audit(ledger, close_mm=None):
     return fresh, new, res["dropped"]
 
 
+# --------------------------------------------------------------- spec ratchet --
+def _spec_masses(spec):
+    for it in spec.get("items", []):
+        yield it
+    for bt in spec.get("builtins", []):
+        yield bt
+    for s in spec.get("subrooms", []):
+        for f in s.get("fixtures", []):
+            yield f
+
+
+def spec_ratchet_check(ledger, spec):
+    """DRW-3: a mass NEW or EDITED versus the seeded baseline must carry
+    `sheet_ref` — an SR-id that exists in this ledger, or a declared
+    'not-in-drawing: <reason>' with a real reason. Grandfathered masses are
+    never violations (zone-by-zone backfill, not big-bang), but the uncovered
+    ones are COUNTED and printed — a silent grandfather clause is how the next
+    headboard gets derived away. Returns (violations, stats)."""
+    rat = ledger.get("spec_ratchet") or {}
+    base = rat.get("baseline")
+    if base is None:
+        return None, None
+    ids = {r["id"] for r in ledger.get("rows", [])}
+    covered = {r.get("spec_mass") for r in ledger.get("rows", [])
+               if r.get("spec_mass")}
+    viol = []
+    stats = {"masses": 0, "covered": 0, "backfill_debt": 0,
+             "edited_ok": 0, "new_ok": 0}
+    for m in _spec_masses(spec):
+        stats["masses"] += 1
+        name = m.get("name", "?")
+        fp = [m.get("x"), m.get("y"), m.get("w"), m.get("d"), m.get("h")]
+        if name in base and base[name] == fp:
+            if name in covered:
+                stats["covered"] += 1
+            else:
+                stats["backfill_debt"] += 1
+            continue
+        ref = m.get("sheet_ref")
+        ok = isinstance(ref, str) and (
+            ref in ids
+            or (ref.startswith("not-in-drawing:")
+                and len(ref.split(":", 1)[1].strip()) >= 10))
+        if ok:
+            stats["new_ok" if name not in base else "edited_ok"] += 1
+        else:
+            kind = "NEW" if name not in base else "EDITED"
+            viol.append(f"{name}: {kind} mass carries no valid sheet_ref "
+                        f"(an SR-id in qa/sheet-recon.json, or "
+                        f"'not-in-drawing: <reason>')")
+    return viol, stats
+
+
+def ratchet_line(viol, stats):
+    line = ("SPEC-RATCHET: %(masses)d masses | %(covered)d covered | "
+            "%(backfill_debt)d backfill debt | %(edited_ok)d edited+ref | "
+            "%(new_ok)d new+ref" % stats)
+    return line + (f" | {len(viol)} VIOLATIONS" if viol else "")
+
+
 # ------------------------------------------------------------------------ report --
 def ledger_summary(ledger):
     """Counts from the ledger's STORED verdicts (last --recon/--gate run), for the
@@ -404,9 +464,22 @@ def main(argv):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     except Exception:                                   # noqa: BLE001
         pass
-    if len(argv) < 2 or argv[1] not in ("--recon", "--gate", "--extract"):
+    if len(argv) < 2 or argv[1] not in ("--recon", "--gate", "--extract", "--spec"):
         raise SystemExit(__doc__)
     ledger = _load(LEDGER, "ledger qa/sheet-recon.json")
+
+    if argv[1] == "--spec":
+        path = argv[2] if len(argv) > 2 else os.path.join(
+            REPO, (ledger.get("spec_ratchet") or {}).get("spec_path", ""))
+        spec = _load(path, "spec")
+        viol, stats = spec_ratchet_check(ledger, spec)
+        if viol is None:
+            print("SPEC-RATCHET: COULD NOT RUN — no baseline seeded in the ledger")
+            raise SystemExit(2)
+        print(ratchet_line(viol, stats))
+        for v in viol:
+            print(f"  !! {v}")
+        return 1 if viol else 0
 
     if argv[1] == "--extract":
         try:
