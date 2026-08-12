@@ -414,6 +414,39 @@ top of the session, before anything else.**
     difference is the remaining work. It also cannot judge beauty, styling or
     believability — those stay with the critic ladder (R7/R7b/R7c) and his eye
     (R3), which R11 does not replace.
+- R12 SHEET-FIRST, AND THE SHEET OUTRANKS EVERY DERIVATION (owner order
+  2026-08-11 — he asked *"คุณมองแบบออกมั้ย?"* and ordered a standing multi-session
+  fix; enshrined 2026-08-12 by DRW-5 after the program held its own gate through
+  a second session, per its charter). Two laws:
+  - **SHEET-FIRST**: no build round touches an element until that element's crop
+    of the DRAWING OF RECORD is OPEN beside it — R4b with the client's sheet as
+    reference #1. The drawing of record is the 00_intake snapshot (D-036: the
+    source file has since changed with no per-piece backup, so our snapshot
+    outranks any "current" export). BF-code semantics are permanently a guess
+    (D-037) — identity is human-signed, never derived; `pending` is refused by
+    name.
+  - **SHEET-OUTRANKS-DERIVATIONS**: when any derived doc of ours (scene-graph,
+    element derivation, canonical spec) disagrees with the sheet, the conflict
+    REOPENS THE DERIVATION — never the sheet. Both directions were paid for
+    before the law was written: the headboard the sheet drew vanished from the
+    build for three weeks past eight blind critic voices, because the build
+    consumed only derivations (the queue-with-no-consumer defect, with the queue
+    being our own reading of the drawing); and when the recon then accused the
+    build at BF11, the vector re-measure INVERTED the accusation — the build was
+    ink-true and the wrong reading was the derived scene-graph's, which had
+    placed the LABEL size against the wall instead of reading strokes (0-for-3
+    on BF band placements). Method note from the night all three re-reads
+    happened: the low-zoom eyeball lied twice; the stroke histogram and the
+    100mm-grid zoom decided every dispute.
+  - THE LAW IS MACHINERY, NOT PROSE: `sheet_recon --gate` (every drawn mass
+    matched, human-signed as a gap, or UNRESOLVED and failing), the heights
+    source ladder (BF label > ergonomics/codes > declared assumption — never
+    our own generated elevations, self-consistency), and the spec-ratchet (a
+    NEW or EDITED canonical mass without a `sheet_ref` fails; thin
+    `not-in-drawing` reasons refused by name) all print at every session open.
+    An in-frustum drawn mass with no match and no signed gap fails the render
+    gate; exit 2 could-not-run never counts as clear. Rows never leave the
+    ledger.
 
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
