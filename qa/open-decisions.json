@@ -473,14 +473,14 @@
    "unit": "DELIV-001",
    "decided_round": 11,
    "decided_date": "2026-08-11",
-   "decided_by": "builder",
+   "decided_by": "owner",
    "question": "เจ้าของชี้จาก floor2_TRUE_sheet ว่าต้องมีแผงหัวเตียง (คำตัดสินนั้นเป็นของเขา ล็อกแล้ว — R3) · แผน view ไม่มีความสูง: แผงสูงเท่าไหร่ และหนา/กว้างเท่าไหร่",
    "in_effect": "bed__headboard: หนา 60mm (ink ที่ calibration ของ sheet เอง ~1px/ซม. — เตียง 7'=210px, BF09 60ซม.=60px ยืนยันสองทาง) · กว้างเต็ม across ของเตียง (= ระหว่าง nightstand ตามแบบ, derive จาก rect) · **สูง 1.10m = DECLARED ASSUMPTION** (plan ไม่มี elevation; แหล่งอ้าง: ergonomics seated-back ~1100 ใน asset_scale + ยอด sham ~1.05 ซุกใต้พอดี) · บุ linen ตระกูล bed_base (rung ลึกสุด, ไม่ใช่โอ๊ค — D1-A) · ยืนชิดหน้าแผง BF14 · จุดโค้ด: _build_bed → emit bed__headboard",
    "because": "element3 เขียนเอง 'headboard = the wall' = derivation เราหลุดจากแบบ; sheet วาดแถบ ~6ซม.ที่หัวเตียงแยกจาก BF14 และกรรมการ blind 8 เสียงข้ามรอบอ่านโซนนี้ว่า ไม่เสร็จ — เจ้าของอ่านแบบแล้วสั่ง; ที่เหลือ (สูง) เป็นการตัดสินแทนของ builder",
    "where": "pipeline/scripts/build_room.py",
    "reverse_by": "ลบบรรทัด emit('bed__headboard', ...) บรรทัดเดียว — หรือแก้เลข 1.10 เมื่อพี่เคาะความสูงจากภาพ/แบบขยาย",
-   "owner_override": null,
-   "override_date": null
+   "owner_override": "ใช้ได้ (จากภาพ p2r26, 2026-08-12 — verdict ข้อ 5 ของรายงานปิดช่วง): ความสูง 1.10m ที่ประกาศเป็น assumption ได้รับการรับรอง; คำถามตะเข็บ/piping ไปคิว P4 craft ไม่ใช่ blocker",
+   "override_date": "2026-08-12"
   },
   {
    "id": "D-035",
@@ -615,9 +615,9 @@
    "decided_date": "2026-08-12",
    "decided_by": "builder",
    "question": "P2k (arris อ่านเป็นมีดทั้งที่ bevel มีจริง) — smooth-shade เข้าไปแล้วตั้งแต่ 08-10 แต่ C3 ยังไฟล์ที่ r20 และไฟล์กลับที่ r22 หลังถอนที่ r21: เหลืองาน geometry จริงไหม หรือกลไกที่ขาดอยู่เฟสอื่น",
-   "in_effect": "P2k ปิดแบบ MEASURED-AND-RELANED (ตระกูล D-041/D-042): ครึ่ง geometry จ่ายแล้วและวัดได้ — transition ที่ edge ที่ถูกชี้เป็น ramp 2-3px (ไม่ใช่ step 1px; smooth-shade+harden ของ dff0759 ถึงเฟรมจริง) · ครึ่งที่เหลือ (เส้น specular ที่ arris จริงมีใต้แสง) วัดจากเฟรม p2r22 เองว่าเป็นของเฟสแสง: gable ที่แสงมีทิศ มี highlight-above-faces 7-18 codes, partition ใต้แสงแบนหน้าตรง = 0.0 ทุกแถวที่วัด — เฟรมเดียวกัน geometry เดียวกัน ต่างกันที่ทิศแสง · ข้อ arris ของ critic จึงย้าย lane: accepted → P4/lighting queue (IES norm + directional key) และไม่ใช่ item เรขาคณิตของ P2 อีก — ตรง build-order law ของเจ้าของ (dimension → objects → light)",
+   "in_effect": "P2k ปิดแบบ MEASURED-AND-RELANED (ตระกูล D-041/D-042): ครึ่ง geometry จ่ายแล้วและวัดได้ — transition ที่ edge ที่ถูกชี้เป็น ramp 2-3px (ไม่ใช่ step 1px; smooth-shade+harden ของ dff0759 ถึงเฟรมจริง) · ครึ่งที่เหลือ (เส้น specular ที่ arris จริงมีใต้แสง) วัดจากเฟรม p2r22 เองว่าเป็นของเฟสแสง: gable ที่แสงมีทิศ มี highlight-above-faces 7-18 codes, partition ใต้แสงแบนหน้าตรง = 0.0 ทุกแถวที่วัด — เฟรมเดียวกัน geometry เดียวกัน ต่างกันที่ทิศแสง · ข้อ arris ของ critic จึงย้าย lane: accepted → P4/lighting queue (IES norm + directional key) และไม่ใช่ item เรขาคณิตของ P2 อีก — ตรง build-order law ของเจ้าของ (dimension → objects → light) · [where-note ย้ายมาจาก field: in force ที่แผน (P2k done+relaned) และบันทึกใน gate-DELIV001-P2r22 addendum]",
    "because": "การวัดสองชุดในคืนเดียว: (1) edge-profile scanlines ที่ partition x830-880 และ gable x420-470 ของ p2r21/p2r22 — ramp 2-3px ทุกจุด ไม่มีจุดไหนเป็นมีด 1px; (2) highlight probe ตามความสูง 7 จุดบน gable (7.2-18.2 codes เหนือทั้งสองหน้า) vs 4 จุดบน partition (0.0 ทุกจุด) — cue มีอยู่จริงตรงที่แสงเอื้อ และเป็นศูนย์ตรงที่แสงแบน ดังนั้นปุ่มที่เหลือไม่ใช่ bevel width/segments (เพิ่ม = ขัดความจริงงาน joinery ที่ MILL_BEVEL_M จดไว้)",
-   "where": "qa/deliverable-plan.json (P2k -> done+relaned) + projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r22-2026-08-12.md (addendum)",
+   "where": "qa/deliverable-plan.json",
    "reverse_by": "เปิด P2k กลับเป็น item เรขาคณิตของ P2 ถ้าหลัง P4 ships directional-light pass แล้ว C3 ยังไฟล์ arris read ในสามรอบแรกหลังจากนั้น — หรือพี่ overrule จากภาพเมื่อไหร่ก็ได้",
    "owner_override": null,
    "override_date": null
@@ -629,9 +629,9 @@
    "decided_date": "2026-08-12",
    "decided_by": "builder",
    "question": "ค่าที่สามของผ้า wardrobe ('matte-black' ใน spec) ถูก deliver ด้วย m_mill_backing — material ของแผ่นหลังระแนงที่ถูกออกแบบให้เป็นตัวดูดแสง (D2-A) — เสื้อดำจึงวัดได้ p50 = 7 sRGB codes (fold contrast ~0) และ C3 อ่านเป็น 'หลุมดำ' สองรอบติด: เสื้อดำควรใส่อะไร",
-   "in_effect": "garment ที่ได้ token 'backing' ใส่ m_mill_garment_black — ผ้าทอดำจริงผ่าน _woven: albedo linear (0.032,0.032,0.035) ~ พื้น reflectance ของผ้าดำจริง (ใต้ KB §8.1 dielectric floor 0.04 เล็กน้อย), cloth signature แถว linen, sheen 0.4 (เพดาน ground-truth), spec 0.35 (pro pole) — รอยพับอ่านด้วย response ไม่ใช่ albedo · backer ของระแนงไม่ถูกแตะ (ค่า signed เดิมยืนทุกตัว) · นี่คือการตีความค่า signed 'matte-black' ให้เป็น TEXTILE ไม่ใช่การแก้ค่า signed ใด",
+   "in_effect": "garment ที่ได้ token 'backing' ใส่ m_mill_garment_black — ผ้าทอดำจริงผ่าน _woven: albedo linear (0.032,0.032,0.035) ~ พื้น reflectance ของผ้าดำจริง (ใต้ KB §8.1 dielectric floor 0.04 เล็กน้อย), cloth signature แถว linen, sheen 0.4 (เพดาน ground-truth), spec 0.35 (pro pole) — รอยพับอ่านด้วย response ไม่ใช่ albedo · backer ของระแนงไม่ถูกแตะ (ค่า signed เดิมยืนทุกตัว) · นี่คือการตีความค่า signed 'matte-black' ให้เป็น TEXTILE ไม่ใช่การแก้ค่า signed ใด · [where-note: จุดโค้ด = _GARMENT_BLACK + m_mill_garment_black + router style_tok ใน build_room.py]",
    "because": "วัดก่อนตัดสิน: หน้าอกเสื้อดำใน p2r21/p2r22 p50=7 codes p5=1 — ระดับที่รอยพับหายทั้งหมดโดย construction เพราะ backer ถูกจูนให้ shadow gap อ่านดำสนิท (คนละ job) · ผ้าดำจริงสะท้อน ~2-5% และยังเห็น weave/fold — คำ C3 สองรอบ ('ดำสนิทเกินจนไม่เห็นรายละเอียด เหมือนวัตถุดำทึบ/หลุมดำ') คือการอ่านที่ตรงกับกลไกที่วัดได้",
-   "where": "pipeline/scripts/build_room.py (_GARMENT_BLACK + m_mill_garment_black + router style_tok)",
+   "where": "pipeline/scripts/build_room.py",
    "reverse_by": "--no-garment-black (map token กลับไป backer เหมือน pre-p2r23 โดยไม่แก้ source) หรือ revert commit ของ p2r23 — พี่ overrule จากภาพได้เสมอ",
    "owner_override": null,
    "override_date": null
