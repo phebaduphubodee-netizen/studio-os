@@ -635,6 +635,20 @@
    "reverse_by": "--no-garment-black (map token กลับไป backer เหมือน pre-p2r23 โดยไม่แก้ source) หรือ revert commit ของ p2r23 — พี่ overrule จากภาพได้เสมอ",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-045",
+   "unit": "DELIV-001",
+   "decided_round": 27,
+   "decided_date": "2026-08-12",
+   "decided_by": "builder",
+   "question": "เจ้าของสั่ง 'แก้' โต๊ะข้างเตียงจากภาพ p2r26 (top 520 ต่ำกว่าระนาบที่นอน 80มม. โคมอ่านใช้งานไม่ได้) — แก้เป็นเท่าไหร่ ในเมื่อสาม artifact ให้สามคำตอบ: vault band 380-480 / spec 520 / P2i วัด 80มม.ใต้ที่นอน",
+   "in_effect": "side_table ทั้งสองตัวใน CANONICAL spec: h 520 -> 580 — DERIVE จาก MATTRESS DATUM (top = mattress 600 - 20, ในแบนด์ ergonomics ที่นอน±50 ซึ่งเป็นกฎที่ใช้กับเตียง platform สูง 600 นี้; vault band 380-480 อ่านเป็น generic ของเตียงต่ำ ไม่ใช่ของ mattress 600) · โคมทุกชิ้น derive จาก h อยู่แล้ว (millwork stack) จึงยกตามอัตโนมัติ",
+   "because": "คำสั่ง 'แก้' ของเจ้าของระบุปัญหา (ต่ำเกิน) แต่ไม่ระบุเลข — เลขเป็นการตัดสินแทนของ builder; เลือก datum-derived แทนตัวเลขจาก band เพราะ R9: ความสัมพันธ์ (ตาม mattress) อยู่รอดเมื่อเตียงเปลี่ยน แต่ตัวเลขจาก band จะผิดเงียบ ๆ",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "reverse_by": "แก้ h 580 กลับเป็นเลขที่พี่เคาะ (สอง item ใน spec + ตัด addon ใน note) — จุดเดียว โคมตามเอง",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

@@ -1406,6 +1406,30 @@ _HEM_BEND = True
 # nobody buys that null twice. A leg: --no-hem-break = the exact p2r25 throw.
 _HEM_BREAK = True
 
+# P2r (p2r27): THE OWNER'S FIVE VERDICTS FROM THE p2r26 IMAGE (R3 — his words,
+# 2026-08-12, recorded in the round report and D-034's own row). Three build
+# mechanisms carry them; each is derived, never typed:
+# - _PILLOW_DROP — his #1 "หมอนลอยจากเตียง", measured 50 mm: place_model lands
+#   the combo's UNION bbox on z0 while the front pillow floats above the
+#   asset's own floor plane. Per-mesh drop until each touches z0 (+2 mm).
+# - _ADULT_SCALE — his #4 "สเกลดูแปลก", measured: every rail ran s_fit
+#   0.70-0.81 because the RUN term shrank people to fit furniture; shells
+#   rendered 570-637 mm vs a real shirt's 700-760. The run term is gone; the
+#   angle (swing) and the cull absorb what the slot cannot hold.
+# - the full-hang low shelf lives in millwork.py (his #4 "ลุย" on the dead
+#   volume) and the nightstand height in the CANONICAL spec (his #3 "แก้",
+#   D-045).
+_PILLOW_DROP = True
+# _ADULT_SCALE default OFF (p2r27 R1 stop after three quick cycles): the
+# joint-fit + re-hang chain proved the PHYSICS — a 227 mm bay holds exactly ONE
+# adult garment, centered, at ~26° — but this set's hanger/garment cluster
+# anatomy breaks the cull (hangers survive their culled garments, the frame
+# showed bare hangers twice), so the mechanism waits for its own round with a
+# mesh-anatomy probe first. The REAL fix is the one the logs have printed for
+# three rails all along: procurement of a FLAT-FILE set for 190-360 mm bays
+# (R8 — routed to the owner in gate #26). B leg to re-enter: --adult-scale.
+_ADULT_SCALE = False
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -2878,7 +2902,34 @@ def _place_garment_rails(models, parts, cut_first=None):
             _nx, _ny, _nz = _n_c
             # yaw90 leg: native y lies along the run, native x across the depth
             _ra, _da = (_ny, _nx) if _GARMENT_YAW90 else (_nx, _ny)
-            _s = min(1.0, run / _ra, depth / _da, (z1 - z0) / _nz)
+            # p2r27 ADULT-SCALE LAW (owner verdict from the p2r26 image:
+            # "ผ้าที่แขวนยังดูไม่สมจริง (สเกลดูแปลก)" — and the numbers agreed:
+            # every rail ran s_fit 0.70-0.81, shells rendered 570-637 mm long
+            # vs a real shirt's 700-760; the DOLL tell is the LENGTH). The old
+            # run term scaled people to fit furniture FLAT. The first cut of
+            # this fix dropped the run term entirely and the R5 quick killed
+            # it: garments physically cannot hang flat OR angled in a
+            # 190-360 mm bay at s=0.95, so the culls emptied every rail — a
+            # bare-hanger closet, against the signed "NEVER empty a rail".
+            # THE JOINT FIT is the real physics: a hanging garment in a
+            # shallow bay picks its ANGLE and its size together — for each
+            # angle θ the slot admits s(θ) = min(run-fit, depth-fit); the
+            # garment hangs at the θ* that admits the LARGEST s. At a real
+            # rail (run 450, bay 227) that lands θ*≈20°, s≈0.85 → shell
+            # ~750 mm = adult length, width at the hanger's own span. drop
+            # and stack-depth terms still cap. A leg: --no-adult-scale = r26.
+            if _ADULT_SCALE:
+                _hw0, _hd0 = _ra / 2.0, 0.030            # garment half-width / half-thickness
+                _s_ang = 0.0
+                for _thd in range(0, 71, 2):
+                    _thr_ = math.radians(_thd)
+                    _c_, _s_ = math.cos(_thr_), math.sin(_thr_)
+                    _fit_r = (run / 2.0 + 0.012) / max(_hw0 * _c_ + _hd0 * _s_, 1e-9)
+                    _fit_d = (depth / 2.0 + 0.012) / max(_hw0 * _s_ + _hd0 * _c_, 1e-9)
+                    _s_ang = max(_s_ang, min(_fit_r, _fit_d))
+                _s = min(1.0, depth / _da, (z1 - z0) / _nz, _s_ang)
+            else:
+                _s = min(1.0, run / _ra, depth / _da, (z1 - z0) / _nz)
             _key = (-abs(_nz - (z1 - z0)), round(_s, 3))
             if _s < GARMENT_SCALE_FLOOR:
                 if gap is None or _key > gap[0]:
@@ -3083,7 +3134,33 @@ def _place_garment_rails(models, parts, cut_first=None):
             _lo_a, _hi_a = (y0, y1) if along_x else (x0, x1)  # across-run bounds
             _lo_r, _hi_r = (x0, x1) if along_x else (y0, y1)  # along-run bounds
             _n_sw, _degs = 0, []
+            _n_cull = 0
             _prop = []          # (objs, px, py, hw, hd, signed_th) — 0.0 = stays put
+
+            def _fits(px_, py_, hw_, hd_, th_):
+                """Both containments at angle th_: ACROSS the run (the bay's
+                depth — the p3r2 rule) and ALONG it (p2r27 adult-scale: a
+                garment kept at adult size can be WIDER than its slot, and the
+                physical answer is the angle, exactly what a real narrow bay
+                forces). 12 mm grace on both, the rail's own graze constant."""
+                ca_, sa_ = abs(math.cos(th_)), abs(math.sin(th_))
+                ext_a = (hw_ * sa_ + hd_ * ca_) if along_x else (hw_ * ca_ + hd_ * sa_)
+                ext_r = (hw_ * ca_ + hd_ * sa_) if along_x else (hw_ * sa_ + hd_ * ca_)
+                ctr_a = py_ if along_x else px_
+                ctr_r = px_ if along_x else py_
+                if not (ctr_a - ext_a >= _lo_a - 0.012
+                        and ctr_a + ext_a <= _hi_a + 0.012):
+                    return False
+                # the ALONG-run containment belongs to the parked adult-scale
+                # lane only — r26's garments always overhung their slot a
+                # little, nothing ever checked it, and enforcing it on the A
+                # leg culled a passed round's closet (the A/B law: the A leg
+                # is the OLD build exactly)
+                if _ADULT_SCALE:
+                    return (ctr_r - ext_r >= _lo_r - 0.012
+                            and ctr_r + ext_r <= _hi_r + 0.012)
+                return True
+
             for ci, cl in enumerate(clusters):
                 objs = [cms[i] for i in cl]
                 cs = [(o.matrix_world @ Vector(c)) for o in objs for c in o.bound_box]
@@ -3091,22 +3168,71 @@ def _place_garment_rails(models, parts, cut_first=None):
                 py = (min(c.y for c in cs) + max(c.y for c in cs)) / 2.0
                 hw = (max(c.x for c in cs) - min(c.x for c in cs)) / 2.0
                 hd = (max(c.y for c in cs) - min(c.y for c in cs)) / 2.0
-                th = math.radians(90.0 - (14.0 + 30.0 * _det01(
+                th0 = math.radians(90.0 - (14.0 + 30.0 * _det01(
                     f"gyaw{salt}_{_ci_copy}_{ci}")))
-                while th >= math.radians(12.0):
-                    ca, sa = abs(math.cos(th)), abs(math.sin(th))
-                    ext = (hw * sa + hd * ca) if along_x else (hw * ca + hd * sa)
-                    ctr = py if along_x else px
-                    if ctr - ext >= _lo_a - 0.012 and ctr + ext <= _hi_a + 0.012:
-                        break
-                    th *= 0.8               # yield to the bay's own depth
-                else:
-                    # too shallow: the piece stays put — but it still occupies
-                    # its slab, so the clamp below must see it (p2r24)
-                    _prop.append((objs, px, py, hw, hd, 0.0))
+                # search DOWN from the pose-DNA angle (the p3r2 yield), then UP
+                # (p2r27: an over-wide adult garment needs a BIGGER angle to fit
+                # its slot along the run — the two containments pull opposite
+                # ways, so both directions are tried before giving up)
+                def _th_search(px_, py_):
+                    t = th0
+                    while t >= math.radians(12.0):
+                        if _fits(px_, py_, hw, hd, t):
+                            return t
+                        t *= 0.8
+                    t = th0 * 1.15
+                    while t <= math.radians(78.0):
+                        if _fits(px_, py_, hw, hd, t):
+                            return t
+                        t *= 1.15
+                    return None
+                th = _th_search(px, py)
+                _rex, _rey = px, py
+                if th is None:
+                    # p2r27b RE-HANG: the joint-fit sized the garment for a
+                    # CENTERED hang, but this set stacks its hangers off the
+                    # slot centre — so before culling, re-hang the piece at
+                    # the slot's run centre / the rail's own across line and
+                    # search again. That is what a hand does with a hanger
+                    # that doesn't sit; the delta is derived from the slot,
+                    # never typed.
+                    _rex = ((_lo_r + _hi_r) / 2.0 if along_x else px)
+                    _rey = (py if along_x else (_lo_r + _hi_r) / 2.0)
+                    _cax = (_lo_a + _hi_a) / 2.0
+                    if along_x:
+                        _rey = _cax
+                    else:
+                        _rex = _cax
+                    th = _th_search(_rex, _rey)
+                    if th is None and _fits(_rex, _rey, hw, hd, 0.0):
+                        th = 0.0
+                if th is None:
+                    if _fits(px, py, hw, hd, 0.0):
+                        # flat fits (the pre-adult-scale world): stays put
+                        _prop.append((objs, px, py, hw, hd, 0.0))
+                    else:
+                        # NO angle contains it anywhere: the honest move is
+                        # absence, not a shoulder through a gable (R9b)
+                        for o in objs:
+                            bpy.data.objects.remove(o, do_unlink=True)
+                        _n_cull += 1
                     continue
+                if (_rex, _rey) != (px, py):
+                    _dre = (_rex - px, _rey - py)
+                    for o in objs:
+                        o.matrix_world = (_Mx.Translation((_dre[0], _dre[1], 0.0))
+                                          @ o.matrix_world)
+                    print(f"  garment rail {salt} copy {_ci_copy}: garment "
+                          f"re-hung {abs(_dre[0]) * 1000:.0f}/"
+                          f"{abs(_dre[1]) * 1000:.0f} mm to the rail line "
+                          f"(joint-fit assumes a centered hang)")
+                    px, py = _rex, _rey
                 _sgn = 1.0 if (salt + _ci_copy + ci) % 2 else -1.0
                 _prop.append((objs, px, py, hw, hd, _sgn * th))
+            if _n_cull:
+                print(f"  garment rail {salt} copy {_ci_copy}: {_n_cull} "
+                      f"garment(s) culled — no angle fits the slot at adult "
+                      f"scale (absence over interpenetration)")
             # p2r24 SWING CLAMP — see _SWING_CLAMP's comment for the record.
             # Greedy left-to-right in run order (clusters already sort along the
             # run — cut-first relies on the same fact): each pair's penetration
@@ -3150,6 +3276,26 @@ def _place_garment_rails(models, parts, cut_first=None):
                     else:
                         cth = 0.0           # parallel layering — always legal
                     _prop[i] = (_co, cpx, cpy, chw, chd, cth)
+            # p2r27 FINAL CONTAINMENT SWEEP: the clamp's angle-yield can walk a
+            # WIDE adult garment back below its run-fit angle. Whatever survives
+            # to here must still be contained at its final angle+slide — a
+            # violator is culled (absence over a shoulder through a gable),
+            # never silently rendered.
+            _kill_idx = []
+            for _i2, ((objs, px, py, hw, hd, sth), _sl) in enumerate(
+                    zip(_prop, _slid)):
+                _px2 = px + (_sl if along_x else 0.0)
+                _py2 = py + (0.0 if along_x else _sl)
+                if not _fits(_px2, _py2, hw, hd, sth):
+                    for o in objs:
+                        bpy.data.objects.remove(o, do_unlink=True)
+                    _kill_idx.append(_i2)
+            if _kill_idx:
+                _prop = [p for i, p in enumerate(_prop) if i not in _kill_idx]
+                _slid = [s for i, s in enumerate(_slid) if i not in _kill_idx]
+                print(f"  garment rail {salt} copy {_ci_copy}: {len(_kill_idx)} "
+                      f"garment(s) culled at the final sweep (clamp walked them "
+                      f"out of containment)")
             for (objs, px, py, hw, hd, sth), _sl in zip(_prop, _slid):
                 if sth:
                     rot = (_Mx.Translation((px, py, 0.0))
@@ -4254,6 +4400,31 @@ def _place_pillow_combo(slug, bank_parts, axis, sign, sham_mat, pillow_mat):
         for o in [o for o in bpy.data.objects if o.name.startswith("bed__headset")]:
             bpy.data.objects.remove(o, do_unlink=True)
         return False
+    # p2r27 — PILLOWS TOUCH WHAT THEY LIE ON (owner verdict from the p2r26
+    # image, his #1: "หมอนลอยจากเตียง" — and the scene agreed: the sleeping
+    # pillow's mesh floor sat 50 mm above z0 because place_model lands the
+    # COMBO's union bbox on z0, and inside the asset the front pillow floats
+    # above the combo's own floor plane). Per-MESH derivation, not a typed z:
+    # every mesh in the combo whose own min-z hangs above z0 drops until it
+    # touches (2 mm settle), the sham that already touches moves 0. Drops only
+    # — never lifts, so a mesh the asset authored BELOW its sibling cannot be
+    # yanked up. A leg: --no-pillow-drop = the r26 placement exactly.
+    if _PILLOW_DROP:
+        from mathutils import Matrix as _PMx
+        for i in range(2):
+            for o in [o for o in bpy.data.objects if o.type == 'MESH'
+                      and o.name.startswith(f"bed__headset{i}__acq")]:
+                wc = [o.matrix_world @ v.co for v in o.data.vertices]
+                if not wc:
+                    continue
+                mnz = min(c.z for c in wc)
+                gap = mnz - (z_top0 + 0.002)
+                if gap > 0.008:
+                    o.matrix_world = (_PMx.Translation((0.0, 0.0, -gap))
+                                      @ o.matrix_world)
+                    print(f"  pillow combo: {o.name} dropped {gap * 1000:.0f} mm "
+                          f"onto the bedding plane (was floating)")
+        bpy.context.view_layer.update()
     # value ladder: within each instance the STANDING mesh is the sham, the LYING one
     # the pillowcase — classified by each mesh's own evaluated height, not by name.
     for i in range(2):
@@ -6352,6 +6523,16 @@ if __name__ == "__main__":
         # A leg of the p2r26 eigenmode-break A/B — the exact p2r25 throw
         globals()["_HEM_BREAK"] = False
         print("  [A/B] throw grid: uniform stations, no hem smooth (pre-p2r26) leg")
+    if "--no-pillow-drop" in _post_dashdash():
+        # A leg of the p2r27 pillow-contact A/B — the r26 floating placement
+        globals()["_PILLOW_DROP"] = False
+        print("  [A/B] bed head: combo-bbox placement, pillows float (pre-p2r27) leg")
+    if "--adult-scale" in _post_dashdash():
+        # B leg of the PARKED adult-scale lane (R1-stopped at p2r27 after three
+        # quick cycles — see _ADULT_SCALE's comment: cluster anatomy breaks the
+        # cull; real fix is flat-file procurement, routed to the owner)
+        globals()["_ADULT_SCALE"] = True
+        print("  [A/B] garments: ADULT-SCALE lane re-entered (parked at p2r27)")
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True

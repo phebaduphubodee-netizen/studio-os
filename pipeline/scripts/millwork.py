@@ -533,6 +533,17 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         rw = max((bay_w if tower_w else bay_w - CARC_T) - r0, 0.0)
         part("shelf_fh", r0, rw, 0.0, depth, z_shelf, CARC_T)
         part("rail_full", r0 + 0.04, max(rw - 0.08, 0.0), depth * 0.45, RAIL_D, 1.85, RAIL_D)
+        # p2r27 (owner order 2026-08-12, "ลุย" on the dead volume): the full-hang
+        # cell's rail at 1.85 leaves ~0.6-0.7 m of bare carcass under the hung
+        # garments — both the owner and C2-r26#9 read it as undesigned volume,
+        # and the R12 check confirmed the plan ink stops at the carcass, so the
+        # fit-out is ours to design. A LOW SHELF at 0.42 m fills it the way a
+        # real full-hang cell is finished (boot/basket shelf under the drop):
+        # 0.42 clears the longest garment this cell can hang (rail 1.85 − adult
+        # 0.78 shell → cuffs ~1.0) with air to spare, and the shelf's token
+        # starts with "shelf" so styling's wardrobe-shelf dressing may stack it
+        # (a bare one stays inside the signed "deliberate minority BARE").
+        part("shelf_fl", r0, rw, 0.0, depth, 0.42, CARC_T)
 
         if tower_w:
             # [2] floating-drawer + open-shelf tower — microcement fronts + a microcement back,

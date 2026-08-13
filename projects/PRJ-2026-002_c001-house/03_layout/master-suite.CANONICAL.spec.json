@@ -808,7 +808,7 @@
    "y": 2200,
    "w": 501,
    "d": 498,
-   "h": 520,
+   "h": 580,
    "lamp": {
     "kind": "dome",
     "finish": "brass",
@@ -819,7 +819,7 @@
     "decision": "D3-3 (element3-bed_DD-2026-07-18.md): matte-DARK low cabinet (pops vs the warm oak headboard wall; NOT a 5th oak mass) + a brass DOME/'mushroom' table lamp (the drawing's round lamp symbol / ref image #3). CCT 2850K = warm band, CCT-safe with the 3000K ceiling (residential-lighting#L45-54); output dim vs the garden windows (PH-02, render-defects#L51), 323-538 lux at the reading plane (lumen-method#L73). Brass = the 10% accent.",
     "ref": "element3-bed_DD-2026-07-18.md"
    },
-   "note": "NE of bed head against BF14; INK x4701.8-5203.2 y2200.1-2698.4 (~501x498, was spec 300x300) + round lamp symbol"
+   "note": "NE of bed head against BF14; INK x4701.8-5203.2 y2200.1-2698.4 (~501x498, was spec 300x300) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12 แก้ from the p2r26 image: top sat 80mm below the mattress plane and the lamp read unusable — h derived from the MATTRESS DATUM, top = mattress 600 - 20; ergonomics mattress-relative band; recorded D-045; plan ink has no heights)"
   },
   {
    "name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
@@ -828,7 +828,7 @@
    "y": -450,
    "w": 501,
    "d": 501,
-   "h": 520,
+   "h": 580,
    "rot": 180,
    "lamp": {
     "kind": "dome",
@@ -840,7 +840,7 @@
     "decision": "D3-3 (element3-bed_DD-2026-07-18.md): matte-dark low cabinet + brass dome lamp, twin of the NE nightstand. Its south half (y-450..-148) stands in front of the glz-east glass return — a lamped side table before the SE garden glass.",
     "ref": "element3-bed_DD-2026-07-18.md"
    },
-   "note": "SE of bed head against BF14; INK x4701.8-5203.2 y-450.2-51.3 (~501x501, was spec 300x294) + round lamp symbol"
+   "note": "SE of bed head against BF14; INK x4701.8-5203.2 y-450.2-51.3 (~501x501, was spec 300x294) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12 แก้ from the p2r26 image: top sat 80mm below the mattress plane and the lamp read unusable — h derived from the MATTRESS DATUM, top = mattress 600 - 20; ergonomics mattress-relative band; recorded D-045; plan ink has no heights)"
   },
   {
    "name": "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)",
