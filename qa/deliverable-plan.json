@@ -1455,7 +1455,46 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "a15bb16171ccd601eb5a713138e8bb86ad223b8e",
+      "verdicts": {
+        "P2": "keep: รอบคำสั่งห้าข้อปิดสี่ (หมอนแตะ/โต๊ะ 580/ชั้น/D-034 ในชื่อพี่ — ทุกตัวมีเลขและกรรมการทั้งสองรายเงียบ) · ระยะที่เหลือแยกเป็นสามชะตา: (ก) ผ้าเตียงทั้งชุด = ข้อ 2 ของพี่ + #1 ของ C2 — เดินได้เมื่อ NLM re-ask ตอบ (ห้ามหมุน knob ก่อน research ตามบทเรียน R1 สองครั้งของ lane นี้) (ข) สเกล/สไตล์เสื้อ = รอ procurement flat-file ที่เป็นการตัดสินใจของพี่ (ทฤษฎีบทวัดแล้ว: bay ตื้นใส่ adult ได้ตัวเดียว) (ค) clause top-3 ฝั่ง C3 = แดน decided เดิม — ทั้งสามไม่มีอันไหนเป็นงาน solver ที่เดินได้คืนนี้",
+        "P4": "keep: แสงยังสะสม (C2 #2 รอบนี้ — โคมยกสูงยิ่งเห็น 'เปิดแต่ไม่ cast') + คิวได้ identity items ใหม่มีชื่อ: kind-misread 'ชามซ้อน' ของ folded_knit ใต้แสงแบน, โต๊ะขวา placeholder (reveal จมแสง), microcement สองเลข (blur 0.86 + blotch scale) — ทุกตัวคือของที่แสง P4 จะตัดสินให้จริง",
+        "P5": "keep: ไม่ขยับ — แต่จดว่า P2 ตอนนี้รอสามอย่างที่ไม่ใช่ solver (ตาพี่/procurement/research) พร้อมกันเป็นครั้งแรก — ถ้าทั้งสามค้างเกินหนึ่ง session ให้ review ถัดไปพิจารณา 'เปิด P4 คู่ขนานโดยไม่ปิด P2' เป็น change จริง เพราะ build-order law อนุญาตให้แสงมาก่อนของแต่ง (P4) เมื่อ objects นิ่งแล้ว"
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "5bce645166628b031ad746605efe14f45920aefe"
+  "last_review_commit": "a15bb16171ccd601eb5a713138e8bb86ad223b8e"
 }
