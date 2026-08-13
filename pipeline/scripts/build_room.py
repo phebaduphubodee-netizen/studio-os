@@ -1286,8 +1286,8 @@ _CLOTH_ROUGH_LINKED = True
 
 # P2r-1 mechanism 3 (p2r13): the DR rank-4 SEWING DART at the duvet's two free
 # foot corners — softgoods.corner_dart cuts the wedge, drape.bake_sheet turns
-# the loose pair edges into sewing springs (dr-cloth-corner-drape-2026-08-11,
-# force band 10-25). The corner ear survived stiffness tuning (p2r9 relief let
+# the loose pair edges into sewing springs
+# (knowledge/_inbox/dr-cloth-corner-drape-2026-08-11.md, force band 10-25). The corner ear survived stiffness tuning (p2r9 relief let
 # it FOLD; the facet read stayed) because the flat sheet simply has more cloth
 # at the corner than a tailored corner carries — a dart REMOVES it, which is
 # how real bedding solves it. A leg: --no-sewing-dart.
