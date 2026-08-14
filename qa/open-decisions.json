@@ -649,6 +649,48 @@
    "reverse_by": "แก้ h 580 กลับเป็นเลขที่พี่เคาะ (สอง item ใน spec + ตัด addon ใน note) — จุดเดียว โคมตามเอง",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-046",
+   "unit": "DELIV-001",
+   "decided_round": 28,
+   "decided_date": "2026-08-14",
+   "decided_by": "builder",
+   "question": "เบาะม้านั่งยุบใต้กองผ้า (site ที่ C2 ไฟล์ 4 รอบ) — กลไก Soft Body ต้องใช้พารามิเตอร์อะไร ในเมื่อ corpus ไม่มีค่าคงที่ให้เลย",
+   "in_effect": "drape.dent_soft_body: goal_yield 0.5 / goal_spring 0.5 / edges 0.8 (แบนด์จาก DR §3) · press travel 16มม. = DECLARED ASSUMPTION (ไม่มีค่าใน corpus — dent วัดจริงได้ 23มม.) · gravity ของ soft body = 0 (rest shape ของเบาะคือรูป settle แล้ว — เปิด gravity คือใส่แรงซ้ำสอง วัดแล้วทั้งหน้าเบาะทรุด) · กองผ้าถูกวางลงตาม dent ที่วัดได้ ไม่ใช่เลขพิมพ์ (R9)",
+   "because": "กลไกแรกของ site นี้ที่ไม่ใช่การหมุน knob ต้องห้าม; travel เป็น assumption ที่ประกาศเพราะ DR ระบุเองว่าไม่มีค่า crease/bulge ใน corpus — ตาและ critic ladder เป็นผู้ตัดสินขนาด",
+   "where": "pipeline/scripts/drape.py",
+   "reverse_by": "รัน build ด้วย --no-bench-dent = เบาะแข็งแบบ p2r27 เป๊ะ (จุดเดียว)",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-047",
+   "unit": "DELIV-001",
+   "decided_round": 28,
+   "decided_date": "2026-08-14",
+   "decided_by": "builder",
+   "question": "batting loft ของ duvet — ความหนา render ต้อง grade เท่าไหร่ ในเมื่อคอลัมน์ settled-loft ของ nlm-bedding-mass ถูก quarantine (trace ไปที่ synthesis ของ DR เอง)",
+   "in_effect": "boundary-distance field (ramp 0.15ม. จากชายผ้า+สัน crease ซึ่งเป็นเส้นบีบ) grade solidify 18→36มม. (factor 2.0) ผ่าน vertex-group thickness เดิมของ _freeze · solid_offset 0.4 เทความหนาขึ้นบน (กัน shell ล่างทะลุเปลือก coverlet — เลขขอบใน comment ของ _freeze) · sim ไม่เห็นอะไรเลย (byte-identical)",
+   "because": "ratio 2.0 และ ramp 0.15 เป็น DECLARED ASSUMPTIONS — จงใจไม่ใช้เลขจากคอลัมน์ quarantined (กฎ: ห้ามใส่เลขกุสวมชุด citation เข้า knowledge) ตัดสินด้วยตาและ critic แทน",
+   "where": "pipeline/scripts/build_room.py",
+   "reverse_by": "รัน build ด้วย --no-duvet-loft = ความหนา uniform 18มม. offset 0 แบบ p2r27 เป๊ะ (จุดเดียว)",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-048",
+   "unit": "DELIV-001",
+   "decided_round": 28,
+   "decided_date": "2026-08-14",
+   "decided_by": "builder",
+   "question": "gen-diff protocol (ไอเดียพี่ อนุมัติ ลุย 2026-08-13): ภาพ gen จาก render เราใช้เป็นอะไรได้ และห้ามเป็นอะไร",
+   "in_effect": "pipeline/scripts/gen_diff.py: ส่งเฉพาะ render เราเอง (egress class เดียวกับ C3) · ผลเป็น HYPOTHESIS ไม่ใช่ target — ทุก gap ที่แกะได้ต้องเช็คกับ anchor pool ก่อนกลายเป็นงาน · delta เชิงโครงสร้าง/เรขาคณิต = noise ทิ้งตาม R12 · variants อยู่ _private (gitignored) เฉพาะ findings ขึ้น gate",
+   "because": "ความสวยของภาพ gen คือ prior ของ Gemini ไม่ใช่รสนิยมงานส่งจริง — ประวัติ blind critic เคย prescribe จาก prior ผิดห้องมาแล้ว; เงื่อนไขสองข้อคือสิ่งที่กันไม่ให้ diagnostic กลายเป็นเป้า",
+   "where": "pipeline/scripts/gen_diff.py",
+   "reverse_by": "ลบ/เลิกเรียก gen_diff.py และตัดขั้น gen-diff ออกจากท้ายรอบ — ไม่มี state อื่นผูก",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
