@@ -142,3 +142,21 @@ Format: `- [ ] <question> — <notebook id> — queued <date> — <why it came u
   uncommitted-modified by a parallel session and belongs to that lane.
 
 - [2026-08-12, p2r26 tick] notebook ae3dd665: folded cloth stack on soft upholstered bench - fold crease radius vs thickness, layer bulge at folded edge, cushion dent + over-edge sag, practitioner techniques. ANSWERED on re-ask 2026-08-13 (autonomous tick) -> staged as dr-cloth-state-loft-tuck-cushion-2026-08-13.md; question CLOSED (DR criterion 2: class entering its 2nd build round); vault partial answer already in knowledge/rendering/cloth-sim-closed-tube-garments.md + dr-cloth-corner-drape-2026-08-11.md
+
+- [x] **ANSWERED 2026-08-13 (same session, turn 5)** — staged as
+  `knowledge/_inbox/dr-cloth-tuck-hands-2026-08-13.md`: four mechanisms ranked
+  (spring pinning first: gradient weights + pin_stiffness 1.5-4.0; post-sim
+  hook REFUSED by the R9-family precedent); arms the p2r29 tuck re-entry.
+  Original ask kept below for the record.
+  **มือเหน็บผ้า (animated tuck) บน cloth sim โดยไม่ตรึงแข็งจากเฟรม 1** — R1
+  stop p2r28 (2 กลไกcycle): hook+empty ตาม DR 08-13 §5 สร้าง "มือ" ที่จริงคือ
+  hard pin — vertex_group_mass weight 1.0 ตรึง vert ไว้ที่ระดับ feedstock ขณะ
+  ม้วนพับรอบข้างลอยขึ้น ~27มม. ตอน settle → dip ทั้งสามจุดจมถึงระนาบเดียวกัน
+  (วัด 35.8/33.4/33.3 แล้ว 28.5/26.9/26.9 หลังลด travel ครึ่ง — cv 0.03 ทั้งคู่
+  = uniform โดยโครงสร้าง ไม่ใช่โดยจูน) คำถาม generic: practitioner ทำ "มือกด/
+  เหน็บ" อย่างไร — partial pin weight (spring แทน clamp)? timed pin release
+  (คลาย pin หลัง settle)? hook falloff บน cloth ที่ไม่ pin? proxy collider
+  รูปนิ้วกดชั่วคราว? ต้องการ: กลไก + ค่าเริ่ม + failure mode ต่อกลไก —
+  notebook `ae3dd665` (คลัง cloth เดิม) — queued 2026-08-13 — R1-stop
+  criteria (1): กลไก mystery มีชื่อ; site "รอยพับตรงเป๊ะข้ามเตียง" ยืนเปิด
+  รอกลไกนี้ (บันทึกใน gate p2r28)

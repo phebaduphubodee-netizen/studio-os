@@ -71,7 +71,7 @@ never broke the symmetry, so these are NEW mechanisms, not re-turns:
 What this does NOT license: pre-wrinkled feedstock (z-noise). Spacing jitter is
 in-plane and flat; the solver stays the only wrinkle author.
 
-## 3. Stack-on-cushion dent (กองผ้าพับบนเบาะ) — the bench mechanism
+## 3. Stack-on-cushion dent (กองผ้าพับบนเบาะ) — CONSUMED p2r28
 
 Diagnosis (2026-08-13 DR): the folded stack sits on a RIGID cushion, so contact
 reads as plastic-on-plastic; C2 filed "ผ้าพับวางบนเบาะนุ่มต้องยุบ" four rounds
@@ -82,7 +82,18 @@ Mechanism: convert the cushion to a deformable target with **Soft Body** —
 yields), edges pull/push ~0.8 — so the stack DENTS the cushion. First
 mechanism for this site that is not a knob re-turn.
 
-## 4. Batting loft (duvet/coverlet all-over undulation)
+CONSUMED 2026-08-14 (`drape.dent_soft_body`, gate-DELIV001-P2r28, D-046) with
+three measured corrections the DR could not know: (1) a static presser has no
+weight — the press must be a MOTION (keyframed travel; probe first measured
+the cushion RISING off the collision field); (2) the soft body's own gravity
+must be ZERO — the seat's rest shape is already its settled shape, and leaving
+gravity on double-applies it; (3) the dent is measured on the yield band's own
+verts — a z-window filter returned its own constant (36.0 mm twice) because
+the overhanging stack puts seat-side verts in the presser's footprint.
+Result: 23 mm dent from a 16 mm press; the four-round critic item was absent
+from the next blind C2 read.
+
+## 4. Batting loft (duvet/coverlet all-over undulation) — CONSUMED p2r28
 
 The full frame is sim-coarse-render-fine (SurfaceDeform + post-sim Solidify
 ~10 mm) — heavier pipeline change. The REACHABLE half first: **procedural
@@ -90,7 +101,17 @@ quilting/loft via displacement driven by a distance-function thickness** on the
 render mesh, no re-sim. Displacement on a subdivided cage is already
 R8b-lawful.
 
-## 5. Tucked-sheet fold irregularity (รอยเหน็บมือ)
+CONSUMED 2026-08-14 (`softgoods.boundary_dist_weights` → `drape._freeze`
+vertex-group solidify, gate-DELIV001-P2r28, D-047): 18→36 mm graded by
+edge-distance, with two additions the DR did not carry — the CREASE is an
+extra distance source (a 180° fold compresses batting; also the two layers'
+solidify normals point OPPOSITE ways on a folded lattice, so an untapered roll
+grazes its own visible surface), and the thickness biases UPWARD
+(solid_offset 0.4) because batting squashes flat against what it lies on and
+the lofted inner shell must clear the collider stack. duvet_fold octave
+energy moved 1.91x → 1.80x toward the anchor.
+
+## 5. Tucked-sheet fold irregularity (รอยเหน็บมือ) — R1-STOPPED p2r28, successor staged
 
 Three techniques for the ruler-straight tucked fold:
 
@@ -100,6 +121,18 @@ Three techniques for the ruler-straight tucked fold:
   and settle instead of bouncing rigid.
 - Asymmetric initial state (rotate the sheet before the drape): the 45-70°
   figure smells like a loose-drape number — verify before using on a MADE bed.
+
+MEASURED DEAD END 2026-08-14 (2 mechanism cycles, R1 stop — gate-DELIV001-
+P2r28): hook + pin weight 1.0 is an infinite-mass CLAMP, not a hand — the
+settling roll lofts ~27 mm around press points frozen at feedstock height, so
+every dip bottoms at one plane (35.8/33.4/33.3 mm, then 28.5/26.9/26.9 after
+halving travel — cv 0.03 both, uniform by construction). The ramp lever is
+also COUPLED to pins: on an unpinned sheet the weightless first third slides
+laterally (52-64 mm proud, invariant to slack). Ramp CONSUMED per-piece where
+pins exist (bench throw); duvet ramp waits for the tuck pins. The successor
+mechanism set (spring pinning first: gradient weights + pin_stiffness
+1.5-4.0) is staged in `knowledge/_inbox/dr-cloth-tuck-hands-2026-08-13.md` —
+distill before the p2r29 re-entry.
 
 ## 6. Empirical chaos bands — what a believability test may cut against
 
