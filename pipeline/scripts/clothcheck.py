@@ -87,6 +87,114 @@ def crease_profile(verts, faces):
     }
 
 
+# ---------------------------------------------------------------------------
+# CREASE BELIEVABILITY (p2r28) — the chaos-band instrument for a MADE fold.
+#
+# The 2026-08-13 cloth DR (knowledge/rendering/bed-cloth-state-mechanisms.md §6)
+# gives the band real re-draped fabric varies between identical trials: ±15%
+# drape coefficient, ±25% fold/node dimensions, ±3 fold count. That is
+# trial-to-trial variance; this instrument transfers it WITHIN one frame as a
+# declared analogy (recorded, not hidden): repeated features of one crease —
+# its wander and its hand-tuck depths — must vary at least a floor's worth,
+# because a row of identical features is the one state real cloth never
+# produces. Same cut family as the aperiodicity measurement that closed the
+# sine-hem (p2r24-25: autocorr 0.591/0.489 = machine, the critics' own words
+# "a deliberate, perfectly regular sine").
+#
+# The thresholds are TEST parameters derived from a REFERENCE-tier band — they
+# gate a mechanism's output, never a deliverable by themselves (the knowledge
+# file's own law). Published constants so pure tests pin them.
+# ---------------------------------------------------------------------------
+CREASE_RMS_MIN = 0.003        # m — a settled fold line straighter than this is a ruler
+# The periodicity cut is scoped to SHORT lags (2..CREASE_MAX_LAG): the machine
+# class the critics named is cell-scale teeth, and a pure sine scores 0.98
+# there. Long lags are excluded BY MEASUREMENT, not convenience: the dev()
+# golden-ratio generator that lawfully drives crease wander has Fibonacci
+# near-repeats (lag 8: 0.69, lag 13: 0.64, lag 34: 0.997 — measured
+# 2026-08-13), which are equidistribution artifacts invisible as periodicity
+# at render scale; a cut that saw them would fail every lawful wander and
+# force the mechanism back to the very uniformity it exists to break.
+# Short-lag separation is wide: sine 0.98 vs dev 0.48 — the 0.65 cut sits in
+# the gap, not on a knife edge (the shred calibration law).
+CREASE_MAX_LAG = 7
+CREASE_AUTOCORR_MAX = 0.65    # detrended wander must stay aperiodic (sine-hem family)
+TUCK_CV_BAND = (0.10, 0.60)   # tuck-depth spread: under = machine row, over = damage
+
+
+def _detrended(samples):
+    """Least-squares line fit t->v; returns residuals (the wander signal)."""
+    n = len(samples)
+    ts = [s[0] for s in samples]
+    mt = sum(ts) / n
+    denom = sum((t - mt) ** 2 for t in ts) or 1e-12
+    out = []
+    for vi in range(1, len(samples[0])):
+        vs = [s[vi] for s in samples]
+        mv = sum(vs) / n
+        slope = sum((t - mt) * (v - mv) for t, v in zip(ts, vs)) / denom
+        out.append([v - (mv + slope * (t - mt)) for t, v in zip(ts, vs)])
+    return out
+
+
+def _max_autocorr(x, max_lag=None):
+    """Max normalised autocorrelation over lags 2..max_lag (default
+    CREASE_MAX_LAG, capped at n/2) — 1.0 = perfectly periodic, ~0 = aperiodic.
+    Guarded for a flat signal."""
+    n = len(x)
+    e = sum(v * v for v in x)
+    if n < 6 or e < 1e-18:
+        return 0.0
+    if max_lag is None:
+        max_lag = CREASE_MAX_LAG
+    best = 0.0
+    for lag in range(2, min(int(max_lag), n // 2) + 1):
+        num = sum(x[i] * x[i + lag] for i in range(n - lag))
+        den = math.sqrt(sum(v * v for v in x[:n - lag]) *
+                        sum(v * v for v in x[lag:])) or 1e-18
+        best = max(best, abs(num / den))
+    return best
+
+
+def crease_believability(line_pts, tuck_depths, rms_min=None, autocorr_max=None,
+                         cv_band=None):
+    """(bad, profile, message) for a settled fold line and its hand-tuck depths.
+
+    line_pts     [(t, u, z), ...] — the crease's settled verts, t = the
+                 across-bed coordinate, u = in-plan position, z = height.
+                 Sorted by t here; caller passes raw.
+    tuck_depths  measured z-drop at each tuck site, metres (>= 2 sites).
+
+    Reads the module constants at call time (same law as shredded: an override
+    must reach the guard)."""
+    if rms_min is None:
+        rms_min = CREASE_RMS_MIN
+    if autocorr_max is None:
+        autocorr_max = CREASE_AUTOCORR_MAX
+    if cv_band is None:
+        cv_band = TUCK_CV_BAND
+    if len(line_pts) < 8:
+        return True, {}, f"crease has {len(line_pts)} samples — too few to judge"
+    if len(tuck_depths) < 2:
+        return True, {}, f"{len(tuck_depths)} tuck depth(s) — the spread of one is undefined"
+    pts = sorted(line_pts)
+    resid = _detrended(pts)
+    rms = math.sqrt(sum(sum(r * r for r in rs) for rs in resid)
+                    / len(pts))
+    auto = max(_max_autocorr(rs) for rs in resid)
+    mean_d = sum(tuck_depths) / len(tuck_depths)
+    if mean_d <= 1e-9:
+        return True, {}, "tuck depths average zero — the hand never pressed"
+    cv = math.sqrt(sum((d - mean_d) ** 2 for d in tuck_depths)
+                   / len(tuck_depths)) / mean_d
+    prof = {"rms": rms, "autocorr": auto, "tuck_cv": cv,
+            "n_line": len(pts), "n_tucks": len(tuck_depths)}
+    bad = rms < rms_min or auto > autocorr_max or not (cv_band[0] <= cv <= cv_band[1])
+    msg = (f"crease wander rms {rms * 1000:.1f} mm (floor {rms_min * 1000:.1f}), "
+           f"autocorr {auto:.3f} (max {autocorr_max:.2f}), "
+           f"tuck-depth cv {cv:.2f} (band {cv_band[0]:.2f}-{cv_band[1]:.2f})")
+    return bad, prof, msg
+
+
 def shredded(verts, faces, frac_max=None):
     """(bad, profile, message). The single entry point a bake guard calls.
     frac_max=None reads the MODULE-LEVEL constant at call time, so a calibration

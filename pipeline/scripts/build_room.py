@@ -56,6 +56,8 @@ import element5_lighting as _e5   # bpy-free pure logic: the 3 real light layers
                        # (schema e5-layers@0.1); malformed/missing referents RAISE (831fc1b law).
 import styling       # bpy-free pure logic: ELEMENT 8 styling derived from built parts
 import softgoods     # bpy-free pure logic: ELEMENT 8 compliant-surface vocabulary
+import clothcheck    # bpy-free pure logic: shred detector + the p2r28 crease-believability
+                     # instrument (chaos band, bed-cloth-state-mechanisms.md §6)
 import drape         # LAYER 2 (uses bpy): Blender's own cloth solver, baked headless and
 #                      frozen to static meshes. Element 8 hand-wrote cloth mathematics and
 #                      then DISABLED the foot throw for want of "a collision term"; the
@@ -1430,6 +1432,43 @@ _PILLOW_DROP = True
 # (R8 — routed to the owner in gate #26). B leg to re-enter: --adult-scale.
 _ADULT_SCALE = False
 
+# P2r-8 (p2r28): THE BED-CLOTH STATE ROUND — the owner's verdict #2 from the
+# p2r26 image ("สภาพผ้าต่าง ๆ บนเตียงยังดูแปลก") + C2-r27#1's three named sites,
+# armed by the 2026-08-13 cloth DR, distilled first per the inbox law
+# (knowledge/rendering/bed-cloth-state-mechanisms.md — REFERENCE tier; every
+# mechanism below was probed headless before this wiring, data-API only).
+# Four flags so each mechanism carries its own A/B leg and its own verdict:
+# - _DUVET_LOFT (§4 batting loft): the duvet's render thickness stops being
+#   uniform — a distance-function field (softgoods.boundary_dist_weights,
+#   ramp 0.15) grades the solidify from 18 mm at every hem to 36 mm where the
+#   batting lofts, through drape._freeze's existing vertex-group solidify. The
+#   sim never sees it. solid_offset 0.4 biases the growth UPWARD so the lofted
+#   centre's inner shell stays clear of the coverlet's outer shell (margin
+#   arithmetic in the _freeze comment) — batting squashes flat where it lies.
+# - _DUVET_TUCKS (§5 hand tucks): the 180° crease read "ตรงเป๊ะข้ามเตียง"
+#   because the feedstock fold line is geometrically straight (the bench crease
+#   closed the same family at p2r23; the duvet's own call passed no wander).
+#   Two moves: crease_wander 0.012 (bench-proven, proportional to cell), and
+#   THREE hook-driven hands (drape tucks param) at derived, dev-salted stations
+#   along the crease, each pressing down-and-in by its own travel over its own
+#   frames — localized asymmetric folds, the thing a uniform solver run cannot
+#   produce. Judged by clothcheck.crease_believability after the ladder (the
+#   chaos-band instrument, DR §6) — a crease that stays a ruler FAILS the bake.
+# - _GRAVITY_RAMP (§5): duvet + bench-throw bakes keyframe their OWN effector
+#   gravity 0→1 over the first third, so tucks slide and the settle relaxes
+#   instead of bouncing rigid. Per-object keyframes — co-baked pieces and every
+#   other lane are byte-identical (probed: 23 mm vs 535 mm fall at frame 12).
+# - _BENCH_DENT (§3, the site C2 filed four rounds running "ผ้าพับวางบนเบาะนุ่ม
+#   ต้องยุบ"): the seat becomes a Soft Body with a painted goal (core holds,
+#   surface yields), the frozen stack PRESSES down (a static presser has no
+#   weight — the probe measured the cushion RISING until the press became a
+#   motion), the foam settles around it, and the stack is lowered by the
+#   MEASURED dent — first mechanism for this site that is not a knob re-turn.
+_DUVET_LOFT = True
+_DUVET_TUCKS = True
+_GRAVITY_RAMP = True
+_BENCH_DENT = True
+
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
 #                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
@@ -2534,9 +2573,29 @@ def _dress_scene(spec):
                                        frames=45, fabric="knit",
                                        mat=bpy.data.materials.get("bed_duvet"),
                                        pin=_pin, thickness=0.010, collide_dist=0.012,
-                                       shred_guard=True)
+                                       shred_guard=True,
+                                       # p2r28 (_GRAVITY_RAMP): same first-third
+                                       # ramp as the duvet — the folded stack
+                                       # SETTLES onto the seat instead of
+                                       # slapping it; None = p2r27 exact
+                                       gravity_ramp=(15 if _GRAVITY_RAMP
+                                                     else None))
                 _to["ph_model"] = 1
                 placed += 1
+                # p2r28 (_BENCH_DENT, DR §3 — the site C2 filed four rounds
+                # running): the seat foam yields under the stack. Travel is the
+                # declared press (16 mm -> ~half that in dent at goal 0.5, per
+                # the probe); the throw is then lowered by the MEASURED dent,
+                # so the final contact is derived from the sim (R9). Styling
+                # lane: a dent that cannot run drops LOUDLY, the build
+                # survives — an undented seat is not a defect object.
+                if _BENCH_DENT:
+                    try:
+                        _dent = drape.dent_soft_body(_seat, _to, 0.016,
+                                                     frames=30, press_frame=18)
+                        _to.location.z -= _dent
+                    except drape.DrapeError as _de:
+                        print(f"  lane D: bench dent dropped ({_de})")
             except drape.DrapeError as _te:
                 # lane D is styling, never structure: a throw that cannot settle is
                 # DROPPED LOUDLY, the build survives (no analytic twin needed here —
@@ -4730,6 +4789,20 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     _dv_len = along - dv_from - 0.10                # the throw band owns the foot edge
     _dv_x, _dv_y, _dv_dx, _dv_dy = box(dv_from, (across - _dv_w) * 0.5, _dv_len, _dv_w)
 
+    # p2r28 crease geometry, hoisted: the tuck HANDS (inside _duvet) and the
+    # believability measurement (after the ladder) must agree on where the fold
+    # line is, and none of it depends on the ladder's (scale, sl)
+    _dvc_cell = 0.042
+    _dvc_ax, _dvc_sgn = _head_side[0], _head_side[1]
+    _dvc_into = -1.0 if _dvc_sgn == "+" else 1.0
+    if _dvc_ax == "x":
+        _dvc_c0 = (_dv_x + _dv_dx) if _dvc_sgn == "+" else _dv_x
+        _dvc_t0, _dvc_tspan = _dv_y, _dv_dy
+    else:
+        _dvc_c0 = (_dv_y + _dv_dy) if _dvc_sgn == "+" else _dv_y
+        _dvc_t0, _dvc_tspan = _dv_x, _dv_dx
+    _tuck_state = {}
+
     def _duvet(scale, sl):
         # cell 0.028 -> 0.042 and thickness 0.008 -> 0.018 at round 4-ref: the
         # delivered-bed reference (I-23-023 #499473) shows a comforter with LOFT —
@@ -4738,8 +4811,15 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         # salt=7 (round-6 lane C, C2#4): a mirror-symmetric lattice over mirror-
         # symmetric colliders bakes mirror-image corners — the feedstock now enters
         # with per-corner bias so each corner settles its own way
+        # p2r28 (_DUVET_TUCKS): crease_wander 0.012 — the fold line was the last
+        # geometrically straight feedstock crease on the bed ("ตรงเป๊ะข้ามเตียง",
+        # C2-r27#1 / the owner's #2). Same bench-proven mechanism, proportional
+        # to this grid's cell (0.012/0.042 ≈ the bench's 0.010/0.035); 0.0 = the
+        # exact p2r27 feedstock.
         vs, fs = softgoods.folded_sheet(_dv_x, _dv_y, _dv_dx, _dv_dy, H + 0.03,
-                                        band=0.28, head=_head_side, cell=0.042, salt=7)
+                                        band=0.28, head=_head_side, cell=0.042, salt=7,
+                                        crease_wander=(0.012 if _DUVET_TUCKS
+                                                       else 0.0))
         # p2r9 — the LEFT-FLANK EAR (P2r-1 half b; C2#3 "corner fold sticks up
         # like bent card", id-mask decoded the pixels to bed__duvet). Bending
         # relief painted at the two FREE FOOT corners only: corner positions
@@ -4775,6 +4855,67 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                      for _cx, _cy in _corners)
             if _d < _R:
                 _bendw[_i] = _d / _R
+        # p2r28: the CREASE STRIP — the fold row caught through its wander, on
+        # the post-dart lattice. Both new mechanisms name it: the loft treats
+        # it as a compression line, the hands grab it.
+        _wid = 0.85 * _cell + (0.012 if _DUVET_TUCKS else 0.0)
+        if _dvc_into < 0:
+            _ulo, _uhi = _dvc_c0 - _wid, _dvc_c0 + 1e-4
+        else:
+            _ulo, _uhi = _dvc_c0 - 1e-4, _dvc_c0 + _wid
+        if _dvc_ax == "x":
+            _crease_all = softgoods.verts_in_rect(vs, _ulo, _dvc_t0, _uhi,
+                                                  _dvc_t0 + _dvc_tspan)
+        else:
+            _crease_all = softgoods.verts_in_rect(vs, _dvc_t0, _ulo,
+                                                  _dvc_t0 + _dvc_tspan, _uhi)
+        # p2r28 (_DUVET_LOFT): the batting field — distance weights on the
+        # POST-DART lattice, seeded from the free boundary (dart banks are
+        # boundary, so the sewn seam stays stitched-thin, which is what a seam
+        # is) AND from the crease strip (a 180° fold compresses the batting —
+        # and without that taper the two layers' opposite-normal shells graze
+        # each other's visible surface inside the roll; see the softgoods
+        # docstring for the measured winding). Consumed only by _freeze's
+        # solidify; the sim is byte-identical.
+        _loft = (softgoods.boundary_dist_weights(vs, fs, ramp=0.15,
+                                                 sources=_crease_all)
+                 if _DUVET_LOFT else None)
+        # p2r28 (_DUVET_TUCKS): three HANDS along the crease. Stations are
+        # dev-salted fractions of the cross span (never typed positions — R9's
+        # family: derived, deterministic, each its own stream); each hand grabs
+        # the fold roll and presses down-and-in by its OWN travel over its OWN
+        # frames, so no two tucks match — the chaos band the believability
+        # instrument then cuts against.
+        _tucks = []
+        if _DUVET_TUCKS:
+            _tcs = []
+            for _k, _fr in enumerate((0.22, 0.52, 0.81)):
+                _tc = _dvc_t0 + _dvc_tspan * (_fr + softgoods.dev(_k, 0.06, salt=41))
+                if _dvc_ax == "x":
+                    _cl = softgoods.verts_in_rect(vs, _ulo, _tc - 1.2 * _cell,
+                                                  _uhi, _tc + 1.2 * _cell)
+                else:
+                    _cl = softgoods.verts_in_rect(vs, _tc - 1.2 * _cell, _ulo,
+                                                  _tc + 1.2 * _cell, _uhi)
+                if not _cl:
+                    continue
+                # travel band 4-8 mm down / 6-11 mm in — NOT the first guess
+                # (10-16 / 12-20): at those pulls all three hands dragged the
+                # crown off the crest until it BOTTOMED OUT on the collision
+                # floor, and the three dips came back 35.8/33.4/33.3 mm —
+                # cv 0.03, the machine row in a new outfit, caught by the
+                # believability rung on its first sane reading. The dip must
+                # stay above the contact floor for the travel DIVERSITY to
+                # survive into the settle.
+                _dz = -(0.004 + 0.004 * abs(softgoods.dev(_k, 1.0, salt=43)))
+                _du = _dvc_into * (0.006 + 0.005 * abs(softgoods.dev(_k, 1.0, salt=47)))
+                _dt = softgoods.dev(_k, 0.008, salt=53)
+                _delta = ((_du, _dt, _dz) if _dvc_ax == "x" else (_dt, _du, _dz))
+                _tucks.append((_cl, _delta, 40 + 12 * _k))
+                _tcs.append(_tc)
+            _tuck_state["t_centers"] = _tcs
+            _tuck_state["sites"] = [list(_t[0]) for _t in _tucks]
+            _tuck_state["crown"] = list(_crease_all)
         # THE CLOTH-STACK CONTACT LAW (earned across fx6→fx8, three failed reads):
         # collide against the coverlet's SINGLE-SHELL sim surface, never its
         # solidified render mesh — a sheet that tunnels between a frozen collider's
@@ -4805,12 +4946,85 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                 self_friction=12.0,
                                 thickness=0.018, slack=sl, collide_dist=0.016,
                                 sim_surface=True, bend_verts=_bendw,
-                                sew_edges=_sew, sewing_force=15.0)
+                                sew_edges=_sew, sewing_force=15.0,
+                                # p2r28 (all three None/empty = p2r27 exact).
+                                # The duvet's ramp REQUIRES the tucks' pins:
+                                # measured on the --no-duvet-tucks leg, a
+                                # rampled UNPINNED sheet spends its weightless
+                                # first third sliding laterally (hem 0.575 ->
+                                # 0.481, 52-64 mm proud on y, invariant to
+                                # slack — the ladder could not buy it back),
+                                # because nothing holds the sheet until gravity
+                                # presses it into friction contact. The DR
+                                # coupled them itself: "tucks SLIDE AND SETTLE".
+                                hem_verts=_loft, hem_factor=2.0,
+                                solid_offset=(0.4 if _loft else 0.0),
+                                gravity_ramp=(40 if _GRAVITY_RAMP and _tucks
+                                              else None),
+                                tucks=(_tucks or None))
     _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
                                top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
                                bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
     _duv_o["ph_model"] = 1
     _SOFT_BAKED.append(_duv_o.name)
+    # p2r28 BELIEVABILITY (chaos band, DR §6): measured on the SETTLED cloth the
+    # ladder shipped, never on our own inputs (rounds 12-18's wound: a check
+    # against a number we chose can prove the build correct and never notice
+    # the ask was wrong). The crease RIDGE is extracted per cross-bin from the
+    # sim surface — the silhouette line the critics actually read — and the
+    # tuck depths are the solver's own dips at the hand stations. A crease that
+    # is still a ruler, still periodic, or whose tucks came out uniform FAILS
+    # THE BAKE — the mechanism gets fixed, never the threshold.
+    if _DUVET_TUCKS and _tuck_state.get("t_centers"):
+        _sd = drape.LAST_SETTLED["bed__duvet"]
+        # THE LINE IS A CENTROID PER BIN, NOT AN EXTREME. Two measured dead ends
+        # bought this form: taking the head-most vert per bin sampled ACROSS the
+        # settled roll's cross-section (crest one bin, shoulder the next — rms
+        # 35-40 mm of pure roll geometry, autocorr 0.71 at the grid's own
+        # frequency), and both flank turndowns read as wander. Averaging the
+        # crease zone per interior bin cancels the cross-section — same-shaped
+        # roll every bin — and leaves exactly the two signals the instrument
+        # judges: where the fold line RUNS (wander) and where hands pulled it.
+        # ONE population for everything: the CROWN strip (|se| <= the tuck
+        # width, both layers — feedstock indices, which the solver preserves).
+        # Line, baseline and tuck depths all come from it, so no baseline
+        # mismatch: the third dead end was measuring the hands' crown verts
+        # against a zone average that sits systematically LOWER than the crown
+        # (it includes the roll's shoulders), which clamped every depth to 0.
+        _tmargin = 0.18
+        _bins = {}
+        for _i in _tuck_state.get("crown", []):
+            if _i >= len(_sd):
+                continue
+            _p = _sd[_i]
+            _u = _p[0] if _dvc_ax == "x" else _p[1]
+            _t = _p[1] if _dvc_ax == "x" else _p[0]
+            if not (_dvc_t0 + _tmargin <= _t <= _dvc_t0 + _dvc_tspan - _tmargin):
+                continue                          # flank turndown, not the crease
+            _b = int((_t - _dvc_t0) / _dvc_cell)
+            _bins.setdefault(_b, []).append((_t, _u, _p[2]))
+        _line = []
+        for _b in sorted(_bins):
+            _pts = _bins[_b]
+            _line.append((sum(_q[0] for _q in _pts) / len(_pts),
+                          sum(_q[1] for _q in _pts) / len(_pts),
+                          sum(_q[2] for _q in _pts) / len(_pts)))
+        _zs = sorted(_pp[2] for _pp in _line)
+        _zmed = _zs[len(_zs) // 2] if _zs else 0.0
+        # tuck depth straight from each hand's OWN verts — same strip, same
+        # cross-section, so the median line is a fair baseline
+        _depths = []
+        for _cl in _tuck_state.get("sites", []):
+            _cz = [_sd[_i][2] for _i in _cl if _i < len(_sd)]
+            if _cz:
+                _depths.append(max(0.0, _zmed - sum(_cz) / len(_cz)))
+        _bad, _prof, _msg = clothcheck.crease_believability(_line, _depths)
+        print("  believability bed__duvet crease: " + _msg
+              + " depths[" + " ".join("%.1f" % (_dd * 1000) for _dd in _depths)
+              + "]mm")
+        if _bad:
+            raise drape.DrapeError(
+                "bed__duvet: the settled crease fails the chaos band — " + _msg)
 
     # ELEMENT 8: THE HEAD LADDER replaces the two identical flat slabs the DD's ground
     # phase named as the loudest CAD tell in the hero frame ("same width, same thickness,
@@ -6527,6 +6741,23 @@ if __name__ == "__main__":
         # A leg of the p2r27 pillow-contact A/B — the r26 floating placement
         globals()["_PILLOW_DROP"] = False
         print("  [A/B] bed head: combo-bbox placement, pillows float (pre-p2r27) leg")
+    if "--no-duvet-loft" in _post_dashdash():
+        # A leg of the p2r28 batting-loft A/B — uniform 18 mm solidify, offset 0
+        globals()["_DUVET_LOFT"] = False
+        print("  [A/B] duvet: uniform thickness, no batting field (pre-p2r28) leg")
+    if "--no-duvet-tucks" in _post_dashdash():
+        # A leg of the p2r28 hand-tuck A/B — straight feedstock crease, no hands;
+        # the believability instrument stands down WITH the mechanism it judges
+        globals()["_DUVET_TUCKS"] = False
+        print("  [A/B] duvet crease: straight feedstock, no hands (pre-p2r28) leg")
+    if "--no-gravity-ramp" in _post_dashdash():
+        # A leg of the p2r28 settle A/B — stock gravity from frame 1
+        globals()["_GRAVITY_RAMP"] = False
+        print("  [A/B] duvet+bench settle: full gravity from frame 1 (pre-p2r28) leg")
+    if "--no-bench-dent" in _post_dashdash():
+        # A leg of the p2r28 cushion A/B — the rigid seat the critics filed
+        globals()["_BENCH_DENT"] = False
+        print("  [A/B] bench seat: rigid under the stack (pre-p2r28) leg")
     if "--adult-scale" in _post_dashdash():
         # B leg of the PARKED adult-scale lane (R1-stopped at p2r27 after three
         # quick cycles — see _ADULT_SCALE's comment: cluster anatomy breaks the

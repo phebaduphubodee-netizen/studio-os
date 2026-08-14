@@ -187,7 +187,7 @@ def _collider(obj, thickness=0.004, friction=40.0, damping=0.6):
     return m
 
 
-def _freeze(obj, solid_thickness, hem=None):
+def _freeze(obj, solid_thickness, hem=None, offset=0.0):
     """Evaluated cloth -> plain static mesh. Everything downstream (materials,
     the suite material router, glTF export, Cycles) then treats it as ordinary
     geometry, and no solver state can re-run at render time.
@@ -220,7 +220,13 @@ def _freeze(obj, solid_thickness, hem=None):
             sm.thickness_vertex_group = 1.0 / float(factor)
         else:
             sm.thickness = solid_thickness
-        sm.offset = 0.0
+        # offset 0 = half above / half below the sim surface. A LOFTED sheet
+        # (p2r28 batting) must bias its thickness UPWARD: batting squashes flat
+        # against whatever it lies on, and the inner shell of a 2x-lofted centre
+        # at offset 0 would grow 9 mm downward and tunnel into the collider
+        # stack's outer shell — the exact fx6-fx8 mottled-patch class the
+        # cloth-stack contact law exists for.
+        sm.offset = float(offset)
         sm.use_quality_normals = True
     dg = bpy.context.evaluated_depsgraph_get()
     ev = obj.evaluated_get(dg)
@@ -254,6 +260,15 @@ def drop_sim_surfaces(*names):
             bpy.data.objects.remove(p, do_unlink=True)
 
 
+# Settled (pre-solidify) vertex positions of the LAST bake under each name.
+# Exists because _freeze REPLACES the mesh with the solidified shell, so feedstock
+# indices stop addressing the render mesh the moment the bake ends — and the
+# believability instrument (clothcheck.crease_believability, p2r28) must measure
+# the SETTLED cloth, not the solidify. A search ladder overwrites per attempt, so
+# the entry always describes the object that survived.
+LAST_SETTLED = {}
+
+
 def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                bounds=None, mat=None, pin=(), thickness=0.006, self_collide=True,
                quality=8, collide_dist=0.004, min_motion=0.010, tol=1e-4,
@@ -262,7 +277,8 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                self_friction=None, bend_verts=None, bend_floor=0.15,
                sew_edges=None, sewing_force=15.0,
                hem_verts=None, hem_factor=2.0, bending_model=None,
-               hem_bend=None, hem_smooth=None):
+               hem_bend=None, hem_smooth=None, gravity_ramp=None, tucks=None,
+               solid_offset=0.0):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -274,8 +290,18 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                  result is asserted against it — this is the CAD invariant, and
                  it is checked AFTER the physics, which is the only moment it
                  can actually be known.
+    gravity_ramp int — keyframe the cloth's OWN effector gravity 0.0 at frame 1
+                 to 1.0 at this frame (DR 2026-08-13 §5: tucks slide and settle
+                 instead of bouncing rigid). Per-object, so co-baking pieces are
+                 untouched; probed headless 2026-08-13 (fall@f12: 23 mm ramped
+                 vs 535 mm stock). None = byte-identical.
+    tucks        [(vert_indices, (dx, dy, dz), end_frame), ...] — each is a HAND:
+                 an animated empty drives a HOOK on those verts (created BEFORE
+                 the cloth modifier, so it sits above it in the stack and moves
+                 the pin targets), pulling them by delta over end_frame frames.
+                 Tuck verts are auto-added to the pin group. None = byte-identical.
     """
-    if not colliders and not pin:
+    if not colliders and not pin and not tucks:
         # a PINNED sheet is supported by its pins (a garment on its hanger zone,
         # round 5) — only cloth with neither pins nor surfaces would fall forever
         raise DrapeError(f"{name}: cloth with no collider AND no pins would fall "
@@ -292,6 +318,48 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         obj.data.materials.append(mat)
 
     before = [v.co.copy() for v in me.vertices]
+
+    # HAND TUCKS (p2r28 — DR 2026-08-13 §5, bed-cloth-state-mechanisms.md): each
+    # tuck is an empty keyframed from the cluster's centroid by its delta, driving
+    # a HOOK created HERE, before the cloth modifier, so it lands ABOVE the cloth
+    # in the stack — the solver then reads the moving verts as animated pin
+    # targets (probed headless 2026-08-13: 98 mm drag, body still simulating).
+    # matrix_inverse is built analytically from the frame-1 location, never read
+    # from matrix_world (which is stale until a depsgraph pass).
+    _tuck_empties = []
+    if tucks:
+        from mathutils import Matrix
+        # idempotent per attempt (the sim_surface precedent): a search ladder
+        # re-bakes under the same name, and a FAILED attempt raises before the
+        # success-path cleanup below — stale hands from that attempt must not
+        # accumulate into the scene (they would reach the .blend and the dump)
+        for _ob in [o for o in bpy.data.objects
+                    if o.name.startswith(name + "__tuck")]:
+            bpy.data.objects.remove(_ob, do_unlink=True)
+        for _ti, (_tidx, _tdelta, _tend) in enumerate(tucks):
+            _tidx = list(_tidx)
+            if not _tidx:
+                raise DrapeError(f"{name}: tuck {_ti} names no verts — a hand "
+                                 f"that touches nothing is a mechanism that "
+                                 f"silently never ran")
+            if not 2 <= int(_tend) <= frames:
+                raise DrapeError(f"{name}: tuck {_ti} ends at frame {_tend}, "
+                                 f"outside 2..{frames}")
+            _c = [sum(verts[i][k] for i in _tidx) / len(_tidx) for k in range(3)]
+            _em = bpy.data.objects.new(f"{name}__tuck{_ti}", None)
+            bpy.context.collection.objects.link(_em)
+            _em.location = _c
+            _em.keyframe_insert("location", frame=1)
+            _em.location = (_c[0] + _tdelta[0], _c[1] + _tdelta[1],
+                            _c[2] + _tdelta[2])
+            _em.keyframe_insert("location", frame=int(_tend))
+            _vgt = obj.vertex_groups.new(name=f"drape_tuck{_ti}")
+            _vgt.add(_tidx, 1.0, 'REPLACE')
+            _hk = obj.modifiers.new(f"tuck{_ti}", 'HOOK')
+            _hk.object = _em
+            _hk.vertex_group = _vgt.name
+            _hk.matrix_inverse = Matrix.Translation(_c).inverted()
+            _tuck_empties.append(_em)
 
     md = obj.modifiers.new("drape", 'CLOTH')
     s = md.settings
@@ -313,6 +381,24 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         # standing-fold preset), which is why this is an opt-in parameter and
         # never a default. Fails LOUD on an unknown value (API enum).
         s.bending_model = bending_model
+    if gravity_ramp:
+        # p2r28 (DR 2026-08-13 §5): the cloth's OWN effector gravity is keyframed
+        # 0 -> 1 so the settle RELAXES instead of bouncing rigid. Keyframes are
+        # the one channel the solver reads without invalidating its cache;
+        # fails LOUD if the keyframe path refuses (the DR's own caveat was
+        # "verify the effector-weight keyframe path" — a swallowed miss here
+        # would print a ramp that never ramped).
+        _gr = int(gravity_ramp)
+        if not 2 <= _gr <= frames:
+            raise DrapeError(f"{name}: gravity_ramp {_gr} outside 2..{frames}")
+        _ew = s.effector_weights
+        _ew.gravity = 0.0
+        _ok1 = _ew.keyframe_insert("gravity", frame=1)
+        _ew.gravity = 1.0
+        _ok2 = _ew.keyframe_insert("gravity", frame=_gr)
+        if not (_ok1 and _ok2):
+            raise DrapeError(f"{name}: effector-weight keyframe path refused "
+                             f"({_ok1}/{_ok2}) — do not bake as if ramped")
     # LOCAL bending relief — DR blender-cloth-corner-drape rank 3 (the half whose
     # slot is still free: vertex_group_shrink is spent on slack, the BENDING group
     # is not). A standing corner ear is double curvature refused: the ANGULAR
@@ -419,9 +505,13 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         s.shrink_max = -abs(slack)          # weight 1: full slack
     else:
         s.shrink_min = -abs(slack)
-    if pin:
+    _pin_all = set(pin or ())
+    if tucks:
+        for _tidx, _d, _e in tucks:
+            _pin_all.update(_tidx)      # a tucked vert follows its hook = a pin
+    if _pin_all:
         vg = obj.vertex_groups.new(name="drape_pin")
-        vg.add(list(pin), 1.0, 'REPLACE')
+        vg.add(sorted(_pin_all), 1.0, 'REPLACE')
         s.vertex_group_mass = vg.name
         s.pin_stiffness = 5.0
     # HEM/SEAM CUE (P2r-1 residual "no hem/seam cue on sewn goods"; r18 C2 #1 /
@@ -434,7 +524,19 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     hem = None
     if hem_verts:
         vgh = obj.vertex_groups.new(name="drape_hem")
-        vgh.add(list(hem_verts), 1.0, 'REPLACE')
+        if isinstance(hem_verts, dict):
+            # GRADED thickness (p2r28 batting loft): weight lerps the solidify
+            # from base (0) to factor x base (1), so a distance-function field
+            # (softgoods.boundary_dist_weights) becomes real batting — thin at
+            # every hem, lofted where the batting is. Same machinery as the
+            # binary hem cue; the sim never sees either.
+            _by_w = {}
+            for _i, _w in hem_verts.items():
+                _by_w.setdefault(float(_w), []).append(_i)
+            for _w, _idxs in sorted(_by_w.items()):
+                vgh.add(_idxs, _w, 'REPLACE')
+        else:
+            vgh.add(list(hem_verts), 1.0, 'REPLACE')
         hem = (vgh.name, float(hem_factor))
     c = md.collision_settings
     c.collision_quality = collision_quality
@@ -464,6 +566,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     tmp = ev.to_mesh()
     after = [v.co.copy() for v in tmp.vertices]
     ev.to_mesh_clear()
+    LAST_SETTLED[name] = [(a.x, a.y, a.z) for a in after]
 
     # GUARD 1 — did the solver actually run? A frozen sheet is a flat plane, and a
     # flat plane is exactly what element 8 shipped by hand; it must never pass silently.
@@ -524,7 +627,14 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         smm.factor = float(_sf)
         smm.iterations = int(_si)
 
-    _freeze(obj, thickness, hem=hem)
+    _freeze(obj, thickness, hem=hem, offset=solid_offset)
+    if gravity_ramp or tucks:
+        # the ramp's keyframes live on this object's action and the hooks' on
+        # their empties; the modifiers are gone (_freeze cleared them), so any
+        # surviving animation would be a dangling driver on a static mesh
+        obj.animation_data_clear()
+    for _em in _tuck_empties:
+        bpy.data.objects.remove(_em, do_unlink=True)
     sc.frame_set(1)          # the render must not inherit the bake's frame
 
     mw = obj.matrix_world
@@ -693,3 +803,129 @@ def bake_bed_cover(name, *, rect, top_z, hang_to, colliders, mat, head, fabric="
     return search_bake(lambda scale, sl: attempt((drop - 0.03) * scale, sl),
                        name=name, bounds=bounds, hem_min=hang_to, top_z=top_z,
                        slack=slack)
+
+
+def _apply_stack(obj):
+    """Evaluated modifier stack -> plain mesh, in place (the _freeze motion
+    without solidify). Clears every modifier — including a COLLISION left by an
+    earlier bake, which matters below: a soft body must not also be a collider."""
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    baked = bpy.data.meshes.new_from_object(ev, depsgraph=dg)
+    old = obj.data
+    obj.data = baked
+    obj.modifiers.clear()
+    if old.users == 0:
+        bpy.data.meshes.remove(old)
+    return baked
+
+
+def dent_soft_body(target, presser, travel, *, frames=30, press_frame=18,
+                   goal_yield=0.5, goal_spring=0.5, top_band=0.02, subdiv=2):
+    """Dent `target` (a rigid built mesh — the bench seat) under `presser` (a
+    frozen bake — the folded stack). Returns the measured dent depth in metres;
+    the CALLER lowers the presser by that measured value, so the final contact
+    is derived from the sim, never typed (R9).
+
+    The mechanism is DR 2026-08-13 §3 (bed-cloth-state-mechanisms.md): Soft
+    Body with a painted goal — core holds (1.0), surface yields (`goal_yield`),
+    edges pull/push 0.8 — the first mechanism for the stack-on-cushion site
+    that is not a knob re-turn. Probed headless 2026-08-13: 5 mm dent under a
+    10 mm press, boundary at 0.0 mm, re-bake drift 0.000000000 m.
+
+    A STATIC presser has no weight — the first probe run measured the cushion
+    RISING 4 mm off its collision field instead of denting — so the press is a
+    MOTION: the presser is keyframed down by `travel` over `press_frame`
+    frames, then the goal springs settle the foam around it.
+
+    All data API: SUBSURF(SIMPLE) for vertex density, SOFT_BODY, COLLISION,
+    keyframe_insert. Everything is frozen back to plain meshes before return."""
+    if travel <= 0:
+        raise DrapeError(f"{target.name}: dent travel {travel} must be > 0")
+    _apply_stack(target)                    # bevel becomes real verts; collision drops
+    sub = target.modifiers.new("dent_sub", 'SUBSURF')
+    if not hasattr(sub, "subdivision_type"):
+        raise DrapeError(f"{target.name}: SUBSURF API surface moved — the dent "
+                         f"cannot run; do not proceed as if it did")
+    sub.subdivision_type = 'SIMPLE'
+    sub.levels = subdiv
+    sub.render_levels = subdiv
+    _apply_stack(target)                    # dense mesh the soft body can move
+    mw = target.matrix_world
+    zs = [(mw @ v.co).z for v in target.data.vertices]
+    top_z = max(zs)
+    vg = target.vertex_groups.new(name="dent_goal")
+    yield_ids, hold_ids = [], []
+    for v in target.data.vertices:
+        (yield_ids if (mw @ v.co).z >= top_z - top_band else hold_ids).append(v.index)
+    if not yield_ids:
+        raise DrapeError(f"{target.name}: no verts inside the yield band "
+                         f"({top_band * 1000:.0f} mm below top) — nothing to dent")
+    vg.add(hold_ids, 1.0, 'REPLACE')
+    vg.add(yield_ids, float(goal_yield), 'REPLACE')
+    md = target.modifiers.new("dent_sb", 'SOFT_BODY')
+    sb = md.settings
+    if not (hasattr(sb, "goal_spring") and hasattr(sb, "pull")):
+        raise DrapeError(f"{target.name}: SOFT_BODY API surface moved — the "
+                         f"dent cannot run; do not proceed as if it did")
+    sb.use_goal = True
+    sb.vertex_group_goal = vg.name
+    sb.goal_spring = float(goal_spring)
+    sb.goal_default = 1.0
+    sb.use_edges = True
+    sb.pull = 0.8
+    sb.push = 0.8
+    # The seat's rest shape IS its gravity-settled shape — it was built that
+    # way. Leaving gravity on double-applies it: measured on the first in-scene
+    # run, the WHOLE yield band sagged ~20 mm under its own weight and the
+    # "dent" came back 36 mm off a 16 mm press — a built element's surface
+    # drifting off spec, with the books above it still placed at nominal.
+    # Zeroing the soft body's own gravity leaves exactly one force story: the
+    # press deforms, the goal springs restore.
+    sb.effector_weights.gravity = 0.0
+    _collider(presser)
+    rest = presser.location.copy()
+    presser.keyframe_insert("location", frame=1)
+    presser.location = (rest.x, rest.y, rest.z - float(travel))
+    presser.keyframe_insert("location", frame=int(press_frame))
+    sc = bpy.context.scene
+    sc.frame_start, sc.frame_end = 1, frames
+    for f in range(1, frames + 1):
+        sc.frame_set(f)
+        bpy.context.view_layer.update()
+    # measure the dent under the presser's plan footprint BEFORE freezing —
+    # over the YIELD BAND'S OWN verts (top surface by construction, indices
+    # preserved). The first form filtered by a z window instead, and because
+    # the stack OVERHANGS the seat edge, the window's floor (top - band -
+    # travel) was always populated by seat-SIDE verts: the measurement
+    # returned its own filter constant, 36.0 mm, twice — measured-boundary
+    # class, recorded in measurement discipline.
+    pb = world_bbox(presser)
+    yset = set(yield_ids)
+    dgp = bpy.context.evaluated_depsgraph_get()
+    evt = target.evaluated_get(dgp)
+    tmp = evt.to_mesh()
+    under = [(mw @ v.co).z for v in tmp.vertices
+             if v.index in yset
+             and pb[0] <= (mw @ v.co).x <= pb[3]
+             and pb[1] <= (mw @ v.co).y <= pb[4]]
+    evt.to_mesh_clear()
+    _apply_stack(target)                    # settled foam becomes the seat
+    # restore the presser to its rest state; the CALLER owns its final position
+    presser.animation_data_clear()
+    presser.location = rest
+    for m in list(presser.modifiers):
+        if m.type == 'COLLISION':
+            presser.modifiers.remove(m)
+    sc.frame_set(1)
+    if not under:
+        raise DrapeError(f"{target.name}: no seat verts under the presser "
+                         f"footprint — the dent pressed on nothing")
+    dent = top_z - min(under)
+    if dent < 0.001:
+        raise DrapeError(f"{target.name}: dent {dent * 1000:.2f} mm < 1 mm — "
+                         f"the mechanism ran and changed nothing; do not ship "
+                         f"a flat cushion wearing the word 'dented'")
+    print("  drape: %s dented %.1f mm under %s (travel %.0f mm, yield %.2f)"
+          % (target.name, dent * 1000, presser.name, travel * 1000, goal_yield))
+    return dent

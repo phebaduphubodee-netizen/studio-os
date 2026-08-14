@@ -50,6 +50,7 @@ in pipeline/CLAUDE.md: n-gons are what a SketchUp recipient sees). The consumer
 (build_room._smooth_mesh_obj) does from_pydata + smooth shading, data API only.
 """
 
+import heapq
 import math
 
 
@@ -466,6 +467,64 @@ def boundary_verts(faces):
             out.add(a)
             out.add(b)
     return out
+
+
+def boundary_dist_weights(verts, faces, ramp, sources=None):
+    """Per-vertex weights from a DISTANCE FUNCTION to the free boundary:
+    0.0 on the boundary itself, rising linearly to 1.0 at `ramp` metres in,
+    measured ALONG THE CLOTH (edge-weighted shortest path), never through
+    the air — on a folded lattice a straight-line distance would tunnel
+    between the two layers and light up the fold band from the wrong side.
+
+    This is the batting-loft field the 2026-08-13 cloth DR names
+    (knowledge/rendering/bed-cloth-state-mechanisms.md §4): a duvet is
+    batting between two skins, thick where the batting lofts and stitched
+    thin at every hem, so render-mesh thickness must be driven by distance
+    from the free edge. The weights feed drape._freeze's vertex-group
+    solidify (weight 1 = factor x base thickness, weight 0 = base), which
+    keeps the sim byte-identical — thickness is not a solver input.
+
+    `sources` adds extra distance-0 seed verts beyond the topological boundary.
+    The duvet passes its fold-crease strip: a 180° fold COMPRESSES the batting,
+    so the roll tapers back to base thickness at the crease — and without that
+    taper the two layers' solidify shells (whose normals point OPPOSITE ways on
+    a folded lattice — measured 2026-08-13: main panel +z, fold band −z) grow
+    toward each other inside the roll and graze the visible surface.
+
+    Returns {index: weight} for EVERY vertex (boundary verts carry 0.0).
+    Pure and deterministic; multi-source Dijkstra over the edge graph."""
+    if ramp <= 0:
+        _fail(f"boundary_dist_weights: ramp {ramp} must be > 0")
+    bset = set(boundary_verts(faces)) | set(sources or ())
+    if not bset:
+        _fail("boundary_dist_weights: sheet has no free boundary")
+    adj = {}
+    for f in faces:
+        n = len(f)
+        for k in range(n):
+            a, b = f[k], f[(k + 1) % n]
+            adj.setdefault(a, set()).add(b)
+            adj.setdefault(b, set()).add(a)
+
+    def _elen(a, b):
+        pa, pb = verts[a], verts[b]
+        return math.dist(pa, pb)
+
+    dist = {i: 0.0 for i in bset}
+    heap = [(0.0, i) for i in bset]
+    heapq.heapify(heap)
+    while heap:
+        d, a = heapq.heappop(heap)
+        if d > dist.get(a, float("inf")):
+            continue
+        if d >= ramp:            # beyond the ramp every weight saturates at 1.0
+            continue
+        for b in adj.get(a, ()):
+            nd = d + _elen(a, b)
+            if nd < dist.get(b, float("inf")):
+                dist[b] = nd
+                heapq.heappush(heap, (nd, b))
+    return {i: min(1.0, dist.get(i, ramp) / ramp) for i in range(len(verts))}
 
 
 def verts_in_rect(verts, x0, y0, x1, y1, tol=1e-9):

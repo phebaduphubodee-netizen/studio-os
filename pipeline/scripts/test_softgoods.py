@@ -778,3 +778,63 @@ def test_boundary_verts_includes_dart_banks_after_the_cut():
     # every sewn bank vert is boundary now — the seam inherits the hem read
     assert all(a in rim2 and b in rim2 for a, b in sew)
     assert len(rim2) > 0 and len(rim0) > 0
+
+
+# ------------------------------------------------- boundary_dist_weights (p2r28)
+
+def test_loft_weights_zero_at_boundary_full_at_core():
+    vs, fs = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    w = sg.boundary_dist_weights(vs, fs, ramp=0.2)
+    assert len(w) == len(vs)
+    b = sg.boundary_verts(fs)
+    assert all(w[i] == 0.0 for i in b)
+    core = [i for i, p in enumerate(vs)
+            if 0.35 <= p[0] <= 0.65 and 0.35 <= p[1] <= 0.65]
+    assert core and all(w[i] == 1.0 for i in core)
+
+
+def test_loft_weights_ramp_monotonically_inward():
+    vs, fs = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    w = sg.boundary_dist_weights(vs, fs, ramp=0.3)
+    # walk a row from the x0 edge toward the middle: weights must not decrease
+    row = sorted((p[0], w[i]) for i, p in enumerate(vs)
+                 if abs(p[1] - 0.5) < 0.026 and p[0] <= 0.5)
+    for (x0, w0), (x1, w1) in zip(row, row[1:]):
+        assert w1 >= w0 - 1e-12
+
+
+def test_loft_extra_sources_compress_their_zone():
+    """The duvet's crease strip is a compression line: seeding it must pull the
+    surrounding weights to ~0 the same way a free hem does."""
+    vs, fs = sg.flat_sheet(0.0, 0.0, 1.0, 1.0, 0.5, cell=0.05)
+    mid = [i for i, p in enumerate(vs) if abs(p[0] - 0.5) < 0.026
+           and 0.3 < p[1] < 0.7]                   # clear of the side boundary
+    w0 = sg.boundary_dist_weights(vs, fs, ramp=0.2)
+    w1 = sg.boundary_dist_weights(vs, fs, ramp=0.2, sources=mid)
+    assert all(w1[i] == 0.0 for i in mid)
+    assert all(w0[i] == 1.0 for i in mid)          # and they were full loft before
+
+
+def test_loft_distance_travels_along_the_cloth_not_through_air():
+    """On a folded lattice the band's top layer lies millimetres above the main
+    panel, but its weight must come from ITS own edges along the sheet — a
+    straight-line metric would light the band from the panel underneath."""
+    vs, fs = sg.folded_sheet(0.0, 0.0, 1.0, 1.0, 0.5, band=0.3, head="x-",
+                             cell=0.05)
+    w = sg.boundary_dist_weights(vs, fs, ramp=0.5)
+    # band free edge (top layer terminus): boundary of the lattice, weight 0;
+    # the main-panel vert directly beneath it sits mid-sheet and must be lofted
+    edge = [i for i, p in enumerate(vs) if p[2] > 0.5 + 0.010
+            and abs(p[0] - 0.3) < 0.026 and 0.3 < p[1] < 0.7]
+    below = [i for i, p in enumerate(vs) if p[2] < 0.5 + 1e-6
+             and abs(p[0] - 0.3) < 0.026 and 0.3 < p[1] < 0.7]
+    assert edge and below
+    assert max(w[i] for i in edge) <= 0.35
+    assert min(w[i] for i in below) >= 0.5
+
+
+def test_loft_weights_deterministic_and_fail_loud():
+    vs, fs = sg.flat_sheet(0.0, 0.0, 0.6, 0.6, 0.5, cell=0.06)
+    assert sg.boundary_dist_weights(vs, fs, 0.2) == sg.boundary_dist_weights(vs, fs, 0.2)
+    with pytest.raises(ValueError):
+        sg.boundary_dist_weights(vs, fs, 0.0)

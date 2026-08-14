@@ -60,3 +60,61 @@ def test_degenerate_faces_are_counted_and_fatal():
 def test_profile_reports_edge_population():
     _, p, _ = cc.shredded(*_grid(8, 8))
     assert p["n_edges"] == 2 * 8 * 7                     # interior edges of an 8x8 quad grid
+
+
+# ---------------------------------------------------------------------------
+# crease_believability (p2r28) — the chaos-band instrument. Synthetic crease
+# lines with known character: a ruler and a sine must FAIL, a dev-wandered
+# crease with varied tucks must PASS, and uniform tucks must FAIL.
+# ---------------------------------------------------------------------------
+
+def _dev(i, bound, salt=0):
+    t = ((i + 1) * 0.6180339887498949 + salt * 0.7548776662466927) % 1.0
+    return bound * (2.0 * t - 1.0)
+
+
+def _line(n=40, u=lambda t: 0.0, z=lambda t: 0.63):
+    return [(t / n, 5.0 + u(t / n), z(t / n)) for t in range(n + 1)]
+
+
+GOOD_DEPTHS = [0.011, 0.016, 0.008]        # a hand's tucks: all real, none alike
+
+
+def test_ruler_crease_fails():
+    bad, p, msg = cc.crease_believability(_line(), GOOD_DEPTHS)
+    assert bad
+    assert p["rms"] < cc.CREASE_RMS_MIN
+
+
+def test_perfect_sine_crease_fails_on_periodicity():
+    line = _line(u=lambda t: 0.008 * math.sin(2 * math.pi * 6 * t))
+    bad, p, _ = cc.crease_believability(line, GOOD_DEPTHS)
+    assert bad
+    assert p["autocorr"] > cc.CREASE_AUTOCORR_MAX
+
+
+def test_dev_wandered_crease_with_varied_tucks_passes():
+    line = _line(u=lambda t: _dev(int(t * 40), 0.010, 13),
+                 z=lambda t: 0.63 + _dev(int(t * 40), 0.004, 29))
+    bad, p, msg = cc.crease_believability(line, GOOD_DEPTHS)
+    assert not bad, msg
+    assert p["rms"] >= cc.CREASE_RMS_MIN
+    assert p["autocorr"] <= cc.CREASE_AUTOCORR_MAX
+
+
+def test_uniform_tucks_fail_the_band():
+    line = _line(u=lambda t: _dev(int(t * 40), 0.010, 13))
+    bad, p, _ = cc.crease_believability(line, [0.012, 0.012, 0.012])
+    assert bad
+    assert p["tuck_cv"] < cc.TUCK_CV_BAND[0]
+
+
+def test_zero_depth_tucks_fail():
+    line = _line(u=lambda t: _dev(int(t * 40), 0.010, 13))
+    bad, _, msg = cc.crease_believability(line, [0.0, 0.0, 0.0])
+    assert bad and "never pressed" in msg
+
+
+def test_too_few_samples_or_tucks_fail_closed():
+    assert cc.crease_believability(_line(4), GOOD_DEPTHS)[0]
+    assert cc.crease_believability(_line(), [0.012])[0]
