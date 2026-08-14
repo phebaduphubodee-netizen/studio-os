@@ -74,6 +74,15 @@ CROPS = {
         "anchor": ANCHOR_BEDROOM,
         "anchor_box": (0.30, 0.80, 0.47, 0.95),  # r7 record verbatim
         "declared": "r7 (gate-DELIV001-P2r7) — 1.126x at close",
+        # p2r29 (pre-registered at r27, opened at r28's third drift): the r7 box
+        # is FROZEN IN FRAME SPACE while the cloth under it re-bakes downstream
+        # of every duvet change — a dead box measures composition drift, not
+        # weave. The mask half scopes the SAME band-energy to the throw's own
+        # rendered pixels (matmask id), eroded by the band's outer radius so
+        # neighbours cannot bleed into the blur. Both halves print: the box
+        # stays as the r7 trend line, the mask answers whether the cloth or
+        # the crop moved.
+        "mask_material": "bed_throw",
     },
     "wood_boards": {
         "kind": "autocorr",
@@ -116,6 +125,61 @@ def _lum_arr(im):
 
 
 # ---------------------------------------------------------------- rungs
+
+def _erode(mask, r):
+    """Binary erosion by r px via iterated 4-neighbour min — no scipy."""
+    m = mask.copy()
+    for _ in range(int(r)):
+        p = np.pad(m, 1, mode="constant", constant_values=False)
+        m = (p[1:-1, 1:-1] & p[:-2, 1:-1] & p[2:, 1:-1]
+             & p[1:-1, :-2] & p[1:-1, 2:])
+    return m
+
+
+def rung_octave_mask(ours_im, render_path, spec, lo=4, hi=32):
+    """The mask half of an octave rung: same band, same 3-pass blur, but the
+    mean runs over the named material's OWN rendered pixels (matmask id),
+    eroded by hi//2 so the box blur cannot pull neighbouring materials into
+    the band. Returns (res, why_not) — exactly one is None."""
+    base = render_path.rsplit(".", 1)[0]
+    mj, mp = base + ".matmask.json", base + ".matmask.png"
+    if not (os.path.exists(mj) and os.path.exists(mp)):
+        return None, "no matmask beside the render"
+    meta = json.load(open(mj, encoding="utf-8"))
+    wanted = spec["mask_material"]
+    mid = next((int(k) for k, v in meta.get("ids", {}).items() if v == wanted),
+               None)
+    if mid is None:
+        return None, f"material {wanted!r} not in matmask ids"
+    # the mask png stores ids as value_probe's sRGB palette triples (levels of
+    # 51), never raw indices — decode first, or every lookup reads channel
+    # noise as "zero pixels"
+    import value_probe as _vp
+    ids = _vp.decode_ids(np.asarray(Image.open(mp).convert("RGB")))
+    mask_full = ids == mid
+    if not mask_full.any():
+        return None, f"{wanted!r} has zero pixels in the mask"
+    # to LE1600 (the same normalise rule as the luminance), NEAREST — an id is
+    # a label, interpolating one invents materials
+    w, h = ours_im.size
+    mask = np.asarray(Image.fromarray(mask_full.astype(np.uint8) * 255)
+                      .resize((w, h), Image.NEAREST)) > 127
+    core = _erode(mask, hi // 2)
+    if core.sum() < 2000:
+        return None, (f"eroded {wanted!r} core is {int(core.sum())} px — too "
+                      f"thin to band-measure")
+    L = _lum_arr(ours_im)
+    band = np.abs(dc._blur(L, lo // 2) - dc._blur(L, hi // 2))
+    e_ours = float(band[core].mean())
+    anchor_c = _crop(_norm_img(spec["anchor"]), spec["anchor_box"])
+    e_anchor = dc._octave_energy(_lum_arr(anchor_c))
+    ys, xs = np.nonzero(mask)
+    return {"ours": round(e_ours, 4), "anchor": round(e_anchor, 4),
+            "ratio": round(e_ours / max(e_anchor, 1e-9), 3),
+            "mask_px": int(mask.sum()), "core_px": int(core.sum()),
+            "bbox": [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())],
+            }, None
+
 
 def rung_octave(ours_im, spec):
     """The r7 throw-crop method: LE1600 -> textile-only crop -> _octave_energy
@@ -339,6 +403,18 @@ def run(render_path, scene_path=None, only=None, tag=None):
                   f"{key}-beside-anchor.png")
             print(f"[{key}] energy ours {res['ours']} vs anchor {res['anchor']} "
                   f"-> {res['ratio']}x  (crop: {p1}; composite: _private, local-only)")
+            if spec.get("mask_material"):
+                mres, why = rung_octave_mask(ours_im, render_path, spec)
+                if mres is None:
+                    could_not.append((key, f"mask half: {why}"))
+                    print(f"[{key}] MASK HALF COULD NOT RUN — {why} "
+                          f"(the box number above is composition-blind trend, "
+                          f"not a substitute)")
+                else:
+                    print(f"[{key}] mask-scoped ({spec['mask_material']}): "
+                          f"energy {mres['ours']} vs anchor {mres['anchor']} "
+                          f"-> {mres['ratio']}x  ({mres['core_px']} core px of "
+                          f"{mres['mask_px']}, bbox {mres['bbox']})")
         elif kind == "autocorr":
             c, _, res = rung_autocorr(ours_im, spec)
             p1 = _save(c, STAGE_DIR, tag, f"{key}-ours-100pct.png")

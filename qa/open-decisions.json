@@ -691,6 +691,34 @@
    "reverse_by": "ลบ/เลิกเรียก gen_diff.py และตัดขั้น gen-diff ออกจากท้ายรอบ — ไม่มี state อื่นผูก",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-049",
+   "unit": "DELIV-001",
+   "decided_round": 29,
+   "decided_date": "2026-08-14",
+   "decided_by": "builder",
+   "question": "P4-parallel หัว (a): เช็คหลักฐานพบ story เปิดอยู่แล้วตั้งแต่ 2026-08-11 (log r28: story daylight 238W · D10 9.04 = ค่าฝั่ง story-on ของ D-033) — premise ของ review #39 ที่ว่า 'จอดหลัง spec key' stale · งานจริงของหัว (a) คือ judge รายดวง — sconce คือ fixture เดียวที่ยืนยันด้วยเลขว่าตาย: ทำไมและแก้ด้วยกลไกไหน",
+   "in_effect": "**sconce ทั้งคู่ได้ APERTURE เปล่งแสง up/down** — จานเปล่งที่ปลายกระบอกทั้งสองด้าน สวมวัสดุ e5_trim_lens ตัวเดียวกับ lens ของ can (Emission 30, กลไกที่พิสูจน์แบนด์แล้ว: can lens 255 vs ฝ้า 71) · รัศมี = body × ratio lens/trim ของ can เอง (0.032/0.048 — derive ไม่ใช่พิมพ์) · default ON ทุกโหมด (เหมือน can trim: aperture คือเรขาคณิตของ fixture ไม่ใช่ state ของ story) · เลขที่ตัดสิน: sconce_L 186 vs ผนังตัวเอง 186 = **0 codes**, sconce_R 179 vs 172 = +7, pool อ่านไม่ออก (±5 ใน noise) — และการหมุน dimmer 1.25→1.70 ที่ p3r2 ไม่ขยับ ratio เพราะ daylight pole ยกผนังกับ fixture พร้อมกัน: **fixture ที่ไม่มีช่องเปล่งของตัวเองแพ้ผนังทุก setting** · อีกสองหัวของ C2-r28#2 ค้านด้วยเลข: lamp pool +40 codes (มี cast จริง) · wardrobe bay mean 111 (มืดกว่าห้อง ไม่ใช่สว่างไร้แหล่ง)",
+   "because": "R7 triage r28 route C2#2/C3#2 เข้า P4 หัวคิว · กลไก aperture คือกลไกเดียวกับที่ can จ่ายและพิสูจน์แล้วในเฟรมเดียวกัน — ไม่ใช่ knob ใหม่ · การหมุน sconces scale ครั้งที่สองต้องห้าม (fix-shape เดิมพิสูจน์แล้วว่าไม่ใช่คันโยก)",
+   "where": "pipeline/scripts/build_room.py",
+   "reverse_by": "รัน build ด้วย --no-sconce-lens = กระบอกเปล่าแบบ p2r28 เป๊ะ (จุดเดียว) แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-050",
+   "unit": "DELIV-001",
+   "decided_round": 29,
+   "decided_date": "2026-08-14",
+   "decided_by": "builder",
+   "question": "tuck site หยุด R1 สองกลไกติด (clamp r28 · spring pinning r29) และ believability guard fail ทั้ง build เมื่อสันพับไม่ผ่านแบนด์ — default ของ _DUVET_TUCKS ควรอยู่ข้างไหน",
+   "in_effect": "**_DUVET_TUCKS default = False** — กลไกที่หยุดสองรอบเป็น opt-in ผ่าน --duvet-tucks ต่อการทดลอง · guard ยังติดอาวุธคู่กลไกเสมอ (เปิด tucks = เปิด believability ที่ fail ทั้ง build) · เหตุ: default True + guard ที่ fail build = ทุก render ที่ไม่พิมพ์ธงตาย — คลาส defect 'reverted by omission' ตามคำของ D-032 เอง กลับหัว · บันทึกกลไกเต็ม (spring lag cv 0.73→0.85, timed release DEAD ON PROBE — solver ไม่อ่าน keyframed pin_stiffness, delta 0.00มม.) อยู่ knowledge/rendering/bed-cloth-state-mechanisms.md §5 + gate-DELIV001-P2r29",
+   "because": "site เปิดอย่างซื่อสัตย์ภายใต้ R1 — successor ถัดไป (two-stage bake release ผ่าน LAST_SETTLED feedstock) staged ใน §5 โดยยังไม่ build · การหยุดคือ move ที่ถูก (Andon)",
+   "where": "pipeline/scripts/build_room.py, knowledge/rendering/bed-cloth-state-mechanisms.md",
+   "reverse_by": "flip default กลับ True เมื่อกลไกใดผ่านแบนด์ที่ gate แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

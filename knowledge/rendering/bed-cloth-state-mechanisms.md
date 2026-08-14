@@ -8,6 +8,9 @@
 >   periodic sine-hem)
 > - `knowledge/_inbox/dr-cloth-state-loft-tuck-cushion-2026-08-13.md` (owner
 >   verdict #2 p2r26 + C2-r27#1 + the bench folded-stack site)
+> - `knowledge/_inbox/dr-cloth-tuck-hands-2026-08-13.md` (turn 5 — the p2r28 R1
+>   stop's own question: a hand-tuck that is not a clamp; distilled 2026-08-14
+>   into §5's successor-mechanism table before the p2r29 re-entry, per the rule)
 > Raw turns: `knowledge/_inbox/nlm-cloth-corner-drape/qa-history.json`.
 > **Tier REFERENCE — practice-report grounding, not domain truth, not statute.**
 > No parameter below may gate a deliverable by itself; a value becomes live only
@@ -129,10 +132,75 @@ every dip bottoms at one plane (35.8/33.4/33.3 mm, then 28.5/26.9/26.9 after
 halving travel — cv 0.03 both, uniform by construction). The ramp lever is
 also COUPLED to pins: on an unpinned sheet the weightless first third slides
 laterally (52-64 mm proud, invariant to slack). Ramp CONSUMED per-piece where
-pins exist (bench throw); duvet ramp waits for the tuck pins. The successor
-mechanism set (spring pinning first: gradient weights + pin_stiffness
-1.5-4.0) is staged in `knowledge/_inbox/dr-cloth-tuck-hands-2026-08-13.md` —
-distill before the p2r29 re-entry.
+pins exist (bench throw); duvet ramp waits for the tuck pins.
+
+SUCCESSOR MECHANISMS (2026-08-13 DR, the stop's own question — four ranked,
+distilled 2026-08-14; the stop record above is the negative control every one
+of them must beat):
+
+1. **SPRING PINNING (partial pin weights) — ranked first for this lane.**
+   Radial gradient in the pin group (center ~0.5 falling to ~0.1 over ~50 mm)
+   + `pin_stiffness` in the **1.5-4.0** band (start 2.0) — the pin becomes a
+   spring, the press yields to local tension, dips vary organically; the
+   solver stays the author. Failure mode: **spring lag** — stiffness/weights
+   too low and the loft pulls the pins out (press flattens away). LANE
+   CONSTRAINT: our solver sets `pin_stiffness = 5.0` for ALL pins; the tuck
+   path needs its OWN stiffness, never a global re-tune (the duvet's real
+   pins are a different mechanism).
+2. **TIMED PIN RELEASE** — hard-pin through settle (~frame 45), keyframe
+   stiffness to 0 over ~20 frames. Failure mode: **elastic snap** (stored
+   spring energy → self-collision instability). If used, verify the
+   pin_stiffness keyframe path headless first (same caveat class as the
+   effector-weights ramp).
+3. **POST-SIM HOOK (falloff sculpt after the sim) — REFUSED BY PRECEDENT.**
+   Authored guidance is a typed result (R9's family); the DR's own matrix
+   concurs (wrinkle realism LOW, folds don't accommodate the press).
+   Recorded so nobody buys it later.
+4. **FINGER COLLISION PROXIES** (animated capsules, friction 20-40). Maximum
+   realism, but failure mode **wrinkle pop-back** is ARMED for us: cloth has
+   perfect elastic memory and our duvet deliberately keeps high bending
+   (standing-fold preset 2.6) — so (4) likely needs (1) as its holding
+   mechanism anyway.
+
+Acceptance test unchanged: `clothcheck` crease believability — depths vary
+inside the §6 chaos band, crease aperiodic.
+
+CONSUMPTION 2026-08-14 (p2r29, gate-DELIV001-P2r29): (1) and (2) are both
+MEASURED DEAD in our solver, two different ways:
+
+- **(1) SPRING PINNING — dead in 2 cycles (R1 stop #2 for this site).**
+  Cycle 1 (weights 0.5→0.1 over 1.2× the grid cell ≈ 50 mm, stiffness 2.0):
+  the DR's named failure mode arrived on cue — spring lag pulled two of three
+  hands out (depths 19.8/4.1/5.4 mm, cv 0.73 over the 0.60 damage line) and
+  the slackened crease found a periodic mode (autocorr 0.871 — the §2
+  eigenmode family surfacing on the fold line). Cycle 2 (stiffness 3.5, the
+  DR's own counter, inside the band): periodicity cured (0.622) and wander
+  healthy (rms 22.8 mm), but the spread blew past the band's other end —
+  20.3/9.0/0.0 mm, cv 0.85, hand 3's press fully absorbed. What the pair
+  measures: LOCAL tension along the crease differs by construction (the
+  flank turndowns load the ends), so ONE piece-level stiffness cannot make
+  three stations yield inside one chaos band — too low and the loft wins
+  everywhere, high enough and it wins only where tension already holds.
+  Per-station stiffness would type the answer per site (the
+  parameterisation-is-the-guess family) — not taken.
+- **(2) TIMED PIN RELEASE — DEAD ON PROBE, zero build cycles spent.** The
+  DR's own precondition check (verify the keyframe path headless first)
+  killed it: keyframing `pin_stiffness` 5.0→0.0 lands an action on the
+  object, and the solver never reads it — settled verts byte-identical to
+  the constant leg (0.00 mm max delta; the pinned row should have fallen).
+  Blender reads pin_stiffness at sim build, once. Same probe family as the
+  effector-weights ramp — that one proved clean, this one proved dead.
+- (3) stays REFUSED by precedent. (4)'s pop-back failure mode is armed for
+  us AND its prescribed holder was (1), now dead.
+
+NEXT MECHANISM (staged, not yet built): a TWO-STAGE BAKE release — settle
+hard-pinned to ~frame 45, freeze, re-enter the settled verts as feedstock
+(`LAST_SETTLED` already provides exactly this) for a short unpinned settle.
+It reaches mechanism 2's physics through machinery the lane already owns,
+without the dead keyframe path and without authored guidance. Elastic-snap
+risk shrinks with the second bake's short frame count. Consumption state:
+§5 site OPEN after two R1 stops; the believability instrument is unchanged
+and passed its negative controls both stops.
 
 ## 6. Empirical chaos bands — what a believability test may cut against
 

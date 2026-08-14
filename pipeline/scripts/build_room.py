@@ -1465,9 +1465,28 @@ _ADULT_SCALE = False
 #   motion), the foam settles around it, and the stack is lowered by the
 #   MEASURED dent — first mechanism for this site that is not a knob re-turn.
 _DUVET_LOFT = True
-_DUVET_TUCKS = True
+# False since p2r29: the tuck site is TWO R1 stops deep (clamp cv 0.03 at r28;
+# spring pinning cv 0.73/0.85 at r29, with timed release dead on probe — the
+# full record is knowledge/rendering/bed-cloth-state-mechanisms.md §5). The
+# believability guard FAILS the whole build when the crease fails its band, so
+# a default-True here means every render dies unless someone remembers a flag —
+# the exact reverted-by-omission defect class D-032 names. Opt back in per
+# experiment with --duvet-tucks; flip the default only with a passing gate.
+_DUVET_TUCKS = False
 _GRAVITY_RAMP = True
 _BENCH_DENT = True
+# p2r29 (P4-parallel head a): the sconces' EMITTING APERTURES. The story state
+# was measured ALREADY ON at p2r28 (log: story daylight 238 W; D10 9.04 = the
+# D-033 story-on value) — review #39's "parked behind a spec key" premise was
+# stale, so head (a)'s real work was judge-per-fixture, and the judge found ONE
+# measured dead fixture class: sconce body 179/186 vs its own wall 172/186
+# (+7 and 0 codes; pools ±5, inside noise), against the cans' proven lens band
+# (255 vs ceiling 71). The p3r2 dimmer re-turn (1.25→1.70) moved nothing
+# because the daylight pole lifts wall and fixture together — a fixture with
+# no aperture cannot out-shine its wall at ANY dimmer setting. Mechanism, not
+# knob: the up/down aperture disks a real cylinder sconce has, wearing the
+# cans' own proven e5_trim_lens emissive.
+_SCONCE_LENS = True
 
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
@@ -4081,6 +4100,17 @@ def _add_e5_lights(spec, h_m):
         # body: a brass cylinder standing 70mm off the slat face
         _cyl_frustum(s["name"], sx - 0.045, sy, 0.030, 0.030, sz - 0.070, sz + 0.070,
                      _sc_body, seg=16)
+        if _SCONCE_LENS:
+            # the up/down APERTURES (see the _SCONCE_LENS flag comment for the
+            # measurement that earned them). Radius = body x the can's own
+            # lens/trim ratio (0.032/0.048 — derived, not typed); material =
+            # the cans' e5_trim_lens, one emissive for every fixture aperture
+            # in the room. Reverse: --no-sconce-lens.
+            _slr = 0.030 * (0.032 / 0.048)
+            for _ltag, _lz0, _lz1 in (("up", sz + 0.070, sz + 0.073),
+                                      ("dn", sz - 0.073, sz - 0.070)):
+                _cyl_frustum(f"{s['name']}_lens_{_ltag}", sx - 0.045, sy,
+                             _slr, _slr, _lz0, _lz1, _lens_m, seg=16)
         for tag, aim_dz in (("up", 1.0), ("dn", -1.0)):
             ld = bpy.data.lights.new(f"{s['name']}_{tag}", type='SPOT')
             ld.energy = s["watts"] * _sc.get("sconces", 1.0) * 0.5
@@ -4961,7 +4991,32 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                 solid_offset=(0.4 if _loft else 0.0),
                                 gravity_ramp=(40 if _GRAVITY_RAMP and _tucks
                                               else None),
-                                tucks=(_tucks or None))
+                                tucks=(_tucks or None),
+                                # p2r29 SPRING PINNING (knowledge §5 successor
+                                # 1, distilled from dr-cloth-tuck-hands): the
+                                # r28 clamp is the measured negative control
+                                # (cv 0.03 at two travel scales). Radius =
+                                # the cluster's own half-width (1.2 x cell) —
+                                # derived, not the DR's typed ~50 mm, though
+                                # at this grid they coincide; weights 0.5→0.1
+                                # and stiffness 2.0 are the DR band's stated
+                                # starting points. The tuck path owns this
+                                # stiffness; every other piece keeps the 5.0
+                                # clamp (the DR's own lane constraint).
+                                # stiffness 2.0 → 3.5 at the cycle-1 quick:
+                                # the DR's named failure mode arrived on cue —
+                                # SPRING LAG. At 2.0 the loft pulled two of
+                                # three hands out (depths 19.8/4.1/5.4 mm,
+                                # cv 0.73 over the damage line) and the
+                                # slackened crease found a periodic mode
+                                # (autocorr 0.871 — the §2 eigenmode family
+                                # surfacing on the fold line). 3.5 stays
+                                # inside the DR's 1.5-4.0 band; the counter
+                                # is the DR's own, not a knob outside it.
+                                tuck_spring=({"center": 0.5, "edge": 0.1,
+                                              "radius": 1.2 * _cell,
+                                              "stiffness": 3.5}
+                                             if _tucks else None))
     _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
                                top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
                                bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
@@ -6750,6 +6805,12 @@ if __name__ == "__main__":
         # the believability instrument stands down WITH the mechanism it judges
         globals()["_DUVET_TUCKS"] = False
         print("  [A/B] duvet crease: straight feedstock, no hands (pre-p2r28) leg")
+    if "--duvet-tucks" in _post_dashdash():
+        # p2r29: opt-in re-entry for the twice-R1-stopped tuck site (see the
+        # _DUVET_TUCKS flag comment) — the believability guard will fail the
+        # build unless the mechanism under test actually passes its band
+        globals()["_DUVET_TUCKS"] = True
+        print("  [A/B] duvet crease: hands ON (twice-R1-stopped site, opt-in leg)")
     if "--no-gravity-ramp" in _post_dashdash():
         # A leg of the p2r28 settle A/B — stock gravity from frame 1
         globals()["_GRAVITY_RAMP"] = False
@@ -6758,6 +6819,11 @@ if __name__ == "__main__":
         # A leg of the p2r28 cushion A/B — the rigid seat the critics filed
         globals()["_BENCH_DENT"] = False
         print("  [A/B] bench seat: rigid under the stack (pre-p2r28) leg")
+    if "--no-sconce-lens" in _post_dashdash():
+        # A leg of the p2r29 sconce-aperture A/B — the blank brass cylinder
+        # that measured 0 codes over its own wall
+        globals()["_SCONCE_LENS"] = False
+        print("  [A/B] sconces: no apertures (pre-p2r29) leg")
     if "--adult-scale" in _post_dashdash():
         # B leg of the PARKED adult-scale lane (R1-stopped at p2r27 after three
         # quick cycles — see _ADULT_SCALE's comment: cluster anatomy breaks the

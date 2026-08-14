@@ -278,7 +278,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                sew_edges=None, sewing_force=15.0,
                hem_verts=None, hem_factor=2.0, bending_model=None,
                hem_bend=None, hem_smooth=None, gravity_ramp=None, tucks=None,
-               solid_offset=0.0):
+               solid_offset=0.0, tuck_spring=None):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -300,6 +300,19 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                  the cloth modifier, so it sits above it in the stack and moves
                  the pin targets), pulling them by delta over end_frame frames.
                  Tuck verts are auto-added to the pin group. None = byte-identical.
+    tuck_spring  {"center": w, "edge": w, "radius": m, "stiffness": s} — SPRING
+                 PINNING (p2r29; DR dr-cloth-tuck-hands-2026-08-13 §1, distilled
+                 in bed-cloth-state-mechanisms.md §5). The p2r28 R1 stop measured
+                 that weight-1.0 pins are an infinite-mass CLAMP: the settling
+                 roll lofts around press points frozen at feedstock height and
+                 every dip bottoms at one plane (cv 0.03 at two travel scales).
+                 With this set, each tuck cluster gets a RADIAL weight gradient
+                 (center falling to edge over radius, in-plane distance from the
+                 cluster centroid) and the PIECE's pin_stiffness drops from the
+                 5.0 clamp to `stiffness` (DR band 1.5-4.0) — the pin becomes a
+                 spring, the press yields to local tension, dips vary. Named
+                 failure mode: SPRING LAG (too soft → the loft pulls the pins
+                 out). None = the clamp behaviour, byte-identical to p2r28.
     """
     if not colliders and not pin and not tucks:
         # a PINNED sheet is supported by its pins (a garment on its hanger zone,
@@ -509,11 +522,59 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     if tucks:
         for _tidx, _d, _e in tucks:
             _pin_all.update(_tidx)      # a tucked vert follows its hook = a pin
+    if tuck_spring and not tucks:
+        raise DrapeError(f"{name}: tuck_spring without tucks — a spring with "
+                         f"no hand is a mechanism that silently never ran")
     if _pin_all:
         vg = obj.vertex_groups.new(name="drape_pin")
-        vg.add(sorted(_pin_all), 1.0, 'REPLACE')
-        s.vertex_group_mass = vg.name
-        s.pin_stiffness = 5.0
+        if tuck_spring:
+            # SPRING PINNING (see docstring). pin_stiffness is ONE scalar per
+            # cloth modifier, so a piece cannot carry a 5.0 clamp on real pins
+            # and a 2.0 spring on tuck verts at once — the same trap as one
+            # parameter carrying two things. Fail loud instead of silently
+            # softening a mattress tuck that must stay clamped.
+            if pin:
+                raise DrapeError(
+                    f"{name}: tuck_spring + explicit pin verts share one "
+                    f"pin_stiffness scalar — the spring would soften the "
+                    f"clamp. Split the piece or drop one mechanism.")
+            _cw = float(tuck_spring["center"])
+            _ew = float(tuck_spring["edge"])
+            _rad = float(tuck_spring["radius"])
+            _stiff = float(tuck_spring["stiffness"])
+            if not (0.0 < _ew <= _cw <= 1.0):
+                raise DrapeError(f"{name}: tuck_spring weights center={_cw} "
+                                 f"edge={_ew} outside 0<edge<=center<=1")
+            if _rad <= 0.0:
+                raise DrapeError(f"{name}: tuck_spring radius {_rad} <= 0")
+            _wmap = {}
+            for _tidx, _d, _e in tucks:
+                _tidx = list(_tidx)
+                _tcx = sum(verts[i][0] for i in _tidx) / len(_tidx)
+                _tcy = sum(verts[i][1] for i in _tidx) / len(_tidx)
+                for _i in _tidx:
+                    # in-plane distance: the cluster spans BOTH layers of the
+                    # fold roll, and a 3D distance would hand the lower layer
+                    # extra slack it did not earn
+                    _dx_ = verts[_i][0] - _tcx
+                    _dy_ = verts[_i][1] - _tcy
+                    _dp = (_dx_ * _dx_ + _dy_ * _dy_) ** 0.5
+                    _w = _ew + (_cw - _ew) * max(0.0, 1.0 - _dp / _rad)
+                    _wmap[_i] = max(_wmap.get(_i, 0.0), _w)
+            _byw = {}
+            for _i, _w in _wmap.items():
+                _byw.setdefault(round(_w, 4), []).append(_i)
+            for _w, _idxs in sorted(_byw.items()):
+                vg.add(_idxs, _w, 'REPLACE')
+            s.vertex_group_mass = vg.name
+            s.pin_stiffness = _stiff
+            print(f"  drape: {name} spring pins — {len(_wmap)} verts, weights "
+                  f"{_ew:.2f}..{_cw:.2f} over {_rad * 1000:.0f} mm, "
+                  f"stiffness {_stiff:.1f} (clamp was 1.0 @ 5.0)")
+        else:
+            vg.add(sorted(_pin_all), 1.0, 'REPLACE')
+            s.vertex_group_mass = vg.name
+            s.pin_stiffness = 5.0
     # HEM/SEAM CUE (P2r-1 residual "no hem/seam cue on sewn goods"; r18 C2 #1 /
     # C3 #1 filed the missing cue from both sides). The group is created BEFORE
     # the bake but consumed only by _freeze's solidify AFTER it — thickness is
