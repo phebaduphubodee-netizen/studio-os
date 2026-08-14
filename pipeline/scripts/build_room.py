@@ -1487,6 +1487,18 @@ _BENCH_DENT = True
 # knob: the up/down aperture disks a real cylinder sconce has, wearing the
 # cans' own proven e5_trim_lens emissive.
 _SCONCE_LENS = True
+# p2r30 calibration (amplitude-bisect law): the r29 apertures clip at 255 but
+# the C2 blind eye still read the fixture dead at frame scale — the read is
+# carried by the HALO (bounce onto body + wall), which scales with emission
+# strength, not by the already-clipped disk. None = the cans' shared 30
+# (exact r29); --sconce-lens-strength=X brackets a sconce-only clone.
+# SETTLED 84.0 at the p2r30 bisect (amplitude law, full pair recorded): the
+# LOUD rung at 120 proved the read — both fixtures lit with a believable
+# halo, body-over-wall +31/+13 codes vs +20/+4 at the shared 30, nothing
+# blown — and 84 is the law's ~70% settle. Declared HERE as the default
+# because a render state that lives only in a command line is reverted by
+# forgetting to type it (D-032's own words). Reverse: set None (D-051).
+_SCONCE_LENS_STRENGTH = 84.0
 
 _SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
 #                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
@@ -4107,10 +4119,22 @@ def _add_e5_lights(spec, h_m):
             # the cans' e5_trim_lens, one emissive for every fixture aperture
             # in the room. Reverse: --no-sconce-lens.
             _slr = 0.030 * (0.032 / 0.048)
+            _slm = _lens_m
+            if _SCONCE_LENS_STRENGTH is not None:
+                # bisect bracket: sconce-only clone so the cans keep their
+                # proven 30 (see the _SCONCE_LENS_STRENGTH flag comment)
+                _slm = bpy.data.materials.get("e5_sconce_lens")
+                if _slm is None:
+                    _slm = _lens_m.copy()
+                    _slm.name = "e5_sconce_lens"
+                for _nd in _slm.node_tree.nodes:
+                    if _nd.type == 'EMISSION':
+                        _nd.inputs["Strength"].default_value = float(
+                            _SCONCE_LENS_STRENGTH)
             for _ltag, _lz0, _lz1 in (("up", sz + 0.070, sz + 0.073),
                                       ("dn", sz - 0.073, sz - 0.070)):
                 _cyl_frustum(f"{s['name']}_lens_{_ltag}", sx - 0.045, sy,
-                             _slr, _slr, _lz0, _lz1, _lens_m, seg=16)
+                             _slr, _slr, _lz0, _lz1, _slm, seg=16)
         for tag, aim_dz in (("up", 1.0), ("dn", -1.0)):
             ld = bpy.data.lights.new(f"{s['name']}_{tag}", type='SPOT')
             ld.energy = s["watts"] * _sc.get("sconces", 1.0) * 0.5
@@ -5003,20 +5027,32 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                 # starting points. The tuck path owns this
                                 # stiffness; every other piece keeps the 5.0
                                 # clamp (the DR's own lane constraint).
-                                # stiffness 2.0 → 3.5 at the cycle-1 quick:
-                                # the DR's named failure mode arrived on cue —
-                                # SPRING LAG. At 2.0 the loft pulled two of
-                                # three hands out (depths 19.8/4.1/5.4 mm,
-                                # cv 0.73 over the damage line) and the
-                                # slackened crease found a periodic mode
-                                # (autocorr 0.871 — the §2 eigenmode family
-                                # surfacing on the fold line). 3.5 stays
-                                # inside the DR's 1.5-4.0 band; the counter
-                                # is the DR's own, not a knob outside it.
-                                tuck_spring=({"center": 0.5, "edge": 0.1,
-                                              "radius": 1.2 * _cell,
-                                              "stiffness": 3.5}
-                                             if _tucks else None))
+                                # p2r30 — TWO-STAGE RELEASE replaces spring
+                                # pinning at this call site (spring pinning:
+                                # 2 cycles, R1-stopped — cv 0.73 at 2.0 then
+                                # cv 0.85 at 3.5; one piece-level stiffness
+                                # cannot make three stations yield inside one
+                                # band. tuck_spring stays in drape.py as the
+                                # record). Stage 1 presses with the CLAMP —
+                                # its uniformity stops being the defect
+                                # because it no longer authors the final
+                                # shape: the settle is rebaked as rest, the
+                                # hands let go, and 25 unpinned frames let
+                                # local tension differentiate the presses.
+                                # Probe-proven before wiring (§5 note).
+                                # R1-STOPPED p2r30 after 2 cycles (stop #3
+                                # for this site) as a PARTIAL mechanism: cv
+                                # SOLVED both cycles (0.24 @ 25f, 0.28 @ 12f
+                                # — the only mechanism ever to pass it), but
+                                # the released line resonates regardless of
+                                # release length (autocorr 0.743/0.765 — the
+                                # time-growth hypothesis behind 25→12 was
+                                # REFUTED; the grid itself is the resonator,
+                                # §2's diagnosis measured on the crease).
+                                # Next entry runs §2's spacing/mass levers
+                                # UNDER this release so the solved half is
+                                # kept. Opt-in via --duvet-tucks only.
+                                release_frames=(12 if _tucks else None))
     _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
                                top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
                                bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
@@ -6824,6 +6860,13 @@ if __name__ == "__main__":
         # that measured 0 codes over its own wall
         globals()["_SCONCE_LENS"] = False
         print("  [A/B] sconces: no apertures (pre-p2r29) leg")
+    _sls = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--sconce-lens-strength=")), None)
+    if _sls:
+        # amplitude-bisect bracket for the sconce aperture halo (LOOK-only
+        # rung; the committed default moves only with a recorded verdict)
+        globals()["_SCONCE_LENS_STRENGTH"] = float(_sls)
+        print(f"  [calibration] sconce aperture emission overridden to {_sls}")
     if "--adult-scale" in _post_dashdash():
         # B leg of the PARKED adult-scale lane (R1-stopped at p2r27 after three
         # quick cycles — see _ADULT_SCALE's comment: cluster anatomy breaks the

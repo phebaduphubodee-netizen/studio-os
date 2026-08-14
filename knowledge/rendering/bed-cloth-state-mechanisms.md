@@ -193,14 +193,33 @@ MEASURED DEAD in our solver, two different ways:
 - (3) stays REFUSED by precedent. (4)'s pop-back failure mode is armed for
   us AND its prescribed holder was (1), now dead.
 
-NEXT MECHANISM (staged, not yet built): a TWO-STAGE BAKE release — settle
-hard-pinned to ~frame 45, freeze, re-enter the settled verts as feedstock
-(`LAST_SETTLED` already provides exactly this) for a short unpinned settle.
-It reaches mechanism 2's physics through machinery the lane already owns,
-without the dead keyframe path and without authored guidance. Elastic-snap
-risk shrinks with the second bake's short frame count. Consumption state:
-§5 site OPEN after two R1 stops; the believability instrument is unchanged
-and passed its negative controls both stops.
+**(5) TWO-STAGE RELEASE — BUILT AND R1-STOPPED p2r30 (stop #3), a PARTIAL
+mechanism with a measured trade.** Probe-proven first (cache resets on a
+base-mesh rebake; a zero-tension crumple retains its form through release —
+`probe_twostage_release2`), then two cycles in `drape.bake_sheet
+release_frames`: stage 1 presses with the clamp, the settle is rebaked as
+REST (press = geometry, not stored energy — elastic-snap disarmed), hands
+let go, short unpinned settle. Results:
+
+- **The depth-diversity rung is SOLVED — the only mechanism ever to pass
+  it.** cv 0.24 (depths 11.5/7.0/12.7 mm) at 25 release frames, cv 0.28
+  (10.5/5.6/11.5) at 12 — uniform clamp presses relax DIFFERENTLY under the
+  same local-tension variation that defeated spring pinning. In band both
+  cycles; clamp gave 0.03, spring 0.73/0.85.
+- **The line-periodicity rung is UNSOLVED and invariant to release length:**
+  autocorr 0.743 @ 25 frames, 0.765 @ 12 (rms healthy, 35 mm). The
+  time-growth hypothesis is refuted — the mode is immediate. Read with the
+  clamp stops, the two halves TRADE: pins hold the line aperiodic but
+  uniform the dips; release diversifies the dips and frees the line to
+  resonate. The resonator is the REGULAR GRID itself — §2's diagnosis
+  verbatim, now measured on the crease.
+
+NEXT ENTRY (staged from §2's own untouched levers — no new DR owed):
+symmetry-breaking SPACING at the crease stations (§2 lever 2, in-plane and
+flat — enter-smooth law untouched) and/or crease-strip MASS (§2 lever 1),
+run UNDER the two-stage release so the solved cv half is kept. Site remains
+OPEN after three stops; the instrument is unchanged and has passed its
+negative controls at every stop.
 
 ## 6. Empirical chaos bands — what a believability test may cut against
 

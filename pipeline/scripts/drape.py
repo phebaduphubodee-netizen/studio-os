@@ -278,7 +278,7 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                sew_edges=None, sewing_force=15.0,
                hem_verts=None, hem_factor=2.0, bending_model=None,
                hem_bend=None, hem_smooth=None, gravity_ramp=None, tucks=None,
-               solid_offset=0.0, tuck_spring=None):
+               solid_offset=0.0, tuck_spring=None, release_frames=None):
     """Simulate a cloth sheet falling onto `colliders`; return the frozen object.
 
     verts/faces  a QUAD grid from layer 1 (`softgoods.flat_sheet`) — the solver
@@ -313,6 +313,24 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                  spring, the press yields to local tension, dips vary. Named
                  failure mode: SPRING LAG (too soft → the loft pulls the pins
                  out). None = the clamp behaviour, byte-identical to p2r28.
+                 MEASURED DEAD p2r29 (2 cycles, R1) — one piece-level scalar
+                 cannot make three stations yield inside one chaos band; kept
+                 as the record and for future gradient-pin experiments.
+    release_frames  int — TWO-STAGE RELEASE (p2r30; §5 successor after both
+                 direct pin mechanisms measured dead). Stage 1 settles WITH
+                 the hands clamped; then the settled shape is rebaked as the
+                 cloth's REST STATE (zero internal tension — the press
+                 becomes geometry, not stored energy, which disarms the DR's
+                 elastic-snap failure mode), the hands let go (hooks removed,
+                 pin group cleared), and the SAME modifier re-runs this many
+                 unpinned frames. Gravity + collisions + bending decide what
+                 survives of each press — the solver stays the only author,
+                 and the clamp's uniformity stops being the final word: the
+                 same local-tension variation that defeated spring pinning
+                 is what differentiates the presses on release. Probe-proven
+                 2026-08-14 (probe_twostage_release2: cache resets on the
+                 rebake; a zero-tension crumple retains its form through a
+                 25-frame release). None = byte-identical single-stage.
     """
     if not colliders and not pin and not tucks:
         # a PINNED sheet is supported by its pins (a garment on its hanger zone,
@@ -621,6 +639,36 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
     for f in range(1, frames + 1):
         sc.frame_set(f)
         bpy.context.view_layer.update()
+
+    # p2r30 — TWO-STAGE RELEASE (see the release_frames docstring)
+    if release_frames:
+        if not tucks:
+            raise DrapeError(f"{name}: release_frames without tucks — a "
+                             f"release with no hands is a mechanism that "
+                             f"silently never ran")
+        _dgr = bpy.context.evaluated_depsgraph_get()
+        _evr = obj.evaluated_get(_dgr)
+        _tmr = _evr.to_mesh()
+        _mid = [v.co.copy() for v in _tmr.vertices]
+        _evr.to_mesh_clear()
+        for _v, _co in zip(me.vertices, _mid):
+            _v.co = _co
+        me.update()
+        for _m in [m for m in obj.modifiers if m.type == 'HOOK']:
+            obj.modifiers.remove(_m)
+        obj.animation_data_clear()      # ramp keys are stage-1 property; the
+        #                                 release runs under full gravity
+        s.vertex_group_mass = ""        # the hands have let go
+        # slack was consumed INTO the rest shape — re-applying shrink would
+        # double-contract the release
+        s.vertex_group_shrink = ""
+        s.shrink_min = 0.0
+        sc.frame_start, sc.frame_end = 1, int(release_frames)
+        for f in range(1, int(release_frames) + 1):
+            sc.frame_set(f)
+            bpy.context.view_layer.update()
+        print(f"  drape: {name} two-stage release — {int(release_frames)} "
+              f"unpinned frame(s) from the rebaked rest")
 
     dg = bpy.context.evaluated_depsgraph_get()
     ev = obj.evaluated_get(dg)

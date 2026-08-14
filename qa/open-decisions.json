@@ -719,6 +719,20 @@
    "reverse_by": "flip default กลับ True เมื่อกลไกใดผ่านแบนด์ที่ gate แล้วลบแถวนี้",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-051",
+   "unit": "DELIV-001",
+   "decided_round": 30,
+   "decided_date": "2026-08-14",
+   "decided_by": "builder",
+   "question": "aperture ของ sconce (D-049) เปล่งที่ 30 (แชร์กับ can) แต่ตา C2 blind ยังอ่านดับที่สเกลเฟรม — halo ต้องแรงเท่าไหร่ให้ fixture อ่าน 'ติด' โดยไม่ blow ผนัง",
+   "in_effect": "**e5_sconce_lens (clone จาก can lens) emission strength = 84.0 เป็น default ของ build** — amplitude-bisect เต็มคู่: LOUD 120 (4x) พิสูจน์การอ่าน — ทั้งคู่ติดชัด, body-over-wall +31/+13 codes (จาก +20/+4 ที่ 30), ไม่มีอะไร blow · settle = ~70% ของ loud ตาม law · can ยังใช้ 30 ที่พิสูจน์แล้วของมันเอง (คนละ material) · ประกาศเป็น default ในโค้ด ไม่ใช่ธง — render state บน command line ถูก revert ด้วยการลืมพิมพ์ (คำของ D-032)",
+   "because": "กลไก aperture ลงแล้วที่ r29 (D-049) และกรรมการสองตาแตกกัน — C3 ถอนข้อแสง แต่ C2 ยังอ่านดับ → งานคือ calibration ไม่ใช่กลไกใหม่ · ตัดสินขั้นสุดท้ายเป็นของตา (C2 รอบ r30 + ตาพี่จากภาพ)",
+   "where": "pipeline/scripts/build_room.py",
+   "reverse_by": "ตั้ง _SCONCE_LENS_STRENGTH = None กลับ (aperture กลับไปแชร์ 30 ของ can = r29 เป๊ะ) แล้วลบแถวนี้",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
