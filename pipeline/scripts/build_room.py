@@ -205,6 +205,8 @@ def _score_deliverable(name, quick=False, frame=True):
     import subprocess
     import scene_dump
     out = _outdir()
+    _out_dir = out          # `out` is rebound to the scorer's stdout below; the
+    #                         ladder rung needs the DIRECTORY after that point
     dump_path = os.path.join(out, f"room_{name}.scene.json")
     objs = scene_dump.dump()
     _dump_doc = {"blend": bpy.data.filepath, "schema": "scene-dump@2",
@@ -239,6 +241,25 @@ def _score_deliverable(name, quick=False, frame=True):
         except Exception as _e:                         # noqa: BLE001
             print(f"  MAT MASK FAILED ({type(_e).__name__}: {_e}) — census "
                   f"will print NOT RUN")
+        # THE TONAL LADDER, WIRED (p2r31). value_ladder has published targets, a
+        # tolerance and a checker, and NOTHING CALLED IT: it had not run since
+        # the light story went on (2026-08-11), so twelve rounds shipped with
+        # every visible rung 28 to 49 codes off its target and no line anywhere
+        # said so. That is this repo's signature defect — a queue whose consumer
+        # never visits it — sitting inside the one instrument that measures the
+        # thing four critics keep filing ("the bed reads as one pale mass").
+        # The mask half runs HERE (bpy, in-process, after save+render, the same
+        # mutate-never-save contract map_census_mask keeps); the DECODE half is
+        # spawned below with deliverable_check, because Blender's bundled Python
+        # has no PIL/numpy and teaching a rule module to read pixels through bpy
+        # would drag layer 1 into layer 2 (pipeline/CLAUDE.md).
+        try:
+            import id_mask
+            id_mask.build_mask(
+                os.path.join(out, f"room_{name}.idmask.png"), ("bed__", "bench__"))
+        except Exception as _e:                         # noqa: BLE001
+            print(f"  ID MASK FAILED ({type(_e).__name__}: {_e}) — the tonal "
+                  f"ladder will print NOT RUN, never a pass")
     py = next((p for p in (shutil.which("python3"), shutil.which("python")) if p), None)
     if py is None:
         print("BUILD FAILED: no plain python interpreter on PATH to run "
@@ -278,6 +299,33 @@ def _score_deliverable(name, quick=False, frame=True):
         print("BUILD FAILED: " + msg)
         sys.stdout.flush()
         os._exit(1)
+
+    # ---- THE TONAL LADDER'S DECODE HALF (p2r31; see the id-mask block above for
+    # why this rung exists at all). Spawned for the same layer reason as
+    # deliverable_check and pixel_check: value_probe needs PIL+numpy, which
+    # Blender's bundled Python does not have. It PRINTS on every render that
+    # produced both a beauty frame and a mask; "could not run" prints as could
+    # not run, never as clean (R11's sentence, applied to this rung).
+    _idm = os.path.join(_out_dir, f"room_{name}.idmask.png")
+    _idj = os.path.join(_out_dir, f"room_{name}.idmask.json")
+    _beauty = os.path.join(_out_dir, f"room_{name}.png")
+    if frame and os.path.isfile(_idm) and os.path.isfile(_idj)             and os.path.isfile(_beauty):
+        _lr = subprocess.run(
+            [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "value_probe.py"), _beauty, _idm, _idj,
+             globals().get("_EYECAM_NAME") or "eye"],
+            capture_output=True, text=True, encoding="utf-8",
+            errors="replace", env=env)
+        for ln in (_lr.stdout or "").splitlines():
+            print(f"LADDER {ln}")
+        if _lr.returncode not in (0, 1):
+            for ln in (_lr.stderr or "").splitlines()[-4:]:
+                print(f"LADDER !! {ln}")
+            print("LADDER -- COULD NOT RUN (exit "
+                  f"{_lr.returncode}) — this is not a pass")
+    else:
+        print("LADDER -- NOT RUN: no id mask beside this render (the bed's tonal "
+              "structure was not measured on this frame)")
 
 
 def configure_cycles(samples=128, res=None):
@@ -1486,6 +1534,24 @@ _BENCH_DENT = True
 # no aperture cannot out-shine its wall at ANY dimmer setting. Mechanism, not
 # knob: the up/down aperture disks a real cylinder sconce has, wearing the
 # cans' own proven e5_trim_lens emissive.
+# p2r31 — the bed cloth is ACQUIRED, not simulated (R8 applied to its own
+# class after four measured mechanism stops on one crease; owner order
+# 2026-08-14). Reverse: --no-bed-cloth-acq returns the solver bakes byte
+# for byte, and the acquisition also stands down on its own if the spec
+# names no cloth_set or the mesh fails its sidecar/fit/part cuts.
+#
+# DEFAULT FALSE AT THE p2r31 STOP, and the reason is the frame, not the code.
+# The path works end to end and is measured: junk pruned by plan area, the
+# file's own mattress dropped as BURIED, the sleeping plane aligned by ray, 90%
+# of the mattress covered, scale asserted as bedding_set. What it does NOT do
+# yet is look better than the bake it replaces — the chosen set renders as a
+# smooth white slab in this frame, flatter than the r30 duvet, and finding out
+# why cost more cycles than R1 allows for one question. So the lane keeps its
+# best-known frame as the DEFAULT and the acquire leg stays one flag away
+# (--bed-cloth-acq) with everything it learned intact. Turning a lane's default
+# to the worse of two measured legs is not courage, it is a regression with a
+# story attached.
+_BED_CLOTH_ACQ = False
 _SCONCE_LENS = True
 # p2r30 calibration (amplitude-bisect law): the r29 apertures clip at 255 but
 # the C2 blind eye still read the fixture dead at frame scale — the read is
@@ -4557,7 +4623,291 @@ def _place_pillow_combo(slug, bank_parts, axis, sign, sham_mat, pillow_mat):
     return True
 
 
-def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
+def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
+    """R8 for the BED CLOTH (owner order 2026-08-14, after the third R1 stop on
+    the crease: *"ผมท้อแล้ว ทำเท่าไรคุณก็ปั้น model ให้สมจริงไม่ได้ซักที"*).
+
+    THE RULE WAS OURS AND WE DID NOT APPLY IT. R8 says free-form geometry is
+    ACQUIRED, never hand-made, and its stop-loss says two shape iterations mean
+    the CLASS was misclassified. This lane spent p2r19-p2r30 on solver recipes
+    for one made bed — clamp, spring pinning, timed release, two-stage release,
+    each measured dead or partial — while the same rule sent figures, plants and
+    garments out to be acquired. A sim is a generator like any other: the
+    parameterisation is still the guess.
+
+    WHAT IS ACQUIRED: the duvet + its turned-down top sheet, as one dressed set.
+    NOT the pillows (already acquired, D-025) and NOT the foot throw (a signed
+    DD element in its own cloth).
+
+    PART SELECTION IS GEOMETRIC, NEVER BY NAME — the file's meshes are called
+    Mesh_0..Mesh_10 and this repo has already been burned by trusting a
+    stranger's naming (an upholstery material called Charcoal that renders
+    fluorescent green). A bed cloth SPANS THE BED: parts are kept by plan area
+    against the mattress footprint, which also drops the junk 2 m cube and the
+    12-poly mattress slab the uploader left in the file.
+
+    Fails -> False, and the caller falls back to the solver bake LOUDLY."""
+    _mp = _model_path(slug)
+    if not _mp:
+        print(f"  bed cloth: no cached mesh for {slug!r} -> solver bake")
+        return False
+    import json as _json
+    _sc = os.path.join(os.path.dirname(_mp), f"{slug}.scale.json")
+    try:
+        with open(_sc, encoding="utf-8") as f:
+            _sj = _json.load(f)
+    except OSError:
+        _sj = None
+    if not (_sj and _sj.get("ok")):
+        print(f"  bed cloth: {slug} has NO ASSERTED scale sidecar (asset_scale "
+              f"law: nothing may be consumed until a class is named) -> bake")
+        return False
+    rx, ry, rw, rd = rect
+    # the set covers the mattress and FALLS past its flanks — the fall is the
+    # same number the solver path used (top_z down to hang_to), so the acquired
+    # and simulated legs occupy the same envelope and the A/B is honest
+    fall = max(0.0, top_z - hang_to)
+    # THE PLAN SLOT IS THE BED'S OWN OUTER LINE, and getting this wrong is the
+    # round's second measured mistake: the first cut inflated the plan slot by
+    # the FALL on every side (rw + 2*fall), which treats a 300 mm vertical drop
+    # as 300 mm of extra width. The set scaled to 1.103, overhung the bed line,
+    # and the foot throw — which is cut from whatever cloth is under it — came
+    # back 91 mm proud on y through all six rungs of its ladder. A duvet falls
+    # DOWN past the mattress flank; it does not grow sideways. The line is the
+    # same invariant the solver leg carried in its `bounds`.
+    lx, ly, lw, ld = line
+    # THE SLOT IS THE MATTRESS PLUS A HAND'S MARGIN, not the bed's whole
+    # footprint. Both were tried and the difference is visible, not academic:
+    # the footprint slot let this set scale to 1.336 and the extra 7% swallowed
+    # its turned-down runner into the field — the frame came back a white blob.
+    # At the mattress+40 mm slot the same asset scales 1.243 and the runner
+    # reads, which is the leg the eye picked in the candidate shoot. Keeping the
+    # bed line as the outer LIMIT (the clamp below and the throw's own line
+    # test) is a different job from using it as the TARGET.
+    slot_w, slot_d = min(lw, rw + 0.04), min(ld, rd + 0.04)
+    slot_h = fall + 0.32                      # fall + the loft a duvet stands
+    # PRUNE BEFORE FIT — and this is the first thing the round measured, not a
+    # precaution: routed through place_model, the fit read the file's 2 m JUNK
+    # CUBE as the model's height and rejected the set at 1.39x. A fit computed
+    # over parts the ingest is going to throw away is a fit of the rubbish.
+    from mathutils import Matrix as _BMx, Vector as _BVec
+    from mathutils.bvhtree import BVHTree as _BVH
+    before = set(bpy.data.objects)
+    try:
+        bpy.ops.import_scene.gltf(filepath=_mp)
+    except Exception as e:                                     # noqa: BLE001
+        print(f"  bed cloth: gltf import failed ({e}) -> solver bake")
+        return False
+    news = [o for o in bpy.data.objects if o not in before]
+    meshes = [o for o in news if o.type == 'MESH']
+    mat_area = rw * rd
+
+    def _wbb(o):
+        wc = [o.matrix_world @ v.co for v in o.data.vertices]
+        if not wc:
+            return None
+        return (min(c.x for c in wc), min(c.y for c in wc), min(c.z for c in wc),
+                max(c.x for c in wc), max(c.y for c in wc), max(c.z for c in wc))
+
+    keep, drop = [], []
+    for o in meshes:
+        bb = _wbb(o)
+        if bb is None or not o.data.polygons:
+            drop.append(o)
+            continue
+        # a bed cloth covers at least a third of the mattress in plan; a pillow,
+        # a cushion or a stray block does not. Derived from the bed we are
+        # dressing, so no constant travels between projects. A BOX is refused on
+        # top of that: the file's mattress slab spans the bed and is 12 polys —
+        # area alone would have kept it, and a second slab under our own
+        # mattress is exactly the invented mass R10 exists to stop.
+        pa = (bb[3] - bb[0]) * (bb[4] - bb[1])
+        (keep if (pa >= mat_area * 0.33 and len(o.data.polygons) >= 100)
+         else drop).append(o)
+    # ONE PART IS A LEGAL DRESSED BED — the two-part floor written here first
+    # assumed "duvet + turned sheet" and refused a single-mesh made cover, which
+    # is how half the real sets are modelled. The question a bed cloth has to
+    # answer is COVERAGE, measured below by ray; part COUNT was never the ask.
+    if len(keep) < 1:
+        print(f"  bed cloth: no bed-scale cloth part survived "
+              f"the plan-area/poly cut -> solver bake")
+        for o in news:
+            bpy.data.objects.remove(o, do_unlink=True)
+        return False
+    for o in drop:
+        bpy.data.objects.remove(o, do_unlink=True)
+    news = [o for o in news if o not in drop]
+
+    bbs = [_wbb(o) for o in keep]
+    mn = [min(b[i] for b in bbs) for i in range(3)]
+    mx = [max(b[i + 3] for b in bbs) for i in range(3)]
+    mw_, md_, mh_ = mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]
+    # ORIENTATION IS DERIVED FROM BOTH BOXES, never from the head string alone:
+    # rotate only when the asset's long axis and the slot's long axis disagree.
+    _rot = 90.0 if ((mw_ > md_) != (slot_w > slot_d)) else 0.0
+    _fit_w, _fit_d = (slot_d, slot_w) if _rot else (slot_w, slot_d)
+    # THE HEIGHT RUNG IS THE WRONG QUESTION FOR CLOTH, and this is not a rung
+    # being switched off — it is a rung being asked what it can answer.
+    # model_fit refuses an object that UNDERFILLS its slot, because a wardrobe
+    # rattling in a 2 m opening is a defect. A bed cover that stands 416 mm in
+    # a 696 mm envelope is not: the envelope is the MOST a duvet may occupy
+    # (fall to the base top plus loft), never a target, and real covers stop
+    # above the base. So the plan question goes to model_fit exactly as before
+    # — may this set live inside the bed's own line — and the height question
+    # goes to the rung that can actually answer it: RAY-MEASURED COVERAGE
+    # below, which no bounding box can fake. Both numbers print.
+    _plan_s = min(_fit_w / max(mw_, 1e-6), _fit_d / max(md_, 1e-6))
+    _s = min(_plan_s, slot_h / max(mh_, 1e-6))
+    # the height passed IS the height the plan rung's own scale produces, so
+    # the rung answers the plan question and nothing else (a height slot it
+    # cannot fail is honest here only because the coverage rung below carries
+    # the height question, and prints)
+    _pl_s, _pl_ok, _pl_why = millwork.model_fit(mw_, md_, mh_,
+                                                _fit_w, _fit_d, mh_ * _plan_s,
+                                                model_slot=None, item_slot=None)
+    print(f"  MODEL-FIT {os.path.basename(_mp)} (cloth parts, plan rung): "
+          f"{_pl_why}")
+    print(f"  bed cloth: scale {_s:.3f}, stands {mh_ * _s * 1000:.0f} mm of a "
+          f"{slot_h * 1000:.0f} mm envelope — height judged by coverage, not "
+          f"by slot fill")
+    if not _pl_ok:
+        for o in news:
+            bpy.data.objects.remove(o, do_unlink=True)
+        return False
+    roots = [o for o in news if o.parent is None] or news
+    for o in roots:
+        o.scale = tuple(v * _s for v in o.scale)
+    bpy.context.view_layer.update()
+    bbs = [_wbb(o) for o in keep]
+    mn = [min(b[i] for b in bbs) for i in range(3)]
+    mx = [max(b[i + 3] for b in bbs) for i in range(3)]
+    cx, cy = rx + rw / 2.0, ry + rd / 2.0
+    dx = cx - (mn[0] + mx[0]) / 2.0
+    dy = cy - (mn[1] + mx[1]) / 2.0
+    for o in roots:
+        o.location = (o.location.x + dx, o.location.y + dy, o.location.z)
+    bpy.context.view_layer.update()
+
+    # ---- the three measured lessons of this round, in the order they were paid
+    # for. (1) ALIGN BY THE CLOTH'S OWN SLEEPING PLANE, never by the set's
+    # bottom: these files ship their OWN mattress, so a bottom anchor buries the
+    # covers inside ours and renders exactly what the first acquired frame
+    # showed — a white slab with a knot of cloth on it. The plateau is the
+    # MEDIAN top surface over the mattress plan; pillows and hanging folds
+    # cannot drag a median. (2) DROP WHAT IS BURIED: a part earns its place by
+    # being the topmost surface somewhere — that is what removes the file's own
+    # mattress without ever reading a mesh NAME. (3) COVERAGE IS MEASURED BY
+    # RAY, never by bounding box: the box version of this guard passed a set
+    # that covered 60% of the bed, because a box cannot tell a spread sheet
+    # from a crumpled one (R9b's law, one level up).
+    def _cloth_top(objs, n=32):
+        _vs, _ts = [], []
+        for _o in objs:
+            _me = _o.data
+            _me.calc_loop_triangles()
+            _off = len(_vs)
+            _vs.extend([_o.matrix_world @ _v.co for _v in _me.vertices])
+            _ts.extend([tuple(_i + _off for _i in _t.vertices)
+                        for _t in _me.loop_triangles])
+        if not _ts:
+            return []
+        _bv = _BVH.FromPolygons(_vs, _ts)
+        _out = []
+        for _i in range(n):
+            for _j in range(n):
+                _x = rx + rw * (_i + 0.5) / n
+                _y = ry + rd * (_j + 0.5) / n
+                _loc, _, _, _ = _bv.ray_cast(_BVec((_x, _y, top_z + 3.0)),
+                                             _BVec((0, 0, -1)), 6.0)
+                _out.append((_x, _y, None if _loc is None else _loc.z))
+        return _out
+
+    _tops = [t for t in _cloth_top(keep) if t[2] is not None]
+    if _tops:
+        _zs = sorted(t[2] for t in _tops)
+        _dz = (top_z + 0.015) - _zs[len(_zs) // 2]
+    else:
+        _dz = hang_to - mn[2]
+    for o in roots:
+        o.location = (o.location.x, o.location.y, o.location.z + _dz)
+    bpy.context.view_layer.update()
+
+    if len(keep) > 1:
+        _all = {(round(t[0], 6), round(t[1], 6)): t[2] for t in _cloth_top(keep)
+                if t[2] is not None}
+        _buried = []
+        for o in keep:
+            _own = [t for t in _cloth_top([o]) if t[2] is not None]
+            if not _own:
+                _buried.append(o)
+                continue
+            _seen = sum(1 for t in _own
+                        if t[2] >= _all.get((round(t[0], 6), round(t[1], 6)),
+                                            -1e9) - 0.004)
+            if _seen / float(len(_own)) < 0.15:
+                _buried.append(o)
+        if _buried and len(_buried) < len(keep):
+            print(f"  bed cloth: {len(_buried)} part(s) dropped as BURIED "
+                  f"(the file's own mattress/liner under the covers)")
+            for o in _buried:
+                keep.remove(o)
+                bpy.data.objects.remove(o, do_unlink=True)
+            news = [o for o in news if o.name in bpy.data.objects]
+
+    _hit = [t for t in _cloth_top(keep, n=40)
+            if t[2] is not None and t[2] > top_z - 0.02]
+    _cov = len(_hit) / float(40 * 40)
+    print(f"  bed cloth: covers {_cov * 100:.1f}% of the mattress plan "
+          f"(ray-measured, not bbox)")
+    if _cov < 0.80:
+        print(f"  bed cloth: {_cov * 100:.0f}% is not a dressed bed — our own "
+              f"mattress would show through -> solver bake")
+        for o in list(news):
+            if o.name in bpy.data.objects:
+                bpy.data.objects.remove(o, do_unlink=True)
+        return False
+    if _rot:
+        piv = _BVec((cx, cy, 0.0))
+        T = (_BMx.Translation(piv) @ _BMx.Rotation(math.radians(_rot), 4, 'Z')
+             @ _BMx.Translation(-piv))
+        bpy.context.view_layer.update()
+        for o in roots:
+            o.matrix_world = T @ o.matrix_world
+    bpy.context.view_layer.update()
+    for i, o in enumerate(keep):
+        o.name = f"bed__cloth__acq{i}"
+        o["ph_model"] = True                   # keeps the global bevel off cloth
+        o.data.materials.clear()
+        o.data.materials.append(duv_mat)
+    # value ladder (the DD's signed order): the TALLEST part is the duvet, the
+    # flatter one is the turned sheet in coverlet cloth — classified by each
+    # part's own z-span, never by the uploader's names.
+    def _zspan(o):
+        wc = [o.matrix_world @ v.co for v in o.data.vertices]
+        return (max(c.z for c in wc) - min(c.z for c in wc)) if wc else 0.0
+    keep.sort(key=_zspan)
+    for flat in keep[:-1]:
+        flat.data.materials.clear()
+        flat.data.materials.append(cov_mat)
+    # CLOTH KEEPS ITS FOLDS. The default 30-degree sharp threshold is tuned for
+    # SketchUp millwork, where every face arrives split and a curved shell must
+    # be smoothed to kill facets (D9's row). Run at that setting on this set it
+    # deleted the only structure the asset had: the turned-down runner welded
+    # into the field and shade-smoothed into a bulge, and the bed rendered as
+    # one white blob — measurably the same asset that had read as a made bed in
+    # the candidate shot, which did not normalise. A fold in cloth IS a hard
+    # edge at this poly budget, so the threshold moves to 15 degrees for the
+    # cloth path only; the millwork caller is untouched.
+    _w, _s, _p = _normalise_acquired(keep, sharp_deg=15.0)
+    print(f"  ACQUIRED bed cloth <- {slug}: {len(keep)} bed-scale part(s) kept, "
+          f"{len(drop)} dropped (junk block + pillow-scale parts), "
+          f"welded {_w} / sharp {_s} / smoothed {_p}")
+    for o in keep:
+        _SOFT_BAKED.append(o.name)
+    return True
+
+
+def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     """A real platform bed massed from beveled primitives, ROT-AWARE — base + inset mattress +
     draped duvet + two pillows at the HEAD.
 
@@ -4766,7 +5116,21 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # which is exactly the defect this replaces and must never pass silently).
     cov_top = H + 0.006
     _head_side = "%s%s" % (axis, "+" if sign > 0 else "-")
-    _cov_o = drape.bake_bed_cover(
+    # p2r31 — ACQUIRE-FIRST FOR THE BED CLOTH (owner order 2026-08-14; R8's own
+    # rule finally applied to this class, and its stop-loss says the class was
+    # misclassified after two shape iterations — this site had four). Tried
+    # BEFORE the two solver bakes; on success both are skipped, on failure the
+    # solver path runs exactly as before and says so.
+    _acq_cloth = False
+    _cloth_slug = (bed_models or {}).get("cloth_set")
+    if _BED_CLOTH_ACQ and _cloth_slug:
+        _acq_cloth = _place_bed_cloth(
+            _cloth_slug,
+            rect=(x0 + mins, y0 + mins, W - 2 * mins, D - 2 * mins),
+            line=(x0, y0, W, D),
+            top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
+            cov_mat=cov_m, duv_mat=duvt_m, head=_head_side)
+    _cov_o = None if _acq_cloth else drape.bake_bed_cover(
         "bed__coverlet",
         rect=(x0 + mins, y0 + mins, W - 2 * mins, D - 2 * mins),
         top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
@@ -4807,8 +5171,9 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         #                               (C2 twice: corner gathers mirrored L/R)                       # the duvet + throw collide with the
     #                                             SINGLE-SHELL surface, not the
     #                                             solidified render mesh (see drape)
-    _cov_o["ph_model"] = 1                              # keep the global 1 mm bevel off cloth
-    _SOFT_BAKED.append(_cov_o.name)                     # the armour keys off what BAKED
+    if _cov_o is not None:
+        _cov_o["ph_model"] = 1                          # keep the global 1 mm bevel off cloth
+        _SOFT_BAKED.append(_cov_o.name)                 # the armour keys off what BAKED
     cov_t = 0.045                                       # kept: the pure layer's layer-thickness
     cins = styling.DRAPE_FOLD                           # kept: pillow/duvet insets derive from it
 
@@ -4980,7 +5345,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
         # 4 mm to spare.
         _cprx = drape.sim_surface_of("bed__coverlet")
         return drape.bake_sheet("bed__duvet", vs, fs,
-                                [o for o in (_cprx or _cov_o, _matt_o, _base_o) if o],
+                                [o for o in (_cprx or _cov_o, _matt_o, _base_o)
+                                 if o is not None],
                                 # p3r2 corner settle package (see the coverlet
                                 # call for the DR record) — same three knobs,
                                 # same reason: this sheet's foot corners are
@@ -5053,11 +5419,13 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                                 # UNDER this release so the solved half is
                                 # kept. Opt-in via --duvet-tucks only.
                                 release_frames=(12 if _tucks else None))
-    _duv_o = drape.search_bake(_duvet, name="bed__duvet", slack=0.04,
-                               top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
-                               bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
-    _duv_o["ph_model"] = 1
-    _SOFT_BAKED.append(_duv_o.name)
+    _duv_o = None if _acq_cloth else drape.search_bake(
+        _duvet, name="bed__duvet", slack=0.04,
+        top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
+        bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
+    if _duv_o is not None:
+        _duv_o["ph_model"] = 1
+        _SOFT_BAKED.append(_duv_o.name)
     # p2r28 BELIEVABILITY (chaos band, DR §6): measured on the SETTLED cloth the
     # ladder shipped, never on our own inputs (rounds 12-18's wound: a check
     # against a number we chose can prove the build correct and never notice
@@ -5066,7 +5434,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # tuck depths are the solver's own dips at the hand stations. A crease that
     # is still a ruler, still periodic, or whose tucks came out uniform FAILS
     # THE BAKE — the mechanism gets fixed, never the threshold.
-    if _DUVET_TUCKS and _tuck_state.get("t_centers"):
+    if _duv_o is not None and _DUVET_TUCKS and _tuck_state.get("t_centers"):
         _sd = drape.LAST_SETTLED["bed__duvet"]
         # THE LINE IS A CENTROID PER BIN, NOT AN EXTREME. Two measured dead ends
         # bought this form: taking the head-most vert per bin sampled ACROSS the
@@ -5186,13 +5554,39 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # measured. The tail is what remains of the gap to the bed line after the coverlet
     # has taken its share, which makes the invariant hold BY CONSTRUCTION rather than by
     # a tuned constant — and a wider coverlet automatically yields a shorter tail.
-    _cbb = drape.world_bbox(_cov_o)
+    # ACQUIRED LEG: the same measurement, taken on the acquired parts — the rule
+    # is "measure the cloth as it came to rest", and an imported set has come to
+    # rest too (its rest is the uploader's sim rather than ours, which changes
+    # WHO solved it, not whether it must be measured).
+    if _cov_o is None:
+        _acq_ms = [o for o in bpy.data.objects if o.type == 'MESH'
+                   and o.name.startswith("bed__cloth__acq")]
+        _acq_bbs = [drape.world_bbox(o) for o in _acq_ms]
+        if not _acq_bbs:
+            raise RuntimeError("bed cloth: neither a baked coverlet nor an "
+                               "acquired set is in the scene — the throw has "
+                               "nothing to measure against")
+        _cbb = tuple([min(b[i] for b in _acq_bbs) for i in range(3)]
+                     + [max(b[i] for b in _acq_bbs) for i in range(3, 6)])
+    else:
+        _cbb = drape.world_bbox(_cov_o)
     # the throw is born above the HIGHEST cloth beneath it — the simulated duvet's
     # fold roll now stands ~40 mm proud of the coverlet where the band lies, and a
     # sheet cut below that would be born intersecting its own collider
     _z_top = max(_cbb[5], drape.world_bbox(_duv_o)[5]) if _duv_o else _cbb[5]
     _c_lo, _c_hi = (_cbb[1], _cbb[4]) if axis == "x" else (_cbb[0], _cbb[3])
     _b_lo, _b_hi = (y0, y0 + D) if axis == "x" else (x0, x0 + W)
+    # AND CLAMPED TO THE BED LINE. The inset above is measured from the cloth
+    # that actually settled, which is right — but an ACQUIRED set is placed to
+    # the bed's own line rather than settling short of it the way a solver bake
+    # does, so the same inset then starts outside the line and the ladder burns
+    # six bakes reporting "85 mm proud" at every slack it tries. The line is not
+    # negotiable (the plinth reveal lives in that margin); the cut is.
+    if _c_lo < _b_lo or _c_hi > _b_hi:
+        print(f"  throw: cloth flanks {_c_lo * 1000:.0f}..{_c_hi * 1000:.0f} "
+              f"reach the bed line {_b_lo * 1000:.0f}..{_b_hi * 1000:.0f} — "
+              f"cross span clamped to the line before the inset")
+        _c_lo, _c_hi = max(_c_lo, _b_lo), min(_c_hi, _b_hi)
     # THE THROW FALLS OVER THE FOOT, NOT THE FLANKS. The first four cuts ran it across the
     # bed with tails down both flanks — the classic styling — and every one of them failed
     # containment, because the coverlet's own skirt already spends the 90 mm between the
@@ -5204,6 +5598,22 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
     # AND where the room actually exists. The cross span is inset from the coverlet's BAKED
     # flanks, so it cannot reach the flank margin the coverlet has already spent.
     _thr_plan = styling.foot_throw(along, across, H, base_h)
+    if _acq_cloth and _thr_plan:
+        # DECLARED ABSENCE, not a silent drop (R10's rule for a mass that cannot
+        # justify itself here). The simulated foot throw exists to put vertical
+        # fabric on the foot face and to carry the room's deepest value. An
+        # ACQUIRED set already falls at the foot — it reaches the bed line there
+        # — so a throw laid over it has NO room to hang: the ladder measured 85
+        # to 95 mm proud of the line at every rung, and the length rungs did not
+        # move the number, which is what says the space is gone rather than the
+        # cut being wrong. Stacking our runner on the set's own turn-down would
+        # also be two runners. The value job returns to the lane as an open
+        # question the gate records; do not paper over it by widening the bbox
+        # (the line protects the plinth reveal).
+        print("  foot throw: DECLARED ABSENT on the acquired leg — the set "
+              "falls at the foot itself (0 mm of line left to hang in) and "
+              "brings its own turned runner; the deepest-value job is filed")
+        _thr_plan = None
     # The band lying ON the bed must outweigh the part cantilevered past the foot, or the
     # throw simply slides off — the first cut put 0.30 m of cloth in mid-air against a
     # 0.50 m band and the whole sheet dragged itself over the foot edge and fell 5.1 m
@@ -5277,9 +5687,16 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                 # single-shell sim surfaces of both cloths beneath (the contact law
                 # in _duvet's comment); the render meshes stay out of the collider
                 # list or their solidified shells would fight the proxies
-                [o for o in (drape.sim_surface_of("bed__duvet") or _duv_o,
-                             drape.sim_surface_of("bed__coverlet") or _cov_o,
-                             _matt_o, _base_o) if o], pin=tpin,
+                # acquired legs have no sim surface and no baked sheet, so the
+                # throw falls onto the ACQUIRED cloth's own render meshes — the
+                # contact law's proxy rule exists for solidified BAKES, and an
+                # imported single shell is not one
+                ([o for o in (drape.sim_surface_of("bed__duvet") or _duv_o,
+                              drape.sim_surface_of("bed__coverlet") or _cov_o,
+                              _matt_o, _base_o) if o]
+                 + ([o for o in bpy.data.objects
+                     if o.type == 'MESH' and o.name.startswith("bed__cloth__acq")]
+                    if _acq_cloth else [])), pin=tpin,
                 # "wool" (bending 3.0) was wrong twice over: at 75 frames the tails went
                 # FURTHER out than at 48, so they were not still swinging — a stiff cloth
                 # draped over the coverlet's soft rounded flank BOWS instead of hanging,
@@ -5332,7 +5749,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None):
                "one" if "bed__throw" in _SOFT_BAKED else "none"))
     # the hidden single-shell proxies have served every sheet in the stack — they
     # must never reach a render or an export
-    drape.drop_sim_surfaces("bed__coverlet", "bed__duvet")
+    if not _acq_cloth:
+        drape.drop_sim_surfaces("bed__coverlet", "bed__duvet")
     return True
 
 
@@ -6406,7 +6824,9 @@ def build_suite(spec, label="suite"):
         if kind == "bed":
             _build_bed(xm, ym, wm, dm, hm, rot,
                        pillow_models=(None if spec.get("_no_acquire")
-                                      else it.get("pillow_models")))
+                                      else it.get("pillow_models")),
+                       bed_models=(None if spec.get("_no_acquire")
+                                   else it.get("bed_models")))
             continue
         if kind == "bench":
             n_intercepted += kind in MODEL_MAP
@@ -6855,6 +7275,15 @@ if __name__ == "__main__":
         # A leg of the p2r28 cushion A/B — the rigid seat the critics filed
         globals()["_BENCH_DENT"] = False
         print("  [A/B] bench seat: rigid under the stack (pre-p2r28) leg")
+    if "--bed-cloth-acq" in _post_dashdash():
+        # opt in to the acquired bed cloth (default off at the p2r31 stop)
+        globals()["_BED_CLOTH_ACQ"] = True
+        print("  [A/B] bed cloth: ACQUIRED set (opt-in leg)")
+    if "--no-bed-cloth-acq" in _post_dashdash():
+        # A leg of the p2r31 acquire-vs-simulate A/B — the solver bakes exactly
+        # as p2r30 shipped them
+        globals()["_BED_CLOTH_ACQ"] = False
+        print("  [A/B] bed cloth: SIMULATED (pre-p2r31 solver bakes) leg")
     if "--no-sconce-lens" in _post_dashdash():
         # A leg of the p2r29 sconce-aperture A/B — the blank brass cylinder
         # that measured 0 codes over its own wall
@@ -6950,6 +7379,10 @@ if __name__ == "__main__":
             sys.stdout.flush()
             os._exit(1)
         _spec["eye_camera"] = _vars[_ecam]
+        # the ladder's per-rung targets are only scorable on the frame they were
+        # solved against, so the rung is TOLD which camera it is looking at
+        # rather than assuming the hero one (value_probe refuses to guess)
+        globals()["_EYECAM_NAME"] = _ecam
         _spec["_eye"] = True
         _spec["_suffix"] = _spec.get("_suffix") or _ecam
     _sfx_final = _spec.get("_suffix")

@@ -73,6 +73,19 @@ BANDS = {
                             "pipeline/scripts/styling.py SHAM_H=0.44 (a 650mm "
                             "euro sham leaning upright presents ~450) + king "
                             "sham 500x900 case note at SHAM_W"),
+    # A DRESSED BED'S CLOTH SET, diagnosed on the axis a duvet cannot fake: the
+    # LENGTH it must cover. This lane's own mattress is 1969 mm long (the ink-true
+    # element-3 footprint) and a duvet covers a mattress and falls past its foot,
+    # so a set for a bed of this class measures ~2000-2400; the band opens to
+    # 1400 (a single/child duvet — a real product, and refusing it here would be
+    # the band judging TASTE instead of UNIT) and 2900 (super-king with a deep
+    # fall). What it is actually for is the 0.0254x trap: an imperial-exported
+    # set lands at 56-92 mm and a metres-as-millimetres one at 2.0-2.9, both
+    # decades outside.
+    "bedding_set": (1400.0, 2900.0, "y",
+                    "projects/PRJ-2026-002_c001-house/03_layout/"
+                    "master-suite.CANONICAL.spec.json element 3 (mattress "
+                    "1969 mm long, ink-true) + standard duvet sizes"),
     # Towels are diagnosed by PRESENTED height, like garments. The band cites the
     # lane's own signed accessory schedule (bathroom.py): a hand towel presents
     # HAND_DROP=300 on a hook, a bath towel TOWEL_DROP=350 folded over the bar
@@ -111,6 +124,10 @@ MIN_DEPTH_RATIO = {
     "pillow_set_standing": 0.30,  # a leaning sham group has real plan depth
     "towel_hung": 0.04,           # two plies over a bar are thin but never zero
     "towel_folded": 0.10,         # a folded stack has real plan depth
+    # a dressed bed's cloth stands ~200 mm proud of a ~2 m footprint at the very
+    # least (duvet loft + the turned sheet); a set that measures thinner than
+    # that is a flat bedspread decal, which is the class this lane is REPLACING
+    "bedding_set": 0.08,
 }
 
 

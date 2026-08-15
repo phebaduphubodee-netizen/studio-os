@@ -160,7 +160,34 @@ TONES = {
     # pillowcase is parked at the 240 band ceiling and cannot rise, so the room is bought
     # BELOW it: duvet_set and coverlet each step down, re-inverted through the same
     # per-object power fits as the original solve.
-    "coverlet":   0.545,  # the bed's main field, the solver-draped spread
+    # 2026-08-15 (p2r31), 0.545 -> 0.435: the FIRST measurement of this ladder
+    # since the light story went on (2026-08-11). check_render had not been
+    # called by build or gate at all — it is a standalone tool nobody invoked —
+    # so twelve rounds shipped with every visible rung 28-49 codes over target
+    # and no line anywhere saying so. Run at last on the p2r31 frame: base
+    # +33.6, throw +49.3, coverlet +46.3, duvet +27.7. The ORDER and the SPAN
+    # (117 codes, floor 95) still hold, so the cloths are not wrong — the story
+    # light lifted everything, and it lifted the deep end most, which is what
+    # collapsed the design's coverlet->duvet gap from 39 codes to 20 and made
+    # the owner read the bed as layers he could not tell apart ("ทำไมมันมีอะไร
+    # ซ้อนข้างในเตียง"). This ONE rung moves, and it moves TOWARD its own signed
+    # target (188.3 -> ~170 predicted, target 142), never away: inverted through
+    # the same sRGB response the original solve used, 0.9028^2.2. The other six
+    # rungs are left alone deliberately — re-anchoring all seven to whatever we
+    # currently render is self-consistency, the wound this repo has already
+    # paid for twice. Predicted, therefore CHECKED after the render, never
+    # asserted (D-053).
+    # SECOND STEP, and this one is FITTED not guessed. The 0.545 -> 0.435 move
+    # predicted 170 from an sRGB power law and delivered 179.2 — the response
+    # under this room's bounce-heavy story light is shallower than a diffuse
+    # power law assumes, which is the same lesson the original solve recorded
+    # ("the same authored albedo rendered 57 codes apart on different pieces").
+    # Two MEASURED points on this frame now define the line: 0.545 -> 188.3 and
+    # 0.435 -> 179.2, i.e. 82.7 codes per unit tone. The designed coverlet ->
+    # duvet gap is 39 codes; at 179.2 it stands at 29.1, so the rung needs
+    # -10.2 more codes = -0.123 tone. Predicted 169.0, gap 39.3 — and predicted
+    # means CHECKED by the ladder rung on the next render, never asserted.
+    "coverlet":   0.312,  # the bed's main field, the solver-draped spread
     "sheet":      0.68,   # the mattress/sheet edge showing under the coverlet
     "duvet_set":  0.415,  # duvet + its turned-back fold + the two euro shams (one cloth)
     "pillowcase": 0.868,  # the sleeping pillows — the lightest thing in the room, by design,
