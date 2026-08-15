@@ -1616,7 +1616,46 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "c1336a7a394560b8eef9942db0ffab7c8f61ecb5",
+      "verdicts": {
+        "P2": "keep: the bar is unchanged and this round moved exactly the class it names. The acquire leg stopped at r31 as a white slab; the cause is now measured (the part cut dropped the set turned-down runner at 16.7 percent of the mattress plan against a 33 percent floor) and the repaired leg renders DELIVERABLE QUALIFIES 6/6 with D1 4.32 and D10 9.02. The exit bar is untouched because nothing here satisfies it: the two independent critics have not seen this frame, and the acquired leg would COST the P2-exit DUVET crop and the room deepest-value mass, since the foot throw is a declared absence on it. That trade is the owner eye, which is why the leg stays opt-in and the default frame is unchanged.",
+        "P4": "keep: untouched this round. Head (a) calibration on the delivered aperture mechanism plus the contact-shadow investigation, and head (b) styling, both stand exactly as review #41 left them; nothing measured this round bears on either.",
+        "P5": "keep: untouched, seat at the end of the plan, RANK debt still on record. The blind RANK sheet is the rung that would settle the simulated-versus-acquired cloth question with something other than one builder eye, and this round produced the first honest pair to put on it."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "d83a196b4c712d401c734dac2af2cedb6f0a0efc"
+  "last_review_commit": "c1336a7a394560b8eef9942db0ffab7c8f61ecb5"
 }
