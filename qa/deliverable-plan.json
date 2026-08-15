@@ -1655,7 +1655,46 @@
         "P2/P2r-8",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "7a6bf1fc1c2c5b5246b0fc53bc7742e3977126e4",
+      "verdicts": {
+        "P2": "keep: the bar did its job in the hardest possible way this round - it FAILED HARDER while the frame got better, because wood_boards stopped being blind rather than the wood changing. that is the phase working, not the phase being wrong. the exit clause is also being satisfied one clause at a time by the right rung: (2) moved from 1 broken cut to 2 on an instrument fix, and (3) failed on both critics for the first time with the surface-realism items now carrying MEASUREMENTS rather than taste - cloth_edge 0.114x, wood peak 0.586 @ lag 199 reproducing across three frames, contact lines at 1.03x the control but a third its depth. nothing here argues for moving the bar; it argues the bar is finally pointed at real numbers.",
+        "P4": "keep: unchanged and untouched this round, and its head is still where review 41 left it - closing classes by critic movement rather than builder assertion. what this round adds is a queue for it, not a change to it: C2 filed four styling-specific items that are D7's, not P2's (books with no page block, the rigid V of folded cloth, an unresolved bedside left-to-right, and a wardrobe still 83 percent undressed by our own r34 measurement). D7 remains the one failing gate row, and it is a P4 row.",
+        "P5": "keep: unchanged, and its RANK debt is now the SECOND thing this program is waiting on rather than the first. two independent critics converged on LIGHT from different vendors and different prompts this round, which is the closest the ladder has come to producing an unforced consensus - but neither of them is a blind RANK sheet against delivered work, and the question P5 asks (do we lose to work that shipped) is still unanswered by anything. the honest note for the owner: the acquired-vs-simulated cloth pair from r33 and this round's frame are now both ready to go on that sheet."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "c1336a7a394560b8eef9942db0ffab7c8f61ecb5"
+  "last_review_commit": "7a6bf1fc1c2c5b5246b0fc53bc7742e3977126e4"
 }
