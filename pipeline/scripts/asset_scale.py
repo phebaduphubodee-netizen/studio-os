@@ -99,6 +99,36 @@ BANDS = {
     "towel_folded": (20.0, 160.0, "z",
                      "pipeline/scripts/bathroom.py acc_hand_towel_counter part "
                      "(300x200x35, D-E6-3) with plush-fold margin"),
+    # ---------------------------------------------------------------- p2r33 --
+    # THE FOUR LOOSE-FURNITURE CLASSES, added when the owner ordered every
+    # hand-built non-BF piece replaced by an acquired mesh. Each band is
+    # diagnosed on the axis that does NOT depend on how a stranger exported the
+    # file, which is a different choice per class and the reason they are not
+    # one rule:
+    #   - a BED and a RUG are diagnosed by their longest HORIZONTAL extent
+    #     ("maxxy"), because their height is nearly meaningless (a platform bed
+    #     is 250 mm, the same bed with a headboard is 1400) while their footprint
+    #     is the thing the class is named for. maxxy is invariant under the only
+    #     rotation furniture gets, which a literal "x" or "y" is not.
+    #   - a NIGHTSTAND and a BENCH are diagnosed by HEIGHT, because that is what
+    #     ergonomics pins (a bedside surface meets the mattress; a bench meets a
+    #     knee) while their plan sizes range freely.
+    "bed_frame": (1800.0, 2600.0, "maxxy",
+                  "projects/PRJ-2026-002_c001-house/03_layout/"
+                  "master-suite.CANONICAL.spec.json element 3 (2000 x 2149 mm "
+                  "ink-true footprint); band opens to a 1900 double and a 2500 "
+                  "super-king with a footboard"),
+    "nightstand": (300.0, 800.0, "z",
+                   "master-suite.CANONICAL.spec.json items[3..4] h=580 + "
+                   "knowledge/ergonomics/residential-clearances.md (a bedside "
+                   "surface sits at or just above the mattress top)"),
+    "bench_seat": (300.0, 600.0, "z",
+                   "master-suite.CANONICAL.spec.json items[2] h=450 + "
+                   "knowledge/ergonomics/residential-clearances.md (seat "
+                   "406-432); a backless bed-end bench is seat height and no more"),
+    "rug": (1000.0, 5000.0, "maxxy",
+            "master-suite.CANONICAL.spec.json items[0] 3100 x 2500 mm; band "
+            "spans a bedside runner to a whole-room rug"),
 }
 
 # ------------------------------------------------------------- planar refusal --
@@ -128,6 +158,14 @@ MIN_DEPTH_RATIO = {
     # least (duvet loft + the turned sheet); a set that measures thinner than
     # that is a flat bedspread decal, which is the class this lane is REPLACING
     "bedding_set": 0.08,
+    # a bed frame, a nightstand and a bench are all solid objects with real plan
+    # depth; none of them can legitimately arrive as a billboard
+    "bed_frame": 0.10,
+    "nightstand": 0.20,
+    "bench_seat": 0.15,
+    # a rug IS a plane — this class is the reason MIN_DEPTH_RATIO carries None as
+    # a DECLARED value rather than treating "absent" and "exempt" as the same
+    "rug": None,
 }
 
 
@@ -323,7 +361,12 @@ def assert_scale(path, cls, bands=None):
             f"reading the same is how an unasserted ingest gets called asserted")
     lo, hi, axis, src = bands[cls]
     b = bounds_mm(path)
-    v = b[f"{axis}_mm"]
+    # "maxxy" = the longest HORIZONTAL extent, for classes whose diagnostic
+    # dimension is a footprint. A literal "x" or "y" band silently depends on
+    # which way the uploader happened to lay the model out, so the same real
+    # object passes or fails by an accident of export — and this module's whole
+    # job is to make a wrong unit impossible to mistake for a right one.
+    v = max(b["x_mm"], b["y_mm"]) if axis == "maxxy" else b[f"{axis}_mm"]
     in_band = lo <= v <= hi
     ratios = {f"x{f:g}": round(v * f, 1) for f in (0.0254, 1.0, 25.4, 1000.0)
               if lo <= v * f <= hi}

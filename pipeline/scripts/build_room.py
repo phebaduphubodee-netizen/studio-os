@@ -6014,6 +6014,26 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
     layer's box envelope — glow or not; without glow the same round lamp simply stays
     dark (specs that have not decided lighting)."""
     body_m  = _solid("nightstand_body", (0.13, 0.12, 0.11, 1.0), rough=0.55, sheen=0.1, spec=0.4)
+    _nightstand_lamp(x0, y0, W, D, H, lamp, glow, cabinet=True, body_m=body_m)
+    return True
+
+
+def _nightstand_lamp(x0, y0, W, D, H, lamp=None, glow=None, cabinet=True, body_m=None):
+    """The bedside LAMP — and, when `cabinet` is true, the cabinet under it.
+
+    SPLIT OUT p2r33, when the owner ordered every hand-built non-BF piece replaced
+    by an acquired mesh. The first audition acquired the two nightstands and the
+    frame lost both brass dome lamps with them, because the cabinet and the lamp
+    were one function: replacing the cabinet deleted a SIGNED DD element (D3-3's
+    10% brass accent, and the only warm practical in the room) as a side effect
+    nobody asked for. An acquisition should swap ONE object, not silently take
+    its neighbours.
+
+    It is a split, not a copy. The lamp exists once, here, and both callers reach
+    it: `_build_nightstand` with cabinet=True, and the acquire path with
+    cabinet=False and `H` set to the acquired cabinet's MEASURED top face — R9,
+    the lamp rests on a contact rather than on a typed z, so a shorter or taller
+    bought cabinet carries its lamp correctly with nothing to re-enter."""
     brass_m = _solid("lamp_brass",      (0.60, 0.44, 0.20, 1.0), rough=0.32, metallic=1.0, spec=0.6,
                      aniso=0.65)   # BRUSHED, not cast: satin brass is drawn in one direction, so
                      #              its highlight is a STREAK. A round dot is the polished-ball
@@ -6048,10 +6068,13 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
     toe_m = _solid("nightstand_toe", (0.045, 0.042, 0.040, 1.0), rough=0.7, spec=0.2)
     for name, ox, oy, oz, dx, dy, dz in millwork.nightstand_lamp_parts(W, D, H, lamp=bool(lamp)):
         if name == "toe":
-            _rbox("nightstand__toe", x0 + ox, y0 + oy, oz, dx, dy, dz, toe_m, bevw=0.004)
+            if cabinet:
+                _rbox("nightstand__toe", x0 + ox, y0 + oy, oz, dx, dy, dz, toe_m, bevw=0.004)
             continue
         if name in ("body", "drawer"):
-            _rbox(f"nightstand__{name}", x0 + ox, y0 + oy, oz, dx, dy, dz, body_m, bevw=0.008)
+            if cabinet:
+                _rbox(f"nightstand__{name}", x0 + ox, y0 + oy, oz, dx, dy, dz, body_m,
+                      bevw=0.008)
             continue
         ccx, ccy, r = x0 + ox + dx * 0.5, y0 + oy + dy * 0.5, dx * 0.5
         if name == "lamp_base":
@@ -6856,6 +6879,7 @@ def build_suite(spec, label="suite"):
                     if _has_surface is None:
                         print("  !! could not read the asset's map roles — retinting "
                               "rather than replacing, which is the reversible half")
+                _pre_acq = set(bpy.data.objects)
                 if place_model(_mp, xm, ym, wm, dm, hm,
                                rot=model_rot(rot, str(_mdl)),
                                retint_fabric=_arf, tag=kind,
@@ -6863,6 +6887,33 @@ def build_suite(spec, label="suite"):
                     n_model += 1
                     n_acquired += 1
                     print(f"  ACQUIRED '{nm}' <- {_mdl}")
+                    # WHAT THE ITEM CARRIES DOES NOT LEAVE WITH THE MESH IT SAT ON.
+                    # p2r33's first audition swapped the two nightstands for bought
+                    # cabinets and the frame lost both brass dome lamps — a signed
+                    # DD element (D3-3, the room's 10% accent and its only warm
+                    # practical) deleted as a side effect of replacing the cabinet,
+                    # because one function built both. The lamp now rests on the
+                    # acquired cabinet's MEASURED top face (R9: a contact, never a
+                    # typed z), so a taller or shorter bought cabinet needs nothing
+                    # re-entered. Nothing here runs for an item with no lamp block.
+                    if kind == "side_table" and it.get("lamp"):
+                        _new = [o for o in bpy.data.objects
+                                if o not in _pre_acq and o.type == 'MESH']
+                        _tops = [max((o.matrix_world @ v.co).z for v in o.data.vertices)
+                                 for o in _new if o.data.vertices]
+                        if _tops:
+                            _g5 = _e5.lamp_glow(spec)
+                            _gl = (dict(_g5, rgb=_e5.lamp_rgb(
+                                (it.get("lamp") or {}).get("cct_k", 2850)))
+                                if _g5 else None)
+                            _nightstand_lamp(xm, ym, wm, dm, max(_tops),
+                                             it.get("lamp"), glow=_gl, cabinet=False)
+                            print(f"    + bedside lamp kept, resting on the acquired "
+                                  f"top at {max(_tops) * 1000:.0f} mm "
+                                  f"(spec cabinet height was {hm * 1000:.0f})")
+                        else:
+                            print("    !! acquired side_table has no measurable top "
+                                  "— the lamp is NOT placed rather than guessed")
                     continue
                 n_acq_fallback += 1
                 print(f"  ACQUIRE FELL BACK for '{nm}' ({kind}): the declared mesh "
@@ -7263,6 +7314,37 @@ if __name__ == "__main__":
         # with a recorded verdict — same contract as --shred-max)
         globals()["_CRUMPLE_RELIEF"] = float(_crl)
         print(f"  [calibration] bedding crumple relief overridden to {_crl} m")
+    # p2r33 — CANDIDATE AUDITIONS RUN THROUGH THE BUILD, NOT BESIDE IT. The owner
+    # ordered every hand-built non-BF piece replaced by an acquired mesh, and his
+    # designer friend's method is to look at each candidate in the work before
+    # choosing it. p2r32 paid for the wrong way to do that: a separate shoot
+    # script dressed the bed and rendered a made bed, the build dressed the same
+    # bed and rendered a slab, and the two disagreed for a full round because the
+    # shoot rendered EVERY imported mesh while the build rendered only what its
+    # part cut kept. So the audition instrument is this flag: it writes `model`
+    # into a spec item exactly as a committed spec would, and everything
+    # downstream — model_fit, the scale sidecar gate, place_model, the facing
+    # law, D8 — runs unchanged. What the eye judges is what the build ships.
+    # Target an item by INDEX (--item-model=2:slug) or by kind
+    # (--item-model=bench:slug, which must match exactly one item).
+    for _im in [a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--item-model=")]:
+        _sel, _, _slug = _im.partition(":")
+        _items = _spec.get("items") or []
+        if _sel.isdigit():
+            _hits = [int(_sel)] if int(_sel) < len(_items) else []
+        else:
+            _hits = [i for i, it in enumerate(_items) if it.get("kind") == _sel]
+        if len(_hits) != 1:
+            # a selector that matches two nightstands would silently dress one of
+            # them; refusing is the only reading that cannot mislead the eye
+            raise SystemExit(
+                f"BUILD FAILED: --item-model={_im!r} selects {len(_hits)} items "
+                f"(kinds: {[it.get('kind') for it in _items]}); name an index or "
+                f"a kind that matches exactly one")
+        _items[_hits[0]]["model"] = _slug
+        print(f"  [audition] items[{_hits[0]}] "
+              f"({_items[_hits[0]].get('kind')}) model := {_slug}")
     if "--no-acquire" in _post_dashdash():
         # The A leg of every acquisition A/B: build every item the way the bespoke
         # builders would, ignoring `model`. Same discipline as --no-fabric-maps — an

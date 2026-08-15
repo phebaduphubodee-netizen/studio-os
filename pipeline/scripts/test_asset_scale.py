@@ -141,8 +141,30 @@ def test_unknown_class_raises_and_does_not_pass(tmp_path):
 def test_every_band_carries_a_source(tmp_path):
     for cls, (lo, hi, axis, src) in A.BANDS.items():
         assert lo < hi, cls
-        assert axis in ("x", "y", "z"), cls
+        # "maxxy" = the longest horizontal extent, for classes whose diagnostic
+        # dimension is a footprint (a bed, a rug). The vocabulary stays CLOSED:
+        # a typo'd axis must fail here rather than resolve to something at runtime.
+        assert axis in ("x", "y", "z", "maxxy"), cls
         assert src and len(src) > 20, f"{cls}: a band with no cited source is a preference"
+
+
+def test_maxxy_is_invariant_to_how_the_uploader_laid_the_model_out(tmp_path):
+    """The whole point of the axis: the SAME real object, exported turned a
+    quarter-turn in plan, must get the SAME verdict. A literal 'x' or 'y' band
+    makes a correct bed pass or fail by an accident of export."""
+    # _boxglb takes glTF axes (x, y=UP, z), which bounds_mm converts to repo Z-up:
+    # a 2.10 x 1.60 m bed standing 0.50 m tall is (2.10, 0.50, 1.60) here.
+    long_x = _boxglb(tmp_path, "bed_x.glb", (2.10, 0.50, 1.60))
+    long_y = _boxglb(tmp_path, "bed_y.glb", (1.60, 0.50, 2.10))
+    ok_x, rep_x = A.assert_scale(long_x, "bed_frame")
+    ok_y, rep_y = A.assert_scale(long_y, "bed_frame")
+    assert ok_x and ok_y, (rep_x["measured_mm"], rep_y["measured_mm"])
+    assert rep_x["measured_mm"] == rep_y["measured_mm"] == 2100.0
+    # and it still catches the unit error the band exists for, in both layouts
+    for nm, dims in (("bed_in_x.glb", (0.0533, 0.0127, 0.0406)),
+                     ("bed_in_y.glb", (0.0406, 0.0127, 0.0533))):
+        inches, rep = A.assert_scale(_boxglb(tmp_path, nm, dims), "bed_frame")
+        assert not inches, rep["measured_mm"]
 
 
 def test_cli_returns_nonzero_when_it_refuses(tmp_path):
