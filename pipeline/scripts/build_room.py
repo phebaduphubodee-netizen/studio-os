@@ -1552,6 +1552,24 @@ _BENCH_DENT = True
 # to the worse of two measured legs is not courage, it is a regression with a
 # story attached.
 _BED_CLOTH_ACQ = False
+# p2r32 — WHICH acquired set, overridable from the CLI. The spec names one
+# (bed_models.cloth_set); this lets a round put a SECOND measured candidate in
+# front of the owner's eye without editing the spec of record for a look. Empty
+# = use the spec. It cannot invent an asset: an unknown slug has no cached mesh
+# and no asserted sidecar, so _place_bed_cloth refuses it and says so.
+_BED_CLOTH_SET = None
+# p2r32 — the cloth shading normaliser gets a LEG, because the reason it was
+# retuned at p2r31 turned out not to exist. That round moved the cloth path from
+# 30 to 15 degrees on the diagnosis that smoothing had "welded the turned-down
+# runner into the field"; p2r32 rendered the two shading legs side by side and
+# they are indistinguishable, because the runner was never in the build to be
+# melted — the PART CUT dropped it before shading ever ran (see
+# _place_bed_cloth). Two rounds of reasoning about a shading threshold were
+# spent on an object that was not in the scene. The default therefore stays
+# where p2r31 left it rather than being changed on a refuted premise, and the
+# question is now askable for the first time: --no-cloth-normalise renders the
+# same frame with cloth keeping its own facets, WITH the runner present.
+_CLOTH_NORMALISE = True
 _SCONCE_LENS = True
 # p2r30 calibration (amplitude-bisect law): the r29 apertures clip at 255 but
 # the C2 blind eye still read the fixture dead at frame scale — the read is
@@ -4709,34 +4727,58 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
         return (min(c.x for c in wc), min(c.y for c in wc), min(c.z for c in wc),
                 max(c.x for c in wc), max(c.y for c in wc), max(c.z for c in wc))
 
-    keep, drop = [], []
+    # A DRESSED BED IS A FIELD PLUS WHAT LIES ON IT, and separating those two
+    # questions is the p2r32 correction. The first cut asked ONE question —
+    # "does this part cover a third of the mattress?" — and used it for both
+    # jobs, so it dropped the set's turned-down runner (374 x 1600 mm, 16.7% of
+    # this mattress in plan) along with the junk. That single dropped part is
+    # the whole of gate #30's unresolved item: the candidate SHOOT renders every
+    # imported object and showed a made bed with a runner; the BUILD renders
+    # only what survives this cut and showed a white slab. The gate guessed
+    # pillows and rotation, p2r32 guessed the shading normaliser, and all three
+    # were refuted — the runner was never in the frame to begin with.
+    #
+    # So: the POLY FLOOR does the junk job on its own (the file's 2 m block and
+    # its 12-poly mattress slab are both coarse), the FIELD fraction identifies
+    # the piece that must cover the bed, and a much lower EXTRA fraction lets
+    # real cloth accessories in. Nothing small gets a free pass on top of that —
+    # the BURIED test below still requires every part to be the topmost surface
+    # somewhere, which is what removes a liner the covers hide.
+    _FIELD_FRAC, _EXTRA_FRAC = 0.33, 0.05
+    field, extra, drop = [], [], []
     for o in meshes:
         bb = _wbb(o)
-        if bb is None or not o.data.polygons:
+        if bb is None or not o.data.polygons or len(o.data.polygons) < 100:
             drop.append(o)
             continue
-        # a bed cloth covers at least a third of the mattress in plan; a pillow,
-        # a cushion or a stray block does not. Derived from the bed we are
-        # dressing, so no constant travels between projects. A BOX is refused on
-        # top of that: the file's mattress slab spans the bed and is 12 polys —
-        # area alone would have kept it, and a second slab under our own
-        # mattress is exactly the invented mass R10 exists to stop.
         pa = (bb[3] - bb[0]) * (bb[4] - bb[1])
-        (keep if (pa >= mat_area * 0.33 and len(o.data.polygons) >= 100)
-         else drop).append(o)
-    # ONE PART IS A LEGAL DRESSED BED — the two-part floor written here first
-    # assumed "duvet + turned sheet" and refused a single-mesh made cover, which
-    # is how half the real sets are modelled. The question a bed cloth has to
-    # answer is COVERAGE, measured below by ray; part COUNT was never the ask.
-    if len(keep) < 1:
-        print(f"  bed cloth: no bed-scale cloth part survived "
-              f"the plan-area/poly cut -> solver bake")
+        if pa >= mat_area * _FIELD_FRAC:
+            field.append(o)
+        elif pa >= mat_area * _EXTRA_FRAC:
+            extra.append(o)
+        else:
+            drop.append(o)
+    # ONE FIELD PART IS A LEGAL DRESSED BED — the two-part floor written here
+    # first assumed "duvet + turned sheet" and refused a single-mesh made cover,
+    # which is how half the real sets are modelled. The question a bed cloth has
+    # to answer is COVERAGE, measured below by ray; part COUNT was never the ask.
+    if not field:
+        print(f"  bed cloth: no part covers {_FIELD_FRAC * 100:.0f}% of the "
+              f"mattress in plan — this is not a bed cover -> solver bake")
         for o in news:
             bpy.data.objects.remove(o, do_unlink=True)
         return False
+    keep = field + extra
+    print(f"  bed cloth: {len(field)} field part(s) + {len(extra)} piece(s) "
+          f"lying on it, {len(drop)} dropped below the poly/plan floor")
+    # FILTER THE LISTS FIRST, FREE SECOND — a removed object's StructRNA raises
+    # on any attribute read, so every list that outlives a removal has to be
+    # rebuilt while its members are still alive (see the buried drop below,
+    # where this exact ordering was wrong and crashed the build).
+    _dnames = {o.name for o in drop}
+    news = [o for o in news if o.name not in _dnames]
     for o in drop:
         bpy.data.objects.remove(o, do_unlink=True)
-    news = [o for o in news if o not in drop]
 
     bbs = [_wbb(o) for o in keep]
     mn = [min(b[i] for b in bbs) for i in range(3)]
@@ -4849,10 +4891,28 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
         if _buried and len(_buried) < len(keep):
             print(f"  bed cloth: {len(_buried)} part(s) dropped as BURIED "
                   f"(the file's own mattress/liner under the covers)")
+            # EVERY list that outlives this drop is pruned BEFORE anything is
+            # freed. The line this replaces read `o.name` on objects it had
+            # already removed, which is a ReferenceError the moment a set has
+            # more than one part to bury — a crash that could not fire while
+            # the part cut above was only ever letting one part through, and
+            # arrived the same round that cut was widened. `roots` matters as
+            # much as the rest: the rotation below writes matrix_world over it.
+            _bnames = {o.name for o in _buried}
             for o in _buried:
                 keep.remove(o)
+                (field if o in field else extra).remove(o)
+            news = [o for o in news if o.name not in _bnames]
+            roots = [o for o in roots if o.name not in _bnames]
+            for o in _buried:
                 bpy.data.objects.remove(o, do_unlink=True)
-            news = [o for o in news if o.name in bpy.data.objects]
+            if not field:
+                print("  bed cloth: every field part is BURIED — this set does "
+                      "not dress a bed -> solver bake")
+                for o in list(news):
+                    if o.name in bpy.data.objects:
+                        bpy.data.objects.remove(o, do_unlink=True)
+                return False
 
     _hit = [t for t in _cloth_top(keep, n=40)
             if t[2] is not None and t[2] > top_z - 0.02]
@@ -4878,30 +4938,33 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
         o.name = f"bed__cloth__acq{i}"
         o["ph_model"] = True                   # keeps the global bevel off cloth
         o.data.materials.clear()
+    # value ladder (the DD's signed order), classified by the FIELD / LIES-ON-IT
+    # split the part cut already made — never by the uploader's names, and no
+    # longer by z-span. The z-span rule read "tallest part = the duvet", which
+    # only ever ran on single-part sets and would have been decided here by
+    # which hem happens to hang further down a flank — a hem is not a cloth.
+    # The spread that covers the bed IS the coverlet rung (0.312, the darker);
+    # a band folded over it IS the duvet rung (0.415). That is what those two
+    # names mean in this project's own ladder, so the mapping is now the same
+    # fact twice instead of two independent guesses.
+    for o in field:
+        o.data.materials.append(cov_mat)
+    for o in extra:
         o.data.materials.append(duv_mat)
-    # value ladder (the DD's signed order): the TALLEST part is the duvet, the
-    # flatter one is the turned sheet in coverlet cloth — classified by each
-    # part's own z-span, never by the uploader's names.
-    def _zspan(o):
-        wc = [o.matrix_world @ v.co for v in o.data.vertices]
-        return (max(c.z for c in wc) - min(c.z for c in wc)) if wc else 0.0
-    keep.sort(key=_zspan)
-    for flat in keep[:-1]:
-        flat.data.materials.clear()
-        flat.data.materials.append(cov_mat)
-    # CLOTH KEEPS ITS FOLDS. The default 30-degree sharp threshold is tuned for
-    # SketchUp millwork, where every face arrives split and a curved shell must
-    # be smoothed to kill facets (D9's row). Run at that setting on this set it
-    # deleted the only structure the asset had: the turned-down runner welded
-    # into the field and shade-smoothed into a bulge, and the bed rendered as
-    # one white blob — measurably the same asset that had read as a made bed in
-    # the candidate shot, which did not normalise. A fold in cloth IS a hard
-    # edge at this poly budget, so the threshold moves to 15 degrees for the
-    # cloth path only; the millwork caller is untouched.
-    _w, _s, _p = _normalise_acquired(keep, sharp_deg=15.0)
-    print(f"  ACQUIRED bed cloth <- {slug}: {len(keep)} bed-scale part(s) kept, "
-          f"{len(drop)} dropped (junk block + pillow-scale parts), "
-          f"welded {_w} / sharp {_s} / smoothed {_p}")
+    # CLOTH AND FACETS: the 30-degree default is tuned for SketchUp millwork,
+    # where every face arrives split and a curved shell must be smoothed or it
+    # facets (D9's row). p2r31 moved the cloth path to 15 degrees believing the
+    # normaliser had melted this set's turned-down runner; p2r32 refuted that —
+    # the runner was dropped by the part cut and never reached shading at all.
+    # The threshold stays where it was and the OFF leg is one flag away.
+    if _CLOTH_NORMALISE:
+        _w, _s, _p = _normalise_acquired(keep, sharp_deg=15.0)
+        _shading = f"welded {_w} / sharp {_s} / smoothed {_p}"
+    else:
+        _shading = "shading normaliser SKIPPED (cloth keeps its own facets)"
+    print(f"  ACQUIRED bed cloth <- {slug}: {len(field)} field + {len(extra)} "
+          f"on-it part(s) kept, {len(drop)} dropped (junk block + fittings), "
+          f"{_shading}")
     for o in keep:
         _SOFT_BAKED.append(o.name)
     return True
@@ -5122,7 +5185,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     # BEFORE the two solver bakes; on success both are skipped, on failure the
     # solver path runs exactly as before and says so.
     _acq_cloth = False
-    _cloth_slug = (bed_models or {}).get("cloth_set")
+    _cloth_slug = _BED_CLOTH_SET or (bed_models or {}).get("cloth_set")
     if _BED_CLOTH_ACQ and _cloth_slug:
         _acq_cloth = _place_bed_cloth(
             _cloth_slug,
@@ -7284,6 +7347,21 @@ if __name__ == "__main__":
         # as p2r30 shipped them
         globals()["_BED_CLOTH_ACQ"] = False
         print("  [A/B] bed cloth: SIMULATED (pre-p2r31 solver bakes) leg")
+    _bcs = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--bed-cloth-set=")), None)
+    if _bcs:
+        # naming a set IMPLIES the acquired leg — asking for candidate B and
+        # silently rendering the solver bake is the "could not look printed like
+        # looked and it was fine" failure in another costume
+        globals()["_BED_CLOTH_SET"] = _bcs
+        globals()["_BED_CLOTH_ACQ"] = True
+        print(f"  [A/B] bed cloth: ACQUIRED set {_bcs} (CLI override of the "
+              f"spec's bed_models.cloth_set; implies --bed-cloth-acq)")
+    if "--no-cloth-normalise" in _post_dashdash():
+        # A leg of the p2r32 shading A/B, now askable for the first time because
+        # the runner is finally in the frame to be shaded (see _CLOTH_NORMALISE)
+        globals()["_CLOTH_NORMALISE"] = False
+        print("  [A/B] bed cloth: shading normaliser OFF (cloth keeps its facets)")
     if "--no-sconce-lens" in _post_dashdash():
         # A leg of the p2r29 sconce-aperture A/B — the blank brass cylinder
         # that measured 0 codes over its own wall
