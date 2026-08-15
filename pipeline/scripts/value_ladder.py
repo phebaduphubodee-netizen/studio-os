@@ -143,7 +143,35 @@ TONES = {
     # boxed in — the pillowcase sits at the 240 band ceiling and the sham rides ~26 codes
     # under the duvet on the SAME cloth — so the room comes from the bottom, where the
     # gaps run 17-40 codes: upholstery and coverlet each give ~2-3.
-    "upholstery": 0.188,  # bed base + foot bench + foot throw + the vanity tub chair
+    # 2026-08-15 (p2r35), 0.188 -> 0.150. THE FIRST MOVE ON THIS RUNG THAT IS NOT
+    # CHASING A TARGET, and the distinction is D-058's: the seven absolute targets in
+    # LADDER were re-anchored to our own 2026-07-28 render, so a deviation from one is
+    # a distance from an old picture, not a defect. What SURVIVES that objection is
+    # ORDER and MIN_STEP, because those are relationships between rungs. check_render
+    # on the p2r35 frame filed exactly such a failure:
+    #     upholstery (bench__seat) 162.7 and coverlet (bed__coverlet) 164.1
+    #     -> 1.4 codes apart, under MIN_STEP 10.0. They read as one piece of cloth.
+    # And it is the frame's loudest complaint said in numbers: every critic reads the
+    # bed as ONE PALE MASS, and the bench is the largest foreground object in it (8.0%
+    # by id mask) sitting at the coverlet's own value. The spec asks for the opposite in
+    # its own words — the upholstery "grounds the bed and keeps the foreground BELOW the
+    # bedding behind it".
+    #
+    # THE MOVE IS INVERTED PER OBJECT FROM THIS FRAME, not from another piece's slope.
+    # One authored albedo renders 106.3 / 139.6 / 162.7 on base / throw / bench, so the
+    # light — not the cloth — is what spread this rung across 57 codes. Decoding each
+    # rendered code to linear and dividing by the authored 0.188 gives each object's own
+    # illumination factor on this frame: base 0.77, throw 1.39, bench 1.94. At 0.150 the
+    # same three predict 96 / 126 / 147, i.e. a bench->coverlet gap of ~17 codes against
+    # a floor of 10, with the rung's internal order untouched.
+    # PREDICTED, therefore CHECKED by check_render on the next full render, never
+    # asserted (D-053). Bounce falls with albedo, so the true response is slightly
+    # steeper than this and the prediction should land a little DARK — which is the
+    # direction with margin.
+    # DISCLOSED, unchanged from the note below: this rung also dresses the wardrobe's
+    # linen garments and folded knits, and they darken with it. That is one identity and
+    # one change, which is the point of the table.
+    "upholstery": 0.150,  # bed base + foot bench + foot throw + the vanity tub chair
     #                       (D3-1/D3-4), and the wardrobe's linen garments + folded knits,
     #                       which wear the same suite token (styling.TOK_LINEN). DISCLOSED:
     #                       deepening this rung deepens those too — one identity, one change.

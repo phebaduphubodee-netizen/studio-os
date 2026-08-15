@@ -327,6 +327,39 @@ def _score_deliverable(name, quick=False, frame=True):
         print("LADDER -- NOT RUN: no id mask beside this render (the bed's tonal "
               "structure was not measured on this frame)")
 
+    # ---- THE P2 EXIT HARNESS, WIRED (p2r35). `p2_exit.py` holds the rungs that
+    # decide whether the phase can close — and it had ZERO consumers: no build, no
+    # gate, no module in this repo ever invoked it, so its verdicts existed only on
+    # the rounds a builder remembered to type the command. That is this repo's
+    # signature defect (a queue whose consumer never visits it) sitting inside the
+    # instrument that judges the phase, and it is exactly how `value_probe` went
+    # twelve rounds unread before p2r31 wired it three blocks above.
+    #
+    # Spawned out of process for the same LAYER reason as every other pixel rung
+    # here: p2_exit reads pixels through PIL, which Blender's bundled Python does not
+    # have. Never read them through bpy inside a gate module.
+    #
+    # EXIT CODES ARE THE SAME CONTRACT AS deliverable_check: 1 = a declared cut is
+    # broken, which is a SCORE and must not kill a build whose whole purpose is to
+    # climb it; 2 = COULD NOT RUN, which prints as could not run and never as clean.
+    # Quick frames are skipped by the harness itself (a playblast is not the
+    # deliverable's size), so this only fires on full fidelity.
+    if frame and not quick and os.path.isfile(_beauty) and os.path.isfile(dump_path):
+        _xr = subprocess.run(
+            [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "p2_exit.py"), _beauty, "--scene", dump_path,
+             "--tag", name],
+            capture_output=True, text=True, encoding="utf-8",
+            errors="replace", env=env)
+        for ln in (_xr.stdout or "").splitlines():
+            print(f"P2EXIT {ln}")
+        if _xr.returncode not in (0, 1):
+            for ln in (_xr.stderr or "").splitlines()[-4:]:
+                print(f"P2EXIT !! {ln}")
+            print(f"P2EXIT -- COULD NOT RUN (exit {_xr.returncode}) — this is not a pass")
+    elif frame and not quick:
+        print("P2EXIT -- NOT RUN: no beauty frame or scene dump beside this render")
+
 
 def configure_cycles(samples=128, res=None):
     """Pin the engine of record + device + sampling. CYCLES because EEVEE needs EGL/Xvfb
@@ -1521,6 +1554,12 @@ _DUVET_LOFT = True
 # the exact reverted-by-omission defect class D-032 names. Opt back in per
 # experiment with --duvet-tucks; flip the default only with a passing gate.
 _DUVET_TUCKS = False
+# p2r35: the eye lane's directional key. DEFAULT OFF until a rendered pair decides it —
+# the A leg must reproduce the shipped p2r34 frame exactly, or the comparison is against
+# a memory instead of an image. B leg: --key-sun (optionally --key-sun=<W> for the loud
+# bracket the amplitude-bisect law requires before a settled value is chosen).
+_KEY_SUN = False
+_KEY_SUN_W = 2.0
 _GRAVITY_RAMP = True
 _BENCH_DENT = True
 # p2r29 (P4-parallel head a): the sconces' EMITTING APERTURES. The story state
@@ -4279,6 +4318,126 @@ def _add_story_daylight(spec):
     return n
 
 
+# The scene's sun direction is NOT a new number: `_sky_environment` already declares
+# one for the Nishita sky (sun_elevation 0.55 rad, sun_rotation 2.3 rad), and the key
+# below is derived from it so the cast shadows agree with the sky the room is standing
+# under. Typing a second, different sun angle here would be the same defect as a typed
+# z next to a declared contact (R9) — one direction, one source.
+KEY_SUN_ELEVATION = 0.55
+KEY_SUN_ROTATION = 2.3
+# The real sun subtends 0.526 deg = 0.00918 rad. Using the physical value rather than a
+# chosen softness is what makes the shadow edge honest; every softening knob in this
+# scene already lives in the AREA emitters.
+KEY_SUN_ANGLE = 0.00918
+
+
+def _add_key_sun(spec):
+    """A DIRECTIONAL key for the eye lane — the light this frame has never had.
+
+    WHAT THE MEASUREMENT FOUND (p2r34, five parallel probes). Two independent critics
+    named the same thing from opposite ends: one said every fixture is on and nothing is
+    lit, the other said the bed reads as one moulded shell. The instruments agreed and
+    then explained it: 463.7 W of the frame's 592.2 W come from AREA/point emitters, the
+    largest a 3.77 x 2.69 m daylight portal standing 0.78 m behind the camera, which
+    projects a 388 mm penumbra onto a 50 mm bench leg. The four bench legs measure
+    -1.8 / -18.4 / -4.1 / -4.6 codes against the rug beneath them, under the repo's own
+    MIN_STEP of 10 that defines "reads as one thing". No SUN object is created anywhere
+    on this lane: `add_suite_camera`'s dollhouse branch makes one (build_room.py:731) and
+    `_hero_camera` deliberately refuses one, but `--eye` was never given either.
+
+    SO THIS IS NOT A TUNING KNOB. With no near-parallel source in the scene, a contact
+    shadow is not weak — it is geometrically unavailable, and no material, exposure or
+    cloth change can produce one. That is why four rounds of cloth work did not move the
+    critics' first item.
+
+    IT ENTERS THROUGH THE GLASS, which is what makes it honest rather than a cheat: the
+    room's openings are glazed back in, so a sun outside is blocked by the walls and
+    reaches the floor only where the drawing put an opening. The story AREA portals stay
+    exactly as they are — they carry the 6500 K sky pole (D-033); this adds the beam that
+    a sky without a sun does not have.
+
+    STORY-ONLY AND FLAGGED. Off, the frame is byte-identical to p2r34.
+    """
+    if not _KEY_SUN:
+        return 0
+    # AZIMUTH IS DERIVED FROM THE GLASS, not from the sky's number. The first bracket
+    # put the beam at the sky's declared rotation 2.3 rad = 131.8 deg and a ray-cast of
+    # the built scene showed why nothing arrived: 0 of 13 panes see the sun, and from
+    # the camera the sun's direction is blocked by the ceiling at 3.16 m. The room's
+    # actual glazing faces 270 deg (glass__0_* , 15.4 m2 — by far the largest) and
+    # 180 deg (glass__5_*, 5.9 m2); 131.8 deg reaches NEITHER, so the declared sun
+    # shines on solid wall. The story's own daylight portals emit from those same panes,
+    # so the two halves of one daylight story disagreed about where the sun is. Taking
+    # the area-weighted inward normal of the portals makes the beam agree with the
+    # apertures the drawing actually has (R9: derive from the thing, never type a
+    # second number that has to be kept in sync by hand).
+    _az = None
+    try:
+        _cam = spec.get("eye_camera") or {}
+        _ports = _e5.daylight_portals(spec, _cam.get("stand_mm"), _cam.get("aim_mm"))
+        _sx = sum(-p["nx"] * p["area_m2"] for p in _ports)
+        _sy = sum(-p["ny"] * p["area_m2"] for p in _ports)
+        if _sx or _sy:
+            _az = math.atan2(_sy, _sx)
+    except Exception as _ae:                             # noqa: BLE001
+        print(f"  key sun: portal azimuth unavailable ({_ae}) — falling back to the "
+              f"sky's declared rotation, which a ray-cast has already shown reaches "
+              f"no pane on this plan")
+    _rot = _az if _az is not None else KEY_SUN_ROTATION
+    if _az is not None and abs(_az - KEY_SUN_ROTATION) > 0.05:
+        print(f"  key sun: DISAGREEMENT NAMED — the sky declares sun_rotation "
+              f"{KEY_SUN_ROTATION:.2f} rad ({math.degrees(KEY_SUN_ROTATION):.0f} deg) "
+              f"but the daylight portals face {math.degrees(_az):.0f} deg. The beam "
+              f"follows the GLASS; the sky texture is left alone this round so the "
+              f"A/B tests one change, and aligning it is the named next step.")
+    sd = bpy.data.lights.new("key_sun", type='SUN')
+    sd.energy = _KEY_SUN_W
+    sd.color = _e5.DAYLIGHT_RGB
+    try:
+        sd.angle = KEY_SUN_ANGLE
+    except Exception:                                    # noqa: BLE001
+        pass
+    # AND THE GLASS MUST STOP CASTING A SHADOW. Cycles treats a transmissive surface as
+    # an OPAQUE blocker on shadow rays by default, so a sun outside a glazed opening is
+    # shadowed by the very window it should be shining through: the portal-derived beam
+    # arrived as a whole-frame mean of +0.34 codes at the LOUD 8 W/m2 — light was
+    # entering only as weak transmitted/caustic paths, never as a beam. Clear glass
+    # casts almost no shadow in the real world, which is why archviz turns this off; it
+    # is a correction toward physics, not a cheat. Scoped to the flag, so the A leg
+    # keeps every pane exactly as it renders today.
+    _ng = 0
+    for _o in bpy.context.scene.objects:
+        if _o.type != 'MESH':
+            continue
+        _mats = getattr(_o.data, "materials", None) or ()
+        if any(m and ("glaz" in m.name.lower() or "glass" in m.name.lower())
+               for m in _mats):
+            try:
+                _o.visible_shadow = False
+                _ng += 1
+            except AttributeError:                       # noqa: PERF203
+                pass
+    print(f"  key sun: {_ng} glazing mesh(es) made shadow-transparent — a window that "
+          f"shadows its own sunlight is the blocker a ray-cast found on this plan "
+          f"(0 of 13 panes saw the sun)")
+    so = bpy.data.objects.new(sd.name, sd)
+    # A SUN emits along its local -Z, so rotation X = 0 is the sun at ZENITH and the
+    # tilt needed for a sun `elevation` radians above the horizon is (pi/2 - elevation).
+    # The first version wrote (elevation + pi/2) = 2.12 rad, which tilts PAST horizontal
+    # and puts the sun under the floor shining at the sky: the loud 8 W/m2 leg rendered
+    # a signed mean delta of -0.07 codes over the whole frame with no cell of a 6x8 grid
+    # past +-0.7 — zero light, not weak light. Caught only because the amplitude-bisect
+    # law demands a LOUD bracket before a settled value; at the intended 2.0 W this would
+    # have read as "the mechanism does not reach the frame" and killed a correct idea.
+    so.rotation_euler = (1.5707963 - KEY_SUN_ELEVATION, 0.0, _rot)
+    bpy.context.scene.collection.objects.link(so)
+    print(f"  KEY SUN: {sd.energy:.2f} W/m2, disc {KEY_SUN_ANGLE:.5f} rad "
+          f"(the real sun's 0.526 deg), elevation {KEY_SUN_ELEVATION} rad / "
+          f"azimuth {math.degrees(_rot):.0f} deg DERIVED from the daylight portals' own "
+          f"area-weighted normals — enters through the glazed openings only")
+    return 1
+
+
 def add_interior_lights(spec, h_m):
     """Place warm ceiling lights at the SAME positions as the RCP lighting layout
     (suite_lighting), so the render is lit like the room's real fixture plan — the
@@ -5152,6 +5311,56 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     # the bed; NOT oak, D1-A anti-monopoly), soft 20 mm arris.
     emit("bed__headboard", 0.0, 0.0, 0.06, across, 0.0, 1.10,
          base_m, bevw=0.02, seg=5)
+    # p2r35 — THE HEADBOARD GETS THE UPHOLSTERY THE BASE HAS HAD SINCE r6.
+    # Two independent critics read this panel as a seamless slab, and the second put
+    # the reason in manufacturing terms rather than taste: upholstery fabric comes off
+    # a roll about 1.4 m wide, so ANY panel wider than the roll must carry a seam. This
+    # one spans the whole bed (~1.9 m) with no seam, no welt, no button and no channel
+    # anywhere — "not manufacturable" is a correct reading, and R10's SENSE test asks
+    # exactly that: could this be built.
+    #
+    # THE SEAM COUNT IS DERIVED, NOT STYLED. n_panels = ceil(across / ROLL_W) puts the
+    # minimum number of seams the fabric width forces and no more, so this is a
+    # correction toward buildability rather than a redesign of a signed piece (D3-1's
+    # identity — greige stonewashed linen — is untouched). A designed channel-tufted
+    # headboard would carry many more; choosing that number is the owner's call, and
+    # this does not pre-empt it.
+    #
+    # THE CUE IS THE ONE THE BASE ALREADY USES — a piped welt cord, same fabric, same
+    # _cyl_frustum helper, same 9 mm radius — so the bed reads as one sewn family
+    # instead of two conventions. Three copies of one idea in three functions is not
+    # "the same upholstery", it is three chances to drift (the comment the bench's own
+    # material block already makes about tone).
+    _HB_ROLL_W = 1.40           # upholstery fabric roll, trade standard; the seam driver
+    _hb_t, _hb_z1 = 0.06, 1.10
+    _hbx, _hby, _hbdx, _hbdy = box(0.0, 0.0, _hb_t, across)
+    _n_pan = max(1, int(math.ceil(across / _HB_ROLL_W - 1e-9)))
+    _seams = 0
+    for _i in range(1, _n_pan):
+        # WHICH FACE IS THE ROOM-FACING ONE — and the first cut of this block GOT IT
+        # WRONG, in the exact shape R9 names. It reasoned about world axes ("the wide
+        # extent is the run, so the thin one is the face") and then added `_hbdx` to
+        # push the cord proud, which lands it on the WALL side whenever the bed's head
+        # points at -x. The id mask settled it in one line: `bed__headboard_welt_v1`
+        # rendered ZERO pixels — a seam built, measured, reported and INVISIBLE, and
+        # `edge_shadow` had scored 0.87x on a crop that must have been reading the top
+        # cord or the panel arris instead. A crop is a REGION; only the id mask answers
+        # per OBJECT.
+        # The fix is not a corrected sign — a sign that can be wrong will be wrong
+        # again. The panel was placed by `box()` in the bed's own head->foot frame, so
+        # the room-facing face is simply `_hb_t` BACK FROM THE HEAD, and the same helper
+        # returns its world point. No axis, no sign, no nudge.
+        _cx, _cy, _, _ = box(_hb_t, across * _i / _n_pan, 0.0, 0.0)
+        _cyl_frustum(f"bed__headboard_welt_v{_i}", _cx, _cy, 0.009, 0.009,
+                     0.02, _hb_z1 - 0.04, base_m, seg=12, cap=False)
+        _seams += 1
+    # and the piped cord along the top edge — the base rings its top edge the same way
+    _rbox("bed__headboard_welt_top", _hbx - 0.006, _hby - 0.006, _hb_z1 - 0.019,
+          _hbdx + 0.012, _hbdy + 0.012, 0.016, base_m, bevw=0.0075, seg=3)
+    print(f"  headboard upholstery: {_seams} vertical welt seam(s) + top piped cord "
+          f"— {_n_pan} panel(s) across {across * 1000:.0f} mm, DERIVED from the "
+          f"{_HB_ROLL_W * 1000:.0f} mm fabric roll (a panel wider than the roll cannot "
+          f"be made in one piece)")
     # ELEMENT 8 (2026-07-22) — THE COVERLET STOPS BEING A SOLID.
     # The DD's ground phase looked at the render and named one mechanism behind "แข็ง",
     # "เหลี่ยม" and "ไม่มี style": nothing in this room DEFORMS, because every soft good was
@@ -5845,6 +6054,25 @@ def _build_bench(x0, y0, W, D, H, rot=0.0):
                                   (inset, D - inset - lt), (W - inset - lt, D - inset - lt))):
         _rbox(f"bench__leg{i}", x0 + ox, y0 + oy, 0.0, lt, lt, leg_h, leg_m, bevw=0.006)
     _rbox("bench__seat", x0, y0, leg_h, W, D, seat_h, seat_m, bevw=0.065, seg=5)  # rounder cushion (07-18)
+    # p2r35 — A WELT WAS BUILT HERE AND WITHDRAWN THE SAME ROUND. Recorded rather than
+    # deleted silently, because the withdrawal is the finding.
+    #
+    # The cue was the bed base's: a 16 mm ring + four 9 mm corner cords round the top of
+    # the cushion, answering a cold critic's "seamless inflated slab, no seam, no piping".
+    # `edge_shadow` scored it a success — 55.8% of columns dipped, 0.63x the bed-base
+    # control, READS AS AN EDGE. The eye then said it was WORSE: a proud ring round the
+    # top of a 65 mm round-over does not read as a sewn welt, it reads as the LIP OF A
+    # TRAY, and the bench stopped being upholstered at all.
+    #
+    # R7's law, paid for with my own work in one round: THE EYE FINDS WHAT IS WRONG, THE
+    # MEASUREMENT FINDS HOW MUCH. `edge_shadow` asks "is there a line here"; it has no
+    # way to ask "is this the RIGHT line", and a green instrument is not an improved frame.
+    # (The headboard seam from the same hour is kept — it reads correctly and its count is
+    # forced by the fabric roll, so it is a manufacturability fix, not a styling one.)
+    #
+    # THE DEEPER READING, which is why this is not being retried with a lower cord: a
+    # bed-end bench is LOOSE FURNITURE, the class the trade buys rather than models. Hand-
+    # detailing it is the wrong lane, not the wrong number. See gate P2r35.
     return True
 
 
@@ -7102,6 +7330,10 @@ def build_suite(spec, label="suite"):
             # p3r2: the cool garden pole through the glass the frame never
             # shows — D10's road back after the warm story dropped it to 2.45
             _add_story_daylight(spec)
+            # p2r35: the DIRECTIONAL half of that daylight. The portals above are
+            # area emitters (sky pole, wide penumbra); this is the beam, and it is
+            # the reason nothing in the frame has ever had a contact shadow.
+            _add_key_sun(spec)
     else:
         # OVERVIEW = the open-top dollhouse QA / hybrid CONTROL leg (make_all): kept on
         # the studio env so the exterior override never silently shifts the control
@@ -7456,6 +7688,23 @@ if __name__ == "__main__":
         # rung; the committed default moves only with a recorded verdict)
         globals()["_SCONCE_LENS_STRENGTH"] = float(_sls)
         print(f"  [calibration] sconce aperture emission overridden to {_sls}")
+    # `in` on the arg LIST is an exact-match test, so a bare `--key-sun` matches and
+    # `--key-sun=8` does not. The first run of this lane passed the loud value, printed
+    # nothing, rendered the A leg again and exited 0 — a flag that silently does nothing
+    # is the revert-by-omission class (D-032) wearing a calibration knob. Accept both
+    # spellings explicitly.
+    if any(a == "--key-sun" or a.startswith("--key-sun=") for a in _post_dashdash()):
+        # p2r35 A/B: the directional key derived from the declared sky sun. Defaults
+        # OFF for this round so the A leg is the shipped p2r34 frame byte-for-byte
+        # and the eye judges the pair, not a memory. Optional loud bracket for the
+        # amplitude-bisect law: --key-sun=8 renders the LOUD leg that proves the
+        # mechanism reaches the frame before the settled value is chosen.
+        globals()["_KEY_SUN"] = True
+        _ksw = next((a.split("=", 1)[1] for a in _post_dashdash()
+                     if a.startswith("--key-sun=")), None)
+        if _ksw:
+            globals()["_KEY_SUN_W"] = float(_ksw)
+            print(f"  [calibration] key sun energy overridden to {_ksw} W/m2")
     if "--adult-scale" in _post_dashdash():
         # B leg of the PARKED adult-scale lane (R1-stopped at p2r27 after three
         # quick cycles — see _ADULT_SCALE's comment: cluster anatomy breaks the

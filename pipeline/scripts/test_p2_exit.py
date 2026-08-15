@@ -15,14 +15,25 @@ import p2_exit as PE
 
 def test_registry_boxes_are_valid_fractions():
     for key, spec in PE.CROPS.items():
-        for bk in ("ours_box", "anchor_box"):
+        for bk in ("ours_box", "anchor_box", "control_box"):
             if bk in spec:
                 x0, y0, x1, y1 = spec[bk]
                 assert 0.0 <= x0 < x1 <= 1.0, (key, bk)
                 assert 0.0 <= y0 < y1 <= 1.0, (key, bk)
         assert spec["kind"] in ("octave_energy", "autocorr", "edge_profile",
-                                "dup_shells"), key
+                                "dup_shells", "shadow_line"), key
         assert spec["declared"], key  # a box with no provenance can drift
+
+
+def test_an_absence_rung_carries_its_own_positive_control():
+    """A rung whose PASS is 'we found nothing' must declare the control that proves it
+    could have found something. Two rungs in this file's history reported clean while
+    being structurally unable to see the case they were named for; this test makes the
+    control a property of the registry rather than of whoever ran it that day."""
+    for key, spec in PE.CROPS.items():
+        if spec["kind"] == "shadow_line":
+            assert "control_box" in spec, key
+            assert spec["ours_box"] != spec["control_box"], key
 
 
 def test_ql_frame_is_refused_as_could_not_run(tmp_path):
@@ -61,6 +72,26 @@ def test_tiled_figure_is_periodic():
     peak, lag, floor = PE.autocorr_peak(_panels(unique=False))
     assert peak > floor
     assert abs(lag - 90) <= 3  # the peak sits at the panel pitch
+
+
+def test_a_two_tile_repeat_is_caught():
+    """D-056, the rung's blind spot for five rounds. `wood_boards` asks about "TWO
+    adjacent veneer panels" carrying the same figure — and a crop framing exactly two
+    tiles repeats at lag W/2, which the old search bound (hi = W//2) excluded by one.
+    So the rung printed `no peak above floor` every round while being unable to see its
+    own headline case, and a cross-vendor critic filed the tiling item six times against
+    that clean. This is the control that must never go quiet again."""
+    peak, lag, floor = PE.autocorr_peak(_panels(unique=False, W=360, pitch=180))
+    assert peak > floor, "a two-panel crop of ONE repeated figure must read periodic"
+    assert abs(lag - 180) <= 4
+
+
+def test_widening_the_search_did_not_make_noise_periodic():
+    """The other half of D-056: the floor is measured through the SAME widened path,
+    so a longer search must not manufacture a peak out of shuffled noise."""
+    rng = np.random.default_rng(11)
+    peak, _, floor = PE.autocorr_peak(rng.normal(128, 20, (120, 480)))
+    assert peak <= floor
 
 
 def test_unique_figure_with_real_seams_is_not_called_tiling():

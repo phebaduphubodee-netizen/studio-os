@@ -107,6 +107,28 @@ CROPS = {
         "asks": "coincident duplicate garment shells in the built scene == 0",
         "declared": "2026-08-11 (p3r2 .blend probe found acq0==acq10 class pairs)",
     },
+    "cloth_edge": {
+        "kind": "shadow_line",
+        "asks": "where one bed cloth lies on another, the boundary CASTS A LINE "
+                "(finite thickness) instead of reading as a tonal ramp",
+        "ours_box": (0.5208, 0.5444, 0.6875, 0.6111),   # coverlet -> sheet, mid bed
+        # THE CONTROL IS PART OF THE RUNG, not an afterthought. A low score here means
+        # "no edge" only if the test demonstrably fires on an edge that certainly
+        # occludes; otherwise it means "could not see" (R11). edge_shadow refuses a
+        # verdict without it, and this box is the bed base standing on the floor.
+        "control_box": (0.6250, 0.7944, 0.7917, 0.8667),
+        # Declared as a RATIO to the control so it survives a light change: an absolute
+        # percentage would drift with exposure, a ratio is about geometry.
+        "cut_ratio": 0.5,
+        "declared": "2026-08-15 from the p2r34 frame, after both critics named the "
+                    "boundary and edge_rise_width scored it the same as a real hem "
+                    "(2-9 px hem, 5 px ours, 5 px control — a rung that cannot "
+                    "separate them). Live at declaration: ours 2.8% of columns vs "
+                    "control 93.0% = 0.03x, while the acquired pillow flange in the "
+                    "SAME frame reads 95.0% = 1.02x and our own free-hanging throw "
+                    "edge reads 92.7% = 1.00x. Same light on all four, so the defect "
+                    "is geometry, not lighting.",
+    },
 }
 
 
@@ -222,7 +244,20 @@ def autocorr_peak(L, min_lag=24, despike_win=9):
     a = L - L.mean(axis=1, keepdims=True)
     p0 = a.mean(axis=0)
     W = len(p0)
-    hi = W // 2
+    # HOW FAR TO SEARCH, and this bound was WRONG for five rounds (D-056). It was
+    # W // 2, which EXCLUDES lag = W/2 — the lag of a TWO-TILE repeat, i.e. exactly
+    # the case "two adjacent boards carrying the same figure" describes when the crop
+    # frames two boards. The rung reported `no peak above floor` on every round while
+    # being structurally unable to see its own headline case; a cross-vendor critic
+    # filed the tiling item six times against that clean.
+    # Extending to 0.75W is not a loosened threshold, it is the range the estimator
+    # already supports: `ac` below is divided by (W - lag), so each lag is normalised
+    # by its OWN overlap and a half-crop overlap is an honest sample. Past ~0.75W the
+    # overlap gets short enough that the estimate is mostly noise, so the tail stays
+    # refused rather than trusted.
+    # The floor moves with it: surrogates walk this identical path, so a wider search
+    # gives shuffled noise the same extra chances to peak and the bar rises to match.
+    hi = int(W * 0.75)
     if min_lag >= hi:
         return 0.0, 0, 0.0
 
@@ -307,6 +342,29 @@ def rung_edge(ours_im, spec):
     c = _crop(ours_im, spec["ours_box"])
     w = edge_rise_width(_lum_arr(c))
     return c, None, {"rise_px_median": round(w, 2) if w == w else None}
+
+
+def rung_shadow_line(ours_im, spec):
+    """Does the declared boundary CAST A LINE, or is it a tonal ramp?
+
+    Delegates the measurement to `edge_shadow` so the physics lives in one place and
+    carries its own tests. The rung's job here is to run the CONTROL in the same frame
+    and express the result as a ratio — an absolute dip percentage would move with
+    exposure, while the ratio to a certainly-occluding edge is about geometry.
+
+    Returns (ours_crop, control_crop, res). res["ran"] is False when the control did
+    not fire: then the frame's absence is UNREAD, and the caller must print
+    could-not-run rather than a pass."""
+    import edge_shadow as es
+    co = _crop(ours_im, spec["ours_box"])
+    cc = _crop(ours_im, spec["control_box"])
+    o_pct, o_med, o_n = es.shadow_line(_lum_arr(co))
+    c_pct, c_med, c_n = es.shadow_line(_lum_arr(cc))
+    res = {"ours_pct": round(o_pct, 1), "ours_med": round(o_med, 1), "ours_n": o_n,
+           "control_pct": round(c_pct, 1), "control_med": round(c_med, 1),
+           "control_n": c_n, "ran": c_pct >= es.CONTROL_MIN_PCT}
+    res["ratio"] = round(o_pct / c_pct, 3) if c_pct else None
+    return co, cc, res
 
 
 def rung_dup_shells(scene_path):
@@ -443,6 +501,31 @@ def run(render_path, scene_path=None, only=None, tag=None):
             else:
                 print(f"[{key}] edge 10-90% rise width median = {w} px  "
                       f"(report-only; crop: {p1})")
+
+        elif kind == "shadow_line":
+            co, cc, res = rung_shadow_line(ours_im, spec)
+            p1 = _save(co, STAGE_DIR, tag, f"{key}-ours-100pct.png")
+            _save(cc, STAGE_DIR, tag, f"{key}-control-100pct.png")
+            if not res["ran"]:
+                # The control did not fire, so a low score here is "could not see",
+                # not "no defect". Refusing is the whole reason the control is in
+                # the rung (R11).
+                could_not.append((key, f"control lined only {res['control_pct']}% "
+                                       f"of its columns — the test did not fire"))
+                print(f"[{key}] COULD NOT RUN — control fired at only "
+                      f"{res['control_pct']}% (needs >= 60%)")
+            else:
+                cut = spec.get("cut_ratio")
+                ok = cut is None or res["ratio"] >= cut
+                if not ok:
+                    broken.append(key)
+                print(f"[{key}] shadow line: ours {res['ours_pct']}% of columns "
+                      f"(median {res['ours_med']} codes) vs control "
+                      f"{res['control_pct']}% -> {res['ratio']}x"
+                      + (f" vs cut >= {cut} -> "
+                         f"{'CASTS A LINE (pass)' if ok else 'READS AS PAINT (cut broken)'}"
+                         if cut is not None else " (report-only)")
+                      + f"  (crop: {p1})")
 
     print()
     if could_not:
