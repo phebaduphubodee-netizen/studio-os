@@ -3116,3 +3116,71 @@ printing into the render path.
 Not done, deliberately: **no render.** Two known geometry defects remain open by
 measurement (the headboard's contact question, the bench's occluded datum), and a
 full frame now would spend an R1 cycle photographing them.
+
+---
+
+## 2026-08-15 — "ทำไมผมสั่งอะไรไปยังไง model ก็พังไม่เปลี่ยน", and the eight free sources
+
+A measurement session. No code changed; two audits and one live source recon were
+run, each finding handed to a second agent instructed to refute it. Full records:
+`docs/orders-vs-frame-audit-2026-08-15.md` and
+`docs/research/2026-08-15-free-model-sources-recon.md`.
+
+**The builder's own first hypothesis was the flattering one and it was refuted.**
+"His orders become machinery instead of geometry" does not hold: instrument churn
+beats geometry churn in only 5 of 11 order windows, `build_room.py` is >89%
+geometry by hunk, 26 of 32 measurable rounds changed the built geometry, and **all
+32 consecutive full-fidelity frame pairs differ in pixels — zero identical.** The
+frame moves every round. Keep this entry mostly for that: the story the builder
+wanted to tell was tested against the history and lost.
+
+**What actually holds still is the CLASS of the object.** 467 of 569 masses are
+hand-built; acquired geometry is **3.78% of the delivered pixels** (bounded 5.65%);
+**74 hand-built free-form masses** exist in a lane whose R8 forbids hand-modelling
+free form; **0 of 21 critic-debt rows has ever closed against a geometry change**;
+and `soft-goods-read-rigid` is filed in **49 of 49 rounds** across both lanes.
+
+**The mechanism, and it is the entry worth carrying forward.** An owner order gets
+translated by the builder into a TEST — and the builder then judges the test. R8's
+test ("boxes with radii?") was written from his order about deformed free-form
+models, and bed, bench, nightstand and rug all pass it, so the rule made from the
+order licenses exactly the class the order was about. Then every acquire audition
+was refused by the same builder (r33 four classes, r31 `_BED_CLOTH_ACQ = False`,
+9d8dded three of five), and **58 of 61 decisions in the log are the builder's, 3
+are the owner's.** Same family as ONE PARAMETER CARRYING TWO THINGS: the judge and
+the judged are the same object. **A test made from an order must be scored outside
+the hands that built the alternative** — blind RANK, C2/C3 — and a round that
+satisfies an order must change a PIECE, not a value.
+
+**Two channels were found leaking in the same direction.** The procurement ask was
+routed at r27 and restated in four gates, then dropped without answer or
+withdrawal (r33/r34/r35 mention it zero times). And R11 — *every mechanism must
+open the picture* — is declared `STRUCTURALLY INAPPLICABLE` for DELIV-001 at
+`rule_gate.py:474`, with 0 `pixel_claims` in the spec. The order does not run on
+the lane being built.
+
+**The owner then cancelled the spend ask himself and named eight free sources.**
+Recon verdicts, all re-fetched: **Poly Haven** works today (CC0, gltf, a free scale
+oracle accurate to 0.1 mm) but holds **zero rugs, wardrobes, curtains or modern
+beds**; **3DSky** is the only source carrying our catalogue (1,878 free rugs, 4,274
+beds, 952 curtains) and is blocked on a free registration and a 3-per-day cap, with
+no archive yet opened; **Dimensiva** is 82 models, not thousands, but ships a native
+`.blend` to bare curl; **TurboSquid is dead for us** — 5 of 20 cards on its own
+"free" grid were usable and the Editorial-Uses-Only label is invisible until the
+product page; **XOIO/Viz People** ship OBJ whose 18 of 18 `.mtl` files contain zero
+`map_` lines, so materials do not arrive at all.
+
+**And the blocker turned out to be ours again.** The whole repo contains **six
+importer calls and all six are `bpy.ops.import_scene.gltf`** — Blender 5.1 offers
+fbx/obj/usd/dae/blend and we open none of them. Three latent defects must land
+before any non-CC0 mesh is ingested: `licence_id("CC-BY-NC 4.0")` returns `cc-by`
+→ `redistributable True` (called, not read); nothing screens licence at render time
+because the audit reads `git ls-files` and the acquired shelf is gitignored; and
+cased goods have an **active opt-out** from the material rung, not a missing one,
+so a bought cabinet renders in a stranger's colour inside a signed palette.
+
+Next round is named and needs nothing from anyone: **the bed cloth set is already
+bought, scale-asserted and switched off** by `_BED_CLOTH_ACQ = False`
+(`build_room.py:1593`) because the part cut discarded `Mesh_1` at 16.7% plan area
+against a 33% threshold. Fix the cut, flip the flag, render the A/B — and let the
+blind sheet and the two critics score it, not the builder.
