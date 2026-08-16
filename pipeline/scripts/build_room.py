@@ -2666,6 +2666,33 @@ def _dress_scene(spec):
         bx, by = float(bench["x"]) * MM, float(bench["y"]) * MM
         bw, bd = float(bench["w"]) * MM, float(bench["d"]) * MM
         bh = float(bench.get("h", 450)) * MM
+        # WHAT THE BENCH CARRIES DOES NOT LEAVE WITH THE MESH IT SAT ON — the
+        # p2r33 lamp lesson, applied to the piece P2a acquires next (p2r37).
+        # Two defects, both live until this block:
+        #   (1) the throw looked up `bench__seat` BY NAME with no `else`, so an
+        #       acquired bench (named `bench__acq*`) dropped it SILENTLY;
+        #   (2) the books sat at `bz0 = bh`, a TYPED z off the spec's declared
+        #       height — and an acquired mesh fits its slot within model_fit's
+        #       0.65-1.30 height band, so a 500 mm ottoman in a 450 mm slot would
+        #       have buried both books inside itself. R9: a position that can be
+        #       derived from a contact must never be typed.
+        # So the top is MEASURED off whichever mass is actually in the scene, and
+        # no mass at all is announced rather than skipped.
+        _bench_obj = bpy.data.objects.get("bench__seat")
+        if _bench_obj is None:
+            _acq_b = [o for o in bpy.data.objects
+                      if o.type == 'MESH' and o.name.startswith("bench__acq")]
+            _bench_obj = (max(_acq_b, key=lambda o: _world_bbox([o])[1][2])
+                          if _acq_b else None)
+        _btop = _world_bbox([_bench_obj])[1][2] if _bench_obj is not None else None
+        if _bench_obj is None:
+            print("  !! lane D: no bench mass in the scene (neither a built "
+                  "`bench__seat` nor an acquired `bench__acq*`) — its books and "
+                  "throw are DROPPED, and that is a hole in a scored styling axis")
+        elif abs(_btop - bh) > 0.005:
+            print(f"  lane D: bench top MEASURED at {_btop * 1000:.0f} mm, not the "
+                  f"spec's declared {bh * 1000:.0f} — books and throw follow the "
+                  f"mass that is actually there")
         # [1] two stacked books at the south end — the bedroom's own muted boards,
         # dark board ON TOP (d1 quick: the cream book uppermost read as a tissue
         # box — an ink cover over a cream base reads "books" at one glance).
@@ -2680,14 +2707,17 @@ def _dress_scene(spec):
         # LINEAR, which displays as sRGB ~0.48 — a mid-grey wearing the word "dark".
         # A cover that reads ink needs ~0.04-0.05 linear; the one-glance "books" cue
         # is the VALUE CONTRAST between board and page block, and 0.20 never had it.
-        for bi, bc in enumerate(((0.78, 0.74, 0.68, 1.0), (0.045, 0.042, 0.040, 1.0))):
+        # no bench mass -> no books ON it (an object resting on nothing is the
+        # floating-mass defect R9b exists to catch, not a styling win)
+        for bi, bc in enumerate(() if _bench_obj is None else
+                                ((0.78, 0.74, 0.68, 1.0), (0.045, 0.042, 0.040, 1.0))):
             bm = _solid(f"bench_book{bi}", bc, rough=0.55, spec=0.4)
             bL = 0.215 - bi * 0.013
             bW = 0.155 - bi * 0.010
             bT = 0.030
             bx0 = bx + (bw - 0.215) * 0.5 + bi * 0.010
             by0 = by + 0.085 + bi * 0.007
-            bz0 = bh + bi * bT
+            bz0 = _btop + bi * bT            # MEASURED contact, never the spec's h
             brd = 0.0028                       # a hardcover board
             _rbox(f"deco__bench_book{bi}_b0", bx0, by0, bz0, bL, bW, brd,
                   bm, bevw=0.001, seg=1)
@@ -2704,10 +2734,10 @@ def _dress_scene(spec):
         # dropped by the solver onto the seat it must fall past — pinned on its
         # on-bench strip the way a tucked throw really is (the unpinned-sheet
         # slide-off is a recorded failure shape)
-        _seat = bpy.data.objects.get("bench__seat")
+        _seat = _bench_obj                      # built OR acquired; see the note above
         if _seat is not None:
             tv, tf = softgoods.folded_sheet(bx + 0.045, by + bd - 0.46, bw - 0.09,
-                                            0.66, bh + 0.02, band=0.18, head="y-",
+                                            0.66, _btop + 0.02, band=0.18, head="y-",
                                             cell=0.035, salt=11,
                                             # p2r23 (_EDGE_WANDER): the 180° crease
                                             # line wanders per column — the fourth
@@ -4515,6 +4545,31 @@ def add_interior_lights(spec, h_m):
 _UPHOLSTERED = ("sofa", "loveseat", "armchair", "chair", "lounge_chair", "stool",
                 "bench", "ottoman")
 
+# CASE GOODS — solid-carcass furniture, the second material family an acquired
+# mesh can belong to. It exists because r33 auditioned three bought nightstands,
+# all three PASSED model_fit, and the eye threw them out anyway: *"มันใส่วัสดุของ
+# ตัวเองมา"* — they arrived in a stranger's oak, clashing with the signed D3-3
+# matte-dark cabinet and the D1-A anti-monopoly rule that keeps this room from
+# becoming a fifth oak mass. The acquire path had a material policy for
+# `_UPHOLSTERED` and NOTHING for anything else, so the whole class was blocked by
+# its finish rather than by its shape.
+#
+# THIS TUPLE IS NOT A TAXONOMY OF FURNITURE and must not be read as one — it is
+# the set this room draws. A kind in neither family is REPORTED as a declared gap
+# at the acquire call site, loudly, because "no policy" and "policy says keep"
+# must not look alike (R9b's law: a rule that names the objects it applies to
+# will always exempt the next one, so the exemption prints).
+_CASE_GOODS = ("nightstand", "side_table", "cabinet", "dresser", "console",
+               "sideboard", "shelf")
+
+# The signed surface, ONE definition (D3-3: a matte-DARK cabinet pops against the
+# warm oak slat wall and is not a fifth oak mass). It was written inline inside
+# `_build_nightstand`; the acquire path needs the same values, and a second copy
+# is how the built and bought nightstands would have drifted apart in the same
+# frame.
+_CASE_GOODS_RGBA = (0.13, 0.12, 0.11, 1.0)
+_CASE_GOODS_ROUGH, _CASE_GOODS_SHEEN, _CASE_GOODS_SPEC = 0.55, 0.1, 0.4
+
 MODEL_MAP = {
     # Poly Haven's CC0 sofas are dark leather / carved wood (traditional). We use the real
     # detailed sofa_02 (tufted) but RETINT its dark upholstery to cream boucle (retint_fabric
@@ -6241,7 +6296,8 @@ def _build_nightstand(x0, y0, W, D, H, rot=0.0, lamp=None, glow=None):
     จริง") every lamp part is a turned surface of revolution inscribed in the pure
     layer's box envelope — glow or not; without glow the same round lamp simply stays
     dark (specs that have not decided lighting)."""
-    body_m  = _solid("nightstand_body", (0.13, 0.12, 0.11, 1.0), rough=0.55, sheen=0.1, spec=0.4)
+    body_m = _case_goods_material("nightstand")   # ONE definition; the bought
+    #                                               cabinet wears the same one
     _nightstand_lamp(x0, y0, W, D, H, lamp, glow, cabinet=True, body_m=body_m)
     return True
 
@@ -6575,6 +6631,17 @@ def _acquired_textile(kind):
                   _matpre.cloth_args("linen"), sheen=0.45, spec=0.35)
 
 
+def _case_goods_material(kind=None):
+    """The room's signed case-goods surface (D3-3 matte-dark cabinet).
+
+    The name stays `nightstand_body` so every name-keyed instrument in this repo
+    keeps seeing what it saw before; what changed is that the BOUGHT cabinet and
+    the BUILT one now come out of the same call instead of the same numbers typed
+    twice."""
+    return _solid("nightstand_body", _CASE_GOODS_RGBA, rough=_CASE_GOODS_ROUGH,
+                  sheen=_CASE_GOODS_SHEEN, spec=_CASE_GOODS_SPEC)
+
+
 def _retint_kwargs(mat_sel, nm, kind, has_mesh):
     """How an ACQUIRED mesh joins this room's decided palette — one definition.
 
@@ -6725,7 +6792,18 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
     roots = [o for o in news if o.parent is None] or news
     mn, mx = _world_bbox(meshes)
     mw, md = mx[0] - mn[0], mx[1] - mn[1]
-    s, ok, why = millwork.model_fit(mw, md, mx[2] - mn[2], w, d, h,
+    # TURN BEFORE FITTING (p2r37). The bed-end bench slot is long on Y and every
+    # real bench exports long on its own X; refusing the mesh for that is
+    # answering the wrong question. The decision is PURE and lives in millwork so
+    # it can be tested (layer law) — including the guard that keeps it off the
+    # cardinal quarter-turns whose w/d the generator already pre-swapped.
+    _turn, _fw, _fd, _twhy = millwork.orient_to_slot(mw, md, w, d, rot)
+    if _turn:
+        # LOUD: a turn re-aims the piece's FRONT, which is free for a bench and is
+        # not free for a chair. Never let that happen silently.
+        print(f"  ORIENT {os.path.basename(path)}: {_twhy}")
+        rot = (rot or 0.0) + _turn
+    s, ok, why = millwork.model_fit(mw, md, mx[2] - mn[2], _fw, _fd, h,
                                     model_slot=model_slot, item_slot=item_slot)
     if ok:
         # The scale is PRINTED on every acquisition, not only on a reject. A uniform
@@ -7135,10 +7213,66 @@ def build_suite(spec, label="suite"):
                 elif kind in _UPHOLSTERED:
                     _akw["retint_force"] = True          # see _ACQUIRE_FORCE_RETINT_NOTE
                     _akw["retint_ignore_metal"] = True   # glTF metallicFactor defaults to 1.0
+                    if "retint_rgba" not in _akw:
+                        # THE SIGNED VALUE, NOT THE LEGACY CREAM — caught by
+                        # looking at p2r38 (R7b: the eye finds WHAT, the
+                        # measurement finds HOW MUCH). With no element preset for
+                        # this item nothing passed an rgba, so `_retint_upholstery`
+                        # fell back to its own default (0.84, 0.79, 0.71) — the
+                        # cream boucle written for the CC0 lounge months ago. That
+                        # is **sRGB 236 against this room's signed bench value of
+                        # 108**, and the acquired bench came out the BRIGHTEST mass
+                        # in the frame. The DD forbids exactly that in words: the
+                        # bench is "the DEEPEST value in the room's soft goods...
+                        # do NOT lighten it toward the bedding". Same family as the
+                        # case-goods gap below: the BUILT piece read the value
+                        # ladder and the BOUGHT one did not, so one frame carried
+                        # both answers.
+                        _akw["retint_rgba"] = _vl.rgba(
+                            _ACQUIRED_TEXTILE_RUNG.get(kind, "stool_uph"))
+                        _akw.setdefault("retint_rough", 0.94)
+                        _akw.setdefault("retint_sheen", 0.45)
+                        print(f"  retint '{nm}': no element preset, so the SIGNED "
+                              f"value-ladder rung "
+                              f"'{_ACQUIRED_TEXTILE_RUNG.get(kind, 'stool_uph')}' "
+                              f"supplies the colour (never _retint_upholstery's "
+                              f"legacy cream)")
                     print(f"  retint {_ACQUIRE_FORCE_RETINT_NOTE}")
                     if _has_surface is None:
                         print("  !! could not read the asset's map roles — retinting "
                               "rather than replacing, which is the reversible half")
+                elif kind in _CASE_GOODS and "retint_rgba" not in _akw:
+                    # THE R33 BLOCKER, and it was never about shape: all three
+                    # bought nightstands passed model_fit and the eye threw them
+                    # out for arriving in a stranger's oak. Same derived rule the
+                    # upholstered branch uses (asset_scale.carries_a_pbr_surface):
+                    # KEEP an incoming surface that exists, REPLACE one that does
+                    # not. An element preset, if the spec declared one, has
+                    # already spoken and is not overridden here.
+                    if _has_surface is False:
+                        _akw = {"replace_material": _case_goods_material(kind)}
+                        _arf = False
+                        print(f"  case goods '{nm}': the mesh brought colours and "
+                              f"no surface — replaced with the signed D3-3 "
+                              f"matte-dark carcass")
+                    else:
+                        _akw.update(retint_rgba=_CASE_GOODS_RGBA,
+                                    retint_rough=_CASE_GOODS_ROUGH,
+                                    retint_sheen=_CASE_GOODS_SHEEN,
+                                    retint_force=True, retint_ignore_metal=True)
+                        _arf = True
+                        print(f"  case goods '{nm}': keeping the mesh's own relief, "
+                              f"taking its colour to the signed D3-3 matte-dark "
+                              f"carcass (D1-A: not a fifth oak mass)")
+                elif "retint_rgba" not in _akw:
+                    # DECLARED GAP, printed. `_UPHOLSTERED` and `_CASE_GOODS` are
+                    # the two families this room has decided a finish for; a kind
+                    # in neither keeps whatever the uploader gave it, and that has
+                    # to be visible in the log rather than discovered in a frame.
+                    print(f"  !! NO MATERIAL POLICY for acquired kind '{kind}' "
+                          f"('{nm}') — it will render in the finish a stranger "
+                          f"uploaded it in. Add it to _UPHOLSTERED or "
+                          f"_CASE_GOODS, or declare an element preset.")
                 _pre_acq = set(bpy.data.objects)
                 if place_model(_mp, xm, ym, wm, dm, hm,
                                rot=model_rot(rot, str(_mdl)),

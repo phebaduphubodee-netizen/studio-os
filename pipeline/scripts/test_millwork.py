@@ -1080,3 +1080,64 @@ def test_the_class_check_runs_before_the_geometry():
     _, ok, why = M.model_fit(*NATIVE["Sofa_01"], 0.501, 0.498, 0.520,
                              model_slot="seating", item_slot="case")
     assert not ok and "class mismatch" in why and "aspect" not in why
+
+
+# --- orient_to_slot: turn the mesh before judging it (p2r37) --------------------
+# r33 refused a real bench mesh at 35% fill and read it as a sourcing problem. It
+# was an orientation problem: the slot is long on Y because the bed's foot runs
+# that way, and no bench is exported long on its own Y.
+
+def test_a_bench_mesh_turns_to_meet_a_slot_that_is_long_the_other_way():
+    turn, fw, fd, why = M.orient_to_slot(0.622, 0.433, 0.498, 1.000, rot=0.0)
+    assert turn == 90.0 and (fw, fd) == (1.000, 0.498)
+    assert "long on x" in why and "long on y" in why
+    # and the refusal it converts: 35% before, passing after
+    _s, ok_before, why_before = M.model_fit(0.622, 0.433, 0.433, 0.498, 1.000, 0.450)
+    assert not ok_before and "35%" in why_before
+    s, ok_after, _ = M.model_fit(0.622, 0.433, 0.433, fw, fd, 0.450)
+    assert ok_after and 0.70 < min((0.622 * s) / fw, (0.433 * s) / fd) < 0.73
+
+
+def test_a_cardinal_quarter_turn_is_never_double_swapped():
+    """The generator PRE-SWAPS w/d for a 90/270 item so fit-then-rotate lands the
+    world AABB on the drawn bbox (model_fit's own docstring). Turning again here
+    would undo that and reject correctly placed furniture."""
+    for rot in (90.0, 270.0, -90.0, 450.0):
+        turn, fw, fd, why = M.orient_to_slot(0.622, 0.433, 0.498, 1.000, rot=rot)
+        assert turn == 0.0 and (fw, fd) == (0.498, 1.000)
+        assert "PRE-SWAPPED" in why
+
+
+def test_rot_180_does_not_transpose_so_the_turn_is_allowed():
+    turn, _fw, _fd, _why = M.orient_to_slot(0.622, 0.433, 0.498, 1.000, rot=180.0)
+    assert turn == 90.0
+
+
+def test_a_near_square_piece_is_never_re_aimed_on_a_3_percent_difference():
+    """The stool is 510 x 546 and the chair that fills it is 432 x 536. Turning
+    either would re-aim a FRONT on noise."""
+    turn, fw, fd, why = M.orient_to_slot(0.432, 0.536, 0.510, 0.546, rot=0.0)
+    assert turn == 0.0 and (fw, fd) == (0.510, 0.546)
+    assert "square enough" in why
+
+
+def test_agreeing_axes_are_left_alone():
+    turn, _fw, _fd, why = M.orient_to_slot(1.600, 0.700, 2.000, 0.900, rot=0.0)
+    assert turn == 0.0 and "already agree" in why
+
+
+def test_the_turn_lands_the_world_footprint_inside_the_declared_rect():
+    """Fit to the SWAPPED slot, then rotate 90: the world footprint comes back to
+    (w, d). That is why the turn does not overflow the drawn bbox."""
+    w, d = 0.498, 1.000
+    turn, fw, fd, _why = M.orient_to_slot(1.264, 0.451, w, d, rot=0.0)
+    s, ok, _ = M.model_fit(1.264, 0.451, 0.432, fw, fd, 0.450)
+    assert ok and turn == 90.0
+    fitted_x, fitted_y = 1.264 * s, 0.451 * s          # before the turn
+    world_x, world_y = fitted_y, fitted_x              # after the 90 deg turn
+    assert world_x <= w + 1e-9 and world_y <= d + 1e-9
+
+
+def test_degenerate_input_returns_the_slot_unchanged():
+    turn, fw, fd, why = M.orient_to_slot(0.0, 0.4, 0.5, 1.0, rot=0.0)
+    assert turn == 0.0 and (fw, fd) == (0.5, 1.0) and "degenerate" in why

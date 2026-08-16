@@ -38,6 +38,18 @@
    "axis": "z",
    "asserted_mm": 160.0,
    "asserted_on": "2026-08-10"
+  },
+  "Ottoman_01": {
+   "class": "ottoman",
+   "axis": "z",
+   "asserted_mm": 624.3,
+   "asserted_on": "2026-08-16"
+  },
+  "ClassicNightstand_01": {
+   "class": "nightstand",
+   "axis": "z",
+   "asserted_mm": 700.0,
+   "asserted_on": "2026-08-16"
   }
  },
  "model_assertions_note": "P2r-9 (2026-08-16). EVERY MODEL REFERENCE ASSERTS ITS OWN SIZE HERE, AS DATA, and pipeline/scripts/model_assert_check.py diffs each row against that file's own `<asset>.scale.json` sidecar AND against a live re-measure of the file, on every build. WHY IT IS A FIELD AND NOT A SENTENCE: until today these numbers lived only in the `*_note` prose beside them, and on p2r36 `bed_models_note` asserted 2198.1 mm on y for ub806591a — the size of 2b142a32, the candidate this lane REJECTED. The file's own sidecar read 1599.9 mm and was right the whole time, but nothing compared the two, so a 1505x1600 mm duvet was scaled onto a 2000x2149 mm bed and its hem came to rest on the mattress face. The owner saw it in one sentence before any instrument did. A measurement kept where only a human re-reading prose can check it is not a measurement. `asserted_on` is provenance and is not checked; class/axis/asserted_mm are, three ways, and a row nothing references is refused by name.",
@@ -850,7 +862,9 @@
    "w": 498,
    "d": 1000,
    "h": 450,
-   "note": "ELEMENT 3: foot-of-bed upholstered bench (INK x2654.5-3152.8 y625.8-1625.6, was spec 504x1002 — matched to ink; ~51mm gap to the bed foot, centred on the bed). D3-4: upholstered greige LINEN (matches the bed base) — the foreground-layering mass that builds depth (color-composition single-large-focal). _build_bench already renders it; material = the fabric family."
+   "note": "ELEMENT 3: foot-of-bed upholstered bench (INK x2654.5-3152.8 y625.8-1625.6, was spec 504x1002 — matched to ink; ~51mm gap to the bed foot, centred on the bed). D3-4: upholstered greige LINEN (matches the bed base) — the foreground-layering mass that builds depth (color-composition single-large-focal). _build_bench already renders it; material = the fabric family.",
+   "model": "Ottoman_01",
+   "model_note": "P2a (p2r37) — R8 ACQUIRE. The bed-end bench becomes the CC0 Ottoman_01. Chosen on a MEASURED discriminator, not taste: of the nine cached candidates that fit this slot, only the two committed CC0 assets carry any PBR maps at all (normal + metallicRoughness); every 3D Warehouse candidate is shape with flat base colours and no relief. P2's own exit test is texture-map coverage and no flat-shaded silhouette, so the asset that brings a surface wins the slot. It reaches the frame at all only because of p2r37's orient_to_slot: this slot is 498 x 1000 — long on Y, because the bed's foot runs that way — and every bench ever exported is long on its own X, so model_fit refused four real benches at 35-55% fill. Turned a quarter and fitted to the swapped slot, the same meshes fill 70-72% and the world footprint lands back inside the drawn rect. `bench` is in _UPHOLSTERED and this mesh HAS a surface, so its relief is kept and only its colour is taken to the signed greige linen (D1-A: the bed base, bench and throw are one textile family and the deepest value in the room's soft goods). Scale ASSERTED as `ottoman` — the NUMBER is data in `model_assertions`, diffed against the file's own sidecar and a live re-measure on every build (P2r-9). Reverse: delete `model` from this item; the bespoke builder runs exactly as before."
   },
   {
    "name": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)",
@@ -871,7 +885,9 @@
     "decision": "D3-3 (element3-bed_DD-2026-07-18.md): matte-DARK low cabinet (pops vs the warm oak headboard wall; NOT a 5th oak mass) + a brass DOME/'mushroom' table lamp (the drawing's round lamp symbol / ref image #3). CCT 2850K = warm band, CCT-safe with the 3000K ceiling (residential-lighting#L45-54); output dim vs the garden windows (PH-02, render-defects#L51), 323-538 lux at the reading plane (lumen-method#L73). Brass = the 10% accent.",
     "ref": "element3-bed_DD-2026-07-18.md"
    },
-   "note": "NE of bed head against BF14; INK x4701.8-5203.2 y2200.1-2698.4 (~501x498, was spec 300x300) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12 แก้ from the p2r26 image: top sat 80mm below the mattress plane and the lamp read unusable — h derived from the MATTRESS DATUM, top = mattress 600 - 20; ergonomics mattress-relative band; recorded D-045; plan ink has no heights)"
+   "note": "NE of bed head against BF14; INK x4701.8-5203.2 y2200.1-2698.4 (~501x498, was spec 300x300) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12 แก้ from the p2r26 image: top sat 80mm below the mattress plane and the lamp read unusable — h derived from the MATTRESS DATUM, top = mattress 600 - 20; ergonomics mattress-relative band; recorded D-045; plan ink has no heights)",
+   "model": "ClassicNightstand_01",
+   "model_note": "P2a (p2r37) — R8 ACQUIRE. The bedside cabinet becomes the CC0 ClassicNightstand_01. Chosen on a MEASURED discriminator, not taste: of the nine cached candidates that fit this slot, only the two committed CC0 assets carry any PBR maps at all (normal + metallicRoughness); every 3D Warehouse candidate is shape with flat base colours and no relief. P2's own exit test is texture-map coverage and no flat-shaded silhouette, so the asset that brings a surface wins the slot. r33 auditioned three bought nightstands, ALL THREE PASSED model_fit, and the eye threw them out anyway — *มันใส่วัสดุของตัวเองมา* — because the acquire path had a material policy for upholstery and none at all for case goods, so a bought cabinet arrived in a stranger's oak against the signed D3-3 matte-dark and D1-A's anti-monopoly rule. p2r37 adds that policy (_CASE_GOODS), derived the same way the upholstery one is: KEEP an incoming surface that exists, REPLACE one that does not. This mesh has one, so its relief survives and its colour goes to the same `nightstand_body` material the HAND-BUILT cabinet uses — one definition, so the bought and the built cannot drift apart in one frame. The brass dome lamp (D3-3) rests on the acquired top's MEASURED face and is untouched. Scale ASSERTED as `nightstand` — the NUMBER is data in `model_assertions`, diffed against the file's own sidecar and a live re-measure on every build (P2r-9). Reverse: delete `model` from this item; the bespoke builder runs exactly as before."
   },
   {
    "name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
@@ -893,7 +909,9 @@
     "decision": "D3-3 (element3-bed_DD-2026-07-18.md): matte-dark low cabinet + brass dome lamp, twin of the NE nightstand. Its south half (y-450..-148) stands in front of the glz-east glass return — a lamped side table before the SE garden glass.",
     "ref": "element3-bed_DD-2026-07-18.md"
    },
-   "note": "SE of bed head against BF14; INK x4701.8-5203.2 y-450.2-51.3 (~501x501, was spec 300x294) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12 แก้ from the p2r26 image: top sat 80mm below the mattress plane and the lamp read unusable — h derived from the MATTRESS DATUM, top = mattress 600 - 20; ergonomics mattress-relative band; recorded D-045; plan ink has no heights)"
+   "note": "SE of bed head against BF14; INK x4701.8-5203.2 y-450.2-51.3 (~501x501, was spec 300x294) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12 แก้ from the p2r26 image: top sat 80mm below the mattress plane and the lamp read unusable — h derived from the MATTRESS DATUM, top = mattress 600 - 20; ergonomics mattress-relative band; recorded D-045; plan ink has no heights)",
+   "model": "ClassicNightstand_01",
+   "model_note": "P2a (p2r37) — R8 ACQUIRE. The bedside cabinet becomes the CC0 ClassicNightstand_01. Chosen on a MEASURED discriminator, not taste: of the nine cached candidates that fit this slot, only the two committed CC0 assets carry any PBR maps at all (normal + metallicRoughness); every 3D Warehouse candidate is shape with flat base colours and no relief. P2's own exit test is texture-map coverage and no flat-shaded silhouette, so the asset that brings a surface wins the slot. r33 auditioned three bought nightstands, ALL THREE PASSED model_fit, and the eye threw them out anyway — *มันใส่วัสดุของตัวเองมา* — because the acquire path had a material policy for upholstery and none at all for case goods, so a bought cabinet arrived in a stranger's oak against the signed D3-3 matte-dark and D1-A's anti-monopoly rule. p2r37 adds that policy (_CASE_GOODS), derived the same way the upholstery one is: KEEP an incoming surface that exists, REPLACE one that does not. This mesh has one, so its relief survives and its colour goes to the same `nightstand_body` material the HAND-BUILT cabinet uses — one definition, so the bought and the built cannot drift apart in one frame. The brass dome lamp (D3-3) rests on the acquired top's MEASURED face and is untouched. Scale ASSERTED as `nightstand` — the NUMBER is data in `model_assertions`, diffed against the file's own sidecar and a live re-measure on every build (P2r-9). Reverse: delete `model` from this item; the bespoke builder runs exactly as before."
   },
   {
    "name": "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)",

@@ -901,6 +901,48 @@
    "reverse_by": "ลบบล็อก sidecar ใน `_model_path` (คืน hits[0] เหมือนเดิม) · ถ้าอยากให้ asset ตัวใดผ่าน: `python pipeline/scripts/asset_scale.py --sidecar <file> <class>`",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-064",
+   "unit": "DELIV-001",
+   "decided_round": 38,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "ทำไม mesh ม้านั่งของจริงถูก model_fit ปฏิเสธที่ fill 35% ทั้งที่มันคือม้านั่ง",
+   "in_effect": "**หมุนก่อนวัด** — `millwork.orient_to_slot` (pure, 7 tests): ถ้าแกนยาวของ mesh กับแกนยาวของช่องไม่ตรงกัน หมุน 90 องศาแล้ว fit เข้าช่องที่สลับแกน · ช่องม้านั่งของห้องนี้ยาวตามแกน Y เพราะปลายเตียงวางตามนั้น ส่วนม้านั่งในโลกความจริงทุกตัว export ยาวตามแกน X ของตัวเอง — คำถามที่ model_fit ถามจึงเป็นคำถามเรื่องรูปทรง ทั้งที่ของจริงคือเรื่องการวางแนว · วัดแล้ว: 4 ใน 5 candidate ที่เคยตกกลายเป็นผ่าน (Ottoman_01 0.802 · e73605b0 0.791 · 250b8e09 0.769 · 37c1bc3a 1.150) ส่วน 125e8377 ยังตกด้วยเหตุผลจริง (สูง 274 มม. ในช่อง 450) · **guard มาจาก docstring ของ model_fit เอง ไม่ได้เลือกเอง**: w/d ในสเปกคือมิติ LOCAL ที่ยังไม่หมุน และ generator สลับให้ล่วงหน้าแล้วสำหรับ 90/270 — หมุนซ้ำตรงนี้จะเป็นการสลับสองรอบ ฉะนั้น orient_to_slot ปฏิเสธที่จะทำงานบน 90/270 และพิมพ์บอก · **ยืนยันจาก scene ที่สร้างจริง ไม่ใช่จากการอนุมาน**: stool (rot 270, สเปก 510x546) ลงที่ world x = 546 (pre-swap เป็นจริง) ส่วน bench (ไม่มี rot) ลงตรงตาม 498x1000 ที่ประกาศไว้ — ข้ออ้างของ r33 ที่ว่าสเปกนี้เก็บ w/d เป็น world footprint จึงถูกหักล้างสำหรับทาง acquire",
+   "because": "R8 บอกให้ซื้อของ free-form และเราซื้อมาแล้ว แต่ประตูของเราปฏิเสธมันด้วยคำถามที่ตอบไม่ตรงเรื่อง · การไปลด MIN_FILL คือการปิดกฎที่เขียนไว้จับ pancake/blob ซึ่งเป็น defect จริง",
+   "where": "pipeline/scripts/millwork.py, pipeline/scripts/build_room.py",
+   "reverse_by": "ใน place_model ส่ง w, d เข้า model_fit ตรง ๆ แทน _fw, _fd แล้วลบ orient_to_slot + 7 tests",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-065",
+   "unit": "DELIV-001",
+   "decided_round": 38,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "ของที่ซื้อมาจะใส่วัสดุของห้องนี้ยังไง และของที่วางอยู่บนมันจะรอดไหมตอนเปลี่ยนตัวรอง",
+   "in_effect": "สามอย่างในตระกูลเดียวกัน — **ของที่สร้างเองอ่านค่าที่เซ็นไว้ ของที่ซื้อมาไม่อ่าน** · (1) **_CASE_GOODS**: ตู้ที่ซื้อมาได้นโยบายวัสดุเป็นครั้งแรก กติกา derive แบบเดียวกับฝั่งเบาะ (carries_a_pbr_surface) — มี surface เก็บไว้แล้วเปลี่ยนแค่สี ไม่มี surface แทนทั้งใบ — และสีมาจาก `_case_goods_material` ซึ่งเป็น call เดียวกับที่ตู้ที่สร้างเองใช้ ฉะนั้นตู้ซื้อกับตู้ปั้นดริฟท์ออกจากกันในเฟรมเดียวไม่ได้ · kind ที่ไม่อยู่ในสองตระกูล **พิมพ์บอกว่าไม่มีนโยบาย** แทนที่จะเงียบ · (2) **retint ใช้ค่าที่เซ็นไว้**: ไม่มี element preset = ไม่มีใครส่ง rgba = `_retint_upholstery` ตกไปใช้ default ครีมของตัวเอง (sRGB 236) ขณะที่ค่าม้านั่งที่เซ็นไว้คือ **108** — เฟรมแรกม้านั่งที่ซื้อมาจึงเป็นมวลที่สว่างที่สุดในห้อง ซึ่ง DD ห้ามไว้เป็นตัวอักษร วัดได้: crop p95 225 เทียบ frame p95 215 (ก่อน) → 195 เทียบ 211 (หลัง) · (3) **ของบนม้านั่งไม่หายไปกับม้านั่ง**: ผ้าคลุมหา `bench__seat` ด้วยชื่อและไม่มี else → ม้านั่งที่ซื้อมาชื่อ `bench__acq*` ผ้าจึงหายเงียบ ๆ (D7 7→6 โดยไม่มีบรรทัดบอก) และหนังสือวางที่ z ที่ **พิมพ์มือ** จาก h ในสเปก ทั้งที่ ottoman จริงสูง 501 ในช่อง 450 → หนังสือจะจมอยู่ในตัวมัน · ทั้งคู่ derive จากมวลที่อยู่ในฉากจริง และ build พิมพ์ว่า 'bench top MEASURED at 501 mm'",
+   "because": "R9: ตำแหน่งที่ derive จาก contact ได้ ห้ามพิมพ์ · และรูปเดิมซ้ำอีกครั้ง — p2r33 ทำโคมไฟหายตอนเปลี่ยนตู้ แก้ไปแล้วหนึ่งจุด แต่รูปเดียวกันยังมีชีวิตอยู่ห่างออกไปหนึ่งชิ้น",
+   "where": "pipeline/scripts/build_room.py",
+   "reverse_by": "ลบ branch `elif kind in _CASE_GOODS` · ลบบล็อก `if \"retint_rgba\" not in _akw` ใน branch upholstered · คืน `_seat = bpy.data.objects.get(\"bench__seat\")` และ `bz0 = bh + bi*bT`",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-066",
+   "unit": "DELIV-001",
+   "decided_round": 38,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "เอา mesh ตัวไหนมาเป็นม้านั่งปลายเตียงและตู้หัวเตียง",
+   "in_effect": "**bench = Ottoman_01 · nightstand ทั้งสองใบ = ClassicNightstand_01** (เก้าอี้ = tub_chair_c เดิม, หมอน = 8a57766d เดิม) ทุกตัวมี row ใน `model_assertions` และผ่าน gate P2r-9 · เลือกด้วยเกณฑ์ที่**วัดได้** ไม่ใช่รสนิยม: ใน 9 candidate ที่ fit ช่องเหล่านี้ มีแค่ **2 ตัวที่เป็น CC0 ที่ commit ไว้เท่านั้นที่มี PBR map เลย** (normal + metallicRoughness) ที่เหลือจาก 3D Warehouse เป็นรูปทรงกับสีแบน ไม่มี relief — และ exit test ของ P2 คือ texture coverage · **สิ่งที่ผมไม่เซ็น และบอกก่อนถูกถาม: รูปทรงของ Ottoman_01 เป็น pouf ทรงป่องขาโค้งแบบคลาสสิก อยู่ในห้อง slat wall โมเดิร์น — ค่าสีถูกแล้ว ขนาดถูกแล้ว แต่ฟอร์มผมว่าไม่ใช่** และเกณฑ์ PBR ที่ผมใช้อาจผิดสำหรับของบุนโดยเฉพาะ เพราะห้องนี้มีผ้าลินินที่เซ็นไว้พร้อม relief จริง — ม้านั่ง 3DW ที่เรียบกว่าแล้ว replace_material อาจชนะการเก็บ normal map ของคนอื่น · ยังไม่ผ่าน C2/C3 และนี่คือ quick rung เท่านั้น",
+   "because": "P2a สั่งให้ acquire ทั้งสี่คลาสผ่าน place_model พร้อม assert scale ทุก import — ทำครบแล้ว · การเลือกตัวจริงเป็นเรื่องของตา ซึ่ง R3 บอกว่าพี่ overrule จากภาพได้ทุกเมื่อ",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r38-2026-08-16.md",
+   "reverse_by": "ลบ key `model` ออกจาก items[2] / items[3] / items[4] แล้วลบ row ของมันใน model_assertions — builder เดิมทำงานเหมือนเดิมทุกประการ · เปลี่ยนตัว: shortlist ที่วัดแล้วอยู่ใน gate §1 (e73605b0 · 250b8e09 · 37c1bc3a)",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

@@ -770,6 +770,59 @@ def tub_chair_curved(w_m, d_m, h_m, seat_h_m=0.43, rot_deg=0.0, opening_deg=110.
 MIN_FILL = 0.62                 # the mesh must fill >= 62% of EACH plan-footprint axis
 H_LO, H_HI = 0.65, 1.30         # resulting height vs the spec's declared height
 
+# Below this, a plan rectangle is "square enough" that its long axis is not a fact
+# about the object. Turning a near-square mesh to match a near-square slot would
+# be re-aiming a chair's FRONT on the strength of a 3% difference in its bbox.
+SQUARE_ENOUGH = 1.15
+
+
+def orient_to_slot(mw, md, w, d, rot=0.0):
+    """PURE. (turn_deg, fit_w, fit_d, why) — should this mesh be turned a quarter
+    turn before it is fitted, and what slot should it then be fitted to?
+
+    WHY THIS IS NEEDED, MEASURED (p2r37). r33 offered a real bench mesh (622 x 433
+    mm) to this room's bed-end bench slot (498 x 1000 mm) and `model_fit` refused
+    it at 35% fill. The refusal is arithmetically right and answers the wrong
+    question: the slot is long on Y and every bench ever exported is long on its
+    own X, so the mesh does not need to be a different bench, it needs to be
+    turned. Turned, the same mesh fills 71.5% and passes. Three cached candidates
+    pass this way; none passed before.
+
+    WHY IT IS SAFE ONLY FOR NON-TRANSPOSING ROTATIONS, and this guard is derived
+    from `model_fit`'s own docstring rather than chosen: a spec item's w/d are the
+    piece's LOCAL, UN-ROTATED dims, and the generator PRE-SWAPS them for a cardinal
+    90/270 so that fit-then-rotate lands the world AABB back on the drawn bbox.
+    Turning here as well would double-apply that pre-swap and start rejecting
+    correctly placed furniture — the exact failure that docstring warns about. At
+    rot 0 and 180 the footprint does not transpose, so no pre-swap was applied and
+    there is nothing to double. VERIFIED against the built scene: the stool
+    (rot 270, spec 510 x 546) lands 546 mm on world x — the pre-swap holds — while
+    the bench (no rot) lands exactly its declared 498 x 1000.
+
+    A turn costs the item's FRONT a quarter turn, which is free for a bench and is
+    not free for a chair. That is why the caller adds `turn` to `rot` and prints
+    it: a facing that changed must be visible, never inferred from a render.
+    """
+    if min(mw, md, w, d) <= 1e-9:
+        return 0.0, w, d, "degenerate bbox — no orientation to derive"
+    transposing = round(float(rot or 0.0) / 90.0) % 2 == 1
+    if transposing:
+        return 0.0, w, d, (f"rot {float(rot or 0.0):.0f} transposes the footprint, so this "
+                           f"item's w/d were PRE-SWAPPED by the generator; turning "
+                           f"here would double-apply that swap")
+    ar_m = max(mw, md) / min(mw, md)
+    ar_s = max(w, d) / min(w, d)
+    if ar_m < SQUARE_ENOUGH or ar_s < SQUARE_ENOUGH:
+        return 0.0, w, d, (f"square enough to have no long axis worth matching "
+                           f"(mesh {ar_m:.2f}:1, slot {ar_s:.2f}:1, floor "
+                           f"{SQUARE_ENOUGH})")
+    if (mw > md) == (w > d):
+        return 0.0, w, d, "mesh and slot already agree on which axis is long"
+    return 90.0, d, w, (f"mesh is long on {'x' if mw > md else 'y'} and the slot is "
+                        f"long on {'x' if w > d else 'y'} — turned 90 deg and "
+                        f"fitted to the swapped slot, which lands the world "
+                        f"footprint back inside the declared rect")
+
 
 def model_fit(mw, md, mh, w, d, h, model_slot=None, item_slot=None):
     """PURE. Can a mesh with native bbox (mw, md, mh) be UNIFORMLY scaled into the spec slot
