@@ -2,7 +2,7 @@
   "_law": "WHAT I ASKED HIM — the other direction of the same channel `qa/owner-orders.json` holds. An ask here has three states and no fourth: OPEN, ANSWERED (his words + the date), or WITHDRAWN (with a reason). It may not simply stop being asked, which is what happened to every row below.",
   "_why_it_exists": "Measured 2026-08-16, by fan-out over the gate artifacts, the plan, the decision register and docs/: TWENTY-ONE asks were routed to the owner and then dropped. The repo's own audit had already found one of them and written the sentence in these words — 'It was not answered and not withdrawn; it stopped being asked' (docs/orders-vs-frame-audit-2026-08-15.md:81) — and then that audit was a DOCUMENT, so nothing consumed it and four more rounds dropped four more asks. The sharpest instances: `owner_questions_carried_forward` in scene-graph.json has ZERO readers in the whole repo; `floor2-owner-decision-queue.md` exists solely to hold five owner questions and has not been opened in 36 days; the r19 pair was abbreviated to the bare tokens 'Q1 · Q2' across eight gates until the questions themselves were no longer written down anywhere; and the blind RANK sheet was REMOVED as a finish-line condition at r34 precisely because it had gone unanswered — the one rung that looked at the picture, deleted for not being answered, four rounds before he said the frame was nowhere near done.",
   "_the_rule": "NOTHING HERE BLOCKS ANYTHING — R3, his order of 2026-08-08: 'เอาผมออกจาก gate เลย ไม่ต้องรอผม'. He reads RENDERS, not documents, so this ledger prints in the render path and at every session open, with each ask's AGE IN DAYS. Age is the metric because the failure mode is not refusal, it is silence on our side. If an ask stops being worth asking, the builder WITHDRAWS it with a reason and the row stays.",
-  "_count_floor": 23,
+  "_count_floor": 24,
   "asks": [
     {
       "id": "ASK-001",
@@ -214,6 +214,15 @@
       "status": "open",
       "money": "no",
       "note": "D-021 บอกว่า R1 cap ไม่ใช้กับ room lane เพราะ cap ประกาศต่อ unit ใน curriculum-caps.json — แล้วไม่เคยมีแถว DELIV-001 ถูกเพิ่มเลย grep นับได้ 0 ตลอด 44 รอบ ตัวหยุดยังทำงาน (R1 หยุดเลนนี้หลายครั้ง) แต่ตัวนับไม่มี"
+    },
+    {
+      "id": "ASK-024",
+      "ask": "ม้านั่งปลายเตียงที่แบบวาดเป็น 498 x 1000 มม. (1:2.0) — ในแคชฟรีไม่มีตัวไหนเป็นทรงนั้นเลย ตัวที่ใช้อยู่ (Ottoman_01) เติมได้ 709 จาก 1000 มม. และกรรมการ blind อ่านว่า 'ที่นอนสองชั้นซ้อนกัน สูงเกือบเท่าเตียง เบียดทางเดิน' — ซื้อตัวที่ทรงถูกมั้ย",
+      "first_routed": "2026-08-16",
+      "where": "qa/open-decisions.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "status": "open",
+      "money": "yes — ฿0 ถ้าเจอฟรี, $5-15/โมเดลที่ 3dsky",
+      "note": "D-069 ยื่นเป็น SOURCING GAP เมื่อ 08-16 จากการค้นชั้นฟรีล้วน — rung ที่สร้างรอบนี้จับได้และเปลี่ยนเป็น procurement ask ที่มีราคา · กรรมการ blind ยืนยันด้วยตาโดยไม่เห็นแบบเลย"
     }
   ]
 }
