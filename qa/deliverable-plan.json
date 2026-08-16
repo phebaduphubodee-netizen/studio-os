@@ -55,6 +55,12 @@
    "claim": "The image rows cannot fail our best frame, and that is a measurement rather than a disappointment. ld1 passes 5 of 6 scored image rows; a sighted judge looking at the same frame called it not sendable and named blob pillows, cut-out garments, white-box books, plasticky uniform roughness and an amber cast. The rows can see exactly one of those five. Separately: the first band-limited detail metric moved 3.45x on pure noise while being called band-limited, and only its negative control said so.",
    "do": "Treat D1-D6 as a FLOOR, never as sufficient. D8/D9 are mandatory and require a scene dump, so P1 must produce one — without it the standard only checks tone, which is the half we already pass. The critic ladder and the owner's eye stay terminal (SC-2). And no threshold in deliverable-standard.json may be edited to make our frame pass: recut it from a fresh census or leave it alone.",
    "phase": "P1"
+  },
+  {
+   "id": "SC-7",
+   "claim": "An owner order lived in this repo as prose, in fields no checker read, and a builder decision reversed one with every rung green. A fan-out found eight instances of the shape and 21 asks dropped in the other direction.",
+   "do": "His orders are rows the machine holds (qa/owner-orders.json), asserted against the actual code; my asks are rows with ages that cannot leave their file (qa/owner-asks.json); a sourcing gap must have searched the tiers R8 permits (qa/sourcing-tiers.json). All three print at session open and in the render path, and block only on the builder's side. R13 in CLAUDE.md.",
+   "phase": "all"
   }
  ],
  "phases": [
@@ -368,6 +374,13 @@
      "what": "BED CLOTH SURFACE, AND THE PARAMETER THAT OWNS IT. p2r43 fixed the bed's VALUE (check_render CLEAN for the first time since 2026-07-23, coverlet inside delivered work's 0.51-0.67 band) and BOTH critics still named the cloth first: C3 'ผ้าห่มดูแข็งทื่อ เหมือนแผ่นพลาสติก ไม่มีน้ำหนัก', C2 'reads as painted rigid plastic, not cloth'. Measured: mask-scoped weave energy on bed_throw's own pixels = 0.577x of delivered work, while the frame's whole-image octave structure PASSES (D5 11.03 in a 6.45-12.80 band) - so this is a per-cloth surface question and the frame-level rung cannot see it. THE MECHANISM, and it is the tonal ladder's own defect one parameter over: SHEEN has no owner. One signed cloth family (D3-2 stonewashed linen) is authored at sheen 0.2 (bed_base), 0.3 (bed_coverlet), 0.7 (bed_duvet) and 0.8 (bed_pillow), typed at four _woven call sites, exactly as each builder used to type its own colour tuple before value_ladder existed. 0.7-0.8 in Blender's Principled is a satin/velvet lobe, not linen. AND IT IS NOT COSMETIC: sheen measurably owns the top of the value ladder - the albedo gamma measured per rung falls 1.11 (sheen 0.2) -> 0.73 (0.3) -> 0.22 (0.7) -> 0.41 (0.8), so a sheen change moves the ladder and must go THROUGH value_ladder, not beside it. DO: give sheen a rung table in value_ladder beside TONES, set the linen family to one value, re-solve the affected tones with the 3-point power fit (the method is validated: every rung landed within 3.3 codes of prediction this round), and check the weave energy on the cloth's OWN pixels against delivered work. CHEAP NOW: BUILD_ROOM_MASK_ON_QUICK=1 measures a material change on a playblast - controlled this round at 0.2 codes (bed__mattress 136.3 full vs 136.5 quick). CLOSE: mask-scoped weave energy >= 0.8x of delivered work on the bed cloth's OWN pixels, check_render still CLEAN, and neither critic top-3 carries a cloth-surface item. SCOPE CORRECTED p2r44: this row was written against bed_throw / bed_duvet / bed_coverlet, which are the HAND-SIMULATED bakes his 2026-08-14 and 2026-08-15 orders took out of this frame — so as written it is work on the class he removed. The mechanism survives the correction intact and is arguably sharper on the acquire leg: an acquired mesh wears retinted materials (D-065/D-077) whose sheen is typed at the retint site exactly as the four _woven call sites typed theirs, so SHEEN STILL HAS NO OWNER and the rung table in value_ladder is still the fix. Measure it on the acquired cover mask, not on bakes that no longer exist.",
      "status": "todo",
      "why": "Three independent judges - C2, C3 and the builder's own LOOK - named the same item first on p2r43, and the owner's verdict that opened this round was about the same cloth. Re-scoped to the acquired cloth at p2r44 (ORD-2026-08-14/08-15).",
+     "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py"
+    },
+    {
+     "id": "P2r-14",
+     "what": "THE ACQUIRED CLOTH'S TONE HAS NO ENFORCER. p2r44 carried out his 2026-08-14/08-15 orders and the acquired cover now renders 163.5 where the coverlet rung's signed target is 142.0 (+21.5, tolerance +-8.0) — REPORTED and not enforced, because D-077 rules that an acquired rung is scored on ORDER and SPAN only. That rule's REASON is sound (the point target was solved on the solver's own geometry under one light, and scoring a bought mesh against another mesh's figure is this repo's own named defect) and its CONSEQUENCE is not: the frame now ships 21 codes off the ladder the DD signed, with no rung able to object. DO: give an acquired rung a target that is honestly ITS OWN — either retint the cover into the signed tone the way case goods already are (D-065) and enforce the point target on the retinted material, or derive a per-acquisition target from the ANCHOR POOL (R4) rather than from our own earlier render (D-058's refusal still binds: never re-anchor to what our frame happens to show). CLOSE: every visible ladder rung is either enforced or carries a target derived from something outside this lane's own output, and the gate prints which is which.",
+     "status": "todo",
+     "why": "Named by the round that fixed the order, in the gate that fixed it — obeying the order created this gap, and a gap created by obedience is exactly the kind that gets absorbed silently.",
      "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py"
     }
    ],
@@ -2076,8 +2089,54 @@
     "P2/P2r-9",
     "P3/P3a"
    ]
+  },
+  {
+   "commit": "0a0a1a6bc05bb5ca1203ae91c4eae86b402e577e",
+   "verdicts": {
+    "P2": "change: P2r-13 is re-scoped from the hand-simulated bakes (which his 2026-08-14/08-15 orders removed from this frame) to the ACQUIRED cover, where the same defect is sharper — sheen is typed at the retint site exactly as it was typed at the four _woven call sites. AND ONE NEW ROW IS OWED: the acquired cover renders 163.5 against the coverlet rungs signed target of 142.0 with NO rung stopping it, because our own acquired-rung rule (D-077) reports rather than enforces a point target. That rule is right about WHY (the target was solved on the solvers geometry) and wrong about WHAT FOLLOWS — the frame now ships 21 codes off the signed ladder unopposed. P2 stays open; clause (3) has not been re-run since the acquisition.",
+    "P4": "keep: styling density is still measured at 7 loose objects in frame against our own target of 12, and nothing this round touched it. It stays after P2 in the phase order he corrected on 08-16.",
+    "P3": "keep: light stays after objects — his 2026-08-08 order, now a row in qa/owner-orders.json with an assertion against the plan array itself. Both critics have named light first for three rounds running and that stays RECORDED, not acted on.",
+    "P5": "change: blocked stands, but the reason is now written down as ASK-006 with an age rather than as a phase note — the blind RANK sheet was removed as a finish-line condition at r34 for having gone unanswered, which CLAUDE.md R11 already calls the removal of the only condition that looked at the picture. It is in the ask ledger now, printing at every session open, so it can be answered or withdrawn with a reason instead of quietly staying blocked."
+   },
+   "changed": [
+    "P2",
+    "P5"
+   ],
+   "note": "p2r44 — R13: his orders became rows the machine holds, and the bed-cloth order was then carried out. Review #49.",
+   "done_at_review": [
+    "DRW/DRW-1",
+    "DRW/DRW-1b",
+    "DRW/DRW-2",
+    "DRW/DRW-3",
+    "DRW/DRW-4",
+    "DRW/DRW-5",
+    "P0/P0a",
+    "P0/P0b",
+    "P0/P0c",
+    "P0/P0d",
+    "P0/P0e",
+    "P0/P0f",
+    "P1/P1a",
+    "P1/P1b",
+    "P2/P2a",
+    "P2/P2b",
+    "P2/P2d",
+    "P2/P2e",
+    "P2/P2f",
+    "P2/P2g",
+    "P2/P2j",
+    "P2/P2k",
+    "P2/P2r-1",
+    "P2/P2r-3",
+    "P2/P2r-4",
+    "P2/P2r-6",
+    "P2/P2r-7",
+    "P2/P2r-8",
+    "P2/P2r-9",
+    "P3/P3a"
+   ]
   }
  ],
- "last_review_commit": "613ad5d3783920ef5bbc700a20ec2df78eb5ed11",
+ "last_review_commit": "0a0a1a6bc05bb5ca1203ae91c4eae86b402e577e",
  "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
