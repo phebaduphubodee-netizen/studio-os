@@ -362,9 +362,16 @@
      "status": "todo",
      "why_now": "p2r41: both independent critics made this their SINGLE FIX, from different vendors and different prompts, and our own rung structurally cannot see it. That is the R7b pairing working exactly as written — the eye found WHAT is wrong and named a question no instrument here asks.",
      "refuted_designs": "TWO designs were built and MEASURED on p2r39 and p2r41 the same afternoon the row was filed, and NEITHER separates the frame both critics failed from anything else. Recorded so the next session does not re-invent them. (1) READABLE PERIMETER — walk each bedding mask's outline, step 3 px inward and outward along the outward normal, count the share of perimeter with a luminance difference >= 3 codes (frame-border perimeter excluded and reported). RESULT: 89.8-96.0% on EVERY bedding material on BOTH legs, including the pillow that certainly reads. It fails because a material boundary almost always carries some albedo step, so it answers 'is there contrast at the outline' when the critics are saying 'there is no hem, seam or selvedge to find'. Code deleted rather than left with a corrected docstring: a metric that cannot separate is worse than a missing one, and one left in the tree gets wired. (2) FLAT SHARE vs DELIVERED WORK — share of a cloth's own eroded core pixels whose local 4-32 px band energy falls below the delivered anchor comforter's own p10 (0.417). RESULT: coverlet 6.3% / throw 11.5% / pillow 1.6% on p2r39 against coverlet 10.1% / duvet 1.4% / pillow 1.2% on p2r41, i.e. both legs sit around a delivered comforter's own 10% by construction. Bedding pixels below the delivered floor come to 0.94% and 0.91% of the whole frame on the two legs — against C2's 'nearly a quarter of the frame'. WHAT THAT LEAVES: the eye is reading something at a scale or of a kind neither the 4-32 px band nor the outline captures, and the next attempt should start by finding a measurement that PUTS THE TWO LEGS APART FIRST, on frames whose verdicts are already known, before any cut is declared."
+    },
+    {
+     "id": "P2r-13",
+     "what": "BED CLOTH SURFACE, AND THE PARAMETER THAT OWNS IT. p2r43 fixed the bed's VALUE (check_render CLEAN for the first time since 2026-07-23, coverlet inside delivered work's 0.51-0.67 band) and BOTH critics still named the cloth first: C3 'ผ้าห่มดูแข็งทื่อ เหมือนแผ่นพลาสติก ไม่มีน้ำหนัก', C2 'reads as painted rigid plastic, not cloth'. Measured: mask-scoped weave energy on bed_throw's own pixels = 0.577x of delivered work, while the frame's whole-image octave structure PASSES (D5 11.03 in a 6.45-12.80 band) - so this is a per-cloth surface question and the frame-level rung cannot see it. THE MECHANISM, and it is the tonal ladder's own defect one parameter over: SHEEN has no owner. One signed cloth family (D3-2 stonewashed linen) is authored at sheen 0.2 (bed_base), 0.3 (bed_coverlet), 0.7 (bed_duvet) and 0.8 (bed_pillow), typed at four _woven call sites, exactly as each builder used to type its own colour tuple before value_ladder existed. 0.7-0.8 in Blender's Principled is a satin/velvet lobe, not linen. AND IT IS NOT COSMETIC: sheen measurably owns the top of the value ladder - the albedo gamma measured per rung falls 1.11 (sheen 0.2) -> 0.73 (0.3) -> 0.22 (0.7) -> 0.41 (0.8), so a sheen change moves the ladder and must go THROUGH value_ladder, not beside it. DO: give sheen a rung table in value_ladder beside TONES, set the linen family to one value, re-solve the affected tones with the 3-point power fit (the method is validated: every rung landed within 3.3 codes of prediction this round), and check the weave energy on the cloth's OWN pixels against delivered work. CHEAP NOW: BUILD_ROOM_MASK_ON_QUICK=1 measures a material change on a playblast - controlled this round at 0.2 codes (bed__mattress 136.3 full vs 136.5 quick). CLOSE: mask-scoped weave energy >= 0.8x of delivered work on bed_throw and bed_duvet, check_render still CLEAN, and neither critic's top-3 carries a cloth-surface item.",
+     "status": "open",
+     "why": "Three independent judges - C2, C3 and the builder's own LOOK - named the same item first on p2r43, and the owner's verdict that opened this round was about the same cloth.",
+     "files": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py"
     }
    ],
-   "exit_test": "REOPENED BAR (owner overrule 2026-08-11; ratified 'ok' after the builder argued against a raw C3-item-count cut — the argument and counter-proposal are in gate-DELIV001-P3r2's addendum thread). To close P2: (1) the r7 rows all still hold — D5/D8/D9 PASS, MODEL-FIT REJECT 0, imported >=8, QUALIFIES; (2) FOUR 100% crops judged beside anchors, one per judged defect class, run by the P2r-7 harness: DUVET fold-structure energy (the r7 throw-crop method), TWO ADJACENT WOOD BOARDS (autocorrelation: no periodic peak), RUG EDGE (rollover, not a 90-degree step), GARMENT SHELLS (coincident duplicate pairs = 0 from the built scene); (3) OWNER-RATIFIED JUDGE CLAUSE, outside the builder's hands: BOTH independent critics (C2 blind-local + C3 cross-vendor) file no surface-realism item in their top 3, AND the ACCEPTED-after-triage surface-realism items across both critics total <= 2 — every refutation must carry a measurement the owner can audit and overrule from the image; (4) REPORTING LINE, not a cut: C3's raw item count prints at every gate so the trend stays visible (7 at p3r1, 5 at p3r2). The owner overrules any of this from the image at any time.",
+   "exit_test": "REOPENED BAR (owner overrule 2026-08-11; ratified 'ok' after the builder argued against a raw C3-item-count cut — the argument and counter-proposal are in gate-DELIV001-P3r2's addendum thread). To close P2: (1) the r7 rows all still hold — D5/D8/D9 PASS, MODEL-FIT REJECT 0, imported >=8, QUALIFIES; (2) FOUR 100% crops judged beside anchors, one per judged defect class, run by the P2r-7 harness: DUVET fold-structure energy (the r7 throw-crop method), TWO ADJACENT WOOD BOARDS (autocorrelation: no periodic peak), RUG EDGE (rollover, not a 90-degree step), GARMENT SHELLS (coincident duplicate pairs = 0 from the built scene); (3) OWNER-RATIFIED JUDGE CLAUSE, outside the builder's hands: BOTH independent critics (C2 blind-local + C3 cross-vendor) file no surface-realism item in their top 3, AND the ACCEPTED-after-triage surface-realism items across both critics total <= 2 — every refutation must carry a measurement the owner can audit and overrule from the image; (4) REPORTING LINE, not a cut: C3's raw item count prints at every gate so the trend stays visible (7 at p3r1, 5 at p3r2). The owner overrules any of this from the image at any time. (5) SECOND REPORTING LINE, added 2026-08-16 after review: the DELIVERED-WORK VALUE BAND. The friend's duvet planes measure 0.505-0.674 of their own frame's 99th-percentile luma; ours are printed the same way at every gate. It is a line and not a cut because the ladder's own signed targets are the authority on value and one of them (duvet 181 = 0.80 of p99) sits above this band - which is a question to settle against the ANCHOR POOL (R4), not a rung to fail a frame on today.",
    "exit_result": "SUPERSEDED — the r7 MET record moved to exit_result_superseded_r7; the reopened bar above is unmet as of 2026-08-11.",
    "_reviewed": true,
    "_owner_reopen": "OWNER OVERRULE 2026-08-11 (R3 — locked to him): ผมไม่เห็นด้วยที่ข้าม phase 2 ไป. The r7 close stood on its exit test (crops + QUALIFIES), but the p3r2 critique tables are still dominated by SURFACE-REALISM findings — bedding reads as felt (both critics' #1), wood figure tiles, rug edge reads printed, garments read cardboard — and the builder's review routed them to P4 (density), which relabels P2-class work instead of doing it. The owner overruled that routing from the image. P2 reopens with those findings as its work list; P4 waits behind it. The exit test below was too narrow and is allowed to be wrong (plan law); it is superseded by the reopen list.",
@@ -2022,8 +2029,55 @@
     "P2/P2r-9",
     "P3/P3a"
    ]
+  },
+  {
+   "commit": "613ad5d3783920ef5bbc700a20ec2df78eb5ed11",
+   "verdicts": {
+    "P2": "change: the phase closes on surface realism and this round proved the frame was losing on VALUE first, which no exit rung measured. cloth_edge, the octave rungs and the C3 count were all green on the frame the owner rejected by eye. ADD a P2 work row for the bed cloth SURFACE (sheen has four values for one signed identity, typed at four call sites, and nothing owns it) and ADD the delivered-work value band (duvet planes at 0.51-0.67 of frame p99) as a reporting line beside the C3 count.",
+    "P3": "keep: light is still the phase after objects and C2 filed no-light-story as its item 15, which is the plan working as written, not a defect.",
+    "P4": "keep: styling is still ahead of light in the 08-16 reorder and D7 FAIL 6 vs 12 on this frame is the same row saying so.",
+    "P5": "keep: unchanged, nothing this round touched it.",
+    "P6": "keep: unchanged, nothing this round touched it.",
+    "P7": "keep: unchanged, nothing this round touched it."
+   },
+   "changed": [
+    "P2"
+   ],
+   "note": "",
+   "done_at_review": [
+    "DRW/DRW-1",
+    "DRW/DRW-1b",
+    "DRW/DRW-2",
+    "DRW/DRW-3",
+    "DRW/DRW-4",
+    "DRW/DRW-5",
+    "P0/P0a",
+    "P0/P0b",
+    "P0/P0c",
+    "P0/P0d",
+    "P0/P0e",
+    "P0/P0f",
+    "P1/P1a",
+    "P1/P1b",
+    "P2/P2a",
+    "P2/P2b",
+    "P2/P2d",
+    "P2/P2e",
+    "P2/P2f",
+    "P2/P2g",
+    "P2/P2j",
+    "P2/P2k",
+    "P2/P2r-1",
+    "P2/P2r-3",
+    "P2/P2r-4",
+    "P2/P2r-6",
+    "P2/P2r-7",
+    "P2/P2r-8",
+    "P2/P2r-9",
+    "P3/P3a"
+   ]
   }
  ],
- "last_review_commit": "fdb6faeee6c29e945f16abb98991841fc65ad5a3",
+ "last_review_commit": "613ad5d3783920ef5bbc700a20ec2df78eb5ed11",
  "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
