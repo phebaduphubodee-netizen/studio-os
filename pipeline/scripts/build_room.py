@@ -226,7 +226,19 @@ def _score_deliverable(name, quick=False, frame=True):
     with open(dump_path, "w", encoding="utf-8") as f:
         json.dump(_dump_doc, f, indent=1, ensure_ascii=False)
     print(f"  scene dump: {len(objs)} mesh objects -> {dump_path}")
-    if frame and not quick:
+    # BUILD_ROOM_MASK_ON_QUICK=1 — the masks on a PLAYBLAST, for probing a knob
+    # (p2r42). R5 forbids a full-fidelity frame being the first look at a change,
+    # and the masks were full-fidelity-only, so measuring what a material change
+    # does to the value ladder cost a deliverable render every time. The masks
+    # are 1-sample flat-emission renders of object and material IDENTITY — they
+    # do not care about samples or resolution — and the beauty values they index
+    # move by a code or two at 48 samples, which is nothing against the 40-code
+    # questions a probe asks. It stays OFF by default and it NEVER closes a gate:
+    # the ladder's hard stop below is still `not quick`, so a probe can inform a
+    # decision and can never pass one.
+    _mask_here = frame and (not quick
+                            or os.environ.get("BUILD_ROOM_MASK_ON_QUICK") == "1")
+    if _mask_here:
         # P2r-6 — per-material id mask for the MAP-COVERAGE census. Runs ONLY
         # here, i.e. after save() and render(): build_material_mask mutates
         # every material slot in the in-memory scene and never saves (the
@@ -234,6 +246,14 @@ def _score_deliverable(name, quick=False, frame=True):
         # 1 sample / 0 bounces. A failure is loud but does not kill the build:
         # deliverable_check prints census NOT RUN for a missing mask, which is
         # the honest state — never a fabricated 0%.
+        # SNAPSHOT THE MATERIAL EACH MESH WEARS BEFORE ANY MASK MUTATES IT
+        # (p2r42). Both masks below repaint every slot in the scene and neither
+        # restores it, so after the FIRST one the question "what is this mesh
+        # made of" has no true answer left in memory — and the answer that IS
+        # there looks perfectly valid (`census__7`). The tonal ladder needs it to
+        # tell a rung renamed by an acquisition from a rung that is missing.
+        _wears = {o.name: [m.name for m in o.data.materials if m is not None]
+                  for o in bpy.data.objects if o.type == 'MESH'}
         try:
             import map_census_mask
             map_census_mask.build_material_mask(
@@ -256,7 +276,8 @@ def _score_deliverable(name, quick=False, frame=True):
         try:
             import id_mask
             id_mask.build_mask(
-                os.path.join(out, f"room_{name}.idmask.png"), ("bed__", "bench__"))
+                os.path.join(out, f"room_{name}.idmask.png"), ("bed__", "bench__"),
+                wears=_wears)
         except Exception as _e:                         # noqa: BLE001
             print(f"  ID MASK FAILED ({type(_e).__name__}: {_e}) — the tonal "
                   f"ladder will print NOT RUN, never a pass")
@@ -306,6 +327,14 @@ def _score_deliverable(name, quick=False, frame=True):
     # Blender's bundled Python does not have. It PRINTS on every render that
     # produced both a beauty frame and a mask; "could not run" prints as could
     # not run, never as clean (R11's sentence, applied to this rung).
+    # THE LADDER'S VERDICT IS CARRIED, NOT ACTED ON HERE (p2r42, second pass).
+    # The first version exited the instant the ladder failed — which suppressed
+    # every instrument AFTER it, including the P2 exit harness. A gate that
+    # silences the other gates when it fires tells you one thing about a frame
+    # and hides six, and the round that needs the other six most is the round
+    # something failed. So the stop is recorded and taken at the END, after
+    # everything has reported.
+    _ladder_stop = None
     _idm = os.path.join(_out_dir, f"room_{name}.idmask.png")
     _idj = os.path.join(_out_dir, f"room_{name}.idmask.json")
     _beauty = os.path.join(_out_dir, f"room_{name}.png")
@@ -318,11 +347,41 @@ def _score_deliverable(name, quick=False, frame=True):
             errors="replace", env=env)
         for ln in (_lr.stdout or "").splitlines():
             print(f"LADDER {ln}")
-        if _lr.returncode not in (0, 1):
+        # IT BLOCKS (p2r42). It did not, and that is the whole finding of the
+        # round: `_lr.returncode not in (0, 1)` treated exit 1 — "a rung of the
+        # signed ladder is off its target" — as a pass. The rung RAN, on every
+        # build since p2r31, PRINTED its violations, and the deliverable shipped
+        # over the top of them. That is not a queue with no consumer; it is the
+        # other one CLAUDE.md names by name, "declared mandatory and then
+        # printed as a suggestion for a human to copy", and the human it was
+        # printed for was me. Measured when the block went in, on the frame the
+        # owner had just called เละ: base +18.3, throw +37.5, coverlet +20.2,
+        # duvet +27.3, and three more rungs unscored — every visible piece of
+        # the bed's cloth 18 to 39 codes above the value its own signed ladder
+        # decided, at the focal point of the frame.
+        #
+        # 2 (and anything else) stays COULD NOT RUN, which is R11's own
+        # sentence and a different event from a fail: an unreadable mask must
+        # never print like a clean bed. Both are a hard stop on a deliverable
+        # frame; on a quick playblast neither is, because a ladder solved for
+        # this camera's light is still valid at half resolution but the mask is
+        # not written at all (see the `not quick` guard above).
+        if _lr.returncode != 0:
             for ln in (_lr.stderr or "").splitlines()[-4:]:
                 print(f"LADDER !! {ln}")
-            print("LADDER -- COULD NOT RUN (exit "
-                  f"{_lr.returncode}) — this is not a pass")
+            _ladder_stop = ("a rung of the signed tonal ladder is off its target"
+                            if _lr.returncode == 1 else
+                            f"COULD NOT RUN (exit {_lr.returncode}) — not a pass")
+    elif frame and not quick:
+        # A DELIVERABLE FRAME WITH NO MASK IS NOT A DELIVERABLE FRAME. The mask
+        # is written a hundred lines above by this same function; if it is not
+        # here, the bed's value went unmeasured on a frame that is allowed to
+        # close a gate.
+        _ladder_stop = ("LADDER NOT RUN — no id mask beside a full-fidelity "
+                        "render, so the bed's tonal structure was not measured "
+                        "on the frame. 'Could not look' must never finish like "
+                        "'looked and it was fine'.")
+        print("LADDER !! " + _ladder_stop)
     else:
         print("LADDER -- NOT RUN: no id mask beside this render (the bed's tonal "
               "structure was not measured on this frame)")
@@ -359,6 +418,22 @@ def _score_deliverable(name, quick=False, frame=True):
             print(f"P2EXIT -- COULD NOT RUN (exit {_xr.returncode}) — this is not a pass")
     elif frame and not quick:
         print("P2EXIT -- NOT RUN: no beauty frame or scene dump beside this render")
+
+    # THE LADDER'S STOP, TAKEN LAST so every other instrument above has spoken.
+    # It is a HARD STOP and not a score, unlike deliverable_check (a standard the
+    # phases exist to climb) and p2_exit (a declared cut): the tonal ladder is the
+    # DESIGN's own decision about this bed, signed 2026-07-23, and a frame that
+    # does not show it is not a worse frame — it is a different design from the
+    # one on file.
+    if _ladder_stop and frame and not quick:
+        print(f"BUILD FAILED: {_ladder_stop}. The ladder is "
+              f"projects/PRJ-2026-002_c001-house/03_layout/"
+              f"element3-bed_TONAL-LADDER-2026-07-23.md; re-solve the tone in "
+              f"value_ladder.TONES, never the target in LADDER — re-anchoring a "
+              f"target to what the render happens to show is scoring the frame "
+              f"against itself.")
+        sys.stdout.flush()
+        os._exit(1)
 
 
 def configure_cycles(samples=128, res=None):
@@ -6460,7 +6535,7 @@ _UPHOLSTERY_KW = ("pillow", "cushion", "fabric", "upholst", "leather", "seat",
 
 
 def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all=False,
-                       rough=0.9, ignore_metal=False):
+                       rough=0.9, ignore_metal=False, rung=None):
     """Recolour a model's UPHOLSTERY to cream boucle (DR: #F5F0E9, rough 0.8-0.9, Sheen 0.7-1.0)
     while leaving wood frames and metal legs alone. Because CC0 models drive Base Color from a
     DIFFUSE TEXTURE, we DISCONNECT that texture and set a flat cream, KEEPING the roughness +
@@ -6506,6 +6581,17 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
         rg = b.inputs.get("Roughness")
         if rg is not None and not rg.is_linked:
             rg.default_value = rough
+        # THE MATERIAL SAYS WHICH VALUE-LADDER RUNG IT IS ON (p2r42). A retint
+        # recolours a material in place and KEEPS THE UPLOADER'S NAME, so the
+        # acquired bench renders in a material called `Ottoman_01` while carrying
+        # this room's signed `bench_seat` value. Every instrument that asks "what
+        # is this mesh's tone" reads the mat mask, sees a stranger's noun, and
+        # concludes the object is outside the value system — which is exactly
+        # what value_ladder concluded, correctly, from the evidence available to
+        # it, on a piece that was in fact on the rung. Renaming costs nothing and
+        # turns the render itself into the record of the decision.
+        if rung:
+            m.name = f"acq_{rung}"
     return n, skipped_metal
 
 
@@ -6659,7 +6745,8 @@ def _normalise_acquired(meshes, weld_mm=0.01, sharp_deg=30.0):
 def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
                 retint_rgba=None, retint_sheen=None, retint_rough=None,
                 retint_force=None, model_slot=None, item_slot=None,
-                retint_ignore_metal=False, replace_material=None, tag=None):
+                retint_ignore_metal=False, replace_material=None, tag=None,
+                retint_rung=None):
     """Import a gltf, UNIFORMLY scale it to fit the item footprint (undistorted), set it
     footprint-centred at (x,y) with its base at height z0 (0 = on the floor; >0 = on a
     table for decor), then rotate it `rot` degrees about world Z (so a chair can face the
@@ -6831,7 +6918,8 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
                                 ("rough", retint_rough)) if v is not None}
         force = retint_force if retint_force is not None else (len(mats) == 1)
         n_re, skipped = _retint_upholstery(mats, force_all=force,
-                                           ignore_metal=bool(retint_ignore_metal), **kw)
+                                           ignore_metal=bool(retint_ignore_metal),
+                                           rung=retint_rung, **kw)
         # A MECHANISM THAT RAN AND CHANGED NOTHING MUST SAY SO. This is the whole
         # lesson of the green chair: the retint fired, matched zero materials, and was
         # silent about it, so the render was the first thing that could tell anyone.
@@ -7109,6 +7197,11 @@ def build_suite(spec, label="suite"):
                 elif kind in _UPHOLSTERED:
                     _akw["retint_force"] = True          # see _ACQUIRE_FORCE_RETINT_NOTE
                     _akw["retint_ignore_metal"] = True   # glTF metallicFactor defaults to 1.0
+                    # p2r42 — the retinted material takes the RUNG's name, so the
+                    # mat mask records which value-ladder rung this bought mesh is
+                    # on. Without it the frame's own evidence says `Ottoman_01`
+                    # and every instrument reads the piece as outside the ladder.
+                    _akw["retint_rung"] = _ACQUIRED_TEXTILE_RUNG.get(kind, "stool_uph")
                     if "retint_rgba" not in _akw:
                         # THE SIGNED VALUE, NOT THE LEGACY CREAM — caught by
                         # looking at p2r38 (R7b: the eye finds WHAT, the

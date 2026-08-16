@@ -171,7 +171,36 @@ TONES = {
     # DISCLOSED, unchanged from the note below: this rung also dresses the wardrobe's
     # linen garments and folded knits, and they darken with it. That is one identity and
     # one change, which is the point of the table.
-    "upholstery": 0.150,  # bed base + foot bench + foot throw + the vanity tub chair
+    # 2026-08-16 (p2r42), 0.150 -> 0.077, AND THE SAME SOLVE ON THREE OTHER RUNGS
+    # BELOW. The owner looked at the frame and said *"ผ้าบนเตียงยังเละอยู่เลย"*.
+    # check_render on that frame, run by hand because nothing failed on it:
+    #     base 91.3 (+18.3) · throw 127.5 (+37.5) · coverlet 162.2 (+20.2) ·
+    #     duvet 208.3 (+27.3), tolerance +-8 — and three rungs unscored.
+    # Every visible rung ABOVE its target, the whole cloth stack riding at the top
+    # of the frame's range: measured against the delivered-work anchors, their
+    # duvet planes sit at 0.51-0.67 of their own frame's 99th-percentile luma and
+    # ours sat at 0.77-0.93. A bed that is the brightest mass in the room has no
+    # value left to separate its own layers with, which is what "เละ" measures as.
+    # (Fold structure was NOT the defect and was tested first: on a rectangle
+    # wholly inside one cloth, delivered duvets run 2.30-6.36 octave energy and
+    # ours 2.13-5.77 — inside the band. Ten rounds of crease/drape work had been
+    # aimed at a metric that was never off.)
+    # SOLVED, NOT NUDGED: for a diffuse surface under fixed light the rendered
+    # linear value is albedo x an illumination factor, so each rung's own factor
+    # comes from THIS frame (linear(rendered) / authored tone) and the tone that
+    # lands the signed target is linear(target) / factor. Where one tone serves
+    # several objects the answer is their area-weighted log mean, which is the
+    # least-squares fit in the space the solve is linear in.
+    # bench__seat is EXCLUDED from this rung's solve, measured not assumed: the
+    # id/mat mask cross-reference shows bench__acq0 rendering in a material called
+    # `Ottoman_01`, i.e. the acquired bench is retinted from element_preset and
+    # never took this tone at all. That is its own open defect (acquired meshes
+    # escape the value system) and pulling this rung to cover it would have put
+    # base and throw 21-33 codes out.
+    # PREDICTED at 0.077: base 65.7 (-7.3) · throw 93.2 (+3.2), both inside
+    # tolerance. PREDICTED, therefore CHECKED by check_render on the next full
+    # render, never asserted (D-053) — and from p2r42 that check FAILS THE BUILD.
+    "upholstery": 0.0848,  # bed base + foot bench + foot throw + the vanity tub chair
     #                       (D3-1/D3-4), and the wardrobe's linen garments + folded knits,
     #                       which wear the same suite token (styling.TOK_LINEN). DISCLOSED:
     #                       deepening this rung deepens those too — one identity, one change.
@@ -215,11 +244,39 @@ TONES = {
     # duvet gap is 39 codes; at 179.2 it stands at 29.1, so the rung needs
     # -10.2 more codes = -0.123 tone. Predicted 169.0, gap 39.3 — and predicted
     # means CHECKED by the ladder rung on the next render, never asserted.
-    "coverlet":   0.312,  # the bed's main field, the solver-draped spread
-    "sheet":      0.68,   # the mattress/sheet edge showing under the coverlet
-    "duvet_set":  0.415,  # duvet + its turned-back fold + the two euro shams (one cloth)
-    "pillowcase": 0.868,  # the sleeping pillows — the lightest thing in the room, by design,
-    #                       and parked just under the 240 band ceiling rather than past it
+    # p2r42: the same one-step solve as `upholstery` above — each rung's own
+    # illumination factor read off the frame the owner rejected, then the tone
+    # that lands the SIGNED target. 0.312 -> 0.233 predicts the coverlet at 142.0
+    # against a target of 142.0.
+    "coverlet":   0.1820,  # the bed's main field, the solver-draped spread
+    # p2r42, 0.68 -> 0.5012, AND IT WAS THE ARMOUR THAT DEMANDED IT. The sheet is
+    # the one cloth with no rung in LADDER (unranked: 0.34% of frame, occluded),
+    # so the solve above skipped it — and the test that pins "the pillowcase is
+    # the lightest cloth" failed instantly, because dropping the other four would
+    # have left the SHEET as the brightest cloth in the room. That is not a
+    # hypothetical: on the acquired leg the mattress is 165k px of exposed
+    # near-white at 0.94 of the frame's top value, the single loudest thing in
+    # the frame.
+    # There is no target to solve against, so what is preserved is the RELATION,
+    # which is the design fact here — one hue at several values (color-composition
+    # §1). The sheet sat 0.669 of the way in log space from duvet_set to
+    # pillowcase; it still does. Predicted 153.3 -> 133.3 on the mattress.
+    "sheet":      0.3401,  # the mattress/sheet edge showing under the coverlet
+    # p2r42, 0.415 -> 0.289. This tone serves TWO rungs whose light has drifted
+    # apart (duvet needs 0.303, sham needs 0.251) and one cloth cannot land both:
+    # the area-weighted answer puts the duvet at 177.1 (-3.9, inside) and the
+    # acquired sham at ~164 (+10, outside). SPLITTING the fabric would close it and
+    # is refused — the signed design says a duvet SET is cover plus shams in ONE
+    # cloth, and inventing `bed_sham` to make a number go green is changing the
+    # design to fit the instrument. The sham is an ACQUIRED rung (ACQUIRED_AS), so
+    # its point target is reported and its ORDER and SPAN enforced; 164 sits inside
+    # the [152, 167] window MIN_STEP leaves between coverlet and duvet.
+    "duvet_set":  0.1360,  # duvet + its turned-back fold + the two euro shams (one cloth)
+    # p2r42, 0.868 -> 0.658. The old value was set to park just under the 240 sRGB
+    # band ceiling, i.e. against the BAND rather than against the render, and the
+    # render put the acquired pillows at 217-220 — the two brightest objects in the
+    # frame. 0.658 predicts 192.0 on the pillowcase rung's own target of 192.0.
+    "pillowcase": 0.5350,  # the sleeping pillows — the lightest thing in the room, by design
 }
 
 # Which build material wears which tone. The build asks BY NAME; a builder that invents
@@ -461,7 +518,85 @@ def _emitted_or_fail(objs):
               f"object (built: {sorted(BUILT_OBJECTS)}; head stems: {sorted(stems)})")
 
 
-def check_render(measured, frame=FRAME):
+# WHEN A RUNG'S OBJECT IS BOUGHT INSTEAD OF BUILT (p2r42, 2026-08-16).
+#
+# THE EVENT. p2r38 acquired the foot bench and the head cushions. `place_model`
+# names an acquired mesh `<tag>__acq<N>`, so `bench__seat` became `bench__acq0`
+# and `bed__sham0` / `bed__pillowsoft0` became `bed__headset0__acq0` and
+# `__acq1`. The CLOTH was still right — the head set is handed `HEAD_CLOTH`'s own
+# materials at placement, so both meshes render in `bed_duvet` and `bed_pillow`
+# and take those tones. Only the ladder's NAMES went stale, and `check_render`
+# has one bucket for a stale name and a missing object: "no measurement — the
+# probe did not see it (occluded, renamed, or not built)". Three of seven rungs
+# said that on every build from p2r38 to p2r41, and the build shipped anyway,
+# because the caller treated exit 1 as a note. The owner found the result by eye:
+# *"ผ้าบนเตียงยังเละอยู่เลย"*.
+#
+# WHAT IS DECLARED HERE AND WHAT IS DERIVED. The pairing — "the bench that fills
+# the bench slot is the thing the bench rung ranks" — is a DESIGN fact and cannot
+# be computed, so it is written down once, in the module that owns value. Which
+# actual mesh it is, is DERIVED: the prefix comes from `place_model`'s own naming
+# contract, the material comes from the id-mask sidecar's `wears` block, and the
+# pair has to resolve to EXACTLY ONE object. Zero is the old violation, and more
+# than one is a violation too — an ambiguous resolution that quietly picks a
+# member is how a rung starts measuring whichever mesh sorted first.
+#
+# WHAT AN ACQUIRED RUNG IS SCORED ON, AND WHY IT IS LESS. The per-rung target is
+# a POINT solved against the SOLVER object's own geometry under one light: 154
+# was measured on a built 0.80 x 0.44 standing king sham. A bought cushion is a
+# different shape with a different normal distribution, so scoring it against
+# that number is this repo's own defect of measuring one thing with another
+# thing's figure. So an acquired rung is scored on ORDER and SPAN — which are
+# claims about the BED, not about a mesh — and its distance from the point target
+# is REPORTED as a note naming the replacement. That is a real loss of grip and
+# it is written in the report rather than hidden: re-deriving the point target
+# from what the acquisition happens to render would be scoring the frame against
+# itself.
+ACQUIRED_AS = {
+    "bench__seat":      ("bench__acq", "bench_seat"),
+    "bed__sham0":       ("bed__headset0__acq", "bed_duvet"),
+    "bed__pillowsoft0": ("bed__headset0__acq", "bed_pillow"),
+}
+
+
+def resolve_acquired(obj, measured, wears):
+    """(object_name, why) for a ladder rung whose own object is absent, or
+    (None, why). `wears` = {object: [material]} from the id-mask sidecar.
+
+    Fails closed in three directions, because each of them has a different
+    answer and reporting them as one is what let p2r38 through: no declaration,
+    no sidecar, and an ambiguous match are all distinct from "not built"."""
+    dec = ACQUIRED_AS.get(obj)
+    if dec is None:
+        return None, (f"{obj!r} is not declared as an acquirable rung, so a "
+                      f"replacement for it cannot be recognised")
+    prefix, material = dec
+    if not wears:
+        return None, (f"{obj!r} may have been replaced by an acquisition "
+                      f"({prefix}*), but this mask sidecar carries no `wears` "
+                      f"block — re-run id_mask.py; a rung that cannot tell a "
+                      f"rename from a deletion must not guess")
+    # `acq_<rung>` is what a RETINT leaves behind: the mesh keeps the uploader's
+    # material object, so build_room renames it to the rung it was tinted from,
+    # and Blender may suffix a duplicate (`acq_bench_seat.001`). A REPLACED
+    # material is our own object and matches exactly. Both are the same claim —
+    # "this mesh renders on that rung" — so both resolve.
+    def _on_rung(ms):
+        return any(m == material or m.startswith("acq_" + material)
+                   for m in (ms or []))
+    hits = sorted(o for o, ms in wears.items()
+                  if o.startswith(prefix) and _on_rung(ms) and o in measured)
+    if not hits:
+        return None, (f"{obj!r} is absent and nothing named {prefix}* renders in "
+                      f"{material!r} either")
+    if len(hits) > 1:
+        return None, (f"{obj!r} resolves to {len(hits)} acquired meshes "
+                      f"({', '.join(hits)}) that all wear {material!r} — "
+                      f"ambiguous; one rung cannot rank two objects")
+    return hits[0], f"acquired: {hits[0]} wears {material}"
+
+
+def check_render(measured, frame=FRAME, wears=None):
     """LOOK-time. `measured` = {object_name: median sRGB luma} from an object-id probe.
 
     Returns a list of human-readable violations — EMPTY means the ladder the design
@@ -482,33 +617,88 @@ def check_render(measured, frame=FRAME):
               f"it RAISES instead (known: {sorted(KNOWN_FRAMES)})")
     out = []
     seen = []
+    acquired = set()          # rung objects resolved through ACQUIRED_AS
     on_frame = (frame == FRAME)
     if not on_frame:
         out.append(f"NOTE: frame {frame!r} is not {FRAME!r} — per-rung targets NOT scored "
                    f"(they were solved against {FRAME!r}'s light); ORDER and SPAN still are")
     for name, obj, target in LADDER:
+        use, bought = obj, False
         if obj not in measured:
-            # On FRAME this is a real finding: every rung is chosen because the hero view
-            # shows it, so an absent one means occluded, renamed or not built. On another
-            # camera it usually just means "not in this shot", which is not a defect.
-            out.append(f"{name}: object {obj!r} has no measurement — the probe did not "
-                       f"see it (occluded, renamed, or not built)"
-                       if on_frame else
-                       f"NOTE: {name} ({obj}) is not visible in {frame!r} — not scored")
-            continue
-        got = float(measured[obj])
-        seen.append((name, obj, target, got))
+            # A RENAME BY ACQUISITION IS NOT A MISSING OBJECT. See ACQUIRED_AS.
+            alt, why = resolve_acquired(obj, measured, wears)
+            if alt is None:
+                # On FRAME this is a real finding: every rung is chosen because the hero
+                # view shows it, so an absent one means occluded, renamed or not built.
+                # On another camera it usually just means "not in this shot".
+                out.append(f"{name}: object {obj!r} has no measurement — the probe did "
+                           f"not see it ({why})"
+                           if on_frame else
+                           f"NOTE: {name} ({obj}) is not visible in {frame!r} — not scored")
+                continue
+            use, bought = alt, True
+            acquired.add(use)
+            out.append(f"NOTE: {name} ({obj}) is scored on {use} — {why}. Its point "
+                       f"target {target:.1f} was solved on the BUILT object and is "
+                       f"reported, not enforced; ORDER and SPAN still are")
+        got = float(measured[use])
+        seen.append((name, use, target, got))
         if on_frame and abs(got - target) > TOLERANCE:
-            out.append(f"{name} ({obj}): rendered {got:.1f}, target {target:.1f} "
-                       f"(off by {got - target:+.1f}, tolerance +-{TOLERANCE})")
-    ranked = sorted(seen, key=lambda r: r[2])
+            out.append(f"{'NOTE: ' if bought else ''}{name} ({use}): rendered {got:.1f}, "
+                       f"target {target:.1f} (off by {got - target:+.1f}, tolerance "
+                       f"+-{TOLERANCE})"
+                       + (" — acquired rung, reported not enforced" if bought else ""))
+    # ONE CHECK WAS CARRYING TWO CLAIMS (split p2r42). Sorting by TARGET and then
+    # measuring adjacent RENDERED gaps fires for two different defects at once:
+    # two pieces that read as one cloth (COLLAPSE), and a piece that has crossed
+    # another in the designed order (INVERSION). Naming one of them "ORDER" and
+    # reporting both through it is this repo's own "one parameter carrying two
+    # things", and it mattered the moment acquisitions arrived: an INVERSION
+    # against a target ordering is a claim about the object that was REPLACED —
+    # the acquired ottoman renders below the throw only because the built bench
+    # it stands in for sat in different light — while COLLAPSE is a claim about
+    # the bed in front of us and survives any swap. So collapse is measured over
+    # every rung by RENDERED value, and inversion only over the rungs whose own
+    # object is actually in the frame.
+    # COLLAPSE IS A CLAIM ABOUT THE PALETTE, so it compares rungs on DIFFERENT
+    # tones (narrowed p2r42). MIN_STEP's own sentence is "they read as one piece
+    # of cloth" — and `upholstery` drives the bed base, the foot throw AND the
+    # foot bench, which D3-4 signs as ONE cloth on purpose. Demanding ten codes
+    # between two objects cut from the same fabric asks the build to break the
+    # design it is checking; the built bench cleared the throw by 41 codes
+    # through LIGHT and position, and when p2r38 replaced it with a bought
+    # ottoman that relationship went with it. Same-tone pairs still PRINT their
+    # gap, because "the ottoman and the throw are nine codes apart" is worth
+    # knowing — it is just a composition finding, not a palette one.
+    #
+    # THE TEST THAT MAKES THIS A CORRECTION AND NOT A LOOPHOLE, and it is the
+    # only reason to accept it: the narrowed check still catches every defect
+    # this instrument was built for. The founding one — six pieces inside 7.1
+    # codes at the head — spans `duvet_set` and `pillowcase`, two tones. The one
+    # the owner rejected by eye at p2r41 — duvet 208.3 against pillow 217.2 —
+    # is also cross-tone. A narrowing that would have let either through would
+    # be a loophole; this one fires on both.
     step_floor = MIN_STEP if on_frame else MIN_STEP_OFF
-    for (an, ao, _at, ag), (bn, bo, _bt, bg) in zip(ranked, ranked[1:]):
-        if bg - ag < step_floor - 1e-9:
-            out.append(f"ORDER: {an} ({ao}) rendered {ag:.1f} and {bn} ({bo}) rendered "
-                       f"{bg:.1f} — {bg - ag:+.1f} codes apart, under "
-                       f"{'MIN_STEP' if on_frame else 'MIN_STEP_OFF'} {step_floor}. "
-                       f"They read as one piece of cloth")
+    by_value = sorted(seen, key=lambda r: r[3])
+    for (an, ao, _at, ag), (bn, bo, _bt, bg) in zip(by_value, by_value[1:]):
+        if bg - ag >= step_floor - 1e-9:
+            continue
+        if an == bn:
+            out.append(f"NOTE: {ao} rendered {ag:.1f} and {bo} rendered {bg:.1f} "
+                       f"— {bg - ag:+.1f} codes apart. They are the SAME cloth "
+                       f"({an}), so this is a composition finding, not a palette "
+                       f"one: no tone can separate them")
+            continue
+        out.append(f"COLLAPSE: {an} ({ao}) rendered {ag:.1f} and {bn} ({bo}) "
+                   f"rendered {bg:.1f} — {bg - ag:+.1f} codes apart, under "
+                   f"{'MIN_STEP' if on_frame else 'MIN_STEP_OFF'} {step_floor}. "
+                   f"They read as one piece of cloth")
+    built = sorted((r for r in seen if r[1] not in acquired), key=lambda r: r[2])
+    for (an, ao, _at, ag), (bn, bo, _bt, bg) in zip(built, built[1:]):
+        if bg < ag:
+            out.append(f"ORDER: {an} ({ao}) is designed below {bn} ({bo}) and renders "
+                       f"ABOVE it — {ag:.1f} against {bg:.1f}. The ladder the design "
+                       f"decided is not the ladder the render shows")
     # SPAN IS ONLY MEANINGFUL OVER THE WHOLE LADDER. A first cut measured it across
     # "whatever rungs happened to be visible", so a camera that legitimately sees three of
     # the seven pieces would FAIL the span it had just been told was unscorable — the

@@ -251,16 +251,63 @@ def test_check_render_flags_a_missing_object():
     assert any("no measurement" in v for v in out)
 
 
-def test_check_render_catches_an_inversion_that_per_rung_tolerance_alone_would_pass():
-    """Each rung within +-TOLERANCE of its own target, yet two rungs swapped: the ORDER
-    check is not implied by the per-rung check."""
+def test_check_render_catches_a_squeeze_that_per_rung_tolerance_alone_would_pass():
+    """Each rung within +-TOLERANCE of its own target and yet two of them one code
+    apart: the relational check is not implied by the per-rung check.
+
+    RENAMED p2r42, and the rename is the finding. This test was called "catches an
+    inversion" and its numbers never encoded one — 73+8=81 and 90-8=82 are still in
+    the designed order. It passed because the old check sorted by TARGET and measured
+    RENDERED gaps, so a squeeze and an inversion came out of one branch under one
+    name. Splitting them (COLLAPSE vs ORDER) is what showed the test was measuring
+    the other thing; the real inversion is now pinned separately below."""
     m = _on_target()
     ranked = sorted(vl.LADDER, key=lambda r: r[2])
-    lo, hi = ranked[0][1], ranked[1][1]
-    m[lo] = vl.LADDER[[o for _n, o, _v in vl.LADDER].index(lo)][2] + vl.TOLERANCE
-    m[hi] = ranked[1][2] - vl.TOLERANCE
+    # the pair has to be on DIFFERENT tones — same-tone siblings are one cloth by
+    # design and their gap is a NOTE, not a palette failure (see the next test)
+    lo, hi = next((a, b) for a, b in zip(ranked, ranked[1:]) if a[0] != b[0])
+    m[lo[1]] = lo[2] + vl.TOLERANCE
+    m[hi[1]] = m[lo[1]] + 1.0          # squeezed, NOT crossed
+    assert abs(m[hi[1]] - hi[2]) <= vl.TOLERANCE, "both rungs stay on target"
+    out = vl.check_render(m)
+    assert any(v.startswith("COLLAPSE:") for v in out), out
+    assert not any(v.startswith("ORDER:") for v in out), "nothing crossed anything"
+
+
+def test_two_objects_of_the_SAME_cloth_reading_alike_is_a_note_not_a_failure():
+    """D3-4 signs the foot bench as the same cloth as the bed base, and the foot
+    throw wears it too. Ten codes between two objects cut from one fabric is
+    something no tone can deliver, so it prints as a composition finding."""
+    m = _on_target()
+    same = next((a, b) for a, b in zip(sorted(vl.LADDER, key=lambda r: r[2]),
+                                       sorted(vl.LADDER, key=lambda r: r[2])[1:])
+                if a[0] == b[0])
+    m[same[1][1]] = m[same[0][1]] + 2.0
+    out = vl.check_render(m)
+    assert not any(v.startswith("COLLAPSE:") for v in out), out
+    assert any("SAME cloth" in v for v in out), out
+
+
+def test_the_narrowing_still_catches_the_defect_the_ladder_was_built_for():
+    """THE TEST THAT MAKES THE NARROWING A CORRECTION AND NOT A LOOPHOLE. The
+    founding defect (2026-07-23) was six pieces of the head inside 7.1 codes, and
+    the one the owner rejected by eye at p2r41 was duvet 208.3 against pillow
+    217.2. Both are CROSS-TONE, so both still fail."""
+    head = {obj: 200.0 for _n, obj, _v in vl.LADDER}
+    assert any(v.startswith("COLLAPSE:") for v in vl.check_render(head))
+    r41 = _on_target()
+    r41["bed__duvet"], r41["bed__pillowsoft0"] = 208.3, 217.2
+    assert any(v.startswith("COLLAPSE:") for v in vl.check_render(r41))
+
+
+def test_check_render_catches_a_real_inversion_with_every_gap_wide_open():
+    """Two rungs SWAPPED, far enough apart that no collapse fires. Only the ORDER
+    half can see this, which is why it is its own check."""
+    m = _on_target()
+    m["bed__base"], m["bed__coverlet"] = 142.0, 73.0
     out = vl.check_render(m)
     assert any(v.startswith("ORDER:") for v in out)
+    assert not any(v.startswith("COLLAPSE:") for v in out)
 
 
 def test_check_render_flags_a_collapsed_span():
@@ -363,7 +410,7 @@ def test_order_and_span_are_enforced_on_every_frame():
     """'The bed must not read as one mass' is a claim about every view that shows it."""
     flat = {obj: 170.0 for _n, obj, _v in vl.LADDER}
     out = vl.check_render(flat, frame="wardrobe_bay_entry")
-    assert any(v.startswith("ORDER:") for v in out)
+    assert any(v.startswith("COLLAPSE:") for v in out)
     assert any(v.startswith("SPAN:") for v in out)
 
 
@@ -529,7 +576,7 @@ def test_off_frame_order_is_a_collapse_alarm_not_the_styling_gate():
     # word ORDER ("ORDER and SPAN still are"), and matching it made this test fail its
     # own first assertion for the wrong reason.
     def order_fired(viol):
-        return any(v.startswith("ORDER:") for v in viol)
+        return any(v.startswith("COLLAPSE:") for v in viol)
     m = {obj: target for _n, obj, target in vl.LADDER}
     squeeze = dict(m)
     squeeze["bed__sham0"] = squeeze["bed__coverlet"] + 8.0
@@ -538,3 +585,100 @@ def test_off_frame_order_is_a_collapse_alarm_not_the_styling_gate():
     collapse = dict(m)
     collapse["bed__sham0"] = collapse["bed__coverlet"] + 4.0
     assert order_fired(vl.check_render(collapse, frame="bed_hero"))
+
+
+# ------------------------------------------------------------ ACQUIRED_AS (p2r42)
+# What these pin: p2r38 bought the bench and the head cushions, `place_model` named
+# them `<tag>__acq<N>`, and three of the ladder's seven rungs read "no measurement"
+# on every build from p2r38 to p2r41 while the cloths were still correctly on their
+# tones. The build printed it and shipped anyway. The owner found it by eye.
+
+def _wears_after_the_p2r38_acquisitions():
+    return {
+        "bed__base": ["bed_base"],
+        "bed__throw": ["bed_throw"],
+        "bed__coverlet": ["bed_coverlet"],
+        "bed__duvet": ["bed_duvet"],
+        "bench__acq0": ["acq_bench_seat"],          # retinted in place, renamed to the rung
+        "bed__headset0__acq0": ["bed_duvet"],       # the standing sham
+        "bed__headset0__acq1": ["bed_pillow"],      # the lying pillowcase
+        "bed__headset1__acq0": ["bed_duvet"],
+        "bed__headset1__acq1": ["bed_pillow"],
+    }
+
+
+def _measured_after_the_p2r38_acquisitions():
+    return {"bed__base": 65.7, "bed__throw": 93.2, "bench__acq0": 110.0,
+            "bed__coverlet": 142.0, "bed__headset0__acq0": 164.1,
+            "bed__duvet": 177.1, "bed__headset0__acq1": 192.0,
+            "bed__headset1__acq0": 163.0, "bed__headset1__acq1": 191.0}
+
+
+def test_a_rung_renamed_by_an_acquisition_is_scored_not_reported_missing():
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    out = vl.check_render(m, wears=w)
+    assert not any("has no measurement" in v for v in out), out
+    assert any("scored on bench__acq0" in v for v in out)
+    assert any("scored on bed__headset0__acq0" in v for v in out)
+
+
+def test_without_the_wears_block_the_rung_says_so_and_never_guesses():
+    """A sidecar written before p2r42 carries no `wears`. The rung must report that
+    it cannot tell a rename from a deletion, not pick a plausible mesh."""
+    out = vl.check_render(_measured_after_the_p2r38_acquisitions(), wears=None)
+    assert any("no `wears` block" in v for v in out)
+    assert not any("scored on" in v for v in out)
+
+
+def test_an_acquired_rung_is_reported_against_its_point_target_and_not_failed_on_it():
+    """154 was solved on a BUILT 0.80x0.44 standing king sham. A bought cushion is a
+    different shape under the same light, so the point target is REPORTED (it is
+    still information) and not enforced."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    m["bed__headset0__acq0"] = 250.0                 # wildly off the 154 target
+    hard = [v for v in vl.check_render(m, wears=w) if not v.startswith("NOTE:")]
+    assert not any("target 154.0" in v for v in hard), hard
+
+
+def test_an_acquired_rung_is_still_failed_when_it_collapses_into_its_neighbour():
+    """The point target does not survive a swap; 'two pieces read as one cloth' does."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    m["bed__headset0__acq0"] = m["bed__coverlet"] + 2.0
+    assert any(v.startswith("COLLAPSE:") for v in vl.check_render(m, wears=w))
+
+
+def test_an_ambiguous_acquisition_fails_rather_than_picking_one():
+    """Two meshes under the same tag on the same cloth cannot both be one rung."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    w["bed__headset0__acq1"] = ["bed_duvet"]         # now BOTH wear the sham cloth
+    m["bed__headset0__acq1"] = 165.0
+    out = vl.check_render(m, wears=w)
+    assert any("ambiguous" in v for v in out), out
+
+
+def test_an_undeclared_rung_cannot_be_resolved_through_an_acquisition():
+    """bed__duvet is not in ACQUIRED_AS, so a `bed__duvet__acq0` must not silently
+    take its rung — the pairing is a design fact and has to be written down."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    del m["bed__duvet"]
+    w["bed__duvet__acq0"] = ["bed_duvet"]
+    m["bed__duvet__acq0"] = 177.1
+    out = vl.check_render(m, wears=w)
+    assert any("not declared as an acquirable rung" in v for v in out), out
+
+
+def test_a_retinted_material_matches_its_rung_through_the_acq_prefix():
+    """A retint keeps the uploader's material OBJECT, so build_room renames it to
+    `acq_<rung>` and Blender may suffix a duplicate. Both must resolve."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    w["bench__acq0"] = ["acq_bench_seat.001"]
+    assert vl.resolve_acquired("bench__seat", m, w)[0] == "bench__acq0"
+
+
+def test_the_acquired_bench_does_not_have_to_hold_the_built_benchs_place_in_the_order():
+    """The p2r42 case in one line: the bought ottoman renders BELOW the throw because
+    the built bench it replaces sat in different light. That is not an inversion of
+    anything we can still see, and it must not block a frame."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    m["bench__acq0"] = 81.8                          # under the throw's 93.2
+    assert not any(v.startswith("ORDER:") for v in vl.check_render(m, wears=w))

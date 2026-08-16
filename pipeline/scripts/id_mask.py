@@ -46,7 +46,7 @@ def _emission(name, srgb255):
     return m
 
 
-def build_mask(out_png, filters):
+def build_mask(out_png, filters, wears=None):
     # BOTH HALVES RESOLVE THE PATH ONCE, TOGETHER. See value_probe.mask_paths.
     out_png, out_json = _vp.mask_paths(out_png)
     targets = sorted((o for o in bpy.data.objects
@@ -61,9 +61,32 @@ def build_mask(out_png, filters):
 
     void = _emission("idmask__void", (0, 0, 0))
     mats, names = {}, {}
+    # WHAT EACH OBJECT WORE — AND WHY THE CALLER USUALLY HAS TO SUPPLY IT (p2r42).
+    # The tonal ladder ranks OBJECTS, but value belongs to the MATERIAL — so when
+    # p2r38 acquired the bench and the head cushions, `place_model` named them
+    # `<tag>__acq<N>` and three of the ladder's seven rungs went to "no
+    # measurement" while the cloths themselves were still correctly on their
+    # tones. The ladder could not tell "this rung was renamed by an acquisition"
+    # from "this rung is missing", so it reported the weakest of the two and the
+    # build shipped past it twelve times. The material each mesh renders in is
+    # the evidence that distinguishes them, and this is the ONLY moment it is
+    # still readable — three lines below, every slot in the scene is cleared.
+    #
+    # AND THE FIRST VERSION CAPTURED IT HERE AND WAS WRONG, which is worth the
+    # paragraph because the failure was invisible: `map_census_mask` runs BEFORE
+    # this function and mutates every slot the same way, so reading the scene at
+    # this point yields `census__5`, `census__7` — a real dict of real strings,
+    # naming a material that existed for two seconds. The ladder then reported
+    # every acquired rung as unresolvable and the wrongness only showed because
+    # its message named the material it could not find. So the CALLER passes the
+    # snapshot it took before the first mask ran; capturing here is the fallback
+    # for a caller that runs this mask alone.
+    wears = dict(wears) if wears else {}
     for i, ob in enumerate(targets, start=1):
         mats[ob.name] = _emission(f"idmask__{i}", _vp.id_to_srgb(i))
         names[i] = ob.name
+        wears.setdefault(ob.name,
+                         [m.name for m in ob.data.materials if m is not None])
     for ob in bpy.data.objects:
         if ob.type != 'MESH':
             continue
@@ -120,8 +143,8 @@ def build_mask(out_png, filters):
         "meshes": len([o for o in bpy.data.objects if o.type == 'MESH']),
     }
     with open(out_json, "w", encoding="utf-8") as fh:
-        json.dump({"source": src, "ids": {str(k): v for k, v in names.items()}},
-                  fh, indent=1)
+        json.dump({"source": src, "ids": {str(k): v for k, v in names.items()},
+                   "wears": wears}, fh, indent=1)
     return names
 
 

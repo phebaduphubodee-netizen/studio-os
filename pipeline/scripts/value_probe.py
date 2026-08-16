@@ -242,7 +242,12 @@ def _main(argv):
         print(f"\nvalue_ladder.check_render: NOT RUN — could not import value_ladder ({e}). "
               f"The table above is a measurement, not a verdict.")
         return 3
-    viol = vl.check_render(measured_map(rows), frame=frame)
+    # `wears` lets the ladder tell a rung RENAMED BY AN ACQUISITION from a rung
+    # that is not built (value_ladder.ACQUIRED_AS). A sidecar written before
+    # p2r42 has no such block; that is passed through as None and the ladder
+    # says so per rung rather than treating an old sidecar as evidence.
+    viol = vl.check_render(measured_map(rows), frame=frame,
+                           wears=side.get("wears"))
     real = [v for v in viol if not v.startswith("NOTE:")]
     print(f"\nvalue_ladder.check_render (frame={frame!r}):")
     for v in viol:

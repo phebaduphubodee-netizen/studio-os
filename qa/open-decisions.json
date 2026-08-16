@@ -1055,6 +1055,76 @@
    "reverse_by": "ไม่ต้องกลับ — เป็น declared gap · shortlist พร้อมตัวเลขที่วัดแล้วอยู่ใน bench2.json และภาพหกใบอยู่ใน shots/",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-075",
+   "unit": "DELIV-001",
+   "decided_round": 43,
+   "decided_date": "2026-08-16",
+   "decided_by": "owner",
+   "question": "พี่ดูเฟรม p2r41 แล้วบอกว่า 'ผ้าบนเตียงยังเละอยู่เลย' — คำตัดสินนี้มีผลยังไงกับ D-072",
+   "in_effect": "**คำตัดสินของพี่จากภาพ = ชุดผ้าที่ซื้อมา (8635b5b9) ตกทั้งใบ และล็อกเป็นของพี่ (R3)** · ผมเคยรายงานว่าเลกที่ซื้อชนะทุกเครื่องมือ (cloth_edge 0.406x -> 0.686x · energy 0.527x -> 0.930x · C3 6 -> 5 ข้อ · QUALIFIES 6/6) แล้วตายังบอกว่าเละ — **R7b: ตาชนะเรื่อง 'ผิดมั้ย' เครื่องมือตอบแค่ 'เท่าไร/ตรงไหน'** · default ยังเป็นเลก solver ต่อไป และตอนนี้มีเหตุผลที่วัดได้แทนที่จะเป็นการแลกที่ผมชั่งเอง",
+   "because": "เครื่องมือสี่ตัวเขียวพร้อมกันบนเฟรมที่เจ้าของตกด้วยตาเปล่า = flattering-scorer ที่วัดได้ ไม่ใช่ข้อโต้แย้งเรื่องรสนิยม",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r43-2026-08-16.md",
+   "reverse_by": "พี่ดู p2r43 แล้วบอกว่าเลกที่ซื้อดีกว่า -> `_BED_CLOTH_ACQ = True` ใน build_room.py บรรทัดเดียว",
+   "owner_override": "ผ้าบนเตียงยังเละอยู่เลย",
+   "override_date": "2026-08-16"
+  },
+  {
+   "id": "D-076",
+   "unit": "DELIV-001",
+   "decided_round": 43,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "tonal ladder รันมา 12 รอบ พิมพ์ violation ทุกรอบ แล้ว build ก็ผ่านไป — ให้มัน BLOCK มั้ย",
+   "in_effect": "**BLOCK** · `value_probe` exit 1 = 'ขั้นหนึ่งของ ladder ที่เซ็นแล้วหลุดเป้า' ทำให้ build ตาย (เดิม `returncode not in (0,1)` = ถือว่าผ่าน) · exit อื่น = COULD NOT RUN ก็ตายเหมือนกัน · full-fidelity เท่านั้น (quick ไม่มี mask) · **และ stop ถูกเก็บไว้ยิงท้ายสุด** หลังเครื่องมืออื่นรายงานครบ — เวอร์ชันแรกตายทันทีและกลบ P2EXIT ทั้งชุด",
+   "because": "วัดตอนติดตั้ง บนเฟรมที่พี่เพิ่งตก: base +18.3 · throw +37.5 · coverlet +20.2 · duvet +27.3 และอีก 3 ขั้นไม่ถูกวัดเลย — ไม่ใช่ queue ที่ไม่มีคนอ่าน แต่เป็น 'ประกาศว่าบังคับแล้วพิมพ์เป็นข้อเสนอแนะ' ซึ่ง CLAUDE.md เรียกชื่อไว้แล้ว และคนที่มันพิมพ์ให้คือผมเอง",
+   "where": "pipeline/scripts/build_room.py",
+   "reverse_by": "เอา `_ladder_stop` block ท้าย `_post_render` ออก แล้วกลับไปเป็น print อย่างเดียว",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-077",
+   "unit": "DELIV-001",
+   "decided_round": 43,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "p2r38 ซื้อ bench + หมอนหัวเตียง ทำให้ ladder เสีย 3 ขั้นจาก 7 — แก้ยังไงไม่ให้เน่าอีก",
+   "in_effect": "**mask sidecar บันทึกว่าแต่ละ mesh ใส่วัสดุอะไร (`wears`) และ ladder resolve ขั้นที่ถูกเปลี่ยนชื่อโดยการซื้อ ผ่านคู่ (prefix ของ place_model, วัสดุของ rung)** · retint ตั้งชื่อวัสดุใหม่เป็น `acq_<rung>` ดังนั้นเฟรมเองเป็นหลักฐานว่าชิ้นนั้นอยู่ขั้นไหน (เดิมอ่านได้ว่า `Ottoman_01` = ชื่อที่คนอัปโหลดตั้ง) · **fail closed สามทาง**: ไม่มีการประกาศ / ไม่มี `wears` / match ได้มากกว่าหนึ่ง = ตกทั้งหมด ไม่เดา · ขั้นที่มาจากการซื้อถูกให้คะแนนด้วย COLLAPSE + SPAN เท่านั้น ส่วน point target **รายงานแต่ไม่บังคับ** เพราะ 154 วัดจาก sham ที่ปั้นเอง ขนาด 0.80x0.44 — เอาเลขของวัตถุหนึ่งไปตัดสินอีกวัตถุคือ defect ของ repo นี้เอง",
+   "because": "ladder แยกไม่ออกระหว่าง 'ขั้นนี้ถูกเปลี่ยนชื่อ' กับ 'ขั้นนี้หายไป' จึงรายงานอย่างอ่อนที่สุดทั้งสองกรณี 12 รอบติด",
+   "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/id_mask.py, pipeline/scripts/build_room.py",
+   "reverse_by": "ลบ ACQUIRED_AS แล้วขั้นที่ถูกซื้อจะกลับไปรายงานว่า 'no measurement' เหมือนเดิม",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-078",
+   "unit": "DELIV-001",
+   "decided_round": 43,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "COLLAPSE ยิงใส่ ottoman กับ throw ที่เป็นผ้าผืนเดียวกันตามแบบ — แคบขอบเขตมั้ย",
+   "in_effect": "**COLLAPSE เทียบเฉพาะขั้นที่อยู่คนละ tone** · คู่ที่ tone เดียวกันยังพิมพ์ระยะห่างออกมาเป็น NOTE ว่าเป็นเรื่อง composition ไม่ใช่ palette · เหตุผล: D3-4 เซ็นว่า bench = ผ้าเดียวกับ bed base และ throw ก็ใส่ rgba ของ bed_base — บังคับให้ห่างกัน 10 codes คือสั่งให้ build ทำผิดแบบที่มันกำลังตรวจ · bench ที่ปั้นเองเคยห่าง throw 41 codes ด้วย **แสงและตำแหน่ง** และความสัมพันธ์นั้นหายไปพร้อมกับตัวมันตอน p2r38",
+   "because": "**บททดสอบที่ทำให้นี่เป็นการแก้ ไม่ใช่ช่องโหว่ และเป็นเหตุผลเดียวที่รับได้:** เวอร์ชันที่แคบลงยังจับ defect ที่สร้างเครื่องมือนี้ขึ้นมาได้ทั้งหมด — หัวเตียง 6 ชิ้นใน 7.1 codes (คร่อม duvet_set กับ pillowcase = คนละ tone) และ duvet 208.3 ปะทะ pillow 217.2 ที่พี่ตกด้วยตาเมื่อ p2r41 (คนละ tone เช่นกัน) · มี test ปักไว้ทั้งสองเคส",
+   "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/test_value_ladder.py",
+   "reverse_by": "เอาเงื่อนไข `if an == bn` ออกจาก loop COLLAPSE",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-079",
+   "unit": "DELIV-001",
+   "decided_round": 43,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "แก้ตัวเลข tone ด้วยการ solve หรือขยับเป้าให้ตรงกับที่ render ออกมา",
+   "in_effect": "**solve tone เสมอ ห้ามขยับ target** · วิธี: วัด 3 จุดต่อ rung แล้ว fit power law ในปริภูมิ linear (γ ของแต่ละ rung มาจาก render จริง ไม่ใช่สมมติ) · ผลลัพธ์ upholstery 0.150 -> 0.0848 · coverlet 0.312 -> 0.1820 · duvet_set 0.415 -> 0.1360 · pillowcase 0.868 -> 0.5350 · sheet 0.68 -> 0.3401 (ไม่มี target — รักษาตำแหน่ง log เดิมระหว่าง duvet_set กับ pillowcase) · **ทำนายก่อน render แล้วเช็ค: ทุก rung เข้าเป้าภายใน 3.3 codes**",
+   "because": "ขยับ target ไปหาสิ่งที่ render แสดง = ตรวจเฟรมด้วยตัวเฟรมเอง (D-058 จดไว้แล้วว่า target ชุด 07-28 ถูก re-anchor แบบนี้) · ข้อยกเว้นเดียวที่ชอบธรรมคือ re-anchor ไปหา **งานส่งจริง** (R4) ซึ่งเป็นคนละทิศทางกัน",
+   "where": "pipeline/scripts/value_ladder.py",
+   "reverse_by": "git revert ค่า TONES — ทุกค่าเดิมอยู่ในคอมเมนต์ข้างบนแต่ละบรรทัด",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }
