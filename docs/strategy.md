@@ -3184,3 +3184,73 @@ bought, scale-asserted and switched off** by `_BED_CLOTH_ACQ = False`
 (`build_room.py:1593`) because the part cut discarded `Mesh_1` at 16.7% plan area
 against a 33% threshold. Fix the cut, flip the flag, render the A/B — and let the
 blind sheet and the two critics score it, not the builder.
+
+## 2026-08-16 — a stated reason is a hypothesis, and this phase falsified two of three in one day
+
+**P2r-9, P2a and P2b closed in one session, and the through-line is not the three
+mechanisms. It is that each item's WRITTEN REASON for existing turned out to be
+wrong, in a different way, and only measurement said so.**
+
+**P2b** existed because D8 was named as the instrument that would fail the
+hand-built tub chair. D8 passes **0/0** on this frame and so does D9 — neither has
+ever touched that object. What actually decides it is R8's stop-loss against the
+object's own three recorded owner LOOKs, plus the fact that its two silhouette
+numbers are declared estimates (`opening_deg=110` chosen; `seat_h 0.43` = *"[est
+studio render-tier] (no vault row)"*, in its own docstring).
+
+**P2a** was believed to be blocked on sourcing. It was blocked on three of our own
+mechanisms, each visible only to a different instrument: `model_fit` asking an
+ORIENTATION question as if it were a shape question (a 498 x 1000 slot is long on
+Y because the bed's foot runs that way, and no bench is exported long on its own
+Y — turned, 4 of 5 refused candidates pass); an acquire path with a material
+policy for upholstery and **none at all** for case goods, which is what the eye
+threw the r33 nightstands out for; and a retint falling back to a cream written
+months ago for another room — **sRGB 236 against this room's signed 108**, so the
+first acquired frame had the bench as the brightest mass in it, which the DD
+forbids in words.
+
+**P2r-9's** own reason held, and its finding was bigger than the item: the size of
+a model was never DATA. It lived in prose beside the reference, so a rejected
+candidate's 2198.1 mm could describe the chosen asset for two rounds with every
+instrument green. **The defect is the CHANNEL, not the number** — the fourth
+instance of this repo's oldest shape, after 357 critic items / ~22 built, ~61 DR
+units / 39 write-only, and a held-out scoring set with no reader.
+
+### Three things worth keeping past this round
+
+**A metric that cannot separate two things is worse than a missing one, because it
+ranks the failure first.** The p2r31 bed-cloth audition chose on COVERAGE, and
+coverage is maximised by a duvet that lies flat ON the mattress without reaching
+past it. Re-run today as pure measurement: **of the five candidates auditioned,
+the one that was chosen is the ONLY one the size filter refuses; the other four
+all pass.** The number that answered the real question — *falls past 2 of 4 sides*
+— was printed in the same table and read past.
+
+**The eye and the instruments each found the half the other could not, in one
+object.** The eye said the foreground was wrong. The numbers said it was 30 codes
+above the frame's own 95th percentile and is now 16 below it (crop p95 225 → 195
+against a frame p95 of 215 → 211). Neither rung could have produced the other's
+answer, which is R7b's law stated as arithmetic.
+
+**A rule spread across its callers is a rule with one exemption per caller.** The
+scale assertion `pipeline/CLAUDE.md` calls a MUST was enforced by each call site
+remembering to read a sidecar; two did, the item loop and the decor lane and every
+`MODEL_MAP` default did not, and **the entire committed CC0 shelf — 13 of 13 —
+had no sidecar to read**, because `warehouse.py` wrote one on every fetch and
+`assets.py` never had that line. The rule read as enforced everywhere it was
+mentioned. The fix is one door (`_model_path`) and one writer
+(`asset_scale.write_sidecar`), not more mentions.
+
+### And the correction to my own choice, kept as prominent as the finding
+
+I picked `Ottoman_01` for the bench on a measured discriminator: of nine
+candidates that fit, **only the two committed CC0 assets carry any PBR map at
+all**. That may be the wrong criterion *for upholstery specifically*, because this
+room has a signed woven linen with real slub relief, so `replace_material` on a
+plainer 3D Warehouse bench could beat keeping a stranger's normal map. And
+`millwork.py`'s own comment records that a pro critic already scored this exact
+mesh in this exact slot as *"a simple box shape on legs"* — for a scale bug since
+fixed, so the verdict does not carry automatically, but reporting the choice
+without it would be quoting the half that flatters. **Written into the gate and
+the decision log before any critic sees the frame, because a doubt I hold and do
+not print is not a doubt the lane has.**

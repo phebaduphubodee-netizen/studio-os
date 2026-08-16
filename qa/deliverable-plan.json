@@ -1858,8 +1858,56 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "c32b65dc8d4c3ca2e5354c74ae654cd5594106a2",
+      "verdicts": {
+        "P0": "keep: closed and unchanged",
+        "P1": "keep: closed and unchanged",
+        "P2": "change: P2b closes and it closes by REFUTING its own stated reason, which is worth carrying rather than filing. The item existed because D8 was cited as the thing that would fail the hand-built tub chair; D8 passes 0/0 on this frame and D9 does too, so the instrument named for it never touched it. The decision came from R8s stop-loss and from the objects own three recorded owner LOOKs. THE CHANGE I AM PROPOSING: the remaining P2 items should each be checked for the same shape before they are worked, because two of the three items I closed today had a stated reason that measurement did not support (P2b cited D8; P2a was believed to be blocked on sourcing and was blocked on three of our own mechanisms). A stated reason is a hypothesis and this phase has now falsified two in one day.",
+        "P4": "keep: unchanged this round; still after the object work",
+        "P3": "keep: unchanged this round; still after both object phases",
+        "P5": "keep: unchanged. It carries one more named open question than it did this morning — Ottoman_01s form — which is written down rather than left for a critic to discover.",
+        "DRW": "keep: untouched this round; the BF10 party-line fact from review 45 is still filed and still not acted on."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "p2r38b: P2b closed; review #47",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "dd01b1d8c6ac8484cb55806805c3074977a76bef",
+  "last_review_commit": "c32b65dc8d4c3ca2e5354c74ae654cd5594106a2",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
