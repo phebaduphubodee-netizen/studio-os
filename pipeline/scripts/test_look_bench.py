@@ -99,6 +99,41 @@ def test_panel_never_asks_for_more_than_the_pool_holds():
     assert len(look_bench.pick(pool, "n.png", 5)) == 3
 
 
+def test_panel_key_makes_two_DIFFERENT_frames_draw_the_same_anchors():
+    """The defect this flag exists for: the panel used to be seeded by FILENAME,
+    while the docstring said its purpose was judging a before/after of OUR frame
+    against an identical panel — and a before/after always has two filenames. On
+    2026-08-15 that drew two different panels for p2r35 and p2r36 at the same
+    salt, and our frame placed 6/6 on one sheet and 4/6 on the other."""
+    pool = [_rec(f"x/{i}.png", (2000, 1400)) for i in range(40)]
+    before = look_bench.pick(pool, "room_eye_p2r35.png", 5, salt=236)
+    after = look_bench.pick(pool, "room_eye_p2r36.png", 5, salt=236)
+    assert [r["path"] for r in before] != [r["path"] for r in after], \
+        "without a panel key, two frames must still draw different panels (the old behaviour)"
+
+    b2 = look_bench.pick(pool, "room_eye_p2r35.png", 5, salt=236, panel_key="ab")
+    a2 = look_bench.pick(pool, "room_eye_p2r36.png", 5, salt=236, panel_key="ab")
+    assert [r["path"] for r in b2] == [r["path"] for r in a2]
+
+
+def test_the_key_alone_does_NOT_make_two_sheets_comparable_and_the_fingerprint_says_so():
+    """The key pins the DRAW; the pool is the BOX drawn from, and it moves with our
+    own image's orientation, --room, the starve-fallback and candidates.json. A
+    'comparable' line that cannot be checked would be the same defect as a scale
+    ASSERTED in prose against the wrong file, so the fingerprint is printed beside
+    the key and must change whenever the draw could."""
+    pool = [_rec(f"x/{i}.png", (2000, 1400)) for i in range(40)]
+    smaller = pool[:30]
+    same_key_wider = look_bench.pick(pool, "a.png", 5, salt=1, panel_key="k")
+    same_key_narrower = look_bench.pick(smaller, "b.png", 5, salt=1, panel_key="k")
+    assert [r["path"] for r in same_key_wider] != [r["path"] for r in same_key_narrower]
+    assert look_bench.panel_fingerprint(pool, 5) != look_bench.panel_fingerprint(smaller, 5)
+    # and it must move with n as well as with the pool
+    assert look_bench.panel_fingerprint(pool, 5) != look_bench.panel_fingerprint(pool, 6)
+    # same box, twice -> same fingerprint
+    assert look_bench.panel_fingerprint(pool, 5) == look_bench.panel_fingerprint(list(pool), 5)
+
+
 # ---- LOCAL-ONLY guard ------------------------------------------------------------
 
 def test_sheet_output_is_allowlisted_to_private_only():

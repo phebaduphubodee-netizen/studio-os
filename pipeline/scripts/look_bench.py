@@ -113,12 +113,56 @@ def select_pool(candidates, orient, room, trained=frozenset()):
     return anchor_pool(candidates, trained=trained), None, None
 
 
-def pick(pool, ours_name, n, salt=0):
-    """Deterministic panel: same (ours_name, salt, pool) -> same anchors, so a
-    before/after of OUR frame is judged against an identical delivered panel."""
-    seed = int(hashlib.sha1(f"{ours_name}|{salt}".encode()).hexdigest()[:8], 16)
+def pick(pool, ours_name, n, salt=0, panel_key=None):
+    """Deterministic panel: same (panel_key, salt, pool) -> same anchors.
+
+    THE KEY DEFAULTS TO THE FILENAME AND THAT DEFEATED THE STATED PURPOSE.
+    The line this docstring used to carry — "so a before/after of OUR frame is
+    judged against an identical delivered panel" — was false for the only case
+    it named: a before/after has, by definition, two different filenames, so it
+    drew two different panels and the two ranks were never comparable. Measured
+    2026-08-15 on the p2r35/p2r36 acquire-vs-simulate A/B: same --salt 236, and
+    an independent blind ranker reported unprompted that the two sheets shared
+    exactly ONE view. Our frame placed 6/6 on one sheet and 4/6 on the other
+    against a DIFFERENT and weaker set of anchors — a jump that says nothing.
+
+    So the panel key is now explicit. `panel_key` pins the anchor draw to a name
+    the caller chooses, which is what makes two sheets a comparison rather than
+    two unrelated exams. Omit it and the old filename behaviour stands, so every
+    existing single-frame sheet reproduces byte for byte.
+
+    NOT changed, deliberately: `blind_slot` still seeds off the real filename,
+    so our frame is UNLIKELY to land in the same cell in two sheets (5/6 for a
+    6-cell sheet, not a guarantee). A judge who saw both sheets should not be
+    able to read our tile off a constant position; if two sheets do collide on
+    a cell, re-run one with a different salt.
+
+    THE KEY IS NOT SUFFICIENT ON ITS OWN, and saying so is the whole point.
+    `rng.sample` draws from POOL, so an identical seed over a different pool
+    returns different anchors. The pool depends on our own image's ORIENTATION,
+    on --room, on select_pool's starve-fallback chain, on candidates.json, and
+    on the trained quarantine. So the key pins the DRAW and `panel_fingerprint`
+    pins the BOX drawn from — two sheets are comparable only when BOTH match,
+    and both are printed. This module has just been burned by a claim asserted
+    in prose instead of checked (a scale 'ASSERTED' in a spec note that belonged
+    to a different file); a line reading 'comparable' that cannot be verified
+    would be the same defect in new clothes."""
+    seed = int(hashlib.sha1(f"{panel_key or ours_name}|{salt}".encode()).hexdigest()[:8], 16)
     rng = random.Random(seed)
     return rng.sample(pool, min(n, len(pool)))
+
+
+def panel_fingerprint(pool, n):
+    """Short digest of the exact BOX the panel was drawn from: pool identity,
+    pool order and n. Two sheets carrying the same panel key, the same salt AND
+    the same fingerprint drew the same anchors; if the fingerprints differ, the
+    ranks are not comparable no matter what the key says. PURE."""
+    h = hashlib.sha1()
+    h.update(f"n={n}|len={len(pool)}|".encode())
+    for c in pool:
+        h.update(str(c.get("path", "")).encode())
+        h.update(b"\x00")
+    return h.hexdigest()[:10]
 
 
 def _guard_out(out_dir):
@@ -210,6 +254,11 @@ def main(argv=None):
     ap.add_argument("--n", type=int, default=5)
     ap.add_argument("--room", default=None, help="room_hint filter, e.g. bedroom")
     ap.add_argument("--salt", type=int, default=0, help="new salt = new panel, same salt = same panel")
+    ap.add_argument("--panel-from", dest="panel_from", default=None,
+                    help="draw the anchor panel as if our frame were named this "
+                         "(any string). REQUIRED to compare two of our own frames: "
+                         "without it the panel is seeded by FILENAME, so an A/B "
+                         "draws two different panels and the ranks are not comparable")
     ap.add_argument("--out", default=OUT_DEFAULT)
     ap.add_argument("--blind", action="store_true",
                     help="reproduction FINISH TEST: shuffle ours in unlabelled, "
@@ -231,11 +280,22 @@ def main(argv=None):
         if want and got is None:
             print(f"note: {what} filter '{want}' starved the pool — dropped (panel is looser "
                   f"than asked; judge accordingly)")
-    chosen = pick(pool, os.path.basename(a.ours), a.n, a.salt)
+    chosen = pick(pool, os.path.basename(a.ours), a.n, a.salt, panel_key=a.panel_from)
+    fp = panel_fingerprint(pool, a.n)
+    if a.panel_from:
+        print(f"panel key: '{a.panel_from}' · panel fingerprint: {fp} — comparable ONLY to a "
+              f"sheet printing this SAME key, salt and fingerprint. The key pins the draw; the "
+              f"fingerprint pins the pool it was drawn from, and the pool moves with our own "
+              f"image's orientation, --room, the starve-fallback and candidates.json.")
 
     stem = os.path.splitext(os.path.basename(a.ours))[0]
     kind = "blind" if a.blind else "bench"
-    out = os.path.join(_guard_out(a.out), f"{kind}_{stem}_s{a.salt}.png")
+    # The panel key belongs in the NAME: without it, two sheets of the same frame
+    # at the same salt but different keys resolve to one path and the second
+    # silently clobbers the first — and its .ANSWER.txt with it, which is the one
+    # file that must never be quietly replaced.
+    key_tag = f"_k{hashlib.sha1(a.panel_from.encode()).hexdigest()[:6]}" if a.panel_from else ""
+    out = os.path.join(_guard_out(a.out), f"{kind}_{stem}_s{a.salt}{key_tag}.png")
     anchors = [root_fix(c["path"]) for c in chosen]
     key = None
     if a.blind:
