@@ -873,6 +873,34 @@
    "reverse_by": "รัน --bed-cloth-acq เพื่อเปิดขา B หนึ่ง build · จะเปิดถาวรต้องหา bed cloth ที่ plan ของตัวเอง >= ที่นอน (1999.6 x 2148.8 mm) แล้วแก้ spec:796 ให้ตรงกับ sidecar ของไฟล์นั้นจริง · ยังไม่ตัดสิน และห้ามอ่านว่าตัดสินแล้ว: acquired ที่สเกลถูกจะชนะ solver หรือไม่ รอบนี้ไม่ได้ทดสอบ",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-062",
+   "unit": "DELIV-001",
+   "decided_round": 37,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "จะทำให้ 'ขนาดที่ประกาศ' ของทุก model ตรวจได้ด้วยเครื่องยังไง (P2r-9) และจะทำยังไงกับ reference ที่ชี้ asset ที่ถูกปฏิเสธไปแล้ว",
+   "in_effect": "**ขนาดของทุก model reference กลายเป็น DATA ไม่ใช่ประโยคในโน้ต** · spec มีบล็อก `model_assertions` (class/axis/asserted_mm ต่อ 1 model) และ `pipeline/scripts/model_assert_check.py` diff สามทาง ทุก build: ที่สเปก assert ↔ sidecar ของไฟล์เอง ↔ **วัดไฟล์ใหม่สด ๆ ตอนนั้น** · ล้มถ้าไม่ตรง / ไม่มี sidecar / sidecar เป็นของไฟล์อื่น / class ไม่มี band / band ถูกแก้หลัง ingest / prim count เปลี่ยน / วัดไม่ได้ (วัดไม่ได้ ≠ ผ่าน) · **row ที่ไม่มีใครอ้างถึงถูกปฏิเสธด้วยชื่อ** ซึ่งคือรูปของ p2r36 ที่ถูกปิดทางถาวร (เลขของ 2b142a32 จะมานั่งอธิบาย ub806591a อีกไม่ได้) · โน้ตร้อยแก้วยังอยู่แต่ไม่มีเลข ชี้มาที่บล็อกแทน · **ลบ `items[1].bed_models` ออกจากสเปก** = ทำตามคำตัดสิน D-061 ข้อ 2 ลงในข้อมูล (เดิมคำปฏิเสธอยู่แต่ในเอกสารรอบ ส่วนสเปกยังชี้ asset เดิมอยู่) · กติกาย้ายไปอยู่กับ **ที่นั่ง (site)** ไม่ใช่กับ asset: `model_requirements[\"items[1].bed_models.cloth_set\"]` = class bedding_set + ต้องคลุม item 1 หัก inset 90 มม. ที่ scale <= 1.0 → พิมพ์ 'NO MODEL YET' ทุก build จนกว่าจะมีตัวใหม่ · re-audition ที่ p2r36 สั่งไว้ ทำแล้วด้วยการวัดล้วน ไม่ต้อง render: **ใน 5 ตัวที่ audition รอบ p2r31 ตัวที่ถูกเลือกคือตัวเดียวที่ filter ปฏิเสธ อีก 4 ตัวผ่านหมด** — เพราะ metric ที่ตัดสินคือ coverage ซึ่งให้คะแนนผ้าที่ 'วางทับบนที่นอน' สูงที่สุด ส่วนเลขที่ตอบคำถามจริง (ตกข้าง 2/4) พิมพ์อยู่ในตารางเดียวกันและถูกอ่านผ่าน",
+   "because": "p2r36 เขียนเองว่า 'ไม่มีอะไรใน repo นี้เทียบสองอันนั้นได้ นี่แหละคือเหตุที่มันรอด — ไม่ใช่เพราะไม่มีใครดู แต่เพราะดูไม่ได้' · เลขที่เก็บในที่ที่ต้องให้คนอ่านร้อยแก้วเท่านั้นถึงจะตรวจได้ ไม่ใช่การวัด · และกฎที่ผูกกับ asset จะหายไปพร้อม asset ตอนถอด ซึ่งจะทำให้ audition รอบหน้าไม่ได้รับอะไรเลย",
+   "where": "pipeline/scripts/model_assert_check.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, pipeline/scripts/rule_gate.py",
+   "reverse_by": "ลบ `model_assertions` + `model_requirements` ออกจากสเปก แล้วลบสองบรรทัด `model_assertions(...)` ใน rule_gate.check/check_room · เอาผ้าเตียงกลับ: ใส่ `bed_models: {\"cloth_set\": \"<slug>\"}` + row ใน model_assertions ของ asset ที่ plan ตัวเอง >= ที่นอน (shortlist ที่วัดแล้ว: 8635b5b9 scale 0.845 · 2b142a32 0.828 · และ 4cf92fdd/ub4631bf5/22897dd4 ที่ยังต้อง assert class ก่อน)",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-063",
+   "unit": "DELIV-001",
+   "decided_round": 37,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "mesh ที่ยังไม่ถูก assert unit เข้า build ได้ไหม และ CC0 shelf ที่ commit ไว้ทั้งชั้นไม่มี sidecar เลยจะทำยังไง",
+   "in_effect": "**ประตูเดียวที่ mesh ภายนอกเข้ามาได้ (`build_room._model_path`) assert เอง**: ถ้าไม่มี `.scale.json` หรือ sidecar ไม่ได้ยืนยัน unit (ok != true) → คืน None + พิมพ์เหตุผล → caller ตกลง fallback ที่ดังของมันเอง (procedural / solver bake / loft) ไม่มีทางเงียบ · เดิมกฎนี้กระจายอยู่ตาม call site และมีแค่ 2 ที่ที่ทำจริง (_place_bed_cloth, _place_pillow_combo) ส่วน item loop, decor lane และ MODEL_MAP ทั้งชุดไม่เคยอ่าน sidecar เลย · **วัดได้: CC0 shelf ที่ commit ไว้ 13 ตัว ไม่มี sidecar สักตัว** เพราะ `assets.py` ไม่เคยเขียน ขณะที่ `warehouse.py` เขียนทุกครั้ง — กฎจึงดูเหมือนบังคับใช้อยู่ทั้งที่ตายไปครึ่งชั้น · แก้: ตัวเขียน sidecar ย้ายไป `asset_scale.write_sidecar` ให้ทั้งสอง fetcher ใช้ร่วมกัน + `assets.fetch_model(assert_class=...)` + CLI `asset_scale.py --sidecar` · assert แล้ว 12/13 (เพิ่ม band sofa/coffee_table/ottoman พร้อมที่มาอ้างอิง) · **calathea_orbifolia_01 จงใจไม่ assert**: ไฟล์คือต้นไม้ 5 variant วางเรียงกัน (node _a.._e ที่ x -1/0/+1) bbox จึงเป็นของ 'ผัง' ไม่ใช่ของวัตถุ — ไม่มี band ของวัตถุเดี่ยวอันไหนจริงกับมันได้ sidecar จึงบันทึกแค่ bounds และบอกว่ายังไม่ assert (build ปฏิเสธมันอยู่แล้วและ fallback เป็นกระถางกับใบ procedural เหมือนเดิม)",
+   "because": "pipeline/CLAUDE.md เขียนไว้เป็น MUST: 'no external geometry reaches a spec or a gate until its unit is RESOLVED and asserted, never assumed' · กฎที่กระจายตาม caller คือกฎที่มีข้อยกเว้นหนึ่งข้อต่อหนึ่ง caller (กฎเดียวกับ R9b) · และ CC0 ไม่ได้แปลว่า unit ถูก",
+   "where": "pipeline/scripts/build_room.py, pipeline/scripts/asset_scale.py, pipeline/scripts/assets.py, pipeline/scripts/warehouse.py",
+   "reverse_by": "ลบบล็อก sidecar ใน `_model_path` (คืน hits[0] เหมือนเดิม) · ถ้าอยากให้ asset ตัวใดผ่าน: `python pipeline/scripts/asset_scale.py --sidecar <file> <class>`",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

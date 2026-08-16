@@ -479,7 +479,40 @@ ROOM_LANE_NOT_APPLICABLE = (
 )
 
 
-def check_room(gate_spec, roster=None):
+def model_assertions(spec, roster=None, extra=(), lines_out=None):
+    """P2r-9 — every model reference asserts its own size, diffed against the
+    file. Returns [violation]; the per-reference lines go to the roster detail so
+    they PRINT on every run (a rung whose findings nobody surfaces is the queue
+    with no consumer, which is this repo's oldest shape).
+
+    `spec` may be None where a caller has only a gate spec: the roster then says
+    the rung did NOT run, by name. It must never return [] for that reason —
+    "nothing to check" and "could not check" reading alike is the mute R11 was
+    written to end.
+    """
+    def note(name, ran_, why=""):
+        if roster is not None:
+            roster.append((name, ran_, why))
+
+    try:
+        import model_assert_check as MAC
+    except ImportError as e:  # pragma: no cover - import path accident
+        note("P2r-9 model scale", False, "module not importable")
+        return [f"model_assert_check is not importable ({e}) — refusing to "
+                f"render past a gate whose half is missing"]
+    if spec is None:
+        note("P2r-9 model scale", False,
+             "no full spec given, so the model references could not be read")
+        return []
+    v, lines = MAC.check(spec, REPO_ROOT, extra=extra)
+    if lines_out is not None:
+        lines_out += lines
+    note("P2r-9 model scale", True,
+         f"{len(lines)} reference(s)\n" + "\n".join(lines))
+    return v
+
+
+def check_room(gate_spec, roster=None, spec=None):
     """R10's object half on a ROOM spec (see room_masses). Returns [violation].
 
     D-021. `check()` cannot be pointed at a room lane as-is: it returns `no
@@ -499,6 +532,12 @@ def check_room(gate_spec, roster=None):
 
     v = audit_spec(gate_spec, require_seen=False)
     note("R10 spec", True, f"{len(gate_spec.get('masses') or [])} object(s)")
+    # P2r-9 TRANSFERS TO THIS LANE AND IS THE ONLY RUNG THAT DOES, because it
+    # needs no reference and no target: it asks whether the model we named is the
+    # model we measured. `gate_spec` carries masses only, so the FULL spec is
+    # passed separately — and when it is not, the roster says so rather than
+    # reporting a rung that checked nothing.
+    v += model_assertions(spec, roster)
     for name, why in ROOM_LANE_NOT_APPLICABLE:
         note(name, False, "not applicable to this lane: " + why)
     return v
@@ -1198,15 +1237,22 @@ PIXEL_RUNGS = {"R11 pixels"}
 def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
           lane_dir=None, spec_path=None, manifest_path=None, roster=None,
           advisories=None, render_dir=None, caps_path=None,
-          decisions_path=None, frame_path=None, target_path=None):
-    """Return [violation str]. `roster` and `advisories`, when given lists, are
-    filled in so the caller can report WHAT RAN — see enforce()."""
+          decisions_path=None, frame_path=None, target_path=None,
+          model_lines=None):
+    """Return [violation str]. `roster`, `advisories` and `model_lines`, when
+    given lists, are filled in so the caller can report WHAT RAN — see enforce()."""
     def note(name, ran_, why=""):
         if roster is not None:
             roster.append((name, ran_, why))
 
     v = audit_spec(spec, require_seen)
     note("R10 spec", True)
+
+    # P2r-9 — the model a reference NAMES is the model that was MEASURED. Wired
+    # on both lanes (see check_room) because the defect it catches is not lane
+    # specific: p2r36 asserted a rejected candidate's 2198.1 mm for an asset that
+    # measures 1599.9, in a prose note nothing read.
+    v += model_assertions(spec, roster, lines_out=model_lines)
 
     # R9, one level up from a position: a RELATIONSHIP that only two equal
     # numbers record is not recorded at all. Blocking, and it belongs on the
@@ -1400,13 +1446,13 @@ def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=Fals
             target_path=None):
     """Print and, if hard, refuse to continue. Called by the builder."""
     _utf8_stdout()
-    roster, advisories = [], []
+    roster, advisories, model_lines = [], [], []
     v = check(spec, bundle_dir, inbox_root, require_seen, lane_dir,
               spec_path=spec_path, manifest_path=manifest_path,
               roster=roster, advisories=advisories,
               render_dir=render_dir, caps_path=caps_path,
               decisions_path=decisions_path, frame_path=frame_path,
-              target_path=target_path)
+              target_path=target_path, model_lines=model_lines)
     # Name what was checked, not just that nothing failed — and name what was
     # NOT, on the pass path AND the fail path. A gate that prints the same
     # success line whether or not it ran a half of itself is indistinguishable
@@ -1417,6 +1463,15 @@ def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=Fals
         print("RULE GATE (advisory, not blocking):")
         for s in advisories:
             print(f"  ~~ {s}")
+    # ONE LINE PER MODEL REFERENCE, ON EVERY RUN — P2r-9's closing condition, and
+    # it is the condition rather than a nicety: the number that was wrong for two
+    # rounds was wrong in a place nobody printed. `debt_check` had the identical
+    # bug (its tally went into note() detail, which only prints for SKIPPED rungs,
+    # while its own comment claimed it printed in the render path).
+    if model_lines:
+        print("RULE GATE — models, asserted vs sidecar vs live re-measure:")
+        for s in model_lines:
+            print(s)
     # R11 — SAY WHICH HALF LOOKED AT THE PICTURE, EVERY RUN. Owner order
     # 2026-08-09. Printing one undifferentiated "checked: ..." list is what let a
     # gate made entirely of declaration-readers go green on a frame four critics

@@ -191,20 +191,59 @@ def test_bedroom_clip_sees_protruding_subroom_fixture(sp):
 
 
 def test_coplanar_backer_skins_canonical(spec):
-    """The pure skin predicate (LAYER LAW extraction): the canonical file yields
-    EXACTLY one skin — BF10 backing the ensuite south edge over x650..3150."""
-    skins = E5.coplanar_backer_skins(spec)
-    assert len(skins) == 1
-    sk = skins[0]
-    assert sk["backer"] == "BF10" and sk["edge"] == "y=5850"
-    assert abs(sk["x"] - 650) < 0.1 and abs(sk["dx"] - 2500) < 0.1
-    assert sk["dz"] == spec["room"]["ceiling_mm"]                 # to the ROOM ceiling
-    assert sk["y"] > 5850                                         # 2mm INSIDE the ensuite
+    """The canonical file now yields ZERO skins, and that is the correct answer.
+
+    THIS TEST WAS A SNAPSHOT AND WENT RED WHEN THE DRAWING WON. It asserted one
+    skin — BF10 backing the ensuite south edge over x650..3150 — and 0b98b98
+    (2026-08-11, D-038) ink-trued BF10 off those numbers: x 650 -> 804, y 5250 ->
+    5200, w 2500 -> 2498. Its face therefore sits at y=5800, fifty millimetres
+    clear of the y=5850 edge, so the Cycles coplanar tie this skin exists to
+    break CANNOT OCCUR and emitting a skin would be painting a fix over nothing.
+    R12: the sheet outranks the derivation, so the conflict reopens the
+    derivation — which is this expectation, not the ink.
+
+    It stayed red for five days, which is its own finding: nothing runs the
+    suite on a spec edit.
+
+    The MECHANISM is pinned by the positive control below rather than by this
+    file's current geometry — a snapshot cannot tell "the defect is gone" from
+    "the detector is broken", and that is the whole distinction here.
+    """
+    assert E5.coplanar_backer_skins(spec) == []
+    bf10 = next(b for b in spec["builtins"] if b.get("bf") == "BF10")
+    assert abs(float(bf10["y"]) + float(bf10["d"]) - 5800.0) < 0.1
+
+
+def test_coplanar_backer_skins_fire_when_a_face_lands_on_the_edge(sp):
+    """POSITIVE CONTROL — put BF10's face back on the ensuite edge and the skin
+    returns. Without this, the zero above is indistinguishable from a detector
+    that has stopped detecting."""
+    bf10 = next(b for b in sp["builtins"] if b.get("bf") == "BF10")
+    bf10["y"] = float(bf10["y"]) + 50.0                          # face 5800 -> 5850
+    skins = E5.coplanar_backer_skins(sp)
+    # TWO, not one — and the second is a fact about the trued plan rather than a
+    # quirk of this test. BF10 is x804..3302 since D-038, while the ensuite ends
+    # at x3150: it overhangs the ensuite/wardrobe-bay party line by 152 mm, so it
+    # backs an edge of BOTH subrooms. The pre-truing cabinet ran 650..3150, flush
+    # with that line, which is why the old expectation of one skin held.
+    assert len(skins) == 2
+    ens = next(s for s in skins if s["dx"] > 1000)
+    assert ens["backer"] == "BF10" and ens["edge"] == "y=5850"
+    assert abs(ens["x"] - float(bf10["x"])) < 0.1
+    assert abs(ens["dx"] - (3150.0 - float(bf10["x"]))) < 0.1
+    assert ens["dz"] == sp["room"]["ceiling_mm"]                 # to the ROOM ceiling
+    assert ens["y"] > 5850                                       # 2mm INSIDE the ensuite
+    bay = next(s for s in skins if s is not ens)
+    assert abs(bay["x"] - 3150.0) < 0.1
+    assert abs(bay["dx"] - (float(bf10["x"]) + float(bf10["w"]) - 3150.0)) < 0.1
 
 
 def test_coplanar_backer_skins_vanish_when_not_backed(sp):
+    """The negative half of the same control, from the fired state."""
     bf10 = next(b for b in sp["builtins"] if b.get("bf") == "BF10")
-    bf10["d"] -= 3                                                # face now 3mm off the edge
+    bf10["y"] = float(bf10["y"]) + 50.0                          # fires (see above)
+    assert len(E5.coplanar_backer_skins(sp)) == 2                # both subrooms
+    bf10["d"] = float(bf10["d"]) - 3                             # face now 3mm off
     assert E5.coplanar_backer_skins(sp) == []
 
 

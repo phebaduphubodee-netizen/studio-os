@@ -1,0 +1,23 @@
+{
+ "file": "ceramic_vase_01_1k.gltf",
+ "class": "vase",
+ "axis": "z",
+ "measured_mm": 400.3,
+ "band_mm": [
+  80.0,
+  900.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.5087,
+ "min_ratio_for_class": 0.25,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 203.6,
+  "y_mm": 203.6,
+  "z_mm": 400.3
+ },
+ "prims": 1,
+ "source": "styling props, this lane's own lathe range",
+ "in_band_under": null
+}

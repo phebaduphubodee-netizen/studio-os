@@ -311,10 +311,17 @@ def test_the_repos_own_plan_loads_and_reports():
     p = PS.load()
     assert p["unit"] == "DELIV-001"
     ids = [x["id"] for x in p["phases"]]
-    # P0..P5 is the spine and its ORDER is the invariant; the plan may grow
-    # named programs after it (DRW, 2026-08-11 owner order) — an exact-list
-    # assert here was this test's own docstring defect one line down.
-    assert ids[:6] == ["P0", "P1", "P2", "P3", "P4", "P5"]
+    # THE SPINE IS THE INVARIANT; ITS ORDER IS THE PLAN'S TO DECLARE, and this
+    # line learned that the hard way for the second time. It pinned
+    # P0..P5 in numeric order and went red on 2026-08-16 when the owner reordered
+    # the phases so both OBJECT phases run before LIGHT ("แสงถูก SOLVE จาก
+    # เรขาคณิต" — light is solved from geometry, so it cannot precede the
+    # geometry): the file now reads P0 P1 P2 P4 P3 P5, deliberately. Asserting a
+    # numeric sequence made a legitimate owner decision look like a regression —
+    # the same snapshot-versus-contract defect this test's own docstring names
+    # one line up. What must hold is that the six spine phases are all present
+    # and unique; where they sit is a decision, not an invariant.
+    assert sorted(ids[:6]) == ["P0", "P1", "P2", "P3", "P4", "P5"]
     out = PS.report(p)
     cur = PS.current(p)
     assert f"WE ARE AT   {cur['id']}" in out and cur["id"] in ids

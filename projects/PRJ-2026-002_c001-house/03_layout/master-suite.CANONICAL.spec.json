@@ -2,11 +2,61 @@
  "schema": "interior-ai/room-spec@0.2+ext",
  "units": "metric",
  "version": "canonical-2026-07-16",
+ "model_assertions": {
+  "8a57766d-2406-4fdb-a17b-ba54af02a494": {
+   "class": "pillow_set_standing",
+   "axis": "z",
+   "asserted_mm": 501.3,
+   "asserted_on": "2026-08-10"
+  },
+  "tub_chair_c": {
+   "class": "chair",
+   "axis": "z",
+   "asserted_mm": 706.3,
+   "asserted_on": "2026-08-10"
+  },
+  "cce50840-c6b0-4d96-8ddc-68987b588673": {
+   "class": "garment_hung",
+   "axis": "z",
+   "asserted_mm": 879.3,
+   "asserted_on": "2026-08-10"
+  },
+  "c25de786-231d-4048-91ba-f94afbba6aed": {
+   "class": "garment_hung",
+   "axis": "z",
+   "asserted_mm": 1308.8,
+   "asserted_on": "2026-08-10"
+  },
+  "8c7ed2ed-ae37-4ec9-9e86-258ab0ddf32d": {
+   "class": "towel_hung",
+   "axis": "z",
+   "asserted_mm": 649.8,
+   "asserted_on": "2026-08-10"
+  },
+  "1ee777624ac8375025009b04306ab688": {
+   "class": "towel_folded",
+   "axis": "z",
+   "asserted_mm": 160.0,
+   "asserted_on": "2026-08-10"
+  }
+ },
+ "model_assertions_note": "P2r-9 (2026-08-16). EVERY MODEL REFERENCE ASSERTS ITS OWN SIZE HERE, AS DATA, and pipeline/scripts/model_assert_check.py diffs each row against that file's own `<asset>.scale.json` sidecar AND against a live re-measure of the file, on every build. WHY IT IS A FIELD AND NOT A SENTENCE: until today these numbers lived only in the `*_note` prose beside them, and on p2r36 `bed_models_note` asserted 2198.1 mm on y for ub806591a — the size of 2b142a32, the candidate this lane REJECTED. The file's own sidecar read 1599.9 mm and was right the whole time, but nothing compared the two, so a 1505x1600 mm duvet was scaled onto a 2000x2149 mm bed and its hem came to rest on the mattress face. The owner saw it in one sentence before any instrument did. A measurement kept where only a human re-reading prose can check it is not a measurement. `asserted_on` is provenance and is not checked; class/axis/asserted_mm are, three ways, and a row nothing references is refused by name.",
+ "model_requirements": {
+  "items[1].bed_models.cloth_set": {
+   "class": "bedding_set",
+   "covers": {
+    "item": 1,
+    "inset_mm": 90
+   },
+   "max_scale": 1.0,
+   "why": "a duvet COVERS the mattress and falls past its flanks. The inset is build_room.py `mins = 0.09`, the mattress's own recess under the coverlet, so the plan to cover is the bed item's w/d less 90 mm a side and it tracks the bed if the bed is redrawn (R9: never typed twice). max_scale 1.0 = an acquired mesh is not stretched to fit — that is the 'plausible-but-wrong-scale model' the whole assertion law exists to refuse. The rule is attached to the SITE, so it survives the asset being removed and filters the next audition on measurement before a single frame is rendered."
+  }
+ },
  "garment_models": [
   "cce50840-c6b0-4d96-8ddc-68987b588673",
   "c25de786-231d-4048-91ba-f94afbba6aed"
  ],
- "garment_models_note": "D-025 item 1 executed r5 (acquire-first, log _private/deliv-001/warehouse-garment-search-2026-08-10.log): 3D Warehouse hanging-garment SETS (Trimble GML, gitignored cache), scale ASSERTED as garment_hung (879/1309 mm on z, band 400-1900); one set replaces one rail's whole loft group (garments+hangers), alternating by rail salt; cloth tokens PER GARMENT CLUSTER since r6 (C2-r5#8: one token per set swallowed dark-garment detail); revert: delete this key or run --no-acquire",
+ "garment_models_note": "D-025 item 1 executed r5 (acquire-first, log _private/deliv-001/warehouse-garment-search-2026-08-10.log): 3D Warehouse hanging-garment SETS (Trimble GML, gitignored cache), scale ASSERTED as garment_hung — the NUMBER is data in `model_assertions`, checked against the file's own sidecar and a live re-measure on every build (P2r-9); it is deliberately not repeated here, because a size written in prose is the one thing no program was reading; one set replaces one rail's whole loft group (garments+hangers), alternating by rail salt; cloth tokens PER GARMENT CLUSTER since r6 (C2-r5#8: one token per set swallowed dark-garment detail); revert: delete this key or run --no-acquire",
  "garment_cut_first": [
   "c25de786-231d-4048-91ba-f94afbba6aed"
  ],
@@ -15,7 +65,7 @@
   "hung": "8c7ed2ed-ae37-4ec9-9e86-258ab0ddf32d",
   "folded": "1ee777624ac8375025009b04306ab688"
  },
- "towel_models_note": "D-028 (r6, D8's last four towel rows; acquire-first, log _private/deliv-001/warehouse-towel-search-2026-08-10.log; clay-probed before wiring — the r4 pillow lesson): hung = a PAIR of draped towels on its own rod (rod DELETED at import, the suite brass bar is the rod of record; scale ASSERTED towel_hung 649.8mm z, band 200-1000; one placement replaces both bar-towel census boxes; the hook towel keeps one towel of the pair recentred); folded = a folded pair (ASSERTED towel_folded 160mm z, band 20-160) on the vanity counter — its ~120mm natural stack vs the census's 35mm board is a DECLARED deviation; census counts + positions stay bathroom.py's; all wear the signed terry token; revert: delete this key or run --no-acquire",
+ "towel_models_note": "D-028 (r6, D8's last four towel rows; acquire-first, log _private/deliv-001/warehouse-towel-search-2026-08-10.log; clay-probed before wiring — the r4 pillow lesson): hung = a PAIR of draped towels on its own rod (rod DELETED at import, the suite brass bar is the rod of record; scale ASSERTED as towel_hung — the NUMBER is data in `model_assertions`, checked against the file's own sidecar and a live re-measure on every build (P2r-9); it is deliberately not repeated here, because a size written in prose is the one thing no program was reading; one placement replaces both bar-towel census boxes; the hook towel keeps one towel of the pair recentred); folded = a folded pair (scale ASSERTED as towel_folded — the NUMBER is data in `model_assertions`, checked against the file's own sidecar and a live re-measure on every build (P2r-9); it is deliberately not repeated here, because a size written in prose is the one thing no program was reading) on the vanity counter — its ~120mm natural stack vs the census's 35mm board is a DECLARED deviation; census counts + positions stay bathroom.py's; all wear the signed terry token; revert: delete this key or run --no-acquire",
  "materials": {
   "schema": "interior-ai/materials@0.1",
   "note": "ELEMENT-1 BUILD-LAYER palette, owner-signed 2026-07-16 (D1/D2/D4/D6 — see element1-oak-signature-wall_DD-2026-07-16.md). Anti mono-timber: LIGHT oak on the feature walls + millwork (30% secondary); COOL plaster walls as the 60% ground (Albers D1-A: a warm wall washes the oak out); satin brass hang-rail as the 10% accent (auto-routed to the open-wardrobe rail parts) + cool microcement drawer fronts / dressing-tower back (D6-A, auto-routed to the open-wardrobe front/back parts). SUPERSEDES the proof render's warm_white_paint + birch_veneer stand-ins now that build_room renders the open:true joinery + the 40/20 slat rhythm (2026-07-16 build layer).",
@@ -781,7 +831,7 @@
    "pillow_models": {
     "head_combo": "8a57766d-2406-4fdb-a17b-ba54af02a494"
    },
-   "pillow_models_note": "D-025 acquire-first: 3D Warehouse 'PILLOW SET' (Trimble GML, gitignored cache), 2 meshes 81k tris = standing flanged sham + lying pillow per instance; scale ASSERTED as pillow_set_standing (501.3mm on z, band 350-800, sidecar 2026-08-10); two instances replace the whole head zone, cloths re-dressed per value ladder (sham/pillowcase), terry lumbar DECLARED ABSENT while the combo places — revert: delete pillow_models or run --no-acquire",
+   "pillow_models_note": "D-025 acquire-first: 3D Warehouse 'PILLOW SET' (Trimble GML, gitignored cache), 2 meshes 81k tris = standing flanged sham + lying pillow per instance; scale ASSERTED as pillow_set_standing — the NUMBER is data in `model_assertions`, checked against the file's own sidecar and a live re-measure on every build (P2r-9); it is deliberately not repeated here, because a size written in prose is the one thing no program was reading; two instances replace the whole head zone, cloths re-dressed per value ladder (sham/pillowcase), terry lumbar DECLARED ABSENT while the combo places — revert: delete pillow_models or run --no-acquire",
    "note": "ELEMENT 3 INK-TRUED + OWNER-CONFIRMED 2026-07-18 (element3-bed_ink-read-2026-07-18.json + _DD). Footprint was the spec's TRANSPOSED 2134x1981 @ (3092,110); the designer drew x3203.6->5203.2 (E-W head-foot 1999.6 ~6.5'/2000mm mattress length) x y51.3->2200.1 (N-S width 2148.8 ~7' — the '7' is the WIDTH, a wide near-square feature bed). Head EAST, flush on BF14 face x5203.2 (pillows + a duvet fold drawn against the east end confirm the head; the headboard IS the slat wall). Owner adopted the ink over the spec (two-layer law: furniture is owner-authored). NO platform/ยกพื้น is drawn — 'ฐาน' = the bed's own base (design), owner-confirmed.",
    "design": {
     "element": 3,
@@ -790,10 +840,7 @@
     "base_material": "upholstered_greige_linen",
     "ref": "element3-bed_DD-2026-07-18.md"
    },
-   "bed_models": {
-    "cloth_set": "ub806591a-d110-475a-8209-11e595d50022"
-   },
-   "bed_models_note": "p2r31 ACQUIRE-FIRST FOR THE BED CLOTH (owner order 2026-08-14 after the crease site's third R1 stop — ผมท้อแล้ว ทำเท่าไรคุณก็ปั้น model ให้สมจริงไม่ได้ซักที): R8 says free-form geometry is ACQUIRED, and its stop-loss says two shape iterations mean the CLASS was misclassified — this site had four measured mechanism stops (clamp / spring pinning / timed release / two-stage release). 3D Warehouse (Trimble GML, gitignored cache). CHOSEN THE WAY HIS FRIEND CHOOSES — by looking at each candidate ON THIS BED: 22 cached models were dressed onto the real mattress and ray-measured (coverage / relief / fall), the four plausible ones were rendered from the eye camera, and the eye picked among those four. The first pick (2b142a32) was rejected BY THAT LOOK: it is a slept-in crumple covering 60% of the mattress. ub806591a covers 90.3% at 20 mm relief with the fall on two flanks — a MADE bed, which is what the DD signed ('the room is made, not slept in'). The richer-folded runner-up 8635b5b9 (80.8%, 138 mm relief) is a THROWN-BACK bed and is recorded as the alternative if the owner wants lived-in instead (the practitioner method the owner reported 2026-08-14: his designer friend uses 3D Warehouse and judges each model by eye for style fit). Scale ASSERTED as bedding_set: 2198.1 mm on y, band 1400-2900 (sidecar 2026-08-14). The file also carries a 2 m junk cube, a 12-poly mattress slab and pillow-scale parts; the ingest keeps only parts whose PLAN AREA is >= a third of this mattress's, derived from the bed being dressed and never from the uploader's mesh names. Cloths re-dressed per the value ladder (tallest part = duvet cloth, flatter = coverlet cloth). Pillows (D-025) and the foot throw are untouched. REVERSE: delete bed_models, or run --no-bed-cloth-acq for one build."
+   "bed_cloth_gap_note": "DECLARED GAP, carrying out gate-DELIV001-P2r36 decision 2 IN DATA rather than in prose. `bed_models.cloth_set` used to name ub806591a-d110-475a-8209-11e595d50022; that asset is REFUSED for this bed on measurement — 1505 x 1600 mm of cloth cannot dress a 1820 x 1969 mm mattress, and scaling it up 1.23x left its hem lying ON the mattress face instead of falling past the flanks, which is what the owner saw in one sentence. The refusal was recorded in a round document while the spec went on naming the asset, so the next reader would have inherited it. The REQUIREMENT the next pick must meet now lives in `model_requirements` and is checked before anything is rendered; R10's law applies to soft goods too — the absent thing is honest, the wrong thing fabricates a reading. Reverse: add `bed_models: {\"cloth_set\": \"<slug>\"}` back with an asset whose own plan is >= the mattress, and add its row to `model_assertions`. `_BED_CLOTH_ACQ` is still False (p2r36 decision 1), so this key alone changes no frame; the acquire leg is `--bed-cloth-acq`."
   },
   {
    "name": "ม้านั่งปลายเตียง (bench)",
@@ -853,7 +900,7 @@
    "kind": "stool",
    "style": "tub_chair",
    "model": "tub_chair_c",
-   "model_note": "R8 ACQUIRE (P2a/P2f, 2026-08-10). A wrap-back upholstered shell is FREE FORM: R8 says acquire it and never hand-model it, and _build_tub_chair is the hand-built version this replaces. Source 3D Warehouse, Trimble GML — commercial use of the RENDER permitted, NOT redistributable, so the mesh stays in the gitignored cache and the client gets the assembled scene (docs/LICENSING.md). Native 432x536x706 mm; scale ASSERTED as class `chair` on ingest (band 600-1300 on z); fits this 510x546x750 slot at scale 1.019, i.e. essentially its true size. Four candidates were fetched and the class+aspect gate refused two of them by name — a 1288 mm two-seater and an 1872 mm sofa. `style` is KEPT: it still routes the fallback if this mesh ever fails the gate, and a silent revert to the hand-built chair is what it prevents.",
+   "model_note": "R8 ACQUIRE (P2a/P2f, 2026-08-10). A wrap-back upholstered shell is FREE FORM: R8 says acquire it and never hand-model it, and _build_tub_chair is the hand-built version this replaces. Source 3D Warehouse, Trimble GML — commercial use of the RENDER permitted, NOT redistributable, so the mesh stays in the gitignored cache and the client gets the assembled scene (docs/LICENSING.md). scale ASSERTED as `chair` — the NUMBER is data in `model_assertions`, checked against the file's own sidecar and a live re-measure on every build (P2r-9); it is deliberately not repeated here, because a size written in prose is the one thing no program was reading; it fits this 510x546x750 slot at essentially its true size. Four candidates were fetched and the class+aspect gate refused two of them by name — a 1288 mm two-seater and an 1872 mm sofa. `style` is KEPT: it still routes the fallback if this mesh ever fails the gate, and a silent revert to the hand-built chair is what it prevents.",
    "x": 870,
    "y": 3982,
    "w": 510,

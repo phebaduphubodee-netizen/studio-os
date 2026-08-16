@@ -1,0 +1,23 @@
+{
+ "file": "Ottoman_01_1k.gltf",
+ "class": "ottoman",
+ "axis": "z",
+ "measured_mm": 624.3,
+ "band_mm": [
+  250.0,
+  800.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.7022,
+ "min_ratio_for_class": 0.3,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 884.6,
+  "y_mm": 621.1,
+  "z_mm": 624.3
+ },
+ "prims": 1,
+ "source": "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:36 (seat height 400-450); band spans a low pouf to a tall storage ottoman",
+ "in_band_under": null
+}

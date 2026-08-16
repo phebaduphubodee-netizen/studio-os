@@ -1,0 +1,23 @@
+{
+ "file": "Sofa_01_1k.gltf",
+ "class": "sofa",
+ "axis": "z",
+ "measured_mm": 796.5,
+ "band_mm": [
+  500.0,
+  1400.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.4187,
+ "min_ratio_for_class": 0.2,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 1571.5,
+  "y_mm": 658.0,
+  "z_mm": 796.5
+ },
+ "prims": 1,
+ "source": "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:36,48 (seat 400-450 mm, and a sofa's `h` is the BACKREST not the seat); band spans a bench-backed modern sofa to a high-back wing",
+ "in_band_under": null
+}

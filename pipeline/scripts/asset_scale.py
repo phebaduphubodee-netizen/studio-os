@@ -129,6 +129,33 @@ BANDS = {
     "rug": (1000.0, 5000.0, "maxxy",
             "master-suite.CANONICAL.spec.json items[0] 3100 x 2500 mm; band "
             "spans a bedside runner to a whole-room rug"),
+    # ---------------------------------------------------------------- p2r37 --
+    # THE CC0 SHELF, banded so it can be asserted for the first time. Measured
+    # 2026-08-16: all 13 committed Poly Haven assets carried NO sidecar, because
+    # `assets.py` never wrote one — so the MUST in pipeline/CLAUDE.md was dead for
+    # the entire COMMITTED shelf while `build_room._model_path` handed those files
+    # to `place_model` unasserted. The gitignored warehouse cache was the half
+    # anyone remembered to check.
+    #
+    # These three are UNIT BANDS AND SAY SO. They are deliberately wider than the
+    # ergonomic range they cite, because the shelf's own `coffee_table_round_01`
+    # is 491 mm tall and Ottoman_01 is 624 — both real products, both outside the
+    # ergonomic table. Refusing them here would be the band judging TASTE, and
+    # this module answers one question: is the UNIT right (the 0.0254x and 1000x
+    # traps), nothing more. Height is the axis for all three because that is what
+    # ergonomics pins; plan sizes range freely across a catalogue.
+    "sofa": (500.0, 1400.0, "z",
+             "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:36,48 "
+             "(seat 400-450 mm, and a sofa's `h` is the BACKREST not the seat); "
+             "band spans a bench-backed modern sofa to a high-back wing"),
+    "coffee_table": (200.0, 900.0, "z",
+                     "knowledge/ergonomics/tv-viewing-and-furniture-dimensions"
+                     ".md:39-40 (coffee table 300-460, side/end 380-480); band "
+                     "widened to admit a low plinth table and a console"),
+    "ottoman": (250.0, 800.0, "z",
+                "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:36 "
+                "(seat height 400-450); band spans a low pouf to a tall storage "
+                "ottoman"),
 }
 
 # ------------------------------------------------------------- planar refusal --
@@ -166,6 +193,10 @@ MIN_DEPTH_RATIO = {
     # a rug IS a plane — this class is the reason MIN_DEPTH_RATIO carries None as
     # a DECLARED value rather than treating "absent" and "exempt" as the same
     "rug": None,
+    # all three are solid volumes; none can legitimately arrive as a billboard
+    "sofa": 0.20,
+    "coffee_table": 0.15,       # a round top on legs is thin in z, never planar
+    "ottoman": 0.30,
 }
 
 
@@ -396,18 +427,62 @@ def assert_scale(path, cls, bands=None):
     }
 
 
+def sidecar_path(path):
+    return os.path.splitext(path)[0] + ".scale.json"
+
+
+def write_sidecar(path, cls):
+    """Assert `path` as `cls`, write `<asset>.scale.json` beside it, return
+    (ok, report). `cls=None` records BOUNDS ONLY and says in the file that the
+    unit is not asserted — "no class named" and "in band" must never read alike.
+
+    IT LIVES HERE, NOT IN A FETCHER, because it was in one and that is why half
+    the shelf was never asserted: `warehouse.py` wrote a sidecar on every fetch
+    and `assets.py` (Poly Haven, the COMMITTED shelf) had no such line, so
+    thirteen assets sat unasserted for six weeks while the rule read as enforced.
+    A step that only happens if each downloader remembers it is not a step.
+    """
+    try:
+        if cls:
+            ok, rep = assert_scale(path, cls)
+        else:
+            ok, rep = None, {
+                "file": os.path.basename(path), "class": None,
+                "bbox_mm": {k: round(v, 1) for k, v in bounds_mm(path).items()
+                            if k != "prims"},
+                "ok": None,
+                "note": "NO CLASS GIVEN — bounds recorded, unit NOT asserted. "
+                        "Nothing may consume this until a class is named."}
+    except (KeyError, ValueError) as e:
+        ok, rep = False, {"file": os.path.basename(path), "class": cls,
+                          "ok": False, "error": str(e)}
+    with open(sidecar_path(path), "w", encoding="utf-8") as f:
+        json.dump(rep, f, indent=1, ensure_ascii=False)
+    return ok, rep
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
+    write = "--sidecar" in argv
+    argv = [a for a in argv if a != "--sidecar"]
     if len(argv) < 2:
-        print("usage: asset_scale.py <file.glb> <class>\n  classes: "
-              + ", ".join(sorted(BANDS)))
+        print("usage: asset_scale.py [--sidecar] <file.glb> <class>\n"
+              "  --sidecar  also write <asset>.scale.json beside the file\n"
+              "  classes: " + ", ".join(sorted(BANDS)))
         return 2
     try:
-        ok, rep = assert_scale(argv[0], argv[1])
+        if write:
+            ok, rep = write_sidecar(argv[0], argv[1])
+            if ok is False and "error" in rep:
+                raise ValueError(rep["error"])
+        else:
+            ok, rep = assert_scale(argv[0], argv[1])
     except (KeyError, ValueError) as e:
         print(f"SCALE ASSERTION FAILED: {e}")
         return 1
     print(json.dumps(rep, indent=1, ensure_ascii=False))
+    if write:
+        print(f"  scale sidecar -> {os.path.basename(sidecar_path(argv[0]))}")
     print("SCALE ASSERTED" if ok else "SCALE REFUSED — do not let this reach a spec")
     return 0 if ok else 1
 

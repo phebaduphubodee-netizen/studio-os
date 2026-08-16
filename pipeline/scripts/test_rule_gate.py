@@ -704,9 +704,20 @@ def test_every_inapplicable_rung_is_DECLARED_with_a_reason():
     assert "R10 spec" in names
     for rung, _why in RG.ROOM_LANE_NOT_APPLICABLE:
         assert rung in names, rung
+    inapplicable = {n for n, _ in RG.ROOM_LANE_NOT_APPLICABLE}
     for name, ran, why in roster:
-        if not ran:
+        if ran:
+            continue
+        # TWO KINDS OF NOT-RUNNING, and they must not be spelled the same. A rung
+        # in the declared list is STRUCTURALLY inapplicable here; anything else
+        # that did not run COULD NOT run (P2r-9 with no full spec is the first
+        # of that kind) and has to say which, because "does not apply" reads as
+        # settled and "could not run" is an unknown.
+        if name in inapplicable:
             assert why.startswith("not applicable to this lane:") and len(why) > 40
+        else:
+            assert not why.startswith("not applicable"), (name, why)
+            assert len(why) > 30, (name, why)
 
 
 def test_the_pixel_rung_says_WHY_it_can_never_apply_here():

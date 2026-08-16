@@ -6446,7 +6446,39 @@ def _model_path(slug):
                  os.path.join(shared, "warehouse", slug)):
         hits += glob.glob(os.path.join(root, "*.gltf"))
         hits += glob.glob(os.path.join(root, "*.glb"))
-    return hits[0] if hits else None
+    if not hits:
+        return None
+    # THE DOOR ASSERTS, AND THAT IS WHY THE CHECK IS HERE AND NOT AT EACH CALLER
+    # (P2r-9, 2026-08-16). pipeline/CLAUDE.md carries the scale assertion as a
+    # MUST — "no external geometry reaches a spec or a gate until its unit is
+    # RESOLVED and asserted, never assumed" — and it was enforced by each call
+    # site remembering to read a sidecar. Two of them did (`_place_bed_cloth`,
+    # `_place_pillow_combo`); the item loop, the decor lane and every MODEL_MAP
+    # default did not, and the whole committed CC0 shelf had no sidecar to read
+    # anyway. A rule spread across the callers is a rule with an exemption per
+    # caller — R9b's law, one level down from placement. This is the one function
+    # every consumed mesh comes through, so it is the one place the rule can be
+    # true of all of them.
+    #
+    # It returns None on refusal rather than raising: every caller already has a
+    # LOUD fallback for "no cached mesh" (procedural primitive, solver bake,
+    # lofted pillows) and an unasserted mesh must take that path, not the frame.
+    _p = hits[0]
+    try:
+        with open(_ascale.sidecar_path(_p), encoding="utf-8") as _f:
+            _sc = json.load(_f)
+    except (OSError, ValueError) as _e:
+        print(f"  MODEL REFUSED {slug}: no readable scale sidecar beside "
+              f"{os.path.basename(_p)} ({_e}). Assert it first: "
+              f"python pipeline/scripts/asset_scale.py --sidecar <file> <class>")
+        return None
+    if _sc.get("ok") is not True:
+        _why = (_sc.get("planar_refusal") or _sc.get("error")
+                or _sc.get("note") or f"ok={_sc.get('ok')}")
+        print(f"  MODEL REFUSED {slug}: its sidecar does not assert a unit "
+              f"({_why})")
+        return None
+    return _p
 
 
 def _enable_gltf():
@@ -7669,8 +7701,23 @@ if __name__ == "__main__":
         # looked and it was fine" failure in another costume
         globals()["_BED_CLOTH_SET"] = _bcs
         globals()["_BED_CLOTH_ACQ"] = True
-        print(f"  [A/B] bed cloth: ACQUIRED set {_bcs} (CLI override of the "
-              f"spec's bed_models.cloth_set; implies --bed-cloth-acq)")
+        # AND WRITE IT INTO THE SPEC, so the P2r-9 gate sees it (2026-08-16).
+        # As a module global alone this flag was a hole straight through the
+        # rung built to close p2r36: the gate reads the SPEC's model
+        # references, so a set named only on the command line rendered with no
+        # assertion, no sidecar diff and — the half that actually bit — no
+        # check that it is big enough for this bed. Same law `--item-model`
+        # already follows (it writes `model` into the item). An audition of an
+        # unasserted candidate belongs in bedcloth_shoot/bedcloth_bench, which
+        # import directly and are measurement tools; the deliverable build
+        # renders what the spec can account for.
+        _bed_it = next((i for i in (_spec.get("items") or [])
+                        if i.get("kind") == "bed"), None)
+        if _bed_it is not None:
+            _bed_it.setdefault("bed_models", {})["cloth_set"] = _bcs
+        print(f"  [A/B] bed cloth: ACQUIRED set {_bcs} (CLI override written "
+              f"into the spec's bed_models.cloth_set so the gate sees it; "
+              f"implies --bed-cloth-acq)")
     if "--no-cloth-normalise" in _post_dashdash():
         # A leg of the p2r32 shading A/B, now askable for the first time because
         # the runner is finally in the frame to be shaded (see _CLOTH_NORMALISE)
@@ -7839,13 +7886,31 @@ if __name__ == "__main__":
             import rule_gate as _RG
             _gs = _RM.as_gate_spec(_spec, _p)
             _roster = []
-            _viol = _RG.check_room(_gs, roster=_roster)
+            # THE FULL SPEC, not just the gate spec: P2r-9 reads model
+            # references, which live all over the spec and nowhere in `masses`.
+            #
+            # It does NOT cover the two decor slugs the styling lane hard-codes
+            # (`ceramic_vase_01`, `calathea_orbifolia_01`) — those are not spec
+            # references, and the rung that covers them is `_model_path`, which
+            # refuses any mesh whose sidecar does not assert a unit. Two rules,
+            # each universal inside its own domain: the GATE governs what the
+            # spec NAMES, the DOOR governs what the build LOADS. Moving decor
+            # into the spec so one rule covers both is open work, not a gap
+            # anything falls through today.
+            _viol = _RG.check_room(_gs, roster=_roster, spec=_spec)
             print("RULE GATE (room lane) — what ran and what did not:")
             for _n, _ran, _why in _roster:
                 print(f"  [{'x' if _ran else ' '}] {_n:26s} {_why}")
             if _viol:
-                print(f"\nRULE GATE FAILED (R10): {len(_viol)} object(s) do not "
-                      f"justify their own existence")
+                # NAME THE RUNGS THAT ACTUALLY RAN. This line said "(R10): N
+                # object(s) do not justify their own existence" for every
+                # failure, whatever failed — so the first P2r-9 refusal
+                # (a model asserted at another file's size) was reported as an
+                # unjustified object. A gate that mislabels its own finding
+                # sends the next reader to the wrong file.
+                _rungs = ", ".join(n for n, _r, _ in _roster if _r) or "?"
+                print(f"\nRULE GATE FAILED: {len(_viol)} violation(s) "
+                      f"[{_rungs}]")
                 for _s in _viol:
                     print(f"  !! {_s}")
                 sys.stdout.flush()

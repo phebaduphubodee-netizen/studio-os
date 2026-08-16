@@ -1,0 +1,23 @@
+{
+ "file": "modern_arm_chair_01_2k.gltf",
+ "class": "chair",
+ "axis": "z",
+ "measured_mm": 1022.9,
+ "band_mm": [
+  600.0,
+  1300.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.802,
+ "min_ratio_for_class": 0.35,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 820.3,
+  "y_mm": 986.6,
+  "z_mm": 1022.9
+ },
+ "prims": 2,
+ "source": "knowledge/ergonomics/casework-fixture-clearances-th-practice.md:47 knowledge/ergonomics/residential-clearances.md (seat 406-432, back to ~1100)",
+ "in_band_under": null
+}

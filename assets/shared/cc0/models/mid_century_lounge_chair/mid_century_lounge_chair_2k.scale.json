@@ -1,0 +1,23 @@
+{
+ "file": "mid_century_lounge_chair_2k.gltf",
+ "class": "chair",
+ "axis": "z",
+ "measured_mm": 1169.1,
+ "band_mm": [
+  600.0,
+  1300.0
+ ],
+ "ok": true,
+ "in_band": true,
+ "thinnest_over_longest": 0.8474,
+ "min_ratio_for_class": 0.35,
+ "planar_refusal": null,
+ "bbox_mm": {
+  "x_mm": 1008.6,
+  "y_mm": 1190.3,
+  "z_mm": 1169.1
+ },
+ "prims": 1,
+ "source": "knowledge/ergonomics/casework-fixture-clearances-th-practice.md:47 knowledge/ergonomics/residential-clearances.md (seat 406-432, back to ~1100)",
+ "in_band_under": null
+}

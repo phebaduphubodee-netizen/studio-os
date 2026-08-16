@@ -1,0 +1,11 @@
+{
+ "file": "calathea_orbifolia_01_1k.gltf",
+ "class": null,
+ "bbox_mm": {
+  "x_mm": 2491.5,
+  "y_mm": 1193.6,
+  "z_mm": 424.3
+ },
+ "ok": null,
+ "note": "NO CLASS GIVEN — bounds recorded, unit NOT asserted. Nothing may consume this until a class is named."
+}

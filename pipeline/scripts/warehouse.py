@@ -169,24 +169,12 @@ def _assert_scale_sidecar(path, cls):
     one, and the layer law wants the pure thing importable without it.
     """
     import asset_scale as S
-    side = os.path.splitext(path)[0] + ".scale.json"
-    try:
-        if cls:
-            ok, rep = S.assert_scale(path, cls)
-        else:
-            ok, rep = None, {"file": os.path.basename(path), "class": None,
-                             "bbox_mm": {k: round(v, 1) for k, v in
-                                         S.bounds_mm(path).items() if k != "prims"},
-                             "ok": None,
-                             "note": "NO CLASS GIVEN — bounds recorded, unit NOT "
-                                     "asserted. Nothing may consume this until "
-                                     "a class is named."}
-    except (KeyError, ValueError) as e:
-        rep, ok = {"file": os.path.basename(path), "class": cls,
-                   "ok": False, "error": str(e)}, False
-    with open(side, "w", encoding="utf-8") as f:
-        json.dump(rep, f, indent=1, ensure_ascii=False)
-    print(f"  scale sidecar -> {os.path.basename(side)}")
+    # THE BODY MOVED TO asset_scale.write_sidecar (2026-08-16, P2r-9). It lived
+    # here, and `assets.py` — the COMMITTED Poly Haven shelf — had no equivalent
+    # line, so 13 of the repo's models were never asserted at all while this one
+    # function made the rule look enforced. One implementation, two fetchers.
+    ok, rep = S.write_sidecar(path, cls)
+    print(f"  scale sidecar -> {os.path.basename(S.sidecar_path(path))}")
     if ok is None:
         print("  UNIT NOT ASSERTED (no --assert-class). Bounds mm: "
               + ", ".join(f"{k}={v}" for k, v in rep["bbox_mm"].items()))
