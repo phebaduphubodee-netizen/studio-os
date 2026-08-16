@@ -2689,10 +2689,31 @@ def _dress_scene(spec):
             print("  !! lane D: no bench mass in the scene (neither a built "
                   "`bench__seat` nor an acquired `bench__acq*`) — its books and "
                   "throw are DROPPED, and that is a hole in a scored styling axis")
-        elif abs(_btop - bh) > 0.005:
-            print(f"  lane D: bench top MEASURED at {_btop * 1000:.0f} mm, not the "
-                  f"spec's declared {bh * 1000:.0f} — books and throw follow the "
-                  f"mass that is actually there")
+        else:
+            # THE PLAN COMES OFF THE MESH TOO, AND THIS HALF WAS MISSING FOR ONE
+            # ROUND — the fix above derived the bench's TOP from the mass in the
+            # scene and left its PLAN on the spec slot, which is the same defect
+            # one axis away. An acquired mesh fills its slot to model_fit's
+            # MIN_FILL (0.62), not to the millimetre: Ottoman_01 lands 498 x 709
+            # in a 498 x 1000 drawn slot, so books placed 85 mm from the SLOT's
+            # near edge started 60 mm before the ottoman did. Measured on the
+            # p2r39 frame: 60.4 of 155 mm of the stack, 39.0%, hanging in air
+            # over the rug.
+            #
+            # THE BLIND CRITIC FOUND IT FIRST AND SIZED IT FROM PIXELS ALONE:
+            # "roughly 40% of the stack projects past the bench's rolled corner
+            # into open air — you can see the grey bed behind the overhanging
+            # half". 39.0% measured. That is what the C2 rung is for.
+            _bmn, _bmx = _world_bbox([_bench_obj])
+            bx, by = _bmn[0], _bmn[1]
+            bw, bd = _bmx[0] - _bmn[0], _bmx[1] - _bmn[1]
+            if abs(_btop - bh) > 0.005:
+                print(f"  lane D: bench top MEASURED at {_btop * 1000:.0f} mm, not "
+                      f"the spec's declared {bh * 1000:.0f}")
+            print(f"  lane D: bench plan MEASURED {bw * 1000:.0f} x {bd * 1000:.0f} mm "
+                  f"at ({bx * 1000:.0f}, {by * 1000:.0f}) — books and throw derive "
+                  f"from the mass that is there, never from the drawn slot "
+                  f"({float(bench['w']):.0f} x {float(bench['d']):.0f})")
         # [1] two stacked books at the south end — the bedroom's own muted boards,
         # dark board ON TOP (d1 quick: the cream book uppermost read as a tissue
         # box — an ink cover over a cream base reads "books" at one glance).
