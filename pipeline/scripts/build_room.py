@@ -6244,6 +6244,37 @@ def _build_tub_chair(x0, y0, W, D, H, rot=0.0):
     millwork.tub_chair_curved (containment/opening/rim invariants unit-tested); meshes
     are real curves via from_pydata (the curtain-wave law — the first boxy pass read as
     a box because the primitive was wrong, owner 2026-07-20)."""
+    # P2b — DECIDED ON R8'S OWN TEST, 2026-08-16, and the test is the stop-loss
+    # rather than the constructive one. R8: *"max TWO shape iterations on a
+    # hand-built organic object; a third means the class was misclassified, not
+    # that the shape needs more tuning."* This object's own history has three,
+    # each recorded as an owner LOOK:
+    #   1. boxy massing            — 2026-07-20 *"ยังไม่ค่อยสวย"*
+    #   2. curved wrap, uniform rim — 2026-07-22 *"เก้าอี้ยังดูไม่สวย"*, read as
+    #                                 a plain ceramic BUCKET
+    #   3. swept rim (arm->back->arm)
+    # and each round fixed what it named while revealing what no setting of the
+    # parameterisation could express — which is R8's stated mechanism, not a
+    # coincidence. Its two load-bearing numbers are declared ESTIMATES, not
+    # measurements: `opening_deg=110` is chosen and `seat_h 0.43` says
+    # "[est studio render-tier] (no vault row)" in its own docstring. A free-form
+    # object with no metric to iterate against is exactly the class R8 sends out
+    # to be acquired.
+    #
+    # THE STATED REASON FOR KEEPING IT WAS D8, AND D8 IS REFUTED: D8 passes 0/0 on
+    # this frame and so does D9, so neither ever failed this chair. The reason it
+    # survived was never the instrument that was cited for it.
+    #
+    # WHAT IS DECIDED: the class is ACQUIRE and already is (`tub_chair_c`, spec
+    # items[5].model, asserted). This generator is retained ONLY as the loud
+    # fallback for a failed acquisition — removing it mid-lane would trade a wrong
+    # object for a hole — and it can never again be reached silently. R8 says a
+    # failed acquisition is a DECLARED GAP handed over as a procurement decision,
+    # never a modelling task, so when this runs it says so.
+    print("  !! R8 FALLBACK: the tub chair is being HAND-BUILT. This is an "
+          "ACQUIRE class (R8 stop-loss: three recorded shape iterations) and the "
+          "acquisition did not land — a free-form approximation is standing in "
+          "for a procurement decision, and that is a DECLARED GAP, not a result.")
     lay = millwork.tub_chair_curved(W, D, H, rot_deg=rot)
     # 2026-07-23 — THE FIFTH COPY, found by the pre-commit review. This line read
     # `(0.40, 0.37, 0.33)` under a comment saying "still the ONE bed-base textile family

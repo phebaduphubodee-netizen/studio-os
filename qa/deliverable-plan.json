@@ -203,8 +203,9 @@
           "id": "P2b",
           "what": "_build_tub_chair: decide it on R8's own test, NOT on D8 — the stated reason is REFUTED by measurement",
           "where": "pipeline/scripts/build_room.py:3081",
-          "status": "todo",
-          "_refuted_2026-08-10": "This item said 'D8 will fail it'. D8 does not, and neither does D9. The built scene reads `stool__shell` at 22 normal clusters with 194 of 194 polygons smooth-shaded: it is neither box-like nor flat-shaded, so no row in the standard fires on it. The item was written when the scene rows read a SPEC, where a hand-built curve and an acquired one are indistinguishable. THE R8 QUESTION SURVIVES INTACT — a wrap-back upholstered shell is free-form, R8 says acquire it, and R8 needs no scorer to be right. What is deleted is the claim that an instrument agrees, which is the refutation-with-a-measurement R7 asks for and the one this repo most often skips."
+          "status": "done",
+          "_refuted_2026-08-10": "This item said 'D8 will fail it'. D8 does not, and neither does D9. The built scene reads `stool__shell` at 22 normal clusters with 194 of 194 polygons smooth-shaded: it is neither box-like nor flat-shaded, so no row in the standard fires on it. The item was written when the scene rows read a SPEC, where a hand-built curve and an acquired one are indistinguishable. THE R8 QUESTION SURVIVES INTACT — a wrap-back upholstered shell is free-form, R8 says acquire it, and R8 needs no scorer to be right. What is deleted is the claim that an instrument agrees, which is the refutation-with-a-measurement R7 asks for and the one this repo most often skips.",
+          "_closed_2026-08-16": "CLOSED p2r38 (D-067). Decided on R8's STOP-LOSS, which is the half of R8 that applies: max two shape iterations on a hand-built organic object, a third means the class was misclassified. This object has three, each an owner LOOK on record — boxy (2026-07-20 'ยังไม่ค่อยสวย'), curved with a uniform rim that read as a ceramic bucket (2026-07-22 'เก้าอี้ยังดูไม่สวย'), swept rim — and each round fixed what it named while revealing what no setting of the parameterisation could express, which is R8's own stated mechanism. Its two load-bearing numbers are declared estimates, not measurements (opening_deg=110 chosen; seat_h 0.43 says '[est studio render-tier] (no vault row)' in its own docstring). THE STATED REASON FOR KEEPING IT WAS D8 AND D8 IS REFUTED: D8 passes 0/0 on this frame and so does D9, so neither ever failed this chair — what kept it was not the instrument cited for it. The class is ACQUIRE and already is (tub_chair_c, asserted, in the frame). The generator stays ONLY as the fallback, because removing it mid-lane trades a wrong object for a hole, and it can no longer be reached silently: it prints R8 FALLBACK ... DECLARED GAP whenever it runs."
         },
         {
           "id": "P2h",
@@ -1810,8 +1811,55 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "dd01b1d8c6ac8484cb55806805c3074977a76bef",
+      "verdicts": {
+        "P0": "keep: closed and unchanged this round",
+        "P1": "keep: closed and unchanged this round",
+        "P2": "change: and the change is SMALLER than the one I proposed at review 45. I proposed splitting P2a into a schema-question item plus an acquire item. The schema question turned out to be answerable in ONE measurement against the built scene rather than a work item — the spec w/d ARE local and pre-swapped for a cardinal quarter turn, r33 is refuted for the acquire path, and orient_to_slot needed only a guard against double-applying that swap. That proposal is WITHDRAWN with its reason, which is what a review is for. What does change: P2h (split an acquired mesh materials by ROLE) is now PARTLY DELIVERED — the case-goods branch and the signed-value retint landed as half of P2a because the eye refused the frame without them — so P2h narrows to its real remainder, per-ROLE splitting inside one acquired mesh so legs keep the leg tone.",
+        "P4": "keep: styling density unchanged, still after the object work per the owner order 2026-08-16. One number to carry in — D7 reads 6 loose items against a target of 12, and it read 7 last round only because the count preceded the acquisition that dropped the bench throw.",
+        "P3": "keep: light stays after both object phases; nothing this round touched it",
+        "P5": "keep: judgement unchanged. It now inherits a NAMED open question instead of a silent one — whether Ottoman_01 form belongs in this room is written into the gate and the decision log for the ladder and the owner, not left for a critic to discover.",
+        "DRW": "keep: untouched this round. The BF10 fact filed at review 45 — trued 152 mm past the ensuite party line at x3150 — is still filed and still not acted on."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "p2r38: P2a closed; review #46",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "7f4298605559913fa68dd64093a3573106b11691",
+  "last_review_commit": "dd01b1d8c6ac8484cb55806805c3074977a76bef",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
