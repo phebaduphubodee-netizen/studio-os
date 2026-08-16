@@ -1,0 +1,219 @@
+{
+  "_law": "WHAT I ASKED HIM — the other direction of the same channel `qa/owner-orders.json` holds. An ask here has three states and no fourth: OPEN, ANSWERED (his words + the date), or WITHDRAWN (with a reason). It may not simply stop being asked, which is what happened to every row below.",
+  "_why_it_exists": "Measured 2026-08-16, by fan-out over the gate artifacts, the plan, the decision register and docs/: TWENTY-ONE asks were routed to the owner and then dropped. The repo's own audit had already found one of them and written the sentence in these words — 'It was not answered and not withdrawn; it stopped being asked' (docs/orders-vs-frame-audit-2026-08-15.md:81) — and then that audit was a DOCUMENT, so nothing consumed it and four more rounds dropped four more asks. The sharpest instances: `owner_questions_carried_forward` in scene-graph.json has ZERO readers in the whole repo; `floor2-owner-decision-queue.md` exists solely to hold five owner questions and has not been opened in 36 days; the r19 pair was abbreviated to the bare tokens 'Q1 · Q2' across eight gates until the questions themselves were no longer written down anywhere; and the blind RANK sheet was REMOVED as a finish-line condition at r34 precisely because it had gone unanswered — the one rung that looked at the picture, deleted for not being answered, four rounds before he said the frame was nowhere near done.",
+  "_the_rule": "NOTHING HERE BLOCKS ANYTHING — R3, his order of 2026-08-08: 'เอาผมออกจาก gate เลย ไม่ต้องรอผม'. He reads RENDERS, not documents, so this ledger prints in the render path and at every session open, with each ask's AGE IN DAYS. Age is the metric because the failure mode is not refusal, it is silence on our side. If an ask stops being worth asking, the builder WITHDRAWS it with a reason and the row stays.",
+  "_count_floor": 23,
+  "asks": [
+    {
+      "id": "ASK-001",
+      "ask": "ซื้อโมเดลผ้าคลุมเตียงจากชั้นที่เสียเงินมั้ย — 3dsky $5-15/โมเดล (ถูกสุด, ซื้อทีละใบ) · BlenderKit $118.80/ปี (ต่อเข้า Blender ได้, ซื้อครั้งเดียวใช้ได้ทุกคลาส) · Chocofur ~EUR 25/pack. สเปกที่วัดมาแล้ว: ผัง >= 1820 x 1969 มม. ที่สเกล <= 1.0 · coverage ด้วยรังสี >= 80% · ตกข้าง >= 3 ด้าน · เป็นเตียงที่จัดแล้ว มีผ้าพับกลับที่หัวเตียง · เหลือเส้นปลายเตียงว่างให้ผ้าคาดเกรจ์",
+      "first_routed": "2026-08-16",
+      "where": "qa/open-decisions.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "status": "open",
+      "money": "yes — $5-15 one model, or $118.80/yr for the tier",
+      "note": "ชั้นเสียเงินไม่เคยถูกลองเลยสักครั้งตั้งแต่พี่ยกเลิกกำแพง ฿0 เมื่อ 2026-08-01 (15 วัน). D-074 ประกาศว่า 'ไม่มีของ' จากการค้น 68 โฟลเดอร์ที่เป็นของฟรีล้วน — นั่นคือคำพูดเรื่องเรา ไม่ใช่เรื่องโลก"
+    },
+    {
+      "id": "ASK-002",
+      "ask": "ชั้น asset ที่เสียเงินโดยรวม — เอาอันไหน (BlenderKit Full $118.80/yr ที่ต่อเข้า Blender ได้ / Chocofur packs / 3dsky ทีละใบ / Dimensiva ~EUR 29/mo)",
+      "first_routed": "2026-07-01",
+      "where": "docs/DECISIONS-render-assets.md",
+      "status": "open",
+      "money": "yes — the only priced ask in the repo",
+      "note": "ปิดไปเมื่อ 2026-07-12 ว่า DECLINED ด้วยเหตุผล 'Budget = ฿0' — แล้วพี่ยกเลิกฐานนั้นเองเมื่อ 2026-08-01 ('฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้') คำตอบเดิมจึงเป็นโมฆะ แต่หน้าเอกสารยัง 'ดูเหมือนปิดแล้ว' เพราะขีดฆ่าไว้ 46 วัน ศูนย์การซื้อถูกส่งถึงพี่"
+    },
+    {
+      "id": "ASK-003",
+      "ask": "ชุดเสื้อผ้า flat-file สำหรับช่องตู้ลึก 190-360 มม. — ซื้อ (หรือหาของฟรี) หรือปล่อยเป็น declared gap",
+      "first_routed": "2026-08-13",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r27-2026-08-13.md",
+      "status": "open",
+      "money": "yes — unpriced; 3D Warehouse may serve it at ฿0",
+      "note": "ยื่นที่ r27 แล้วพูดซ้ำอีก 8 ครั้ง (r28 x4, r29 x2, r30, r31) แล้วหายไปเลยตั้งแต่ r33 — audit ของเราเองเขียนไว้ว่า 'ไม่ได้ถูกตอบ ไม่ได้ถูกถอน มันแค่เลิกถูกถาม'"
+    },
+    {
+      "id": "ASK-004",
+      "ask": "SC-3 สองคำถามสำหรับเพื่อนดีไซเนอร์ของพี่: (1) ชิ้นไหนเขาปั้นเอง ชิ้นไหนซื้อ (2) ลูกค้าไทยส่งกลับมาแก้เรื่องอะไรบ่อยที่สุด",
+      "first_routed": "2026-08-09",
+      "where": "qa/deliverable-plan.json",
+      "status": "open",
+      "money": "no",
+      "note": "ข้อเดียวในทั้ง repo ที่มีคนอ่านจริง (plan_status พิมพ์ทุก session) และยังไม่ถูกตอบ 7 วัน — ช่องทางใช้ได้ ที่ขาดคือทะเบียน"
+    },
+    {
+      "id": "ASK-005",
+      "ask": "เตียงที่ 'จัดแล้ว' กับเตียงที่ 'เพิ่งลุก' — DD ที่เซ็นเขียนว่าห้องถูกจัด แต่ชุดผ้าที่ทิ้งตัวสวยที่สุดในตลาดฟรีคือเตียงเพิ่งลุก จะแลกมั้ย",
+      "first_routed": "2026-08-15",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r31-2026-08-15.md",
+      "status": "open",
+      "money": "no — but it decides which asset class we would be buying",
+      "note": "D-073 อ่านสเปกใหม่แล้วพบว่าประโยคห้ามยับใช้กับหมอนสามใบที่หัวเตียงเท่านั้น ไม่ใช่เครื่องนอนทั้งชุด — ครึ่งหนึ่งของคำถามจึงตอบด้วยเอกสารได้ ที่เหลือคือรสนิยมของพี่"
+    },
+    {
+      "id": "ASK-006",
+      "ask": "ตอบ blind RANK sheet — เรียง A-F จากขายได้ที่สุดไปน้อยที่สุด พร้อมเหตุผลสั้น ๆ ต่อช่อง",
+      "first_routed": "2026-08-07",
+      "where": "training/TRN-002/RANK-ask-2026-08-07.md",
+      "status": "open",
+      "money": "no",
+      "note": "8 แผ่นถูกสร้าง 0 ครั้งถูกตอบ แล้วถูกถอดออกจากเส้นชัยที่ r34 เพราะไม่มีใครตอบ — CLAUDE.md R11 บันทึกเองว่านั่นคือการถอดขั้นเดียวที่มองรูปจริงออก แล้ว 4 รอบต่อมาพี่บอกว่าเฟรมยังไม่ใกล้เสร็จ"
+    },
+    {
+      "id": "ASK-007",
+      "ask": "sconce ใน r30 อ่านว่า 'ติดไฟอยู่' หรือยัง และ day-night story จะเอาแบบไหน",
+      "first_routed": "2026-08-14",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r30-2026-08-14.md",
+      "status": "open",
+      "money": "no",
+      "note": "ยื่นครั้งเดียว ไม่เคยพูดซ้ำ"
+    },
+    {
+      "id": "ASK-008",
+      "ask": "ผ้าม่าน — design call ที่ผมไม่ควรตัดสินเอง",
+      "first_routed": "2026-08-14",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r30-2026-08-14.md",
+      "status": "open",
+      "money": "no",
+      "note": "มาจาก r28-C2#11 ยื่นครั้งเดียวแล้วหายไป"
+    },
+    {
+      "id": "ASK-009",
+      "ask": "กล้อง/องค์ประกอบ — โต๊ะข้างเตียงขวาโดนขอบเฟรมตัด และเตียงถูกครอปด้วยริก จะขยับกล้องมั้ย",
+      "first_routed": "2026-08-13",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r27-2026-08-13.md",
+      "status": "open",
+      "money": "no",
+      "note": "ตาราง triage เขียนว่า 'ACCEPT -> owner/camera call' แล้วไม่มี escalate section ในทั้ง r39 และ r41 — คำว่า escalate ถูกเขียนในช่องตาราง ไม่ได้ถูกส่งไปไหน"
+    },
+    {
+      "id": "ASK-010",
+      "ask": "ไม้สามชนิดที่ไม่เข้ากัน (พื้นส้ม / ตู้แอชเย็น / ระแนงแอชอุ่น) — DD เซ็นตระกูลโอ๊คอุ่นไว้ จะเอาสองโทนหรือรวมเป็นตระกูลเดียว",
+      "first_routed": "2026-08-16",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r39-2026-08-16.md",
+      "status": "open",
+      "money": "no",
+      "note": "'Escalated, not decided by me' เขียนไว้ในช่องตาราง แต่ไม่มี decision row และไม่มี escalate section"
+    },
+    {
+      "id": "ASK-011",
+      "ask": "duvet-overflow story — ความยับต้องมีเรื่องเล่า และม้วนชายหนา ๆ อ่านเป็น 'หนา' หรือเป็นความผิดพลาด",
+      "first_routed": "2026-08-12",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r26-2026-08-12.md",
+      "status": "open",
+      "money": "no",
+      "note": "ยื่น 3 รอบ (r26, r27, r28) แล้วหายไป — ขณะที่เครื่องนอนเป็นข้อ #1 ของกรรมการทั้งสองรายติดกัน 16+ รอบ"
+    },
+    {
+      "id": "ASK-012",
+      "ask": "Q1 ความลึกตู้เสื้อผ้า · Q2 ชั้นหนังสือ/ทีวี",
+      "first_routed": "2026-08-12",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r19-2026-08-12.md",
+      "status": "open",
+      "money": "no",
+      "note": "ยื่น 8 รอบติด (r19->r27) แล้วศูนย์ตั้งแต่ r28 — และแย่กว่านั้นคือมันหดเหลือแค่โทเคน 'Q1 · Q2' จนไม่มีไฟล์ไหนในรีโปเขียนคำถามเต็มไว้อีกเลย ถึงพี่อยากตอบก็ตอบไม่ได้"
+    },
+    {
+      "id": "ASK-013",
+      "ask": "jewel niche + ช่องแสง — จากกล้องตัวนี้มันอ่านออกมั้ย หรือควรขยับ",
+      "first_routed": "2026-08-12",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r20-2026-08-12.md",
+      "status": "open",
+      "money": "no",
+      "note": "ยื่น 5 รอบ (r20->r24) แล้วหายไป — วัดได้ว่าสร้างแล้ว อยู่ในเฟรม แต่ 0 พิกเซล"
+    },
+    {
+      "id": "ASK-014",
+      "ask": "floor2 stage-03 ค้าง 5 ข้อ: s2 เป็นช่องเปิด/บานคู่/ผนังทึบ · tg1/tg2 · ช่องฝักบัว · อ่างสองใบ · เส้นขอบ",
+      "first_routed": "2026-07-11",
+      "where": "projects/PRJ-2026-002_c001-house/03_layout/floor2-owner-decision-queue.md",
+      "status": "open",
+      "money": "no",
+      "note": "ไฟล์นี้มีอยู่เพื่อถือคำถามพวกนี้อย่างเดียว ไม่ถูกแตะมา 36 วัน และไม่มีสคริปต์หรือพิธีกรรมไหนอ่านมันเลย"
+    },
+    {
+      "id": "ASK-015",
+      "ask": "ทิศเตียงห้องนอนใหญ่ N-S หรือ E-W (เตียงลึก 2134 แบบ N-S ผ่านทางเดิน 610/910 ไม่ได้)",
+      "first_routed": "2026-07-04",
+      "where": "projects/PRJ-2026-002_c001-house/03_layout/clearance-report.md",
+      "status": "withdrawn",
+      "withdrawn_reason": "ตอบจากแบบของลูกค้าแทน (R12/DRW 2026-08-11) — ทิศมาจากเส้นหมึกในแบบ ไม่ใช่จากคำตอบของพี่ จึงถอนอย่างเป็นทางการแทนที่จะปล่อยค้าง",
+      "withdrawn_date": "2026-08-16",
+      "money": "no",
+      "note": "คีย์ owner_questions_carried_forward ใน scene-graph.json ไม่มีผู้อ่านเลยแม้แต่รายเดียวในทั้งรีโป — instance ที่บริสุทธิ์ที่สุดของ queue ที่ไม่มีคนมาเก็บ"
+    },
+    {
+      "id": "ASK-016",
+      "ask": "ขนาดห้องที่ประเมินไว้ (sitting_room ลึก 3300 · living_room 4800x4200) — ต้องการให้วัดจริงมั้ย",
+      "first_routed": "2026-07-04",
+      "where": "projects/PRJ-2026-002_c001-house/03_layout/clearance-report.md",
+      "status": "open",
+      "money": "no",
+      "note": "ติดป้ายตัวเองว่า 'เป็นความมั่นใจ ไม่ใช่ตัวบล็อก' ซึ่งเป็นวิธีที่มันค้างมา 43 วันพอดี"
+    },
+    {
+      "id": "ASK-017",
+      "ask": "petcave — มันคืออะไรและมิติเท่าไร (กรรมการหกรายอ่านได้หกแบบ)",
+      "first_routed": "2026-08-07",
+      "where": "training/TRN-002/identifiability-partition-2026-08-07.md",
+      "status": "open",
+      "money": "possibly — R8 ส่ง identity ที่แก้ไม่ตกไปที่การจัดซื้อ",
+      "note": "ไม่เคยถูกส่งเข้าช่องไหนเลย มันถูกเรียกว่า owner ask อยู่ในเอกสารวิเคราะห์เท่านั้น — แล้ว r35/r36 ผมก็วัดและพิมพ์มิติเองซึ่งตรงข้ามกับสิ่งที่ ask บอก"
+    },
+    {
+      "id": "ASK-018",
+      "ask": "เซ็นแบบฟอร์ม ToU ของชุดข้อมูล 3D-FRONT / Structured3D / ZInD (ฟรี แต่ต้องมีลายเซ็นเจ้าของ)",
+      "first_routed": "2026-07-06",
+      "where": "docs/strategy.md",
+      "status": "open",
+      "money": "no — datasets are free; the blocker is a signature",
+      "note": "มีทั้งเลนที่บันทึกไว้ว่ารออนุมัติที่ไม่เคยถูกยื่น และ checklist ที่เขียนว่า 'staged for the owner' หาไม่เจอบนดิสก์"
+    },
+    {
+      "id": "ASK-019",
+      "ask": "ใช้ skill `banana-claude` หรือเก็บ tools/gemini_image.py ของเราเอง",
+      "first_routed": "2026-07-01",
+      "where": "docs/DECISIONS-render-assets.md",
+      "status": "withdrawn",
+      "withdrawn_reason": "สคริปต์ของเราพิสูจน์ความสามารถเดียวกันที่ $0 แล้ว skill เพิ่มแค่ prompt polish — ถอนเพราะไม่คุ้มค่าที่จะรบกวนพี่ ไม่ใช่เพราะลืม",
+      "withdrawn_date": "2026-08-16",
+      "money": "no",
+      "note": "ask ที่เล็กที่สุดและค้างนานที่สุดในรีโป (46 วัน)"
+    },
+    {
+      "id": "ASK-020",
+      "ask": "ผ้าคาดปลายเตียงสีเกรจ์ — ยอมให้หายไปจากเฟรมชั่วคราวมั้ย ถ้าเลกที่ซื้อยังหาผ้าคาดที่ผ่านการวัดไม่ได้",
+      "first_routed": "2026-08-16",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "status": "open",
+      "money": "no — แต่ผูกกับ ASK-001",
+      "note": "สเปกที่เซ็นเขียนว่า 'อย่าเอาออก' พร้อมเหตุผลว่ามันกันไม่ให้เตียงอ่านเป็นก้อนซีดก้อนเดียว — ทางเลือกคือซื้ออีกชิ้น (แคชมี th_a..th_f) หรือประกาศเป็น gap ที่เซ็นแล้ว ไม่ใช่กลับไปปั้นเอง"
+    },
+    {
+      "id": "ASK-021",
+      "ask": "ยืนยันว่าผ้าคลุมเตียงชุดที่สอง (0afd4c6f) ที่ผ่านการวัดแล้ว อ่านออกมาโอเคมั้ย — หรือให้ไปหาของใหม่ทั้งหมด",
+      "first_routed": "2026-08-16",
+      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "status": "open",
+      "money": "no",
+      "note": "ตัวที่พี่ตก (8635b5b9) กับตัวนี้คือสองตัวเดียวจาก 68 ที่ผ่านเกณฑ์วัดได้ — ถ้าตัวนี้ตกด้วย ตลาดฟรีในแคชหมดแล้วจริง ๆ และ ASK-001 คือทางเดียวที่เหลือ"
+    },
+    {
+      "id": "ASK-022",
+      "ask": "ปฏิทินคำสั่ง: มีคำสั่งไหนใน qa/owner-orders.json ที่พี่ถือว่าเลิกใช้แล้วบ้าง (ผมถอนเองไม่ได้ตามกฎ)",
+      "first_routed": "2026-08-16",
+      "where": "qa/owner-orders.json",
+      "status": "open",
+      "money": "no",
+      "note": "คำสั่งจะไม่หมดอายุเอง มีแต่พี่ที่ถอนได้ — ถ้าไม่มีช่องนี้ ทะเบียนคำสั่งจะกลายเป็นของที่โตอย่างเดียวไม่มีวันหด"
+    },
+    {
+      "id": "ASK-023",
+      "ask": "cap ของเลน DELIV-001 ควรเป็นเท่าไร — กี่รอบ / กี่เฟรม full-fidelity ก่อนต้องหยุดแล้วทบทวน (กฎในไฟล์ caps เขียนเองว่ามีแต่พี่ที่ขยับ cap ได้ ผมจึงตั้งเลขเองไม่ได้)",
+      "first_routed": "2026-08-16",
+      "where": "qa/curriculum-caps.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "status": "open",
+      "money": "no",
+      "note": "D-021 บอกว่า R1 cap ไม่ใช้กับ room lane เพราะ cap ประกาศต่อ unit ใน curriculum-caps.json — แล้วไม่เคยมีแถว DELIV-001 ถูกเพิ่มเลย grep นับได้ 0 ตลอด 44 รอบ ตัวหยุดยังทำงาน (R1 หยุดเลนนี้หลายครั้ง) แต่ตัวนับไม่มี"
+    }
+  ]
+}

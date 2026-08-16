@@ -556,6 +556,48 @@ ACQUIRED_AS = {
     "bench__seat":      ("bench__acq", "bench_seat"),
     "bed__sham0":       ("bed__headset0__acq", "bed_duvet"),
     "bed__pillowsoft0": ("bed__headset0__acq", "bed_pillow"),
+    # p2r44 — THE BED CLOTH ITSELF, now that his 2026-08-14 / 2026-08-15 orders
+    # are carried out and the coverlet and duvet are bought rather than solved.
+    # `_place_bed_cloth` names every kept part `bed__cloth__acq<N>` and hands the
+    # FIELD parts `cov_mat` and the parts LYING ON IT `duv_mat` — the same split
+    # the part cut already made, so the pairing below is that decision read back
+    # rather than a second guess. Same loss of grip as every acquired rung: the
+    # point target was solved on the SOLVER's own geometry, so it is reported and
+    # ORDER/SPAN are what bind.
+    "bed__coverlet":    ("bed__cloth__acq", "bed_coverlet"),
+    "bed__duvet":       ("bed__cloth__acq", "bed_duvet"),
+}
+
+# A RUNG WHOSE OBJECT IS ABSENT ON PURPOSE, AND THE DECISION THAT SAYS SO.
+#
+# p2r44. This is the third time in one day that the same distinction turned out
+# to be the fix, so it gets a name: "I could not measure it" and "it is not there
+# and we said so" are DIFFERENT SENTENCES, and a rung that reports them as one
+# either blocks a lane over a signed decision or lets a real absence pass as a
+# shrug. `sourcing_check` needed it between `not-attempted` and `n/a`; the p2-exit
+# rungs need it for a mask half whose material is gone; the ladder needs it here.
+#
+# The bar is deliberately high: the object must be absent by a DECISION ROW with
+# an id, and the reason has to be the measurement that produced it. Adding a row
+# here to quiet a rung is the defect; the row is only honest when the absence was
+# already decided somewhere a reader can check.
+DECLARED_ABSENT = {
+    "bed__throw": ("D-083", "the acquired cloth set falls to the bed line itself "
+                            "— 0 mm of line left for a runner to hang in "
+                            "(measured 85-95 mm proud at every rung, and the "
+                            "length levers did not move it). The deepest-value "
+                            "job it did is open as ASK-020, not as a licence to "
+                            "hand-build it again."),
+    "bed__duvet": ("D-086", "the acquired set 0afd4c6f is ONE field cloth — the "
+                            "part cut keeps 1 field part and 0 parts lying on "
+                            "it — so there is no separate duvet layer to "
+                            "measure. The duvet_set RUNG is still measured, on "
+                            "the euro shams that wear the same cloth "
+                            "(bed__sham0 -> bed__headset0__acq0). A set that "
+                            "does carry a turned band resolves through "
+                            "ACQUIRED_AS and is measured instead of this: the "
+                            "declaration is asked only after that lookup "
+                            "fails."),
 }
 
 
@@ -627,6 +669,18 @@ def check_render(measured, frame=FRAME, wears=None):
         if obj not in measured:
             # A RENAME BY ACQUISITION IS NOT A MISSING OBJECT. See ACQUIRED_AS.
             alt, why = resolve_acquired(obj, measured, wears)
+            # ABSENT ON PURPOSE IS NOT ABSENT BY ACCIDENT — but this is asked
+            # AFTER the acquisition lookup, never before, and the order is the
+            # whole safety of the mechanism: if a later purchase DOES carry this
+            # piece, it resolves and gets measured, and the declaration cannot
+            # hide it. Declaring first would have turned a signed absence into a
+            # blindfold the moment the shopping changed.
+            if alt is None and obj in DECLARED_ABSENT:
+                _dec, _why = DECLARED_ABSENT[obj]
+                out.append(f"NOTE: {name} ({obj}) is ABSENT BY DECLARATION "
+                           f"{_dec} — {_why} Not measured, and not a defect in "
+                           f"this frame's tone.")
+                continue
             if alt is None:
                 # On FRAME this is a real finding: every rung is chosen because the hero
                 # view shows it, so an absent one means occluded, renamed or not built.

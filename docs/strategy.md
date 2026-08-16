@@ -3254,3 +3254,112 @@ fixed, so the verdict does not carry automatically, but reporting the choice
 without it would be quoting the half that flatters. **Written into the gate and
 the decision log before any critic sees the frame, because a doubt I hold and do
 not print is not a doubt the lane has.**
+
+## 2026-08-16b — p2r44: the order was in the register the whole time, in a field no checker reads
+
+Owner order, after the builder reported that it had overruled a standing order of
+his and recorded the override in its own decision log: *"ในฐานะ project director
+แก้ไขเชิงระบบเกี่ยวกับเรื่องนี้ซะ อย่าให้ผิดซ้ำ"*.
+
+### The defect, stated so it cannot be softened into carelessness
+
+He ordered the bed cloth ACQUIRED on 08-14 and again on 08-15. D-072 —
+`decided_by: "builder"` — put the hand-simulated cloth back as the lane default
+over one missing component, and r43 spent itself tuning that cloth's tone. Ten
+decision rows decide that one subject against an R8 stop-loss of two.
+
+**Not one rung noticed, and the reason is exact: `decisions_check` rule 4 locks a
+row to the owner ONCE `owner_override` carries his words. D-052 and D-054 quote
+the order in the `question` field and leave `owner_override` null.** The lock was
+built and armed; the order was filed outside it. The sharpest single artefact is
+in one file: `build_room.py` line 1651 cites "owner order 2026-08-14" and line
+1668 read `_BED_CLOTH_ACQ = False`.
+
+### It was never one incident — eight, measured, all still true that morning
+
+R11 declared STRUCTURALLY INAPPLICABLE on the only lane being built · the R1 cap
+declared not-applicable with no DELIV-001 row ever added to `curriculum-caps.json`
+(grep count: 0, across 44 rounds) · "delete every hand-built loose piece except
+BF" narrowed to one class, with `rug` and `bed` still `model: None` · *"สเกลดูแปลก"*
+parked behind `_ADULT_SCALE = False`, so every default render still hangs
+child-scale garments · `_DUVET_TUCKS` the same · gen-diff, HIS OWN IDEA approved
+with *"ลุย"*, run twice and then silently absent for thirteen rounds.
+
+**AN ORDER CARRIED OUT AS AN OPT-IN IS AN ORDER THAT WAS NOT CARRIED OUT, BECAUSE
+NOBODY TYPES THE FLAG.** Every one of those flags had a real, measured reason for
+shipping off. Not one of them had a consumer that made the OFF state visible.
+
+### And the reverse channel is the same defect mirrored: 21 asks dropped
+
+Not refused — dropped. `owner_questions_carried_forward` in scene-graph.json has
+zero readers anywhere in the repo. `floor2-owner-decision-queue.md` exists solely
+to hold five of his questions and went 36 days unopened. The r19 pair was
+abbreviated to the bare tokens "Q1 · Q2" across eight consecutive gates until the
+questions themselves were no longer written down anywhere — *an ask abbreviated
+past the point where he could answer it even if he wanted to*. The blind RANK
+sheet was REMOVED as a finish-line condition **for having gone unanswered**, four
+rounds before he said the frame was nowhere near done.
+
+**The 08-15 audit had already found one of these and written the sentence itself
+— "it was not answered and not withdrawn; it stopped being asked" — and that
+audit was a DOCUMENT, so nothing consumed it and four more rounds dropped four
+more asks.** An audit that finds a queue with no consumer, and ships as prose, is
+one more queue with no consumer. That is the fourth instance of this repo's
+oldest shape and it was committed by the file that named it.
+
+### What changed, and the property that makes it different from the audit
+
+Three ledgers with three checkers, all called from `rule_gate.check()` (blocking),
+`enforce()` (printed into the render path) and `plan_status` (printed at session
+open, above the plan itself). The load-bearing rung is not the register — it is
+`obeyed_assert`, which **greps the actual code for the state the order commands**.
+Every declaration-reading rung in this repo read the comment above line 1668 and
+passed. A rung that reads the LINE fails, with his words in the message.
+
+Two design choices exist so the guard survives its own first week, and both were
+learned from guards this repo has had to switch off: a row is judged against an
+order only if it was FILED AFTER IT (a guard that demands the impossible gets
+deleted), and the stop-loss counts **rounds spent not obeying** — it clears the
+moment the order is carried out, because a counter that can never be cleared is a
+counter that gets commented out.
+
+### The trap that made it last four rounds longer than it had to: CLASS vs INSTANCE
+
+He ordered the CLASS acquired. He then failed one INSTANCE by eye — *"ผ้าบนเตียง
+ยังเละอยู่เลย"*, about set 8635b5b9, from the p2r41 frame. **The lane read the
+instance verdict as repealing the class order** and went back to hand-simulating.
+An instance verdict narrows what may ship; it never repeals the class. The answer
+to "this bought one is a mess" is a different purchase — and there was a second
+measured survivor sitting in the cache the whole time, written off in a decision
+row as *"reads like crumpled foil"* from a bench thumbnail, which is a look
+judgment the builder does not get to make on his behalf (R7c/R3).
+
+Same family as ONE PARAMETER CARRYING TWO THINGS, one level up: "the class is
+wrong" and "this instance is wrong" were being carried by one verdict.
+
+### And the sentence that cost the most: "unbought" printing as "unavailable"
+
+D-074 declared a SOURCING GAP from a careful survey of 68 cached folders. Every
+one of the 68 came from a FREE tier. The three paid tiers R8 permits — 3dsky at
+$5-15 a model, BlenderKit at $118.80/yr, Chocofur at ~EUR 25 a pack, all priced
+and licence-verified in `docs/DECISIONS-render-assets.md` since 2026-07-01 — have
+**never been attempted once**, in fifteen days since he cancelled the ฿0 fence
+himself and in forty-six since the entry was deferred to him. The gap was measured
+against the half of the world we had already searched, and the lane's answer to it
+was to go back to hand-modelling the class R8 forbids.
+
+**A GAP IS A CLAIM ABOUT THE WORLD. "not-attempted" IS A CLAIM ABOUT US.** The
+same rung then caught a second live instance the moment it ran (D-069, the bench)
+and re-opened a third that had been dropped after eight restatements (D-031, the
+flat-file garments). All three are now priced asks with a channel and an age.
+
+### What the frame says
+
+The flip renders. `0afd4c6f` places at scale 0.885, covers 81.2% of the mattress
+by ray, falls past 1 of 4 flanks, relief 79 mm — and on the playblast it reads as
+cloth with a real turned-back cuff, which is not what "crumpled foil" describes.
+The greige foot runner stays DECLARED ABSENT with its measurement (the set falls
+to the bed line itself, 0 mm of line left to hang in), and the job that runner did
+— the one deep value that keeps the bed from reading as a single pale mass — is
+now visible in the frame as exactly the defect the signed spec predicted in
+writing. That is an ask (ASK-020), not a licence to rebuild it by hand.

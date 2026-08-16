@@ -512,7 +512,96 @@ def model_assertions(spec, roster=None, extra=(), lines_out=None):
     return v
 
 
-def check_room(gate_spec, roster=None, spec=None):
+def owner_channel(unit, decisions_path=None, note=None, decisions=None):
+    """HIS ORDERS IN, MY ASKS OUT, AND WHAT COUNTS AS A SOURCING GAP — the three
+    rungs of R13, in one function so that no lane can end up with a subset.
+
+    Split out of `check()` on the day it was written, because `check_room` — the
+    entry point the ONLY lane in production uses — would otherwise not have
+    called any of them. That is the precise shape R13 exists to end (R11 was
+    declared "structurally inapplicable" on this same lane and went inert), and
+    it would have happened inside the fix for it.
+
+    Blocks on NOTHING the owner owes. Every violation reachable from here is the
+    builder's side: an order quoted and not carried out, an order contradicted
+    under the builder's own name, a subject re-decided while his order stands, an
+    ask deleted rather than answered or withdrawn, or a gap declared over tiers
+    nobody searched.
+    """
+    def _note(name, ran_, why=""):
+        if note is not None:
+            note(name, ran_, why)
+
+    v = []
+    if decisions is None and unit:
+        try:
+            import decisions_check as _DEC
+            decisions = _DEC.load(decisions_path
+                                  or os.path.join(REPO_ROOT, _DEC.DECISIONS_REL))
+        except Exception:                               # pragma: no cover
+            decisions = None
+    # HIS ORDERS — the half the decision log could not hold. `decisions_check`
+        # locks a row to him ONCE `owner_override` carries his words, and D-052 and
+        # D-054 stored his bed-cloth order in the `question` field instead, so the
+        # lock never armed and a builder row (D-072) reversed a standing order with
+        # every rung green. This block reads the ORDERS ledger, asserts them against
+        # the actual code, and refuses a builder decision that contradicts one. It
+        # blocks on NOTHING he owes — every violation it can raise is the builder's.
+        try:
+            import orders_check as ORD
+        except ImportError as e:  # pragma: no cover - import path accident
+            v.append(f"orders_check is not importable ({e}) — refusing to render "
+                     f"past a gate that cannot read his orders")
+            _note("owner orders", False, "module not importable")
+        else:
+            odata = ORD.load(repo_root=REPO_ROOT)
+            v += ORD.check_orders(odata, REPO_ROOT)
+            if unit:
+                v += ORD.check_decisions(odata, decisions, unit, REPO_ROOT)
+            ob = ORD.obedience(odata, REPO_ROOT)
+            _note("owner orders", True,
+                 f"{sum(1 for _, ok, _ in ob if ok)}/{len(ob)} standing orders "
+                 f"assert clean")
+
+        # UNBOUGHT IS NOT UNAVAILABLE — a declared sourcing gap has to have searched
+        # the tiers R8 permits, including the three paid ones that have never been
+        # attempted once since he cancelled the ฿0 fence on 2026-08-01.
+        try:
+            import sourcing_check as SRC
+        except ImportError as e:  # pragma: no cover - import path accident
+            v.append(f"sourcing_check is not importable ({e}) — refusing to render "
+                     f"past a gate that cannot tell an absence from an unmade "
+                     f"purchase")
+            _note("sourcing", False, "module not importable")
+        else:
+            sdata = SRC.load(repo_root=REPO_ROOT)
+            v += SRC.check(sdata, decisions, unit, REPO_ROOT)
+            _note("sourcing", True,
+                 f"{len(SRC.paid_tiers(sdata))} paid tier(s) permitted, "
+                 f"{len(SRC.open_asks(decisions, unit))} purchase(s) with him")
+
+        # WHAT I ASKED HIM — same split as the critic debt: this blocks on the
+        # LEDGER BEING HONEST (an ask deleted, a withdrawal with no reason, a row
+        # claiming to block him) and on nothing else. Twenty-one asks were dropped
+        # while no such ledger existed.
+        try:
+            import asks_check as ASK
+        except ImportError as e:  # pragma: no cover - import path accident
+            v.append(f"asks_check is not importable ({e}) — refusing to render past "
+                     f"a gate that cannot see what he was asked")
+            _note("owner asks", False, "module not importable")
+        else:
+            adata = ASK.load(repo_root=REPO_ROOT)
+            v += ASK.check(adata, REPO_ROOT)
+            t = ASK.tally(adata)
+            _note("owner asks", True,
+                 f"{t['open']} open, oldest {t['oldest']}d, {t['money']} about money")
+
+    return v
+
+
+def check_room(gate_spec, roster=None, spec=None, unit=None,
+               decisions_path=None):
     """R10's object half on a ROOM spec (see room_masses). Returns [violation].
 
     D-021. `check()` cannot be pointed at a room lane as-is: it returns `no
@@ -532,6 +621,15 @@ def check_room(gate_spec, roster=None, spec=None):
 
     v = audit_spec(gate_spec, require_seen=False)
     note("R10 spec", True, f"{len(gate_spec.get('masses') or [])} object(s)")
+    # HIS ORDERS RUN ON EVERY LANE, AND THIS LINE IS THE POINT OF R13.
+    #
+    # D-021 declared nine rungs not-applicable to the room lane for reasons that
+    # are all true — they need a reference, a manifest or a round series this
+    # lane does not have. The owner-channel rungs need NONE of that: they read
+    # ledgers and grep code. Leaving them in `check()` only would have put the
+    # rung built to stop "an order inert on the lane being built" in exactly that
+    # position, on its first day, in the same file that names the defect.
+    v += owner_channel(unit or "DELIV-001", note=note)
     # P2r-9 TRANSFERS TO THIS LANE AND IS THE ONLY RUNG THAT DOES, because it
     # needs no reference and no target: it asks whether the model we named is the
     # model we measured. `gate_spec` carries masses only, so the FULL spec is
@@ -1357,6 +1455,10 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
     # waiting on him was waiting in a channel he does not use. What it checks is
     # the builder's side of that bargain: a call made in his name has to be
     # written down, in force somewhere real, and reversible in one named edit.
+    # None, not {}, and the difference is load-bearing three blocks below: an
+    # unread register must not present to the orders/sourcing rungs as a register
+    # with no rows in it.
+    data = None
     if unit:
         try:
             import decisions_check as DEC
@@ -1375,6 +1477,8 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
                  f"{len(rows)} in force ({mine} taken in the owner's name)")
     else:
         note("decision log", False, "no lane dir given, so no unit")
+
+    v += owner_channel(unit, decisions_path, note, data)
 
     # THE CRITIC-DEBT LEDGER. Same split as the decision log above, and for the
     # same reason: this blocks on the LEDGER BEING HONEST — a row closed with a
@@ -1507,6 +1611,46 @@ def enforce(spec, bundle_dir=None, inbox_root=None, hard=True, require_seen=Fals
                   f"ไม่มีข้อไหนรอคุณอยู่:")
             for d in rows:
                 print(DEC.one_line(d))
+
+    # HIS ORDERS, AND WHETHER THIS BUILD OBEYS THEM — printed above the decision
+    # log's own line for the reason the ledger exists: for five days the answer
+    # to "does the repo obey the 2026-08-14 order" was NO, in a file nobody
+    # printed, under a comment that cited the order by date.
+    try:
+        import orders_check as ORD
+        _od = ORD.load(repo_root=REPO_ROOT)
+    except Exception as e:  # pragma: no cover - a read must not stop a render
+        print(f"\nORDERS: could not be read ({e}) — that is unknown, not fine")
+    else:
+        _ob = ORD.obedience(_od, REPO_ROOT)
+        _bad = [o for o, ok, _ in _ob if not ok]
+        print(f"\nคำสั่งพี่ที่ยังมีผล: {len(_ob)} ข้อ — ทำตามครบ "
+              f"{len(_ob) - len(_bad)} ข้อ" +
+              (f", ยังไม่ทำตาม {len(_bad)} ข้อ" if _bad else ""))
+        for o, ok, detail in _ob:
+            if not ok:
+                print(ORD.one_line(o, ok, detail))
+        try:
+            import decisions_check as _DEC
+            _dd = _DEC.load(decisions_path
+                            or os.path.join(REPO_ROOT, _DEC.DECISIONS_REL))
+        except Exception:                               # pragma: no cover
+            _dd = None
+        _pd = ORD.prose_debt(_od, _dd, unit)
+        if _pd:
+            print(f"  (backfill debt: {len(_pd)} row(s) quote an order in prose "
+                  f"the machine cannot hold — {', '.join(_pd)})")
+
+    # WHAT HE HAS BEEN ASKED, WITH AGES. Nothing here waits on him and nothing
+    # blocks; the number that matters is how long WE have left something asked.
+    try:
+        import asks_check as ASK
+        _ad = ASK.load(repo_root=REPO_ROOT)
+        print("\n" + ASK.gate_line(_ad))
+        for _a, _age in ASK.open_asks(_ad)[:5]:
+            print(ASK.one_line(_a, _age))
+    except Exception as e:  # pragma: no cover
+        print(f"ASKS: could not be read ({e}) — that is unknown, not fine")
 
     # THE CRITIC DEBT — printed HERE, beside the decision log, because `check()`
     # only put the tally into `note()`, and `note`'s detail is printed for SKIPPED

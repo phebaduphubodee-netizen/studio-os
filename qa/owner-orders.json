@@ -1,0 +1,413 @@
+{
+  "_law": "HIS ORDERS, HELD BY THE MACHINE. Every row carries his words verbatim, the file those words still live in, what they command, where the repo obeys them, and — where it can be written as one — an ASSERTION against the actual code. The builder may not edit, soften, retire or out-argue a row here. He reverses his own orders, from the image, at any time, and that reversal is a decision row carrying new words and a later date.",
+  "_what_it_cost_to_learn": "2026-08-16, his count, not mine: he ordered the bed cloth ACQUIRED on 08-14 and again on 08-15 (\"เอาผ้าที่ปั้นเองออก แล้วเอาโมเดลเตียงที่หามาใส่ให้ดู\"). D-072, decided_by 'builder', put the hand-simulated cloth back as the default over one missing component, and the next round went on tuning its numbers. Ten decision rows in the register decide that one subject against an R8 stop-loss of two. Not one rung noticed, and the reason is exact: HIS WORDS WERE IN THE REGISTER THE WHOLE TIME, IN A FIELD NO CHECKER READS — D-052 and D-054 quote the order in `question` and leave `owner_override` null, so `decisions_check`'s lock (rule 4) never armed and the row stayed re-decidable by the builder who wrote it. build_room.py states it at its sharpest: line 1651 cites 'owner order 2026-08-14' and line 1668 read `_BED_CLOTH_ACQ = False`.",
+  "_the_trap_this_file_names": "A CLASS order and an INSTANCE verdict are not the same object, and treating one as repealing the other is what happened on 2026-08-16. He ordered the CLASS acquired (08-14, 08-15). He then failed one INSTANCE by eye — \"ผ้าบนเตียงยังเละอยู่เลย\" about set 8635b5b9 — and the lane read that as permission to return to hand-simulating and spend the next round tuning its tone. The answer to 'this bought one is a mess' is A DIFFERENT PURCHASE. An instance verdict narrows what may ship; it never repeals the class.",
+  "_how_to_overrule": "Say it while looking at a frame. The builder files a decision row with `decided_by: 'owner'`, your words in `owner_override`, and `override_date`; if it retires an order here, that order's `standing` goes false and `retired_by` names the row. Nothing in this file ever waits for you — R3 stands.",
+  "_subject_ratchet_from": "D-080",
+  "orders": [
+    {
+      "id": "ORD-2026-08-01-freeform-acquire",
+      "date": "2026-08-01",
+      "verbatim": "เวลาคุณต้องปั้น model ที่มีส่วนเว้าส่วนโค้ง มันมักจะเพี้ยนเสมอ ตั้งแต่ทำมาในทุก project",
+      "recorded_at": "CLAUDE.md",
+      "commands": "Free-form geometry (figures, plants, cut flowers, drapery, upholstery, animals, food) is ACQUIRED, never hand-modelled. Two shape iterations on a hand-built organic object means the CLASS was misclassified.",
+      "subject": "freeform-build-vs-acquire",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "CLAUDE.md, docs/DECISIONS-render-assets.md",
+      "obeyed_how": "R8 is the rule text; the acquire path exists end to end (warehouse.py -> asset_scale -> model_fit -> build_room import).",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-01-paid-sources-unfenced",
+      "date": "2026-08-01",
+      "verbatim": "฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้",
+      "recorded_at": "CLAUDE.md",
+      "commands": "The free-only fence is CANCELLED. Any source whose licence permits commercial use of the RENDER is in scope, paid libraries included; a spend is his call per purchase.",
+      "subject": "asset-sourcing-tiers",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "qa/sourcing-tiers.json, pipeline/scripts/sourcing_check.py, docs/DECISIONS-render-assets.md",
+      "obeyed_how": "The tier roster names three paid tiers with verified prices and licences, and a gap declared without attempting them is refused by name.",
+      "obeyed_assert": [
+        {
+          "file": "qa/sourcing-tiers.json",
+          "pattern": "\"paid_permitted\": true",
+          "why": "Re-fencing sourcing to free-only is re-imposing the thing he cancelled by name."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-02-placement-derived",
+      "date": "2026-08-02",
+      "verbatim": "ผมสังเกตว่าที่ผ่านมาทั้งหมดคุณชอบวาง model เบี้ยว ลอย ไม่ตรงแกน ไม่สมจริง",
+      "recorded_at": "CLAUDE.md",
+      "commands": "A position derivable from a contact must never be typed. Declare the relationship; a `nudge` is the defect wearing a knob.",
+      "subject": "placement-derivation",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/placement.py, pipeline/scripts/placement_check.py",
+      "obeyed_how": "placement.py solves rest_on / centre_on / measured offsets and refuses nudge synonyms by name; placement_check reads the BUILT scene with no allowlist.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/placement.py",
+          "pattern": "NUDGE_KEYS",
+          "why": "The ban on typed fudge factors is the operative half of this order."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-02-gemini-judges-every-render",
+      "date": "2026-08-02",
+      "verbatim": "เพิ่มกฏเลย ใช้ gemini ตัวช่วยวิเคราะห์และตัดสินในฐานะ designer หลังผล render ออกทุกครั้ง",
+      "recorded_at": "CLAUDE.md",
+      "commands": "A cross-vendor designer's eye (C3) judges EVERY render, not only big gates. Every returned item gets a written accept-and-lane or a refutation carrying a measurement.",
+      "subject": "critic-ladder",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "CLAUDE.md, pipeline/scripts/critique_call.py",
+      "obeyed_how": "critique_call.py builds the bundle and calls Gemini directly; the owner-paste ritual is the fallback, not the default.",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-04-stop-and-ask-for-critique",
+      "date": "2026-08-04",
+      "verbatim": "เวลาต้องการคำวิจารณ์ให้หยุดแล้วมาถาม claude ui",
+      "recorded_at": "CLAUDE.md",
+      "commands": "When the lane needs a designer's critique the builder STOPS and routes the question to a separate-context critic instead of self-judging. (Channel amended 2026-08-05: the Cowork app is retired; C2 is a fresh-context local agent, blind by bundle construction.)",
+      "subject": "critic-ladder",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "CLAUDE.md, pipeline/scripts/critique_call.py",
+      "obeyed_how": "R7c is the rule text; the bundle builder refuses target/anchors by code so blindness is enforced by the ask's construction.",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-05-object-must-justify-itself",
+      "date": "2026-08-05",
+      "verbatim": "คุณไม่เคยตั้งคำถามของแต่ละชิ้นว่ามันอยู่ตรงนี้สมเหตุสมผลมั้ย",
+      "recorded_at": "CLAUDE.md",
+      "commands": "Every mass answers identity / exists-in-the-reference / could-be-built / verdict before a frame is judged. An object invented to satisfy a structure is a declared assumption, not a measurement.",
+      "subject": "object-justification",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/rule_gate.py, CLAUDE.md",
+      "obeyed_how": "rule_gate's R10 half refuses a mass with no justification and prints the count on every run.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "masses, all justified",
+          "why": "The per-mass verdict is the operative half of this order."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-05-privacy-is-git-only",
+      "date": "2026-08-05",
+      "verbatim": "ผมไม่สนเรื่อง privacy แล้ว ขอแค่อย่าส่งงานลูกค้าเพื่อนผมออกไป github",
+      "recorded_at": "CLAUDE.md",
+      "commands": "The hard line is GIT: the friend's delivered client work must never be committed or pushed. Local sighted comparison is open; sending the reference to an external vendor stays off by default (benchmark leakage), which is the builder's call and his to override.",
+      "subject": "privacy-fence",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": ".gitignore, CLAUDE.md",
+      "obeyed_how": "_private/ is gitignored, and the critique bundle builder refuses target/anchor images by code.",
+      "obeyed_assert": [
+        {
+          "file": ".gitignore",
+          "pattern": "^_private/",
+          "why": "The one line that keeps his friend's delivered work out of git."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-08-owner-is-out-of-the-gate",
+      "date": "2026-08-08",
+      "verbatim": "เอาผมออกจาก gate เลย ไม่ต้องรอผม สุดท้ายทุกขั้นตอนที่ render ออกมาผมก็นั่งดูทุกรูปตลอดอยู่แล้ว",
+      "recorded_at": "qa/open-decisions.json, CLAUDE.md",
+      "commands": "Nothing waits for his signature, ever. The builder closes rounds. He overrules from the image at any time, and every call taken in his name is written down before the render that depends on it, with the one edit that undoes it.",
+      "subject": "owner-gate-role",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "qa/open-decisions.json, pipeline/scripts/decisions_check.py, pipeline/scripts/rule_gate.py",
+      "obeyed_how": "`pending` is refused by name; the decision log prints into the render path on every gate run.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/decisions_check.py",
+          "pattern": "DECIDERS = \\(\"builder\", \"owner\"\\)",
+          "why": "A third decider value is a queue, and the queue is what this order abolished."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-09-every-mechanism-opens-the-picture",
+      "date": "2026-08-09",
+      "verbatim": "ผมขอบังคับให้ทุกกลไก ทุกขั้นตอนต้องมองรูปจริง",
+      "recorded_at": "CLAUDE.md",
+      "commands": "Every mechanism and every step must open the real image. A gate made of declaration-readers says so by name and never prints like one that looked.",
+      "subject": "gate-opens-the-picture",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/rule_gate.py, pipeline/scripts/pixel_check.py",
+      "obeyed_how": "rule_gate prints OPENED THE PICTURE and declarations-only on every run. SAID PLAINLY, because the flattering reading is available: pixel_check itself is declared STRUCTURALLY INAPPLICABLE on DELIV-001 (rule_gate.py:474) and that is TRUE — this lane is not a reproduction and has no target frame to compare against. So the order is carried here by a different picture-opening rung: the signed tonal ladder, which since 2026-08-16 FAILS THE BUILD rather than printing a violation past it (D-076). Both asserts below have to hold, because the first one alone would go green on a lane where nothing opens the picture at all.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "OPENED THE PICTURE",
+          "why": "The line that stops a roster of blind rungs from reading as coverage."
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_ladder_stop",
+          "why": "On this lane the ladder is the rung that opens the picture AND can stop a build; without it the order is obeyed only on lanes we are not building."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-11-sheet-first",
+      "date": "2026-08-11",
+      "verbatim": "คุณมองแบบออกมั้ย?",
+      "recorded_at": "CLAUDE.md",
+      "commands": "No build round touches an element until that element's crop of the DRAWING OF RECORD is open beside it, and when a derived doc disagrees with the sheet the conflict reopens the derivation, never the sheet.",
+      "subject": "sheet-of-record",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/sheet_recon.py, pipeline/scripts/plan_status.py, qa/sheet-recon.json",
+      "obeyed_how": "sheet_recon --gate fails an in-frustum drawn mass with no match and no signed gap; the ledger line prints at every session open.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/plan_status.py",
+          "pattern": "SHEET-RECON",
+          "why": "The headboard sat derived-away for three weeks because no session opener ever said so."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-07-28-see-your-own-work-and-be-able-to-stop",
+      "date": "2026-07-28",
+      "verbatim": "project นี้ไม่ยั่งยืน เพราะคนทำ (คุณ) มองไม่เห็นว่าตัวเองกำลังทำอะไรและไม่สามารถหยุดสิ่งที่กำลังทำไปในทางที่ผิดไว้ได้",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "commands": "Give the builder sight of its own work and a way to STOP — R1 stop-loss (two cycles per mechanism), R2 gate artifact, R4-R6. The caps are the machine-readable half, and the caps file's own law says only the owner raises one.",
+      "subject": "round-and-frame-caps",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-10",
+      "not_obeyed_because": "D-021 listed 'R1 cap' among the rungs that do not apply to the room lane, on the grounds that caps are declared per unit in qa/curriculum-caps.json — and no DELIV-001 row was ever added to that file. `grep -c DELIV-001 qa/curriculum-caps.json` returns 0, so the cap has never been able to bite on the only lane being built, across 44 rounds. The stops themselves still happen (R1 stopped this lane repeatedly); it is the COUNTER that is absent.",
+      "blocked_by": "ASK-023",
+      "obeyed_where": "qa/curriculum-caps.json, pipeline/scripts/rule_gate.py",
+      "obeyed_how": "R1's stop-loss is practised and recorded in the gates; the numeric cap for this lane is his to set, which is why this row is blocked rather than restartable.",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-08-build-order-dimension-objects-light",
+      "date": "2026-08-08",
+      "verbatim": "",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "commands": "Dimension first, then every object present, THEN light. Light is SOLVED from geometry, never layered on top: doing it early buries geometry error in an invisible light/material table (measured once at 240 W against a real 37 W). NO VERBATIM — the record of this order is a paraphrase in the builder's memory file, and this ledger refuses to invent his words, so it is filed with `commands` only.",
+      "subject": "phase-order",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "qa/deliverable-plan.json",
+      "obeyed_how": "The phase array was reordered on 2026-08-16 to P0 P1 P2 P4 P3 P5 — objects before light — after P3 had been opened and closed on 08-11 while P2 was still open. The reorder is recorded in the plan under its own key.",
+      "obeyed_assert": [
+        {
+          "file": "qa/deliverable-plan.json",
+          "pattern": "_phase_order_2026-08-16",
+          "why": "The array IS the sequence the lane follows, so the fix had to be in the array and not in a note about it."
+        }
+      ],
+      "verbatim_absent_because": "His words for this one survive only as a paraphrase in the builder's own memory file, outside the repo. Reconstructing a Thai sentence in his voice and storing it as `verbatim` would put words in his mouth to satisfy a checker — the order governs on its `commands` alone until he restates it."
+    },
+    {
+      "id": "ORD-2026-08-12-garment-scale-is-wrong",
+      "date": "2026-08-12",
+      "verbatim": "สเกลดูแปลก",
+      "recorded_at": "pipeline/scripts/build_room.py",
+      "commands": "From the p2r26 image: the hung garments read at the wrong scale (they render 570-637 mm against a real shirt's 700-760, because the run term shrank people to fit the furniture). Fix the scale.",
+      "subject": "garment-scale",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-13",
+      "not_obeyed_because": "p2r27 R1-STOPPED the mechanism after three quick cycles and shipped it OFF (`_ADULT_SCALE = False`, re-enterable only with --adult-scale), because the physics is real: the drawn bay is too shallow to hang an adult garment more than one deep. The declared real fix is PROCUREMENT of a flat-file garment set, which is his call per R8. So every default render still hangs child-scale garments, and that is a fact this ledger prints rather than a state anyone chose.",
+      "blocked_by": "ASK-003",
+      "obeyed_where": "pipeline/scripts/build_room.py",
+      "obeyed_how": "not yet — the flag exists and ships off; obedience arrives with the acquired flat-file set.",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-12-bed-cloth-still-looks-wrong",
+      "date": "2026-08-12",
+      "verbatim": "สภาพผ้าต่าง ๆ บนเตียงยังดูแปลก",
+      "recorded_at": "pipeline/scripts/build_room.py",
+      "commands": "From the p2r26 image: the state of the cloth on the bed still reads wrong. This is the verdict that opened the whole bed-cloth mechanism round and, two days later, R8's application to the class.",
+      "subject": "bed-cloth-build-vs-acquire",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+      "obeyed_how": "The obedience ROUTE moved: four solver mechanisms were tried and three R1-stopped (`_DUVET_TUCKS` still ships off as the residue of that), and the answer became acquisition rather than more tuning. So this order is now carried by the same line the 08-14 order asserts.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "^_BED_CLOTH_ACQ = True",
+          "why": "Its obedience route is the acquire leg, not another tuck mechanism."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-13-gen-diff-runs-every-round",
+      "date": "2026-08-13",
+      "verbatim": "ไอเดียพี่ อนุมัติ ลุย",
+      "recorded_at": "qa/open-decisions.json",
+      "commands": "The gen-diff protocol — his own idea, approved — runs as a step at the end of every round: generate variants of our own frame and read what they change, as a diagnostic the builder's eye cannot supply.",
+      "subject": "gen-diff-protocol",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-15",
+      "not_obeyed_because": "It ran on p2r28 and p2r29, was 'deliberately skipped' at r30, and from r31 onward is not mentioned in any gate — thirteen rounds and nine full-fidelity frames. `_private/deliv-001/gen-diff/` holds exactly two run dirs. Nothing decided this; it stopped, which is the same shape as the twenty-one dropped asks one direction over. D-048's own reverse_by describes removing the step, and that removal was never taken either.",
+      "restart_by": "run gen_diff on the p2r44 frame and put its variants in the gate; if the protocol is genuinely not worth its wall time, say so in a decision row and retire D-048 — but it may not simply stop.",
+      "obeyed_where": "qa/open-decisions.json",
+      "obeyed_how": "not yet — wired as a per-round step at D-048 and last run 2026-08-14.",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-14-bed-cloth-is-acquired",
+      "date": "2026-08-14",
+      "verbatim": "ทำเท่าไรคุณก็ปั้น model ให้สมจริงไม่ได้ซักที",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r31-2026-08-15.md",
+      "commands": "Stop hand-simulating the bed cloth. R8 applies to its class — the crease site had stopped three times — so the bed cloth is ACQUIRED, and the acquire leg is the lane's default, not a flag.",
+      "subject": "bed-cloth-build-vs-acquire",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+      "obeyed_how": "_BED_CLOTH_ACQ ships True; a failed acquisition raises or declares an honest gap and NEVER falls back to the solver bakes.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "^_BED_CLOTH_ACQ = True",
+          "why": "This is the line that read False for five days under a comment citing this very order."
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_ACQ_CLOTH_FALLBACK_IS_REFUSED",
+          "why": "A silent fallback to the solver bakes obeys the flag and disobeys the order — the frame is what he judges, not the flag."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-15-remove-the-hand-built-cloth",
+      "date": "2026-08-15",
+      "verbatim": "เอาผ้าที่ปั้นเองออก แล้วเอาโมเดลเตียงที่หามาใส่ให้ดู",
+      "recorded_at": "qa/open-decisions.json",
+      "commands": "Take the hand-simulated cloth OUT and put the acquired bed model IN, then show him the frame. This is the same order as 08-14 restated as an instruction about the frame he sees.",
+      "subject": "bed-cloth-build-vs-acquire",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+      "obeyed_how": "The canonical spec names an acquired cloth set and the build places it; the solver bakes are unreachable while the order stands.",
+      "obeyed_assert": [
+        {
+          "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+          "pattern": "\"cloth_set\"",
+          "why": "An acquire order with no named asset is an order nobody carried out."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-15-loose-furniture-is-acquired",
+      "date": "2026-08-15",
+      "verbatim": "ลบ furniture ที่ปั้นเองทุกชิ้น (ยกเว้น BF) แล้วหาจาก 3D Warehouse มาใส่ให้หมด",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r33-2026-08-15.md",
+      "commands": "Every hand-built LOOSE furniture piece comes out and is acquired; built-in millwork (BF) stays hand-built. The cut is built-in vs loose, not box-vs-curve.",
+      "subject": "loose-furniture-build-vs-acquire",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/deliverable-plan.json",
+      "obeyed_how": "bench, both nightstands, the tub chair and the head cushions are acquired meshes with model_assertions; the bed cloth is the open half.",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-16-set-8635b5b9-is-refused",
+      "date": "2026-08-16",
+      "verbatim": "ผ้าบนเตียงยังเละอยู่เลย",
+      "recorded_at": "qa/open-decisions.json",
+      "commands": "Looking at p2r41 — the frame built on the ACQUIRED set 8635b5b9 — he failed the bed cloth. That set does not ship. IT DOES NOT REPEAL THE CLASS ORDER: the answer is a different acquisition, never a return to hand-simulating.",
+      "subject": "bed-cloth-build-vs-acquire",
+      "scope": "instance",
+      "names": "8635b5b9-669c-4efc-a23a-60936f2e0192",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/open-decisions.json",
+      "obeyed_how": "The spec no longer names that slug; the audition moves to the second measured survivor and to tiers never searched.",
+      "obeyed_assert": [
+        {
+          "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+          "pattern": "\"cloth_set\": \"8635b5b9",
+          "absent": true,
+          "why": "He failed this exact set from the image; shipping it again is deciding his verdict away. The pattern names the SHIPPING key only — the scale assertion for that file stays, because it is a true measurement and erasing it would be tidying away the evidence."
+        }
+      ]
+    },
+    {
+      "id": "ORD-2026-08-16-fix-the-system-not-the-round",
+      "date": "2026-08-16",
+      "verbatim": "ในฐานะ project director แก้ไขเชิงระบบเกี่ยวกับเรื่องนี้ซะ อย่าให้ผิดซ้ำ",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+      "commands": "Fix the mechanism that let a builder decision overrule a standing order, not just this instance of it. The machine must hold his orders; a rule that only exists as prose is the defect this repo has now named four times.",
+      "subject": "owner-orders-machinery",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "qa/owner-orders.json, pipeline/scripts/orders_check.py, pipeline/scripts/sourcing_check.py, pipeline/scripts/rule_gate.py",
+      "obeyed_how": "Orders are rows with assertions against the code; a builder row contradicting a standing order is refused by name; decisions per subject are counted; a gap that skipped a permitted tier is refused as an unmade purchase.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "import orders_check",
+          "why": "An orders ledger with no consumer would be the fifth instance of the defect it was built to end."
+        }
+      ]
+    }
+  ]
+}

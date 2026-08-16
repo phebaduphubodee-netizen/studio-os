@@ -657,14 +657,51 @@ def test_an_ambiguous_acquisition_fails_rather_than_picking_one():
 
 
 def test_an_undeclared_rung_cannot_be_resolved_through_an_acquisition():
-    """bed__duvet is not in ACQUIRED_AS, so a `bed__duvet__acq0` must not silently
-    take its rung — the pairing is a design fact and has to be written down."""
+    """`bed__base` (the upholstery rung's own object) is not in ACQUIRED_AS, so a
+    `bed__mattress__acq0` must not silently take its rung — the pairing is a
+    design fact and has to be written down. (This test used bed__duvet until
+    p2r44, when the bed cloth itself became an acquisition and that rung was
+    declared; the rule it guards is unchanged, and `bed__base` carries it now.)"""
     m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
-    del m["bed__duvet"]
-    w["bed__duvet__acq0"] = ["bed_duvet"]
-    m["bed__duvet__acq0"] = 177.1
+    del m["bed__base"]
+    w["bed__base__acq0"] = ["bed_base"]
+    m["bed__base__acq0"] = 177.1
     out = vl.check_render(m, wears=w)
     assert any("not declared as an acquirable rung" in v for v in out), out
+
+
+def test_the_bought_bed_cloth_resolves_to_its_two_rungs():
+    """p2r44: his order put the cloth on the acquire path, and the ladder went
+    silent on three of seven rungs the same round. The FIELD parts wear the
+    coverlet cloth and the parts lying on them wear the duvet cloth — the split
+    the part cut already made, read back rather than guessed a second time."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    for k in ("bed__coverlet", "bed__duvet"):
+        m.pop(k, None)
+    w["bed__cloth__acq0"] = ["bed_coverlet"]
+    m["bed__cloth__acq0"] = 150.0
+    w["bed__cloth__acq1"] = ["bed_duvet"]
+    m["bed__cloth__acq1"] = 168.0
+    assert vl.resolve_acquired("bed__coverlet", m, w)[0] == "bed__cloth__acq0"
+    assert vl.resolve_acquired("bed__duvet", m, w)[0] == "bed__cloth__acq1"
+
+
+def test_an_absence_that_was_decided_is_not_an_absence_that_was_missed():
+    """"I could not measure it" and "it is not there and we said so" are
+    different sentences. bed__throw is gone by decision D-083 (the acquired set
+    falls to the bed line itself, 0 mm left to hang a runner in), so the rung
+    reports the declaration and the build does not fail on it."""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    m.pop("bed__throw", None)
+    out = vl.check_render(m, wears=w)
+    assert any("ABSENT BY DECLARATION D-083" in v for v in out), out
+    assert not any("bed__throw" in v and "has no measurement" in v for v in out)
+
+
+def test_a_declared_absence_still_has_to_name_a_decision_row():
+    for obj, (dec, why) in vl.DECLARED_ABSENT.items():
+        assert dec.startswith("D-"), obj
+        assert len(why) > 40, obj
 
 
 def test_a_retinted_material_matches_its_rung_through_the_acq_prefix():

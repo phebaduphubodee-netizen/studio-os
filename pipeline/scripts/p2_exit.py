@@ -191,6 +191,29 @@ def _erode(mask, r):
     return m
 
 
+def _absent_by_declaration(material):
+    """(decision_id, why) when this material's object is absent BY A SIGNED
+    DECISION, else None.
+
+    The table lives in `value_ladder.DECLARED_ABSENT` — one owner for the fact,
+    read by everything that needs it, rather than a second copy here that can
+    drift. Both modules are pure python, so the import is free. A missing or
+    unreadable table returns None, i.e. falls back to COULD NOT RUN, because the
+    fail-closed direction is to keep reporting the unknown."""
+    try:
+        import value_ladder as _vl
+        for obj, (dec, why) in getattr(_vl, "DECLARED_ABSENT", {}).items():
+            # EXACT ONLY. A looser match (endswith, contains) would silence a
+            # REAL could-not-run on a neighbouring material, and that is the one
+            # direction this function must never fail in — the whole point of
+            # the exit-code contract is that an unknown stays an unknown.
+            if obj.replace("bed__", "bed_") == material:
+                return dec, why
+    except Exception:                                   # pragma: no cover
+        return None
+    return None
+
+
 def rung_octave_mask(ours_im, render_path, spec, lo=4, hi=32):
     """The mask half of an octave rung: same band, same 3-pass blur, but the
     mean runs over the named material's OWN rendered pixels (matmask id),
@@ -616,7 +639,19 @@ def run(render_path, scene_path=None, only=None, tag=None):
                   f"-> {res['ratio']}x  (crop: {p1}; composite: _private, local-only)")
             if spec.get("mask_material"):
                 mres, why = rung_octave_mask(ours_im, render_path, spec)
-                if mres is None:
+                declared = _absent_by_declaration(spec.get("mask_material"))
+                if mres is None and declared:
+                    # ABSENT ON PURPOSE IS NOT COULD-NOT-RUN. p2r44: his order
+                    # put the bed cloth on the acquire path, the acquired set
+                    # falls to the bed line itself, and the greige foot runner
+                    # is gone by a decision row with a measurement behind it. A
+                    # rung that reports a signed absence as "could not look"
+                    # prints a permanent unknown that everybody learns to skip
+                    # — which is how a real could-not-look stops being read.
+                    print(f"[{key}] N/A BY DECLARATION {declared[0]} — the "
+                          f"material this half measures is absent by decision, "
+                          f"not unmeasured. {declared[1]}")
+                elif mres is None:
                     could_not.append((key, f"mask half: {why}"))
                     print(f"[{key}] MASK HALF COULD NOT RUN — {why} "
                           f"(the box number above is composition-blind trend, "

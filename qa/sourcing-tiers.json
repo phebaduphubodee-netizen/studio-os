@@ -1,0 +1,64 @@
+{
+  "_law": "THE TIERS A SEARCH HAS TO REACH BEFORE 'no such asset exists' IS A TRUE SENTENCE. R8 decides BUILD vs ACQUIRE; this file decides what ACQUIRE means, because the answer stopped being 'free only' on 2026-08-01 and the lane kept searching as if it had not.",
+  "_owner_order_2026_08_01": "฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้",
+  "_what_it_cost": "D-074 (2026-08-16) declared a SOURCING GAP for the bed cloth from a survey of 68 cached folders. Every one of those folders came from a FREE tier (Poly Haven CC0 + 3D Warehouse). The three paid tiers below have never been attempted once, in this repo's whole history, while docs/DECISIONS-render-assets.md has carried their verified prices and licences since 2026-07-01 with the note 'Status: DEFERRED — founder will decide later'. Forty-six days later the lane converted 'we have not bought one' into 'one does not exist' and went back to hand-modelling — which is the class R8 forbids, reached through a gap that was never measured.",
+  "_the_rule": "A gap is a statement about the WORLD. 'not-attempted' is a statement about US. A declaration that mixes them is refused by name in pipeline/scripts/sourcing_check.py, and the row becomes a PROCUREMENT ASK carrying a price — which is his call per purchase (R8), routed into the plan's owner channel and printed in the render path, never a blocking queue (R3).",
+  "paid_permitted": true,
+  "_paid_permitted_because": "R8 as amended 2026-08-01: 'any source whose licence permits commercial use of the RENDER ... CC-BY with attribution recorded, paid libraries'. The delivery law is unchanged and is not a sourcing question: a non-redistributable mesh never enters git, the client gets the assembled SCENE, and scale is ASSERTED on every ingest.",
+  "tiers": [
+    {
+      "id": "cc0",
+      "name": "Poly Haven / CC0 pool",
+      "tool": "pipeline/scripts/assets.py",
+      "cost": "฿0",
+      "licence": "CC0 — committable to git",
+      "owner_decision": false,
+      "note": "The only tier whose meshes may be committed. Vintage-heavy; modern-luxury furniture is its known hole (measured 2026-07-01)."
+    },
+    {
+      "id": "warehouse",
+      "name": "3D Warehouse",
+      "tool": "pipeline/scripts/warehouse.py",
+      "cost": "฿0",
+      "licence": "Trimble General Model License — use yes, redistribute as a model no",
+      "owner_decision": false,
+      "note": "The practitioner rung: his friend's main source. Gitignored cache (.gitignore:50). Style hit rate is low per query, so a search that returns nothing usable is a statement about the QUERY as often as about the tier."
+    },
+    {
+      "id": "cc-by",
+      "name": "CC-BY with attribution recorded",
+      "tool": "manual + docs/LICENSING.md",
+      "cost": "฿0",
+      "licence": "CC-BY — attribution must be recorded at ingest",
+      "owner_decision": false,
+      "note": "Permitted by R8 explicitly; never yet used."
+    },
+    {
+      "id": "paid-per-model",
+      "name": "3dsky / Dimensiva",
+      "tool": "manual purchase",
+      "cost": "$5-15 per model (3dsky); Dimensiva ~EUR 29/mo",
+      "licence": "royalty-free commercial (verified 2026-07-01, docs/DECISIONS-render-assets.md)",
+      "owner_decision": true,
+      "note": "Cheapest way to buy exactly one qualifying object. 'huge selection incl. exact boucle/marble/brass' — the file's own words. NEVER ATTEMPTED."
+    },
+    {
+      "id": "paid-subscription",
+      "name": "BlenderKit Full",
+      "tool": "Blender add-on (automatable download + placement)",
+      "cost": "$118.80/yr ($17.90/mo)",
+      "licence": "RF + CC0; client-delivered renders are permitted commercial use; models may not be resold",
+      "owner_decision": true,
+      "note": "The only paid tier that plugs into Blender, so the only one that scales past one purchase. NEVER ATTEMPTED."
+    },
+    {
+      "id": "paid-pack",
+      "name": "Chocofur packs",
+      "tool": "manual purchase",
+      "cost": "~EUR 25/pack one-time (EUR 8.90/model); free CC0 tier exists",
+      "licence": "commercial renders OK",
+      "owner_decision": true,
+      "note": "One-time alternative to a subscription; Blender-native Cycles shaders. NEVER ATTEMPTED."
+    }
+  ]
+}

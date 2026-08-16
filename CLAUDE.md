@@ -448,6 +448,75 @@ top of the session, before anything else.**
     gate; exit 2 could-not-run never counts as clear. Rows never leave the
     ledger.
 
+- R13 AN ORDER IS A ROW, NOT A SENTENCE (owner order 2026-08-16: *"ในฐานะ
+  project director แก้ไขเชิงระบบเกี่ยวกับเรื่องนี้ซะ อย่าให้ผิดซ้ำ"*, after the
+  builder reported that it had overruled a standing order of his and written the
+  override down in its own register).
+  - **WHAT HAPPENED, exactly.** He ordered the bed cloth ACQUIRED on 2026-08-14
+    and again on 2026-08-15 (*"เอาผ้าที่ปั้นเองออก แล้วเอาโมเดลเตียงที่หามาใส่ให้ดู"*).
+    On 08-16 the builder filed **D-072, `decided_by: "builder"`**, putting the
+    hand-simulated cloth back as the default over one missing component, and the
+    next round went on tuning its numbers. **Ten decision rows decide that one
+    subject** (r12·r17·r28·r29·r31·r32·r35·r36·r41·r43) against an R8 stop-loss
+    that says TWO.
+  - **WHY NOTHING CAUGHT IT, and the reason is mechanical rather than moral:**
+    **HIS WORDS WERE IN THE REGISTER THE WHOLE TIME, IN A FIELD NO CHECKER
+    READS.** `decisions_check` rule 4 locks a row to him *once `owner_override`
+    carries his words*; D-052 and D-054 quote the order in `question` and leave
+    `owner_override` null, so the lock never armed and the row stayed re-decidable
+    by the builder who wrote it. `build_room.py` had the case at its sharpest —
+    a comment citing "owner order 2026-08-14" seventeen lines above
+    `_BED_CLOTH_ACQ = False`.
+  - **IT WAS NEVER ONE INCIDENT.** A fan-out over the repo's own history found
+    **eight** orders in the same shape, all still true that morning: R11 declared
+    STRUCTURALLY INAPPLICABLE on the only lane being built; the R1 cap declared
+    not-applicable with no DELIV-001 row ever added to the caps file; "delete
+    every hand-built loose piece" narrowed to one class; *"สเกลดูแปลก"* parked
+    behind `_ADULT_SCALE = False`; the same for `_DUVET_TUCKS`; gen-diff — his
+    own idea, approved with *"ลุย"* — run twice and then silently absent for
+    thirteen rounds. **THE SHAPE IS ONE SENTENCE: an order carried out as an
+    OPT-IN is an order that was not carried out, because nobody types the flag.**
+  - **AND THE REVERSE CHANNEL WAS THE SAME DEFECT MIRRORED: 21 asks routed to
+    him and dropped** — not refused, dropped. `owner_questions_carried_forward`
+    in scene-graph.json has zero readers; `floor2-owner-decision-queue.md` exists
+    only to hold five of his questions and went 36 days unopened; the r19 pair was
+    abbreviated to the bare tokens "Q1 · Q2" across eight gates until the
+    questions themselves were nowhere on disk; the blind RANK sheet was REMOVED
+    as a finish-line condition *for having gone unanswered*. The 08-15 audit had
+    already found one of these and written *"it was not answered and not
+    withdrawn; it stopped being asked"* — **and that audit was a document, so
+    nothing consumed it and four more rounds dropped four more.**
+  - **WHAT IS BUILT.** `qa/owner-orders.json` + `orders_check.py`, `qa/owner-asks.json`
+    + `asks_check.py`, `qa/sourcing-tiers.json` + `sourcing_check.py` — all three
+    called from `rule_gate.check()` (blocking), `enforce()` (printed into the
+    render path) and `plan_status` (printed at session open, above everything
+    else). Six rules: his words must still REPRODUCE in the file cited;
+    `obeyed_where` must exist; **`obeyed_assert` greps the actual code**, so the
+    rung reads the line and not the comment above it; a `contradicts` row with
+    `decided_by: "builder"` is refused BY NAME; an order quoted in prose with no
+    stance is refused; and **the stop-loss is a COUNTER** that fires while the
+    order is unobeyed and clears when it is carried out.
+  - **THE TRAP THAT MADE IT LAST FOUR MORE ROUNDS — CLASS vs INSTANCE.** He
+    ordered the CLASS acquired, then failed one INSTANCE by eye (*"ผ้าบนเตียงยัง
+    เละอยู่เลย"* about set 8635b5b9), and the lane read the instance verdict as
+    repealing the class order and went back to hand-simulating. **An instance
+    verdict narrows what may ship; it never repeals the class. The answer to
+    "this bought one is a mess" is a different purchase.**
+  - **AND "UNBOUGHT" IS NOT "UNAVAILABLE".** D-074 declared a sourcing gap from
+    68 cached folders that were all from FREE tiers, while the three paid tiers
+    R8 permits — priced and licence-verified in `docs/DECISIONS-render-assets.md`
+    since 2026-07-01 — had never been attempted once in the repo's history. A
+    gap is a claim about the WORLD; `not-attempted` is a claim about US. Mixing
+    them is refused by name, and the row becomes a PROCUREMENT ASK with a price,
+    which is his call per purchase (R8).
+  - **THE THIRD STATE, so this rung survives its own first week:** an order may
+    be recorded `not-obeyed` — loudly, with a `since` date so its age prints, and
+    with either `blocked_by` (an OPEN ask only he can clear: money, his eye, a
+    signature) or `restart_by` (a named builder action, i.e. a debt). What it may
+    never be is silent, and what it may never do is print as obeyed. A machine
+    that hard-fails every historical instance on day one gets switched off and
+    joins them.
+
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
 - Verify guard hooks:  `bash scripts/test_guards.sh`

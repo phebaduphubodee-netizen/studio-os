@@ -331,6 +331,53 @@ def debt_lines(plan):
     return out
 
 
+# ------------------------------------------------------- his orders, my asks
+
+def order_lines():
+    """His standing orders and whether the repo obeys each one TODAY.
+
+    Unreadable prints UNKNOWN, never nothing — the same law the debt and the
+    sheet ledger follow here, and the reason is the same: silence and zero look
+    identical from outside, and that confusion is the disease this file was
+    written against."""
+    try:
+        import orders_check as ORD
+    except ImportError as e:                            # pragma: no cover
+        return ["", f"ORDERS unknown — orders_check is not importable ({e})"]
+    data = ORD.load()
+    if data is None:
+        return ["", "ORDERS unknown — qa/owner-orders.json could not be read. "
+                    "That is unknown, not zero."]
+    ob = ORD.obedience(data)
+    bad = [(o, d) for o, ok, d in ob if not ok]
+    out = ["", f"คำสั่งพี่ที่ยังมีผล {len(ob)} ข้อ — ทำตามครบ {len(ob) - len(bad)} ข้อ"
+           + (f", **ยังไม่ทำตาม {len(bad)} ข้อ**" if bad else "")]
+    for o, detail in bad:
+        out.append(f"  !! {o.get('id')} — {ORD._norm(o.get('verbatim'))[:60]}")
+        out.append(f"     {o.get('commands')[:110]}")
+    n_none = sum(1 for o, _, d in ob if str(d).startswith("NO ASSERTION"))
+    if n_none:
+        out.append(f"            ({n_none} order(s) carry no assertion against "
+                   f"the code — obedience there is only declared)")
+    return out
+
+
+def ask_lines():
+    """What he was asked, oldest first, with ages. Nothing blocks on these."""
+    try:
+        import asks_check as ASK
+    except ImportError as e:                            # pragma: no cover
+        return ["", f"ASKS unknown — asks_check is not importable ({e})"]
+    data = ASK.load()
+    if data is None:
+        return ["", "ASKS unknown — qa/owner-asks.json could not be read. "
+                    "That is unknown, not zero."]
+    out = ["", ASK.gate_line(data)]
+    for a, age in ASK.open_asks(data)[:4]:
+        out.append(ASK.one_line(a, age))
+    return out
+
+
 # --------------------------------------------------------------- sheet recon
 
 def sheet_lines():
@@ -401,12 +448,22 @@ def report(plan):
             lines.append(f"  [{pid}/{w['id']}] {w['what']}")
             lines.append(f"          -> {w.get('where', '?')}")
 
+    # HIS STANDING ORDERS, FIRST, BEFORE ANYTHING ELSE THIS FILE PRINTS. The
+    # session opener existed for eight days and never once said what he had
+    # ordered — so a round could open, plan itself, and close without his orders
+    # entering the builder's context at all. That is how the 2026-08-14 bed-cloth
+    # order lived through nine rounds with `_BED_CLOTH_ACQ = False` sitting
+    # seventeen lines under a comment citing it.
+    lines += order_lines()
+
     oa = owner_actions(plan)
     if oa:
         lines.append("")
         lines.append("WAITING ON THE OWNER (the lane does not block on these)")
         for c in oa:
             lines.append(f"  {c['id']}: {c['do']}")
+
+    lines += ask_lines()
 
     # THE CRITIC DEBT, printed unasked at the top of every session — the same
     # reason this file exists at all. 357 items were filed and ~22 built because

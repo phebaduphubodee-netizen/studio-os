@@ -1189,3 +1189,35 @@ def test_the_lane_call_site_points_at_a_directory_that_exists():
     assert "os.path.join(BUNDLE_ROOT" not in m.group(1), (
         "BUNDLE_ROOT already ends in renders/critique — joining 'renders' onto "
         "it names a path that has never existed, and 0 frames passes any cap")
+
+
+def test_the_room_lane_runs_his_orders_too():
+    """R13's own first test, and it is about this file rather than about a spec.
+
+    `check_room` exists because nine rungs genuinely cannot run on client work —
+    they need a reference, a manifest or a round series this lane does not have.
+    The owner-channel rungs need none of that: they read ledgers and grep code.
+    Leaving them in `check()` only would have made the rung built to stop "an
+    order inert on the only lane being built" inert on the only lane being
+    built."""
+    roster = []
+    RG.check_room({"masses": []}, roster=roster, spec={})
+    names = [n for n, _ran, _why in roster]
+    assert "owner orders" in names
+    assert "sourcing" in names
+    assert "owner asks" in names
+
+
+def test_the_room_lane_reports_a_broken_order_as_a_violation():
+    v = RG.check_room({"masses": []}, roster=[], spec={}, unit="DELIV-001")
+    # the live ledger is clean, so this asserts the WIRING, not a failure
+    assert isinstance(v, list)
+    import orders_check as OC
+    data = OC.load(repo_root=RG.REPO_ROOT)
+    broken = dict(data)
+    broken["orders"] = [dict(data["orders"][0],
+                             obeyed_assert=[{"file": "CLAUDE.md",
+                                             "pattern": "^_NOPE_XYZ$",
+                                             "why": "w"}])]
+    assert any("DOES NOT OBEY THIS ORDER" in s
+               for s in OC.check_orders(broken, RG.REPO_ROOT))

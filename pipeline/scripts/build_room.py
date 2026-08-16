@@ -1654,18 +1654,34 @@ _BENCH_DENT = True
 # for byte, and the acquisition also stands down on its own if the spec
 # names no cloth_set or the mesh fails its sidecar/fit/part cuts.
 #
-# DEFAULT FALSE AT THE p2r31 STOP, and the reason is the frame, not the code.
-# The path works end to end and is measured: junk pruned by plan area, the
-# file's own mattress dropped as BURIED, the sleeping plane aligned by ray, 90%
-# of the mattress covered, scale asserted as bedding_set. What it does NOT do
-# yet is look better than the bake it replaces — the chosen set renders as a
-# smooth white slab in this frame, flatter than the r30 duvet, and finding out
-# why cost more cycles than R1 allows for one question. So the lane keeps its
-# best-known frame as the DEFAULT and the acquire leg stays one flag away
-# (--bed-cloth-acq) with everything it learned intact. Turning a lane's default
-# to the worse of two measured legs is not courage, it is a regression with a
-# story attached.
-_BED_CLOTH_ACQ = False
+# DEFAULT TRUE SINCE p2r44, AND THE FIVE DAYS IT SPENT AT False ARE THE RECORD
+# WORTH KEEPING. It was set False at the p2r31 stop with a real reason (the then
+# chosen set rendered as a smooth white slab, flatter than the r30 duvet) and it
+# stayed False through r32, r33, r35, r36, r41 and r43 while the comment
+# seventeen lines above it cited the owner order that says the opposite. That is
+# the whole defect in one file: HIS ORDER WAS QUOTED IN A COMMENT AND DISOBEYED
+# ON THE NEXT LINE, and no rung in the repo could see it because no rung read
+# his orders at all. `qa/owner-orders.json` + `orders_check.py` now assert this
+# exact line against ORD-2026-08-14-bed-cloth-is-acquired, so flipping it back
+# fails the gate with his words in the message.
+#
+# WHAT DOES NOT FOLLOW FROM THE FLIP: which SET ships. He refused 8635b5b9 from
+# the p2r41 frame ("ผ้าบนเตียงยังเละอยู่เลย"). An INSTANCE verdict does not
+# repeal a CLASS order — the answer to "this bought one is a mess" is a
+# different purchase, never a return to hand-simulating, and r43 got that
+# backwards. The spec now names 0afd4c6f, the other survivor of the 68.
+_BED_CLOTH_ACQ = True
+# p2r44 — AND THE FALLBACK IS REFUSED BY NAME. Until this round a failed
+# acquisition fell through to the solver bakes and printed a line about it, so
+# the flag could read True while the FRAME carried hand-simulated cloth: the
+# order obeyed in the declaration and disobeyed in the pixels, which is the
+# shape R11 exists to name. Now a failure raises, and the honest escape is
+# --bed-cloth-gap, which builds the bed with NO cover at all and declares it.
+# R10's law: the absent thing is honest, the wrong thing fabricates a reading.
+_ACQ_CLOTH_FALLBACK_IS_REFUSED = True
+# The declared-gap leg (--bed-cloth-gap): no acquired set qualified, so the bed
+# ships bare and the gap is signed rather than papered over with a solver bake.
+_BED_CLOTH_GAP = False
 # p2r32 — WHICH acquired set, overridable from the CLI. The spec names one
 # (bed_models.cloth_set); this lets a round put a SECOND measured candidate in
 # front of the owner's eye without editing the spec of record for a look. Empty
@@ -5385,11 +5401,21 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     _head_side = "%s%s" % (axis, "+" if sign > 0 else "-")
     # p2r31 — ACQUIRE-FIRST FOR THE BED CLOTH (owner order 2026-08-14; R8's own
     # rule finally applied to this class, and its stop-loss says the class was
-    # misclassified after two shape iterations — this site had four). Tried
-    # BEFORE the two solver bakes; on success both are skipped, on failure the
-    # solver path runs exactly as before and says so.
+    # misclassified after two shape iterations — this site had four).
+    #
+    # p2r44 — AND THE FALLBACK IS GONE. It used to read "on failure the solver
+    # path runs exactly as before and says so", which is a sentence with a hole
+    # in it: SAYING SO IS NOT OBEYING. With that fallback the flag could be True,
+    # the gate could be green, and the frame he judges could still carry
+    # hand-simulated cloth — the order satisfied in the declaration and broken
+    # in the pixels. Three states now, and every one of them is explicit:
+    #   acquire succeeds  -> the acquired set is the cloth
+    #   acquire fails     -> RAISE. Not a quieter frame, a stopped build.
+    #   --bed-cloth-gap   -> no cover at all, declared. R10: the absent thing is
+    #                        honest, the wrong thing fabricates a reading.
     _acq_cloth = False
-    _cloth_slug = _BED_CLOTH_SET or (bed_models or {}).get("cloth_set")
+    _cloth_slug = None if _BED_CLOTH_GAP else (
+        _BED_CLOTH_SET or (bed_models or {}).get("cloth_set"))
     if _BED_CLOTH_ACQ and _cloth_slug:
         _acq_cloth = _place_bed_cloth(
             _cloth_slug,
@@ -5397,7 +5423,28 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
             line=(x0, y0, W, D),
             top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
             cov_mat=cov_m, duv_mat=duvt_m, head=_head_side)
-    _cov_o = None if _acq_cloth else drape.bake_bed_cover(
+        if not _acq_cloth and _ACQ_CLOTH_FALLBACK_IS_REFUSED:
+            raise RuntimeError(
+                "bed cloth: the acquired set %r did not place, and falling back "
+                "to the solver bakes is REFUSED. His order stands "
+                "(ORD-2026-08-14-bed-cloth-is-acquired, "
+                "ORD-2026-08-15-remove-the-hand-built-cloth: \"เอาผ้าที่ปั้นเอง"
+                "ออก แล้วเอาโมเดลเตียงที่หามาใส่ให้ดู\"). Either name a set that "
+                "places, or run --bed-cloth-gap and declare the bed bare. A "
+                "frame that quietly re-grows the hand-built cloth is the "
+                "failure this line was written to stop." % _cloth_slug)
+    elif _BED_CLOTH_ACQ and not _BED_CLOTH_GAP:
+        raise RuntimeError(
+            "bed cloth: acquire is ON and no cloth_set is named, in the spec or "
+            "on the CLI. An acquire order with no asset is an order nobody "
+            "carried out — name one, or run --bed-cloth-gap.")
+    # The gap leg suppresses the solver bakes as completely as a success does:
+    # the whole point is that no hand-simulated cloth reaches the frame.
+    _no_sim_cloth = _acq_cloth or _BED_CLOTH_GAP
+    if _BED_CLOTH_GAP:
+        print("  bed cloth: DECLARED GAP — no cover on this bed. No acquired "
+              "set qualified and the solver bakes are refused by his order.")
+    _cov_o = None if _no_sim_cloth else drape.bake_bed_cover(
         "bed__coverlet",
         rect=(x0 + mins, y0 + mins, W - 2 * mins, D - 2 * mins),
         top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
@@ -5686,7 +5733,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
                                 # UNDER this release so the solved half is
                                 # kept. Opt-in via --duvet-tucks only.
                                 release_frames=(12 if _tucks else None))
-    _duv_o = None if _acq_cloth else drape.search_bake(
+    _duv_o = None if _no_sim_cloth else drape.search_bake(
         _duvet, name="bed__duvet", slack=0.04,
         top_z=H + 0.03, hem_min=base_h + styling.DRAPE_REVEAL,
         bounds=(x0, y0, 0.0, x0 + W, y0 + D, H + 0.35))
@@ -5865,7 +5912,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     # AND where the room actually exists. The cross span is inset from the coverlet's BAKED
     # flanks, so it cannot reach the flank margin the coverlet has already spent.
     _thr_plan = styling.foot_throw(along, across, H, base_h)
-    if _acq_cloth and _thr_plan:
+    if _no_sim_cloth and _thr_plan:
         # DECLARED ABSENCE, not a silent drop (R10's rule for a mass that cannot
         # justify itself here). The simulated foot throw exists to put vertical
         # fabric on the foot face and to carry the room's deepest value. An
@@ -5879,7 +5926,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
         # (the line protects the plinth reveal).
         print("  foot throw: DECLARED ABSENT on the acquired leg — the set "
               "falls at the foot itself (0 mm of line left to hang in) and "
-              "brings its own turned runner; the deepest-value job is filed")
+              "brings its own turned runner; the deepest-value job is filed"
+              if _acq_cloth else
+              "  foot throw: DECLARED ABSENT on the declared-gap leg — there is "
+              "no cover to lay it over, and a hand-simulated runner on a bare "
+              "bed is the class his order took out of this frame")
         _thr_plan = None
     # The band lying ON the bed must outweigh the part cantilevered past the foot, or the
     # throw simply slides off — the first cut put 0.30 m of cloth in mid-air against a
@@ -6016,7 +6067,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
                "one" if "bed__throw" in _SOFT_BAKED else "none"))
     # the hidden single-shell proxies have served every sheet in the stack — they
     # must never reach a render or an export
-    if not _acq_cloth:
+    if not _no_sim_cloth:
         drape.drop_sim_surfaces("bed__coverlet", "bed__duvet")
     return True
 
@@ -7808,14 +7859,26 @@ if __name__ == "__main__":
         globals()["_BENCH_DENT"] = False
         print("  [A/B] bench seat: rigid under the stack (pre-p2r28) leg")
     if "--bed-cloth-acq" in _post_dashdash():
-        # opt in to the acquired bed cloth (default off at the p2r31 stop)
+        # p2r44: now the DEFAULT (his order), kept as a no-op flag so the
+        # commands recorded in nine gate artifacts still run
         globals()["_BED_CLOTH_ACQ"] = True
-        print("  [A/B] bed cloth: ACQUIRED set (opt-in leg)")
+        print("  [A/B] bed cloth: ACQUIRED set (now the default — see "
+              "ORD-2026-08-14-bed-cloth-is-acquired)")
     if "--no-bed-cloth-acq" in _post_dashdash():
-        # A leg of the p2r31 acquire-vs-simulate A/B — the solver bakes exactly
-        # as p2r30 shipped them
+        # THE A LEG OF A MEASUREMENT, NEVER A SHIPPING STATE. It renders the
+        # class his order removed from this frame, so it exists only to answer
+        # "how much worse/better", and the frame it makes must not be presented
+        # as the lane's own. `orders_check` asserts the DEFAULT, so this flag
+        # cannot quietly become the lane's position again.
         globals()["_BED_CLOTH_ACQ"] = False
-        print("  [A/B] bed cloth: SIMULATED (pre-p2r31 solver bakes) leg")
+        print("  [A/B] bed cloth: SIMULATED (pre-p2r31 solver bakes) leg — "
+              "A-leg of a comparison ONLY; this is the class "
+              "ORD-2026-08-15-remove-the-hand-built-cloth took out")
+    if "--bed-cloth-gap" in _post_dashdash():
+        # The honest escape when no acquired set qualifies: a bare bed and a
+        # signed gap, never a solver bake wearing the acquired leg's name.
+        globals()["_BED_CLOTH_GAP"] = True
+        print("  [A/B] bed cloth: DECLARED GAP (bare bed, R10)")
     _bcs = next((a.split("=", 1)[1] for a in _post_dashdash()
                  if a.startswith("--bed-cloth-set=")), None)
     if _bcs:
@@ -8020,7 +8083,8 @@ if __name__ == "__main__":
             # spec NAMES, the DOOR governs what the build LOADS. Moving decor
             # into the spec so one rule covers both is open work, not a gap
             # anything falls through today.
-            _viol = _RG.check_room(_gs, roster=_roster, spec=_spec)
+            _viol = _RG.check_room(_gs, roster=_roster, spec=_spec,
+                                   unit="DELIV-001")
             print("RULE GATE (room lane) — what ran and what did not:")
             for _n, _ran, _why in _roster:
                 print(f"  [{'x' if _ran else ' '}] {_n:26s} {_why}")
