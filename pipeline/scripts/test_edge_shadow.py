@@ -94,8 +94,16 @@ def test_verdict_calls_paint_when_the_control_fired():
 
 
 def test_p2r34_numbers_reproduce_the_finding():
-    """The live numbers this module was derived from, pinned as a regression:
-    acquired hem 95.0% vs our coverlet 2.8% against a 93.7% control."""
+    """The banding this module was derived from, pinned as a regression on the
+    CLASSIFIER: 95.0% reads as an edge, 2.8% does not, against a 93.7% control.
+
+    The provenance of the 2.8% is corrected at p2r41 and the correction is left
+    here on purpose. That figure was measured in a box the matmask later showed to
+    be 99.6% ONE material, so it was never a reading of our coverlet boundary — it
+    was a reading of shading noise inside a single cloth. `verdict`'s banding of
+    the three numbers is unaffected and still what this test pins; what changed is
+    that a site is now DERIVED from a named contact (contact_columns), so the same
+    mistake cannot be made by typing four fractions."""
     sites = [
         {"name": "bed base meets floor", "pct": 93.7, "med": 39.3, "n": 395, "control": True},
         {"name": "pillow flange", "pct": 95.0, "med": 23.0, "n": 200},
@@ -105,3 +113,79 @@ def test_p2r34_numbers_reproduce_the_finding():
     calls = {s["name"]: call for s, call, _ in rows}
     assert calls["pillow flange"] == "READS AS AN EDGE"
     assert calls["coverlet boundary"].startswith("NO LINE")
+
+
+# ------------------------------------------------------- derived contact sites
+
+def _stack(h=60, w=200, upper=7, lower=9, row=28):
+    """An id image: material `upper` above row, `lower` below it. The synthetic
+    twin of a matmask where one cloth lies on another."""
+    ids = np.full((h, w), lower, dtype=np.int32)
+    ids[:row, :] = upper
+    return ids
+
+
+def test_contact_columns_finds_the_row_of_a_named_contact():
+    cols = ES.contact_columns(_stack(), 7, 9)
+    assert len(cols) == 200
+    assert set(cols.values()) == {27}, "the contact row is the last UPPER row"
+
+
+def test_contact_columns_is_ordered_and_the_other_side_is_a_different_site():
+    """Reversing the pair names the other side of the fold, which on p2r39 is the
+    difference between 36% and 99%. It must not quietly return the same columns."""
+    ids = _stack()
+    assert ES.contact_columns(ids, 7, 9)
+    assert ES.contact_columns(ids, 9, 7) == {}
+
+
+def test_contact_columns_drops_a_column_that_crosses_too_often():
+    ids = _stack()
+    # one column where the two materials interleave — a fold seen end-on
+    ids[:, 5] = np.where(np.arange(60) % 2 == 0, 7, 9)
+    cols = ES.contact_columns(ids, 7, 9)
+    assert 5 not in cols
+    assert len(cols) == 199
+
+
+def test_shadow_line_at_refuses_a_site_with_too_few_columns():
+    """A sliver of contact is not a measurable site, and could-not-look must never
+    print like a clean absence (R11)."""
+    L = _edge(h=60, w=200)
+    cols = {x: 21 for x in range(10)}
+    with pytest.raises(ES.NoFeature):
+        ES.shadow_line_at(L, cols)
+
+
+def test_shadow_line_at_refuses_when_the_contact_has_no_transition_in_pixels():
+    """THE DEFECT THIS FUNCTION EXISTS FOR. A site inside ONE flat material —
+    exactly what the retired cloth_edge box was measuring, at 99.6% bed_throw —
+    must raise rather than return a confident 0%."""
+    flat = np.full((60, 200), 170.0)
+    cols = {x: 28 for x in range(200)}
+    with pytest.raises(ES.NoFeature):
+        ES.shadow_line_at(flat, cols)
+
+
+def test_shadow_line_at_separates_a_line_from_a_ramp_at_a_known_contact():
+    cols = {x: 21 for x in range(200)}
+    e_pct, e_med, e_n = ES.shadow_line_at(_edge(h=60, w=200), cols)
+    r_pct, _, r_n = ES.shadow_line_at(_ramp(h=60, w=200), {x: 30 for x in range(200)})
+    assert e_pct > 90.0 and e_med > 15.0 and e_n == 200
+    assert r_pct < 5.0 and r_n == 200
+    assert e_pct > 10 * max(r_pct, 1.0)
+
+
+def test_a_window_centred_on_the_contact_does_not_wander_to_another_edge():
+    """`shadow_line` takes the strongest gradient anywhere in the crop, so a second,
+    stronger edge elsewhere in the box captures the reading. `shadow_line_at` is
+    pinned to the named contact and cannot be pulled off it — which is the whole
+    reason a derived site beats a typed box."""
+    h, w = 90, 200
+    img = np.full((h, w), 170.0)
+    img[28:, :] = 200.0                     # the contact under test: a bare step
+    img[70:72, :] = 40.0                    # a much stronger dark line further down
+    at_contact = ES.shadow_line_at(img, {x: 27 for x in range(w)})[0]
+    in_box = ES.shadow_line(img)[0]
+    assert in_box > 90.0, "the strong decoy line dominates a box reading"
+    assert at_contact < 5.0, "the named contact itself casts no line"

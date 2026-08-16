@@ -42,6 +42,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import deliverable_check as dc  # noqa: E402  — pure (no bpy); _octave_energy + LE1600 normalise
+import edge_shadow as es  # noqa: E402  — pure; the shadow-line physics + contact derivation
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 STAGE_DIR = os.path.join(REPO, "projects", "PRJ-2026-002_c001-house",
@@ -108,26 +109,58 @@ CROPS = {
         "declared": "2026-08-11 (p3r2 .blend probe found acq0==acq10 class pairs)",
     },
     "cloth_edge": {
-        "kind": "shadow_line",
+        "kind": "shadow_contact",
         "asks": "where one bed cloth lies on another, the boundary CASTS A LINE "
                 "(finite thickness) instead of reading as a tonal ramp",
-        "ours_box": (0.5208, 0.5444, 0.6875, 0.6111),   # coverlet -> sheet, mid bed
+        # THE SITE IS NAMED, NOT TYPED (p2r41). Ordered pair, upper over lower in
+        # IMAGE space: the throw's far hem, the long line where it lies flat on the
+        # duvet. That is the edge both critics named in their own words ("the grey
+        # band and the white below it"). See `retired_box` for what this replaces.
+        # The site is "an accessory cloth's hem lying FLAT on the field cloth". Its
+        # material names differ by leg — the simulated leg dresses the field as
+        # bed_throw, the acquired leg as bed_coverlet — so the registry names the
+        # site and lists the pairs that can carry it. Every present pair is
+        # measured and the WORST is the answer (see rung_shadow_contact).
+        "contact": (("bed_duvet", "bed_throw"),
+                    ("bed_duvet", "bed_coverlet")),
         # THE CONTROL IS PART OF THE RUNG, not an afterthought. A low score here means
         # "no edge" only if the test demonstrably fires on an edge that certainly
-        # occludes; otherwise it means "could not see" (R11). edge_shadow refuses a
-        # verdict without it, and this box is the bed base standing on the floor.
-        "control_box": (0.6250, 0.7944, 0.7917, 0.8667),
+        # occludes; otherwise it means "could not see" (R11). This control is the
+        # ACQUIRED pillow's sham hem lying on our own cloth: same frame, same light,
+        # same class of contact, and a pillow indisputably occludes.
+        "control_contact": (("bed_pillow", "bed_duvet"),
+                            ("bed_pillow", "bed_coverlet")),
+        # SAME OBJECT, OTHER EDGES - report-only, and they are what make the finding
+        # an argument instead of a number. The throw's hanging edges line at 95-99%
+        # while its lying-flat hem lines at 35%, so the cause is not the cloth, not
+        # the material and not the light: it is that one hem.
+        "sibling_contacts": (("bed_throw", "bed_coverlet"),
+                             ("bed_coverlet", "bed_throw"),
+                             ("bed_coverlet", "bed_duvet")),
         # Declared as a RATIO to the control so it survives a light change: an absolute
         # percentage would drift with exposure, a ratio is about geometry.
         "cut_ratio": 0.5,
         "declared": "2026-08-15 from the p2r34 frame, after both critics named the "
                     "boundary and edge_rise_width scored it the same as a real hem "
-                    "(2-9 px hem, 5 px ours, 5 px control — a rung that cannot "
-                    "separate them). Live at declaration: ours 2.8% of columns vs "
-                    "control 93.0% = 0.03x, while the acquired pillow flange in the "
-                    "SAME frame reads 95.0% = 1.02x and our own free-hanging throw "
-                    "edge reads 92.7% = 1.00x. Same light on all four, so the defect "
-                    "is geometry, not lighting.",
+                    "(2-9 px hem, 5 px ours, 5 px control - a rung that cannot "
+                    "separate them). SITE RE-DERIVED 2026-08-16 (p2r41); cut, method "
+                    "and physics unchanged. Live at re-derivation, on p2r39: ours "
+                    "36.0% of columns (median 2.7 codes, n=633) vs the acquired sham "
+                    "hem at 88.7% = 0.406x, while the SAME throw's hanging edges read "
+                    "98.8% (median 28.1) and 95.5% (median 28.4) in the same frame.",
+        "retired_box": {
+            "ours_box": (0.5208, 0.5444, 0.6875, 0.6111),
+            "control_box": (0.6250, 0.7944, 0.7917, 0.8667),
+            "why": "the box held ONE material. Measured from the matmask on its own "
+                   "declaration frame (p2r34) and on p2r36/p2r39: 99.6% bed_throw, "
+                   "0.4% bed_duvet - no cloth-on-cloth boundary inside it at all. It "
+                   "scored 2.8% / 9.3% / 13.6% of columns and printed READS AS PAINT "
+                   "each time, and the p2r39 gate cited that as the measurement "
+                   "confirming C2 #5. A working control proved the METHOD could see; "
+                   "nothing ever checked that the BOX HELD A BOUNDARY. Kept here "
+                   "rather than deleted, because a retired box with no record is how "
+                   "the same site gets re-typed next round.",
+        },
     },
 }
 
@@ -367,6 +400,126 @@ def rung_shadow_line(ours_im, spec):
     return co, cc, res
 
 
+def _decoded_matmask(render_path):
+    """(id array, {material name: id}) from the matmask beside a render, or
+    (None, why). Shared by every rung that needs to know WHAT it is looking at
+    rather than only WHERE it is looking."""
+    base = render_path.rsplit(".", 1)[0]
+    mj, mp = base + ".matmask.json", base + ".matmask.png"
+    if not (os.path.exists(mj) and os.path.exists(mp)):
+        return None, "no matmask beside the render"
+    import value_probe as _vp
+    meta = json.load(open(mj, encoding="utf-8"))
+    ids = _vp.decode_ids(np.asarray(Image.open(mp).convert("RGB")))
+    return (ids, {v: int(k) for k, v in meta.get("ids", {}).items()}), None
+
+
+def _contact_in(ours_im, id_arr, name_to_id, pair):
+    """Contact columns for an ordered material pair, expressed in `ours_im`'s
+    pixel space. The mask is native resolution and the measurement runs on the
+    LE1600 normalise (deliverable_check's rule), so the scale is applied HERE,
+    once and visibly - two coordinate systems compared silently is its own
+    defect class in this repo."""
+    upper, lower = pair
+    if upper not in name_to_id:
+        raise es.NoFeature(f"material {upper!r} is not in the matmask")
+    if lower not in name_to_id:
+        raise es.NoFeature(f"material {lower!r} is not in the matmask")
+    native = es.contact_columns(id_arr, name_to_id[upper], name_to_id[lower])
+    H, W = id_arr.shape
+    w1, h1 = ours_im.size
+    sx, sy = w1 / float(W), h1 / float(H)
+    grouped = {}
+    for x, y in native.items():
+        grouped.setdefault(int(round(x * sx)), []).append(int(round(y * sy)))
+    return {x: int(np.median(v)) for x, v in grouped.items()}
+
+
+def _contact_crop(ours_im, cols, pad=18):
+    """The archived 100% crop for a derived site: the contact's own bounding box
+    plus a margin, so a human opening the gate sees the line the number is about
+    (R11 - a rung that only prints a number cannot be checked by eye)."""
+    xs = sorted(cols)
+    ys = [cols[x] for x in xs]
+    w, h = ours_im.size
+    box = (max(0, min(xs) - pad), max(0, min(ys) - pad),
+           min(w, max(xs) + pad + 1), min(h, max(ys) + pad + 1))
+    return ours_im.crop(box)
+
+
+def _pairs(v):
+    """One ordered pair, or a list of them. A site may be dressed differently on
+    two legs of the same lane (the bed's accessory-on-field contact is
+    duvet-over-throw when the cloth is simulated and duvet-over-coverlet when it is
+    acquired), so the registry names the SITE and lists the material pairs that can
+    carry it."""
+    return [tuple(v)] if v and isinstance(v[0], str) else [tuple(p) for p in v]
+
+
+def _measure_pairs(ours_im, L, id_arr, name_to_id, pairs):
+    """[(name, pct, med, n)] for every pair PRESENT in this frame, and the reasons
+    the others were not measurable."""
+    got, missed = [], []
+    for pair in pairs:
+        nm = " over ".join(pair)
+        try:
+            cols = _contact_in(ours_im, id_arr, name_to_id, pair)
+            pct, med, n = es.shadow_line_at(L, cols)
+        except es.NoFeature as e:
+            missed.append((nm, str(e)))
+            continue
+        got.append((nm, pct, med, n, cols))
+    return got, missed
+
+
+def rung_shadow_contact(ours_im, render_path, spec):
+    """Does the NAMED contact cast a line? The site comes from the render's own
+    material mask, never from a typed box.
+
+    Where the registry lists several material pairs for one site, EVERY present pair
+    is measured and the WORST is the rung's answer, while all of them print. Taking
+    the worst is deliberate: picking the best-scoring present pair would be
+    contact-shopping, the same flattering-selection this repo has paid for in nine
+    other shapes. Controls go the other way for the same reason — the STRICTEST
+    control that fires is the reference, so the ratio can only get harder.
+
+    Returns (ours_crop, control_crop, res) or (None, None, {"could_not_run": why}).
+    res["ran"] is False when the control did not fire - then the frame's absence
+    is UNREAD and the caller must print could-not-run rather than a pass."""
+    got, why = _decoded_matmask(render_path)
+    if got is None:
+        return None, None, {"could_not_run": why}
+    id_arr, name_to_id = got
+    L = _lum_arr(ours_im)
+    ours, ours_missed = _measure_pairs(ours_im, L, id_arr, name_to_id,
+                                       _pairs(spec["contact"]))
+    ctrl, ctrl_missed = _measure_pairs(ours_im, L, id_arr, name_to_id,
+                                       _pairs(spec["control_contact"]))
+    if not ours:
+        return None, None, {"could_not_run": "; ".join(f"{n}: {w}"
+                                                       for n, w in ours_missed)}
+    if not ctrl:
+        return None, None, {"could_not_run": "no control contact in this frame — "
+                            + "; ".join(f"{n}: {w}" for n, w in ctrl_missed)}
+    o_name, o_pct, o_med, o_n, oc = min(ours, key=lambda r: r[1])
+    c_name, c_pct, c_med, c_n, cc = max(ctrl, key=lambda r: r[1])
+    res = {"ours_pct": round(o_pct, 1), "ours_med": round(o_med, 1), "ours_n": o_n,
+           "control_pct": round(c_pct, 1), "control_med": round(c_med, 1),
+           "control_n": c_n, "ran": c_pct >= es.CONTROL_MIN_PCT,
+           "contact": o_name, "control": c_name,
+           "also_present": [{"contact": n, "pct": round(p, 1), "med": round(m, 1),
+                             "n": k} for n, p, m, k, _ in ours if n != o_name],
+           "not_in_frame": [n for n, _ in ours_missed + ctrl_missed]}
+    res["ratio"] = round(o_pct / c_pct, 3) if c_pct else None
+    sib_got, sib_missed = _measure_pairs(ours_im, L, id_arr, name_to_id,
+                                         _pairs(spec.get("sibling_contacts", ())) 
+                                         if spec.get("sibling_contacts") else [])
+    res["siblings"] = ([{"contact": n, "pct": round(p, 1), "med": round(m, 1),
+                         "n": k} for n, p, m, k, _ in sib_got]
+                       + [{"contact": n, "why_not": w} for n, w in sib_missed])
+    return _contact_crop(ours_im, oc), _contact_crop(ours_im, cc), res
+
+
 def rung_dup_shells(scene_path):
     """Coincident duplicate shells among acquired garment/prop meshes, from the
     BUILT scene dump (never the spec — the file that renders is the file of
@@ -501,6 +654,47 @@ def run(render_path, scene_path=None, only=None, tag=None):
             else:
                 print(f"[{key}] edge 10-90% rise width median = {w} px  "
                       f"(report-only; crop: {p1})")
+
+        elif kind == "shadow_contact":
+            co, cc, res = rung_shadow_contact(ours_im, render_path, spec)
+            if co is None:
+                could_not.append((key, res["could_not_run"]))
+                print(f"[{key}] COULD NOT RUN - {res['could_not_run']}")
+                continue
+            p1 = _save(co, STAGE_DIR, tag, f"{key}-ours-100pct.png")
+            _save(cc, STAGE_DIR, tag, f"{key}-control-100pct.png")
+            if not res["ran"]:
+                could_not.append((key, f"control {res['control']} lined only "
+                                       f"{res['control_pct']}% of its columns - the "
+                                       f"test did not fire"))
+                print(f"[{key}] COULD NOT RUN - control ({res['control']}) fired at "
+                      f"only {res['control_pct']}% (needs >= 60%)")
+            else:
+                cut = spec.get("cut_ratio")
+                ok = cut is None or res["ratio"] >= cut
+                if not ok:
+                    broken.append(key)
+                print(f"[{key}] shadow line at {res['contact']}: ours "
+                      f"{res['ours_pct']}% of columns (median {res['ours_med']} "
+                      f"codes, n={res['ours_n']}) vs control {res['control']} "
+                      f"{res['control_pct']}% -> {res['ratio']}x"
+                      + (f" vs cut >= {cut} -> "
+                         f"{'CASTS A LINE (pass)' if ok else 'NO LINE (cut broken)'}"
+                         if cut is not None else " (report-only)")
+                      + f"  (crop: {p1})")
+                for s in res.get("also_present", ()):
+                    print(f"[{key}]   same site, other dressing {s['contact']}: "
+                          f"{s['pct']}% (median {s['med']} codes, n={s['n']}) — "
+                          f"the WORST present pair is the answer above")
+                for s in res.get("not_in_frame", ()):
+                    print(f"[{key}]   declared pair not in this frame: {s}")
+                for s in res.get("siblings", ()):
+                    if "why_not" in s:
+                        print(f"[{key}]   same object, other edge {s['contact']}: "
+                              f"not measurable - {s['why_not']}")
+                    else:
+                        print(f"[{key}]   same object, other edge {s['contact']}: "
+                              f"{s['pct']}% (median {s['med']} codes, n={s['n']})")
 
         elif kind == "shadow_line":
             co, cc, res = rung_shadow_line(ours_im, spec)

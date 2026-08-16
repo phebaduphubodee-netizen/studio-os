@@ -4916,35 +4916,42 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
               f"law: nothing may be consumed until a class is named) -> bake")
         return False
     rx, ry, rw, rd = rect
-    # the set covers the mattress and FALLS past its flanks — the fall is the
-    # same number the solver path used (top_z down to hang_to), so the acquired
-    # and simulated legs occupy the same envelope and the A/B is honest
-    fall = max(0.0, top_z - hang_to)
-    # THE PLAN SLOT IS THE BED'S OWN OUTER LINE, and getting this wrong is the
-    # round's second measured mistake: the first cut inflated the plan slot by
-    # the FALL on every side (rw + 2*fall), which treats a 300 mm vertical drop
-    # as 300 mm of extra width. The set scaled to 1.103, overhung the bed line,
-    # and the foot throw — which is cut from whatever cloth is under it — came
-    # back 91 mm proud on y through all six rungs of its ladder. A duvet falls
-    # DOWN past the mattress flank; it does not grow sideways. The line is the
-    # same invariant the solver leg carried in its `bounds`.
-    lx, ly, lw, ld = line
-    # THE SLOT IS THE MATTRESS PLUS A HAND'S MARGIN, not the bed's whole
-    # footprint. Both were tried and the difference is visible, not academic:
-    # the footprint slot let this set scale to 1.336 and the extra 7% swallowed
-    # its turned-down runner into the field — the frame came back a white blob.
-    # At the mattress+40 mm slot the same asset scales 1.243 and the runner
-    # reads, which is the leg the eye picked in the candidate shoot. Keeping the
-    # bed line as the outer LIMIT (the clamp below and the throw's own line
-    # test) is a different job from using it as the TARGET.
-    slot_w, slot_d = min(lw, rw + 0.04), min(ld, rd + 0.04)
-    slot_h = fall + 0.32                      # fall + the loft a duvet stands
-    # PRUNE BEFORE FIT — and this is the first thing the round measured, not a
-    # precaution: routed through place_model, the fit read the file's 2 m JUNK
-    # CUBE as the model's height and rejected the set at 1.39x. A fit computed
-    # over parts the ingest is going to throw away is a fit of the rubbish.
-    from mathutils import Matrix as _BMx, Vector as _BVec
-    from mathutils.bvhtree import BVHTree as _BVH
+    # the set covers the mattress and FALLS past its flanks — the fall is the same
+    # number the solver path used (top_z down to hang_to), so the acquired and
+    # simulated legs occupy the same envelope and the A/B is honest. `line` (the
+    # bed's outer footprint) is no longer read here: it was the plan TARGET, and
+    # this bed's line is narrower than its own mattress — see below.
+    # THE PLAN RULE IS A CEILING AND A FLOOR, NEVER A TARGET (p2r41) — and the two
+    # earlier versions of this block were both TARGETS, which is why the acquired
+    # leg has twice rendered a flat lump:
+    #   * `rw + 2*fall` as a target let the set scale to 1.103-1.336 and swallow its
+    #     own turned runner into the field. Recorded then, still true.
+    #   * `min(bed line, mattress + 40 mm)` as a target was the correction, and on
+    #     THIS bed it measures 1800 x 1949 mm against a mattress of 1820 x 1969 —
+    #     SMALLER than the thing the cover must cover. Any duvet authored with real
+    #     drape (2200 mm of cloth for an 1820 mm mattress) was scaled to 0.82 until
+    #     its hem sat inside the mattress edge: precisely the "flatter than the
+    #     solver's duvet" the eye reported at p2r31, and precisely why the metric
+    #     that ranked candidates (coverage) preferred the smallest one.
+    # So: TARGET = the asset as authored (max_scale 1.0, never stretched); CEILING =
+    # the mattress plus the cover's own drop on each side, because cloth that hangs
+    # cannot reach further out in plan than it hangs down; FLOOR = it must actually
+    # cover the mattress, which is the spec's `model_requirements.covers` rule
+    # applied by the same code that scales. All three derive from the bed (R9).
+    import bedcloth_fit as _bcf
+    _limit, _cover = _bcf.limits_for(rect, top_z, hang_to)
+    slot_h = _limit[2]
+    # STAGING IS `bedcloth_fit`, THE MODULE THE AUDITION TOOLS ALSO CALL (p2r41).
+    # Every rule below the import used to live here and be re-implemented, slightly
+    # differently, in `bedcloth_bench` and `bedcloth_shoot` — and the difference was
+    # not academic: their copy was the PRE-p2r32 part cut, so from p2r32 to p2r41 the
+    # build dressed this bed with runners and top sheets while the audition that
+    # CHOSE the asset had deleted them before measuring or photographing anything.
+    # A rule spread across the callers is a rule with one exemption per caller.
+    #
+    # What stays here is this lane's POLICY, which an audition must not be able to
+    # change: the sidecar door above, the model_fit plan rung, the coverage cut, the
+    # value-ladder re-dress and the shading normaliser.
     before = set(bpy.data.objects)
     try:
         bpy.ops.import_scene.gltf(filepath=_mp)
@@ -4952,217 +4959,53 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
         print(f"  bed cloth: gltf import failed ({e}) -> solver bake")
         return False
     news = [o for o in bpy.data.objects if o not in before]
-    meshes = [o for o in news if o.type == 'MESH']
-    mat_area = rw * rd
-
-    def _wbb(o):
-        wc = [o.matrix_world @ v.co for v in o.data.vertices]
-        if not wc:
-            return None
-        return (min(c.x for c in wc), min(c.y for c in wc), min(c.z for c in wc),
-                max(c.x for c in wc), max(c.y for c in wc), max(c.z for c in wc))
-
-    # A DRESSED BED IS A FIELD PLUS WHAT LIES ON IT, and separating those two
-    # questions is the p2r32 correction. The first cut asked ONE question —
-    # "does this part cover a third of the mattress?" — and used it for both
-    # jobs, so it dropped the set's turned-down runner (374 x 1600 mm, 16.7% of
-    # this mattress in plan) along with the junk. That single dropped part is
-    # the whole of gate #30's unresolved item: the candidate SHOOT renders every
-    # imported object and showed a made bed with a runner; the BUILD renders
-    # only what survives this cut and showed a white slab. The gate guessed
-    # pillows and rotation, p2r32 guessed the shading normaliser, and all three
-    # were refuted — the runner was never in the frame to begin with.
-    #
-    # So: the POLY FLOOR does the junk job on its own (the file's 2 m block and
-    # its 12-poly mattress slab are both coarse), the FIELD fraction identifies
-    # the piece that must cover the bed, and a much lower EXTRA fraction lets
-    # real cloth accessories in. Nothing small gets a free pass on top of that —
-    # the BURIED test below still requires every part to be the topmost surface
-    # somewhere, which is what removes a liner the covers hide.
-    _FIELD_FRAC, _EXTRA_FRAC = 0.33, 0.05
-    field, extra, drop = [], [], []
-    for o in meshes:
-        bb = _wbb(o)
-        if bb is None or not o.data.polygons or len(o.data.polygons) < 100:
-            drop.append(o)
-            continue
-        pa = (bb[3] - bb[0]) * (bb[4] - bb[1])
-        if pa >= mat_area * _FIELD_FRAC:
-            field.append(o)
-        elif pa >= mat_area * _EXTRA_FRAC:
-            extra.append(o)
-        else:
-            drop.append(o)
-    # ONE FIELD PART IS A LEGAL DRESSED BED — the two-part floor written here
-    # first assumed "duvet + turned sheet" and refused a single-mesh made cover,
-    # which is how half the real sets are modelled. The question a bed cloth has
-    # to answer is COVERAGE, measured below by ray; part COUNT was never the ask.
-    if not field:
-        print(f"  bed cloth: no part covers {_FIELD_FRAC * 100:.0f}% of the "
-              f"mattress in plan — this is not a bed cover -> solver bake")
-        for o in news:
-            bpy.data.objects.remove(o, do_unlink=True)
+    _st = _bcf.stage(news, rect, top_z, hang_to, _limit, cover=_cover)
+    if "reject" in _st:
+        print(f"  bed cloth: {_st['reject']} -> solver bake")
+        for o in list(news):
+            if o.name in bpy.data.objects:
+                bpy.data.objects.remove(o, do_unlink=True)
         return False
-    keep = field + extra
-    print(f"  bed cloth: {len(field)} field part(s) + {len(extra)} piece(s) "
-          f"lying on it, {len(drop)} dropped below the poly/plan floor")
-    # FILTER THE LISTS FIRST, FREE SECOND — a removed object's StructRNA raises
-    # on any attribute read, so every list that outlives a removal has to be
-    # rebuilt while its members are still alive (see the buried drop below,
-    # where this exact ordering was wrong and crashed the build).
-    _dnames = {o.name for o in drop}
-    news = [o for o in news if o.name not in _dnames]
-    for o in drop:
-        bpy.data.objects.remove(o, do_unlink=True)
-
-    bbs = [_wbb(o) for o in keep]
-    mn = [min(b[i] for b in bbs) for i in range(3)]
-    mx = [max(b[i + 3] for b in bbs) for i in range(3)]
-    mw_, md_, mh_ = mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]
-    # ORIENTATION IS DERIVED FROM BOTH BOXES, never from the head string alone:
-    # rotate only when the asset's long axis and the slot's long axis disagree.
-    _rot = 90.0 if ((mw_ > md_) != (slot_w > slot_d)) else 0.0
-    _fit_w, _fit_d = (slot_d, slot_w) if _rot else (slot_w, slot_d)
-    # THE HEIGHT RUNG IS THE WRONG QUESTION FOR CLOTH, and this is not a rung
-    # being switched off — it is a rung being asked what it can answer.
-    # model_fit refuses an object that UNDERFILLS its slot, because a wardrobe
-    # rattling in a 2 m opening is a defect. A bed cover that stands 416 mm in
-    # a 696 mm envelope is not: the envelope is the MOST a duvet may occupy
-    # (fall to the base top plus loft), never a target, and real covers stop
-    # above the base. So the plan question goes to model_fit exactly as before
-    # — may this set live inside the bed's own line — and the height question
-    # goes to the rung that can actually answer it: RAY-MEASURED COVERAGE
-    # below, which no bounding box can fake. Both numbers print.
-    _plan_s = min(_fit_w / max(mw_, 1e-6), _fit_d / max(md_, 1e-6))
-    _s = min(_plan_s, slot_h / max(mh_, 1e-6))
-    # the height passed IS the height the plan rung's own scale produces, so
-    # the rung answers the plan question and nothing else (a height slot it
-    # cannot fail is honest here only because the coverage rung below carries
-    # the height question, and prints)
+    field, extra, keep = _st["field"], _st["extra"], _st["keep"]
+    news, roots = _st["news"], _st["roots"]
+    _s, _rot = _st["scale"], _st["rot"]
+    mw_, md_, mh_ = [v / 1000.0 for v in _st["native_mm"]]
+    _fit_w, _fit_d = _st["fit"]
+    _plan_s = _st["plan_scale"]
+    print(f"  bed cloth: {len(field)} field part(s) + {len(extra)} piece(s) lying "
+          f"on it, {_st['parts_dropped']} dropped below the poly/plan floor"
+          + (f", {_st['parts_buried']} dropped as BURIED (the file's own "
+             f"mattress/liner under the covers)" if _st["parts_buried"] else ""))
+    # THE HEIGHT RUNG IS THE WRONG QUESTION FOR CLOTH, and this is not a rung being
+    # switched off — it is a rung being asked what it can answer. model_fit refuses
+    # an object that UNDERFILLS its slot, because a wardrobe rattling in a 2 m
+    # opening is a defect. A bed cover that stands 416 mm in a 696 mm envelope is
+    # not: the envelope is the MOST a duvet may occupy (fall to the base top plus
+    # loft), never a target. So the plan question goes to model_fit exactly as
+    # before, and the height question goes to the rung that can actually answer it:
+    # the RAY-MEASURED COVERAGE below, which no bounding box can fake. Both print.
     _pl_s, _pl_ok, _pl_why = millwork.model_fit(mw_, md_, mh_,
                                                 _fit_w, _fit_d, mh_ * _plan_s,
                                                 model_slot=None, item_slot=None)
-    print(f"  MODEL-FIT {os.path.basename(_mp)} (cloth parts, plan rung): "
-          f"{_pl_why}")
-    print(f"  bed cloth: scale {_s:.3f}, stands {mh_ * _s * 1000:.0f} mm of a "
-          f"{slot_h * 1000:.0f} mm envelope — height judged by coverage, not "
-          f"by slot fill")
-    if not _pl_ok:
-        for o in news:
-            bpy.data.objects.remove(o, do_unlink=True)
-        return False
-    roots = [o for o in news if o.parent is None] or news
-    for o in roots:
-        o.scale = tuple(v * _s for v in o.scale)
-    bpy.context.view_layer.update()
-    bbs = [_wbb(o) for o in keep]
-    mn = [min(b[i] for b in bbs) for i in range(3)]
-    mx = [max(b[i + 3] for b in bbs) for i in range(3)]
-    cx, cy = rx + rw / 2.0, ry + rd / 2.0
-    dx = cx - (mn[0] + mx[0]) / 2.0
-    dy = cy - (mn[1] + mx[1]) / 2.0
-    for o in roots:
-        o.location = (o.location.x + dx, o.location.y + dy, o.location.z)
-    bpy.context.view_layer.update()
-
-    # ---- the three measured lessons of this round, in the order they were paid
-    # for. (1) ALIGN BY THE CLOTH'S OWN SLEEPING PLANE, never by the set's
-    # bottom: these files ship their OWN mattress, so a bottom anchor buries the
-    # covers inside ours and renders exactly what the first acquired frame
-    # showed — a white slab with a knot of cloth on it. The plateau is the
-    # MEDIAN top surface over the mattress plan; pillows and hanging folds
-    # cannot drag a median. (2) DROP WHAT IS BURIED: a part earns its place by
-    # being the topmost surface somewhere — that is what removes the file's own
-    # mattress without ever reading a mesh NAME. (3) COVERAGE IS MEASURED BY
-    # RAY, never by bounding box: the box version of this guard passed a set
-    # that covered 60% of the bed, because a box cannot tell a spread sheet
-    # from a crumpled one (R9b's law, one level up).
-    def _cloth_top(objs, n=32):
-        _vs, _ts = [], []
-        for _o in objs:
-            _me = _o.data
-            _me.calc_loop_triangles()
-            _off = len(_vs)
-            _vs.extend([_o.matrix_world @ _v.co for _v in _me.vertices])
-            _ts.extend([tuple(_i + _off for _i in _t.vertices)
-                        for _t in _me.loop_triangles])
-        if not _ts:
-            return []
-        _bv = _BVH.FromPolygons(_vs, _ts)
-        _out = []
-        for _i in range(n):
-            for _j in range(n):
-                _x = rx + rw * (_i + 0.5) / n
-                _y = ry + rd * (_j + 0.5) / n
-                _loc, _, _, _ = _bv.ray_cast(_BVec((_x, _y, top_z + 3.0)),
-                                             _BVec((0, 0, -1)), 6.0)
-                _out.append((_x, _y, None if _loc is None else _loc.z))
-        return _out
-
-    _tops = [t for t in _cloth_top(keep) if t[2] is not None]
-    if _tops:
-        _zs = sorted(t[2] for t in _tops)
-        _dz = (top_z + 0.015) - _zs[len(_zs) // 2]
-    else:
-        _dz = hang_to - mn[2]
-    for o in roots:
-        o.location = (o.location.x, o.location.y, o.location.z + _dz)
-    bpy.context.view_layer.update()
-
-    if len(keep) > 1:
-        _all = {(round(t[0], 6), round(t[1], 6)): t[2] for t in _cloth_top(keep)
-                if t[2] is not None}
-        _buried = []
-        for o in keep:
-            _own = [t for t in _cloth_top([o]) if t[2] is not None]
-            if not _own:
-                _buried.append(o)
-                continue
-            _seen = sum(1 for t in _own
-                        if t[2] >= _all.get((round(t[0], 6), round(t[1], 6)),
-                                            -1e9) - 0.004)
-            if _seen / float(len(_own)) < 0.15:
-                _buried.append(o)
-        if _buried and len(_buried) < len(keep):
-            print(f"  bed cloth: {len(_buried)} part(s) dropped as BURIED "
-                  f"(the file's own mattress/liner under the covers)")
-            # EVERY list that outlives this drop is pruned BEFORE anything is
-            # freed. The line this replaces read `o.name` on objects it had
-            # already removed, which is a ReferenceError the moment a set has
-            # more than one part to bury — a crash that could not fire while
-            # the part cut above was only ever letting one part through, and
-            # arrived the same round that cut was widened. `roots` matters as
-            # much as the rest: the rotation below writes matrix_world over it.
-            _bnames = {o.name for o in _buried}
-            for o in _buried:
-                keep.remove(o)
-                (field if o in field else extra).remove(o)
-            news = [o for o in news if o.name not in _bnames]
-            roots = [o for o in roots if o.name not in _bnames]
-            for o in _buried:
-                bpy.data.objects.remove(o, do_unlink=True)
-            if not field:
-                print("  bed cloth: every field part is BURIED — this set does "
-                      "not dress a bed -> solver bake")
-                for o in list(news):
-                    if o.name in bpy.data.objects:
-                        bpy.data.objects.remove(o, do_unlink=True)
-                return False
-
-    _hit = [t for t in _cloth_top(keep, n=40)
-            if t[2] is not None and t[2] > top_z - 0.02]
-    _cov = len(_hit) / float(40 * 40)
+    print(f"  MODEL-FIT {os.path.basename(_mp)} (cloth parts, plan rung): {_pl_why}")
+    print(f"  bed cloth: scale {_s:.3f}, stands {_st['height_mm']:.0f} mm of a "
+          f"{slot_h * 1000:.0f} mm envelope — height judged by coverage, not by "
+          f"slot fill")
+    _cov = _st["coverage"]
     print(f"  bed cloth: covers {_cov * 100:.1f}% of the mattress plan "
-          f"(ray-measured, not bbox)")
-    if _cov < 0.80:
-        print(f"  bed cloth: {_cov * 100:.0f}% is not a dressed bed — our own "
-              f"mattress would show through -> solver bake")
+          f"(ray-measured, not bbox), falls past {_st['fall_sides']}/4 flanks, "
+          f"relief {_st['relief_mm']:.0f} mm")
+    if not _pl_ok or _cov < 0.80:
+        if _pl_ok:
+            print(f"  bed cloth: {_cov * 100:.0f}% is not a dressed bed — our own "
+                  f"mattress would show through -> solver bake")
         for o in list(news):
             if o.name in bpy.data.objects:
                 bpy.data.objects.remove(o, do_unlink=True)
         return False
     if _rot:
-        piv = _BVec((cx, cy, 0.0))
+        from mathutils import Matrix as _BMx, Vector as _BVec
+        piv = _BVec((rx + rw / 2.0, ry + rd / 2.0, 0.0))
         T = (_BMx.Translation(piv) @ _BMx.Rotation(math.radians(_rot), 4, 'Z')
              @ _BMx.Translation(-piv))
         bpy.context.view_layer.update()
@@ -5198,7 +5041,8 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
     else:
         _shading = "shading normaliser SKIPPED (cloth keeps its own facets)"
     print(f"  ACQUIRED bed cloth <- {slug}: {len(field)} field + {len(extra)} "
-          f"on-it part(s) kept, {len(drop)} dropped (junk block + fittings), "
+          f"on-it part(s) kept, {_st['parts_dropped']} dropped (junk block + "
+          f"fittings), "
           f"{_shading}")
     for o in keep:
         _SOFT_BAKED.append(o.name)

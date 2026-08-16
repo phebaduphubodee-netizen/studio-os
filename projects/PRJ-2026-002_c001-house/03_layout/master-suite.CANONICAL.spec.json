@@ -50,6 +50,12 @@
    "axis": "z",
    "asserted_mm": 700.0,
    "asserted_on": "2026-08-16"
+  },
+  "8635b5b9-669c-4efc-a23a-60936f2e0192": {
+   "class": "bedding_set",
+   "axis": "y",
+   "asserted_mm": 2331.1,
+   "asserted_on": "2026-08-16"
   }
  },
  "model_assertions_note": "P2r-9 (2026-08-16). EVERY MODEL REFERENCE ASSERTS ITS OWN SIZE HERE, AS DATA, and pipeline/scripts/model_assert_check.py diffs each row against that file's own `<asset>.scale.json` sidecar AND against a live re-measure of the file, on every build. WHY IT IS A FIELD AND NOT A SENTENCE: until today these numbers lived only in the `*_note` prose beside them, and on p2r36 `bed_models_note` asserted 2198.1 mm on y for ub806591a — the size of 2b142a32, the candidate this lane REJECTED. The file's own sidecar read 1599.9 mm and was right the whole time, but nothing compared the two, so a 1505x1600 mm duvet was scaled onto a 2000x2149 mm bed and its hem came to rest on the mattress face. The owner saw it in one sentence before any instrument did. A measurement kept where only a human re-reading prose can check it is not a measurement. `asserted_on` is provenance and is not checked; class/axis/asserted_mm are, three ways, and a row nothing references is refused by name.",
@@ -852,7 +858,11 @@
     "base_material": "upholstered_greige_linen",
     "ref": "element3-bed_DD-2026-07-18.md"
    },
-   "bed_cloth_gap_note": "DECLARED GAP, carrying out gate-DELIV001-P2r36 decision 2 IN DATA rather than in prose. `bed_models.cloth_set` used to name ub806591a-d110-475a-8209-11e595d50022; that asset is REFUSED for this bed on measurement — 1505 x 1600 mm of cloth cannot dress a 1820 x 1969 mm mattress, and scaling it up 1.23x left its hem lying ON the mattress face instead of falling past the flanks, which is what the owner saw in one sentence. The refusal was recorded in a round document while the spec went on naming the asset, so the next reader would have inherited it. The REQUIREMENT the next pick must meet now lives in `model_requirements` and is checked before anything is rendered; R10's law applies to soft goods too — the absent thing is honest, the wrong thing fabricates a reading. Reverse: add `bed_models: {\"cloth_set\": \"<slug>\"}` back with an asset whose own plan is >= the mattress, and add its row to `model_assertions`. `_BED_CLOTH_ACQ` is still False (p2r36 decision 1), so this key alone changes no frame; the acquire leg is `--bed-cloth-acq`."
+   "bed_cloth_gap_note": "DECLARED GAP, carrying out gate-DELIV001-P2r36 decision 2 IN DATA rather than in prose. `bed_models.cloth_set` used to name ub806591a-d110-475a-8209-11e595d50022; that asset is REFUSED for this bed on measurement — 1505 x 1600 mm of cloth cannot dress a 1820 x 1969 mm mattress, and scaling it up 1.23x left its hem lying ON the mattress face instead of falling past the flanks, which is what the owner saw in one sentence. The refusal was recorded in a round document while the spec went on naming the asset, so the next reader would have inherited it. The REQUIREMENT the next pick must meet now lives in `model_requirements` and is checked before anything is rendered; R10's law applies to soft goods too — the absent thing is honest, the wrong thing fabricates a reading. Reverse: add `bed_models: {\"cloth_set\": \"<slug>\"}` back with an asset whose own plan is >= the mattress, and add its row to `model_assertions`. `_BED_CLOTH_ACQ` is still False (p2r36 decision 1), so this key alone changes no frame; the acquire leg is `--bed-cloth-acq`.",
+   "bed_models": {
+    "cloth_set": "8635b5b9-669c-4efc-a23a-60936f2e0192",
+    "why_note": "p2r41. Chosen by the EYE from the six candidates the corrected audition let through (_private/deliv-001/bedcloth-p2r41/shots), which is the owner's own practitioner method: the machine filters what an eye should not have to look at, the eye judges style. It is the only survivor of all three measured cuts (need 0.845x <= 1.0 - never stretched; covers 90.2% of the mattress by ray; falls past 2 of 4 flanks) and the only one of six that reads as cloth rather than as a plane. Under the fit rule this round retired it read 69.9% / 0 flanks and would have been refused - see bedcloth_rules.plan_scale."
+   }
   },
   {
    "name": "ม้านั่งปลายเตียง (bench)",

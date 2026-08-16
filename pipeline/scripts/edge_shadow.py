@@ -40,6 +40,37 @@ existed scored the same. An absence test with no positive control measures nothi
 `verdict()` REFUSES to return a verdict unless at least one site is declared a control
 AND that control actually fires. "Could not look" must never print like "looked and it
 was fine".
+
+AND THE CONTROL IS ONLY HALF THE GUARD — the other half arrived 2026-08-16 and cost
+four rounds of a false reading. A control proves the METHOD can see an edge. It says
+nothing about whether the BOX HOLDS ONE. The `cloth_edge` site frozen into
+`p2_exit.CROPS` on 2026-08-15 was measured, on its own declaration frame (p2r34) and on
+every frame since, to be **99.6% a single material** — `bed_throw` and nothing else. It
+therefore scored 2.8%, then 9.3%, then 13.6% of columns against a control firing at
+89-94%, printed READS AS PAINT each time, and the p2r39 gate cited that number as the
+measurement confirming a critic's item. There was no boundary inside the box to read as
+anything. Same shape as the wood rung whose search bound excluded the two-board case it
+was named for; same shape as R9's typed coordinate one level up — **a site that can be
+DERIVED from a named contact must never be typed.**
+
+So `contact_columns` + `shadow_line_at` take the site from the render's own material
+mask: name the two materials, and the instrument finds every column where one lies
+directly on the other and measures THERE. The site follows the feature when the frame
+changes, which is the freeze law's actual intent (a box is frozen so nobody re-aims it
+at a flattering spot; a RULE that names the contact cannot be re-aimed at all). Too few
+columns is `NoFeature` — could-not-look, never a clean absence.
+
+WHAT THAT CORRECTION MEASURED on p2r39 — same frame, same light, per column at the real
+contacts. It is not a retraction of the defect, only of its size:
+
+    bed_throw   over bed_coverlet    dip 99.0% of columns, median 28.0 codes
+    bed_pillow  over bed_duvet       dip 88.1%             median 23.0 codes
+    bed_duvet   over bed_coverlet    dip 83.1%             median 53.0 codes
+    bed_duvet   over bed_throw       dip 34.8%             median  2.0 codes   <- the one
+
+Our generated cloth lines most of its boundaries. The one it does not line is the
+throw's FAR edge — the long line where it lies flat on the duvet, which is the exact
+edge two critics kept naming. WEAK at ~0.4x the control, not paint at 0.15x.
 """
 from __future__ import annotations
 
@@ -61,6 +92,15 @@ MIN_DIP = 1.5
 # A control that lines fewer than this fraction of its columns did not fire: the test
 # could not see, so no absence elsewhere in that frame means anything.
 CONTROL_MIN_PCT = 60.0
+# A named contact seen in fewer columns than this is not a measurable site. Set from
+# what the four real bed contacts actually offer on a 1600px-long-edge frame (455-957
+# columns each) against what the retired box offered (0), with a wide margin: the number
+# has to refuse a contact that is a sliver, not tune a result.
+MIN_CONTACT_COLS = 60
+# More than this many separate crossings in one column means the contact folds back on
+# itself there (a hem seen twice, a tail crossing its own field). One column cannot then
+# name one site, so it is skipped rather than averaged into a place with no cloth.
+MAX_CROSSINGS = 3
 
 
 def luma(im):
@@ -97,6 +137,94 @@ def shadow_line(L, min_grad=MIN_GRAD, half=HALF_WIN, min_dip=MIN_DIP):
     pct = 100.0 * len(hits) / cols if cols else 0.0
     med = float(np.median(hits)) if hits else 0.0
     return pct, med, cols
+
+
+def contact_columns(ids, upper, lower, max_crossings=MAX_CROSSINGS):
+    """Columns of a 2-D id array where `upper` lies DIRECTLY ON `lower`.
+
+    `ids` is an integer label image (this repo's matmask, decoded). Returns
+    {x: y} — for each column, the row of the contact — in that array's own pixel
+    space, so a caller that measures on a different-resolution image has to say so
+    by scaling, rather than silently comparing two coordinate systems.
+
+    ORDERED, and the order is the physics: `upper` above `lower` in IMAGE space is
+    the cloth nearer the camera lying on the cloth behind it. Passing the pair the
+    other way round names the other side of the same fold, which is a different
+    site with a different answer — measured on p2r39, bed_duvet-over-bed_throw
+    reads 34.8% and bed_throw-over-bed_coverlet reads 99.0%.
+
+    Columns with more than `max_crossings` crossings are dropped: there the contact
+    folds back on itself and no single row names it."""
+    a, b = ids[:-1, :], ids[1:, :]
+    m = (a == upper) & (b == lower)
+    ys, xs = np.nonzero(m)
+    out = {}
+    if xs.size == 0:
+        return out
+    order = np.argsort(xs, kind="stable")
+    xs, ys = xs[order], ys[order]
+    starts = np.searchsorted(xs, np.unique(xs), side="left")
+    ends = np.searchsorted(xs, np.unique(xs), side="right")
+    for x, i0, i1 in zip(np.unique(xs), starts, ends):
+        col = ys[i0:i1]
+        if col.size > max_crossings:
+            continue
+        out[int(x)] = int(np.median(col))
+    return out
+
+
+class NoFeature(RuntimeError):
+    """Raised when the named contact is not present (or not resolvable) in the frame.
+
+    A separate exception from NoControl on purpose: NoControl means the method could
+    not see, NoFeature means there was nothing at the site to see. Both are
+    could-not-look and neither may print like a clean absence — but a caller fixes
+    them in opposite places (the control, versus the claim about what is in frame)."""
+
+
+def shadow_line_at(L, cols, half=HALF_WIN, min_grad=MIN_GRAD, min_dip=MIN_DIP,
+                   min_cols=MIN_CONTACT_COLS):
+    """`shadow_line`, but the window is centred on a KNOWN contact row per column
+    instead of on whatever gradient happens to be strongest in a box.
+
+    That difference is the whole point. `shadow_line` asks "is the strongest edge
+    anywhere in this rectangle a line?" — in a rectangle holding one material it
+    answers about shading noise, and it cannot say so. This asks "is THIS contact a
+    line?", and if the contact is not in the frame it raises rather than answering.
+
+    cols: {x: y} in L's own pixel space (see contact_columns; scale first if the
+    mask and the measured image are different sizes).
+
+    Returns (pct_columns_with_dip, median_dip_codes, n_columns_considered)."""
+    if len(cols) < min_cols:
+        raise NoFeature(
+            f"the named contact appears in {len(cols)} column(s), below the "
+            f"{min_cols} this rung needs — could not look, which is not a clean edge")
+    H, W = L.shape
+    hits, n = [], 0
+    for x, y in sorted(cols.items()):
+        if not 0 <= x < W:
+            continue
+        lo, hi = max(0, y - half), min(H, y + half + 1)
+        seg = L[lo:hi, x]
+        if len(seg) < 6:
+            continue                       # window ran off the image; cannot judge
+        grad = np.abs(np.diff(seg))
+        if grad.size == 0 or grad.max() < min_grad:
+            continue                       # no transition at the contact in this column
+        n += 1
+        plateau = min(float(seg[0]), float(seg[-1]))
+        dip = plateau - float(seg.min())
+        if dip > min_dip:
+            hits.append(dip)
+    if n < min_cols:
+        raise NoFeature(
+            f"only {n} of {len(cols)} contact column(s) carry a transition at all — "
+            f"the contact is in the mask but not in the pixels (occluded, or too "
+            f"small at this resolution to measure)")
+    pct = 100.0 * len(hits) / n
+    med = float(np.median(hits)) if hits else 0.0
+    return pct, med, n
 
 
 class NoControl(RuntimeError):

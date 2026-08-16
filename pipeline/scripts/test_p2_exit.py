@@ -21,7 +21,7 @@ def test_registry_boxes_are_valid_fractions():
                 assert 0.0 <= x0 < x1 <= 1.0, (key, bk)
                 assert 0.0 <= y0 < y1 <= 1.0, (key, bk)
         assert spec["kind"] in ("octave_energy", "autocorr", "edge_profile",
-                                "dup_shells", "shadow_line"), key
+                                "dup_shells", "shadow_line", "shadow_contact"), key
         assert spec["declared"], key  # a box with no provenance can drift
 
 
@@ -34,6 +34,9 @@ def test_an_absence_rung_carries_its_own_positive_control():
         if spec["kind"] == "shadow_line":
             assert "control_box" in spec, key
             assert spec["ours_box"] != spec["control_box"], key
+        if spec["kind"] == "shadow_contact":
+            assert "control_contact" in spec, key
+            assert tuple(spec["contact"]) != tuple(spec["control_contact"]), key
 
 
 def test_ql_frame_is_refused_as_could_not_run(tmp_path):
@@ -205,3 +208,110 @@ def test_folded_cloth_scores_more_band_energy_than_flat(tmp_path):
     e_flat = PE.dc._octave_energy(flat)
     e_folds = PE.dc._octave_energy(folds)
     assert e_folds > 4 * max(e_flat, 1e-9)
+
+
+# ------------------------------------------------------- shadow_contact rung
+
+def _matmask_png(path, ids_arr, names):
+    """Write a matmask pair the way the build does: ids in value_probe's palette
+    plus the sidecar naming them."""
+    import value_probe as vp
+    h, w = ids_arr.shape
+    rgb = np.zeros((h, w, 3), dtype=np.uint8)
+    for i in np.unique(ids_arr):
+        rgb[ids_arr == i] = vp.id_to_srgb(int(i))
+    Image.fromarray(rgb).save(str(path) + ".matmask.png")
+    json.dump({"schema": 1, "ids": {str(v): k for k, v in names.items()}},
+              open(str(path) + ".matmask.json", "w", encoding="utf-8"))
+
+
+def _two_cloth_frame(tmp_path, dip, stem="room_x_p1"):
+    """A frame with one cloth lying on another at row 480, plus a pillow lying on
+    it at row 800 that ALWAYS casts a line (the positive control). `dip` is how
+    many codes the cloth boundary undershoots — 0 is a bare step with no thickness.
+
+    THE LONG EDGE IS 1600 ON PURPOSE: `dc._norm` upscales anything smaller, and
+    LANCZOS rings at a hard step — a synthetic at 320px reads a 1.0 ratio for a
+    step with no dip at all, i.e. the resampler manufactures the very undershoot
+    the rung is looking for. (Checked on the real frame too, where it does not
+    bite: native 2400 reads 39.0%/88.8% and the LE1600 normalise 36.4%/88.2%.)"""
+    H, W = 1200, 1600
+    L = np.full((H, W), 190.0)
+    L[480:, :] = 150.0                                  # the cloth-on-cloth step
+    if dip:
+        L[476:480, :] = 150.0 - dip
+    L[800:, :] = 175.0                                  # pillow region below
+    L[792:800, :] = 175.0 - 45.0                        # control line, always deep
+    rgb = np.repeat(np.clip(L, 0, 255).astype(np.uint8)[:, :, None], 3, axis=2)
+    p = tmp_path / f"{stem}.png"
+    Image.fromarray(rgb).save(p)
+    ids = np.full((H, W), 9, dtype=np.int32)            # bed_throw
+    ids[:480, :] = 7                                    # bed_duvet above it
+    ids[800:, :] = 11                                   # bed_pillow at the bottom
+    _matmask_png(str(p).rsplit(".", 1)[0], ids,
+                 {"bed_duvet": 7, "bed_throw": 9, "bed_pillow": 11})
+    return p
+
+
+_CONTACT_SPEC = {
+    "kind": "shadow_contact",
+    "contact": ("bed_duvet", "bed_throw"),
+    "control_contact": ("bed_throw", "bed_pillow"),
+    "cut_ratio": 0.5,
+}
+
+
+def _run_contact(p, spec=None):
+    ours = PE._norm_img(str(p))
+    return PE.rung_shadow_contact(ours, str(p), spec or _CONTACT_SPEC)
+
+
+def test_contact_rung_calls_a_cast_line_an_edge(tmp_path):
+    _, _, res = _run_contact(_two_cloth_frame(tmp_path, dip=40))
+    assert res["ran"], res
+    assert res["ratio"] >= 0.5, res
+
+
+def test_contact_rung_calls_a_bare_step_no_line(tmp_path):
+    """A material change with no thickness: same two plateaus, no undershoot."""
+    _, _, res = _run_contact(_two_cloth_frame(tmp_path, dip=0))
+    assert res["ran"], res
+    assert res["ratio"] < 0.5, res
+
+
+def test_contact_rung_refuses_when_the_named_material_is_absent(tmp_path):
+    """The p2r41 defect, made unrepeatable: a site that names a contact which is
+    not in the frame must be COULD NOT RUN, never a confident absence."""
+    spec = dict(_CONTACT_SPEC, contact=("bed_coverlet", "bed_throw"))
+    co, cc, res = _run_contact(_two_cloth_frame(tmp_path, dip=0), spec)
+    assert co is None and cc is None
+    assert "could_not_run" in res and "bed_coverlet" in res["could_not_run"]
+
+
+def test_contact_rung_refuses_without_a_matmask(tmp_path):
+    p = tmp_path / "room_x_p2.png"
+    Image.new("RGB", (1600, 1200), (180, 180, 180)).save(p)
+    co, _, res = PE.rung_shadow_contact(PE._norm_img(str(p)), str(p), _CONTACT_SPEC)
+    assert co is None and "matmask" in res["could_not_run"]
+
+
+def test_contact_rung_reports_sibling_edges_of_the_same_object(tmp_path):
+    spec = dict(_CONTACT_SPEC,
+                sibling_contacts=(("bed_throw", "bed_pillow"),))
+    _, _, res = _run_contact(_two_cloth_frame(tmp_path, dip=40), spec)
+    assert res["siblings"] and res["siblings"][0]["pct"] > 90.0
+
+
+def test_the_registry_contact_site_is_named_not_typed():
+    """A shadow_contact entry must name its site and its control as material pairs,
+    they must differ, and the retired typed box must stay on the record with the
+    reason it was retired — a retired box with no record gets re-typed."""
+    for key, spec in PE.CROPS.items():
+        if spec["kind"] != "shadow_contact":
+            continue
+        assert len(spec["contact"]) == 2, key
+        assert len(spec["control_contact"]) == 2, key
+        assert tuple(spec["contact"]) != tuple(spec["control_contact"]), key
+        assert "ours_box" not in spec, f"{key}: a derived site must not carry a box"
+        rb = spec.get("retired_box")
+        assert rb and rb.get("why"), key
