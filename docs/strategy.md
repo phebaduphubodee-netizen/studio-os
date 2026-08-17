@@ -3363,3 +3363,121 @@ to the bed line itself, 0 mm of line left to hang in), and the job that runner d
 — the one deep value that keeps the bed from reading as a single pale mass — is
 now visible in the frame as exactly the defect the signed spec predicted in
 writing. That is an ask (ASK-020), not a licence to rebuild it by hand.
+
+## 2026-08-17 — he stopped me before the plan and asked for the problem, and the problem was not the duvet
+
+He asked for a plan to fix the bed, then interrupted with *"ก่อนเสนอแผน หาปัญหาให้เจอก่อน
+ว่าปัญหาคืออะไร"*. The interruption was right. Forty-seven rounds and **47 of the repo's
+102 decision rows** had been spent on which cloth to buy, and no round had ever measured
+the bed in the space every judge actually uses.
+
+### What the picture says, measured by object mask
+
+`id_mask` + `value_probe.decode_ids` over `room_bedroom_suite_eye_p2r49.png`, scoped to
+the bed's own objects. Of the visible sleeping surface:
+
+    acquired duvet (lofted)   182,192 px   31.5%
+    acquired flat sheet       124,678 px   21.6%
+    OUR OWN MATTRESS BOX      270,691 px   46.9%      delivered work, 7 of 7 frames: 0%
+
+The image-space number reproduces the three sighted readers exactly (25 / 30 / 40) while
+the plan-space ray reads 43.2%. **The largest single thing in our bed is our own
+218-polygon mattress.** On this bed the hand-built parts are **0.29% of the polygons
+(1,136 of 395,171) and 57.4% of the pixels.**
+
+### Why every rung stayed green through all of it
+
+Every acceptance number for the bed is computed in PLAN, by a top-down ray grid over the
+mattress rectangle — and the failure is on the mattress's VERTICAL faces, which have no
+plan area at all.
+
+- `coverage` 94.0% — counts cloth above the mattress; a flank cannot be counted.
+- `fall_sides` 4/4 — counts how many flanks carry cloth, never how much, while the
+  shipped cover is **86 mm narrower than the mattress** (1734 vs 1820) and so cannot
+  reach either long flank at all.
+- `size_ok` — the shipping set needs **1.046x** to reach the mattress edge. That value is
+  literally one of the five the `survives` docstring lists as refused on 2026-08-17, the
+  same day the cut was demoted to a printed number. **The winner entered the frame in the
+  round that removed the cut which had been refusing it**, and the metric that replaced it
+  measures in the one space where the defect has no extent.
+- `p2_exit.duvet_fold` — the exit test's flagship crop is frozen in FRAME space
+  (declared from p3r2). Today it lands on **55.0% flat sheet, 40.8% mattress, 0.9%
+  duvet**, so the "duvet fold-structure energy beside delivered work" rung has been
+  scoring OUR MATTRESS against THEIR COMFORTER. Same at p2r41.
+- The render gate imports eleven modules and exactly one opens the picture
+  (`deliverable_check`), which scores the WHOLE FRAME. **No rung anywhere measures a
+  named object in the rendered image**, though `id_mask` and `value_probe` have existed
+  for weeks — `value_probe` is called from `rule_gate` zero times.
+- R10's ledger holds ONE row for the whole `bed` assembly, verdict `keep`, justified by
+  the drawing. That answers *should a bed be here*, never *is a 396 mm bare mattress box
+  a possible built object*.
+
+### The fold spectrum, which points the opposite way to where the lane was aiming
+
+Scale-matched (our duvet 686 px on screen, the anchor's 352) and contrast-normalised, in
+octave bands: **fine scale ours ~1.5x the delivered comforter, coarse scale ours 0.8x.**
+Delivered bedding is CALM with few large soft folds; ours is crumple-noise. The lane had
+been buying finer mesh and chasing more fold energy — the wrong direction on both axes.
+
+And the light is not the duvet's lever: shading range (p95-p05 of a 32 px blur) is
+**ours 45.5 against delivered 46.1**. Cycles models cloth as well as the benchmark does.
+The difference is the mesh's authored state, which is a property of the ASSET.
+
+### Dead ends, so no future round re-spends them
+
+Mesh fineness (D-094), scaling or shrinking anything (D-101), relighting the duvet
+(45.5 vs 46.1), adding fold energy (we already carry 1.5x too much at fine scale).
+
+### "the free shelf is exhausted" was false for the fourth time, and checkably so
+
+96 folders on the warehouse shelf, **20 whose own title names a BED**, and **11 of them —
+~660 MB — have never appeared in any bench run in the repo's history**, including
+`CAMA KING CASAL — COM ROUPA DE CAMA`, `CAMA CON EDREDON` and `QUARTO SUÍTE CASAL`. Two
+were already flattened for import and still never benched. This was not an oversight: the
+bench asks *"which cloth covers our mattress"*, so a whole bed is out of scope BY
+CONSTRUCTION. **The scope was the defect.**
+
+### The DR he ordered, and the source our own licence table had already ranked first
+
+`docs/LICENSING.md` has said all along: *"FurniMesh — cleanest — the ONLY source legal to
+script-fetch"*, with an explicit automation carve-out, and `furnimesh` is the first token
+in the permissive-licence set the code enforces. **We have never fetched one model from
+it.** There is no `furnimesh.py`; shelf provenance is 166 `trimble-gml` + 26
+`3dwarehouse` + 3 `blenderkit` + **0 furnimesh** — i.e. the whole shelf comes from the
+source the same table marks *"manual download only; ToS bans scraping; ~100-dl cap +
+bans"*. The 2026-08-01 lesson recurred with the roles reversed: last time the outside
+answer was 3D Warehouse and our files pointed at it from three directions; this time the
+outside answer named the source our own licence table had ranked #1.
+
+Verified live the same hour: FurniMesh is real, **9,778+ hand-curated free models in
+GLB/OBJ/SKP/BLEND**, commercial use, no attribution. **The DR's headline claim did not
+survive** — it said "267 bed models with pre-simulated fabric covers"; the site's own
+title is *"AI Image to 3D Model Generator for Furniture"* and no such number appears.
+Same failure the DISTILLATION-LEDGER already pinned on the 2026-07-01 sourcing DR. Every
+other price and count in that answer is unverified, including a BlenderKit figure ($108/yr)
+that contradicts our own file ($118.80).
+
+### The method finding that changes the plan more than the source list does
+
+Studios split bedding two ways and **we do neither half properly**: 80-90% download a
+pre-made bed and then REBUILD ITS MATERIALS from high-resolution fabric scans — *"they
+rarely use these beds straight out of the box"* — and 10-20% simulate in **Marvelous
+Designer** for hero shots and master suites, which is what this frame is. P2h is
+therefore not polish deferred to later; it is half of the standard method. Marvelous
+Designer had never been named once in this repo, while five failed cloth attempts were
+all hand-written Blender physics.
+
+### And the engine was never chosen
+
+He asked *"ทำไมต้องยึดติดกับ blender"*. `pipeline/CLAUDE.md` says in its own words that
+`build_room.py` as engine-of-record is **PROPOSED, "NOT yet owner-confirmed"**, to be
+carried to this file for confirmation — 35 days ago, and nothing here confirms it.
+**0 of 102 decision rows and 0 of 20 owner orders name an engine or a renderer.** Of the
+delivered frames whose filename still records a renderer: **Enscape 228, D5 2, everything
+else 0**. Our free shelf is 96/96 SketchUp. Every adapter defect paid for at p2r46-r48
+(one primitive per triangle, `glb_flatten`, the bounding-box fit) is a SketchUp→Blender
+translation cost. The choice that was never made had already shaped every option we put
+in front of him: ASK-001 and ASK-002 are Blender-native shelves top to bottom. Filed as
+ASK-025 rather than left in this paragraph. Counter-evidence recorded with it: the
+diagnosis points at the ASSET layer, not the renderer, and FurniMesh ships SKP and BLEND
+alike, so no source decision waits on the engine answer.
