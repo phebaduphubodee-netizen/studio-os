@@ -28,7 +28,7 @@ any public repo (`furniture_catalog.json` is gitignored; `raw/assets/*.skp` is g
 | Source | Client-deliverable? | Notes |
 |---|---|---|
 | **SketchUp 3D Warehouse** | ✅ ONLY as a Combined-Work scene | General Model License 1.3.2 "Combined Work" carve-out; 2.4 no standalone sell, 2.6 no aggregation. Manual download only (ToS 10.5.6 bans scraping; ~100-dl cap + bans). |
-| **FurniMesh** | ✅ cleanest | Explicit "free to use in commercial projects"; the ONLY source legal to script-fetch. |
+| **FurniMesh** | ✅ cleanest — **APPROVED AND NOT YET FETCHED** | Explicit "free to use in commercial projects"; the ONLY source legal to script-fetch. **No fetcher yet, and this cell says so because for weeks it did not**: on 2026-08-17 a paid Deep Research "found" this source while the table below had ranked it first the whole time and the shelf held 0 files from it. Verified live that day — 9,778+ curated free models in GLB/OBJ/SKP/BLEND, commercial use, no attribution. The library is a streamed React page with no JSON payload and no `/api/` route in its HTML, so a fetcher is a real piece of work rather than an afternoon; until it lands this row must keep saying NOT YET FETCHED. Record: `knowledge/_inbox/nlm-free-asset-sources/`. |
 | **Your own original models** / **CC0** | ✅ | No restriction. |
 | **BIMobject** (incl. Häfele on BIMobject) | ❌ personal-use only | EULA 4.4(b) personal/non-commercial; 4.7(f)(g) no transfer/incorporate-for-third-party. |
 | **CADENAS / PARTcommunity / 3Dfindit** (the Häfele CAD route) | ❌ personal-use only | §8 "personal uses only … passing to third parties is not permitted". |

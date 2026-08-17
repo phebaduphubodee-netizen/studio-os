@@ -578,6 +578,29 @@ def owner_channel(unit, decisions_path=None, note=None, decisions=None):
                  f"{len(SRC.paid_tiers(sdata))} paid tier(s) permitted, "
                  f"{len(SRC.open_asks(decisions, unit))} purchase(s) with him")
 
+        # READ OUR OWN FILES FIRST — his order of 2026-08-17, after the DR he paid
+        # for "found" a source `docs/LICENSING.md` had ranked FIRST for weeks while
+        # the shelf held zero files from it. Blocks on two things, both the
+        # builder's: an APPROVED source nothing reads and never says why, and a
+        # MONEY ask that never opened one of our own answers.
+        try:
+            import repo_first as RFST
+        except ImportError as e:  # pragma: no cover - import path accident
+            v.append(f"repo_first is not importable ({e}) — refusing to render past "
+                     f"a gate that cannot tell 'we searched' from 'we never opened "
+                     f"our own file'")
+            _note("repo_first", False, "module not importable")
+        else:
+            _lic = RFST.load_text(RFST.LICENSING_REL, REPO_ROOT)
+            _rasks = RFST.load_json(RFST.ASKS_REL, REPO_ROOT)
+            v += RFST.check(_lic, _rasks, REPO_ROOT)
+            _states = [st for _n, st, _e in RFST.report(_lic, REPO_ROOT)]
+            _note("repo_first", True,
+                  f"{_states.count('used')} approved source(s) read, "
+                  f"{_states.count('declared-unused')} declared unused, "
+                  f"{len(RFST.unread_registers(REPO_ROOT))} qa/ register(s) with "
+                  f"no reader")
+
         # WHAT I ASKED HIM — same split as the critic debt: this blocks on the
         # LEDGER BEING HONEST (an ask deleted, a withdrawal with no reason, a row
         # claiming to block him) and on nothing else. Twenty-one asks were dropped
