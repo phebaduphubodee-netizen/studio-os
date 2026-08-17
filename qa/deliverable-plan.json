@@ -2527,8 +2527,57 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "1ecb152c7bba2704c276a7a68de4a0300087138f",
+      "verdicts": {
+        "P2": "keep: the phase re-aim holds and this round strengthened it rather than changing it. Review 57 re-aimed P2 onto surface, objects-that-could-not-be-built, and garment hang, and said the phase must NOT spend another round on the bed. This round did not: it built an INSTRUMENT (bed_pixels, the first rung on this lane that measures a named object in the rendered picture) and spent one quick playblast, no full-fidelity frame, no geometry touched. What it changes is a premise the re-aim rested on, not the aim: the bed was called a procurement gap with no builder action behind it, and the flank measurement shows a 23x regression (11,694 px at p2r31e to 295,661 at p2r44) that no rung could see, plus a ratchet that now blocks the next one. The bed still needs an acquisition — his class order stands (D-104) — but it is no longer true that nothing on our side moves it: the acquisition now has an image-space acceptance test it never had, and 11 whole-bed folders have never been benched. P2 keeps its three named levers and gains a measured entry criterion for the bed lever whenever it reopens.",
+        "P4": "keep: untouched this round and its premise is undisturbed. Styling density is a completeness question measured against the coverage/existence ledgers, and nothing this round changed what counts as complete. It stays after P2 and before P3 per the 08-16 reordering (objects before light), which this round supports rather than challenges: bed_pixels is more evidence that geometry defects must be found before light and material can hide them.",
+        "P3": "keep: still correctly ordered LAST of the three build phases, and this round adds a reason. The 08-16 reordering put objects before light because light solved over wrong geometry buries the error in a table nobody reads. A 396 mm bare mattress flank across the whole near side is exactly that class of geometry error, and it survived 49 rounds partly because materials and a directional key were already on the frame making every mass look like something. Do light after the objects are real, unchanged.",
+        "P5": "keep: blocked, and blocked on the right thing. Judgement is gated on the phases above it producing a frame worth judging, and this round did not change that. It did move one of its inputs: the exit test now has a rung that can say the bed is unmade in the space the judges use, so a P5 panel is less likely to spend its budget re-filing a defect an instrument can state in pixels. No change to its conditions.",
+        "DRW": "keep: done and standing, and it ran clean at session open (21 drawn, 21 matched, 0 unresolved). Nothing this round touched the drawing-to-build reconciliation. Noting for the record that bed_pixels is downstream of DRW, not a substitute for it: DRW asks whether what the client drew got built, bed_pixels asks whether what got built reads as made."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "854b5c12bd25df570574a050e06f745b57a6cb1c",
+  "last_review_commit": "1ecb152c7bba2704c276a7a68de4a0300087138f",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
