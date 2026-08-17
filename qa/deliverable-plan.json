@@ -2376,8 +2376,55 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "d9691d0b1745d67be1bea86eb243becb77828c73",
+      "verdicts": {
+        "P2": "keep: the phase is doing exactly what it was re-aimed to do and the evidence is now three-channel. Its stated lever was measured this round and the finding is a PROCUREMENT fact, not a phase error: 0 of 22 free candidates make this bed, and the best of them is the one already in the frame. A blind critic, three sighted anchor readers and a generated variant filed the same defect without seeing one another. Two of the three levers the phase names closed (P2r-15 duvet share, P2r-16 the R10 object question, P2r-17 the fineness cut) and three successors opened with the measurement that justifies each (P2r-18 the duvet placement or ASK-002, P2r-19 the downlights hanging 60 mm below their own ceiling, P2r-20 the garment hang orientation). What would CHANGE this verdict is one thing only: if P2r-18 finds the acquired duvet cannot be staged to cover the plan, then the phase has no free lever left and it should stop and say so rather than round 50.",
+        "P4": "keep: and this round strengthened it from an unexpected direction. P4 is styling DENSITY justified as completeness rather than realism, and the gen-diff variant — the first automatic run of his own protocol — filed a full wardrobe against our ~70 percent empty one without being asked, while C2 filed near-zero styling density as its item 7 and C3 filed the same thing as its item 2. Three channels, one item, and it is P4s. No change to the phase; the evidence for it is now stronger than when it was written.",
+        "P3": "keep: unchanged, and the order behind it is his. Both critics ranked light in their top items this round (C2 items 2 and 3, C3 item 5) and the correct answer is still to hold — his 2026-08-08 order puts every object present BEFORE light, because light solved over missing geometry buries the geometry error in an invisible table. That is exactly the trap this round would have walked into: the frame is short a made bed, a bench with a load path and twelve correctly-seated downlights, and lighting it now would tune around all three.",
+        "P5": "keep: blocked, and the reason is unchanged and correct. P5 is judgement and it cannot open until the frame is a frame worth judging. Nothing this round changes its shape. Noting one thing for whoever opens it: the sighted-reader method built for P2r-15 is reusable machinery for P5 — three fresh-context local readers, unlabelled frames including ours, one written question — and it produced a decisive answer in one pass where eight blind RANK sheets went unanswered.",
+        "DRW": "keep: done and standing, ran clean. Sheet-recon 21 drawn / 21 matched / 0 unresolved and the spec-ratchet passed the canonical spec edit this round made (the made-bed gap block carries no new mass). The programs printed at session open as designed; nothing asks for a change."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "6202ee011b9b07938edc96fd6b70571dbdc9fe9c",
+  "last_review_commit": "d9691d0b1745d67be1bea86eb243becb77828c73",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
