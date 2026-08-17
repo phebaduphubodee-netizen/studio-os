@@ -469,11 +469,16 @@ ROOM_LANE_NOT_APPLICABLE = (
                    "no previous round to diff against"),
     ("R9 contacts", "the room grammar declares no `contacts`; this lane's "
                     "placement derivation runs in placement_gate from build_room"),
-    ("R11 pixels", "STRUCTURALLY INAPPLICABLE — pixel_check measures a feature in "
-                   "our frame AND in a reproduction TARGET, and DELIV-001 is the "
-                   "owner's own client bedroom, so there is no target and never "
-                   "will be. deliverable_check is the rung that scores this lane, "
-                   "and it needs no target at all"),
+    ("R11 pixels", "pixel_check specifically is INAPPLICABLE — it measures a "
+                   "feature in our frame AND in a reproduction TARGET, and "
+                   "DELIV-001 is the owner's own client bedroom, so there is no "
+                   "target and never will be. R11 ITSELF IS NOT INAPPLICABLE AND "
+                   "THE FIRST WORDING SAID IT WAS: for 49 rounds this lane read "
+                   "that line as 'no rung here opens the picture', which is "
+                   "precisely the state R11 was written to end. Two rungs now do, "
+                   "and neither needs a target — deliverable_check scores the "
+                   "whole frame, and bed_pixels measures a NAMED OBJECT in it "
+                   "(spawned from build_room after the render, per bed_exit_policy)"),
 )
 
 
@@ -730,6 +735,52 @@ def pixel_exit_policy(returncode, quick):
                         "reference's size.")
     return "stop", ("R11 PIXEL GATE FAILED: the frame does not honour a feature "
                     "its own spec claims.")
+
+
+def bed_exit_policy(returncode, quick):
+    """PURE. What a build must DO with bed_pixels' exit code — ("ok"|"note"|
+    "stop", message). Same contract and same three codes as `pixel_exit_policy`.
+
+    WHAT EXIT 1 MEANS HERE, and it is narrower than "the bed is wrong". The
+    absolute defect — how much of our own mattress the frame shows — is a
+    PRINTED line, never a violation, because it is true of all 15 masked frames
+    in this lane's history and a rung that is red on every render is a rung
+    somebody switches off (R13). Exit 1 is raised by the two things that are the
+    BUILDER's side: the number RISING against `qa/bed-pixels-baseline.json`, and
+    the rung going BLIND — an object lying over the mattress wearing a material
+    no role claims, which is the next object an allowlist would have exempted
+    (R9b).
+
+    The rise is not hypothetical. Measured over this lane's own frames, bare
+    mattress on the flank went 11,694 px at p2r31e to 295,661 at p2r44 — 23x —
+    across the rounds that replaced hand-built cloth with a bought set, while
+    `coverage` read 94.0% and `fall_sides` read 4/4 the whole way, because both
+    are computed in PLAN and a vertical flank has zero plan area. Nothing in the
+    repo could see it. This is the rung that would have stopped it, one round
+    after it started.
+    """
+    if returncode == 0:
+        return "ok", ""
+    if returncode == 2:
+        if quick:
+            return "note", ("bed_pixels COULD NOT RUN (exit 2): this is an R5 "
+                            "playblast and the id mask is not written for one by "
+                            "default. Only a full-fidelity frame closes this rung.")
+        return "stop", ("bed_pixels COULD NOT RUN (exit 2) on a full-fidelity "
+                        "frame — the rung that measures a NAMED OBJECT in the "
+                        "picture did not measure it. `could not look` does not "
+                        "finish like `looked and it was fine`.")
+    if quick:
+        return "note", ("bed_pixels reports a violation on a playblast; the mask "
+                        "at half resolution is not the baseline's camera, so this "
+                        "is informative and does not close or fail a gate (R5).")
+    return "stop", ("BED PIXELS: our own mattress is showing MORE than the "
+                    "recorded baseline, or an object lying over it wears a "
+                    "material no role claims. The bed got worse in the space "
+                    "every reader, every critic and the owner judge in, and no "
+                    "plan-space coverage number can see it. Lower the number, or "
+                    "re-baseline deliberately in qa/bed-pixels-baseline.json and "
+                    "say in qa/open-decisions.json why the bed may get worse.")
 
 
 # The last line `deliverable_check` prints when it ran to the end. Defined HERE

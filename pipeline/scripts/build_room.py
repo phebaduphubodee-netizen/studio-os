@@ -473,6 +473,44 @@ def _score_deliverable(name, quick=False, frame=True):
         print("LADDER -- NOT RUN: no id mask beside this render (the bed's tonal "
               "structure was not measured on this frame)")
 
+    # ---- BED PIXELS (p2r50): THE FIRST RUNG ON THIS LANE THAT MEASURES A NAMED
+    # OBJECT IN THE RENDERED PICTURE. Everything above either scores the WHOLE
+    # frame (deliverable_check) or reads the built scene's AABBs; the tonal ladder
+    # is per-object but measures VALUE, not extent. So for 49 rounds the question
+    # "how much of our own mattress is showing" had no reader at all, and the
+    # answer on the frame that closed p2r49 was 270,691 px — 44.0% of the visible
+    # sleeping surface, and the single largest thing in the bed.
+    #
+    # Spawned out of process for the same LAYER reason as every pixel rung here:
+    # it needs PIL and numpy, which Blender's bundled Python does not have, and
+    # reading pixels through bpy inside a gate module drags layer 1 into layer 2
+    # (pipeline/CLAUDE.md). The verdict is CARRIED, not acted on here — same as
+    # the ladder's, and for the reason that one records: a gate that exits the
+    # instant it fires silences every instrument after it.
+    _bed_stop = None
+    if frame and os.path.isfile(_idm) and os.path.isfile(_idj) \
+            and os.path.isfile(_beauty):
+        _br = subprocess.run(
+            [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "bed_pixels.py"), _beauty, _idm, _idj,
+             "--scene", dump_path],
+            capture_output=True, text=True, encoding="utf-8",
+            errors="replace", env=env)
+        for ln in (_br.stdout or "").splitlines():
+            print(f"BEDPX {ln}")
+        _act, _msg = _RG.bed_exit_policy(_br.returncode, quick)
+        if _act == "note":
+            print("BEDPX -- " + _msg)
+        elif _act == "stop":
+            for ln in (_br.stderr or "").splitlines()[-4:]:
+                print(f"BEDPX !! {ln}")
+            _bed_stop = _msg
+    elif frame and not quick:
+        _bed_stop = ("BED PIXELS NOT RUN — no id mask beside a full-fidelity "
+                     "render, so nothing measured how much of our own mattress "
+                     "the frame shows.")
+        print("BEDPX !! " + _bed_stop)
+
     # ---- THE P2 EXIT HARNESS, WIRED (p2r35). `p2_exit.py` holds the rungs that
     # decide whether the phase can close — and it had ZERO consumers: no build, no
     # gate, no module in this repo ever invoked it, so its verdicts existed only on
@@ -512,6 +550,22 @@ def _score_deliverable(name, quick=False, frame=True):
     # DESIGN's own decision about this bed, signed 2026-07-23, and a frame that
     # does not show it is not a worse frame — it is a different design from the
     # one on file.
+    # BED PIXELS' STOP, taken beside the ladder's and for the same reason: every
+    # other instrument has now spoken. It is a HARD STOP because what raises it is
+    # never a matter of degree — either the mattress is showing MORE than the
+    # recorded baseline, or an object over it wears a material no role claims.
+    if _bed_stop and frame and not quick:
+        print(f"BUILD FAILED: {_bed_stop}")
+        # AND THE LADDER'S REASON TOO, if it also fired. These are two separate
+        # `os._exit(1)` blocks and only the first can speak, so a round where both
+        # broke would have been told about one of them — the same "a gate that
+        # fires silences the gates after it" defect the ladder's own comment
+        # records, reproduced one block above it.
+        if _ladder_stop:
+            print(f"AND ALSO: {_ladder_stop}")
+        sys.stdout.flush()
+        os._exit(1)
+
     if _ladder_stop and frame and not quick:
         print(f"BUILD FAILED: {_ladder_stop}. The ladder is "
               f"projects/PRJ-2026-002_c001-house/03_layout/"

@@ -1622,6 +1622,37 @@
    "reverse_by": "คืน `_recessed_trim(..., f[\"z\"] * MM)` ที่ทั้งสอง call site ใน build_room.py แล้วหน้ากากกลับไปลอยใต้ฝ้า 60 มม. · ถ้าวันหนึ่งห้องนี้มี soffit หลุมจริงที่ 2740 ต้องสร้างฝ้านั้นก่อน แล้วส่งระนาบของมันมาแทน h_m",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-103",
+   "unit": "DELIV-001",
+   "subject": "bed-pixels-rung",
+   "decided_round": 50,
+   "decided_date": "2026-08-17",
+   "decided_by": "builder",
+   "question": "เลนนี้ไม่มี rung ไหนวัด 'วัตถุที่ระบุชื่อ' ในภาพที่ render ออกมาเลย — จะตั้งเกณฑ์ที่นอนโผล่เป็น cut ตายตัว หรือเป็นอะไร",
+   "in_effect": "**`bed_pixels.py` เป็น rung แรกของเลนนี้ที่วัดวัตถุที่ระบุชื่อในภาพจริง** (id-mask + scene dump, spawn นอก process จาก build_room) · **role มาจาก MATERIAL ไม่ใช่ชื่อ object** — สำรวจ dump ทั้ง 96 ไฟล์แล้ว object ของเตียงใส่ material 6 ตัวเท่านั้นตลอดประวัติ p2r2→p2r50 · **cut ตายตัวถูกปฏิเสธด้วย negative control ของมันเอง**: ยิงย้อนหลัง 15 เฟรมที่มี mask ตกทั้ง 15 — แยกอะไรไม่ได้เลย เพราะ flank เปลือยอยู่ในทุกเฟรมที่สตูดิโอนี้เคยทำ · **สิ่งที่ block คือ RATCHET** (ตัวเลขสูงขึ้นจาก `qa/bed-pixels-baseline.json`) กับ **rung ตาบอด** (ของทับที่นอนใส่ material ที่ไม่มี role) · ตัวเลขสัมบูรณ์ **พิมพ์ทุกครั้งลง render path** และห้ามพิมพ์เหมือนผ่าน · วัดได้ p2r49: ที่นอนโผล่ 270,691 px = 44.0% ของพื้นนอน, **254,849 px อยู่บนหน้าข้างแนวตั้ง**",
+   "where": "pipeline/scripts/bed_pixels.py, pipeline/scripts/test_bed_pixels.py, pipeline/scripts/rule_gate.py, pipeline/scripts/build_room.py, qa/bed-pixels-baseline.json",
+   "because": "R11 — ทุกกลไกต้องเปิดดูรูปจริง · เกตนี้ import 11 module มีตัวเดียวที่เปิดภาพ และตัวนั้นให้คะแนน**ทั้งเฟรม** ไม่มีอะไรวัดวัตถุตัวใดตัวหนึ่งเลย ทั้งที่ id_mask กับ value_probe มีมาหลายสัปดาห์ · R13 — เครื่องที่แดงทุกรอบตั้งแต่วันแรกจะถูกปิดทิ้ง จึงแยก 'พิมพ์' ออกจาก 'บล็อก' · R9b — กฎที่ระบุชื่อ object ที่มันคุม จะยกเว้นตัวถัดไปเสมอ role จึงอ่านจาก material และของที่ทับที่นอนแล้วไม่มี role คือ violation ไม่ใช่ข้อยกเว้น",
+   "reverse_by": "ลบบล็อก BEDPX ใน `_score_deliverable` ของ build_room.py และ `bed_exit_policy` ใน rule_gate.py แล้ว rung หายไปทั้งตัว · ถ้าจะเก็บไว้แต่ไม่ให้ block: ทำให้ `bed_exit_policy` คืน 'note' ที่ทุก returncode",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-104",
+   "unit": "DELIV-001",
+   "subject": "bed-cloth-acquired-class-order",
+   "decided_round": 50,
+   "decided_date": "2026-08-17",
+   "decided_by": "builder",
+   "question": "การวัดพบว่าผ้าที่ปั้นเองคลุมที่นอนดีกว่าชุดที่ซื้อมา 23 เท่า (flank 11,694 px ที่ p2r31e vs 254,849 ที่ p2r49) — หลักฐานนี้เปลี่ยนสถานะของคำสั่งที่ยืนอยู่หรือไม่",
+   "in_effect": "**ไม่กลับ และห้ามอ่านแบบนั้น** · คำสั่ง 2026-08-14 และ 2026-08-15 เป็นคำสั่งระดับ CLASS ว่าผ้าเตียงต้อง ACQUIRED · R13 ถูกเขียนขึ้นเพราะ builder เคยอ่านคำตัดสินระดับ INSTANCE ว่าเป็นการยกเลิกคำสั่งระดับ class มาแล้วครั้งหนึ่ง (D-072) · **สิ่งที่ p2r31e พิสูจน์คือเรื่องที่แคบกว่าและมีประโยชน์กว่า**: core ใกล้ศูนย์ **ทำได้จริง** บนเตียงนี้ กล้องตัวนี้ ห้องนี้ ดังนั้นเป้าหมายเป็นคุณสมบัติของ ASSET ไม่ใช่ของเฟรม · **ผลจริงคือการซื้อมีเกณฑ์รับที่ไม่เคยมี**: ชุดที่ซื้อต้องกด `core_flank` ลง ซึ่ง bench เดิมมองไม่เห็นเพราะวัดใน plan ทั้งหมด · และทำให้ 11 โฟลเดอร์ 'เตียงทั้งหลัง' ที่ไม่เคย bench น่าสนใจขึ้นมาก — เตียงทั้งหลังมาพร้อมที่นอนของมันเอง กล่องแดงของเราจึงออกจากเฟรมไปเลย ไม่ใช่ถูกคลุม",
+   "where": "qa/bed-pixels-baseline.json, docs/strategy.md, qa/owner-orders.json",
+   "because": "R13 — คำตัดสินระดับ instance ทำได้แค่จำกัดว่าอะไรส่งได้ ไม่เคยยกเลิกคำสั่งระดับ class · คำตอบของ 'ตัวที่ซื้อมาตัวนี้เละ' คือการซื้อตัวอื่น ไม่ใช่การกลับไปปั้นเอง · เขียนลงทะเบียนเพราะกับดักนี้เคยกินเลนนี้ไปสี่รอบมาแล้ว และการวัดรอบนี้ชี้ไปทางที่ล่อให้พลาดซ้ำพอดี · คำสั่งที่ปกครองแถวนี้คือ ORD-2026-08-14-bed-cloth-is-acquired (class); ORD-2026-08-15-remove-the-hand-built-cloth เป็นคำสั่งเดียวกันในทางปฏิบัติและไม่ขัดกัน",
+   "reverse_by": "ถ้าพี่สั่งกลับให้ปั้นผ้าเตียงเอง แถวนี้ต้องได้ `owner_override` เป็นคำพูดของพี่ แล้วแถวใน qa/owner-orders.json ที่ถือคำสั่ง ACQUIRED ต้องถูกปิดพร้อมกัน",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-14-bed-cloth-is-acquired"
   }
  ]
 }

@@ -817,6 +817,32 @@ def test_a_broken_claim_stops_either_way():
     assert RG.pixel_exit_policy(1, False)[0] == "stop"
 
 
+# --- bed_pixels' policy: the same three codes, and one narrower meaning for 1 ---
+# The absolute defect is a printed line rather than a violation (it is true of
+# all 15 masked frames this lane has), so exit 1 here means the number ROSE or
+# the rung went BLIND — the builder's side, not the bed's outcome.
+
+def test_a_clean_bed_run_is_ok():
+    assert RG.bed_exit_policy(0, False) == ("ok", "")
+
+
+def test_bed_could_not_run_STOPS_a_full_fidelity_frame():
+    action, msg = RG.bed_exit_policy(2, False)
+    assert action == "stop" and "COULD NOT RUN" in msg
+
+
+def test_bed_could_not_run_is_only_a_note_on_a_playblast():
+    action, msg = RG.bed_exit_policy(2, True)
+    assert action == "note" and "playblast" in msg
+
+
+def test_a_regression_stops_a_deliverable_and_only_notes_a_playblast():
+    """The playblast half is not leniency: at half resolution the mask is not the
+    baseline's camera, so there is no comparison to fail."""
+    assert RG.bed_exit_policy(1, False)[0] == "stop"
+    assert RG.bed_exit_policy(1, True)[0] == "note"
+
+
 # --- P0f: audit_craft returned a bare [] for "clean" AND for "never measured" ---
 # R11's own sentence, applied to an advisory rung: "could not look" must never
 # print like "looked and it was fine". The docstring also claimed the roster

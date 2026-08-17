@@ -1,0 +1,63 @@
+{
+ "_what": "The ratchet ceiling for bed_pixels: how much of our own mattress the frame is allowed to show before the build fails. NOT the target - see best_on_record and target below.",
+ "_why_a_ratchet": "A flat cut at the delivered value fails 15 of 15 masked frames in this lane history, because the bare flank is in every frame this studio has made. A rung red on every render gets switched off (R13). So the absolute number PRINTS on every run into the render path and what BLOCKS is the number rising - which is the half nothing caught when it rose 23x between p2r31e and p2r44 while coverage read 94.0% and fall_sides read 4/4.",
+ "_how_to_lower_it": "A round that covers more of the mattress re-runs bed_pixels and writes the lower numbers here, naming the round. It may only ever go DOWN. Raising it is a decision that needs a row in qa/open-decisions.json saying why the bed is allowed to get worse.",
+ "frame": "room_bedroom_suite_eye_p2r49",
+ "round": "p2r49",
+ "date": "2026-08-17",
+ "camera": {
+  "res": [
+   2400,
+   1800,
+   100
+  ],
+  "lens": 24.0,
+  "shift": [
+   0.0,
+   -0.08
+  ],
+  "matrix": [
+   [
+    0.622001,
+    -0.0,
+    -0.783016,
+    1.4
+   ],
+   [
+    -0.783016,
+    -0.0,
+    -0.622001,
+    -0.12
+   ],
+   [
+    0.0,
+    1.0,
+    -0.0,
+    1.15
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ]
+ },
+ "core_px": 270691,
+ "core_flank": 254849,
+ "core_top": 15842,
+ "core_share": 0.4398,
+ "top_plane_px": 240334,
+ "best_on_record": {
+  "frame": "room_bedroom_suite_eye_p2r31e",
+  "core_px": 11694,
+  "core_flank": 11694,
+  "core_top": 0,
+  "note": "the hand-built cloth stack covered the mattress 23x better than the bought set does. This is NOT an instruction to revert - his standing order is that the bed cloth is ACQUIRED (R13, class order, twice) - it is the proof that core near zero is reachable on this bed, this camera and this room, so the target is not a property of the frame."
+ },
+ "target": {
+  "core_flank": 0,
+  "authority": "_private/deliv-001/flank-panel-2026-08-17/readings.json",
+  "note": "three blind sighted readers over 7 delivered frames: 16 of 18 legible readings none, 2 sliver, 0 above sliver; ours most 3 for 3. The panel answers on a word scale and delivered frames carry no object mask, so no delivered flank can be counted in pixels - this target is a direction with a fact behind it, not a measured px value."
+ }
+}
