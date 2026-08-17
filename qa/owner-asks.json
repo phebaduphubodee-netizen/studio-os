@@ -2,7 +2,7 @@
   "_law": "WHAT I ASKED HIM — the other direction of the same channel `qa/owner-orders.json` holds. An ask here has three states and no fourth: OPEN, ANSWERED (his words + the date), or WITHDRAWN (with a reason). It may not simply stop being asked, which is what happened to every row below.",
   "_why_it_exists": "Measured 2026-08-16, by fan-out over the gate artifacts, the plan, the decision register and docs/: TWENTY-ONE asks were routed to the owner and then dropped. The repo's own audit had already found one of them and written the sentence in these words — 'It was not answered and not withdrawn; it stopped being asked' (docs/orders-vs-frame-audit-2026-08-15.md:81) — and then that audit was a DOCUMENT, so nothing consumed it and four more rounds dropped four more asks. The sharpest instances: `owner_questions_carried_forward` in scene-graph.json has ZERO readers in the whole repo; `floor2-owner-decision-queue.md` exists solely to hold five owner questions and has not been opened in 36 days; the r19 pair was abbreviated to the bare tokens 'Q1 · Q2' across eight gates until the questions themselves were no longer written down anywhere; and the blind RANK sheet was REMOVED as a finish-line condition at r34 precisely because it had gone unanswered — the one rung that looked at the picture, deleted for not being answered, four rounds before he said the frame was nowhere near done.",
   "_the_rule": "NOTHING HERE BLOCKS ANYTHING — R3, his order of 2026-08-08: 'เอาผมออกจาก gate เลย ไม่ต้องรอผม'. He reads RENDERS, not documents, so this ledger prints in the render path and at every session open, with each ask's AGE IN DAYS. Age is the metric because the failure mode is not refusal, it is silence on our side. If an ask stops being worth asking, the builder WITHDRAWS it with a reason and the row stays.",
-  "_count_floor": 24,
+  "_count_floor": 27,
   "asks": [
     {
       "id": "ASK-001",
@@ -223,6 +223,33 @@
       "status": "open",
       "money": "yes — ฿0 ถ้าเจอฟรี, $5-15/โมเดลที่ 3dsky",
       "note": "D-069 ยื่นเป็น SOURCING GAP เมื่อ 08-16 จากการค้นชั้นฟรีล้วน — rung ที่สร้างรอบนี้จับได้และเปลี่ยนเป็น procurement ask ที่มีราคา · กรรมการ blind ยืนยันด้วยตาโดยไม่เห็นแบบเลย"
+    },
+    {
+      "id": "ASK-025",
+      "ask": "**engine ของสตูดิโอ — Blender ใช่คำตอบมั้ย** พี่ถามเอง 2026-08-17: \"ทำไมต้องยึดติดกับ blender โปรแกรมอื่นเราใช้ไม่ได้หรอ\" · คำถามนี้ไม่เคยถูกตัดสิน: `pipeline/CLAUDE.md` เขียนไว้เองว่า engine-of-record = build_room.py เป็นแค่ PROPOSED (2026-07-13) และ \"NOT yet owner-confirmed, so do not cite it as settled\" ให้เอาไปยืนยันที่ docs/strategy.md ก่อน — ผ่านมา 35 วัน docs/ ไม่มีบรรทัดไหนยืนยัน · **ทะเบียนทั้งหมดยืนยันว่าไม่เคยตัดสิน**: decision row 102 แถว = 0 แถวพูดถึง engine หรือ renderer · owner order 20 ข้อ = 0 ข้อ",
+      "first_routed": "2026-08-17",
+      "where": "pipeline/CLAUDE.md, docs/strategy.md",
+      "status": "open",
+      "money": "yes — Enscape ต้องมี host CAD (SketchUp Pro/Revit/Rhino) จึงเป็นค่า subscription สองชั้น ราคายังไม่ verify (อยู่ใน DR 2026-08-17)",
+      "note": "**หลักฐานที่ทำให้คำถามนี้มีน้ำหนัก วัดเมื่อ 2026-08-17**: (1) งานส่งจริงที่เราไล่ตาม — ในภาพ 1,787 ใบใต้ _private/discord ที่ชื่อไฟล์ยังบอกว่าเรนเดอร์ด้วยอะไร **Enscape 228 · D5 2 · อย่างอื่น 0** (99.1% Enscape) · (2) ของฟรีที่เราใช้ **96/96 โฟลเดอร์เป็น SketchUp 3D Warehouse** — เราใช้ของ SketchUp โดยไม่ใช้ SketchUp · (3) ภาษีอะแดปเตอร์ที่จ่ายไปทั้งหมดเมื่อ p2r46-r48 เป็นค่าแปลง SketchUp→Blender ล้วน ๆ: exporter เขียน 1 primitive/สามเหลี่ยม ทำให้ mesh_density อ่านผ้า 133,108 tri เป็น 1 tri · import 297,640 primitive กินเวลาเป็นชั่วโมงจนต้องเขียน glb_flatten.py (360MB→35.5MB) · fit ต้องแก้เพราะ 6 ใน 9 ชุดถูกปฏิเสธด้วยความสูงของเตียงที่แถมมาในไฟล์ · (4) และ **ทุกตัวเลือกที่ผมเคยเอาไปให้พี่ (ASK-001/ASK-002) เป็นชั้น asset ที่ต่อเข้า Blender ได้ทั้งนั้น** — ทางเลือกที่ไม่เคยถูกตัดสิน กำหนดทางเลือกที่พี่ได้เห็นไปแล้วเงียบ ๆ · **สิ่งที่ค้านการย้าย และผมวัดเอง**: gradient แสงบนผ้านวมเรา 45.5 vs งานส่งจริง 46.1 — Cycles โมเดลแสงบนผ้าได้เท่า Enscape ความต่างอยู่ที่โครงสร้างพับของ mesh (ละเอียด 1.5x / หยาบ 0.8x) ซึ่งเป็นสมบัติของ ASSET ไม่ใช่ของ RENDERER · และ pipeline ทั้งหมด (build_room 537KB, placement solver, sheet_recon, id_mask, gate 11 โมดูล, 3,191 tests) รัน headless ใน Blender — Enscape ไม่มี headless API (ข้อนี้ยังไม่ verify ใน repo, อยู่ในคำถาม DR) · **สามชั้นที่แยกกันได้**: engine ที่สร้างห้องจากแบบ / คลัง asset + ฟอร์แมตต้นทาง / renderer — การวินิจฉัยเตียง 2026-08-17 ชี้ไปที่ **ชั้นกลางอย่างเดียว** ซึ่งเปลี่ยนได้ฟรี และไม่ต้องรอคำตอบข้อนี้"
+    },
+    {
+      "id": "ASK-026",
+      "ask": "**Marvelous Designer สำหรับเตียง hero — เอามั้ย** DR 2026-08-17 ตอบว่า สตูดิโอจริงแบ่งงานเครื่องนอนเป็นสองทาง: 80-90% โหลดเตียงสำเร็จมาแล้ว**สร้างวัสดุใหม่เอง** (ทิ้ง texture ที่ติดมา ทำ PBR จาก fabric scan) · 10-20% **sim เองใน Marvelous Designer** สำหรับ hero shot / master suite / ภาพระยะใกล้ — ซึ่งเฟรมนี้เข้าข่ายอย่างหลังตามคำอธิบายของ DR เอง · **MD ไม่เคยถูกเอ่ยถึงในทั้ง repo มาก่อน** ห้ารอบที่เราล้มเรื่องผ้าเป็นการเขียน physics ใน Blender ด้วยมือทั้งหมด ซึ่งไม่ใช่วิธีที่วงการเขาทำ",
+      "first_routed": "2026-08-17",
+      "where": "knowledge/_inbox/nlm-free-asset-sources/2026-08-17-free-asset-sources.md, qa/owner-orders.json",
+      "status": "open",
+      "money": "yes — ราคายังไม่ verify (DR ไม่ได้ให้ และผมไม่เดา)",
+      "note": "**ทำไมต้องเป็นคำสั่งพี่ ไม่ใช่คำตัดสินผม**: พี่สั่ง 2026-08-14 และย้ำ 08-15 ว่า ผ้าเตียงต้องเป็นของที่ซื้อมา · D-072 เคยกลับคำสั่งนั้นด้วยตัวเองและกลายเป็นที่มาของ R13 ผมจะไม่ทำซ้ำ · **แต่ MD ไม่ใช่การกลับคำสั่งเสียทีเดียว** — มันคือการซื้อ *เครื่องมือ* ไม่ใช่การกลับไปปั้นผ้าด้วยมือ และ DR บอกว่าเป็นวิธีมาตรฐานของ hero shot · ถ้าพี่เอา ผมลงเป็นแถวใน owner-orders.json ก่อนแตะโค้ด · ถ้าพี่ไม่เอา เส้นทางเหลือ FurniMesh + 3dsky free tier + 11 ไฟล์เตียงบนชั้นที่ยังไม่เคย bench"
+    },
+    {
+      "id": "ASK-027",
+      "ask": "**ลิงก์ 3DSKY ที่แชร์ใน Discord ของพี่ — ใช้ไม่ได้ตามใบอนุญาต ยืนยันมั้ย** `knowledge/_inbox/discord/MY-DATA-PEAT/model-for-sale/` เก็บลิงก์ Dropbox ของชุด **3DSKY FURNITURE 2024 / 2022 / PROP / LIGHTING / TREE** ที่โพสต์ไว้ในเซิร์ฟเวอร์ของพี่เอง · นั่นคือโมเดลจากคลังเสียเงินที่ถูกแจกต่อ",
+      "first_routed": "2026-08-17",
+      "where": "docs/LICENSING.md, knowledge/_inbox/discord/MY-DATA-PEAT/model-for-sale",
+      "status": "open",
+      "money": "no — แต่เป็นความเสี่ยงทางธุรกิจ",
+      "note": "**กฎในไฟล์ของเราเองตอบไว้แล้ว** (`docs/LICENSING.md`): \"the personal-use restriction **travels with the file** — her sharing it does not launder the license\" · ผมจึง **ไม่เอามาใช้เป็นแหล่ง** และแจ้งไว้เป็นแถวแทนที่จะเก็บเงียบ · สิ่งที่จะเปลี่ยนคำตอบนี้ได้มีอย่างเดียว: พี่ถือ license 3dsky ของตัวเอง — และถ้าถืออยู่แล้ว ASK-001/ASK-002 ต้องแก้ เพราะมันตั้งราคาไว้เหมือนเรายังไม่มี · หมายเหตุ: DR บอกว่า 3dsky มี **free tier 3 โหลด/24 ชม.** และหมวด Bed มี 15,167 ตัว (ยังไม่ verify) ถ้าจริง เราเข้าถึงคลังเดียวกันได้ที่ ฿0 วันละ 3 ตัว โดยไม่ต้องแตะลิงก์พวกนี้เลย"
     }
   ]
 }
