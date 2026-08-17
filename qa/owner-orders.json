@@ -345,7 +345,11 @@
           "pattern": "\"cloth_set\"",
           "why": "An acquire order with no named asset is an order nobody carried out."
         }
-      ]
+      ],
+      "status": "not-obeyed",
+      "since": "2026-08-15",
+      "not_obeyed_because": "THE FRAME HAS NO BOUGHT COVER ON IT, and until p2r46 this row read obeyed anyway. The spec named 0afd4c6f, so the assertion ('an acquire order with no named asset is an order nobody carried out') was satisfied by a set BOTH of our own rungs refuse: on the built scene it drapes 1 of 4 flanks against a cut of 2, and its median world edge is 43.5 mm against a 10.3 mm fineness control — a control that is itself a bought cloth from the SAME free tier, accepted in the same frame. Naming an asset the build must refuse is the declaration-vs-pixels split this ledger exists to catch, one level in: the assertion asked whether a set was NAMED, never whether it SURVIVES. p2r46 removed the name, signed the gap as data the build reads, and the row now says what the picture says. The prohibition half of his order IS kept — no hand-simulated cloth reaches the frame, and the fallback is refused by name — but he did not ask only for the hand-built cloth to go; he asked to be shown the acquired model in its place.",
+      "restart_by": "Keep auditioning the FREE tier, which p2r46 proved is not exhausted: 68 cached models was the whole shelf, of which ten ever staged as bed cloth. Concretely — run `warehouse.py sweep` with Portuguese bedding terms ('roupa de cama king', 'colcha', 'edredom'; they outperform every English term on this corpus), screen the fetches with `mesh_density.py --control-mm 10.3` (milliseconds per file), and bench only what screens under the control. The bar a candidate must clear, stated so a search can use it: about 75,000 triangles IN ONE SHEET for a ~2 m cover. NOT `blocked_by`: the money route (ASK-002) is open but is not what is holding this, and filing it as his would be the builder's own decision to disobey wearing his name."
     },
     {
       "id": "ORD-2026-08-15-loose-furniture-is-acquired",

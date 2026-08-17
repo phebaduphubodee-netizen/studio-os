@@ -58,6 +58,41 @@ def edge_mm(o):
     return ls[len(ls) // 2] * 1000.0
 
 
+def control_edges(objs=None, exclude_prefix="bed__cloth__acq"):
+    """{object name: median world edge mm} for the acquired soft goods ALREADY
+    ACCEPTED in this frame — the control `bedcloth_rules.fineness` compares a
+    candidate cover against.
+
+    IT LIVES HERE FOR THE REASON THIS WHOLE MODULE EXISTS. Ten lines of it sat
+    inline in `_place_bed_cloth` from p2r45, which made the fineness cut a rule
+    only the BUILD could ask: the bench measured every candidate's edge and could
+    only RANK on it, because it had no control. So the audition went on nominating
+    sets the build was then obliged to refuse — 0afd4c6f passed all three audition
+    cuts and died at the build on a fourth the audition could not see. That is the
+    module docstring's own defect ("a rule spread across the callers is a rule with
+    one exemption per caller") reappearing in the rule written to fix it.
+
+    Membership comes from `value_ladder.ACQUIRED_AS` — the signed register of which
+    rungs are BOUGHT cloth — never from a list of names kept here (R9b: a rule that
+    names the objects it applies to will always exempt the next one). The candidate
+    cover itself is excluded by prefix: a cover cannot be its own control.
+    """
+    import value_ladder as _vl
+    prefixes = {p for (p, _m) in _vl.ACQUIRED_AS.values()}
+    out = {}
+    for o in (bpy.data.objects if objs is None else objs):
+        if getattr(o, "type", None) != 'MESH':
+            continue
+        if exclude_prefix and o.name.startswith(exclude_prefix):
+            continue
+        if not any(o.name.startswith(p) for p in prefixes):
+            continue
+        e = edge_mm(o)
+        if e:
+            out[o.name] = e
+    return out
+
+
 def world_bbox(o):
     wc = [o.matrix_world @ v.co for v in o.data.vertices]
     if not wc:

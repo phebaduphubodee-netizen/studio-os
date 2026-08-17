@@ -54,6 +54,23 @@ _CTX = ssl._create_unverified_context()
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 CACHE = os.path.join(REPO, "assets", "shared", "warehouse")
+# THE PROVENANCE OF A SEARCH, which this module recorded nowhere until p2r46.
+# `SOURCE.json` records what we DOWNLOADED — entity id, bytes, licence. It has
+# never recorded what we ASKED, and the difference decided a round: on 2026-08-17
+# this lane reported to the owner that "the free tier is exhausted (68 models, one
+# repository)". 68 was the whole cache — chairs, towels, garments — of which
+# exactly TEN ever staged as bed cloth, and the number of bed-cloth QUERIES behind
+# them was unrecoverable from disk. A claim of exhaustion that cannot be checked
+# against the queries actually asked is not a finding, it is a mood. R13's law
+# ("'unbought' is not 'unavailable'") one level in: not-found-in-ten is not
+# does-not-exist.
+# ...AND IT LIVES IN `qa/`, NOT IN THE CACHE. The cache is gitignored on purpose
+# (a Trimble-licensed mesh may not be redistributed, so it never enters git), but
+# the LOG is our own record and carries no licensed bytes. Written beside the
+# models it would die with them on any cache clear — and a record of what we
+# searched that cannot outlive the shelf answers the exhaustion question exactly
+# once.
+SEARCH_LOG = os.path.join(REPO, "qa", "warehouse-search-log.json")
 
 LICENSE_NOTE = """SketchUp 3D Warehouse models — Trimble General Model License.
 
@@ -95,9 +112,107 @@ def binary_url(entity_id, fmt="glb"):
     return rec.get("contentUrl"), int(rec.get("fileSize") or 0)
 
 
-def fetch(entity_id, slug=None, fmt="glb"):
+def cached_ids(cache=CACHE):
+    """Every entity id already on the shelf, from the SOURCE.json files themselves.
+
+    Read from disk rather than from the log, because the shelf is the fact and the
+    log is a record of one lane's asks — 68 models predate the log entirely."""
+    out = {}
+    for name in sorted(os.listdir(cache)) if os.path.isdir(cache) else []:
+        src = os.path.join(cache, name, "SOURCE.json")
+        if not os.path.isfile(src):
+            continue
+        try:
+            with open(src, encoding="utf-8") as fh:
+                eid = (json.load(fh) or {}).get("entity_id")
+        except (OSError, ValueError):
+            continue
+        if eid:
+            out[eid] = name
+    return out
+
+
+def plan_sweep(hits, have, limit=None, min_bytes=0, max_bytes=0):
+    """PURE. Decide which search hits to fetch and say why each other one is out.
+
+    `hits`  [{id, title, downloads, fmts, bytes, query}] — bytes may be None when
+            the size probe has not run yet.
+    `have`  {entity_id: slug} already on the shelf.
+    Returns (fetch_rows, skipped_rows) with `skipped` carrying a REASON per id, so
+    a sweep that fetches nothing still says what it looked at and why it passed.
+
+    RANKED BY BYTES, AND THERE IS NO SIZE CUT UNLESS THE CALLER ASKS FOR ONE.
+    File size is the only density signal available before a download, and density
+    is what the bed-cloth lane is short of: the acquired PILLOWS that pass the
+    fineness rule are 10.8 MB and 18.8 MB, while every bed cover this lane has
+    auditioned is 1-3 MB and measures 15-124 mm median edge against a 10.3 mm cut.
+    But a byte floor is a number nobody measured, and this repo's own word for that
+    is "taste wearing a threshold" (`bedcloth_rules.survives`). So bytes ORDER the
+    queue and never decide membership — the same split the bench already uses,
+    where three cuts decide who is in and mesh edge decides who is looked at first.
+    """
+    seen, keep, skip = {}, [], []
+    for h in hits:
+        eid = h.get("id")
+        if not eid:
+            continue
+        if eid in have:
+            skip.append({**h, "why": f"already cached as {have[eid]}"})
+            continue
+        if eid in seen:                       # the same model answering two queries
+            seen[eid].setdefault("also_found_by", []).append(h.get("query"))
+            continue
+        if "glb" not in (h.get("fmts") or []):
+            skip.append({**h, "why": "no glb binary"})
+            continue
+        if min_bytes and (h.get("bytes") or 0) < min_bytes:
+            skip.append({**h, "why": f"{h.get('bytes') or 0} bytes < floor {min_bytes}"})
+            continue
+        # A CEILING IS AN OPERATIONAL LIMIT, NOT A QUALITY JUDGEMENT, and it is
+        # recorded as a skip with its reason for exactly that: the top of one
+        # sweep's rank was a 384 MB entity, which is a whole scene rather than a
+        # bed cover and would have eaten the fetch budget and the bench's memory
+        # alone. "No silent caps" — a bound that shrinks coverage has to print.
+        if max_bytes and (h.get("bytes") or 0) > max_bytes:
+            skip.append({**h, "why": f"{h.get('bytes') or 0} bytes > ceiling "
+                                     f"{max_bytes} (deferred, not judged)"})
+            continue
+        seen[eid] = dict(h)
+        keep.append(seen[eid])
+    keep.sort(key=lambda r: -(r.get("bytes") or 0))
+    if limit is not None and len(keep) > limit:
+        for r in keep[limit:]:
+            skip.append({**r, "why": f"past --limit {limit} in the size rank"})
+        keep = keep[:limit]
+    return keep, skip
+
+
+def log_sweep(record, path=SEARCH_LOG):
+    """Append one sweep to the search log. Never rewrites a prior run."""
+    runs = []
+    if os.path.exists(path):
+        try:
+            with open(path, encoding="utf-8") as fh:
+                runs = json.load(fh).get("runs") or []
+        except (OSError, ValueError):
+            runs = []
+    runs.append(record)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump({"_what": "Every 3D Warehouse query this repo has asked, with "
+                            "what came back and what was fetched. Written so "
+                            "'we searched and there is nothing' is a checkable "
+                            "sentence instead of a memory.",
+                   "runs": runs}, fh, indent=1, ensure_ascii=False)
+    return path
+
+
+def fetch(entity_id, slug=None, fmt="glb", found_by=None):
     """Download one model into the warehouse cache. Returns the local path.
-    Idempotent: an existing non-empty file is kept."""
+    Idempotent: an existing non-empty file is kept.
+
+    `found_by` {query, title, downloads} is written into SOURCE.json — the ask that
+    produced this model, which the sidecar never carried (see SEARCH_LOG)."""
     url, size = binary_url(entity_id, fmt)
     if not url:
         raise SystemExit(f"warehouse: entity {entity_id} has no {fmt} binary")
@@ -108,9 +223,17 @@ def fetch(entity_id, slug=None, fmt="glb"):
         with open(note, "w", encoding="utf-8") as f:
             f.write(LICENSE_NOTE)
     # the entity id is the provenance: it is what makes the fetch reproducible
-    with open(os.path.join(base, "SOURCE.json"), "w", encoding="utf-8") as f:
+    src_path = os.path.join(base, "SOURCE.json")
+    if found_by is None and os.path.exists(src_path):
+        # never let a re-fetch ERASE an ask that an earlier sweep recorded
+        try:
+            with open(src_path, encoding="utf-8") as f:
+                found_by = (json.load(f) or {}).get("found_by")
+        except (OSError, ValueError):
+            found_by = None
+    with open(src_path, "w", encoding="utf-8") as f:
         json.dump({"source": "3dwarehouse.sketchup.com", "entity_id": entity_id,
-                   "format": fmt, "bytes": size,
+                   "format": fmt, "bytes": size, "found_by": found_by,
                    # machine-readable FIRST: scripts/asset_license.py reads this
                    # id, and matching an English sentence is a fallback for the
                    # models fetched before the id existed, not the contract
@@ -131,12 +254,82 @@ def fetch(entity_id, slug=None, fmt="glb"):
     return dest
 
 
+def sweep(queries, count=12, limit=None, min_bytes=0, max_bytes=0,
+          dry_run=False, probe=True):
+    """Run many queries, size-probe what is new, fetch the densest, LOG ALL OF IT.
+
+    The size probe is one extra API call per unseen entity and it is what makes the
+    rank possible before any download — `binary_url` returns the binary's fileSize
+    from the entity record. Cached ids are never probed.
+    """
+    from datetime import datetime, timezone
+    have = cached_ids()
+    hits = []
+    for q in queries:
+        try:
+            found = search(q, count)
+        except Exception as e:                                # noqa: BLE001
+            print(f"SWEEP {q!r}: SEARCH FAILED ({str(e)[:70]})")
+            hits.append({"id": None, "query": q, "error": str(e)[:200]})
+            continue
+        print(f"SWEEP {q!r}: {len(found)} result(s)")
+        for eid, title, dl, fmts in found:
+            hits.append({"id": eid, "title": title, "downloads": dl,
+                         "fmts": fmts, "bytes": None, "query": q})
+    if probe:
+        for h in hits:
+            if not h.get("id") or h["id"] in have or "glb" not in (h.get("fmts") or []):
+                continue
+            try:
+                _, h["bytes"] = binary_url(h["id"], "glb")
+            except Exception as e:                            # noqa: BLE001
+                h["probe_error"] = str(e)[:120]
+    keep, skip = plan_sweep(hits, have, limit=limit, min_bytes=min_bytes,
+                            max_bytes=max_bytes)
+    print(f"\nSWEEP {len(hits)} hit(s) over {len(queries)} query(ies): "
+          f"{len(keep)} to fetch, {len(skip)} passed over "
+          f"({sum(1 for s in skip if 'already cached' in s.get('why', ''))} already on the shelf)")
+    for r in keep:
+        print(f"  {r['id']}  {(r.get('bytes') or 0)/1e6:7.2f} MB  "
+              f"{r.get('downloads', 0):>7} dl  {(r.get('title') or '')[:46]}   <- {r['query']!r}")
+    fetched = []
+    if not dry_run:
+        for r in keep:
+            try:
+                p = fetch(r["id"], None, "glb",
+                          found_by={"query": r["query"], "title": r.get("title"),
+                                    "downloads": r.get("downloads")})
+                fetched.append(r["id"])
+                print(f"  fetched {os.path.basename(p)} "
+                      f"({os.path.getsize(p)/1e6:.2f} MB)")
+            except Exception as e:                            # noqa: BLE001
+                r["fetch_error"] = str(e)[:160]
+                print(f"  FETCH FAILED {r['id']}: {str(e)[:80]}")
+    log_sweep({"at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+               "queries": list(queries), "count": count, "limit": limit,
+               "min_bytes": min_bytes, "max_bytes": max_bytes,
+               "dry_run": bool(dry_run),
+               "n_hits": len(hits), "fetched": fetched,
+               "hits": hits, "skipped": skip})
+    print(f"SWEEP logged -> {SEARCH_LOG}")
+    return fetched
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("search")
     s.add_argument("query")
     s.add_argument("--count", type=int, default=12)
+    w = sub.add_parser("sweep", help="many queries -> size-ranked fetch, all logged")
+    w.add_argument("queries", nargs="+")
+    w.add_argument("--count", type=int, default=12)
+    w.add_argument("--limit", type=int, default=None,
+                   help="fetch at most N, densest first")
+    w.add_argument("--min-bytes", type=int, default=0, dest="min_bytes")
+    w.add_argument("--max-bytes", type=int, default=0, dest="max_bytes",
+                   help="defer anything larger (logged with its reason, never silent)")
+    w.add_argument("--dry-run", action="store_true")
     f = sub.add_parser("fetch")
     f.add_argument("entity_id")
     f.add_argument("--slug", default=None)
@@ -155,6 +348,10 @@ def main(argv=None):
     if a.cmd == "search":
         for eid, title, dl, fmts in search(a.query, a.count):
             print(f"{eid}  {dl:>7} dl  [{','.join(fmts) or '-'}]  {title[:52]}")
+        return 0
+    if a.cmd == "sweep":
+        sweep(a.queries, count=a.count, limit=a.limit,
+              min_bytes=a.min_bytes, max_bytes=a.max_bytes, dry_run=a.dry_run)
         return 0
     path = fetch(a.entity_id, a.slug, a.format)
     print(f"fetched {path} ({os.path.getsize(path)} bytes)")

@@ -5169,16 +5169,12 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
     # three fit rungs cannot see what a mesh is made of. Its control is the frame's
     # own accepted cloth, resolved through the value ladder's signed ACQUIRED_AS
     # register rather than a list of names kept here (R9b).
-    import value_ladder as _vl
-    _acq_pref = {p for (p, _m) in _vl.ACQUIRED_AS.values()}
-    _ctrl = {}
-    for _o in bpy.data.objects:
-        if (_o.type != 'MESH' or _o.name.startswith("bed__cloth__acq")
-                or not any(_o.name.startswith(p) for p in _acq_pref)):
-            continue
-        _e = _bcf.edge_mm(_o)
-        if _e:
-            _ctrl[_o.name] = _e
+    # p2r46: the control derivation moved to `bedcloth_fit.control_edges` so the
+    # AUDITION can ask this question too. It lived here, inline, which made fineness
+    # a cut only the build could apply — and the bench went on nominating sets the
+    # build was obliged to refuse (0afd4c6f cleared all three audition cuts and died
+    # here on a fourth the audition could not see).
+    _ctrl = _bcf.control_edges()
     _bedge = max((_bcf.edge_mm(o) or 0.0) for o in field) if field else None
     _bcov, _brel, _bfall = _bcf.measure(keep, rect, top_z, hang_to)
     _built = _bcf.built_survives(_bcov, _bfall, _bedge, _ctrl)
@@ -5205,7 +5201,8 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
     return True
 
 
-def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
+def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
+               bed_cloth_gap=None):
     """A real platform bed massed from beveled primitives, ROT-AWARE — base + inset mattress +
     draped duvet + two pillows at the HEAD.
 
@@ -5478,8 +5475,21 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     #   acquire fails     -> RAISE. Not a quieter frame, a stopped build.
     #   --bed-cloth-gap   -> no cover at all, declared. R10: the absent thing is
     #                        honest, the wrong thing fabricates a reading.
+    # p2r46 — THE GAP IS A SIGNED ROW IN THE SPEC, NOT A FLAG SOMEBODY REMEMBERS.
+    # Until this round the honest state (bed bare, gap declared) was reachable ONLY
+    # by typing `--bed-cloth-gap`, while the spec went on naming 0afd4c6f — a set
+    # BOTH rungs now refuse (drape 1/4 on the built scene, 4.21x the fineness
+    # control). So the default build raised, the gap was an OPT-IN, and the spec's
+    # own `bed_cloth_gap_note` — which explains all of this in prose — had ZERO
+    # readers in the repo. That is R13's sentence exactly ("an order carried out as
+    # an OPT-IN is an order that was not carried out, because nobody types the
+    # flag") sitting inside the machinery built to end it, plus the queue-with-no-
+    # consumer defect one key over. A declared gap is now DATA that the build reads
+    # and prints; the CLI flag survives as an override for auditions.
+    _spec_gap = bed_cloth_gap
+    _gap = bool(_BED_CLOTH_GAP) or bool(_spec_gap and not _BED_CLOTH_SET)
     _acq_cloth = False
-    _cloth_slug = None if _BED_CLOTH_GAP else (
+    _cloth_slug = None if _gap else (
         _BED_CLOTH_SET or (bed_models or {}).get("cloth_set"))
     if _BED_CLOTH_ACQ and _cloth_slug:
         _acq_cloth = _place_bed_cloth(
@@ -5498,17 +5508,22 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
                 "places, or run --bed-cloth-gap and declare the bed bare. A "
                 "frame that quietly re-grows the hand-built cloth is the "
                 "failure this line was written to stop." % _cloth_slug)
-    elif _BED_CLOTH_ACQ and not _BED_CLOTH_GAP:
+    elif _BED_CLOTH_ACQ and not _gap:
         raise RuntimeError(
             "bed cloth: acquire is ON and no cloth_set is named, in the spec or "
-            "on the CLI. An acquire order with no asset is an order nobody "
-            "carried out — name one, or run --bed-cloth-gap.")
+            "on the CLI, and no signed `bed_models.cloth_gap` declares the bed "
+            "bare. An acquire order with no asset is an order nobody carried "
+            "out — name one, sign the gap in the spec, or run --bed-cloth-gap.")
     # The gap leg suppresses the solver bakes as completely as a success does:
     # the whole point is that no hand-simulated cloth reaches the frame.
-    _no_sim_cloth = _acq_cloth or _BED_CLOTH_GAP
-    if _BED_CLOTH_GAP:
+    _no_sim_cloth = _acq_cloth or _gap
+    if _gap:
         print("  bed cloth: DECLARED GAP — no cover on this bed. No acquired "
-              "set qualified and the solver bakes are refused by his order.")
+              "set qualified and the solver bakes are refused by his order."
+              + (f" Signed in the spec {_spec_gap.get('declared', '?')}: "
+                 f"{str(_spec_gap.get('because', ''))[:120]}"
+                 if isinstance(_spec_gap, dict) and not _BED_CLOTH_GAP
+                 else " (--bed-cloth-gap on the CLI)"))
     _cov_o = None if _no_sim_cloth else drape.bake_bed_cover(
         "bed__coverlet",
         rect=(x0 + mins, y0 + mins, W - 2 * mins, D - 2 * mins),
@@ -7538,7 +7553,9 @@ def build_suite(spec, label="suite"):
                        pillow_models=(None if spec.get("_no_acquire")
                                       else it.get("pillow_models")),
                        bed_models=(None if spec.get("_no_acquire")
-                                   else it.get("bed_models")))
+                                   else it.get("bed_models")),
+                       bed_cloth_gap=(None if spec.get("_no_acquire")
+                                      else it.get("bed_cloth_gap")))
             continue
         if kind == "bench":
             n_intercepted += kind in MODEL_MAP

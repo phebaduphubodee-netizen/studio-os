@@ -30,7 +30,7 @@ AND THE RANK IS NOT COVERAGE, which is the mistake that decided a purchase. p2r3
 ranked on coverage, and coverage is MAXIMISED by a cloth that lies flat on the mattress
 without reaching past it — a duvet too small to drape scores best. The number that
 answers the real question was printed in the same table and read past: falls past 2 of
-4 sides. So the machine now applies three HARD filters and then stops:
+4 sides. So the machine now applies four HARD filters and then stops:
 
     size_ok      need_scale <= 1.0     (a mesh is never stretched to fit)
     covered      coverage   >= 0.80    (the build's own cut: our mattress must not
@@ -38,6 +38,16 @@ answers the real question was printed in the same table and read past: falls pas
     drapes       fall_sides >= 2       (a cover falls over the flanks; on a bed
                                         against a headboard the reachable maximum
                                         is 3 — two sides and the foot)
+    fine_enough  median world edge <= the coarsest BOUGHT cloth already accepted
+                                        in this frame (p2r46; the control comes
+                                        from the open .blend, not from a number)
+
+THE FOURTH ONE IS NEW HERE AND THAT IS THE POINT. The first three all ask whether a
+set FITS; none can see what the mesh is MADE OF, and 0afd4c6f passed all three at
+43.5 mm against acquired pillows at 4.5-10.3 mm in the same frame — the build then
+refused it on a cut this bench could not apply, because the control was derived
+INLINE IN THE BUILD. An audition that cannot ask the build's question is an audition
+that wastes the eye, which is the same defect as p2r32's deleted runners one rule on.
 
 relief_mm stays REPORT-ONLY with both of its failure directions named — a crumple
 (the signed DD says the room is made, not slept in) and a painted plane (what both
@@ -78,6 +88,18 @@ BZ = max(c.z for c in bw)                 # base top = where a hem may reach
 # this bed is 1800 x 1949 against a mattress of 1820 x 1969 — it shrank every
 # candidate to smaller than the thing it must cover.
 LIMIT, COVER = fit.limits_for(RECT, MTOP, BZ)
+
+# THE FINENESS CONTROL, read from this same .blend BEFORE the shipped bedding is
+# stripped below: the acquired soft goods already ACCEPTED in this frame (membership
+# from value_ladder.ACQUIRED_AS, never a list kept here). A candidate cover may not
+# be coarser than the coarsest bought cloth standing beside it at the same distance
+# from the same camera. Empty dict = the cut cannot run, which is NOT a pass.
+CONTROL = fit.control_edges()
+print("BENCH fineness control: " + (
+    ", ".join(f"{k} {v:.1f} mm" for k, v in sorted(CONTROL.items()))
+    + f"  -> limit {max(CONTROL.values()):.1f} mm" if CONTROL else
+    "NONE — no acquired soft-goods mesh in this .blend, so the fineness cut "
+    "CANNOT RUN and no candidate can survive it"))
 
 print(f"BENCH bed: mattress {RECT[2]*1000:.0f} x {RECT[3]*1000:.0f} mm, top "
       f"{MTOP*1000:.0f}, base top {BZ*1000:.0f}, fall {(MTOP-BZ)*1000:.0f} mm; "
@@ -120,16 +142,21 @@ for slug in sorted(os.listdir(CACHE)):
         size_ok = need <= st["scale"] + 1e-9
         covered = st["coverage"] >= COVER_CUT
         drapes = st["fall_sides"] >= FALL_CUT
-        # MEDIAN EDGE LENGTH, world mm — reported for every candidate from p2r45.
+        # MEDIAN EDGE LENGTH, world mm, AND THE CUT — not just the rank (p2r46).
         # The three cuts above all ask whether the set FITS; none of them can see
         # what it is MADE OF, and the set this bench chose renders at 43.2 mm
-        # against acquired pillows at 4.5-10.3 in the same frame. The cut itself is
-        # applied where a control exists (the build, against the cloth already
-        # accepted beside it); here it RANKS, so the eye is never spent on the
-        # coarsest survivor first again.
+        # against acquired pillows at 4.5-10.3 in the same frame. From p2r45 this
+        # number was measured here and only RANKED on, because the control lived
+        # inline in the build — so the audition nominated 0afd4c6f on three cuts
+        # and the build refused it on a fourth the audition could not see. The
+        # control is now `fit.control_edges()`, the same call the build makes, read
+        # from the SAME open .blend the bed rect comes from. An audition that
+        # cannot ask the build's question is an audition that wastes the eye.
         edge = max((fit.edge_mm(o) or 0.0) for o in st["field"]) or None
+        fine = fit.fineness(edge, CONTROL)
         row.update({
             "edge_mm": None if edge is None else round(edge, 1),
+            "fine_enough": fine["fine_enough"], "fineness": fine,
             "parts_total": st["parts_total"], "field": len(st["field"]),
             "extra": len(st["extra"]), "dropped": st["parts_dropped"],
             "buried": st["parts_buried"], "scale": round(st["scale"], 3),
@@ -138,7 +165,8 @@ for slug in sorted(os.listdir(CACHE)):
             "relief_mm": round(st["relief_mm"], 1),
             "fall_sides": st["fall_sides"], "need_scale": round(need, 3),
             "size_ok": size_ok, "covered": covered, "drapes": drapes,
-            "survives": bool(size_ok and covered and drapes)})
+            "survives": bool(size_ok and covered and drapes
+                             and fine["fine_enough"] is True)})
         print(f"BENCH {slug:14s} {len(st['field'])}F+{len(st['extra'])}E of "
               f"{st['parts_total']:2d}  scale {st['scale']:5.3f}  "
               f"cover {st['coverage']*100:5.1f}%  relief {st['relief_mm']:6.1f} mm  "
@@ -146,7 +174,8 @@ for slug in sorted(os.listdir(CACHE)):
               f"edge {('%6.1f mm' % edge) if edge else '   n/a '}  "
               f"{'SURVIVES' if row['survives'] else 'out: ' + ','.join(
                   k for k, ok in (('size', size_ok), ('cover', covered),
-                                  ('drape', drapes)) if not ok)}")
+                                  ('drape', drapes),
+                                  ('fine', fine['fine_enough'])) if ok is not True)}")
     rows.append(row)
     for nm in names:
         ob = bpy.data.objects.get(nm)
@@ -159,7 +188,11 @@ with open(OUT, "w", encoding="utf-8") as fh:
                        "must_cover_mm": [round(v * 1000) for v in COVER],
                        "fall_mm": round((MTOP - BZ) * 1000)},
                "cuts": {"coverage": COVER_CUT, "fall_sides": FALL_CUT,
-                        "max_scale": MAX_SCALE},
+                        "max_scale": MAX_SCALE,
+                        "fineness_control_mm": (max(CONTROL.values())
+                                                if CONTROL else None),
+                        "fineness_control": (max(CONTROL, key=CONTROL.get)
+                                             if CONTROL else None)},
                "candidates": rows}, fh, indent=1)
 # SURVIVORS ARE RANKED FINEST-FIRST, and the rank is the only thing that decides
 # an ORDER here — the three cuts decide membership. p2r31 ranked on coverage and
@@ -167,7 +200,7 @@ with open(OUT, "w", encoding="utf-8") as fh:
 # meshes the critics accept from the one they called carved plastic.
 surv = sorted((r for r in rows if r.get("survives")),
               key=lambda r: (r.get("edge_mm") is None, r.get("edge_mm") or 0.0))
-print(f"BENCH wrote {OUT} ({len(rows)} candidate(s), {len(surv)} survive all three "
+print(f"BENCH wrote {OUT} ({len(rows)} candidate(s), {len(surv)} survive all four "
       f"cuts, finest mesh first): "
       + (", ".join(f"{r['slug']} ({r['edge_mm']} mm)" for r in surv)
          if surv else "(none)"))

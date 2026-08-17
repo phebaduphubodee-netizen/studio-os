@@ -681,9 +681,21 @@ def test_an_owner_signed_entry_removal_is_allowed(tmp_path):
 
 # --- D-021: the room lane, where nine of thirteen rungs have no referent ---------
 
+# `check_room` reads the LIVE ledgers (qa/owner-orders.json, qa/open-decisions.json)
+# for the orders rung, so these two must assert about the rung they name and not
+# about the length of the whole list. They were written as exact-list assertions and
+# went red on 2026-08-17 the moment a REAL owner order was filed not-obeyed and its
+# stop-loss fired — i.e. the rung under test was fine and the test was measuring the
+# repo's current honesty. Pinning a unit test to the live ledger is the same shape as
+# a metric that moves when something unrelated changes; the fix is to name the
+# violation being asserted, never to quieten the gate so an assertion survives.
+def _about(v, *needles):
+    return [s for s in v if any(n in s for n in needles)]
+
+
 def test_check_room_runs_R10_and_blocks_an_unjustified_object():
     v = RG.check_room({"masses": [{"name": "mystery", "prov": ""}]})
-    assert len(v) == 1 and "no `prov`" in v[0]
+    assert len(_about(v, "no `prov`")) == 1
 
 
 def test_check_room_does_NOT_fail_on_a_missing_coverage_manifest():
@@ -692,7 +704,7 @@ def test_check_room_does_NOT_fail_on_a_missing_coverage_manifest():
     # on the absence of an artefact that could never be correct to make is how a
     # guard gets switched off.
     v = RG.check_room({"masses": [{"name": "bed", "prov": "M(ink x1)"}]})
-    assert v == []
+    assert _about(v, "coverage manifest", "coverage-manifest", "`prov`") == []
 
 
 def test_every_inapplicable_rung_is_DECLARED_with_a_reason():

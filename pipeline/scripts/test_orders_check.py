@@ -365,10 +365,44 @@ def test_the_repos_own_orders_ledger_is_honest():
 
 
 def test_the_repos_own_register_takes_a_stance_where_it_must():
+    """Every live row that is governed by a standing order names a stance.
+
+    THE STOP-LOSS IS EXCLUDED HERE ON PURPOSE, and the distinction is the point.
+    The other violations this function raises are BOOKKEEPING — a row that quotes
+    his words with no stance, a decider called `pending`, a builder row that
+    contradicts an order — and every one of them is fixable by editing the
+    register, so a red test means someone must go and write something down.
+    The stop-loss is not fixable that way: it fires while a real order is
+    unobeyed and it clears only when the order is CARRIED OUT. Asserting it here
+    would put a permanently-red test in the suite while the bed has no cloth,
+    and a suite that is red for a reason nobody can close is a suite that stops
+    being read — this repo's own recorded failure mode for guards. It is
+    enforced where it bites instead: `rule_gate` blocks the render on it, which
+    is what stopped p2r46 from producing a frame at all.
+    """
     data = OC.load(repo_root=REPO)
     with open(os.path.join(REPO, "qa/open-decisions.json"), encoding="utf-8") as f:
         dec = json.load(f)
-    assert OC.check_decisions(data, dec, "DELIV-001", REPO) == []
+    v = OC.check_decisions(data, dec, "DELIV-001", REPO)
+    assert [s for s in v if not s.startswith("STOP-LOSS:")] == []
+
+
+def test_the_stop_loss_is_live_on_the_bed_cloth_order_until_it_is_carried_out():
+    """The counter's own contract, pinned. p2r46 filed
+    ORD-2026-08-15-remove-the-hand-built-cloth as not-obeyed — it had been
+    reading OBEYED because its assertion asked whether a set was NAMED, not
+    whether it SURVIVES — and the stop-loss fired on the eight builder decisions
+    taken on that subject since. When a qualifying cover is finally named, the
+    assertion holds again, this fires no more, and THIS TEST FLIPS: change it
+    then, do not silence it now.
+    """
+    data = OC.load(repo_root=REPO)
+    with open(os.path.join(REPO, "qa/open-decisions.json"), encoding="utf-8") as f:
+        dec = json.load(f)
+    v = OC.check_decisions(data, dec, "DELIV-001", REPO)
+    hits = [s for s in v if s.startswith("STOP-LOSS:")]
+    assert len(hits) == 1 and "bed-cloth-build-vs-acquire" in hits[0]
+    assert "STILL NOT OBEYED" in hits[0]
 
 
 def test_every_standing_order_still_reproduces_its_own_words():

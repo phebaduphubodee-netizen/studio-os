@@ -22,7 +22,7 @@
       "cost": "฿0",
       "licence": "Trimble General Model License — use yes, redistribute as a model no",
       "owner_decision": false,
-      "note": "The practitioner rung: his friend's main source. Gitignored cache (.gitignore:50). Style hit rate is low per query, so a search that returns nothing usable is a statement about the QUERY as often as about the tier."
+      "note": "The practitioner rung: his friend's main source. Gitignored cache (.gitignore:50). Style hit rate is low per query, so a search that returns nothing usable is a statement about the QUERY as often as about the tier. — MEASURED p2r46 (2026-08-17), and this tier's own sentence above turned out to be the finding: 68 cached models was the WHOLE shelf, of which TEN ever staged as bed cloth, and no query behind them was recorded anywhere. 12 fresh queries (Portuguese 'roupa de cama'/'colcha'/'edredom' beat every English term on this corpus) surfaced 8-384 MB bedding against the 1-3 MB covers this lane had been auditioning. Every query is now logged in qa/warehouse-search-log.json. THE TIER'S REAL LIMIT, measured rather than assumed: its dense meshes are SUB-METRE objects (pillow_set_a 63,492 tris on a 600 mm pillow = 10.3 mm; 799b6961 88,390 tris on 1089 mm parts = 9.55 mm), while every part big enough to be a 2 m bed cover carries 4k-22k tris and measures 20-45 mm. Fineness is a WORLD measurement, so a fine small mesh scaled up is a coarse mesh. A ~2 m cover at the 10.3 mm control needs ~75,408 triangles IN ONE SHEET; screen any candidate for it with mesh_density.py before spending a Blender import on it."
     },
     {
       "id": "cc-by",
