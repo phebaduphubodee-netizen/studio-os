@@ -4752,14 +4752,34 @@ def _add_e5_lights(spec, h_m):
         _out = _nt.nodes.get("Material Output")
         _nt.links.new(_em.outputs[0], _out.inputs["Surface"])
 
-    def _recessed_trim(tag, cx, cy, cz):
-        _cyl_frustum(f"e5_trim_{tag}", cx, cy, 0.048, 0.048, cz - 0.006, cz - 0.0005,
-                     _trim_m, seg=20)
-        _cyl_frustum(f"e5_lens_{tag}", cx, cy, 0.032, 0.032, cz - 0.010, cz - 0.007,
-                     _lens_m, seg=20)
+    def _recessed_trim(tag, cx, cy, soffit_z):
+        """The visible ring and aperture of a recessed can, FLUSH WITH THE CEILING.
+
+        p2r49 (P2r-19): `soffit_z` used to be the FIXTURE's z, and the fixture sits at
+        `ceiling - 60 mm` because an emitter coplanar with the geometry it lights is a
+        self-shadowing z-fight. That stand-off is right FOR THE LIGHT and wrong for the
+        trim, so every recessed can in this room hung 60 mm below the ceiling it was
+        recessed into — twelve of them, on every frame this lane has shipped.
+
+        ONE PARAMETER CARRYING TWO THINGS, which is this repo's own named defect: the
+        light's clearance and the trim's mounting plane are not the same number and
+        were the same variable. The light keeps its stand-off; the geometry now takes
+        the ceiling.
+
+        NOBODY SAW IT UNTIL R10 ASKED. `placement_check`'s FLOATING branch cannot —
+        its own docstring declares the hole ("an object with NO support escapes
+        FLOATING if anything at all touches it"), and each trim is touched by its own
+        lens. It took a rung that asks what HOLDS a mass, not whether it touches one.
+        """
+        _cyl_frustum(f"e5_trim_{tag}", cx, cy, 0.048, 0.048,
+                     soffit_z - 0.006, soffit_z - 0.0005, _trim_m, seg=20)
+        _cyl_frustum(f"e5_lens_{tag}", cx, cy, 0.032, 0.032,
+                     soffit_z - 0.010, soffit_z - 0.007, _lens_m, seg=20)
 
     for i, f in enumerate(plan["downlights"]):
-        _recessed_trim(f"dl{i}", f["x"] * MM, f["y"] * MM, f["z"] * MM)
+        # the trim is mounted in the CEILING, the light hangs 60 mm under it —
+        # two facts, two numbers (see _recessed_trim)
+        _recessed_trim(f"dl{i}", f["x"] * MM, f["y"] * MM, h_m)
         # the proven downlight style: AREA disk facing down, deterministic ±12%
         # output spread + a hint of CCT drift (a real ceiling never fires every
         # can at one exact output/colour); positions come mass-clipped from the plan
@@ -4807,7 +4827,7 @@ def _add_e5_lights(spec, h_m):
                  (b["aim"][0] * MM, b["aim"][1] * MM, b["aim"][2] * MM))
     n += 1
     for s in plan["spots"]:
-        _recessed_trim(s["name"], s["x"] * MM, s["y"] * MM, s["z"] * MM)
+        _recessed_trim(s["name"], s["x"] * MM, s["y"] * MM, h_m)
         ld = bpy.data.lights.new(s["name"], type='SPOT')
         ld.energy = s["watts"] * _sc["spots"]
         ld.color = warm

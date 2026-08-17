@@ -271,9 +271,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
   },
   {
    "assembly": "e5_trim_dl8",
@@ -281,9 +280,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
   },
   {
    "assembly": "e5_trim_dl9",
@@ -291,9 +289,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
   },
   {
    "assembly": "e5_trim_dl16",
@@ -301,9 +298,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
   },
   {
    "assembly": "e5_trim_dl17",
@@ -311,9 +307,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
   },
   {
    "assembly": "e5_trim_bf14_wash_3",
@@ -321,9 +316,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it."
   },
   {
    "assembly": "e5_lens_dl5",
@@ -331,9 +325,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "Rides its trim; carries the trim's unresolved height (above)."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
   },
   {
    "assembly": "e5_lens_dl8",
@@ -341,9 +334,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "Rides its trim; carries the trim's unresolved height (above)."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
   },
   {
    "assembly": "e5_lens_dl9",
@@ -351,9 +343,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "Rides its trim; carries the trim's unresolved height (above)."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
   },
   {
    "assembly": "e5_lens_dl16",
@@ -361,9 +352,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "Rides its trim; carries the trim's unresolved height (above)."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
   },
   {
    "assembly": "e5_lens_dl17",
@@ -371,9 +361,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "Rides its trim; carries the trim's unresolved height (above)."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
   },
   {
    "assembly": "e5_lens_bf14_wash_3",
@@ -381,9 +370,8 @@
    "exists": "not-in-drawing: element 5 RCP",
    "held_by": "ceiling",
    "operable": false,
-   "verdict": "unresolved",
-   "since": "2026-08-17",
-   "why": "Rides its trim; carries the trim's unresolved height (above)."
+   "verdict": "keep",
+   "why": "RESOLVED p2r49/p2r50, and the R10 rung is what found it. Filed unresolved when this ledger opened: the trim sat at z 2734-2740 under a 2800 soffit, so every recessed can in the room hung 60 mm below the ceiling it is recessed into, on every frame this lane has shipped. THE CAUSE was one parameter carrying two things — `_recessed_trim` was handed the FIXTURE's z, and the fixture sits at `ceiling - 60` because an emitter coplanar with the geometry it lights self-shadows. That stand-off is right for the light and wrong for the trim. The light keeps it; the geometry now takes the ceiling. Measured after the fix: trim 2794.0-2799.5 under a 2800.0 soffit (a 5.5 mm flange, flush), aperture 2790.0-2793.0 recessed 7-10 mm above it. This row rides its trim and carried its height."
   },
   {
    "assembly": "bf14_sconce_0",
