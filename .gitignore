@@ -61,3 +61,8 @@ training/**/*.blend1
 # enter version control. Fetch is reproducible from the entity id instead
 # (pipeline/scripts/warehouse.py, and every consuming spec records the id).
 assets/shared/warehouse/
+# BlenderKit assets are ROYALTY-FREE, not public domain: free to use in renders and
+# client work, NOT redistributable as models. Same reason as the Warehouse shelf above
+# — a mesh that may not be redistributed must never enter version control. Fetch is
+# reproducible from the asset id (SOURCE.json records it).
+assets/shared/blenderkit/

@@ -1,0 +1,76 @@
+{
+ "_what": "Every BlenderKit query this repo has asked, and what the tier actually measured. Written for the same reason as qa/warehouse-search-log.json: 'the paid tier has what we need' must be a checkable sentence, not a mood — the free-tier version of that sentence has now been wrong three times.",
+ "_asked": "2026-08-17 (p2r48), on the owner's instruction to run the FREE test before spending on ASK-002.",
+ "_route": "Public search API, no account: /api/v1/search/?query=... Free royalty_free assets download from /api/v1/downloads/<id>/?scene_uuid=<uuid>, which returns a signed file URL. ฿0 spent, no credentials created.",
+ "_the_caveat_that_decided_it": "`dictParameters.faceCount` is a WHOLE-ASSET number. Read as a per-sheet count it says 449 of 828 full-plan assets clear the ~73,088-face bar; measured per OBJECT on three downloaded samples it says something else entirely — see `measured`.",
+ "cover_span_mm": 1969.0,
+ "control_mm": 10.3,
+ "one_sheet_bar_faces": 73088,
+ "queries": [
+  "bed linen",
+  "duvet",
+  "bedding",
+  "blanket bed",
+  "bedspread",
+  "bed sheet",
+  "comforter",
+  "quilt bed",
+  "cloth bed cover",
+  "pillow bed"
+ ],
+ "catalogue": {
+  "distinct_model_assets": 1289,
+  "with_face_count": 1261,
+  "free": {
+   "n": 433,
+   "median_faces": 26580,
+   "max_faces": 1583452,
+   "assets_whose_TOTAL_clears_the_bar": 142
+  },
+  "full_plan": {
+   "n": 828,
+   "median_faces": 97378,
+   "max_faces": 4936021,
+   "assets_whose_TOTAL_clears_the_bar": 449
+  }
+ },
+ "downloaded": [
+  {
+   "slug": "bk_daxing",
+   "declared_faces": 575335,
+   "simulation": true
+  },
+  {
+   "slug": "bk_phoenix",
+   "declared_faces": 374441,
+   "simulation": true
+  },
+  {
+   "slug": "bk_stansted",
+   "declared_faces": 238163,
+   "simulation": true
+  }
+ ],
+ "measured": {
+  "_finding": "All three are FREE, category `bed`, `simulation: true`, royalty_free — the sim-authored class this repo told the owner the free tier does not hold. That claim was wrong, for the third time. But the density is NOT in the bedding: the densest object in each is the upholstered HEADBOARD (`capçal` is Catalan for headboard; `costures` is seams) at 2.05-2.12 x 1.18-1.22 x 0.16 m, 184,536 / 274,048 / 574,293 triangles. The BEDDING parts are the SAME MESHES in all three files — 59,840-triangle cover halves, a 52,317-triangle sheet, 25,610-triangle pillows — so across a 2.4x spread in whole-asset faceCount, the cloth does not get finer at all.",
+  "on_this_bed": {
+   "coverage": 0.817,
+   "fall_sides": 2,
+   "cover_part_edge_mm": 13.8,
+   "coarsest_field_edge_mm": 25.2,
+   "note": "identical for all three, because the cloth meshes are shared"
+  },
+  "versus_what_already_ships": {
+   "slug": "d4698c95_flat",
+   "coverage": 0.94,
+   "fall_sides": 4,
+   "edge_mm": 10.7,
+   "verdict": "the free BlenderKit sample is WORSE on every enforced number"
+  }
+ },
+ "what_this_does_and_does_not_settle": {
+  "settled": "Buying density in this library buys headboard tufting, not cloth. The catalogue's faceCount cannot be read as a per-sheet number, and the one sample where it could be checked showed bedding density flat across a 2.4x asset-face spread.",
+  "not_settled": "Whether some FULL-PLAN asset's bedding part specifically is finer than 10.7 mm. No free measurement can answer that, because the API publishes no per-object counts. Answering it costs one month of the full plan.",
+  "cheapest_next_test_if_he_wants_it": "One month of BlenderKit Full (~$10 if monthly is offered, $118.80/yr otherwise), download 5 bedding assets, run the same three commands. The instruments are built and cost nothing per candidate now."
+ }
+}
