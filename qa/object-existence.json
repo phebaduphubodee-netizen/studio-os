@@ -1,0 +1,463 @@
+{
+ "_what": "R10 AS ROWS. One row per OBJECT IN THE FRAME: what it is, whether anything outside this lane says it should be there, whether it could be built and used, and the verdict. Consumed by pipeline/scripts/existence_check.py, which is spawned by build_room after every render and BLOCKS the build.",
+ "_law": [
+  "The object list is DERIVED FROM THE BUILT SCENE (sheet_recon.assemblies_from_dump), never kept here — R9b: a rule that names the objects it applies to will always exempt the next one.",
+  "IDENTITY IS SIGNED, CONSEQUENCES ARE MEASURED. No program can look at a box and know it is a drawer, so the row declares; the checker then holds the declaration to the scene — a named support must exist and touch, a claimed reveal must measure, a 'remove' must actually be gone.",
+  "`pending` is refused BY NAME. So are `tbd`, `todo` and `later`.",
+  "The unrowed backlog RATCHETS and may only fall. A machine that hard-fails every historical instance on day one gets switched off and joins them (R13).",
+  "Rows never leave the ledger."
+ ],
+ "_why_it_exists": "R8 governs HOW an object is made and R9 governs WHERE it goes. R10 was written 2026-08-05 because nothing governed WHETHER IT SHOULD EXIST, and on 2026-08-17 two independent critics filed three defects of exactly that class against p2r47 — a foot bench with no load path, drawer fronts with no way to open them, and a room with no skirting, sockets or switches. The round's own triage accepted all three with the same sentence: no instrument in this repo can see it.",
+ "baseline_unrowed": 0,
+ "required_elements": [
+  {
+   "element": "skirting",
+   "why_required": "A plastered wall meeting a wood floor is not finished without a skirting or a recessed shadow gap; the junction is drawn on every interior elevation. C2 p2r47 item 10: 'no skirting or shadow-gap where wall meets floor on ANY wall'. Height and projection are DR-sourced for the 2700-3200 mm ceiling band (knowledge/_inbox/nlm-th-bedroom-services).",
+   "present_as": "skirt",
+   "min_parts": 4
+  },
+  {
+   "element": "wall services (switch plates and sockets)",
+   "why_required": "The sconces over the bed are LIT, so something must switch them from somewhere reachable, and a bedroom has sockets. C2 p2r47 item 10: 'no switch plate anywhere, including beside the bed for the sconces; no sockets'. Heights are DR-sourced (door switch 1200-1250 AFFL, bedside switch 600-700, concealed bedside socket 300-350).",
+   "present_as": "svc",
+   "min_parts": 3
+  }
+ ],
+ "objects": [
+  {
+   "assembly": "wall_4",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_3z",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s0_0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s1_1",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_1z",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s1_2",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_3l0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s1_3z",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_3p0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_s0_1p0",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "wall_2",
+   "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
+   "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. R10's question is whether a mass was invented to satisfy a structure; a wall the drawing draws is the structure."
+  },
+  {
+   "assembly": "floor",
+   "identity": "The floor slab, outline polygon from -100 to 0. Oak boards are its material, not a separate mass.",
+   "exists": "sheet:outline",
+   "held_by": "self",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture, from the same outline as the walls."
+  },
+  {
+   "assembly": "ceiling",
+   "identity": "The ceiling slab at 2800, added to stop the HDRI leaking over the wall tops. Flat: the RCP's cove is a separate mass (e5_cove_pelmet).",
+   "exists": "not-in-drawing: a FURNITURE plan draws no ceiling; the height 2800 comes from room.ceiling_mm and the RCP work is element 5",
+   "held_by": "wall_4",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture; and without it the room is lit by an HDRI through an open top."
+  },
+  {
+   "assembly": "bed",
+   "identity": "The bed: upholstered base, mattress, headboard panel with welts, the acquired head pillows and the acquired cloth set. 2000 x 2149 x 600.",
+   "exists": "sheet:SR-07",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Ink-trued and owner-confirmed; footprint and height are the client's own drawing (R12)."
+  },
+  {
+   "assembly": "bench",
+   "identity": "Foot-of-bed bench — ONE acquired mesh (Ottoman_01), 498 x 710 in plan, top measured at 501 mm.",
+   "exists": "sheet:SR-08",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "fix",
+   "fix_by": "Give it a visible load path or replace the mesh. Both critics read it as two stacked cushions with nothing to carry the load to the legs, and that is TRUE of this mesh — an upholstered block on an upholstered block. R8 sends the FRAME to the builder (rail + apron + leg = boxes with radii) while the cushion stays acquired; ASK-024 carries the other route, which is a bench of the drawn 498 x 1000 (1:2.0) proportion that the free shelf does not hold.",
+   "why": "PARTLY REFUTED WITH A MEASUREMENT, and the surviving half is real. C2's 'a seat at mattress height is not a seat' does not hold: the bench top measures 501 mm and the mattress top 600 mm, so it sits 99 mm BELOW the sleeping plane and inside the 400-500 mm seat band it cites. The load-path half stands and no number refutes it."
+  },
+  {
+   "assembly": "rug",
+   "identity": "Rug under the bed, 3100 x 2500, 19 mm thick with contact dents pressed by whatever actually stands on it.",
+   "exists": "not-in-drawing: D1-A, an owner-signed styling decision (the anti-monopoly rug); the furniture plan draws no rug",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Signed, and its size is derived from the bed it sits under."
+  },
+  {
+   "assembly": "deco",
+   "identity": "Two books and a folded throw on the bench.",
+   "exists": "not-in-drawing: element 8 styling; a furniture plan draws no books",
+   "held_by": "bench",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Styling that a bench in a bedroom plausibly carries; z derived from the bench top MEASURED at 501 mm (D-065), not typed."
+  },
+  {
+   "assembly": "mill@3254,4621",
+   "identity": "BF09-1, the wardrobe run: north leg (SR-05) and east leg (SR-06) as one connected carcass — gables, backs, shelves, brass hang rails, two three-drawer towers with microcement fronts, plinths, a niche mirror.",
+   "exists": "sheet:SR-05 + SR-06",
+   "held_by": "floor",
+   "operable": true,
+   "opens_by": {
+    "push_to_open": "D-097"
+   },
+   "verdict": "keep",
+   "why": "Drawn, ink-trued, owner-confirmed. The drawer fronts carry no pull BY THE SIGNED DESIGN (D6-A: 'flat handleless microcement'), which is why the answer to the critics' item is to NAME the mechanism rather than to add a handle that would contradict the owner's own decision — see D-097."
+  },
+  {
+   "assembly": "mill@2353,-450",
+   "identity": "BF09-3, the open dressing wardrobe over the bed (SR-03), joined to the BF14 bed-head slat wall (SR-01/SR-18) and carrying the folded-linen styling stacks on its shelves.",
+   "exists": "sheet:SR-03 + SR-01",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "BF09-3 is signed OPEN (owner 2026-07-16, ref image #3: 'oak veneer carcass, brass hang rails, floating drawers, open shelves - NO doors'), so it has no leaf to open and `operable` is false as a fact about the design, not an omission."
+  },
+  {
+   "assembly": "mill@306,2600",
+   "identity": "BF10 dressing cabinet (SR-20) joined to BF09-2 (SR-19), whose three double-leaf doors are the only hinged fronts in the room.",
+   "exists": "sheet:SR-20 + SR-19",
+   "held_by": "floor",
+   "operable": true,
+   "opens_by": {
+    "push_to_open": "D-097"
+   },
+   "verdict": "keep",
+   "why": "Drawn and ink-trued. Same handleless mechanism as the drawer fronts; one decision covers the room so two cabinets cannot drift apart."
+  },
+  {
+   "assembly": "mill@77,5898",
+   "identity": "The ensuite fit-out reaching into this frustum: the double vanity carcass and its acquired towels and accessories.",
+   "exists": "sheet:SR-04",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn. It is in the frustum only as a sliver past the wardrobe bay."
+  },
+  {
+   "assembly": "side_table@4702,2261",
+   "identity": "Bedside table, one acquired mesh, 501 x 375 in plan, top at 618 mm.",
+   "exists": "sheet:SR-09",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045), which is why it sits 20 mm below the sleeping plane — his decision, not a slip."
+  },
+  {
+   "assembly": "side_table@4702,-386",
+   "identity": "Bedside table, one acquired mesh, 501 x 375 in plan, top at 618 mm.",
+   "exists": "sheet:SR-10",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045), which is why it sits 20 mm below the sleeping plane — his decision, not a slip."
+  },
+  {
+   "assembly": "nightstand@4786,2283",
+   "identity": "Table lamp on the north bedside table: base, stem, shade, emitter.",
+   "exists": "not-in-drawing: element 8 / D3 styling; the furniture plan draws the table but not what stands on it",
+   "held_by": "side_table@4702,2261",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A bedside table with a lamp is what the spec's own item name says it is ('โต๊ะข้างเตียง เหนือ (มีโคมไฟ)'), and the lamp rests on the measured top."
+  },
+  {
+   "assembly": "e5_cove_pelmet",
+   "identity": "The cove pelmet that hides the BF14 wall-wash strip: a 20 mm blade standing off the slat wall at 2650-2790.",
+   "exists": "not-in-drawing: element 5 RCP; a furniture plan carries no lighting",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "It exists to conceal a real source that is in the frame; a wall-wash cove without a pelmet shows its own lamp."
+  },
+  {
+   "assembly": "e5_cove_pelmet_ret_n",
+   "identity": "The pelmet's north return, closing its end against the wall.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A pelmet with an open end shows the strip from the side."
+  },
+  {
+   "assembly": "e5_trim_dl5",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+  },
+  {
+   "assembly": "e5_trim_dl8",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+  },
+  {
+   "assembly": "e5_trim_dl9",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+  },
+  {
+   "assembly": "e5_trim_dl16",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+  },
+  {
+   "assembly": "e5_trim_dl17",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+  },
+  {
+   "assembly": "e5_trim_bf14_wash_3",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "MEASURED PROBLEM, filed rather than fixed: the trim sits at z 2734-2740 and the ceiling slab's soffit is at 2800, so it hangs 60 mm below the surface it is recessed into. Either the ceiling is missing a dropped soffit at 2740 or the trims are placed against a plane nobody built. This is exactly what R10 asks and no existing rung sees it — placement_check's FLOATING branch is escaped because the lens touches the trim."
+  },
+  {
+   "assembly": "e5_lens_dl5",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "Rides its trim; carries the trim's unresolved height (above)."
+  },
+  {
+   "assembly": "e5_lens_dl8",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "Rides its trim; carries the trim's unresolved height (above)."
+  },
+  {
+   "assembly": "e5_lens_dl9",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "Rides its trim; carries the trim's unresolved height (above)."
+  },
+  {
+   "assembly": "e5_lens_dl16",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "Rides its trim; carries the trim's unresolved height (above)."
+  },
+  {
+   "assembly": "e5_lens_dl17",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "Rides its trim; carries the trim's unresolved height (above)."
+  },
+  {
+   "assembly": "e5_lens_bf14_wash_3",
+   "identity": "The emitting aperture disc inside a downlight trim.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "unresolved",
+   "since": "2026-08-17",
+   "why": "Rides its trim; carries the trim's unresolved height (above)."
+  },
+  {
+   "assembly": "bf14_sconce_0",
+   "identity": "Wall sconce on the BF14 slat wall above the bed, 60 mm cylinder at 1480-1620 mm.",
+   "exists": "not-in-drawing: element 5 RCP; the furniture plan carries no fittings",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Mounted on the slat wall it lights. C2's related item — that they are LIT and nothing switches them — is answered by the bedside switch plate this round adds, not by removing the sconce."
+  },
+  {
+   "assembly": "bf14_sconce_1",
+   "identity": "Wall sconce on the BF14 slat wall above the bed, 60 mm cylinder at 1480-1620 mm.",
+   "exists": "not-in-drawing: element 5 RCP; the furniture plan carries no fittings",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Mounted on the slat wall it lights. C2's related item — that they are LIT and nothing switches them — is answered by the bedside switch plate this round adds, not by removing the sconce."
+  },
+  {
+   "assembly": "bf14_sconce_0_lens_up",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "bf14_sconce_0_lens_dn",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "bf14_sconce_1_lens_up",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "bf14_sconce_1_lens_dn",
+   "identity": "The up/down emitting aperture disc of a sconce.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
+  },
+  {
+   "assembly": "skirt",
+   "identity": "Skirting: a 100 x 15 mm painted band where a plastered wall meets the oak floor, run along the room outline and stopped at every doorway and at every floor-standing mass that backs onto that wall.",
+   "exists": "not-in-drawing: the wall-floor junction is an interior-elevation detail and this is a FURNITURE plan; the dimensions are read off a DR of Thai residential practice for the 2700-3200 mm ceiling band (D-098)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "C2 p2r47 item 10 filed its absence on every wall. It is skirting rather than the contemporary recessed shadow gap because a skirting is a BOX and a shadow gap is a CUT into the wall prism — R8's test sends the box to the builder, and the gap stays available as this row's named reversal."
+  },
+  {
+   "assembly": "svc",
+   "identity": "Wall services: an 86 x 86 mm faceplate beside the bedroom door at 1225 mm AFFL (the room switch), and per bedside a switch at 700 mm and a socket plate at 325 mm on the bed-head wall.",
+   "exists": "not-in-drawing: a furniture plan carries no electrical; heights are DR-sourced Thai residential practice (D-098's same unit)",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "fix",
+   "why": "C2 p2r47 item 10, and its grounding is the sharpest R10 sentence either critic wrote: the sconces over the bed are LIT, so they must be switched from somewhere reachable. Every position is derived from the opening or the nightstand it serves, so moving the door moves the switch. The carrier is named as the CLASS 'wall' and not as one mass because the three plates sit on three DIFFERENT walls — the door switch on the east wall, the two bedside plates on the BF14 slat wall standing in front of it. The checker refused the first draft of this row, which named wall_4: the plate is nowhere near it. NOTE p2r49: filed as FIX on the day it was built — the blind critic caught the mounting detail in the first frame it appeared in, which is the ladder working rather than a defect surviving.",
+   "fix_by": "Give each faceplate a flat MOUNTING BLOCK behind it. C2 filed it against the very object this round added (p2r49 item 16: \"the switch plate floats on the slat wall with no mounting block, recess or shadow\") and it is right as construction: the plate spans x5193-5203, i.e. it lands flush with the slat faces and bridges the gaps between them, and you cannot screw a faceplate to a slat. A real installation cuts the slats back to a flat plaster or ply pad. The pad is a box with radii, so R8 sends it to the builder."
+  }
+ ],
+ "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."
+}

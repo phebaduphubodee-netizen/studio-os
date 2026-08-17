@@ -70,8 +70,16 @@ argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 CACHE, OUT = argv[0], argv[1]
 ONLY = set(argv[2].split(",")) if len(argv) > 2 and argv[2] else None
 
-COVER_CUT = 0.80
-FALL_CUT = 2
+# THE CUTS COME FROM `bedcloth_rules` AND NOTHING IS RE-TYPED HERE (p2r49). Until
+# this line these three were LOCAL COPIES, and the comment at the candidate loop
+# already claimed they were not — "THE CUTS COME FROM bedcloth_rules, NOT FROM A COPY
+# HERE (p2r47)" — while `COVER_CUT = 0.80` sat eighty lines above it, shadowing the
+# rule and being passed back into it. That is this module's own opening defect, alive
+# inside the fix written for it: a rule spread across the callers is a rule with one
+# exemption per caller. They agreed today; nothing made them agree tomorrow.
+COVER_CUT = fit.COVER_CUT
+FALL_CUT = fit.FALL_CUT
+DUVET_CUT = fit.DUVET_SHARE_CUT
 MAX_SCALE = 1.0
 
 matt = bpy.data.objects["bed__mattress"]
@@ -175,6 +183,12 @@ for slug in sorted(os.listdir(CACHE)):
         cov_obj = bpy.data.objects.get(st.get("cover_name") or "")
         cov_edge = fit.edge_mm(cov_obj) if cov_obj is not None else None
         fine = fit.fineness(edge, CONTROL)
+        # IS THE BED MADE (p2r49, D-095). The three cuts above ask whether the set
+        # FITS and the fourth what it is MADE OF; none of them can see that a flat
+        # spread and a lofted duvet answer `coverage` identically. This is the ray
+        # that separates them, and its cut is read off delivered work — the only cut
+        # on this bench that is not a number someone here chose.
+        _made = fit.made_bed(st.get("duvet_share"), DUVET_CUT, st.get("loft_curve"))
         row.update({
             "edge_mm": None if edge is None else round(edge, 1),
             "cover_edge_mm": None if cov_edge is None else round(cov_edge, 1),
@@ -185,20 +199,24 @@ for slug in sorted(os.listdir(CACHE)):
             "buried": st["parts_buried"], "scale": round(st["scale"], 3),
             "rot": st["rot"], "native_mm": st["native_mm"],
             "coverage": round(st["coverage"], 3),
+            "duvet_share": round(st.get("duvet_share") or 0.0, 3),
+            "loft_curve": st.get("loft_curve"), "made": _made,
             "relief_mm": round(st["relief_mm"], 1),
             "fall_sides": st["fall_sides"], "need_scale": round(need, 3),
             "size_ok": size_ok, "covered": covered, "drapes": drapes,
-            "survives": bool(row3["survives"] and fine["fine_enough"] is True)})
+            "survives": bool(row3["survives"] and _made["made"] is True)})
         print(f"BENCH {slug:14s} {len(st['field'])}F+{len(st['extra'])}E of "
               f"{st['parts_total']:2d}  scale {st['scale']:5.3f}  "
-              f"cover {st['coverage']*100:5.1f}%  relief {st['relief_mm']:6.1f} mm  "
+              f"cover {st['coverage']*100:5.1f}%  DUVET {(_made.get('share') or 0)*100:5.1f}%  "
+              f"relief {st['relief_mm']:6.1f} mm  "
               f"fall {st['fall_sides']}/4  need {need:5.3f}x"
               f"{'' if size_ok else '!'}  "
               f"edge {('%6.1f mm' % edge) if edge else '   n/a '}"
               f"{(' (cover %.1f)' % cov_edge) if cov_edge else ''}  "
               f"{'SURVIVES' if row['survives'] else 'out: ' + ','.join(
                   k for k, ok in (('cover', covered), ('drape', drapes),
-                                  ('fine', fine['fine_enough'])) if ok is not True)}")
+                                  ('made', _made['made'])) if ok is not True)}"
+              f"  [fine {fine['fine_enough']} — REPORTED, not a cut since p2r49]")
     rows.append(row)
     for nm in names:
         ob = bpy.data.objects.get(nm)

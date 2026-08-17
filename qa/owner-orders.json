@@ -204,11 +204,28 @@
       "retired_by": null,
       "status": "not-obeyed",
       "since": "2026-08-10",
-      "not_obeyed_because": "D-021 listed 'R1 cap' among the rungs that do not apply to the room lane, on the grounds that caps are declared per unit in qa/curriculum-caps.json — and no DELIV-001 row was ever added to that file. `grep -c DELIV-001 qa/curriculum-caps.json` returns 0, so the cap has never been able to bite on the only lane being built, across 44 rounds. The stops themselves still happen (R1 stopped this lane repeatedly); it is the COUNTER that is absent.",
+      "not_obeyed_because": "HALF OF IT IS NOW DONE AND THE OTHER HALF IS HIS. p2r49 found the ledger's own reason was too kind: adding a DELIV-001 row to qa/curriculum-caps.json would have changed nothing, because `count_rounds` looks for spec_r<N>.json files this lane has none of and `count_full_frames` needs a spec `image` key the canonical spec does not carry — both returned 0, and 0 passes any cap. The BUILDER'S HALF is built: `rule_gate.count_rounds_room` (the highest round with a gate artefact, because R2 makes the artefact the round's record) and `count_full_frames_room` (beauty PNGs at the deliverable size with the id/mat masks removed — the pixel test alone over-counted this lane by nearly 2x), called from `check_room`, with 'R1 cap' removed from ROOM_LANE_NOT_APPLICABLE. The spend now prints at every gate: 47 rounds, 46 full frames, against a builder-proposed 12/20 in the plan that nothing ever enforced. THE NUMBER IS HIS: the caps file's own law says only the owner sets or extends a cap, so this row stays not-obeyed until ASK-023 is answered. Blocking the render instead would halt the lane on an unanswered ask, which R3 forbids by name.",
       "blocked_by": "ASK-023",
       "obeyed_where": "qa/curriculum-caps.json, pipeline/scripts/rule_gate.py",
-      "obeyed_how": "R1's stop-loss is practised and recorded in the gates; the numeric cap for this lane is his to set, which is why this row is blocked rather than restartable.",
-      "obeyed_assert": []
+      "obeyed_how": "the counter runs and prints; the cap number is open as ASK-023 and only he may set it",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "^def count_rounds_room\\(gate_dir\\):",
+          "why": "the lane's own round counter exists (builder half)"
+        },
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "\\(\\\"R1 cap\\\", \\\"round/frame caps are declared per reproduction unit",
+          "absent": true,
+          "why": "R1 cap may not be declared not-applicable to the only lane being built — re-declaring it re-breaks this order"
+        },
+        {
+          "file": "qa/curriculum-caps.json",
+          "pattern": "\\\"DELIV-001\\\"[\\s\\S]{0,120}?\\\"cap_rounds\\\": \\d",
+          "why": "THIS ONE IS EXPECTED TO FAIL and that is the honest interim state: a NUMERIC cap for DELIV-001 exists only when the owner sets one. The row prints not-obeyed until it holds"
+        }
+      ]
     },
     {
       "id": "ORD-2026-08-08-build-order-dimension-objects-light",
@@ -246,11 +263,22 @@
       "retired_by": null,
       "status": "not-obeyed",
       "since": "2026-08-13",
-      "not_obeyed_because": "p2r27 R1-STOPPED the mechanism after three quick cycles and shipped it OFF (`_ADULT_SCALE = False`, re-enterable only with --adult-scale), because the physics is real: the drawn bay is too shallow to hang an adult garment more than one deep. The declared real fix is PROCUREMENT of a flat-file garment set, which is his call per R8. So every default render still hangs child-scale garments, and that is a fact this ledger prints rather than a state anyone chose.",
-      "blocked_by": "ASK-003",
+      "not_obeyed_because": "THE DIAGNOSIS IN THIS ROW WAS WRONG FOR FIVE DAYS, and p2r49 replaced it with a measurement. It blamed the RUN term and routed the fix to a money ask (ASK-003) that was never needed. Measured on the p2r47 built scene: rendered garment height equals `s_fit x 879.3` to the millimetre AND equals styling's loft-placeholder z-span to the millimetre on all nine rails (690/640/653/681/715/664/614/705/655). The binding term was the DROP, and its floor came from a 690 mm box we drew ourselves — an asset this repo ASSERTS at 879.3 mm was being shrunk to fit our own guess. WHAT SHIPPED: the drop is now DERIVED from the rail down to whatever is really under it in the built scene — 1005 / 1002 / 1447 mm against placeholders of 847 / 737 / 1053 — which is millwork's own signed short-hang (D4-A, 1000-1150). WHAT WAS TRIED AND KILLED IN THE SAME HOUR: making the run decide the COUNT rather than the size. The R5 playblast refuted it outright — `cce50840` stacks its four garments FRONT TO BACK, so every cluster occupies the same run and culling cannot shrink the row; three garments were cut per rail, the survivor still overflowed, and the wardrobe rendered as bare hangers. Reverted, with the reason written at `_GARMENT_FIT_BY_COUNT`. WHAT IS LEFT: one hanger spans 573 mm and the drawn bay run is 400-466 mm, so a garment hung ACROSS the rail does not fit the bay the client's own sheet draws. AND THE DROP FIX IS MEASURED INERT AT THIS GEOMETRY, which is said here rather than claimed away: with the run term restored, s_fit comes back 0.785/0.728/0.742/0.774/0.813/0.756/0.698/0.802/0.745 — IDENTICAL to p2r47 on all nine rails, because the run already bound tighter than the drop everywhere. The placeholder defect was real and is now gone; it moves no pixel today. Garments still render 614-715 mm against a real shirt 700-760. It is NOT a procurement block: the set is already acquired and already scale-asserted.",
       "obeyed_where": "pipeline/scripts/build_room.py",
-      "obeyed_how": "not yet — the flag exists and ships off; obedience arrives with the acquired flat-file set.",
-      "obeyed_assert": []
+      "obeyed_how": "half: the drop is derived from the wardrobe instead of from our own placeholder. The remaining half is the hang orientation.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "^\\s+z0 = _z_bot$",
+          "why": "the drop is the DERIVED clear space under the rail, not the placeholder's z-span — the half of this order that is carried out"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "GARMENT_SCALE_FLOOR = 0\\.8",
+          "why": "THIS ONE IS EXPECTED TO FAIL, and it is the definition of done. The floor refuses a set that reads as children's clothes; at 0.6 it admits 528 mm, which is child scale inside the rule written to refuse child scale. Obedience is when the geometry lets the floor stand at 0.8 (703 mm) WITHOUT emptying the rails — i.e. when the hang orientation is solved, not when a number is raised"
+        }
+      ],
+      "restart_by": "Hang the garments FACE-ON — yaw 90, shoulder span into the carcass DEPTH instead of across the rail run. The A/B that refused that at r6 (D-031) ran against a depth slot taken from the SAME styling placeholder this round proved wrong for the drop, so it is not settled evidence. It is the third mechanism at this site, so R1 requires it to enter as a NEW mechanism with its own gate — not as a re-turn of `_ADULT_SCALE`'s angle sweep, which is stopped and stays off."
     },
     {
       "id": "ORD-2026-08-12-bed-cloth-still-looks-wrong",
@@ -288,13 +316,26 @@
       ],
       "standing": true,
       "retired_by": null,
-      "status": "not-obeyed",
-      "since": "2026-08-15",
-      "not_obeyed_because": "It ran on p2r28 and p2r29, was 'deliberately skipped' at r30, and from r31 onward is not mentioned in any gate — thirteen rounds and nine full-fidelity frames. `_private/deliv-001/gen-diff/` holds exactly two run dirs. Nothing decided this; it stopped, which is the same shape as the twenty-one dropped asks one direction over. D-048's own reverse_by describes removing the step, and that removal was never taken either.",
-      "restart_by": "run gen_diff on the p2r44 frame and put its variants in the gate; if the protocol is genuinely not worth its wall time, say so in a decision row and retire D-048 — but it may not simply stop.",
-      "obeyed_where": "qa/open-decisions.json",
-      "obeyed_how": "not yet — wired as a per-round step at D-048 and last run 2026-08-14.",
-      "obeyed_assert": []
+      "status": "obeyed",
+      "obeyed_where": "pipeline/scripts/build_room.py, pipeline/scripts/gen_diff.py",
+      "obeyed_how": "p2r49: gen_diff had ZERO call sites in the repo — it was a manual CLI that ran twice on 2026-08-14 and stopped, which is R13's exact shape (an order carried out as an OPT-IN is an order that was not carried out, because nobody types the flag; here there was not even a flag to type). It is now a STEP in the render path: `_gen_diff(name)` runs after every full-fidelity eye frame, spawned out of process for the layer reason (`google.genai` is not in Blender's bundled Python) and non-fatal because a variant is a hypothesis generator, not a gate. It cannot go quiet: a failed run prints NOT RUN with the reason, and turning it off costs an environment variable that prints when it is used.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "^_GEN_DIFF_EVERY_ROUND = True$",
+          "why": "the default itself, at column 0 — an indented copy or a comment cannot satisfy it"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "^\\s+_gen_diff\\(name\\)$",
+          "why": "the CALL in the render path. The constant alone is the p2r46 defect (an assertion that asks whether a thing is NAMED, not whether it RUNS); this line is what makes the round actually fire it"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "\\\"gen_diff\\.py\\\"\\), png",
+          "why": "the argv fragment, so the spawn survives a rename of the wrapper"
+        }
+      ]
     },
     {
       "id": "ORD-2026-08-14-bed-cloth-is-acquired",

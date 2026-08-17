@@ -242,18 +242,64 @@ def test_no_control_is_the_third_state_and_never_a_pass():
 
 
 def test_built_survives_blocks_on_each_clause_by_name():
-    ok = BR.built_survives(0.902, 2, 9.0, {"pillow": 10.3})
+    ok = BR.built_survives(0.902, 2, 9.0, {"pillow": 10.3}, share=0.91)
     assert ok["survives"] and ok["blocked_by"] == []
-    drape = BR.built_survives(0.812, 1, 9.0, {"pillow": 10.3})
+    drape = BR.built_survives(0.812, 1, 9.0, {"pillow": 10.3}, share=0.91)
     assert drape["blocked_by"] == ["drape"]
-    coarse = BR.built_survives(0.902, 2, 43.2, {"pillow": 10.3})
-    assert coarse["blocked_by"] == ["fineness"]
-    blind = BR.built_survives(0.902, 2, 43.2, {})
-    assert blind["blocked_by"] == ["fineness"], (
+    half = BR.built_survives(0.940, 4, 9.0, {"pillow": 10.3}, share=0.45)
+    assert half["blocked_by"] == ["made"], (
+        "p2r47's frame: 94% coverage, 4/4 flanks, and a bed a blind critic read as "
+        "half made — the whole point of D-095 is that the first two cannot see it")
+    blind = BR.built_survives(0.902, 2, 9.0, {"pillow": 10.3}, share=None)
+    assert blind["blocked_by"] == ["made"], (
         "a cut that could not run still blocks — it does not pass by default")
-    shipped = BR.built_survives(0.812, 1, 43.2, {"pillow": 10.3})
-    assert shipped["blocked_by"] == ["drape", "fineness"], (
-        "p2r44's built frame, refused by both new clauses")
+    both = BR.built_survives(0.812, 1, 9.0, {"pillow": 10.3}, share=0.45)
+    assert both["blocked_by"] == ["drape", "made"]
+
+
+def test_fineness_is_measured_and_reported_and_no_longer_blocks():
+    """p2r49 (D-096, plan row P2r-17). D-094 measured the cut's own control — the
+    acquired pillows at 4.5 and 10.3 mm — drawing the SAME critic complaint as the
+    cover it judges, so it cannot separate the two things it is asked to decide
+    between. It keeps measuring; it stops deciding."""
+    coarse = BR.built_survives(0.902, 2, 43.2, {"pillow": 10.3}, share=0.91)
+    assert coarse["fine_enough"] is False, "still measured, still reported"
+    assert coarse["fineness"]["ratio"] > 4.0
+    assert "fineness" not in coarse["blocked_by"]
+    assert coarse["survives"] is True, "a coarse mesh that MAKES the bed now ships"
+    cannot = BR.built_survives(0.902, 2, 43.2, {}, share=0.91)
+    assert cannot["fineness"]["ran"] is False
+    assert cannot["survives"] is True, (
+        "and a fineness that COULD NOT RUN no longer sinks a frame either — the "
+        "clause that replaced it is the one that has to be answerable")
+
+
+def test_made_bed_is_the_third_clause_and_needs_an_outside_cut():
+    """The cut is passed IN, never stored in the rule, so the file that records where
+    the number was read off is the file that carries it."""
+    assert BR.made_bed(0.95, None)["ran"] is False
+    assert BR.made_bed(None, 0.80)["ran"] is False
+    assert BR.made_bed(0.95, 0.80)["made"] is True
+    row = BR.made_bed(0.45, 0.80)
+    assert row["made"] is False and abs(row["shortfall"] - 0.35) < 1e-9
+
+
+def test_duvet_share_counts_bare_plan_in_the_denominator():
+    """A bare patch of mattress is not made, it is bare — so points with NO cloth
+    over them must count against the share, not be dropped from it."""
+    hs = [120.0, 120.0, 120.0]          # three lofted points
+    assert abs(BR.duvet_share(hs, 3) - 1.0) < 1e-9
+    assert abs(BR.duvet_share(hs, 6) - 0.5) < 1e-9, "three of six plan points bare"
+
+
+def test_loft_curve_publishes_the_threshold_s_own_sensitivity():
+    """p2r47's set, from `lies_on_the_bed`'s own measurements: the sheet tops out at
+    7.5 mm and the duvet at 146.4. Every line between 20 and 140 returns the same
+    answer, which is the fact that makes 30 mm not a knob."""
+    hs = [7.5] * 55 + [146.4] * 45
+    curve = BR.loft_shares(hs, 100)
+    assert curve[10.0] == 0.45 and curve[120.0] == 0.45, "insensitive across the band"
+    assert curve[5.0] == 1.00, "below the sheet's own height everything counts"
 
 
 def test_fineness_is_a_comparison_so_it_re_aims_itself():

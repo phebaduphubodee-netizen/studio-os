@@ -37,6 +37,104 @@ LOFT_M = 0.32
 COVER_CUT = 0.80
 FALL_CUT = 2
 
+# ---------------------------------------------------------------------- p2r49
+# DUVET SHARE — "is this bed MADE", asked apart from "is there cloth on it".
+#
+# D-095, and the eye found it, not the instrument. `coverage` counts plan points
+# with ANY cloth above the mattress and returned 94.0% for the set that shipped at
+# p2r47; the blind critic's first item was that the bed is only half made and
+# "reads as a fitted mattress protector". Both statements are true at once, because
+# that set is a flat 1734 x 2017 mm spread covering the whole plan plus a
+# 2144 x 1438 x 486 mm duvet lying across half of it. A metric that cannot separate
+# two things it is being asked to decide between is this repo's own named defect.
+#
+# THE DISCRIMINATOR IS LOFT, AND IT IS NOT A KNOB. A duvet is filled, so it stands
+# proud of the sleeping plane; a sheet or a protector hugs it. `lies_on_the_bed`
+# already recorded the measurement on the very set this rule was written from —
+# "the sheet tops out 7.5 mm above the mattress, the duvet 146.4, the folded runner
+# 94.1". Any line drawn between about 20 and about 140 mm returns the same answer
+# on that set, which is why `LOFT_CURVE_MM` is published beside the number: the
+# share is reported at EVERY cut so a reader can see for themselves whether the
+# answer depends on where the line was drawn. A threshold whose sensitivity is
+# printed is not taste wearing a threshold.
+DUVET_LOFT_MM = 30.0
+LOFT_CURVE_MM = (5.0, 10.0, 20.0, 30.0, 40.0, 60.0, 80.0, 120.0)
+
+# THE CUT IS READ OFF DELIVERED WORK AND IT IS THE DELIVERED MINIMUM (R4b: anchors
+# judge, a cut is never typed). Derivation of record, with every reading and the
+# method: `qa/duvet-share-anchor-readings.json`, 2026-08-17.
+#
+# Three fresh-context sighted readers (the R10b local rung — no egress) were each
+# given six of the friend's delivered bedroom renders plus our own p2r47 frame,
+# UNLABELLED and at a different position per reader, and one written method: of the
+# VISIBLE sleeping surface — pillows and the area under them, headboard, base and all
+# drape below the mattress-top line excluded — what share carries the TOP BEDDING
+# LAYER (a duvet/quilt/coverlet with loft and folds) rather than a tight sheet, a
+# protector, or bare mattress.
+#
+#   DELIVERED, n = 7 legible beds of 18 sampled:  80 · 90 · 95 · 95 · 100 · 100 · 100
+#                                                 min 80, median 95, and EVERY ONE
+#                                                 independently classed "made".
+#   OURS (p2r47), three independent readings:     25 · 30 · 40, and every one classed
+#                                                 "half-made". Two readers reached for
+#                                                 the words "fitted sheet / mattress
+#                                                 cover" with no prompting — the blind
+#                                                 critic's sentence, arrived at again
+#                                                 from the picture alone.
+#
+# SO THE CUT IS 0.80 BECAUSE THAT IS THE WORST MADE BED THE FRIEND HAS SHIPPED, not
+# because 0.80 is a comfortable number. Two limits are printed rather than papered
+# over: the sample is 7, so this is a MINIMUM and not a percentile (`cut_thresholds`
+# in this repo refuses a percentile under 30 frames, and it is right to); and the
+# readers measure IMAGE area while this rule measures PLAN area, which one reader
+# priced unprompted at 30% image against about 45% plan on our own frame. Nothing
+# here rectifies one space to the other. It decides nothing today — our frame misses
+# by 35 points in either space — but a candidate landing between 0.75 and 0.85 would
+# have to resolve that before this cut could honestly refuse it.
+DUVET_SHARE_CUT = 0.80
+
+
+def loft_shares(heights_mm, n_points, cuts=LOFT_CURVE_MM):
+    """{cut_mm: share of the mattress plan standing at least that far proud}.
+
+    `heights_mm` is one entry per plan point that HAS cloth over it; `n_points` is
+    the whole plan grid, so points with no cloth at all count in the denominator
+    (a bare patch of mattress is not made, it is bare).
+    """
+    n = max(1, int(n_points))
+    hs = [float(h) for h in (heights_mm or [])]
+    return {float(c): sum(1 for h in hs if h >= c) / float(n) for c in cuts}
+
+
+def duvet_share(heights_mm, n_points, loft_mm=DUVET_LOFT_MM):
+    """Share of the mattress plan wearing cloth that stands `loft_mm` proud."""
+    n = max(1, int(n_points))
+    return sum(1 for h in (heights_mm or []) if float(h) >= loft_mm) / float(n)
+
+
+def made_bed(share, cut, curve=None):
+    """Is this a MADE bed — the one question `coverage` could not be asked.
+
+    `cut` comes from DELIVERED WORK and never from us (R4b: anchors judge). It is
+    passed in rather than stored here so that the file recording where the number
+    was read off is the file that carries it, and a caller with no anchor-derived
+    number gets `ran: False` rather than a default that would quietly become the
+    standard. "Could not look" must never print like "looked and it was fine".
+    """
+    if share is None or cut is None:
+        return {"ran": False, "made": None, "share": share, "cut": cut,
+                "why": ("no duvet share was measured" if share is None else
+                        "no anchor-derived cut was supplied — this rule is a "
+                        "comparison against delivered work and has nothing to "
+                        "compare with")}
+    row = {"ran": True, "made": bool(share >= cut - 1e-9),
+           "share": float(share), "cut": float(cut),
+           "shortfall": max(0.0, float(cut) - float(share))}
+    if curve:
+        row["curve"] = {str(k): round(float(v), 3)
+                        for k, v in sorted(curve.items(), key=lambda kv: float(kv[0]))}
+    return row
+
 
 def limits_for(rect, top_z, base_z, loft=LOFT_M):
     """(limit_w, limit_d, limit_h), (cover_w, cover_d) — the CEILING a cover may not
@@ -260,8 +358,29 @@ def fineness(cover_edge_mm, control_edges_mm):
 
 
 def built_survives(coverage, fall_sides, cover_edge_mm=None, control_edges_mm=None,
-                   cover_cut=COVER_CUT, fall_cut=FALL_CUT):
+                   cover_cut=COVER_CUT, fall_cut=FALL_CUT,
+                   share=None, share_cut=DUVET_SHARE_CUT, curve=None):
     """The same cuts, re-applied to numbers measured on the BUILT SCENE.
+
+    p2r49 SWAPPED THE THIRD CLAUSE, and did not simply drop one. FINENESS is now
+    MEASURED AND REPORTED AND DOES NOT BLOCK (D-096, carrying out plan row P2r-17);
+    MADE-BED blocks in its place. The reason is D-094's measurement and not a
+    preference: the fineness cut's control is "the coarsest bought cloth already
+    accepted in this frame", which at p2r47 was the acquired pillows at 4.5 and
+    10.3 mm — and BOTH independent critics filed those pillows under the SAME item
+    they filed the cover under ("One systemic error, not four"). A comparison whose
+    reference object draws the complaint cannot separate the two things it is being
+    asked to decide between; that is this repo's own named defect, and the honest
+    move for a cut that cannot decide is to stop pretending it does. It keeps
+    printing, because the number is still a fact about the mesh.
+
+    THE COUNT OF CUTS DOES NOT FALL. `size_ok` went at p2r47 and `fineness` goes
+    here, and both went because a measurement showed them refusing candidates for
+    reasons unrelated to what anyone was complaining about. What arrives with this
+    edit is a cut GROUNDED OUTSIDE THIS LANE for the first time on this bench — the
+    duvet share, read off the friend's delivered beds (see `DUVET_SHARE_CUT`). A
+    session that demotes cuts and adds none is thinning its own gate; this one
+    replaces a cut that could not see the defect with one built from it.
 
     WHY A SECOND APPLICATION IS NOT A DUPLICATE, and it is the third instance of the
     shape this file was written to end. The audition stages a candidate and measures
@@ -287,13 +406,15 @@ def built_survives(coverage, fall_sides, cover_edge_mm=None, control_edges_mm=No
     fine = fineness(cover_edge_mm, control_edges_mm)
     row["fineness"] = fine
     row["fine_enough"] = fine["fine_enough"]
+    made = made_bed(share, share_cut, curve)
+    row["made_bed"] = made
+    row["made"] = made["made"]
     # A cut that could not run is NOT a pass. `survives` is the three fit clauses;
     # `blocks` is what a caller acts on, and it names could-not-run separately.
-    row["survives"] = bool(row["covered"] and row["drapes"]
-                           and fine["fine_enough"] is True)
+    row["survives"] = bool(row["covered"] and row["drapes"] and made["made"] is True)
     row["blocked_by"] = [k for k, ok in (("cover", row["covered"]),
                                          ("drape", row["drapes"]),
-                                         ("fineness", fine["fine_enough"]))
+                                         ("made", made["made"]))
                          if ok is not True]
     return row
 

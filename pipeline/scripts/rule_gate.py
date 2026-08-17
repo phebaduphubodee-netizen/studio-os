@@ -467,8 +467,6 @@ ROOM_LANE_NOT_APPLICABLE = (
     ("absent_baseline ratchet", "no manifest, so nothing to ratchet"),
     ("continuity", "a client spec is not a spec_r<N> round series, so there is "
                    "no previous round to diff against"),
-    ("R1 cap", "round/frame caps are declared per reproduction unit in "
-               "qa/curriculum-caps.json"),
     ("R9 contacts", "the room grammar declares no `contacts`; this lane's "
                     "placement derivation runs in placement_gate from build_room"),
     ("R11 pixels", "STRUCTURALLY INAPPLICABLE — pixel_check measures a feature in "
@@ -636,6 +634,38 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
     # passed separately — and when it is not, the roster says so rather than
     # reporting a rung that checked nothing.
     v += model_assertions(spec, roster)
+    # R1's COUNTER, on the lane that has spent the most and been counted the least
+    # (p2r49, ORD-2026-07-28). It is wired here rather than left to `check()` for the
+    # same reason the owner-channel rungs are: `check()` is the reproduction lane's
+    # entry point and this lane never calls it, so "declared per reproduction unit"
+    # meant "never counted at all" for 44 rounds. The NUMBER is still the owner's —
+    # the caps file's own law says only he sets or extends one — so a row with no
+    # number prints as a number he owes, never as a pass.
+    _u = unit or "DELIV-001"
+    _row = load_caps(_u)
+    _rounds = count_rounds_room(os.path.join(
+        REPO_ROOT, "projects/PRJ-2026-002_c001-house/04_visualization"))
+    _frames = count_full_frames_room(os.path.join(REPO_ROOT, "pipeline/output"),
+                                     (2400, 1800))
+    _cap_v = cap_check(_row, _rounds, _frames)
+    _declared = bool(_row and _row.get("cap_rounds") is not None
+                     and _row.get("cap_full_frames") is not None)
+    note("R1 cap", True,
+         f"{_rounds} round(s) / {_frames} full frame(s) spent; cap "
+         + (f"{_row.get('cap_rounds')}/{_row.get('cap_full_frames')}" if _declared
+            else "NOT SET — his call, ASK-023"))
+    if _declared:
+        v += _cap_v
+    else:
+        # NOT a violation, and this is the R13 third state rather than a loophole:
+        # only the owner may set a cap, so blocking here would halt the lane on an
+        # unanswered ask — which R3 forbids by name. What may never happen is
+        # silence, so the spend prints on every gate run and the ask stays open.
+        print(f"  R1 CAP: DELIV-001 has spent {_rounds} round(s) and {_frames} "
+              f"full-fidelity frame(s). No cap is declared — only the owner sets one "
+              f"(caps file law), and ASK-023 carries the question. The counter is the "
+              f"builder's half of ORD-2026-07-28 and it is now running; the number is "
+              f"his half and it is open.")
     for name, why in ROOM_LANE_NOT_APPLICABLE:
         note(name, False, "not applicable to this lane: " + why)
     return v
@@ -1304,6 +1334,65 @@ def count_full_frames(render_dir, wh):
     return sum(1 for f in os.listdir(render_dir)
                if f.lower().endswith(".png")
                and _png_size(os.path.join(render_dir, f)) == tuple(wh))
+
+
+# --- R1 ON THE ROOM LANE (p2r49) ---------------------------------------------
+# ORD-2026-07-28 — *"project นี้ไม่ยั่งยืน เพราะคนทำ (คุณ) มองไม่เห็นว่าตัวเองกำลังทำอะไร
+# และไม่สามารถหยุดสิ่งที่กำลังทำไปในทางที่ผิดไว้ได้"* — has been NOT-OBEYED since
+# 2026-08-10, and the reason turned out to be worse than the ledger said. The ledger
+# said no DELIV-001 row existed in the caps file. Adding one would have changed
+# nothing: `count_rounds` looks for `spec_r<N>.json` files, of which this lane has
+# none, and `count_full_frames` needs `spec["image"]["w"/"h"]`, which the canonical
+# spec does not carry — so both counters return 0 on this lane, and 0 passes any cap.
+# A cap that counts zero forever is the "mute dressed as compliance" shape the
+# function below this one was written to prevent, reproduced one level up.
+#
+# THE COUNTERS BELOW ARE THIS LANE'S OWN, and they count what this lane actually
+# produces. Neither number is typed and neither is self-reported.
+ROOM_ROUND = re.compile(r"^gate-DELIV001-P\d+r(\d+)-\d{4}-\d{2}-\d{2}\.md$")
+_MASK_TOKENS = (".idmask.", ".matmask.")
+
+
+def count_rounds_room(gate_dir):
+    """ROUNDS = the highest round number that has a GATE ARTIFACT on disk.
+
+    Not the file COUNT: rounds that produced no artefact (r32, r40, r42, r45 are
+    missing from the series) would hand the unit free rounds, which is exactly the
+    under-report `count_rounds` documents on the reproduction lane. The gate artefact
+    is the right unit because R2 makes it the ROUND'S RECORD — a round with no
+    artefact is a round that did not close, and it still spent.
+    """
+    if not gate_dir or not os.path.isdir(gate_dir):
+        return 0
+    ns = [int(m.group(1)) for m in
+          (ROOM_ROUND.match(f) for f in os.listdir(gate_dir)) if m]
+    return max(ns) if ns else 0
+
+
+def count_full_frames_room(render_dir, wh, prefix="room_"):
+    """FULL FRAMES at the deliverable size, WITH THE MASKS TAKEN OUT.
+
+    `count_full_frames` counts every PNG at the spec's image size, and on this lane
+    that OVER-counts by very nearly 2x: `id_mask` and `map_census_mask` write at
+    exactly DELIVERABLE_RES too, so 95 PNGs match the size and only 46 are beauty
+    frames. The caps file's own `_counting` note warns that a filename-based count was
+    wrong by 3x on the other lane; the pixel-based count is wrong by 2x here, for the
+    opposite reason. Both readings need the other's correction, so this one keeps the
+    pixel test AND removes the two mask tokens, which are ours and are not guesses
+    about somebody's naming.
+    """
+    if not render_dir or not os.path.isdir(render_dir) or not wh:
+        return 0
+    n = 0
+    for f in os.listdir(render_dir):
+        lf = f.lower()
+        if not lf.endswith(".png") or not lf.startswith(prefix):
+            continue
+        if any(t in lf for t in _MASK_TOKENS):
+            continue
+        if _png_size(os.path.join(render_dir, f)) == tuple(wh):
+            n += 1
+    return n
 
 
 def manifest_for(lane_dir, manifest_path=None):

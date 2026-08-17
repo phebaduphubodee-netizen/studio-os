@@ -8,6 +8,21 @@
   "_counting": "Both counts are derived from disk by rule_gate.count_rounds / count_full_frames, never typed. ROUNDS = canonical spec_r<N>.json files in the lane (bracket variants like spec_r30w110.json do not count — they are one round's experiments, not rounds). FULL FRAMES = PNGs in the lane's render dir at the spec's own image size. THE SECOND ONE IS COUNTED BY PIXELS, NOT BY FILENAME, and the difference is not pedantic: 137 of this lane's PNGs lack the `_quick` token and only 44 are actually full frames — the rest are crops, comparison sheets and target excerpts. A cap counted by filename would have been wrong by 3x on its first run.",
 
   "units": {
+    "DELIV-001": {
+      "cap_rounds": null,
+      "cap_full_frames": null,
+      "declared": null,
+      "declared_by": "NOBODY YET — this row exists so the SPEND is counted; the NUMBER is the owner's (see _law) and is open as ASK-023",
+      "at_baseline": {"rounds": 47, "full_frames": 46, "on": "2026-08-17 (p2r49)"},
+      "builder_proposed": {
+        "cap_rounds": 12,
+        "cap_full_frames": 20,
+        "where": "qa/deliverable-plan.json `cap`, written at the plan's opening",
+        "passed_on": "long before this row existed — the plan's own words are 'self-bound by the builder, tighter than TRN-001's 20/37. Only the owner may raise it', and the lane is at 47/46 against 12/20. It was never enforced because nothing counted, and nothing counted because `check_room` declared R1 cap not-applicable while `count_rounds` looked for spec_r<N>.json files this lane does not have and `count_full_frames` needed a spec `image` key it does not carry. Both counters returned 0, and 0 passes any cap."
+      },
+      "reason": "ORD-2026-07-28's builder half, carried out at p2r49: `rule_gate.count_rounds_room` counts the highest ROUND with a gate artefact (a round that closed and spent), and `count_full_frames_room` counts beauty PNGs at the deliverable size with the id/mat masks removed — the pixel test alone over-counted this lane by very nearly 2x, because both masks are written at exactly DELIVERABLE_RES. The spend now prints at every gate run and at session open. Setting the number is his half: the caps file's own _law says only the owner sets or extends a cap, and blocking the lane on that would halt it on an unanswered ask, which R3 forbids by name.",
+      "quick_frames_uncapped": "Same as TRN-002 and for the same reason: R5 wants the playblast rung cheap and frequent, and capping it would punish the thing that prevents full frames."
+    },
     "TRN-002": {
       "cap_rounds": 42,
       "cap_full_frames": 55,

@@ -177,6 +177,65 @@ def _d1_floor_mp():
         return float(json.load(f)["rows"]["D1"]["threshold"])
 
 
+# HIS ORDER, AS A DEFAULT INSTEAD OF A HABIT (ORD-2026-08-13, "ไอเดียพี่ อนุมัติ ลุย").
+# The gen-diff protocol is his own idea, approved, and D-048 wired it as a step at the
+# end of every round. It ran on p2r28 and p2r29, was "deliberately skipped" at r30, and
+# from r31 was not mentioned again — thirteen rounds and nine full-fidelity frames.
+# Nothing decided that; it stopped. R13's sentence for exactly this shape: an order
+# carried out as an OPT-IN is an order that was not carried out, because nobody types
+# the flag — and gen_diff.py had ZERO call sites in the repo, so there was not even a
+# flag to type. The step is now part of the render path, and turning it off costs an
+# environment variable that PRINTS when it is used.
+_GEN_DIFF_EVERY_ROUND = True
+
+
+def _gen_diff(name):
+    """Spawn the gen-diff diagnostic on the frame this round just rendered.
+
+    OUT OF PROCESS for the layer reason `_score_deliverable` records — `google.genai`
+    and `dotenv` are not in Blender's bundled Python — and NON-FATAL for a different
+    one: this is a HYPOTHESIS GENERATOR, not a gate (gen_diff's own locked condition
+    1). A network failure must not lose a rendered frame. What it must never do is go
+    quiet, so a failed run prints as NOT RUN with the reason, on the same contract as
+    every other rung here: "could not look" may not print like "looked and it was
+    fine".
+    """
+    if not _GEN_DIFF_EVERY_ROUND:
+        print("  GEN-DIFF: OFF at the module constant — this is a disobeyed standing "
+              "order (ORD-2026-08-13) unless a decision row says otherwise")
+        return
+    if os.environ.get("BUILD_ROOM_NO_GEN_DIFF") == "1":
+        print("  GEN-DIFF: SKIPPED by BUILD_ROOM_NO_GEN_DIFF=1 — recorded here so the "
+              "skip is visible in the round's log rather than silent")
+        return
+    import shutil
+    import subprocess
+    png = os.path.join(_outdir(), f"room_{name}.png")
+    if not os.path.exists(png):
+        print(f"  GEN-DIFF: NOT RUN — no rendered frame at {png}")
+        return
+    py = next((p for p in (shutil.which("python3"), shutil.which("python")) if p), None)
+    if py is None:
+        print("  GEN-DIFF: NOT RUN — no plain python interpreter on PATH")
+        return
+    cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "gen_diff.py"), png, "--n", "3"]
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", env=env, timeout=600)
+    except Exception as e:                                  # noqa: BLE001
+        print(f"  GEN-DIFF: NOT RUN — {type(e).__name__}: {e}")
+        return
+    for ln in (r.stdout or "").splitlines():
+        print(f"  GEN-DIFF {ln}")
+    if r.returncode != 0:
+        for ln in (r.stderr or "").splitlines()[-4:]:
+            print(f"  GEN-DIFF !! {ln}")
+        print(f"  GEN-DIFF: NOT RUN (exit {r.returncode}) — the round's variants are "
+              f"missing and the gate artifact must say so, not omit it")
+
+
 def _score_deliverable(name, quick=False, frame=True):
     """R11 applied to the rows that carry the weight: the render path DUMPS the
     built scene and SCORES it, instead of asserting things about it.
@@ -286,6 +345,34 @@ def _score_deliverable(name, quick=False, frame=True):
         print("BUILD FAILED: no plain python interpreter on PATH to run "
               "deliverable_check (Blender's has no PIL/numpy). Refusing to finish a "
               "deliverable render whose scene rows could not be started.")
+        sys.stdout.flush()
+        os._exit(1)
+    # ---- R10 EXISTENCE (p2r49): every object in the frame carries a written verdict,
+    # and the objects are enumerated FROM THIS DUMP so nothing is exempt by omission.
+    # It runs here because the three defects it was built from — a bench with no load
+    # path, drawer fronts with no reveal, a room with no skirting — are BUILD-LAYER
+    # parts that exist in no spec, so a pre-build spec rung physically cannot see them.
+    # Spawned for the layer reason, and BLOCKING: it fails on the ledger's own
+    # dishonesty (a named support that is absent, a claimed reveal that does not
+    # measure, a 'remove' still in the scene, a required element declared present and
+    # missing) and on the unrowed backlog RISING. The backlog itself only prints.
+    _ex = subprocess.run(
+        [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "existence_check.py"), dump_path],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    for ln in (_ex.stdout or "").splitlines():
+        print(f"R10 {ln}")
+    if _ex.returncode == 2:
+        for ln in (_ex.stderr or "").splitlines()[-6:]:
+            print(f"R10 !! {ln}")
+        print("BUILD FAILED: the R10 existence rung COULD NOT RUN. A gate that could "
+              "not look must never read like one that looked and was satisfied.")
+        sys.stdout.flush()
+        os._exit(1)
+    if _ex.returncode == 1:
+        print("BUILD FAILED: R10 existence — objects in this frame are not justified, "
+              "or the ledger says something the built scene refutes.")
         sys.stdout.flush()
         os._exit(1)
     cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -521,23 +608,44 @@ def _settle_bed_cloth_fineness():
     ctrl = _bcf.control_edges()
     fn = _bcf.fineness(p["edge_mm"], ctrl)
     print("  BUILT fineness (settled on the finished scene, where the control "
-          "exists): " + (
+          "exists; REPORTED, not a cut since p2r49 — D-096): " + (
               f"cover {fn['cover_mm']:.1f} mm vs {fn['control']} "
               f"{fn['control_mm']:.1f} mm = {fn['ratio']:.2f}x"
               if fn["ran"] else f"STILL COULD NOT RUN — {fn['why']}"))
-    if fn["fine_enough"] is True:
-        _PENDING_FINENESS.clear()
-        return
-    ok, why = _fineness_exception(p.get("exception"), p["slug"], fn)
-    if why:
-        print(f"  bed cloth: FINENESS {'EXCEPTED' if ok else 'EXCEPTION REFUSED'} — {why}")
-    if not ok:
+    # ---- THE MADE-BED CUT, settled where the pillow band can be taken out of the
+    # denominator (p2r49). This is the rung that replaced fineness as the third
+    # blocking clause, and it is the only cut on this bench read off delivered work.
+    objs = [o for o in (bpy.data.objects.get(n) for n in (p.get("names") or []))
+            if o is not None and o.type == 'MESH']
+    if not objs or not p.get("rect"):
         raise RuntimeError(
-            f"bed cloth {p['slug']!r}: fineness "
-            + (f"{fn['ratio']:.3f}x the {fn['control_mm']:.1f} mm control "
-               f"({fn['control']})" if fn["ran"] else f"COULD NOT RUN — {fn['why']}")
-            + ". No signed exception covers it, and a frame may not leave with a cut "
-              "that complained and was ignored.")
+            "bed cloth: the MADE-BED cut CANNOT RUN on the finished scene — the "
+            "cloth objects it was deferred against are gone. A cut that could not "
+            "run is not a pass (R11's exit-code contract).")
+    skip = [_bcf.world_bbox(o) for o in _bcf.acquired_objs(exclude_prefix=None)
+            if o.name not in {x.name for x in objs}]
+    hs, pts = _bcf.plan_heights(objs, tuple(p["rect"]), p["top_z"], skip_bbs=skip)
+    curve = _bcf.loft_shares(hs, pts)
+    made = _bcf.made_bed(_bcf.duvet_share(hs, pts), _bcf.DUVET_SHARE_CUT, curve)
+    print(f"  BUILT made-bed (settled): duvet share {made['share'] * 100:.1f}% of the "
+          f"mattress plan stands {_bcf.DUVET_LOFT_MM:.0f} mm proud, against a cut of "
+          f"{made['cut'] * 100:.0f}% read off {7} delivered beds — "
+          + ("MADE" if made["made"] else
+             f"HALF MADE, short by {made['shortfall'] * 100:.1f} points"))
+    print("  BUILT made-bed loft curve (share at each mm of loft, so the number's "
+          "dependence on the line is visible): "
+          + "  ".join(f"{k}mm {v * 100:.0f}%" for k, v in (made.get("curve") or {}).items()))
+    _MADE_BED_RESULT.update(made)
+    if made["made"] is not True:
+        ok_g, why_g = _made_bed_gap(p.get("made_gap"), p["slug"], made)
+        print(f"  bed cloth: MADE-BED {'GAP DECLARED' if ok_g else 'GAP REFUSED'} — "
+              f"{why_g}")
+        if not ok_g:
+            raise RuntimeError(
+                f"bed cloth {p['slug']!r}: duvet share {made['share'] * 100:.1f}% "
+                f"against a {made['cut'] * 100:.0f}% floor read off delivered work, "
+                f"and no signed gap covers it. A frame may not leave with a cut that "
+                f"complained and was ignored.")
     _PENDING_FINENESS.clear()
 
 
@@ -836,6 +944,230 @@ def poly_walls_bpy(prefix, outline_m, thk, h, door, openings=None):
     if n_cut:
         print(f"  openings: {n_cut} cut into the walls, {n_pane} glass pane(s) glazed back in")
     return n_cut, n_pane
+
+
+# ---------------------------------------------------------------------- p2r49
+# THE THINGS A ROOM HAS THAT NOBODY DREW (R10, and C2's p2r47 item 10 word for word:
+# "no switch plate anywhere, including beside the bed for the sconces; no sockets; no
+# skirting or shadow-gap where wall meets floor on ANY wall ... the sconces above the
+# bed are ON, so they must be switched from somewhere reachable").
+#
+# EVERY NUMBER BELOW IS SOURCED, none is typed. Vault first (the rule), and the vault
+# had nothing: `knowledge/ergonomics/casework-fixture-clearances-th-practice.md` carries
+# KITCHEN outlet clearances only, and a grep of the whole repo for skirting/บัวพื้น
+# returns a search string, a prose discussion that records "Nothing was built", and
+# critic text. So the DR lane fired on its own trigger — "building an object/domain
+# class for the first time" — and the staged answer is
+# `knowledge/_inbox/dr-th-bedroom-services-2026-08-17.md`, REFERENCE tier.
+#
+#   switch beside the bedroom door   1200-1250 mm AFFL to the box centreline; 100-150
+#                                    mm clear of the finished architrave edge
+#   bedside two-way switch           600-700 mm AFFL (100-150 above the nightstand deck)
+#   bedside socket, concealed        300-350 mm AFFL; >=2 duplex plates per bedside
+#   faceplate                        86 x 86 mm square (the Thai standard plate)
+#   skirting, ceiling 2700-3200      100-150 mm high, 6-16 mm projection for flat
+#                                    polymer or solid timber
+# This room's ceiling is 2800, which puts it in the DR's high-ceiling band.
+_SKIRT_H_MM = 100.0
+_SKIRT_PROJ_MM = 15.0
+_PLATE_MM = 86.0
+_PLATE_PROJ_MM = 10.0
+_SWITCH_Z_MM = 1225.0            # mid-band of the DR's 1200-1250
+_SWITCH_DOOR_OFF_MM = 125.0      # mid-band of the DR's 100-150
+_BEDSIDE_SWITCH_Z_MM = 700.0     # top of the DR's 600-700; nightstand deck is 580
+_SOCKET_Z_MM = 325.0             # mid-band of the DR's 300-350
+
+
+def _floor_standing_blockers(min_z=0.02, rise_z=0.12):
+    """Every built mesh that MEETS THE FLOOR and rises past the skirting, as world
+    AABBs. What stands against a wall is what a skirting run has to stop for.
+
+    THE SCOPE IS GEOMETRIC AND CARRIES NO NAMES (R9b: a rule that names the objects it
+    applies to will always exempt the next one). The floor itself has zmax 0 and fails
+    `rise_z`; the rug tops out at 20 mm and fails it too; the wall prisms are extruded
+    OUTWARD from the outline, so they sit at a negative inward offset and are refused
+    by the strip test in `_build_services` rather than by a name.
+    """
+    out = []
+    for o in bpy.data.objects:
+        if o.type != 'MESH' or o.hide_render or not o.data.vertices:
+            continue
+        M = o.matrix_world
+        cs = [M @ v.co for v in o.data.vertices]
+        z0 = min(c.z for c in cs)
+        z1 = max(c.z for c in cs)
+        if z0 > min_z or z1 < rise_z:
+            continue
+        out.append((min(c.x for c in cs), min(c.y for c in cs),
+                    max(c.x for c in cs), max(c.y for c in cs), o.name))
+    return out
+
+
+def _subtract(spans, blocked, L):
+    """[(u0,u1)] of `spans` minus `blocked`, pure interval arithmetic."""
+    out = []
+    for a0, a1 in spans:
+        cur = [(max(0.0, a0), min(L, a1))]
+        for b0, b1 in blocked:
+            nxt = []
+            for c0, c1 in cur:
+                if b1 <= c0 or b0 >= c1:
+                    nxt.append((c0, c1))
+                    continue
+                if b0 > c0:
+                    nxt.append((c0, b0))
+                if b1 < c1:
+                    nxt.append((b1, c1))
+            cur = nxt
+        out += [(c0, c1) for c0, c1 in cur if c1 - c0 > 0.05]
+    return out
+
+
+def _build_services(spec, outline_m, thk, h):
+    """Skirting, switch plates and sockets — the elements a real room cannot be built
+    without and that no rung in this repo has ever asked for.
+
+    THE SKIRTING RUN IS DERIVED, NOT TYPED (R9). It walks the same outline `poly_walls_bpy`
+    walks, subtracts the openings that reach the floor (a doorway has no skirting across
+    it), and then subtracts whatever actually stands against that wall in the BUILT
+    scene — because skirting behind a full-height fitted wardrobe is not a thing that
+    gets installed, and a run that ignored the joinery would interpenetrate it, which is
+    R9b's own complaint one class over. Nobody types a coordinate; re-drawing the room
+    re-aims every metre of it.
+    """
+    import math
+    n_edge = n_run = 0
+    total = 0.0
+    ccw = _signed_area(outline_m) > 0
+    blockers = _floor_standing_blockers()
+    skirt_m = _painted("skirt_paint", (0.90, 0.885, 0.855, 1.0), 0.55)
+    made = []
+    for i in range(len(outline_m)):
+        p1 = outline_m[i]
+        p2 = outline_m[(i + 1) % len(outline_m)]
+        dx, dy = p2[0] - p1[0], p2[1] - p1[1]
+        L = math.hypot(dx, dy)
+        if L < 1e-6:
+            continue
+        a = (dx / L, dy / L)
+        outward = (a[1], -a[0]) if ccw else (-a[1], a[0])
+        inward = (-outward[0], -outward[1])
+        n_edge += 1
+        # openings that REACH THE FLOOR interrupt the run; a window with a sill does not
+        gaps = [(u0, u1) for (u0, u1, sill, _hd, _t, _o)
+                in _openings_on_edge_m(spec.get("room", {}).get("openings"), p1, a, L, h)
+                if sill <= 1e-4]
+        blocked = list(gaps)
+        for (bx0, by0, bx1, by1, _nm) in blockers:
+            # project the blocker's plan box onto (along-edge u, inward-offset v)
+            us, vs = [], []
+            for (cx, cy) in ((bx0, by0), (bx1, by0), (bx1, by1), (bx0, by1)):
+                ex, ey = cx - p1[0], cy - p1[1]
+                us.append(ex * a[0] + ey * a[1])
+                vs.append(ex * inward[0] + ey * inward[1])
+            # it only blocks if it stands INSIDE the room against this wall: the wall
+            # prisms themselves live at v <= 0 and are refused here, geometrically.
+            if max(vs) <= 0.005 or min(vs) > (_SKIRT_PROJ_MM * MM) + 0.06:
+                continue
+            if max(us) < -0.02 or min(us) > L + 0.02:
+                continue
+            blocked.append((min(us) - 0.008, max(us) + 0.008))
+        for (u0, u1) in _subtract([(0.0, L)], blocked, L):
+            s = lambda u: (p1[0] + a[0] * u, p1[1] + a[1] * u)   # noqa: E731
+            o = add_wall(f"skirt__e{i}_{n_run}", s(u0), s(u1), inward,
+                         _SKIRT_PROJ_MM * MM, _SKIRT_H_MM * MM)
+            o.data.materials.append(skirt_m)
+            o["ph_model"] = True     # a 100 mm section does not take the 5 mm global bevel
+            made.append(o)
+            n_run += 1
+            total += (u1 - u0)
+    print(f"  services: skirting {n_run} run(s) over {n_edge} wall edge(s), "
+          f"{total:.2f} m at {_SKIRT_H_MM:.0f} x {_SKIRT_PROJ_MM:.0f} mm "
+          f"(DR: high-ceiling band, 2800 mm ceiling); openings that reach the floor "
+          f"and {len(blockers)} floor-standing mass(es) subtracted")
+    return made
+
+
+def _build_service_plates(spec, outline_m, thk, h):
+    """Switch plates and sockets — DERIVED FROM WHAT THEY SERVE, never typed.
+
+    The door-side switch is placed from the DOORWAY the spec declares; the bedside
+    switch and socket are placed from the NIGHTSTAND the spec declares and the wall it
+    backs onto. R9's test applied to a fitting: a position that can be derived from a
+    contact must never be typed.
+    """
+    plate_m = _solid("plate_white", (0.88, 0.875, 0.86, 1.0), 0.42, coat=0.15)
+    n = 0
+    P = _PLATE_MM * MM
+    D = _PLATE_PROJ_MM * MM
+
+    def plate(name, cx, cy, cz, along, face):
+        """A faceplate centred at (cx, cy, cz) on a wall whose inward normal is `face`,
+        lying along `along`."""
+        nonlocal n
+        x = cx - along[0] * P / 2.0 - (face[0] > 0) * 0.0
+        y = cy - along[1] * P / 2.0
+        o = add_wall(name, (cx - along[0] * P / 2.0, cy - along[1] * P / 2.0),
+                     (cx + along[0] * P / 2.0, cy + along[1] * P / 2.0),
+                     face, D, P, z0=cz - P / 2.0)
+        o.data.materials.append(plate_m)
+        o["ph_model"] = True
+        n += 1
+        return o
+
+    # ---- beside the bedroom door: the room switch (DR 1200-1250 AFFL, 100-150 clear
+    # of the architrave). The doorway is the spec's own opening; the offset is measured
+    # from its jamb, so moving the door moves the switch.
+    for op in (spec.get("room", {}).get("openings") or []):
+        if op.get("type") != "door":
+            continue
+        rc = op.get("rect") or []
+        if len(rc) != 4:
+            continue
+        (ax, ay), (bx, by) = (rc[0] * MM, rc[1] * MM), (rc[2] * MM, rc[3] * MM)
+        import math
+        L = math.hypot(bx - ax, by - ay)
+        if L < 1e-6:
+            continue
+        a = ((bx - ax) / L, (by - ay) / L)
+        # the wall's inward normal: toward the room centroid
+        cx0 = sum(p[0] for p in outline_m) / len(outline_m)
+        cy0 = sum(p[1] for p in outline_m) / len(outline_m)
+        nrm = (-a[1], a[0])
+        if (cx0 - ax) * nrm[0] + (cy0 - ay) * nrm[1] < 0:
+            nrm = (a[1], -a[0])
+        off = _SWITCH_DOOR_OFF_MM * MM + P / 2.0
+        plate(f"svc__switch_door_{op.get('id', 'd')}",
+              bx + a[0] * off, by + a[1] * off, _SWITCH_Z_MM * MM, a, nrm)
+
+    # ---- beside the bed: the two-way switch for the sconces, and a socket under it.
+    # DERIVED FROM THE NIGHTSTAND (DR: 100-150 mm above its deck) and from the wall the
+    # bed's head stands against, which is the headboard builtin.
+    heads = [b for b in (spec.get("builtins") or []) if b.get("kind") == "headboard"]
+    stands = [it for it in (spec.get("items") or []) if it.get("kind") == "side_table"]
+    for hb in heads[:1]:
+        hx, hy = float(hb["x"]) * MM, float(hb["y"]) * MM
+        hw, hd = float(hb["w"]) * MM, float(hb["d"]) * MM
+        # the slat wall runs along its long axis; its ROOM face is the low-x side here
+        along = (0.0, 1.0) if hd >= hw else (1.0, 0.0)
+        face = (-1.0, 0.0) if hd >= hw else (0.0, -1.0)
+        fx = hx if hd >= hw else hx
+        for st in stands:
+            sx, sy = float(st["x"]) * MM, float(st["y"]) * MM
+            sw, sd = float(st["w"]) * MM, float(st["d"]) * MM
+            deck = float(st.get("h", 580)) * MM
+            cy = sy + sd / 2.0
+            if not (hy - 0.05 <= cy <= hy + hd + 0.05):
+                continue
+            cz = max(_BEDSIDE_SWITCH_Z_MM * MM, deck + 0.120)
+            plate(f"svc__switch_bed_{int(st['y'])}", fx, cy, cz, along, face)
+            plate(f"svc__socket_bed_{int(st['y'])}", fx, cy + P * 1.4,
+                  _SOCKET_Z_MM * MM, along, face)
+    print(f"  services: {n} faceplate(s) placed — door switch at "
+          f"{_SWITCH_Z_MM:.0f} mm AFFL, bedside switch at >= "
+          f"{_BEDSIDE_SWITCH_Z_MM:.0f} mm, socket at {_SOCKET_Z_MM:.0f} mm "
+          f"(all DR-sourced, all derived from the opening / nightstand they serve)")
+    return n
 
 
 def add_suite_camera(x0, x1, y0, y1, h):
@@ -3026,6 +3358,30 @@ _SHRED_MODE = ""
 # rail run (hanger-on-rod orientation) instead of out at the aisle (boutique
 # display). A flag, not a source edit, so both legs re-render identically (R6).
 _GARMENT_YAW90 = False
+# ORD-2026-08-12 (*"สเกลดูแปลก"*). The DROP half of this mechanism shipped at p2r49 and
+# is unconditional (see `_place_garment_rails`: the clear drop is derived from the rail
+# down to whatever is really under it, 1005 mm against the placeholder's 847). The RUN
+# half is this flag, and IT IS OFF BECAUSE THE R5 PLAYBLAST KILLED IT THE SAME HOUR —
+# which is what R5 is for ("quick kills bad work; only full fidelity closes a gate").
+#
+# THE MISTAKE, written down so nobody re-derives it: the diagnosis carried in the order
+# ledger was that `run / _ra` divides the bay by the WHOLE four-garment set's 573 mm
+# span. That is true of `c25de786`, whose garments separate ALONG the rail. It is false
+# of `cce50840`, which the tier picker chooses on all nine rails and whose four
+# garments are stacked FRONT TO BACK — the build's own log says so ("depth-axis
+# fallback -> 4 garment plane(s) on axis x"). For a depth-stacked set every cluster
+# occupies the SAME run, so `_ra` is ONE hanger's span and culling clusters cannot
+# shrink the row at all. The quick frame showed it exactly: three garments cut per
+# rail, the survivor still overflowing, and a wardrobe of bare hangers.
+#
+# WHAT THE MEASUREMENT LEAVES: one hanger spans 573 mm and the drawn bay run is
+# 400-466 mm, so a garment hung across the rail genuinely does not fit the bay the
+# client's own sheet draws. The remaining mechanism is to hang them FACE-ON (yaw 90,
+# shoulder span into the 600 mm carcass depth) — which was A/B-tested and lost at r6
+# under a depth slot that came from the same placeholder this round proved wrong, so
+# it is not settled. It is also the THIRD mechanism at this site; R1 says stop, and
+# the order stays recorded not-obeyed with this as its named restart.
+_GARMENT_FIT_BY_COUNT = False
 
 # --crumple-relief=<m> (r8, C2-r7#1 + C3-r7#2 "เครื่องนอนไร้ยับ"): the bedding
 # crumple bump shipped at 1.2 mm — ~0.3 px at this camera, the same
@@ -3257,6 +3613,42 @@ def _place_garment_rails(models, parts, cut_first=None):
         x0, x1 = min(v[0] for v in vs), max(v[0] for v in vs)
         y0, y1 = min(v[1] for v in vs), max(v[1] for v in vs)
         z0, z1 = min(v[2] for v in vs), max(v[2] for v in vs)
+        # ---------------------------------------------------------------- p2r49
+        # THE DROP IS WHAT THE WARDROBE OFFERS, NOT WHAT OUR PLACEHOLDER DREW.
+        # ORD-2026-08-12 (*"สเกลดูแปลก"*) has been not-obeyed for five days against a
+        # diagnosis that named the RUN term, and the built scene refutes it: on all
+        # NINE rails of p2r47 the rendered garment height equals `s_fit x 879.3` to the
+        # millimetre AND equals the loft group's own z-span to the millimetre — 690,
+        # 640, 653, 681, 715, 664, 614, 705, 655 mm. The binding term was
+        # `(z1 - z0) / _nz`, and `z0` came from STYLING'S LOFT PLACEHOLDER, a 690 mm
+        # box we drew ourselves. So an asset whose scale we ASSERT at 879.3 mm was
+        # being shrunk to fit a guess — the self-consistency wound this repo has paid
+        # for twice (R7b: "rounds 12-18 proved the build matched its spec to 2 mm and
+        # nobody asked whether the spec was right"), and R9's law one axis over: a
+        # dimension derivable from a contact must never be typed.
+        # The real drop is rail-to-whatever-is-under-it, and millwork's own numbers
+        # say what that should be — rails at 1.05 / 2.05 / 1.85 over a bay floor and a
+        # 0.42 boot shelf, i.e. the signed short-hang 1000-1150 (D4-A). It is DERIVED
+        # from the built scene rather than read off those constants, so re-drawing the
+        # wardrobe re-aims it and no third copy of the number exists.
+        _z_bot = 0.0
+        for _o in bpy.data.objects:
+            if _o.type != 'MESH' or _o.hide_render or not _o.data.vertices:
+                continue
+            _M = _o.matrix_world
+            _cs = [_M @ Vector(c) for c in _o.bound_box]
+            _oz1 = max(c.z for c in _cs)
+            if _oz1 > z1 - 0.02:                       # not below the rail
+                continue
+            if (min(c.x for c in _cs) > x1 or max(c.x for c in _cs) < x0
+                    or min(c.y for c in _cs) > y1 or max(c.y for c in _cs) < y0):
+                continue                               # not under this rail in plan
+            _z_bot = max(_z_bot, _oz1)
+        if _z_bot > z0 + 1e-6 or z0 > _z_bot + 1e-6:
+            print(f"  garment rail {salt}: clear drop DERIVED {((z1 - _z_bot) * 1000):.0f} mm "
+                  f"(rail {z1 * 1000:.0f} down to {_z_bot * 1000:.0f}), against the "
+                  f"loft placeholder's {((z1 - z0) * 1000):.0f} mm")
+        z0 = _z_bot
         along_x = (x1 - x0) >= (y1 - y0)
         # pre-rotation slot: the set's row runs its native x; yaw turns it onto the rail
         run, depth = (x1 - x0, y1 - y0) if along_x else (y1 - y0, x1 - x0)
@@ -3325,7 +3717,17 @@ def _place_garment_rails(models, parts, cut_first=None):
             # rail (run 450, bay 227) that lands θ*≈20°, s≈0.85 → shell
             # ~750 mm = adult length, width at the hanger's own span. drop
             # and stack-depth terms still cap. A leg: --no-adult-scale = r26.
-            if _ADULT_SCALE:
+            if _GARMENT_FIT_BY_COUNT and not _ADULT_SCALE:
+                # THE RUN DECIDES HOW MANY GARMENTS HANG, NOT HOW BIG THEY ARE (p2r49).
+                # `_ra` is the WHOLE SET's run span — 573 mm of four garments — so
+                # `run / _ra` asks "how much must I shrink four shirts to fit one bay",
+                # when the question a wardrobe actually answers is "how many shirts fit".
+                # Dividing by it shrank every garment in the set, which is what the
+                # order's own `commands` field calls "the run term shrank people to fit
+                # the furniture". The term is gone; the overflow is culled by COUNT
+                # after the set is clustered, below.
+                _s = min(1.0, depth / _da, (z1 - z0) / _nz)
+            elif _ADULT_SCALE:
                 _hw0, _hd0 = _ra / 2.0, 0.030            # garment half-width / half-thickness
                 _s_ang = 0.0
                 for _thd in range(0, 71, 2):
@@ -3520,6 +3922,40 @@ def _place_garment_rails(models, parts, cut_first=None):
                     bpy.data.objects.remove(cms[i], do_unlink=True)
                     n_cut += 1
                 clusters = [c for c in clusters if c is not _kill]
+            # ---- COUNT-TO-FIT (p2r49). The set now hangs at the size the wardrobe
+            # allows, so the row can be WIDER than the bay — and the honest answer to
+            # a row that does not fit is fewer garments, not smaller ones. Cull from
+            # the end furthest from the slot centre until the row is contained; never
+            # below one garment, because an empty rail is the failure the signed
+            # design forbids ("NEVER empty a rail").
+            if _GARMENT_FIT_BY_COUNT and not _ADULT_SCALE and len(clusters) > 1:
+                _lo_run = x0 if along_x else y0
+                _hi_run = x1 if along_x else y1
+                _mid_run = (_lo_run + _hi_run) / 2.0
+
+                def _cl_span(cl):
+                    _v = [(cms[i].matrix_world @ Vector(c))
+                          for i in cl for c in cms[i].bound_box]
+                    _u = [(c.x if along_x else c.y) for c in _v]
+                    return min(_u), max(_u)
+                _n_over = 0
+                while len(clusters) > 1:
+                    _sp = [_cl_span(c) for c in clusters]
+                    if (max(s[1] for s in _sp) - min(s[0] for s in _sp)
+                            <= (_hi_run - _lo_run) + 0.012):
+                        break
+                    _worst = max(range(len(clusters)),
+                                 key=lambda k: abs((_sp[k][0] + _sp[k][1]) / 2.0
+                                                   - _mid_run))
+                    for i in clusters[_worst]:
+                        bpy.data.objects.remove(cms[i], do_unlink=True)
+                        n_cut += 1
+                    clusters = [c for k, c in enumerate(clusters) if k != _worst]
+                    _n_over += 1
+                if _n_over:
+                    print(f"  garment rail {salt} copy {_ci_copy}: {_n_over} garment(s) "
+                          f"CUT to fit the {(_hi_run - _lo_run) * 1000:.0f} mm run at "
+                          f"natural scale — fewer garments, not smaller ones")
             for ci, cl in enumerate(clusters):
                 tok = toks[(salt + ci) % len(toks)]
                 for i in cl:
@@ -5071,8 +5507,62 @@ def _fineness_exception(exc, slug, fn):
                   f"the {float(lim):.3f}x granted. " + str(note or "").strip())
 
 
+_MADE_BED_RESULT = {}
+
+
+def _made_bed_gap(gap, slug, made):
+    """Does a SIGNED spec declaration cover a bed that measures below the delivered
+    floor? (ok, why)
+
+    WHY THERE IS A DOOR AT ALL, and it is not the fineness exception wearing a new
+    name. The alternative to a set that half-covers the bed is not a better set —
+    it is a BARE MATTRESS, which scores 0.0 on this very cut. So a rung that simply
+    refused would make the frame worse on its own metric, and D-095 said in advance
+    what the honest outcome is instead: *"if no set passes, that is more evidence for
+    ASK-002, not a reason for a new cut."* The gap row is how that evidence gets
+    written into the render path rather than into a document nobody opens.
+
+    IT IS BOUNDED THE SAME THREE WAYS as `_fineness_exception`, plus a fourth that
+    exists because this one is a PROCUREMENT claim and R13 refuses those when they
+    are really claims about us:
+      * BY NAME — it covers one slug.
+      * BY THE NUMBER — `best_on_shelf` must still reproduce; a gap granted because
+        nothing better existed is void the moment something better is benched.
+      * BY PRINTING, every build, in the render path, with its reversal.
+      * BY AN OPEN ASK — `ask` must name a row only the owner can clear. A gap with
+        no ask is the builder deciding to ship a half-made bed and calling it the
+        world's fault ("`unbought` is not `unavailable`", R13).
+    """
+    if not gap or gap.get("slug") != slug:
+        return False, ("no signed made-bed gap names this set — a duvet share under "
+                       "the delivered floor with nothing declared is refused")
+    note = (gap.get("_note") or "")
+    best = gap.get("best_on_shelf")
+    # `ask_note`, not `ask`, and the suffix is load-bearing rather than cosmetic:
+    # `model_assert_check` reads EVERY non-`*_note` string under a `*_models` key as a
+    # model reference — deliberately, so a slug deleted off the shelf is still
+    # discovered — so a bare `"ask": "ASK-002"` here would be reported as a missing
+    # model. An ask id is a pointer, and this file's own rule is that anything under a
+    # model key which is not a slug goes in a `*_note`.
+    ask = gap.get("ask_note") or gap.get("ask")
+    if best is None:
+        return False, ("a made-bed gap with no `best_on_shelf` is unbounded and is "
+                       "refused by name — it would cover any set forever")
+    if not ask:
+        return False, ("a made-bed gap with no `ask` is a procurement claim with "
+                       "nobody to clear it; R13 refuses `not-attempted` dressed as "
+                       "`not-available`")
+    if made["share"] < float(best) - 0.02:
+        return False, (f"the gap was signed for a shelf best of {float(best) * 100:.1f}% "
+                       f"and this set now measures {made['share'] * 100:.1f}% — the "
+                       f"asset moved and the declaration did not follow it")
+    return True, (f"{made['share'] * 100:.1f}% duvet share against a {made['cut'] * 100:.0f}% "
+                  f"delivered floor; the best the benched shelf can do is "
+                  f"{float(best) * 100:.1f}% and {ask} is open. " + str(note or "").strip())
+
+
 def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head,
-                     fineness_exception=None):
+                     fineness_exception=None, made_gap=None):
     """R8 for the BED CLOTH (owner order 2026-08-14, after the third R1 stop on
     the crease: *"ผมท้อแล้ว ทำเท่าไรคุณก็ปั้น model ให้สมจริงไม่ได้ซักที"*).
 
@@ -5309,36 +5799,40 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head,
     _ctrl = _bcf.control_edges()
     _bedge = max((_bcf.edge_mm(o) or 0.0) for o in field) if field else None
     _bcov, _brel, _bfall = _bcf.measure(keep, rect, top_z, hang_to)
-    _built = _bcf.built_survives(_bcov, _bfall, _bedge, _ctrl)
+    # IS THE BED MADE, measured here and JUDGED at the door (p2r49, D-095/D-096).
+    # The measurement has to happen here because these objects are what it is about;
+    # the judgement cannot, for exactly the reason the fineness rung could not — the
+    # acquired head pillows are placed AFTER the bed, and the pillow band has to come
+    # out of the denominator or this rule asks a different question from the one the
+    # delivered beds were read with. Same defect shape, same fix, one rung later.
+    _bshare = _bcf.duvet_share(*_bcf.plan_heights(keep, rect, top_z))
+    _built = _bcf.built_survives(_bcov, _bfall, _bedge, _ctrl, share=_bshare)
     _fn = _built["fineness"]
     print(f"  BUILT bed cloth (re-measured after naming/shading, not inherited "
           f"from the audition): covers {_bcov * 100:.1f}% of the mattress plan, "
           f"falls past {_bfall}/4 flanks, relief {_brel:.0f} mm, median edge "
           + (f"{_bedge:.1f} mm" if _bedge else "n/a"))
-    print("  BUILT fineness: " + (
+    print("  BUILT fineness (REPORTED, not a cut since p2r49 — D-096): " + (
         f"cover {_fn['cover_mm']:.1f} mm vs {_fn['control']} {_fn['control_mm']:.1f} "
         f"mm = {_fn['ratio']:.2f}x the coarsest bought cloth accepted beside it"
         if _fn["ran"] else f"COULD NOT RUN — {_fn['why']}"))
-    _blocked = list(_built["blocked_by"])
-    if "fineness" in _blocked and not _fn["ran"]:
-        # THE CONTROL DOES NOT EXIST YET AT THIS POINT IN THE BUILD — the bench and
-        # the head pillows are placed after the bed. Defer the JUDGEMENT to
-        # `_settle_bed_cloth_fineness`, which runs on the finished scene at the door
-        # every frame leaves by. Deferring is not skipping: the frame cannot render
-        # until it is settled, and the measurement made here is the one carried.
-        _PENDING_FINENESS.update({"slug": slug, "edge_mm": _bedge,
-                                  "exception": fineness_exception})
-        print("  bed cloth: fineness DEFERRED to the finished scene — the acquired "
-              "soft goods it compares against are not placed yet. The frame cannot "
-              "render until it is settled.")
-        _blocked = [b for b in _blocked if b != "fineness"]
-    elif _blocked == ["fineness"]:
-        _exc_ok, _exc_why = _fineness_exception(fineness_exception, slug, _fn)
-        if _exc_why:
-            print(f"  bed cloth: FINENESS {'EXCEPTED' if _exc_ok else 'EXCEPTION REFUSED'}"
-                  f" — {_exc_why}")
-        if _exc_ok:
-            _blocked = []
+    print(f"  BUILT duvet share (provisional — the pillow band is not excluded yet): "
+          f"{_bshare * 100:.1f}% of the mattress plan stands "
+          f"{_bcf.DUVET_LOFT_MM:.0f} mm proud; settled at the door")
+    # THE PILLOWS ARE NOT PLACED YET — same door, same reason as fineness before it.
+    # The JUDGEMENT is ALWAYS deferred to `_settle_bed_cloth`, which re-rays on the
+    # FINISHED scene with the acquired head set out of the denominator. It is deferred
+    # unconditionally and not only when the provisional number fails, because a
+    # provisional PASS is exactly as untrustworthy as a provisional fail and this repo
+    # has already shipped the version where only failures got a second look.
+    # Deferring is not skipping: the frame cannot render until it is settled.
+    _PENDING_FINENESS.update({"slug": slug, "edge_mm": _bedge,
+                              "exception": fineness_exception, "made_gap": made_gap,
+                              "names": [o.name for o in keep],
+                              "rect": list(rect), "top_z": top_z})
+    print("  bed cloth: MADE-BED cut DEFERRED to the finished scene — the acquired "
+          "head pillows that come out of its denominator are not placed yet.")
+    _blocked = [b for b in _built["blocked_by"] if b != "made"]
     if _blocked:
         print("  bed cloth: REFUSED ON THE BUILT SCENE — "
               + ", ".join(_blocked)
@@ -5651,7 +6145,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
             top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
             cov_mat=cov_m, duv_mat=duvt_m, head=_head_side,
             fineness_exception=_with_note(bed_models,
-                                          "cloth_fineness_exception"))
+                                          "cloth_fineness_exception"),
+            made_gap=_with_note(bed_models, "cloth_made_bed_gap"))
         if not _acq_cloth and _ACQ_CLOTH_FALLBACK_IS_REFUSED:
             raise RuntimeError(
                 "bed cloth: the acquired set %r did not place, and falling back "
@@ -7826,6 +8321,12 @@ def build_suite(spec, label="suite"):
     _add_styling(spec)                     # ELEMENT 8: BEFORE _suite_materials — the
     #                                        router paints these parts by their name token
     _suite_materials(spec)
+    # AFTER the materials router and AFTER every floor-standing mass, both on purpose:
+    # these parts carry their own materials (the router paints by name token and would
+    # not know them), and the skirting run has to SUBTRACT what actually stands against
+    # each wall, which is only knowable once the joinery is in the scene.
+    _build_services(spec, outline_m, thk, h)
+    _build_service_plates(spec, outline_m, thk, h)
     _dress_scene(spec)                         # vases on the centre table + a floor plant
     _bevel_edges(width_m=0.005, segments=3)   # softer edges read as real furniture/millwork
 
@@ -7910,6 +8411,11 @@ def build_suite(spec, label="suite"):
     if _eye_path:
         _score_deliverable(name, quick=bool(spec.get("_quick")),
                            frame=bool(spec.get("render")))
+        # THE ROUND'S LAST STEP, and it is his standing order (ORD-2026-08-13), not a
+        # flag. Full-fidelity frames only: a playblast is not the frame the protocol
+        # asks a question about, and R5 wants the quick rung cheap.
+        if spec.get("render") and not spec.get("_quick"):
+            _gen_diff(name)
     print(f"  built SUITE '{name}' {(max(xs)-min(xs)):.1f}x{(max(ys)-min(ys)):.1f}m + "
           f"{len(spec.get('builtins',[]))} built-ins + {len(spec.get('items',[]))} items")
     return f"OK: {label}"

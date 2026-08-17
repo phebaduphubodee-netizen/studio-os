@@ -35,10 +35,11 @@ from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
 from bedcloth_rules import (BURIED_SHARE, COVER_CUT, DUPLICATE_SHARE,  # noqa: F401
-                            EXTRA_FRAC, FALL_CUT, FIELD_FRAC, POLY_FLOOR,
-                            built_survives, choose_cover, classify_areas,
-                            duplicate_of_placed, fineness, lies_on_the_bed,
-                            limits_for, plan_scale, survives)
+                            DUVET_LOFT_MM, DUVET_SHARE_CUT, EXTRA_FRAC, FALL_CUT,
+                            FIELD_FRAC, LOFT_CURVE_MM, POLY_FLOOR, built_survives,
+                            choose_cover, classify_areas, duplicate_of_placed,
+                            duvet_share, fineness, lies_on_the_bed, limits_for,
+                            loft_shares, made_bed, plan_scale, survives)
 
 
 def edge_mm(o):
@@ -170,6 +171,45 @@ def group_bbox(objs):
             max(b[3] for b in bbs), max(b[4] for b in bbs), max(b[5] for b in bbs))
 
 
+def plan_heights(objs, rect, top_z, n=40, skip_bbs=None):
+    """(heights_mm, n_points) — how far the TOPMOST cloth stands above the mattress
+    top at every point of its plan, and how many points were asked.
+
+    ONE RAY CAST, TWO QUESTIONS, and the reason it is one function is D-095. Until
+    p2r49 the only number this ray produced was `coverage` — "is there cloth here,
+    yes or no" — which a flat sheet answers exactly as well as a duvet, and did:
+    94.0% on a bed the blind critic read as half made. The height was already being
+    collected two lines below and thrown away except as a p90-p10 spread. Keeping the
+    profile costs nothing and lets any loft question be re-asked later without a
+    re-run, which is why `loft_shares` publishes the whole curve.
+
+    `skip_bbs` drops grid points whose plan lies inside an already-placed object's
+    footprint — the acquired head pillows. It is not a convenience: the delivered
+    beds this cut is read off are judged with the pillows excluded (you cannot see
+    the sheet under a pillow), so including that band here would compare two
+    different questions. Membership comes from the caller's `acquired_objs`, the
+    value ladder's signed register, never a list of names (R9b).
+    """
+    rx, ry, rw, rd = rect
+    bv = _bvh(objs)
+    if bv is None:
+        return [], 0
+    boxes = [b for b in (skip_bbs or []) if b]
+    hs, pts = [], 0
+    for i in range(n):
+        for j in range(n):
+            x = rx + rw * (i + 0.5) / n
+            y = ry + rd * (j + 0.5) / n
+            if any(b[0] <= x <= b[3] and b[1] <= y <= b[4] for b in boxes):
+                continue
+            pts += 1
+            loc, _, _, _ = bv.ray_cast(Vector((x, y, top_z + 1.2)),
+                                       Vector((0, 0, -1)), 2.0)
+            if loc is not None and loc.z > top_z - 0.02:
+                hs.append((loc.z - top_z) * 1000.0)
+    return hs, pts
+
+
 def measure(objs, rect, top_z, base_z, n=40):
     """coverage / relief_mm / fall_sides for a staged set.
 
@@ -178,22 +218,18 @@ def measure(objs, rect, top_z, base_z, n=40):
     fall_sides  how many of the four flanks carry cloth below the mattress top; a
                 duvet on a made bed falls over its sides, and this is the number
                 p2r31 printed and read past while ranking on coverage alone
+
+    coverage CANNOT tell a duvet from a flat sheet and never could (D-095) — see
+    `plan_heights` and `bedcloth_rules.duvet_share` for the number that can.
     """
     rx, ry, rw, rd = rect
     bv = _bvh(objs)
     if bv is None:
         return 0.0, 0.0, 0
-    hits, zs = 0, []
-    for i in range(n):
-        for j in range(n):
-            x = rx + rw * (i + 0.5) / n
-            y = ry + rd * (j + 0.5) / n
-            loc, _, _, _ = bv.ray_cast(Vector((x, y, top_z + 1.2)),
-                                       Vector((0, 0, -1)), 2.0)
-            if loc is not None and loc.z > top_z - 0.02:
-                hits += 1
-                zs.append(loc.z - top_z)
-    cov = hits / float(n * n)
+    hs, pts = plan_heights(objs, rect, top_z, n)
+    hits = len(hs)
+    zs = [h / 1000.0 for h in hs]
+    cov = hits / float(max(1, pts))
     zs.sort()
     relief = ((zs[int(0.9 * (len(zs) - 1))] - zs[int(0.1 * (len(zs) - 1))]) * 1000.0
               if len(zs) > 4 else 0.0)
@@ -405,6 +441,16 @@ def stage(news, rect, top_z, base_z, limit, cover=None, max_scale=1.0,
             bpy.data.objects.remove(o, do_unlink=True)
 
     cov, relief, sides = measure(keep, rect, top_z, base_z)
+    # THE SECOND RAY (p2r49, D-095). `coverage` above says whether OUR mattress
+    # shows; this says whether the bed is MADE. The set that shipped at p2r47
+    # answers 94.0% to the first and was read by a blind critic as "only half made
+    # … a fitted mattress protector", because a flat spread satisfies coverage
+    # exactly as well as a duvet does. The pillow band is excluded for the reason
+    # `plan_heights` gives: the delivered beds the cut is read off are judged with
+    # the pillows out of the frame of the question.
+    _skip = [world_bbox(o) for o in (avoid or [])]
+    _hs, _pts = plan_heights(keep, rect, top_z, skip_bbs=_skip)
+    _curve = loft_shares(_hs, _pts)
     if apply_rot and rot:
         piv = Vector((cx, cy, 0.0))
         T = (Matrix.Translation(piv) @ Matrix.Rotation(rot * 3.14159265358979 / 180.0,
@@ -425,6 +471,9 @@ def stage(news, rect, top_z, base_z, limit, cover=None, max_scale=1.0,
                                round((gb[4] - gb[1]) * 1000),
                                round((gb[5] - gb[2]) * 1000)] if gb else None),
             "coverage": cov, "relief_mm": relief, "fall_sides": sides,
+            "duvet_share": duvet_share(_hs, _pts),
+            "loft_curve": {str(k): round(v, 3) for k, v in sorted(_curve.items())},
+            "plan_points": _pts, "plan_points_skipped": (40 * 40) - _pts,
             "parts_total": len(meshes), "parts_dropped": len(drop),
             "parts_buried": len(buried), "parts_duplicate": dupes,
             "parts_standing": standing,
