@@ -184,7 +184,7 @@
     {
       "id": "P2",
       "title": "Surface and real objects — the strongest measured lever",
-      "goal": "MESH TESSELLATION and the hand-built masses — re-aimed at p2r45 (review #52) after the phase's original lever was measured INERT. It read: \"Texture-map coverage from 4.9% toward the 50-66% measured in delivered work\". Map coverage cannot be the strongest lever at this framing: the acquired maps were tiling at 0.1-27.5 mm instead of 850 (an imported glTF's object space is the file's units, not metres), and correcting that to exactly 850 mm moved the surface by 1.021x median per-object gradient across the 14 objects in both id masks at full fidelity — against a threshold of 1.10 declared BEFORE the render. 850 mm over a 2k map is 0.415 mm/texel against a camera at 1.4 mm/pixel, so the weave is sub-pixel before and after, at any correct scale. WHAT THE SAME MEASUREMENTS DO POINT AT: (1) TESSELLATION — the acquired cover renders 43.2 mm median world edge and 80 px per visible triangle, against acquired pillows at 4.5-10.3 mm and 2 px in the same frame; now a blocking cut whose threshold is the frame's own accepted cloth, not a typed number. (2) THE HAND-BUILT MASSES — 65.4% of the bed's pixels are boxes we generated; bed__mattress is 6 authored polygons at 4,380 px per visible triangle and grew to 542,175 px (12.5% of frame) the moment the cover was refused. Every R8-ACQUIRE class object still becomes an acquired mesh with its own PBR maps and no flat-shaded curved silhouette survives — that half of the goal is unchanged.",
+      "goal": "WHAT THE FRAME IS SHORT OF, measured at p2r47 by two independent critics and by the instruments that disagreed with them. THREE LEVERS, in the order the evidence ranks them: (1) THE BED IS HALF MADE — coverage 94.0% by ray and 'reads as a fitted mattress protector' (C2 #1) are both TRUE, because the ray counts cloth-above-mattress and cannot tell a duvet from a flat sheet (D-095). Measure DUVET SHARE separately and re-bench the shelf on it. (2) THE ACQUISITION CHANNEL, now that it works: per-triangle exports are importable (glb_flatten), the density screen reads objects instead of primitives, and the fit is solved on the cover part — so 29 candidates have now been benched against this bed against 10 in the lane's whole history, and the fold-structure complaint survives all of them. That makes ASK-002 a MEASURED procurement ask rather than a wish. (3) THE R10 QUESTION NO INSTRUMENT HERE ASKS — both critics filed objects that could not be built or used: a foot bench of two stacked cushions with no load path, drawer fronts with no pull and no push-to-open, and no skirting, sockets or switches anywhere in the room. Plus the unchanged half of the p2r45 aim: every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps, and no flat-shaded curved silhouette survives.",
       "status": "open",
       "_reranked": "Moved ahead of light and density by SC-4. Acquiring pays the texture bill in the same move, because acquired meshes ship with 3-8 maps.",
       "work": [
@@ -382,6 +382,27 @@
           "status": "todo",
           "why": "Named by the round that fixed the order, in the gate that fixed it — obeying the order created this gap, and a gap created by obedience is exactly the kind that gets absorbed silently.",
           "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py"
+        },
+        {
+          "id": "P2r-15",
+          "status": "todo",
+          "what": "DUVET SHARE IS NOT CLOTH SHARE (D-095, and the eye found it, not the instrument). `bedcloth_fit.measure` rays for cloth above the mattress and returns 94.0% for a set whose flat 1734 x 2017 mm spread covers the whole plan while its 2144 x 1438 mm duvet lies across half of it; C2's first item is that the bed is only half made and reads as a fitted mattress protector. DO: add a second ray measurement — what share of the mattress plan is under the part wearing the DUVET rung — and re-bench the whole shelf on it before any purchase decision. INSTRUMENT: the existing top_map, restricted to the duvet part. CLOSE: a set whose duvet share clears a cut derived from the anchor pool (R4b: read it off delivered work, never typed), or a measured statement that no set on the free shelf can, which is evidence for ASK-002.",
+          "added": "2026-08-17",
+          "added_round": "p2r47"
+        },
+        {
+          "id": "P2r-16",
+          "status": "todo",
+          "what": "OBJECTS THAT COULD NOT BE BUILT OR USED — the R10 question, filed NEW by both critics at p2r47 and visible to no instrument in this repo. (a) the foot bench reads as two stacked upholstered cushions with the upper overhanging the lower on all sides, on stub legs, with its top at roughly mattress height: a soft block on a soft block has no load path and a seat at mattress height is not a seat (C2 #2, C3 #6). (b) the microcement drawer fronts carry no pull, no finger reveal and no push-to-open, so they cannot be opened (C3 #4, C2 #9). (c) no skirting, no sockets, no switches anywhere — the sconces are lit and nothing switches them (C2 #10). DO: run R10's four-question test over every mass in frame and write the verdicts down. This is a NEW class for this repo: every existing rung asks whether an object FITS or what it is MADE of, and none asks whether it could exist.",
+          "added": "2026-08-17",
+          "added_round": "p2r47"
+        },
+        {
+          "id": "P2r-17",
+          "status": "todo",
+          "what": "THE FINENESS CUT IS CALIBRATED ON OBJECTS THAT DRAW THE SAME COMPLAINT (D-094). It compares a candidate cover against the coarsest bought cloth accepted in the frame — which is the acquired pillows at 4.5-10.3 mm — and at p2r47 both critics filed those pillows under the same item they filed the cover under. DO NOT retune the number: decide what the cut is FOR now that its control is contested, and either re-ground it on the anchor pool (R4b) or demote it to a reporting line with that reason written down. NOTE FOR WHOEVER PICKS THIS UP: p2r47 demoted `size_ok` from a cut to a number in the same session, on separate and measured grounds, and two of four cuts falling in one round should be read as evidence about how the cuts were built.",
+          "added": "2026-08-17",
+          "added_round": "p2r47"
         }
       ],
       "exit_test": "REOPENED BAR (owner overrule 2026-08-11; ratified 'ok' after the builder argued against a raw C3-item-count cut — the argument and counter-proposal are in gate-DELIV001-P3r2's addendum thread). To close P2: (1) the r7 rows all still hold — D5/D8/D9 PASS, MODEL-FIT REJECT 0, imported >=8, QUALIFIES; (2) FOUR 100% crops judged beside anchors, one per judged defect class, run by the P2r-7 harness: DUVET fold-structure energy (the r7 throw-crop method), TWO ADJACENT WOOD BOARDS (autocorrelation: no periodic peak), RUG EDGE (rollover, not a 90-degree step), GARMENT SHELLS (coincident duplicate pairs = 0 from the built scene); (3) OWNER-RATIFIED JUDGE CLAUSE, outside the builder's hands: BOTH independent critics (C2 blind-local + C3 cross-vendor) file no surface-realism item in their top 3, AND the ACCEPTED-after-triage surface-realism items across both critics total <= 2 — every refutation must carry a measurement the owner can audit and overrule from the image; (4) REPORTING LINE, not a cut: C3's raw item count prints at every gate so the trend stays visible (7 at p3r1, 5 at p3r2). The owner overrules any of this from the image at any time. (5) SECOND REPORTING LINE, added 2026-08-16 after review: the DELIVERED-WORK VALUE BAND. The friend's duvet planes measure 0.505-0.674 of their own frame's 99th-percentile luma; ours are printed the same way at every gate. It is a line and not a cut because the ladder's own signed targets are the authority on value and one of them (duvet 181 = 0.80 of p99) sits above this band - which is a question to settle against the ANCHOR POOL (R4), not a rung to fail a frame on today.",
@@ -391,7 +412,8 @@
       "exit_test_superseded_r7": "D5 (band-limited 4-32 px), D8 and D9 all PASS; MODEL-FIT REJECT count = 0; imported-mesh objects >=8. Then two crops at 100%: a sewn seam ridge on the bed head with no polygon facet on any silhouette, and weave on the foot-of-bed throw (0.11x the target's detail energy today).",
       "_owner_expand": "OWNER ORDER 2026-08-11 (second, an hour after the reopen): ปรับแผนขยาย p2 ให้เข้มงวดและ meaningful มากกว่านี้ (แบ่งทำหลาย session ก็ได้) เพราะมันสำคัญมาก. The thin 4-rider list is replaced by the multi-session program below: one work item per judged surface class, each carrying its own MECHANISM, its own INSTRUMENT (how the claim is measured, declared before the build), and its own CLOSE CONDITION. One item per session-scale round, R1 stop-loss per mechanism, full critic ladder on every full frame. The phase exit stays the three-part reopened bar (rows + four 100% crops + critic-top3), plus the map-coverage band once P2s-6's instrument exists.",
       "_queue_2026-08-15_r36": "ORDER, CORRECTED TWICE BY THE OWNER IN ONE SESSION. The builder proposed light first, was corrected, then proposed SURFACE first (wood figure, material response, smooth-shading) and was corrected again with the same question — 'model ของต่าง ๆ ปิดแล้วหรอ?'. Both proposals were the same error: polishing what exists in a room that is still missing objects against its own target. P2's work array is now ordered guard -> objects -> surface: 1) P2r-9 assert gate — cheap, and it is the door every later acquire passes through; it is the guard for the exact defect class that voided the p2r31-p2r36 acquire thread. 2) P2a / P2b / P2h / P2i — the objects themselves (acquire chair, nightstand, ottoman; the tub-chair decision on R8's own test; material role-splitting on acquired meshes; ergonomic RELATIONS). 3) P2r-2 wood figure, P2r-5 material response, P2c smooth-shade — SURFACE, and last, even though wood figure is an exit-clause crop and C3 has now filed it three times. It is a real defect on a real object and it keeps its place in the queue; it just does not outrank a room that is short five objects.",
-      "goal_superseded_p2r45": "Texture-map coverage from 4.9% toward the 50-66% measured in delivered work; every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps; no flat-shaded curved silhouette survives."
+      "goal_superseded_p2r45": "Texture-map coverage from 4.9% toward the 50-66% measured in delivered work; every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps; no flat-shaded curved silhouette survives.",
+      "goal_superseded_p2r47": "SUPERSEDED 2026-08-17 (review #54, verdict 'change'). The p2r45 re-aim named MESH TESSELLATION as the phase's strongest lever, on the measurement that the acquired cover ran 43.2 mm against acquired pillows at 4.5-10.3 mm. p2r47 bought a cover at 10.7 mm — INSIDE that band — and both independent critics still ranked the bedding #1 and called it stiff, plastic, 'clay, not cloth'. C2 filed the identical item against the 4.5/10.3 mm pillows in as many words ('One systemic error, not four', covering pillows, folded throw and hung garments). A 2.4x range of tessellation that reads identically to two designers is not the lever, and the cut calibrated on it cannot separate what they are seeing. The goal below replaces it. The HAND-BUILT MASSES half of the p2r45 aim is unchanged and still live."
     },
     {
       "id": "P4",
@@ -2230,8 +2252,99 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "6202ee011b9b07938edc96fd6b70571dbdc9fe9c",
+      "verdicts": {
+        "P2": "change: the phase re-aimed at MESH TESSELLATION at p2r45 and p2r47 measured that aim wrong at its own bar. The acquired cover now renders at 10.7 mm world edge — inside the 4.5-10.3 mm band of the accepted pillows — and BOTH independent critics still ranked the bedding #1 and called it stiff, plastic, clay-not-cloth, filing the SAME item against those 4.5/10.3 mm pillows (C2 in as many words: one systemic error, not four). Tessellation is therefore not the lever it was re-aimed to be; a range of 4.5-10.7 mm reads identically to two designers. What p2r47 measured INSTEAD, and what P2 should now carry: (1) DUVET SHARE, not cloth share — coverage 94.0% and C2 first item the bed is only half made, reads as a fitted mattress protector, are both true because the ray cannot tell a duvet from a flat sheet (D-095); (2) the acquisition CHANNEL itself, now that per-triangle exports are importable and the shelf screens honestly, because the fold-structure complaint is a class the free tier may simply not hold and that makes ASK-002 a measured procurement ask rather than a wish; (3) the R10 items neither instrument can see and both critics filed new this round: a foot bench with no load path, drawer fronts with no way to open, no skirting or sockets anywhere. The hand-built-mass half of the phase stands unchanged.",
+        "P4": "keep: styling density is untouched by this round and its own evidence got stronger, not weaker. Both critics independently filed the wardrobe as a display shell — roughly 70% of shelf and hanging space empty, garments as flat cut-out planes with no shoulder volume — and the garment-scale order ORD-2026-08-12 has now been NOT OBEYED for four days. Completeness, not realism, is exactly the right framing for that.",
+        "P3": "keep: and this round bought the phase evidence rather than spending it. Both critics filed the light independently — every fixture reads ON while lighting no surface, sconce pools dying within 150 mm of the slats, a 600 mm wardrobe bay as bright at the back as the front, almost no contact shadow under bench or bed base. That is P3 stated in critic words, and the owner order of 2026-08-08 (dimension, then objects, then light) is the reason it stays after P2 and P4 rather than being pulled forward to chase those items now.",
+        "P5": "keep: blocked and correctly so. Nothing in p2r47 touches the judgement phase, and the round produced the opposite of a reason to open it early — a frame both independent judges rank as unfinished at its largest element."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
+    },
+    {
+      "commit": "6202ee011b9b07938edc96fd6b70571dbdc9fe9c",
+      "verdicts": {
+        "P2": "change: the phase re-aimed at MESH TESSELLATION at p2r45 and p2r47 measured that aim wrong at its own bar. The acquired cover now renders at 10.7 mm world edge — inside the 4.5-10.3 mm band of the accepted pillows — and BOTH independent critics still ranked the bedding #1 and called it stiff, plastic, clay-not-cloth, filing the SAME item against those 4.5/10.3 mm pillows. Tessellation is therefore not the lever it was re-aimed to be. What P2 should carry instead: DUVET SHARE not cloth share (coverage 94.0% and C2 the bed is only half made are both true because the ray cannot tell a duvet from a flat sheet, D-095); the acquisition CHANNEL now that per-triangle exports are importable, which makes ASK-002 a measured procurement ask; and the R10 items neither instrument can see and both critics filed new this round — a foot bench with no load path, drawer fronts with no way to open, no skirting or sockets. The hand-built-mass half stands unchanged.",
+        "P4": "keep: untouched by this round and its evidence got stronger. Both critics independently filed the wardrobe as a display shell, roughly 70% of shelf and hanging space empty and garments as flat cut-out planes, and ORD-2026-08-12 garment-scale has now been NOT OBEYED for four days.",
+        "P3": "keep: this round bought the phase evidence rather than spending it. Both critics filed the light independently — every fixture reads ON while lighting no surface, sconce pools dying within 150 mm, a 600 mm bay as bright at the back as the front, almost no contact shadow. The owner order of 2026-08-08 (dimension, then objects, then light) is why it stays after P2 and P4.",
+        "P5": "keep: blocked and correctly so. Nothing in p2r47 touches judgement, and the round produced the opposite of a reason to open it early — a frame both independent judges rank as unfinished at its largest element.",
+        "DRW": "keep: done and standing. Its own laws decided this round twice — the bed footprint 2000 x 2149 is ink-true and owner-confirmed, so it is what refuses standard king bedding, and R12 sheet-outranks-derivations is what stopped that being read as a modelling error."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "e71ef9ba60711dddc6adf1f6c8d1b4e0c9acb13c",
+  "last_review_commit": "6202ee011b9b07938edc96fd6b70571dbdc9fe9c",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
