@@ -34,9 +34,28 @@ import bpy
 from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
-from bedcloth_rules import (BURIED_SHARE, EXTRA_FRAC, FIELD_FRAC,  # noqa: F401
-                            POLY_FLOOR, classify_areas, limits_for, plan_scale,
+from bedcloth_rules import (BURIED_SHARE, COVER_CUT, EXTRA_FRAC,  # noqa: F401
+                            FALL_CUT, FIELD_FRAC, POLY_FLOOR, built_survives,
+                            classify_areas, fineness, limits_for, plan_scale,
                             survives)
+
+
+def edge_mm(o):
+    """Median EDGE LENGTH of a mesh in WORLD millimetres, or None.
+
+    The number no rung in this repo measured until p2r45, and the one that separates
+    the meshes the critics accept from the mesh they call carved plastic: in the
+    p2r44 frame the acquired pillows measure 4.5 and 10.3 mm and the acquired cover
+    measures 43.2. It is read in world space on purpose — a fine mesh scaled up to
+    cover a bed is a coarse mesh, and the file's own units are not the question."""
+    me = getattr(o, "data", None)
+    if me is None or not len(me.edges):
+        return None
+    M = o.matrix_world
+    v = me.vertices
+    ls = sorted(((M @ v[e.vertices[0]].co) - (M @ v[e.vertices[1]].co)).length
+                for e in me.edges)
+    return ls[len(ls) // 2] * 1000.0
 
 
 def world_bbox(o):

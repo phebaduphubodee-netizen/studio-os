@@ -31,6 +31,11 @@ POLY_FLOOR = 100
 BURIED_SHARE = 0.15
 # A duvet stands this much above its own fall — the loft, not a target.
 LOFT_M = 0.32
+# The two cuts an audition applies, as ONE definition. `bedcloth_bench` and
+# `build_room` each carried their own copy of these numbers; the build's copy was
+# also MISSING the drape clause entirely (see `built_survives`).
+COVER_CUT = 0.80
+FALL_CUT = 2
 
 
 def limits_for(rect, top_z, base_z, loft=LOFT_M):
@@ -102,8 +107,94 @@ def plan_scale(size, limit, cover=None, max_scale=1.0):
     return s, rot, fit_w, fit_d, plan_s, need
 
 
+def fineness(cover_edge_mm, control_edges_mm):
+    """Is this mesh fine enough to BE cloth — judged against the cloth already
+    accepted beside it in the same frame?
+
+    THE GAP THIS CLOSES, measured on p2r44. Two independent critics read the bed as
+    "a carved solid, every fold two flat facets meeting at a knife edge". Every
+    existing rung passed it, because all three of them ask whether the set FITS
+    (`need_scale`, `coverage`, `fall_sides`) and none of them can see what the mesh
+    is MADE OF. The set that shipped has a median edge of 43.2 mm in world; a mesh
+    that coarse cannot carry a bending radius, so its folds can only be creases.
+
+    AND THE CUT IS NOT INVENTED, which is the trap `survives` names for relief_mm
+    ("inventing one would be taste wearing a threshold"). The frame carries its own
+    control: the acquired PILLOWS in the same bed, from the same acquire pipeline,
+    at the same distance from the same camera, measure 4.5 mm and 10.3 mm — and no
+    critic has ever filed them. So the rule is a COMPARISON, not a constant: a
+    bought cover may not be coarser than the coarsest bought cloth already accepted
+    in the frame. It re-aims itself when the frame changes and there is no number in
+    it for anyone to tune.
+
+    `control_edges_mm` is {object name: median world edge mm} for the acquired
+    soft-goods already in the scene — membership comes from `value_ladder.ACQUIRED_AS`,
+    the signed register of which rungs are bought cloth, so this rule never grows an
+    allowlist of its own (R9b: a rule that names the objects it applies to will
+    always exempt the next one).
+
+    Returns `ran: False` when there is nothing to control against. That is the THIRD
+    STATE and it is never a pass — "could not look" must not print like "looked and
+    it was fine" (R11's exit-code contract). The caller decides what to do with it.
+    """
+    ctrl = {k: float(v) for k, v in (control_edges_mm or {}).items()
+            if v is not None and float(v) > 0.0}
+    if cover_edge_mm is None or cover_edge_mm <= 0:
+        return {"ran": False, "fine_enough": None, "cover_mm": cover_edge_mm,
+                "why": "no edge length was measured on the cover"}
+    if not ctrl:
+        return {"ran": False, "fine_enough": None, "cover_mm": cover_edge_mm,
+                "why": "no acquired soft-goods mesh in this frame to control "
+                       "against — the cut is a comparison and has nothing to "
+                       "compare with"}
+    name = max(ctrl, key=lambda k: ctrl[k])
+    limit = ctrl[name]
+    return {"ran": True, "fine_enough": bool(cover_edge_mm <= limit + 1e-9),
+            "cover_mm": float(cover_edge_mm), "control": name,
+            "control_mm": limit, "ratio": float(cover_edge_mm) / limit}
+
+
+def built_survives(coverage, fall_sides, cover_edge_mm=None, control_edges_mm=None,
+                   cover_cut=COVER_CUT, fall_cut=FALL_CUT):
+    """The same cuts, re-applied to numbers measured on the BUILT SCENE.
+
+    WHY A SECOND APPLICATION IS NOT A DUPLICATE, and it is the third instance of the
+    shape this file was written to end. The audition stages a candidate and measures
+    it; the build then stages the same file, renames the parts, re-dresses their
+    materials and runs the shading normaliser over them — and NOTHING measured the
+    result. On p2r44 that mattered by exactly the width of the cut: the audition
+    recorded `fall_sides 2/4` and the built scene measures **1/4** against a cut of
+    2. The frame shipped a cover that drapes one flank, so the other three flanks
+    render as our own 218-polygon mattress box — 332,879 px of it against the
+    cover's 212,263.
+
+    AND THE BUILD WAS ONLY EVER APPLYING TWO OF THE THREE CUTS. `_place_bed_cloth`
+    tested `model_fit` and `coverage < 0.80` inline and printed `fall_sides` beside
+    them without ever comparing it to anything — the drape clause existed in
+    `survives`, which the build does not call. A rule spread across its callers is a
+    rule with one exemption per caller (R9b, one level up), and this was that
+    exemption.
+
+    `need_scale` is not re-asked here: the scale was applied at staging, so at build
+    time the question is answered by the geometry itself.
+    """
+    row = survives(None, 1.0, coverage, fall_sides, cover_cut, fall_cut)
+    fine = fineness(cover_edge_mm, control_edges_mm)
+    row["fineness"] = fine
+    row["fine_enough"] = fine["fine_enough"]
+    # A cut that could not run is NOT a pass. `survives` is the three fit clauses;
+    # `blocks` is what a caller acts on, and it names could-not-run separately.
+    row["survives"] = bool(row["covered"] and row["drapes"]
+                           and fine["fine_enough"] is True)
+    row["blocked_by"] = [k for k, ok in (("cover", row["covered"]),
+                                         ("drape", row["drapes"]),
+                                         ("fineness", fine["fine_enough"]))
+                         if ok is not True]
+    return row
+
+
 def survives(need_scale, scale, coverage, fall_sides,
-             cover_cut=0.80, fall_cut=2):
+             cover_cut=COVER_CUT, fall_cut=FALL_CUT):
     """The three HARD filters an audition applies before an eye is spent on a
     candidate, and the rank that replaces ranking on coverage alone.
 

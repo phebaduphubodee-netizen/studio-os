@@ -114,6 +114,72 @@ def test_survives_requires_all_three_and_names_which_one_failed():
     assert not BR.survives(0.845, 1.0, 0.90, 0)["survives"]     # does not drape
 
 
+def test_the_build_applied_two_of_the_three_cuts_and_p2r44_walked_through_the_gap():
+    """THE p2r45 FINDING, pinned. `_place_bed_cloth` tested model_fit and
+    `coverage < 0.80` inline and printed `fall_sides` next to nothing at all, so a
+    set draping ONE flank passed the build while the audition that chose it applies
+    a cut of two. These are p2r44's own built numbers."""
+    shipped = BR.survives(0.855, 0.911, 0.812, 1)
+    assert shipped["covered"], "coverage cleared the cut it was tested against"
+    assert not shipped["drapes"], "and the clause the build never called refuses it"
+    assert not shipped["survives"]
+    # the retired build-side test, reconstructed: coverage alone lets it through
+    assert 0.812 >= BR.COVER_CUT
+
+
+# --------------------------------------------------------------- mesh fineness
+
+def test_a_cover_coarser_than_the_pillows_beside_it_is_refused():
+    """p2r44's frame, measured in world mm on the built scene: the acquired cover
+    is 43.2 mm and the acquired pillows in the same bed are 4.5 and 10.3. No
+    threshold is typed — the coarsest accepted cloth in the frame IS the cut."""
+    fine = BR.fineness(43.2, {"bed__headset0__acq0": 10.3,
+                              "bed__headset0__acq1": 4.5})
+    assert fine["ran"]
+    assert fine["control"] == "bed__headset0__acq0", "the COARSEST control binds"
+    assert fine["control_mm"] == 10.3
+    assert fine["ratio"] == pytest.approx(4.194, abs=0.01)
+    assert fine["fine_enough"] is False
+
+
+def test_the_pillows_themselves_pass_the_rule_that_refuses_the_cover():
+    """A rule that also condemned the meshes no critic has ever filed would be
+    measuring something other than what it names."""
+    assert BR.fineness(10.3, {"a": 10.3})["fine_enough"] is True
+    assert BR.fineness(4.5, {"a": 10.3})["fine_enough"] is True
+
+
+def test_no_control_is_the_third_state_and_never_a_pass():
+    """R11's exit-code contract, one level down: could-not-look must not print like
+    looked-and-it-was-fine."""
+    for row in (BR.fineness(43.2, {}), BR.fineness(43.2, None),
+                BR.fineness(43.2, {"a": 0.0}), BR.fineness(None, {"a": 10.3})):
+        assert row["ran"] is False
+        assert row["fine_enough"] is None, "not True, and not False either"
+
+
+def test_built_survives_blocks_on_each_clause_by_name():
+    ok = BR.built_survives(0.902, 2, 9.0, {"pillow": 10.3})
+    assert ok["survives"] and ok["blocked_by"] == []
+    drape = BR.built_survives(0.812, 1, 9.0, {"pillow": 10.3})
+    assert drape["blocked_by"] == ["drape"]
+    coarse = BR.built_survives(0.902, 2, 43.2, {"pillow": 10.3})
+    assert coarse["blocked_by"] == ["fineness"]
+    blind = BR.built_survives(0.902, 2, 43.2, {})
+    assert blind["blocked_by"] == ["fineness"], (
+        "a cut that could not run still blocks — it does not pass by default")
+    shipped = BR.built_survives(0.812, 1, 43.2, {"pillow": 10.3})
+    assert shipped["blocked_by"] == ["drape", "fineness"], (
+        "p2r44's built frame, refused by both new clauses")
+
+
+def test_fineness_is_a_comparison_so_it_re_aims_itself():
+    """No number in the rule means nothing to tune: the same 20 mm cover passes
+    beside a 25 mm control and fails beside a 10 mm one."""
+    assert BR.fineness(20.0, {"a": 25.0})["fine_enough"] is True
+    assert BR.fineness(20.0, {"a": 10.0})["fine_enough"] is False
+
+
 def test_coverage_alone_would_have_ranked_the_failure_first():
     """p2r31 ranked on coverage. A cloth too small to reach past the mattress covers
     its plan most efficiently, so the ranking actively preferred the failure. This

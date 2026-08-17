@@ -1376,6 +1376,36 @@
    "reverse_by": "ลบ entry ใน DECLARED_ABSENT แล้วขั้นนั้นกลับไปตก 'no measurement' และ build ตายที่ ladder stop เหมือน p2r44 ครั้งแรก",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-087",
+   "unit": "DELIV-001",
+   "subject": "acquired-cloth-must-be-cloth",
+   "decided_round": 45,
+   "decided_date": "2026-08-16",
+   "decided_by": "builder",
+   "question": "กรรมการสองรายอ่านผ้าเตียงว่าเป็น 'ของแข็งแกะสลัก' แต่ rung ทุกตัวเขียว — เกณฑ์คัดของเราวัดอะไรอยู่ และมันควรหยุดเฟรมนี้มั้ย",
+   "in_effect": "**เกณฑ์คัดผ้าเตียงทั้งสามข้อเดิมถามว่า 'พอดีตัวมั้ย' ล้วน ๆ (need_scale · coverage · fall_sides) ไม่มีข้อไหนเห็นว่า mesh ทำมาจากอะไร** รอบนี้เพิ่มสองอย่าง และทั้งคู่บล็อก build ไม่ใช่พิมพ์เฉย ๆ · (1) **BUILD ใช้ครบสามข้อแล้ว** — เดิม `_place_bed_cloth` เช็ค model_fit กับ `coverage < 0.80` inline และพิมพ์ `fall_sides` โดยไม่เทียบกับอะไรเลย (คำว่า fall_sides ปรากฏในฟังก์ชันนั้นครั้งเดียว ในบรรทัด print) ข้อ drape มีอยู่ใน `bedcloth_rules.survives` ตั้งแต่ p2r41 แต่ build ไม่เคยเรียก · (2) **วัดซ้ำบน BUILT SCENE ไม่ใช่รับตัวเลขจาก audition** — audition บันทึก fall 2/4 แต่ของที่ render จริง วัดได้ **1/4** ต่อ cut ที่ 2 ระหว่างสองจุดนั้นมีการเปลี่ยนชื่อ เปลี่ยนวัสดุ และ shading normaliser และไม่มีใครมองอีกเลย · (3) **FINENESS: ผ้าที่ซื้อมาห้ามหยาบกว่าผ้าที่ซื้อมาซึ่งถูกรับไว้แล้วในเฟรมเดียวกัน** — ไม่ใช่ค่าคงที่ที่ตั้งเอง แต่เป็นการเปรียบเทียบ ตัวคุมมาจาก `value_ladder.ACQUIRED_AS` ซึ่งเป็นทะเบียนที่เซ็นแล้ว ว่าขั้นไหนคือผ้าที่ซื้อ · วัดบนเฟรม p2r44: cover 43.2 มม. เทียบหมอน 10.3 / 4.5 มม. และเบาะม้านั่ง 6.6 มม. = **4.21x** · NEGATIVE CONTROL รันกับ .blend ที่ ship ไปแล้วจริง ๆ: `blocked_by=['drape','fineness']` — rung ปฏิเสธเฟรมที่กรรมการสองรายปฏิเสธ · **ราคาที่ต้องพูดตรง ๆ: 0afd4c6f จะไม่ผ่านอีกต่อไป และ fallback ไปผ้าที่ปั้นเองถูกปฏิเสธด้วยชื่อ (D-081) ทางออกที่ซื่อสัตย์คือ `--bed-cloth-gap` = เตียงเปล่าพร้อม gap ที่เซ็น จนกว่าจะมีชุดที่ผ่าน** ซึ่งชั้นฟรีหมดแล้ว (68 ตัวจากคลังเดียว 3D Warehouse, ผ่านสามข้อเดิมแค่ 2 ตัว, ตัวที่ละเอียดสุดในคลาส 2b142a32 ตกที่ coverage 0.558 / fall 0) -> ASK-001 เป็นคำถามเงินที่แบกน้ำหนักจริงแล้ว",
+   "where": "pipeline/scripts/bedcloth_rules.py, pipeline/scripts/bedcloth_fit.py, pipeline/scripts/bedcloth_bench.py, pipeline/scripts/build_room.py, pipeline/scripts/test_bedcloth_rules.py",
+   "because": "rung ที่ไม่เคยปฏิเสธอะไรเลยคือ rung ที่ยังไม่มีใครทดสอบ · และ 'พอดีตัว' กับ 'เป็นผ้า' เป็นคนละคำถาม — เกณฑ์เดิมตอบข้อแรกได้ครบและตอบข้อสองไม่ได้เลย จึงเลือกโมเดล massing 43.2 มม. มาถ่ายใกล้ · cut ไม่ได้ตั้งตัวเลขเอง เพราะ `survives` เขียนไว้เองแล้วว่าการตั้งแบนด์ที่ไม่มีหลักฐานคือ 'taste wearing a threshold' — เฟรมมีตัวคุมของมันเองอยู่แล้ว (หมอนที่ซื้อมาชุดเดียวกัน กล้องเดียวกัน ระยะเดียวกัน และไม่มีกรรมการคนไหนเคยติ) · could-not-run ไม่นับเป็นผ่าน (สัญญา exit-code ของ R11 ลงมาอีกชั้น)",
+   "reverse_by": "ลบการเรียก `built_survives` ใน `_place_bed_cloth` (บล็อกท้ายฟังก์ชัน) แล้วเปลี่ยน `_cut` กลับเป็น `_cov < 0.80` — build จะรับ 0afd4c6f อีกครั้งพร้อม fall 1/4 และ 4.21x",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-088",
+   "unit": "DELIV-001",
+   "subject": "acquired-texture-space",
+   "decided_round": 45,
+   "decided_date": "2026-08-17",
+   "decided_by": "builder",
+   "question": "แผนที่ผ้าทุกใบ project บน OBJECT coordinates แต่ของที่ import มา object space ไม่ใช่เมตร — มันคือสาเหตุที่ผ้าอ่านเป็นพลาสติกมั้ย",
+   "in_effect": "**บั๊กเป็นของจริงและครอบคลุมทุกทางที่ acquire**: `_FABRIC_TILE_M = 0.85` หมายถึง 850 มม. *ของ object space* · ของที่เราปั้น scale 1.0 จึงได้ 850 มม. จริง แต่ glTF ที่ import มาแบกหน่วยของไฟล์ไว้ใน object matrix — วัดบนเฟรม p2r44/p2r45: หมอน **0.1 มม.** · เสื้อผ้า 9 ราว **0.5 มม.** · ผ้าคลุมเตียง **7.1 มม.** · ผ้าเช็ดตัว 11-27 มม. · tub chair 22 มม. · Poly Haven 681-750 มม. → texel ต่ำกว่าพิกเซลสามอันดับ แผนที่ทุกใบอยู่ใน node graph และไม่มีใบไหนไปถึงภาพได้ · สเกลยัง **ไม่เท่ากันสามแกน** (0.0083/0.0316/0.0026) = 'texture ยืด' ที่กรรมการฟ้อง · **แก้แล้วด้วย `_bake_transform_to_mesh`** (data API `Mesh.transform` ไม่ใช่ geometry op — layer law ไม่ถูกแตะ) เรียกจากทั้ง `place_model` และ `_place_bed_cloth` · พิสูจน์: tile 7.05 -> 850.00 มม. โดย world bbox ไม่ขยับสี่ตำแหน่งทศนิยม · **แต่ A/B ที่ประกาศเกณฑ์ไว้ก่อนรัน (median gradient ratio > 1.10) ได้ 1.021 (local-std 1.015) บน 14 object ที่อยู่ในทั้งสองเฟรมที่ full fidelity — ไม่มีผลต่อพื้นผิวที่วัดได้** · เหตุผล: 850 มม. บน texture 2k = 0.415 มม./texel ขณะที่กล้องนี้อยู่ที่ ~1.4 มม./พิกเซล → ลายผ้าอยู่ใต้หนึ่งพิกเซลทั้งก่อนและหลัง **การแก้ย้าย tile จาก 'ผิดมหาศาล' ไปเป็น 'ถูกแต่ยังมองไม่เห็น'** · เก็บโค้ดไว้เพราะมัน 'จริง' (object space เป็นเมตรจริงแล้ว ทำให้ระยะ weld ของ `_normalise_acquired` มีความหมายตามที่เขียน และจะสำคัญเมื่อกล้องเข้าใกล้) **ห้ามอ้างว่ามันทำให้ผ้าดีขึ้น** · **และ `--bed-cloth-gap` build จบได้เป็นครั้งแรก**: บล็อก throw วัด bbox ผ้าก่อนที่ premise ของ throw จะถูกตัดสิน 40 บรรทัดถัดไป จึง raise ทิ้งทุกครั้ง — ทางออกที่ D-081 ประกาศไว้ไม่เคยเดินได้จริง (ยังเหลือข้อบกพร่องที่สอง: ladder stop ตกที่ rung coverlet ซึ่งไม่มี object บนเตียงเปล่า)",
+   "where": "pipeline/scripts/build_room.py, pipeline/output/room_bedroom_suite_eye_p2r45.png, qa/open-decisions.json",
+   "because": "ผลลบที่วัดได้คือผลลัพธ์ ไม่ใช่ความล้มเหลว — repo นี้เขียนกฎตัวเองไว้ว่า 'A probe proves REACHABILITY. Only a look proves VALUE' · ประกาศเกณฑ์ก่อนรันเพื่อไม่ให้ขยับเสาประตูทีหลัง · และสิ่งที่มีค่ากว่าตัวแก้คือข้อสรุป: **เส้นทาง fabric-map ที่ออกแบบไว้แบบนี้ ผลิตลายผ้าที่มองเห็นได้ไม่ได้เลย ที่ระยะกล้องนี้ ต่อให้สเกลถูก** น้ำหนักจึงกลับไปที่เรขาคณิต (ผ้า 43.2 มม. · ที่นอน 4,380 px/สามเหลี่ยม) และโทน (AgX กินคอนทราสต์ 25.2% ที่ +21.5 codes)",
+   "reverse_by": "ลบการเรียก `_bake_transform_to_mesh` สองจุด (place_model หลังจัดวางเสร็จ, _place_bed_cloth ก่อนตั้งชื่อ) — object space กลับไปเป็นหน่วยของไฟล์ และ tile กลับไป 0.1-27.5 มม.",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

@@ -120,7 +120,16 @@ for slug in sorted(os.listdir(CACHE)):
         size_ok = need <= st["scale"] + 1e-9
         covered = st["coverage"] >= COVER_CUT
         drapes = st["fall_sides"] >= FALL_CUT
+        # MEDIAN EDGE LENGTH, world mm — reported for every candidate from p2r45.
+        # The three cuts above all ask whether the set FITS; none of them can see
+        # what it is MADE OF, and the set this bench chose renders at 43.2 mm
+        # against acquired pillows at 4.5-10.3 in the same frame. The cut itself is
+        # applied where a control exists (the build, against the cloth already
+        # accepted beside it); here it RANKS, so the eye is never spent on the
+        # coarsest survivor first again.
+        edge = max((fit.edge_mm(o) or 0.0) for o in st["field"]) or None
         row.update({
+            "edge_mm": None if edge is None else round(edge, 1),
             "parts_total": st["parts_total"], "field": len(st["field"]),
             "extra": len(st["extra"]), "dropped": st["parts_dropped"],
             "buried": st["parts_buried"], "scale": round(st["scale"], 3),
@@ -134,6 +143,7 @@ for slug in sorted(os.listdir(CACHE)):
               f"{st['parts_total']:2d}  scale {st['scale']:5.3f}  "
               f"cover {st['coverage']*100:5.1f}%  relief {st['relief_mm']:6.1f} mm  "
               f"fall {st['fall_sides']}/4  need {need:5.3f}x  "
+              f"edge {('%6.1f mm' % edge) if edge else '   n/a '}  "
               f"{'SURVIVES' if row['survives'] else 'out: ' + ','.join(
                   k for k, ok in (('size', size_ok), ('cover', covered),
                                   ('drape', drapes)) if not ok)}")
@@ -151,6 +161,13 @@ with open(OUT, "w", encoding="utf-8") as fh:
                "cuts": {"coverage": COVER_CUT, "fall_sides": FALL_CUT,
                         "max_scale": MAX_SCALE},
                "candidates": rows}, fh, indent=1)
-surv = [r["slug"] for r in rows if r.get("survives")]
+# SURVIVORS ARE RANKED FINEST-FIRST, and the rank is the only thing that decides
+# an ORDER here — the three cuts decide membership. p2r31 ranked on coverage and
+# coverage is maximised by the failure; this ranks on the number that separated the
+# meshes the critics accept from the one they called carved plastic.
+surv = sorted((r for r in rows if r.get("survives")),
+              key=lambda r: (r.get("edge_mm") is None, r.get("edge_mm") or 0.0))
 print(f"BENCH wrote {OUT} ({len(rows)} candidate(s), {len(surv)} survive all three "
-      f"cuts): {','.join(surv) if surv else '(none)'}")
+      f"cuts, finest mesh first): "
+      + (", ".join(f"{r['slug']} ({r['edge_mm']} mm)" for r in surv)
+         if surv else "(none)"))

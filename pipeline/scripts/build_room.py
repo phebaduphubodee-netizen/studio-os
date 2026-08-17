@@ -5086,10 +5086,26 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
     print(f"  bed cloth: covers {_cov * 100:.1f}% of the mattress plan "
           f"(ray-measured, not bbox), falls past {_st['fall_sides']}/4 flanks, "
           f"relief {_st['relief_mm']:.0f} mm")
-    if not _pl_ok or _cov < 0.80:
+    # THE BUILD APPLIES ALL THREE CUTS NOW, AND IT USED TO APPLY TWO. Until p2r45
+    # this line read `if not _pl_ok or _cov < 0.80`, and `fall_sides` appeared in
+    # this function exactly once — in the print above it, compared to nothing. The
+    # drape clause has existed in `bedcloth_rules.survives` since p2r41; the build
+    # simply never called it, so a set that falls past ONE flank passed here while
+    # the audition that chose it would have refused the same numbers. Same shape as
+    # the part cut that drifted between the two callers, one clause further on.
+    _cut = _bcf.survives(_st["need_scale"], _st["scale"], _cov, _st["fall_sides"])
+    if not _pl_ok or not _cut["survives"]:
         if _pl_ok:
-            print(f"  bed cloth: {_cov * 100:.0f}% is not a dressed bed — our own "
-                  f"mattress would show through -> solver bake")
+            print("  bed cloth: REFUSED — "
+                  + ", ".join(
+                      w for w, ok in (
+                          (f"{_cov * 100:.0f}% coverage is not a dressed bed "
+                           f"(our own mattress shows through)", _cut["covered"]),
+                          (f"falls past {_st['fall_sides']}/4 flanks, under the "
+                           f"{_bcf.FALL_CUT} a cover needs (the flanks it misses "
+                           f"render as our mattress box)", _cut["drapes"]),
+                          ("needs stretching past max_scale", _cut["size_ok"]))
+                      if not ok))
         for o in list(news):
             if o.name in bpy.data.objects:
                 bpy.data.objects.remove(o, do_unlink=True)
@@ -5103,6 +5119,10 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
         for o in roots:
             o.matrix_world = T @ o.matrix_world
     bpy.context.view_layer.update()
+    # Placement is final (scale, centre, plateau align, rotation). Bake it before the
+    # materials are built, because every one of them projects on OBJECT coordinates
+    # and this set's object space is 0.0086 of a metre — see `_bake_transform_to_mesh`.
+    _bake_transform_to_mesh(keep, why=f"bed cloth {slug}")
     for i, o in enumerate(keep):
         o.name = f"bed__cloth__acq{i}"
         o["ph_model"] = True                   # keeps the global bevel off cloth
@@ -5135,6 +5155,51 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
           f"on-it part(s) kept, {_st['parts_dropped']} dropped (junk block + "
           f"fittings), "
           f"{_shading}")
+    # ------------------------------------------------------------------ p2r45
+    # RE-MEASURE THE THING THAT WILL ACTUALLY RENDER. Everything above this line
+    # measured a STAGED candidate; between there and here the parts were renamed,
+    # re-materialled and run through the shading normaliser, and nothing looked
+    # again. On p2r44 that gap was exactly one cut wide: staging recorded
+    # `fall_sides 2/4` and the built object measures 1/4 against a cut of 2, so the
+    # frame shipped a cover draping a single flank and the other three rendered as
+    # our own 218-polygon mattress — 332,879 px of bare box against the cover's
+    # 212,263, which is what two critics read as "carved plastic".
+    #
+    # And the FINENESS cut has no equivalent above because it did not exist: the
+    # three fit rungs cannot see what a mesh is made of. Its control is the frame's
+    # own accepted cloth, resolved through the value ladder's signed ACQUIRED_AS
+    # register rather than a list of names kept here (R9b).
+    import value_ladder as _vl
+    _acq_pref = {p for (p, _m) in _vl.ACQUIRED_AS.values()}
+    _ctrl = {}
+    for _o in bpy.data.objects:
+        if (_o.type != 'MESH' or _o.name.startswith("bed__cloth__acq")
+                or not any(_o.name.startswith(p) for p in _acq_pref)):
+            continue
+        _e = _bcf.edge_mm(_o)
+        if _e:
+            _ctrl[_o.name] = _e
+    _bedge = max((_bcf.edge_mm(o) or 0.0) for o in field) if field else None
+    _bcov, _brel, _bfall = _bcf.measure(keep, rect, top_z, hang_to)
+    _built = _bcf.built_survives(_bcov, _bfall, _bedge, _ctrl)
+    _fn = _built["fineness"]
+    print(f"  BUILT bed cloth (re-measured after naming/shading, not inherited "
+          f"from the audition): covers {_bcov * 100:.1f}% of the mattress plan, "
+          f"falls past {_bfall}/4 flanks, relief {_brel:.0f} mm, median edge "
+          + (f"{_bedge:.1f} mm" if _bedge else "n/a"))
+    print("  BUILT fineness: " + (
+        f"cover {_fn['cover_mm']:.1f} mm vs {_fn['control']} {_fn['control_mm']:.1f} "
+        f"mm = {_fn['ratio']:.2f}x the coarsest bought cloth accepted beside it"
+        if _fn["ran"] else f"COULD NOT RUN — {_fn['why']}"))
+    if _built["blocked_by"]:
+        print("  bed cloth: REFUSED ON THE BUILT SCENE — "
+              + ", ".join(_built["blocked_by"])
+              + ". The audition's numbers were about a different object; these are "
+                "about the one that renders.")
+        for o in list(news):
+            if o.name in bpy.data.objects:
+                bpy.data.objects.remove(o, do_unlink=True)
+        return False
     for o in keep:
         _SOFT_BAKED.append(o.name)
     return True
@@ -5876,19 +5941,28 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
         _acq_ms = [o for o in bpy.data.objects if o.type == 'MESH'
                    and o.name.startswith("bed__cloth__acq")]
         _acq_bbs = [drape.world_bbox(o) for o in _acq_ms]
-        if not _acq_bbs:
-            raise RuntimeError("bed cloth: neither a baked coverlet nor an "
-                               "acquired set is in the scene — the throw has "
-                               "nothing to measure against")
+        # A BARE BED IS A LEGAL STATE AND THIS RAISE MADE IT UNREACHABLE (p2r45).
+        # D-081 declared `--bed-cloth-gap` the honest exit when no acquired set
+        # qualifies — and the exit had never been run to completion, because this
+        # block measures the cloth BEFORE the throw's own premise is decided 40
+        # lines below (`_no_sim_cloth and _thr_plan -> None`). So the declared exit
+        # died here with a message about a throw nobody was building. A gap leg that
+        # cannot produce a frame is not an exit; it is a second way to be stuck.
+        # `None` rather than a placeholder bbox: every consumer sits inside
+        # `if _thr_plan:`, so a fabricated number would be unused-and-invented, and
+        # if one ever escapes that guard it must crash rather than measure a fiction.
         _cbb = tuple([min(b[i] for b in _acq_bbs) for i in range(3)]
-                     + [max(b[i] for b in _acq_bbs) for i in range(3, 6)])
+                     + [max(b[i] for b in _acq_bbs) for i in range(3, 6)]) \
+            if _acq_bbs else None
     else:
         _cbb = drape.world_bbox(_cov_o)
     # the throw is born above the HIGHEST cloth beneath it — the simulated duvet's
     # fold roll now stands ~40 mm proud of the coverlet where the band lies, and a
     # sheet cut below that would be born intersecting its own collider
-    _z_top = max(_cbb[5], drape.world_bbox(_duv_o)[5]) if _duv_o else _cbb[5]
-    _c_lo, _c_hi = (_cbb[1], _cbb[4]) if axis == "x" else (_cbb[0], _cbb[3])
+    _z_top = None if _cbb is None else (
+        max(_cbb[5], drape.world_bbox(_duv_o)[5]) if _duv_o else _cbb[5])
+    _c_lo, _c_hi = ((None, None) if _cbb is None else
+                    ((_cbb[1], _cbb[4]) if axis == "x" else (_cbb[0], _cbb[3])))
     _b_lo, _b_hi = (y0, y0 + D) if axis == "x" else (x0, x0 + W)
     # AND CLAMPED TO THE BED LINE. The inset above is measured from the cloth
     # that actually settled, which is right — but an ACQUIRED set is placed to
@@ -5896,7 +5970,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     # does, so the same inset then starts outside the line and the ladder burns
     # six bakes reporting "85 mm proud" at every slack it tries. The line is not
     # negotiable (the plinth reveal lives in that margin); the cut is.
-    if _c_lo < _b_lo or _c_hi > _b_hi:
+    if _c_lo is not None and (_c_lo < _b_lo or _c_hi > _b_hi):
         print(f"  throw: cloth flanks {_c_lo * 1000:.0f}..{_c_hi * 1000:.0f} "
               f"reach the bed line {_b_lo * 1000:.0f}..{_b_hi * 1000:.0f} — "
               f"cross span clamped to the line before the inset")
@@ -5912,6 +5986,13 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None):
     # AND where the room actually exists. The cross span is inset from the coverlet's BAKED
     # flanks, so it cannot reach the flank margin the coverlet has already spent.
     _thr_plan = styling.foot_throw(along, across, H, base_h)
+    if _cbb is None and _thr_plan:
+        # A throw lies ON a made bed. With the bed declared bare there is no cloth
+        # under it and nothing to measure it against, so its premise is gone — the
+        # same R10 reasoning as the acquired leg below, on a different cause.
+        print("  throw: DECLARED ABSENT — the bed carries no cloth at all "
+              "(--bed-cloth-gap), so a throw would lie on the bare mattress")
+        _thr_plan = None
     if _no_sim_cloth and _thr_plan:
         # DECLARED ABSENCE, not a silent drop (R10's rule for a mass that cannot
         # justify itself here). The simulated foot throw exists to put vertical
@@ -6793,6 +6874,83 @@ def _normalise_acquired(meshes, weld_mm=0.01, sharp_deg=30.0):
     return welded, sharp, smoothed
 
 
+def _bake_transform_to_mesh(objs, why=""):
+    """Bake each acquired mesh's WORLD transform into its vertex data and clear the
+    object transform, so its LOCAL space IS world metres. Data API only (`Mesh.transform`),
+    never a geometry `bpy.ops` — the layer law is untouched.
+
+    A REAL BUG, CORRECTLY FIXED, THAT IS NOT THE ANSWER — and the second half of that
+    sentence is the one worth keeping. The A/B is below; read it before citing this
+    function as a reason the cloth improved, because it did not.
+
+    THE BUG IS OURS, NOT THE ASSET'S. Every textile material this file builds projects
+    its maps on OBJECT
+    coordinates — the linen slub, the weave, the crease breakup and the photographed
+    2k weave all read `tc.outputs["Object"]`, and `_FABRIC_TILE_M = 0.85` means one
+    tile spans 850 mm OF OBJECT SPACE. For a mesh we generate that is 850 mm of room,
+    because our objects sit at scale 1.0. An IMPORTED glTF does not: the importer
+    leaves the file's own units in the object matrix, and measured on the p2r44 frame
+    that matrix is 0.0086 for the bed cover and 0.0001 for the acquired pillows. So
+    the weave tiled at **7.1 mm on the cover and 0.1 mm on the pillows** instead of
+    850 — 120x and 8,500x too fine, which at 2048 px per tile puts every texel three
+    orders of magnitude under one rendered pixel. The maps are all there in the node
+    graph and NONE of them can reach the picture; the surface averages to a flat
+    value, which is exactly what "carved plastic" describes.
+
+    The scale is also ANISOTROPIC on the cover (0.0083 / 0.0316 / 0.0026 world-per-
+    object on the three axes), so the box projection was stretched 12x between axes —
+    the "repeating/stretched textures" item both critics filed.
+
+    AND THE A/B THAT ADOPTED THE MAPS COULD NOT HAVE CAUGHT IT: D-022 measured
+    "objects carrying an image texture: 2/498 -> 13/498". That counts NODES, not
+    pixels. A map that is present and invisible passes it perfectly — the repo's own
+    R11 defect (a rung reading declarations about the picture) one layer down.
+
+    THE A/B, PRE-REGISTERED AND NEGATIVE (p2r45, D-088). Threshold declared before
+    the render: median per-object gradient ratio > 1.10 = the fix moves the surface.
+    Measured at FULL fidelity across the 14 objects present in both id masks
+    (p2r44 fix-off vs p2r45 fix-on, `bed__cloth__acq*` excluded because it differs by
+    declaration rather than by this change): **median gradient ratio 1.021, median
+    local-std ratio 1.015.** No surface gain.
+
+    WHY, and this is the finding rather than the fix: `_FABRIC_TILE_M = 0.85` over a
+    2k map is 0.415 mm per texel, and this camera renders the bed at about 1.4 mm per
+    pixel. The weave was under one pixel BEFORE and is still under one pixel AFTER.
+    This bake moved the tile from absurdly wrong to correct-and-still-invisible, so
+    the fabric-map path as designed cannot put visible weave on cloth at this framing
+    at ANY correct scale. It is kept because it is true (object space really is
+    metres now, which also makes `_normalise_acquired`'s weld distance mean what it
+    says, and it will matter at a closer camera) — never as evidence that the cloth
+    got better. What the numbers point at instead is geometry and tone: the cover at
+    43.2 mm median edge, the mattress at 4,380 px per visible triangle, and AgX
+    compressing 25.2% of the cloth's micro-contrast at +21.5 codes off target.
+    """
+    from mathutils import Matrix
+    baked, worst = 0, 0.0
+    for o in [o for o in objs if o.type == 'MESH' and o.data]:
+        mw = o.matrix_world.copy()
+        s = mw.to_scale()
+        worst = max(worst, max(abs(s.x), abs(s.y), abs(s.z)),
+                    1.0 / max(1e-12, min(abs(s.x), abs(s.y), abs(s.z))))
+        if o.data.users > 1:                 # never re-bake a shared datablock twice
+            o.data = o.data.copy()
+        o.data.transform(mw)
+        if mw.determinant() < 0.0:           # a mirrored import would invert winding
+            o.data.flip_normals()
+        o.data.update()
+        o.parent = None
+        o.matrix_parent_inverse = Matrix.Identity(4)
+        o.matrix_world = Matrix.Identity(4)
+        baked += 1
+    if baked:
+        bpy.context.view_layer.update()
+        print(f"  TEXTURE SPACE: baked world transform into {baked} acquired mesh(es)"
+              + (f" ({why})" if why else "")
+              + f" — object space is now metres, so the 850 mm fabric tile lands at "
+                f"850 mm instead of {850.0 / max(1.0, worst):.1f} mm")
+    return baked
+
+
 def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
                 retint_rgba=None, retint_sheen=None, retint_rough=None,
                 retint_force=None, model_slot=None, item_slot=None,
@@ -6884,6 +7042,12 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
         for o in roots:
             o.matrix_world = T @ o.matrix_world
     bpy.context.view_layer.update()
+    # Placement is final here (fit scale, centring, z0, world-Z turn all applied), so
+    # this is the last moment at which the object matrix still means anything and the
+    # first at which baking it is safe. See `_bake_transform_to_mesh`: every textile
+    # map in this file is projected on OBJECT coordinates, and an imported glTF's
+    # object space is the file's units, not metres.
+    _bake_transform_to_mesh(meshes, why=os.path.basename(path))
     for o in news:
         o["ph_model"] = True                     # keep its own materials / skip bevel
     # DROP THE EMPTY IMPORTS. A glTF routinely carries nodes with no geometry; they
