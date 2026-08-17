@@ -429,7 +429,22 @@ def check_decisions(data, decisions, unit=None, repo_root=None):
                          f"the order in {ORDERS_REL} and name it in `obeys`.")
             # older rows are BACKFILL DEBT — see prose_debt(), printed not failed
 
+        # A STANCE IS ONE ORDER ID, AND A MALFORMED ONE IS REPORTED, NOT RAISED.
+        # Written 2026-08-17 after a row filed `obeys` as a LIST of two ids and
+        # this loop died on `unhashable type: 'list'` — a blocking gate module
+        # taken out by a TypeError. `score_exit_policy` already records why that
+        # is the dangerous shape: python exits 1 on an uncaught exception and 1
+        # is this tool's code for "ran and found violations", so a crashed rung
+        # reads exactly like a completed one. Two orders on one row is also a
+        # real question the row has not answered — which one governs the subject
+        # if they ever diverge — so it is refused rather than quietly reduced.
         for oid in [x for x in (stance_obeys, stance_contra) if x]:
+            if not isinstance(oid, str):
+                v.append(f"{did} files a stance as {type(oid).__name__} "
+                         f"({oid!r}). A stance is ONE order id: if two orders "
+                         f"govern this row, say which one decides the subject "
+                         f"and record the other in `because`.")
+                continue
             if oid not in by_id:
                 v.append(f"{did} names order {oid}, which is not in "
                          f"{ORDERS_REL}. A stance on an order nobody recorded "

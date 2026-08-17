@@ -438,3 +438,23 @@ def test_the_bed_cloth_order_is_actually_obeyed_now():
     o = next(x for x in OC.orders(data)
              if x["id"] == "ORD-2026-08-14-bed-cloth-is-acquired")
     assert OC._assert_violations(o["id"], o, REPO) == []
+
+
+# --- a malformed stance is REPORTED, never raised -----------------------------
+# 2026-08-17: a row filed `obeys` as a LIST of two order ids and `check_decisions`
+# died on `unhashable type: 'list'`. A blocking gate module taken out by a
+# TypeError is the shape score_exit_policy already records — python exits 1 on an
+# uncaught exception and 1 is this tool's code for "ran and found violations", so
+# a crashed rung reads exactly like a completed one.
+
+def test_a_list_valued_stance_is_a_violation_and_not_a_crash():
+    led = _led([_order(id="ORD-a"), _order(id="ORD-b")])
+    rows = _dec([_row(obeys=["ORD-a", "ORD-b"])])
+    v = OC.check_decisions(led, rows, "DELIV-001", REPO)
+    assert any("stance as list" in s for s in v), v
+
+
+def test_a_well_formed_stance_still_resolves():
+    led = _led([_order(id="ORD-a")])
+    v = OC.check_decisions(led, _dec([_row(obeys="ORD-a")]), "DELIV-001", REPO)
+    assert not any("stance as" in s for s in v), v
