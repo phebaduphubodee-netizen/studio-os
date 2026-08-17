@@ -2478,8 +2478,57 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "854b5c12bd25df570574a050e06f745b57a6cb1c",
+      "verdicts": {
+        "P2": "keep: the re-aim from review 57 is holding and one of its three named items is now done. P2r-19 closed — the twelve recessed cans were placed against a plane nobody built (the trim geometry inherited the LIGHT stand-off of ceiling-60), fixed by giving the geometry the ceiling and leaving the light its clearance, verified on the built scene at 2794-2799.5 under a 2800 soffit. The R10 ledger reads 0 unresolved for the first time. No change to the phase: its remaining items are exactly the two the re-aim named — surface (P2h materials by role, P2r-2 wood figure which this frame own instrument still scores PERIODIC, P2r-5) and P2r-20 the garment hang under R1. The bed stays a procurement gap.",
+        "P4": "keep: untouched by this close and unchanged from reviews 56 and 57. Styling density is still justified as completeness and still evidenced by three independent channels. Saying it a third time changes nothing, so this verdict is deliberately short.",
+        "P3": "keep: and this close slightly strengthens the hold. The downlight trims were geometrically wrong on every frame this lane has shipped, which means any light tuning done before now would have been tuned around a fixture sitting 60 mm below its own ceiling — exactly the burial his 2026-08-08 order warns about. Objects first was the right order and this is a concrete instance of why.",
+        "P5": "keep: blocked, unchanged. Nothing in a downlight mounting height touches judgement.",
+        "DRW": "keep: done and standing. No drawn mass changed; the ceiling and the fixtures are RCP-tier, not furniture-plan tier, so sheet-recon is untouched."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "53d297819d9669bb40d6c6b6f8d333f36df078d4",
+  "last_review_commit": "854b5c12bd25df570574a050e06f745b57a6cb1c",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
