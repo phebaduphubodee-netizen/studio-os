@@ -46,12 +46,24 @@ coarseness: a candidate this screen calls coarse will not come back fine.
 
 WHAT IT SAYS ABOUT THE ASK, in one line the bench cannot afford to compute: to clear
 a 10.3 mm control on a ~2 m cover a candidate needs about 2 * (2000/10.3)^2 = 75,000
-triangles IN ONE SHEET. Nothing on this shelf of 84 models has that in a part that is
-also a bed cover.
+triangles IN ONE SHEET.
+
+THE UNIT OF THE ESTIMATE IS AN OBJECT, NOT A PRIMITIVE — p2r47, and getting this
+wrong threw a candidate away. The first version read the densest PRIMITIVE, on the
+assumption that a cloth sheet arrives as one primitive. **The SketchUp GLTF Exporter
+writes ONE PRIMITIVE PER TRIANGLE.** Measured: `d4698c95` ("BED SETS", 360 MB) holds
+297,631 primitives of 1 triangle each — so the per-primitive screen reported its
+densest sheet as `tris=1`, `est_edge=2785 mm`, the coarsest possible reading of the
+FINEST cloth this lane has ever fetched. Aggregated per glTF MESH, the same file's
+mesh 8 carries **133,108 triangles across 2301 x 1461 mm** and estimates 7.6 mm.
+That reading is what a screen is for, and the broken one is what "the free tier is
+exhausted" was resting on the round before. A primitive is a material patch; the
+OBJECT is what gets staged, measured and rendered, so the object is the unit.
 """
 import argparse
 import json
 import os
+import re
 import struct
 import sys
 
@@ -61,10 +73,19 @@ except Exception:                                   # noqa: BLE001
     pass
 
 GLB_MAGIC = 0x46546C67
+# An embedded buffer/image is a base64 `data:` URI INSIDE the JSON chunk, and on this
+# shelf that is not an edge case: `bf542bbc` is a 384 MB file whose JSON chunk is
+# 351 MB, essentially all of it base64. Nothing here ever reads a buffer — only
+# accessor counts and extents — so the payload is dropped at the door. It keeps the
+# screen's promise (milliseconds, no Blender) on files that would otherwise cost a
+# gigabyte of dict to look at.
+_DATA_URI = re.compile(rb'"uri"\s*:\s*"data:[^"]*"')
 
 
 def gltf_json(path):
-    """The JSON chunk of a binary glTF. Raises on anything that is not a .glb."""
+    """The JSON chunk of a binary glTF, with embedded data: URIs stripped.
+
+    Raises on anything that is not a .glb."""
     with open(path, "rb") as f:
         head = f.read(12)
         if len(head) < 12:
@@ -73,7 +94,8 @@ def gltf_json(path):
         if magic != GLB_MAGIC:
             raise ValueError(f"{os.path.basename(path)}: not a binary glTF")
         clen, _ctype = struct.unpack("<II", f.read(8))
-        return json.loads(f.read(clen).decode("utf-8"))
+        raw = f.read(clen)
+    return json.loads(_DATA_URI.sub(b'"uri":""', raw).decode("utf-8", "replace"))
 
 
 def primitives(g):
@@ -105,6 +127,49 @@ def primitives(g):
     return out
 
 
+def objects(g):
+    """[{mesh, name, tris, ext, plan, prims}] per glTF MESH, largest plan area first.
+
+    THE UNIT THE STAGING PIPELINE ACTUALLY SEES. `bpy.ops.import_scene.gltf` makes one
+    Blender object per mesh (its primitives become material slots), so this is the
+    thing `bedcloth_fit.classify` weighs and `bedcloth_fit.edge_mm` measures. Reading
+    primitives instead reported a 133,108-triangle duvet as a 1-triangle sheet — see
+    the module docstring.
+    """
+    acc = g.get("accessors") or []
+    out = []
+    for mi, m in enumerate(g.get("meshes") or []):
+        tris, prims = 0, 0
+        lo = [float("inf")] * 3
+        hi = [float("-inf")] * 3
+        for p in (m.get("primitives") or []):
+            pos = (p.get("attributes") or {}).get("POSITION")
+            if pos is None or pos >= len(acc):
+                continue
+            a = acc[pos]
+            mn, mx = a.get("min"), a.get("max")
+            if not mn or not mx or len(mn) < 3 or len(mx) < 3:
+                continue
+            idx = p.get("indices")
+            n = acc[idx].get("count", 0) if (idx is not None and idx < len(acc)) \
+                else a.get("count", 0)
+            t = max(0, int(n) // 3)
+            if t <= 0:
+                continue
+            for k in range(3):
+                lo[k] = min(lo[k], mn[k])
+                hi[k] = max(hi[k], mx[k])
+            tris += t
+            prims += 1
+        if tris <= 0 or lo[0] == float("inf"):
+            continue
+        ext = sorted((hi[k] - lo[k] for k in range(3)), reverse=True)
+        out.append({"mesh": mi, "name": m.get("name"), "tris": tris, "prims": prims,
+                    "ext": ext, "plan": ext[0] * ext[1]})
+    out.sort(key=lambda r: -r["plan"])
+    return out
+
+
 def est_edge_mm(tris, cover_mm):
     """Estimated world edge (mm) of a sheet of `tris` triangles staged to span
     `cover_mm`. None when there is nothing to estimate from."""
@@ -123,19 +188,34 @@ def tris_needed(control_mm, cover_mm):
 
 
 def screen(path, cover_mm):
-    """{slug-agnostic} density screen for one .glb — the densest sheet it holds."""
-    prims = primitives(gltf_json(path))
-    if not prims:
-        return {"tris": 0, "est_edge_mm": None, "prims": 0}
-    finest = max(prims, key=lambda r: r["tris"])
-    return {"prims": len(prims), "tris": finest["tris"],
-            "total_tris": sum(r["tris"] for r in prims),
-            "ext": finest["ext"],
+    """{slug-agnostic} density screen for one .glb — the densest OBJECT it holds.
+
+    `per_tri_export` says the file came out of an exporter that splits geometry one
+    primitive per triangle (the SketchUp GLTF Exporter does). It is reported rather
+    than acted on: it is the fact that broke the first version of this screen, and it
+    is also what makes such a file cost hours to import — `glb_flatten` exists for
+    that half.
+    """
+    return screen_gltf(gltf_json(path), cover_mm)
+
+
+def screen_gltf(g, cover_mm):
+    """The same screen on an already-parsed glTF document."""
+    objs = objects(g)
+    if not objs:
+        return {"tris": 0, "est_edge_mm": None, "prims": 0, "objects": 0}
+    finest = max(objs, key=lambda r: r["tris"])
+    nprims = sum(r["prims"] for r in objs)
+    ntris = sum(r["tris"] for r in objs)
+    return {"objects": len(objs), "prims": nprims, "tris": finest["tris"],
+            "total_tris": ntris, "ext": finest["ext"],
+            "per_tri_export": bool(nprims and ntris and nprims >= 0.9 * ntris),
             "est_edge_mm": est_edge_mm(finest["tris"], cover_mm)}
 
 
 def screen_dir(cache, cover_mm):
-    """[(est_edge_mm, slug, tris, bytes)] over a cache of <slug>/<slug>.glb dirs."""
+    """[(est_edge_mm, slug, tris, bytes, err, per_tri)] over a cache of
+    <slug>/<slug>.glb dirs."""
     rows = []
     for slug in sorted(os.listdir(cache)) if os.path.isdir(cache) else []:
         d = os.path.join(cache, slug)
@@ -147,10 +227,11 @@ def screen_dir(cache, cover_mm):
         p = os.path.join(d, glbs[0])
         try:
             s = screen(p, cover_mm)
-        except (OSError, ValueError, KeyError, struct.error) as e:
-            rows.append((None, slug, 0, os.path.getsize(p), str(e)[:60]))
+        except (OSError, ValueError, KeyError, struct.error, MemoryError) as e:
+            rows.append((None, slug, 0, os.path.getsize(p), str(e)[:60], False))
             continue
-        rows.append((s["est_edge_mm"], slug, s["tris"], os.path.getsize(p), None))
+        rows.append((s["est_edge_mm"], slug, s["tris"], os.path.getsize(p), None,
+                     s.get("per_tri_export", False)))
     rows.sort(key=lambda r: (r[0] is None, r[0] if r[0] is not None else 0.0))
     return rows
 
@@ -172,13 +253,15 @@ def main(argv=None):
         print(f"SCREEN to reach {a.control_mm:.1f} mm over a {a.cover_mm:.0f} mm "
               f"cover, ONE sheet needs ~{need:,} triangles")
     print(f"{'slug':44s} {'est edge':>9} {'sheet tris':>11} {'MB':>7}")
-    for est, slug, tris, nbytes, err in rows[:a.top]:
+    for est, slug, tris, nbytes, err, per_tri in rows[:a.top]:
         if err:
             print(f"{slug:44s} {'—':>9} {'—':>11} {nbytes/1e6:7.1f}  {err}")
             continue
         mark = ""
         if a.control_mm and est is not None:
             mark = "  <= control" if est <= a.control_mm else ""
+        if per_tri:
+            mark += "  [per-triangle export — flatten before benching]"
         print(f"{slug:44s} {est:8.1f}mm {tris:11,d} {nbytes/1e6:7.1f}{mark}")
     return 0
 

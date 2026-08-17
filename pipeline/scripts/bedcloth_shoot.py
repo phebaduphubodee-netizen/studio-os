@@ -48,6 +48,14 @@ for o in list(bpy.data.objects):
                              ("bed__coverlet", "bed__duvet", "bed__throw")):
         bpy.data.objects.remove(o, do_unlink=True)
 
+# WHAT THE FRAME HAS ALREADY DRESSED, read AFTER the strip above so the cloth being
+# replaced is not in it. A candidate part landing inside one of these is that object
+# bought twice — the set's own pillows on top of ours (D-025). Same signed register
+# as the fineness control; see `bedcloth_rules.duplicate_of_placed`.
+AVOID = fit.acquired_objs()
+print("SHOOT already dressed (candidate parts overlapping these are dropped): "
+      + (", ".join(o.name for o in AVOID) if AVOID else "nothing"))
+
 # ONE cloth material for every candidate, so the COMPARISON is of SHAPE, not of
 # whatever colour each uploader baked in (the same reason the build re-dresses)
 cm = bpy.data.materials.get("bed_duvet") or bpy.data.materials.new("bed_duvet")
@@ -69,7 +77,7 @@ for slug in SLUGS:
     news = [o for o in bpy.data.objects if o not in before]
     names = [o.name for o in news]
     st = fit.stage(news, RECT, MTOP, BZ, LIMIT, cover=COVER,
-                   apply_rot=True)
+                   apply_rot=True, avoid=AVOID)
     if "reject" in st:
         print(f"SHOOT {slug}: {st['reject']} — skipped")
     else:

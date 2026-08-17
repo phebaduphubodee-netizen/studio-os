@@ -113,6 +113,14 @@ for o in list(bpy.data.objects):
                              ("bed__coverlet", "bed__duvet", "bed__throw")):
         bpy.data.objects.remove(o, do_unlink=True)
 
+# WHAT THE FRAME HAS ALREADY DRESSED, read AFTER the strip above so the cloth being
+# replaced is not in it. A candidate part landing inside one of these is that object
+# bought twice — the set's own pillows on top of ours (D-025). Same signed register
+# as the fineness control; see `bedcloth_rules.duplicate_of_placed`.
+AVOID = fit.acquired_objs()
+print("BENCH already dressed (candidate parts overlapping these are dropped): "
+      + (", ".join(o.name for o in AVOID) if AVOID else "nothing"))
+
 rows = []
 for slug in sorted(os.listdir(CACHE)):
     d = os.path.join(CACHE, slug)
@@ -131,17 +139,23 @@ for slug in sorted(os.listdir(CACHE)):
     news = [o for o in bpy.data.objects if o not in before]
     names = [o.name for o in news]
     row = {"slug": slug, "file": glbs[0]}
-    st = fit.stage(news, RECT, MTOP, BZ, LIMIT, cover=COVER, max_scale=MAX_SCALE)
+    st = fit.stage(news, RECT, MTOP, BZ, LIMIT, cover=COVER, max_scale=MAX_SCALE,
+                   avoid=AVOID)
     if "reject" in st:
         row.update({"verdict": st["reject"], "parts_total": st.get("parts_total"),
                     "need_scale": st.get("need_scale"),
                     "native_mm": st.get("native_mm"), "survives": False})
         print(f"BENCH {slug:14s} — {st['reject']}")
     else:
+        # THE CUTS COME FROM `bedcloth_rules`, NOT FROM A COPY HERE (p2r47). This
+        # file used to recompute all three inline, which is the exact shape its own
+        # docstring is about: a rule spread across its callers is a rule with one
+        # exemption per caller. `size_ok` is now reported and does not decide — see
+        # `bedcloth_rules.survives`.
         need = st["need_scale"]
-        size_ok = need <= st["scale"] + 1e-9
-        covered = st["coverage"] >= COVER_CUT
-        drapes = st["fall_sides"] >= FALL_CUT
+        row3 = fit.survives(need, st["scale"], st["coverage"], st["fall_sides"],
+                            COVER_CUT, FALL_CUT)
+        size_ok, covered, drapes = row3["size_ok"], row3["covered"], row3["drapes"]
         # MEDIAN EDGE LENGTH, world mm, AND THE CUT — not just the rank (p2r46).
         # The three cuts above all ask whether the set FITS; none of them can see
         # what it is MADE OF, and the set this bench chose renders at 43.2 mm
@@ -153,9 +167,18 @@ for slug in sorted(os.listdir(CACHE)):
         # from the SAME open .blend the bed rect comes from. An audition that
         # cannot ask the build's question is an audition that wastes the eye.
         edge = max((fit.edge_mm(o) or 0.0) for o in st["field"]) or None
+        # AND THE COVER'S OWN EDGE BESIDE IT. The cut stays on the COARSEST visible
+        # field part — a coarse sheet the camera can see is a coarse sheet whichever
+        # part it is — but a set whose cover is fine and whose underlayer is not is a
+        # different fact from a set that is coarse throughout, and the row could not
+        # tell them apart.
+        cov_obj = bpy.data.objects.get(st.get("cover_name") or "")
+        cov_edge = fit.edge_mm(cov_obj) if cov_obj is not None else None
         fine = fit.fineness(edge, CONTROL)
         row.update({
             "edge_mm": None if edge is None else round(edge, 1),
+            "cover_edge_mm": None if cov_edge is None else round(cov_edge, 1),
+            "cover_name": st.get("cover_name"),
             "fine_enough": fine["fine_enough"], "fineness": fine,
             "parts_total": st["parts_total"], "field": len(st["field"]),
             "extra": len(st["extra"]), "dropped": st["parts_dropped"],
@@ -165,16 +188,16 @@ for slug in sorted(os.listdir(CACHE)):
             "relief_mm": round(st["relief_mm"], 1),
             "fall_sides": st["fall_sides"], "need_scale": round(need, 3),
             "size_ok": size_ok, "covered": covered, "drapes": drapes,
-            "survives": bool(size_ok and covered and drapes
-                             and fine["fine_enough"] is True)})
+            "survives": bool(row3["survives"] and fine["fine_enough"] is True)})
         print(f"BENCH {slug:14s} {len(st['field'])}F+{len(st['extra'])}E of "
               f"{st['parts_total']:2d}  scale {st['scale']:5.3f}  "
               f"cover {st['coverage']*100:5.1f}%  relief {st['relief_mm']:6.1f} mm  "
-              f"fall {st['fall_sides']}/4  need {need:5.3f}x  "
-              f"edge {('%6.1f mm' % edge) if edge else '   n/a '}  "
+              f"fall {st['fall_sides']}/4  need {need:5.3f}x"
+              f"{'' if size_ok else '!'}  "
+              f"edge {('%6.1f mm' % edge) if edge else '   n/a '}"
+              f"{(' (cover %.1f)' % cov_edge) if cov_edge else ''}  "
               f"{'SURVIVES' if row['survives'] else 'out: ' + ','.join(
-                  k for k, ok in (('size', size_ok), ('cover', covered),
-                                  ('drape', drapes),
+                  k for k, ok in (('cover', covered), ('drape', drapes),
                                   ('fine', fine['fine_enough'])) if ok is not True)}")
     rows.append(row)
     for nm in names:

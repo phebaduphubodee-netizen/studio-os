@@ -387,22 +387,32 @@ def test_the_repos_own_register_takes_a_stance_where_it_must():
     assert [s for s in v if not s.startswith("STOP-LOSS:")] == []
 
 
-def test_the_stop_loss_is_live_on_the_bed_cloth_order_until_it_is_carried_out():
-    """The counter's own contract, pinned. p2r46 filed
-    ORD-2026-08-15-remove-the-hand-built-cloth as not-obeyed — it had been
-    reading OBEYED because its assertion asked whether a set was NAMED, not
-    whether it SURVIVES — and the stop-loss fired on the eight builder decisions
-    taken on that subject since. When a qualifying cover is finally named, the
-    assertion holds again, this fires no more, and THIS TEST FLIPS: change it
-    then, do not silence it now.
+def test_the_stop_loss_cleared_when_the_bed_cloth_order_was_carried_out():
+    """THE FLIP THIS TEST WAS WRITTEN TO TAKE, taken on 2026-08-17 (p2r47).
+
+    Its p2r46 form asserted the stop-loss was FIRING, and said in its own
+    docstring: "When a qualifying cover is finally named, the assertion holds
+    again, this fires no more, and THIS TEST FLIPS: change it then, do not
+    silence it now." A cover was named — `bed_models.cloth_set` = d4698c95_flat,
+    94.0% coverage and 4/4 flanks on the built scene — the order's assertions
+    hold, and the counter cleared itself exactly as R13 specifies ("the stop-loss
+    is a COUNTER that fires while the order is unobeyed and clears when it is
+    carried out").
+
+    It is kept as a LIVE test rather than deleted, in the direction that matters:
+    if the subject ever accumulates builder decisions again while the order is
+    unobeyed, this goes red on the next run.
     """
     data = OC.load(repo_root=REPO)
     with open(os.path.join(REPO, "qa/open-decisions.json"), encoding="utf-8") as f:
         dec = json.load(f)
     v = OC.check_decisions(data, dec, "DELIV-001", REPO)
-    hits = [s for s in v if s.startswith("STOP-LOSS:")]
-    assert len(hits) == 1 and "bed-cloth-build-vs-acquire" in hits[0]
-    assert "STILL NOT OBEYED" in hits[0]
+    hits = [s for s in v if s.startswith("STOP-LOSS:")
+            and "bed-cloth-build-vs-acquire" in s]
+    assert hits == [], (
+        "the bed-cloth order is carried out; a stop-loss here means either the "
+        "spec stopped naming a surviving set or the subject is being decided "
+        "again by the builder: " + "; ".join(hits))
 
 
 def test_every_standing_order_still_reproduces_its_own_words():

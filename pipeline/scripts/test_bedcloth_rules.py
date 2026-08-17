@@ -84,6 +84,72 @@ def test_rotation_is_derived_from_both_boxes_and_reorients_the_cover_test():
 
 # ------------------------------------------------------------ part classification
 
+def test_the_cover_is_chosen_from_the_parts_and_the_bed_in_the_file_does_not_decide():
+    """p2r47, on 22897dd4's own measurements. The file is a whole bedding SET: a
+    2018 x 1827 x 213 mm sheet of 74,136 triangles, a 2596 x 1681 x 660 mm spread,
+    and a bed standing 1243 mm tall. Solved on the file's bounding box the height
+    ceiling (fall 396 + loft 320 = 716 mm) collapses the allowed scale to 0.576x and
+    the sheet's own 0.665x reads as 'too big'; solved on the sheet it is 1.0x."""
+    parts = [("sheet", (2.018, 1.827, 0.213)),
+             ("spread", (2.596, 1.681, 0.660)),
+             ("bed", (2.738, 3.345, 1.243))]
+    key, row, feasible = BR.choose_cover(parts, LIMIT, COVER, max_scale=1.0)
+    assert key == "sheet", "the 74k-triangle sheet is the cover; the bed is not"
+    assert row[0] == pytest.approx(1.0), "staged as authored, not shrunk by the bed"
+    assert feasible == 1, "and it is the only part that can cover this mattress"
+    # and the refused version, reconstructed: the file's own box
+    s_file, _, _, _, _, need_file = BR.plan_scale((2.738, 3.345, 1.243), LIMIT, COVER)
+    assert need_file > s_file, "this is the refusal the whole set used to get"
+
+
+def test_the_outermost_cloth_wins_when_more_than_one_part_can_cover():
+    parts = [("inner", (1.9, 2.0, 0.2)), ("outer", (2.2, 2.3, 0.3))]
+    key, _row, feasible = BR.choose_cover(parts, LIMIT, COVER)
+    assert key == "outer" and feasible == 2
+
+
+def test_with_nothing_feasible_the_closest_part_is_still_chosen_and_still_measured():
+    """d4698c95 needs 1.046x and 9dc70a0e needs 1.011x — 20 mm on one axis of a bed
+    the client's drawing makes 2149 mm wide. Both used to be refused sight unseen;
+    both are now staged as authored so the rays can answer."""
+    parts = [("cover", (1.740, 1.978, 0.324)), ("pillow", (0.6, 0.5, 0.2))]
+    key, row, feasible = BR.choose_cover(parts, LIMIT, COVER)
+    assert feasible == 0
+    assert key == "cover", "the closest part is the file's cover"
+    assert row[5] == pytest.approx(1.046, abs=0.002)
+    assert row[0] == pytest.approx(1.0), "still staged AS AUTHORED, never stretched"
+
+
+def test_a_sets_own_pillow_landing_inside_the_acquired_one_is_a_duplicate():
+    """p2r47's audition shot: d4698c95 ships its own pillows, this bed's head set was
+    acquired eleven rounds ago, and an 800 mm bolster rendered standing THROUGH it.
+    Geometric, never by name (R9b) — the uploader's names are the one thing this repo
+    has already been burned by trusting."""
+    ours = (0.0, 0.0, 0.60, 0.60, 0.45, 1.05)          # an acquired sham at the head
+    theirs = (0.05, 0.05, 0.62, 0.55, 0.40, 1.00)      # the set's own, on top of it
+    share, dup = BR.duplicate_of_placed(theirs, [ours])
+    assert dup and share > 0.9
+
+
+def test_a_duvet_merely_touching_a_pillow_is_not_a_duplicate():
+    """R9b calls AABB interpenetration ADVISORY because a box cannot tell interlocking
+    from intersecting, so the threshold is a THIRD of the part's own volume. A cover
+    tucked against a sham overlaps it a little and must survive."""
+    ours = (0.0, 0.0, 0.60, 0.60, 0.45, 1.05)
+    duvet = (0.0, 0.0, 0.20, 1.82, 1.97, 0.65)
+    share, dup = BR.duplicate_of_placed(duvet, [ours])
+    assert not dup and share < BR.DUPLICATE_SHARE
+
+
+def test_nothing_placed_means_nothing_is_a_duplicate():
+    assert BR.duplicate_of_placed((0, 0, 0, 1, 1, 1), []) == (0.0, False)
+    assert BR.duplicate_of_placed(None, [(0, 0, 0, 1, 1, 1)]) == (0.0, False)
+
+
+def test_choose_cover_with_no_parts_says_so_rather_than_guessing():
+    assert BR.choose_cover([], LIMIT, COVER) == (None, None, 0)
+
+
 def test_an_accessory_cloth_is_kept_and_not_counted_as_the_cover():
     """p2r32's correction, pinned: the turned-down runner (374 x 1600 mm = 16.7% of
     this mattress in plan) is EXTRA, not junk. The pre-p2r32 cut deleted it, and the
@@ -107,11 +173,28 @@ def test_the_poly_floor_alone_removes_the_uploaders_junk():
 
 # ------------------------------------------------------------------ the three cuts
 
-def test_survives_requires_all_three_and_names_which_one_failed():
+def test_survives_is_decided_by_the_two_RAY_cuts_and_names_which_one_failed():
     assert BR.survives(0.845, 1.0, 0.902, 2)["survives"]
-    assert not BR.survives(1.231, 1.0, 0.90, 2)["survives"]     # stretched
     assert not BR.survives(0.845, 1.0, 0.71, 2)["survives"]     # our mattress shows
     assert not BR.survives(0.845, 1.0, 0.90, 0)["survives"]     # does not drape
+
+
+def test_size_is_reported_and_no_longer_decides_because_it_is_a_bounding_box():
+    """p2r47. `need_scale` used to refuse a set outright; it refused five candidates
+    at 1.011x-1.125x, none of which was ever rayed. It is still MEASURED and still
+    printed — a set needing 1.231x is a fact worth reading — but the verdict belongs
+    to the two cuts that can see the object."""
+    stretched = BR.survives(1.231, 1.0, 0.90, 2)
+    assert stretched["size_ok"] is False, "the number is still measured and reported"
+    assert stretched["survives"], "and the rays, not the box, decide"
+
+
+def test_a_cover_too_small_still_dies_by_ray_so_nothing_was_loosened():
+    """The clause that replaces the box: a set that cannot reach the mattress fails
+    coverage, and one that cannot reach past its flanks fails drape. Demoting the box
+    removed an early-out, not a standard."""
+    assert not BR.survives(1.9, 1.0, 0.42, 0)["survives"]
+    assert not BR.survives(1.9, 1.0, 0.95, 1)["survives"]
 
 
 def test_the_build_applied_two_of_the_three_cuts_and_p2r44_walked_through_the_gap():

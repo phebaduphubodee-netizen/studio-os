@@ -34,10 +34,11 @@ import bpy
 from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
-from bedcloth_rules import (BURIED_SHARE, COVER_CUT, EXTRA_FRAC,  # noqa: F401
-                            FALL_CUT, FIELD_FRAC, POLY_FLOOR, built_survives,
-                            classify_areas, fineness, limits_for, plan_scale,
-                            survives)
+from bedcloth_rules import (BURIED_SHARE, COVER_CUT, DUPLICATE_SHARE,  # noqa: F401
+                            EXTRA_FRAC, FALL_CUT, FIELD_FRAC, POLY_FLOOR,
+                            built_survives, choose_cover, classify_areas,
+                            duplicate_of_placed, fineness, lies_on_the_bed,
+                            limits_for, plan_scale, survives)
 
 
 def edge_mm(o):
@@ -56,6 +57,26 @@ def edge_mm(o):
     ls = sorted(((M @ v[e.vertices[0]].co) - (M @ v[e.vertices[1]].co)).length
                 for e in me.edges)
     return ls[len(ls) // 2] * 1000.0
+
+
+def acquired_objs(objs=None, exclude_prefix="bed__cloth__acq"):
+    """The BOUGHT soft goods already standing in this frame.
+
+    Membership is the value ladder's signed ACQUIRED_AS register — the same source
+    `control_edges` uses and the same one `duplicate_of_placed` needs, so "what counts
+    as already-dressed" is one fact and not two.
+    """
+    import value_ladder as _vl
+    prefixes = {p for (p, _m) in _vl.ACQUIRED_AS.values()}
+    out = []
+    for o in (bpy.data.objects if objs is None else objs):
+        if getattr(o, "type", None) != 'MESH':
+            continue
+        if exclude_prefix and o.name.startswith(exclude_prefix):
+            continue
+        if any(o.name.startswith(p) for p in prefixes):
+            out.append(o)
+    return out
 
 
 def control_edges(objs=None, exclude_prefix="bed__cloth__acq"):
@@ -77,16 +98,8 @@ def control_edges(objs=None, exclude_prefix="bed__cloth__acq"):
     names the objects it applies to will always exempt the next one). The candidate
     cover itself is excluded by prefix: a cover cannot be its own control.
     """
-    import value_ladder as _vl
-    prefixes = {p for (p, _m) in _vl.ACQUIRED_AS.values()}
     out = {}
-    for o in (bpy.data.objects if objs is None else objs):
-        if getattr(o, "type", None) != 'MESH':
-            continue
-        if exclude_prefix and o.name.startswith(exclude_prefix):
-            continue
-        if not any(o.name.startswith(p) for p in prefixes):
-            continue
+    for o in acquired_objs(objs, exclude_prefix):
         e = edge_mm(o)
         if e:
             out[o.name] = e
@@ -201,7 +214,7 @@ def measure(objs, rect, top_z, base_z, n=40):
 
 
 def stage(news, rect, top_z, base_z, limit, cover=None, max_scale=1.0,
-          apply_rot=False, log=print):
+          apply_rot=False, avoid=None, log=print):
     """Stage an imported candidate onto THIS bed. `news` is every object the import
     created; `rect` is the mattress plan (x, y, w, d); `limit`/`cover` are the
     ceiling and floor from `limits_for` (see `plan_scale`).
@@ -212,7 +225,10 @@ def stage(news, rect, top_z, base_z, limit, cover=None, max_scale=1.0,
     Order is load-bearing and every step was paid for by a measured mistake:
       1. PRUNE BEFORE FIT — routed through the generic fitter, a set was rejected at
          1.39x because the file's 2 m junk cube was read as the model's height.
-      2. Fit and CENTRE on the mattress plan.
+      2. Fit and CENTRE on the mattress plan, both SOLVED ON THE COVER PART rather
+         than on the file's bounding box — a set that ships with the bed it dresses
+         was being refused for the bed's height and slid off the mattress by the
+         bed's centre (p2r47; six of nine size-refusals were this).
       3. ALIGN BY THE CLOTH'S OWN SLEEPING PLANE, never by the set's bottom: these
          files ship their own mattress, so a bottom anchor buries the covers inside
          ours — a white slab with a knot of cloth on it, which is what the first
@@ -240,20 +256,58 @@ def stage(news, rect, top_z, base_z, limit, cover=None, max_scale=1.0,
     for o in drop:
         bpy.data.objects.remove(o, do_unlink=True)
 
-    bb = group_bbox(keep)
-    native = (bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2])
-    s, rot, fit_w, fit_d, plan_s, need = plan_scale(native, limit, cover, max_scale)
-    if need is not None and need > s + 1e-9:
-        return {"reject": f"to cover {cover[0]*1000:.0f} x {cover[1]*1000:.0f} mm "
-                          f"this {native[0]*1000:.0f} x {native[1]*1000:.0f} mm set "
-                          f"needs {need:.3f}x, past the {s:.3f}x this bed allows",
-                "parts_total": len(meshes), "need_scale": need, "allowed": s,
-                "native_mm": [round(v * 1000) for v in native]}
+    # THE FIT IS DERIVED FROM THE COVER, NEVER FROM THE WHOLE FILE (p2r47), and the
+    # rule it replaces refused six of the nine sets it size-rejected for a height that
+    # was never the cover's. `limits_for` says in its own words what the height ceiling
+    # describes — "that drop plus the loft", i.e. what a COVER may be. It was being
+    # applied to `group_bbox(field + extra)`, which for any set that ships with the bed
+    # it dresses is the BED: 22897dd4 holds a 2018 x 1827 x 213 mm sheet of 74,136
+    # triangles and was refused because the file around it stands 1243 mm tall, so the
+    # ceiling collapsed to 0.576x and the cover's own 0.665x read as "too big". Same
+    # shape as R9b one level over: a rule applied to a group it does not describe will
+    # refuse the next one. The set still scales as ONE object — the author's internal
+    # proportions are not ours to edit — but the scale is now solved on the part that
+    # has to cover the mattress, and the file's own bed is removed where it always was,
+    # by the buried test below.
+    by_name, parts = {}, []
+    for o in field:
+        b = world_bbox(o)
+        if not b:
+            continue
+        by_name[o.name] = o
+        parts.append((o.name, (b[3] - b[0], b[4] - b[1], b[5] - b[2])))
+    if not parts:
+        return {"reject": "no measurable field part", "parts_total": len(meshes)}
+    # THE DECISION IS PURE AND LIVES IN `bedcloth_rules` (layer law: rules are plain
+    # Python, only the middle layer is Blender). This module supplies the bounding
+    # boxes; it does not get its own copy of the choice.
+    key, row, n_feasible = choose_cover(parts, limit, cover, max_scale)
+    # `need <= s` RANKS THE PICK; IT NO LONGER REFUSES THE SET (p2r47). It is a
+    # BOUNDING-BOX test, and this bench exists because a bounding box was the wrong
+    # instrument: "a bounding box cannot tell a spread sheet from a crumpled one...
+    # This measures the thing itself, by ray" (bedcloth_bench's own opening). The two
+    # ray cuts downstream ask the same question better and at a stated tolerance —
+    # `coverage >= 0.80` is "our mattress must not show" and `fall_sides >= 2` is "it
+    # drapes" — while this proxy demanded a bbox spanning 100% of the mattress before
+    # either could run. Measured on the shelf the day it changed: it refused FIVE
+    # candidates at 1.011x, 1.046x, 1.066x, 1.087x and 1.125x, none of which was ever
+    # rayed. The nearest missed by 20 mm on one axis. `max_scale` is untouched and
+    # still binds the staging scale — nothing is stretched to fit; a set simply gets
+    # staged AS AUTHORED and then has to survive the measurements that can see it.
+    cover_obj = by_name[key]
+    # the NAME is taken now, while the object is alive: the buried test below may
+    # remove it, and a removed object's StructRNA raises on any attribute read
+    cover_name = key
+    native = dict(parts)[key]
+    s, rot, fit_w, fit_d, plan_s, need = row
     roots = [o for o in news if o.parent is None] or news
     for o in roots:
         o.scale = tuple(v * s for v in o.scale)
     bpy.context.view_layer.update()
-    bb = group_bbox(keep)
+    # CENTRE THE COVER ON THE MATTRESS, not the file's bounding box — same reason the
+    # scale comes from the cover. A set that ships with its own bed frame has a group
+    # centre that is the BED's, and centring on it slides the cloth off the mattress.
+    bb = world_bbox(cover_obj) or group_bbox(keep)
     cx, cy = rx + rw / 2.0, ry + rd / 2.0
     dx, dy = cx - (bb[0] + bb[3]) / 2.0, cy - (bb[1] + bb[4]) / 2.0
     for o in roots:
@@ -299,6 +353,57 @@ def stage(news, rect, top_z, base_z, limit, cover=None, max_scale=1.0,
         else:
             buried = []
 
+    # DROP WHAT THE FRAME HAS ALREADY DRESSED (p2r47). A bedding set ships with its
+    # own pillows; this bed's head pillows were acquired eleven rounds ago (D-025), so
+    # the set's pair lands inside ours. `_place_bed_cloth` has SAID it buys "the duvet
+    # + its turned-down top sheet... NOT the pillows" since p2r44 and nothing enforced
+    # it; p2r47's audition shot rendered an 800 mm bolster standing through the
+    # acquired head set. Geometric, never by name (R9b) — see `duplicate_of_placed`.
+    dupes = []
+    if avoid:
+        abbs = [world_bbox(o) for o in avoid]
+        for o in list(keep):
+            share, is_dup = duplicate_of_placed(world_bbox(o), abbs)
+            if is_dup:
+                dupes.append((o.name, round(share, 3)))
+        if dupes and len(dupes) < len(keep):
+            dnames2 = {n for n, _s in dupes}
+            gone = [o for o in keep if o.name in dnames2]
+            for o in gone:
+                keep.remove(o)
+                (field if o in field else extra).remove(o)
+            news = [o for o in news if o.name not in dnames2]
+            roots = [o for o in roots if o.name not in dnames2]
+            for o in gone:
+                bpy.data.objects.remove(o, do_unlink=True)
+            if not field:
+                return {"reject": "every field part duplicates something already in "
+                                  "the frame", "parts_total": len(meshes)}
+        else:
+            # dropping EVERYTHING would leave the bed bare, which is the failure this
+            # rule is meant to prevent — report it and change nothing.
+            dupes = [(n, s, "not dropped: it is the whole set") for n, s in dupes]
+
+    # AND DROP WHAT IS NOT LYING ON THE BED AT ALL (p2r47). EXTRA means "a runner, a
+    # folded top sheet" in `classify_areas`'s own words; a 545 mm bolster standing on
+    # the corner is not that. Bounded by the declared loft, never a new number.
+    standing = []
+    for o in list(extra):
+        b = world_bbox(o)
+        ok, rise = lies_on_the_bed(None if not b else b[5], top_z)
+        if not ok:
+            standing.append((o.name, round(rise * 1000.0, 1)))
+    if standing:
+        snames = {n for n, _r in standing}
+        gone = [o for o in keep if o.name in snames]
+        for o in gone:
+            keep.remove(o)
+            extra.remove(o)
+        news = [o for o in news if o.name not in snames]
+        roots = [o for o in roots if o.name not in snames]
+        for o in gone:
+            bpy.data.objects.remove(o, do_unlink=True)
+
     cov, relief, sides = measure(keep, rect, top_z, base_z)
     if apply_rot and rot:
         piv = Vector((cx, cy, 0.0))
@@ -308,10 +413,19 @@ def stage(news, rect, top_z, base_z, limit, cover=None, max_scale=1.0,
         for o in roots:
             o.matrix_world = T @ o.matrix_world
         bpy.context.view_layer.update()
+    gb = group_bbox(keep)
     return {"field": field, "extra": extra, "keep": keep, "news": news,
             "roots": roots, "scale": s, "plan_scale": plan_s, "rot": rot,
             "need_scale": need, "fit": (fit_w, fit_d),
+            "cover_name": cover_name,
+            "cover_buried": cover_name not in {o.name for o in keep},
+            "cover_candidates": len(parts), "cover_feasible": n_feasible,
             "native_mm": [round(v * 1000) for v in native],
+            "set_native_mm": ([round((gb[3] - gb[0]) * 1000),
+                               round((gb[4] - gb[1]) * 1000),
+                               round((gb[5] - gb[2]) * 1000)] if gb else None),
             "coverage": cov, "relief_mm": relief, "fall_sides": sides,
             "parts_total": len(meshes), "parts_dropped": len(drop),
-            "parts_buried": len(buried), "height_mm": native[2] * s * 1000.0}
+            "parts_buried": len(buried), "parts_duplicate": dupes,
+            "parts_standing": standing,
+            "height_mm": native[2] * s * 1000.0}

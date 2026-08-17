@@ -5416,6 +5416,2315 @@
      "why": "past --limit 16 in the size rank"
     }
    ]
+  },
+  {
+   "at": "2026-08-17T12:05:18+00:00",
+   "queries": [
+    "покрывало на кровать",
+    "постельное белье",
+    "copriletto",
+    "couvre-lit",
+    "couette lit",
+    "colcha cama matrimonial",
+    "edredón cama",
+    "narzuta na łóżko",
+    "yatak örtüsü",
+    "床品 床上用品",
+    "ผ้าคลุมเตียง",
+    "duvet high poly",
+    "hotel bed made",
+    "bed with duvet cover",
+    "cama com edredom king",
+    "quarto casal cama arrumada"
+   ],
+   "count": 12,
+   "limit": null,
+   "min_bytes": 0,
+   "max_bytes": 0,
+   "dry_run": true,
+   "n_hits": 67,
+   "fetched": [],
+   "hits": [
+    {
+     "id": "3dfca6fa-12a0-41cc-8378-4cb1fed41984",
+     "title": "постельное белье",
+     "downloads": 635,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 10755408,
+     "query": "постельное белье"
+    },
+    {
+     "id": "05977346-eee0-40a1-80ac-7345023a063e",
+     "title": "Кровать подростка",
+     "downloads": 1051,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "постельное белье"
+    },
+    {
+     "id": "c0500a8a-9b5d-4f5b-af0f-c085e1757414",
+     "title": "LETTO SING. con copriletto",
+     "downloads": 682,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5919772,
+     "query": "copriletto"
+    },
+    {
+     "id": "1fc93781d7007c4ee3f7a74e12a274ef",
+     "title": "The bed2",
+     "downloads": 1935,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 1511564,
+     "query": "copriletto"
+    },
+    {
+     "id": "6046d88f55e44708f79339f0188551c9",
+     "title": "letto stile antico",
+     "downloads": 271,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 81476,
+     "query": "copriletto"
+    },
+    {
+     "id": "9fa697ca-51cf-4985-bca9-92472e2dc884",
+     "title": "Testata letto bottoni + materasso 160x190",
+     "downloads": 1856,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 401028,
+     "query": "copriletto"
+    },
+    {
+     "id": "073c9b03-01e7-4f7b-9326-85b5b59b0d37",
+     "title": "letto",
+     "downloads": 5357,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "copriletto"
+    },
+    {
+     "id": "a033a95b3099162fb20383e4c9a96b8c",
+     "title": "double bed with blanket",
+     "downloads": 12262,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 519704,
+     "query": "copriletto"
+    },
+    {
+     "id": "139d1b3ad9ae9aed9c7452f71dc2cb86",
+     "title": "Colcha Lençol Solteiro Corinthians,",
+     "downloads": 1760,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 376296,
+     "query": "copriletto"
+    },
+    {
+     "id": "4c1596034e181d7ce3f7a74e12a274ef",
+     "title": "Decarus Bed",
+     "downloads": 990,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 986956,
+     "query": "copriletto"
+    },
+    {
+     "id": "a10f3b837e019ffa6f3561dc8f27c",
+     "title": "Desert Curtain Bed",
+     "downloads": 4508,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 686672,
+     "query": "copriletto"
+    },
+    {
+     "id": "u429d35a1-4bf6-4e34-83a7-1ae50e55d3db",
+     "title": "lit mandel",
+     "downloads": 1744,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 631460,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "u48acdab3-0afc-4193-a744-57114faa5407",
+     "title": "lit,nape,rideau",
+     "downloads": 1203,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 499304,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "u999331d9-292f-48c9-b50c-08df28800918",
+     "title": "lit",
+     "downloads": 3557,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 832432,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "ud81b0769-122f-4674-9e13-8473be894d80",
+     "title": "lit",
+     "downloads": 590,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1179868,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "9786ac330218b53b1332cc326bc0fa00",
+     "title": "lit\"maraya\"",
+     "downloads": 425,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1182492,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "6b337447db0fd472274f54ce84fdc700",
+     "title": "Lit 2 places",
+     "downloads": 4211,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3970300,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "5103af20-f4f6-40a3-93d2-3a74d371479a",
+     "title": "Lit enfant avec couette 90cm",
+     "downloads": 73,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6196684,
+     "query": "couette lit"
+    },
+    {
+     "id": "c91b8f78-c24b-46a5-bc2e-cb95308bbebd",
+     "title": "lit avec couette  draps et  sommier",
+     "downloads": 451,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 230944,
+     "query": "couette lit"
+    },
+    {
+     "id": "32ec1509-4c16-496e-96a9-58834c936bc8",
+     "title": "lit avec couette  draps et  sommier",
+     "downloads": 20027,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 241420,
+     "query": "couette lit"
+    },
+    {
+     "id": "1378405e-70be-4a0b-9469-db2b114df96e",
+     "title": "couette er oreiller lit simple 200 90",
+     "downloads": 1572,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3115544,
+     "query": "couette lit"
+    },
+    {
+     "id": "4fa5bc088e318ab87bf81cf9eabf373",
+     "title": "Lit",
+     "downloads": 399,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 227472,
+     "query": "couette lit"
+    },
+    {
+     "id": "ec02140d08209a8d97b2cbcac97425d",
+     "title": "Bed",
+     "downloads": 320,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 158984,
+     "query": "couette lit"
+    },
+    {
+     "id": "e0d5b9142a245b4b2041aaba4268ef64",
+     "title": "lit 1994",
+     "downloads": 652,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 276064,
+     "query": "couette lit"
+    },
+    {
+     "id": "f0829336-e162-4e29-b64b-4b689d2e0d4c",
+     "title": "fauteuil",
+     "downloads": 1,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 629664,
+     "query": "couette lit"
+    },
+    {
+     "id": "11436d7d0fa5be7aebc1a142bacc95e0",
+     "title": "Lit violet",
+     "downloads": 125,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 41092,
+     "query": "couette lit"
+    },
+    {
+     "id": "51341d8d-eb5f-4f7f-8a63-11460c97c559",
+     "title": "Lit double 160cm",
+     "downloads": 1406,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 28643792,
+     "query": "couette lit"
+    },
+    {
+     "id": "a85bd7fe-2435-4892-bf7a-4be78bdd1040",
+     "title": "Lit rose fille",
+     "downloads": 4,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3610276,
+     "query": "couette lit"
+    },
+    {
+     "id": "e48d919adc38ef2f8aa542131c11ec66",
+     "title": "lit magnifique",
+     "downloads": 238,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 473628,
+     "query": "couette lit"
+    },
+    {
+     "id": "bf41eb2a-0208-4844-b9da-cb05b1689e1c",
+     "title": "CAMA CON EDREDON",
+     "downloads": 850,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 152578940,
+     "query": "edredón cama"
+    },
+    {
+     "id": "2ff852a8a1a9a55fb2f9f9cf8b50994b",
+     "title": "Cabeceira Cama Box Criado Mudo, Colcha, Edredon, Travesseiro de Zebra,",
+     "downloads": 16952,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 545272,
+     "query": "edredón cama"
+    },
+    {
+     "id": "32931d81d4314c62a3e5cc9100f37590",
+     "title": "Edredon de Pluma",
+     "downloads": 55947,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 423832,
+     "query": "edredón cama"
+    },
+    {
+     "id": "u159c4655-001a-481b-8b3d-da8418fe3254",
+     "title": "Cama Menina",
+     "downloads": 2504,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 13209872,
+     "query": "edredón cama"
+    },
+    {
+     "id": "4dfd4ce8-2044-4187-bbdd-1ea189ea07e4",
+     "title": "Bed King Size",
+     "downloads": 112400,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "edredón cama"
+    },
+    {
+     "id": "f52472c1-fc7e-481a-8fcd-d18036496e6a",
+     "title": "Bed King Size",
+     "downloads": 9504,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 11056212,
+     "query": "edredón cama"
+    },
+    {
+     "id": "udaa9eeb8-8718-458c-96fa-e8c102195872",
+     "title": "Cama infantil",
+     "downloads": 2886,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 915668,
+     "query": "edredón cama"
+    },
+    {
+     "id": "34b89ae3-12e7-4379-9e33-3fc1aa9bcc6d",
+     "title": "Cama queen white",
+     "downloads": 109,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 7008504,
+     "query": "edredón cama"
+    },
+    {
+     "id": "ac7f7190-7afc-4423-9f0b-d194e0d6a29e",
+     "title": "ROPA-DE-CAMA-GENERICA",
+     "downloads": 508,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 10625936,
+     "query": "edredón cama"
+    },
+    {
+     "id": "f66352c1ddb294d24ffbcf8cf904ca12",
+     "title": "Edredom MDNA",
+     "downloads": 1541,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 418896,
+     "query": "edredón cama"
+    },
+    {
+     "id": "75a4122b-5f19-4801-96e7-6e6a725440ba",
+     "title": "CAMA QUEEN 1.60X2.00M",
+     "downloads": 135401,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1516260,
+     "query": "edredón cama"
+    },
+    {
+     "id": "a7486efc6679cb69db22f2a6fafd9522",
+     "title": "cama casal",
+     "downloads": 52078,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 3068004,
+     "query": "edredón cama"
+    },
+    {
+     "id": "2674a230-a3be-4c5c-a961-c0319da8140f",
+     "title": "Örtü - Cover",
+     "downloads": 812,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "yatak örtüsü"
+    },
+    {
+     "id": "e9260226-31bc-4070-ae00-4d6f6bf5a51c",
+     "title": "couette ou pouf géant",
+     "downloads": 9609,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6278968,
+     "query": "duvet high poly"
+    },
+    {
+     "id": "a0c1f55b4f51781b58db0ef36af1d3c5",
+     "title": "Bed",
+     "downloads": 2362,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1870404,
+     "query": "duvet high poly"
+    },
+    {
+     "id": "f0f32af8-7d1a-4053-9157-0a0f400664f1",
+     "title": "HABITAT - ADAMS II - BED 180x200 - DYNAMIC COMPONENT",
+     "downloads": 321,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 272764,
+     "query": "duvet high poly"
+    },
+    {
+     "id": "e63ab045-d517-4e9a-8e63-ee98dd1e97b7",
+     "title": "Wooden Bed 2.58m",
+     "downloads": 3545,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 16334364,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "c850400612ebe5549f695af5ccc7d06f",
+     "title": "rooms of hotels",
+     "downloads": 3751,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 269316,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "f355ef3f420bfed3b837e70a993ea5df",
+     "title": "Premium Inn - Fully furnished",
+     "downloads": 183,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "9670a720ff46ba65638e83bf3e71cd0",
+     "title": "Hotel Room",
+     "downloads": 7201,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3618252,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "6ff23f36e9c74407bc3b6aea14a4f985",
+     "title": "simple four poster bed with mosquito nets",
+     "downloads": 104570,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 532372,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "e1658be9-3005-417c-bae1-528534144b92",
+     "title": "bed",
+     "downloads": 748,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 490544,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "633c242eb1d0eb199daa2bf0c68f794f",
+     "title": "Hotel(Inside all detailed)",
+     "downloads": 1172,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 946520,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "59a5fb95-4039-431a-bbf8-bd21407986e2",
+     "title": "simple four poster bed with mosquito nets",
+     "downloads": 6656,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 532372,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "dec12a93-99a3-457c-ac00-a3cddba1f8fb",
+     "title": "Nilson Beds | Design Timeless",
+     "downloads": 1339,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 7613708,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "f0b17d93-8b3d-48e8-a1be-798bc008d4c1",
+     "title": "Nilson Beds | Design Menton",
+     "downloads": 1685,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 8681604,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "6719980a-bee9-4234-82df-52422828e28c",
+     "title": "Nilson Beds | Design Heather ",
+     "downloads": 1371,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5715124,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "3f57e13d93b79363f54c21aef59199a2",
+     "title": "Bedroom",
+     "downloads": 8053,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "c459efc2492bfe9fafd8078191062c7f",
+     "title": "Old victorian bed",
+     "downloads": 2376,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 152036,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "d16f00ca-d24b-464c-bd54-00cf909930b2",
+     "title": "Hayworth Upholstered Panel Bed",
+     "downloads": 4652,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6439564,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "4de405ec-de99-4ea9-89b3-d19621384988",
+     "title": "Pallet Double Bed",
+     "downloads": 15355,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "681130ec-dacc-4eb3-a01c-4332ffb8803b",
+     "title": "MERESON",
+     "downloads": 442,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5253852,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "aacaa3d3-9f72-4f8f-9873-b940c3f270c9",
+     "title": "Nais Upholstered Platform Bed",
+     "downloads": 1653,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 4742756,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "4d23a803-ec1f-484c-8014-7438f9b67fe0",
+     "title": "Double Bed ",
+     "downloads": 46059,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "1cc18d852e217fae630771196b76eab9",
+     "title": "Highly Detailed & Accurate Four Poster Bed",
+     "downloads": 10206,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3124652,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "34407528-f1f5-4147-90a0-48b845ba8b30",
+     "title": "IKEA Malm bed (low poly)",
+     "downloads": 28802,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "5c33cbe0-e14f-46ac-ab62-5911b9fd6396",
+     "title": "Redhill Upholstered Panel Headboard",
+     "downloads": 13575,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5591604,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "d660dd40-fd01-4ab0-a331-dce383b84501",
+     "title": "Cama king com edredom",
+     "downloads": 709,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3753248,
+     "query": "cama com edredom king"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "05977346-eee0-40a1-80ac-7345023a063e",
+     "title": "Кровать подростка",
+     "downloads": 1051,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "постельное белье",
+     "why": "no glb binary"
+    },
+    {
+     "id": "073c9b03-01e7-4f7b-9326-85b5b59b0d37",
+     "title": "letto",
+     "downloads": 5357,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "copriletto",
+     "why": "no glb binary"
+    },
+    {
+     "id": "4dfd4ce8-2044-4187-bbdd-1ea189ea07e4",
+     "title": "Bed King Size",
+     "downloads": 112400,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "edredón cama",
+     "why": "no glb binary"
+    },
+    {
+     "id": "2674a230-a3be-4c5c-a961-c0319da8140f",
+     "title": "Örtü - Cover",
+     "downloads": 812,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "yatak örtüsü",
+     "why": "no glb binary"
+    },
+    {
+     "id": "f355ef3f420bfed3b837e70a993ea5df",
+     "title": "Premium Inn - Fully furnished",
+     "downloads": 183,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made",
+     "why": "no glb binary"
+    },
+    {
+     "id": "3f57e13d93b79363f54c21aef59199a2",
+     "title": "Bedroom",
+     "downloads": 8053,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made",
+     "why": "no glb binary"
+    },
+    {
+     "id": "4de405ec-de99-4ea9-89b3-d19621384988",
+     "title": "Pallet Double Bed",
+     "downloads": 15355,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover",
+     "why": "no glb binary"
+    },
+    {
+     "id": "4d23a803-ec1f-484c-8014-7438f9b67fe0",
+     "title": "Double Bed ",
+     "downloads": 46059,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover",
+     "why": "no glb binary"
+    },
+    {
+     "id": "34407528-f1f5-4147-90a0-48b845ba8b30",
+     "title": "IKEA Malm bed (low poly)",
+     "downloads": 28802,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover",
+     "why": "no glb binary"
+    }
+   ]
+  },
+  {
+   "at": "2026-08-17T12:15:25+00:00",
+   "queries": [
+    "постельное белье",
+    "copriletto",
+    "couvre-lit",
+    "couette lit",
+    "edredón cama",
+    "床品 床上用品",
+    "duvet high poly",
+    "hotel bed made",
+    "bed with duvet cover",
+    "cama com edredom king",
+    "quarto casal cama arrumada"
+   ],
+   "count": 12,
+   "limit": 6,
+   "min_bytes": 0,
+   "max_bytes": 0,
+   "dry_run": false,
+   "n_hits": 66,
+   "fetched": [
+    "bf41eb2a-0208-4844-b9da-cb05b1689e1c",
+    "51341d8d-eb5f-4f7f-8a63-11460c97c559",
+    "e63ab045-d517-4e9a-8e63-ee98dd1e97b7",
+    "u159c4655-001a-481b-8b3d-da8418fe3254",
+    "f52472c1-fc7e-481a-8fcd-d18036496e6a",
+    "3dfca6fa-12a0-41cc-8378-4cb1fed41984"
+   ],
+   "hits": [
+    {
+     "id": "3dfca6fa-12a0-41cc-8378-4cb1fed41984",
+     "title": "постельное белье",
+     "downloads": 635,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 10755408,
+     "query": "постельное белье"
+    },
+    {
+     "id": "05977346-eee0-40a1-80ac-7345023a063e",
+     "title": "Кровать подростка",
+     "downloads": 1051,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "постельное белье"
+    },
+    {
+     "id": "c0500a8a-9b5d-4f5b-af0f-c085e1757414",
+     "title": "LETTO SING. con copriletto",
+     "downloads": 682,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5919772,
+     "query": "copriletto"
+    },
+    {
+     "id": "1fc93781d7007c4ee3f7a74e12a274ef",
+     "title": "The bed2",
+     "downloads": 1935,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 1511564,
+     "query": "copriletto"
+    },
+    {
+     "id": "6046d88f55e44708f79339f0188551c9",
+     "title": "letto stile antico",
+     "downloads": 271,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 81476,
+     "query": "copriletto"
+    },
+    {
+     "id": "9fa697ca-51cf-4985-bca9-92472e2dc884",
+     "title": "Testata letto bottoni + materasso 160x190",
+     "downloads": 1856,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 401028,
+     "query": "copriletto"
+    },
+    {
+     "id": "073c9b03-01e7-4f7b-9326-85b5b59b0d37",
+     "title": "letto",
+     "downloads": 5357,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "copriletto"
+    },
+    {
+     "id": "a033a95b3099162fb20383e4c9a96b8c",
+     "title": "double bed with blanket",
+     "downloads": 12262,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 519704,
+     "query": "copriletto"
+    },
+    {
+     "id": "139d1b3ad9ae9aed9c7452f71dc2cb86",
+     "title": "Colcha Lençol Solteiro Corinthians,",
+     "downloads": 1760,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 376296,
+     "query": "copriletto"
+    },
+    {
+     "id": "4c1596034e181d7ce3f7a74e12a274ef",
+     "title": "Decarus Bed",
+     "downloads": 990,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 986956,
+     "query": "copriletto"
+    },
+    {
+     "id": "a10f3b837e019ffa6f3561dc8f27c",
+     "title": "Desert Curtain Bed",
+     "downloads": 4508,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 686672,
+     "query": "copriletto"
+    },
+    {
+     "id": "u429d35a1-4bf6-4e34-83a7-1ae50e55d3db",
+     "title": "lit mandel",
+     "downloads": 1744,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 631460,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "u48acdab3-0afc-4193-a744-57114faa5407",
+     "title": "lit,nape,rideau",
+     "downloads": 1203,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 499304,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "u999331d9-292f-48c9-b50c-08df28800918",
+     "title": "lit",
+     "downloads": 3557,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 832432,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "ud81b0769-122f-4674-9e13-8473be894d80",
+     "title": "lit",
+     "downloads": 590,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1179868,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "9786ac330218b53b1332cc326bc0fa00",
+     "title": "lit\"maraya\"",
+     "downloads": 425,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1182492,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "6b337447db0fd472274f54ce84fdc700",
+     "title": "Lit 2 places",
+     "downloads": 4211,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3970300,
+     "query": "couvre-lit"
+    },
+    {
+     "id": "5103af20-f4f6-40a3-93d2-3a74d371479a",
+     "title": "Lit enfant avec couette 90cm",
+     "downloads": 73,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6196684,
+     "query": "couette lit"
+    },
+    {
+     "id": "c91b8f78-c24b-46a5-bc2e-cb95308bbebd",
+     "title": "lit avec couette  draps et  sommier",
+     "downloads": 451,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 230944,
+     "query": "couette lit"
+    },
+    {
+     "id": "32ec1509-4c16-496e-96a9-58834c936bc8",
+     "title": "lit avec couette  draps et  sommier",
+     "downloads": 20027,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 241420,
+     "query": "couette lit"
+    },
+    {
+     "id": "1378405e-70be-4a0b-9469-db2b114df96e",
+     "title": "couette er oreiller lit simple 200 90",
+     "downloads": 1572,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3115544,
+     "query": "couette lit"
+    },
+    {
+     "id": "4fa5bc088e318ab87bf81cf9eabf373",
+     "title": "Lit",
+     "downloads": 399,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 227472,
+     "query": "couette lit"
+    },
+    {
+     "id": "ec02140d08209a8d97b2cbcac97425d",
+     "title": "Bed",
+     "downloads": 320,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 158984,
+     "query": "couette lit"
+    },
+    {
+     "id": "e0d5b9142a245b4b2041aaba4268ef64",
+     "title": "lit 1994",
+     "downloads": 652,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 276064,
+     "query": "couette lit"
+    },
+    {
+     "id": "f0829336-e162-4e29-b64b-4b689d2e0d4c",
+     "title": "fauteuil",
+     "downloads": 1,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 629664,
+     "query": "couette lit"
+    },
+    {
+     "id": "11436d7d0fa5be7aebc1a142bacc95e0",
+     "title": "Lit violet",
+     "downloads": 125,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 41092,
+     "query": "couette lit"
+    },
+    {
+     "id": "51341d8d-eb5f-4f7f-8a63-11460c97c559",
+     "title": "Lit double 160cm",
+     "downloads": 1406,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 28643792,
+     "query": "couette lit"
+    },
+    {
+     "id": "a85bd7fe-2435-4892-bf7a-4be78bdd1040",
+     "title": "Lit rose fille",
+     "downloads": 4,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3610276,
+     "query": "couette lit"
+    },
+    {
+     "id": "e48d919adc38ef2f8aa542131c11ec66",
+     "title": "lit magnifique",
+     "downloads": 238,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 473628,
+     "query": "couette lit"
+    },
+    {
+     "id": "bf41eb2a-0208-4844-b9da-cb05b1689e1c",
+     "title": "CAMA CON EDREDON",
+     "downloads": 850,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 152578940,
+     "query": "edredón cama"
+    },
+    {
+     "id": "2ff852a8a1a9a55fb2f9f9cf8b50994b",
+     "title": "Cabeceira Cama Box Criado Mudo, Colcha, Edredon, Travesseiro de Zebra,",
+     "downloads": 16952,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 545272,
+     "query": "edredón cama"
+    },
+    {
+     "id": "32931d81d4314c62a3e5cc9100f37590",
+     "title": "Edredon de Pluma",
+     "downloads": 55947,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 423832,
+     "query": "edredón cama"
+    },
+    {
+     "id": "u159c4655-001a-481b-8b3d-da8418fe3254",
+     "title": "Cama Menina",
+     "downloads": 2504,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 13209872,
+     "query": "edredón cama"
+    },
+    {
+     "id": "4dfd4ce8-2044-4187-bbdd-1ea189ea07e4",
+     "title": "Bed King Size",
+     "downloads": 112400,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "edredón cama"
+    },
+    {
+     "id": "f52472c1-fc7e-481a-8fcd-d18036496e6a",
+     "title": "Bed King Size",
+     "downloads": 9504,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 11056212,
+     "query": "edredón cama"
+    },
+    {
+     "id": "udaa9eeb8-8718-458c-96fa-e8c102195872",
+     "title": "Cama infantil",
+     "downloads": 2886,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 915668,
+     "query": "edredón cama"
+    },
+    {
+     "id": "34b89ae3-12e7-4379-9e33-3fc1aa9bcc6d",
+     "title": "Cama queen white",
+     "downloads": 109,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 7008504,
+     "query": "edredón cama"
+    },
+    {
+     "id": "ac7f7190-7afc-4423-9f0b-d194e0d6a29e",
+     "title": "ROPA-DE-CAMA-GENERICA",
+     "downloads": 508,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 10625936,
+     "query": "edredón cama"
+    },
+    {
+     "id": "f66352c1ddb294d24ffbcf8cf904ca12",
+     "title": "Edredom MDNA",
+     "downloads": 1541,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 418896,
+     "query": "edredón cama"
+    },
+    {
+     "id": "75a4122b-5f19-4801-96e7-6e6a725440ba",
+     "title": "CAMA QUEEN 1.60X2.00M",
+     "downloads": 135401,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1516260,
+     "query": "edredón cama"
+    },
+    {
+     "id": "a7486efc6679cb69db22f2a6fafd9522",
+     "title": "cama casal",
+     "downloads": 52078,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 3068004,
+     "query": "edredón cama"
+    },
+    {
+     "id": "e9260226-31bc-4070-ae00-4d6f6bf5a51c",
+     "title": "couette ou pouf géant",
+     "downloads": 9609,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6278968,
+     "query": "duvet high poly"
+    },
+    {
+     "id": "a0c1f55b4f51781b58db0ef36af1d3c5",
+     "title": "Bed",
+     "downloads": 2362,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1870404,
+     "query": "duvet high poly"
+    },
+    {
+     "id": "f0f32af8-7d1a-4053-9157-0a0f400664f1",
+     "title": "HABITAT - ADAMS II - BED 180x200 - DYNAMIC COMPONENT",
+     "downloads": 321,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 272764,
+     "query": "duvet high poly"
+    },
+    {
+     "id": "e63ab045-d517-4e9a-8e63-ee98dd1e97b7",
+     "title": "Wooden Bed 2.58m",
+     "downloads": 3545,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 16334364,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "c850400612ebe5549f695af5ccc7d06f",
+     "title": "rooms of hotels",
+     "downloads": 3751,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 269316,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "f355ef3f420bfed3b837e70a993ea5df",
+     "title": "Premium Inn - Fully furnished",
+     "downloads": 183,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "9670a720ff46ba65638e83bf3e71cd0",
+     "title": "Hotel Room",
+     "downloads": 7201,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3618252,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "6ff23f36e9c74407bc3b6aea14a4f985",
+     "title": "simple four poster bed with mosquito nets",
+     "downloads": 104570,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 532372,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "e1658be9-3005-417c-bae1-528534144b92",
+     "title": "bed",
+     "downloads": 748,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 490544,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "633c242eb1d0eb199daa2bf0c68f794f",
+     "title": "Hotel(Inside all detailed)",
+     "downloads": 1172,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 946520,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "59a5fb95-4039-431a-bbf8-bd21407986e2",
+     "title": "simple four poster bed with mosquito nets",
+     "downloads": 6656,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 532372,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "dec12a93-99a3-457c-ac00-a3cddba1f8fb",
+     "title": "Nilson Beds | Design Timeless",
+     "downloads": 1339,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 7613708,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "f0b17d93-8b3d-48e8-a1be-798bc008d4c1",
+     "title": "Nilson Beds | Design Menton",
+     "downloads": 1685,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 8681604,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "6719980a-bee9-4234-82df-52422828e28c",
+     "title": "Nilson Beds | Design Heather ",
+     "downloads": 1371,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5715124,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "3f57e13d93b79363f54c21aef59199a2",
+     "title": "Bedroom",
+     "downloads": 8053,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made"
+    },
+    {
+     "id": "c459efc2492bfe9fafd8078191062c7f",
+     "title": "Old victorian bed",
+     "downloads": 2376,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 152036,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "d16f00ca-d24b-464c-bd54-00cf909930b2",
+     "title": "Hayworth Upholstered Panel Bed",
+     "downloads": 4652,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6439564,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "4de405ec-de99-4ea9-89b3-d19621384988",
+     "title": "Pallet Double Bed",
+     "downloads": 15355,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "681130ec-dacc-4eb3-a01c-4332ffb8803b",
+     "title": "MERESON",
+     "downloads": 442,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5253852,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "aacaa3d3-9f72-4f8f-9873-b940c3f270c9",
+     "title": "Nais Upholstered Platform Bed",
+     "downloads": 1653,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 4742756,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "4d23a803-ec1f-484c-8014-7438f9b67fe0",
+     "title": "Double Bed ",
+     "downloads": 46059,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "1cc18d852e217fae630771196b76eab9",
+     "title": "Highly Detailed & Accurate Four Poster Bed",
+     "downloads": 10206,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3124652,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "34407528-f1f5-4147-90a0-48b845ba8b30",
+     "title": "IKEA Malm bed (low poly)",
+     "downloads": 28802,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "5c33cbe0-e14f-46ac-ab62-5911b9fd6396",
+     "title": "Redhill Upholstered Panel Headboard",
+     "downloads": 13575,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5591604,
+     "query": "bed with duvet cover"
+    },
+    {
+     "id": "d660dd40-fd01-4ab0-a331-dce383b84501",
+     "title": "Cama king com edredom",
+     "downloads": 709,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3753248,
+     "query": "cama com edredom king"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "05977346-eee0-40a1-80ac-7345023a063e",
+     "title": "Кровать подростка",
+     "downloads": 1051,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "постельное белье",
+     "why": "no glb binary"
+    },
+    {
+     "id": "073c9b03-01e7-4f7b-9326-85b5b59b0d37",
+     "title": "letto",
+     "downloads": 5357,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "copriletto",
+     "why": "no glb binary"
+    },
+    {
+     "id": "4dfd4ce8-2044-4187-bbdd-1ea189ea07e4",
+     "title": "Bed King Size",
+     "downloads": 112400,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "edredón cama",
+     "why": "no glb binary"
+    },
+    {
+     "id": "f355ef3f420bfed3b837e70a993ea5df",
+     "title": "Premium Inn - Fully furnished",
+     "downloads": 183,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made",
+     "why": "no glb binary"
+    },
+    {
+     "id": "3f57e13d93b79363f54c21aef59199a2",
+     "title": "Bedroom",
+     "downloads": 8053,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "hotel bed made",
+     "why": "no glb binary"
+    },
+    {
+     "id": "4de405ec-de99-4ea9-89b3-d19621384988",
+     "title": "Pallet Double Bed",
+     "downloads": 15355,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover",
+     "why": "no glb binary"
+    },
+    {
+     "id": "4d23a803-ec1f-484c-8014-7438f9b67fe0",
+     "title": "Double Bed ",
+     "downloads": 46059,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover",
+     "why": "no glb binary"
+    },
+    {
+     "id": "34407528-f1f5-4147-90a0-48b845ba8b30",
+     "title": "IKEA Malm bed (low poly)",
+     "downloads": 28802,
+     "fmts": [
+      "usdz"
+     ],
+     "bytes": null,
+     "query": "bed with duvet cover",
+     "why": "no glb binary"
+    },
+    {
+     "id": "ac7f7190-7afc-4423-9f0b-d194e0d6a29e",
+     "title": "ROPA-DE-CAMA-GENERICA",
+     "downloads": 508,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 10625936,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "f0b17d93-8b3d-48e8-a1be-798bc008d4c1",
+     "title": "Nilson Beds | Design Menton",
+     "downloads": 1685,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 8681604,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "dec12a93-99a3-457c-ac00-a3cddba1f8fb",
+     "title": "Nilson Beds | Design Timeless",
+     "downloads": 1339,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 7613708,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "34b89ae3-12e7-4379-9e33-3fc1aa9bcc6d",
+     "title": "Cama queen white",
+     "downloads": 109,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 7008504,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "d16f00ca-d24b-464c-bd54-00cf909930b2",
+     "title": "Hayworth Upholstered Panel Bed",
+     "downloads": 4652,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6439564,
+     "query": "bed with duvet cover",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "e9260226-31bc-4070-ae00-4d6f6bf5a51c",
+     "title": "couette ou pouf géant",
+     "downloads": 9609,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6278968,
+     "query": "duvet high poly",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "5103af20-f4f6-40a3-93d2-3a74d371479a",
+     "title": "Lit enfant avec couette 90cm",
+     "downloads": 73,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 6196684,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "c0500a8a-9b5d-4f5b-af0f-c085e1757414",
+     "title": "LETTO SING. con copriletto",
+     "downloads": 682,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5919772,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "6719980a-bee9-4234-82df-52422828e28c",
+     "title": "Nilson Beds | Design Heather ",
+     "downloads": 1371,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5715124,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "5c33cbe0-e14f-46ac-ab62-5911b9fd6396",
+     "title": "Redhill Upholstered Panel Headboard",
+     "downloads": 13575,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5591604,
+     "query": "bed with duvet cover",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "681130ec-dacc-4eb3-a01c-4332ffb8803b",
+     "title": "MERESON",
+     "downloads": 442,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 5253852,
+     "query": "bed with duvet cover",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "aacaa3d3-9f72-4f8f-9873-b940c3f270c9",
+     "title": "Nais Upholstered Platform Bed",
+     "downloads": 1653,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 4742756,
+     "query": "bed with duvet cover",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "6b337447db0fd472274f54ce84fdc700",
+     "title": "Lit 2 places",
+     "downloads": 4211,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3970300,
+     "query": "couvre-lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "d660dd40-fd01-4ab0-a331-dce383b84501",
+     "title": "Cama king com edredom",
+     "downloads": 709,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3753248,
+     "query": "cama com edredom king",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "9670a720ff46ba65638e83bf3e71cd0",
+     "title": "Hotel Room",
+     "downloads": 7201,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3618252,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "a85bd7fe-2435-4892-bf7a-4be78bdd1040",
+     "title": "Lit rose fille",
+     "downloads": 4,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3610276,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "1cc18d852e217fae630771196b76eab9",
+     "title": "Highly Detailed & Accurate Four Poster Bed",
+     "downloads": 10206,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3124652,
+     "query": "bed with duvet cover",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "1378405e-70be-4a0b-9469-db2b114df96e",
+     "title": "couette er oreiller lit simple 200 90",
+     "downloads": 1572,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 3115544,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "a7486efc6679cb69db22f2a6fafd9522",
+     "title": "cama casal",
+     "downloads": 52078,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 3068004,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "a0c1f55b4f51781b58db0ef36af1d3c5",
+     "title": "Bed",
+     "downloads": 2362,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1870404,
+     "query": "duvet high poly",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "75a4122b-5f19-4801-96e7-6e6a725440ba",
+     "title": "CAMA QUEEN 1.60X2.00M",
+     "downloads": 135401,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1516260,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "1fc93781d7007c4ee3f7a74e12a274ef",
+     "title": "The bed2",
+     "downloads": 1935,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 1511564,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "9786ac330218b53b1332cc326bc0fa00",
+     "title": "lit\"maraya\"",
+     "downloads": 425,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1182492,
+     "query": "couvre-lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "ud81b0769-122f-4674-9e13-8473be894d80",
+     "title": "lit",
+     "downloads": 590,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1179868,
+     "query": "couvre-lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "4c1596034e181d7ce3f7a74e12a274ef",
+     "title": "Decarus Bed",
+     "downloads": 990,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 986956,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "633c242eb1d0eb199daa2bf0c68f794f",
+     "title": "Hotel(Inside all detailed)",
+     "downloads": 1172,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 946520,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "udaa9eeb8-8718-458c-96fa-e8c102195872",
+     "title": "Cama infantil",
+     "downloads": 2886,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 915668,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "u999331d9-292f-48c9-b50c-08df28800918",
+     "title": "lit",
+     "downloads": 3557,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 832432,
+     "query": "couvre-lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "a10f3b837e019ffa6f3561dc8f27c",
+     "title": "Desert Curtain Bed",
+     "downloads": 4508,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 686672,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "u429d35a1-4bf6-4e34-83a7-1ae50e55d3db",
+     "title": "lit mandel",
+     "downloads": 1744,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 631460,
+     "query": "couvre-lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "f0829336-e162-4e29-b64b-4b689d2e0d4c",
+     "title": "fauteuil",
+     "downloads": 1,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 629664,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "2ff852a8a1a9a55fb2f9f9cf8b50994b",
+     "title": "Cabeceira Cama Box Criado Mudo, Colcha, Edredon, Travesseiro de Zebra,",
+     "downloads": 16952,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 545272,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "6ff23f36e9c74407bc3b6aea14a4f985",
+     "title": "simple four poster bed with mosquito nets",
+     "downloads": 104570,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 532372,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "59a5fb95-4039-431a-bbf8-bd21407986e2",
+     "title": "simple four poster bed with mosquito nets",
+     "downloads": 6656,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 532372,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "a033a95b3099162fb20383e4c9a96b8c",
+     "title": "double bed with blanket",
+     "downloads": 12262,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 519704,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "u48acdab3-0afc-4193-a744-57114faa5407",
+     "title": "lit,nape,rideau",
+     "downloads": 1203,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 499304,
+     "query": "couvre-lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "e1658be9-3005-417c-bae1-528534144b92",
+     "title": "bed",
+     "downloads": 748,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 490544,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "e48d919adc38ef2f8aa542131c11ec66",
+     "title": "lit magnifique",
+     "downloads": 238,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 473628,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "32931d81d4314c62a3e5cc9100f37590",
+     "title": "Edredon de Pluma",
+     "downloads": 55947,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 423832,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "f66352c1ddb294d24ffbcf8cf904ca12",
+     "title": "Edredom MDNA",
+     "downloads": 1541,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 418896,
+     "query": "edredón cama",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "9fa697ca-51cf-4985-bca9-92472e2dc884",
+     "title": "Testata letto bottoni + materasso 160x190",
+     "downloads": 1856,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 401028,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "139d1b3ad9ae9aed9c7452f71dc2cb86",
+     "title": "Colcha Lençol Solteiro Corinthians,",
+     "downloads": 1760,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 376296,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "e0d5b9142a245b4b2041aaba4268ef64",
+     "title": "lit 1994",
+     "downloads": 652,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 276064,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "f0f32af8-7d1a-4053-9157-0a0f400664f1",
+     "title": "HABITAT - ADAMS II - BED 180x200 - DYNAMIC COMPONENT",
+     "downloads": 321,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 272764,
+     "query": "duvet high poly",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "c850400612ebe5549f695af5ccc7d06f",
+     "title": "rooms of hotels",
+     "downloads": 3751,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 269316,
+     "query": "hotel bed made",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "32ec1509-4c16-496e-96a9-58834c936bc8",
+     "title": "lit avec couette  draps et  sommier",
+     "downloads": 20027,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 241420,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "c91b8f78-c24b-46a5-bc2e-cb95308bbebd",
+     "title": "lit avec couette  draps et  sommier",
+     "downloads": 451,
+     "fmts": [
+      "glb"
+     ],
+     "bytes": 230944,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "4fa5bc088e318ab87bf81cf9eabf373",
+     "title": "Lit",
+     "downloads": 399,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 227472,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "ec02140d08209a8d97b2cbcac97425d",
+     "title": "Bed",
+     "downloads": 320,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 158984,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "c459efc2492bfe9fafd8078191062c7f",
+     "title": "Old victorian bed",
+     "downloads": 2376,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 152036,
+     "query": "bed with duvet cover",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "6046d88f55e44708f79339f0188551c9",
+     "title": "letto stile antico",
+     "downloads": 271,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 81476,
+     "query": "copriletto",
+     "why": "past --limit 6 in the size rank"
+    },
+    {
+     "id": "11436d7d0fa5be7aebc1a142bacc95e0",
+     "title": "Lit violet",
+     "downloads": 125,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 41092,
+     "query": "couette lit",
+     "why": "past --limit 6 in the size rank"
+    }
+   ]
   }
  ]
 }

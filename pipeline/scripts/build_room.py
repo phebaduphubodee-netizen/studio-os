@@ -483,6 +483,7 @@ def configure_cycles(samples=128, res=None):
 def save(name, samples=128, res=None):
     """Write the .blend deliverable. Takes the render settings so the saved file
     REPRODUCES the PNG rendered next to it — pass what render() will be given."""
+    _settle_bed_cloth_fineness()
     configure_cycles(samples, res)
     path = os.path.join(_outdir(), f"room_{name}.blend")
     bpy.ops.wm.save_as_mainfile(filepath=path)
@@ -490,7 +491,58 @@ def save(name, samples=128, res=None):
           f"samples={bpy.context.scene.cycles.samples})")
 
 
+_PENDING_FINENESS = {}
+
+
+def _settle_bed_cloth_fineness():
+    """Run the bed cloth's fineness cut NOW, on the finished scene.
+
+    IT CANNOT RUN WHERE IT WAS WRITTEN, and that is a defect this round found by
+    obeying an order rather than by reading code. The cut is a COMPARISON against
+    "the coarsest bought cloth already accepted in this frame", and membership comes
+    from `value_ladder.ACQUIRED_AS` — `bench__acq`, `bed__headset0__acq`. The bed
+    cloth is placed by `_build_bed` BEFORE either of them exists, so at that moment
+    the control set is EMPTY and `fineness` returns its third state, `ran: False`.
+    `built_survives` correctly refuses to read that as a pass, so with the acquire
+    leg on, EVERY candidate was refused at this rung by construction, whatever it
+    measured. The p2r46 numbers everyone quoted (4.21x, control 10.3 mm) came from
+    `bedcloth_bench`, which reads a FINISHED .blend and therefore had a control.
+
+    So the measurement stays where the cloth is (nothing else can see those objects)
+    and the JUDGEMENT moves to where the control exists. Called from `render` and
+    `save` — the two doors a frame leaves by — and it HARD-FAILS, because a cut that
+    prints a complaint and lets the frame out is the defect this repo has named more
+    than once.
+    """
+    p = _PENDING_FINENESS
+    if not p:
+        return
+    import bedcloth_fit as _bcf
+    ctrl = _bcf.control_edges()
+    fn = _bcf.fineness(p["edge_mm"], ctrl)
+    print("  BUILT fineness (settled on the finished scene, where the control "
+          "exists): " + (
+              f"cover {fn['cover_mm']:.1f} mm vs {fn['control']} "
+              f"{fn['control_mm']:.1f} mm = {fn['ratio']:.2f}x"
+              if fn["ran"] else f"STILL COULD NOT RUN — {fn['why']}"))
+    if fn["fine_enough"] is True:
+        _PENDING_FINENESS.clear()
+        return
+    ok, why = _fineness_exception(p.get("exception"), p["slug"], fn)
+    if why:
+        print(f"  bed cloth: FINENESS {'EXCEPTED' if ok else 'EXCEPTION REFUSED'} — {why}")
+    if not ok:
+        raise RuntimeError(
+            f"bed cloth {p['slug']!r}: fineness "
+            + (f"{fn['ratio']:.3f}x the {fn['control_mm']:.1f} mm control "
+               f"({fn['control']})" if fn["ran"] else f"COULD NOT RUN — {fn['why']}")
+            + ". No signed exception covers it, and a frame may not leave with a cut "
+              "that complained and was ignored.")
+    _PENDING_FINENESS.clear()
+
+
 def render(name, samples=128, res=(1600, 1000)):
+    _settle_bed_cloth_fineness()
     scn = configure_cycles(samples, res)
     scn.render.filepath = os.path.join(_outdir(), f"room_{name}.png")
     print(f"  cycles device={scn.cycles.device} samples={scn.cycles.samples} -> rendering ...")
@@ -4967,7 +5019,60 @@ def _place_pillow_combo(slug, bank_parts, axis, sign, sham_mat, pillow_mat):
     return True
 
 
-def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
+def _with_note(block, key):
+    """`block[key]` with its sibling `<key>_note` prose folded in as `_note`.
+
+    The split is `model_assert_check`'s rule, not a preference: it reads EVERY string
+    under a `*_models` key as a model reference (deliberately — "a slug that has been
+    DELETED off the shelf is still discovered"), and its comment says rationale belongs
+    in a `*_note` key. So a signed block keeps its DATA where the build reads it and
+    its reasons where the checker skips them, and this rejoins the two for printing.
+    """
+    v = (block or {}).get(key)
+    if not isinstance(v, dict):
+        return v
+    return dict(v, _note=(block or {}).get(f"{key}_note") or "")
+
+
+def _fineness_exception(exc, slug, fn):
+    """Does a SIGNED spec exception cover this measured fineness miss? (ok, why)
+
+    THE RULE IT BENDS IS THE BUILDER'S, NOT HIS. The fineness cut is two rounds old
+    and was written by the same builder it now stops; the ACQUIRE order it is standing
+    in front of is the owner's, twice given (2026-08-14, 2026-08-15) and unobeyed for
+    two days. R13's own hierarchy settles which yields.
+
+    IT IS BOUNDED THREE WAYS so it cannot become the flag nobody notices:
+      * BY NAME — it covers one slug. A different asset gets the full cut.
+      * BY THE NUMBER IT WAS GRANTED FOR — a ratio worse than the one recorded is
+        refused, so the exception cannot drift with the asset behind it.
+      * BY PRINTING, every build, in the render path, with its reversal.
+    An exception whose numbers no longer reproduce is refused rather than trusted:
+    same law as `orders_check`'s "his words must still REPRODUCE in the file cited".
+    """
+    if not exc or exc.get("slug") != slug:
+        return False, None
+    # the prose lives in a sibling `*_note` key, which is where `model_assert_check`
+    # says rationale belongs — every string under a `*_models` key is read by that
+    # checker as a model reference, and a paragraph is not a slug.
+    note = (exc.get("_note") or "")
+    lim = exc.get("max_ratio")
+    if not lim:
+        return False, ("a fineness exception with no `max_ratio` is unbounded and is "
+                       "refused by name")
+    if not fn.get("ran"):
+        return False, "the fineness cut could not run; an exception cannot cover a " \
+                      "measurement that does not exist"
+    if fn["ratio"] > float(lim) + 1e-9:
+        return False, (f"exception is for at most {float(lim):.3f}x and this set now "
+                       f"measures {fn['ratio']:.3f}x — the asset moved, the exception "
+                       f"did not follow it")
+    return True, (f"{fn['ratio']:.3f}x of the {fn['control_mm']:.1f} mm control, within "
+                  f"the {float(lim):.3f}x granted. " + str(note or "").strip())
+
+
+def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head,
+                     fineness_exception=None):
     """R8 for the BED CLOTH (owner order 2026-08-14, after the third R1 stop on
     the crease: *"ผมท้อแล้ว ทำเท่าไรคุณก็ปั้น model ให้สมจริงไม่ได้ซักที"*).
 
@@ -5050,7 +5155,8 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
         print(f"  bed cloth: gltf import failed ({e}) -> solver bake")
         return False
     news = [o for o in bpy.data.objects if o not in before]
-    _st = _bcf.stage(news, rect, top_z, hang_to, _limit, cover=_cover)
+    _st = _bcf.stage(news, rect, top_z, hang_to, _limit, cover=_cover,
+                     avoid=_bcf.acquired_objs())
     if "reject" in _st:
         print(f"  bed cloth: {_st['reject']} -> solver bake")
         for o in list(news):
@@ -5103,13 +5209,20 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
                            f"(our own mattress shows through)", _cut["covered"]),
                           (f"falls past {_st['fall_sides']}/4 flanks, under the "
                            f"{_bcf.FALL_CUT} a cover needs (the flanks it misses "
-                           f"render as our mattress box)", _cut["drapes"]),
-                          ("needs stretching past max_scale", _cut["size_ok"]))
+                           f"render as our mattress box)", _cut["drapes"]))
                       if not ok))
         for o in list(news):
             if o.name in bpy.data.objects:
                 bpy.data.objects.remove(o, do_unlink=True)
         return False
+    # REPORTED, NEVER A REASON (p2r47). `size_ok` is a bounding-box prediction of the
+    # coverage the rays above just MEASURED; as a cut it refused five candidates at
+    # 1.011x-1.125x sight unseen. Printing it in the refusal list would have named a
+    # clause that did not decide anything.
+    if not _cut["size_ok"]:
+        print(f"  bed cloth: NOTE — as authored this set needs "
+              f"{_st['need_scale']:.3f}x to span the mattress bbox and is staged at "
+              f"{_st['scale']:.3f}x (never stretched); the rays above are the cut")
     if _rot:
         from mathutils import Matrix as _BMx, Vector as _BVec
         piv = _BVec((rx + rw / 2.0, ry + rd / 2.0, 0.0))
@@ -5136,10 +5249,29 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
     # a band folded over it IS the duvet rung (0.415). That is what those two
     # names mean in this project's own ladder, so the mapping is now the same
     # fact twice instead of two independent guesses.
+    # ONE OBJECT PER RUNG, and the split is the sentence above applied to a set with
+    # more than one field part. p2r47's set has two: a 1734 x 2017 mm spread lying on
+    # the mattress and a 2144 x 1438 x 486 mm duvet folded across it. Dressing both in
+    # `cov_mat` made `value_ladder` refuse the frame by name — "'bed__coverlet'
+    # resolves to 2 acquired meshes that all wear 'bed_coverlet' — ambiguous; one rung
+    # cannot rank two objects" — which is the right refusal: a ladder that silently
+    # averaged two objects into one rung would score a tone nothing in the frame
+    # actually wears. THE SPREAD IS THE ONE WITH THE LARGEST PLAN; anything else in
+    # the field is, by the same definition, a band folded over it.
+    _fplan = {}
     for o in field:
-        o.data.materials.append(cov_mat)
+        b = _bcf.world_bbox(o)
+        _fplan[o.name] = 0.0 if not b else (b[3] - b[0]) * (b[4] - b[1])
+    _spread = max(field, key=lambda o: _fplan[o.name]) if field else None
+    for o in field:
+        o.data.materials.append(cov_mat if o is _spread else duv_mat)
     for o in extra:
         o.data.materials.append(duv_mat)
+    if field and len(field) > 1:
+        print(f"  bed cloth: {_spread.name} is the SPREAD (largest plan, "
+              f"{_fplan[_spread.name]:.2f} m2) -> coverlet rung; "
+              f"{len(field) - 1} further field part(s) are bands folded over it "
+              f"-> duvet rung. One object per rung, or the ladder cannot rank them.")
     # CLOTH AND FACETS: the 30-degree default is tuned for SketchUp millwork,
     # where every face arrives split and a curved shell must be smoothed or it
     # facets (D9's row). p2r31 moved the cloth path to 15 degrees believing the
@@ -5187,9 +5319,29 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head):
         f"cover {_fn['cover_mm']:.1f} mm vs {_fn['control']} {_fn['control_mm']:.1f} "
         f"mm = {_fn['ratio']:.2f}x the coarsest bought cloth accepted beside it"
         if _fn["ran"] else f"COULD NOT RUN — {_fn['why']}"))
-    if _built["blocked_by"]:
+    _blocked = list(_built["blocked_by"])
+    if "fineness" in _blocked and not _fn["ran"]:
+        # THE CONTROL DOES NOT EXIST YET AT THIS POINT IN THE BUILD — the bench and
+        # the head pillows are placed after the bed. Defer the JUDGEMENT to
+        # `_settle_bed_cloth_fineness`, which runs on the finished scene at the door
+        # every frame leaves by. Deferring is not skipping: the frame cannot render
+        # until it is settled, and the measurement made here is the one carried.
+        _PENDING_FINENESS.update({"slug": slug, "edge_mm": _bedge,
+                                  "exception": fineness_exception})
+        print("  bed cloth: fineness DEFERRED to the finished scene — the acquired "
+              "soft goods it compares against are not placed yet. The frame cannot "
+              "render until it is settled.")
+        _blocked = [b for b in _blocked if b != "fineness"]
+    elif _blocked == ["fineness"]:
+        _exc_ok, _exc_why = _fineness_exception(fineness_exception, slug, _fn)
+        if _exc_why:
+            print(f"  bed cloth: FINENESS {'EXCEPTED' if _exc_ok else 'EXCEPTION REFUSED'}"
+                  f" — {_exc_why}")
+        if _exc_ok:
+            _blocked = []
+    if _blocked:
         print("  bed cloth: REFUSED ON THE BUILT SCENE — "
-              + ", ".join(_built["blocked_by"])
+              + ", ".join(_blocked)
               + ". The audition's numbers were about a different object; these are "
                 "about the one that renders.")
         for o in list(news):
@@ -5497,7 +5649,9 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
             rect=(x0 + mins, y0 + mins, W - 2 * mins, D - 2 * mins),
             line=(x0, y0, W, D),
             top_z=H, hang_to=base_h + styling.DRAPE_REVEAL,
-            cov_mat=cov_m, duv_mat=duvt_m, head=_head_side)
+            cov_mat=cov_m, duv_mat=duvt_m, head=_head_side,
+            fineness_exception=_with_note(bed_models,
+                                          "cloth_fineness_exception"))
         if not _acq_cloth and _ACQ_CLOTH_FALLBACK_IS_REFUSED:
             raise RuntimeError(
                 "bed cloth: the acquired set %r did not place, and falling back "

@@ -107,6 +107,111 @@ def plan_scale(size, limit, cover=None, max_scale=1.0):
     return s, rot, fit_w, fit_d, plan_s, need
 
 
+DUPLICATE_SHARE = 0.30
+
+
+def lies_on_the_bed(part_top_z, mattress_top_z, loft=LOFT_M):
+    """Is this EXTRA part cloth lying on the bed, or furniture the set brought along?
+
+    `classify_areas` already says in words what EXTRA means — "something LYING ON the
+    field (a runner, a folded top sheet)" — and nothing tested it, so the class took
+    whatever the uploader shipped between 5% and 33% of the mattress plan. On
+    d4698c95 that is a 735 x 359 x 545 mm bolster, and p2r47's audition rendered it
+    standing upright on the near corner of the bed with our own acquired shams already
+    at the head.
+
+    THE BOUND IS `LOFT_M`, WHICH IS ALREADY DECLARED — "a duvet stands this much
+    above its own fall" — so no number is invented here. It is the most a cloth ON
+    this bed can rise. Measured on the set this rule was written from: the sheet tops
+    out 7.5 mm above the mattress, the duvet 146.4, the folded runner 94.1, and the
+    bolster 554.7. The nearest legitimate part has a factor of two of headroom.
+
+    FIELD parts are deliberately NOT subject to this: the field IS the cover, and
+    whether it is right is what `coverage` and `fall_sides` are for.
+    """
+    if part_top_z is None or mattress_top_z is None:
+        return True, None
+    rise = part_top_z - mattress_top_z
+    return bool(rise <= loft + 1e-9), rise
+
+
+def duplicate_of_placed(part_bb, placed_bbs, share=DUPLICATE_SHARE):
+    """Is this set part occupying a volume the frame has ALREADY dressed?
+
+    `part_bb` and each of `placed_bbs` are (x0, y0, z0, x1, y1, z1). Returns the
+    largest fraction of the PART's own volume that sits inside one placed object, and
+    whether that clears `share`.
+
+    WHY IT IS NOT A NAME TEST. `_place_bed_cloth` has said since p2r44 what it is
+    buying — "the duvet + its turned-down top sheet, as one dressed set. NOT the
+    pillows (already acquired, D-025)" — and nothing enforced it, so a bedding set
+    that ships with its own pillows puts a second pair on top of ours. p2r47 rendered
+    exactly that: an 800 mm bolster standing upright through the acquired head set.
+    A name test would need the uploader's names, which this repo has already been
+    burned by trusting (a material called Charcoal that renders fluorescent green).
+    Volume overlap with an object ALREADY in the frame is the geometric form of the
+    same question, and membership of "already in the frame" comes from the value
+    ladder's signed ACQUIRED_AS register, not from a list kept here (R9b).
+
+    R9b calls AABB interpenetration ADVISORY because a box cannot tell interlocking
+    from intersecting — which is why the threshold is a THIRD of the part's volume
+    and not a touch. A duvet resting against a sham overlaps it slightly; a second
+    pillow standing where ours stands does not.
+    """
+    if not part_bb or not placed_bbs:
+        return 0.0, False
+    vol = max(1e-12, (part_bb[3] - part_bb[0]) * (part_bb[4] - part_bb[1])
+              * (part_bb[5] - part_bb[2]))
+    best = 0.0
+    for b in placed_bbs:
+        if not b:
+            continue
+        ov = 1.0
+        for k in range(3):
+            lo = max(part_bb[k], b[k])
+            hi = min(part_bb[k + 3], b[k + 3])
+            ov *= max(0.0, hi - lo)
+        best = max(best, ov / vol)
+    return best, best >= share
+
+
+def choose_cover(parts, limit, cover=None, max_scale=1.0):
+    """WHICH PART OF THIS FILE IS THE COVER, and what scale does the set take from it.
+
+    `parts` is [(key, (w, d, h))] in metres for every FIELD-classified part. Returns
+    (key, plan_scale_row, feasible_count) where the row is `plan_scale`'s tuple for
+    the chosen part, or (None, None, 0) when there is nothing to choose from.
+
+    IT IS SOLVED ON A PART, NOT ON THE FILE, and the difference refused six sets.
+    `limits_for` says what its height ceiling describes — the cover's own fall plus
+    its loft — and it was being applied to the bounding box of everything kept. Any
+    bedding set that ships with the bed it dresses is therefore judged by the BED's
+    height: 22897dd4 holds a 2018 x 1827 x 213 mm sheet of 74,136 triangles inside a
+    file standing 1243 mm tall, so the ceiling collapsed to 0.576x and the sheet's
+    own 0.665x read as "too big to fit". R9b's law with the sign flipped — a rule
+    applied to a group it does not describe will refuse the next one.
+
+    THE PICK: among parts that can cover within the ceiling, the largest plan wins —
+    that is the outermost cloth, the sheet the camera sees, and the accessories ride
+    with it at the same scale (the author's internal proportions are not ours to
+    edit). When none can, the pick is the part that comes CLOSEST to covering, so the
+    set is still staged and still measured by ray rather than refused by a box.
+    """
+    rows = []
+    for key, native in parts:
+        row = plan_scale(native, limit, cover, max_scale)
+        need = row[5]
+        rows.append({"key": key, "native": native, "row": row, "need": need,
+                     "plan": native[0] * native[1],
+                     "ok": need is None or need <= row[0] + 1e-9})
+    if not rows:
+        return None, None, 0
+    feasible = [r for r in rows if r["ok"]]
+    pick = (max(feasible, key=lambda r: r["plan"]) if feasible
+            else min(rows, key=lambda r: r["need"] if r["need"] is not None else 0.0))
+    return pick["key"], pick["row"], len(feasible)
+
+
 def fineness(cover_edge_mm, control_edges_mm):
     """Is this mesh fine enough to BE cloth — judged against the cloth already
     accepted beside it in the same frame?
@@ -203,10 +308,25 @@ def survives(need_scale, scale, coverage, fall_sides,
     the number that answered the real question was printed in the same table and read
     past (falls past 2 of 4 sides).
 
-      size    the set covers the mattress within the ceiling — never stretched
+      size    REPORTED, NOT A CUT since p2r47 — see below
       cover   coverage >= 0.80, the build's own cut (our mattress must not show)
       drape   fall_sides >= 2; on a bed against a headboard the reachable maximum
               is 3 (two flanks and the foot)
+
+    SIZE WAS DEMOTED FROM A CUT TO A NUMBER, and the reason is that it asked the
+    same question as the other two with a worse instrument. `need_scale` compares
+    BOUNDING BOXES, and this whole bench exists because a bounding box was the wrong
+    tool — its own opening line: "a bounding box cannot tell a spread sheet from a
+    crumpled one... This measures the thing itself, by ray." As a cut it demanded a
+    box spanning 100% of the mattress while `cover` — the ray version of the same
+    question — is satisfied at 80%. On 2026-08-17 it refused five candidates at
+    1.011x, 1.046x, 1.066x, 1.087x and 1.125x, and not one of them was ever rayed;
+    the nearest missed by 20 mm on one axis of a bed the client's own drawing makes
+    2149 mm wide. Nothing was loosened to arrange that: a cover too small still fails
+    `cover` or `drape`, which measure the consequence instead of predicting it, and
+    `max_scale` still binds the staging scale so no mesh is stretched to fit. What is
+    given up is a cheap early-out; what is bought is that the eye and the rays get to
+    see candidates a box refused sight unseen.
 
     relief_mm is deliberately NOT a filter: both of its failure directions are real
     (a crumple contradicts the signed DD, a painted plane is what both critics keep
@@ -218,4 +338,4 @@ def survives(need_scale, scale, coverage, fall_sides,
     covered = coverage >= cover_cut
     drapes = fall_sides >= fall_cut
     return {"size_ok": size_ok, "covered": covered, "drapes": drapes,
-            "survives": bool(size_ok and covered and drapes)}
+            "survives": bool(covered and drapes)}
