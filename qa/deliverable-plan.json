@@ -184,7 +184,7 @@
     {
       "id": "P2",
       "title": "Surface and real objects — the strongest measured lever",
-      "goal": "WHAT THE FRAME IS SHORT OF, measured at p2r47 by two independent critics and by the instruments that disagreed with them. THREE LEVERS, in the order the evidence ranks them: (1) THE BED IS HALF MADE — coverage 94.0% by ray and 'reads as a fitted mattress protector' (C2 #1) are both TRUE, because the ray counts cloth-above-mattress and cannot tell a duvet from a flat sheet (D-095). Measure DUVET SHARE separately and re-bench the shelf on it. (2) THE ACQUISITION CHANNEL, now that it works: per-triangle exports are importable (glb_flatten), the density screen reads objects instead of primitives, and the fit is solved on the cover part — so 29 candidates have now been benched against this bed against 10 in the lane's whole history, and the fold-structure complaint survives all of them. That makes ASK-002 a MEASURED procurement ask rather than a wish. (3) THE R10 QUESTION NO INSTRUMENT HERE ASKS — both critics filed objects that could not be built or used: a foot bench of two stacked cushions with no load path, drawer fronts with no pull and no push-to-open, and no skirting, sockets or switches anywhere in the room. Plus the unchanged half of the p2r45 aim: every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps, and no flat-shaded curved silhouette survives.",
+      "goal": "RE-AIMED 2026-08-17 (review #57, verdict 'change', carrying out a condition review #56 wrote down BEFORE the measurement that fired it). THE BED IS NO LONGER A LEVER OF THIS PHASE — it is a PROCUREMENT GAP, and the difference is that no builder action stands behind it any more. What settled it: duvet share is now measured apart from cloth coverage and its cut (0.80) is read off seven delivered beds; the whole free shelf was re-benched and 0 of 22 survive; and the best of them, the set already in the frame at 43.2%, is GEOMETRICALLY INCAPABLE of clearing the cut on this bed — its duvet part is 1438 mm across a 1969 mm mattress, a 73.0% ceiling by its own extent, and max_scale forbids stretching (D-101). The frame ships a signed gap that prints its own reasoning into the render path; the route is ASK-002 and nothing else. THE PHASE CONTINUES, on the levers that still have builder actions behind them, in this order: (1) SURFACE — P2h materials split by ROLE on acquired meshes, P2r-2 wood figure (this frame's own instrument still scores it PERIODIC: autocorr peak 0.597 vs floor 0.564), P2r-5 material response, and the standing aim that every R8-ACQUIRE object carries its own PBR maps rather than a tint. (2) OBJECTS THAT COULD NOT BE BUILT — now a program (existence_check + a 46-row ledger, blocking) rather than a question: P2r-19, the twelve recessed downlights hanging 60 mm below the ceiling they are recessed into, and the foot bench's load path, filed as `fix` with a named action. (3) P2r-20, the garment hang orientation, which is R1-stopped territory and must enter as a NEW mechanism with its own gate. WHAT THIS PHASE MUST NOT DO: spend another round on the bed. It was measured, the free tier was measured, and the answer is his.",
       "status": "open",
       "_reranked": "Moved ahead of light and density by SC-4. Acquiring pays the texture bill in the same move, because acquired meshes ship with 3-8 maps.",
       "work": [
@@ -448,7 +448,8 @@
       "_owner_expand": "OWNER ORDER 2026-08-11 (second, an hour after the reopen): ปรับแผนขยาย p2 ให้เข้มงวดและ meaningful มากกว่านี้ (แบ่งทำหลาย session ก็ได้) เพราะมันสำคัญมาก. The thin 4-rider list is replaced by the multi-session program below: one work item per judged surface class, each carrying its own MECHANISM, its own INSTRUMENT (how the claim is measured, declared before the build), and its own CLOSE CONDITION. One item per session-scale round, R1 stop-loss per mechanism, full critic ladder on every full frame. The phase exit stays the three-part reopened bar (rows + four 100% crops + critic-top3), plus the map-coverage band once P2s-6's instrument exists.",
       "_queue_2026-08-15_r36": "ORDER, CORRECTED TWICE BY THE OWNER IN ONE SESSION. The builder proposed light first, was corrected, then proposed SURFACE first (wood figure, material response, smooth-shading) and was corrected again with the same question — 'model ของต่าง ๆ ปิดแล้วหรอ?'. Both proposals were the same error: polishing what exists in a room that is still missing objects against its own target. P2's work array is now ordered guard -> objects -> surface: 1) P2r-9 assert gate — cheap, and it is the door every later acquire passes through; it is the guard for the exact defect class that voided the p2r31-p2r36 acquire thread. 2) P2a / P2b / P2h / P2i — the objects themselves (acquire chair, nightstand, ottoman; the tub-chair decision on R8's own test; material role-splitting on acquired meshes; ergonomic RELATIONS). 3) P2r-2 wood figure, P2r-5 material response, P2c smooth-shade — SURFACE, and last, even though wood figure is an exit-clause crop and C3 has now filed it three times. It is a real defect on a real object and it keeps its place in the queue; it just does not outrank a room that is short five objects.",
       "goal_superseded_p2r45": "Texture-map coverage from 4.9% toward the 50-66% measured in delivered work; every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps; no flat-shaded curved silhouette survives.",
-      "goal_superseded_p2r47": "SUPERSEDED 2026-08-17 (review #54, verdict 'change'). The p2r45 re-aim named MESH TESSELLATION as the phase's strongest lever, on the measurement that the acquired cover ran 43.2 mm against acquired pillows at 4.5-10.3 mm. p2r47 bought a cover at 10.7 mm — INSIDE that band — and both independent critics still ranked the bedding #1 and called it stiff, plastic, 'clay, not cloth'. C2 filed the identical item against the 4.5/10.3 mm pillows in as many words ('One systemic error, not four', covering pillows, folded throw and hung garments). A 2.4x range of tessellation that reads identically to two designers is not the lever, and the cut calibrated on it cannot separate what they are seeing. The goal below replaces it. The HAND-BUILT MASSES half of the p2r45 aim is unchanged and still live."
+      "goal_superseded_p2r47": "SUPERSEDED 2026-08-17 (review #54, verdict 'change'). The p2r45 re-aim named MESH TESSELLATION as the phase's strongest lever, on the measurement that the acquired cover ran 43.2 mm against acquired pillows at 4.5-10.3 mm. p2r47 bought a cover at 10.7 mm — INSIDE that band — and both independent critics still ranked the bedding #1 and called it stiff, plastic, 'clay, not cloth'. C2 filed the identical item against the 4.5/10.3 mm pillows in as many words ('One systemic error, not four', covering pillows, folded throw and hung garments). A 2.4x range of tessellation that reads identically to two designers is not the lever, and the cut calibrated on it cannot separate what they are seeing. The goal below replaces it. The HAND-BUILT MASSES half of the p2r45 aim is unchanged and still live.",
+      "goal_superseded_p2r49": "WHAT THE FRAME IS SHORT OF, measured at p2r47 by two independent critics and by the instruments that disagreed with them. THREE LEVERS, in the order the evidence ranks them: (1) THE BED IS HALF MADE — coverage 94.0% by ray and 'reads as a fitted mattress protector' (C2 #1) are both TRUE, because the ray counts cloth-above-mattress and cannot tell a duvet from a flat sheet (D-095). Measure DUVET SHARE separately and re-bench the shelf on it. (2) THE ACQUISITION CHANNEL, now that it works: per-triangle exports are importable (glb_flatten), the density screen reads objects instead of primitives, and the fit is solved on the cover part — so 29 candidates have now been benched against this bed against 10 in the lane's whole history, and the fold-structure complaint survives all of them. That makes ASK-002 a MEASURED procurement ask rather than a wish. (3) THE R10 QUESTION NO INSTRUMENT HERE ASKS — both critics filed objects that could not be built or used: a foot bench of two stacked cushions with no load path, drawer fronts with no pull and no push-to-open, and no skirting, sockets or switches anywhere in the room. Plus the unchanged half of the p2r45 aim: every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps, and no flat-shaded curved silhouette survives."
     },
     {
       "id": "P4",
@@ -2425,8 +2426,58 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "53d297819d9669bb40d6c6b6f8d333f36df078d4",
+      "verdicts": {
+        "P2": "change: the conditional written into review 56 has FIRED, and it fired on a measurement rather than on fatigue. P2r-18 closed the same round it opened — the acquired duvet is 1438 mm across a 1969 mm bed, so its ceiling is 73.0 percent against a cut of 80, and no placement reaches it. Combined with 0 of 22 free candidates surviving the bench, THE BED LEVER IS CLOSED AT THE FREE TIER and P2 must stop reaching for it. What CHANGES: the phase description should stop naming the bed as lever 1, because there is no builder action behind it any more — the route is ASK-002 and nothing else. What STAYS: the phase itself, because its other lever is untouched and now better evidenced — surface and object work (P2h materials by role, P2r-2 wood figure, which this frame own instrument still scores PERIODIC) plus the two object rows this round opened (P2r-19 the downlights hanging 60 mm below their own ceiling, P2r-20 the garment hang). P2 continues on those and reports the bed as a procurement gap, not as work in progress.",
+        "P4": "keep: unchanged from review 56 an hour ago and for the same reason, said once. Styling density is justified as completeness, three independent channels filed it this round (C2 item 7, C3 item 2, and the gen-diff variant unprompted), and the phase already says what to do about it. Nothing in P2r-18 touches it.",
+        "P3": "keep: unchanged. The bed lever closing does not promote light — if anything it argues the other way, because the frame is now short a made bed it cannot fix for free, and lighting a frame with a known unfixable hole in its hero object is exactly how his 2026-08-08 order says geometry error gets buried in an invisible table.",
+        "P5": "keep: blocked, unchanged. P2r-18 closing makes the eventual judgement round CHEAPER to reason about, not sooner: when P5 opens it will be judging a frame whose bed is a declared procurement gap rather than an open question, and that is a better thing to hand a judge.",
+        "DRW": "keep: done and standing, untouched by this close. No drawn mass changed and the spec-ratchet passed."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "d9691d0b1745d67be1bea86eb243becb77828c73",
+  "last_review_commit": "53d297819d9669bb40d6c6b6f8d333f36df078d4",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
