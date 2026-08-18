@@ -139,7 +139,7 @@ def _carries_attribution(path_rel):
 # which is the one thing it must never do: the whole value of the constant is that a new
 # provenance file cannot land without a human opening it. (Proposed 2026-08-08 by an audit
 # that read the drift as "the constant is stale". The constant was doing its job.)
-EXPECTED_PROVENANCE = 23
+EXPECTED_PROVENANCE = 36
 # 20 -> 21 on 2026-08-10, and the file was OPENED before the number moved, which is the
 # only reason this constant is worth having. The new one is
 # `dr-acquired-mesh-integration-2026-08-10.qa-history.json`: notebook id, title,
@@ -154,6 +154,24 @@ EXPECTED_PROVENANCE = 23
 #   corner drape; the parallel P2 session's DR). Attribution real; its ORPHAN failure is
 #   separate and stays loud until that unit cites its own anchor — this bump does not
 #   discharge it.
+# 23 -> 35 on 2026-08-17, all 12 files OPENED first (heads verified for notebook/conversation
+# attribution before the number moved):
+# 4 from the 08-15..08-17 staging sessions: `dr-id-workflow-and-3d-render-2026-08-15
+#   .qa-history.json` (gemini-share attribution: source/url/model — a different but real
+#   shape), `dr-whole-bed-swap-2026-08-17.qa-history.json` (notebook 1036d123),
+#   `nlm-free-asset-sources/qa-history.json` (notebook 5482788c, 4 qa_pairs),
+#   `nlm-th-bedroom-services/qa-history.json` (notebook 7864b15c — its ORPHAN failure is
+#   separate and stays loud; this bump does not discharge it, same law as the 08-12 bump).
+# 8 from the 2026-08-17 "spend all DR" batch (owner order), all written by one archiver from
+#   the wrapper's --save-history output, schema notebook_id+conversation_id+qa_pairs:
+#   dr-made-bed-grammar (1d384983) · dr-madebed-procurement-refit (8c7220de) ·
+#   dr-tool-boundary-md-enscape (9f816dfd) · dr-upholstery-construction (e3e1654c) ·
+#   dr-veneer-antitiling (bedcb991) · dr-cloth-read-discriminator (026cdd5b) ·
+#   dr-material-numeric-gaps (56227928; 2 turns, first is a dead RPC retry) ·
+#   dr-lighting-nondaylight-fixtures (80f12c2c).
+# 35 -> 36 same day, the batch's 9th and last: `dr-wardrobe-garments-2026-08-17
+#   .qa-history.json` (notebook 6cac307d, conversation e8bb1b43, 1 qa_pair) — same archiver,
+#   same schema, OPENED before the number moved.
 
 # INFRA is pinned by FULL PATH (review 2026-07-13: a basename match let any stash hide a
 # staged file by naming it `nlm-queue.md` / `_index.md`). Only .gitkeep stays name-matched —
