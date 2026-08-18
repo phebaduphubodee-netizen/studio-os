@@ -2870,8 +2870,61 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "7c60a5496761dfaff7120de5fd9d23d13a48a441",
+      "verdicts": {
+        "P2": "change: the bed leaves P2 entirely — not as a lever (review 57 already did that) but as a WORK SUBJECT: the drawn 7ft-x-6.5ft bed is now a measured procurement gap (ASK-028, free shelf exhausted: 18 stagings + 2 showroom probes, widest made-bed field 1910 of 2149) with the interim signed in the spec and printing at every build. P2 continues exactly on its queued surface rows — P2r-24 seam, P2r-2 wood figure (autocorr still PERIODIC at lag 199), P2r-22/23 — none of which wait on the bed. The new made-bed-field rule guards any future bed swap for free.",
+        "P4": "keep: unchanged — styling density enters after P2 per the 08-16 order; nothing this round touches it, and the bed interim does not block staging density work.",
+        "P3": "keep: light stays last per the owner build order (dimension - objects - light); the field-deficit interim does not change what light must solve, and P2r-24/height seams should settle before IES pools anchor to surfaces.",
+        "P5": "keep: judgement still closes the plan; the blind panel + both critics remain the bar. One note for its charter: this round proved the panel judges made-ness, not size — the sighted sheet-fidelity question (does the frame match the DRAWING) needs its own rung at P5, or his eye stays the only instrument for it, which is exactly what R11 exists to prevent."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "3ab0e52c0754ecfac79000ced71a67598ccf0a5e",
+  "last_review_commit": "7c60a5496761dfaff7120de5fd9d23d13a48a441",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
