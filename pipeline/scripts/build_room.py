@@ -5922,7 +5922,7 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head,
 
 
 def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
-                     field_deficit_signed=None):
+                     field_deficit_signed=None, plane_declared_mm=None):
     """R8 ONE LEVEL UP — THE WHOLE BED IS ACQUIRED (P2r-21, D-106 -> D-107).
 
     p2r49 measured that no free CLOTH SET makes our bed (best duvet share 43.2%
@@ -6251,6 +6251,27 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
     if matt is None:
         return _bail("no part tops out at the sleeping plane — cannot name a "
                      "mattress, and bed_pixels must never guess one")
+    # ---- the spec's declared plane must still be TRUE of this staging -------
+    # P2r-24: `bed_plane_measured_mm` is the number the nightstand relation
+    # reads spec-side, and a declaration nothing verifies is how the last h
+    # went stale (600 in the spec, 425 in the scene, the seam invisible for a
+    # round). Drift beyond ray-noise means the staged bed changed: re-measure
+    # and update the declaration consciously — the build never edits the spec.
+    if isinstance(plane_declared_mm, dict) and plane_declared_mm.get("value"):
+        _decl = float(plane_declared_mm["value"])
+        _drift = abs(plane * 1000.0 - _decl)
+        print(f"  whole bed: sleeping plane {plane * 1000:.1f} mm vs declared "
+              f"{_decl:.0f} mm (drift {_drift:.1f}, tol 15)")
+        if _drift > 15.0:
+            return _bail(f"staged sleeping plane {plane * 1000:.1f} mm drifted "
+                         f"{_drift:.0f} mm from the spec's declared "
+                         f"bed_plane_measured_mm {_decl:.0f} — the bed under "
+                         f"the declaration changed. Re-measure and update the "
+                         f"declaration (P2r-24); a stale plane is how the "
+                         f"+193 mm nightstand seam hid behind a PASS.")
+    elif plane_declared_mm is not None:
+        return _bail("bed_plane_measured_mm is present but carries no value — "
+                     "a declaration that cannot be read verifies nothing")
     rest = [p for p in rest if p is not matt]
     bedding = sorted((p for p in rest
                       if _wbr.plan_area(p) >= _wbr.BEDDING_PLAN_FRAC * along * across),
@@ -6396,7 +6417,7 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
 
 
 def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
-               bed_field_deficit=None,
+               bed_field_deficit=None, bed_plane_declared=None,
                bed_cloth_gap=None):
     """A real platform bed massed from beveled primitives, ROT-AWARE — base + inset mattress +
     draped duvet + two pillows at the HEAD.
@@ -6650,7 +6671,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
               f"built (R12/SR-18)")
         if not _place_bed_frame(str(_frame_slug), x0, y0, W, D, rot,
                                 base_m, matt_m, duvt_m, pill_m,
-                                field_deficit_signed=bed_field_deficit):
+                                field_deficit_signed=bed_field_deficit,
+                                plane_declared_mm=bed_plane_declared):
             raise RuntimeError(
                 "whole bed: the acquired frame %r did not place, and falling "
                 "back to the hand-built bed is REFUSED (his class order, "
@@ -8892,6 +8914,8 @@ def build_suite(spec, label="suite"):
                                    else it.get("bed_models")),
                        bed_field_deficit=(None if spec.get("_no_acquire")
                                           else it.get("bed_field_deficit_signed")),
+                       bed_plane_declared=(None if spec.get("_no_acquire")
+                                           else it.get("bed_plane_measured_mm")),
                        bed_cloth_gap=(None if spec.get("_no_acquire")
                                       else it.get("bed_cloth_gap")))
             continue

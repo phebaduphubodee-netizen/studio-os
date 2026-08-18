@@ -906,7 +906,13 @@
     "decision": "D-108",
     "ask": "ASK-028"
    },
-   "bed_field_deficit_signed_note": "ORD-2026-08-18-bed-too-small: he failed the staged bed's size from the image and the measurement agreed — f52472c1's made-bed field is 0.90x0.72 of the drawn 2000x2149 (mattress 1243 of 2149; integral platform wings cap the scale). The free shelf is measured to exhaustion (18 in-room stagings + 2 showroom probes, widest field 1,910 mm) so the drawn 7'x6.5' bed is a PROCUREMENT GAP: ASK-028 (money/identity, his). This signature keeps the lane rendering the interim frame LOUDLY — build prints the deficit every round; delete this key the moment a bench-passing bed lands in bed_models.frame."
+   "bed_field_deficit_signed_note": "ORD-2026-08-18-bed-too-small: he failed the staged bed's size from the image and the measurement agreed — f52472c1's made-bed field is 0.90x0.72 of the drawn 2000x2149 (mattress 1243 of 2149; integral platform wings cap the scale). The free shelf is measured to exhaustion (18 in-room stagings + 2 showroom probes, widest field 1,910 mm) so the drawn 7'x6.5' bed is a PROCUREMENT GAP: ASK-028 (money/identity, his). This signature keeps the lane rendering the interim frame LOUDLY — build prints the deficit every round; delete this key the moment a bench-passing bed lands in bed_models.frame.",
+   "bed_plane_measured_mm": {
+    "value": 428,
+    "from": "wholebed staging ray median, printed by _place_bed_frame (427.6 at p2r52 and at the p2r53 quick check)",
+    "round": "p2r52",
+    "note": "P2r-24: the item's h (600) is the ink's made-bed massing envelope, NOT a surface. This is the staged winner's SLEEPING PLANE, a measured declaration the build VERIFIES every round (drift >15 mm = hard stop in _place_bed_frame) and the nightstand relation reads. A new bed in bed_models.frame must re-measure this value."
+   }
   },
   {
    "name": "ม้านั่งปลายเตียง (bench)",

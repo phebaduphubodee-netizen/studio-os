@@ -997,3 +997,41 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ---- acquired frame: the relation reads the DECLARED PLANE, never h (P2r-24) ----
+def test_acquired_frame_reads_declared_plane_not_h():
+    """The p2r52 seam verbatim: deck 618 beside h=600 read +18 = PASS while the
+    staged plane was 425 (+193). With the plane declared, the truth surfaces."""
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][0]["bed_models"] = {"frame": "f52472c1-fc7e-481a-8fcd-d18036496e6a"}
+    spec["items"][0]["bed_plane_measured_mm"] = {"value": 428, "round": "p2r52"}
+    spec["items"][-1]["h"] = 618
+    rep = P.check(spec)
+    assert _s(rep, "nightstand_vs_mattress") == P.WARN
+    msg = next(f["detail"] for f in rep["findings"] if f["rule"] == "nightstand_vs_mattress")
+    assert "+190" in msg
+
+
+def test_acquired_frame_with_undeclared_plane_warns_never_silent():
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][0]["bed_models"] = {"frame": "f52472c1-fc7e-481a-8fcd-d18036496e6a"}
+    spec["items"][0].pop("bed_plane_measured_mm", None)
+    rep = P.check(spec)
+    assert _s(rep, "nightstand_vs_mattress") == P.WARN
+    msg = next(f["detail"] for f in rep["findings"] if f["rule"] == "nightstand_vs_mattress")
+    assert "UNMEASURABLE" in msg
+
+
+def test_hand_built_bed_still_reads_h():
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][-1]["h"] = 580
+    assert _s(P.check(spec), "nightstand_vs_mattress") == P.PASS
+
+
+def test_acquired_frame_deck_at_plane_reach_passes():
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][0]["bed_models"] = {"frame": "f52472c1-fc7e-481a-8fcd-d18036496e6a"}
+    spec["items"][0]["bed_plane_measured_mm"] = {"value": 428, "round": "p2r52"}
+    spec["items"][-1]["h"] = 450
+    assert _s(P.check(spec), "nightstand_vs_mattress") == P.PASS

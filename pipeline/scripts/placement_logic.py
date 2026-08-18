@@ -663,7 +663,25 @@ def _rule_nightstand_vs_mattress(spec, ctx):
     stands = ctx.get("nightstands") or []
     if bed is None or not stands:
         return None          # absence is bed_has_nightstand's finding, not a silent pass here
-    bh = float(bed.get("h", 0) or 0)
+    # P2r-24: WITH AN ACQUIRED FRAME, THE ITEM'S h IS NOT THE PLANE. h=600 is
+    # the ink's made-bed massing envelope; the staged winner's plane measured
+    # 425 mm, and judging decks against 600 turned a +193 mm seam into a
+    # passing +18 (C2#3 saw it by eye; this rule said PASS). The plane is a
+    # MEASURED declaration with provenance (`bed_plane_measured_mm`, verified
+    # against the staged scene by _place_bed_frame every build, drift >15 mm =
+    # hard stop), so this comparison can never silently go stale again.
+    plane_row = bed.get("bed_plane_measured_mm")
+    if (bed.get("bed_models") or {}).get("frame"):
+        if not (isinstance(plane_row, dict) and plane_row.get("value")):
+            return ("nightstand_vs_mattress", WARN,
+                    "bed stages an ACQUIRED frame but declares no measured "
+                    "sleeping plane (`bed_plane_measured_mm`) — the item's h "
+                    "is the ink envelope, not a surface, so this relation is "
+                    "UNMEASURABLE spec-side until the plane is declared "
+                    "(P2r-24; never a silent pass)")
+        bh = float(plane_row["value"])
+    else:
+        bh = float(bed.get("h", 0) or 0)
     if not bh:
         return None          # a bed with no height claim: nothing to relate against
     lo, hi = ergo.NIGHTSTAND_TOP_VS_MATTRESS_MM
