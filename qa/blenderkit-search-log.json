@@ -72,5 +72,32 @@
   "settled": "Buying density in this library buys headboard tufting, not cloth. The catalogue's faceCount cannot be read as a per-sheet number, and the one sample where it could be checked showed bedding density flat across a 2.4x asset-face spread.",
   "not_settled": "Whether some FULL-PLAN asset's bedding part specifically is finer than 10.7 mm. No free measurement can answer that, because the API publishes no per-object counts. Answering it costs one month of the full plan.",
   "cheapest_next_test_if_he_wants_it": "One month of BlenderKit Full (~$10 if monthly is offered, $118.80/yr otherwise), download 5 bedding assets, run the same three commands. The instruments are built and cost nothing per candidate now."
+ },
+ "wholebed_2026_08_18": {
+  "_asked": "2026-08-18, the hour after the owner answered ASK-028 with 'ลุย BlenderKit'. Question: does the catalogue hold a WHOLE MADE BED that fills the drawn 7'x6.5' rectangle (made-bed field >= 0.88 both axes, ORD-2026-08-18-bed-too-small)?",
+  "_route": "Same public search API, no account. 12 text queries ('double bed'..'bed luxury'), 991 distinct assets, 588 bed-named, 174 inside the whole-asset size window (unordered horizontal axes 1.90-2.90 m, h <= 1.6). Every one of the 174 thumbnail-judged by a 12-agent fresh-context panel (whole made bed / duvet drapes / no footboard / headboard / modern): 129 bench_worthy = 118 full_plan + 11 free.",
+  "_exhaustion_correction": "The p2r53 sentence 'the free shelf is measured to exhaustion' was true only of the queries then run — NONE of these 11 free beds appears in either 08-18 rebench. Third instance of an exhaustion claim that was really a claim about our queries (p2r46, p2r47 before it). The claim is hereby narrowed: exhaustion is always relative to a recorded query list.",
+  "free_tier_bench": {
+   "staged": 11,
+   "route": "downloads are per-FILE (files[].downloadUrl of fileType blend), not per-asset — the naive /downloads/<asset_id>/ 404s. blend -> GLB via headless Blender, then wholebed_bench in the real room, fit rect 3204,51,2000,2149, same as the rebench.",
+   "pass": 1,
+   "passer": {
+    "assetBaseId": "81d895fd-ab4b-4d44-8c4c-126f386083d6",
+    "name": "Modern double Bed",
+    "licence": "royalty-free (free tier)",
+    "field_mm": [1776, 2149],
+    "field_fill": [0.888, 1.0],
+    "scale": 0.7789,
+    "plane_mm": 416.8,
+    "cover_edge_mm": 4.08,
+    "control_edge_mm": 10.27,
+    "tris_total": 1456528,
+    "note": "First hard-filter pass in this bench's history (0/7 and 0/18 the day before). Separable headboard, head end resolves, duvet drapes to the floor both sides. Brings its own flanking white drawer units and blue pillows — integration decisions, not audition failures.",
+    "render": "_private/deliv-001/bed-size-2026-08-18/bench-free-blenderkit/chunkB/81d895fd-ab4b-4d44-8c4c-126f386083d6_eye_ql.png"
+   },
+   "runner_up": "f0938871 field 1781x1980 (0.891x0.921) PASSES the field law but fails head-end resolution (one-mesh bed, orientation would be a coin flip — R9 refuses). If ever needed, orientation could be human-signed the way identity is (D-037's ladder), but with a clean passer there is no reason.",
+   "fails": "9 others: 7 read smaller than the ink (field_fill 0.27-0.94 on an axis), 3 unresolvable head end, 2 fused headboards colliding with the sheet-drawn band (SR-18). Full rows: _private/deliv-001/bed-size-2026-08-18/bench-free-blenderkit/wholebed_bench.json"
+  },
+  "what_the_full_plan_still_holds": "118 panel-passed full-plan candidates, untouched — the ASK-029 key unlocks them. The free tier delivering a passer removes the bed from that ask's critical path; the subscription decision is now about the library (bench seats, alternates, other classes), not about this order."
  }
 }
