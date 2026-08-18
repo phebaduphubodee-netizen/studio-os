@@ -367,7 +367,8 @@
           "where": "pipeline/scripts/p2_exit.py + pipeline/scripts/edge_shadow.py",
           "status": "todo",
           "why_now": "p2r41: both independent critics made this their SINGLE FIX, from different vendors and different prompts, and our own rung structurally cannot see it. That is the R7b pairing working exactly as written — the eye found WHAT is wrong and named a question no instrument here asks.",
-          "refuted_designs": "TWO designs were built and MEASURED on p2r39 and p2r41 the same afternoon the row was filed, and NEITHER separates the frame both critics failed from anything else. Recorded so the next session does not re-invent them. (1) READABLE PERIMETER — walk each bedding mask's outline, step 3 px inward and outward along the outward normal, count the share of perimeter with a luminance difference >= 3 codes (frame-border perimeter excluded and reported). RESULT: 89.8-96.0% on EVERY bedding material on BOTH legs, including the pillow that certainly reads. It fails because a material boundary almost always carries some albedo step, so it answers 'is there contrast at the outline' when the critics are saying 'there is no hem, seam or selvedge to find'. Code deleted rather than left with a corrected docstring: a metric that cannot separate is worse than a missing one, and one left in the tree gets wired. (2) FLAT SHARE vs DELIVERED WORK — share of a cloth's own eroded core pixels whose local 4-32 px band energy falls below the delivered anchor comforter's own p10 (0.417). RESULT: coverlet 6.3% / throw 11.5% / pillow 1.6% on p2r39 against coverlet 10.1% / duvet 1.4% / pillow 1.2% on p2r41, i.e. both legs sit around a delivered comforter's own 10% by construction. Bedding pixels below the delivered floor come to 0.94% and 0.91% of the whole frame on the two legs — against C2's 'nearly a quarter of the frame'. WHAT THAT LEAVES: the eye is reading something at a scale or of a kind neither the 4-32 px band nor the outline captures, and the next attempt should start by finding a measurement that PUTS THE TWO LEGS APART FIRST, on frames whose verdicts are already known, before any cut is declared."
+          "refuted_designs": "TWO designs were built and MEASURED on p2r39 and p2r41 the same afternoon the row was filed, and NEITHER separates the frame both critics failed from anything else. Recorded so the next session does not re-invent them. (1) READABLE PERIMETER — walk each bedding mask's outline, step 3 px inward and outward along the outward normal, count the share of perimeter with a luminance difference >= 3 codes (frame-border perimeter excluded and reported). RESULT: 89.8-96.0% on EVERY bedding material on BOTH legs, including the pillow that certainly reads. It fails because a material boundary almost always carries some albedo step, so it answers 'is there contrast at the outline' when the critics are saying 'there is no hem, seam or selvedge to find'. Code deleted rather than left with a corrected docstring: a metric that cannot separate is worse than a missing one, and one left in the tree gets wired. (2) FLAT SHARE vs DELIVERED WORK — share of a cloth's own eroded core pixels whose local 4-32 px band energy falls below the delivered anchor comforter's own p10 (0.417). RESULT: coverlet 6.3% / throw 11.5% / pillow 1.6% on p2r39 against coverlet 10.1% / duvet 1.4% / pillow 1.2% on p2r41, i.e. both legs sit around a delivered comforter's own 10% by construction. Bedding pixels below the delivered floor come to 0.94% and 0.91% of the whole frame on the two legs — against C2's 'nearly a quarter of the frame'. WHAT THAT LEAVES: the eye is reading something at a scale or of a kind neither the 4-32 px band nor the outline captures, and the next attempt should start by finding a measurement that PUTS THE TWO LEGS APART FIRST, on frames whose verdicts are already known, before any cut is declared.",
+          "successor_design": "RECORDED 2026-08-18 from knowledge/_inbox/dr-cloth-read-discriminator-2026-08-17.md so the next session does not invent a FOURTH instrument in the dead family. The DR's central honest finding: the fold-statistics literature this row hoped to copy (crease frequency spectra, fold radius distributions, fold-scale hierarchy) DOES NOT EXIST — the corpus's own synthesis says NOT IN SOURCES — so instrument-hunting in literature is CLOSED as a route. What IS sourced and buildable is a PREDICTOR, a different class from all three refuted designs: the PNAS draping scaling laws (gravity length ell_g=(B/(rho*g*h))^(1/3); fold wavelength lambda ~ ell_g^(3/4) * L^(1/4); fold count n ~ (R/ell_g)^(3/4)) let us COMPUTE the expected fold count and wavelength for a declared fabric class and drop length, then measure the frame against the prediction. The three refuted designs measured PRESENCE of detail and could not separate; a predictor tests STRUCTURE against physics, so a duvet with uniform resonator folds fails it while a real drape passes. Same unit also warns the sighted-panel method itself: static-image judgments confound optical with mechanical properties (perception literature) — recorded, unresolved, belongs to P5's method notes."
         },
         {
           "id": "P2r-13",
@@ -449,6 +450,24 @@
           "where": "pipeline/scripts/build_room.py (bed_models.frame hook), pipeline/scripts/wholebed_bench.py",
           "what": "INTEGRATE THE AUDITION WINNER — f52472c1, the only candidate of 11 staged that passes every hard filter AND stays inside the delivered none-or-sliver flank band for all three blind readers (none/sliver/none; the p2r49 control read 'most' 3/3). One integration round (R1: two max, then the alternates 4cf92fdd -> bd96c4ff, never the same candidate a third time): a bed_models.frame hook modelled on _place_bed_cloth that (1) fits on the FRAME CLUSTER, not the file bbox — the audition's declared fill limitation; (2) strips the enumerated leftovers (two burl wing panels, the below-mattress floating shelf+box, the plaid accent piece); (3) retints the printed duvet per the acquire law (keep normal/rough, kill the print) into the signed palette; (4) closes the one bounded head-end bare strip (C2 + reader B agree on its place; DR gives the pillowstop/shim condition and the 12.7-38.1 mm band clearance); (5) assigns the studio role materials so bed_pixels can POINT at its mattress — without this the rung exits 2 = STOP on full builds; (6) MODEL_FRONT_DEG entry measured, never assumed; (7) full-fidelity frame -> bed_pixels ratchet vs the p2r49 baseline (core_flank must FALL), C2+C3, and the flank panel re-run against the delivered pool. Spec side: the bed item's model reference must carry a sheet_ref or ratchet-clean edit (R12), and the scale sidecar must be asserted with a whole_bed class band added to asset_scale.BANDS.",
           "gate": "bed_pixels core_flank strictly below the 254,849 px baseline AND no blind reader above sliver on the full-fidelity frame; exit 2 anywhere = the round did not run"
+        },
+        {
+          "id": "P2r-22",
+          "status": "todo",
+          "added": "2026-08-18",
+          "added_round": "between rounds — filed by the 2026-08-17 spend-all-DR review (owner: ลุย)",
+          "where": "pipeline/scripts/build_room.py (headboard + bench_foot geometry); source: knowledge/_inbox/dr-upholstery-construction-2026-08-17.md",
+          "what": "UPHOLSTERY CONSTRUCTION CUES — the headboard reads as a featureless extruded slab (C2 r41 #12, r47 #12, r49 #8) and the bench as a box with no seams (both critics, every round), and until today NO ROW OWNED THE HEADBOARD. The sheet draws its outline (R12 — identity stays the sheet's); what the sheet does not draw is the construction layer that makes upholstery read as manufactured, and the DR supplies it with dimensions: perimeter welt (trade cord 3.18-25.4 mm; single welt on cushions, double welt only on tacked frames), panel reveals 3.18-4.76 mm for modular headboards, channel tufting 101.6 mm channels / diamond grids 152.4-203.2 mm with 101.6 mm row offset, bench boxing 50-150 mm by seating class with zipper on the rear boxing strip, seam allowances 9.53/12.70 mm. THE MODELED-VS-MAPPED LAW from the same unit governs the build: major creases, welts and tuft recesses are GEOMETRY (they must survive raking light and the silhouette); micro-weave lives in tangent normals; AO reinforces, never replaces. DO: pick the headboard's construction style FROM THE SHEET CROP beside a same-class anchor (R4b), then model welt runs + reveals on the headboard and boxing + welt + closure seam on the bench, dimensions from the DR bands. CLOSE: 100% crops of headboard and bench judged beside anchors, and neither critic files a featureless-slab or no-seam item on either mass.",
+          "why_now": "P2's exit clause counts surface-realism items in both critics' top 3 — the headboard slab is a standing item with no owner, so it can block the phase exit by itself. The knowledge arrived 2026-08-17 (DR4); building without it would repeat the four soft-goods rounds R4b exists to prevent."
+        },
+        {
+          "id": "P2r-23",
+          "status": "todo",
+          "added": "2026-08-18",
+          "added_round": "between rounds — filed by the 2026-08-17 spend-all-DR review (owner: ลุย)",
+          "where": "pipeline/scripts/build_room.py (slat wall backing), pipeline/scripts/element5_lighting.py (trim internals); source: knowledge/_inbox/dr-lighting-nondaylight-fixtures-2026-08-17.md",
+          "what": "FIXTURE INTERNALS + SLAT BACKING, the GEOMETRY half of believability that P4 does not own: C2 files the slat gaps as pure-black voids with no backing board (r41 #9, r47 #7, r43 #6) and the downlight trims as flat discs with no visible reflector/source — and the plan queued only the light-EMISSION half in P4, leaving the construction half unowned. The DR's millwork answer (manufacturer-tier co-cites): behind open slats sits a real backing — 9 mm black/grey PET felt or drywall painted dark MATTE/EGGSHELL (never flat 0,0,0 — the real material catches bounce light, which is exactly why our gaps read as rendering artifacts), clip battens add 20-30 mm depth, panels stop 150-200 mm below the ceiling for a reveal. Downlights: the lamp is REGRESSED 25-40 mm up inside the aperture behind a matte black or white baffle; aperture/housing dims per trim class are in the unit (Lutron/Signify/Lumenpulse spec sheets). DO: model the backing plane at its real offset with a dark matte material carrying non-zero albedo, and give each of the 12 trims a regressed baffle cylinder + lamp disc at depth. CLOSE: slat-gap pixels no longer sample 0,0,0 (measurable from the render, existing pixel tooling), trims read a recessed source in a 100% crop beside an anchor, and the void/flat-trim items stop being filed.",
+          "why_now": "These are R10-class object-existence questions (does the construction make sense as a built thing), due in P2-objects by the phase's own definition; the emission half stays in P4 per the owner's build order. Knowledge arrived 2026-08-17 (DR9, manufacturer tier for exactly this half)."
         }
       ],
       "exit_test": "REOPENED BAR (owner overrule 2026-08-11; ratified 'ok' after the builder argued against a raw C3-item-count cut — the argument and counter-proposal are in gate-DELIV001-P3r2's addendum thread). To close P2: (1) the r7 rows all still hold — D5/D8/D9 PASS, MODEL-FIT REJECT 0, imported >=8, QUALIFIES; (2) FOUR 100% crops judged beside anchors, one per judged defect class, run by the P2r-7 harness: DUVET fold-structure energy (the r7 throw-crop method), TWO ADJACENT WOOD BOARDS (autocorrelation: no periodic peak), RUG EDGE (rollover, not a 90-degree step), GARMENT SHELLS (coincident duplicate pairs = 0 from the built scene); (3) OWNER-RATIFIED JUDGE CLAUSE, outside the builder's hands: BOTH independent critics (C2 blind-local + C3 cross-vendor) file no surface-realism item in their top 3, AND the ACCEPTED-after-triage surface-realism items across both critics total <= 2 — every refutation must carry a measurement the owner can audit and overrule from the image; (4) REPORTING LINE, not a cut: C3's raw item count prints at every gate so the trend stays visible (7 at p3r1, 5 at p3r2). The owner overrules any of this from the image at any time. (5) SECOND REPORTING LINE, added 2026-08-16 after review: the DELIVERED-WORK VALUE BAND. The friend's duvet planes measure 0.505-0.674 of their own frame's 99th-percentile luma; ours are printed the same way at every gate. It is a line and not a cut because the ladder's own signed targets are the authority on value and one of them (duvet 181 = 0.80 of p99) sits above this band - which is a question to settle against the ANCHOR POOL (R4), not a rung to fail a frame on today.",
@@ -2634,8 +2653,58 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "65309093a73c61a6a1a5a448bd4b75e31d42d0d1",
+      "verdicts": {
+        "P2": "change: two rows added and one edited from the 2026-08-17 spend-all-DR batch, filed on owner order. P2r-22 upholstery construction cues (the headboard slab both critics file every round had NO owning row and can block the exit clause by itself; DR4 supplies welt/reveal/tuft/boxing bands in mm plus the modeled-vs-mapped law). P2r-23 fixture internals + slat backing geometry (the black-void and flat-trim filings; the plan queued only the emission half in P4 — the construction half is R10-class object work due here; DR9 supplies 9mm dark PET felt backing, 25-40mm baffle regression, manufacturer dims). P2r-12 successor_design recorded: the fold-statistics literature the row hoped to copy does not exist per the corpus itself, so the route forward is a PREDICTOR from the PNAS draping scaling laws, a different class from the three refuted designs. The bed re-aim is UNCHANGED and independently corroborated: DR3 shows the trade itself refuses naive rescale and refits via re-simulation or buy-to-fit, and DR1+Hilton sizing corroborates the 0.80 duvet-share cut from the supply side — the route stays ASK-002, now armed with named MADE-authored listings and vendor-page prices.",
+        "P3": "keep: light-range goal untouched by the DR batch. The ground-truth numbers (our 10:1 vs pro 191-2500:1) remain the phase evidence; DR9 community-tier rig values are mutually inconsistent different setups and enter only as test starting points inside this phase when it opens, never as a reshape of it.",
+        "P4": "keep: the owner build order (objects before light) stands. DR9 banked exactly what this phase will need — the exposure PROCEDURE (False Color, meter a midtone at 18% grey, crank lights and lower exposure), which is consistent with the vault law that exposure has no promotable number — and the one part that could not wait (fixture construction geometry) was pulled into P2r-23 instead of reordering phases.",
+        "P5": "keep: judgement phase unchanged. DR2 perception literature warns that static-image judgments confound optical with mechanical properties — recorded in the staged unit and in P2r-12 successor_design as a method note for this phase when it opens; a warning to carry, not a structure to change now."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "DR-batch review filed between rounds on owner order (ลุย) — no work item closed; commits 94aa6d6+6530909 staged nine DR units, this review converts their findings into plan rows",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "1b96e4be508243f1a6ce900c91a865694604a4b3",
+  "last_review_commit": "65309093a73c61a6a1a5a448bd4b75e31d42d0d1",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
