@@ -1653,6 +1653,38 @@
    "owner_override": null,
    "override_date": null,
    "obeys": "ORD-2026-08-14-bed-cloth-is-acquired"
+  },
+  {
+   "id": "D-105",
+   "unit": "DELIV-001",
+   "subject": "whole-bed-audition-instrument",
+   "decided_round": 51,
+   "decided_date": "2026-08-17",
+   "decided_by": "builder",
+   "question": "cache มีไฟล์เตียงทั้งหลังที่ไม่มี bench ตัวไหนเคยมองเห็น (bench ผ้าถามว่า 'ผ้าไหนคลุมที่นอนเรา' — เตียงทั้งหลังจึงหลุด scope โดย construction) จะ audition อย่างไรโดยไม่เผารอบ build",
+   "in_effect": "เครื่องมือ audition เตียงทั้งหลังมีอยู่แล้วและทุกการซื้อเตียงทั้งหลังต้องผ่านมันก่อนได้รอบ build: wholebed_rules.py (pure, 20 tests) + wholebed_bench.py (เปิด .blend ที่ build แล้ว, เก็บหัวเตียงตามแบบ SR-18 ไว้เสมอ, ลบเตียงเราที่เหลือ, import candidate, assert unit factor, ตัด scenery ด้วยเรขาคณิตล้วน, หาหัวเตียงจาก geometry ของ candidate เอง — แยกได้=ลบ แยกไม่ได้=ธง FUSED, scale <= 1.0 เทียบ footprint ในแบบ 2000x2149, วางด้วย contact, วัดด้วย ray, quick render จากกล้องห้องจริง) · ข้อจำกัดที่ประกาศ: fill คิดจาก bbox ของชิ้นที่เหลือทั้งหมด จึงลงโทษผ้าที่ตกข้างกว้างและเฟอร์นิเจอร์ติดตัว — integration hook ต้อง fit บน FRAME cluster ไม่ใช่ bbox ทั้งไฟล์ · รอบแรกจับผู้เขียนเองสองครั้ง (ลบหมอนทั้งแถวเป็น 'headboard', ป้าย wing เป็น headboard) — ทั้งคู่ pin ด้วย test แล้ว",
+   "where": "pipeline/scripts/wholebed_rules.py, pipeline/scripts/wholebed_bench.py, pipeline/scripts/test_wholebed_rules.py, _private/deliv-001/whole-bed-audition-2026-08-17/",
+   "because": "p2r49 วัดแล้วว่าไม่มีชุดผ้าฟรีตัวไหนทำเตียงนี้ได้ (ดีสุด 43.2% vs cut 0.80) และ p2r50 วัด flank เปลือย 254,849 px ที่งานส่งจริงอ่าน none-or-sliver 18/18 — เตียงทั้งหลังมาพร้อมที่นอนของมันเอง กล่องของเราจึงออกจากเฟรมโดย construction ไม่ใช่ถูกคลุม · gate p2r49 เขียนเองว่า 'the scope was the defect' · พี่ ratify ทิศทางนี้จากรายงาน p2r50 ('ลุยยาว ๆ') และอนุญาต DR",
+   "reverse_by": "ลบสองสคริปต์ + test — โฟลเดอร์ audition คงอยู่เป็น record · ถ้าจะเลิกเส้นทางเตียงทั้งหลังทั้งเส้น ต้องปิดพร้อมเหตุผลที่วัดได้ใน gate รอบถัดไป",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-14-bed-cloth-is-acquired"
+  },
+  {
+   "id": "D-106",
+   "unit": "DELIV-001",
+   "subject": "whole-bed-audition-verdict",
+   "decided_round": 51,
+   "decided_date": "2026-08-17",
+   "decided_by": "builder",
+   "question": "จาก 27 ใบที่เปิดดู / 11 ใบที่ stage ในห้องจริง ตัวไหนได้รอบ integration",
+   "in_effect": "f52472c1 ('Bed King Size') คือ qualifier เดี่ยว: ผ่าน hard filter ทุกข้อ (fill 0.90x1.00, ไม่มี footboard, headboard แยกชิ้นได้) และอยู่ใน band งานส่งจริงจาก panel ตาบอด 3 คน (none/sliver/none — เกณฑ์คือ 'ไม่มีเสียงไหนเกิน sliver' เพราะงานส่งจริงอ่าน 18/18 แบบนั้น; control p2r49 ที่แทรกโดยไม่ติดป้ายได้ most ทั้งสามเสียง) · หนี้ integration ระบุครบใน gate: ผ่าปีกไม้ 2 ชิ้น + ชั้นลอยติดตัว, retint ลายพิมพ์ (เก็บ normal/rough ตามกติกา acquire), แถบหัวเตียงเปลือย bounded หนึ่งจุด (C2 + reader B เห็นตรงกัน), ใส่ role material ให้ bed_pixels ชี้ที่นอนมันได้ (ไม่งั้น exit 2 = STOP บน full build), fit ใหม่บน frame cluster · ทางสำรองตามลำดับ: 4cf92fdd (panel ผ่าน แต่ต้อง sign ทิศหัวเตียง + ลบหมอน trade dress Burberry-check ซึ่งห้าม ship โดย licence ใดก็ตาม) แล้วค่อย bd96c4ff (partial หนึ่งเสียง + ผ่าปีก) · d4698c95_flat กับ 22897dd4 โดน most จาก reader จริง — ฐานขาว/แพลตฟอร์มขาวของมันอ่านเป็นที่นอนเปลือย",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r51-2026-08-17.md, _private/deliv-001/whole-bed-audition-2026-08-17/panel/readings.json, _private/deliv-001/whole-bed-audition-2026-08-17/batch3/wholebed_bench.json",
+   "because": "เกณฑ์รับอ่านจากงานส่งจริง ไม่ได้พิมพ์เอง (D-099/D-103 ตระกูลเดียวกัน) · C3 (Gemini) ไม่ file item ที่นอนเปลือยเป็นครั้งแรกของเลน · C2 ตาบอด file 9 ข้อ — ทุกข้อ triage ลงเลนที่มีอยู่แล้วหรือหนี้ integration ที่ระบุชื่อ ไม่มีข้อไหนต้อง refute",
+   "reverse_by": "ลบแถวนี้ — ตาราง audition ยังยืน · ถ้า integration รอบเดียวพิสูจน์ว่า f52472c1 ไม่ผ่าน (R1: สองรอบต่อกลไก) เปลี่ยนไป alternate ตามลำดับ ไม่วนตัวเดิม",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-14-bed-cloth-is-acquired"
   }
  ]
 }
