@@ -172,6 +172,43 @@ BANDS = {
                 "ottoman"),
 }
 
+# ------------------------------------------------------------ slot roles (P2h) --
+# SPLIT AN ACQUIRED MESH'S MATERIAL SLOTS BY ROLE, from the geometry each slot's
+# faces actually cover — never from the uploader's names (tub_chair_c's upholstery
+# is called Carpet_Plush_Charcoal and is fluorescent green; a name is not evidence).
+# The signed statement the split serves: "upholstery = the textile; legs = the
+# bench leg tone" — and until this landed, a FORCED retint painted every non-metal
+# slot, legs included (build_room._ACQUIRE_FORCE_RETINT_NOTE, the declared gap).
+#
+# A LEG slot is one whose faces ALL top out in the bottom LEG_TOP_FRAC of the
+# model's own height AND carry a small share of its surface area. A seat cushion
+# is large and reaches high; a leg is small and stays low. Both halves together,
+# because each alone is wrong: area alone tags piping and buttons; height alone
+# tags a low seat pan. Slots that fail either half stay UPHOLSTERY — the split
+# fails toward the signed textile, which is the pre-split behaviour, so it can
+# only ever improve on the forced state, never regress it.
+LEG_TOP_FRAC = 0.45     # legs top out under ~45% of a chair/bench's height
+LEG_AREA_MAX = 0.30     # legs + stretchers carry <= ~30% of the surface area
+
+
+def slot_roles(slots, z0, z1):
+    """{name: 'leg' | 'upholstery'} for {name: {'area': m2, 'top_z': m}} against
+    the MODEL'S OWN z range (never per-mesh — a leg exported as its own mesh has
+    a short range of its own and would read 'tall' against itself). Degenerate
+    height or empty stats -> everything upholstery (fail toward the signed
+    textile, loudly upstream)."""
+    h = z1 - z0
+    total = sum(s.get("area", 0.0) for s in slots.values())
+    if h <= 1e-9 or total <= 1e-12:
+        return {n: "upholstery" for n in slots}
+    out = {}
+    for n, s in slots.items():
+        low = (s.get("top_z", z1) - z0) <= LEG_TOP_FRAC * h
+        small = s.get("area", 0.0) <= LEG_AREA_MAX * total
+        out[n] = "leg" if (low and small) else "upholstery"
+    return out
+
+
 # ------------------------------------------------------------- planar refusal --
 # ADDED THE HOUR THIS FILE'S FIRST REAL INGEST WALKED PAST IT. The first asset
 # fetched for TRN-002 was a shirt on a hanger: 715 mm tall, comfortably inside

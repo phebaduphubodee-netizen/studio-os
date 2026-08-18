@@ -8015,8 +8015,72 @@ def _retint_kwargs(mat_sel, nm, kind, has_mesh):
 # answer lands the split is a declared gap rather than a guess.
 _ACQUIRE_FORCE_RETINT_NOTE = ("forced: the model's material names cannot be trusted "
                               "(tub_chair_c's upholstery is called Charcoal and is "
-                              "green); legs share the textile tint until the "
-                              "role-split lands")
+                              "green); slots are split by ROLE from their own "
+                              "geometry (P2h) — legs take the leg tone, the rest "
+                              "takes the signed textile")
+
+
+def _role_split_slots(meshes):
+    """P2h — which of an acquired model's materials are LEGS, from the geometry
+    their faces cover. Gathers per-material area + top-z across ALL the model's
+    meshes in world space (a leg exported as its own mesh must be judged against
+    the MODEL's height, not its own), then asks the pure classifier
+    (asset_scale.slot_roles — thresholds + reasoning live there, tested without
+    bpy). Returns (uph_mats, leg_mats) as sets; on any failure everything is
+    upholstery — the pre-split behaviour, so the split can only improve."""
+    stats, z0, z1 = {}, math.inf, -math.inf
+    mat_of = {}
+    for o in meshes:
+        if o.type != "MESH" or not o.data:
+            continue
+        mw = o.matrix_world
+        for v in o.data.vertices:
+            z = (mw @ v.co).z
+            z0 = min(z0, z)
+            z1 = max(z1, z)
+        s = mw.to_scale()
+        a_scale = abs(s.x * s.y)          # polygon.area is object-space
+        for p in o.data.polygons:
+            sl = o.material_slots[p.material_index] if p.material_index < len(o.material_slots) else None
+            m = sl.material if sl else None
+            if m is None:
+                continue
+            st = stats.setdefault(m.name, {"area": 0.0, "top_z": -math.inf})
+            st["area"] += p.area * a_scale
+            st["top_z"] = max(st["top_z"], (mw @ p.center).z)
+            mat_of[m.name] = m
+    if not stats or not (z1 > z0):
+        return {m for m in mat_of.values()}, set()
+    roles = _ascale.slot_roles(stats, z0, z1)
+    uph = {mat_of[n] for n, r in roles.items() if r == "upholstery"}
+    legs = {mat_of[n] for n, r in roles.items() if r == "leg"}
+    return uph, legs
+
+
+def _retint_legs(mats):
+    """The signed leg treatment for an acquired mesh's LEG slots: base colour to
+    the one _DARK_LEG definition (the same tone _build_bench and _build_tub_chair
+    share), maps kept, renamed so the mat-mask shows the decision."""
+    n = 0
+    for m in mats:
+        if not m or not getattr(m, "use_nodes", False):
+            continue
+        nt, b = _principled(m)
+        if not b:
+            continue
+        bc = b.inputs.get("Base Color")
+        if bc is None:
+            continue
+        for l in list(bc.links):
+            nt.links.remove(l)
+        bc.default_value = _DARK_LEG
+        rg = b.inputs.get("Roughness")
+        if rg is not None and not rg.is_linked:
+            rg.default_value = 0.5
+        _set(b, "Sheen Weight", 0.05)
+        m.name = "acq_dark_leg"
+        n += 1
+    return n
 
 
 def _slot_pair(slug, kind):
@@ -8329,22 +8393,65 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
         # finished surface; a 3D Warehouse asset arrives with flat base colours and no
         # relief at all. Tinting the second one produces a moulded-plastic look, which
         # is what the first acquired chair on this lane rendered as.
-        n_slots = 0
+        # P2h — the REPLACE branch is where the vanity chair actually travels
+        # (3DW base-colour-only -> no PBR to keep), and it used to CLEAR every
+        # mesh's slots and append the one textile — which painted the legs linen
+        # and threw away the only information that could have said which faces
+        # ARE legs. The incoming slot structure survives now: each slot's
+        # material is REPLACED IN PLACE (face assignments untouched), textile or
+        # the leg tone by the slot's own geometry (asset_scale.slot_roles; a
+        # fused-mesh model's legs are still separate SLOTS). Failure direction
+        # unchanged — no split means everything takes the textile.
+        _leg_mats = set()
+        _all_mats = {s.material for o in meshes for s in o.material_slots
+                     if s.material}
+        if len(_all_mats) > 1:
+            _uph_mats, _leg_mats = _role_split_slots(meshes)
+        _leg_m = None
+        n_slots = n_leg = 0
         for o in meshes:
-            o.data.materials.clear()
-            o.data.materials.append(replace_material)
-            n_slots += 1
-        print(f"  material REPLACED on {n_slots} mesh(es) with "
+            if not o.material_slots:
+                o.data.materials.append(replace_material)
+                n_slots += 1
+                continue
+            for slot in o.material_slots:
+                if slot.material in _leg_mats:
+                    if _leg_m is None:
+                        _leg_m = _solid("acq_dark_leg", _DARK_LEG, rough=0.5,
+                                        sheen=0.05, spec=0.3)
+                    slot.material = _leg_m
+                    n_leg += 1
+                else:
+                    slot.material = replace_material
+                    n_slots += 1
+        print(f"  material REPLACED on {n_slots} slot(s) with "
               f"'{replace_material.name}': the mesh carried no normal or "
-              f"metallic-roughness map, so it brought a colour and not a surface")
+              f"metallic-roughness map, so it brought a colour and not a surface"
+              + (f"; {n_leg} leg slot(s) take the _DARK_LEG tone instead "
+                 f"(P2h role split — geometry decided, asset_scale.slot_roles)"
+                 if n_leg else ""))
     elif retint_fabric:
         mats = {slot.material for o in meshes for slot in o.material_slots if slot.material}
         kw = {k: v for k, v in (("rgba", retint_rgba), ("sheen", retint_sheen),
                                 ("rough", retint_rough)) if v is not None}
         force = retint_force if retint_force is not None else (len(mats) == 1)
+        # P2h — a FORCED retint on a multi-material model splits the slots by
+        # ROLE first, so legs stop wearing the textile. Single-material models
+        # and name-matched retints are untouched (nothing to split / the name
+        # match already spares the legs).
+        leg_mats = set()
+        if force and len(mats) > 1:
+            uph_mats, leg_mats = _role_split_slots(meshes)
+            if leg_mats:
+                mats = uph_mats
         n_re, skipped = _retint_upholstery(mats, force_all=force,
                                            ignore_metal=bool(retint_ignore_metal),
                                            rung=retint_rung, **kw)
+        if leg_mats:
+            n_leg = _retint_legs(leg_mats)
+            print(f"  retint role-split (P2h): {n_leg} leg slot(s) take the "
+                  f"_DARK_LEG tone (geometry decided — low and small; "
+                  f"asset_scale.slot_roles), {len(mats)} slot(s) stay textile")
         # A MECHANISM THAT RAN AND CHANGED NOTHING MUST SAY SO. This is the whole
         # lesson of the green chair: the retint fired, matched zero materials, and was
         # silent about it, so the render was the first thing that could tell anyone.

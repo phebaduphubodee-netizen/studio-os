@@ -218,7 +218,9 @@
           "what": "split an acquired mesh's materials by ROLE so legs keep the leg tone",
           "where": "pipeline/scripts/build_room.py",
           "why": "Forcing the signed textile onto an acquired upholstered mesh paints every non-metal material, legs included, while the spec says 'upholstery = greige linen; legs = the bench leg tone'. On the vanity chair the legs are hidden under the counter so nothing is visibly wrong yet — which is exactly why it is filed now rather than after a bench makes it visible. The DR (knowledge/_inbox/dr-acquired-mesh-integration-2026-08-10.md) does not answer the role-split; it answers keep-vs-strip and normalisation.",
-          "status": "todo"
+          "status": "done",
+          "closed": "2026-08-18 (p2r53 quick — mechanism proven on the named chair, no full frame owed: the legs are occluded and the row was filed for correctness, not for this frame)",
+          "result": "CLOSED. The split is GEOMETRY, never names (the Charcoal-is-green law): asset_scale.slot_roles — pure, 5 tests — tags a slot LEG when its faces all top out in the bottom 0.45 of the MODEL's own height AND carry <=0.30 of its area; both halves together (area alone tags piping, height alone tags a seat pan — each pinned by a test). Wired at BOTH acquire material paths in build_room: the retint branch (forced multi-material) and the REPLACE branch — which is where the vanity chair actually travels (3DW base-colour-only), and which used to CLEAR the slots and throw away the only information that said which faces are legs; slots are now replaced IN PLACE so face assignments survive. Live proof on the named case: tub_chair_c -> 6 slots textile + 1 leg slot _DARK_LEG (the one shared leg-tone definition). Fails toward the signed textile in every degenerate direction, so the split can only improve on the forced state. The chair's legs stay occluded under the counter in this frame — the row predicted that; the mat-mask now records the decision (acq_dark_leg) for the day a bench makes it visible."
         },
         {
           "id": "P2i",

@@ -349,3 +349,53 @@ def test_the_real_shelves_differ_the_way_the_rule_assumes():
     cc0 = os.path.join(repo, "assets", "shared", "cc0", "models",
                        "ArmChair_01", "ArmChair_01_1k.gltf")
     assert A.carries_a_pbr_surface(cc0) is True, "the CC0 shelf ships real PBR"
+
+
+# ---- slot roles (P2h) — geometry decides, names never do -----------------------
+def _chair_slots():
+    """tub_chair_c-shaped fixture: 750 mm chair, big green 'Charcoal' upholstery
+    reaching the top, small dark legs stopping at 320 mm, piping high and tiny."""
+    return {
+        "Carpet_Plush_Charcoal": {"area": 1.8, "top_z": 0.75},   # the (green) upholstery
+        "Wood_Cherry": {"area": 0.25, "top_z": 0.32},            # legs
+        "Piping": {"area": 0.05, "top_z": 0.70},                 # trim, high and tiny
+    }
+
+
+def test_slot_roles_legs_split_from_upholstery():
+    r = A.slot_roles(_chair_slots(), 0.0, 0.75)
+    assert r["Wood_Cherry"] == "leg"
+    assert r["Carpet_Plush_Charcoal"] == "upholstery"
+
+
+def test_slot_roles_small_high_trim_is_not_a_leg():
+    """Piping is small but tops out high — area alone would tag it; both halves
+    together must not."""
+    r = A.slot_roles(_chair_slots(), 0.0, 0.75)
+    assert r["Piping"] == "upholstery"
+
+
+def test_slot_roles_low_large_seat_pan_is_not_a_leg():
+    """A low ottoman's seat pan stays low but is LARGE — height alone would tag
+    it; both halves together must not."""
+    slots = {"pan": {"area": 1.5, "top_z": 0.18}, "leg": {"area": 0.1, "top_z": 0.15}}
+    r = A.slot_roles(slots, 0.0, 0.45)
+    assert r["pan"] == "upholstery" and r["leg"] == "leg"
+
+
+def test_slot_roles_judged_against_the_model_range_not_per_mesh():
+    """A leg exported as its own mesh has a short z-range of its own; judged
+    against the MODEL range it is low, judged against itself it would be tall.
+    The caller passes the model range; this pins that a leg topping at 0.30 of a
+    0.75 model is a leg even though its own extent is 0-0.30."""
+    slots = {"leg_mesh": {"area": 0.2, "top_z": 0.30},
+             "body": {"area": 2.0, "top_z": 0.75}}
+    r = A.slot_roles(slots, 0.0, 0.75)
+    assert r["leg_mesh"] == "leg"
+
+
+def test_slot_roles_fails_toward_the_textile():
+    """Degenerate height or empty stats -> everything upholstery: the split may
+    only ever IMPROVE on the forced retint, never quietly un-tint a cushion."""
+    assert A.slot_roles({"a": {"area": 1.0, "top_z": 0.5}}, 0.5, 0.5) == {"a": "upholstery"}
+    assert A.slot_roles({}, 0.0, 1.0) == {}
