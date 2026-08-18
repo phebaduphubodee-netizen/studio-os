@@ -140,7 +140,8 @@ def test_scale_shrinks_oversize_uniformly():
 def base_row():
     return {"anchor_found": True, "orientation": "head at x-hi",
             "fill_len": 0.95, "fill_w": 0.93, "foot_over_plane_m": 0.05,
-            "headboard_fused": False}
+            "headboard_fused": False,
+            "field_fill_len": 0.95, "field_fill_w": 0.93}
 
 
 def test_verdict_passes_a_clean_row():
@@ -268,3 +269,98 @@ def test_frame_cluster_excludes_overhang_and_side_furniture():
     drape = part("drape", (0.1, -0.1, 0.3), (1.5, 2.30, 0.7))     # overhangs both flanks
     cl = R.frame_cluster([w["anchor"], w["mattress"], wing, drape], w["anchor"])
     assert sorted(p["name"] for p in cl) == ["frame", "mattress"]
+
+
+# ---- made_field / field_fill (P2r-53, ORD-2026-08-18-bed-too-small) -------------
+def f52472c1_staged_parts():
+    """The REAL p2r52 staging, metres, read off room_bedroom_suite_eye_p2r52
+    .scene.json — the frame the owner failed from the image. Platform (anchor,
+    with integral wings) 2149 wide; mattress 1243; cloth 1541; two sham pairs.
+    Axis 0 = head-foot (drawn 2.000), axis 1 = width (drawn 2.149)."""
+    return [
+        part("platform", (3.534, 0.051, 0.004), (5.126, 2.200, 0.203)),
+        part("mattress", (3.572, 0.510, 0.200), (5.141, 1.752, 0.347)),
+        part("cloth",    (3.368, 0.342, 0.000), (4.591, 1.883, 0.519)),
+        part("headset0", (4.787, 0.689, 0.334), (4.999, 1.176, 0.688)),
+        part("headset1", (4.787, 1.126, 0.334), (4.999, 1.614, 0.688)),
+    ]
+
+
+def test_made_field_regression_f52472c1_is_refused():
+    """The staged winner the owner failed: its made-bed field reaches 1541 mm of
+    the drawn 2149 (0.72). The rule that did not exist on 2026-08-17 refuses it."""
+    ps = f52472c1_staged_parts()
+    anchor = ps[0]
+    field = R.made_field(ps, anchor)
+    assert {p["name"] for p in field} == {"mattress", "cloth", "headset0", "headset1"}
+    fl, fw = R.field_fill(field)
+    assert fw < R.MIN_FIELD_FILL, f"width fill {fw:.2f} must refuse"
+    row = {"anchor_found": True, "orientation": "head at x-hi",
+           "fill_len": 0.90, "fill_w": 1.0, "foot_over_plane_m": 0.0,
+           "headboard_fused": False,
+           "field_fill_len": fl, "field_fill_w": fw}
+    ok, why = R.verdict(row)
+    assert not ok and any("ORD-2026-08-18" in w for w in why)
+
+
+def test_made_field_true_king_passes():
+    """A wingless king: mattress 1.80 wide, duvet draping to 2.05, pillows.
+    Its field reaches the drawn rectangle on both axes."""
+    ps = [
+        part("frame",    (0.05, 0.15, 0.0),  (2.00, 2.05, 0.30)),
+        part("mattress", (0.10, 0.20, 0.28), (2.00, 2.00, 0.55)),
+        part("duvet",    (0.02, 0.05, 0.40), (1.98, 2.10, 0.70)),
+        part("pillow",   (1.55, 0.40, 0.55), (2.00, 1.80, 0.80)),
+    ]
+    anchor = ps[0]
+    field = R.made_field(ps, anchor)
+    fl, fw = R.field_fill(field)
+    assert fl >= R.MIN_FIELD_FILL and fw >= R.MIN_FIELD_FILL
+
+
+def test_made_field_excludes_standing_panel_keeps_bedding():
+    """The burl head panel (24 mm thin, 677 tall) rises above the anchor but is
+    hard furniture; the duvet is never plate-thin while standing tall."""
+    ps = f52472c1_staged_parts()
+    ps.append(part("burl_panel", (5.10, 0.051, 0.20), (5.124, 2.200, 0.877)))
+    field = R.made_field(ps, ps[0])
+    names = {p["name"] for p in field}
+    assert "burl_panel" not in names and "cloth" in names
+
+
+def test_field_fill_empty_is_zero_never_clean():
+    assert R.field_fill([]) == (0.0, 0.0)
+
+
+def test_verdict_field_unmeasured_is_named_not_clean():
+    """A pre-rule bench row carries no field keys: UNMEASURED, never a pass."""
+    row = base_row()
+    del row["field_fill_len"], row["field_fill_w"]
+    ok, why = R.verdict(row)
+    assert not ok and any("UNMEASURED" in w for w in why)
+
+
+def test_field_fill_axis_len_maps_room_axes():
+    """The integration hook runs after rotation: length may sit on either room
+    axis. axis_len=1 measures length on y."""
+    f = [part("duvet", (0.0, 0.0, 0.4), (2.10, 1.95, 0.7))]
+    fl_a, fw_a = R.field_fill(f, fit_len=2.0, fit_w=2.149, axis_len=1)
+    assert abs(fl_a - 1.95 / 2.0) < 1e-9 and abs(fw_a - 2.10 / 2.149) < 1e-9
+
+
+# ---- field_verdict (the R13 third state) ---------------------------------------
+def test_field_verdict_pass_needs_no_signature():
+    assert R.field_verdict(0.95, 0.99) == "pass"
+
+
+def test_field_verdict_deficit_unsigned_is_a_hard_stop():
+    assert R.field_verdict(0.90, 0.72) == "fail"
+    assert R.field_verdict(0.90, 0.72, signed={}) == "fail"
+    assert R.field_verdict(0.90, 0.72, signed={"decision": "D-108"}) == "fail"
+
+
+def test_field_verdict_signed_deficit_is_interim_never_pass():
+    s = {"decision": "D-108", "ask": "ASK-028"}
+    assert R.field_verdict(0.90, 0.72, signed=s) == "interim"
+    # a signature cannot upgrade a passing field to anything else
+    assert R.field_verdict(0.95, 0.99, signed=s) == "pass"

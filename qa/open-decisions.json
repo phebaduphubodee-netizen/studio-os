@@ -1701,6 +1701,22 @@
    "owner_override": null,
    "override_date": null,
    "obeys": "ORD-2026-08-14-bed-cloth-is-acquired"
+  },
+  {
+   "id": "D-108",
+   "unit": "DELIV-001",
+   "subject": "bed-size-vs-sheet",
+   "decided_round": 53,
+   "decided_date": "2026-08-18",
+   "decided_by": "builder",
+   "obeys": "ORD-2026-08-18-bed-too-small",
+   "question": "คำตัดสินของพี่ 'ผมว่าเตียงมันเล็กเกินไป' แปลงเป็นกลไกยังไง และเฟรมอยู่สถานะไหนระหว่างที่ยังไม่มีเตียงที่ถูกขนาด",
+   "in_effect": "(1) กฎใหม่ MADE-BED FIELD (wholebed_rules.made_field/field_fill/field_verdict + MIN_FIELD_FILL 0.88): มวลนุ่มที่ตาอ่านว่าเป็นเตียง (ที่นอน+ผ้า+หมอน) ต้องถึงสี่เหลี่ยม 2000x2149 ของแบบ >= 0.88 ทั้งสองแกน — วัดใน bench ทุก audition และใน _place_bed_frame ทุก build; แถว bench เก่าที่ไม่มี field keys = UNMEASURED ไม่ใช่ผ่าน (2) การวัด: f52472c1 field 1803x1541 = 0.90x0.72 REFUSED — ปีกในเนื้อ platform (native 3159 รอบที่นอน king 1827) cap scale ที่ 0.68 ที่นอนเหลือ 1243/2149 = 0.58 และไม่มี scale ถูกกฎหมายแก้ได้ (ขยาย = ปีกทะลุโซน nightstand 505 มม./ข้าง) — ตายเชิงเรขาคณิต แบบเดียวกับเพดาน 73% ของ D-101 (3) ชั้นฟรีวัดหมด: re-bench 11 ตัวเดิม + sweep size-first 10 query (ภาษา/ขนาดที่ไม่เคยถาม — ประวัติ query เป็นผ้าล้วน) ได้ 8 ตัวใหม่ (1 ซ้ำ: 605409a3=149e40a4; 17151c7e per-primitive 56,721 prims flatten แล้ว) + probe showroom 2 ไฟล์ด้วย GLB reader ล้วน — ไม่มีตัวไหน ใหญ่พอ+จัดเต็ม+ตรง ink พร้อมกัน: 0f56d8b6 ขนาดผ่าน (0.94x1.00, plane 561) แต่ panel p2r51 อ่าน most/partial/most (sheet+throw ไม่มี duvet) · e6bf4690 ผ่านกว้างแต่ plane 277 ขัด h600 ที่พี่ sign · 603cf98e field 0.94x0.97 แต่ footboard 379 มม. ขัด ink + ทิศหัวเตียงแก้ไม่ได้ · 17151c7e ยาว 2465 cap กว้างที่ 1763 (4) INTERIM: f52472c1 คงใน spec พร้อม bed_models.field_deficit_signed={decision:D-108, ask:ASK-028} — build พิมพ์ deficit ดัง ๆ ทุกรอบ (field_verdict สามสถานะ: fail ที่ไม่มีลายเซ็น = หยุดแข็ง) เหตุที่ไม่สลับ: 0f56d8b6 จะถอยแผล bare-reading ที่เพิ่งปิด (ratchet เรือธง) และการย้าย duvet ข้ามตัว = shell แข็ง conform เตียงอื่นไม่ได้ (soft-goods-rigid class; cloth-stack-contact law) ส่วนการผ่า mesh ปีก = รอบ shape ที่สามบน candidate เดิม ต้องห้ามตาม D-107",
+   "where": "pipeline/scripts/wholebed_rules.py, pipeline/scripts/wholebed_bench.py, pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/owner-asks.json",
+   "because": "ตาพี่หา WHAT (เตียงเล็ก) — การวัดหา HOW MUCH (0.58 ของแบบ) และ WHICH KNOB (fit denominator กับปีกในเนื้อ mesh) ตาม R7b · ทุก rung เขียวเพราะไม่มีตัวไหนถามเรื่องขนาด: MIN_FILL วัดทั้งก้อนรวมปีกแข็ง, ratchet วัด flank ซึ่งเตียงเล็กยิ่งได้เปรียบ, panel ถาม made-ness — instrument ตอบคำถามที่มันถูกสร้างมาถาม (ครั้งที่สี่ของ class นี้)",
+   "reverse_by": "ตัวซื้อใหม่ผ่าน bench (field >= 0.88 ทั้งสองแกน + filter เดิม + panel) -> เปลี่ยน bed_models.frame, ลบ field_deficit_signed, ratchet re-baseline ด้วย row ใหม่ · หรือพี่ตัดสินจากภาพว่า interim ตัวไหนดีกว่า — เป็นคำพูดพี่ ลง owner_override",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

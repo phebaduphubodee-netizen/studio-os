@@ -330,6 +330,85 @@ def frame_cluster(parts, anchor, pad_m=0.02):
     return cluster
 
 
+# ------------------------------------------------- the made-bed field (P2r-53) --
+# ORD-2026-08-18-bed-too-small: the owner failed p2r52's bed from the image
+# ("ผมว่าเตียงมันเล็กเกินไป") and the measurement agreed. The drawn 7'x6.5'
+# rectangle IS the made bed — duvet to the edges, the same ink read this audition
+# archived — but MIN_FILL judged the WHOLE kept bed, so f52472c1's integral hard
+# wings (platform 3159 native around a true-king 1827 mattress) carried a narrow
+# bed through the width test: at the wing-capped scale 0.68 the mattress lands at
+# 1243 mm of the drawn 2149 (0.58) and the bedding field at 1541 (0.72). What was
+# missing is one sentence: THE SOFT MASS THAT VISUALLY IS THE BED — mattress,
+# bedding, pillow bank — MUST REACH THE DRAWN RECTANGLE. Hard parts keep the
+# inside-the-rect duty they already had (the cluster fit); this rule adds the
+# soft half. Same constant as MIN_FILL: one ink, one premise.
+SOFT_ABOVE_ANCHOR_M = 0.01
+# A thin STANDING panel rising above the anchor is hard furniture (the burl head
+# panel survives to integration exactly this way); bedding is never plate-thin
+# in one plan axis while standing several times its own thickness tall.
+SOFT_PANEL_THIN_M = 0.06
+MIN_FIELD_FILL = MIN_FILL
+
+
+def made_field(parts, anchor):
+    """The parts forming the MADE-BED FIELD: everything rising above the
+    anchor's top face except thin standing panels. Selection heuristic for the
+    bench, where no roles exist yet; the integration hook passes its own
+    role-resolved parts straight to field_fill instead."""
+    top = anchor["hi"][2]
+    out = []
+    for p in parts:
+        if p is anchor:
+            continue
+        if p["hi"][2] <= top + SOFT_ABOVE_ANCHOR_M:
+            continue
+        s = size(p)
+        thin = min(s[0], s[1])
+        if thin <= SOFT_PANEL_THIN_M and s[2] > 3 * thin:
+            continue
+        out.append(p)
+    return out
+
+
+def field_fill(field_parts, fit_len=2.000, fit_w=2.149, axis_len=0):
+    """Fill of the field's plan union against the drawn rectangle, at the
+    CURRENT scale of the parts (call after fitting). Returns (fill_len,
+    fill_w); (0.0, 0.0) when no field exists — could-not-measure must never
+    read as clean (the exit-2 law)."""
+    if not field_parts or fit_len <= 0 or fit_w <= 0:
+        return 0.0, 0.0
+    al, aw = axis_len, 1 - axis_len
+    lo_l = min(p["lo"][al] for p in field_parts)
+    hi_l = max(p["hi"][al] for p in field_parts)
+    lo_w = min(p["lo"][aw] for p in field_parts)
+    hi_w = max(p["hi"][aw] for p in field_parts)
+    return min(1.0, (hi_l - lo_l) / fit_len), min(1.0, (hi_w - lo_w) / fit_w)
+
+
+def field_verdict(ffl, ffw, signed=None):
+    """Three-state outcome for the staged made-bed field (the integration
+    hook's side of ORD-2026-08-18-bed-too-small):
+
+      "pass"    — the field reaches the drawn rectangle; nothing to say.
+      "interim" — the field falls short AND a SIGNED deficit rides in the spec
+                  (a dict naming decision + ask). The build proceeds LOUDLY:
+                  the deficit prints at every gate, ages with its ask, and the
+                  frame is not shippable as the drawn bed. This is the R13
+                  third state — the free shelf was measured to exhaustion
+                  (18 in-room stagings + 2 showroom probes, widest field
+                  1,910 mm of a drawn 2,149) and what clears it is a purchase
+                  only the owner can make. NOT an opt-out: the signature is a
+                  register row, printed, never a flag someone forgets to type.
+      "fail"    — the field falls short and nothing signed says so. Hard stop.
+
+    `signed` must carry non-empty 'decision' and 'ask' keys to count."""
+    if ffl >= MIN_FIELD_FILL and ffw >= MIN_FIELD_FILL:
+        return "pass"
+    if isinstance(signed, dict) and signed.get("decision") and signed.get("ask"):
+        return "interim"
+    return "fail"
+
+
 def verdict(row):
     """The audition's hard filters, applied to a measured row (mm/px-free: all
     booleans derived upstream). Returns (ok, [reasons])."""
@@ -349,4 +428,12 @@ def verdict(row):
         why.append(f"footboard {foot*1000:.0f} mm over the plane — the ink draws none")
     if row.get("headboard_fused"):
         why.append("own headboard fused with the bed — collides with the sheet-drawn band (SR-18)")
+    ffl, ffw = row.get("field_fill_len"), row.get("field_fill_w")
+    if ffl is None or ffw is None:
+        why.append("made-bed field UNMEASURED — a row from before the size rule "
+                   "existed; re-bench it (ORD-2026-08-18-bed-too-small)")
+    elif ffl < MIN_FIELD_FILL or ffw < MIN_FIELD_FILL:
+        why.append(f"made-bed field fills {ffl:.2f}x{ffw:.2f} of the drawn "
+                   f"rectangle (< {MIN_FIELD_FILL}) — the bed reads smaller than "
+                   f"the ink draws it (ORD-2026-08-18-bed-too-small)")
     return (not why), why

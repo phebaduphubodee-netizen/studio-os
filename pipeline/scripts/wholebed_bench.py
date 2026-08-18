@@ -306,6 +306,25 @@ def stage_one(slug):
                      for d in (0.05, 0.15, 0.25)} if plane else None
     row["foot_over_plane_m"] = round(R.foot_over_plane(keep, plane, foot_x=FX0, head="hi"), 3) if plane else None
 
+    # the made-bed field vs the ink (P2r-53, ORD-2026-08-18-bed-too-small): the
+    # soft mass that visually IS the bed must reach the drawn rectangle. The
+    # owner failed a staged winner whose mattress measured 0.58 of the drawn
+    # width while every green rung measured something else; verdict() now
+    # refuses a row without these keys, so an old ledger can never pass again.
+    anchor_staged = next((p for p in keep
+                          if p["name"] == row["anchor"]["name"]), None)
+    if anchor_staged is not None:
+        fparts = R.made_field(keep, anchor_staged)
+        ffl, ffw = R.field_fill(fparts, fit_len=FW, fit_w=FD, axis_len=0)
+        row["field_fill_len"], row["field_fill_w"] = round(ffl, 3), round(ffw, 3)
+        row["field_parts"] = [p["name"] for p in fparts]
+        if fparts:
+            row["field_mm"] = [
+                round((max(p["hi"][0] for p in fparts)
+                       - min(p["lo"][0] for p in fparts)) * 1000),
+                round((max(p["hi"][1] for p in fparts)
+                       - min(p["lo"][1] for p in fparts)) * 1000)]
+
     # fineness: the part owning the most top samples is the visible bedding
     if plane and samples:
         # per-part: bbox containment of top samples as the cheap owner test

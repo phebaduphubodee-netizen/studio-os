@@ -5921,7 +5921,8 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head,
     return True
 
 
-def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m):
+def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
+                     field_deficit_signed=None):
     """R8 ONE LEVEL UP — THE WHOLE BED IS ACQUIRED (P2r-21, D-106 -> D-107).
 
     p2r49 measured that no free CLOTH SET makes our bed (best duvet share 43.2%
@@ -6271,6 +6272,37 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m):
     else:
         shams, pillows = [], []
 
+    # ---- the made-bed field must reach the drawn rectangle (P2r-53) ---------
+    # ORD-2026-08-18-bed-too-small: he failed p2r52 from the image and the
+    # measurement agreed — mattress 1243 mm of a drawn 2149 (0.58), bedding
+    # 1541 (0.72), because the wing-capped scale shrank the soft mass while
+    # every rung measured something else. The field is the ROLE-RESOLVED soft
+    # mass this hook just named — mattress + bedding + the whole pillow bank —
+    # judged by the same pure rule the audition verdict now carries.
+    _field = [matt] + bedding + shams + pillows
+    _ffl, _ffw = _wbr.field_fill(_field, fit_len=along, fit_w=across, axis_len=a)
+    print(f"  whole bed: made-bed field fills {_ffl:.2f} x {_ffw:.2f} of the "
+          f"drawn {along * 1000:.0f} x {across * 1000:.0f} mm rectangle "
+          f"(min {_wbr.MIN_FIELD_FILL})")
+    _fv = _wbr.field_verdict(_ffl, _ffw, signed=field_deficit_signed)
+    if _fv == "fail":
+        return _bail(f"made-bed field fills {_ffl:.2f}x{_ffw:.2f} of the drawn "
+                     f"rectangle (< {_wbr.MIN_FIELD_FILL}) and NOTHING SIGNED "
+                     f"says so — the bed reads smaller than the ink draws it "
+                     f"(ORD-2026-08-18-bed-too-small). Sign the deficit in "
+                     f"the item's bed_field_deficit_signed (decision + ask) "
+                     f"or stage a bed whose field reaches the drawing.")
+    if _fv == "interim":
+        _s = field_deficit_signed or {}
+        print(f"  whole bed: FIELD DEFICIT SIGNED ({_s.get('decision')}, "
+              f"blocked by {_s.get('ask')}) — the staged bed's made field is "
+              f"{_ffl:.2f}x{_ffw:.2f} of the drawn rectangle; the drawn "
+              f"7'x6.5' bed is a PROCUREMENT GAP (free shelf measured to "
+              f"exhaustion 2026-08-18: 18 in-room stagings + 2 showroom "
+              f"probes, widest field 1,910 mm of 2,149). This frame does not "
+              f"ship as the drawn bed. ORD-2026-08-18-bed-too-small ages "
+              f"until the ask clears.")
+
     def _dress(p, name, mat):
         o = p["_ob"]
         o.name = name
@@ -6364,6 +6396,7 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m):
 
 
 def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
+               bed_field_deficit=None,
                bed_cloth_gap=None):
     """A real platform bed massed from beveled primitives, ROT-AWARE — base + inset mattress +
     draped duvet + two pillows at the HEAD.
@@ -6616,7 +6649,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
               f"({len(_ours)} parts); the sheet-drawn headboard band stays "
               f"built (R12/SR-18)")
         if not _place_bed_frame(str(_frame_slug), x0, y0, W, D, rot,
-                                base_m, matt_m, duvt_m, pill_m):
+                                base_m, matt_m, duvt_m, pill_m,
+                                field_deficit_signed=bed_field_deficit):
             raise RuntimeError(
                 "whole bed: the acquired frame %r did not place, and falling "
                 "back to the hand-built bed is REFUSED (his class order, "
@@ -8856,6 +8890,8 @@ def build_suite(spec, label="suite"):
                                       else it.get("pillow_models")),
                        bed_models=(None if spec.get("_no_acquire")
                                    else it.get("bed_models")),
+                       bed_field_deficit=(None if spec.get("_no_acquire")
+                                          else it.get("bed_field_deficit_signed")),
                        bed_cloth_gap=(None if spec.get("_no_acquire")
                                       else it.get("bed_cloth_gap")))
             continue

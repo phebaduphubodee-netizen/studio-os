@@ -455,6 +455,21 @@
           "why": "An orders ledger with no consumer would be the fifth instance of the defect it was built to end."
         }
       ]
+    },
+    {
+      "id": "ORD-2026-08-18-bed-too-small",
+      "date": "2026-08-18",
+      "verbatim": "ผมว่าเตียงมันเล็กเกินไป",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r53-2026-08-18.md",
+      "commands": "The staged bed reads too small against the drawn 7'x6.5' bed. The made-bed field (mattress + bedding + pillows) must be judged against the sheet's rectangle before any whole-bed staging passes; a candidate whose soft field cannot reach the drawn footprint at a legal scale is refused, and the currently staged f52472c1 (mattress 1243 mm of a drawn 2149) may not ship un-remeasured.",
+      "subject": "bed-size-vs-sheet",
+      "scope": "instance",
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-18",
+      "not_obeyed_because": "The mechanism his order demanded EXISTS and refuses the staged bed (wholebed_rules.made_field/field_verdict, wired into the bench and the build), but no obtainable bed passes it: the free shelf was measured to exhaustion on 2026-08-18 — 18 in-room stagings + 2 showroom probes, widest made-bed field 1,910 mm of the drawn 2,149, and every size-passer reads bare to the blind panel or contradicts the ink (footboard / plane 277 vs his signed h600). What clears the order is a purchase or an account only he can open (ASK-028). The interim frame keeps f52472c1 with the deficit SIGNED (D-108) and printed at every build.",
+      "blocked_by": "ASK-028"
     }
   ]
 }

@@ -901,7 +901,12 @@
     "closed_by": "d4698c95_flat — the 360 MB 'BED SETS' entity the p2r46 sweep DEFERRED under its 140 MB fetch ceiling, fetched and made benchable this round. It measures, on the staged mesh: 94.0% coverage by ray, falls past 4 of 4 flanks, relief 121.6 mm, median world edge 10.69 mm against a 10.27 mm control. Three of the four cuts clear; the fineness cut misses by 4.1% and is covered by a SIGNED, BOUNDED exception recorded in `bed_models.cloth_fineness_exception` and printed on every build.",
     "what_the_gap_was_actually_hiding": "Not an empty shelf — three of our own instruments answering the wrong question. (1) `mesh_density` read the densest PRIMITIVE and the SketchUp GLTF Exporter writes ONE PRIMITIVE PER TRIANGLE, so this file's 133,108-triangle duvet screened as a 1-triangle sheet at 2785 mm — the coarsest possible reading of the finest cloth on the shelf. (2) Nothing could IMPORT it: 297,640 primitives and 297,632 material entries (27 distinct by value) cost hours in Blender, which is why p2r46 deferred it by byte ceiling and called that 'not judged'. (3) The staging fit was solved on the FILE's bounding box, so every bedding set that ships with the bed it dresses was refused for the BED's height — six of the nine size-refusals on this shelf. None of these is a fact about the free tier.",
     "kept_because": "the gap's own `not_a_claim_about_the_world` clause is the sentence this round proved: 'a gap is a claim about the WORLD; not-attempted is a claim about US'. It was a claim about us. The row stays so the next declared gap is read that way."
-   }
+   },
+   "bed_field_deficit_signed": {
+    "decision": "D-108",
+    "ask": "ASK-028"
+   },
+   "bed_field_deficit_signed_note": "ORD-2026-08-18-bed-too-small: he failed the staged bed's size from the image and the measurement agreed — f52472c1's made-bed field is 0.90x0.72 of the drawn 2000x2149 (mattress 1243 of 2149; integral platform wings cap the scale). The free shelf is measured to exhaustion (18 in-room stagings + 2 showroom probes, widest field 1,910 mm) so the drawn 7'x6.5' bed is a PROCUREMENT GAP: ASK-028 (money/identity, his). This signature keeps the lane rendering the interim frame LOUDLY — build prints the deficit every round; delete this key the moment a bench-passing bed lands in bed_models.frame."
   },
   {
    "name": "ม้านั่งปลายเตียง (bench)",

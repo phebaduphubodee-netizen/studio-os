@@ -262,6 +262,25 @@
       "status": "open",
       "money": "no — แต่เป็นความเสี่ยงทางธุรกิจ",
       "note": "**กฎในไฟล์ของเราเองตอบไว้แล้ว** (`docs/LICENSING.md`): \"the personal-use restriction **travels with the file** — her sharing it does not launder the license\" · ผมจึง **ไม่เอามาใช้เป็นแหล่ง** และแจ้งไว้เป็นแถวแทนที่จะเก็บเงียบ · สิ่งที่จะเปลี่ยนคำตอบนี้ได้มีอย่างเดียว: พี่ถือ license 3dsky ของตัวเอง — และถ้าถืออยู่แล้ว ASK-001/ASK-002 ต้องแก้ เพราะมันตั้งราคาไว้เหมือนเรายังไม่มี · หมายเหตุ: DR บอกว่า 3dsky มี **free tier 3 โหลด/24 ชม.** และหมวด Bed มี 15,167 ตัว (ยังไม่ verify) ถ้าจริง เราเข้าถึงคลังเดียวกันได้ที่ ฿0 วันละ 3 ตัว โดยไม่ต้องแตะลิงก์พวกนี้เลย"
+    },
+    {
+      "id": "ASK-028",
+      "ask": "**ซื้อโมเดลเตียง 7'x6.5' ตามแบบ — ชั้นฟรีวัดจนหมดแล้ว ไม่มีของ** แบบวาดเตียง near-square 2149 กว้าง x 2000 ยาว (7'x6.5') h600 duvet ถึงขอบ ไม่มี footboard · วัด 2026-08-18: 18 stagings ในห้องจริง + probe showroom 2 ไฟล์ — field กว้างสุดที่ทำได้ 1,910 มม. (0.89) และตัวที่ผ่านขนาดล้วน bare-อ่าน 'most' จาก panel ตาบอด · สเปกที่ตัวซื้อต้องผ่าน (เข้า bench อัตโนมัติ): made-bed field >= 1,891 มม. กว้าง ที่ยาว <= 2,000 (field_fill >= 0.88 ทั้งสองแกน) + duvet เต็มผืน + ไม่มี footboard + headboard แยกชิ้นได้ · เส้นทาง: (1) 3dsky free tier 3 โหลด/วัน (DR อ้าง หมวด Bed 15,167 ตัว — ยังไม่ verify, ต้องสมัคร account ซึ่งเป็นตัวตนของพี่) (2) 3dsky ต่อใบ ~$5-18 (3) BlenderKit Full $118.80/ปี (ASK-002 เดิม) (4) Chocofur/Dimensiva ตาม ASK-002 · ระหว่างรอ เฟรมคง f52472c1 (จัดเต็มแต่เล็ก 0.72 ของแบบ) พร้อม deficit พิมพ์ทุก render (D-108)",
+      "first_routed": "2026-08-18",
+      "where": "qa/owner-orders.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r53-2026-08-18.md, _private/deliv-001/bed-size-2026-08-18",
+      "status": "open",
+      "money": "yes — ตั้งแต่ ฿0 (free tier ที่ต้อง account พี่) ถึง $118.80/ปี",
+      "note": "R13: 'ยังไม่ได้ซื้อ' ไม่ใช่ 'ไม่มีของ' — แต่รอบนี้วัดฝั่งโลกครบแล้ว: ของฟรีไม่มีจริง แถวนี้จึงเป็น ask เรื่องเงิน/ตัวตนล้วน ๆ ไม่มี builder action ค้าง",
+      "read_first": [
+        "docs/DECISIONS-render-assets.md",
+        "docs/LICENSING.md",
+        "qa/warehouse-search-log.json",
+        "qa/blenderkit-search-log.json",
+        "knowledge/_inbox/dr-whole-bed-swap-2026-08-17.md",
+        "_private/deliv-001/whole-bed-audition-2026-08-17/README.md",
+        "_private/deliv-001/bed-size-2026-08-18/rebench/wholebed_bench.json",
+        "_private/deliv-001/bed-size-2026-08-18/rebench-new/wholebed_bench.json"
+      ]
     }
   ]
 }

@@ -7725,6 +7725,149 @@
      "why": "past --limit 6 in the size rank"
     }
    ]
+  },
+  {
+   "at": "2026-08-18T06:40:53+00:00",
+   "queries": [
+    "emperor bed",
+    "family bed extra wide",
+    "super king bed 200",
+    "bed 220x200",
+    "cama familiar king",
+    "letto matrimoniale maxi",
+    "familienbett 220",
+    "grand lit 200x200",
+    "เตียง 7 ฟุต",
+    "wide platform bed low"
+   ],
+   "count": 12,
+   "limit": 8,
+   "min_bytes": 0,
+   "max_bytes": 0,
+   "dry_run": false,
+   "n_hits": 9,
+   "fetched": [
+    "605409a3-3567-4b2b-addd-3b75984fbebc",
+    "u322f0245-54e7-4c38-8250-281fa12bb9b8",
+    "u70d54604-20f4-4bad-a507-7fedd9a1ca99",
+    "d61b64f0c69b8aa0c69075054a3ac538",
+    "b9f1214d-840f-45aa-9e61-bd1ec6b698e2"
+   ],
+   "hits": [
+    {
+     "id": "603cf98e-7e2c-41d9-8807-908f8f502021",
+     "title": "Double bed",
+     "downloads": 1082,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 16971136,
+     "query": "emperor bed"
+    },
+    {
+     "id": "17151c7e-35dc-4c04-b73a-1b3c679dac78",
+     "title": "Super King Size Bed 200 cm x 200 cm",
+     "downloads": 2061,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 62682332,
+     "query": "super king bed 200"
+    },
+    {
+     "id": "149e40a4-709d-4f81-98ae-8f2542130e60",
+     "title": "king bed",
+     "downloads": 12239,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 4290388,
+     "query": "super king bed 200"
+    },
+    {
+     "id": "605409a3-3567-4b2b-addd-3b75984fbebc",
+     "title": "king bed",
+     "downloads": 28405,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 4290344,
+     "query": "super king bed 200"
+    },
+    {
+     "id": "b9f1214d-840f-45aa-9e61-bd1ec6b698e2",
+     "title": "2D BEDROOM",
+     "downloads": 4179,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 205876,
+     "query": "super king bed 200"
+    },
+    {
+     "id": "u322f0245-54e7-4c38-8250-281fa12bb9b8",
+     "title": "bedroom",
+     "downloads": 599,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 1547448,
+     "query": "bed 220x200"
+    },
+    {
+     "id": "u70d54604-20f4-4bad-a507-7fedd9a1ca99",
+     "title": "xTRMExPORT.com - Le lit... ",
+     "downloads": 1577,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 934364,
+     "query": "grand lit 200x200"
+    },
+    {
+     "id": "d61b64f0c69b8aa0c69075054a3ac538",
+     "title": "Alpine Bed by CB2, Queen",
+     "downloads": 44594,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 256896,
+     "query": "wide platform bed low"
+    },
+    {
+     "id": "22abe461-dba1-4e1a-923f-aabbccb916d0",
+     "title": "Goat house",
+     "downloads": 204,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 126724,
+     "query": "wide platform bed low"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "22abe461-dba1-4e1a-923f-aabbccb916d0",
+     "title": "Goat house",
+     "downloads": 204,
+     "fmts": [
+      "glb",
+      "usdz"
+     ],
+     "bytes": 126724,
+     "query": "wide platform bed low",
+     "why": "past --limit 8 in the size rank"
+    }
+   ]
   }
  ]
 }
