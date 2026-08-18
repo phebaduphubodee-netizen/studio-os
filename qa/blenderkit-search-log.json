@@ -98,6 +98,13 @@
    "runner_up": "f0938871 field 1781x1980 (0.891x0.921) PASSES the field law but fails head-end resolution (one-mesh bed, orientation would be a coin flip — R9 refuses). If ever needed, orientation could be human-signed the way identity is (D-037's ladder), but with a clean passer there is no reason.",
    "fails": "9 others: 7 read smaller than the ink (field_fill 0.27-0.94 on an axis), 3 unresolvable head end, 2 fused headboards colliding with the sheet-drawn band (SR-18). Full rows: _private/deliv-001/bed-size-2026-08-18/bench-free-blenderkit/wholebed_bench.json"
   },
-  "what_the_full_plan_still_holds": "118 panel-passed full-plan candidates, untouched — the ASK-029 key unlocks them. The free tier delivering a passer removes the bed from that ask's critical path; the subscription decision is now about the library (bench seats, alternates, other classes), not about this order."
+  "what_the_full_plan_still_holds": "118 panel-passed full-plan candidates, untouched — the ASK-029 key unlocks them. The free tier delivering a passer removes the bed from that ask's critical path; the subscription decision is now about the library (bench seats, alternates, other classes), not about this order.",
+  "exhaustive_recheck": {
+   "_trigger": "The owner asked, the same evening: 'มั่นใจแล้วใช่มั้ยว่าหาดี (หาแบบตรง keyword, หาครบทุกหน้าที่มี) แล้วในชั้นฟรี' — and the honest answer was NO: the first sweep capped every query at 3 pages and never walked the platform's own category tree. The very defect this file's opening sentence exists to prevent, caught by him within hours.",
+   "_route": "Every page of every channel, no caps: category_subtree:bed (611) and :bedroom (232) — the canonical 'every page there is' — full-text 'bed' (1242), the original 12 queries uncapped ('double bed' alone holds 835; the capped sweep had read 300), and 9 non-English terms. Non-English yield ~0 (postel 1, cama 1, кровать/yatak/letto 0; 'lit' 96 = English lighting noise): this platform's tags are English, so the p2r46 Portuguese lesson does NOT transfer.",
+   "totals": "2,147 distinct assets (first sweep saw 991), 210 in the drawn-bed size window (was 174) — 36 NEW, judged by a fresh 3-agent panel: 18 bench_worthy = 17 full_plan + 1 free.",
+   "free_delta": "The one new free candidate (7bd2641a, tufted-headboard double) benched in the real room: field 1945x1867 = fill 0.973x0.869 — fails the width axis by 0.011. FINAL free-tier sentence, now catalogue-true: 12 panel-passed free beds exist across all channels, all 12 staged and measured, exactly ONE passes every hard filter — 81d895fd. The full-plan shortlist grows to 135.",
+   "process_notes": "Two mechanical traps recorded: cp1252 stdout kills a sweep that prints non-Latin queries (set PYTHONIOENCODING=utf-8); and a bench slug must be READ from the download manifest, never retyped — one retyped uuid tail cost a wasted bench run."
+  }
  }
 }
