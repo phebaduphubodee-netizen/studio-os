@@ -486,6 +486,15 @@
           "closed": "2026-08-18",
           "closed_round": "p2r53",
           "outcome": "DECLARED MEANING: item h stays the ink's made-bed massing envelope (600). The PLANE is a measured declaration with provenance — items[1].bed_plane_measured_mm {value: 428, from: staging ray median} — which _place_bed_frame VERIFIES against the staged scene every build (drift >15 mm = hard stop, so the number can never silently go stale; verified live: 424.7 quick / 427.6 full vs 428). _rule_nightstand_vs_mattress reads the declared plane when bed_models.frame is present (undeclared = WARN UNMEASURABLE, never silent), h otherwise. The seam is now visible at spec level: decks 580 sit +152 vs plane 428, band -50..+150 — the +18-looking PASS that hid C2#3's +193 built seam is gone. The deck-height fix itself rides with the bed procurement (ASK-028: a right-size bed restores plane ~550-600) — not chased here, the WARN holds it visible. Tests: 4 new in test_placement_logic (103 green)."
+        },
+        {
+          "id": "P2r-25",
+          "status": "todo",
+          "added": "2026-08-18",
+          "added_round": "p2r54",
+          "where": "pipeline/scripts/build_room.py (wardrobe drawer stack material), pipeline/scripts/material_presets.py",
+          "what": "WARDROBE DRAWER STACK READS AS RAW CONCRETE INSIDE AN OAK CARCASS (C2 p2r54 #6, accepted at triage): the three drawer faces and the bay's back panel render as mottled stone/plaster while every neighbouring bay is light oak with an oak back — no joinery logic swaps a single bay's back material, so it reads as a material assignment slip, not design. DO: trace which material_story / preset row dresses that bay, decide the intended finish from the sheet + D1 material ladder, and fix the mapping. INSTRUMENT: matmask over the drawer-stack region names the material actually worn; CLOSE: the bay reads as one joinery family + no critic files it again.",
+          "why_now": "filed the round a blind critic caught it; cheap to trace with the matmask that already exists."
         }
       ],
       "exit_test": "REOPENED BAR (owner overrule 2026-08-11; ratified 'ok' after the builder argued against a raw C3-item-count cut — the argument and counter-proposal are in gate-DELIV001-P3r2's addendum thread). To close P2: (1) the r7 rows all still hold — D5/D8/D9 PASS, MODEL-FIT REJECT 0, imported >=8, QUALIFIES; (2) FOUR 100% crops judged beside anchors, one per judged defect class, run by the P2r-7 harness: DUVET fold-structure energy (the r7 throw-crop method), TWO ADJACENT WOOD BOARDS (autocorrelation: no periodic peak), RUG EDGE (rollover, not a 90-degree step), GARMENT SHELLS (coincident duplicate pairs = 0 from the built scene); (3) OWNER-RATIFIED JUDGE CLAUSE, outside the builder's hands: BOTH independent critics (C2 blind-local + C3 cross-vendor) file no surface-realism item in their top 3, AND the ACCEPTED-after-triage surface-realism items across both critics total <= 2 — every refutation must carry a measurement the owner can audit and overrule from the image; (4) REPORTING LINE, not a cut: C3's raw item count prints at every gate so the trend stays visible (7 at p3r1, 5 at p3r2). The owner overrules any of this from the image at any time. (5) SECOND REPORTING LINE, added 2026-08-16 after review: the DELIVERED-WORK VALUE BAND. The friend's duvet planes measure 0.505-0.674 of their own frame's 99th-percentile luma; ours are printed the same way at every gate. It is a line and not a cut because the ladder's own signed targets are the authority on value and one of them (duvet 181 = 0.80 of p99) sits above this band - which is a question to settle against the ANCHOR POOL (R4), not a rung to fail a frame on today.",
@@ -2978,8 +2987,62 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "62f3fd6d888fd25872fae82af31a97c3c3dc488d",
+      "verdicts": {
+        "P2": "change: the bed exits P2 as a SIGNED INTERIM under the owner mid-round calibration D-110 (drawn size = target with HIS tolerance; his eye on the p2r54 frame decides 0.835, and both possible answers have named routes — accept closes the deficit, reject makes ASK-029 the funded route). The instrument that declared last night free-tier pass was corrected at the rules (D-109: field overlap 0.5, carry_ons, containment fit, fused-core dress in the signed D3-1 base linen) and the free tier is now honestly exhausted 12/12. P2 continues on the levers both critics rank first and the plan already names, in this order: P2r-2 wood figure (its cut broke again on this frame, 0.585 vs floor 0.573), P2r-5 material response + value hierarchy (both critics #1 = duvet surface; ladder confirms duvet 140 vs 181, bench 90.9 vs 131), P2r-20 garment hang (new mechanism, own gate), plus small new P2r-25 (wardrobe drawer bay reads concrete — C2#6) and the measured seam number into P2r-22 (3 m band, one seam, 1.4 m roll). WHAT THE PHASE STILL MUST NOT DO: no more bed-size rounds — that question is now his eye vs D-110, not a build queue.",
+        "P4": "keep: evidence keeps arriving on schedule — C2 p2r54 #7 filed the slat-wall wash with no source and the weak contact shadows under the duvet fall, exactly the light-story class P4 owns; the build-order law (objects before light) still holds, so P4 stays after P2 and its queue grows richer without being touched.",
+        "P3": "keep: unchanged — the 08-16 re-order (P2 objects -> P4 light -> P3) still matches how the evidence is arriving; nothing this round touches P3 scope.",
+        "P5": "keep: still blocked on upstream phases by design; nothing new belongs to it and nothing in it went stale this round."
+      },
+      "changed": [
+        "P2"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "6b976c606b92394908ef31e533de44c0e8ac584c",
+  "last_review_commit": "62f3fd6d888fd25872fae82af31a97c3c3dc488d",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
