@@ -1510,12 +1510,55 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
         sxyz = nt.nodes.new("ShaderNodeSeparateXYZ")
         nt.links.new(va.outputs["Vector"], sxyz.inputs["Vector"])
         cpp = nt.nodes.new("ShaderNodeCombineXYZ")
-        for _ax in ("X", "Y", "Z"):
-            pp = nt.nodes.new("ShaderNodeMath")
-            pp.operation = 'PINGPONG'
-            pp.inputs[1].default_value = 1.0
-            nt.links.new(sxyz.outputs[_ax], pp.inputs[0])
-            nt.links.new(pp.outputs["Value"], cpp.inputs[_ax])
+        # P2r-2 (p2r55) — THE LEAF GRID BECOMES THE PHYSICAL ONE. The p2r54
+        # instrument read PERIODIC at the board pitch (autocorr 0.585 vs floor
+        # 0.573, lag = the ~0.6 m carcass panel pitch on screen) and the
+        # mechanism is a resonance: the shader's "leaf" was the TEXTURE TILE
+        # (1.19 m), boards sit ~0.504 tile apart, and a half-tile step into a
+        # ping-pong is a mirror — adjacent boards sampled near-perfect
+        # reflections of each other. No offset seed can fix a grid whose pitch
+        # is wrong. Across grain the grid is now PLANK_PITCH_MM (180 mm — the
+        # REAL leaf width this file already declares as law): each 180 mm leaf
+        # samples its own randomly-chosen window of the flitch, continuous
+        # inside the leaf, discontinuous at the joint — which is what a slip-
+        # match lay-up IS. The window range is clamped to [0, 1-leaf] so no
+        # leaf ever crosses the texture border mid-leaf. ALONG grain (Z) the
+        # ping-pong stays untouched — it is the fail-soft top fold, and a
+        # per-leaf Z slip was considered and REFUSED: panels span their whole
+        # grain run, so any slip folds the grain mid-panel, the exact p2r14
+        # defect the mapping note above forbids.
+        leaf_u = max((PLANK_PITCH_MM / 1000.0) * s, 1e-4)
+        for _i, _ax in enumerate(("X", "Y")):
+            lsnap = nt.nodes.new("ShaderNodeMath")
+            lsnap.operation = 'SNAP'
+            lsnap.inputs[1].default_value = leaf_u
+            nt.links.new(sxyz.outputs[_ax], lsnap.inputs[0])
+            frac = nt.nodes.new("ShaderNodeMath")
+            frac.operation = 'SUBTRACT'
+            nt.links.new(sxyz.outputs[_ax], frac.inputs[0])
+            nt.links.new(lsnap.outputs["Value"], frac.inputs[1])
+            lw = nt.nodes.new("ShaderNodeTexWhiteNoise")
+            lw.noise_dimensions = '4D'
+            lw.inputs["W"].default_value = 7.7 + 13.1 * _i   # per-axis stream
+            lid = nt.nodes.new("ShaderNodeCombineXYZ")
+            nt.links.new(lsnap.outputs["Value"], lid.inputs["X"])
+            nt.links.new(lid.outputs["Vector"], lw.inputs["Vector"])
+            win = nt.nodes.new("ShaderNodeMapRange")
+            win.inputs["From Min"].default_value = 0.0
+            win.inputs["From Max"].default_value = 1.0
+            win.inputs["To Min"].default_value = 0.0
+            win.inputs["To Max"].default_value = max(1.0 - leaf_u, 0.0)
+            nt.links.new(lw.outputs["Value"], win.inputs["Value"])
+            put = nt.nodes.new("ShaderNodeMath")
+            put.operation = 'ADD'
+            nt.links.new(win.outputs["Result"], put.inputs[0])
+            nt.links.new(frac.outputs["Value"], put.inputs[1])
+            nt.links.new(put.outputs["Value"], cpp.inputs[_ax])
+        pp = nt.nodes.new("ShaderNodeMath")
+        pp.operation = 'PINGPONG'
+        pp.inputs[1].default_value = 1.0
+        nt.links.new(sxyz.outputs["Z"], pp.inputs[0])
+        nt.links.new(pp.outputs["Value"], cpp.inputs["Z"])
         # PER-LEAF TONE (r8, C3-r7#4 "ลายไม้ซ้ำ... ขาดความเข้มของสีที่ไม่สม่ำเสมอ"):
         # book-match makes an identical-FEATURE repeat impossible, but every mirrored
         # leaf still carried an identical VALUE, and a periodic value IS a visible
@@ -1525,7 +1568,11 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
         # lay-up it imitates, deterministic (pure function of world position).
         snp = nt.nodes.new("ShaderNodeVectorMath")
         snp.operation = 'SNAP'
-        snp.inputs[1].default_value = (1.0, 1.0, 1.0)
+        # p2r55: tone steps on the PHYSICAL leaf grid too (was the 1.19 m
+        # texture tile) — real leaves differ in tone at 180 mm pitch
+        snp.inputs[1].default_value = (max((PLANK_PITCH_MM / 1000.0) * s, 1e-4),
+                                       max((PLANK_PITCH_MM / 1000.0) * s, 1e-4),
+                                       1.0)
         nt.links.new(va.outputs["Vector"], snp.inputs[0])
         wn = nt.nodes.new("ShaderNodeTexWhiteNoise")
         wn.noise_dimensions = '3D'

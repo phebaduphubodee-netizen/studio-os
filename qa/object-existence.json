@@ -449,11 +449,12 @@
   {
    "assembly": "unidentified_ceiling_wire_topleft",
    "identity": "UNRESOLVED — C2 (p2r54, blind-local) filed 'a small black line hanging from the ceiling at the very top-left of the eye frame; cannot tell what it is the wire of'. Not yet matched to any built mass or spec item.",
-   "exists": "unknown — filed from the rendered frame, not from the sheet; idmask not yet sampled at that region",
+   "exists": "not-in-drawing: filed from the rendered frame (C2 p2r54 #10), no sheet mass corresponds; probe reads it as a garment-hanger hook of the leftmost wardrobe bay clipped by the eye camera",
    "held_by": "unknown",
    "operable": false,
-   "verdict": "unresolved-and-why",
-   "why": "R10: a dark line nobody can name in a client frame is exactly the class this ledger exists to hold. Next action: sample the idmask at the top-left ceiling region of room_bedroom_suite_eye_p2r54, name the object, then keep/fix/remove. Filed p2r54, 2026-08-18."
+   "verdict": "unresolved",
+   "why": "R10: a dark line nobody can name in a client frame is exactly the class this ledger exists to hold. PROBED p2r54 (same session): the idmask roster is bed-focused and reads id0 over the whole top-left region, so the mask cannot name it; the beauty crop shows a black angular mass ~40 px at the extreme left edge (x 30-45, y 150-230 of 2400x1800) against the wardrobe end column — reads as a garment-hanger hook of the leftmost bay clipped by the eye camera, not a ceiling wire. NEXT: confirm against the built scene (hanger object AABBs at the wardrobe south end) or widen the mask roster; keep/remove decided then. Filed p2r54, probed p2r55, 2026-08-18.",
+   "since": "2026-08-18"
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."
