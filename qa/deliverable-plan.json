@@ -2926,8 +2926,60 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "6b976c606b92394908ef31e533de44c0e8ac584c",
+      "verdicts": {
+        "P2": "keep: P2r-24 closed as specified — the plane is a verified declaration, the relation reads it, and the +152 seam prints where a false PASS sat. The queue is now purely surface: P2r-2 wood figure (PERIODIC at lag 199 nine rounds running, DR formula staged, verify at dx-0.03 where the signal is 1.9x, never touch the floor estimator in the deciding round) then P2r-22/23. The bed stays parked behind ASK-028 and costs no further rounds.",
+        "P4": "keep: unchanged — enters after P2 per the 08-16 order; the deck-height WARN (+152) will partly resolve itself when ASK-028 lands a right-plane bed, so P4 must not restage nightstands before that lands.",
+        "P3": "keep: light stays last per the owner build order; nothing this round touches its scope.",
+        "P5": "keep: judgement closes the plan; carrying forward the p2r53 charter note that sheet-fidelity (size vs the drawing) needs its own sighted rung — the blind panel proved it judges made-ness only."
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "7c60a5496761dfaff7120de5fd9d23d13a48a441",
+  "last_review_commit": "6b976c606b92394908ef31e533de44c0e8ac584c",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
