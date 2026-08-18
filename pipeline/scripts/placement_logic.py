@@ -614,10 +614,11 @@ def _gap(a, b):
 
 def nightstands_at_head(spec, bed):
     """Tables actually SERVING as bedside tables: a nightstand-ish kind, within arm's reach of
-    the bed, on its HEAD half. Shared by two rules — bed_has_nightstand asks whether any exist,
-    and furniture_dimensions asks whether a given side_table is one (a bedside table is
-    mattress-height ~520-650, NOT the 380-480 lounge band its kind would otherwise be judged by;
-    PRJ-2026-002's real 520 mm bedside tables were being WARNed as under-tall lounge tables)."""
+    the bed, on its HEAD half. Shared by three rules — bed_has_nightstand asks whether any
+    exist, furniture_dimensions judges a member against the nightstand band instead of the
+    380-480 lounge band (PRJ-2026-002's real bedside tables were being WARNed as under-tall
+    lounge tables), and nightstand_vs_mattress asks the RELATION question the band cannot
+    (P2i: 520 beside a 600 mattress passed the band while sitting 80 mm below reach)."""
     if bed is None:
         return []
     bfp, bc = _footprint(bed), _center(bed)
@@ -648,6 +649,42 @@ def _rule_bed_has_nightstand(spec, ctx):
             f"bed '{nm}' has NO bedside table within {NIGHTSTAND_REACH_MM} mm of the head — a real client "
             f"sent this exact omission back for rework (\"หัวเตียง อยากให้มีโต๊ะข้างเตียง\", 2025-11-19); "
             f"add a side_table each side, or note why the room can't take one")
+
+
+def _rule_nightstand_vs_mattress(spec, ctx):
+    # RELATION, not band (P2i): furniture_dimensions judges a nightstand against
+    # TABLE_H_MM["nightstand"] = (380,700), which happily passes a 520 mm deck beside a
+    # 600 mm mattress — 80 mm below the sleeper's reach (C2#10). A nightstand's height is
+    # a relation to the bed it serves. Spec-side (both `h` fields; a bed item's `h` is
+    # the mattress plane in build_room._build_bed) and advisory like the rest of the
+    # dimensions family; the built-scene number is re-measured at the gate from the
+    # scene dump when the two disagree (model_assertions vs item h is a known split).
+    bed = ctx.get("bed")
+    stands = ctx.get("nightstands") or []
+    if bed is None or not stands:
+        return None          # absence is bed_has_nightstand's finding, not a silent pass here
+    bh = float(bed.get("h", 0) or 0)
+    if not bh:
+        return None          # a bed with no height claim: nothing to relate against
+    lo, hi = ergo.NIGHTSTAND_TOP_VS_MATTRESS_MM
+    off, measured = [], 0
+    for el in stands:
+        h = float(el.get("h", 0) or 0)
+        if not h:
+            continue             # a deck with no height claim is skipped, never guessed
+        measured += 1
+        if not (lo <= h - bh <= hi):
+            nm = el.get("name") or el.get("kind")
+            off.append(f"'{nm}' deck {h:.0f}mm sits {h - bh:+.0f}mm vs mattress top "
+                       f"{bh:.0f}mm (band {lo:+d}..{hi:+d})")
+    if not measured:
+        return None              # nothing measurable -> not applicable, never a silent PASS
+    if off:
+        return ("nightstand_vs_mattress", WARN,
+                "; ".join(off) + " — outside the reach band a sleeper is served by "
+                "(band is a DECLARED ASSUMPTION, ergonomics_ref)")
+    return ("nightstand_vs_mattress", PASS,
+            f"{measured} bedside deck(s) within {lo:+d}..{hi:+d}mm of the mattress top")
 
 
 def _rule_dining_table_pendant(spec, ctx):
@@ -701,7 +738,8 @@ RULES = [_rule_tv_positioned, _rule_tv_faces_viewer, _rule_tv_not_over_viewer,
          _rule_tv_viewing_distance, _rule_door_vs_bed_head, _rule_furniture_dimensions,
          _rule_bathroom_logic, _rule_seating_faces_focal, _rule_seating_clear_of_screen,
          _rule_kitchen_work_triangle, _rule_tv_mount_height, _rule_camera_has_a_reason,
-         _rule_bed_has_nightstand, _rule_dining_table_pendant, _rule_basin_has_storage]
+         _rule_bed_has_nightstand, _rule_nightstand_vs_mattress,
+         _rule_dining_table_pendant, _rule_basin_has_storage]
 
 
 def _worst(statuses):

@@ -33,6 +33,24 @@ TABLE_H_MM = {
 }
 WARDROBE_DEPTH_MM = (450, 650)        # a functional hanging wardrobe (600 typical)
 
+# --- RELATIONS (mm) — heights that are a relation to another piece, not a band of
+# their own (P2i; R9's law arriving in this layer: a band answers "is this a legal
+# table", the relation answers "can the sleeper reach it" — TABLE_H_MM["nightstand"]
+# = (380,700) happily passes a deck 80 mm below the mattress top, C2#10).
+# Value = nightstand DECK TOP minus MATTRESS TOP (spec `h` of each; a bed item's `h`
+# is the mattress plane in build_room._build_bed).
+# DECLARED ASSUMPTION (DRW-2 ladder, lowest rung — recorded loudly so nobody
+# upgrades it by forgetting): no sourced numeric relation exists. Vault holds only
+# absolutes (TH bedroom-services staging note: premium nightstands 500–550 mm);
+# the Design Systems corpus returned NOT IN SOURCES (NLM a5a43395, conversation
+# b39e68d6 turn 1, 2026-08-18 — Human Dimension has bed heights and clearances but
+# night-table height "alignments relative to the mattress are not
+# anthropometrically dimensioned"). Band encodes the reach argument the row was
+# filed on: below the mattress plane a reclined hand loses the deck (−80 was the
+# filed defect), level-to-slightly-above serves; above ~150 the deck crowds the
+# sleeper's head space.
+NIGHTSTAND_TOP_VS_MATTRESS_MM = (-50, 150)
+
 # --- circulation (Neufert) ---
 WALKWAY_MIN_MM = 600
 WALKWAY_COMFORT_MM = (800, 900)

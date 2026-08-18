@@ -225,7 +225,9 @@
           "what": "ergonomic RELATIONS, not just absolute bands: nightstand top vs mattress top",
           "where": "pipeline/scripts/ergonomics_ref.py",
           "why": "C2#10, with a number: bed h=600, both side tables h=520, so the nightstand top sits 80 mm BELOW the mattress top. `TABLE_H_MM[\"nightstand\"] = (380, 700)` and 520 is inside it — the band PASSES a nightstand nobody can reach from the bed. The band is not wrong, it answers a different question. A nightstand's height is a RELATION to the bed it serves, which is R9's law arriving in the ergonomics layer: a number encodes a result, never a relationship. Same file already admits the shape of this gap for seat height ('a chair/sofa spec h is the BACKREST, not the seat, so seat-height 400-450 is NOT checkable here').",
-          "status": "todo"
+          "status": "done",
+          "closed": "2026-08-18 (between rounds — pure spec-side rule, no render spent)",
+          "result": "CLOSED as the mechanism the row asked for: `nightstand_vs_mattress` relation rule in placement_logic (advisory WARN like the rest of the dimensions family), constant NIGHTSTAND_TOP_VS_MATTRESS_MM = (-50, +150) in ergonomics_ref — a DECLARED ASSUMPTION on the DRW-2 ladder, recorded loudly in the constant's comment: vault has only absolutes (TH bedroom-services 500-550) and the Design Systems corpus returned NOT IN SOURCES (NLM a5a43395 turn 23, staged in the same commit's qa-history refresh). The filed defect (-80, C2#10) WARNs; the current spec (580 vs 600 = -20) and the p2r43 built +18 both pass; zero-measurable-decks returns not-applicable rather than a silent PASS (scrutiny catch, pinned by test). The rule reads the SPEC h fields pre-render; the spec-h-vs-built-h split (side_table 580 / asserted mesh 700 / built top 618) stays a known seam, re-measured at gates from the scene dump."
         },
         {
           "id": "P2r-2",

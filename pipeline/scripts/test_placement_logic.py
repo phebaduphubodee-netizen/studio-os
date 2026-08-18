@@ -821,6 +821,53 @@ def test_bedside_table_judged_on_the_nightstand_band_not_the_lounge_band():
     assert _s(P.check(absurd), "furniture_dimensions") == P.WARN
 
 
+# ---- nightstand deck vs mattress top — the RELATION the band cannot ask (P2i) ----
+def test_nightstand_below_reach_warns():
+    # the filed defect verbatim (C2#10): deck 520 beside a 600 mattress = -80 mm. The
+    # nightstand BAND (380-700) passes it — the relation rule is what catches it.
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][-1]["h"] = 520
+    rep = P.check(spec)
+    assert _s(rep, "furniture_dimensions") == P.PASS      # the band is blind to it, by design
+    assert _s(rep, "nightstand_vs_mattress") == P.WARN
+
+
+def test_nightstand_at_reach_passes():
+    # PRJ-2026-002's current 580 vs 600 (-20) and the p2r43 built +18 case both sit in band
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][-1]["h"] = 580
+    assert _s(P.check(spec), "nightstand_vs_mattress") == P.PASS
+
+
+def test_nightstand_towering_warns():
+    spec = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    spec["items"][-1]["h"] = 900                          # crowds the sleeper's head space
+    assert _s(P.check(spec), "nightstand_vs_mattress") == P.WARN
+
+
+def test_nightstand_relation_needs_a_nightstand_and_a_bed_height():
+    # absence of the table is bed_has_nightstand's finding; this rule stays silent
+    assert _s(P.check(_bedroom(nightstand=False)), "nightstand_vs_mattress") is None
+    # a table at the FOOT is not a nightstand -> not related to the mattress
+    foot = _bedroom_with(_nightstand(y=2500), nightstand=False)
+    assert _s(P.check(foot), "nightstand_vs_mattress") is None
+    # a bed with no height claim: nothing to relate against, never a guess
+    nb = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    nb["items"][0]["h"] = 0
+    assert _s(P.check(nb), "nightstand_vs_mattress") is None
+    # missing table h -> that table is skipped, not guessed (scaffold-only spec => PASS trivially
+    # would be a silent pass, so assert the finding still reports over the remaining table)
+    two = _bedroom_with(_nightstand(y=4500), _nightstand(x=2900, y=4500), nightstand=False)
+    two["items"][-1]["h"] = 0
+    two["items"][-2]["h"] = 520
+    assert _s(P.check(two), "nightstand_vs_mattress") == P.WARN
+    # and when NO deck carries a height, the rule is not applicable — a PASS claiming
+    # "decks within band" over zero measured decks would be a silent pass (scrutiny catch)
+    none_measurable = _bedroom_with(_nightstand(y=4500), nightstand=False)
+    none_measurable["items"][-1]["h"] = 0
+    assert _s(P.check(none_measurable), "nightstand_vs_mattress") is None
+
+
 def _dining(kind="dining_table", name="โต๊ะกินข้าว 6 ที่นั่ง"):
     return {"name": name, "kind": kind, "x": 1000, "y": 1000, "w": 1800, "d": 900, "h": 750}
 
