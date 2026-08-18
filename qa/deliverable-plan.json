@@ -2705,8 +2705,57 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "92aa5204251749d982d2745bf729e58aceeb1a81",
+      "verdicts": {
+        "P2": "keep: P2i closed the relation mechanism with no render spent; the queue is unchanged and the phase continues on its own order — P2r-21 (the D-106 integration round) is next, then P2h whose role-split machinery that round builds, then P2r-2/22/23. Closing a between-rounds row does not move the exit bar.",
+        "P4": "keep: unchanged by a spec-side ergonomics rule; still enters after P2 per the 08-16 order (objects before light).",
+        "P3": "keep: unchanged; still deliberately after P4 so light is solved on complete geometry.",
+        "P5": "keep: still blocked on the phases before it; nothing in P2i touches judgement — keep as the blocked terminal phase."
+      },
+      "changed": [],
+      "note": "review after P2i close (92aa520): a between-rounds mechanism row closed; no phase re-aim proposed — the bed integration round (P2r-21) remains the next named work",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "65309093a73c61a6a1a5a448bd4b75e31d42d0d1",
+  "last_review_commit": "92aa5204251749d982d2745bf729e58aceeb1a81",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
