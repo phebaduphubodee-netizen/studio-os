@@ -490,10 +490,15 @@ def _score_deliverable(name, quick=False, frame=True):
     _bed_stop = None
     if frame and os.path.isfile(_idm) and os.path.isfile(_idj) \
             and os.path.isfile(_beauty):
+        _bp_cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "bed_pixels.py"), _beauty, _idm, _idj,
+                   "--scene", dump_path]
+        # the staged bed's construction is the BUILD's knowledge, declared to
+        # the rung rather than inferred by it (p2r54, fused frame+mattress)
+        if globals().get("_WB_FUSED_BODY"):
+            _bp_cmd += ["--fused-body", globals()["_WB_FUSED_BODY"]]
         _br = subprocess.run(
-            [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              "bed_pixels.py"), _beauty, _idm, _idj,
-             "--scene", dump_path],
+            _bp_cmd,
             capture_output=True, text=True, encoding="utf-8",
             errors="replace", env=env)
         for ln in (_br.stdout or "").splitlines():
@@ -6145,25 +6150,52 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
     parts = _parts()
     anchor = next(p for p in parts if p["name"] == anchor["name"])
     _drop(_wbr.flat_accents_on_bank(parts, plane, anchor=anchor,
-                                    drawn_plan_m2=along * across),
-          "lying-flat accent band on the pillow bank (style clash filed by "
-          "both critics; a standing pillow is taller than it is deep)")
+                                    drawn_plan_m2=along * across,
+                                    head_x=max(p["hi"][0] for p in parts),
+                                    head="hi"),
+          "lying-flat accent band out on the bedding field (style clash filed "
+          "by both critics; the pillow bank presses the head and is spared "
+          "by the head term)")
+    parts = _parts()
+    anchor = next(p for p in parts if p["name"] == anchor["name"])
+    # p2r54 — furniture riding along in the file (a part of the bed lies ON
+    # the bed; wholebed_rules.carry_ons carries the premise and the boundary)
+    for _p, _why in _wbr.carry_ons(parts, plane, anchor):
+        _drop([_p], _why)
     parts = _parts()
     anchor = next(p for p in parts if p["name"] == anchor["name"])
 
-    # ---- fit on the FRAME CLUSTER, never the file bbox ----------------------
-    # The SCALE denominator is the cluster (drape and side wings must not
-    # shrink the bed — the audition's own fill-limitation note). The FILL
-    # refusal then re-checks what the audition's hard filter checked: the
-    # WHOLE kept bed, bedding included, against the drawn footprint — a
-    # cluster that fills 0.80 under bedding that drapes to 0.90 is this
-    # candidate's real construction (the frame stops short of the duvet's
-    # foot fall), not a different bed.
+    # ---- fit: the FRAME CLUSTER reaches the rect, the FIELD stays inside it -
+    # Two one-sided laws, one drawn rectangle (the ink IS the made bed —
+    # duvet to the edges, R12):
+    #   reach   — the SCALE numerator is the cluster (drape and side wings
+    #             must not shrink the bed; the audition's fill-limitation
+    #             note, and f52472c1's actual defect).
+    #   contain — the MADE-BED FIELD may meet the rect but never overflow it
+    #             (81d895fd's actual defect the other way: its frame is
+    #             narrower than its soft field, so the cluster fit alone
+    #             inflated the bed 25% past the staging the bench judged —
+    #             plane 521 vs the declared 417 caught it, P2r-24 doing its
+    #             job. Soft mass past the drawn foot line eats the drawn
+    #             bench walkway, which is the ink's call, not a knob's).
+    # s = min(reach, contain); the FILL refusal below then re-checks the
+    # WHOLE kept bed against MIN_FILL as before.
     cl = _wbr.frame_cluster(parts, anchor)
     cl_lo0 = min(p["lo"][0] for p in cl); cl_hi0 = max(p["hi"][0] for p in cl)
     cl_lo1 = min(p["lo"][1] for p in cl); cl_hi1 = max(p["hi"][1] for p in cl)
-    s, _cf_l, _cf_w = _wbr.plan_scale_whole(cl_hi0 - cl_lo0, cl_hi1 - cl_lo1,
-                                            along, across)
+    s_cl, _cf_l, _cf_w = _wbr.plan_scale_whole(cl_hi0 - cl_lo0, cl_hi1 - cl_lo1,
+                                               along, across)
+    s = s_cl
+    _fld = _wbr.made_field(parts, anchor)
+    if _fld:
+        _f_l = (max(p["hi"][0] for p in _fld) - min(p["lo"][0] for p in _fld))
+        _f_w = (max(p["hi"][1] for p in _fld) - min(p["lo"][1] for p in _fld))
+        s_fld, _, _ = _wbr.plan_scale_whole(_f_l, _f_w, along, across)
+        if s_fld is not None and s_cl is not None and s_fld < s_cl:
+            s = s_fld
+            print(f"  whole bed: scale capped by FIELD CONTAINMENT "
+                  f"{s_fld:.4f} (cluster reach wanted {s_cl:.4f}) — the soft "
+                  f"field meets the drawn rectangle, never overflows it")
     if s is None:
         return _bail("frame cluster has no extent — nothing to fit")
     all_l = max(p["hi"][0] for p in parts) - min(p["lo"][0] for p in parts)
@@ -6171,9 +6203,25 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
     fill_l = min(1.0, s * all_l / along)
     fill_w = min(1.0, s * all_w / across)
     if fill_l < _wbr.MIN_FILL or fill_w < _wbr.MIN_FILL:
-        return _bail(f"the kept bed fills {fill_l:.2f}x{fill_w:.2f} of the "
-                     f"drawn footprint at cluster scale {s:.3f} "
-                     f"(< {_wbr.MIN_FILL}) — a different bed, not a fit")
+        # p2r54: the whole-bed fill and the made-bed field measure the SAME
+        # premise (the drawn rectangle, one MIN_FILL constant), so they honour
+        # the SAME signature — the R13 third state field_verdict already
+        # carries. A signed deficit proceeds LOUDLY (printed here and again at
+        # the field check below, aging with its ask); an unsigned shortfall is
+        # the hard stop it always was. Without this door the signed-interim
+        # mechanism D-108 built could never stage a bed whose honest deficit
+        # IS the thing the signature declares (81d895fd, 1.00x0.84).
+        _wv = _wbr.field_verdict(fill_l, fill_w, signed=field_deficit_signed)
+        if _wv != "interim":
+            return _bail(f"the kept bed fills {fill_l:.2f}x{fill_w:.2f} of the "
+                         f"drawn footprint at cluster scale {s:.3f} "
+                         f"(< {_wbr.MIN_FILL}) and nothing signed says so — "
+                         f"a different bed, not a fit")
+        _s = field_deficit_signed or {}
+        print(f"  whole bed: fills {fill_l:.2f}x{fill_w:.2f} of the drawn "
+              f"footprint (< {_wbr.MIN_FILL}) under the SIGNED deficit "
+              f"({_s.get('decision')}, blocked by {_s.get('ask')}) — "
+              f"proceeding loudly as the interim")
     if abs(s - 1.0) > 1e-9:
         M = _Mx.Translation(piv) @ _Mx.Scale(s, 4) @ _Mx.Translation(-piv)
         for o in _roots():
@@ -6245,12 +6293,42 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
     rest = [p for p in parts if p is not anchor]
     matt = None
     for p in sorted(rest, key=lambda q: -_wbr.plan_area(q)):
-        if a_top + 0.01 <= p["hi"][2] <= plane + 0.02:
+        # a mattress RESTS ON ITS BASE; cloth FALLS PAST it. 81d895fd's duvet
+        # put its bbox top (499) inside this window because the plane median
+        # sits on the duvet itself — but its hem reaches the floor (lo z 0.0),
+        # which no mattress does. Without the floor term the duvet dressed as
+        # the core and bed_pixels would have counted the whole made-bed
+        # surface as bare mattress.
+        if (a_top + 0.01 <= p["hi"][2] <= plane + 0.02
+                and p["lo"][2] > anchor["lo"][2] + 0.05):
             matt = p
             break
+    fused_core = False
     if matt is None:
-        return _bail("no part tops out at the sleeping plane — cannot name a "
-                     "mattress, and bed_pixels must never guess one")
+        # p2r54 — THE FUSED-CORE BED. 81d895fd models frame and mattress as ONE
+        # shell (Plane.029) with the duvet spread over the whole sleeping
+        # surface, so no separate part tops out at the plane — the first cut of
+        # this block named the DUVET the mattress, and bed_pixels would have
+        # counted the entire made-bed surface as bare core (ratchet false-fail
+        # against a 1,459 px baseline). The truthful reading: the ANCHOR is the
+        # core (its exposed body below the cloth IS what "bare flank" means in
+        # the delivered grammar), and the largest part crossing the plane is
+        # the cover. A file where neither exists still refuses — bed_pixels
+        # must never guess a core (its own exit-2 law).
+        cover = next((p for p in sorted(rest, key=lambda q: -_wbr.plan_area(q))
+                      if p["hi"][2] > plane - 0.02), None)
+        if cover is None:
+            return _bail("no part tops out at the sleeping plane and none "
+                         "crosses it — cannot name a mattress or a cover, and "
+                         "bed_pixels must never guess one")
+        fused_core = True
+        matt = anchor
+        print(f"  whole bed: FUSED CORE — frame and mattress are one shell "
+              f"({anchor['name']}); it wears the SIGNED base linen (D3-1: "
+              f"what shows below the cloth on a platform bed is the base) "
+              f"and {cover['name']} is the cover. bed_pixels reads the shell "
+              f"as the bed BODY via the build's --fused-body declaration — "
+              f"a stricter core than a separable mattress ever gets.")
     # ---- the spec's declared plane must still be TRUE of this staging -------
     # P2r-24: `bed_plane_measured_mm` is the number the nightstand relation
     # reads spec-side, and a declaration nothing verifies is how the last h
@@ -6273,6 +6351,12 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
         return _bail("bed_plane_measured_mm is present but carries no value — "
                      "a declaration that cannot be read verifies nothing")
     rest = [p for p in rest if p is not matt]
+    # below the anchor's top face = the bed's own body (under-bed slabs,
+    # plinths): FRAME, never bedding — a bedding layer lies OVER the bed.
+    # Without the z term 81d895fd's two hidden under-mattress slabs (plan
+    # 2.17 m² each) dressed as duvet cloth by plan share alone.
+    frame_extras = [p for p in rest if p["hi"][2] <= a_top + 0.01]
+    rest = [p for p in rest if p not in frame_extras]
     bedding = sorted((p for p in rest
                       if _wbr.plan_area(p) >= _wbr.BEDDING_PLAN_FRAC * along * across),
                      key=lambda q: -_wbr.plan_area(q))
@@ -6316,13 +6400,15 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
     if _fv == "interim":
         _s = field_deficit_signed or {}
         print(f"  whole bed: FIELD DEFICIT SIGNED ({_s.get('decision')}, "
-              f"blocked by {_s.get('ask')}) — the staged bed's made field is "
-              f"{_ffl:.2f}x{_ffw:.2f} of the drawn rectangle; the drawn "
-              f"7'x6.5' bed is a PROCUREMENT GAP (free shelf measured to "
-              f"exhaustion 2026-08-18: 18 in-room stagings + 2 showroom "
-              f"probes, widest field 1,910 mm of 2,149). This frame does not "
-              f"ship as the drawn bed. ORD-2026-08-18-bed-too-small ages "
-              f"until the ask clears.")
+              f"ask {_s.get('ask')}) — the staged bed's made field is "
+              f"{_ffl:.2f}x{_ffw:.2f} of the drawn rectangle (builder's "
+              f"signing line {_wbr.MIN_FIELD_FILL}). Whether that deviation "
+              f"is acceptable is HIS tolerance, judged from the image — his "
+              f"calibration D-110, 2026-08-18: the drawn size is a target, "
+              f"not a fixed spec, 'แต่ไม่ได้อยากให้เปลี่ยนจากแบบเยอะเกินไป'. "
+              f"He accepts from the render -> the deficit closes and the "
+              f"order retires quoting him; he rejects -> the ask is the "
+              f"route to a closer bed.")
 
     def _dress(p, name, mat):
         o = p["_ob"]
@@ -6331,8 +6417,23 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
         o.data.materials.clear()
         o.data.materials.append(mat)
 
-    _dress(anchor, "bed__frame__acq0", base_m)
-    _dress(matt, "bed__frame__acq1", matt_m)
+    if fused_core:
+        # ONE SHELL, ONE DRESS — AND IT WEARS THE SIGNED BASE LINEN (p2r54,
+        # full frame #1's lesson): dressed as bed_mattress the exposed corners
+        # rendered LIGHT (176.8) and read as bare mattress, and the tonal
+        # ladder lost its signed ground rung (D3-1: the deep base linen
+        # GROUNDS the bed — 'bed__base' absent, nothing rendering in
+        # bed_base). What shows below the cloth on a platform bed IS the
+        # base. bed_pixels still reads this object as the core via the
+        # build's own declaration (--fused-body), under fused semantics its
+        # ratchet refuses to compare with a separable-core baseline.
+        _dress(anchor, "bed__frame__acq0", base_m)
+        globals()["_WB_FUSED_BODY"] = "bed__frame__acq0"
+    else:
+        _dress(anchor, "bed__frame__acq0", base_m)
+        _dress(matt, "bed__frame__acq1", matt_m)
+    for _i, _p in enumerate(frame_extras):
+        _dress(_p, f"bed__base__acq{_i}", base_m)
     for i, p in enumerate(bedding):
         # the largest field part is the duvet rung; a second field part would
         # be a second cloth and must not share the rung's prefix (one object
@@ -6349,7 +6450,8 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
               f"material — if it can touch the core, bed_pixels will refuse "
               f"the frame rather than guess its role (fail-closed downstream)")
 
-    hard = [p["_ob"] for p in (anchor, matt)]
+    hard = [p["_ob"] for p in ([anchor] if fused_core else [anchor, matt])
+            ] + [p["_ob"] for p in frame_extras]
     soft = [p["_ob"] for p in bedding + pillows + shams]
     _w1, _s1, _p1 = _normalise_acquired(hard, sharp_deg=30.0)
     _w2, _s2, _p2 = _normalise_acquired(soft, sharp_deg=15.0)
@@ -7867,8 +7969,14 @@ def _model_path(slug):
     here = os.path.dirname(os.path.abspath(bpy.data.filepath or __file__))
     shared = os.path.join(os.path.dirname(os.path.dirname(here)), "assets", "shared")
     hits = []
+    # p2r54: the BlenderKit shelf joins the search (ORD-2026-08-18-bed-too-small
+    # restart: 81d895fd is the first build-consumed asset from it). Same licence
+    # posture as warehouse — royalty-free, use-in-renders yes, redistribute no,
+    # gitignored (.gitignore:68), SOURCE.json per asset — and the same sidecar
+    # door below applies unchanged: an unasserted mesh never reaches the frame.
     for root in (os.path.join(shared, "cc0", "models", slug),
-                 os.path.join(shared, "warehouse", slug)):
+                 os.path.join(shared, "warehouse", slug),
+                 os.path.join(shared, "blenderkit", slug)):
         hits += glob.glob(os.path.join(root, "*.gltf"))
         hits += glob.glob(os.path.join(root, "*.glb"))
     if not hits:

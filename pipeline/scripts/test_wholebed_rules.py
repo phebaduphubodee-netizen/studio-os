@@ -364,3 +364,93 @@ def test_field_verdict_signed_deficit_is_interim_never_pass():
     assert R.field_verdict(0.90, 0.72, signed=s) == "interim"
     # a signature cannot upgrade a passing field to anything else
     assert R.field_verdict(0.95, 0.99, signed=s) == "pass"
+
+
+# ---- p2r54: the field's denominator must be the BED, not the file -------------
+def rider_parts():
+    """81d895fd staged (head normalized to x-hi): fused frame+mattress anchor,
+    duvet draping past the foot, four pillows pressing the head, a foot throw,
+    two under-mattress slabs — PLUS the furniture that rides along in the file:
+    a two-layer fabric headboard WALL standing on the floor behind the head
+    (wider than the frame by 0.59 m each side) and two flanking closet bodies
+    with their doors. Extents are the 2026-08-18 probe of the GLB, native
+    metres, axes rotated head-to-x-hi. The wall's width IS what the bench's
+    field read as 'fill 1.00' — the defect this fixture pins."""
+    return {
+        "plane": 0.535,
+        "anchor": part("frame", (-1.031, -0.794, 0.096), (1.016, 0.784, 0.454)),
+        "duvet": part("duvet", (-1.170, -0.862, 0.0), (0.686, 0.850, 0.544)),
+        "throw": part("throw", (-0.974, -1.021, 0.0), (-0.027, 0.967, 0.627)),
+        "pillow_a": part("pillow_a", (0.633, -0.014, 0.441), (1.034, 0.759, 0.761)),
+        "pillow_b": part("pillow_b", (0.679, -0.728, 0.394), (1.045, -0.016, 0.764)),
+        "pillow_c": part("pillow_c", (0.566, -0.645, 0.430), (0.827, -0.086, 0.755)),
+        "pillow_d": part("pillow_d", (0.561, 0.085, 0.460), (0.818, 0.628, 0.708)),
+        "slab_hi": part("slab_hi", (-0.942, -0.699, 0.221), (0.958, 0.701, 0.421)),
+        "slab_lo": part("slab_lo", (-0.942, -0.699, 0.001), (0.958, 0.701, 0.221)),
+        "wall_1": part("wall_1", (0.948, -1.360, 0.0), (1.110, 1.399, 0.591)),
+        "wall_2": part("wall_2", (0.981, -1.238, 0.0), (1.049, 1.274, 0.633)),
+        "closet_a": part("closet_a", (0.563, 0.783, 0.001), (0.959, 1.283, 0.451)),
+        "closet_b": part("closet_b", (0.563, -1.243, 0.001), (0.959, -0.743, 0.451)),
+        "door_a": part("door_a", (0.579, 0.783, 0.061), (0.594, 1.283, 0.420)),
+        "door_b": part("door_b", (0.579, -1.243, 0.061), (0.594, -0.743, 0.420)),
+    }
+
+
+def test_overlap_frac_separates_bed_layers_from_riders():
+    w = rider_parts()
+    assert R.plan_overlap_frac(w["duvet"], w["anchor"]) > 0.8
+    assert R.plan_overlap_frac(w["throw"], w["anchor"]) > 0.7
+    assert R.plan_overlap_frac(w["wall_1"], w["anchor"]) < 0.3
+    assert R.plan_overlap_frac(w["closet_a"], w["anchor"]) < 0.1
+
+
+def test_made_field_refuses_the_backdrop_wall():
+    """The honest field: bedding + pillows + throw. The 2.759 m wall panel and
+    the closets never count — the width the field reports must be the BED's
+    (1.988 m), not the wall's. This is the number the first-ever 'field pass'
+    was wrong by (0.888x1.00 printed; the bed itself reaches 0.835 on width at
+    the containment-capped scale)."""
+    w = rider_parts()
+    f = R.made_field(_all(w), w["anchor"])
+    names = sorted(p["name"] for p in f)
+    assert "wall_1" not in names and "wall_2" not in names
+    assert "closet_a" not in names and "closet_b" not in names
+    assert {"duvet", "throw"} <= set(names)
+    wid = max(p["hi"][1] for p in f) - min(p["lo"][1] for p in f)
+    assert abs(wid - 1.988) < 0.01
+
+
+def test_carry_ons_names_both_families_by_geometry():
+    w = rider_parts()
+    hits = R.carry_ons(_all(w), w["plane"], w["anchor"])
+    got = {p["name"]: why for p, why in hits}
+    assert set(got) == {"wall_1", "wall_2", "closet_a", "closet_b",
+                        "door_a", "door_b"}
+    assert "cabinet" in got["closet_a"] and "cabinet" in got["door_a"]
+    assert "panelling" in got["wall_1"] and "panelling" in got["wall_2"]
+
+
+def test_carry_ons_spares_every_bed_layer():
+    w = rider_parts()
+    hits = R.carry_ons([w["duvet"], w["throw"], w["pillow_a"], w["slab_hi"],
+                        w["slab_lo"]], w["plane"], w["anchor"])
+    assert hits == []
+
+
+def test_flat_accent_head_term_spares_the_lying_pillow_bank():
+    """81d895fd's pillows lie flatter than their plan (0.79-0.96 of smallest
+    dim) — the pre-p2r54 flatness test alone ate two of them. They press the
+    head (0.02-0.29 m), the plaid lies 0.70 m out on the field: the head term
+    is what separates the measured families."""
+    w = rider_parts()
+    head_x = max(p["hi"][0] for p in _all(w))
+    hits = R.flat_accents_on_bank(_all(w), w["plane"], anchor=w["anchor"],
+                                  head_x=head_x, head="hi")
+    assert hits == []
+
+
+def test_flat_accent_head_term_still_catches_the_plaid():
+    w = winner_parts()
+    hits = R.flat_accents_on_bank(_all(w), w["plane"], anchor=w["anchor"],
+                                  head_x=2.0, head="hi")
+    assert [p["name"] for p in hits] == ["plaid"]

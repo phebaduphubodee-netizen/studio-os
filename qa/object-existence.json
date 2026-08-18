@@ -445,6 +445,15 @@
    "verdict": "fix",
    "why": "C2 p2r47 item 10, and its grounding is the sharpest R10 sentence either critic wrote: the sconces over the bed are LIT, so they must be switched from somewhere reachable. Every position is derived from the opening or the nightstand it serves, so moving the door moves the switch. The carrier is named as the CLASS 'wall' and not as one mass because the three plates sit on three DIFFERENT walls — the door switch on the east wall, the two bedside plates on the BF14 slat wall standing in front of it. The checker refused the first draft of this row, which named wall_4: the plate is nowhere near it. NOTE p2r49: filed as FIX on the day it was built — the blind critic caught the mounting detail in the first frame it appeared in, which is the ladder working rather than a defect surviving.",
    "fix_by": "Give each faceplate a flat MOUNTING BLOCK behind it. C2 filed it against the very object this round added (p2r49 item 16: \"the switch plate floats on the slat wall with no mounting block, recess or shadow\") and it is right as construction: the plate spans x5193-5203, i.e. it lands flush with the slat faces and bridges the gaps between them, and you cannot screw a faceplate to a slat. A real installation cuts the slats back to a flat plaster or ply pad. The pad is a box with radii, so R8 sends it to the builder."
+  },
+  {
+   "assembly": "unidentified_ceiling_wire_topleft",
+   "identity": "UNRESOLVED — C2 (p2r54, blind-local) filed 'a small black line hanging from the ceiling at the very top-left of the eye frame; cannot tell what it is the wire of'. Not yet matched to any built mass or spec item.",
+   "exists": "unknown — filed from the rendered frame, not from the sheet; idmask not yet sampled at that region",
+   "held_by": "unknown",
+   "operable": false,
+   "verdict": "unresolved-and-why",
+   "why": "R10: a dark line nobody can name in a client frame is exactly the class this ledger exists to hold. Next action: sample the idmask at the top-left ceiling region of room_bedroom_suite_eye_p2r54, name the object, then keep/fix/remove. Filed p2r54, 2026-08-18."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."

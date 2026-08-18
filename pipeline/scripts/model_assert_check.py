@@ -97,7 +97,12 @@ REQ_KEY = "model_requirements"
 # the order identical is not cosmetic: if the same slug existed on both, the gate
 # must measure the file the build will actually load.
 SHELVES = (("assets", "shared", "cc0", "models"),
-           ("assets", "shared", "warehouse"))
+           ("assets", "shared", "warehouse"),
+           # p2r54: the BlenderKit shelf (gitignored, .gitignore:68) joins both
+           # consumers in the same edit — build_room._model_path and this check
+           # must always search the same shelves, or an asserted model reads
+           # "not there" to one of them while the other builds with it.
+           ("assets", "shared", "blenderkit"))
 
 # A key that HOLDS a model reference. `*_note` is excluded first and by name,
 # because the note is exactly where the number used to live and must never be
@@ -313,7 +318,7 @@ def verify(spec, slug, row, sites, repo_root=None):
     mp = resolve(slug, repo_root)
     if not mp:
         v.append(f"{SPEC_KEY}['{slug}'] names a model that is on neither shelf "
-                 f"(cc0/models, warehouse). The spec asserts a size for a file "
+                 f"(cc0/models, warehouse, blenderkit). The spec asserts a size for a file "
                  f"that is not there; the build will fall back and this row "
                  f"will keep asserting.")
         return v, f"  MODEL ASSERT {short:<12} {where}  !! NO FILE ON EITHER SHELF"

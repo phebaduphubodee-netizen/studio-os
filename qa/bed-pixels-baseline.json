@@ -2,8 +2,8 @@
  "_what": "The ratchet ceiling for bed_pixels: how much of our own mattress the frame is allowed to show before the build fails. NOT the target - see best_on_record and target below.",
  "_why_a_ratchet": "A flat cut at the delivered value fails 15 of 15 masked frames in this lane history, because the bare flank is in every frame this studio has made. A rung red on every render gets switched off (R13). So the absolute number PRINTS on every run into the render path and what BLOCKS is the number rising - which is the half nothing caught when it rose 23x between p2r31e and p2r44 while coverage read 94.0% and fall_sides read 4/4.",
  "_how_to_lower_it": "A round that covers more of the mattress re-runs bed_pixels and writes the lower numbers here, naming the round. It may only ever go DOWN. Raising it is a decision that needs a row in qa/open-decisions.json saying why the bed is allowed to get worse.",
- "frame": "room_bedroom_suite_eye_p2r52",
- "round": "p2r52",
+ "frame": "room_bedroom_suite_eye_p2r54",
+ "round": "p2r54",
  "date": "2026-08-18",
  "camera": {
   "res": [
@@ -43,21 +43,31 @@
    ]
   ]
  },
- "core_px": 2067,
- "core_flank": 1459,
- "core_top": 608,
- "core_share": 0.006,
- "top_plane_px": 151680,
+ "core_px": 4559,
+ "core_flank": 3206,
+ "core_top": 1353,
+ "core_share": 0.009,
+ "top_plane_px": 218522,
  "best_on_record": {
-  "frame": "room_bedroom_suite_eye_p2r52",
-  "core_px": 2067,
-  "core_flank": 1459,
-  "core_top": 608,
-  "note": "p2r52, the D-106 whole-bed integration: the bought bed brings its own mattress and bedding, so the defect's surface area fell 99.4% by construction (254,849 -> 1,459 flank px), not by drape tuning. The previous record was the HAND-BUILT cloth stack (p2r31e, 11,694 px) — kept here as history and as the proof it was never an instruction to revert: his class order stands (R13, D-104) and the bought bed now beats the hand-built record 8x on the same camera."
+  "frame": "room_bedroom_suite_eye_p2r54",
+  "core_semantics": "fused_body:bed__frame__acq0",
+  "core_px": 4559,
+  "core_flank": 3206,
+  "core_top": 1353,
+  "note": "p2r54, the D-109 interim integration: fused-body count, first of its semantics. Not comparable to the separable numbers below (D-111).",
+  "separable": {
+   "frame": "room_bedroom_suite_eye_p2r52",
+   "core_px": 2067,
+   "core_flank": 1459,
+   "core_top": 608,
+   "note": "p2r52, the D-106 whole-bed integration: the bought bed brings its own mattress and bedding, so the defect's surface area fell 99.4% by construction (254,849 -> 1,459 flank px), not by drape tuning. The previous record was the HAND-BUILT cloth stack (p2r31e, 11,694 px) — kept here as history and as the proof it was never an instruction to revert: his class order stands (R13, D-104) and the bought bed now beats the hand-built record 8x on the same camera."
+  }
  },
  "target": {
   "core_flank": 0,
   "authority": "_private/deliv-001/flank-panel-2026-08-17/readings.json",
   "note": "three blind sighted readers over 7 delivered frames: 16 of 18 legible readings none, 2 sliver, 0 above sliver; ours most 3 for 3. The panel answers on a word scale and delivered frames carry no object mask, so no delivered flank can be counted in pixels - this target is a direction with a fact behind it, not a measured px value."
- }
+ },
+ "core_semantics": "fused_body:bed__frame__acq0",
+ "_rebaselined_p2r54": "D-111: fused-body semantics (81d895fd models frame+mattress as one shell; every exposed body pixel counts as core — stricter than the separable count by construction). The ratchet's own semantics guard refused the cross-construction comparison; this baseline is the deliberate restart. The separable-era numbers stay in best_on_record.separable below for the day a separable bed returns. The shell wears the signed D3-1 base linen (value 114), so what shows reads as dark base, the delivered grammar; the cross-construction judge is the blind panel, run on this frame this round."
 }

@@ -1717,6 +1717,53 @@
    "reverse_by": "ตัวซื้อใหม่ผ่าน bench (field >= 0.88 ทั้งสองแกน + filter เดิม + panel) -> เปลี่ยน bed_models.frame, ลบ field_deficit_signed, ratchet re-baseline ด้วย row ใหม่ · หรือพี่ตัดสินจากภาพว่า interim ตัวไหนดีกว่า — เป็นคำพูดพี่ ลง owner_override",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-109",
+   "unit": "DELIV-001",
+   "subject": "bed-size-vs-sheet",
+   "decided_round": 54,
+   "decided_date": "2026-08-18",
+   "decided_by": "builder",
+   "obeys": "ORD-2026-08-18-bed-too-small",
+   "question": "bench ค่ำวานประกาศ 81d895fd เป็น 'ตัวผ่าน hard filter ครบข้อแรกในประวัติ (field 0.888x1.00)' — integrate ได้เลยตามนั้นหรือไม่ และ D-108 reverse ได้หรือยัง",
+   "in_effect": "(1) คำประกาศนั้นเป็นความผิดของเครื่องมือเราเอง ครั้งที่ห้าของ class เดิม: probe ตำแหน่งชิ้นส่วน (native GLB) พบว่าความกว้าง field ที่ผ่าน คือแผงผนังหัวเตียงผ้าสองชั้นกว้าง 2,759 มม. ยืนบนพื้นหลังเตียง (กว้างกว่าเฟรม 590 มม./ข้าง) ซึ่งข้อยกเว้น thin-panel ของ made_field (แช่แข็งที่ 60 มม. จากแผง burl ของ candidate เดียว — ประโยค R9b ในรูป threshold) นับเป็นผ้าที่ความหนา 163 มม. และ scale 0.7789 ของ bench คือการเอาแผงผนังไป fit ความกว้างแบบ (2) แก้เครื่องมือ ไม่ใช่แก้ตัวเลข: made_field ต้องการ plan overlap กับ anchor >= 0.5 ('ชิ้นส่วนของเตียงนอนอยู่บนเตียง'), กฎ strip ใหม่ carry_ons (แผงผนัง+ตู้ข้างเตียงที่ติดมากับไฟล์ — หน้าที่นั้นเป็นของ band และ nightstand ที่แบบวาด R12), flat_accents เพิ่ม head term (การทดสอบความแบนอย่างเดียวกินหมอนจริง 2 ใบ), และ scale ใน _place_bed_frame = min(cluster reach, field containment) — field แตะเส้นหมึกได้ ห้ามล้น (3) ตัวเลขซื่อสัตย์: field ของเตียงเอง 1,988 มม. native -> ที่ scale 0.903 ได้ 1.00x0.835 และไม่มี scale ถูกกฎหมายถึง 0.88 (ดันถึง = ผ้าล้นเส้นท้ายเตียง 107 มม. เข้า walkway ของ bench ที่แบบวาด) (4) จึง INTEGRATE เป็น INTERIM ที่ sign deficit ใหม่ ไม่ใช่ผ่าน: ชนะ f52472c1 (0.90x0.72) บนแกนกว้างที่พี่ตัดสิน +254 มม., flank drape 0.11 vs 0.89, หัวเตียง resolve, plane ใน envelope — ทุกแกนดีขึ้น (5) f0938871 refuted-for-cause: field นับเฟรมแข็ง 976 มม. ของตัวเอง + flank เปลือย N/W 0.89 + plane 644 เกิน h600 (6) D-108 ยัง REVERSE ไม่ได้ — เงื่อนไข reverse_by ของมัน (ตัวซื้อผ่าน bench ครบ) ยังไม่เกิดจริง; แถวนี้คือ deficit ใบใหม่ตัวเลขเล็กลง ผูก ASK-029 ซึ่งกลับมาเป็น critical path ของคำสั่ง",
+   "where": "pipeline/scripts/wholebed_rules.py, pipeline/scripts/build_room.py, pipeline/scripts/model_assert_check.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/blenderkit-search-log.json, pipeline/scripts/test_wholebed_rules.py",
+   "because": "instrument ตอบคำถามที่มันถูกสร้างมาถาม (R7b) — made_field ถูกถามว่า 'มวลนุ่มกว้างเท่าไร' และตอบด้วยความกว้างของแผงผนังเพราะข้อยกเว้นของมัน calibrate กับวัตถุชิ้นเดียว · การจับได้มาจากรุ่ง P2r-24 ทำงานตรงตามที่ออกแบบ: plane ประกาศ 417 vs staged 521 (drift 104) หยุด build แล้วบังคับให้เปิด probe · ตาพี่ยังไม่เคยเห็นเฟรมนี้ — ทุกอย่างในแถวนี้ reversible จากภาพตาม R3",
+   "reverse_by": "ตัวจาก ASK-029 (คลัง 135 ตัว) ผ่าน field cut ด้วยเครื่องมือที่แก้แล้ว -> เปลี่ยน frame, ลบ deficit แถวนี้ · หรือพี่ตัดสินจากภาพว่า interim ตัวเก่า (f52472c1) อ่านดีกว่า -> restore slug + assertion row + deficit {D-108, ASK-028} ตาม frame_note · หรือพี่ sign หัวเตียงของ candidate อื่นตาม D-037 ladder",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-110",
+   "unit": "DELIV-001",
+   "subject": "bed-size-vs-sheet",
+   "decided_round": 54,
+   "decided_date": "2026-08-18",
+   "decided_by": "owner",
+   "obeys": "ORD-2026-08-18-bed-too-small",
+   "question": "field cut 0.88 อ่านแบบวาดเป็นสเปกตายตัวหรือเป็นเป้าที่มี tolerance — และ deficit 0.835 ของ 81d895fd อยู่สถานะไหน",
+   "in_effect": "พี่ calibrate ด้วยปากตัวเองกลางรอบ p2r54: ขนาดเตียงตามแบบไม่ใช่ค่าตายตัว แต่ห้ามเบี่ยงจากแบบมากเกินไป และเปลี่ยนได้ · ผลเชิงกลไก: (1) MIN_FIELD_FILL 0.88 คงเดิมเป็นเส้นของ BUILDER — ต่ำกว่านั้นยังต้อง sign deficit เป็นแถวทะเบียน + พิมพ์ดังทุก build เหมือนเดิม ไม่มีอะไรเงียบลง (2) ความหมายของสถานะ interim เปลี่ยน: จาก 'ช่องว่างจัดซื้อ เฟรมห้าม ship เป็นเตียงตามแบบ' เป็น 'ระยะเบี่ยงที่อยู่ในดุลยพินิจของพี่ ตัดสินจากภาพ (R3)' — 0.835 ของ 81d895fd จึงเป็นคำถามที่ตากับเฟรม p2r54 ตอบ ไม่ใช่คำตัดสินอัตโนมัติ (3) ASK-029 ลดจาก critical path เหลือเส้นทางถ้าตาพี่อยากได้เตียงที่ใกล้แบบกว่านี้ (4) ห้าม builder แปลประโยคนี้เป็นตัวเลขใหม่เอง — พี่ไม่ได้ให้ตัวเลข เส้น 0.88 อยู่ที่เดิม ดุลยพินิจใต้เส้นเป็นของพี่คนเดียว",
+   "where": "qa/owner-orders.json, qa/owner-asks.json, pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "because": "คำพูดพี่เอง ระหว่างรอบ — บันทึกทันทีตาม R13 (คำสั่งเป็นแถวข้อมูล ไม่ใช่ประโยคใน chat log) และตาม bug ที่ R13 เกิดมาแก้: คำพูดพี่ที่อยู่ในช่องที่ไม่มีเครื่องมืออ่าน = คำพูดที่หายไป",
+   "reverse_by": "พี่พูดจากภาพเมื่อไรก็ได้ — 'เตียงนี้เล็กไป' บนเฟรม p2r54 = interim ถูกปฏิเสธ ASK-029 กลับเป็น critical path · 'ใช้ได้' = deficit แถวนี้ปิดโดยตาพี่ และ ORD-2026-08-18-bed-too-small retire ด้วยแถวใหม่ที่อ้างคำพูดนั้น",
+   "owner_override": "เอาจริง ๆ ขนาดเตียงมันก็ไม่ได้ fix ขนาดนั้นแต่ก็ไม่ได้อยากให้มันเปลี่ยนจากแบบเยอะเกินไป (แต่เปลี่ยนได้)",
+   "override_date": "2026-08-18"
+  },
+  {
+   "id": "D-111",
+   "unit": "DELIV-001",
+   "subject": "bed-pixels-fused-semantics-rebaseline",
+   "decided_round": 54,
+   "decided_date": "2026-08-18",
+   "decided_by": "builder",
+   "question": "ratchet ยิง (core 2,067->4,559 / flank 1,459->3,206) บนเฟรม p2r54 — เตียงแย่ลงจริงหรือเปล่า และ baseline ต้องทำยังไง",
+   "in_effect": "การพุ่งส่วนใหญ่คือ ACCOUNTING ไม่ใช่ pixel regression: เตียงเก่า (f52472c1) ฐาน platform ใส่ bed_base (role frame ไม่ถูกนับเป็น core) ที่นอนแยกชิ้นเป็น core · เตียงใหม่ (81d895fd) เฟรม+ที่นอนหลอมเป็นเปลือกเดียว ทุกพิกเซลของตัวเตียงที่โผล่ถูกนับเป็น core — คนละคำถามกัน overlay ยืนยันด้วยตา: ส่วนที่โผล่คือมุมตัวเตียงหัว-ขวาที่ชายผ้าหยุดสั้น (~45x120px) + ร่องระหว่างหมอน ซึ่ง 'ฐานโผล่มุมใต้ชายผ้า' มีในงานส่งจริงและ reader ตาบอดอ่านเป็น none · ที่ทำ: (1) เปลือกใส่ SIGNED base linen (D3-1 คืน ground rung ให้บันได — value 176.8->114.0 มุมอ่านเป็นฐานเข้มแบบงานส่งจริง) (2) bed_pixels รับ declaration --fused-body จาก build (ไม่เดาเอง — roster ไม่มี core ยัง refuse เหมือนเดิม) (3) ratchet ปฏิเสธเทียบข้าม core_semantics (กฎเดียวกับ guard กล้องของมันเอง) (4) RE-BASELINE โดยเจตนา: qa/bed-pixels-baseline.json เขียนใหม่ด้วยเลข fused ของ p2r54 (core 4,559 / flank 3,206 / top 1,353) — เลขนี้เข้มกว่า separable โดยนิยาม และ ratchet เดินต่อจากตรงนี้ ลงได้อย่างเดียว · กรรมการข้าม-construction ที่เทียบได้จริงคือ blind panel (อ่านที่นอน-vs-ฐานด้วยตา) ซึ่งรันบนเฟรมนี้ในรอบเดียวกัน",
+   "where": "qa/bed-pixels-baseline.json, pipeline/scripts/bed_pixels.py, pipeline/scripts/build_room.py",
+   "because": "เลขที่ขึ้นเพราะนิยามเปลี่ยนถ้าปล่อยให้พิมพ์เป็น 'เตียงแย่ลง' คือ instrument โกหกอีกรูปแบบ — แต่การ re-baseline เงียบ ๆ คือการปิดเสียง rung · ทางที่สาม: guard ปฏิเสธการเทียบ + แถวนี้บอกเหตุ + เลขใหม่พิมพ์ทุกรอบเหมือนเดิม",
+   "reverse_by": "เตียง separable กลับมาใน frame -> ratchet ปฏิเสธเทียบอีกครั้ง -> re-baseline กลับพร้อมแถวใหม่ · หรือพี่ชี้จากภาพว่ามุมที่โผล่ต้องหาย -> เป็น work item ใหม่ (ผ้า/หมอนปิดมุม) ไม่ใช่การแก้เลข",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

@@ -76,6 +76,24 @@ def plan_gap(a, b):
     return max(gx, gy)
 
 
+def plan_overlap_frac(p, anchor):
+    """Fraction of p's PLAN area lying over the anchor's plan bbox (0..1).
+
+    The premise it carries (p2r54): A PART OF THE BED LIES ON THE BED. Bedding
+    covers the mattress, pillows lean on it, a foot throw crosses it — every
+    made-bed layer puts most of its plan over the frame. Furniture that RIDES
+    ALONG in the file (flanking cabinets, a backdrop headboard wall) stands on
+    the floor BESIDE or BEHIND the frame, so most of its plan lies off it.
+    Measured on the candidate that forced the rule (81d895fd, native m):
+    duvet 0.86, foot throw 0.79, pillows ~1.0 / closet bodies 0.02, backdrop
+    wall panels 0.10-0.24. The gap between the two families is wide."""
+    ax0, ax1 = max(p["lo"][0], anchor["lo"][0]), min(p["hi"][0], anchor["hi"][0])
+    ay0, ay1 = max(p["lo"][1], anchor["lo"][1]), min(p["hi"][1], anchor["hi"][1])
+    inter = max(0.0, ax1 - ax0) * max(0.0, ay1 - ay0)
+    a = plan_area(p)
+    return (inter / a) if a > 0 else 0.0
+
+
 def unit_factor(parts, drawn_long_m=2.149):
     """Which uniform factor lands the file in metres-at-bed-scale.
 
@@ -295,11 +313,29 @@ def dead_side_boards(parts, plane_z, anchor=None):
     return out
 
 
-def flat_accents_on_bank(parts, plane_z, anchor=None, drawn_plan_m2=4.298):
-    """Lying-flat decor bands on the pillow bank: above the plane, too small to
-    be the bedding field, presented height under their own smallest plan
-    dimension. A standing pillow is taller than it is deep; a draped accent
-    band is not. Bedding (the duvet field) is exempted first by plan share."""
+# The flatness test alone cannot tell a lying accent band from a lying pillow —
+# f52472c1's plaid presents 0.60 of its smallest plan dimension, 81d895fd's
+# flattest pillow 0.79, and that gap is too narrow to carry a rule. What
+# separates the measured families is WHERE THEY LIE: the pillow BANK presses
+# against the head (81d895fd's four pillows end 0.02-0.23 m from the head
+# edge), an accent band lies out on the bedding field (the plaid's near edge is
+# 0.70 m from the head). The first cut of this rule had no head term at all and
+# ate two of 81d895fd's pillows at integration — the same single-candidate
+# calibration the field's thin-panel exemption paid for the same hour (R9b in
+# threshold form). 0.45 sits in the measured gap.
+FLAT_ACCENT_HEAD_M = 0.45
+
+
+def flat_accents_on_bank(parts, plane_z, anchor=None, drawn_plan_m2=4.298,
+                         head_x=None, head="hi"):
+    """Lying-flat decor bands ON THE FIELD, away from the pillow bank: above
+    the plane, too small to be the bedding field, presented height under their
+    own smallest plan dimension, and lying farther than FLAT_ACCENT_HEAD_M
+    from the head edge (the bank presses against the head; an accent band lies
+    out on the bedding). With no head_x the head term is skipped — the
+    pre-p2r54 behaviour, kept only so old callers fail loudly in tests rather
+    than silently pass a band. Bedding (the duvet field) is exempted first by
+    plan share."""
     out = []
     for p in parts:
         if p is anchor:
@@ -309,8 +345,13 @@ def flat_accents_on_bank(parts, plane_z, anchor=None, drawn_plan_m2=4.298):
             continue                      # at or under the plane: mattress/frame
         if plan_area(p) >= BEDDING_PLAN_FRAC * drawn_plan_m2:
             continue                      # the bedding field itself
-        if s[2] < min(s[0], s[1]):
-            out.append(p)
+        if s[2] >= min(s[0], s[1]):
+            continue                      # presents its depth: a pillow, kept
+        if head_x is not None:
+            d_head = (head_x - p["hi"][0]) if head == "hi" else (p["lo"][0] - head_x)
+            if d_head < FLAT_ACCENT_HEAD_M:
+                continue                  # pressed against the head: the bank
+        out.append(p)
     return out
 
 
@@ -350,11 +391,25 @@ SOFT_PANEL_THIN_M = 0.06
 MIN_FIELD_FILL = MIN_FILL
 
 
+# A made-bed layer puts at least half its plan over the frame (plan_overlap_frac's
+# own premise). CALIBRATION DEBT PAID p2r54: without this predicate the field
+# admitted 81d895fd's 163 mm-thick backdrop headboard WALL — a floor-standing
+# panel 2,759 mm wide, 590 mm past the frame each side — because the thin-panel
+# exemption below was frozen at 60 mm against ONE candidate's burl panel (R9b's
+# sentence, in threshold form: a rule calibrated on the object it applies to
+# will exempt the next one). That panel's width WAS the bench's 'field 2149,
+# fill 1.00' — the first-ever field pass was the wall, not the bed. It also
+# admitted f0938871's fused hard FRAME (976 mm tall) as field width. Both
+# corrected rows: qa/blenderkit-search-log.json wholebed_2026_08_18.
+FIELD_MIN_OVERLAP = 0.5
+
+
 def made_field(parts, anchor):
     """The parts forming the MADE-BED FIELD: everything rising above the
-    anchor's top face except thin standing panels. Selection heuristic for the
-    bench, where no roles exist yet; the integration hook passes its own
-    role-resolved parts straight to field_fill instead."""
+    anchor's top face that LIES ON THE BED (plan overlap >= FIELD_MIN_OVERLAP),
+    except thin standing panels. Selection heuristic for the bench, where no
+    roles exist yet; the integration hook passes its own role-resolved parts
+    straight to field_fill instead."""
     top = anchor["hi"][2]
     out = []
     for p in parts:
@@ -366,7 +421,40 @@ def made_field(parts, anchor):
         thin = min(s[0], s[1])
         if thin <= SOFT_PANEL_THIN_M and s[2] > 3 * thin:
             continue
+        if plan_overlap_frac(p, anchor) < FIELD_MIN_OVERLAP:
+            continue
         out.append(p)
+    return out
+
+
+def carry_ons(parts, plane_z, anchor):
+    """Furniture riding along in the candidate's file: non-anchor parts whose
+    plan mostly lies OFF the frame (plan_overlap_frac < FIELD_MIN_OVERLAP).
+    Returns [(part, why)].
+
+    Two families, one premise, two printed reasons: BELOW the plane they are
+    flanking cabinets (this room's nightstands are owner millwork the sheet
+    draws — R12; a candidate's own bedside units duplicate them the way its
+    own headboard duplicates the band); rising TO or OVER the plane they are
+    backdrop panelling (81d895fd ships a two-layer fabric headboard WALL wider
+    than the bed). BOUNDARY, said plainly: a candidate whose side drape is a
+    SEPARATE mesh hanging fully off the frame would be eaten by this rule —
+    and the field check downstream would then FAIL LOUDLY on the missing
+    width, never silently ship a stripped bed. No such candidate exists in
+    the 20 stagings measured to date (every duvet mesh overlaps its frame
+    0.79+)."""
+    out = []
+    for p in parts:
+        if p is anchor:
+            continue
+        if plan_overlap_frac(p, anchor) >= FIELD_MIN_OVERLAP:
+            continue
+        if p["hi"][2] < plane_z - 0.05:
+            out.append((p, "flanking cabinet riding along in the file — the "
+                           "sheet draws this room's nightstands (R12)"))
+        else:
+            out.append((p, "backdrop panelling riding along in the file — the "
+                           "band is the headboard of record (R12)"))
     return out
 
 

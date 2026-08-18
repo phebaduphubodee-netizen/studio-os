@@ -476,8 +476,18 @@ def compose(beauty_path, mask_path, sidecar):
     return ids, names, px, b
 
 
-def measure(beauty_path, mask_path, sidecar_path, dump_path=None):
-    """The whole measurement, as one dict. Raises CouldNotRun."""
+def measure(beauty_path, mask_path, sidecar_path, dump_path=None,
+            fused_body=None):
+    """The whole measurement, as one dict. Raises CouldNotRun.
+
+    `fused_body` (p2r54): the BUILD's declaration that the staged bed models
+    frame and mattress as ONE shell — the named object is the bed BODY and is
+    read as the core even though it wears the base upholstery (D3-1's signed
+    deep linen, which is what its exposed corners visually are). This is a
+    DECLARATION from the layer that staged the mesh, never an inference here:
+    without it a roster with no core still REFUSES (the exit-2 law below), and
+    with it the core question changes meaning — which is why the semantics
+    travel in the result and the ratchet refuses to compare across them."""
     import numpy as np
 
     side = load_sidecar(sidecar_path)
@@ -486,6 +496,14 @@ def measure(beauty_path, mask_path, sidecar_path, dump_path=None):
     materials, mat_src = materials_for(side, dump_path)
     ids, names, px, beauty = compose(beauty_path, mask_path, side)
     role, unknown = roles_of(names, materials)
+    if fused_body:
+        if fused_body not in names.values():
+            raise CouldNotRun(
+                f"the build declares a fused bed body {fused_body!r} but no such "
+                f"object is in the mask roster — the declaration and the frame "
+                f"disagree, and a rung must not pick a side silently.")
+        role[fused_body] = CORE
+        unknown = [(nm, mt) for nm, mt in unknown if nm != fused_body]
 
     core_names = sorted(n for n, r in role.items() if r == CORE)
     aabbs = aabbs_from_dump(dump_path) if dump_path and os.path.isfile(dump_path) else {}
@@ -568,6 +586,8 @@ def measure(beauty_path, mask_path, sidecar_path, dump_path=None):
     return {
         "frame": os.path.basename(beauty_path),
         "resolution": [int(beauty.shape[1]), int(beauty.shape[0])],
+        "core_semantics": (f"fused_body:{fused_body}" if fused_body
+                           else "separable"),
         "material_source": mat_src,
         "roster": len(names),
         "px": px,
@@ -655,6 +675,12 @@ def report(m):
     lines = []
     lines.append(f"BED PIXELS — {m['frame']} at {m['resolution'][0]}x"
                  f"{m['resolution'][1]}, roles from {m['material_source']}")
+    if m.get("core_semantics", "separable") != "separable":
+        lines.append(f"  CORE SEMANTICS: {m['core_semantics']} — the staged "
+                     f"bed models frame+mattress as one shell (build's "
+                     f"declaration); every exposed pixel of the bed BODY "
+                     f"counts as core, which is a stricter read than a "
+                     f"separable mattress ever gets.")
     rows = sorted(((n, m["px"][n], m["role"].get(n, "?")) for n in m["px"]),
                   key=lambda r: -r[1])
     for nm, n, r in rows:
@@ -795,6 +821,20 @@ def ratchet(m, baseline, sidecar_source=None):
                     f"different camera ({baseline.get('frame')}), so its pixel "
                     f"counts are not comparable to this frame's. Re-baseline "
                     f"deliberately."], False
+    # p2r54 — SAME CAMERA IS NOT ENOUGH: the core's MEANING is part of the
+    # measurement. A separable-mattress count (the slab alone; the base wears
+    # its own role and is never counted) and a fused-body count (frame+mattress
+    # one shell — every exposed pixel of the bed's body) answer different
+    # questions, and comparing them printed a +2,492 px "regression" that was
+    # actually the accounting change. Same law as the camera guard one line up.
+    _bsem = baseline.get("core_semantics", "separable")
+    _msem = m.get("core_semantics", "separable")
+    if _bsem != _msem:
+        return [], [f"  ratchet DID NOT RUN — the baseline's core is "
+                    f"{_bsem!r} and this frame's is {_msem!r}: different bed "
+                    f"constructions count different pixels as core, so the "
+                    f"numbers are not comparable. Re-baseline deliberately "
+                    f"with a decision row saying so."], False
     v, notes = [], []
     for key, label in (("core_px", "visible mattress"),
                        ("core_flank", "bare mattress FLANK")):
@@ -908,6 +948,7 @@ def main(argv=None):
     ov, a = opt("--overlay")
     js, a = opt("--json")
     baseline, a = opt("--baseline")
+    fused, a = opt("--fused-body")
     if len(a) < 3:
         print("usage: bed_pixels.py <beauty.png> <idmask.png> <idmask.json> "
               "[--scene <scene.json>] [--overlay <png>] [--json <path>] [--soft]")
@@ -918,7 +959,7 @@ def main(argv=None):
             print(f"BED PIXELS: COULD NOT RUN — {p!r} is not a file")
             return 2
     try:
-        m = measure(beauty, mask, sidecar_path, scene)
+        m = measure(beauty, mask, sidecar_path, scene, fused_body=fused)
         v = check(m)
     except CouldNotRun as e:
         print(f"BED PIXELS: COULD NOT RUN — {e}")
