@@ -143,12 +143,12 @@
   },
   {
    "assembly": "bed",
-   "identity": "The bed: upholstered base, mattress, headboard panel with welts, the acquired head pillows and the acquired cloth set. 2000 x 2149 x 600.",
+   "identity": "The bed: the ACQUIRED whole bed f52472c1 (P2r-52, D-106/D-107 — platform frame with integral side ledges, fitted mattress, one duvet field, 2 pillows + 3 shams, all re-dressed in the six studio bed materials), the sheet-drawn headboard band with welts (R12, stays built), and a measured pillowstop closing the head-end strip. 2000 x 2149 footprint, ink-true.",
    "exists": "sheet:SR-07",
    "held_by": "floor",
    "operable": false,
    "verdict": "keep",
-   "why": "Ink-trued and owner-confirmed; footprint and height are the client's own drawing (R12)."
+   "why": "Ink-trued and owner-confirmed; footprint is the client's own drawing (R12). The assembly's construction is acquired per his class order (D-104); the acquired parts group under this row by the bed__ prefix."
   },
   {
    "assembly": "bench",

@@ -56,6 +56,12 @@
    "axis": "y",
    "asserted_mm": 2512.8,
    "asserted_on": "2026-08-17"
+  },
+  "f52472c1-fc7e-481a-8fcd-d18036496e6a": {
+   "class": "whole_bed",
+   "axis": "maxxy",
+   "asserted_mm": 3159.0,
+   "asserted_on": "2026-08-18"
   }
  },
  "model_assertions_note": "P2r-9 (2026-08-16). EVERY MODEL REFERENCE ASSERTS ITS OWN SIZE HERE, AS DATA, and pipeline/scripts/model_assert_check.py diffs each row against that file's own `<asset>.scale.json` sidecar AND against a live re-measure of the file, on every build. WHY IT IS A FIELD AND NOT A SENTENCE: until today these numbers lived only in the `*_note` prose beside them, and on p2r36 `bed_models_note` asserted 2198.1 mm on y for ub806591a — the size of 2b142a32, the candidate this lane REJECTED. The file's own sidecar read 1599.9 mm and was right the whole time, but nothing compared the two, so a 1505x1600 mm duvet was scaled onto a 2000x2149 mm bed and its hem came to rest on the mattress face. The owner saw it in one sentence before any instrument did. A measurement kept where only a human re-reading prose can check it is not a measurement. `asserted_on` is provenance and is not checked; class/axis/asserted_mm are, three ways, and a row nothing references is refused by name.",
@@ -68,6 +74,15 @@
    },
    "max_scale": 1.0,
    "why": "a duvet COVERS the mattress and falls past its flanks. The inset is build_room.py `mins = 0.09`, the mattress's own recess under the coverlet, so the plan to cover is the bed item's w/d less 90 mm a side and it tracks the bed if the bed is redrawn (R9: never typed twice). max_scale 1.0 = an acquired mesh is not stretched to fit — that is the 'plausible-but-wrong-scale model' the whole assertion law exists to refuse. The rule is attached to the SITE, so it survives the asset being removed and filters the next audition on measurement before a single frame is rendered."
+  },
+  "items[1].bed_models.frame": {
+   "class": "whole_bed",
+   "covers": {
+    "item": 1,
+    "inset_mm": 0
+   },
+   "max_scale": 1.0,
+   "why": "a whole bed FILLS the drawn footprint (2000 x 2149, element 3 ink-true) rather than covering a mattress inside it — inset 0 because the frame IS the outer line. max_scale 1.0 = never stretched (the 'plausible-but-wrong-scale model' refusal). The fit denominator is the FRAME CLUSTER, not the file bbox (wholebed_rules.frame_cluster; the audition's own fill-limitation note) — attached drape and side wings must not shrink the bed. The rule is attached to the SITE so it survives the asset and filters the next audition on measurement."
   }
  },
  "garment_models": [
@@ -875,7 +890,9 @@
      "best_on_shelf": 0.432,
      "ask_note": "ASK-002"
     },
-    "cloth_made_bed_gap_note": "p2r49, D-099. The MADE-BED cut says 80% of the mattress plan must wear cloth standing 30 mm proud, and that 80 is the WORST made bed in the friend's delivered work (7 legible beds read 80/90/95/95/100/100/100 by three independent sighted readers; qa/duvet-share-anchor-readings.json). This set measures 43.2%. So does the whole free shelf: 22 candidates re-benched on the new metric, ZERO survive, and 43.2% IS THE BEST OF THEM — this set, already in the frame. The next three are 42.8 (falls 1/4), 42.7 (the set the owner himself refused as 'เละ') and 39.2 (covers 73.4%, under the coverage cut). The gap is therefore a fact about the WORLD and not about us, which is the test R13 sets before a gap may be declared at all: 96 cached models, 27 new queries at p2r47, a BlenderKit sweep of 1,289 bedding assets at p2r48, and the class the free tier does not hold is sim-authored bedding with a duvet spread over the whole sleeping surface. ASK-002 is his money call and it now carries a measurement instead of a wish. REVERSAL: delete this block and the build refuses the set, which leaves a bare mattress — 0.0 on this same cut, i.e. strictly worse on the metric the gap is about. That asymmetry is why the door exists."
+    "cloth_made_bed_gap_note": "p2r49, D-099. The MADE-BED cut says 80% of the mattress plan must wear cloth standing 30 mm proud, and that 80 is the WORST made bed in the friend's delivered work (7 legible beds read 80/90/95/95/100/100/100 by three independent sighted readers; qa/duvet-share-anchor-readings.json). This set measures 43.2%. So does the whole free shelf: 22 candidates re-benched on the new metric, ZERO survive, and 43.2% IS THE BEST OF THEM — this set, already in the frame. The next three are 42.8 (falls 1/4), 42.7 (the set the owner himself refused as 'เละ') and 39.2 (covers 73.4%, under the coverage cut). The gap is therefore a fact about the WORLD and not about us, which is the test R13 sets before a gap may be declared at all: 96 cached models, 27 new queries at p2r47, a BlenderKit sweep of 1,289 bedding assets at p2r48, and the class the free tier does not hold is sim-authored bedding with a duvet spread over the whole sleeping surface. ASK-002 is his money call and it now carries a measurement instead of a wish. REVERSAL: delete this block and the build refuses the set, which leaves a bare mattress — 0.0 on this same cut, i.e. strictly worse on the metric the gap is about. That asymmetry is why the door exists.",
+    "frame": "f52472c1-fc7e-481a-8fcd-d18036496e6a",
+    "frame_note": "P2r-52, D-106 -> D-107: the whole-bed audition winner ('Bed King Size', 3D Warehouse, Trimble GML use-yes/redistribute-no, gitignored cache). When `frame` is named, build_room's frame hook REPLACES our base+mattress+cloth+pillows with the staged asset (the sheet-drawn headboard band stays built, R12/SR-18) — so `cloth_set`, its exception rows and `pillow_models.head_combo` above have NO CONSUMER while this row stands; they are kept as the record of the cloth era and as the fallback data a REVERSAL would need (reverse: delete `frame`, the cloth path reads them again). Scale is ASSERTED as whole_bed (the number is data in model_assertions, checked by P2r-9 on every build); orientation is MEASURED per staging from the file's own geometry (wholebed_rules.head_end), so no MODEL_FRONT_DEG entry exists for this class. Integration mechanics + strip-rule reasoning: D-107. Alternates if this round falsifies the winner (R1 two max): 4cf92fdd then bd96c4ff, per D-106."
    },
    "bed_cloth_gap_closed": {
     "was_declared": "2026-08-17",

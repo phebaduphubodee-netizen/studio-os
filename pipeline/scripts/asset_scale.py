@@ -118,6 +118,20 @@ BANDS = {
                   "master-suite.CANONICAL.spec.json element 3 (2000 x 2149 mm "
                   "ink-true footprint); band opens to a 1900 double and a 2500 "
                   "super-king with a footboard"),
+    # ---------------------------------------------------------------- p2r52 --
+    # A WHOLE DRESSED BED in one file (frame + mattress + bedding + pillows +
+    # its own headboard), diagnosed like bed_frame on the longest horizontal
+    # extent — but the band opens wider on both ends because the assembly
+    # includes side ledges, wing panels and drape that a bare frame does not
+    # carry (the D-106 winner measures 3159 mm across its ledged platform,
+    # inside wholebed_rules.ANCHOR_LONG_M's 3.30 m ceiling). What the band is
+    # for is the unit traps: an imperial-as-metres king lands at ~80 mm and a
+    # cm-as-metres one at ~32 m, both decades outside.
+    "whole_bed": (1900.0, 3600.0, "maxxy",
+                  "pipeline/scripts/wholebed_rules.py ANCHOR_LONG_M (1.55-3.30 "
+                  "m bed-anchor band) + the drawn 2000 x 2149 mm footprint "
+                  "(element 3, ink-true); D-106 audition table spans "
+                  "2149-3160 mm native across 11 staged candidates"),
     "nightstand": (300.0, 800.0, "z",
                    "master-suite.CANONICAL.spec.json items[3..4] h=580 + "
                    "knowledge/ergonomics/residential-clearances.md (a bedside "
@@ -188,6 +202,7 @@ MIN_DEPTH_RATIO = {
     # a bed frame, a nightstand and a bench are all solid objects with real plan
     # depth; none of them can legitimately arrive as a billboard
     "bed_frame": 0.10,
+    "whole_bed": 0.10,      # a dressed bed is a volume for the same reason
     "nightstand": 0.20,
     "bench_seat": 0.15,
     # a rug IS a plane — this class is the reason MIN_DEPTH_RATIO carries None as

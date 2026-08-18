@@ -519,8 +519,11 @@ def rung_shadow_contact(ours_im, render_path, spec):
     ctrl, ctrl_missed = _measure_pairs(ours_im, L, id_arr, name_to_id,
                                        _pairs(spec["control_contact"]))
     if not ours:
+        missing = sorted({m for pr in spec["contact"] for m in pr
+                          if m not in name_to_id})
         return None, None, {"could_not_run": "; ".join(f"{n}: {w}"
-                                                       for n, w in ours_missed)}
+                                                       for n, w in ours_missed),
+                            "missing_materials": missing}
     if not ctrl:
         return None, None, {"could_not_run": "no control contact in this frame — "
                             + "; ".join(f"{n}: {w}" for n, w in ctrl_missed)}
@@ -693,6 +696,20 @@ def run(render_path, scene_path=None, only=None, tag=None):
         elif kind == "shadow_contact":
             co, cc, res = rung_shadow_contact(ours_im, render_path, spec)
             if co is None:
+                # ABSENT ON PURPOSE IS NOT COULD-NOT-RUN (the octave rung's own
+                # law, p2r52): when every cloth a contact pair needs is gone by
+                # a signed decision (the whole-bed winner ships no throw and no
+                # coverlet — D-083/D-107), the site does not exist in this
+                # frame's construction. A future set that carries the layer
+                # re-enters the matmask and re-arms the rung by itself.
+                missing = res.get("missing_materials") or []
+                decs = {m: _absent_by_declaration(m) for m in missing}
+                if missing and all(decs.values()):
+                    ids = sorted({d[0] for d in decs.values()})
+                    print(f"[{key}] N/A BY DECLARATION {'+'.join(ids)} — every "
+                          f"cloth this contact needs ({', '.join(missing)}) is "
+                          f"absent by decision, not unmeasured.")
+                    continue
                 could_not.append((key, res["could_not_run"]))
                 print(f"[{key}] COULD NOT RUN - {res['could_not_run']}")
                 continue

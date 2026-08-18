@@ -228,6 +228,108 @@ def plan_scale_whole(native_len, native_w, fit_len=2.000, fit_w=2.149):
     return s, s * native_len / fit_len, s * native_w / fit_w
 
 
+# ---------------------------------------------------------------- integration --
+# P2r-52 (D-106 -> D-107): the INTEGRATION strip — the debts the audition
+# enumerated on the winning candidate, written as geometry rather than as mesh
+# names (R9b), and verified against an id-coloured render of the file before the
+# predicates were frozen (the "shelf+box vs plaid" pair was an inference until
+# the look settled it: the full-width burl panel is ONE mesh, the "wings" its two
+# visible ends; the below-plane pair are the side shelf boards; the plaid is a
+# lying-flat accent band on the pillow bank).
+
+# A second headboard plane: thinner along the head axis than any real bedding
+# and spanning most of the bed. The audition's own headboard strip requires
+# TALL (plane + 0.45); this panel tops out under that, which is exactly how it
+# survived to integration.
+HEAD_PANEL_THIN_M = 0.06
+HEAD_PANEL_WIDE_FRAC = 0.70
+# A dead side board: a thin shelf whose useful surface ends BELOW the sleeping
+# plane (R10: a surface nobody can use from the bed is a fabricated object) and
+# whose plan is board-sized, never platform-sized.
+DEAD_BOARD_THIN_M = 0.04
+DEAD_BOARD_PLAN_M2 = 0.20
+# A lying-flat accent on the pillow bank: presented height under its own
+# smallest plan dimension = a draped band, not a standing pillow. Real pillows
+# in this file measure z >= 1.1x their depth; the accent measures 0.6x.
+# Bedding is exempted FIRST by plan share of the anchor.
+BEDDING_PLAN_FRAC = 0.35
+
+
+def head_panel_parts(parts, plane_z, head_x, head="hi", bed_w=None, anchor=None):
+    """Duplicate headboard planes at the head: reach the head band, THIN along
+    the head axis, spanning most of the bed across, standing above the plane.
+    The sheet-drawn band (SR-18) is the headboard of record (R12); any
+    full-width panel the candidate parks there duplicates owner millwork."""
+    if bed_w is None:
+        bed_w = max((p["hi"][1] for p in parts), default=0.0) - \
+            min((p["lo"][1] for p in parts), default=0.0)
+    out = []
+    for p in parts:
+        if p is anchor:
+            continue
+        s = size(p)
+        if head == "hi":
+            reaches = p["hi"][0] > head_x - HB_BAND_M
+        else:
+            reaches = p["lo"][0] < head_x + HB_BAND_M
+        if (reaches and s[0] <= HEAD_PANEL_THIN_M
+                and s[1] >= HEAD_PANEL_WIDE_FRAC * bed_w
+                and p["hi"][2] > plane_z + 0.05):
+            out.append(p)
+    return out
+
+
+def dead_side_boards(parts, plane_z, anchor=None):
+    """Attached shelf boards whose top ends below the sleeping plane: a surface
+    that cannot be reached from the bed and does not exist in the drawing
+    (R10 — the absent thing is honest; a dead surface fabricates a reading)."""
+    out = []
+    for p in parts:
+        if p is anchor:
+            continue
+        s = size(p)
+        if (p["hi"][2] < plane_z - 0.05
+                and min(s[0], s[1]) <= DEAD_BOARD_THIN_M
+                and plan_area(p) <= DEAD_BOARD_PLAN_M2):
+            out.append(p)
+    return out
+
+
+def flat_accents_on_bank(parts, plane_z, anchor=None, drawn_plan_m2=4.298):
+    """Lying-flat decor bands on the pillow bank: above the plane, too small to
+    be the bedding field, presented height under their own smallest plan
+    dimension. A standing pillow is taller than it is deep; a draped accent
+    band is not. Bedding (the duvet field) is exempted first by plan share."""
+    out = []
+    for p in parts:
+        if p is anchor:
+            continue
+        s = size(p)
+        if p["hi"][2] <= plane_z + 0.03:
+            continue                      # at or under the plane: mattress/frame
+        if plan_area(p) >= BEDDING_PLAN_FRAC * drawn_plan_m2:
+            continue                      # the bedding field itself
+        if s[2] < min(s[0], s[1]):
+            out.append(p)
+    return out
+
+
+def frame_cluster(parts, anchor, pad_m=0.02):
+    """The parts the SCALE is fitted on: the anchor plus anything whose plan
+    lies inside the anchor's plan bbox (padded). Bedding drape that overhangs
+    the frame and attached side furniture that widens it stay OUT of the
+    denominator — the audition's own fill note: 'the integration hook must fit
+    on the FRAME cluster, not the file bbox'."""
+    cluster = [anchor]
+    for p in parts:
+        if p is anchor:
+            continue
+        if (p["lo"][0] >= anchor["lo"][0] - pad_m and p["hi"][0] <= anchor["hi"][0] + pad_m
+                and p["lo"][1] >= anchor["lo"][1] - pad_m and p["hi"][1] <= anchor["hi"][1] + pad_m):
+            cluster.append(p)
+    return cluster
+
+
 def verdict(row):
     """The audition's hard filters, applied to a measured row (mm/px-free: all
     booleans derived upstream). Returns (ok, [reasons])."""

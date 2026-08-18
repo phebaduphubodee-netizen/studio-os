@@ -176,3 +176,95 @@ def test_unit_factor_prefers_the_bed_scale_reading():
     assert f in (None, 0.0254)  # never a silent third guess
     if f is None:
         assert "ambiguous" in why or "unit factor" in why
+
+
+# ---- integration strip (P2r-52, D-107) — fixtures are the WINNER'S own staged
+# ---- millimetres from the p2r51 bench row, in metres, head at x-hi ------------
+def winner_parts():
+    """f52472c1 staged: anchor frame + mattress + duvet + burl panel + 2 shelf
+    boards + plaid band + 2 pillows + 3 shams. Positions reconstructed from the
+    id-coloured identification views (2026-08-18); sizes are the bench row's."""
+    plane = 0.4276
+    return {
+        "plane": plane,
+        "anchor": part("frame", (0.0, 0.0, 0.0), (1.592, 2.149, 0.199)),
+        "mattress": part("mattress", (0.03, 0.44, 0.28), (1.599, 1.683, plane)),
+        "duvet": part("duvet", (0.05, 0.30, 0.30), (1.272, 1.841, 0.819)),
+        "burl": part("panel", (1.970, 0.0, 0.05), (1.994, 2.149, 0.727)),
+        "board_s": part("board_s", (1.30, 0.10, 0.20), (1.314, 0.559, 0.331)),
+        "board_n": part("board_n", (1.30, 1.59, 0.20), (1.314, 2.049, 0.331)),
+        "plaid": part("plaid", (0.95, 0.60, plane), (1.304, 1.534, plane + 0.214)),
+        "pillow_a": part("pillow_a", (1.45, 0.55, plane), (1.662, 1.038, plane + 0.354)),
+        "pillow_b": part("pillow_b", (1.45, 1.10, plane), (1.662, 1.588, plane + 0.354)),
+        "sham_a": part("sham_a", (1.60, 0.40, plane), (1.908, 0.894, plane + 0.452)),
+        "sham_b": part("sham_b", (1.60, 0.90, plane), (1.908, 1.394, plane + 0.452)),
+        "sham_c": part("sham_c", (1.60, 1.40, plane), (1.908, 1.894, plane + 0.452)),
+    }
+
+
+def _all(w):
+    return [v for k, v in w.items() if k not in ("plane",)]
+
+
+def test_head_panel_catches_the_burl_and_nothing_soft():
+    w = winner_parts()
+    hits = R.head_panel_parts(_all(w), w["plane"], head_x=2.0, head="hi",
+                              bed_w=2.149, anchor=w["anchor"])
+    assert [p["name"] for p in hits] == ["panel"]
+
+
+def test_head_panel_spares_the_sham_bank():
+    """The shams reach the head band and stand above the plane but are neither
+    thin nor full-width — the first bench run's pillow-bank deletion is the
+    mistake this assert pins against recurrence."""
+    w = winner_parts()
+    hits = R.head_panel_parts([w["sham_a"], w["sham_b"], w["sham_c"]], w["plane"],
+                              head_x=2.0, head="hi", bed_w=2.149)
+    assert hits == []
+
+
+def test_dead_side_boards_catches_the_shelf_pair_only():
+    w = winner_parts()
+    hits = R.dead_side_boards(_all(w), w["plane"], anchor=w["anchor"])
+    assert sorted(p["name"] for p in hits) == ["board_n", "board_s"]
+
+
+def test_dead_side_boards_spares_the_mattress_and_frame():
+    """The mattress top IS the plane (not below it) and the frame is the anchor
+    (exempt by identity, not by tuning)."""
+    w = winner_parts()
+    hits = R.dead_side_boards([w["anchor"], w["mattress"]], w["plane"],
+                              anchor=w["anchor"])
+    assert hits == []
+
+
+def test_flat_accent_catches_the_plaid_band_only():
+    w = winner_parts()
+    hits = R.flat_accents_on_bank(_all(w), w["plane"], anchor=w["anchor"])
+    assert [p["name"] for p in hits] == ["plaid"]
+
+
+def test_flat_accent_exempts_bedding_by_plan_share_not_by_name():
+    """The duvet lies flatter than it is wide too — it is exempt because it IS
+    the bedding field (>= 0.35 of the drawn plan), never because of a name."""
+    w = winner_parts()
+    hits = R.flat_accents_on_bank([w["duvet"]], w["plane"])
+    assert hits == []
+
+
+def test_flat_accent_spares_standing_pillows():
+    w = winner_parts()
+    hits = R.flat_accents_on_bank(
+        [w["pillow_a"], w["pillow_b"], w["sham_a"]], w["plane"])
+    assert hits == []
+
+
+def test_frame_cluster_excludes_overhang_and_side_furniture():
+    """The scale denominator: a nightstand wing outside the anchor's plan and a
+    drape overhanging it stay OUT (bd96c4ff's fill failure was exactly the wing
+    widening the file bbox); the mattress inside stays IN."""
+    w = winner_parts()
+    wing = part("wing", (0.2, -0.4, 0.0), (0.9, -0.05, 0.45))     # off the anchor
+    drape = part("drape", (0.1, -0.1, 0.3), (1.5, 2.30, 0.7))     # overhangs both flanks
+    cl = R.frame_cluster([w["anchor"], w["mattress"], wing, drape], w["anchor"])
+    assert sorted(p["name"] for p in cl) == ["frame", "mattress"]

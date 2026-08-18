@@ -244,11 +244,25 @@ def test_check_render_flags_a_rung_that_misses_its_target():
 
 def test_check_render_flags_a_missing_object():
     """The probe not seeing a piece is a finding, not a pass. An occluded or renamed
-    object must never read as 'no violation'."""
+    object must never read as 'no violation'. (Example migrated bed__coverlet ->
+    bed__pillowsoft0 at p2r52, when the coverlet's absence became DECLARED (D-107,
+    the whole-bed winner has no spread layer) — the rule is unchanged and the
+    declaration path has its own test.)"""
+    m = _on_target()
+    del m["bed__pillowsoft0"]
+    out = vl.check_render(m)
+    assert any("no measurement" in v for v in out)
+
+
+def test_the_declared_coverlet_absence_notes_rather_than_fails():
+    """p2r52: the whole-bed winner is duvet-over-fitted-mattress — no spread
+    exists in the file (D-107). The rung reports the declaration; it does not
+    fail the frame, and it does not go silent either."""
     m = _on_target()
     del m["bed__coverlet"]
     out = vl.check_render(m)
-    assert any("no measurement" in v for v in out)
+    assert any("ABSENT BY DECLARATION D-107" in v for v in out), out
+    assert not any("bed__coverlet" in v and "no measurement" in v for v in out)
 
 
 def test_check_render_catches_a_squeeze_that_per_rung_tolerance_alone_would_pass():
@@ -657,17 +671,34 @@ def test_an_ambiguous_acquisition_fails_rather_than_picking_one():
 
 
 def test_an_undeclared_rung_cannot_be_resolved_through_an_acquisition():
-    """`bed__base` (the upholstery rung's own object) is not in ACQUIRED_AS, so a
-    `bed__mattress__acq0` must not silently take its rung — the pairing is a
-    design fact and has to be written down. (This test used bed__duvet until
-    p2r44, when the bed cloth itself became an acquisition and that rung was
-    declared; the rule it guards is unchanged, and `bed__base` carries it now.)"""
+    """A rung with no ACQUIRED_AS row must not be silently taken by a renamed
+    mesh — the pairing is a design fact and has to be written down. (This test
+    used bed__duvet until p2r44 and bed__base until p2r52; each migrated the
+    hour its rung became a real acquisition, which is itself the rule working.
+    `bed__throw` carries it now — absent by D-083, and if an acquisition ever
+    ships a runner it must be DECLARED here before it can resolve; asked via
+    resolve_acquired directly because check_render would land on the D-083
+    declaration after the failed lookup, by design.)"""
+    m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
+    m.pop("bed__throw", None)
+    w["bed__throw__acq0"] = ["bed_base"]
+    m["bed__throw__acq0"] = 91.0
+    got, why = vl.resolve_acquired("bed__throw", m, w)
+    assert got is None and "not declared as an acquirable rung" in why
+
+
+def test_the_whole_bed_frame_takes_the_base_rung():
+    """p2r52 (D-106/D-107): the hand-built bed leaves the scene with the frame
+    hook, and the acquired platform — named bed__frame__acq0, dressed in the
+    base linen — takes the upholstery rung. The mattress beside it wears
+    bed_mattress and must NOT be swept into the same rung."""
     m, w = _measured_after_the_p2r38_acquisitions(), _wears_after_the_p2r38_acquisitions()
     del m["bed__base"]
-    w["bed__base__acq0"] = ["bed_base"]
-    m["bed__base__acq0"] = 177.1
-    out = vl.check_render(m, wears=w)
-    assert any("not declared as an acquirable rung" in v for v in out), out
+    w["bed__frame__acq0"] = ["bed_base"]
+    m["bed__frame__acq0"] = 75.0
+    w["bed__frame__acq1"] = ["bed_mattress"]
+    m["bed__frame__acq1"] = 230.0
+    assert vl.resolve_acquired("bed__base", m, w)[0] == "bed__frame__acq0"
 
 
 def test_the_bought_bed_cloth_resolves_to_its_two_rungs():

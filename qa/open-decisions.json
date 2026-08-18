@@ -1685,6 +1685,22 @@
    "owner_override": null,
    "override_date": null,
    "obeys": "ORD-2026-08-14-bed-cloth-is-acquired"
+  },
+  {
+   "id": "D-107",
+   "unit": "DELIV-001",
+   "subject": "wholebed-integration-mechanics",
+   "decided_round": 52,
+   "decided_date": "2026-08-18",
+   "decided_by": "builder",
+   "question": "หนี้ integration ของ f52472c1 (D-106) แปลงเป็นกลไกยังไง: strip อะไรด้วยเกณฑ์อะไร, วัสดุจัดยังไง, แถบหัวเตียงปิดด้วยอะไร",
+   "in_effect": "bed_models.frame ใน spec เรียก _place_bed_frame (build_room): (1) STRIP ด้วยเรขาคณิตล้วน 3 กฎใน wholebed_rules — head_panel_parts (แผงบางเต็มกว้างที่หัว = แผง burl ชิ้นเดียว ที่ตาอ่านเป็น 'ปีกคู่'; แผงหัวเตียงของ record คือ band ที่แบบวาด R12) · dead_side_boards (บอร์ดชั้นลอยยอดต่ำกว่า ระนาบนอน = ผิวใช้ไม่ได้ R10) · flat_accents_on_bank (ชิ้นนอนราบบนแถวหมอน z < มิติแผนต่ำสุด = แถบ plaid; หมอนตั้ง รอด, ผ้านวมยกเว้นด้วย plan share ไม่ใช่ชื่อ) — predicate ทุกตัว freeze หลังดู id-coloured render ของไฟล์จริง; (2) FIT บน frame_cluster (anchor + ชิ้นใน plan bbox ของมัน) ไม่ใช่ bbox ทั้งไฟล์; (3) วัสดุ: เคลียร์ของเดิมทั้งหมดแล้วใส่วัสดุสตูดิโอตาม role — 3DW ส่ง base-colour-only (pbr_map_roles) ข้อ 'เก็บ normal/rough' ของ DR จึง vacuous, ความยับอยู่ในเรขาคณิต 225k tris; frame=bed_base(ลินินเทา DD ที่ sign), mattress=bed_mattress, duvet=bed_duvet, หมอนหน้า=bed_pillow, sham หลัง=bed_duvet (ประโยคของ ladder เอง); ชื่อเข้า register เดิม: bed__frame__acq0/1, bed__cloth__acq0, bed__headset0/1__acq* + แถว ACQUIRED_AS['bed__base'] และ DECLARED_ABSENT['bed__coverlet'] (เตียงนี้ไม่มี spread — duvet ทับ fitted sheet ตรง ๆ); (4) แถบหัวเตียงเปลือย: วัดด้วย ray จากหน้า band เข้าเตียง แล้วสร้าง bed__head_shim (ชื่อการค้า pillowstop; คำว่า pillow ในชื่อ object ชน D8 ที่อ่าน acquire-word ถูกต้อง — ชิ้นนี้คือบอร์ด shim, R8 class (a) BUILD) บุลินิน base ลึกตามที่วัด+20mm (DR whole-bed-swap §1: joinery จริง ไม่ใช่ fudge transform); (5) ทิศหัวเตียง MEASURED ต่อ staging ด้วย wholebed_rules.head_end — ไม่มีแถว MODEL_FRONT_DEG (dict คง {-90} และ test ความครบของมันยังมีความหมาย)",
+   "where": "pipeline/scripts/build_room.py, pipeline/scripts/wholebed_rules.py, pipeline/scripts/value_ladder.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "because": "gate-DELIV001-P2r51 ระบุหนี้ครบแต่เป็น prose; แถวนี้คือ prose นั้นแปลงเป็นกลไกพร้อมเหตุผลต่อชิ้น หลังยืนยันตัวตนชิ้นส่วนด้วย id-render (การเดา Mesh_0 vs Mesh_4 ของ gate พลิกจริง: แผง burl เป็นชิ้นเดียวเต็มกว้าง ไม่ใช่ปีกคู่, คู่ Mica คือบอร์ดชั้นลอย, Mesh_4 คือหมอนอิง plaid นอนราบ) · D-104 (class order): เตียงทั้งหลังคือ acquired ยิ่งกว่าเดิม ไม่ใช่การ revisit",
+   "reverse_by": "ลบ bed_models.frame ออกจาก spec แล้ว build กลับไปทาง cloth_set เดิม · หรือ integration รอบสองล้มเหลว (R1: สองรอบ) → alternate ตาม D-106 ไม่วนตัวเดิม · แถว ACQUIRED_AS/DECLARED_ABSENT ลบพร้อมกัน",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-14-bed-cloth-is-acquired"
   }
  ]
 }

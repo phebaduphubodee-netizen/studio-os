@@ -566,6 +566,14 @@ ACQUIRED_AS = {
     # ORDER/SPAN are what bind.
     "bed__coverlet":    ("bed__cloth__acq", "bed_coverlet"),
     "bed__duvet":       ("bed__cloth__acq", "bed_duvet"),
+    # p2r52 — THE WHOLE BED (D-106/D-107): the base rung's own object leaves the
+    # scene with the hand-built bed and the acquired frame takes its rung. The
+    # frame hook names the platform `bed__frame__acq0` and dresses it in the
+    # base linen; `bed__frame__acq1` is the mattress (bed_mattress — not a rung,
+    # same reason bed__mattress never was). Duvet/sham/pillow resolve through
+    # the rows above unchanged, because the hook names its parts into the same
+    # register (`bed__cloth__acq0`, `bed__headset0__acq0/1`).
+    "bed__base":        ("bed__frame__acq", "bed_base"),
 }
 
 # A RUNG WHOSE OBJECT IS ABSENT ON PURPOSE, AND THE DECISION THAT SAYS SO.
@@ -598,6 +606,18 @@ DECLARED_ABSENT = {
                             "ACQUIRED_AS and is measured instead of this: the "
                             "declaration is asked only after that lookup "
                             "fails."),
+    # p2r52 — the whole-bed winner's construction is duvet-over-fitted-mattress:
+    # the file holds NO spread layer between mattress and duvet, and the blind
+    # panel read that construction inside the delivered none-or-sliver band
+    # (gate-DELIV001-P2r51). A future asset that does carry a spread resolves
+    # through ACQUIRED_AS first, same safety as the duvet row above.
+    "bed__coverlet": ("D-107", "the acquired whole bed f52472c1 has no spread: "
+                               "its bedding is one duvet field over a "
+                               "fitted-sheet mattress (id-coloured part census "
+                               "2026-08-18, 12 meshes, none between mattress "
+                               "top and duvet). The coverlet rung has no "
+                               "object to rank and the panel accepted the "
+                               "construction blind."),
 }
 
 

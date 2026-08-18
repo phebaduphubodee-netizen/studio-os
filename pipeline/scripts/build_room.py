@@ -5921,6 +5921,448 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head,
     return True
 
 
+def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m):
+    """R8 ONE LEVEL UP — THE WHOLE BED IS ACQUIRED (P2r-21, D-106 -> D-107).
+
+    p2r49 measured that no free CLOTH SET makes our bed (best duvet share 43.2%
+    vs the 0.80 delivered floor, geometrically incapable — D-101); p2r50 measured
+    the defect in image space (254,849 px of bare flank vs none-or-sliver 18/18
+    delivered); p2r51 auditioned 11 whole beds in the real room and ONE passed
+    every hard filter and the blind panel. This hook stages that winner in the
+    build proper, the way the audition staged it (wholebed_bench order), plus
+    the integration debts the gate enumerated:
+
+      strip   — the duplicate head panel, the dead side boards and the flat
+                accent band, by GEOMETRY (wholebed_rules.head_panel_parts /
+                dead_side_boards / flat_accents_on_bank; predicates frozen
+                against an id-coloured render, never mesh names — R9b)
+      fit     — on the FRAME CLUSTER, not the file bbox (the audition's own
+                stated fill limitation; wholebed_rules.frame_cluster)
+      retint  — the printed bedding leaves, the signed studio cloths arrive.
+                3D Warehouse ships base-colour-only (asset_scale.pbr_map_roles),
+                so DR §2's keep-normal/rough clause is vacuous here: the crumple
+                lives in the 225k-tri geometry, and the studio _woven materials
+                bring the rough_linen maps the file never had. Same treatment
+                _place_bed_cloth already gives acquired cloth.
+      roles   — every kept part wears one of the six studio bed materials, so
+                bed_pixels can POINT at the mattress (its exit-2 law: a core it
+                cannot find is a stopped build, never a silent 0%)
+      shim    — the head-end bare strip is measured by ray and closed with a
+                modelled upholstered pillowstop (DR whole-bed-swap §1: a real
+                joinery solution, never a transform fudge)
+
+    Orientation is MEASURED from the candidate's own geometry per staging
+    (wholebed_rules.head_end), so no MODEL_FRONT_DEG entry exists for this
+    class — the dict stays all -90 and its completeness test stays meaningful.
+
+    Returns True on success. False -> the CALLER raises (the cloth branch's own
+    three-state law: no silent fallback ever re-grows a hand-built bed, R13)."""
+    import bmesh
+    from mathutils import Matrix as _Mx, Vector as _Vec
+    from mathutils.bvhtree import BVHTree as _BVH
+    import wholebed_rules as _wbr
+
+    _mp = _model_path(slug)                       # sidecar door (whole_bed band)
+    if not _mp:
+        return False
+    hb = bpy.data.objects.get("bed__headboard")
+    if hb is None:
+        print("  whole bed: no built bed__headboard band to butt against")
+        return False
+    axis, sign = _head_dir(rot)
+    a = 0 if axis == "x" else 1                   # head axis index
+    b = 1 - a
+    along = W if axis == "x" else D
+    across = D if axis == "x" else W
+
+    def _wb(o):
+        lo = [math.inf] * 3
+        hi = [-math.inf] * 3
+        for c in o.bound_box:
+            w = o.matrix_world @ _Vec(c)
+            for i in range(3):
+                lo[i] = min(lo[i], w[i])
+                hi[i] = max(hi[i], w[i])
+        return lo, hi
+
+    hb_lo, hb_hi = _wb(hb)
+    HEAD_GAP = 0.003                              # bench contact; DR micro-gap law
+    head_face = (hb_lo[a] - HEAD_GAP) if sign > 0 else (hb_hi[a] + HEAD_GAP)
+
+    before = set(bpy.data.objects)
+    try:
+        bpy.ops.import_scene.gltf(filepath=_mp)
+    except Exception as e:                                     # noqa: BLE001
+        print(f"  whole bed: gltf import failed ({e})")
+        return False
+    news = [o for o in bpy.data.objects if o not in before]
+    for o in news:
+        o["_wb_cand"] = True
+
+    def _roots():
+        return [o for o in bpy.data.objects if o.get("_wb_cand") and o.parent is None]
+
+    def _parts():
+        bpy.context.view_layer.update()
+        out = []
+        for o in bpy.data.objects:
+            if not (o.get("_wb_cand") and o.type == "MESH"):
+                continue
+            lo, hi = _wb(o)
+            try:
+                o.data.calc_loop_triangles()
+                tris = len(o.data.loop_triangles)
+            except Exception:                                  # noqa: BLE001
+                tris = 0
+            out.append({"name": o.name, "lo": tuple(lo), "hi": tuple(hi),
+                        "tris": tris, "_ob": o})
+        return out
+
+    def _drop(ps, why):
+        for p in ps:
+            print(f"  whole bed: strip {p['name']} — {why}")
+            bpy.data.objects.remove(p["_ob"], do_unlink=True)
+
+    def _bail(msg):
+        print(f"  whole bed: {msg}")
+        for o in list(news):
+            try:                       # a stripped part is already gone; touching
+                bpy.data.objects.remove(o, do_unlink=True)   # even .name raises
+            except Exception:                                # noqa: BLE001
+                pass
+        return False
+
+    def _bvh(ps):
+        bm = bmesh.new()
+        for p in ps:
+            ob = p["_ob"]
+            m = ob.to_mesh()
+            m.transform(ob.matrix_world)
+            bm.from_mesh(m)
+            ob.to_mesh_clear()
+        tree = _BVH.FromBMesh(bm)
+        bm.free()
+        return tree
+
+    def _top(tree, x_, y_, z_from=4.0):
+        hit = tree.ray_cast(_Vec((x_, y_, z_from)), _Vec((0, 0, -1)), 8.0)
+        return hit[0].z if hit[0] is not None else None
+
+    def _plane_of(ps):
+        tree = _bvh(ps)
+        lo0 = min(p["lo"][0] for p in ps); hi0 = max(p["hi"][0] for p in ps)
+        lo1 = min(p["lo"][1] for p in ps); hi1 = max(p["hi"][1] for p in ps)
+        zs = []
+        n = 16
+        for i in range(n):
+            for j in range(n):
+                x_ = lo0 + 0.25 * (hi0 - lo0) + (i + 0.5) * 0.5 * (hi0 - lo0) / n
+                y_ = lo1 + 0.25 * (hi1 - lo1) + (j + 0.5) * 0.5 * (hi1 - lo1) / n
+                z = _top(tree, x_, y_)
+                if z is not None:
+                    zs.append(z)
+        return _wbr.sleeping_plane(zs), tree
+
+    parts = _parts()
+    if not parts:
+        return _bail("import produced no meshes")
+
+    # unit factor — asserted from the file's own extents, never assumed (R8)
+    f, why = _wbr.unit_factor(parts, drawn_long_m=max(along, across))
+    if f is None:
+        return _bail(f"scale unresolvable: {why}")
+    if f != 1.0:
+        for o in _roots():
+            o.scale = tuple(s * f for s in o.scale)
+        parts = _parts()
+
+    anchor = _wbr.pick_anchor(parts, drawn_plan_m2=along * across)
+    if anchor is None:
+        return _bail("no bed-scale anchor part")
+    keep, dropped = _wbr.strip(parts, anchor)
+    _drop([p for p, _w in dropped], "scenery/neighbour (audition rule)")
+    parts = _parts()
+
+    # head end from the candidate's own geometry -> head to +x first (bench
+    # parity: every predicate below runs in that frame), room heading later.
+    cand = {"x": _wbr.head_end(parts, axis=0), "y": _wbr.head_end(parts, axis=1)}
+    lo0 = min(p["lo"][0] for p in parts); hi0 = max(p["hi"][0] for p in parts)
+    lo1 = min(p["lo"][1] for p in parts); hi1 = max(p["hi"][1] for p in parts)
+    span = {"x": hi0 - lo0, "y": hi1 - lo1}
+    c_axis = None
+    if cand["x"] and not cand["y"]:
+        c_axis = "x"
+    elif cand["y"] and not cand["x"]:
+        c_axis = "y"
+    elif cand["x"] and cand["y"]:
+        c_axis = "x" if span["x"] >= span["y"] else "y"
+    if c_axis is None:
+        return _bail("head end unresolvable — placement would be a coin flip (R9)")
+    end = cand[c_axis]
+    if c_axis == "x":
+        rot_z = 0.0 if end == "hi" else math.pi
+    else:
+        rot_z = -math.pi / 2 if end == "hi" else math.pi / 2
+    piv = _Vec(((lo0 + hi0) / 2, (lo1 + hi1) / 2, 0))
+    if rot_z:
+        R_ = _Mx.Rotation(rot_z, 4, "Z")
+        for o in _roots():
+            o.matrix_world = _Mx.Translation(piv) @ R_ @ _Mx.Translation(-piv) @ o.matrix_world
+        parts = _parts()
+    print(f"  whole bed: head measured at {c_axis}-{end} from the file's own "
+          f"geometry (wholebed_rules.head_end — never a MODEL_FRONT_DEG guess)")
+
+    plane, tree = _plane_of(parts)
+    if plane is None:
+        return _bail("no top surface found by ray")
+
+    # separable own headboard leaves; a fused one was already an audition reject
+    hb_parts, fused = _wbr.headboard_parts(
+        parts, plane, head_x=max(p["hi"][0] for p in parts), head="hi")
+    if fused:
+        return _bail("own headboard is FUSED with the bed body (SR-18 collision)")
+    _drop(hb_parts, "candidate's own separable headboard (the band is the "
+                    "headboard of record, R12)")
+    parts = _parts()
+    anchor = next((p for p in parts if p["name"] == anchor["name"]), None)
+    if anchor is None:
+        return _bail("anchor vanished during strip — refusing to guess")
+
+    # ---- the integration strip (D-107): geometry, verified against an
+    # ---- id-coloured render before the predicates were frozen ---------------
+    head_x_now = max(p["hi"][0] for p in parts)
+    bed_w_now = max(p["hi"][1] for p in parts) - min(p["lo"][1] for p in parts)
+    _drop(_wbr.head_panel_parts(parts, plane, head_x=head_x_now, head="hi",
+                                bed_w=bed_w_now, anchor=anchor),
+          "duplicate head panel — thin, full-width, standing over the plane; "
+          "the sheet-drawn band is the headboard of record (R12)")
+    parts = _parts()
+    anchor = next(p for p in parts if p["name"] == anchor["name"])
+    _drop(_wbr.dead_side_boards(parts, plane, anchor=anchor),
+          "shelf board topping out BELOW the sleeping plane — a surface nobody "
+          "can use from the bed (R10)")
+    parts = _parts()
+    anchor = next(p for p in parts if p["name"] == anchor["name"])
+    _drop(_wbr.flat_accents_on_bank(parts, plane, anchor=anchor,
+                                    drawn_plan_m2=along * across),
+          "lying-flat accent band on the pillow bank (style clash filed by "
+          "both critics; a standing pillow is taller than it is deep)")
+    parts = _parts()
+    anchor = next(p for p in parts if p["name"] == anchor["name"])
+
+    # ---- fit on the FRAME CLUSTER, never the file bbox ----------------------
+    # The SCALE denominator is the cluster (drape and side wings must not
+    # shrink the bed — the audition's own fill-limitation note). The FILL
+    # refusal then re-checks what the audition's hard filter checked: the
+    # WHOLE kept bed, bedding included, against the drawn footprint — a
+    # cluster that fills 0.80 under bedding that drapes to 0.90 is this
+    # candidate's real construction (the frame stops short of the duvet's
+    # foot fall), not a different bed.
+    cl = _wbr.frame_cluster(parts, anchor)
+    cl_lo0 = min(p["lo"][0] for p in cl); cl_hi0 = max(p["hi"][0] for p in cl)
+    cl_lo1 = min(p["lo"][1] for p in cl); cl_hi1 = max(p["hi"][1] for p in cl)
+    s, _cf_l, _cf_w = _wbr.plan_scale_whole(cl_hi0 - cl_lo0, cl_hi1 - cl_lo1,
+                                            along, across)
+    if s is None:
+        return _bail("frame cluster has no extent — nothing to fit")
+    all_l = max(p["hi"][0] for p in parts) - min(p["lo"][0] for p in parts)
+    all_w = max(p["hi"][1] for p in parts) - min(p["lo"][1] for p in parts)
+    fill_l = min(1.0, s * all_l / along)
+    fill_w = min(1.0, s * all_w / across)
+    if fill_l < _wbr.MIN_FILL or fill_w < _wbr.MIN_FILL:
+        return _bail(f"the kept bed fills {fill_l:.2f}x{fill_w:.2f} of the "
+                     f"drawn footprint at cluster scale {s:.3f} "
+                     f"(< {_wbr.MIN_FILL}) — a different bed, not a fit")
+    if abs(s - 1.0) > 1e-9:
+        M = _Mx.Translation(piv) @ _Mx.Scale(s, 4) @ _Mx.Translation(-piv)
+        for o in _roots():
+            o.matrix_world = M @ o.matrix_world
+        parts = _parts()
+        anchor = next(p for p in parts if p["name"] == anchor["name"])
+        cl = _wbr.frame_cluster(parts, anchor)
+    print(f"  whole bed: scale {s:.4f} on the FRAME CLUSTER "
+          f"({len(cl)}/{len(parts)} parts in the denominator), fills "
+          f"{fill_l:.2f} x {fill_w:.2f} of the drawn {along * 1000:.0f} x "
+          f"{across * 1000:.0f} mm footprint")
+
+    # ---- the ink's no-footboard test, re-run on the staged result -----------
+    plane, tree = _plane_of(parts)
+    if plane is None:
+        return _bail("no top surface after scale — refusing to place blind")
+    foot = _wbr.foot_over_plane(parts, plane,
+                                foot_x=min(p["lo"][0] for p in parts), head="hi")
+    if foot > _wbr.FOOT_ABOVE_PLANE_M:
+        return _bail(f"footboard {foot * 1000:.0f} mm over the plane — the ink "
+                     f"draws none")
+
+    # ---- rotate +x-head frame into the room's head direction, then place by
+    # ---- contact: head butts the band, centred across, resting on the floor -
+    theta = {("x", 1): 0.0, ("y", 1): math.pi / 2,
+             ("x", -1): math.pi, ("y", -1): -math.pi / 2}[(axis, sign)]
+    if abs(theta) > 1e-9:
+        R_ = _Mx.Rotation(theta, 4, "Z")
+        for o in _roots():
+            o.matrix_world = _Mx.Translation(piv) @ R_ @ _Mx.Translation(-piv) @ o.matrix_world
+        parts = _parts()
+        anchor = next(p for p in parts if p["name"] == anchor["name"])
+        cl = _wbr.frame_cluster(parts, anchor)
+    cl_head = (max(p["hi"][a] for p in cl) if sign > 0
+               else min(p["lo"][a] for p in cl))
+    delta = [0.0, 0.0, 0.0]
+    delta[a] = head_face - cl_head
+    mid_b = (min(p["lo"][b] for p in cl) + max(p["hi"][b] for p in cl)) / 2.0
+    room_mid_b = (y0 + D / 2.0) if b == 1 else (x0 + W / 2.0)
+    delta[b] = room_mid_b - mid_b
+    delta[2] = -min(p["lo"][2] for p in parts)
+    for o in _roots():
+        o.matrix_world.translation += _Vec(delta)
+    parts = _parts()
+    anchor = next(p for p in parts if p["name"] == anchor["name"])
+
+    # placement is final — bake so object space is world metres (texture space
+    # + weld distances mean what they say; see _bake_transform_to_mesh)
+    keep_obs = [p["_ob"] for p in parts]
+    _bake_transform_to_mesh(keep_obs, why=f"whole bed {slug}")
+    parts = _parts()
+    anchor = next(p for p in parts if p["name"] == anchor["name"])
+    plane, tree = _plane_of(parts)
+    if plane is None:
+        return _bail("no top surface after placement")
+
+    # ---- roles: every kept part wears one of the six studio bed materials so
+    # ---- bed_pixels can point at the mattress and the ladder can rank rungs -
+    print("  whole bed roles: plane %.1f mm; parts: %s" % (
+        plane * 1000,
+        ", ".join(f"{p['name']}(top {p['hi'][2] * 1000:.0f} plan "
+                  f"{_wbr.plan_area(p):.2f})" for p in parts)))
+    # THE PLANE IS NOT A FACE. The ray median mixes bare mattress (top 347 on
+    # the winner) with duvet loft (519), so no part "tops out at the plane" —
+    # the first cut of this block looked for one and correctly found nothing.
+    # The mattress is the layer BETWEEN frame and plane: largest plan among
+    # parts whose top sits above the anchor's back and at-or-under the plane.
+    a_top = anchor["hi"][2]
+    rest = [p for p in parts if p is not anchor]
+    matt = None
+    for p in sorted(rest, key=lambda q: -_wbr.plan_area(q)):
+        if a_top + 0.01 <= p["hi"][2] <= plane + 0.02:
+            matt = p
+            break
+    if matt is None:
+        return _bail("no part tops out at the sleeping plane — cannot name a "
+                     "mattress, and bed_pixels must never guess one")
+    rest = [p for p in rest if p is not matt]
+    bedding = sorted((p for p in rest
+                      if _wbr.plan_area(p) >= _wbr.BEDDING_PLAN_FRAC * along * across),
+                     key=lambda q: -_wbr.plan_area(q))
+    rest = [p for p in rest if p not in bedding]
+    bank = [p for p in rest if p["hi"][2] > plane + 0.03]
+    rest = [p for p in rest if p not in bank]
+    # the pillow bank splits by head proximity: the rank against the band is
+    # the shams (they wear the duvet cloth — the ladder's own sentence: "a
+    # duvet cover and its euro shams are one fabric"); the rank in front is
+    # the sleeping pillows
+    if bank:
+        head_edge = (max(p["hi"][a] for p in bank) if sign > 0
+                     else min(p["lo"][a] for p in bank))
+        def _hd(p):
+            return abs((p["hi"][a] if sign > 0 else p["lo"][a]) - head_edge)
+        shams = [p for p in bank if _hd(p) <= 0.12]
+        pillows = [p for p in bank if p not in shams]
+    else:
+        shams, pillows = [], []
+
+    def _dress(p, name, mat):
+        o = p["_ob"]
+        o.name = name
+        o["ph_model"] = True
+        o.data.materials.clear()
+        o.data.materials.append(mat)
+
+    _dress(anchor, "bed__frame__acq0", base_m)
+    _dress(matt, "bed__frame__acq1", matt_m)
+    for i, p in enumerate(bedding):
+        # the largest field part is the duvet rung; a second field part would
+        # be a second cloth and must not share the rung's prefix (one object
+        # per rung, the ladder's own refusal)
+        _dress(p, "bed__cloth__acq0" if i == 0 else f"bed__bedding__acq{i}",
+               duvt_m)
+    for i, p in enumerate(sorted(pillows, key=lambda q: q["lo"][b])):
+        _dress(p, f"bed__headset{min(i, 1)}__acq0" if i < 2
+               else f"bed__bank{i}__acq0", pill_m)
+    for i, p in enumerate(sorted(shams, key=lambda q: q["lo"][b])):
+        _dress(p, f"bed__headset{min(i, 1)}__acq{1 if i < 2 else i}", duvt_m)
+    for p in rest:
+        print(f"  whole bed: UNCLASSIFIED part {p['name']} keeps its imported "
+              f"material — if it can touch the core, bed_pixels will refuse "
+              f"the frame rather than guess its role (fail-closed downstream)")
+
+    hard = [p["_ob"] for p in (anchor, matt)]
+    soft = [p["_ob"] for p in bedding + pillows + shams]
+    _w1, _s1, _p1 = _normalise_acquired(hard, sharp_deg=30.0)
+    _w2, _s2, _p2 = _normalise_acquired(soft, sharp_deg=15.0)
+    print(f"  whole bed shading: welded {_w1 + _w2} / sharp {_s1 + _s2} / "
+          f"smoothed {_p1 + _p2} (hard 30 deg, cloth 15 deg)")
+
+    # ---- the head-end bare strip, measured by ray and closed with a modelled
+    # ---- pillowstop (DR whole-bed-swap §1: a real joinery solution) ---------
+    tree = _bvh(parts)
+    m_lo_b, m_hi_b = matt["lo"][b], matt["hi"][b]
+    m_top = matt["hi"][2]
+    need = 0.0
+    # 64 rows (~34 mm apart on this bed): the strip the panel's reader B saw is
+    # ~100 mm across — 16 rows at 134 mm straddled it and measured 0 while the
+    # id-mask counted 921 core px in the same frame (the miss that taught this)
+    n = 64
+    for j in range(n):
+        pos_b = m_lo_b + (j + 0.5) * (m_hi_b - m_lo_b) / n
+        run = 0.0
+        for k in range(1, 36):
+            d_in = 0.005 + k * 0.01
+            pos_a = head_face - sign * d_in
+            xy = (pos_a, pos_b) if a == 0 else (pos_b, pos_a)
+            z = _top(tree, *xy)
+            # bare = the ray hits the MATTRESS SURFACE itself, not the plane
+            # (the plane is a median mixing bare and duvet; a hem within loft
+            # of it would read bare against it and covered against reality)
+            if z is not None and z <= m_top + 0.02:
+                run = d_in
+            else:
+                break
+        need = max(need, run)
+    band_gap = abs(((hb_lo[a] if sign > 0 else hb_hi[a])) -
+                   (matt["hi"][a] if sign > 0 else matt["lo"][a])) * 1000.0
+    print(f"  whole bed: mattress-to-band clearance {band_gap:.1f} mm "
+          f"(DR band 12.7-38.1); bare head strip measured {need * 1000:.0f} mm "
+          f"deep from the band face")
+    if need >= 0.02:
+        depth = min(need + 0.02, 0.30)
+        ps_a0 = head_face - sign * depth
+        # named `head_shim`, not `pillowstop`: the trade calls this piece a
+        # pillowstop, but D8 reads "pillow" as an R8-ACQUIRE word and this board
+        # is exactly what D8's box test says it is — a box, correctly BUILT
+        # (R8 class (a): a board with radii is joinery). The name change is the
+        # honest fix; renaming the RULE to spare a pet object would not be.
+        if a == 0:
+            _rbox("bed__head_shim", min(ps_a0, head_face), m_lo_b,
+                  m_top - 0.02, depth, m_hi_b - m_lo_b, 0.13, base_m,
+                  bevw=0.015, seg=3)
+        else:
+            _rbox("bed__head_shim", m_lo_b, min(ps_a0, head_face),
+                  m_top - 0.02, m_hi_b - m_lo_b, depth, 0.13, base_m,
+                  bevw=0.015, seg=3)
+        print(f"  whole bed: PILLOWSTOP built — {depth * 1000:.0f} mm deep, "
+              f"upholstered in the base linen, closing the bare strip the "
+              f"panel's reader B and C2 both filed (a modelled shim, never a "
+              f"transform fudge)")
+
+    print(f"  ACQUIRED whole bed <- {slug}: frame + mattress + "
+          f"{len(bedding)} bedding + {len(pillows)} pillow(s) + "
+          f"{len(shams)} sham(s) kept; plane {plane * 1000:.0f} mm; roles "
+          f"named for bed_pixels; his class order is obeyed, not revisited "
+          f"(D-104)")
+    return True
+
+
 def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
                bed_cloth_gap=None):
     """A real platform bed massed from beveled primitives, ROT-AWARE — base + inset mattress +
@@ -6154,6 +6596,36 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
           f"— {_n_pan} panel(s) across {across * 1000:.0f} mm, DERIVED from the "
           f"{_HB_ROLL_W * 1000:.0f} mm fabric roll (a panel wider than the roll cannot "
           f"be made in one piece)")
+    # ------------------------------------------------------------------ p2r52
+    # THE WHOLE BED IS ACQUIRED (P2r-21, D-106): when the spec names a frame,
+    # our base + mattress LEAVE THE SCENE the way the audition removed them
+    # (wholebed_bench: everything bed__* except the sheet-drawn band), and the
+    # audition winner is staged by contact in their place. The band and its
+    # welts stay BUILT — R12: the sheet draws them, they are the headboard of
+    # record. Three states, same law as the cloth branch below: place, or RAISE
+    # (never a silent fallback that re-grows a hand-built bed — R13), or no
+    # frame named and this block does not exist.
+    _frame_slug = (bed_models or {}).get("frame")
+    if _frame_slug:
+        _ours = [o for o in bpy.data.objects
+                 if o.name.startswith("bed__")
+                 and not o.name.startswith("bed__headboard")]
+        for _o in _ours:
+            bpy.data.objects.remove(_o, do_unlink=True)
+        print(f"  whole bed: our base/mattress leave the scene "
+              f"({len(_ours)} parts); the sheet-drawn headboard band stays "
+              f"built (R12/SR-18)")
+        if not _place_bed_frame(str(_frame_slug), x0, y0, W, D, rot,
+                                base_m, matt_m, duvt_m, pill_m):
+            raise RuntimeError(
+                "whole bed: the acquired frame %r did not place, and falling "
+                "back to the hand-built bed is REFUSED (his class order, "
+                "D-104: the bed is ACQUIRED). D-106 names the alternates in "
+                "order — 4cf92fdd (needs a measured head side + its "
+                "trade-dress accent pillows deleted) then bd96c4ff — and a "
+                "new round decides, never this function silently."
+                % _frame_slug)
+        return
     # ELEMENT 8 (2026-07-22) — THE COVERLET STOPS BEING A SOLID.
     # The DD's ground phase looked at the render and named one mechanism behind "แข็ง",
     # "เหลี่ยม" and "ไม่มี style": nothing in this room DEFORMS, because every soft good was
