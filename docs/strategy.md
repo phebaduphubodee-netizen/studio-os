@@ -3517,9 +3517,7 @@ returned, with invented B values — caught and replaced with measured ones befo
 commit, and confessed in the gate. The defect class that this repo instruments
 against does not spare the instrument-writer.
 
-(And one more, same hour: appending this very entry flipped the whole file to
-
- by writing decoded text back through newline translation — 7001 phantom
+(And one more, same hour: appending this very entry flipped the whole file to CR-CR-LF line endings by writing decoded text back through newline translation — 7001 phantom
 changed lines in the diff. Fixed by byte-restore + binary append. Check the DIFF
 SIZE before trusting a text-file commit on Windows; the memory note already said
 so and it fired anyway.)
