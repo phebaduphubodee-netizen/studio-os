@@ -3093,8 +3093,62 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "d91bf435580acdc3615ae14299f8fca7f456f5fd",
+      "verdicts": {
+        "P2": "keep: the round p2r56 closed the bed question by the owner order (standard size + hug) - field 1.00x1.00 first clean pass, both critics silent on the bed zone for the first time, and their shared top pick IS the phase current lever (P2r-5 material response / duvet surface, then P2r-2 held its second autocorr pass). Add from triage: junction/bevel family items (C2#12, C3#4) fold into the existing detail work; nothing new needs an instrument (D-112 held)",
+        "P4": "change: add the C2 p2r56 item-4 class as a named work item - STYLE COHERENCE of acquired loose pieces (carved-Louis side tables + skirted ottoman clash the Japandi envelope): acquired objects pass size benches but no style rung exists; re-source from the now-stocked shelf (FurniMesh 17 + BlenderKit catalog) when P4 opens. P4 exit (>=12 loose objects) unchanged",
+        "P3": "keep: light-phase items keep accumulating exactly there per the objects->light order (contact shadows C3#7/C2#8, lamp brightness reads as off, downlight trim P2r-19 boundary) - nothing today changes its levers or order",
+        "P5": "keep: terminal owner condition unchanged; p2r56 is the frame he should look at next since it answers his own order of today - his eye may retire or reopen D-114 from the image at any time"
+      },
+      "changed": [
+        "P4"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "3f46069de9d2992434d1cba9dea71acc03eb6636",
+  "last_review_commit": "d91bf435580acdc3615ae14299f8fca7f456f5fd",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
