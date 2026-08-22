@@ -3147,8 +3147,62 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "7202397120633f72e5ceffff778c3de310d52f1c",
+      "verdicts": {
+        "P2": "keep: p2r57 closed the proportion/style half of the bed zone (both critics silent two rounds running; the C2 p2r56 style-clash item vanished without replacement) and the levers left are exactly the two the phase already names - P2r-5 material response (both top picks: all soft goods one flat grey / no weave) and P2r-20 garments (C3 top pick moved there). New in-lane debts from triage: re-drape throw+props on the NEW bench mesh (cloth-stack-contact), bulkhead junction detail, and the R9 conversion debt is now at its stop-loss: the side tables have had their two typed corrections - next move on them MUST be contact-derived",
+        "P4": "change: the style rung is no longer hypothetical - p2r57 ran the first style-panel selection and it flipped the pick away from the numerically best candidate; adopt that two-tier criterion (relation-band + style panel) as P4 standard for every loose piece, and note C2 p2r57 #3 (emptiness is the focal point) is the phase charter restated by a critic",
+        "P3": "keep: lighting items keep accruing to it (C2#7 sconce-dead-vs-washes, C3#3 lamp shadow, contact shadows) - untouched today by design (objects before light, his order)",
+        "P5": "keep: terminal owner condition; p2r57 is the frame that answers his two eye verdicts of today - his look decides whether the proportion question closes or reopens"
+      },
+      "changed": [
+        "P4"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "d91bf435580acdc3615ae14299f8fca7f456f5fd",
+  "last_review_commit": "7202397120633f72e5ceffff778c3de310d52f1c",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
