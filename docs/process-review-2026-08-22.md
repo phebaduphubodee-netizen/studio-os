@@ -50,9 +50,12 @@ practitioner knowledge ที่กลั่นไว้แล้ว, time-sink 
 - **ข้อ 1** = เลือกเส้นทางรายเดือน: ได้ — BlenderKit Full มี $17.90/เดือน ยกเลิกได้
   (ราคา verify ใน repo 2026-08-18; ASK-029 อัปเดตแล้ว) สมัคร 1 เดือน, bench คลัง full-plan 135 ตัว
   ระหว่างเดือนนั้น, ต่ออายุตัดสินจากผลที่วัดได้
-  **คำเตือนความปลอดภัย:** 2026-08-22 การเรียก https://www.blenderkit.com/plans/pricing/ ตอบ
-  301 redirect ไป `blendkit.com` (สะกดไม่มี "er" — โดเมนเลียนแบบ) builder ไม่ตามลิงก์นั้น
-  ตอนจ่ายเงินให้เช็ค address bar ว่าเป็น `blenderkit.com` ตัวจริงเท่านั้น
+  **คำเตือนความปลอดภัย (แก้แล้ววันเดียวกัน):** 301 ไป `blendkit.com` เป็น **rebrand จริง**
+  ไม่ใช่โดเมนเลียนแบบ — BlenderKit → Blendkit 2026-06-10 ตามคำขอ trademark ของ Blender
+  Foundation (ยืนยัน: redirect ออกจาก origin จริง + BlenderNation + release notes add-on
+  v3.21.0 'formerly known as BlenderKit') · ราคาปัจจุบันหลัง rebrand ถูกลง: **$9.90/เดือน**
+  (เดิมบันทึก $17.90) · การหยุดไม่ตาม cross-domain redirect บนเส้นทางจ่ายเงินจนกว่าจะ verify
+  เป็นพฤติกรรมที่ถูก — ที่ผิดคือประกาศ 'โดเมนเลียนแบบ' ก่อน verify แทนที่จะพูดว่า 'ยังไม่รู้'
 - **ข้อ 2** "4 วัน" = คำตอบของคำถามข้อสุดท้าย (เวลา/เฟรมของเพื่อน): **1 เฟรมห้องนอน ~4 วัน**
   (บันทึกเป็น ASK-030 answered) นี่คือไม้บรรทัดที่ repo ไม่เคยมี: เรา 16 วันบนเฟรมเดียวและยังไม่จบ
   = ช้ากว่า ~4 เท่าโดย wall-clock — ไม่ใช่ร้อยเท่า — แต่ 4 วันของเขารวมทั้ง scene จากของซื้อ
@@ -67,3 +70,34 @@ practitioner knowledge ที่กลั่นไว้แล้ว, time-sink 
 ## Spend ของ review นี้ (R6)
 
 Workflow 6 agents อ่านอย่างเดียว ~766k tokens / 193 tool calls · 0 render rounds · ไม่มีการแก้โค้ดใน review
+
+## Glance rung — measured (ข้อ 4, ทำแล้ว 2026-08-22)
+
+`pipeline/scripts/glance.py` — build machinery ไม่ใช่กรรมการ (ฝั่ง D-112 ที่ถูกต้อง):
+render เฟรมถูก ๆ จาก .blend ที่ lane save ไว้แล้ว (กล้อง --eye ตัวเดิมอยู่ในไฟล์)
+ไม่ตัดสินอะไร ไม่แตะ .blend เดิม Cycles ยังเป็น engine ปิด gate เหมือนเดิม (R5 ไม่เปลี่ยน)
+
+วัดจริงบนเครื่องนี้ (RTX 3060 Laptop 6GB, Blender 5.1.2, scene = room_bedroom_suite_eye_p2r55.blend 118MB, scale 50%):
+
+| rung | wall-clock | หมายเหตุ |
+|---|---|---|
+| R5 quick (Cycles --quick) เดิม | ~68 วิ | ตัวเลขที่บันทึกไว้บนหน้านี้ (บรรทัด "quick look 68 วิ") |
+| glance workbench one-shot | 6.61 วิ | render 3.25 วิ; ที่เหลือ = เปิด Blender + โหลด scene |
+| glance eevee one-shot ครั้งแรกสุด | 26.95 วิ | 24.6 วิ เป็น shader compile ครั้งเดียว (cache ลงดิสก์) |
+| glance eevee one-shot warm | 6.99 วิ | render 4.68 วิ |
+| **--watch + --snap eevee (amortized)** | **2.6-2.7 วิ/เฟรม** | โหลด scene จ่ายครั้งเดียว — นี่คือ rung มาตรฐาน |
+| --watch + --snap workbench | 0.71 วิ/เฟรม | เทาล้วน อ่าน material ไม่ออก — เก็บไว้เป็น flag |
+
+Default = **eevee**: 2.7 วิ อยู่ในเป้า "ระดับวินาที" และเฟรมอ่านออกจริง (ไม้ตู้, ผนังระแนง,
+sconce ติดไฟ, headboard เข้ม — ใกล้ Cycles) ขณะ workbench ให้ก้อนเทาแบน ๆ; เร็วกว่า
+quick เดิม ~25 เท่า (amortized) / ~10 เท่า (one-shot) · EEVEE-headless risk ใน DR เป็นเรื่อง
+EGL/Xvfb (Linux) — บนเครื่อง Windows นี้วัดแล้วทั้งสอง engine ทำงาน headless ได้จริง
+(เฟรมเปิดดูยืนยันแล้ว ไม่ใช่จอดำ)
+
+วิธีใช้ (LOOK-while-working ระหว่างรอบ):
+```
+python pipeline/scripts/glance.py pipeline/output/<room>.blend --watch   # เปิดค้างไว้ 1 terminal
+python pipeline/scripts/glance.py pipeline/output/<room>.blend --snap   # ~2.7 วิ ได้เฟรมใหม่
+python pipeline/scripts/glance.py pipeline/output/<room>.blend          # one-shot ~7 วิ ไม่ต้องมี watcher
+```
+(--mode=workbench, --scale=N, --cam=NAME, --stop มีครบ; test = test_glance.py, 24 ข้อ, ไม่ต้องมี Blender)

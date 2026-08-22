@@ -474,6 +474,7 @@
    "tiers": {
     "cc0": "searched: the CC0 pool has no flat-file hung-garment set",
     "warehouse": "searched: 3D Warehouse — the sets found hang at 879-1309 mm natural drop and none is flat-file",
+    "furnimesh": "not-attempted: tier first reachable 2026-08-22 (furnimesh.py landed); the library index shows no garment/clothing category — an index read, not a search",
     "cc-by": "not-attempted",
     "paid-per-model": "not-attempted",
     "paid-subscription": "not-attempted",
@@ -1049,6 +1050,7 @@
    "tiers": {
     "cc0": "n/a: the class is FILLED — tub_chair_c is in the spec and asserted",
     "warehouse": "searched: tub_chair_c chosen from the cached candidates and shipping",
+    "furnimesh": "n/a: the class is filled (tier added 2026-08-22)",
     "cc-by": "n/a: the class is filled",
     "paid-per-model": "n/a: the class is filled",
     "paid-subscription": "n/a: the class is filled",
@@ -1090,6 +1092,7 @@
    "tiers": {
     "cc0": "searched: no 1:2.0 bench in the CC0 pool",
     "warehouse": "searched: 9 candidates fit the slot; best is Ottoman_01 at 1:1.42 filling 709 of 1000 mm, e73605b0/250b8e09 invert it",
+    "furnimesh": "searched 2026-08-22: 24 benches listed, 4 fetched and scale-run — an-elongated-contemporary-bench-…-w2p8xm measures 1003.7 x 477.8 mm plan = 1:2.10 vs the drawn 1:2.0 (FurniMesh meshes arrive ~1.0 m normalized, so the PROPORTION is the fact and fit-to-slot scaling is required either way) — a real audition candidate; qa/furnimesh-search-log.json",
     "cc-by": "not-attempted",
     "paid-per-model": "not-attempted",
     "paid-subscription": "not-attempted",
@@ -1332,6 +1335,7 @@
    "tiers": {
     "cc0": "searched: 68 cached folders across both free tiers, 58 not bed covers, 8 failing a measured cut",
     "warehouse": "searched: same 68, 2 survivors (8635b5b9 refused by his eye, 0afd4c6f now in the spec)",
+    "furnimesh": "not-attempted: beds/bed category exists (24 models on page 1, listed dry 2026-08-22, none fetched) — the bed route is locked to ASK-029 + the D-109 signed interim, his call, so no FurniMesh bed audition was run",
     "cc-by": "not-attempted",
     "paid-per-model": "not-attempted",
     "paid-subscription": "not-attempted",

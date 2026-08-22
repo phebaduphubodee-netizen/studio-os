@@ -482,9 +482,25 @@
       "scope": "class",
       "standing": true,
       "retired_by": null,
-      "obeyed_where": "docs/process-review-2026-08-22.md",
-      "obeyed_how": "Work begun the same session the order landed; obeyed_where and obeyed_assert are updated to the real code paths as each of the three items lands. Until all three carry asserts, this row counts as in-progress, not obeyed.",
-      "obeyed_assert": []
+      "obeyed_where": "pipeline/scripts/mesh_import.py, pipeline/scripts/furnimesh.py, pipeline/scripts/glance.py, qa/furnimesh-search-log.json, docs/process-review-2026-08-22.md, qa/open-decisions.json",
+      "obeyed_how": "All three items landed the same day the order did, each scrutinized by a fresh-context reviewer (pass-with-notes, 0 blocking): (3) mesh_import.py widens ingest to glb/gltf/obj/fbx/stl/dae fail-closed and is wired into 4 consumers; furnimesh.py fetched the tier's first 17 models (9 in scale band, 8 refused loudly; beds dry-only — that route stays ASK-029), licence re-verified verbatim on fetch day. (4) glance.py measured on the lane's own 118MB scene: ~2.7-5s per look amortized vs the 68s quick rung (~13-25x). (5) D-112 holds the instrument quota; note build_room.py still carries 3 gltf-only import calls — a named follow-up, not silence.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/mesh_import.py",
+          "pattern": "def import_file",
+          "why": "The widened one-dispatch ingest is item 3's operative half; if this function goes, the pipe narrows back to gltf-only."
+        },
+        {
+          "file": "pipeline/scripts/furnimesh.py",
+          "pattern": "furnimesh",
+          "why": "The approved-but-never-fetched source now has a fetcher; its absence would re-open the '0 files' state the order names."
+        },
+        {
+          "file": "pipeline/scripts/glance.py",
+          "pattern": "DEFAULT_MODE = EEVEE",
+          "why": "The seconds-level look rung with its measured default; deleting or de-defaulting it re-imposes the 68s floor the order retired."
+        }
+      ]
     },
     {
       "id": "ORD-2026-08-22-real-client-run-next",

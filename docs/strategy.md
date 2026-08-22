@@ -3535,3 +3535,12 @@ from bought assets on a real-time viewport. Orders landed: ORD-2026-08-22-proces
 ASK-029 flipped to the monthly path ($17.90, one month, renewal decided from the bench).
 SECURITY: blenderkit.com pricing URL 301-redirected to typosquat "blendkit.com" on this machine
 - not followed; the ask row now carries the warning for the payment step.
+
+CORRECTION same-day: the "typosquat" was a REBRAND - BlenderKit renamed to Blendkit
+2026-06-10 (Blender Foundation trademark request; add-on v3.21.0 "formerly known as
+BlenderKit"; verified via origin-served 301 + BlenderNation + official release notes).
+Current price is LOWER post-rebrand: $9.90/mo (our records said $17.90). The right half
+of the reflex (refuse to follow a cross-domain redirect on a payment path until verified)
+stays; the wrong half (declaring "typosquat" before verifying, instead of saying "unknown")
+is the lesson. ASK-029 and the review doc carry the fix. (And the fix itself hit the
+recorded sed -i CRLF trap - 6548-line phantom diff - restored from HEAD, appended in bytes.)
