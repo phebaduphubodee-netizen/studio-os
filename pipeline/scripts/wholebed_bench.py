@@ -30,6 +30,7 @@ from mathutils import Vector
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bedcloth_fit as bcf  # noqa: E402  (control_edges, edge_mm — the shared metric)
+import ergonomics_ref as ERGO  # noqa: E402  (pure; standard mattress tables)
 import mesh_import as MI    # noqa: E402  (one dispatch, all formats — never gltf-only)
 import wholebed_rules as R  # noqa: E402
 
@@ -268,6 +269,18 @@ def stage_one(slug):
     s, fill_l, fill_w = R.plan_scale_whole(hi0 - lo0, hi1 - lo1, FW, FD)
     row["scale"] = round(s, 4) if s else None
     row["fill_len"], row["fill_w"] = round(fill_l, 3), round(fill_w, 3)
+    # FRONT DOOR (ORD-2026-08-22-front-door-dims): project the anchor — the mattress
+    # — through the fit scale and ask whether it is ANY real bed's size, BEFORE a
+    # build round is spent. This is the arithmetic that existed at p2r52 (s was
+    # derived FROM the drawn width and applied to a 1827 mm mattress, landing it at
+    # 1243) with no line comparing the two. verdict() refuses a row without these
+    # keys, so an old ledger can never pass again (the field-rule precedent).
+    if s and row.get("anchor"):
+        _pw, _pd = (round(v * s) for v in row["anchor"]["size_mm"][:2])
+        _nm, _std, _ok, _worst = ERGO.nearest_bed_size(_pw, _pd)
+        row["anchor_projected_mm"] = [_pw, _pd]
+        row["anchor_std"] = {"name": _nm, "worst_mm": round(_worst),
+                             "within": bool(_ok)}
     if s and abs(s - 1.0) > 1e-9:
         import mathutils
         piv = Vector(((lo0 + hi0) / 2, (lo1 + hi1) / 2, 0))

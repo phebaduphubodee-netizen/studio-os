@@ -141,7 +141,9 @@ def base_row():
     return {"anchor_found": True, "orientation": "head at x-hi",
             "fill_len": 0.95, "fill_w": 0.93, "foot_over_plane_m": 0.05,
             "headboard_fused": False,
-            "field_fill_len": 0.95, "field_fill_w": 0.93}
+            "field_fill_len": 0.95, "field_fill_w": 0.93,
+            "anchor_projected_mm": [1800, 2000],
+            "anchor_std": {"name": "th_king_6ft", "worst_mm": 0, "within": True}}
 
 
 def test_verdict_passes_a_clean_row():
@@ -338,6 +340,27 @@ def test_verdict_field_unmeasured_is_named_not_clean():
     del row["field_fill_len"], row["field_fill_w"]
     ok, why = R.verdict(row)
     assert not ok and any("UNMEASURED" in w for w in why)
+
+
+# ---- ORD-2026-08-22 front door: projected mattress must be SOME standard size --
+def test_verdict_nonstandard_projected_mattress_refused():
+    """f52472c1's real staged numbers: wings capped s at 0.68 and the mattress
+    projected to 1243x1569 — 336+ mm from every US and Thai standard. The p2r52
+    frame shipped because no rung made this comparison; this one does."""
+    row = base_row()
+    row["anchor_projected_mm"] = [1243, 1569]
+    row["anchor_std"] = {"name": "th_single_3_5ft", "worst_mm": 411, "within": False}
+    ok, why = R.verdict(row)
+    assert not ok and any("ORD-2026-08-22" in w for w in why)
+
+
+def test_verdict_missing_anchor_std_is_named_not_clean():
+    """A row benched before the front-door rule: UNMEASURED, never a pass —
+    the same ratchet the field rule set (an old ledger can never pass again)."""
+    row = base_row()
+    del row["anchor_std"], row["anchor_projected_mm"]
+    ok, why = R.verdict(row)
+    assert not ok and any("front-door" in w for w in why)
 
 
 def test_field_fill_axis_len_maps_room_axes():

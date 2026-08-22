@@ -375,6 +375,35 @@ def _score_deliverable(name, quick=False, frame=True):
               "or the ledger says something the built scene refutes.")
         sys.stdout.flush()
         os._exit(1)
+    # ---- FRONT DOOR — built dims vs WORLD standards (ORD-2026-08-22-front-door-dims,
+    # owner "ลุย" on docs/owner-advice-2026-08-22.md; admitted per D-112 as the class
+    # only his eye had an instrument for: bed 0.58x at p2r52, garments 570-637 mm at
+    # p2r26, the nightstand datum at p2r56). Spawned for the layer reason; it reads
+    # the SCENE DUMP, which is full-scale geometry at any render rung, so it runs on
+    # quick too — that is the point: the p2r52 defect was arithmetic before it was
+    # ever pixels, and this rung fails it before a full-fidelity frame is spent.
+    # Exit 2 = could not run = hard stop (R11's sentence); signed deficits
+    # (qa/dim-deficits.json) print loudly and proceed — the R13 third state.
+    _dm = subprocess.run(
+        [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "dim_check.py"), dump_path],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    for ln in (_dm.stdout or "").splitlines():
+        print(f"DIMS {ln}")
+    if _dm.returncode == 2:
+        for ln in (_dm.stderr or "").splitlines()[-6:]:
+            print(f"DIMS !! {ln}")
+        print("BUILD FAILED: the front-door dim rung COULD NOT RUN. A gate that "
+              "could not look must never read like one that looked and was fine.")
+        sys.stdout.flush()
+        os._exit(1)
+    if _dm.returncode == 1:
+        print("BUILD FAILED: built dimensions violate a world standard with no "
+              "signed deficit (ORD-2026-08-22-front-door-dims). The absent thing "
+              "is honest; the wrong-sized thing fabricates a reading.")
+        sys.stdout.flush()
+        os._exit(1)
     cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "deliverable_check.py"), "--scene-dump", dump_path]
     if frame and not quick:

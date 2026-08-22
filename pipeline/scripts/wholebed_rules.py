@@ -524,4 +524,18 @@ def verdict(row):
         why.append(f"made-bed field fills {ffl:.2f}x{ffw:.2f} of the drawn "
                    f"rectangle (< {MIN_FIELD_FILL}) — the bed reads smaller than "
                    f"the ink draws it (ORD-2026-08-18-bed-too-small)")
+    # FRONT DOOR (ORD-2026-08-22-front-door-dims): the projected mattress must be
+    # SOME standard bed's size. The field rule asks "does it reach the slot"; this
+    # asks "is it a real bed at all" — the p2r52 winner answered yes to neither and
+    # was refused by nothing. Keys ride the bench (anchor_projected_mm/anchor_std);
+    # a staged row without them is from before this rule and must re-bench.
+    std = row.get("anchor_std")
+    if std is None:
+        why.append("projected-anchor standard size UNMEASURED — a row from before "
+                   "the front-door rule existed; re-bench it "
+                   "(ORD-2026-08-22-front-door-dims)")
+    elif not std.get("within"):
+        why.append(f"projected mattress {row.get('anchor_projected_mm')} mm is no "
+                   f"standard bed size (worst {std.get('worst_mm')} mm from "
+                   f"{std.get('name')}) — ORD-2026-08-22-front-door-dims")
     return (not why), why

@@ -55,7 +55,7 @@
       "id": "paid-subscription",
       "name": "BlenderKit Full",
       "tool": "Blender add-on (automatable download + placement)",
-      "cost": "$118.80/yr ($17.90/mo)",
+      "cost": "$9.90/mo (Blendkit Full, post-rebrand price verified 2026-08-22 per ASK-029; pre-rebrand figures were $118.80/yr / $17.90/mo)",
       "licence": "RF + CC0; client-delivered renders are permitted commercial use; models may not be resold",
       "owner_decision": true,
       "note": "The only paid tier that plugs into Blender, so the only one that scales past one purchase. APPROVED 2026-08-18 — the owner answered ASK-028 (and with it ASK-002, open 48 days) with 'ลุย BlenderKit'. Catalog measured the same day via the public search API, no account: 991 assets swept, 588 bed-named, 174 whole beds inside the drawn 7'x6.5' size window, 148 of them full-plan (qa/blenderkit-search-log.json wholebed_2026_08_18). Awaiting only his subscribe + API key (ASK-029); the declared-dims caveat stands — dims and faceCount are WHOLE-ASSET numbers, the bench measures the truth after download."

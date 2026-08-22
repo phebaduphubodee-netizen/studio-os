@@ -24,6 +24,20 @@ BED_SIZES_MM = {
 }
 BED_SIZE_TOL_MM = 150
 
+# --- Thai-market mattress sizes, W×L (the sizes this studio's clients actually buy;
+# the US table above is what D-114 had to call "unreachable" because this dict did
+# not exist — the 08-22 standard 1800x2000 was a DECLARED ASSUMPTION for want of a
+# sourced row). Sourced 2026-08-22 from five Thai retailers (Lunio, Dunlopillo,
+# SleepHappy, PATEX, Zcoopy — knowledge/_inbox/web-thai-mattress-sizes-2026-08-22.md,
+# distilled to knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md §Thai);
+# widths vary ±10-20 mm by brand (105-107 / 150-152 / 180-183 cm), lengths 198-200 cm.
+# Nominal values below sit inside every listed brand's range. ---
+BED_SIZES_TH_MM = {
+    "th_single_3_5ft": (1070, 1980),
+    "th_queen_5ft": (1520, 1980),
+    "th_king_6ft": (1800, 2000),
+}
+
 # --- furniture heights (mm). Note: a chair/sofa spec `h` is the BACKREST, not the seat,
 # so seat-height 400–450 is NOT checkable here (would need a seat_h field). ---
 TABLE_H_MM = {
@@ -71,12 +85,17 @@ KITCHEN_AISLE_SINGLE_MM = 1067           # single-cook aisle (needs run grouping
 KITCHEN_AISLE_MULTI_MM = 1219            # multi-cook aisle (ditto)
 
 
-def nearest_bed_size(w, d):
+def nearest_bed_size(w, d, sizes=None):
     """Best-matching standard mattress for a footprint (orientation-agnostic) +
-    whether it is within tolerance. Returns (name, (W,L), within_tol:bool, worst_mm)."""
+    whether it is within tolerance. Returns (name, (W,L), within_tol:bool, worst_mm).
+
+    Searches US + Thai tables by default — the p2r52 bed (mattress squeezed to
+    1243x1569 mm by a whole-cluster fit) fails every row of both tables by 336+ mm,
+    which is the comparison no rung made until the owner's eye did (ORD-2026-08-18)."""
     a, b = sorted((float(w), float(d)))
+    table = sizes if sizes is not None else {**BED_SIZES_MM, **BED_SIZES_TH_MM}
     best = None
-    for name, (bw, bl) in BED_SIZES_MM.items():
+    for name, (bw, bl) in table.items():
         sw, sl = sorted((bw, bl))
         worst = max(abs(a - sw), abs(b - sl))
         if best is None or worst < best[3]:

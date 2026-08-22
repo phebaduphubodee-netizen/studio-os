@@ -540,6 +540,41 @@
           "why": "The bed slot at standard width IS the order; 2149 returning means the drawn-rectangle target quietly came back."
         }
       ]
+    },
+    {
+      "id": "ORD-2026-08-22-front-door-dims",
+      "date": "2026-08-22",
+      "verbatim": "ลุย",
+      "recorded_at": "docs/owner-advice-2026-08-22.md",
+      "commands": "The 'ลุย' approves items (2) and (3) of the builder's advice given the same sitting (his four messages verbatim in the recorded_at doc, ending 'ทำตัวฉลาด ๆ แล้วแนะนำผมหน่อยสิ'): (2) BEFORE P4, build the FRONT-DOOR rung — built dimensions judged against WORLD standards (standard mattress tables US+Thai, real garment lengths, ergonomic height bands), no allowlist, running at bench arithmetic and at the scene dump on every render including R5 quick — never waiting for pixels, because the p2r52 defect was arithmetic before it was ever an image; (3) the coverage map (qa/coverage-map.json, what-compares-against-what per rung) printed at every session open, with instrument admission governed by the existing D-112 quota, NOT by a new checker. Background measured that morning: 28 gate rungs, 3 world-standard, 1 blocking; nearest_bed_size would have failed the p2r52 mattress by 336 mm and nothing fed built numbers to it; his eye preceded green instruments 15 times in 33 days.",
+      "subject": "dims-vs-world-standard",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "pipeline/scripts/dim_check.py, pipeline/scripts/build_room.py, pipeline/scripts/wholebed_rules.py, pipeline/scripts/plan_status.py, qa/coverage-map.json, qa/dim-deficits.json",
+      "obeyed_how": "dim_check.py reads the scene dump and judges bed cluster / garment rails / side tables / bench against world bands, three-state (ok / signed-interim via qa/dim-deficits.json / fail), exit 0/1/2, spawned blocking from build_room._score_deliverable on every render rung; wholebed_bench projects the anchor mattress through the fit scale and wholebed_rules.verdict refuses a candidate whose projected mattress is no standard bed's size; plan_status prints the coverage map at session open. Thai mattress sizes sourced and distilled the same day (knowledge/_inbox/web-thai-mattress-sizes-2026-08-22.md), upgrading D-114's declared assumption.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "dim_check\\.py\"\\), dump_path",
+          "why": "The spawn line that RUNS the rung on every render — the constant alone would be the p2r46 defect (named, not running)."
+        },
+        {
+          "file": "pipeline/scripts/dim_check.py",
+          "pattern": "^DIM_CHECK_VERSION = ",
+          "why": "The rung exists as a module a plain python can run (layer law)."
+        },
+        {
+          "file": "pipeline/scripts/wholebed_rules.py",
+          "pattern": "^    std = row\\.get\\(\"anchor_std\"\\)",
+          "why": "The bench-side half: verdict refuses a projected mattress that is no standard size, and refuses rows benched before the rule existed."
+        },
+        {
+          "file": "pipeline/scripts/plan_status.py",
+          "pattern": "^    lines \\+= coverage_lines\\(\\)",
+          "why": "The map has a consumer at every session open — a map nobody prints is the queue-with-no-consumer defect wearing a map."
+        }
+      ]
     }
   ]
 }

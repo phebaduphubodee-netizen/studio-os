@@ -3544,3 +3544,28 @@ of the reflex (refuse to follow a cross-domain redirect on a payment path until 
 stays; the wrong half (declaring "typosquat" before verifying, instead of saying "unknown")
 is the lesson. ASK-029 and the review doc carry the fix. (And the fix itself hit the
 recorded sed -i CRLF trap - 6548-line phantom diff - restored from HEAD, appended in bytes.)
+
+## 2026-08-22b — the front door, and the map the head stopped holding (ORD-2026-08-22-front-door-dims)
+
+Three owner questions in one sitting — why can't you judge "reasonable" yourself;
+why do I see errors only after a render; has the project outgrown checkability —
+then "ทำตัวฉลาด ๆ แล้วแนะนำผมหน่อยสิ" and "ลุย" on the advice (verbatim record:
+docs/owner-advice-2026-08-22.md). Measured before building: 28 gate rungs / 3
+world-standard / 1 blocking; nearest_bed_size(1243,1569) -> False existed 46 days
+with no path from built scene to it; the eye preceded green instruments 15x/33d.
+
+Built under the order: dim_check.py (scene-dump dims vs world standards, no
+allowlist, three-state with signed deficits in qa/dim-deficits.json, exit 0/1/2,
+spawned on every render incl. R5 quick); wholebed anchor_std (projected mattress
+must be SOME standard size, refused at bench arithmetic before any build);
+BED_SIZES_TH_MM sourced (D-114's 1800x2000 assumption upgraded, _inbox unit);
+qa/coverage-map.json printed by plan_status at session open, admission = D-112.
+
+LEARNING, from the negative control: run on p2r52, the rung fails the SIDE TABLES
+at 618 mm — the exact object his eye called "สัดส่วนเพี้ยน" at p2r56 — and the
+bench rule fails the 1243 mattress; but the p2r52 CLUSTER passes the world check
+(wings mask the squeezed mattress). One world-standard question is three
+different questions at three stages: bench arithmetic catches the mattress,
+the dump catches the furniture, and field-vs-slot (existing) catches the fit.
+No single stage sees all three — which is the earliest-stage law stated from
+the other end.

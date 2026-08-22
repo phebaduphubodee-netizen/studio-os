@@ -422,6 +422,39 @@ def sheet_lines():
     return out
 
 
+# --------------------------------------------------------------- coverage map
+
+def coverage_lines():
+    """WHAT ASKS, AND WHAT NOBODY ASKS (owner 2026-08-22: 'project ใหญ่เกินกว่าที่
+    ตรวจเช็คได้ว่าขั้นไหนผิดอะไรแล้วใช่ไหม'). The first full census of the gate's
+    own rungs took a five-agent sweep to produce — a system that needs a fan-out
+    to know what it checks has outgrown its operator's head, so the map is now a
+    FILE (qa/coverage-map.json) and this section is its consumer. Unreadable
+    prints UNKNOWN, never nothing — same law as every ledger section above."""
+    p = os.path.join(REPO, "qa", "coverage-map.json")
+    try:
+        with open(p, encoding="utf-8") as f:
+            cmap = json.load(f)
+    except (OSError, ValueError):
+        return ["", "COVERAGE unknown — qa/coverage-map.json could not be read. "
+                    "That is unknown, not zero."]
+    rungs = cmap.get("rungs") or []
+    if not rungs:
+        return ["", "COVERAGE unknown — the map holds zero rungs. Unknown, not zero."]
+    def _n(cls):
+        return sum(1 for r in rungs if cls in str(r.get("compares", "")))
+    world_block = [r["name"].split(" (")[0] for r in rungs
+                   if "c" in str(r.get("compares", "")) and r.get("blocking")]
+    out = ["", f"COVERAGE    เครื่องตรวจ {len(rungs)} rung (แผนที่ {cmap.get('updated', '?')}) — "
+               f"เทียบตัวเอง {_n('a')} · กระบวนการ {_n('d')} · แบบ/target {_n('b')} · "
+               f"โลกจริง {_n('c')}"]
+    wb = ", ".join(world_block) if world_block else "ไม่มี — ตาพี่เป็นเครื่องเดียว"
+    out.append(f"            โลกจริงที่ block: {wb}")
+    out.append("            defect class ที่ไม่มีเครื่องมอง = แถว none_yet ใน CRITIC DEBT "
+               "ข้างบน · การรับ rung ใหม่ = D-112 (พิมพ์ใน gate ที่แนะนำมัน)")
+    return out
+
+
 # --------------------------------------------------------------- the report
 
 def report(plan):
@@ -471,6 +504,7 @@ def report(plan):
     # instance, not the fix.
     lines += debt_lines(plan)
     lines += sheet_lines()
+    lines += coverage_lines()
 
     bad = unreadable_statuses(plan)
     if bad:

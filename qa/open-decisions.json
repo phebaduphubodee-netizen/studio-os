@@ -1832,6 +1832,22 @@
    "reverse_by": "พี่ดู p2r57 แล้วไม่เอา -> ชี้จากภาพ: กลับตัวเดิม = คืน model/slot/ตำแหน่งใน 3 items (เลขเดิมอยู่ใน git ที่ commit นี้เอง) หรือชี้ตัวอื่นจาก audition (aud_*.png ใน scratchpad, 8 ตัว) หรือสั่งหาเพิ่ม (Blendkit ฟรีที่ผ่านมิติมี 27, ยังโหลดแค่ 8)",
    "owner_override": "ลุย",
    "override_date": "2026-08-22"
+  },
+  {
+   "id": "D-116",
+   "unit": "DELIV-001",
+   "subject": "dims-vs-world-standard",
+   "decided_round": 57,
+   "decided_date": "2026-08-22",
+   "decided_by": "builder",
+   "obeys": "ORD-2026-08-22-front-door-dims",
+   "question": "คำสั่ง front-door (ลุย 08-22) บอกให้เทียบขนาดที่สร้างจริงกับมาตรฐานโลก — แต่ band/ค่า tolerance/ขอบเขต v1 ใครเลือก — เป็นของ builder ทั้งหมด จึงต้องมีแถว",
+   "in_effect": "v1 ของ dim_check: (1) เตียง = ACQ cluster plan union เทียบตาราง US+TH ที่ tol 150มม. (cluster รวมโครง — กฎ ±50 ของ knowledge ใช้กับที่นอนเปลือย + D-110 บอก tolerance ของพี่เองหลวม) (2) ราวเสื้อผ้า = z-span ต่อ rail: floor 700 (เสื้อจริง 700-760 ตาม ORD-2026-08-12) ceiling 1900 (garment_hung ของ asset_scale) (3) side_table top 380-480±25 · bench seat 400-450±25 (GENERAL_TOL 25 = comfort band + ความต่างแบรนด์) (4) ค่า TH nominal 1070/1520/1800 จาก 5 แหล่ง web (_inbox unit) (5) ลายเซ็น deficit มี signed_down_to_mm — ครอบเฉพาะ instance ที่เซ็น ไม่ครอบ class (R13) (6) รันบน R5 quick ด้วย — scene dump เป็น full-scale geometry ทุก rung",
+   "where": "pipeline/scripts/dim_check.py, qa/dim-deficits.json, qa/coverage-map.json, docs/owner-advice-2026-08-22.md, knowledge/_inbox/web-thai-mattress-sizes-2026-08-22.md",
+   "because": "ค่าทุกตัวต้องอ้างแหล่งได้หรือประกาศเป็น assumption ดัง ๆ — การ distill ครั้งก่อน (±50→±150 เงียบ ๆ) คือตัวอย่างของ builder คลายเสียงเตือนของตัวเองโดยไม่มีใครเห็น",
+   "reverse_by": "พี่ชี้จากภาพว่า band ไหนผิด/เข้มไป → แก้ค่าใน dim_check.py (GARMENT_LEN_MM, GENERAL_TOL_MM) หรือ ergonomics_ref.py (BED_SIZE_TOL_MM, BED_SIZES_TH_MM) พร้อมแหล่งใหม่ · ถอน rung ทั้งตัว = ลบบล็อก DIMS ใน build_room._score_deliverable + ถอนกฎ anchor_std ใน wholebed_rules.verdict (ต้องเป็นคำพี่ — แถวนี้ obeys คำสั่ง standing)",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

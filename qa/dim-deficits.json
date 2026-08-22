@@ -1,0 +1,13 @@
+{
+ "_law": "Signed dimensional deficits for dim_check.py (ORD-2026-08-22-front-door-dims). A row here converts a dim_check FAIL into a LOUD INTERIM — it must cite an ORD-/D- id that reproduces verbatim in qa/owner-orders.json or qa/open-decisions.json, or the signature does not count (a signature nobody can find was never given). signed_down_to_mm is the floor the signature covers: a worse instance than what was signed FAILS anyway — an instance signature never covers the class (R13, CLASS != INSTANCE, applied in the forgiving direction). Rows leave when the deficit clears, and the clearing round says so.",
+ "rows": [
+  {
+   "id": "DIMDEF-001",
+   "class": "garment_rail",
+   "cite": "ORD-2026-08-12-garment-scale-is-wrong",
+   "since": "2026-08-13",
+   "signed_down_to_mm": 600,
+   "note": "Rails measured 614-715 mm on p2r57 against the 700 mm shirt floor; the order is standing not-obeyed with restart_by = face-on hang (yaw 90) as a NEW mechanism with its own gate. Until that mechanism lands, the deficit prints at every render with its age. Below 600 mm is NOT covered — that would be a new, worse instance, not this signed one."
+  }
+ ]
+}

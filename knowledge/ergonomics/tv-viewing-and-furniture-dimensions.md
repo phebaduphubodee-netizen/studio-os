@@ -104,3 +104,22 @@ kitchen work-triangle metric limits (`:34`); a targeted follow-up DR was fired t
 same day (`:44-45`). Those topics are out of scope for THIS file — for where they
 live now, list `knowledge/ergonomics/` rather than trusting a pointer frozen here.
 This file covers TV geometry, furniture dimensions, seating and circulation/reach.
+
+
+## Thai-market mattress sizes (appended 2026-08-22 — web-sourced, see
+## knowledge/_inbox/web-thai-mattress-sizes-2026-08-22.md for retrieval + URLs)
+
+The table above is US (Panero & Zelnik). The studio's clients buy THAI retail
+sizes; D-114 (2026-08-22) had to declare 1800x2000 as an assumption because this
+file could not name one. Sourced from five Thai retailers (Lunio, Dunlopillo,
+SleepHappy, PATEX, Zcoopy), widths vary +-10-20 mm by brand, lengths 1980-2000:
+
+| Thai size | mattress W x L (nominal, mm) |
+|---|---|
+| 3.5 ฟุต (single) | **1070 x 1980** |
+| 5 ฟุต (queen) | **1520 x 1980** |
+| 6 ฟุต (king) | **1800 x 2000** |
+
+Machine copy: `pipeline/scripts/ergonomics_ref.py` `BED_SIZES_TH_MM`. Rule use is
+the same +-~50 mm bare-mattress test as the US table; built ACQ clusters include
+the frame, so the machine judges those at +-150 (ergonomics_ref.BED_SIZE_TOL_MM).
