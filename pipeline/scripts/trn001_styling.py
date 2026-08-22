@@ -648,9 +648,8 @@ def build_asset_figure(p, materials=None):
         print(f"  STYLING: {p['name']} asset {p['slug']} not in the warehouse "
               f"cache — SKIPPED (run pipeline/scripts/warehouse.py fetch)")
         return []
-    before = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=path)        # headless-safe, not a geometry op
-    objs = [o for o in bpy.data.objects if o not in before]
+    import mesh_import as MI
+    objs = MI.import_file(path)     # headless-safe import op, any known format
     meshes = [o for o in objs if o.type == "MESH" and len(o.data.polygons)]
     if not meshes:
         print(f"  STYLING: {p['name']} <- {p['slug']} imported no geometry — SKIPPED")
@@ -967,10 +966,9 @@ def _assert_placed(mesh_objs, p, tol_mm=8.0):
 
 
 def _import_gltf(path):
-    import bpy
-    before = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=path)        # headless-safe (not a geometry op)
-    return [o for o in bpy.data.objects if o not in before]
+    """Name kept for its callers; the dispatch is mesh_import's, any known format."""
+    import mesh_import as MI
+    return MI.import_file(path)     # headless-safe import op (not a geometry op)
 
 
 def build_styling(spec, materials=None):

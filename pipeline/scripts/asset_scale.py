@@ -170,6 +170,23 @@ BANDS = {
                 "knowledge/ergonomics/tv-viewing-and-furniture-dimensions.md:36 "
                 "(seat height 400-450); band spans a low pouf to a tall storage "
                 "ottoman"),
+    # ---------------------------------------------------------------- 08-22 --
+    # A TABLE LAMP, added for the first FurniMesh ingest (ORD-2026-08-22 item 3
+    # — AI photo->3D models, so the unit trap is the expected case, not the
+    # rare one). Diagnosed by HEIGHT: a table lamp is a TABLETOP luminaire —
+    # the canonical spec stands it on a 580 mm nightstand whose own height was
+    # owner-corrected so the lamp is usable from the 600 mm mattress datum
+    # (D-045), and the studio's lighting law files it in the TASK tier of the
+    # three-tier scheme (render-quality.md:79), i.e. a sub-metre object on a
+    # surface, never a floor fixture. Band spans a compact accent lamp to a
+    # tall buffet lamp; what it is FOR is the traps: an imperial-exported
+    # 600 mm lamp lands at 15.2 and a metres-as-mm one at 0.6, both decades out.
+    "table_lamp": (250.0, 1100.0, "z",
+                   "projects/PRJ-2026-002_c001-house/03_layout/"
+                   "master-suite.CANONICAL.spec.json items[3..4] (h=580 "
+                   "nightstand + dome lamp, D-045 mattress-datum usability) + "
+                   "knowledge/brand-standards/render-quality.md:79 (table "
+                   "lamps = task tier, a tabletop object)"),
 }
 
 # ------------------------------------------------------------ slot roles (P2h) --
@@ -249,6 +266,9 @@ MIN_DEPTH_RATIO = {
     "sofa": 0.20,
     "coffee_table": 0.15,       # a round top on legs is thin in z, never planar
     "ottoman": 0.30,
+    # a lamp's shade and base are round-ish in plan; even a slim candlestick
+    # buffet lamp keeps ~1/10 of its height in depth — a flat cutout does not
+    "table_lamp": 0.10,
 }
 
 

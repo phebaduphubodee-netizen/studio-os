@@ -92,7 +92,17 @@ def is_gap(d):
         # key outranks the prose, and it is a HIGHER bar, not an escape: an ask
         # must carry a price, a measured spec, and a channel that exists.
         return False
-    return d.get("kind") == "sourcing-gap" or any(m in _blob(d)
+    # THE R10 SPEC KEY IS NOT A SOURCING SENTENCE. `declared_gaps.<mass>` is
+    # the object-existence register (R10: "the absent thing is honest"), and
+    # the "declared_gap" marker matching INSIDE that key is a substring
+    # accident, not a declaration about the market — D-014 removes a hand-built
+    # desk pier and cites `declared_gaps.desk_pier`, and this scan read that as
+    # a claim that a purchase was never tried. Masking the KEY FORM only (the
+    # plural key followed by a dot) is scope derived from the rule's own
+    # premise (R9b), not a silence chosen to pass: a prose "declared gap"
+    # about an asset class still fires.
+    blob = _blob(d).replace("declared_gaps.", "")
+    return d.get("kind") == "sourcing-gap" or any(m in blob
                                                   for m in GAP_MARKERS)
 
 

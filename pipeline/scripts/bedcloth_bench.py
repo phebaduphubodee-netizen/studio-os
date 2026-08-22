@@ -65,6 +65,7 @@ import bpy
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bedcloth_fit as fit  # noqa: E402
+import mesh_import as MI    # noqa: E402  (one dispatch, all formats — never gltf-only)
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 CACHE, OUT = argv[0], argv[1]
@@ -134,19 +135,17 @@ for slug in sorted(os.listdir(CACHE)):
     d = os.path.join(CACHE, slug)
     if not os.path.isdir(d) or (ONLY and slug not in ONLY):
         continue
-    glbs = [f for f in os.listdir(d) if f.endswith(".glb")]
-    if not glbs:
+    models = MI.model_files(d)          # any importable format, best first
+    if not models:
         continue
-    before = set(bpy.data.objects)
     try:
-        bpy.ops.import_scene.gltf(filepath=os.path.join(d, glbs[0]))
+        news = MI.import_file(os.path.join(d, models[0]))
     except Exception as e:                                    # noqa: BLE001
         rows.append({"slug": slug, "error": str(e)[:120]})
         print(f"BENCH {slug:14s} IMPORT FAILED: {str(e)[:60]}")
         continue
-    news = [o for o in bpy.data.objects if o not in before]
     names = [o.name for o in news]
-    row = {"slug": slug, "file": glbs[0]}
+    row = {"slug": slug, "file": models[0]}
     st = fit.stage(news, RECT, MTOP, BZ, LIMIT, cover=COVER, max_scale=MAX_SCALE,
                    avoid=AVOID)
     if "reject" in st:

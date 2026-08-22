@@ -30,6 +30,7 @@ from mathutils import Vector
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bedcloth_fit as bcf  # noqa: E402  (control_edges, edge_mm — the shared metric)
+import mesh_import as MI    # noqa: E402  (one dispatch, all formats — never gltf-only)
 import wholebed_rules as R  # noqa: E402
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -151,23 +152,17 @@ def stage_one(slug):
     row["ours_removed"] = len(ours)
     delete(ours)
 
-    # import
-    glb = None
+    # import — any format mesh_import knows, best first (never gltf-only)
     d = os.path.join(CACHE, slug)
-    for f in sorted(os.listdir(d)):
-        if f.lower().endswith((".glb", ".gltf")):
-            glb = os.path.join(d, f)
-            break
-    if not glb:
-        row["reject"] = "no glb in cache dir"
+    models = MI.model_files(d)
+    if not models:
+        row["reject"] = "no importable model in cache dir"
         return row
-    before = set(bpy.data.objects)
     try:
-        bpy.ops.import_scene.gltf(filepath=glb)
+        new = MI.import_file(os.path.join(d, models[0]))
     except Exception as e:
         row["reject"] = f"import failed: {type(e).__name__}: {e}"
         return row
-    new = [o for o in bpy.data.objects if o not in before]
     for o in new:
         o["_wb_cand"] = True
     new_mesh = [o for o in new if o.type == "MESH"]

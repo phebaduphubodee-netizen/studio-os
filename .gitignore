@@ -66,3 +66,9 @@ assets/shared/warehouse/
 # — a mesh that may not be redistributed must never enter version control. Fetch is
 # reproducible from the asset id (SOURCE.json records it).
 assets/shared/blenderkit/
+# FurniMesh models are free for unrestricted commercial use, no attribution
+# (library licence, verified live 2026-08-22) — but the grant is USE, not
+# redistribution of the model files, so the shelf stays out of git like the two
+# above. Fetch is reproducible from the model page URL (SOURCE.json records it;
+# pipeline/scripts/furnimesh.py).
+assets/shared/furnimesh/

@@ -21,6 +21,7 @@ import bpy
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bedcloth_fit as fit  # noqa: E402
+import mesh_import as MI    # noqa: E402  (one dispatch, all formats — never gltf-only)
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 CACHE = os.path.abspath(argv[0])
@@ -68,13 +69,11 @@ sc.cycles.samples = 24
 os.makedirs(OUTDIR, exist_ok=True)
 for slug in SLUGS:
     d = os.path.join(CACHE, slug)
-    glbs = [f for f in os.listdir(d) if f.endswith(".glb")]
-    if not glbs:
-        print(f"SHOOT {slug}: no glb — skipped")
+    models = MI.model_files(d)          # any importable format, best first
+    if not models:
+        print(f"SHOOT {slug}: no importable model — skipped")
         continue
-    before = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=os.path.join(d, glbs[0]))
-    news = [o for o in bpy.data.objects if o not in before]
+    news = MI.import_file(os.path.join(d, models[0]))
     names = [o.name for o in news]
     st = fit.stage(news, RECT, MTOP, BZ, LIMIT, cover=COVER,
                    apply_rot=True, avoid=AVOID)

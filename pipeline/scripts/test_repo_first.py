@@ -204,20 +204,29 @@ class TestRegisterLine(unittest.TestCase):
 
 class TestLive(unittest.TestCase):
     def test_the_real_repo_reproduces_the_finding_it_was_written_from(self):
-        """FurniMesh is SILENT in this repo today. If this ever changes, either
-        the fetcher landed (good) or the rung stopped seeing it — find out
-        which before relaxing anything."""
+        """This test used to pin 'FurniMesh is SILENT' and said: if this ever
+        changes, either the fetcher landed (good) or the rung stopped seeing
+        it. It was the good case: `furnimesh.py` landed 2026-08-22
+        (ORD-2026-08-22-process-review-actions item 3) carrying the host
+        literal, so the source the table ranked first is finally USED."""
         root = RF._repo_root()
         text = RF.load_text(RF.LICENSING_REL, root)
         self.assertIsNotNone(text)
         states = {n: s for n, s, _ in RF.report(text, root)}
-        self.assertIn("FurniMesh", states)
+        self.assertEqual(states.get("FurniMesh"), "used")
         self.assertEqual(states.get("Poly Haven"), "used")
 
     def test_this_module_does_not_make_itself_pass(self):
-        """repo_first.py names FurniMesh many times in prose and carries no host
-        for it, so it must never register as a consumer."""
-        self.assertNotIn("furnimesh", RF.used_tokens(RF._repo_root()))
+        """The live half of this test flipped 2026-08-22: 'furnimesh' is now a
+        used token because `furnimesh.py` carries the real host — a FETCHER,
+        which is exactly what the rung demands. The spirit it originally
+        pinned — prose alone must never register a source as consumed — stays
+        pinned by test_prose_naming_a_source_is_NOT_use on a synthetic repo,
+        and by this module itself still carrying no host."""
+        self.assertIn("furnimesh", RF.used_tokens(RF._repo_root()))
+        with open(RF.__file__, encoding="utf-8") as fh:
+            self.assertNotIn("://furnimesh", fh.read().lower(),
+                             "repo_first.py must never carry the host itself")
 
 
 if __name__ == "__main__":

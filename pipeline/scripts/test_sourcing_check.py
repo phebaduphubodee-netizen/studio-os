@@ -57,6 +57,18 @@ def test_a_gap_declared_in_prose_is_still_a_gap():
     assert any("measured against 68 free-tier folders" in s for s in v)
 
 
+def test_the_r10_spec_key_is_not_a_sourcing_sentence():
+    # D-014 removes a hand-built desk pier and cites `declared_gaps.desk_pier`
+    # — R10's object-existence register. The "declared_gap" marker matching
+    # INSIDE that key is a substring accident; the row makes no claim about
+    # the market and must not be charged with one.
+    r = _row(in_effect="ลบออกจากเฟรม · ประกาศเป็น declared_gaps.desk_pier")
+    assert not SC.is_gap(r)
+    assert SC.check(ROSTER, _dec([r]), "DELIV-001", REPO) == []
+    # ...while a PROSE declared gap about an asset class still fires.
+    assert SC.is_gap(_row(in_effect="declared gap: no such asset"))
+
+
 def test_an_unmentioned_tier_reads_as_coverage_and_is_refused():
     t = dict(FULL)
     t.pop("paid-per-model")
