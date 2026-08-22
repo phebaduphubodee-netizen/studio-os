@@ -111,15 +111,15 @@
  "eye_camera": {
   "stand_mm": [
    1400,
-   -120
+   1125
   ],
   "aim_mm": [
-   4950,
-   2700
+   5180,
+   1125
   ],
-  "lens_mm": 24,
-  "shift_y": -0.08,
-  "note": "ELEMENT-1 hero framing: stand SW in the sleeping-area free floor, look NE at the corner where the BF14 slat headboard (east) meets the BF09-3 open dressing wall (north). The bed (600 mm) sits in the foreground below the 1.15 m lens; the slat rhythm + open joinery rise behind it. Hand-placed override — validated by camera_config._spot_is_clear like the auto grid. RE-NUDGED 2026-07-16b: the ink-true geometry moved the subject (BF09-3 north 150 to y2800, BF14 lengthened to 3250), which pushed the old stand [1400,250]/aim [4900,2350] into a too-tight frame aimed below BF09-3's new face. Stand pulled SW + 24 mm lens to hold the whole two-wall corner."
+  "lens_mm": 26,
+  "shift_y": -0.14,
+  "note": "CAMERA OF RECORD SINCE 2026-08-22 (D-118, owner 'ดี' on the A/B pair AB_camera_A-canonical_vs_B-bedhero.png): the bed-foot hero, adopted from eye_camera_variants.bed_hero after the RANK verdict 'ตู้ fix ไว้ทำให้เตียงดูเล็ก' and the two-mode measurement (delivered work always commits — bed-as-subject: camera ~1.1-1.2 m, sleep surface <=0.3 of frame, bed cut by a frame edge; ours committed to neither). Stand WEST of the foot in the clear band, look EAST across the bed to the BF14 slat wall; frontal-axial, both nightstands symmetric; shift_y -0.14 looks down to kill the empty upper wall. IN THE SPEC, NOT A FLAG (D-032's law: a render state that lives only in the command line is reverted by forgetting to type it). The old NE-corner framing is preserved verbatim as eye_camera_variants.corner_ne_legacy — one --eyecam away, and D-118's reverse_by names it."
  },
  "light_warm": [
   1.0,
@@ -544,6 +544,19 @@
    "lens_mm": 24,
    "shift_y": -0.08,
    "note": "ELEMENT 2: WEST at the open display bookshelf the bed FOOT faces — oak shelves on a cool carcass, see-through to the wall/curtain, the SW garden glass at the south end (frame left). AIM is ~50mm in FRONT of the bookshelf front face x906 (a solid open grid has no kneehole to see the wall through — aiming behind it fails _spot_is_clear). STAND is at the EAST edge of the only clear standing band (x1206-2346): the foot-of-bed bench (h450>0.35, x2646-3150 y628-1630) + the bed crowd the bed-foot floor, so the full 1.8m won't frame from here — this is the realistic eye-level view (shift_y -0.08 looks down at the display shelves), not a full elevation."
+  },
+  "corner_ne_legacy": {
+   "stand_mm": [
+    1400,
+    -120
+   ],
+   "aim_mm": [
+    4950,
+    2700
+   ],
+   "lens_mm": 24,
+   "shift_y": -0.08,
+   "note": "ELEMENT-1 hero framing, CANONICAL 2026-07-16b..2026-08-22 (superseded by the bed-foot camera, D-118): stand SW in the sleeping-area free floor, look NE at the corner where the BF14 slat headboard (east) meets the BF09-3 open dressing wall (north). Hand-placed override — validated by camera_config._spot_is_clear. RE-NUDGED 2026-07-16b: the ink-true geometry moved the subject (BF09-3 north 150 to y2800, BF14 lengthened to 3250), stand pulled SW + 24 mm lens to hold the whole two-wall corner. Kept verbatim as the named reversal of the 08-22 camera adoption."
   },
   "bed_hero": {
    "stand_mm": [

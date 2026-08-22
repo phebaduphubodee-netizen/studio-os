@@ -464,6 +464,33 @@
    "verdict": "unresolved",
    "why": "R10: a dark line nobody can name in a client frame is exactly the class this ledger exists to hold. PROBED p2r54 (same session): the idmask roster is bed-focused and reads id0 over the whole top-left region, so the mask cannot name it; the beauty crop shows a black angular mass ~40 px at the extreme left edge (x 30-45, y 150-230 of 2400x1800) against the wardrobe end column — reads as a garment-hanger hook of the leftmost bay clipped by the eye camera, not a ceiling wire. NEXT: confirm against the built scene (hanger object AABBs at the wardrobe south end) or widen the mask roster; keep/remove decided then. Filed p2r54, probed p2r55, 2026-08-18.",
    "since": "2026-08-18"
+  },
+  {
+   "assembly": "glass@-105,-802",
+   "identity": "The east glazed opening's glass panes — the window/slider glazing the spec's room.openings declares, built as thin glass quads in the opening the wall prism is cut by. Entered the eye frame 2026-08-22 when the camera of record moved to the bed-foot axis (D-118): the old NE-corner framing never looked east.",
+   "exists": "sheet:openings — the east glazing is a declared opening (room.openings), not a discretionary object; the wall is cut for it",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "keep",
+   "why": "R10's question is whether a mass was invented to satisfy a structure; glazing in a drawn opening is the structure. New-to-frame by camera move, not by build."
+  },
+  {
+   "assembly": "curtain",
+   "identity": "The window curtain sets (privacy + blackout pairs per glazed opening) the spec's curtains block declares — built 2026-07-17 (curtain build, eye_camera_variants provenance note) and present in every scene since; the bed-foot camera is simply the first eye framing that faces them.",
+   "exists": "sheet:openings + spec curtains block — dressing a declared opening; class order soft-goods-acquired governs their cloth, and their per-window presence is spec-declared",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A drawn opening in a bedroom carries window dressing; absence would be the invented thing. New-to-frame by camera move, not by build."
+  },
+  {
+   "assembly": "juliet",
+   "identity": "The juliet guard bars at the glazed slider (juliet__glz-slider_*, steel flats) — the fall-protection a full-height openable glazed panel requires, declared with the slider in the spec's openings.",
+   "exists": "sheet:openings — the glz-slider is drawn/declared; a full-height opening panel above ground carries a guard as constructed reality",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Holds a real load path (guard spanning the opening, anchored at jambs); removing it would make the slider the invented object. New-to-frame by camera move, not by build."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."

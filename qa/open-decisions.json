@@ -1863,6 +1863,21 @@
    "reverse_by": "พี่ดูคู่ A/B (canonical vs bed_hero quick ใน pipeline/output) แล้วชี้จากภาพ: ไม่เอาโหมดเตียงพระเอก -> คงกล้อง canonical แล้วลบแถวนี้ · หรือชี้โหมด (ข) ตู้พระเอก -> คิวเปลี่ยนเป็น composition ฝั่งตู้ · แก้เป้าเลข (0.3/20%) ได้จากใบ delivered ที่พี่ชี้",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-118",
+   "unit": "DELIV-001",
+   "subject": "bed-reads-small-vs-builtin",
+   "decided_round": 57,
+   "decided_date": "2026-08-22",
+   "decided_by": "owner",
+   "question": "คู่ A/B กล้อง (canonical NE-corner vs bed_hero เตียงพระเอก, D-117) — เอาทางไหน และ 'fur ยังไม่สวย' หมายถึงอะไร",
+   "in_effect": "(1) กล้อง bed-foot เป็นกล้อง record ของ DELIV-001 — เข้า spec eye_camera แล้ว (ไม่ใช่ flag, กฎ D-032) มุมเดิมเก็บเป็น eye_camera_variants.corner_ne_legacy · (2) 'fur' = ทั้งสี่ที่ถามกลับ: ม้านั่ง boucle, พรม (ขน/pile), ผ้านวม-ผ้าบนเตียง, และเฟอร์นิเจอร์ลอยทั้งชุด (สไตล์) — แมปตรง lever ที่เปิดอยู่: P2r-5 material response (ผ้า 'พลาสติก' — กรรมการทั้งคู่อันดับ 1), DEBT-14 ครึ่ง pile/edge ของพรม (P2r-3), เกณฑ์สองชั้น relation+style ของ review 70 (P4) — ไม่มีกลไกใหม่ · (3) แถว R10 สามแถว (glass@-105,-802 / curtain / juliet) ลง ledger เพราะกล้องใหม่เห็นของที่มุมเดิมไม่เคยเห็น",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/object-existence.json, docs/owner-advice-2026-08-22.md",
+   "because": "ตาพี่ตัดสินจากคู่ภาพตาม R3 — 'ดี' คือคำตัดสินโหมดเตียงพระเอก และคำถาม fur ถูกถามกลับแบบสี่ตัวเลือกเพื่อไม่อ่านคำตอบกำกวมแบบเข้าทางตัวเอง (บทเรียน flattering-reader ในแผ่น RANK 08-07)",
+   "reverse_by": "พี่ชี้จากภาพ: กลับมุมเดิม = คืน eye_camera จาก eye_camera_variants.corner_ne_legacy (ค่าเดิม verbatim อยู่ตรงนั้น + git) แล้วลบแถวนี้ · fur ข้อไหนไม่ใช่ที่พี่หมายถึง บอกคำเดียว ผมย้ายคิว",
+   "owner_override": "ดีแต่ fur ยังไม่สวย",
+   "override_date": "2026-08-22"
   }
  ]
 }
