@@ -461,11 +461,12 @@
       "date": "2026-08-18",
       "verbatim": "ผมว่าเตียงมันเล็กเกินไป",
       "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r53-2026-08-18.md",
+      "_retired_note": "RETIRED 2026-08-22 by D-114 carrying his newer words ('หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา'): this order's yardstick was the sheet's drawn rectangle; the 08-22 order replaces that yardstick with a standard bed size, which the current fit already meets within the studio's +-50mm rule. The bed was never too small against a standard — its drawn slot was larger than any standard and its neighbors stood at drawn positions 212-267mm away, which is what read as small.",
       "commands": "The staged bed reads too small against the drawn 7'x6.5' bed. The made-bed field (mattress + bedding + pillows) must be judged against the sheet's rectangle before any whole-bed staging passes; a candidate whose soft field cannot reach the drawn footprint at a legal scale is refused, and the currently staged f52472c1 (mattress 1243 mm of a drawn 2149) may not ship un-remeasured.",
       "subject": "bed-size-vs-sheet",
       "scope": "instance",
-      "standing": true,
-      "retired_by": null,
+      "standing": false,
+      "retired_by": "D-114",
       "status": "not-obeyed",
       "since": "2026-08-18",
       "not_obeyed_because": "The mechanism his order demanded EXISTS and refuses undersized beds (wholebed_rules made_field/field_verdict, in bench and build), and the p2r54 integration round CORRECTED ITS DENOMINATOR: the evening bench's 'first hard-filter pass in history' (81d895fd, field 0.888x1.00) was the instrument's error — the width that passed belonged to a 2,759 mm fabric headboard WALL riding in the file, admitted as bedding by a thin-panel exemption frozen against one candidate (D-109; fifth instance of an instrument answering its own question). Honest numbers with the corrected rules: 81d895fd's own soft field reaches 1.00x0.835 of the drawn rectangle at the containment-capped scale 0.903, and no legal scale reaches the 0.88 width cut (overflowing the drawn foot line is the ink's call, not a knob's). It is still the honest-best obtainable — +254 mm on the width axis he failed by eye vs the f52472c1 interim (0.90x0.72), draping flanks (0.11 vs f0938871's 0.89), resolvable head end, plane inside h600 — so p2r54 stages it as the SIGNED INTERIM (bed_field_deficit_signed {D-109, ASK-029}) and the deficit prints at every gate. The free tier is now instrument-honestly exhausted: 12/12 panel-passed free beds staged and measured, 0 pass the field cut (f0938871 refuted for cause: field counted its own fused 976 mm frame, flanks bare N/W 0.89, plane 644 over the signed h600). What stands between this order and the drawn bed is ASK-029 — the paid library's 135 panel-passed full-plan candidates, the only unmeasured shelf left, his payment. || CALIBRATED BY HIM MID-ROUND (D-110, 2026-08-18, his words verbatim in that row): the drawn size is a target with HIS tolerance, not a fixed spec — 'ไม่ได้ fix ขนาดนั้น แต่ไม่ได้อยากให้เปลี่ยนจากแบบเยอะเกินไป (แต่เปลี่ยนได้)'. The 0.88 line stays as the builder's signing threshold (nothing goes quieter), but whether 0.835 is 'too much' is now a question his EYE answers on the p2r54 render — not an automatic refusal, and not the builder's call in either direction. If he accepts the frame, this order retires by a decision row quoting him; if he rejects it, ASK-029 is the route back to a closer bed.",
@@ -519,6 +520,26 @@
       "obeyed_where": "docs/process-review-2026-08-22.md",
       "obeyed_how": "Cannot be obeyed before its trigger; recorded not-obeyed with restart_by per R13's third state.",
       "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-22-bed-standard-size-hug",
+      "date": "2026-08-22",
+      "verbatim": "หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา",
+      "recorded_at": "docs/process-review-2026-08-22.md",
+      "commands": "The bed's size target is a STANDARD bed size, not the sheet's drawn 2149x2000 rectangle; the surrounding pieces (two side tables, foot bench) move in to hug the bed instead of holding their drawn positions around the 7-ft slot. Numbers and the chosen standard are D-114: Thai king 6-ft 1800x2000 (declared assumption; the knowledge table's US Eastern King 1930x2032 is unreachable within the studio's own +-50mm rule at any uniform scale of this model), which the current fit already satisfies — so the bed geometry itself does not change; the actionable half is the hug.",
+      "subject": "bed-size-vs-sheet",
+      "scope": "instance",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/open-decisions.json, docs/process-review-2026-08-22.md",
+      "obeyed_how": "Spec item[1] bed slot narrowed 2149 -> 1800 (Thai king width; length 2000 already standard), side tables SR-09/SR-10 re-seated at hug gaps from the bed rect, bench already in contact at the foot (0.8mm) and untouched. Built and rendered as p2r56 the same day; the render is his channel to overrule from.",
+      "obeyed_assert": [
+        {
+          "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+          "pattern": "\"d\": 1800",
+          "why": "The bed slot at standard width IS the order; 2149 returning means the drawn-rectangle target quietly came back."
+        }
+      ]
     }
   ]
 }
