@@ -1816,6 +1816,22 @@
    "reverse_by": "พี่ดูเฟรม p2r56 แล้วว่ายังเล็ก/ชิดไป/มาตรฐานผิดไซซ์ -> ชี้จากภาพ คำพูดลงแถวใหม่: เปลี่ยนไซซ์มาตรฐาน (queen/king US) = แก้ item w/d สองเลข, คลาย gap = แก้ y โต๊ะข้าง · หรือกลับแบบเดิม: d 1800->2149, y 226->51, โต๊ะกลับ 2200/-450",
    "owner_override": "หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา",
    "override_date": "2026-08-22"
+  },
+  {
+   "id": "D-115",
+   "unit": "DELIV-001",
+   "subject": "bedside-datum-and-style-swap",
+   "decided_round": 57,
+   "decided_date": "2026-08-22",
+   "decided_by": "owner",
+   "obeys": "ORD-2026-08-22-bed-standard-size-hug",
+   "question": "ตาพี่บนเฟรม p2r56: 'สัดส่วนมันดูเพี้ยนแปลก ๆ' — วัดแล้วตัวการคือโต๊ะข้าง top 618 ลอยเหนือระนาบนอน 425 อยู่ 193มม. (D-045 ยกโต๊ะถึง datum ที่นอนของเตียงเก่า ~600 เป็นเลขตาย 618; เตียงเปลี่ยนที่ p2r52 เลขไม่ตาม — R9 class: เลขเก็บผลลัพธ์ ไม่ใช่ความสัมพันธ์) + bench top 501 สูงกว่าที่นอน +76 + C2 p2r56 #4 ชี้ว่าทั้งสามชิ้นเป็นทรง Louis ชนห้อง Japandi — แก้ยังไง",
+   "in_effect": "พี่ 'ลุย' บนข้อเสนอที่ระบุใน gate p2r56 addendum → SWAP สามชิ้นด้วยเกณฑ์สองชั้น: (1) RELATION ของ D-045 เดิม re-derive กับ plane ปัจจุบัน (top = 425-20 ≈ 405, band ±30) (2) STYLE ผ่าน 3-judge fresh panel (ครั้งแรกที่สไตล์เป็นเกณฑ์คัด asset) · ที่มา: Blendkit free sweep 27 ตัวมีมิติจริง (queries log ใน qa/blenderkit-search-log.json), โหลด 8 (royalty_free, ฿0, ไม่มี account), sidecar assert ผ่านทั้ง 8, audition stills + panel · ผล: โต๊ะ = 341b04e0 'Modern Nightstand 02' (panel #1 สองในสาม 'greige waterfall เข้า headboard'; slot ตั้งเป็นขนาดธรรมชาติ 400x400x400 → top 400 = plane-25 ใน band; ตัวที่เลขสวยกว่า (D 546x341x427→392) ตกที่ตา+panel เอกฉันท์: เป็นทรงคลาสสิกอีกตัว) · bench = 5b8e98d7 'Minimal modern bench' (panel เอกฉันท์; s 0.993 ใน slot เดิม → top ~406 = plane-19) · โต๊ะ re-seat ชิดใหม่: x4803 (ชิดผนัง), y 2036/-184 (rect gap 10มม. กับ rect เตียงมาตรฐาน) · แถว assertion ของ ClassicNightstand_01/Ottoman_01 ถูกลบพร้อม reference ตามที่ model_assert_check บังคับ (แถวกำพร้าคือช่องที่เลขของตัวที่ถูกปฏิเสธเคยไปทับตัวที่เลือก) — ประวัติอยู่ใน git",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/open-decisions.json, assets/shared/blenderkit",
+   "because": "การยัดโมเดลคลาสสิกให้เตี้ยลง (z-squash 0.66) ทำลายลายแกะและคงสไตล์ที่ชน; การหด slot ให้ตัวเลขสวย (C ที่ 352มม.) ได้โต๊ะจิ๋วข้างเตียง 1795; ตัวที่ผ่านทั้ง relation และ panel มีตัวเดียวในชั้นฟรีที่โหลดมา",
+   "reverse_by": "พี่ดู p2r57 แล้วไม่เอา -> ชี้จากภาพ: กลับตัวเดิม = คืน model/slot/ตำแหน่งใน 3 items (เลขเดิมอยู่ใน git ที่ commit นี้เอง) หรือชี้ตัวอื่นจาก audition (aud_*.png ใน scratchpad, 8 ตัว) หรือสั่งหาเพิ่ม (Blendkit ฟรีที่ผ่านมิติมี 27, ยังโหลดแค่ 8)",
+   "owner_override": "ลุย",
+   "override_date": "2026-08-22"
   }
  ]
 }

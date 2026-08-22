@@ -221,8 +221,8 @@
    "why": "Drawn. It is in the frustum only as a sliver past the wardrobe bay."
   },
   {
-   "assembly": "side_table@4702,2004",
-   "identity": "Bedside table, one acquired mesh, 501 x 375 in plan, top at 618 mm.",
+   "assembly": "side_table@4803,2005",
+   "identity": "Bedside table, one acquired mesh (Blendkit 341b04e0 Modern Nightstand 02, greige waterfall), 400 x 400 in plan, top at ~400 mm = sleeping plane - 25 (D-115 re-derivation of D-045's datum relation).",
    "exists": "sheet:SR-09",
    "held_by": "floor",
    "operable": false,
@@ -230,8 +230,8 @@
    "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y 2200) to hug the standard-size bed at a 10 mm slot gap — his order 2026-08-22 verbatim in ORD-2026-08-22-bed-standard-size-hug / D-114; the drawn position served the drawn 7-ft bed that D-114 retired."
   },
   {
-   "assembly": "side_table@4702,-184",
-   "identity": "Bedside table, one acquired mesh, 501 x 375 in plan, top at 618 mm.",
+   "assembly": "side_table@4803,-210",
+   "identity": "Bedside table, one acquired mesh (Blendkit 341b04e0 Modern Nightstand 02, greige waterfall), 400 x 400 in plan, top at ~400 mm = sleeping plane - 25 (D-115 re-derivation of D-045's datum relation).",
    "exists": "sheet:SR-10",
    "held_by": "floor",
    "operable": false,
@@ -239,19 +239,19 @@
    "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y -450) to hug the standard-size bed at a 10 mm slot gap — ORD-2026-08-22-bed-standard-size-hug / D-114."
   },
   {
-   "assembly": "nightstand@4786,2026",
+   "assembly": "nightstand@4869,2071",
    "identity": "Table lamp on the north bedside table: base, stem, shade, emitter.",
    "exists": "not-in-drawing: element 8 / D3 styling; the furniture plan draws the table but not what stands on it",
-   "held_by": "side_table@4702,2004",
+   "held_by": "side_table@4803,2005",
    "operable": false,
    "verdict": "keep",
    "why": "A bedside table with a lamp is what the spec's own item name says it is ('โต๊ะข้างเตียง เหนือ (มีโคมไฟ)'), and the lamp rests on the measured top. Rides its table's p2r56 hug move (D-114)."
   },
   {
-   "assembly": "nightstand@4785,-164",
+   "assembly": "nightstand@4869,-143",
    "identity": "Table lamp on the south bedside table: base, stem, shade, emitter — mirror of the north lamp.",
    "exists": "not-in-drawing: element 8 / D3 styling; the furniture plan draws the table but not what stands on it",
-   "held_by": "side_table@4702,-184",
+   "held_by": "side_table@4803,-210",
    "operable": false,
    "verdict": "keep",
    "why": "Same justification as its north mirror ('โต๊ะข้างเตียง ใต้ (มีโคมไฟ)' is the item's own name). It enters the in-frame roster at p2r56 because the hug move (D-114) brought its table 165 mm further into the eye frustum; the lamp itself is unchanged."

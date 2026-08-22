@@ -113,5 +113,32 @@
    "free_delta": "The one new free candidate (7bd2641a, tufted-headboard double) benched in the real room: field 1945x1867 = fill 0.973x0.869 — fails the width axis by 0.011. FINAL free-tier sentence, now catalogue-true: 12 panel-passed free beds exist across all channels, all 12 staged and measured, exactly ONE passes every hard filter — 81d895fd. The full-plan shortlist grows to 135.",
    "process_notes": "Two mechanical traps recorded: cp1252 stdout kills a sweep that prints non-Latin queries (set PYTHONIOENCODING=utf-8); and a bench slug must be READ from the download manifest, never retyped — one retyped uuid tail cost a wasted bench run."
   }
+ },
+ "nightstand_bench_2026_08_22": {
+  "why": "p2r57 (D-115): owner's eye 'สัดส่วนมันดูเพี้ยนแปลก ๆ' -> bedside datum re-derivation + style swap. Queries for LOW nightstands (target top ~405 = plane 425 - 20) and foot benches (top <= 425) with REAL dims from the API.",
+  "domain_note": "API now at blendkit.com (verified rebrand 2026-06-10, ex blenderkit.com); same public no-account route as wholebed_2026_08_18.",
+  "queries": [
+   "asset_type:model+is_free:true+nightstand (3 pages, 198 results)",
+   "asset_type:model+is_free:true+bedside+table (3 pages, 172 results)",
+   "asset_type:model+is_free:true+bench (3 pages, 250 results)"
+  ],
+  "size_window_hits": 27,
+  "fetched": [
+   "b0f7d7c0 Minimalist wooden nightstand 400x303x416",
+   "9d193cdc Nightstand 408x342x374",
+   "e7e2deeb Nightstand 408x342x470",
+   "6239feef Classic modern bed side drawer 546x341x427",
+   "6e95a09b Arcom Lime Green Bedside 500x350x450",
+   "341b04e0 Modern Nightstand 02 450x450x450",
+   "5b8e98d7 Minimal modern bench 1007x396x409",
+   "aab1e047 Small Bench 1005x424x424"
+  ],
+  "all_royalty_free": true,
+  "spend": "THB 0 (free tier, no account); sidecars asserted 8/8 ok",
+  "picked": {
+   "nightstand": "341b04e0 (3-judge style panel #1 two of three; slot set to natural 400x400x400 -> top 400 = plane-25)",
+   "bench": "5b8e98d7 (panel unanimous; s 0.993 in the existing slot -> top 406 = plane-19)",
+   "refused_by_eye_and_panel": "6239feef — the best NUMBERS (fit top 392) but a classical crown-molding piece; unanimous clash — the exact style class both critics condemned at p2r56"
+  }
  }
 }
