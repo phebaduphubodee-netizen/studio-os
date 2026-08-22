@@ -3521,3 +3521,17 @@ against does not spare the instrument-writer.
 changed lines in the diff. Fixed by byte-restore + binary append. Check the DIFF
 SIZE before trusting a text-file commit on Windows; the memory note already said
 so and it fired anyway.)
+
+---
+
+## 2026-08-22 — Process review: วิธีทำงานเรา vs designer ตัวจริง
+
+Full record: docs/process-review-2026-08-22.md (6-agent evidence sweep, owner reply verbatim).
+The ruler the repo never had, from the owner in one line: the friend takes ~4 DAYS per bedroom
+frame (ASK-030) - we are ~4x slower by wall-clock, not 100x, but his 4 days buys a whole scene
+from bought assets on a real-time viewport. Orders landed: ORD-2026-08-22-process-review-actions
+(acquire pipe + glance rung + instrument quota D-112) and ORD-2026-08-22-real-client-run-next
+(after DELIV-001: real client run end-to-end; sequencing with TRN-003 is D-113, nothing retired).
+ASK-029 flipped to the monthly path ($17.90, one month, renewal decided from the bench).
+SECURITY: blenderkit.com pricing URL 301-redirected to typosquat "blendkit.com" on this machine
+- not followed; the ask row now carries the warning for the payment step.

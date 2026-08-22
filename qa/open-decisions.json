@@ -1764,6 +1764,38 @@
    "reverse_by": "เตียง separable กลับมาใน frame -> ratchet ปฏิเสธเทียบอีกครั้ง -> re-baseline กลับพร้อมแถวใหม่ · หรือพี่ชี้จากภาพว่ามุมที่โผล่ต้องหาย -> เป็น work item ใหม่ (ผ้า/หมอนปิดมุม) ไม่ใช่การแก้เลข",
    "owner_override": null,
    "override_date": null
+  },
+  {
+   "id": "D-112",
+   "unit": "DELIV-001",
+   "subject": "instrument-admission-quota",
+   "decided_round": 55,
+   "decided_date": "2026-08-22",
+   "decided_by": "builder",
+   "obeys": "ORD-2026-08-22-process-review-actions",
+   "question": "process review 2026-08-22 ข้อ 5: pipeline/scripts มี 284 ไฟล์ / ~105k บรรทัด และ ~3/4 เป็นเครื่องตรวจไม่ใช่เครื่องสร้าง ขณะที่ critic debt 9 class ยังไม่มีเครื่องมอง — จะหยุดการขยายโรงงานกรรมการยังไงโดยไม่สร้างกรรมการเพิ่มมาคุม",
+   "in_effect": "เครื่องมือวัด/gate/bench ตัวใหม่รับเข้าได้ต่อเมื่อมันให้ตากับ critic-debt class ที่ยังไม่มีเครื่องมอง (9 class ณ วันตัดสิน) หรือแทนที่เครื่องเดิมที่พิสูจน์แล้วว่าโกหก (5 กรณีมีชื่อ) — นอกนั้น refuse โดยหลักการ R6 เดิม ('new guards must name the class existing guards miss') ซึ่งมีอยู่แล้วแต่ไม่เคยกัด · บังคับด้วยวินัยใน gate artifact ไม่ใช่ด้วยสคริปต์ใหม่ (การเขียน checker มาคุมเรื่องนี้คือการละเมิดเรื่องนี้): ทุก gate ที่แนะนำเครื่องมือใหม่ต้องพิมพ์ว่ามันตอบ debt class ไหน หรือแทนตัวโกหกตัวไหน",
+   "where": "docs/process-review-2026-08-22.md, qa/owner-orders.json",
+   "because": "หลักฐานจาก review: เครื่องตรวจโกหกมาแล้ว 5 ครั้งที่มีชื่อ ทุกตัวใหม่คือผู้ต้องสงสัยรายใหม่ + คนดูแลเพิ่ม ขณะที่ defect ที่ critic ยื่นซ้ำสูงสุดไม่มีเครื่องมองเลย 9 class — โควตาที่มีอยู่ควรไหลไปที่ช่องว่าง ไม่ใช่ที่ของที่มีตาแล้ว",
+   "reverse_by": "ลบแถวนี้ หรือพี่ชี้จากภาพว่า defect class ใหม่ต้องมีเครื่องมือ -> เพิ่มได้ทันทีเพราะนั่นคือ 'class ที่ยังไม่มีตัวมอง' ตามนิยามแถวนี้เอง",
+   "owner_override": null,
+   "override_date": null
+  },
+  {
+   "id": "D-113",
+   "unit": "DELIV-001",
+   "subject": "post-deliv-sequencing",
+   "decided_round": 55,
+   "decided_date": "2026-08-22",
+   "decided_by": "builder",
+   "obeys": "ORD-2026-08-22-real-client-run-next",
+   "question": "ORD-2026-08-22-real-client-run-next (client run จริงเป็น unit ถัดไปหลัง DELIV-001) ชนกับ standing order 2026-07-30 ('ทำไปเรื่อยๆ ทุก session จนกว่าจะสร้างงานของเพื่อนออกมาได้ทั้งหมด' — TRN-003 เปิดเมื่อ deliverable ships) — ลำดับยังไงโดยไม่ retire คำสั่งเก่า",
+   "in_effect": "เมื่อ DELIV-001 ships: unit ถัดไปคือ client run จริง (คำสั่ง 08-22 ใหม่กว่าและเจาะจงกว่า) · TRN curriculum ไม่ถูก retire — TRN-003 เปิดหลังหรือขนานกับ client run ตามกำลังของ session · ทั้งสอง order คง standing: true ทั้งคู่",
+   "where": "qa/owner-orders.json, docs/process-review-2026-08-22.md, qa/reproduction-curriculum.md",
+   "because": "R13: builder ห้าม out-argue คำสั่ง — คำสั่งเก่าไม่หายเพราะมีคำสั่งใหม่ การเรียงลำดับเป็น builder call ที่กลับได้ ไม่ใช่การ repeal · สนามที่ตอบคำถาม 'ช้ากว่าตัวจริงกี่เท่า' (ASK-030: เพื่อน ~4 วัน/เฟรม) ได้จริงคืองานจริง",
+   "reverse_by": "พี่พูดคำเดียวว่าเอา TRN-003 ก่อน หรือเอา curriculum ออก -> แถวนี้พลิกตาม พร้อม override ลง ORD ที่เกี่ยว",
+   "owner_override": null,
+   "override_date": null
   }
  ]
 }

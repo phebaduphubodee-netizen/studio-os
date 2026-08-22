@@ -471,6 +471,38 @@
       "not_obeyed_because": "The mechanism his order demanded EXISTS and refuses undersized beds (wholebed_rules made_field/field_verdict, in bench and build), and the p2r54 integration round CORRECTED ITS DENOMINATOR: the evening bench's 'first hard-filter pass in history' (81d895fd, field 0.888x1.00) was the instrument's error — the width that passed belonged to a 2,759 mm fabric headboard WALL riding in the file, admitted as bedding by a thin-panel exemption frozen against one candidate (D-109; fifth instance of an instrument answering its own question). Honest numbers with the corrected rules: 81d895fd's own soft field reaches 1.00x0.835 of the drawn rectangle at the containment-capped scale 0.903, and no legal scale reaches the 0.88 width cut (overflowing the drawn foot line is the ink's call, not a knob's). It is still the honest-best obtainable — +254 mm on the width axis he failed by eye vs the f52472c1 interim (0.90x0.72), draping flanks (0.11 vs f0938871's 0.89), resolvable head end, plane inside h600 — so p2r54 stages it as the SIGNED INTERIM (bed_field_deficit_signed {D-109, ASK-029}) and the deficit prints at every gate. The free tier is now instrument-honestly exhausted: 12/12 panel-passed free beds staged and measured, 0 pass the field cut (f0938871 refuted for cause: field counted its own fused 976 mm frame, flanks bare N/W 0.89, plane 644 over the signed h600). What stands between this order and the drawn bed is ASK-029 — the paid library's 135 panel-passed full-plan candidates, the only unmeasured shelf left, his payment. || CALIBRATED BY HIM MID-ROUND (D-110, 2026-08-18, his words verbatim in that row): the drawn size is a target with HIS tolerance, not a fixed spec — 'ไม่ได้ fix ขนาดนั้น แต่ไม่ได้อยากให้เปลี่ยนจากแบบเยอะเกินไป (แต่เปลี่ยนได้)'. The 0.88 line stays as the builder's signing threshold (nothing goes quieter), but whether 0.835 is 'too much' is now a question his EYE answers on the p2r54 render — not an automatic refusal, and not the builder's call in either direction. If he accepts the frame, this order retires by a decision row quoting him; if he rejects it, ASK-029 is the route back to a closer bed.",
       "restart_by": "(carried out at p2r54 as far as a builder action can go: 81d895fd integrated as the signed interim, instrument corrected, deficit re-signed smaller. No further builder action exists on the free shelf; the order ages with ASK-029.)",
       "blocked_by": "ASK-029"
+    },
+    {
+      "id": "ORD-2026-08-22-process-review-actions",
+      "date": "2026-08-22",
+      "verbatim": "3 - 6 ลุย",
+      "recorded_at": "docs/process-review-2026-08-22.md",
+      "commands": "Carry out review items 3-5 of the 2026-08-22 process review: (3) complete the acquire pipe for the loose class — FurniMesh shelf populated from 0 files, ingest widened beyond the gltf-only path; (4) make the routine look cost seconds, not 68s — a glance rung (Eevee/Workbench snapshot) becomes the standard LOOK-while-working step, Cycles reserved for gates; (5) freeze the referee factory — a new instrument is admitted only when it gives eyes to a critic-debt class that has none (9 such classes exist), refused otherwise (mechanics in D-112).",
+      "subject": "process-vs-practitioner",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "obeyed_where": "docs/process-review-2026-08-22.md",
+      "obeyed_how": "Work begun the same session the order landed; obeyed_where and obeyed_assert are updated to the real code paths as each of the three items lands. Until all three carry asserts, this row counts as in-progress, not obeyed.",
+      "obeyed_assert": []
+    },
+    {
+      "id": "ORD-2026-08-22-real-client-run-next",
+      "date": "2026-08-22",
+      "verbatim": "3 - 6 ลุย",
+      "recorded_at": "docs/process-review-2026-08-22.md",
+      "commands": "Review item 6: after DELIV-001 ships (P5 exit met), the next unit is a REAL CLIENT PROJECT run end-to-end (00_intake -> 08_handover) with acquired assets — the arena where speed against a real designer (friend's ruler: ~4 days/frame, ASK-030) is actually measured. Sequencing with the TRN-003 standing order is D-113: the curriculum is NOT retired by this row.",
+      "subject": "post-deliv-direction",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-22",
+      "not_obeyed_because": "The order's own trigger has not arrived: it commands what happens AFTER DELIV-001 ships, and DELIV-001 is still open at P2. Nothing about this row is a debt in the R13 sense — it cannot be obeyed earlier than its condition — but it is recorded not-obeyed rather than obeyed so that no rung ever prints a future promise as a completed act. The builder action that discharges it is named in restart_by and fires the day P5's exit is recorded.",
+      "restart_by": "DELIV-001 P5 exit recorded as met -> scaffold the client run (scripts/scaffold_project.py) and open its plan as the next unit. A named builder action with a future trigger, not a debt aging in silence: plan_status prints this row until it fires.",
+      "obeyed_where": "docs/process-review-2026-08-22.md",
+      "obeyed_how": "Cannot be obeyed before its trigger; recorded not-obeyed with restart_by per R13's third state.",
+      "obeyed_assert": []
     }
   ]
 }
