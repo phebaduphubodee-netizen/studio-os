@@ -101,3 +101,14 @@ python pipeline/scripts/glance.py pipeline/output/<room>.blend --snap   # ~2.7 �
 python pipeline/scripts/glance.py pipeline/output/<room>.blend          # one-shot ~7 วิ ไม่ต้องมี watcher
 ```
 (--mode=workbench, --scale=N, --cam=NAME, --stop มีครบ; test = test_glance.py, 24 ข้อ, ไม่ต้องมี Blender)
+
+## Mock ladder ขนาดเตียง (คำถามเจ้าของ 2026-08-22: "ขยายอีกไม่ได้หรอ?")
+
+MOCK_bedladder_{1_088cut,2_092,3_096,4_fullwidth}.png ใน pipeline/output — uniform scale
+×1.054/×1.10/×1.15/×1.197 รอบ pivot หัวเตียงจริง (แก้จากคู่ A/B แรกที่ pivot คลาด 54มม.)
+พร้อมเลื่อน nightstand+โคม (±dy 48/90/135/177) และ bench+หนังสือ+ผ้าพาด (dx 108/200/300/395
+เข้าหากล้อง) รักษาระยะเดิมแบบที่ designer จริงทำเมื่อ upsize เตียง · ขั้น 4 = กว้างเต็มแบบ 7' พอดี
+แต่ยาวเกินเส้น 6.5' ไป 395มม. — **ข้อจำกัดจริงคือสัดส่วนโมเดล ไม่ใช่สเกล**: แบบวาดเตียงกว้าง>ยาว
+(2149×2000) ตัวที่ซื้อยาว>กว้าง (2000×1795 ที่ fit) uniform scale จึงตรงได้ทีละแกน · เป็น mock
+ใน .blend memory เท่านั้น ไม่แตะ spec/gate; ถ้าเจ้าของชี้ขั้นไหน → ลง owner decision แล้ว
+implement ผ่าน spec (fit override + placement re-derive) เป็นรอบจริง
