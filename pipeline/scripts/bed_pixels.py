@@ -184,6 +184,52 @@ def load_sidecar(path):
     return d
 
 
+def record_fused_body(sidecar_path, name):
+    """Put the build's fused-body DECLARATION into THE FRAME'S OWN RECORD.
+
+    Found 2026-08-23 by the frame corpus this module's own test walks: since
+    p2r54 the staged bed is one shell, so the core exists only where the build
+    DECLARES which object is the body — and that declaration lived nowhere but
+    the command line `build_room` spawns this rung with (`--fused-body`). The
+    rung therefore ran correctly at build time and NO LATER READER COULD EVER
+    REPRODUCE IT: p2r54..p2r57 re-measure as `core_objects: []`, which is this
+    module refusing exactly as designed, on four frames whose bed is right
+    there in the mask.
+
+    That is D-032's law one layer down — "a render state that lives only in the
+    command line is reverted by forgetting to type it" — except a record cannot
+    be re-typed after the fact. It is also the shape this module already warns
+    about in `measure`: the semantics travel in the result so the ratchet can
+    refuse to compare across them, which is worth nothing if the semantics do
+    not survive the render that produced them.
+
+    Written by the rung that RECEIVES the declaration, and only after the frame
+    has corroborated it (see `main`), so a name the mask does not contain is
+    never recorded. Idempotent. A DIFFERENT stored name is a disagreement
+    between two builds about what the frame is made of, and this raises rather
+    than overwriting — the same law the flag itself obeys three functions down:
+    a rung must not pick a side silently.
+
+    Returns "written" | "already".
+    """
+    with open(sidecar_path, encoding="utf-8") as f:
+        d = json.load(f)
+    have = d.get("fused_body")
+    if have == name:
+        return "already"
+    if have:
+        raise CouldNotRun(
+            f"{sidecar_path} already records the fused bed body {have!r} and "
+            f"this run declares {name!r}. Two builds disagree about what this "
+            f"frame is made of; a record is not overwritten to settle it.")
+    d["fused_body"] = name
+    tmp = sidecar_path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(d, f, indent=1)
+    os.replace(tmp, sidecar_path)
+    return "written"
+
+
 def materials_from_dump(dump_path):
     """{object_name: [material, ...]} from a scene dump.
 
@@ -491,6 +537,15 @@ def measure(beauty_path, mask_path, sidecar_path, dump_path=None,
     import numpy as np
 
     side = load_sidecar(sidecar_path)
+    # NO FLAG? ASK THE FRAME. `record_fused_body` puts the build's
+    # declaration into the sidecar, so a re-measure of an archived frame
+    # reproduces the build's reading instead of refusing for want of a
+    # command line nobody kept. An explicit argument still wins — the
+    # caller that just staged the mesh outranks the file.
+    declared_by = "argument" if fused_body else None
+    if fused_body is None and side.get("fused_body"):
+        fused_body = side["fused_body"]
+        declared_by = "frame record"
     if dump_path and os.path.isfile(dump_path):
         assert_dump_is_this_frames(dump_path, beauty_path)
     materials, mat_src = materials_for(side, dump_path)
@@ -588,6 +643,11 @@ def measure(beauty_path, mask_path, sidecar_path, dump_path=None,
         "resolution": [int(beauty.shape[1]), int(beauty.shape[0])],
         "core_semantics": (f"fused_body:{fused_body}" if fused_body
                            else "separable"),
+        # WHICH LAYER SAID SO. Not decoration: "the build told me" and
+        # "the frame remembered" are different evidence, and a frame that
+        # can only be measured while its build is still running is the
+        # defect record_fused_body exists to end.
+        "core_semantics_from": declared_by,
         "material_source": mat_src,
         "roster": len(names),
         "px": px,
@@ -960,6 +1020,14 @@ def main(argv=None):
             return 2
     try:
         m = measure(beauty, mask, sidecar_path, scene, fused_body=fused)
+        # THE DECLARATION OUTLIVES THE COMMAND LINE. Written only now,
+        # after `measure` has found the named object in this frame's own
+        # mask roster — a name the frame does not corroborate is refused
+        # above and never reaches the record.
+        if fused:
+            print(f"  fused-body declaration -> "
+                  f"{record_fused_body(sidecar_path, fused)} "
+                  f"({os.path.basename(sidecar_path)})")
         v = check(m)
     except CouldNotRun as e:
         print(f"BED PIXELS: COULD NOT RUN — {e}")

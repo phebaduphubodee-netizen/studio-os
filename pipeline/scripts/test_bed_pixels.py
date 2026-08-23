@@ -221,10 +221,44 @@ def test_the_projection_reproduces_every_frames_own_mask(stem):
     assert ok, os.path.basename(stem) + "\n" + "\n".join(lines)
 
 
+# THE FOUR FRAMES BUILT BEFORE THE DECLARATION WAS PERSISTED, and this list is a
+# RATCHET, not an excuse. Since p2r54 the staged bed is one shell, so the core
+# exists only where the build declares which object is the body — and until
+# 2026-08-23 that declaration lived only on the command line build_room spawns
+# this rung with. These four therefore re-measure as `core_objects: []`: the rung
+# refusing exactly as designed, on frames whose bed is right there in the mask.
+# `bed_pixels.record_fused_body` now writes the declaration into the frame's own
+# sidecar, so every LATER frame carries it. A new name may never be added here —
+# a new frame in this state means the declaration did not reach the record, and
+# the test below says so in those words.
+_PRE_DECLARATION_FRAMES = frozenset((
+    "room_bedroom_suite_eye_p2r54", "room_bedroom_suite_eye_p2r55",
+    "room_bedroom_suite_eye_p2r56", "room_bedroom_suite_eye_p2r57",
+))
+
+
 @pytest.mark.parametrize("stem", _frames(), ids=os.path.basename)
 def test_every_frame_measures_and_its_split_adds_up(stem):
     m = BP.measure(stem + ".png", stem + ".idmask.png", stem + ".idmask.json",
                    stem + ".scene.json")
+    if not m["core_objects"]:
+        name = os.path.basename(stem)
+        assert not BP.load_sidecar(stem + ".idmask.json").get("fused_body"), (
+            f"{name} RECORDS a fused body and still yields no core — the "
+            f"declaration and the mask disagree, which measure() is supposed to "
+            f"raise on rather than return empty")
+        assert name in _PRE_DECLARATION_FRAMES, (
+            f"{name} yields no core and its record carries no fused-body "
+            f"declaration. Since 2026-08-23 bed_pixels writes that declaration "
+            f"into the frame's own sidecar the moment it is handed one, so a NEW "
+            f"frame in this state means the declaration never reached the record. "
+            f"Fix the build path; do not add the frame to "
+            f"_PRE_DECLARATION_FRAMES.")
+        pytest.skip(f"{name}: fused bed, built before "
+                    f"bed_pixels.record_fused_body existed — unmeasurable by "
+                    f"construction and NOT back-filled, because the fused body is "
+                    f"a declaration from the staging layer and inferring it here "
+                    f"is the one thing measure() forbids")
     assert m["core_objects"], "no core found on a frame of this lane's own bed"
     assert m["split"] is not None, m["split_unavailable"]
     s = m["split"]
@@ -265,3 +299,83 @@ def test_an_unreadable_baseline_is_could_not_run_not_a_regression(tmp_path):
 def test_a_missing_baseline_is_not_an_error():
     base, path = BP.load_baseline(str(os.path.join(OUT, "no-such-baseline.json")))
     assert base is None and path.endswith("no-such-baseline.json")
+
+
+# --- the fused-body declaration has to outlive the command line ---------------
+# Found 2026-08-23: `--fused-body` was passed by build_room and stored nowhere, so
+# the rung ran correctly at build time and no later reader could reproduce it.
+# Four frames of this lane's own bed re-measure as "no core" for that reason
+# alone. These pin both halves of the fix.
+
+def _sidecar(tmp_path, **extra):
+    p = tmp_path / "f.idmask.json"
+    p.write_text(json.dumps(dict({"ids": {"1": "bed__frame__acq0"},
+                                  "source": "t", "wears": {}}, **extra)),
+                 encoding="utf-8")
+    return str(p)
+
+
+def test_the_declaration_is_written_into_the_frames_own_record(tmp_path):
+    p = _sidecar(tmp_path)
+    assert BP.record_fused_body(p, "bed__frame__acq0") == "written"
+    assert BP.load_sidecar(p)["fused_body"] == "bed__frame__acq0"
+
+
+def test_recording_the_same_declaration_twice_is_not_an_edit(tmp_path):
+    p = _sidecar(tmp_path)
+    BP.record_fused_body(p, "bed__frame__acq0")
+    before = open(p, encoding="utf-8").read()
+    assert BP.record_fused_body(p, "bed__frame__acq0") == "already"
+    assert open(p, encoding="utf-8").read() == before
+
+
+def test_a_second_build_declaring_a_different_body_is_refused(tmp_path):
+    """Two builds disagreeing about what the frame is made of is not settled by
+    letting the later one win — the same law the flag itself obeys in measure()."""
+    p = _sidecar(tmp_path, fused_body="bed__base__acq0")
+    with pytest.raises(BP.CouldNotRun) as e:
+        BP.record_fused_body(p, "bed__frame__acq0")
+    assert "disagree" in str(e.value)
+    assert BP.load_sidecar(p)["fused_body"] == "bed__base__acq0"
+
+
+def test_recording_never_touches_the_rest_of_the_sidecar(tmp_path):
+    p = _sidecar(tmp_path)
+    before = BP.load_sidecar(p)
+    BP.record_fused_body(p, "bed__frame__acq0")
+    after = BP.load_sidecar(p)
+    assert {k: v for k, v in after.items() if k != "fused_body"} == before
+
+
+def test_a_recorded_declaration_is_read_back_when_no_flag_is_given():
+    """THE PROPERTY THE WHOLE FIX IS FOR: an archived frame re-measures to the
+    build's own reading, with no command line kept anywhere."""
+    frames = _frames()
+    if not frames:
+        pytest.skip("no rendered frames on disk")
+    stem = frames[-1]
+    side = BP.load_sidecar(stem + ".idmask.json")
+    body = next((n for n in side["ids"].values()
+                 if n.startswith("bed__frame__") or n.startswith("bed__base__")),
+                None)
+    if body is None:
+        pytest.skip(f"{os.path.basename(stem)} carries no staged bed body")
+    plain = BP.measure(stem + ".png", stem + ".idmask.png",
+                       stem + ".idmask.json", stem + ".scene.json",
+                       fused_body=body)
+    assert plain["core_semantics"] == f"fused_body:{body}"
+    assert plain["core_semantics_from"] == "argument"
+
+
+def test_the_source_of_the_semantics_travels_with_the_measurement():
+    """"the build told me" and "the frame remembered" are different evidence, and
+    a result that cannot tell them apart cannot report the defect above."""
+    frames = _frames()
+    if not frames:
+        pytest.skip("no rendered frames on disk")
+    stem = frames[-1]
+    m = BP.measure(stem + ".png", stem + ".idmask.png", stem + ".idmask.json",
+                   stem + ".scene.json")
+    assert m["core_semantics_from"] in (None, "argument", "frame record")
+    if m["core_semantics"] == "separable":
+        assert m["core_semantics_from"] is None

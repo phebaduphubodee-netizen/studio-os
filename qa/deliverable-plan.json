@@ -3315,8 +3315,65 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "a8be7cdcf5c6b38ae3ff82f022d02cca5ce61579",
+      "verdicts": {
+        "P2": "keep: the surface levers that still have builder actions behind them are untouched (P2r-2 wood figure still scores PERIODIC, P2r-5 material response still open), and STY did not compete for a round — it changed zero pixels. What STY adds to P2 is a SHARPER version of a lever P2 already owned: the floor is now a named unsigned slot printing its age, and signing it is the highest-area single change in the room. It rides as the second variable of the Metropol integration round (D-121 item 4), not as a round of its own.",
+        "P4": "change: P4's own review verdict of 2026-08-17 named 'STYLE COHERENCE of acquired loose pieces — acquired objects pass size benches but no style rung exists' as a work item of this phase. It now has a home that is not P4: STY-2 (a style verdict on qa/object-existence.json rows + one rule in existence_check). Move the coherence half OUT of P4 and leave P4 as what its title says — DENSITY, >=12 loose objects. Two phases were carrying one question; the phase that can measure it should keep it.",
+        "P3": "keep: nothing in STY touches light. The build order stands — objects before light, because light is SOLVED from geometry and doing it early buries geometry errors in a lighting table nobody reads. STY-1b's palette measurement is an AREA split, not a luminance one, so it does not pre-empt P3's range work either.",
+        "P5": "keep: still blocked on the same thing and STY does not unblock it. If anything STY makes P5 more honest — the palette gap of 0.300 is now a number that prints beside the frame, so 'he calls it unfinished' has one measured companion instead of none.",
+        "STY": "keep: opened today, STY-1 and STY-1b closed and wired into the lane that renders, STY-2 through STY-6 open with STY-5 blocked on the D-119 criteria freeze until the BlenderKit month review. The program stays open because the register currently tells the truth about what renders without yet making it correct — 6 of 9 slots unsigned and no acquired object judged against the style."
+      },
+      "changed": [
+        "P4"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a",
+        "STY/STY-1",
+        "STY/STY-1b"
+      ]
     }
   ],
-  "last_review_commit": "1a106f54a234beee69a2e45b75745239d214f995",
+  "last_review_commit": "a8be7cdcf5c6b38ae3ff82f022d02cca5ce61579",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }

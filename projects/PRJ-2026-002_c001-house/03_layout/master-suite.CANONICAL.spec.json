@@ -868,6 +868,8 @@
   {
    "name": "เตียง 7'x6.5' หัวตะวันออก",
    "kind": "bed",
+   "sheet_ref": "SR-07",
+   "sheet_ref_note": "R12 spec-ratchet, filled 2026-08-23 — it had stood open since p2r56 and printed at every session open. SR-07 IS this mass's identity (the drawn bed, head east against BF14) and that has never been in question. What moved is the ratchet fingerprint [x,y,w,d,h]: [3204,51,2000,2149,600] -> [3204,226,2000,1800,600] at p2r56 (d91bf43), so `d` now sits 181 mm inside the drawn 1981 and the mass 175 mm further north. THAT IS NOT DRIFT AND IT IS NOT A DERIVATION OF OURS QUARRELLING WITH THE SHEET — it is his order, ORD-2026-08-22-bed-standard-size-hug / D-114, in his own words: 'หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา'. The drawn rectangle 2149x2000 is larger than EVERY standard bed size, so the ink's rectangle became the TARGET and the standard size became the spec (Thai king 6ft 1800x2000, a declared assumption recorded in D-114); the two nightstands moved to hug it in the same commit (SR-09 y1943, SR-10 y-248). D-110 is what permits this at all — the drawn size is a target carrying HIS tolerance, not a fixed spec. R12 is not bent here: R12 makes a DERIVED DOC OF OURS yield to the sheet, and this is the owner overruling the sheet directly, which R13's hierarchy puts above every builder rung. Recorded rather than left implicit because D-069's own reverse_by warns in writing that editing `d` to suit an acquired mesh would be the forbidden version of this edit — the distinction is WHO ordered it. REVERSE: restore d 2149 / y 51 here and the two nightstand y values from d91bf43, which puts the drawn rectangle back as the spec and re-opens ORD-2026-08-18-bed-too-small.",
    "x": 3204,
    "y": 226,
    "w": 2000,
@@ -930,6 +932,8 @@
   {
    "name": "ม้านั่งปลายเตียง (bench)",
    "kind": "bench",
+   "sheet_ref": "SR-08",
+   "sheet_ref_note": "R12 spec-ratchet, filled 2026-08-23. SR-08 is the identity and THE PLAN FOOTPRINT IS UNTOUCHED: x2654 y626 w498 d1000 is the same ink-matched rectangle this mass has carried since element 3 (SR-08 draws [2646,626,504,1008]). The only number that moved is h, 450 -> 410, at p2r57 (7202397, D-115, owner 'ลุย' on the proportion diagnosis) — and h is the one dimension THE SHEET DOES NOT CARRY (plans hold no z; D-034). Its authority is the heights ladder (DRW-2) at the ergonomics rung: a foot-of-bed bench sits at or below the sleeping plane, the new bed measures that plane at 425, the Blendkit bench predicts a top of ~406 and the Ottoman_01 it replaced measured 501. Named so the next reader does not go hunting for an ink change that is not there: the ratchet fingerprints [x,y,w,d,h] as one tuple, so a z-only edit is asked for a sheet ref as well — and the ref answers WHICH DRAWN THING THIS IS, never whether the sheet agreed about a height it does not draw. REVERSE: h back to 450 and the model back to Ottoman_01, both in git at 7202397; D-115's reverse_by carries the fuller route.",
    "x": 2654,
    "y": 626,
    "w": 498,

@@ -42,7 +42,7 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@2353,-450/mill__ผนังระแนงหัวเตียง_BF14__backer",
@@ -54,12 +54,12 @@
      {
       "assembly": "bed/bed__headboard_welt_top",
       "kind": "part",
-      "coverage": 0.068,
-      "footprint_m2": 0.156,
+      "coverage": 0.055,
+      "footprint_m2": 0.13,
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -85,7 +85,7 @@
    "gap": null,
    "note": "RECT CORRECTED 2026-08-11 by vector measure (DRW-1b): the drawn band's principal verticals are x=306 (4399mm of ink) and x=804 (3799mm) — the canonical build (counter 306..804) was ink-true all along, and the refuted reading was the floor2 scene-graph's [0..600], which had placed the LABEL size against the wall instead of reading the strokes. My own low-zoom eyeball agreed with the wrong one; the histogram decided. Old rect [0,2900,600,3200] kept here for the record. Label-vs-drawn depth flag: BF11 label says 60cm, ink draws 498mm — same ป้าย≠วาด class the floor2 lane flagged on BF14/BF09-1.",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@306,2600/mill__โต๊ะเครื่องแป้ง_BF11__counter",
@@ -109,7 +109,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -135,7 +135,7 @@
    "gap": null,
    "note": "WEST-END ACCUSATION RETRACTED 2026-08-11, same night it was filed: the vector probe finds exactly ONE vertical in x[1300,2900] within the band — x=2352, len 600, the drawn west cap — and band edges y2800/y3400 with ~3.1m runs. The built band (x2353, 3301 long = label 330 to 1mm) is INK-EXACT. My low-zoom eyeball had read the pelmet/leader linework at ~x1750 as the band edge — third eyeball error of the night, third vector correction. Rect corrected from the floor2 scene-graph guess [1800,2950] to the ink; the scene-graph is now 0-for-3 on BF band placements (BF11, BF10, BF09-3).",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@2353,-450/mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__top",
@@ -159,7 +159,7 @@
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -185,7 +185,7 @@
    "gap": null,
    "note": "ROW NARROWED 2026-08-11: it had carried the basin counter AND the BF10 label in one rect (one row, two objects — R9's one-parameter defect in ledger form). The BF10 band is SR-20; this row keeps the drawn basin-counter rect.",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@77,5898",
@@ -209,7 +209,7 @@
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -235,7 +235,7 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@3254,4621/mill__bayBF09-1-0_top",
@@ -259,7 +259,7 @@
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -285,7 +285,7 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@3254,4621/mill__bayBF09-1-1_top",
@@ -309,7 +309,7 @@
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -336,13 +336,13 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
-      "assembly": "bed/bed__cloth__acq0",
-      "kind": "part",
-      "coverage": 0.975,
-      "footprint_m2": 4.698,
+      "assembly": "bed",
+      "kind": "assembly",
+      "coverage": 0.782,
+      "footprint_m2": 12.032,
       "in_frustum": true
      },
      {
@@ -360,7 +360,7 @@
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -387,31 +387,31 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
-     {
-      "assembly": "bench",
-      "kind": "assembly",
-      "coverage": 0.682,
-      "footprint_m2": 0.353,
-      "in_frustum": true
-     },
      {
       "assembly": "bench/bench__acq0",
       "kind": "part",
-      "coverage": 0.682,
-      "footprint_m2": 0.353,
+      "coverage": 0.775,
+      "footprint_m2": 0.393,
       "in_frustum": true
      },
      {
-      "assembly": "deco",
+      "assembly": "bench",
       "kind": "assembly",
-      "coverage": 0.476,
-      "footprint_m2": 0.388,
+      "coverage": 0.775,
+      "footprint_m2": 0.632,
+      "in_frustum": true
+     },
+     {
+      "assembly": "bench/bench__acq1",
+      "kind": "part",
+      "coverage": 0.46,
+      "footprint_m2": 0.239,
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -436,36 +436,36 @@
     "date": "2026-07-05"
    },
    "gap": null,
-   "note": "",
+   "note": "UNRESOLVED SINCE 2026-08-23, and NOT drift — this row is the recon catching an OWNER-ORDERED move it cannot know about. p2r56 (d91bf43) carried out ORD-2026-08-22-bed-standard-size-hug / D-114 in his own words — 'หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา' — so the bed became a standard size inside the oversized drawn rectangle and the two nightstands moved IN to hug it; p2r57 (7202397, D-115) then swapped the pieces themselves. Measured now: drawn [4794,2306,300,300] against a built [4803,2005,400,400] — 301 mm off on the y the order moved, 100 mm larger in plan, coverage 0.317. The stored verdict read `matched` until today only because it was frozen against p2r41, sixteen rounds before the move — the session opener has been printing '21 matched | 0 blocking' over a live gate that exits 1. DELIBERATELY LEFT UNRESOLVED RATHER THAN SIGNED: signing it is a drawing call and R12 says the drawing crop must be open beside the element before that call is made, which is a round with the sheet, not a ledger edit. What it must NOT become is a silent `matched`.",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
-      "assembly": "nightstand@4786,2283/nightstand__lamp_shade",
+      "assembly": "side_table@4803,2005",
+      "kind": "assembly",
+      "coverage": 0.317,
+      "footprint_m2": 0.16,
+      "in_frustum": true
+     },
+     {
+      "assembly": "side_table@4803,2005/side_table__acq0",
       "kind": "part",
-      "coverage": 1.0,
-      "footprint_m2": 0.11,
+      "coverage": 0.317,
+      "footprint_m2": 0.16,
       "in_frustum": true
      },
      {
-      "assembly": "nightstand@4786,2283",
-      "kind": "assembly",
-      "coverage": 1.0,
-      "footprint_m2": 0.142,
-      "in_frustum": true
-     },
-     {
-      "assembly": "side_table@4702,2261",
-      "kind": "assembly",
-      "coverage": 1.0,
-      "footprint_m2": 0.188,
+      "assembly": "nightstand@4869,2071/nightstand__lamp_shade",
+      "kind": "part",
+      "coverage": 0.075,
+      "footprint_m2": 0.071,
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
-   "verdict": "matched",
+   "verdict": "UNRESOLVED",
    "warning": null,
    "spec_mass": "โต๊ะข้างเตียง เหนือ (มีโคมไฟ)"
   },
@@ -487,36 +487,36 @@
     "date": "2026-07-05"
    },
    "gap": null,
-   "note": "",
+   "note": "UNRESOLVED SINCE 2026-08-23, and NOT drift — this row is the recon catching an OWNER-ORDERED move it cannot know about. p2r56 (d91bf43) carried out ORD-2026-08-22-bed-standard-size-hug / D-114 in his own words — 'หาขนาดเตียงมาตรฐานแล้วขนาดให้เท่านั้นแล้วปรับของรอบ ๆ ให้มาชิดเตียงเอา' — so the bed became a standard size inside the oversized drawn rectangle and the two nightstands moved IN to hug it; p2r57 (7202397, D-115) then swapped the pieces themselves. Measured now: drawn [4794,-340,300,294] against a built [4803,-210,400,400] — 130 mm off on the y the order moved, 100 mm larger in plan, coverage 0.536. The stored verdict read `matched` until today only because it was frozen against p2r41, sixteen rounds before the move — the session opener has been printing '21 matched | 0 blocking' over a live gate that exits 1. DELIBERATELY LEFT UNRESOLVED RATHER THAN SIGNED: signing it is a drawing call and R12 says the drawing crop must be open beside the element before that call is made, which is a round with the sheet, not a ledger edit. What it must NOT become is a silent `matched`.",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
-      "assembly": "nightstand@4785,-366/nightstand__lamp_shade.001",
+      "assembly": "side_table@4803,-210",
+      "kind": "assembly",
+      "coverage": 0.536,
+      "footprint_m2": 0.16,
+      "in_frustum": true
+     },
+     {
+      "assembly": "side_table@4803,-210/side_table__acq0.001",
       "kind": "part",
-      "coverage": 1.0,
-      "footprint_m2": 0.111,
-      "in_frustum": false
+      "coverage": 0.536,
+      "footprint_m2": 0.16,
+      "in_frustum": true
      },
      {
-      "assembly": "nightstand@4785,-366",
-      "kind": "assembly",
-      "coverage": 1.0,
-      "footprint_m2": 0.144,
-      "in_frustum": false
-     },
-     {
-      "assembly": "side_table@4702,-386",
-      "kind": "assembly",
-      "coverage": 1.0,
-      "footprint_m2": 0.188,
+      "assembly": "nightstand@4869,-143/nightstand__lamp_shade.001",
+      "kind": "part",
+      "coverage": 0.244,
+      "footprint_m2": 0.071,
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
-   "verdict": "matched",
+   "verdict": "UNRESOLVED",
    "warning": null,
    "spec_mass": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)"
   },
@@ -540,7 +540,7 @@
    "gap": null,
    "note": "with BF11 owner-ruled as vanity (SR-02), the drawn chair pulled up to it is a vanity seat — the built stool (D-023 tub chair) is the consistent identity, not a divergence.",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "stool",
@@ -564,7 +564,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -591,7 +591,7 @@
    "gap": null,
    "note": "owner may overrule the ex-TV decision from the image; the drawn symbol is a low console, the build is a 1.8m-tall shelf",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@306,248",
@@ -615,7 +615,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -642,7 +642,7 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "fix@55,6079",
@@ -666,7 +666,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -693,7 +693,7 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "fix@1125,7596",
@@ -717,7 +717,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -744,7 +744,7 @@
    "gap": null,
    "note": "",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@55,7320",
@@ -761,7 +761,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -788,7 +788,7 @@
    "gap": null,
    "note": "186x600 outside the wall face (x<0) — window symbols draw on the facade's outside; matched to built glazing, so the ink is accounted for",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "glass@-105,4994",
@@ -812,7 +812,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -839,7 +839,7 @@
    "gap": null,
    "note": "twin of SR-16 one bay south",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "glass@-105,2893",
@@ -863,7 +863,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",
@@ -890,31 +890,31 @@
    "gap": null,
    "note": "the row that exists because eight blind critics and the drawing agreed while our element doc disagreed",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "bed/bed__headboard_welt_top",
       "kind": "part",
-      "coverage": 0.9,
-      "footprint_m2": 0.156,
+      "coverage": 0.75,
+      "footprint_m2": 0.13,
       "in_frustum": true
      },
      {
       "assembly": "bed/bed__headboard",
       "kind": "part",
-      "coverage": 0.833,
-      "footprint_m2": 0.129,
+      "coverage": 0.694,
+      "footprint_m2": 0.108,
       "in_frustum": true
      },
      {
-      "assembly": "bed/bed__headset0__acq0",
-      "kind": "part",
-      "coverage": 0.317,
-      "footprint_m2": 0.306,
+      "assembly": "side_table@4803,2005",
+      "kind": "assembly",
+      "coverage": 0.125,
+      "footprint_m2": 0.16,
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -940,7 +940,7 @@
    "gap": null,
    "note": "GAP RETRACTED 2026-08-11, two hours after it was signed. The July \"รอ owner ชี้\" pending WAS resolved — by element 7 on 07-21, with a 1.9mm label re-proof — and the unit is BUILT (8 mill parts at x3302-3803). My re-read failed to find it because I searched for a 600-deep rect; x=3302/len 2097 was the TOP LINE of my own histogram and I read past it. What actually fell out of the queues was only the floor2 README cross-reference. The real open half survives narrower: drawn depth 501.5 vs label 600 — the spec's own recorded \"designer question, never machine-resolved\", paired with BF11's 498-vs-600 (rides the DRW-2 eye-pack). #9c RESOLVED 2026-08-11: BF10 ink-trued to [804,5200,2498,600] (D-038) — its east face now lands on this unit's west face exactly as the ink draws.",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@306,2600/mill__bayBF09-2-2_plinth__cool",
@@ -957,7 +957,7 @@
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -984,7 +984,7 @@
    "note": "the row whose absence made SR-04 carry two objects; canonical BF10 ink-trued to this rect the same hour (D-038)",
    "spec_mass": "ตู้/ชั้น BF10 (dressing)",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "mill@306,2600",
@@ -1008,7 +1008,7 @@
       "in_frustum": true
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": true
    },
    "verdict": "matched",
@@ -1035,7 +1035,7 @@
    "spec_mass": "ผนังกระจกกั้นเปียก/แห้ง (wet/dry glass partition)",
    "note": "the last backfill-debt mass to get a measured row — board and ratchet both close to zero debt with it",
    "match": {
-    "frame": "room_bedroom_suite_eye_p2r41.scene.json",
+    "frame": "room_bedroom_suite_eye_p2r57.scene.json",
     "candidates": [
      {
       "assembly": "glass@1125,7329",
@@ -1052,7 +1052,7 @@
       "in_frustum": false
      }
     ],
-    "checked": "2026-08-16",
+    "checked": "2026-08-23",
     "in_frustum": false
    },
    "verdict": "matched",

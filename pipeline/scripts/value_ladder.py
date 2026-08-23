@@ -356,7 +356,8 @@ FRAME = "eye"              # the canonical hero eye camera (spec.eye_camera)
 # `eye_camera_variants` keys plus the bare eye camera; `test_value_ladder` re-derives them
 # from that file, so this list cannot drift from the cameras that exist.
 KNOWN_FRAMES = frozenset((
-    FRAME, "bed_hero", "curtains_semouth", "curtains_south", "ensuite_hooks_east",
+    FRAME, "bed_hero", "corner_ne_legacy", "curtains_semouth",
+    "curtains_south", "ensuite_hooks_east",
     "ensuite_mirror", "ensuite_towels_west", "ensuite_vanity", "ensuite_wet",
     "wardrobe_bay_doorlane", "wardrobe_bay_dressing", "wardrobe_bay_entry",
     "west_bookshelf", "west_vanity",

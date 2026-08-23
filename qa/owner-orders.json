@@ -186,11 +186,20 @@
       "obeyed_how": "sheet_recon --gate fails an in-frustum drawn mass with no match and no signed gap; the ledger line prints at every session open.",
       "obeyed_assert": [
         {
-          "file": "pipeline/scripts/plan_status.py",
-          "pattern": "SHEET-RECON",
-          "why": "The headboard sat derived-away for three weeks because no session opener ever said so."
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "sheet_recon\\.py",
+          "why": "R12 says an in-frustum drawn mass with no match and no signed gap FAILS THE RENDER GATE. That can only be true if the render path runs the gate. Nothing in build_room has ever spawned it — this assertion is the one that was missing, and it is expected to break until the wiring in `restart_by` lands."
+        },
+        {
+          "file": "pipeline/scripts/sheet_recon.py",
+          "pattern": "SHEET-RECON: %\\(drawn\\)d drawn",
+          "why": "The session-open summary line, which DOES print. Kept as a separate assertion from the gate above so the two halves cannot be confused again: this one proves a line can print, not that the verdict it prints is live — it replays the ledger's stored value, and on 2026-08-23 that stored value disagreed with the live gate."
         }
-      ]
+      ],
+      "status": "not-obeyed",
+      "since": "2026-08-11",
+      "not_obeyed_because": "MEASURED 2026-08-23, and the row said `obeyed` on the strength of an assertion that matched two COULD-NOT-RUN strings. Its single obeyed_assert was {plan_status.py, /SHEET-RECON/}, and the only two lines in that file matching it are 394 'SHEET-RECON unknown — sheet_recon is not importable' and 396 'SHEET-RECON unknown — qa/sheet-recon.json could not be read'. So the rung that R13 built to read the LINE instead of the comment above it was reading the failure message. THE BLOCKING HALF DOES NOT EXIST IN THE RENDER PATH: `git log -S 'sheet_recon.py' -- build_room.py rule_gate.py` returns nothing for the whole history, so `sheet_recon --gate` has never once been spawned by a build; build_room's only two mentions of it are comments, and it dutifully writes camera.floor_poly_mm into every scene dump SO THAT the recon can frustum-test, then never runs it. AND THE SURVIVING PRINT IS CURRENTLY FALSE: the session opener replays the ledger's STORED verdict — '21 drawn | 21 matched | 0 UNRESOLVED (0 blocking) [stored]' — while the live gate on the frame of record exits 1: `python sheet_recon.py --gate pipeline/output/room_bedroom_suite_eye_p2r57.scene.json` -> '21 drawn | 19 matched | 0 declared gaps | 2 UNRESOLVED (1 blocking) [floor_poly]'. The SHEET-FIRST half of the order (open the drawing crop before touching an element) is a working practice and is not what this row now denies; what is not-obeyed is the machinery R12 says enforces it.",
+      "restart_by": "Two builder actions, in this order. (1) TRIAGE THE 1 BLOCKING ROW: run `python pipeline/scripts/sheet_recon.py --gate pipeline/output/room_bedroom_suite_eye_<frame>.scene.json` on the frame of record and resolve each UNRESOLVED drawn mass into a match or a human-signed gap — the gate cannot be wired while it fails, because a rung that is red on every render is a rung somebody switches off (R13's own words). (2) SPAWN IT FROM THE RENDER PATH, out of process beside existence_check / dim_check / deliverable_check in build_room.py, honouring the exit contract: 1 fails the build, 2 COULD NOT RUN is a hard stop on a full-fidelity frame and never counts as clear. The assertion below is written against that end state, so it clears itself the moment the wiring lands."
     },
     {
       "id": "ORD-2026-07-28-see-your-own-work-and-be-able-to-stop",

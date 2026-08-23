@@ -544,86 +544,216 @@ def owner_channel(unit, decisions_path=None, note=None, decisions=None):
         except Exception:                               # pragma: no cover
             decisions = None
     # HIS ORDERS — the half the decision log could not hold. `decisions_check`
-        # locks a row to him ONCE `owner_override` carries his words, and D-052 and
-        # D-054 stored his bed-cloth order in the `question` field instead, so the
-        # lock never armed and a builder row (D-072) reversed a standing order with
-        # every rung green. This block reads the ORDERS ledger, asserts them against
-        # the actual code, and refuses a builder decision that contradicts one. It
-        # blocks on NOTHING he owes — every violation it can raise is the builder's.
-        try:
-            import orders_check as ORD
-        except ImportError as e:  # pragma: no cover - import path accident
-            v.append(f"orders_check is not importable ({e}) — refusing to render "
-                     f"past a gate that cannot read his orders")
-            _note("owner orders", False, "module not importable")
-        else:
-            odata = ORD.load(repo_root=REPO_ROOT)
-            v += ORD.check_orders(odata, REPO_ROOT)
-            if unit:
-                v += ORD.check_decisions(odata, decisions, unit, REPO_ROOT)
-            ob = ORD.obedience(odata, REPO_ROOT)
-            _note("owner orders", True,
-                 f"{sum(1 for _, ok, _ in ob if ok)}/{len(ob)} standing orders "
-                 f"assert clean")
+    # locks a row to him ONCE `owner_override` carries his words, and D-052 and
+    # D-054 stored his bed-cloth order in the `question` field instead, so the
+    # lock never armed and a builder row (D-072) reversed a standing order with
+    # every rung green. This block reads the ORDERS ledger, asserts them against
+    # the actual code, and refuses a builder decision that contradicts one. It
+    # blocks on NOTHING he owes — every violation it can raise is the builder's.
+    #
+    # THE FOUR RUNGS BELOW SIT AT FUNCTION LEVEL, and that is the fix of
+    # 2026-08-23 rather than a formatting preference. They were indented one
+    # level deeper, inside the `if decisions is None and unit:` above — which is
+    # a LAZY LOAD, not a condition on the rungs. So they ran only for a caller
+    # that supplied no decisions. `check_room` passes none, so the DELIV-001
+    # lane ran all four; `check` loads the register itself and passes it in, so
+    # the reproduction lane ran NONE — and got an EMPTY ROSTER back, so nothing
+    # printed that they had been skipped. That is R11's own sentence failing
+    # inside R13's own implementation: "could not look" printed exactly like
+    # "looked and it was fine".
+    #
+    # WHAT HID IT for the week it stood: the one test covering this function
+    # called `check_room` and nothing else — the single caller the accidental
+    # guard happened to admit. A rung's test that exercises one entry point
+    # certifies the path that works and says nothing about the path that does
+    # not; `test_owner_channel_runs_the_same_rungs_for_both_of_its_callers`
+    # now pins every shape a caller can present.
+    try:
+        import orders_check as ORD
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"orders_check is not importable ({e}) — refusing to render "
+                 f"past a gate that cannot read his orders")
+        _note("owner orders", False, "module not importable")
+    else:
+        odata = ORD.load(repo_root=REPO_ROOT)
+        v += ORD.check_orders(odata, REPO_ROOT)
+        if unit:
+            v += ORD.check_decisions(odata, decisions, unit, REPO_ROOT)
+        ob = ORD.obedience(odata, REPO_ROOT)
+        _note("owner orders", True,
+             f"{sum(1 for _, ok, _ in ob if ok)}/{len(ob)} standing orders "
+             f"assert clean")
 
-        # UNBOUGHT IS NOT UNAVAILABLE — a declared sourcing gap has to have searched
-        # the tiers R8 permits, including the three paid ones that have never been
-        # attempted once since he cancelled the ฿0 fence on 2026-08-01.
-        try:
-            import sourcing_check as SRC
-        except ImportError as e:  # pragma: no cover - import path accident
-            v.append(f"sourcing_check is not importable ({e}) — refusing to render "
-                     f"past a gate that cannot tell an absence from an unmade "
-                     f"purchase")
-            _note("sourcing", False, "module not importable")
-        else:
-            sdata = SRC.load(repo_root=REPO_ROOT)
-            v += SRC.check(sdata, decisions, unit, REPO_ROOT)
-            _note("sourcing", True,
-                 f"{len(SRC.paid_tiers(sdata))} paid tier(s) permitted, "
-                 f"{len(SRC.open_asks(decisions, unit))} purchase(s) with him")
+    # UNBOUGHT IS NOT UNAVAILABLE — a declared sourcing gap has to have searched
+    # the tiers R8 permits, including the three paid ones that have never been
+    # attempted once since he cancelled the ฿0 fence on 2026-08-01.
+    try:
+        import sourcing_check as SRC
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"sourcing_check is not importable ({e}) — refusing to render "
+                 f"past a gate that cannot tell an absence from an unmade "
+                 f"purchase")
+        _note("sourcing", False, "module not importable")
+    else:
+        sdata = SRC.load(repo_root=REPO_ROOT)
+        v += SRC.check(sdata, decisions, unit, REPO_ROOT)
+        _note("sourcing", True,
+             f"{len(SRC.paid_tiers(sdata))} paid tier(s) permitted, "
+             f"{len(SRC.open_asks(decisions, unit))} purchase(s) with him")
 
-        # READ OUR OWN FILES FIRST — his order of 2026-08-17, after the DR he paid
-        # for "found" a source `docs/LICENSING.md` had ranked FIRST for weeks while
-        # the shelf held zero files from it. Blocks on two things, both the
-        # builder's: an APPROVED source nothing reads and never says why, and a
-        # MONEY ask that never opened one of our own answers.
-        try:
-            import repo_first as RFST
-        except ImportError as e:  # pragma: no cover - import path accident
-            v.append(f"repo_first is not importable ({e}) — refusing to render past "
-                     f"a gate that cannot tell 'we searched' from 'we never opened "
-                     f"our own file'")
-            _note("repo_first", False, "module not importable")
-        else:
-            _lic = RFST.load_text(RFST.LICENSING_REL, REPO_ROOT)
-            _rasks = RFST.load_json(RFST.ASKS_REL, REPO_ROOT)
-            v += RFST.check(_lic, _rasks, REPO_ROOT)
-            _states = [st for _n, st, _e in RFST.report(_lic, REPO_ROOT)]
-            _note("repo_first", True,
-                  f"{_states.count('used')} approved source(s) read, "
-                  f"{_states.count('declared-unused')} declared unused, "
-                  f"{len(RFST.unread_registers(REPO_ROOT))} qa/ register(s) with "
-                  f"no reader")
+    # READ OUR OWN FILES FIRST — his order of 2026-08-17, after the DR he paid
+    # for "found" a source `docs/LICENSING.md` had ranked FIRST for weeks while
+    # the shelf held zero files from it. Blocks on two things, both the
+    # builder's: an APPROVED source nothing reads and never says why, and a
+    # MONEY ask that never opened one of our own answers.
+    try:
+        import repo_first as RFST
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"repo_first is not importable ({e}) — refusing to render past "
+                 f"a gate that cannot tell 'we searched' from 'we never opened "
+                 f"our own file'")
+        _note("repo_first", False, "module not importable")
+    else:
+        _lic = RFST.load_text(RFST.LICENSING_REL, REPO_ROOT)
+        _rasks = RFST.load_json(RFST.ASKS_REL, REPO_ROOT)
+        v += RFST.check(_lic, _rasks, REPO_ROOT)
+        _states = [st for _n, st, _e in RFST.report(_lic, REPO_ROOT)]
+        _note("repo_first", True,
+              f"{_states.count('used')} approved source(s) read, "
+              f"{_states.count('declared-unused')} declared unused, "
+              f"{len(RFST.unread_registers(REPO_ROOT))} qa/ register(s) with "
+              f"no reader")
 
-        # WHAT I ASKED HIM — same split as the critic debt: this blocks on the
-        # LEDGER BEING HONEST (an ask deleted, a withdrawal with no reason, a row
-        # claiming to block him) and on nothing else. Twenty-one asks were dropped
-        # while no such ledger existed.
-        try:
-            import asks_check as ASK
-        except ImportError as e:  # pragma: no cover - import path accident
-            v.append(f"asks_check is not importable ({e}) — refusing to render past "
-                     f"a gate that cannot see what he was asked")
-            _note("owner asks", False, "module not importable")
-        else:
-            adata = ASK.load(repo_root=REPO_ROOT)
-            v += ASK.check(adata, REPO_ROOT)
-            t = ASK.tally(adata)
-            _note("owner asks", True,
-                 f"{t['open']} open, oldest {t['oldest']}d, {t['money']} about money")
+    # WHAT I ASKED HIM — same split as the critic debt: this blocks on the
+    # LEDGER BEING HONEST (an ask deleted, a withdrawal with no reason, a row
+    # claiming to block him) and on nothing else. Twenty-one asks were dropped
+    # while no such ledger existed.
+    try:
+        import asks_check as ASK
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"asks_check is not importable ({e}) — refusing to render past "
+                 f"a gate that cannot see what he was asked")
+        _note("owner asks", False, "module not importable")
+    else:
+        adata = ASK.load(repo_root=REPO_ROOT)
+        v += ASK.check(adata, REPO_ROOT)
+        t = ASK.tally(adata)
+        _note("owner asks", True,
+             f"{t['open']} open, oldest {t['oldest']}d, {t['money']} about money")
 
     return v
+
+
+def ledger_rungs(unit, decisions_path=None, note=None, print_log=False):
+    """R3's DECISION LOG and R7's CRITIC-DEBT ledger — in ONE function, for the
+    same reason `owner_channel` is one function: so that no lane can end up with
+    a subset. Returns (violations, decisions).
+
+    SPLIT OUT 2026-08-23, and the reason is the third instance of one defect in
+    one file. Both rungs lived inside `check()` and nowhere else. `check()` is
+    the REPRODUCTION lane's entry point — `build_room` calls `check_room` and
+    nothing else (build_room.py:9824; its only other rule_gate uses are two exit
+    policies) — so on THE ONLY LANE IN PRODUCTION neither rung had ever run once.
+
+    WHAT THAT COST, in the words of the rules themselves:
+      * R3 removed the owner from the gate and named its replacement: "Every
+        gate run PRINTS the log, one line per decision naming its reversal, into
+        the render path — his channel — so overruling costs him a sentence."
+        103 decisions stand in force on DELIV-001, 96 of them taken in his name.
+        ZERO have ever printed into a DELIV-001 render. The one control R3 kept
+        was the printing, and it was wired to a lane that does not render.
+      * decisions_check's four refusals — `pending` refused by name, a `where`
+        naming a path that does not exist, a missing `reverse_by`, an
+        `owner_override` relabelled as the builder's call — could not fire here.
+      * `debt_check.ratchet`, whose whole purpose is that a debt row may never
+        leave the ledger, had one caller and it was on the closed lane.
+      * And the rung was not even DECLARED skipped: "critic debt" is absent from
+        `check_room`'s roster AND from ROOM_LANE_NOT_APPLICABLE, so the block
+        build_room prints on every build said nothing about it at all. Neither
+        ran nor named — which is the exact state R11 was written to end.
+
+    NEITHER RUNG BLOCKS ANYTHING TODAY, and that was measured before wiring, not
+    hoped: decisions_check returns 0 on DELIV-001's 103 rows, debt_check returns
+    0 and its ratchet 0. This wiring buys the printing and the future refusal,
+    and costs no round.
+    """
+    def _note(name, ran_, why=""):
+        if note is not None:
+            note(name, ran_, why)
+
+    v, decisions = [], None
+
+    # THE DECISION LOG. This half does NOT block on the owner and must never be
+    # made to — he removed his own rung on 2026-08-08 ("เอาผมออกจาก gate เลย ไม่
+    # ต้องรอผม"), because he reads renders rather than documents and a gate
+    # waiting on him was waiting in a channel he does not use. What it checks is
+    # the builder's side of that bargain: a call made in his name has to be
+    # written down, in force somewhere real, and reversible in one named edit.
+    # None, not {}, and the difference is load-bearing in `owner_channel`: an
+    # unread register must not present to the orders/sourcing rungs as a
+    # register with no rows in it.
+    if unit:
+        try:
+            import decisions_check as DEC
+        except ImportError as e:  # pragma: no cover - import path accident
+            v.append(f"decisions_check is not importable ({e}) — refusing to "
+                     f"render past a gate whose half is missing")
+            _note("decision log", False, "module not importable")
+        else:
+            _rel = decisions_path or DEC.DECISIONS_REL
+            decisions = DEC.load(decisions_path
+                                 or os.path.join(REPO_ROOT, DEC.DECISIONS_REL))
+            v += DEC.check(decisions, unit, REPO_ROOT, path_hint=_rel)
+            rows = DEC.in_force(decisions, unit) if decisions else []
+            mine = sum(1 for d in rows if not d.get("owner_override"))
+            _note("decision log", True,
+                  f"{len(rows)} in force ({mine} taken in the owner's name)")
+            # R3'S ACTUAL CONTROL, and the half that had no channel. Printed
+            # from here rather than from `enforce` because `enforce` has one
+            # non-test caller and it is not a render this studio still makes.
+            if print_log and rows:
+                print(f"\nDECISIONS IN FORCE ({unit}) — เปลี่ยนได้ทุกข้อ ทุกเมื่อ "
+                      f"ไม่มีข้อไหนรอคุณอยู่:")
+                for d in rows:
+                    print(DEC.one_line(d))
+    else:
+        _note("decision log", False, "no lane dir given, so no unit")
+
+    # THE CRITIC-DEBT LEDGER. Same split as the decision log above, and for the
+    # same reason: this blocks on the LEDGER BEING HONEST — a row closed with a
+    # sentence, refuted without a number, closed against a spec, or quietly
+    # deleted — and it blocks on nothing else. Whether the twenty-one debts are
+    # PAID is not a property of this frame's provenance; it is owed work, and
+    # halting a render over owed work is the enforcement clause R3 revoked.
+    try:
+        import debt_check as DEBT
+    except ImportError as e:  # pragma: no cover - import path accident
+        v.append(f"debt_check is not importable ({e}) — refusing to render past "
+                 f"a gate whose half is missing")
+        _note("critic debt", False, "module not importable")
+    else:
+        led = DEBT.load()
+        # THE STANDARD IS NOT OPTIONAL, and leaving it out was the proof that
+        # this call had never been exercised. Without it every image_row door
+        # returns "NOT RUN — no standard loaded", which `check` then files as a
+        # VIOLATION: two of them against today's ledger, both false. `plan_status`
+        # already carries the fix and says why in its own comment — "a false alarm
+        # at the top of every session is how a warning column gets ignored".
+        try:
+            import deliverable_check as _DCH
+            std = _DCH.load_standard()
+        except Exception:                                   # noqa: BLE001
+            std = None
+        v += DEBT.check(led, plan_phases=DEBT._plan_phases(), standard=std)
+        if led is not None:
+            v += DEBT.ratchet(led)
+            t = DEBT.tally(led)
+            _note("critic debt", True,
+                  f"{t['open']} open / {t['built']} built / {t['refuted']} "
+                  f"refuted, {t['none_yet']} with no instrument"
+                  + ("" if std else " — NO STANDARD LOADED, so every image door "
+                                    "reads NOT RUN"))
+    return v, decisions
 
 
 def check_room(gate_spec, roster=None, spec=None, unit=None,
@@ -655,7 +785,23 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
     # ledgers and grep code. Leaving them in `check()` only would have put the
     # rung built to stop "an order inert on the lane being built" in exactly that
     # position, on its first day, in the same file that names the defect.
-    v += owner_channel(unit or "DELIV-001", note=note)
+    _u = unit or "DELIV-001"
+    # R3's DECISION LOG AND R7's CRITIC-DEBT LEDGER, on the lane they were
+    # written for. Both were wired into `check()` alone until 2026-08-23 — and
+    # `check()` belongs to the reproduction lane, so 103 decisions in force (96
+    # of them taken in HIS name) had never once printed into a DELIV-001 render,
+    # which is the entire control R3 kept when it took him out of the gate. The
+    # debt rung was worse than skipped: absent from the roster AND absent from
+    # ROOM_LANE_NOT_APPLICABLE, so this printed block said nothing about it at
+    # all. Measured clean before wiring — 0 and 0 — so this buys the printing
+    # and the future refusal, and costs the lane no round.
+    _lv, _dec = ledger_rungs(_u, decisions_path, note, print_log=True)
+    v += _lv
+    # DECISIONS FORWARDED, and `decisions_path` with them. It was in this
+    # function's signature and dropped on the floor: a caller pointing the gate
+    # at another ledger got a verdict computed against the default one, with no
+    # line saying so.
+    v += owner_channel(_u, decisions_path, note, _dec)
     # P2r-9 TRANSFERS TO THIS LANE AND IS THE ONLY RUNG THAT DOES, because it
     # needs no reference and no target: it asks whether the model we named is the
     # model we measured. `gate_spec` carries masses only, so the FULL spec is
@@ -699,7 +845,6 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
     # meant "never counted at all" for 44 rounds. The NUMBER is still the owner's —
     # the caps file's own law says only he sets or extends one — so a row with no
     # number prints as a number he owes, never as a pass.
-    _u = unit or "DELIV-001"
     _row = load_caps(_u)
     _rounds = count_rounds_room(os.path.join(
         REPO_ROOT, "projects/PRJ-2026-002_c001-house/04_visualization"))
@@ -1642,60 +1787,15 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
     else:
         note("R1 cap", False, "no lane dir given, so no unit to look up")
 
-    # THE DECISION LOG. This half does NOT block on the owner and must never be
-    # made to — he removed his own rung on 2026-08-08 ("เอาผมออกจาก gate เลย ไม่
-    # ต้องรอผม"), because he reads renders rather than documents and a gate
-    # waiting on him was waiting in a channel he does not use. What it checks is
-    # the builder's side of that bargain: a call made in his name has to be
-    # written down, in force somewhere real, and reversible in one named edit.
-    # None, not {}, and the difference is load-bearing three blocks below: an
-    # unread register must not present to the orders/sourcing rungs as a register
-    # with no rows in it.
-    data = None
-    if unit:
-        try:
-            import decisions_check as DEC
-        except ImportError as e:  # pragma: no cover - import path accident
-            v.append(f"decisions_check is not importable ({e}) — refusing to "
-                     f"render past a gate whose half is missing")
-            note("decision log", False, "module not importable")
-        else:
-            data = DEC.load(decisions_path
-                            or os.path.join(REPO_ROOT, DEC.DECISIONS_REL))
-            v += DEC.check(data, unit, REPO_ROOT,
-                           path_hint=decisions_path or DEC.DECISIONS_REL)
-            rows = DEC.in_force(data, unit) if data else []
-            mine = sum(1 for d in rows if not d.get("owner_override"))
-            note("decision log", True,
-                 f"{len(rows)} in force ({mine} taken in the owner's name)")
-    else:
-        note("decision log", False, "no lane dir given, so no unit")
-
+    # R3's DECISION LOG AND R7's CRITIC-DEBT LEDGER. Both used to be written out
+    # here, inline, and `check_room` — the entry point the ONLY lane in
+    # production uses — had neither. They now live in `ledger_rungs`, for exactly
+    # the reason `owner_channel` was split out on the day IT was written: a rung
+    # that exists in one entry point only is a rung the other lane does not have,
+    # and this file has now shipped that defect three times.
+    _lv, data = ledger_rungs(unit, decisions_path, note)
+    v += _lv
     v += owner_channel(unit, decisions_path, note, data)
-
-    # THE CRITIC-DEBT LEDGER. Same split as the decision log above, and for the
-    # same reason: this blocks on the LEDGER BEING HONEST — a row closed with a
-    # sentence, refuted without a number, closed against a spec, or quietly
-    # deleted — and it blocks on nothing else. Whether the twenty-one debts are
-    # PAID is not a property of this frame's provenance; it is owed work, and
-    # halting a render over owed work is the enforcement clause R3 revoked.
-    # Payment is reported by `debt_check` and by `plan_status`, in the render
-    # path, which is the channel the owner actually reads.
-    try:
-        import debt_check as DEBT
-    except ImportError as e:  # pragma: no cover - import path accident
-        v.append(f"debt_check is not importable ({e}) — refusing to render past "
-                 f"a gate whose half is missing")
-        note("critic debt", False, "module not importable")
-    else:
-        led = DEBT.load()
-        v += DEBT.check(led, plan_phases=DEBT._plan_phases())
-        if led is not None:
-            v += DEBT.ratchet(led)
-            t = DEBT.tally(led)
-            note("critic debt", True,
-                 f"{t['open']} open / {t['built']} built / {t['refuted']} "
-                 f"refuted, {t['none_yet']} with no instrument")
 
     # R11 — THE ONE RUNG THAT OPENS THE PICTURE. It can only run where a frame
     # exists, which is AFTER the render, so `trn002_build` calls the gate a

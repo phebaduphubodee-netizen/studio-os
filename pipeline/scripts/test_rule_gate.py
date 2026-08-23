@@ -1259,3 +1259,87 @@ def test_the_room_lane_reports_a_broken_order_as_a_violation():
                                              "why": "w"}])]
     assert any("DOES NOT OBEY THIS ORDER" in s
                for s in OC.check_orders(broken, RG.REPO_ROOT))
+
+
+def test_owner_channel_runs_the_same_rungs_for_both_of_its_callers():
+    """R13's rungs must not depend on WHICH gate function called them.
+
+    Found 2026-08-23. `owner_channel`'s four rungs — orders, sourcing,
+    repo_first, asks — were indented inside its own `if decisions is None and
+    unit:` lazy load. That guard is about whether the DECISION REGISTER still
+    needs loading; it is not a condition on the rungs. So they fired for the
+    caller that supplies no decisions (`check_room`, the DELIV-001 lane) and
+    not for the caller that loads the register itself and passes it in
+    (`check`, reached from `enforce`) — and the roster came back EMPTY, so the
+    run did not even print that four rungs had been skipped.
+
+    The test that existed, `test_the_room_lane_runs_his_orders_too`, exercised
+    `check_room` only: the single caller the accidental guard happened to
+    admit. It passed on every one of those days. This one pins every shape a
+    caller can present, which is the property that was actually broken.
+    """
+    import decisions_check as DEC
+    data = DEC.load(os.path.join(RG.REPO_ROOT, DEC.DECISIONS_REL))
+    assert data, "the live decision register must be readable for this test"
+
+    def rungs(decisions, unit):
+        roster = []
+        RG.owner_channel(unit, None,
+                         lambda n, ran, why="": roster.append((n, ran, why)),
+                         decisions)
+        return {n for n, _ran, _why in roster}
+
+    expected = {"owner orders", "sourcing", "repo_first", "owner asks"}
+    assert expected <= rungs(None, "DELIV-001")   # what check_room passes
+    assert expected <= rungs(data, "DELIV-001")   # what check passes
+    assert expected <= rungs(data, "TRN-002")     # the reproduction lane
+    assert expected <= rungs(None, None)          # no lane: repo-wide ledgers
+
+
+def test_no_rung_reaches_one_entry_point_and_not_the_other():
+    """THE GENERAL GUARD for the defect this file has now shipped three times.
+
+    A rung wired into `check()` alone is a rung the production lane does not
+    have: `build_room` calls `check_room` and nothing else. Three instances, all
+    live on the same morning of 2026-08-23 —
+
+      * `owner_channel`'s four R13 rungs, inert from `check()` (an indent);
+      * the DECISION LOG, R3's entire replacement for the owner's own gate rung,
+        which had never run OR PRINTED on DELIV-001 — 103 rows in force, 96 of
+        them taken in his name, and the printing IS the control R3 kept;
+      * the CRITIC-DEBT ledger, which was worse than skipped — absent from
+        `check_room`'s roster AND from ROOM_LANE_NOT_APPLICABLE, so the block
+        build_room prints every build named it neither way.
+
+    The invariant is not "both entry points run everything" — nine rungs
+    genuinely need a reference, a manifest or a round series client work does not
+    have. It is that the room lane must either RUN a rung or NAME it, and that
+    "did not run" must never be indistinguishable from "ran and was clean".
+    """
+    import contextlib
+    import io as _io
+    import room_masses as RM
+
+    spec = json.load(open(os.path.join(
+        RG.REPO_ROOT, "projects/PRJ-2026-002_c001-house/03_layout/"
+                      "master-suite.CANONICAL.spec.json"), encoding="utf-8"))
+
+    repro, room = [], []
+    with contextlib.redirect_stdout(_io.StringIO()):
+        RG.check({"id": "TRN-002", "masses": []}, roster=repro)
+        RG.check_room(RM.as_gate_spec(spec, "x"), roster=room, spec=spec,
+                      unit="DELIV-001")
+
+    named = {n for n, _ran, _why in room} | {n for n, _why in RG.ROOM_LANE_NOT_APPLICABLE}
+    missing = {n for n, _ran, _why in repro} - named
+    assert not missing, (
+        f"{sorted(missing)} run in check() and are neither run nor declared by "
+        f"check_room — so a DELIV-001 render neither performs them nor prints "
+        f"that it skipped them. Wire the rung into check_room, or add it to "
+        f"ROOM_LANE_NOT_APPLICABLE with a reason that is true.")
+
+    stale = {n for n, _why in RG.ROOM_LANE_NOT_APPLICABLE} - {n for n, _r, _w in repro}
+    assert not stale, (
+        f"{sorted(stale)} are declared not-applicable to the room lane but no "
+        f"longer exist in check() — an exemption for a rung nobody has is how "
+        f"the list stops describing anything")
