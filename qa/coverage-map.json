@@ -1,6 +1,6 @@
 {
  "_law": "THE MAP THE HEAD STOPPED BEING ABLE TO HOLD (owner 2026-08-22: 'project ใหญ่เกินกว่าที่ตรวจเช็คได้ว่าขั้นไหนผิดอะไรแล้วใช่ไหม' -> advice -> 'ลุย', ORD-2026-08-22-front-door-dims). One row per check the render lanes actually run, classified by (1) STAGE — where in the pipe it fires, and (2) COMPARES — what it holds the work against: a = our own spec/derivation/history (self-consistency), b = the client's sheet / the target / the delivered anchor pool, c = a WORLD standard independent of both, d = process-state (registers, orders, ledgers). The first full census (2026-08-22, 5-agent sweep) found 28 rungs: a=9 b=4 c=3 d=12, with ONE blocking world-standard check on the render path — which is the measured answer to why 'the bed is too small' had no asker. ADMISSION of new rows is governed by D-112 (a new instrument must give eyes to a none_yet critic-debt class, replace a proven liar, or be owner-ordered — printed in the gate that introduces it; enforcement is discipline in gate artifacts, NOT a new checker, by D-112's own words). The defect-class half of the map is qa/critic-debt.json's none_yet rows — this file does not duplicate them. plan_status prints this map's summary at every session open; a map nobody prints is the queue-with-no-consumer defect wearing a map.",
- "updated": "2026-08-22",
+ "updated": "2026-08-23",
  "classes": {"a": "own-spec/self-history", "b": "sheet/target/anchor-pool", "c": "world-standard", "d": "process-state"},
  "stages": ["ingest", "spec", "bench", "scene-dump", "render", "process"],
  "rungs": [
@@ -12,7 +12,7 @@
   {"name": "craft_check (arc-minute)", "stage": "spec", "compares": "c", "blocking": false, "note": "advisory only"},
   {"name": "pixel_check.unclaimed", "stage": "spec", "compares": "d", "blocking": false},
   {"name": "coverage_check (R10)", "stage": "spec", "compares": "a", "blocking": true, "note": "repro lane; manifest is our own reading"},
-  {"name": "wholebed bench filters", "stage": "bench", "compares": "b+c", "blocking": true, "note": "qualifier, not gate; front-door anchor_std row added 2026-08-22"},
+  {"name": "wholebed bench filters", "stage": "bench", "compares": "b+c", "blocking": true, "note": "qualifier, not gate; front-door anchor_std row added 2026-08-22; D-120 (2026-08-23): the size anchor is the MATTRESS by geometry (pick_mattress, probe cover/top_med/relief), bare-mattress tol +-50 (knowledge:45,124), scale lands the mattress in the slot, the FRAME is capped by the drawn bed rect SR-07 (b); carry_ons stripped at the bench as at the hook; cluster overhang + neighbour clearance REPORTED"},
   {"name": "placement_check (R9b)", "stage": "scene-dump", "compares": "c", "blocking": true, "note": "physics: floating/overhang/off-axis"},
   {"name": "sheet_recon (R12)", "stage": "scene-dump", "compares": "b", "blocking": true},
   {"name": "existence_check (R10)", "stage": "scene-dump", "compares": "a", "blocking": true, "note": "vs human-signed ledger"},
@@ -34,6 +34,8 @@
   {"name": "sourcing_check (R13)", "stage": "process", "compares": "d", "blocking": true},
   {"name": "repo_first", "stage": "process", "compares": "d", "blocking": true},
   {"name": "debt_check", "stage": "process", "compares": "d", "blocking": true, "note": "repro lane; its none_yet rows are the map's defect-class half"},
-  {"name": "plan_status print rung", "stage": "process", "compares": "d", "blocking": false}
+  {"name": "plan_status print rung", "stage": "process", "compares": "d", "blocking": false},
+  {"name": "style_check (STY-1)", "stage": "process", "compares": "d", "blocking": true, "note": "qa/style-of-record.json: nine material slots signed or dated-unsigned, prohibitions with a test, one style name. Wired into check_room (the lane that renders), not check()/enforce()"},
+  {"name": "style_measure palette gap (STY-1b)", "stage": "post-render", "compares": "a", "blocking": true, "note": "R11: the only style rung that OPENS THE PICTURE. style_fingerprint 60/30/10 area split off the frame of record vs concept.md§3; ratchet only ever falls. compares=a because the declared palette is our own document — it is self-consistency measured in PIXELS, not a world standard"}
  ]
 }

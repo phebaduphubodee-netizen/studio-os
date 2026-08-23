@@ -293,7 +293,7 @@
       "ask": "**Blendkit Full (ชื่อใหม่ของ BlenderKit หลัง rebrand 06-10) — ขั้นลงมือที่เป็นตัวตน/เงินของพี่ล้วน ๆ (อนุมัติแล้ว 'ลุย BlenderKit' 2026-08-18, เลือกรายเดือน 08-22):** (1) สมัคร/จ่ายที่ **blendkit.com** — Full Plan **$9.90/เดือน** (ราคา verify 08-22) ด้วยบัตรของพี่ (2) เอา API key จากหน้า profile (blendkit.com/profile) มาวางใน `.env` ที่รากรีโปเป็นบรรทัด `BLENDERKIT_API_KEY=<key>` — เท่านั้น จบ · ทันทีที่ key อยู่ในไฟล์ ฝั่ง builder ดาวน์โหลด shortlist ที่คัดไว้แล้ว (panel 12 ชุดผ่าน 129 จาก 174: full-plan 118 · free 11) เข้า wholebed_bench อัตโนมัติด้วยเกณฑ์ที่เข้า bench ไปแล้ว (field_fill >= 0.88 ทั้งสองแกน + duvet เต็มผืน + ไม่มี footboard) · **อัปเดต 2026-08-22 (D-114): แถวนี้ไม่ใช่ critical path ของเตียงอีกแล้ว** — คำสั่ง bed-too-small ถูก retire เพราะเป้าเปลี่ยนเป็นขนาดมาตรฐานซึ่งเตียงปัจจุบันผ่าน field 1.00x1.00 แล้ว; เหลือสถานะ library upgrade (bench ทางเลือก, คลาสอื่น, แก้สไตล์ชนตาม C2 p2r56 ข้อ 4)",
       "first_routed": "2026-08-18",
       "where": "qa/owner-orders.json, qa/blenderkit-search-log.json, _private/deliv-001/bed-size-2026-08-18/blenderkit-shortlist",
-      "status": "open",
+      "status": "answered",
       "money": "yes — เส้นทางที่พี่เลือก 2026-08-22 ('สมัครเดือนเดียวก่อนไม่ได้หรอ'): รายเดือน — และราคาปัจจุบันถูกกว่าที่เคยบันทึก: **$9.90/เดือน** (verify 2026-08-22 บน blendkit.com/plans/pricing หลัง rebrand; ตัวเลข $17.90/$118.80 ในทะเบียนเป็นราคาก่อน rebrand) — จ่ายเดือนเดียว bench คลัง full-plan 135 ตัวภายในเดือนนั้น ต่ออายุตัดสินจากผลวัด",
       "note": "แยกจาก ASK-028 เพราะสถานะต่างกัน: ASK-028 คือคำถาม 'เอาทางไหน' (ตอบแล้ว) แถวนี้คือการกระทำที่เหลือ ซึ่งมีแต่พี่ทำได้ — builder ไม่มีบัตร ไม่มีตัวตนไปสมัครแทน · **แก้ p2r54 (คืนเดียวกัน): ข้อความก่อนหน้าของ note นี้ ('ชั้นฟรีให้เตียงที่ผ่าน bench ทุกข้อแล้ว — คำสั่งเตียงเล็กไม่รอ key นี้') อยู่ได้ 4 ชั่วโมงแล้วเป็นเท็จ — ความกว้าง field ที่ 'ผ่าน' เป็นของแผงผนังหัวเตียง 2,759 มม. ที่ติดมากับไฟล์ ไม่ใช่ของเตียง (D-109; เครื่องมือแก้แล้ว) เตียงเองถึงแค่ 1.00x0.835 และถูก stage เป็น interim ที่ sign deficit** · **แถวนี้จึงกลับมาเป็น critical path ของ ORD-2026-08-18-bed-too-small**: ชั้นฟรีวัดหมดจริงแล้วด้วยเครื่องมือที่ซื่อสัตย์ (12/12 stage, 0 ผ่าน field cut) เหลือคลัง full-plan 135 ตัวหลัง key นี้ทางเดียว — key ลง .env เมื่อไร shortlist วิ่งเข้า bench ด้วยกฎที่แก้แล้วอัตโนมัติ · **ลดระดับอีกครั้งในชั่วโมงเดียวกัน (D-110): พี่ calibrate ว่าขนาดตามแบบมี tolerance ของพี่เอง ('ไม่ได้ fix ขนาดนั้น... แต่เปลี่ยนได้') — แถวนี้จึงเหลือสถานะ 'เส้นทางถ้าตาพี่ปฏิเสธ interim 0.835 จากเฟรม p2r54' ไม่ใช่ทางบังคับ** เงินก้อนนี้ตัดสินหลังพี่เห็นภาพ ไม่ใช่ก่อน",
       "read_first": [
@@ -304,7 +304,10 @@
         "_private/deliv-001/bed-size-2026-08-18/blenderkit-shortlist/shortlist.json"
       ],
       "read_first_found": "อ่านจริง 2026-08-18 ก่อนแก้แถวนี้: `docs/LICENSING.md` และ `qa/sourcing-tiers.json` อนุมัติชั้น paid ไว้แล้วโดยหลักการ (ราคา+ใบอนุญาตบันทึกตั้งแต่ 2026-07-01) — แถวนี้ไม่ได้เสนอชั้นใหม่ แค่เป็นการจ่ายจริงของชั้นที่ตารางเรามีอยู่แล้ว และ ASK-028 อนุมัติจำนวนเงินไว้แล้ว ('ลุย BlenderKit') · ชั้นฟรีของแพลตฟอร์มเดียวกันถูกวัดจนถึงหน้าสุดท้ายแล้ว (2,147 assets) ก่อนที่แถวนี้จะเหลือสถานะเรื่องคลัง",
-      "security_note_2026_08_22": "RESOLVED ในวันเดียวกัน — 301 จาก blenderkit.com ไป blendkit.com เป็น REBRAND จริง ไม่ใช่เว็บปลอม: BlenderKit เปลี่ยนชื่อเป็น Blendkit 2026-06-10 (Blender Foundation ขอไม่ให้ใช้คำ 'Blender' ในชื่อสินค้า; add-on v3.21.0 เขียนเอง 'formerly known as BlenderKit'; ยืนยัน 3 ทาง: redirect ออกจาก origin จริง (Heroku NEL headers) + BlenderNation 06-24 + release notes ทางการ) · คำเตือน typosquat เดิมของ builder เป็น false alarm ที่แก้แล้ว — จ่ายที่ blendkit.com ได้เลย (API key: blendkit.com/profile ลง .env เป็น BLENDERKIT_API_KEY เหมือนเดิม)"
+      "security_note_2026_08_22": "RESOLVED ในวันเดียวกัน — 301 จาก blenderkit.com ไป blendkit.com เป็น REBRAND จริง ไม่ใช่เว็บปลอม: BlenderKit เปลี่ยนชื่อเป็น Blendkit 2026-06-10 (Blender Foundation ขอไม่ให้ใช้คำ 'Blender' ในชื่อสินค้า; add-on v3.21.0 เขียนเอง 'formerly known as BlenderKit'; ยืนยัน 3 ทาง: redirect ออกจาก origin จริง (Heroku NEL headers) + BlenderNation 06-24 + release notes ทางการ) · คำเตือน typosquat เดิมของ builder เป็น false alarm ที่แก้แล้ว — จ่ายที่ blendkit.com ได้เลย (API key: blendkit.com/profile ลง .env เป็น BLENDERKIT_API_KEY เหมือนเดิม)",
+      "answer": "สมัคร blenderkit 1 เดือนเลย ผมอยากจะรู้ว่ามันจะทำให้งานดีขึ้นยังไง",
+      "answered_date": "2026-08-22",
+      "answer_context": "ตอบทางแชทเย็น 08-22 (verbatim ใน docs/owner-advice-2026-08-22.md §6) → ORD-2026-08-22-blenderkit-one-month · คำสั่ง = คำตอบของ 'เอาไหม/ทางไหน' (หนึ่งเดือน); การกระทำที่เหลือ (จ่าย + วาง key) แยกเป็น ASK-031 เพราะ asks_check มีสามสถานะเท่านั้น — ไม่มี 'เขาบอกไปแล้วแต่ยังไม่ได้ทำ' · **ราคาที่แถวนี้บันทึกไว้ ($9.90/เดือน) ผิด**: ตรวจ markup หน้าราคาเย็นเดียวกัน — การ์ด Full มีสามแท็บ '30 day glimpse' $19.90 ไม่ต่ออัตโนมัติ · Monthly $17.90 · Yearly $9.90/เดือน ($118.80/ปี) และหน้าเปิดที่แท็บ Yearly; 'สมัคร 1 เดือน' ตามคำสั่ง = glimpse $19.90"
     },
     {
       "id": "ASK-030",
@@ -316,6 +319,23 @@
       "answered_date": "2026-08-22",
       "money": "no",
       "note": "การอ่านเป็นของ builder (พี่แก้ได้): 1 เฟรมห้องนอน ~4 วัน — เทียบเรา 16 วันบนเฟรมเดียวและยังไม่จบ = ช้ากว่า ~4 เท่าโดย wall-clock ไม่ใช่ร้อยเท่า แต่ 4 วันของเขารวมทั้ง scene จากของซื้อบนเครื่องมือเรียลไทม์ · สองคำถามที่เหลือของ SC-3 (ปั้นเอง/ซื้อ · ลูกค้าส่งกลับ) ยังเปิดที่ ASK-004"
+    },
+    {
+      "id": "ASK-031",
+      "ask": "**เอา API key ลง `.env` — ทางที่ไม่ต้อง copy อะไร (ทางหลัก):** `python pipeline/scripts/blenderkit.py key --login` ทำสิ่งเดียวกับ add-on (OAuth PKCE ของ Blendkit: client_id/port/redirect ของ add-on เอง, อ่านจาก source สาธารณะ 2026-08-22) → Chrome เปิดหน้า blendkit.com/o/authorize → **พี่แค่ login Google / กด Authorize ในแท็บนั้น** → redirect กลับ localhost → token เขียนลง `.env` (access + refresh + หมดอายุ; refresh อัตโนมัติ) → `status` พิมพ์ plan จาก /me · ทางสำรอง: (ก) หน้า profile → `blenderkit.py key <ค่า>` รันเองใน terminal (ห้ามวาง key ลงแชท) (ข) ติดตั้ง extension BlenderKit ใน Blender แล้ว `key --from-blender` · การจ่าย: พี่บอก 'จ่ายตังแล้ว' 2026-08-22 คืน — /me จะยืนยันว่าเป็น '30 day glimpse' หรือแท็บอื่น",
+      "first_routed": "2026-08-22",
+      "where": "docs/blenderkit-month-2026-08-22.md, pipeline/scripts/blenderkit.py, .env.example, qa/owner-orders.json",
+      "status": "answered",
+      "money": "yes — $19.90 once (glimpse); Monthly $17.90 / Yearly $118.80 are the other tabs and are not what he ordered",
+      "note": "แยกจาก ASK-029 (ตอบแล้ว 'สมัคร blenderkit 1 เดือนเลย' 08-22) — คำสั่งคือคำตอบ การกระทำเป็น ask ใหม่ · ORD-2026-08-22-blenderkit-one-month อยู่ในสถานะ not-obeyed blocked_by แถวนี้จนกว่า key จะลงไฟล์ · เกณฑ์ 'ดีขึ้นยังไง' ล็อกไว้ที่ D-119 ก่อนโหลดตัวแรก; การต่ออายุไม่ได้ตัดสินล่วงหน้า — วัน 30 จะมี ask ใหม่พร้อมตัวเลข · 2026-08-22 คืน: พี่บอก 'สมัครแล้วด้วย google account' + ส่งลิงก์คู่มือ add-on (docs.blender.org 2.93 blenderkit) — เช็คแล้ว key ยังไม่อยู่ใน .env และเครื่องนี้ยังไม่มี add-on/extension BlenderKit (userpref ลงวันที่ 07-04) จึงเพิ่มสองทางข้างบน (`key <ค่า>` / `key --from-blender`) · 'สมัครด้วย google' = บัญชี; การซื้อ glimpse เป็นอีกคลิก — /me จะบอกว่า plan ไหนเมื่อ key ลง · 2026-08-22 ดึก: พี่ถาม 'หา key เองเลยไม่ได้หรอ' + 'จ่ายตังแล้ว' → สร้าง `key --login` (flow เดียวกับ add-on: /o/authorize + PKCE S256 + state → localhost:62485/consumer/exchange/ → POST /o/token/; endpoint ยืนยันด้วย code ปลอม = 400 invalid_grant) · รัน 2 ครั้ง (5 + 9 นาที) Chrome เปิดแท็บได้ (default browser = Chrome) แต่ไม่มี redirect กลับ = ยังไม่มีมือพี่ในแท็บ → ปล่อย listener detached 2 ชม. (pid ใน scratchpad/bk_login.out) รอพี่กด; key ลงเมื่อไร `status` เห็นเอง",
+      "read_first": [
+        "docs/blenderkit-month-2026-08-22.md",
+        "qa/sourcing-tiers.json",
+        "qa/blenderkit-month-classes.json"
+      ],
+      "answer": "จ่ายตังแล้ว",
+      "answered_date": "2026-08-22",
+      "answer_context": "พี่พิมพ์ 'จ่ายตังแล้ว' ทางแชท 2026-08-22 ดึก แล้วกด login/Authorize ในแท็บ Chrome ที่ `blenderkit.py key --login` เปิดไว้ (listener detached รอบที่ 3) → token เขียนลง `.env` (access 30 ตัวอักษร หมดอายุ 175 ชม. + refresh) → `/me` = currentPlanName 'Full'. ไม่มีการ copy key ผ่านแชทเลย · ที่ /me ยังบอกไม่ได้: เป็นแท็บ '30 day glimpse' หรือ Monthly/Yearly — ดูที่หน้า My Plan ของพี่"
     }
   ]
 }

@@ -662,6 +662,36 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
     # passed separately — and when it is not, the roster says so rather than
     # reporting a rung that checked nothing.
     v += model_assertions(spec, roster)
+    # STYLE — wired HERE and not into `check()`, on purpose and on the record.
+    #
+    # `check()` is the reproduction lane's entry point and DELIV-001 never calls
+    # it (build_room.py calls `check_room` only), and `enforce()` — the function
+    # whose docstring says it prints the ledgers "into the render path" — has two
+    # callers in this repo and neither is the production render. A style rung
+    # wired to either would have been a queue with no consumer, which is the
+    # exact defect qa/style-of-record.json was written to end, rebuilt by the
+    # rung meant to end it. The survival record in this repo is unambiguous:
+    # wiring tier AT BIRTH predicts whether a register lives, with no exceptions.
+    try:
+        import style_check as STY
+    except ImportError as e:                                # pragma: no cover
+        v.append(f"style_check is not importable ({e}) — refusing to render "
+                 f"past a style register that cannot be read.")
+        note("style of record", False, "style_check not importable")
+    else:
+        _sty = STY.load(repo_root=REPO_ROOT)
+        v += STY.check(_sty, repo_root=REPO_ROOT, spec=spec)
+        _s = STY.summary(_sty)
+        note("style of record", True,
+             f"{_s['style']} | {_s['signed']}/{_s['slots']} slots signed, "
+             f"{_s['unsigned']} legacy-unsigned | palette gap "
+             + (f"{(_sty.get('palette_measured') or {}).get('gap_worst')}"
+                if _sty else "NOT MEASURED"))
+        # R11: the ONE line here that came from pixels. Printed into the render
+        # path because that is his channel — he reads renders, not documents.
+        for _ln in STY.style_lines(_sty):
+            if _ln:
+                print("  " + _ln)
     # R1's COUNTER, on the lane that has spent the most and been counted the least
     # (p2r49, ORD-2026-07-28). It is wired here rather than left to `check()` for the
     # same reason the owner-channel rungs are: `check()` is the reproduction lane's

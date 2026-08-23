@@ -470,8 +470,9 @@
       "status": "not-obeyed",
       "since": "2026-08-18",
       "not_obeyed_because": "The mechanism his order demanded EXISTS and refuses undersized beds (wholebed_rules made_field/field_verdict, in bench and build), and the p2r54 integration round CORRECTED ITS DENOMINATOR: the evening bench's 'first hard-filter pass in history' (81d895fd, field 0.888x1.00) was the instrument's error — the width that passed belonged to a 2,759 mm fabric headboard WALL riding in the file, admitted as bedding by a thin-panel exemption frozen against one candidate (D-109; fifth instance of an instrument answering its own question). Honest numbers with the corrected rules: 81d895fd's own soft field reaches 1.00x0.835 of the drawn rectangle at the containment-capped scale 0.903, and no legal scale reaches the 0.88 width cut (overflowing the drawn foot line is the ink's call, not a knob's). It is still the honest-best obtainable — +254 mm on the width axis he failed by eye vs the f52472c1 interim (0.90x0.72), draping flanks (0.11 vs f0938871's 0.89), resolvable head end, plane inside h600 — so p2r54 stages it as the SIGNED INTERIM (bed_field_deficit_signed {D-109, ASK-029}) and the deficit prints at every gate. The free tier is now instrument-honestly exhausted: 12/12 panel-passed free beds staged and measured, 0 pass the field cut (f0938871 refuted for cause: field counted its own fused 976 mm frame, flanks bare N/W 0.89, plane 644 over the signed h600). What stands between this order and the drawn bed is ASK-029 — the paid library's 135 panel-passed full-plan candidates, the only unmeasured shelf left, his payment. || CALIBRATED BY HIM MID-ROUND (D-110, 2026-08-18, his words verbatim in that row): the drawn size is a target with HIS tolerance, not a fixed spec — 'ไม่ได้ fix ขนาดนั้น แต่ไม่ได้อยากให้เปลี่ยนจากแบบเยอะเกินไป (แต่เปลี่ยนได้)'. The 0.88 line stays as the builder's signing threshold (nothing goes quieter), but whether 0.835 is 'too much' is now a question his EYE answers on the p2r54 render — not an automatic refusal, and not the builder's call in either direction. If he accepts the frame, this order retires by a decision row quoting him; if he rejects it, ASK-029 is the route back to a closer bed.",
-      "restart_by": "(carried out at p2r54 as far as a builder action can go: 81d895fd integrated as the signed interim, instrument corrected, deficit re-signed smaller. No further builder action exists on the free shelf; the order ages with ASK-029.)",
-      "blocked_by": "ASK-029"
+      "restart_by": "(retired row, standing false, retired_by D-114) — the key this row waited on landed 2026-08-22 night; the full-plan bench it named now runs under ORD-2026-08-22-blenderkit-one-month. Nothing further is owed on this row.",
+      "blocked_by": null,
+      "blocked_by_repointed": "2026-08-22 evening: ASK-029 ('which route') was ANSWERED by his order 'สมัคร blenderkit 1 เดือนเลย'; the thing he is still holding — pay + paste the key — is ASK-031. Nothing else on this retired row changed (standing false, retired_by D-114); orders_check requires blocked_by to name an OPEN ask, which is the only reason this field moved."
     },
     {
       "id": "ORD-2026-08-22-process-review-actions",
@@ -575,6 +576,76 @@
           "why": "The map has a consumer at every session open — a map nobody prints is the queue-with-no-consumer defect wearing a map."
         }
       ]
+    },
+    {
+      "id": "ORD-2026-08-22-blenderkit-one-month",
+      "date": "2026-08-22",
+      "verbatim": "สมัคร blenderkit 1 เดือนเลย ผมอยากจะรู้ว่ามันจะทำให้งานดีขึ้นยังไง",
+      "recorded_at": "docs/owner-advice-2026-08-22.md",
+      "commands": "Subscribe to Blendkit Full for ONE month — the '30 day glimpse' tab ($19.90, non-recurring; the monthly route he chose that morning) — and have that month REPORT HOW IT MADE THE WORK BETTER: as numbers, and as a frame he can look at, within 30 days of the first paid download. What counts as 'better' and whether to renew are NOT in his sentence: the criteria are the builder's proposal in D-119 (frozen at the first paid download), and renewal is HIS call, filed as a procurement ask at day 30.",
+      "subject": "paid-library-trial",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-22",
+      "not_obeyed_because": "The subscription is a payment with his card and an API key from his account — the builder has neither (ASK-031, open). Everything on the builder's side was carried out in advance: pipeline/scripts/blenderkit.py fetches by asset id with the key, exports .blend -> GLB in a spawned headless Blender (--factory-startup -Y), asserts scale (asset_scale.write_sidecar), writes SOURCE.json + LICENSE.txt, and `shortlist` walks the 135 panel-passed full-plan beds into the shelf; `status` prints the month clock (starts at the first PAID download, never a probe) and whether the D-119 criteria digest still matches. Proven end-to-end on the free tier before he pays: the exit contract is tested with the network and Blender stubbed (no key -> status 2, shortlist 2, full-plan fetch 2 naming ASK-031; transport failure 2; bad key stops the walk after one call), and a live free nightstand went download -> Blender 5.1 export -> GLB -> sidecar in 8.3 s with scale honestly REFUSED (940 mm vs 300-800). PRICE CORRECTED the same evening by a fresh-context reviewer: the $9.90/mo recorded that morning is the Yearly tab the pricing page opens on; one month is the '30 day glimpse' at $19.90, non-recurring. The order flips to obeyed on the day a paid asset is fetched AND the month's answer section exists — both assertions below read files, not prose. || UPDATE 2026-08-22 night: the key LANDED — `key --login` (the add-on's own OAuth flow, nothing copied) wrote it to .env after his click; /me says plan Full. blocked_by cleared; from here the order ages on the builder (restart_by), not on him.",
+      "blocked_by": null,
+      "obeyed_where": "pipeline/scripts/blenderkit.py, docs/blenderkit-month-2026-08-22.md, qa/blenderkit-month-classes.json, docs/blenderkit-month/style-panel-prompt.md, qa/open-decisions.json, .env.example",
+      "obeyed_how": "Not yet — nothing paid has been downloaded. When it is: the first full-plan fetch is logged in qa/blenderkit-fetch-log.json (a non-probe run with tier='full_plan' and fetched=true, carrying the D-119 criteria digest), the month clock starts, the shortlist runs into wholebed_bench with the fit rect DERIVED from the spec's bed item, and the answer to his second sentence is due as the '## 8. คำตอบของเดือน — ตอบแล้ว' section of docs/blenderkit-month-2026-08-22.md within 30 days.",
+      "obeyed_assert": [
+        {
+          "file": "qa/blenderkit-fetch-log.json",
+          "pattern": "\"probe\": false[^{}]*\"tier\": \"full_plan\"[^{}]*\"fetched\": true",
+          "why": "A PAID asset actually on the shelf is the only state in which 'subscribed for a month' is true of this repo. Probe and dry runs carry probe=true and cannot match. Until this line exists the order is not carried out; the day it exists, orders_check refuses 'not-obeyed' and the row must flip."
+        },
+        {
+          "file": "docs/blenderkit-month-2026-08-22.md",
+          "pattern": "^## 8\\. คำตอบของเดือน — ตอบแล้ว",
+          "why": "His second sentence is a question. It is answered only when the month's section is written with numbers and the A/B frame — the placeholder heading ('ยังไม่มี') does not match this pattern on purpose."
+        },
+        {
+          "file": "pipeline/scripts/blenderkit.py",
+          "pattern": "^KEY_NAME = \"BLENDERKIT_API_KEY\"",
+          "why": "The consumer of the key. Deleting it puts the paid month back to an ad-hoc script in _private/ that nothing at session open can see."
+        }
+      ],
+      "restart_by": "The key is in .env (2026-08-22 night, ASK-031 answered 'จ่ายตังแล้ว' + his click in the OAuth tab). What remains is the builder's alone: `python pipeline/scripts/blenderkit.py shortlist` (first paid download starts the clock and hashes D-119), wholebed_bench in the real room with the spec-derived rect, the C3 A/B pair through the sighted-reader panel, and the '## 8. คำตอบของเดือน — ตอบแล้ว' section with numbers by day 30 — the two obeyed_assert lines flip this row when both exist."
+    },
+    {
+      "id": "ORD-2026-08-23-style-before-objects",
+      "date": "2026-08-23",
+      "verbatim": "ต้องเลือกก่อนว่าห้องนี้จะเป็นสไตล์ไหนแล้วค่อยเอาของมาเติม + เปลี่ยนของ (เถียงผมได้) || ไม่จำเป็นต้องเป็นไม้โอ๊ค ผมเลือกตอนนั้นเพื่อจะให้งานเดิน จริง ๆ อยากได้หลาย ๆ variant แต่ตอนนี้เอาแนวนี้ให้รอดก่อน || ทำตัวเป็น project director และวางแผนแก้ปัญหานี้ระยะยาว",
+      "recorded_at": "qa/style-of-record.json",
+      "commands": "THE STYLE IS CHOSEN BEFORE OBJECTS ARE SELECTED, and it is chosen as DATA the machine reads — not as a document. Three sentences in one order, and the second narrows the first rather than contradicting it: (1) decide the room's style first, then fill and swap objects against it; (2) OAK IS NOT REQUIRED — he picked it only to unblock work and wants several variants eventually, but wants THIS direction to land first, so the variant machinery must exist while no variant is built yet; (3) fix it as project director, for the long term, meaning a mechanism and not a round. What is NOT in his sentence and stays the builder's: WHICH style. He disclaimed design authority in his own words on 2026-07-16c and ruled 'stop issuing A/B/C menus of taste for signature — decide, build it, render it, and put the picture in front of him'. So the builder names the style, records it as a decision row, and he overrules from the image.",
+      "subject": "style-governance",
+      "scope": "class",
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-23",
+      "not_obeyed_because": "STY-1 is built and wired — qa/style-of-record.json + style_check.py in rule_gate.check_room() (the lane that actually renders; check() and enforce() serve the retired TRN-002 lane and would have been a queue with no consumer), style_measure.py taking the R11 pixel reading, style_lines at session open, two rows in the coverage census, 38 tests. But the order says objects are selected AGAINST the style, and that half does not exist yet: no acquired object carries a style_ref, so nothing stops the next carved-Louis side table the way STY-1 stops an unsigned material. Six of nine material slots are also still legacy-unsigned — declared, dated and printing their age, which is the honest state, not the finished one. The order flips when the two assertions below hold: the register is read by the production gate (already true, asserted so it cannot be quietly unwired) AND acquired masses carry a style verdict.",
+      "blocked_by": null,
+      "obeyed_where": "qa/style-of-record.json, pipeline/scripts/style_check.py, pipeline/scripts/style_measure.py, pipeline/scripts/rule_gate.py, pipeline/scripts/plan_status.py, qa/coverage-map.json",
+      "obeyed_how": "Not yet, and the missing half is named. STY-1 (the style is data, and the gate reads it) is done. STY-2 (objects are selected against it) is the work: a style verdict on every acquired mass, filed the way qa/object-existence.json already files identity — that ledger is scene-derived with no allowlist and already blocks, so it is the right home and a new register would be the wrong one.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "import style_check as STY",
+          "why": "The whole order reduces to whether the machine READS the style before it builds. This greps the production gate's own source, not a comment about it — R13's rule, applied to the rung R13's shape produced. Delete this import and the register becomes the 27th unread file in qa/, which is exactly the state his order was answering."
+        },
+        {
+          "file": "qa/style-of-record.json",
+          "pattern": "\"gap_worst\"",
+          "why": "R11: the one rung here that opened the picture. Its absence means the style register went back to being declarations about a room nobody measured — and every other rule in style_check can go green while the frame gets worse."
+        },
+        {
+          "file": "pipeline/scripts/existence_check.py",
+          "pattern": "style_verdict",
+          "why": "THE HALF THAT IS NOT BUILT, and the reason this row is honestly not-obeyed. His order is 'choose the style FIRST, then fill and swap objects' — STY-1 makes the style data the gate reads, but nothing yet judges an ACQUIRED object against it, so the next carved-Louis side table still enters the room and waits for a critic. orders_check refused this row on its first run for being pessimistic while every assertion held; this line is that refutation answered — the assert now names the missing work instead of the finished work, which is what an obeyed_assert is for."
+        }
+      ],
+      "restart_by": "STY-2, and it is the builder's alone: add a style verdict field to qa/object-existence.json rows (inside | edge | outside | not-judged with judged_by and since), one rule in existence_check.py refusing an in-frustum ACQUIRED mass that is not-judged past its date, and route the existing 3-agent sighted panel at it. Then sign the floor slot — the largest surface in the room and the 60% dominant this room has never had — as its own preset with variation >= 0.05, and re-measure the palette gap."
     }
   ]
 }

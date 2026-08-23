@@ -647,6 +647,68 @@
       "exit_test": "sheet_recon --gate exits 0 on the deliverable frame of record (UNRESOLVED = 0 among rows in or possibly in the DELIV-001 frustum; exit 2 could-not-run never counts as clear), the SHEET-RECON line prints at every session open, and every DRW item closes on a recorded run of its own test.",
       "exit_result": "first gate run 2026-08-11 vs p2r11: 18 drawn | 17 matched | 0 declared gaps | 1 UNRESOLVED (0 blocking) [floor_poly] — exit 0. The bar holds on the current frame; the program stays open for DRW-1b..5 and for every future frame the line must keep holding on. SECOND-NIGHT EXAM 2026-08-12 vs p2r17: 21 drawn | 21 matched | 0 declared gaps | 0 UNRESOLVED - exit 0; ratchet 20/20 with all three probe edits refused; DRW-5 closed the same open, laws enshrined as R12. Program complete in seven rungs over two sessions.",
       "_reviewed": true
+    },
+    {
+      "id": "STY",
+      "title": "สไตล์ — style-to-build governance (standing program, runs interleaved with P2+)",
+      "goal": "Nothing enters this room — a material, a bought object, a prohibition — without a style of record that the machine reads before the build, and one rung that reads it off the PIXELS afterwards.",
+      "status": "open",
+      "_opened_by": "owner 2026-08-23. He picked the Metropol bed, immediately asked 'ของที่เหลือในห้องเป็นสไตล์เดียวกันมั้ย?', ordered 'ต้องเลือกก่อนว่าห้องนี้จะเป็นสไตล์ไหนแล้วค่อยเอาของมาเติม + เปลี่ยนของ (เถียงผมได้)', rebutted the builder's counter-argument correctly ('ไม่จำเป็นต้องเป็นไม้โอ๊ค ผมเลือกตอนนั้นเพื่อจะให้งานเดิน จริง ๆ อยากได้หลาย ๆ variant'), and then ordered a long-term fix as project director — the same sentence that opened DRW on 2026-08-11. ORD-2026-08-23-style-before-objects; D-122.",
+      "_diagnosis": "The same shape DRW found, one axis over: not a missing capability, a missing wire. concept.md declared a style, a 60/30/10 palette and seven EDGE prohibitions on 2026-07-02 and no .py or .json in this repo names that file. style_fingerprint.py measures a 60/30/10 area split FROM PIXELS, is tested, and had zero production consumers — declaration and instrument built seven weeks apart in the same repo, never introduced. Of nine spec-addressable material roles the spec filled three, the floor not among them, so the largest surface in every frame renders an untinted CC0 photograph 2.6-5.6x darker than the signed oak. Of 31 gate rungs, zero read a style token. Six style names were in force at once and the live one, 'Japandi', was a blind critic's description of our own render promoted to the rule that selects what we buy.",
+      "work": [
+        {
+          "id": "STY-1",
+          "what": "qa/style-of-record.json + style_check.py: one style name with a decision row behind it, nine material slots each signed or legacy-unsigned with a date and a restart_by, seven prohibitions each carrying a TEST (none refused by name), an unsigned-count ratchet that only ever falls, and a retired-name walk over the trees the machine reads with no allowlist",
+          "where": "pipeline/scripts/style_check.py",
+          "status": "done",
+          "closed_by": "Built and wired 2026-08-23. Wired into rule_gate.check_room() — the lane that actually renders — after the evidence pass found that check() and enforce() serve the retired TRN-002 lane and that a style rung wired there would have been a queue with no consumer, the exact defect the register exists to end. Session-open line via plan_status.style_lines; two rows in qa/coverage-map.json. 38 tests. First run against the live register caught a real signed_where pointing at 04_visualization/ instead of 03_layout/; orders_check then refused the order row twice — once for words that did not reproduce in the file it cited, once for being filed not-obeyed while every assertion held."
+        },
+        {
+          "id": "STY-1b",
+          "what": "R11: the rung must OPEN THE PICTURE. style_measure.py runs style_fingerprint out of process (PIL/numpy cannot enter a rules module) and stores the measured 60/30/10 split; style_check fails on no measurement, a stale frame, exit-2 could-not-run, or a gap that WIDENS",
+          "where": "pipeline/scripts/style_measure.py",
+          "status": "done",
+          "closed_by": "First reading on the frame of record p2r57: dominant 0.300 / secondary 0.186 / accent 0.183 against a declared 0.60/0.30/0.10 — worst gap 0.300, six clusters at entropy 0.93. A room with no dominant surface, which is what a 60% field that was never signed produces. Ceiling seeded at 0.320 and it only ever falls."
+        },
+        {
+          "id": "STY-2",
+          "what": "the half his order names that does not exist: objects selected AGAINST the style. A style verdict (inside|edge|outside|not-judged + judged_by + since) on qa/object-existence.json rows — that ledger is already scene-derived, allowlist-free and blocking, so it is the right home and a new register would be the wrong one — plus one rule in existence_check.py refusing an in-frustum ACQUIRED mass left not-judged past its date",
+          "where": "pipeline/scripts/existence_check.py",
+          "status": "todo",
+          "why": "Nothing yet stops the next carved-Louis side table the way STY-1 stops an unsigned material. The prohibition that would have caught the last one was written 2026-07-02 and was rediscovered seven weeks later by three sighted agents at ~203k tokens."
+        },
+        {
+          "id": "STY-3",
+          "what": "sign the floor — the largest surface in the room and the 60% dominant it has never had. NOT by pointing at oak_wood_floor: that preset is the same slug minus the anti-tiling drift, so it would regress MA-03 and change the wood not at all. Author a preset that is actually a different finish with variation >= 0.05, render the pair, re-measure the palette gap",
+          "where": "pipeline/scripts/material_presets.py",
+          "status": "todo",
+          "why": "The single highest-area change available in this room, and the one most likely to move the 0.300 palette gap. Rides as the second variable of a round the lane was going to spend anyway — the next round belongs to the Metropol integration (D-121 item 4)."
+        },
+        {
+          "id": "STY-4",
+          "what": "the client-facing half: route rationale._material_axis through material_presets.resolve_materials(spec) and delete the stale comment at rationale.py:223",
+          "where": "pipeline/scripts/rationale.py",
+          "status": "todo",
+          "why": "rationale.py:223 says 'today the spec carries NO material field and build_room ignores the spec anyway'. The spec grew that block on 2026-07-14 and build_room.py:4558 has read it since. So the CLIENT deliverable describes the feature wall as walnut while the render builds the owner-signed oak — and test_rationale stays green because it drift-guards the strings against build_room's SOURCE rather than against the signature. Three slots are affected; one fix clears all three. style_check prints them as acknowledged, dated debt until it lands."
+        },
+        {
+          "id": "STY-5",
+          "what": "close the Japandi name debt at the BlenderKit month review: rewrite qa/blenderkit-month-classes.json _pass_rule and the P4 verdict to name the style of record, and record the criteria_digest change in the same commit",
+          "where": "qa/blenderkit-month-classes.json",
+          "status": "blocked",
+          "why": "D-119 froze the trial's criteria text with a digest. Re-aiming a hashed criterion mid-trial is the motion that freeze forbids, and doing it so our own new register passes would be the freeze's first violation committed by the rung built to stop drift. Dated in qa/style-of-record.json name_debt; due at the month review."
+        },
+        {
+          "id": "STY-6",
+          "what": "enshrine the law in CLAUDE.md as R14, the way DRW-5 became R12",
+          "where": "CLAUDE.md",
+          "status": "todo",
+          "why": "A rule that is not in CLAUDE.md is forgotten by the next session."
+        }
+      ],
+      "exit_test": "style_check exits 0 inside check_room on the deliverable frame of record with zero legacy-unsigned slots and zero none-yet prohibitions; the STYLE line prints at every session open and in the render path; the measured palette gap has fallen from its 2026-08-23 seed of 0.300 and its ceiling has fallen with it; and every in-frustum ACQUIRED mass carries a style verdict. Exit 2 could-not-run never counts as clear.",
+      "exit_result": null,
+      "_first_run": "2026-08-23 vs p2r57: style name decided (D-122), 3/9 slots signed, 6 legacy-unsigned at 40 days, 7 prohibitions with 6 tests and 1 honestly none-yet, palette gap 0.300 measured off the pixels — exit 0. The register tells the truth about what renders today; it does not yet make what renders correct, and the difference is STY-2 through STY-4."
     }
   ],
   "trn002": {
@@ -3201,8 +3263,60 @@
         "P2/P2r-9",
         "P3/P3a"
       ]
+    },
+    {
+      "commit": "1a106f54a234beee69a2e45b75745239d214f995",
+      "verdicts": {
+        "P2": "keep: งานวันนี้เป็น process-level (front-door rung + coverage map) — lever ของ P2 ยังเป็น P2r-2 ลายไม้ / P2r-5 ผิววัสดุ ตามที่กรรมการทั้งคู่จัดอันดับ ไม่เปลี่ยน",
+        "P4": "keep: เกณฑ์สองชั้น relation+style จาก review 70 คงเดิม — และ P4 ได้ยามใหม่หน้าประตู: ของ acquired ทุกชิ้นที่จะเข้าเฟรมตอน styling ผ่าน dim_check (world bands, no allowlist) ก่อนพิกเซลเสมอ ลดความเสี่ยงรีเพลย์มหากาพย์เตียงคูณจำนวนชิ้น",
+        "P3": "keep: build order ยังถูก — แสง solve จากเรขาคณิตหลังของครบ ไม่มีอะไรวันนี้เปลี่ยนคาน",
+        "P5": "keep: เส้นชัย 3 sighted judges + ตาพี่ ไม่เปลี่ยน — coverage map ช่วยให้เห็นว่า rung ไหนถามอะไรตอนตัดสิน แต่ไม่แตะเกณฑ์"
+      },
+      "changed": [],
+      "note": "nothing changed this review",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a"
+      ]
     }
   ],
-  "last_review_commit": "7202397120633f72e5ceffff778c3de310d52f1c",
+  "last_review_commit": "1a106f54a234beee69a2e45b75745239d214f995",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }

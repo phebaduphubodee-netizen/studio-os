@@ -10,10 +10,14 @@ reopen the built .blend -> read the fineness control (before anything is deleted
 the candidate -> assert a unit factor (never assumed, R8) -> pick the bed anchor and
 strip scenery/neighbours geometrically (never by name, R9b) -> resolve the head end
 from the candidate's own geometry and turn it EAST -> delete its separable own
-headboard (fused = recorded, verdict fails it) -> uniform scale <= 1.0 against the
-drawn footprint -> place by contact: head face butts the built headboard band, plan
-centred on the drawn rect, rest on the floor (derived, never typed — R9) -> ray
-measurements on the STAGED result -> one quick render from the room's own camera.
+headboard (fused = recorded, verdict fails it) -> probe every kept part's top and
+name the MATTRESS by geometry (D-120: the slab between frame and bedding) -> uniform
+scale <= 1.0 that lands the MATTRESS in the spec's mattress slot (the frame's rails
+overhang it; that overhang and the clearance to the built neighbours are reported,
+never absorbed by shrinking the bed) -> place by contact: head face butts the built
+headboard band, plan centred on the drawn rect, rest on the floor (derived, never
+typed — R9) -> ray measurements on the STAGED result -> one quick render from the
+room's own camera.
 
 The render is the audition's product; the numbers stop the eye wasting time on
 candidates that cannot fit (the owner's practitioner-rung split, same as
@@ -32,6 +36,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bedcloth_fit as bcf  # noqa: E402  (control_edges, edge_mm — the shared metric)
 import ergonomics_ref as ERGO  # noqa: E402  (pure; standard mattress tables)
 import mesh_import as MI    # noqa: E402  (one dispatch, all formats — never gltf-only)
+import wholebed_dump as WD  # noqa: E402  (surface_facts — the probe the mattress rule reads)
 import wholebed_rules as R  # noqa: E402
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -43,6 +48,27 @@ BLEND = bpy.data.filepath  # the file blender opened; reopened per candidate
 
 FX0, FY0, FW, FD = FIT
 FX1, FY1 = FX0 + FW, FY0 + FD
+# The DRAWN bed rectangle (sheet-recon SR-07), the cap on the made bed (D-120,
+# R12) — read, never typed. None -> every row's ink cap is UNMEASURED (fails).
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def ink_bed_rect_m(path=os.path.join(REPO, "qa", "sheet-recon.json")):
+    """(w_m, len_m) of the sheet's bed row — width across the head axis, length
+    along it (rect_mm is [x, y, w, d]; the bed's head axis is x in this room)."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            rows = json.load(fh).get("rows") or []
+    except (OSError, ValueError):
+        return None
+    for r in rows:
+        if r.get("key") == "bed" and r.get("rect_mm"):
+            x, y, w, d = r["rect_mm"]
+            return d / 1000.0, w / 1000.0
+    return None
+
+
+INK = ink_bed_rect_m()
 # The head face the frame butts against: the sheet-drawn headboard band's WEST face,
 # derived from the built band in the scene (never typed here).
 HEAD_GAP = 0.003
@@ -125,6 +151,22 @@ def flank_hits(tree, plane_z, depth):
                 n += 1
         res[tag] = n / 9.0
     return res
+
+
+def neighbour_clearance(keep, frame, z_top=None):
+    """Scene meshes standing beside the staged FRAME (never the candidate's own
+    parts; in the bed's height band — floor, rug and ceiling are not
+    neighbours) -> wholebed_rules.neighbour_gaps (pure, tested)."""
+    top = frame["hi"][2] if z_top is None else z_top
+    others = []
+    for o in bpy.context.scene.objects:
+        if o.type != "MESH" or o.get("_wb_cand"):
+            continue
+        lo, hi = world_bbox(o)
+        if lo[2] >= top or hi[2] <= 0.05:
+            continue
+        others.append((o.name, lo, hi))
+    return R.neighbour_gaps(frame["lo"], frame["hi"], others)
 
 
 def stage_one(slug):
@@ -262,32 +304,115 @@ def stage_one(slug):
     if not keep:
         row["reject"] = "nothing left after headboard strip"
         return row
+    # furniture riding along in the file (p2r54 rule, applied at the bench as the
+    # integration hook applies it — bench parity): a low headboard, flanking
+    # cabinets and backdrop panels leave BEFORE the made bed is measured against
+    # the drawn rectangle, or a pair of side tables would be "the bed's width".
+    anchor_now = next((p for p in keep if p["name"] == row["anchor"]["name"]), None)
+    if anchor_now is not None:
+        co = R.carry_ons(keep, plane, anchor_now)
+        row["carry_ons_removed"] = [{"name": p["name"], "why": w} for p, w in co]
+        delete([p["_ob"] for p, _ in co])
+        keep = cand_parts()
+        if not keep:
+            row["reject"] = "nothing left after carry-on strip"
+            return row
 
-    # scale against the drawn footprint (never stretch)
+    # ---- THE MATTRESS, by geometry (D-120) ---------------------------------
+    # The slot is a MATTRESS size (D-114); the anchor is the FRAME. Fitting the
+    # frame into the mattress slot shrank every upholstered bed by its own
+    # rails and then asked whether the shrunken frame was a standard mattress
+    # (Metropol: 1786 x 1980 mattress refused at frame-scale 0.84). Probe each
+    # kept part's top (cover / top_med / relief — wholebed_dump.surface_facts,
+    # the same probe the rule was calibrated on), name the slab between frame
+    # and bedding, and let THAT choose the scale and answer the front door.
+    facts = {}
+    for p in keep:
+        f = WD.surface_facts(p)
+        facts[p["name"]] = f
+        p.update(f)
+    # The probe facts must SURVIVE every cand_parts() rebuild below (part_dict
+    # makes fresh dicts, so the first cut's row["surface_facts"] was [] on
+    # every row and the frame rule downstream saw no facts at all — a table
+    # nobody could read is the same defect as a queue nobody visits).
+    def cand_parts_probed():
+        ps = cand_parts()
+        for q in ps:
+            if q["name"] in facts:
+                q.update(facts[q["name"]])
+        return ps
+
+    anchor_now = next((p for p in keep if p["name"] == row["anchor"]["name"]), None)
+    matt, m_note = R.pick_mattress(keep, anchor_now, drawn_plan_m2=FW * FD)
+    row["mattress_note"] = m_note
     lo0 = min(p["lo"][0] for p in keep); hi0 = max(p["hi"][0] for p in keep)
     lo1 = min(p["lo"][1] for p in keep); hi1 = max(p["hi"][1] for p in keep)
-    s, fill_l, fill_w = R.plan_scale_whole(hi0 - lo0, hi1 - lo1, FW, FD)
+    if matt is not None:
+        m_sz = R.size(matt)                       # x = along the head axis now
+        row["mattress"] = {"name": matt["name"],
+                           "native_mm": [round(m_sz[1] * 1000), round(m_sz[0] * 1000),
+                                         round(m_sz[2] * 1000)],   # W, L, H
+                           "cover": matt["cover"],
+                           "relief_mm": round(matt["relief"] * 1000, 1),
+                           "top_mm": round(matt["top_med"] * 1000)}
+        s = R.mattress_scale(m_sz[0], m_sz[1], FW, FD)
+        row["scale_from"] = "mattress"
+    else:
+        # no slab qualifies: the RENDER still needs a staging (the audition's
+        # product is the picture), so the cluster fit stands in for the scale —
+        # LOUDLY: the front door below records UNMEASURED and verdict() refuses.
+        row["mattress"] = None
+        s, _, _ = R.plan_scale_whole(hi0 - lo0, hi1 - lo1, FW, FD)
+        row["scale_from"] = f"cluster-fallback (no mattress: {m_note})"
     row["scale"] = round(s, 4) if s else None
+    mb_len_pre, mb_w_pre = hi0 - lo0, hi1 - lo1      # NATIVE cluster, for the hook line
+    # whole kept cluster against the slot at this scale — may EXCEED 1.0 now
+    # (the frame's rails overhang a mattress slot); verdict() reads < MIN_FILL.
+    fill_l = (s * (hi0 - lo0) / FW) if s else 0.0
+    fill_w = (s * (hi1 - lo1) / FD) if s else 0.0
     row["fill_len"], row["fill_w"] = round(fill_l, 3), round(fill_w, 3)
-    # FRONT DOOR (ORD-2026-08-22-front-door-dims): project the anchor — the mattress
-    # — through the fit scale and ask whether it is ANY real bed's size, BEFORE a
-    # build round is spent. This is the arithmetic that existed at p2r52 (s was
-    # derived FROM the drawn width and applied to a 1827 mm mattress, landing it at
-    # 1243) with no line comparing the two. verdict() refuses a row without these
-    # keys, so an old ledger can never pass again (the field-rule precedent).
-    if s and row.get("anchor"):
-        _pw, _pd = (round(v * s) for v in row["anchor"]["size_mm"][:2])
-        _nm, _std, _ok, _worst = ERGO.nearest_bed_size(_pw, _pd)
+    # FRONT DOOR (ORD-2026-08-22-front-door-dims): project the MATTRESS through
+    # the scale and ask whether it is ANY real bed's size, BEFORE a build round
+    # is spent — at the BARE-MATTRESS tolerance (+-50, wholebed_rules.
+    # MATT_STD_TOL_MM), not the cluster's 150. verdict() refuses a row without
+    # these keys, so an old ledger can never pass again; a row whose mattress
+    # could not be named carries `unmeasured` and is refused by name (R10).
+    if s and matt is not None:
+        _pw, _pd = round(m_sz[1] * s * 1000), round(m_sz[0] * s * 1000)
+        _tbl = {**ERGO.BED_SIZES_MM, **ERGO.BED_SIZES_TH_MM}
+        # THE SLOT'S OWN STANDARD is the target — the spec's w x d IS a
+        # standard bed (D-114), so "is it a real bed" is not the question the
+        # slot asks. Being SOME standard while filling 0.74 of the slot was a
+        # pass in the first cut (Slate's 1336 'full' under a 1641 quilt).
+        _slot = ERGO.nearest_bed_size(round(FD * 1000), round(FW * 1000))
+        _worst = max(abs(_pw - min(_slot[1])), abs(_pd - max(_slot[1]))) \
+            if _pw <= _pd else max(abs(_pd - min(_slot[1])), abs(_pw - max(_slot[1])))
+        _na, _nas, _ok150, _nworst = ERGO.nearest_bed_size(_pw, _pd)
+        _bs, _bn, _bw = R.best_uniform_fit(m_sz[1] * 1000, m_sz[0] * 1000, _tbl)
         row["anchor_projected_mm"] = [_pw, _pd]
-        row["anchor_std"] = {"name": _nm, "worst_mm": round(_worst),
-                             "within": bool(_ok)}
+        row["anchor_std"] = {"name": _slot[0], "slot_mm": list(_slot[1]),
+                             "worst_mm": round(_worst),
+                             "within": bool(_worst <= R.MATT_STD_TOL_MM),
+                             "tol_mm": R.MATT_STD_TOL_MM,
+                             "nearest_any": {"name": _na, "worst_mm": round(_nworst),
+                                             "within_cluster_tol_150": bool(_ok150)},
+                             "best_uniform": {"scale": _bs, "name": _bn,
+                                              "worst_mm": round(_bw) if _bw is not None else None},
+                             "part": matt["name"]}
+        row["mattress_fill"] = [round(v, 3) for v in
+                                R.mattress_fill(_pw, _pd, round(FD * 1000), round(FW * 1000))]
+    else:
+        row["anchor_projected_mm"] = None
+        row["mattress_fill"] = None
+        row["anchor_std"] = {"name": None, "worst_mm": None, "within": False,
+                             "unmeasured": m_note}
     if s and abs(s - 1.0) > 1e-9:
         import mathutils
         piv = Vector(((lo0 + hi0) / 2, (lo1 + hi1) / 2, 0))
         m = mathutils.Matrix.Translation(piv) @ mathutils.Matrix.Scale(s, 4) @ mathutils.Matrix.Translation(-piv)
         for o in cand_roots():
             o.matrix_world = m @ o.matrix_world
-        keep = cand_parts()
+        keep = cand_parts_probed()
         lo0 = min(p["lo"][0] for p in keep); hi0 = max(p["hi"][0] for p in keep)
         lo1 = min(p["lo"][1] for p in keep); hi1 = max(p["hi"][1] for p in keep)
 
@@ -298,7 +423,53 @@ def stage_one(slug):
     dz = -min_z
     for o in cand_roots():
         o.matrix_world.translation += Vector((dx, dy, dz))
-    keep = cand_parts()
+    keep = cand_parts_probed()
+
+    # ---- what the frame does to the room (D-120, the owner's 08-22 clause:
+    # ---- "ปรับของรอบ ๆ ให้มาชิด") — overhang past the slot and the clearance
+    # ---- to whatever the built scene already has beside the bed -------------
+    # The FRAME is the hard stack around the mattress (R.frame_extent), NOT
+    # pick_anchor's part: on 4 of the 11 cached files that part is cloth (a
+    # quilt, a sheet), and judging the ink cap on a quilt's drape read
+    # Cloudrest's real base 70 mm past the drawn bed as INSIDE.
+    matt_st = (next((p for p in keep if p["name"] == matt["name"]), None)
+               if matt is not None else None)
+    fe = R.frame_extent(keep, matt_st) if matt_st is not None else None
+    if fe is not None:
+        (flx, fly), (fhx, fhy), fnames = fe
+        row["frame_staged_mm"] = [round((fhy - fly) * 1000), round((fhx - flx) * 1000)]
+        row["frame_parts"] = fnames
+        row["frame_overhang_mm"] = R.overhang_staged_mm((flx, fly), (fhx, fhy),
+                                                        FX0, FY0, FX1, FY1)
+    else:
+        row["frame_staged_mm"] = None
+        row["frame_parts"] = None
+        row["frame_overhang_mm"] = None
+    # WHAT THE BUILD WOULD DO WITH THE SAME FILE (D-120 debt, printed rather
+    # than assumed): build_room._place_bed_frame still fits the FRAME CLUSTER
+    # into the slot, so a bench PASS is not yet a prediction of the staging the
+    # render will show. The two scales print side by side until the hook
+    # consumes pick_mattress; a row where they differ is a row whose picture
+    # the build cannot reproduce.
+    _hook_s, _, _ = R.plan_scale_whole(mb_len_pre, mb_w_pre, FW, FD)
+    row["hook_scale_today"] = round(_hook_s, 4) if _hook_s else None
+    row["hook_agrees"] = (row["scale"] is not None and _hook_s is not None
+                          and abs(_hook_s - row["scale"]) < 0.002)
+    mb_len = max(p["hi"][0] for p in keep) - min(p["lo"][0] for p in keep)
+    mb_w = max(p["hi"][1] for p in keep) - min(p["lo"][1] for p in keep)
+    row["cluster_overhang_mm"] = R.overhang_staged_mm(
+        (min(p["lo"][0] for p in keep), min(p["lo"][1] for p in keep)),
+        (max(p["hi"][0] for p in keep), max(p["hi"][1] for p in keep)),
+        FX0, FY0, FX1, FY1)
+    row["made_bed_mm"] = [round(mb_w * 1000), round(mb_len * 1000)]       # W, L
+    row["ink_bed_mm"] = ([round(INK[0] * 1000), round(INK[1] * 1000)]
+                         if INK else None)
+    _cl_frame = ({"lo": (flx, fly, 0.0), "hi": (fhx, fhy, matt_st["hi"][2])}
+                 if fe is not None else
+                 {"lo": (min(p["lo"][0] for p in keep), min(p["lo"][1] for p in keep), 0.0),
+                  "hi": (max(p["hi"][0] for p in keep), max(p["hi"][1] for p in keep),
+                         max(p["hi"][2] for p in keep))})
+    row["neighbour_clearance_mm"] = neighbour_clearance(keep, _cl_frame)
 
     # measurements on the staged result
     tree = bvh_of(keep)
@@ -351,6 +522,12 @@ def stage_one(slug):
     row["parts_kept"] = [{"name": p["name"],
                           "size_mm": [round((p["hi"][i] - p["lo"][i]) * 1000) for i in range(3)],
                           "tris": p["tris"]} for p in keep]
+    # the probe table, from the dict that OWNS the facts (native metres, before
+    # the fit) — the evidence for why every other slab was refused
+    row["surface_facts"] = [{"name": n, "cover": f.get("cover"),
+                             "top_mm": (round(f["top_med"] * 1000) if f.get("top_med") is not None else None),
+                             "relief_mm": (round(f["relief"] * 1000, 1) if f.get("relief") is not None else None)}
+                            for n, f in facts.items()]
     row["tris_total"] = sum(p["tris"] for p in keep)
 
     ok, why = R.verdict(row)

@@ -38,7 +38,7 @@ any public repo (`furniture_catalog.json` is gitignored; `raw/assets/*.skp` is g
 | **Poly Haven** | ✅ | CC0 — commercial use, redistribution and AI/ML all explicitly permitted on their own licence page. Already fetched by `pipeline/scripts/assets.py`; committable. |
 | **ambientCG** | ✅ (not yet used) | CC0 — "may be used for commercial purposes, even if that means redistributing them as files". No fetcher yet, **and deliberately not written yet** — see the note under Automation. |
 | **Poliigon** | ❌ **DECLINED 2026-08-08** | Not a legal finding — a **decision**, and the reason is below the table so it cannot be skimmed past. |
-| **BlenderKit** | ⚠️ CC0 tier only | Two licences: CC0 (free) and Royalty-Free (commercial OK, no resale as an asset). Only the CC0 tier may be committed; RF must be gitignored like 3D Warehouse. **Their docs are silent on AI/ML — treat that as unanswered, not as permitted.** |
+| **Blendkit (formerly BlenderKit)** | ✅ RF gitignored / CC0 committable — **FETCHER `pipeline/scripts/blenderkit.py` (2026-08-22)** | Two licences per asset, recorded raw and as repo ids (`royalty_free` → `royalty-free-commercial`, `cc_zero` → `cc0`; unstated → `unknown`, never defaulted permissive). RF = commercial renders OK, no resale as an asset, so the whole shelf `assets/shared/blenderkit/` is gitignored like 3D Warehouse. Script access is the product's OWN integration: the fetcher uses the same per-file API route and Bearer key the official Blender add-on uses (`/api/v1/downloads/<fileId>/?scene_uuid=`), not page scraping; every fetch is scale-asserted and logged in `qa/blenderkit-fetch-log.json`. Free tier needs no account; the Full plan ('30 day glimpse' $19.90 / Monthly $17.90 / Yearly $118.80) is the owner's purchase (ORD-2026-08-22-blenderkit-one-month, ASK-031). **Their docs are silent on AI/ML — treat that as unanswered, not as permitted** (`style_embed.py` runs CLIP over renders that would contain these; same posture as the Poliigon note, not yet a blocker because nothing here trains a model). |
 | **Sketchfab / Fab** | ⚠️ per-model | CC0 / CC-BY / CC-BY-NC / CC-BY-ND all coexist; **CC-BY-NC is unusable for client work**. Fab (Epic, incl. Quixel Megascans) forbids redistribution at every tier and its terms are still changing; Quixel's own licence page returned 403 on 2026-08-05, so the post-2024 "free" status is **unverified**. Read the individual model's licence, every time. |
 
 ### Poliigon — DECLINED, and why a decision rather than a reading
@@ -58,7 +58,8 @@ CC0 — and then buy the separate licence rather than reasoning about intent.
 ## Automation
 **Manual-download workflow by design.** Scripted/bulk fetch is independently ToS-banned on 3D
 Warehouse, BIMobject, CADENAS (account ban + legal risk) — even where the model license is
-permissive. **Exception: FurniMesh** may be fetched directly. At ~12 mapped kinds, hand-curation
+permissive. **Exceptions: FurniMesh** (explicit grant) **and Blendkit** (the API is the add-on's own route;
+`pipeline/scripts/blenderkit.py`) may be fetched directly. At ~12 mapped kinds, hand-curation
 is fine.
 
 ### No second fetcher before there is a consumer (2026-08-08)

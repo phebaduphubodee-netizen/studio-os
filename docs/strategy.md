@@ -3569,3 +3569,248 @@ different questions at three stages: bench arithmetic catches the mattress,
 the dump catches the furniture, and field-vs-slot (existing) catches the fit.
 No single stage sees all three — which is the earliest-stage law stated from
 the other end.
+
+## 2026-08-23 — D-120: the bench measured the frame as a mattress (instrument wrong, sixth time in the D-109 class)
+
+The owner approved "fix pick_anchor to prefer the mattress, re-bench Metropol +
+Bolzan + Obsidian" with one word. What the bench had been doing since D-114
+moved the slot from the ink's 2149 to the mattress standard 2000x1800: take the
+largest-plan part (the FRAME on every upholstered bed), fit it into the
+MATTRESS slot (0.84 / 0.85 / 0.91), project that shrunken frame through the
+scale and ask the mattress table whether it was a standard size. Metropol's
+mattress is 1786 x 1980 native — a Thai 6 ft king to 14/20 mm at scale 1.0 —
+and the rung printed "no standard size". Every rung was green; the category
+error was in the arithmetic, where R11's "open the picture" cannot see it.
+
+WHAT IT TOOK TO WRITE THE MATTRESS AS GEOMETRY (R9b). A bbox cannot do it:
+Obsidian's 'Base Seams' spans 1950 x 2144 over the base and holds no surface;
+Bolzan's real mattress has 25% of its top faces because the author deleted
+what the bedding hides. So the rule needed a PROBE per part (cover / top_med /
+relief by ray against that part's own BVH — wholebed_dump.py, which is the R5
+playblast of the bench: eleven candidates in three minutes, no room, no render,
+and the rule iterated on the JSON instead of on twenty-minute bench runs). The
+premise that survived the eleven files: the mattress is THE SLAB BETWEEN THE
+FRAME AND THE BEDDING — on the frame's plan, resting above the frame's bottom
+(cloth falls past it), slab-thick, with a continuous flat top; among survivors
+the LOWEST top (a sheet or quilt lies on it, never under it). Families measured:
+seams cover 0.00-0.14 / hidden-face mattresses 0.25-0.50; blankets relief 24-60
+vs mattresses 0-19; throws span <= 0.57 of the frame vs mattresses >= 0.64;
+base plates 35-59 mm thick. 9/9 right where a mattress exists; two honest NONEs
+(a one-mesh bed, a mattress split across two meshes) refused as UNMEASURABLE by
+name, never measured as the frame (R10).
+
+TWO QUESTIONS THAT HAD BEEN ONE NUMBER. "Is this a real bed" (best uniform
+scale <= 1 to ANY sourced standard) and "does it fit the spec's slot" (slot-fit
+scale, deviation from the slot's own standard) come apart on Ikea Nordli: a US
+king to 23 mm at 0.998, but shrunk into the Thai-king slot at 0.92 it is
+1800 x 1852 — a size nobody sells. The row now prints both. And the tolerance
+moved with the measurement: D-116's 150 was justified by "the cluster includes
+the frame" (true for dim_check, false for the bench's new number) and by "D-110
+says his tolerance is loose" — which is the builder translating his sentence
+into a number, the thing D-110(4) forbids. The bare-mattress rule is +-50
+(knowledge:45,124); between 50 and 150 is his discretion from the image.
+
+THE CAP THE OLD FIT GAVE FOR FREE. Cluster-fit could never let a frame past the
+slot; mattress-fit can, so a cap had to be written: the FRAME stays inside the
+drawn bed rectangle (SR-07, 7' x 6.5', read from sheet-recon, R12). The first
+cut capped the CLUSTER and failed Metropol for a sheet draping 118 mm down each
+flank — the ink draws the bed's hard edge and the owner's clause moves the
+surroundings to the FRAME; cloth over the gap is not a wider bed. Cluster
+overhang and per-side clearance to the built neighbours are REPORTED for P4.
+The clearance rule itself was wrong twice in one hour (a 100 mm look-past-the-
+face window hid a night table 126 mm INTO the frame and named the wardrobe
+687 mm away; a centre-of-plan test put the foot bench on the N side) — pulled
+out of the Blender file into a pure, tested function, with the band's own
+3 mm HEAD_GAP printing on the E side as a built-in positive control.
+
+RESULT (p2r57 room, rect from spec). Metropol PASSES every hard filter at scale
+1.0 — frame 1842 x 2033 overhangs the slot 21/side + 33 at the foot, inside the
+ink; N night table overlaps 42, S clears 15, bench clears 8: the move-to-touch
+numbers. Bolzan fails ONLY the front door: its mattress is 1800 x 2114, an EU
+180 x 210 the table does not hold; best uniform fit lands 53 mm from a Thai
+king — three past the line — and its body (2144) is the ink's 7' (2134) to
+10 mm. Under D-116's 150 it passed; under the bare rule it is his call from the
+image, and the row says so. Obsidian fails twice (1671 sheet = EU 160 + wrap;
+base 2011 x 2166 past the ink by 20/22) and the render shows the quilt piled on
+the bench exactly where the clearance reads -125.
+
+THE PROCESS DEFECT WORTH KEEPING: the bench ran with the rules Blender had
+loaded before the cap was re-scoped, so its printed verdict for Metropol was
+the stale cluster rule. verdict() is a pure function of the row, so the rows
+were re-judged from the JSON and both values are kept in the file — the layer
+law (rules pure, Blender only materialises) is what made that recoverable
+without a second twenty-minute run. Debt named in D-120: the integration hook
+still carries its own inline mattress rule, which on the dump picks Obsidian's
+QUILT SEAMS; it moves to pick_mattress in the first build round that
+integrates a bought bed, not today (the plan forbids another bed round and the
+in-frame bed is a signed interim).
+
+### Addendum, same day: three fresh-context reviewers filed 23 items against the above, and 8 of them were real
+
+The entry above was written after the first cut passed 66 tests — every one of which I
+wrote myself. A three-lens adversarial review (rule logic on the real dump, bench
+wiring traced by reading, repo-law and consumers) found what a self-written suite
+structurally cannot:
+
+* **The front door asked the wrong question.** It asked "is this SOME standard size",
+  not "is it the SLOT's standard". Slate's 1336 x 1895 is a US full within 36, so it
+  passed while filling 0.74 of the slot — the owner's "เตียงเล็กไป" with a standard
+  label on it. Now the slab answers to the slot (th_king_6ft, from the spec, never
+  typed) AND to MIN_FILL; when it is a different standard the row says which one and
+  names the two ways out (change the spec's w/d per D-114, or a different purchase).
+* **The "frame" I capped with the ink was pick_anchor's part, which is CLOTH on 4 of
+  the 11 cached files.** Cloudrest's real base is 2311 long — 167 mm past the drawn
+  bed — and read as INSIDE because the quilt was measured instead. `frame_extent`
+  now finds the hard stack around the mattress by geometry (hollow, or a flat slab
+  topping out below the mattress), and cloth is excluded by HEIGHT, not thickness.
+* **A slat deck wins "lowest top" over the mattress resting on it**, and a hotel
+  coverlet flat on the slab ties its top within a millimetre and out-plans it. Both
+  are now rules with the measured families behind them.
+* **`overhang_mm` under-read the foot by 63 mm** because the built band is emitted
+  INSIDE the slot, so the head butts 5.141 and not 5.204 — two numbers in one row
+  disagreeing about the same edge. It now measures from where the frame actually
+  stands.
+* **`row["surface_facts"]` was `[]` on every row** — the probe table was attached to
+  dicts that `cand_parts()` rebuilds. The evidence for why every other slab was
+  refused never reached the file. The same one-line class as a queue with no consumer.
+* **The negative control that mattered most was not in my list at all**: benched
+  under the corrected rule, **the bed in the frame today (81d895fd) is a US full,
+  1400 x 1900, 0.78 of the slot's width.** The old instrument could not see it —
+  it measured that file's sheet (Plane.029) and fitted the cluster.
+
+Two items I did NOT fix and recorded instead: the integration hook still fits the
+frame cluster, so a bench PASS is not yet a prediction of the build's staging — the
+row now prints `hook_scale_today` and `hook_agrees` beside its own scale rather than
+leaving the divergence implicit; and a draped quilt's hollow seam mesh widens
+`frame_extent` by ~60 mm/side on two files, which only ever makes the rung stricter
+and is printed with the part names rather than tuned away.
+
+And the governance item, answered rather than dodged: D-119 freezes the month's
+criteria after the clock starts, and this changed the instrument behind C1 after
+seeing results. The criterion TEXT is untouched; the correction runs under a standing
+owner order plus his "ลุย"; and the direction is auditable — the tool's own previous
+winner (Bolzan) now FAILS and the one it refused (Metropol) passes at scale 1.0,
+which is the opposite of what a flattered scorer produces. The blind spot is real
+and now written down in two places: `criteria_digest` hashes the decision text, the
+class file and the panel prompt, but NOT the rung's code, so `status` still prints
+MATCH.
+
+And two the reviewers found that I did NOT fix, recorded rather than left silent
+(the R13 third state, applied to a defect in an instrument instead of an order):
+`made_field` counts Ikea Nordli's two shelf boards — 2629 x 220 and 2626 x 91 — as
+the made bed, so its field reads 1.00 x 1.00 off joinery (re-checked today, still
+live). It is the D-109 class in a rule this session did not write, and nothing's
+verdict now turns on it: `mattress_fill` asks the same question of the SLAB and is
+strictly harder, so the load moved off the field check. Moving `made_field` onto the
+probe (cover/relief) instead of its thin-panel test is the right fix, and it belongs
+in a round that has a candidate to test it against — tuning a multi-candidate
+threshold with no such round is R9b in threshold form. Second: `field_fill` still
+caps at min(1.0), so now that a cluster may exceed the slot, "meets the rect" and
+"overflows it by 15%" print identically; the real number is in `cluster_overhang_mm`
+in the same row (Metropol: foot 191, side 139), so nothing is hidden — but the field
+number itself reads a meaning it no longer has.
+
+
+## 2026-08-23 — STY: a style is nine rows, not a name (ORD-2026-08-23-style-before-objects, D-122)
+
+He picked the Metropol bed, then asked the question the lane had never asked:
+*"ของที่เหลือในห้องเป็นสไตล์เดียวกันมั้ย?"* — and ordered the answer as a mechanism:
+*"ต้องเลือกก่อนว่าห้องนี้จะเป็นสไตล์ไหนแล้วค่อยเอาของมาเติม"*, then *"ทำตัวเป็น project
+director และวางแผนแก้ปัญหานี้ระยะยาว"*. The same sentence, from the same person,
+that opened DRW on 2026-08-11 — and the diagnosis came out the same: **not a
+missing capability, a missing wire.**
+
+**THE COUNT.** Of the 31 rungs the gate runs, **zero** read a style token.
+`02_concept/concept.md` — a named style, a 60/30/10 palette and seven EDGE
+prohibitions, written 2026-07-02 — is named by **no `.py` and no `.json`** in
+this repo. `style_fingerprint.py` **measures a 60/30/10 area split from pixels**,
+is tested, is local-only, and had **zero production consumers**: the declaration
+and the instrument that could check it were built seven weeks apart in the same
+repo and were never introduced. Of the **nine** spec-addressable material roles,
+the spec filled **three** — and the missing six include the FLOOR, the largest
+surface in every frame and concept.md's own declared 60% dominant, which renders
+2.6-5.6x darker and redder than the signed oak because one constant,
+`FLOOR_SLUG`, is the floor **and** the "walnut" feature wall **and** the wood on
+every loose item. Six style names were in force at once; the live one, "Japandi",
+entered as a blind critic's **description of our own render** and hardened into
+the rule selecting what we buy. The client never gave a style at all.
+
+**AND THE BILL HAD ALREADY BEEN PAID TWICE.** *"No classic profile anywhere"* was
+written 2026-07-02; seven weeks later three sighted agents and ~203k tokens were
+spent rediscovering it as "carved-Louis side tables". *"Velvet rejected —
+humidity"* sat beside a live `velvet_sand` preset with an FFE citation and
+nothing in between.
+
+**HE WAS RIGHT AND THE BUILDER'S COUNTER-ARGUMENT WAS WRONG.** The builder argued
+the drawing constrains the style toward oak. **0 of 21 rows in
+`qa/sheet-recon.json` carry any material word** — the drawing fixes GEOMETRY, not
+FINISH, and the oak default traces to concept.md citing a template-status studio
+file as *"studio default direction, not filled identity"*. His own words:
+*"ไม่จำเป็นต้องเป็นไม้โอ๊ค ผมเลือกตอนนั้นเพื่อจะให้งานเดิน จริง ๆ อยากได้หลาย ๆ variant"*.
+
+**WHAT SHIPPED (zero pixels changed).** `qa/style-of-record.json` +
+`style_check.py`, wired into **`rule_gate.check_room()`** — and that choice is the
+whole lesson. The canonical fix-shape in CLAUDE.md says "wired into
+`rule_gate.check()`". On this repo that sentence is now half-true: `check()`
+serves the retired TRN-002 lane and `enforce()` — the function whose docstring
+says it prints "into the render path" — has two callers, neither of them the
+production render. **A style rung wired there would have been a queue with no
+consumer: the exact defect the register exists to end, rebuilt by the rung meant
+to end it.**
+
+**THE ADVERSARIAL PASS KILLED THE FIRST VERSION FOUR TIMES** and every repair is
+in the shipped one:
+- **It was declarations-only — R11's exact defect.** Every rule read JSON or
+  grepped text; none opened an image, on a rung about the one thing you can only
+  see. Repaired with `style_measure.py`, which runs the instrument this repo
+  already owned. **First reading on p2r57: dominant 0.300 / secondary 0.186 /
+  accent 0.183 against a declared 0.60/0.30/0.10 — a room with no dominant
+  surface, which is what a 60% field that was never signed produces.** Recorded,
+  dated, and RATCHETED rather than failed, because a rung that hard-fails on the
+  day it ships gets switched off.
+- **Its retired-name rule was an allowlist of four files** — R9b by name ("a rule
+  that names the objects it applies to will always exempt the next one"). Now a
+  walk over the trees the machine reads, where every hit must be acknowledged and
+  the acknowledged debt may exist but **may not spread**.
+- **It was going to buy its D-112 admission with a self-issued critic-debt row** —
+  circular, and `debt_check` would have required a fabricated recurrence count
+  against a frozen 28-file denominator. Dropped: no new measurement was admitted
+  at all, because the measuring instrument was already in the repo.
+- **The floor A/B pair had no B.** `oak_wood_floor` is the same texture slug minus
+  the anti-tiling drift — signing it would have regressed MA-03 and changed the
+  wood not at all.
+
+**THEN THE MACHINERY REFUSED ITS OWN AUTHOR, THREE TIMES, WHICH IS THE POINT.**
+`style_check`'s first run against the first draft caught a `signed_where` citing
+`04_visualization/` for a file that lives in `03_layout/`. `orders_check` then
+refused the order row twice: once because his words did not REPRODUCE in the file
+the row cited (*"an order I cannot point at is an order I am paraphrasing"*), and
+once for being filed not-obeyed while every assertion it carried held — so the
+assertions were rewritten to name the **missing** work rather than the finished
+work, which is what an `obeyed_assert` is for.
+
+**THE HONEST STATE, printed at every session open and in the render path:**
+3/9 slots signed, 6 legacy-unsigned at 40 days each with a named restart action,
+7 prohibitions with 6 tests and 1 honestly `none-yet`, palette gap 0.300 measured
+off the pixels. **The register tells the truth about what renders today; it does
+not yet make what renders correct**, and the difference is STY-2 (objects judged
+against the style — the half his order names that does not exist) through STY-4.
+
+**A CLIENT-FACING DEFECT FOUND ON THE WAY, now dated debt with a restart action.**
+`rationale.py:223` still says *"today the spec carries NO material field and
+build_room ignores the spec anyway"*. The spec grew that block on 2026-07-14 and
+`build_room.py:4558` has read it since. So the **client deliverable** describes
+the feature wall as walnut while the render builds the owner-signed oak — and
+`test_rationale` stays green because it drift-guards those strings against
+`build_room`'s SOURCE rather than against the signature. Self-consistency that
+can prove the build correct and never notice the description is wrong: the R7b
+shape, one level down.
+
+**AND A LIVE BUG AT THE ATTACHMENT POINT, reported not fixed** (it belongs to the
+reproduction lane and deserves its own verification): `owner_channel`'s
+orders/sourcing/repo_first/asks section is indented inside
+`if decisions is None and unit:` (`rule_gate.py:539` vs `553-624`), and `check()`
+always passes a loaded register — so **all four R13 rungs silently do not run in
+`check()`**. Verified empirically: `decisions=None` rosters four rungs, the live
+register rosters zero. They do run under `check_room`, which is why DELIV-001 was
+never affected.

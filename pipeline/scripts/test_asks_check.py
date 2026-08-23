@@ -116,9 +116,22 @@ def test_the_dropped_asks_this_session_found_are_all_in_it():
     assert len(AC.asks(data)) >= 21
 
 
-def test_the_oldest_open_ask_is_the_paid_asset_tier():
-    """46 days, and it is the one whose closure ground he cancelled himself."""
+def test_the_paid_asset_tier_ask_was_answered_not_dropped():
+    """ASK-002 sat open 48 days (the one whose closure ground he cancelled
+    himself) and was then ANSWERED on 2026-08-18 — 'ลุย BlenderKit' — not
+    dropped. ASK-029 (which route, one month?) was answered on 2026-08-22 by
+    his order; the action half (pay + paste the key) is ASK-031 and stays
+    OPEN and priced until the key is in .env — three states, no fourth. Before 08-18 this test asserted ASK-002 was the oldest open ask;
+    that became false the day he answered, which is the outcome the ledger
+    exists to produce."""
     data = AC.load(repo_root=REPO)
-    oldest = AC.open_asks(data, TODAY)[0][0]
-    assert oldest["id"] == "ASK-002"
-    assert str(oldest["money"]).startswith("yes")
+    by_id = {a["id"]: a for a in AC.asks(data)}
+    a2, a29, a31 = by_id["ASK-002"], by_id["ASK-029"], by_id["ASK-031"]
+    assert a2["status"] == "answered" and "BlenderKit" in a2["answer"]
+    assert a29["status"] == "answered" and "1 เดือน" in a29["answer"]
+    # the action half was answered the same night ('จ่ายตังแล้ว' + his click in
+    # the OAuth tab); a money ask that is answered carries his words and a date
+    assert a31["status"] == "answered" and a31["answer"] and a31["answered_date"]
+    assert str(a31["money"]).startswith("yes")
+    for a in (a2, a29, a31):
+        assert a["status"] != "open" or a.get("answer") is None

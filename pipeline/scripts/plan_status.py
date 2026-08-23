@@ -424,6 +424,37 @@ def sheet_lines():
 
 # --------------------------------------------------------------- coverage map
 
+def style_lines():
+    """สไตล์ของห้องเป็นเก้าแถว ไม่ใช่ชื่อ (owner 2026-08-23: 'ต้องเลือกก่อนว่าห้องนี้จะเป็น
+    สไตล์ไหนแล้วค่อยเอาของมาเติม'). Printed unasked for the reason every ledger
+    above is: `02_concept/concept.md` declared a style, a 60/30/10 palette and
+    seven prohibitions on 2026-07-02 and no `.py` or `.json` in this repo names
+    that file — so the room was styled by whatever word the last critic used.
+    Unreadable prints UNKNOWN, never nothing."""
+    try:
+        import style_check as STY
+    except ImportError as e:                            # pragma: no cover
+        return ["", f"STYLE unknown — style_check is not importable ({e})"]
+    data = STY.load(repo_root=REPO)
+    if data is None:
+        return ["", "STYLE unknown — qa/style-of-record.json could not be read. "
+                    "That is unknown, not zero."]
+    out = list(STY.style_lines(data))
+    m = data.get("palette_measured") or {}
+    if m.get("could_not_run"):
+        out.append(f"            PALETTE COULD NOT BE MEASURED: "
+                   f"{m['could_not_run']} — that is not a pass.")
+    elif m.get("gap_worst") is not None:
+        out.append(f"            palette วัดจากพิกเซล {m.get('frame')} — ห่างจาก "
+                   f"60/30/10 ที่ประกาศไว้ {m['gap_worst']:.3f} "
+                   f"(เพดาน {m.get('gap_ceiling')}, ตั้งแต่ {m.get('gap_since')}) "
+                   f"— rung เดียวในนี้ที่เปิดรูป")
+    else:
+        out.append("            palette ยังไม่เคยวัดจากรูปเลย — "
+                   "`python pipeline/scripts/style_measure.py <frame>`")
+    return out
+
+
 def coverage_lines():
     """WHAT ASKS, AND WHAT NOBODY ASKS (owner 2026-08-22: 'project ใหญ่เกินกว่าที่
     ตรวจเช็คได้ว่าขั้นไหนผิดอะไรแล้วใช่ไหม'). The first full census of the gate's
@@ -504,6 +535,7 @@ def report(plan):
     # instance, not the fix.
     lines += debt_lines(plan)
     lines += sheet_lines()
+    lines += style_lines()
     lines += coverage_lines()
 
     bad = unreadable_statuses(plan)

@@ -1,0 +1,13 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "style-panel verdict (one judge, one candidate)",
+ "type": "object",
+ "properties": {
+  "candidate": {"type": "string", "description": "the letter shown, never a filename or tier"},
+  "verdict": {"type": "string", "enum": ["inside", "edge", "outside"]},
+  "deciding_feature": {"type": "string", "enum": ["profile", "ornament", "material", "proportion", "colour", "other"]},
+  "reason": {"type": "string", "maxLength": 240}
+ },
+ "required": ["candidate", "verdict", "deciding_feature", "reason"],
+ "additionalProperties": false
+}

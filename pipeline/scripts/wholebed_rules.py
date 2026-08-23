@@ -127,8 +127,14 @@ def unit_factor(parts, drawn_long_m=2.149):
 
 
 def pick_anchor(parts, drawn_plan_m2=4.298):
-    """The part the bed is organised around: largest plan area whose long axis sits
-    in the anchor band. None -> the file holds no bed at this scale."""
+    """The part the bed is ORGANISED around: largest plan area whose long axis
+    sits in the anchor band. None -> the file holds no bed at this scale.
+
+    It is the FRAME on every upholstered bed, and it is the right part for
+    strip / orientation / field premises ("a part of the bed lies ON the bed").
+    It is NOT the bed's size: the spec slot is a mattress size, and the
+    mattress is pick_mattress (D-120) — the bench fitted this part into the
+    mattress slot for four rounds and refused real king beds for it."""
     best = None
     for p in parts:
         s = size(p)
@@ -244,6 +250,318 @@ def plan_scale_whole(native_len, native_w, fit_len=2.000, fit_w=2.149):
         return None, 0.0, 0.0
     s = min(MAX_SCALE, fit_len / native_len, fit_w / native_w)
     return s, s * native_len / fit_len, s * native_w / fit_w
+
+
+# ------------------------------------------------ the mattress (P2r-58, D-120) --
+# INSTRUMENT WRONG, SIXTH TIME IN THE D-109 CLASS (the anchor names the wrong
+# part). pick_anchor returns the part the bed is ORGANISED around — the largest
+# plan in the bed band — which on every upholstered bed is the FRAME (Metropol
+# 'Bed Frame' 1842 x 2033, Obsidian 'Base' 2023 x 2179, Bolzan 'body bed'
+# 1842 x 2144). The bench then fitted THAT part into the spec's slot, which is
+# a MATTRESS size (2000 x 1800, D-114), shrank every frame by its own rails
+# (0.84 / 0.85 / 0.91), and asked whether the shrunken FRAME was a standard
+# MATTRESS. Metropol's mattress measures 1786 x 1980 native — the Thai 6 ft
+# king to within 14 / 20 mm, at scale 1.0 — and was refused as "no standard
+# size". A frame is not a mattress; the slot is a mattress slot; the rule
+# below names the mattress by GEOMETRY so the size and the scale read it.
+#
+# THE PREMISE: the mattress is THE SLAB BETWEEN THE FRAME AND THE BEDDING —
+# it lies on the frame's plan, rests above the frame's bottom (cloth falls
+# past it; a platform sits on the floor), is slab-thick, and presents a
+# CONTINUOUS FLAT TOP. The last clause needs a probe, not a bbox: measured on
+# eleven cached candidates (wholebed_dump.py, 2026-08-23) the seam-piping
+# meshes that share a slab's footprint hold no surface (cover 0.00-0.14), and
+# authors delete the hidden faces of a real mattress under its bedding (Bolzan
+# 'mattres' cover 0.25, Loca Loft 0.50), so the cover floor sits between the
+# two families. Folds separate bedding from a slab (blankets relief 24-60 mm;
+# mattresses and fitted sheets 0-19), half-bed throws fail the span (0.28-0.57
+# of the frame's short axis vs 0.64-1.0 for mattresses), thin plates fail the
+# thickness band (base plates 35-59 mm), and a draped duvet fails the floor
+# term (its hem reaches 0-12 mm above the frame's bottom). Among survivors the
+# LOWEST top is the mattress (a sheet or flat quilt LIES ON it, never under
+# it); ties within MATT_TOP_TIE_M go to the largest plan. A part with no probe
+# facts can never qualify — could-not-measure must not read as a mattress.
+MATT_OVERLAP_MIN = 0.80        # lies on the frame's plan
+MATT_ABOVE_FLOOR_M = 0.05      # rests above the frame's bottom (hook's term)
+MATT_THICK_M = (0.10, 0.45)    # a slab, not a plate and not a draped stack
+MATT_COVER_MIN = 0.15          # seams 0.00-0.14 / hidden-face mattresses 0.25+
+MATT_RELIEF_M = 0.02           # flat top: mattresses 0-19 mm, blankets 24+
+MATT_SPAN_FRAC = 0.60          # spans the frame's axes: throws <= 0.57
+MATT_TOP_TIE_M = 0.01
+
+
+def _has_facts(p):
+    return (p.get("cover") is not None and p.get("relief") is not None
+            and p.get("top_med") is not None)
+
+
+def _stacked_above(q, p, tol=0.02):
+    """q sits ENTIRELY above p's top — a mattress on a slat deck or a divan
+    base. Cloth lying on a mattress fails this test by construction: it drapes
+    over the sides, so its bbox bottom is far below the slab's top. That is
+    what separates 'p is a deck under the mattress' (p is excluded) from
+    'p is the mattress under a coverlet' (p is kept)."""
+    return (plan_overlap_frac(q, p) >= MATT_OVERLAP_MIN
+            and q["lo"][2] >= p["hi"][2] - tol)
+
+
+def pick_mattress(parts, anchor, drawn_plan_m2=3.6):
+    """(part, note) — the mattress slab by geometry, or (None, why).
+
+    `parts` carry bbox + the probe facts (cover / top_med / relief, metres;
+    wholebed_dump.surface_facts). `anchor` is pick_anchor's organising part;
+    it competes too, but only when something of the bed stands UNDER it
+    (starts >= MATT_ABOVE_FLOOR_M below its bottom, on its plan) — Ikea's
+    'Bedsheets' out-planned its own frame by 1% and became the anchor; the
+    frame beneath is what makes it a mattress and not a platform.
+
+    Among qualifying slabs: a slab with ANOTHER slab stacked entirely above it
+    is a deck or an inner base, never the mattress (a 100 mm slat deck inside
+    the rails would otherwise win on 'lowest top'); then the LOWEST top (cloth lies on
+    the mattress); ties within MATT_TOP_TIE_M go to the slab CONTAINED in the
+    other's plan (the cloth that covers a mattress out-plans it — a hotel
+    coverlet wider than the slab must not win the tie), else the larger plan.
+
+    A file with no qualifying slab returns (None, reason): a one-mesh bed
+    (Tierra) or a mattress split across meshes. The caller must then record
+    the size as UNMEASURED — never fall back to the frame (R10: typing a number
+    for an unmeasurable dimension is the defect)."""
+    if anchor is None:
+        return None, "no anchor"
+    a_lo_z = anchor["lo"][2]
+    a_s = size(anchor)
+    cands, probed = [], 0
+    for p in parts:
+        if not _has_facts(p):
+            continue
+        probed += 1
+        s = size(p)
+        if plan_overlap_frac(p, anchor) < MATT_OVERLAP_MIN:
+            continue
+        if not (MATT_THICK_M[0] <= s[2] <= MATT_THICK_M[1]):
+            continue
+        if p["cover"] < MATT_COVER_MIN or p["relief"] > MATT_RELIEF_M:
+            continue
+        if s[0] < MATT_SPAN_FRAC * a_s[0] or s[1] < MATT_SPAN_FRAC * a_s[1]:
+            continue
+        if p is anchor:
+            under = [q for q in parts if q is not p
+                     and q["lo"][2] <= p["lo"][2] - MATT_ABOVE_FLOOR_M
+                     and plan_overlap_frac(q, p) >= MATT_OVERLAP_MIN]
+            if not under:
+                continue
+        elif p["lo"][2] < a_lo_z + MATT_ABOVE_FLOOR_M:
+            continue
+        cands.append(p)
+    if probed == 0:
+        return None, "no part carries probe facts (cover/top_med/relief) — unprobed"
+    if not cands:
+        return None, ("no slab between frame and bedding qualifies — a one-mesh "
+                      "bed, or a mattress split across meshes")
+    decks = [p for p in cands if any(q is not p and _stacked_above(q, p) for q in cands)]
+    tops = [p for p in cands if p not in decks] or cands
+    low = min(p["top_med"] for p in tops)
+    tied = [p for p in tops if p["top_med"] <= low + MATT_TOP_TIE_M]
+    if len(tied) > 1:
+        inner = [p for p in tied
+                 if any(q is not p and plan_overlap_frac(p, q) >= 0.95 for q in tied)]
+        if inner:
+            tied = inner
+    best = max(tied, key=plan_area)
+    note = f"{len(cands)} candidate slab(s); lowest top {low * 1000:.0f} mm"
+    if decks:
+        note += f"; {len(decks)} deck(s) under another slab excluded"
+    return best, note
+
+
+def mattress_scale(m_len, m_w, fit_len=2.000, fit_w=1.800):
+    """Uniform scale that lands the MATTRESS in the spec's slot, never above
+    MAX_SCALE (R8 / D-101: shrink is a transform, stretch is a fake bed).
+    The frame then overhangs the slot by its own rails — that overhang is
+    reported, and the owner's order is to move the surroundings to it
+    (2026-08-22: "หาขนาดมาตรฐานแล้วปรับของรอบ ๆ ให้มาชิด"), never to shrink
+    the bed into the mattress slot. Returns s or None."""
+    if m_len <= 0 or m_w <= 0:
+        return None
+    return min(MAX_SCALE, fit_len / m_len, fit_w / m_w)
+
+
+# The bare-mattress test is +-50 mm (knowledge/ergonomics/tv-viewing-and-
+# furniture-dimensions.md:45 and :124 — "the same +-~50 mm bare-mattress test
+# as the US table; built ACQ clusters include the frame, so the machine judges
+# those at +-150"). ergonomics_ref.BED_SIZE_TOL_MM = 150 is the CLUSTER
+# tolerance (dim_check reads a plan union that includes the frame; D-116).
+# The bench's number is now the bare slab, so the bare rule applies here —
+# the 150 would let a 1,671 mm EU-160 mattress print as a US queen (1,524).
+# Deviations between the two lines are the OWNER's discretion from the image
+# (D-110), never a number the builder widens.
+MATT_STD_TOL_MM = 50
+
+
+def best_uniform_fit(m_w_mm, m_len_mm, sizes, max_scale=None, steps=200):
+    """(s, name, worst_mm) — the uniform scale in [0.80, MAX_SCALE] that
+    brings a W x L mattress CLOSEST to any standard in `sizes` ({name:(W,L)}),
+    orientation-agnostic. Reported beside the slot-fit so a row can say "no
+    uniform scale reaches a standard" rather than leaving the reader to
+    wonder whether a different scale would have passed. PURE."""
+    if m_w_mm <= 0 or m_len_mm <= 0 or not sizes:
+        return None, None, None
+    top = MAX_SCALE if max_scale is None else max_scale
+    a0, b0 = sorted((float(m_w_mm), float(m_len_mm)))
+    best = (None, None, None)
+    for i in range(steps + 1):
+        sc = 0.80 + (top - 0.80) * i / steps
+        a, b = a0 * sc, b0 * sc
+        for name, (bw, bl) in sizes.items():
+            sw, sl = sorted((bw, bl))
+            worst = max(abs(a - sw), abs(b - sl))
+            if best[2] is None or worst < best[2]:
+                best = (round(sc, 4), name, worst)
+    return best
+
+
+# THE DRAWN BED IS THE WIDEST FRAME THE SHEET ALLOWS (R12). With the scale read
+# off the mattress, nothing shrinks a wide frame into the slot any more (the
+# old cluster fit did that by construction — and refused real king beds for
+# it). The cap is the DRAWN bed rectangle (sheet-recon SR-07, 7' x 6.5'), read
+# from qa/sheet-recon.json by the bench, never typed: the slot (mattress) sits
+# inside it, and the HARD frame may reach it but not pass it. It is the frame
+# and not the cluster because the ink draws the bed's edge and the owner's
+# clause moves the surroundings to the FRAME — a sheet draping 118 mm down each
+# flank (Metropol) or a duvet foot (81d895fd, +71) is cloth over the gap, not a
+# wider bed. Cloth and carry-on extents are REPORTED (cluster_overhang_mm,
+# neighbour_clearance_mm), never the verdict. Tolerance = the ink read's own.
+MADE_BED_INK_TOL_M = 0.010
+
+
+def made_bed_within_ink(made_w_m, made_len_m, ink_w_m, ink_len_m,
+                        tol=MADE_BED_INK_TOL_M):
+    """(ok, over_w_mm, over_len_mm) — how far a staged extent (the FRAME, per
+    verdict) reaches past the drawn bed rectangle, per axis (0 inside). PURE."""
+    over_w = max(0.0, made_w_m - ink_w_m - tol) * 1000.0
+    over_l = max(0.0, made_len_m - ink_len_m - tol) * 1000.0
+    return (over_w <= 0.0 and over_l <= 0.0), int(round(over_w)), int(round(over_l))
+
+
+def neighbour_gaps(frame_lo, frame_hi, others, far_m=1.5, run_m=0.05):
+    """Per side (N = +y, S = -y, W = foot = -x, E = head = +x), the gap in mm
+    from the staged FRAME's face to the nearest thing standing beside it — the
+    number the owner's "move the surroundings to the bed" clause needs (D-114
+    override). NEGATIVE = it overlaps the frame by that much, however deep.
+
+    Which side a thing is ON is the side it penetrates LEAST (argmax of the
+    four face gaps), provided it overlaps the frame's run along the other axis
+    by at least `run_m`. Two wrong answers paid for that sentence: a 100 mm
+    look-past-the-face window named the wardrobe 687 mm away on a side where
+    a night table sat 126 mm INTO the frame, and a centre-of-plan test put the
+    foot bench — which the frame overhung by 177 mm — on the N side because its
+    centre lay a float above the frame's. A band part 1 mm past the head face
+    is an E neighbour, never an S one.
+
+    `others` = [(name, lo, hi)] of scene meshes — not the candidate's own parts
+    — already filtered to the bed's height band by the caller (floor, rug and
+    ceiling are not neighbours). Things farther than `far_m` are not reported;
+    per side the DEEPEST (smallest) gap is kept. PURE."""
+    fx0, fy0 = frame_lo[0], frame_lo[1]
+    fx1, fy1 = frame_hi[0], frame_hi[1]
+    out = {"N": None, "S": None, "W": None, "E": None}
+    for name, lo, hi in others:
+        gaps = {"N": lo[1] - fy1, "S": fy0 - hi[1], "W": fx0 - hi[0], "E": lo[0] - fx1}
+        side = max(gaps, key=gaps.get)
+        g = gaps[side]
+        if g > far_m:
+            continue
+        if side in ("N", "S"):
+            run = min(hi[0], fx1) - max(lo[0], fx0)
+        else:
+            run = min(hi[1], fy1) - max(lo[1], fy0)
+        if run < run_m:
+            continue
+        g_mm = int(round(g * 1000.0))
+        if out[side] is None or g_mm < out[side]["gap_mm"]:
+            out[side] = {"gap_mm": g_mm, "object": name}
+    return out
+
+
+# THE FRAME, by geometry (review of D-120: pick_anchor is cloth on 4 of 11
+# candidates — Ikea's sheet, two quilts, the in-frame bed's draped sheet — so
+# the ink cap, the overhang and the clearance were reading a quilt's drape as
+# "the frame"; Cloudrest's base 70 mm past the drawn bed read INSIDE). The
+# frame is the HARD STACK under and around the mattress: parts that do not
+# rise above the mattress top by more than a rim, lie on its plan, and are
+# either HOLLOW (a rail ring, a slat frame — cover under MATT_COVER_MIN) or a
+# FLAT SLAB whose top sits BELOW the mattress top (a base, a deck; the
+# mattress itself). Cloth lying ON the mattress has its top at or above the
+# mattress top and is excluded — that, not thickness, is what keeps a foot
+# sheet or a flat blanket out of the frame's width. Per axis a part counts
+# only if it spans most of the mattress on the OTHER axis (a rail runs the
+# length; a 576 mm foot strip does not set the width). Known over-read: a
+# draped quilt's SEAM mesh (hollow, low) adds ~60 mm/side on two of the
+# eleven cached files (Slate, Cloudrest) — reported with the part names.
+FRAME_RIM_M = 0.10
+FRAME_SPAN_FRAC = 0.60
+
+
+def frame_extent(parts, mattress):
+    """((lo_x, lo_y), (hi_x, hi_y), [names]) of the hard frame around
+    `mattress`, or None when no hard part qualifies (the mattress alone is
+    then the frame's extent — a mattress on the floor)."""
+    if mattress is None:
+        return None
+    m_top = mattress["top_med"]
+    m_s = size(mattress)
+    hard = []
+    for p in parts:
+        if p is mattress:
+            hard.append(p)
+            continue
+        if not _has_facts(p) and p.get("cover") is None:
+            continue
+        if p["hi"][2] > m_top + FRAME_RIM_M:
+            continue
+        if plan_overlap_frac(p, mattress) < 0.5 and plan_overlap_frac(mattress, p) < 0.5:
+            continue
+        hollow = (p.get("cover") or 0.0) < MATT_COVER_MIN
+        flat = (p.get("relief") is not None and p["relief"] <= MATT_RELIEF_M
+                and p.get("top_med") is not None and p["top_med"] <= m_top - 0.02)
+        if hollow or flat:
+            hard.append(p)
+    lo_x = min(p["lo"][0] for p in hard if size(p)[1] >= FRAME_SPAN_FRAC * m_s[1])
+    hi_x = max(p["hi"][0] for p in hard if size(p)[1] >= FRAME_SPAN_FRAC * m_s[1])
+    lo_y = min(p["lo"][1] for p in hard if size(p)[0] >= FRAME_SPAN_FRAC * m_s[0])
+    hi_y = max(p["hi"][1] for p in hard if size(p)[0] >= FRAME_SPAN_FRAC * m_s[0])
+    return (lo_x, lo_y), (hi_x, hi_y), [p["name"] for p in hard]
+
+
+def overhang_staged_mm(frame_lo, frame_hi, fx0, fy0, fx1, fy1):
+    """How far the STAGED frame reaches past the slot rectangle, from where it
+    actually stands (the head butts the built band, which this room's spec
+    emits INSIDE the slot — 60 mm of the 2000 belongs to the band, so a foot
+    measured from extents alone under-reads by that much). Positive = past the
+    slot; 0 inside. Integers in mm."""
+    return {"foot": int(round(max(0.0, fx0 - frame_lo[0]) * 1000)),
+            "head": int(round(max(0.0, frame_hi[0] - fx1) * 1000)),
+            "side_S": int(round(max(0.0, fy0 - frame_lo[1]) * 1000)),
+            "side_N": int(round(max(0.0, frame_hi[1] - fy1) * 1000))}
+
+
+def mattress_fill(proj_w_mm, proj_len_mm, slot_w_mm, slot_len_mm):
+    """The MATTRESS itself against the slot, per axis (capped at 1). The field
+    rule reads the soft mass and passed a 1336 mm 'full' mattress under a
+    1641 mm quilt at 0.91 — the bed-too-small premise applied to the slab is
+    this number, held to the same MIN_FILL (one ink, one premise)."""
+    if slot_w_mm <= 0 or slot_len_mm <= 0:
+        return 0.0, 0.0
+    return (min(1.0, proj_w_mm / slot_w_mm), min(1.0, proj_len_mm / slot_len_mm))
+
+
+def overhang_mm(ext_len_m, ext_w_m, fit_len=2.000, fit_w=1.800):
+    """How far a staged extent reaches PAST the slot: foot (all of the length
+    overhang, since the head butts the band) and per side (centred). Zero
+    when inside. Integers in mm."""
+    foot = max(0.0, ext_len_m - fit_len) * 1000.0
+    side = max(0.0, (ext_w_m - fit_w) / 2.0) * 1000.0
+    return {"foot": int(round(foot)), "side_each": int(round(side))}
 
 
 # ---------------------------------------------------------------- integration --
@@ -534,8 +852,53 @@ def verdict(row):
         why.append("projected-anchor standard size UNMEASURED — a row from before "
                    "the front-door rule existed; re-bench it "
                    "(ORD-2026-08-22-front-door-dims)")
+    elif std.get("unmeasured"):
+        # D-120: the size anchor is the MATTRESS, found by geometry. A file
+        # where none qualifies gets no number typed for it (R10) — the front
+        # door is not answered, and not-answered is a refusal, never a pass.
+        why.append(f"mattress size UNMEASURABLE — {std['unmeasured']}; the front "
+                   f"door cannot be answered for this file "
+                   f"(ORD-2026-08-22-front-door-dims, D-120)")
+    elif std.get("tol_mm") is None or std.get("part") is None or std.get("slot_mm") is None:
+        # a pre-D-120 row: the FRAME projected at the cluster's +-150. It must
+        # not read as a bare-mattress pass (the chunkA Bolzan row did).
+        why.append("front door measured on the FRAME at +-150 — a row from before "
+                   "D-120 (no tol_mm/part/slot_mm); re-bench it")
     elif not std.get("within"):
-        why.append(f"projected mattress {row.get('anchor_projected_mm')} mm is no "
-                   f"standard bed size (worst {std.get('worst_mm')} mm from "
-                   f"{std.get('name')}) — ORD-2026-08-22-front-door-dims")
+        na = std.get("nearest_any") or {}
+        bu = std.get("best_uniform") or {}
+        tail = ""
+        if na.get("name") and na.get("name") != std.get("name") and na.get("worst_mm") is not None \
+                and na["worst_mm"] <= std.get("tol_mm", MATT_STD_TOL_MM):
+            tail += (f"; it IS a {na['name']} (within {na['worst_mm']} mm) — a standard "
+                     f"other than the slot's: change the spec's w/d (D-114 reverse_by) "
+                     f"or a different purchase")
+        elif bu.get("scale") is not None:
+            tail += (f"; best uniform scale {bu.get('scale')} reaches {bu.get('name')} "
+                     f"within {bu.get('worst_mm')} mm")
+        why.append(f"projected mattress {row.get('anchor_projected_mm')} mm is "
+                   f"{std.get('worst_mm')} mm from the slot's standard {std.get('name')} "
+                   f"{std.get('slot_mm')} (bare-mattress tol +-{std.get('tol_mm')}){tail} "
+                   f"— ORD-2026-08-22-front-door-dims")
+    mf = row.get("mattress_fill")
+    if std is not None and not std.get("unmeasured") and std.get("part") is not None:
+        if mf is None:
+            why.append("mattress-vs-slot fill UNMEASURED — re-bench (D-120)")
+        elif mf[0] < MIN_FILL or mf[1] < MIN_FILL:
+            why.append(f"the mattress itself fills {mf[0]:.2f}x{mf[1]:.2f} of the slot "
+                       f"(< {MIN_FILL}) — a smaller bed under wider bedding "
+                       f"(ORD-2026-08-18-bed-too-small applied to the slab, D-120)")
+    # THE INK CAP (D-120): the staged FRAME must stay inside the drawn bed rect.
+    fr, ink = row.get("frame_staged_mm"), row.get("ink_bed_mm")
+    if fr is None or ink is None:
+        why.append("frame vs drawn bed rectangle UNMEASURED — no staged frame "
+                   "extent or no SR bed row read; could-not-look never counts as "
+                   "inside (R12, D-120)")
+    else:
+        ok, ow, ol = made_bed_within_ink(fr[0] / 1000.0, fr[1] / 1000.0,
+                                         ink[0] / 1000.0, ink[1] / 1000.0)
+        if not ok:
+            why.append(f"frame {fr[0]}x{fr[1]} mm passes the drawn bed rectangle "
+                       f"{ink[0]}x{ink[1]} (SR-07) by {ow} mm across / {ol} mm long "
+                       f"— the sheet draws the widest bed this room takes (R12)")
     return (not why), why

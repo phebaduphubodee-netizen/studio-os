@@ -78,10 +78,35 @@ of the `_inbox/` debt above. One canonical spec's `license` field was corrected 
 (`master-suite.CANONICAL.spec.json`) — the CC0 fact was true and is unchanged; only the rule
 citation beside it was wrong.
 
+## 2026-08-22 — OWNER ORDER: Blendkit Full, ONE MONTH, and the month must answer with numbers.
+Owner, verbatim: *"สมัคร blenderkit 1 เดือนเลย ผมอยากจะรู้ว่ามันจะทำให้งานดีขึ้นยังไง"* (recorded in
+`docs/owner-advice-2026-08-22.md` §6; order row `ORD-2026-08-22-blenderkit-one-month`; the payment +
+API key are his alone — `ASK-029`). This closes the 2026-07-01 "DEFERRED — founder will decide later"
+line below after 52 days, on the one-month route: the Full card's **'30 day glimpse' tab, $19.90, non-recurring**
+(pricing-page markup verified the same evening; Monthly $17.90, Yearly $9.90/mo = the $118.80/yr below — the
+'$9.90/mo' this repo recorded that morning was the Yearly tab the page opens on).
+
+**What the money buys, measured before paying (public API census, 2026-08-22):** MODELS — 77% of
+beds, 89% of curtains, 62-78% of every loose class P4 needs — and 62% of interior HDRIs. **It buys no
+materials at all**: `asset_type:material+is_free:false` returns 0 (wood 4,864/4,864 free, fabric
+5,730/5,730 free). So the two levers both critics rank first (wood-figure repeat, 'plastic' cloth
+response) are not what this spend addresses, and no round may claim they are.
+
+**How "ดีขึ้น" is decided — `D-119`, frozen before the first paid download:** C1 a full-plan whole bed
+that passes `wholebed_bench`'s hard filters and the style panel (free tier baseline: 0/12); C2 ≥3 P4
+loose objects in classes the free shelves measurably lack; reporting lines for critic counts, blind
+RANK and wall-clock; and C3, a frame-level cut — a locked A/B pair from the record camera judged by the sighted-reader
+panel and by his eye. Renewal is HIS call (R8: a spend is his per purchase): at day 30 a procurement ask is filed
+with the measured numbers; if declined the tier is recorded as `searched` with numbers — the first paid tier ever
+measured in this repo. Plan:
+`docs/blenderkit-month-2026-08-22.md`. Fetcher: `pipeline/scripts/blenderkit.py` (proven on the free
+tier with both controls the same evening). The 07-01 caveat stands: the last 10-15% is art direction.
+
 ## 2026-07-12 — OWNER DECISION: NO ASSET SPEND. The asset lever was measured and it is not the lever.
-> **AMENDED 2026-08-01** — decisions 2 and 3 below are CANCELLED by the entry above. The measurement
+> **AMENDED 2026-08-01** — decisions 2 and 3 below are CANCELLED by the 2026-08-01 entry (the fence cancellation). The measurement
 > and the refutation of the furniture-realism lever are NOT retracted and remain the reason not to
-> chase assets as a score lever. Read the top entry before acting on anything in this one.
+> chase assets as a score lever. Read the 2026-08-01 entry before acting on anything in this one; the 2026-08-22
+> entry records the one-month trial that decision 2 had deferred.
 Closes the 2026-07-01 "furniture pack (DEFERRED)" entry below. 31-agent workflow: repo forensics +
 live-catalog CC0 hunt + adversarial license verification (21 claims survived, 3 refuted).
 
@@ -198,7 +223,7 @@ at `C:\Program Files\Blender Foundation\Blender 5.1\`). Re-open triggers: (a) ov
 starts catching Gemini layout drift too often, (b) Gemini pricing/terms change, or (c) a
 16 GB+ desktop GPU arrives (then FLUX.2 klein 4B / Nunchaku-class local becomes competitive).
 
-## 2026-07-01 — Modern-luxury furniture pack (~~PENDING founder decision, DEFERRED~~ → **CLOSED 2026-07-12: DECLINED, see top entry. Its premise was refuted by measurement and its Chocofur row is factually stale. Do not act on this table.**)
+## 2026-07-01 — Modern-luxury furniture pack (~~PENDING founder decision, DEFERRED~~ → **CLOSED 2026-07-12: DECLINED, see the 2026-08-01 entry (fence cancelled) and the 2026-08-22 entry (one month ordered). Its premise was refuted by measurement and its Chocofur row is factually stale. Do not act on this table.**)
 Founder wants renders as beautiful as his friend's studio (PORS). The free CC0 pipeline
 reaches ~70–75%; the biggest remaining lever is **modern-luxury furniture/material assets**
 (Poly Haven / free CC0 has only vintage furniture, so we retint dark leather → cream boucle).
@@ -225,7 +250,7 @@ lane, and this note is the first place its absence is written down.
 
 **Recommendation:** BlenderKit Full ($118.80/yr) — only option that plugs into Blender (automatable).
 One-time alternative: Chocofur packs (~$27).
-**Status: DEFERRED — founder will decide later (2026-07-01). AI cannot purchase; needs founder go-ahead.**
+**Status: DEFERRED — founder will decide later (2026-07-01). AI cannot purchase; needs founder go-ahead.** → approved in principle 2026-08-18 (ASK-002/ASK-028 'ลุย BlenderKit') → **ORDERED 2026-08-22, one month (ORD-2026-08-22-blenderkit-one-month; action ASK-031)**.
 On approval: subscribe/buy → wire into `build_room.py` (swap MODEL_MAP vintage→modern, auto-place).
 
 Honest caveat: assets close most of the gap; the last ~10–15% is human art-direction (styling/composition),

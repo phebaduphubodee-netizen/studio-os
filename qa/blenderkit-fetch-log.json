@@ -1,0 +1,399 @@
+{
+ "_what": "Every run of pipeline/scripts/blenderkit.py — searches, fetches, shortlist walks, refusals — appended atomically, never rewritten. probe/dry runs carry probe=true and never start the month clock; tests and reviewers point --log / $BLENDERKIT_LOG elsewhere (2026-08-22: 16 review-probe rows were stripped back to the 3 genuine control runs). Kept APART from qa/blenderkit-search-log.json, the hand-written 08-17/08-18 measurement record (byte-identical). ORD-2026-08-22-blenderkit-one-month reads THIS file: a non-probe run with tier 'full_plan' and fetched true is the day the paid month became real, and it carries the D-119 criteria digest.",
+ "runs": [
+  {
+   "at": "2026-08-23T01:59:47+00:00",
+   "cmd": "search",
+   "query": "asset_type:model bed modern",
+   "pages": 1,
+   "key_present": false,
+   "n": 8,
+   "free": 6,
+   "full_plan": 2,
+   "fetched": false,
+   "probe": true,
+   "date_local": "2026-08-22"
+  },
+  {
+   "at": "2026-08-23T01:59:48+00:00",
+   "cmd": "fetch",
+   "asset": "342709ec-5214-4627-a26d-134bdd639ee8",
+   "key_present": false,
+   "fetched": false,
+   "refusal": "full-plan asset and no BLENDERKIT_API_KEY in .env — this is ASK-029: subscribe at https://www.blendkit.com/plans/pricing, copy the API key from https://www.blendkit.com/profile into the repo .env as BLENDERKIT_API_KEY=<key>. Nothing else is missing.",
+   "probe": false,
+   "date_local": "2026-08-22"
+  },
+  {
+   "at": "2026-08-23T01:59:56+00:00",
+   "cmd": "fetch",
+   "asset": "fbb98c0b-a730-48a7-a878-8e4fa2402430",
+   "tier": "free",
+   "fetched": true,
+   "key_present": false,
+   "assert_class": "nightstand",
+   "resolution": "2K",
+   "scale": {
+    "ok": false,
+    "class": "nightstand",
+    "tier": "free",
+    "fetched_now": true,
+    "measured_mm": 940.2,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "bbox_mm": {
+     "x_mm": 500.0,
+     "y_mm": 390.0,
+     "z_mm": 940.2
+    },
+    "refusal": null,
+    "in_band_under": {}
+   },
+   "probe": false,
+   "date_local": "2026-08-22"
+  },
+  {
+   "at": "2026-08-22T23:38:46-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "key",
+   "probe": false,
+   "key_present": false,
+   "asset": null,
+   "fetched": false,
+   "exit": 2,
+   "refusal": "no redirect arrived in time — the browser was not logged in, or the tab was closed; run `key --login` again"
+  },
+  {
+   "at": "2026-08-22T23:48:26-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "key",
+   "probe": false,
+   "key_present": false,
+   "asset": null,
+   "fetched": false,
+   "exit": 2,
+   "refusal": "no redirect arrived in time — the browser was not logged in, or the tab was closed; run `key --login` again"
+  },
+  {
+   "at": "2026-08-22T23:49:13-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-22T23:51:15-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "shortlist",
+   "probe": false,
+   "key_present": true,
+   "tier": "full_plan",
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "limit": 10,
+   "n_rows": 135,
+   "fetched": true,
+   "fetched_ids": [
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a",
+    "317c797d-4439-4607-808d-af1ec1578d88",
+    "8968de2e-684c-45c7-aa22-b09cb45178e1",
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4",
+    "b8359da9-db8d-40e2-a134-005b286c5ea6",
+    "93862856-49e7-4bf6-85e7-56dd36d13053",
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71",
+    "10b19e20-c34f-4b58-a548-48a811809054"
+   ],
+   "asserted_ids": [
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a",
+    "317c797d-4439-4607-808d-af1ec1578d88",
+    "8968de2e-684c-45c7-aa22-b09cb45178e1",
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4",
+    "b8359da9-db8d-40e2-a134-005b286c5ea6",
+    "93862856-49e7-4bf6-85e7-56dd36d13053",
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71",
+    "10b19e20-c34f-4b58-a548-48a811809054"
+   ],
+   "scale": {
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2337.8,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "317c797d-4439-4607-808d-af1ec1578d88": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2416.1,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "8968de2e-684c-45c7-aa22-b09cb45178e1": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2311.5,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2567.6,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "b8359da9-db8d-40e2-a134-005b286c5ea6": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2483.9,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "93862856-49e7-4bf6-85e7-56dd36d13053": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2914.0,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2377.4,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "17aff0ff-6f12-4293-a7fe-8956a0411867": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2828.9,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2634.8,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    },
+    "10b19e20-c34f-4b58-a548-48a811809054": {
+     "ok": true,
+     "tier": "full_plan",
+     "measured_mm": 2740.0,
+     "band_mm": [
+      1900.0,
+      3600.0
+     ],
+     "refusal": null
+    }
+   },
+   "refusals": {},
+   "skipped": {
+    "by_reason": {
+     "past --limit 10 in rank order": 125
+    },
+    "first_ids": [
+     "f1be76f8-01ae-4a53-a81e-3b703f688fe3",
+     "31e39968-e5f3-45b8-a34c-9151f25be8ab",
+     "dc376b1b-fad1-42dd-a349-9507a46f1741",
+     "faf62273-6f13-4cd2-95ea-adef83f57048",
+     "f8b1c86b-d5bb-4caf-9f8e-17cab267b760"
+    ]
+   },
+   "stopped_by": null,
+   "exit": 0,
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-22T23:58:21-04:00",
+   "date_local": "2026-08-22",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T00:44:06-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "10b19e20-c34f-4b58-a548-48a811809054",
+    "b43e2f5c-d224-4b1a-9b04-c17a1d116c71",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9"
+   ],
+   "out": "<out>",
+   "result_lines": [
+    "WHOLEBED 17aff0ff-6f12-4293-a7fe-8956a0411867 -> PASS",
+    "WHOLEBED staging e2418055-2a3f-4cdc-9f04-3bd851b4cef9 ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED e2418055-2a3f-4cdc-9f04-3bd851b4cef9 -> projected mattress [1550, 1710] mm is no standard bed size (worst 195 mm from full) — ORD-2026-08-22-front-door-dims",
+    "WHOLEBED BENCH COMPLETE 1/4 pass hard filters"
+   ]
+  },
+  {
+   "at": "2026-08-23T00:53:27-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "style-panel",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "bundle": "_private/deliv-001/bed-size-2026-08-22/style-panel-bolzan",
+   "result": {
+    "B_17aff0ff_bolzan_paid": "inside 3/3 PASS",
+    "D_9ea98a45_free_soft": "inside 3/3",
+    "C_81d895fd_free_in_frame": "edge 3/3",
+    "A_f0938871_free": "edge 3/3",
+    "E_10b19e20_ikea_paid": "edge 3/3"
+   },
+   "anchors": "5 delivered-pool bedrooms tagged contemporary-neutral before the run (no strict Japandi in the pool)",
+   "note": "C1 style half met by the Bolzan bed; the bench render's black-white print is the GLB route binding the 'velvet' texture as base colour (R4 line), not the asset"
+  },
+  {
+   "at": "2026-08-23T01:05:16-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "93862856-49e7-4bf6-85e7-56dd36d13053",
+    "b8359da9-db8d-40e2-a134-005b286c5ea6",
+    "d8be9e01-8b4f-47a2-be7e-776b21b9eda4",
+    "8968de2e-684c-45c7-aa22-b09cb45178e1",
+    "317c797d-4439-4607-808d-af1ec1578d88",
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a"
+   ],
+   "out": "<out>",
+   "result_lines": [
+    "WHOLEBED staging 317c797d-4439-4607-808d-af1ec1578d88 ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED 317c797d-4439-4607-808d-af1ec1578d88 -> head end unresolvable — placement would be a coin flip (R9); fills 0.74x1.00 of the drawn footprint (< 0.88); made-bed field fills 0.00x0.00 of the drawn rectangle (< 0.88) — the bed reads smaller than the ink draws it (ORD-2026-08-18-bed-too-small); projected mattress [1404, 1477] mm is no standard bed size (worst 428 mm from twin) — ORD-2026-08-22-front-door-dims",
+    "WHOLEBED staging b4915f0a-4d5e-48f8-a01b-a42a9249155a ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED b4915f0a-4d5e-48f8-a01b-a42a9249155a -> projected mattress [1711, 1843] mm is no standard bed size (worst 157 mm from th_king_6ft) — ORD-2026-08-22-front-door-dims",
+    "WHOLEBED BENCH COMPLETE 0/6 pass hard filters"
+   ]
+  },
+  {
+   "at": "2026-08-23T01:07:30-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T01:49:45-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T01:57:25-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a"
+   ],
+   "out": "_private\\deliv-001\\bed-size-2026-08-22\\bench-full-blenderkit\\chunkC-mattress-d120",
+   "result_lines": [
+    "WHOLEBED staging b4915f0a-4d5e-48f8-a01b-a42a9249155a ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED b4915f0a-4d5e-48f8-a01b-a42a9249155a -> projected mattress [1661, 2000] mm is no standard bed size at +-50 (worst 137 mm from queen); best uniform scale 0.95 reaches th_queen_5ft within 69 mm — ORD-2026-08-22-front-door-dims; made bed 2116x2175 mm passes the drawn bed rectangle 1981x2134 (SR-07) by 125 mm across / 31 mm long — the sheet draws the widest bed this room takes (R12)",
+    "WHOLEBED BENCH COMPLETE 0/3 pass hard filters"
+   ]
+  },
+  {
+   "at": "2026-08-23T07:30:16-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "bench",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "blend": "room_bedroom_suite_eye_p2r57.blend",
+   "rect": "3204,226,2000,1800",
+   "ids": [
+    "e2418055-2a3f-4cdc-9f04-3bd851b4cef9",
+    "17aff0ff-6f12-4293-a7fe-8956a0411867",
+    "b4915f0a-4d5e-48f8-a01b-a42a9249155a",
+    "81d895fd-ab4b-4d44-8c4c-126f386083d6"
+   ],
+   "out": "_private\\deliv-001\\bed-size-2026-08-22\\bench-full-blenderkit\\chunkD-mattress-d120-rev",
+   "result_lines": [
+    "WHOLEBED b4915f0a-4d5e-48f8-a01b-a42a9249155a -> projected mattress [1661, 2000] mm is 139 mm from the slot's standard th_king_6ft [1800, 2000] (bare-mattress tol +-50); best uniform scale 0.95 reaches th_queen_5ft within 69 mm — ORD-2026-08-22-front-door-dims; frame 2011x2175 mm passes the drawn bed rectangle 1981x2134 (SR-07) by 20 mm across / 31 mm long — the sheet draws the widest bed this room takes (R12)",
+    "WHOLEBED staging 81d895fd-ab4b-4d44-8c4c-126f386083d6 ...",
+    "WHOLEBED render engine=CYCLES device=GPU samples=48 res%=50",
+    "WHOLEBED 81d895fd-ab4b-4d44-8c4c-126f386083d6 -> projected mattress [1400, 1900] mm is 400 mm from the slot's standard th_king_6ft [1800, 2000] (bare-mattress tol +-50); it IS a full (within 28 mm) — a standard other than the slot's: change the spec's w/d (D-114 reverse_by) or a different purchase — ORD-2026-08-22-front-door-dims; the mattress itself fills 0.78x0.95 of the slot (< 0.88) — a smaller bed under wider bedding (ORD-2026-08-18-bed-too-small applied to the slab, D-120)",
+    "WHOLEBED BENCH COMPLETE 1/4 pass hard filters"
+   ]
+  }
+ ]
+}

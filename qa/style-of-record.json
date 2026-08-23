@@ -1,0 +1,242 @@
+{
+ "_what": "THE STYLE OF RECORD for PRJ-2026-002 master suite, as NINE ROWS. A style name governs nothing; the nine material slots the build can actually address are what render. Read by pipeline/scripts/style_check.py, called from rule_gate.check_room() (the production gate) and printed by plan_status.py at every session open.",
+ "_law": "A room has ONE style name; the name carries a decision row; and it governs nothing until all nine slots are SIGNED to a preset or recorded legacy-unsigned with a date and a named restart action. A prohibition with no test is prose. A style derived from our own render is refused by name. Three states and no fourth — silence is not a state.",
+ "_why_it_exists": "2026-08-23. He asked whether the rest of the room is the same style as the bed he had just picked, said the style must be chosen BEFORE objects are filled in, and then ordered a long-term fix as project director. The audit found the shape DRW found on 2026-08-11: not a missing capability, a missing wire. concept.md declares a style, a 60/30/10 palette and seven EDGE prohibitions and no .py or .json in this repo names that file. style_fingerprint.py measures a 60/30/10 palette split from pixels and has zero production consumers — the declaration and the instrument that could check it were built seven weeks apart in the same repo and never introduced. Of the nine spec-addressable material roles the build exposes, the spec filled three; the floor — the largest surface in every frame and concept.md's own declared 60% dominant — was not one of them. And of the 31 rungs the gate runs, not one reads a style token.",
+ "_how_to_overrule": "He overrules from the image at any time (R3). Put his words in style.owner_override with the date, flip style.decided_by to 'owner', and the row is locked to him — style_check refuses an owner_override still labelled the builder's call. To change the palette, edit the slots: a variant is nine preset keys, not a rebuild.",
+ "_the_trap_this_file_names": "CLASS vs INSTANCE, and its mirror. 'Japandi' was never chosen by anyone. It entered on 2026-08-11 as a BLIND CRITIC'S DESCRIPTION OF OUR OWN RENDER ('one consistent Japandi-hotel register') and hardened into the criterion that selects what we buy next — a closed loop that can only ratify what we already built. derived_from refuses that shape by name. The mirror: the client never gave a style at all (00_intake/brief.json style_direction_hint: null), so every name in this repo is studio-invented and the one in force must at least be DECIDED rather than inherited.",
+ "_owner_words": {
+  "_why_here": "orders_check refuses an order whose words do not REPRODUCE in the file it cites — 'an order I cannot point at is an order I am paraphrasing, and a paraphrase is the builder's sentence wearing his name'. It refused this very row on the first run. These are his, unedited, from 2026-08-23.",
+  "order": "ORD-2026-08-23-style-before-objects",
+  "as_filed": "ต้องเลือกก่อนว่าห้องนี้จะเป็นสไตล์ไหนแล้วค่อยเอาของมาเติม + เปลี่ยนของ (เถียงผมได้) || ไม่จำเป็นต้องเป็นไม้โอ๊ค ผมเลือกตอนนั้นเพื่อจะให้งานเดิน จริง ๆ อยากได้หลาย ๆ variant แต่ตอนนี้เอาแนวนี้ให้รอดก่อน || ทำตัวเป็น project director และวางแผนแก้ปัญหานี้ระยะยาว",
+  "verbatim": [
+   "ชอบอันขวา แต่ของที่เหลือในห้องเป็นสไตล์เดียวกันมั้ย ?",
+   "ต้องเลือกก่อนว่าห้องนี้จะเป็นสไตล์ไหนแล้วค่อยเอาของมาเติม + เปลี่ยนของ (เถียงผมได้)",
+   "ไม่จำเป็นต้องเป็นไม้โอ๊ค ผมเลือกตอนนั้นเพื่อจะให้งานเดิน จริง ๆ อยากได้หลาย ๆ variant แต่ตอนนี้เอาแนวนี้ให้รอดก่อน",
+   "ทำตัวเป็น project director และวางแผนแก้ปัญหานี้ระยะยาว"
+  ],
+  "what_he_was_right_about": "The builder argued back that the drawing constrains the style toward oak. It does not: 0 of 21 rows in qa/sheet-recon.json carry any material word, and the oak default traces to concept.md citing a template-status studio file as 'studio default direction, not filled identity'. He was right and the argument was wrong — drawn GEOMETRY was being confused with chosen FINISH."
+ },
+ "_slot_floor": 9,
+ "_unsigned_ceiling": 6,
+ "_unsigned_ceiling_law": "THE CEILING ONLY EVER FALLS. Six of nine slots are legacy-unsigned today. A slot may be signed, never un-signed; a new addressable role arrives signed, or the ceiling rises by a decision row and not by an edit. This exists because the rule below that compares this register against the spec compares two files the builder wrote in the same commit — coverage-map calls that class a, self-consistency, and it is the class D-112 was written about. A count that may only fall cannot be satisfied by editing both sides to agree.",
+ "style": {
+  "name": "Warm Contemporary Thai-Tropical Minimal",
+  "decided_by": "builder",
+  "decision_row": "D-122",
+  "date": "2026-08-23",
+  "derived_from": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:25",
+  "why_this_name": "It is the only named style in this repo with a written rationale and per-claim citations, it lives in the stage-02 concept that 03_layout/_contract.md names as input #1 to the stage that selects furniture, and it is the one name that did not come from a description of our own pixels. Not chosen for taste — chosen because it is the only candidate with provenance.",
+  "palette_conflict_resolved": "concept.md section 3 puts the OAK field at 60% and warm greige at 30%. The owner-signed materials note in the canonical spec (2026-07-16, D1/D2/D4/D6) INVERTS that: COOL plaster walls are the 60% ground and LIGHT OAK is the 30% secondary, on the Albers D1-A reasoning that a warm wall washes the oak out. THE SIGNED NOTE WINS, on two checkable grounds: it carries his signature, and it is what actually renders. concept.md section 3's ratio is SUPERSEDED — its EDGE prohibitions are not.",
+  "accent": "10% matte black + brushed brass (both spec-signed presets: matte_black_ply, satin_brass)",
+  "retired_names": [
+   "Japandi"
+  ],
+  "retired_names_walk": "style_check.retired_name_hits walks qa/, pipeline/scripts/ and pipeline/prompts/ — NOT a named list of files. R9b: a rule that names the objects it applies to will always exempt the next one, and the sixth style name will be typed into a fifth file.",
+  "also_seen_in_prose_not_selecting": [
+   "prompt registry v001-v005:16 'contemporary Thai residential, calm and livable, quiet luxury' (read only by the Gemini repaint lane, which is not the lane building these frames)",
+   "requirements.md:21 R-12 'warm contemporary, built-in-heavy' (marked TARGET, 'NOT confirmed preference' — the only honest row of the six)",
+   "the anchor pool, tagged 'contemporary-neutral' (a description of somebody else's delivered work, correctly not a criterion)"
+  ],
+  "owner_override": null
+ },
+ "name_debt": {
+  "Japandi": {
+   "since": "2026-08-11",
+   "where_seen": "qa/blenderkit-fetch-log.json,qa/blenderkit-month-classes.json,qa/deliverable-plan.json,qa/open-decisions.json",
+   "where_it_selects": "qa/blenderkit-month-classes.json _pass_rule (the rule that decides what may be bought), qa/deliverable-plan.json P4 verdict",
+   "why_not_fixed_today": "D-119 froze the BlenderKit month's criteria text with a criteria_digest. Rewriting _pass_rule mid-trial is exactly the motion that freeze forbids, and doing it to make our own register pass would be the freeze's first violation being committed by the rung that exists to stop drift.",
+   "restart_by": "at the BlenderKit month review (trial ends 2026-09-21), rewrite _pass_rule and the P4 verdict to name the style of record instead of Japandi, and record the digest change in the same commit"
+  }
+ },
+ "client_description_debt": {
+  "_why": "rationale.py builds the CLIENT-FACING material list from material_defaults.py, whose own docstring says the palette is 'not chosen for any client, brief, concept, or spec'. That was true until 2026-07-14, when the spec grew a materials block and build_room.py:4558 started reading it. rationale.py:223 still carries the stale comment 'today the spec carries NO material field and build_room ignores the spec anyway'. So three signed slots are described to the client as the material they REPLACED. test_rationale stays green because it drift-guards the strings against build_room's SOURCE, which still holds the legacy names — a self-consistency check that can prove the build correct and never notice the description is wrong (the R7b shape, one level down).",
+  "walls": {
+   "since": "2026-07-16",
+   "renders": "cool_plaster (#EAEDEF matte cool off-white)",
+   "client_is_told": "matte warm-white paint (slug wall_paint)",
+   "restart_by": "route rationale._material_axis through material_presets.resolve_materials(spec) and delete the stale comment at rationale.py:223"
+  },
+  "feature_wall": {
+   "since": "2026-07-16",
+   "renders": "oak_veneer (light warm oak #C7B896)",
+   "client_is_told": "walnut feature wall (slug feature_walnut)",
+   "restart_by": "same fix as walls — one change to rationale._material_axis clears all three"
+  },
+  "millwork": {
+   "since": "2026-07-16",
+   "renders": "oak_veneer_photo (photographed CC0 oak veneer, mean-normalised to #C7B896)",
+   "client_is_told": "rift-walnut veneer, matte lacquer (slug mill_walnut)",
+   "restart_by": "same fix as walls — one change to rationale._material_axis clears all three"
+  }
+ },
+ "slots": [
+  {
+   "slot": "walls",
+   "kind": "surface",
+   "status": "signed",
+   "preset": "cool_plaster",
+   "signed_by": "owner",
+   "signed_date": "2026-07-16",
+   "signed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json,projects/PRJ-2026-002_c001-house/03_layout/element1-oak-signature-wall_DD-2026-07-16.md",
+   "note": "the 60% ground. Kept COOL so a warm wall does not wash the oak out (Albers D1-A)."
+  },
+  {
+   "slot": "feature_wall",
+   "kind": "surface",
+   "status": "signed",
+   "preset": "oak_veneer",
+   "signed_by": "owner",
+   "signed_date": "2026-07-16",
+   "signed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json,projects/PRJ-2026-002_c001-house/03_layout/element1-oak-signature-wall_DD-2026-07-16.md",
+   "note": "the 30% secondary. Replaced the dark-walnut mono-timber the first eye-render exposed (D5-A)."
+  },
+  {
+   "slot": "millwork",
+   "kind": "surface",
+   "status": "signed",
+   "preset": "oak_veneer_photo",
+   "signed_by": "owner",
+   "signed_date": "2026-07-16",
+   "signed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json,projects/PRJ-2026-002_c001-house/03_layout/element1-oak-signature-wall_DD-2026-07-16.md",
+   "note": "same signed oak as a photographed CC0 veneer, box-projected so grain breaks at panel arrises (D-024)."
+  },
+  {
+   "slot": "floor",
+   "kind": "surface",
+   "status": "legacy-unsigned",
+   "since": "2026-07-14",
+   "renders_as": "_pbr_material('floor_pbr', slug 'wood_floor', variation=0.05) — the CC0 photograph's own colour, no tint, mean linear (0.217, 0.117, 0.055) against the signed oak's (0.571, 0.479, 0.305)",
+   "why_it_matters": "the largest surface in every frame, concept.md's declared 60% dominant, and the ONLY large surface with no signed material. It is also 2.6-5.6x darker and redder than every other wood in the room, so 'the oak room' has never had an oak floor.",
+   "nearest_preset": "oak_wood_floor — SAME slug 'wood_floor', tint None, variation 0.0",
+   "do_not_sign_to_the_nearest_preset": "oak_wood_floor is not a different floor. It is the texture already rendering, MINUS the anti-tiling drift: signing it would set variation 0.05 -> 0.0 and REGRESS MA-03 (knowledge/classifications/render-defects.md — a large continuous surface must not show a repeating grid), while changing the wood not at all. An A/B pair built that way has no B.",
+   "restart_by": "author a floor preset that is actually a different finish — its own slug or tint, carrying variation >= 0.05 — and render the pair. That is a preset commit plus a render round, not a one-line spec edit, and it is the highest-area single change available in this room."
+  },
+  {
+   "slot": "glazing",
+   "kind": "surface",
+   "status": "legacy-unsigned",
+   "since": "2026-07-14",
+   "renders_as": "_legacy_glass: linear (0.60,0.76,0.80) rough 0.05 ior 1.52 spec 0.5, Transmission 0.95, base colour (0.86,0.92,0.93)",
+   "nearest_preset": "glazing_default (differs at ior 1.45 vs 1.52 — NOT field-identical)",
+   "restart_by": "reconcile the ior with knowledge/materials (vault says glass 1.52) and sign, or add a preset that matches what renders"
+  },
+  {
+   "slot": "fixtures",
+   "kind": "surface",
+   "status": "legacy-unsigned",
+   "since": "2026-07-14",
+   "renders_as": "_solid('sanitary_white', linear (0.90,0.91,0.92), rough 0.15, spec 0.6, coat 0.2)",
+   "nearest_preset": "sanitary_white — FIELD-IDENTICAL, verified value by value",
+   "restart_by": "sign in the spec AND update material_defaults.FIXTURE_MATERIAL + ALL_SLUGS in the same commit — signing renames the material to m_fixtures_sanitary_white and material_defaults pins the old name, so this costs zero pixels but is not a one-line edit"
+  },
+  {
+   "slot": "fabric",
+   "kind": "family",
+   "status": "legacy-unsigned",
+   "since": "2026-07-14",
+   "renders_as": "_woven('fabric_boucle', linear (0.84,0.79,0.71), rough 0.92, sheen 0.8) + procedural slub/weave relief",
+   "nearest_preset": "boucle_cream_studio — same colour, roughness and sheen, but factory 'solid'. Signing it would DROP the weave relief, which is a pixel change and a downgrade",
+   "restart_by": "add a woven-factory preset carrying cloth_args('boucle') so the signature and the render are the same material, then sign"
+  },
+  {
+   "slot": "wood",
+   "kind": "family",
+   "status": "legacy-unsigned",
+   "since": "2026-07-14",
+   "renders_as": "_pbr_material('wood_oak', slug 'wood_floor') — THE FLOOR TEXTURE, on every loose wooden item in the room",
+   "why_it_matters": "FLOOR_SLUG is the floor, the 'walnut' feature-wall fallback and the wood family, all three (build_room.py:4572/4576/4589). One parameter carrying three things — the defect class R9 named, in the material layer.",
+   "nearest_preset": "oak_wood_floor — FIELD-IDENTICAL (pbr, slug wood_floor, tint None, variation 0.0)",
+   "restart_by": "sign in the spec AND update material_defaults.WOODEN_MATERIAL + ALL_SLUGS in the same commit — zero pixels, but it renames the material"
+  },
+  {
+   "slot": "neutral",
+   "kind": "family",
+   "status": "legacy-unsigned",
+   "since": "2026-07-14",
+   "renders_as": "_solid('furn_neutral', linear (0.52,0.50,0.48), rough 0.55)",
+   "nearest_preset": "neutral_solid — FIELD-IDENTICAL, verified value by value",
+   "restart_by": "sign in the spec AND update material_defaults.NEUTRAL_MATERIAL + ALL_SLUGS in the same commit — zero pixels, but it renames the material"
+  }
+ ],
+ "edges": [
+  {
+   "id": "E1",
+   "rule": "no ornamental moulding / cornice / classic profile anywhere",
+   "source": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:30",
+   "test": "panel",
+   "how": "the acquisition style panel reads each candidate against this rule before it can be bought",
+   "already_cost_us": "gate-DELIV001-P2r51 item 4 and the C2 p2r56 item-4 class — carved-Louis side tables and a skirted ottoman were acquired and had to be caught by a critic, seven weeks after this line was written"
+  },
+  {
+   "id": "E2",
+   "rule": "no solid-wood flooring; engineered wood only (humid heat, GROUNDED [t3-1])",
+   "source": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:37",
+   "test": "preset-vocabulary",
+   "how": "the floor slot's preset must not name a solid-wood build; the live library carries no solid-wood entry, so this holds by vocabulary and fails the moment one is added"
+  },
+  {
+   "id": "E3",
+   "rule": "no unlined natural drapery — mildew-resistant lining required",
+   "source": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:38",
+   "test": "none-yet",
+   "why_untestable": "curtains are built from fabric_rgba_linear + sheer_alpha in the spec; there is no lining field anywhere, so nothing can be read",
+   "restart_by": "add a `lining` key to the curtain block when curtains are next touched in P4, then move this edge to spec-key"
+  },
+  {
+   "id": "E4",
+   "rule": "no standard vinyl wallcovering behind AC'd walls (trapped-moisture mold)",
+   "source": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:40",
+   "test": "preset-vocabulary",
+   "how": "the walls slot's preset must not name a vinyl wallcovering; holds by vocabulary today and fails the moment one is added"
+  },
+  {
+   "id": "E5",
+   "rule": "warm 2700-3000 K everywhere in the suite; NO cool-white source in the sleep zone",
+   "source": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:43",
+   "test": "light-table",
+   "how": "every fixture's CCT in the light story must fall in 2700-3000 K; the prohibited clash is 4000-vs-2700 K in one localized zone",
+   "note": "the sharpest edge in the set — it is pure numbers and needs no eye at all, which is exactly why it should never have been prose"
+  },
+  {
+   "id": "E6",
+   "rule": "nothing figurative or text-bearing in artwork slots (render-tell + anonymity)",
+   "source": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:48",
+   "test": "panel"
+  },
+  {
+   "id": "E7",
+   "rule": "velvet / heavy-pile luxury cliche rejected (humidity)",
+   "source": "projects/PRJ-2026-002_c001-house/02_concept/concept.md:133",
+   "test": "preset-vocabulary",
+   "how": "the fabric family must not resolve to a velvet preset or a velvet cloth kind",
+   "already_cost_us": "material_presets ships velvet_sand (a live REFERENCE preset with an FFE citation) and CLOTH_KINDS carries 'velvet', and until this row existed nothing in the repo stood between them and the frame"
+  }
+ ],
+ "variants": {
+  "_law": "A variant is NINE PRESET KEYS, not a rebuild. Add a named block here, point the spec's materials block at it, render the pair, and put both pictures in front of him. He asked for several variants on 2026-08-23 ('จริง ๆ อยากได้หลาย ๆ variant') and said oak was only ever chosen to unblock work — this key is the whole cost of honouring that.",
+  "_not_yet": "none written. A variant is only worth a row once the nine slots of the style of record are signed, because a variant of six unsigned defaults is not a variant of anything."
+ },
+ "palette_measured": {
+  "_what": "R11's rung: the 60/30/10 concept.md declares, measured off the pixels of the frame of record by style_fingerprint (k-means area split in Lab). Written here by style_measure.py; read by style_check.py, which is pure and cannot look for itself.",
+  "frame": "pipeline/output/room_bedroom_suite_eye_p2r57.png",
+  "measured_at": "2026-08-23",
+  "declared": {
+   "dominant": 0.6,
+   "secondary": 0.3,
+   "accent": 0.1
+  },
+  "dominant_share": 0.29979,
+  "secondary_share": 0.18567,
+  "accent_share": 0.18271,
+  "entropy": 0.9295,
+  "clusters_k": 6,
+  "chromatic_mono_index": 0.3956,
+  "neutral_share": 0.60132,
+  "warmth_index": 10.289,
+  "gap_worst": 0.3002,
+  "gap_ceiling": 0.3202,
+  "gap_since": "2026-08-23",
+  "close_by": "sign the floor slot (the 60% dominant this room has never had) and re-measure — the gap is a palette question, not a rendering one",
+  "_honest_note": "The gap is WIDE and it is not a bug in the measurement. The frame of record splits its area 0.30 / 0.19 / 0.18 across six clusters with entropy 0.93 — a room with no dominant surface, which is exactly what a 60% field that was never signed produces. This number is recorded, dated and ratcheted rather than failed, because a rung that hard-fails on the day it ships gets switched off and joins the dead queues this register exists to stop."
+ }
+}

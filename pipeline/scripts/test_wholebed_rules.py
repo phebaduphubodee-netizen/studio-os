@@ -143,7 +143,15 @@ def base_row():
             "headboard_fused": False,
             "field_fill_len": 0.95, "field_fill_w": 0.93,
             "anchor_projected_mm": [1800, 2000],
-            "anchor_std": {"name": "th_king_6ft", "worst_mm": 0, "within": True}}
+            "anchor_std": {"name": "th_king_6ft", "slot_mm": [1800, 2000],
+                           "worst_mm": 0, "within": True, "tol_mm": 50,
+                           "part": "Matress",
+                           "nearest_any": {"name": "th_king_6ft", "worst_mm": 0},
+                           "best_uniform": {"scale": 1.0, "name": "th_king_6ft",
+                                            "worst_mm": 0}},
+            "mattress_fill": [1.0, 1.0],
+            "frame_staged_mm": [1842, 2033], "made_bed_mm": [2079, 2128],
+            "ink_bed_mm": [1981, 2134]}
 
 
 def test_verdict_passes_a_clean_row():
@@ -349,9 +357,49 @@ def test_verdict_nonstandard_projected_mattress_refused():
     frame shipped because no rung made this comparison; this one does."""
     row = base_row()
     row["anchor_projected_mm"] = [1243, 1569]
-    row["anchor_std"] = {"name": "th_single_3_5ft", "worst_mm": 411, "within": False}
+    row["anchor_std"].update({"worst_mm": 557, "within": False,
+                              "nearest_any": {"name": "th_single_3_5ft", "worst_mm": 411},
+                              "best_uniform": {"scale": 0.86, "name": "twin",
+                                               "worst_mm": 21}})
+    row["mattress_fill"] = [0.69, 0.78]
     ok, why = R.verdict(row)
     assert not ok and any("ORD-2026-08-22" in w for w in why)
+
+
+def test_verdict_refuses_a_pre_d120_frame_row_at_150():
+    """chunkA's real Bolzan row: the FRAME projected at 0.91 to 1676x1951 with
+    within=True at the cluster's +-150. The new rule must not read that shape
+    as a bare-mattress pass — the old ledger can never pass again."""
+    row = base_row()
+    row["anchor_projected_mm"] = [1676, 1951]
+    row["anchor_std"] = {"name": "th_king_6ft", "worst_mm": 124, "within": True}
+    ok, why = R.verdict(row)
+    assert not ok and any("+-150" in w and "D-120" in w for w in why)
+
+
+def test_verdict_refuses_a_standard_bed_too_small_for_the_slot():
+    """Slate (8968de2e): its Mattress is 1336x1895 — a 'full' within 36, so the
+    front door said yes; under a 1641 quilt the cluster fill and the field both
+    passed too. A bed 0.74 of the slot's width is the owner's 'เตียงเล็กไป'
+    with a standard label on it (D-120: the slab answers to the SLOT)."""
+    row = base_row()
+    row["anchor_projected_mm"] = [1336, 1895]
+    row["anchor_std"].update({"worst_mm": 464, "within": False,
+                              "nearest_any": {"name": "full", "worst_mm": 36},
+                              "best_uniform": {"scale": 1.0, "name": "full",
+                                               "worst_mm": 36}})
+    row["mattress_fill"] = [0.742, 0.948]
+    ok, why = R.verdict(row)
+    assert not ok
+    assert any("it IS a full (within 36 mm)" in w for w in why)      # names the way out
+    assert any("the mattress itself fills 0.74" in w for w in why)
+
+
+def test_verdict_refuses_an_unmeasured_mattress_fill():
+    row = base_row()
+    del row["mattress_fill"]
+    ok, why = R.verdict(row)
+    assert not ok and any("mattress-vs-slot fill UNMEASURED" in w for w in why)
 
 
 def test_verdict_missing_anchor_std_is_named_not_clean():
@@ -477,3 +525,323 @@ def test_flat_accent_head_term_still_catches_the_plaid():
     hits = R.flat_accents_on_bank(_all(w), w["plane"], anchor=w["anchor"],
                                   head_x=2.0, head="hi")
     assert [p["name"] for p in hits] == ["plaid"]
+
+
+# ---- D-120: the MATTRESS by geometry; the frame is not the bed's size ---------
+# The families below carry the NUMBERS measured on the cached candidates
+# (wholebed_dump.py, 2026-08-23, native metres): a test that reproduces a real
+# file's parts is a test that would have caught the real defect.
+def _p(name, lo, hi, cover=None, top=None, relief=None):
+    d = part(name, lo, hi)
+    if cover is not None:
+        d.update({"cover": cover, "top_med": top, "relief": relief})
+    return d
+
+
+def metropol_parts():
+    """e2418055 — frame hollow (cover 0), mattress 1786 x 1980 x 247 flat slab,
+    foot sheet strip, blanket with folds, low cushions. The frame is 1842 x 2033."""
+    return {
+        "frame": _p("Bed Frame", (0.0, 0.0, 0.034), (2.033, 1.842, 0.386), 0.0, None, None),
+        "support": _p("Bed Support", (0.08, 0.10, 0.0), (1.95, 1.75, 0.059), 0.0, None, None),
+        "matt": _p("Matress", (0.03, 0.028, 0.273), (2.01, 1.814, 0.520), 1.0, 0.513, 0.011),
+        "sheet": _p("Sheet", (0.0, -0.12, 0.081), (0.576, 1.96, 0.541), 1.0, 0.523, 0.019),
+        "blanket": _p("Blanket", (0.30, -0.09, 0.109), (1.66, 1.92, 0.543), 1.0, 0.513, 0.024),
+        "cushions": _p("Cusions", (1.40, 0.0, 0.428), (1.99, 1.836, 0.857), 0.99, 0.786, 0.163),
+        "head": _p("Head board", (1.62, -0.08, 0.036), (2.03, 1.92, 0.964), 0.92, 0.889, 0.258),
+    }
+
+
+def test_mattress_is_the_slab_not_the_frame_metropol():
+    w = metropol_parts()
+    ps = list(w.values())
+    a = R.pick_anchor(ps, drawn_plan_m2=3.6)
+    assert a is w["frame"]                      # organising part: the frame
+    m, note = R.pick_mattress(ps, a, drawn_plan_m2=3.6)
+    assert m is w["matt"], note
+    sz = R.size(m)
+    # the front door at scale 1.0: 1786 x 1980 is the Thai 6 ft king within 20
+    s = R.mattress_scale(sz[0], sz[1], 2.0, 1.8)
+    assert s == 1.0
+    assert abs(sz[1] * s - 1.786) < 0.002 and abs(sz[0] * s - 1.98) < 0.002
+
+
+def test_cluster_fit_was_the_defect_metropol():
+    """THE NEGATIVE CONTROL, with the arithmetic the real bench actually ran.
+    The old rule fitted the whole kept CLUSTER — frame plus the sheet's drape,
+    2079 wide — into the 2000 x 1800 slot: s = 0.841, at which the real
+    mattress projects to 1502 x 1665, which is no standard at either
+    tolerance. (The frame ALONE would have fitted at 0.977 and passed, which
+    is why the defect needed the cluster to appear at all.) The rule under
+    test reads the mattress instead and returns exactly 1.0."""
+    import ergonomics_ref as E
+    s_cluster, _, _ = R.plan_scale_whole(2.128, 2.079, 2.0, 1.8)
+    assert abs(s_cluster - 0.8658) < 0.001
+    _, _, ok, worst = E.nearest_bed_size(round(1.786 * s_cluster * 1000),
+                                         round(1.980 * s_cluster * 1000))
+    assert not ok and worst > 150
+    w = metropol_parts()
+    m, _ = R.pick_mattress(list(w.values()), w["frame"], drawn_plan_m2=3.6)
+    sz = R.size(m)
+    assert R.mattress_scale(sz[0], sz[1], 2.0, 1.8) == 1.0
+
+
+def test_seam_piping_never_the_mattress_obsidian():
+    """b4915f0a: 'Base Seams' spans 1950 x 2144 over the Base (2023 x 2179) and
+    holds NO surface (cover 0.00); 'Quilt Seams' cover 0.06. The Sheet (1671 x
+    2012, cover 1.0, relief 0) is the slab; the Quilt has folds (relief 34)."""
+    base = _p("Base", (0.0, 0.0, 0.001), (2.179, 2.023, 0.252), 1.0, 0.195, 0.0)
+    seams = _p("Base Seams", (0.02, 0.04, 0.001), (2.164, 1.99, 0.201), 0.0, None, None)
+    sheet = _p("Sheet", (0.08, 0.18, 0.169), (2.092, 1.851, 0.417), 1.0, 0.417, 0.0)
+    quilt = _p("Quilt", (0.10, 0.06, 0.160), (2.06, 1.96, 0.469), 1.0, 0.437, 0.034)
+    qseams = _p("Quilt Seams", (0.10, 0.07, 0.174), (2.06, 1.95, 0.451), 0.06, 0.425, 0.001)
+    head = _p("Headboard", (1.90, 0.04, 0.001), (2.18, 1.99, 0.795), 1.0, 0.785, 0.066)
+    ps = [base, seams, sheet, quilt, qseams, head]
+    a = R.pick_anchor(ps, drawn_plan_m2=3.6)
+    assert a is base
+    m, note = R.pick_mattress(ps, a, drawn_plan_m2=3.6)
+    assert m is sheet, note
+
+
+def test_hidden_face_mattress_still_qualifies_bolzan():
+    """17aff0ff: the author deleted the mattress faces under the bedding —
+    'mattres' 1800 x 2114 has cover 0.25 and relief 1 mm. The thin 'base bed'
+    plate (35 mm) and the hollow body (cover 0) do not qualify; the half-bed
+    blankets fail the span."""
+    body = _p("body bed", (0.0, 0.0, 0.026), (2.144, 1.842, 0.316), 0.0, None, None)
+    plate = _p("base bed", (0.07, 0.07, 0.0), (2.07, 1.77, 0.035), 0.0, None, None)
+    matt = _p("mattres", (0.015, 0.021, 0.271), (2.129, 1.821, 0.539), 0.25, 0.537, 0.001)
+    blanket = _p("blanket", (0.0, -0.03, 0.128), (0.788, 1.874, 0.574), 1.0, 0.562, 0.011)
+    blanket2 = _p("blanket.001", (0.2, -0.06, 0.068), (0.939, 1.90, 0.615), 1.0, 0.59, 0.026)
+    ps = [body, plate, matt, blanket, blanket2]
+    a = R.pick_anchor(ps, drawn_plan_m2=3.6)
+    assert a is body
+    m, note = R.pick_mattress(ps, a, drawn_plan_m2=3.6)
+    assert m is matt, note
+    # 1800 x 2114: no US/TH standard within +-50 at any uniform scale <= 1
+    import ergonomics_ref as E
+    sc, nm, worst = R.best_uniform_fit(1800, 2114, {**E.BED_SIZES_MM, **E.BED_SIZES_TH_MM})
+    assert nm == "th_king_6ft" and 50 < worst < 60
+
+
+def test_anchor_that_is_the_mattress_needs_a_frame_under_it_ikea():
+    """10b19e20: 'Bedsheets' (1957 x 2013) out-plans the frame by 1% and is the
+    anchor; the frame beneath (top 300 <= its bottom 290 + 50) is what makes it
+    a mattress. Without anything under it, a lone slab is a platform, not a
+    mattress (the anchor never passes the floor term on its own)."""
+    sheets = _p("Bedsheets", (0.0, 0.0, 0.290), (2.013, 1.957, 0.567), 1.0, 0.533, 0.009)
+    frame = _p("frame", (0.0, 0.01, 0.04), (2.02, 1.94, 0.30), 0.0, None, None)
+    base = _p("Base", (0.02, 0.05, 0.0), (1.999, 1.91, 0.04), 1.0, 0.04, 0.0)
+    ps = [sheets, frame, base]
+    a = R.pick_anchor(ps, drawn_plan_m2=3.6)
+    assert a is sheets
+    m, _ = R.pick_mattress(ps, a, drawn_plan_m2=3.6)
+    assert m is sheets
+    m2, note = R.pick_mattress([sheets], sheets, drawn_plan_m2=3.6)
+    assert m2 is None and "no slab" in note
+
+
+def test_one_mesh_bed_is_unmeasurable_not_a_frame_number_tierra():
+    """b8359da9 is one mesh. No slab qualifies -> (None, why); the bench then
+    records UNMEASURED and verdict refuses — never the frame's 2425 x 2484."""
+    one = _p("Tierra Bed", (0.0, 0.0, -0.008), (2.484, 2.425, 0.705), 1.0, 0.438, 0.2)
+    a = R.pick_anchor([one], drawn_plan_m2=3.6)
+    m, note = R.pick_mattress([one], a, drawn_plan_m2=3.6)
+    assert m is None and "one-mesh" in note
+    row = base_row()
+    row["anchor_projected_mm"] = None
+    row["anchor_std"] = {"name": None, "worst_mm": None, "within": False, "unmeasured": note}
+    ok, why = R.verdict(row)
+    assert not ok and any("UNMEASURABLE" in w and "D-120" in w for w in why)
+
+
+def test_unprobed_parts_never_qualify():
+    """A part without cover/top_med/relief cannot be the mattress: could-not-
+    measure must not read as a slab."""
+    ps = bed_parts()
+    a = R.pick_anchor(ps)
+    m, note = R.pick_mattress(ps, a)
+    assert m is None and "unprobed" in note
+
+
+def test_flat_blanket_ties_go_to_the_larger_slab():
+    """A blanket lying flat ON the mattress tops out at the same z (Metropol:
+    both 513); the tie within 10 mm goes to the larger plan — the slab."""
+    w = metropol_parts()
+    w["blanket"]["relief"] = 0.010         # flatter than measured: a harder case
+    ps = list(w.values())
+    m, _ = R.pick_mattress(ps, w["frame"], drawn_plan_m2=3.6)
+    assert m is w["matt"]
+
+
+def test_draped_duvet_fails_the_floor_term():
+    """81d895fd's duvet hem reaches the floor (lo z 0.0) — a mattress never
+    does. Cube.015 (1400 x 1900 x 200, resting at 221) is the slab."""
+    sheet = _p("Plane.029", (0.0, 0.0, 0.096), (2.047, 1.578, 0.454), 1.0, 0.443, 0.0)
+    duvet = _p("Plane.030", (0.1, -0.07, 0.0), (1.956, 1.642, 0.544), 1.0, 0.482, 0.054)
+    core = _p("Cube.015", (0.07, 0.089, 0.221), (1.97, 1.489, 0.421), 1.0, 0.421, 0.0)
+    base = _p("Cube.016", (0.07, 0.089, 0.001), (1.97, 1.489, 0.221), 1.0, 0.221, 0.0)
+    ps = [sheet, duvet, core, base]
+    a = R.pick_anchor(ps, drawn_plan_m2=3.6)
+    assert a is sheet
+    m, _ = R.pick_mattress(ps, a, drawn_plan_m2=3.6)
+    assert m is core
+
+
+def test_mattress_scale_never_stretches_and_reports_overhang():
+    assert R.mattress_scale(1.98, 1.786, 2.0, 1.8) == 1.0          # smaller than the slot
+    assert abs(R.mattress_scale(2.114, 1.80, 2.0, 1.8) - 0.946) < 0.001
+    oh = R.overhang_mm(2.033, 1.842, 2.0, 1.8)
+    assert oh == {"foot": 33, "side_each": 21}
+    assert R.overhang_mm(1.9, 1.7, 2.0, 1.8) == {"foot": 0, "side_each": 0}
+
+
+def test_frame_ink_cap_is_a_verdict_rule_cloth_is_not():
+    """The drawn bed (SR-07, 1981 x 2134) is the widest FRAME the sheet allows.
+    Metropol's frame (1842 x 2033) is inside and its sheet draping to 2079
+    across is cloth over the gap — reported, never the verdict. Obsidian's
+    base (2011 x 2166 at slot-fit) passes the ink by 30 / 32; a missing ink
+    row is UNMEASURED."""
+    ok, ow, ol = R.made_bed_within_ink(1.842, 2.033, 1.981, 2.134)
+    assert ok and ow == 0 and ol == 0
+    ok, ow, ol = R.made_bed_within_ink(2.011, 2.166, 1.981, 2.134)
+    assert not ok and ow == 20 and ol == 22          # past the 10 mm ink tolerance
+    row = base_row()                                  # made bed 2079 wide: passes
+    ok, why = R.verdict(row)
+    assert ok, why
+    assert row["frame_staged_mm"] == [1842, 2033]
+    row["frame_staged_mm"] = [2011, 2166]
+    ok, why = R.verdict(row)
+    assert not ok and any("SR-07" in w for w in why)
+    row = base_row()
+    row["ink_bed_mm"] = None
+    ok, why = R.verdict(row)
+    assert not ok and any("UNMEASURED" in w and "R12" in w for w in why)
+
+
+def test_verdict_names_the_best_uniform_fit_when_refusing():
+    """Ikea Nordli: a US king squeezed into the Thai-king slot lands at
+    1800x1852 — no standard. With no other standard within tolerance the line
+    reports the best uniform fit, so the reader can see whether ANY scale
+    reaches a real bed (here 0.998 does, but the slot forbids it)."""
+    row = base_row()
+    row["anchor_projected_mm"] = [1800, 1852]
+    row["anchor_std"].update({"worst_mm": 148, "within": False,
+                              "nearest_any": {"name": "th_king_6ft", "worst_mm": 148},
+                              "best_uniform": {"scale": 0.998, "name": "king",
+                                               "worst_mm": 23}})
+    row["mattress_fill"] = [1.0, 0.926]
+    ok, why = R.verdict(row)
+    assert not ok and any("best uniform scale 0.998 reaches king" in w for w in why)
+
+
+# ---- the FRAME by geometry (review of D-120: the anchor is cloth on 4 of 11) --
+def test_frame_extent_is_the_hard_stack_not_the_quilt():
+    """Cloudrest (317c797d): pick_anchor is the QUILT (1882x1979), whose staged
+    extent read INSIDE the ink while the real Base (1639x2217) is 70 mm past
+    it. frame_extent takes the hard stack around the mattress instead."""
+    base = _p("Base", (0.0, 0.0, 0.0), (2.217, 1.639, 0.190), 1.0, 0.190, 0.0)
+    quilt = _p("Quilt", (0.06, -0.05, 0.007), (2.04, 1.93, 0.534), 1.0, 0.474, 0.054)
+    qseams = _p("Quilt Seams", (0.10, 0.0, 0.007), (1.98, 1.79, 0.438), 0.0, None, None)
+    sheet = _p("Sheet", (0.10, 0.03, 0.169), (2.11, 1.70, 0.417), 1.0, 0.417, 0.0)
+    blanket = _p("Blanket", (0.0, 0.05, 0.001), (0.472, 1.92, 0.528), 1.0, 0.501, 0.019)
+    ps = [base, quilt, qseams, sheet, blanket]
+    a = R.pick_anchor(ps, drawn_plan_m2=3.6)
+    assert a is quilt                                   # the anchor IS cloth here
+    m, _ = R.pick_mattress(ps, a, drawn_plan_m2=3.6)
+    assert m is sheet
+    (lx, ly), (hx, hy), names = R.frame_extent(ps, m)
+    assert "Base" in names and "Quilt" not in names and "Blanket" not in names
+    # the hard length is the Base's own 2217 — 83 mm past the drawn 2134,
+    # which the quilt-as-frame reading (1967 long) called INSIDE
+    assert round((hx - lx) * 1000) == 2217
+    ok, over_w, over_l = R.made_bed_within_ink((hy - ly), (hx - lx), 1.981, 2.134)
+    assert not ok and over_l == 73
+    # KNOWN OVER-READ, recorded rather than tuned away: the quilt's hollow SEAM
+    # mesh sits low enough to count as hard, so the width reads 1790 instead of
+    # the Base's 1639. It is reported with the part names in the row; it cannot
+    # rescue a candidate (it only ever widens), and no cached file's verdict
+    # turns on it.
+    assert round((hy - ly) * 1000) == 1790 and "Quilt Seams" in names
+
+
+def test_frame_extent_excludes_cloth_lying_on_the_mattress():
+    """Metropol: the Sheet (2079 wide with its drape) and the Blanket lie ON
+    the mattress, so the frame is the Bed Frame + Support + slab = 1842x2033,
+    the number the ink cap must judge."""
+    w = metropol_parts()
+    ps = list(w.values())
+    m, _ = R.pick_mattress(ps, w["frame"], drawn_plan_m2=3.6)
+    (lx, ly), (hx, hy), names = R.frame_extent(ps, m)
+    assert round((hy - ly) * 1000) == 1842 and round((hx - lx) * 1000) == 2033
+    assert "Sheet" not in names and "Blanket" not in names and "Cusions" not in names
+
+
+def test_overhang_staged_reads_from_where_the_frame_stands():
+    """The built headboard band is emitted INSIDE the slot (60 of the 2000), so
+    the head butts x=5.141 while the slot ends at 5.204: a foot measured from
+    extents alone under-reads by 63 mm. Metropol's frame really stands 96 mm
+    past the slot's foot line."""
+    oh = R.overhang_staged_mm((3.108, 0.205), (5.141, 2.047),
+                              3.204, 0.226, 5.204, 2.026)
+    assert oh["foot"] == 96 and oh["head"] == 0
+    assert oh["side_S"] == 21 and oh["side_N"] == 21
+    inside = R.overhang_staged_mm((3.3, 0.3), (5.1, 1.9), 3.204, 0.226, 5.204, 2.026)
+    assert inside == {"foot": 0, "head": 0, "side_S": 0, "side_N": 0}
+
+
+def test_mattress_deck_and_tie_rules():
+    """Two families the first cut got wrong, from the reviewers' constructions:
+    a 100 mm slat deck inside the rails wins 'lowest top' over the mattress
+    resting on it; and a hotel coverlet flat on the slab ties its top within
+    a millimetre and out-plans it."""
+    w = metropol_parts()
+    deck = _p("slat_deck", (0.05, 0.05, 0.15), (2.00, 1.79, 0.273), 1.0, 0.273, 0.0)
+    ps = list(w.values()) + [deck]
+    m, note = R.pick_mattress(ps, w["frame"], drawn_plan_m2=3.6)
+    assert m is w["matt"] and "deck" in note
+    w2 = metropol_parts()
+    coverlet = _p("coverlet", (0.0, -0.016, 0.109), (2.05, 1.85, 0.5126),
+                  1.0, 0.5126, 0.019)
+    ps2 = [w2["frame"], w2["support"], w2["matt"], coverlet]
+    m2, _ = R.pick_mattress(ps2, w2["frame"], drawn_plan_m2=3.6)
+    assert m2 is w2["matt"]           # the contained slab wins the tie, not the cloth
+
+
+def test_neighbour_gaps_report_deep_overlaps_not_the_next_thing_out():
+    """Obsidian staged: frame x 2.975..5.141, y 0.121..2.131 (2011 wide on the
+    1800 slot). The north side table (spec y 2.005..2.405) sits 126 mm INTO
+    the frame — the first cut's 100 mm window skipped it and named the
+    wardrobe gable 687 mm away. The foot bench, which the frame overhangs by
+    177 mm, is a W neighbour (a centre-of-plan test put it on N); the band's
+    welt 1 mm past the head face is E, never S; a book on the bench rides
+    with the bench's side; nothing 2 m+ away is reported."""
+    frame_lo, frame_hi = (2.975, 0.121, 0.0), (5.141, 2.131, 0.25)
+    others = [
+        ("side_table_N", (4.803, 2.005, 0.0), (5.203, 2.405, 0.40)),
+        ("side_table_S", (4.803, -0.210, 0.0), (5.203, 0.190, 0.40)),
+        ("wardrobe_gable", (2.353, 2.818, 0.0), (5.654, 3.40, 2.8)),
+        ("bench", (2.654, 0.626, 0.0), (3.152, 1.626, 0.41)),
+        ("book_on_bench", (2.80, 1.00, 0.41), (3.10, 1.20, 0.45)),
+        ("headboard_welt", (5.140, 0.20, 0.0), (5.20, 2.00, 1.10)),
+        ("far_tv_console", (0.306, 0.128, 0.0), (0.906, 2.174, 0.6)),
+    ]
+    g = R.neighbour_gaps(frame_lo, frame_hi, others)
+    assert g["N"] == {"gap_mm": -126, "object": "side_table_N"}
+    assert g["S"] == {"gap_mm": -69, "object": "side_table_S"}
+    assert g["W"] == {"gap_mm": -177, "object": "bench"}
+    assert g["E"] == {"gap_mm": -1, "object": "headboard_welt"}
+    g2 = R.neighbour_gaps(frame_lo, frame_hi, [others[2], others[6]])
+    assert g2["N"] == {"gap_mm": 687, "object": "wardrobe_gable"} and g2["W"] is None
+
+
+def test_neighbour_gaps_metropol_is_an_adjust_the_surroundings_number():
+    """Metropol at scale 1.0: frame 1842 x 2033 centred on the 1800 slot with
+    the head at the band -> the N table overlaps 42 mm, the S table clears
+    by 15, the bench clears by 8. Those are P4's move-to-touch numbers."""
+    frame_lo, frame_hi = (3.108, 0.205, 0.0), (5.141, 2.047, 0.25)
+    others = [("side_table_N", (4.803, 2.005, 0.0), (5.203, 2.405, 0.40)),
+              ("side_table_S", (4.803, -0.210, 0.0), (5.203, 0.190, 0.40)),
+              ("bench", (2.602, 0.626, 0.0), (3.100, 1.626, 0.41))]
+    g = R.neighbour_gaps(frame_lo, frame_hi, others)
+    assert g["N"]["gap_mm"] == -42 and g["S"]["gap_mm"] == 15 and g["W"]["gap_mm"] == 8
