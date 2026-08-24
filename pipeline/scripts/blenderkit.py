@@ -126,6 +126,53 @@ SPEC = os.path.join(REPO, "projects", "PRJ-2026-002_c001-house", "03_layout",
 DECISIONS = os.path.join(REPO, "qa", "open-decisions.json")
 CLASSES = os.path.join(REPO, "qa", "blenderkit-month-classes.json")
 PANEL_PROMPT = os.path.join(REPO, "docs", "blenderkit-month", "style-panel-prompt.md")
+
+# THE QUERY GRAMMAR, MEASURED 2026-08-23 — not read off a page, tested.
+#
+# Every line below was verified against the live public endpoint with this repo's own
+# positive/negative-control method: a REAL filter splits the set and its halves sum to the
+# unfiltered count; an UNKNOWN qualifier silently answers 0, exactly like a deliberate
+# misspelling; a MALFORMED field name answers HTTP 400. All three behaviours were observed,
+# so "0 results" alone never proves a filter exists.
+#
+# WHY THIS SITS IN --help AND NOT IN A DOC: the filters already pass straight through
+# `search` with no code change. What was missing was knowledge, and knowledge parked in
+# knowledge/_inbox/ is this repo's oldest defect. The full workings, the refuted claims and
+# the source quotes are in knowledge/_inbox/blenderkit-month/ (2026-08-23).
+SEARCH_GRAMMAR = """\
+FILTER GRAMMAR (measured 2026-08-23 against the live endpoint, not documented anywhere public)
+
+  One query= string, tokens joined by '+', a colon separates field from value.
+
+  REAL, and they discriminate:
+    asset_type:model | material | scene | hdr | brush
+    category_subtree:bed            bed 1244 name-hit -> 611 by category
+    is_free:true | false            bed 282 + 962 = 1244  (perfect split = real)
+    license:cc_zero | royalty_free  bed  22 + 1222 = 1244  (perfect split = real)
+    manufacturer:<name>             bed+manufacturer:ikea = 23
+    verification_status:validated   real, but every public asset is validated (= no-op here)
+
+  REAL AND THE REASON THIS BLOCK EXISTS — server-side REAL-WORLD SIZE filters, which the
+  add-on's own UI does not expose. Metres, float:
+    dimensionX_gte / dimensionX_lte      and the same for Y and Z
+      category_subtree:bed                                  611
+      + dimensionX_gte:1.5                                  551
+      + dimensionX_gte:1.5 + dimensionX_lte:2.2             171
+      + dimensionZ_lte:1.0                                  304
+      + dimensionX_gte:99                                     0   (sanity control)
+    Shortlist by the size the slot needs BEFORE downloading anything. This is the cheapest
+    fix available for the defect class that has cost this lane the most rounds (D-109 read a
+    2,759 mm backdrop wall as bedding; D-120 fitted a bed FRAME into a mattress slot).
+
+  BUT THE NUMBER IS A SEARCH KEY, NEVER A SPEC. Blendkit's own uploader does not enforce
+  scale and its Terms disclaim measurement accuracy in writing. asset_scale must still
+  assert on every ingest (R8) — this filter narrows the shelf, it does not certify a size.
+
+  NOT REAL, though widely repeated — each answers 0, identically to a misspelling:
+    rating:>=4    resolution:8k    license:cc0    author:<username>
+  REJECTED outright with HTTP 400:
+    quality_count:  faceCount:  textureResolutionMax:
+"""
 MONTH_DOC = "docs/blenderkit-month-2026-08-22.md"
 
 RESOLUTIONS = {"blend": "blend", "4K": "resolution_4K", "2K": "resolution_2K",
@@ -1375,8 +1422,12 @@ def main(argv=None):
     k.add_argument("--login", action="store_true")
     k.add_argument("--from-blender", action="store_true")
     k.add_argument("--timeout", type=int, default=300)
-    q = sub.add_parser("search", help="catalogue search (logged as a probe, no download)")
-    q.add_argument("query", help='e.g. "bed modern" or "asset_type:model+rug"')
+    q = sub.add_parser(
+        "search", help="catalogue search (logged as a probe, no download)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=SEARCH_GRAMMAR)
+    q.add_argument("query", help='e.g. "bed modern" or "asset_type:model+rug" '
+                                 '— see the filter grammar below')
     q.add_argument("--pages", type=int, default=1)
     q.add_argument("--page-size", type=int, default=100)
     q.add_argument("--free-only", action="store_true")

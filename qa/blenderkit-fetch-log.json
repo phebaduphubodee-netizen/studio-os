@@ -394,6 +394,43 @@
     "WHOLEBED 81d895fd-ab4b-4d44-8c4c-126f386083d6 -> projected mattress [1400, 1900] mm is 400 mm from the slot's standard th_king_6ft [1800, 2000] (bare-mattress tol +-50); it IS a full (within 28 mm) — a standard other than the slot's: change the spec's w/d (D-114 reverse_by) or a different purchase — ORD-2026-08-22-front-door-dims; the mattress itself fills 0.78x0.95 of the slot (< 0.88) — a smaller bed under wider bedding (ORD-2026-08-18-bed-too-small applied to the slab, D-120)",
     "WHOLEBED BENCH COMPLETE 1/4 pass hard filters"
    ]
+  },
+  {
+   "at": "2026-08-23T21:33:18-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-23T22:54:57-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+category_subtree:bed+dimensionX_gte:1.5+dimensionX_lte:2.2",
+   "pages": 1,
+   "n": 4,
+   "free": 4,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-23T22:56:17-04:00",
+   "date_local": "2026-08-23",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
   }
  ]
 }
