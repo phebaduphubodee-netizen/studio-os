@@ -896,8 +896,15 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
     # the caps file's own law says only he sets or extends one — so a row with no
     # number prints as a number he owes, never as a pass.
     _row = load_caps(_u)
-    _rounds = count_rounds_room(os.path.join(
+    _closed = count_rounds_room(os.path.join(
         REPO_ROOT, "projects/PRJ-2026-002_c001-house/04_visualization"))
+    # THE TAIL COUNTS AS SPEND. `count_rounds_room` reads gate artefacts, and a
+    # round that rendered without writing one is outside its range rather than
+    # inside a gap its max() steps over — measured 2026-08-24 at 57 against a lane
+    # that had already rendered p2r61q. The cap counter may never be the smaller of
+    # two honest readings of its own lane.
+    _open = count_rounds_room_open(os.path.join(REPO_ROOT, "pipeline/output"))
+    _rounds = max(_closed, _open)
     _frames = count_full_frames_room(os.path.join(REPO_ROOT, "pipeline/output"),
                                      (2400, 1800))
     _cap_v = cap_check(_row, _rounds, _frames)
@@ -919,6 +926,29 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
               f"(caps file law), and ASK-023 carries the question. The counter is the "
               f"builder's half of ORD-2026-07-28 and it is now running; the number is "
               f"his half and it is open.")
+    if _open > _closed:
+        print(f"  OPEN ROUNDS: r{_closed + 1}..r{_open} rendered with no gate "
+              f"artefact — {_open - _closed} round(s) that spent a build and never "
+              f"wrote the ROUND'S RECORD (R2). They are counted as spend above.")
+    # R7b/R7c — HOW LONG SINCE A JUDGE SAW A FRAME. Printed, never blocking: the
+    # frame under judgment does not exist yet when this pre-render gate runs, so a
+    # refusal here would fall on the render that clears it.
+    _lag, _last, _half = critic_lag(
+        os.path.join(REPO_ROOT, "_private/deliv-001/critique"), _rounds)
+    note("critic ladder lag", True,
+         (f"{_lag} round(s) since C2+C3 last judged a frame (r{_last})"
+          if _last is not None else f"NO frame has ever been judged ({_lag} round(s))"))
+    if _lag >= 2:
+        print(f"  CRITIC LADDER: {_lag} round(s) since both judges saw a frame"
+              + (f" (last was r{_last})." if _last is not None else ".")
+              + f" R7b judges EVERY render and R7c stops the lane rather than "
+                f"self-judging; rounds r{(_last or 0) + 1}..r{_rounds} closed on the "
+                f"builder's eye alone, which R3 puts at 30-50%. Bundle the frame and "
+                f"run both rungs before the next mechanism.")
+    if _half:
+        print(f"  CRITIC LADDER: round(s) {', '.join('r%d' % n for n in _half)} hold "
+              f"ONE judge's answer, not two — a bundle dir that reads like the ladder "
+              f"ran and is half a ladder in fact.")
     for name, why in ROOM_LANE_NOT_APPLICABLE:
         note(name, False, "not applicable to this lane: " + why)
     return v
@@ -1668,6 +1698,43 @@ def count_rounds_room(gate_dir):
     return max(ns) if ns else 0
 
 
+# THE ROUND TOKEN AS THE RENDER PATH WRITES IT: `..._p2r57.png`, `..._p2r58_ql.png`,
+# `..._p2r61q_ql.blend`, `..._p2r59q_ql.scene.json`. Phase-agnostic on purpose, to
+# match ROOM_ROUND's own `P\d+r(\d+)` reading — both counters answer "the highest
+# round this unit has reached", and mixing the phase in would make the two numbers
+# incomparable at the one place they are compared.
+ROOM_RENDER_ROUND = re.compile(r"_p\d+r(\d+)[a-z]*(?:[_.]|$)", re.I)
+
+
+def count_rounds_room_open(render_dir):
+    """THE HIGHEST ROUND WITH RENDER EVIDENCE — closed or not.
+
+    `count_rounds_room` reads GATE ARTEFACTS, and its own docstring says the thing
+    this function exists to act on: *"a round with no artefact is a round that did
+    not close, and it still spent"*. Then it returns `max()` over the artefacts,
+    which repairs an INTERIOR gap (r32, r40, r42, r45 sit inside the series and the
+    max steps over them) and cannot see a TAIL — the rounds after the last artefact
+    are not stepped over, they are outside the range entirely.
+
+    MEASURED 2026-08-24, which is why this is here rather than in a plan: the lane
+    had rendered p2r58, p2r59q, p2r60q and p2r61q, and `count_rounds_room` returned
+    57. Four rounds of spend, each with a render on disk, invisible to R1's counter —
+    the counter built to carry out ORD-2026-07-28 ("the builder cannot see what it is
+    doing and cannot stop"), under-reporting in exactly the direction that hides
+    spend. Same shape as the cap it replaced: a number that can only be too small
+    passes every cap it is measured against.
+
+    It counts EVIDENCE, never a self-report: a render artefact on disk is a round
+    that spent a build. Returns 0 on a missing dir rather than raising — the caller
+    prints an open tail, and a lane with no renders has no tail to print.
+    """
+    if not render_dir or not os.path.isdir(render_dir):
+        return 0
+    ns = [int(m.group(1)) for m in
+          (ROOM_RENDER_ROUND.search(f) for f in os.listdir(render_dir)) if m]
+    return max(ns) if ns else 0
+
+
 def count_full_frames_room(render_dir, wh, prefix="room_"):
     """FULL FRAMES at the deliverable size, WITH THE MASKS TAKEN OUT.
 
@@ -1692,6 +1759,87 @@ def count_full_frames_room(render_dir, wh, prefix="room_"):
         if _png_size(os.path.join(render_dir, f)) == tuple(wh):
             n += 1
     return n
+
+
+# --- R7b / R7c: HOW LONG SINCE A JUDGE SAW A FRAME (p2r62) --------------------
+# The two critic orders — ORD-2026-08-02-gemini-judges-every-render and
+# ORD-2026-08-04-stop-and-ask-for-critique — both carry `obeyed_assert: []`, so
+# `orders_check` has nothing to fail on and they print obeyed forever. plan_status
+# says so out loud every session ("4 order(s) carry no assertion against the code")
+# and the count kept printing while the lane went FOUR ROUNDS with no judged frame
+# (p2r58, p2r59q, p2r60q, p2r61q — every one a playblast, every decision in them
+# closed on the builder's own eye, which R3 puts at 30-50%).
+#
+# WHY A COUNTER AND NOT AN ASSERT. `obeyed_assert` greps a file for a pattern, and
+# the strongest thing a grep can say here is "critique_call.py exists" — which was
+# true on all four of those rounds. This lane has already shipped that exact
+# mistake once: ORD-sheet-first self-certified green with an assert whose pattern
+# matched its own COULD-NOT-RUN string. Obedience to "judge every render" is a
+# fact about the RENDER SERIES, not about the source tree, so it has to be counted
+# off the artefacts.
+#
+# WHAT IT DOES NOT DO, said plainly so nobody reads it as enforcement: it PRINTS.
+# It is not wired to fail a build, because the only place a pre-render gate could
+# fail on it is the render that would clear it — the frame under judgment does not
+# exist yet when this runs, and failing here would deadlock the ladder it exists to
+# protect. The blocking form belongs where a ROUND CLOSES, and the backlog has to
+# reach zero before that is honest (R13: a machine that hard-fails every historical
+# instance on day one gets switched off and joins them).
+C2_ANSWER = "c2"          # ANSWER_claude-local-c2.md  (R7c fresh-context local)
+C3_ANSWER = "gemini"      # ANSWER_gemini25pro.md      (R7b cross-vendor)
+
+
+def judged_rounds(critique_dir):
+    """{round: (has_c2, has_c3)} read off the bundle dirs. PURE, no network.
+
+    A bundle is a directory named `critique-<render stem>`; the round is the
+    `p<phase>r<round>` token in that stem, the same token the render path writes.
+    Bundles with no token (`critique-room_bedroom_suite_eye_p1a`) are skipped —
+    they predate the numbering and there is nothing to compare them against.
+
+    THE TWO TOKENS ARE THIS REPO'S TWO RUNGS, not a general vendor list: `c2` is
+    the fresh-context local critic and `gemini` is the only cross-vendor judge the
+    ladder has ever had. A third vendor means editing this pair, deliberately —
+    better than a pattern that quietly counts any ANSWER file as a full ladder.
+    """
+    out = {}
+    if not critique_dir or not os.path.isdir(critique_dir):
+        return out
+    for d in os.listdir(critique_dir):
+        p = os.path.join(critique_dir, d)
+        if not os.path.isdir(p):
+            continue
+        m = ROOM_RENDER_ROUND.search(d) or re.search(r"-p\d+r(\d+)[a-z]*$", d, re.I)
+        if not m:
+            continue
+        n = int(m.group(1))
+        names = [f.lower() for f in os.listdir(p) if f.upper().startswith("ANSWER")]
+        c2 = any(C2_ANSWER in f for f in names)
+        c3 = any(C3_ANSWER in f for f in names)
+        had = out.get(n, (False, False))
+        out[n] = (had[0] or c2, had[1] or c3)
+    return out
+
+
+def critic_lag(critique_dir, round_now):
+    """(lag, last_judged, half_judged) — rounds since BOTH judges saw a frame.
+
+    `last_judged` is the highest round whose bundle holds a C2 answer AND a C3
+    answer; `lag` is `round_now - last_judged`, floored at 0. `half_judged` lists
+    the rounds a bundle exists for that carry only one of the two, newest first —
+    they are the shape that reads like compliance in a directory listing and is
+    half a ladder in fact (p2r34 and p2r36 hold Gemini only; p2r44 holds C2 only).
+
+    `last_judged` is None when nothing has ever been judged; the caller prints the
+    round count in that case rather than a lag against zero.
+    """
+    j = judged_rounds(critique_dir)
+    both = [n for n, (c2, c3) in j.items() if c2 and c3]
+    half = sorted((n for n, (c2, c3) in j.items() if c2 != c3), reverse=True)
+    if not both:
+        return (round_now, None, half)
+    last = max(both)
+    return (max(0, round_now - last), last, half)
 
 
 def manifest_for(lane_dir, manifest_path=None):

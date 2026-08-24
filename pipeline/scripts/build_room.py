@@ -74,6 +74,10 @@ import quicklook      # bpy-free pure logic: R5 playblast-ladder rung (--quick) 
                       # first LOOK before any full-fidelity frame; kills bad work
                       # early, never certifies good work
 import asset_scale as _ascale   # bpy-free: glTF bounds, scale assertion, PBR map roles
+import sheet_recon as _sr       # bpy-free: R12's ledger. The BUILD reads the drawing's own
+                                # numbers here (drawn_rect_mm); until p2r62 the only reader was
+                                # the after-the-fact gate, so every drawn dimension in the model
+                                # was one somebody had transcribed
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
@@ -6894,8 +6898,55 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
     # ~1100"), sham tops (~1.05 m) tuck just under it; the owner overrules from
     # the image. Upholstered in the bed-base linen (deepest soft rung — grounds
     # the bed; NOT oak, D1-A anti-monopoly), soft 20 mm arris.
-    emit("bed__headboard", 0.0, 0.0, 0.06, across, 0.0, 1.10,
-         base_m, bevw=0.02, seg=5)
+    # p2r62 — THE BUILD NOW ASKS THE DRAWING WHAT THIS BAND IS, AND PRINTS THE GAP.
+    #
+    # `across` is the bed's WIDTH and it has been carrying two meanings: how wide the
+    # mattress is, and how long the drawn head band is. They were within 61 mm of each
+    # other when this was written at p2r11 (drawn slot 2149, drawn band 2088), so
+    # nobody saw it — then ORD-2026-08-22-bed-standard-size-hug narrowed the bed to a
+    # standard 1800 and the panel silently followed, 288 mm short of the ink. ONE
+    # PARAMETER CARRYING TWO THINGS, the defect this repo has already paid for in four
+    # other places.
+    #
+    # THE BLIND CRITIC READ IT OFF THE PICTURE (C2 p2r62 item 10, no access to the
+    # sheet, the spec or any of this): "the headboard is narrower than the bed it
+    # serves; bedding spills past BOTH of its ends." Measured on that frame's own dump:
+    # headboard 1800.0, bed frame 1841.7 (21 mm proud each side), pillows 1835.8,
+    # duvet 2012.7 (106 mm past each side). The drawn band is 2088 and covers all four.
+    #
+    # AND IT CANNOT SIMPLY BE WIDENED TO THE INK, which is why this prints instead of
+    # fixing. The drawn composition is a 2088 band BETWEEN TWO DRAWN BEDSIDE POCKETS at
+    # y2200 and y51 (SR-09/SR-10, pen 0.60). His hug order moved our nightstands IN to
+    # touch the standard bed, so their tops now sit at y2036 and y265 — a 2088 band
+    # centred on the bed would run y82..2170 and drive 134 mm into both of them, on top
+    # of the 39 mm the SOUTH top already takes out of this panel today. The drawn
+    # composition and the hugged nightstands are geometrically incompatible, and which
+    # one gives is HIS call because his order is what moved them (ASK-032, D-131).
+    #
+    # SO THE BAND KEEPS THE MATTRESS WIDTH AND THE BUILD SAYS SO OUT LOUD, every round,
+    # in the render path. A number we cannot yet honour is not a number we may stop
+    # measuring — that is how the 288 mm went unnoticed for two days.
+    _hb_ink = _sr.drawn_rect_mm("SR-18")
+    _hb_len, _hb_off = across, 0.0
+    if _hb_ink and _hb_ink[3] > 0.05:
+        _d_mm = _hb_ink[3] - across * 1000.0
+        print(f"  headboard vs the DRAWING: built {across * 1000:.0f} mm (the mattress "
+              f"width), drawn {_hb_ink[3]:.0f} mm (sheet-recon SR-18) — {_d_mm:+.0f} mm. "
+              f"The band's length is the MATTRESS's number, not the sheet's; widening it "
+              f"to the ink drives 134 mm into both hugged nightstands (ASK-032, D-131).")
+    else:
+        print(f"  !! headboard vs the DRAWING: SR-18 unreadable in qa/sheet-recon.json, "
+              f"so this round cannot say how far the built band is from the ink. "
+              f"Could-not-look never reads like looked-and-fine.")
+    # BUILT WITH `_rbox`, NOT `emit`, and the one thing `emit` gave that matters here is
+    # kept by hand: a degenerate bed gets FEWER parts rather than a degenerate part.
+    # `emit`'s OTHER guard — "no part leaves the bed's plan bbox" — is deliberately not
+    # reproduced, because SR-18 reads this band as architecture bounded by the drawn
+    # pockets rather than as a bedding part, so the bed's bbox is not its authority.
+    if _hb_len > 0.01:
+        _hbx0, _hby0, _hbdx0, _hbdy0 = box(0.0, _hb_off, 0.06, _hb_len)
+        _rbox("bed__headboard", _hbx0, _hby0, 0.0, _hbdx0, _hbdy0, 1.10,
+              base_m, bevw=0.02, seg=5)
     # p2r35 — THE HEADBOARD GETS THE UPHOLSTERY THE BASE HAS HAD SINCE r6.
     # Two independent critics read this panel as a seamless slab, and the second put
     # the reason in manufacturing terms rather than taste: upholstery fabric comes off
@@ -6918,8 +6969,8 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
     # material block already makes about tone).
     _HB_ROLL_W = 1.40           # upholstery fabric roll, trade standard; the seam driver
     _hb_t, _hb_z1 = 0.06, 1.10
-    _hbx, _hby, _hbdx, _hbdy = box(0.0, 0.0, _hb_t, across)
-    _n_pan = max(1, int(math.ceil(across / _HB_ROLL_W - 1e-9)))
+    _hbx, _hby, _hbdx, _hbdy = box(0.0, _hb_off, _hb_t, _hb_len)
+    _n_pan = max(1, int(math.ceil(_hb_len / _HB_ROLL_W - 1e-9)))
     _seams = 0
     for _i in range(1, _n_pan):
         # WHICH FACE IS THE ROOM-FACING ONE — and the first cut of this block GOT IT
@@ -6935,7 +6986,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
         # again. The panel was placed by `box()` in the bed's own head->foot frame, so
         # the room-facing face is simply `_hb_t` BACK FROM THE HEAD, and the same helper
         # returns its world point. No axis, no sign, no nudge.
-        _cx, _cy, _, _ = box(_hb_t, across * _i / _n_pan, 0.0, 0.0)
+        _cx, _cy, _, _ = box(_hb_t, _hb_off + _hb_len * _i / _n_pan, 0.0, 0.0)
         _cyl_frustum(f"bed__headboard_welt_v{_i}", _cx, _cy, 0.009, 0.009,
                      0.02, _hb_z1 - 0.04, base_m, seg=12, cap=False)
         _seams += 1
@@ -6943,7 +6994,7 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
     _rbox("bed__headboard_welt_top", _hbx - 0.006, _hby - 0.006, _hb_z1 - 0.019,
           _hbdx + 0.012, _hbdy + 0.012, 0.016, base_m, bevw=0.0075, seg=3)
     print(f"  headboard upholstery: {_seams} vertical welt seam(s) + top piped cord "
-          f"— {_n_pan} panel(s) across {across * 1000:.0f} mm, DERIVED from the "
+          f"— {_n_pan} panel(s) across {_hb_len * 1000:.0f} mm, DERIVED from the "
           f"{_HB_ROLL_W * 1000:.0f} mm fabric roll (a panel wider than the roll cannot "
           f"be made in one piece)")
     # ------------------------------------------------------------------ p2r52
@@ -8054,9 +8105,12 @@ def _nightstand_lamp(x0, y0, W, D, H, lamp=None, glow=None, cabinet=True, body_m
                     b0, b1 = a0 + _seg, a1 + _seg
                     _dfs.append((a0, a1, b1, b0))
             _smooth_mesh_obj("nightstand__lamp_shade", _dvs, _dfs, brass_m)
-            # the BULB under the dome: what actually glows now that the shade is metal
+            # the BULB under the dome: what actually glows now that the shade is metal.
+            # Its span comes from millwork so the PRACTICAL can be put at its centre by
+            # deriving, not by repeating the numbers here (see the light below).
             _cyl_frustum("nightstand__lamp_bulb", ccx, ccy, 0.024, 0.019,
-                         oz - 0.005, oz + 0.045, shade_m, seg=16)
+                         oz + millwork.LAMP_BULB_DZ0, oz + millwork.LAMP_BULB_DZ1,
+                         shade_m, seg=16)
     if glow and lamp:
         ld = bpy.data.lights.new("lamp_glow", type='POINT')
         # lane-A story: practicals CARRY the hero frame (Kelly focal glow)
@@ -8068,7 +8122,28 @@ def _nightstand_lamp(x0, y0, W, D, H, lamp=None, glow=None, cabinet=True, body_m
         # and gains a soft penumbra instead of a stamped edge
         ld.shadow_soft_size = 0.05
         lo = bpy.data.objects.new("lamp_glow", ld)
-        lo.location = (x0 + W / 2.0, y0 + D / 2.0, H + glow["z_off_m"])
+        # THE EMITTER SITS INSIDE THE SHADE THIS BUILD JUST MADE, and it is derived from
+        # THIS cabinet's W/D/H rather than added to H as a stored offset. `glow["z_off_m"]`
+        # is computed by element5_lighting against a HARDCODED PROBE cabinet
+        # (0.5, 0.5, 0.52) that exists nowhere in the spec; when D-115 re-slotted the real
+        # cabinet to 0.40 the two parted company and the point light ended up 10.7 mm ABOVE
+        # the dome's apex — outside the shade, burning a white ellipse onto the top of the
+        # brass in every frame from p2r57 on, lighting the slat wall above and leaving the
+        # deck below dead. R9: a position derivable from a contact must never be typed, and
+        # a probe constant is a typed position wearing a derivation's name.
+        _emit_z = millwork.nightstand_lamp_emitter_z(W, D, H)
+        _apex_z = millwork.nightstand_lamp_dome_apex_z(W, D, H)
+        if _emit_z is None:
+            # COULD NOT DERIVE must never print like DERIVED (R11's exit-code law).
+            print(f"  !! lamp practical: no shade part for {W:.3f}x{D:.3f}x{H:.3f} — "
+                  f"falling back to the PROBE offset H+{glow['z_off_m']:.3f}, which is "
+                  f"not this cabinet's geometry")
+            _emit_z = H + glow["z_off_m"]
+        else:
+            print(f"  lamp practical: emitter z {_emit_z * 1000:.1f} mm, dome apex "
+                  f"{_apex_z * 1000:.1f} mm (inside) — the stored probe offset would "
+                  f"have put it at {(H + glow['z_off_m']) * 1000:.1f} mm")
+        lo.location = (x0 + W / 2.0, y0 + D / 2.0, _emit_z)
         bpy.context.scene.collection.objects.link(lo)
     return True
 
@@ -8245,6 +8320,7 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
     per piece — defaults reproduce the legacy cream boucle exactly."""
     n = 0
     skipped_metal = []
+    opaqued = []
     for m in mats:
         if not m or not getattr(m, "use_nodes", False):
             continue
@@ -8276,6 +8352,34 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
         for l in list(bc.links):                           # drop the dark diffuse texture
             nt.links.remove(l)
         bc.default_value = rgba
+        # A SLOT WE HAVE PAINTED IS A SLOT WE OWN, AND THAT INCLUDES WHETHER LIGHT
+        # GOES THROUGH IT (p2r62). Every finish this function can apply is opaque by
+        # its own description — cream boucle, greige stonewashed linen, the signed
+        # D3-3 "matte-DARK carcass". Transmission was the one response channel the
+        # retint never touched, so a vendor slot authored as glass kept being glass
+        # while wearing our colour, which is neither the uploader's object nor ours.
+        #
+        # MEASURED on the frame that found it: the acquired bedside table's pedestal
+        # (`BedsideTable_TableGlassLeg`, 8256 polys — the whole body of the piece)
+        # came out of the case-goods branch with Base Color (0.13, 0.12, 0.11),
+        # Roughness 0.55 and Sheen 0.1 exactly as the policy logged, AND Transmission
+        # Weight 1.0 at IOR 1.1. It rendered as polished black glass: the blind C2
+        # critic read the slat wall straight THROUGH both nightstands and filed them
+        # as furniture "the eye cannot decide is solid".
+        #
+        # NOT AN ALLOWLIST, and deliberately not a glass SKIP: leaving a transmissive
+        # slot un-retinted would ship a stranger's finish, which is the r33 defect the
+        # case-goods branch above exists to end. If a piece is meant to keep real
+        # glass, that slot must be excluded from the retint the way metal is — an
+        # explicit decision, not a channel nobody set.
+        tr = b.inputs.get("Transmission Weight")
+        if tr is not None:
+            was = None if tr.is_linked else float(tr.default_value)
+            if tr.is_linked or was > 0.001:
+                for l in list(tr.links):
+                    nt.links.remove(l)
+                tr.default_value = 0.0
+                opaqued.append((m.name, "linked" if was is None else round(was, 3)))
         _set(b, "Sheen Weight", sheen)
         _set(b, "Sheen Roughness", 0.35)
         rg = b.inputs.get("Roughness")
@@ -8292,6 +8396,9 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
         # turns the render itself into the record of the decision.
         if rung:
             m.name = f"acq_{rung}"
+    for nm_, was_ in opaqued:
+        print(f"  retint: '{nm_}' carried Transmission {was_} and now wears an OPAQUE "
+              f"finish of ours — a painted slot is a slot we own (p2r62)")
     return n, skipped_metal
 
 

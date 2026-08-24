@@ -71,7 +71,9 @@ def test_a_named_support_that_exists_but_is_elsewhere_is_refused():
     row = dict(KEEP, assembly="bench", held_by="rug")
     v, _n, _s = EX.check(objs, ledger([row, dict(KEEP, assembly="rug",
                                                  held_by="floor")]))
-    assert any("does not touch it" in x for x in v)
+    assert any("does not touch bench" in x for x in v), (
+        "the message NAMES the component whose carrier is missing (p2r62): with a "
+        "family row covering mirror twins, 'it' was ambiguous about which twin")
 
 
 def test_a_reveal_claim_is_MEASURED_and_can_be_wrong():
@@ -202,3 +204,69 @@ def test_the_shipped_ledger_and_the_shipped_dump_agree():
 
 def test_selftest_measures_a_reveal_that_is_there():
     assert EX.selftest() == 0
+
+
+# --- a FAMILY row's load path, per component (p2r62) ---------------------------
+# Collapsing the two bedside-lamp rows into one `nightstand` family row made the
+# held_by test RUN for the first time (an exact-coordinate key never resolves in
+# `by_name`, which is prefix-keyed, so those rows had never had a load path
+# measured) — and it immediately reported a broken one for two lamps each sitting
+# squarely on their own table. The cause was `by_name` collapsing a prefix to its
+# LARGEST component: mirror twins have equal footprints, so "the largest" is an
+# arbitrary one of them and the check compared a NORTH lamp against a SOUTH table.
+
+def _twins(off_north=0.0, off_south=0.0):
+    """Two tables and two lamps, mirrored across the room. Either offset slides that
+    lamp off its own table without touching anything else."""
+    return scene(
+        box("side_table@0,0", 0.0, 0.0, 0.0, 0.4, 0.4, 0.40),
+        box("side_table@0,3", 0.0, 3.0, 0.0, 0.4, 3.4, 0.40),
+        box("nightstand@0,0", 0.08, 0.08 + off_south, 0.40, 0.32, 0.32 + off_south, 0.78),
+        box("nightstand@0,3", 0.08, 3.08 + off_north, 0.40, 0.32, 3.32 + off_north, 0.78),
+    )
+
+
+def _family_row(**kw):
+    return dict(KEEP, assembly="nightstand", held_by="side_table",
+                exists="not-in-drawing: the plan draws the table, not the lamp on it",
+                **kw)
+
+
+def _table_rows():
+    return [dict(KEEP, assembly="side_table@0,0"), dict(KEEP, assembly="side_table@0,3")]
+
+
+def test_a_family_row_does_not_report_twins_as_a_broken_load_path():
+    v, _n, _s = EX.check(_twins(), ledger([_family_row()] + _table_rows()))
+    assert not [x for x in v if "does not touch" in x], (
+        "each twin is on its own carrier; comparing one arbitrary representative "
+        "against another is a coin flip, not a measurement: " + repr(v))
+
+
+def test_a_family_row_fails_when_ANY_component_has_no_carrier_under_it():
+    """The whole point of the family form: it must be STRICTLY MORE checked than the
+    coordinate form it replaced, not less. EITHER twin, not just whichever one the
+    scene happens to build first — a first-component-only check passes half the
+    broken load paths and reads exactly like a check that ran.
+    """
+    for label, kw in (("south", {"off_south": 1.2}), ("north", {"off_north": 1.2})):
+        v, _n, _s = EX.check(_twins(**kw), ledger([_family_row()] + _table_rows()))
+        bad = [x for x in v if "does not touch" in x]
+        assert bad, f"the {label} lamp is floating over open floor and nothing said so"
+        assert "nightstand@" in bad[0], (
+            "the message must name WHICH component lost its carrier: " + bad[0])
+
+
+def test_an_exact_coordinate_row_still_gets_its_own_carrier_checked():
+    row = dict(KEEP, assembly="nightstand@0,0", held_by="side_table@0,3",
+               exists="not-in-drawing: the plan draws the table, not the lamp on it")
+    v, _n, _s = EX.check(_twins(), ledger([row] + _table_rows()))
+    assert [x for x in v if "does not touch" in x], (
+        "a row pointing at the carrier ACROSS THE ROOM must still fail")
+
+
+def test_components_resolves_a_prefix_and_prefers_an_exact_name():
+    asms = EX.assemblies(_twins())
+    assert len(EX.components("nightstand", asms)) == 2
+    assert [a["name"] for a in EX.components("nightstand@0,0", asms)] == ["nightstand@0,0"]
+    assert EX.components("nothing_here", asms) == []

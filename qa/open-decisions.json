@@ -1970,6 +1970,128 @@
    "in_effect": "_place_bed_frame ใช้ pick_mattress + mattress_scale เท่านั้น; ไม่มี cluster fit และไม่มี field cap ในทางนี้แล้ว. ไม่มีที่นอน = _bail ไม่ใช่ fallback ไป เฟรม (R10 + docstring ของ pick_mattress เอง). parts ถูก probe ด้วย wholebed_dump.surface_facts ก่อนเลือก และ facts ถูกทาซ้ำทุกครั้งที่ _parts() rebuild (bench เตือนเรื่องนี้ไว้เองแล้วและ build ก็ชนกำแพงเดียวกันในรอบแรก). ผล p2r58 quick: bench กับ build ให้ scale 1.0000 เท่ากันเป็นครั้งแรก — ซึ่งคือเงื่อนไขเดียวที่ทำให้ 'bench PASS' เป็นคำทำนายของภาพ.",
    "where": "pipeline/scripts/build_room.py, pipeline/scripts/wholebed_rules.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
    "reverse_by": "คืน block scale เดิมใน _place_bed_frame (s = min(cluster reach, field containment) — โค้ดเดิมอยู่ใน git ที่ commit ก่อนหน้า) แล้วลบแถวนี้; ภาพจะ กลับไปเป็นเตียงที่หดเข้าช่อง · หรือพี่ชี้จากภาพว่าเฟรมล้นเข้า walkway มากไป -> นั่นไม่ใช่การคืน cap แต่เป็นการเลือกเตียงที่เฟรมแคบกว่า หรือขยับ bench ตามคำสั่ง 08-22 (ปรับของรอบ ๆ ให้มาชิดเตียง)"
+  },
+  {
+   "id": "D-125",
+   "unit": "DELIV-001",
+   "subject": "bedside lamp practical",
+   "decided_by": "builder",
+   "decided_date": "2026-08-24",
+   "decided_round": 60,
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-07-28-see-your-own-work-and-be-able-to-stop",
+   "question": "แสงของโคมหัวเตียงอยู่ที่ z 715.0 มม. แต่ยอดโดมทองเหลืองอยู่ที่ 704.3 — หลอดอยู่ **นอก** โป๊ะของตัวเอง สูงกว่า 10.7 มม. ทั้งสองดวง จะย้ายแสงเข้าไปในโดม หรือปล่อยไว้",
+   "because": "**ตาเห็นก่อน แล้วเลขบอกว่าเท่าไร** (R7b): crop 4x ที่โคมทั้งสองดวงมีวงรีขาวไหม้อยู่บนหลังโดม ตำแหน่งเดียวกันเป๊ะทั้งคู่ ระแนงเหนือโคมสว่าง ส่วนหน้าโต๊ะใต้โคมเทาตาย. สาเหตุไม่ใช่ค่าที่ตั้งผิด แต่เป็น **หนึ่งพารามิเตอร์แบกสองความหมาย (R9)**: element5_lighting.lamp_glow คำนวณ z_off_m จาก **ตู้ probe ที่ hardcode ไว้ 0.5 x 0.5 x 0.52** ซึ่งไม่มีอยู่ในสเปกที่ไหนเลย แล้ว build_room เอาไปบวกกับ H ของตู้ **จริง**. D-115 (p2r57) เปลี่ยนช่องตู้จริงเป็น 0.40 โดมจึงหล่นมาที่ 704.3 ส่วนแสงค้างอยู่ที่ 715.0. **และมันมีเทสต์ที่ผ่านตลอด**: `test_lamp_glow_z_derives_from_the_built_shade` ชื่อบอกว่า derive จากโป๊ะที่สร้างจริง แต่เนื้อในคำนวณคำตอบใหม่จาก probe ตัวเดียวกับที่โค้ดใช้ — เทสต์ที่คำนวณสิ่งที่มันตรวจใหม่เอง เห็นด้วยกับมันได้อย่างเดียว (flattering scorer). นี่คือรายที่ห้าของ datum เดียวกัน: p2r58 เปลี่ยนเตียง แล้วความสูงโต๊ะข้างเตียง (D-045), ความสูงม้านั่ง (D-115 แก้กับ plane 425), ความยาวแผงหัวเตียง (ผูกกับความกว้างที่นอน) และแสงโคมนี้ ไม่ตามไปสักตัว",
+   "in_effect": "millwork ถือนิยามเดียวของโดมกับหลอด (LAMP_DOME_H_OVER_R, LAMP_BULB_DZ0/DZ1) และมีฟังก์ชันบริสุทธิ์ `nightstand_lamp_emitter_z(w,d,h)` คืน **จุดกึ่งกลางหลอดที่โมดูลเดียวกันนี้สร้าง** กับ `nightstand_lamp_dome_apex_z` เป็นเพดานให้เทสต์อ้าง. build_room วาง practical ที่ค่านั้น ไม่ใช่ H + offset ที่เก็บไว้ และ **พิมพ์ทุกรอบลง render path**: 'lamp practical: emitter z 640.0 mm, dome apex 704.3 mm (inside) — the stored probe offset would have put it at 715.0 mm'. derive ไม่ได้ = พิมพ์คำเตือนแล้วถอยไปใช้ probe (R11: 'ดูไม่ได้' ห้ามพิมพ์เหมือน 'ดูแล้วเรียบร้อย'). เทสต์ใหม่ 7 ข้อใน test_millwork ยืนยัน emitter อยู่ใต้ยอดโดมและเหนือปากโดมที่ **ทุกขนาดตู้ 5 แบบ** และมีข้อหนึ่งตรึง defect ไว้เป็นข้อเท็จจริงว่า offset จาก probe ยัง escape โดมจริง",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_emit_z = millwork\\.nightstand_lamp_emitter_z\\(W, D, H\\)",
+     "why": "แถวนี้จะจริงก็ต่อเมื่อ build วางแสงจาก geometry ของตู้ใบนี้จริง ไม่ใช่จาก offset ที่เก็บไว้ ลบบรรทัดนี้แล้วหลอดกลับออกไปนอกโป๊ะเงียบ ๆ เหมือนเดิม"
+    },
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "^def nightstand_lamp_emitter_z\\(",
+     "why": "นิยามเดียวที่ทั้ง mesh หลอดและตัวแสงอ่าน ถ้าหายไปก็กลับไปมีเลขสองชุดที่เดินคนละทางอีกครั้ง ซึ่งเป็นกลไกของ defect นี้ทั้งอัน"
+    },
+    {
+     "file": "pipeline/scripts/test_millwork.py",
+     "pattern": "def test_the_emitter_is_inside_the_dome_at_every_cabinet_size",
+     "why": "invariant ทางกายภาพ ไม่ใช่การคำนวณคำตอบซ้ำ — เป็นสิ่งที่เทสต์เดิมที่ชื่อพูดถูกแต่เนื้อในผิด ไม่เคยตรวจ"
+    }
+   ],
+   "where": "pipeline/scripts/millwork.py, pipeline/scripts/build_room.py, pipeline/scripts/test_millwork.py",
+   "reverse_by": "คืน `lo.location = (x0 + W/2, y0 + D/2, H + glow['z_off_m'])` ใน build_room แล้วลบแถวนี้ — ภาพจะกลับไปมีวงรีขาวไหม้บนหลังโดมทั้งสองดวง · ถ้าพี่ดูภาพใหม่แล้วเห็นว่าโคม **มืดเกินไป** นั่นไม่ใช่เหตุให้ยกแสงกลับออกไปนอกโป๊ะ แต่เป็นเรื่อง watts (element5_lighting practicals.lamp_watts) ซึ่งเป็น knob คนละตัว"
+  },
+  {
+   "id": "D-126",
+   "unit": "DELIV-001",
+   "subject": "Blendkit month — freeze vs results",
+   "decided_by": "builder",
+   "decided_date": "2026-08-24",
+   "decided_round": 60,
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-22-blenderkit-one-month",
+   "question": "โปรโตคอลของเดือน Blendkit สั่งให้เขียน free_baseline แล้ว paid_result ลงไฟล์ criteria — แต่ไฟล์นั้นคือไฟล์ที่ digest แช่แข็งไว้ทั้งก้อน การทำตามโปรโตคอลจึงทำให้ status พิมพ์ว่าเราเพิ่งก่อ flattering-scorer defect จะแก้ยังไงโดยไม่คลาย freeze",
+   "because": "**พิสูจน์ด้วย probe ก่อนเชื่อ**: กรอก free_baseline ของ cushion_throw ช่องเดียว ไม่แตะอะไรอีกเลย digest ขยับ d95d5e9d… -> 67b709df…. fresh-context agent ที่ไม่เคยเห็นงานผมยิงซ้ำได้เลขเดียวกันและเพิ่มมาอีกสองเคส (เพิ่มคลาส 15dc880d…, จัดรูปแบบใหม่โดยไม่เปลี่ยนความหมายเลย aaa31b30…) — **freeze แยกสามอย่างนี้ไม่ออก** ทั้งที่อันกลางคือการวัดที่ pass rule บังคับให้ทำ. นี่คือคำเตือน third state ของ R13 มาโผล่ที่ตัว freeze เอง: เครื่องที่ตราหน้าการทำตามกฎว่าเป็น defect คือเครื่องที่ถูกปิด. **และมีรูอีกด้าน**: digest ไม่แฮชโค้ดเลย ครึ่งหนึ่งของ pass rule คือ 'passes dim_check in its asset_scale class' ดังนั้น**การขยายแบนด์ย้ายเกณฑ์ได้โดย MATCH ยังพิมพ์อยู่** — D-120 จดรูนี้ไว้เป็นลายลักษณ์อักษรแล้วและมันยังเปิดอยู่จนถึงเช้านี้ ซึ่งสำคัญมากเพราะห้าในเจ็ดคลาสยังต้อง**เขียนแบนด์ขึ้นใหม่**ก่อน fetch แรก",
+   "in_effect": "**ไม่คลาย hash เลยสักนิด** — ย้ายผลออกมาแทน. `qa/blenderkit-month-results.json` (ไม่ถูกแฮช) เก็บ free_baseline/paid_result; `qa/blenderkit-month-classes.json` ถูกแช่แข็งเป็นไบต์ต่อไป การแก้ query, control flag, pass rule หรือ **เพิ่มคลาส** ยังพลิกเป็น CHANGED เหมือนเดิม ซึ่งถูกแล้ว. คลาสใหม่ทั้งสี่ที่พี่ขอวันนี้ (โคมไฟ, ผ้า+หนังสือบนม้านั่ง, ของในตู้, หัวเตียง) เข้าช่อง `out_of_test` โดยประกาศว่า **ไม่นับเป็นหลักฐาน C2** เพราะเลือกชุดทดสอบหลังเห็นผลคือสิ่งที่ freeze มีไว้จับ. รูอีกด้านปิดด้วย `instrument_digest()` แฮช asset_scale.BANDS + MIN_DEPTH_RATIO **เป็น digest ที่สอง ไม่ใช่ input ที่สี่ของอันแรก** — เพราะค่าที่เก็บของอันแรกคือหลักฐานที่ประทับไว้ตอน 08-22 การไปประทับใหม่จะทำลายสิ่งเดียวที่มันมีไว้ทำ. อันที่สองประทับ 2026-08-24 และ **พิมพ์เองว่าเริ่มช้า พูดแทนช่วง 08-22..24 ไม่ได้**",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/blenderkit.py",
+     "pattern": "^RESULTS = os\\.path\\.join\\(REPO, \"qa\", \"blenderkit-month-results\\.json\"\\)",
+     "why": "ที่อยู่ของผลที่อยู่นอก hash ถ้าหายไปผลก็ถูกเขียนกลับเข้าไฟล์ที่ถูกแช่แข็ง แล้ว defect นี้กลับมาทั้งอัน"
+    },
+    {
+     "file": "pipeline/scripts/blenderkit.py",
+     "pattern": "^def instrument_digest\\(bands=None, ratios=None\\):",
+     "why": "รูฝั่ง false-negative ที่ D-120 จดไว้ ลบออกแล้วการขยายแบนด์ย้ายเกณฑ์ C2 ได้เงียบ ๆ อีกครั้ง"
+    },
+    {
+     "file": "pipeline/scripts/test_blenderkit.py",
+     "pattern": "def test_editing_a_query_still_flips_the_digest",
+     "why": "negative control ที่พิสูจน์ว่า freeze ไม่ได้ถูกคลาย มีแต่ถูกปลดภาระเรื่องผล — ถ้าเทสต์นี้หายไปก็ไม่มีอะไรค้านว่าผมคลาย freeze ให้ตัวเองผ่าน"
+    }
+   ],
+   "where": "pipeline/scripts/blenderkit.py, qa/blenderkit-month-results.json, pipeline/scripts/test_blenderkit.py, qa/blenderkit-month-classes.json",
+   "reverse_by": "ย้าย free_baseline/paid_result กลับเข้า qa/blenderkit-month-classes.json แล้วลบ RESULTS + instrument_digest + เทสต์ 11 ข้อ; status จะพิมพ์ CHANGED ทุกครั้งที่บันทึกผลตามโปรโตคอล · ถ้าพี่อยากให้ **นับ** คลาสใหม่เป็นหลักฐาน C2 ด้วย นั่นคือคำสั่งของพี่ที่เหนือกว่ากฎนี้ (R13) — ย้ายแถวจาก out_of_test เข้าไฟล์ criteria แล้วเขียน digest เก่า->ใหม่ลง gate ในคอมมิตเดียวกัน"
+  },
+  {
+   "id": "D-127",
+   "unit": "DELIV-001",
+   "subject": "STY-2 style verdict on acquired masses",
+   "decided_by": "builder",
+   "decided_date": "2026-08-24",
+   "decided_round": 61,
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-23-style-before-objects",
+   "question": "STY-2 (verdict สไตล์บนก้อนที่ซื้อมา) เป็นครึ่งที่ยังไม่สร้างของคำสั่งพี่ 08-23 — สร้างตอนนี้เลยมั้ย ในเมื่อพี่ขอของใหม่หกอย่างและกฎข้อนี้คือสิ่งที่ทำให้การไปช้อปตรวจสอบได้",
+   "because": "**ออกแบบแล้ว ยิงด้วยฝ่ายค้านสามมุม และ REFUTED — ไม่สร้าง** และการไม่สร้างคือคำตอบ ไม่ใช่การเลื่อน. ฝ่ายออกแบบตอบข้อค้านสองข้อของเมื่อคืนได้ดีจริง (predicate เลือก 108/567 ก้อน false positive 0 · false negative ตัวเดียวคือ `Sheet` ที่ tripwire ตัวที่สามจับได้ · และ 'จะแดงวันแรก' ผิดตามข้อเท็จจริงเพราะทั้ง 5 assembly มี verdict อยู่แล้วในร้อยแก้ว) — **แต่ฝ่ายค้านสองคนที่ไม่รู้จักกันตอบ REFUTED ทั้งคู่** ด้วยข้อที่หนักกว่ามาก และเจ็ดข้อในนั้นคือรูปเดิมที่ repo นี้จ่ายมาแล้ว: (1) **รอบ 08-22 ที่จะเอามาเป็นแถวแรก 'ถอดความ' ไม่ได้ ต้อง 'กุ'** — ทั้ง repo มีแค่ร้อยแก้วสองท่อนใน qa/blenderkit-search-log.json ไม่มี sealed_map ไม่มี verdict รายคน ไม่มีรายชื่อ anchor ไม่มี timestamp ไม่มีโฟลเดอร์ artifact เลย → V13/V14/V15 จะ 'recompute' จากไฟล์ที่คนถูกตรวจพิมพ์ขึ้นเองให้ตรงกับคำตอบที่อยากได้ นี่คือ flattering scorer รูปบริสุทธิ์ที่สุด (2) **รอบนั้นเกิดก่อน prompt ที่แช่แข็งไว้หนึ่งวัน** (prompt ถูก add 2026-08-23 15:34 / รอบ 08-22) → rung ที่สร้างมาพิสูจน์ว่า 'คำถามถูกล็อกก่อนเห็นของ' จะ ship มาพร้อม counter-example ฝังอยู่ข้างใน (3) **criteria_digest ไม่แฮช anchor** ซึ่งเป็น input ที่ขยับคำตอบจริง ๆ และ repo มีหลักฐานเอง: 341b04e0 ได้ 'สองในสาม' เมื่อ 08-22 แต่ **เอกฉันท์ 3/3** เมื่อ 08-24 (4) **กรรมการสามคนเห็นตรงกัน 23 จาก 24 ข้อ** (7 ใน 8 เอกฉันท์) → '>=2 ใน 3' แทบไม่ให้ข้อมูลอะไร มันคือกรรมการคนเดียวสุ่มสามครั้ง และเป็น vendor เดียวกับผู้สร้าง ซึ่ง R7c เขียนไว้ตรง ๆ ว่าไม่ใช่ตัวแทนของ rung ข้ามค่าย (5) **ซีลคุมการสับไพ่ ไม่ได้คุมการคัดเลือก** — 38 hit ในกรอบขนาดเหลือ 8 ใบให้กรรมการดู ไม่มีไฟล์ไหนบอกว่า 30 ใบที่ตัดทิ้งคืออันไหนหรือด้วยเหตุใด 'panel ที่ตัดสินเฉพาะของที่รสนิยมผู้สร้างปล่อยผ่านมาแล้ว คือตัวกรองที่มีตรายางต่อท้าย' (6) **ผูกกฎไว้กับ 'ของที่ซื้อ' = ยกเว้นทุกก้อนที่ปั้นเองโดยโครงสร้าง** — หัวเตียง ระแนง BF14 โคมสองดวง หนังสือ ผ้าพับ 42 ชั้น อยู่นอกกฎทั้งหมด ทั้งที่เป็นของที่กรรมการยื่นข้อสไตล์ใส่จริง ๆ · R9b เขียนไว้เองว่ากฎที่ระบุว่ามันใช้กับอะไร จะยกเว้นชิ้นต่อไปเสมอ (7) **obeyed_assert เป็น grep คำว่า `style_verdict` เปล่า ๆ ที่ failure string ของ rung เองสนอง** → คำสั่งพลิกเป็น obeyed ด้วยข้อความที่ rung พิมพ์ตอนมัน **ตก** รูปเดียวกับ ORD-sheet-first ที่ยืนยันตัวเองเขียวด้วย assert ที่ตรงกับ COULD-NOT-RUN ของตัวเอง (จับได้ 08-23) (8) **มันไม่เปิดรูป** — verdict มาจาก thumbnail แคตตาล็อก และ existence_check เป็นโมดูล JSON บริสุทธิ์ตาม layer law → rung ที่ 32 ที่อ่านคำประกาศ บนเลนที่ R11 เขียนมาเพื่อสิ่งนี้พอดี. **และสองข้อสุดท้ายคือของผมเอง**: การสลับโต๊ะข้างเตียงที่ r60 ทำให้ 'วันแรกมี violation เดียว' ผิดไปสองข้อทันที (แถว side_table ทั้งคู่ยื่น verdict ใส่ 341b04e0 ซึ่งสเปกไม่อ้างถึงแล้ว) — ซึ่งพิสูจน์ข้อกล่าวหาหลักได้ดีกว่าคำอธิบายใด ๆ: **'วันแรกเขียว' เป็นคำกล่าวเรื่องช่วงเวลาหนึ่ง ไม่ใช่คุณสมบัติของ rung และ spec edit วันเดียวกันที่ยังไม่ commit ก็พลิกมันได้**",
+   "in_effect": "**ไม่มี STY-2 ในโค้ด** — ORD-2026-08-23-style-before-objects ยัง `not-obeyed` ตามเดิม พร้อมเหตุผลที่ตอนนี้วัดได้แทนที่จะเป็นความรู้สึก. สิ่งที่มีคือ **เงื่อนไขเจ็ดข้อที่ต้องจริงก่อน rung สไตล์ตัวไหนก็ตามจะ ship** (ข้อ 1-8 ข้างบน) และ artifact ที่ใช้ได้จริงสองชุด: `_private/deliv-001/style-panel-2026-08-24/{nightstand,bench}/` เป็นรอบแรกที่มี **verdict รายคนครบตาม schema + _key.json + prompt ที่ freeze** — คือรอบแรกที่ทะเบียนสไตล์จะถอดความได้โดยไม่ต้องกุ. รอบ 08-22 เข้าทะเบียนได้ในสถานะ `not-judged` เท่านั้น ห้าม backfill เป็น verdict",
+   "in_effect_assert": [
+    {
+     "file": "qa/owner-orders.json",
+     "pattern": "\"id\": \"ORD-2026-08-23-style-before-objects\"[\\s\\S]{0,4000}?\"status\": \"not-obeyed\"",
+     "why": "แถวนี้จะจริงก็ต่อเมื่อคำสั่งยังถูกบันทึกว่ายังไม่ทำตาม การพลิกเป็น obeyed โดยไม่มี rung จริงคือสิ่งที่ฝ่ายค้านข้อ 7 บอกว่าจะเกิดขึ้นเอง"
+    },
+    {
+     "file": "pipeline/scripts/existence_check.py",
+     "pattern": "^VERDICTS = \\(\\\"keep\\\", \\\"fix\\\", \\\"remove\\\", \\\"unresolved\\\"\\)",
+     "why": "ยืนยันว่า STY-2 ยังไม่ถูกใส่เข้าไปจริง ๆ ถ้ามีวันหนึ่ง style_verdict เข้ามา บรรทัดนี้จะเปลี่ยน และแถวนี้ต้องถูกทบทวนพร้อมกับเงื่อนไขเจ็ดข้อ"
+    }
+   ],
+   "where": "qa/owner-orders.json, pipeline/scripts/existence_check.py, _private/deliv-001/style-panel-2026-08-24/",
+   "reverse_by": "สร้าง STY-2 ตามที่ออกแบบไว้ — แต่ต้องแก้เงื่อนไขทั้งเจ็ดก่อน โดยเฉพาะ: ทะเบียนเริ่มจากรอบที่ **มีข้อมูลจริง** (08-24) ไม่ใช่ backfill รอบ 08-22 · digest ต้องแฮช anchor ด้วย · ซีลต้องคุม pool ที่คัดเข้ามา ไม่ใช่แค่การสับไพ่ · กฎต้องไม่ผูกกับ 'ของที่ซื้อ' · assert ต้องไม่ใช่ grep คำเปล่า · และต้องมี rung ที่เปิดรูป (crop จากเฟรมจริง ไม่ใช่ thumbnail) · หรือพี่สั่งจากภาพว่าเอาแบบไหน ซึ่งเหนือกว่ากฎนี้ทั้งหมด (R13)"
+  },
+  {
+   "id": "D-131",
+   "unit": "DELIV-001",
+   "subject": "headboard band vs hugged nightstands",
+   "decided_round": 62,
+   "decided_date": "2026-08-24",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-11-sheet-first",
+   "question": "กรรมการตาบอด C2 ข้อ 10 อ่านจากภาพล้วน: 'หัวเตียงแคบกว่าเตียงที่มันรับใช้ ผ้าเตียงล้นออกนอก ปลายทั้งสองข้าง' — วัดแล้วเขาถูกทุกคำ แบบวาดแผงไว้ 2088 ซึ่งคลุมได้หมด จะขยายตามหมึกเลยมั้ย",
+   "in_effect": "**ไม่ขยาย และเหตุผลเป็นเรขาคณิตที่วัดได้ ไม่ใช่การเลื่อน** · จาก dump ของ p2r62: หัวเตียง 1800.0 · โครงเตียง 1841.7 (โผล่ 21 ต่อข้าง) · หมอน 1835.8 · ผ้านวม 2012.7 (ล้น 106 ต่อข้าง) — กรรมการถูกทั้งสี่ · แบบ (SR-18) วาดแผง 60x2088 ไว้ **ระหว่างช่องโต๊ะข้างเตียงสองช่อง** ที่ y2200 กับ y51 (SR-09/SR-10 pen 0.60) · แต่ ORD-2026-08-22-bed-standard-size-hug ย้ายโต๊ะของเราเข้ามา hug เตียงมาตรฐาน ท็อปจึงอยู่ที่ y2036 กับ y265 · แผง 2088 กลางเตียงจะกิน **134มม.** เข้าไปในท็อป ทั้งสองใบ **ทับกับที่ท็อปฝั่งใต้กินแผงอยู่แล้ว 39มม. วันนี้** · องค์ประกอบที่แบบวาด (แผง+ช่องขนาบ) กับโต๊ะที่ hug อยู่ร่วมกันไม่ได้ และ **คำสั่งที่ย้ายโต๊ะเป็นของพี่** จึงเป็นคำตัดสินของพี่ ไม่ใช่ของผม (ASK-032 ที่เปิดอยู่แล้วบนชิ้นนี้พอดี) · **สิ่งที่ทำแทน**: build อ่าน SR-18 ได้แล้ว (`sheet_recon.drawn_rect_mm`) และ **พิมพ์ระยะห่างจากหมึกทุกรอบ** ในเส้นทาง render — เลขที่เรายัง ทำตามไม่ได้ ไม่ใช่เลขที่เลิกวัด นั่นคือวิธีที่ 288มม. หายไปสองวันโดยไม่มีใครเห็น",
+   "where": "pipeline/scripts/build_room.py, pipeline/scripts/sheet_recon.py, qa/owner-asks.json, qa/sheet-recon.json",
+   "because": "แผงยาวเท่า `across` = ความกว้างที่นอน ตั้งแต่ p2r11 ตอนนั้นช่องที่วาด 2149 กับแผง 2088 เป็นเลขใกล้กัน (ห่าง 61) จึงไม่มีใครเห็นว่ามันเป็นคนละอย่าง · พอคำสั่ง 08-22 หดเตียงเหลือ 1800 แผงหดตามเงียบ ๆ 288มม. — หนึ่ง parameter แบกสองความหมาย",
+   "reverse_by": "พี่ตอบ ASK-032 ว่าเอาแผงตามแบบ → ต้องคืนโต๊ะไปที่ช่องที่วาด (y2200/y-450) ก่อน แล้วแผง 2088 ถึงจะลงได้ · หรือพี่บอกว่าเอาโต๊ะที่ hug ไว้ → แผงอยู่ที่ความกว้างเตียงต่อไปและ SR-18 coverage จะพิมพ์ส่วนต่างทุกรอบ · ถอด rung: ลบบล็อก `_hb_ink` ใน build_room แล้วลบแถวนี้",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_hb_ink = _sr\\.drawn_rect_mm\\(\"SR-18\"\\)",
+     "why": "The build must keep ASKING the drawing every round. A number we cannot yet honour is not a number we may stop measuring — that is exactly how the 288 mm went unnoticed."
+    },
+    {
+     "file": "pipeline/scripts/sheet_recon.py",
+     "pattern": "def drawn_rect_mm\\(row_id, path=None\\)",
+     "why": "The reader itself. Without it the build has no way to ask the sheet anything and every drawn dimension in the model goes back to being a transcription."
+    }
+   ]
   }
  ],
  "_assert_ratchet_from": "D-124"

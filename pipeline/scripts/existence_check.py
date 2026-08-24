@@ -131,6 +131,36 @@ def touches(a, b, tol_mm=25.0):
     return hi >= lo - tol_mm
 
 
+def components(name, asms):
+    """Every assembly a ledger key names: the exact match, or — when the key is a bare
+    prefix — every component of that prefix. `by_name` collapses a prefix to its LARGEST
+    component so the geometric checks still RUN, and that is right for a size question
+    and wrong for a load path: mirror twins have equal footprints, so "the largest" picks
+    an arbitrary one of them and the held_by test then compares a NORTH lamp against a
+    SOUTH table. Caught 2026-08-24 the moment the two bedside-lamp rows were collapsed
+    into one family row (p2r62) — the check reported a broken load path for two lamps
+    that are each sitting squarely on their own table.
+    """
+    exact = [a for a in asms if a["name"] == name]
+    return exact or [a for a in asms if a["name"].split("@")[0] == name]
+
+
+def held_violation(key, held, asms):
+    """None, or the component whose carrier is not under it.
+
+    EVERY component must touch SOME carrier component — not "one representative touches
+    one representative". The family form is therefore STRICTLY MORE checked than the
+    coordinate form, which is the opposite of what collapsing rows usually costs.
+    """
+    carriers = components(held, asms)
+    if not carriers:
+        return None                      # absence is the caller's own, earlier, message
+    for c in components(key, asms):
+        if not any(touches(c, b) for b in carriers):
+            return c["name"]
+    return None
+
+
 def measured_reveal_mm(asm, token):
     """The smallest vertical gap between adjacent parts of THIS assembly whose names
     carry `token`, in mm — or None when fewer than two such parts exist.
@@ -227,10 +257,12 @@ def check(objects, ledger, today=None):
                     v.append(f"object-existence {key}: held_by {held!r} is not in the "
                              f"built scene — a support that is named and absent is a "
                              f"load path nobody took (R3's `where` test)")
-                elif key in by_name and not touches(by_name[key], by_name[held]):
-                    v.append(f"object-existence {key}: held_by {held!r} exists but "
-                             f"does not touch it — the named carrier is somewhere "
-                             f"else in the room")
+                else:
+                    _off = held_violation(key, held, asms)
+                    if _off:
+                        v.append(f"object-existence {key}: held_by {held!r} exists but "
+                                 f"does not touch {_off} — the named carrier is "
+                                 f"somewhere else in the room")
 
         # ---- SENSE: can it be used ----------------------------------------------
         if r.get("operable"):

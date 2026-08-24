@@ -60,6 +60,21 @@ FLOAT_Z   = 0.450   # the drawer stack FLOATS — air/shadow reveal below it (D3
 LAMP_BASE_H  = 0.040   # brass base height
 LAMP_STEM_H  = 0.200   # stem height
 LAMP_SHADE_H = 0.190   # drum shade height
+# THE DOME AND ITS BULB — one definition, because two produced a light OUTSIDE its own
+# shade. build_room materialises the shade envelope above as a spun dome of height
+# min(dz, r * LAMP_DOME_H_OVER_R) with its rim at the envelope's oz, and a bulb spanning
+# oz+LAMP_BULB_DZ0 .. oz+LAMP_BULB_DZ1 under it. Those three numbers used to live only in
+# build_room, while element5_lighting derived the practical's z from a HARDCODED PROBE
+# cabinet (0.5, 0.5, 0.52) that exists nowhere in the spec. D-115 then re-slotted the real
+# cabinet 501 -> 400 mm and the two halves parted company: the shade apex fell to 704.3 mm
+# while the point light stayed at 715.0 mm — 10.7 mm ABOVE the dome it is supposed to be
+# inside. Both lamps in every frame since p2r57 carry a blown-out white ellipse burned on
+# TOP of the brass, the slats above them glow, and the deck under them stays dead grey.
+# R9's law is why it is here and not there: a position derivable from a contact must never
+# be typed, and a probe constant IS a typed position wearing a derivation's name.
+LAMP_DOME_H_OVER_R = 0.62   # mushroom proportion: dome height / shade radius
+LAMP_BULB_DZ0      = -0.005 # bulb bottom, relative to the shade envelope's oz
+LAMP_BULB_DZ1      = 0.045  # bulb top
 NS_TOE_H     = 0.035   # nightstand toe-shadow height
 NS_TOE_R     = 0.022   # toe set-back from every face (symmetric — rot-honesty)
 NS_DRAWER_H  = 0.185   # top-drawer face height
@@ -698,6 +713,40 @@ def nightstand_lamp_parts(w_m, d_m, h_m, lamp=True):
         parts.append(("lamp_shade", cx - sr, cy - sr, h_m + base_h + stem_h - 0.02,
                       2 * sr, 2 * sr, shade_h))
     return parts
+
+
+def nightstand_lamp_emitter_z(w_m, d_m, h_m):
+    """PURE (metres): absolute z of the practical point light for a lamped nightstand of
+    this size — the CENTRE OF THE BULB THIS SAME MODULE SIZES, never a constant.
+
+    Returns None when no lamp part exists, so a caller cannot mistake "there is no lamp"
+    for "the lamp is at zero" (R11's exit-code law, applied to a number).
+
+    WHY IT IS A FUNCTION AND NOT A NUMBER: see LAMP_DOME_H_OVER_R above. The emitter and
+    the shade must move together whenever the cabinet resizes, and the only way to
+    guarantee that is to derive both from one call to `nightstand_lamp_parts`.
+    """
+    shade = next((p for p in nightstand_lamp_parts(w_m, d_m, h_m, lamp=True)
+                  if p[0] == "lamp_shade"), None)
+    if shade is None:
+        return None
+    _, _ox, _oy, oz, dx, _dy, _dz = shade
+    return oz + (LAMP_BULB_DZ0 + LAMP_BULB_DZ1) / 2.0
+
+
+def nightstand_lamp_dome_apex_z(w_m, d_m, h_m):
+    """PURE (metres): absolute z of the built dome's apex — the ceiling the emitter must
+    stay under. Exists so a test can state the invariant the frame broke, rather than
+    re-deriving build_room's dome maths in the test file (a test that recomputes the
+    thing under test is the flattering scorer this defect already shipped once:
+    `test_lamp_glow_z_derives_from_the_built_shade` asserted the code equalled its own
+    probe constant, so it passed on every frame with the bulb outside the shade)."""
+    shade = next((p for p in nightstand_lamp_parts(w_m, d_m, h_m, lamp=True)
+                  if p[0] == "lamp_shade"), None)
+    if shade is None:
+        return None
+    _, _ox, _oy, oz, dx, _dy, dz = shade
+    return oz + min(dz, (dx * 0.5) * LAMP_DOME_H_OVER_R)
 
 
 def tub_chair_curved(w_m, d_m, h_m, seat_h_m=0.43, rot_deg=0.0, opening_deg=110.0):

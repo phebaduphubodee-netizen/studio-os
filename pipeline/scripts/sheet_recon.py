@@ -553,6 +553,38 @@ def _load(path, what):
         raise SystemExit(2)
 
 
+def drawn_rect_mm(row_id, path=None):
+    """The INK rect of one drawn row — [x, y, dx, dy] in mm — or None.
+
+    PURE, no bpy, no side effects, and it never raises: the caller decides what a
+    missing row means, because "the sheet says nothing here" and "the sheet could not
+    be read" are different facts and only the caller knows which one is allowed to
+    proceed. `row_id` matches `id` first (SR-18) and then `key` (headboard_band).
+
+    WHY THE BUILD NEEDS THIS AT ALL (p2r62). R12 says the sheet outranks our
+    derivations, and until now that law was enforced only AFTER the fact, by the
+    reconciliation gate. The build itself had no way to ASK the drawing for a number,
+    so every drawn dimension in the model was a number somebody had transcribed —
+    and the headboard band is what that costs: `build_room` sized it from the
+    MATTRESS WIDTH, so when the owner's standard-size order narrowed the bed the
+    panel silently narrowed with it, 288 mm below the ink. A blind critic then read
+    the result off the picture with no access to any of this: "the headboard is
+    narrower than the bed it serves; bedding spills past BOTH of its ends."
+    """
+    try:
+        with open(path or LEDGER, encoding="utf-8") as f:
+            rows = json.load(f).get("rows") or []
+    except (OSError, ValueError, AttributeError):
+        return None
+    for r in rows:
+        if r.get("id") == row_id or r.get("key") == row_id:
+            rect = r.get("rect_mm")
+            if isinstance(rect, list) and len(rect) == 4:
+                return [float(v) for v in rect]
+            return None
+    return None
+
+
 def _save_ledger(ledger):
     with open(LEDGER, "w", encoding="utf-8", newline="\n") as f:
         json.dump(ledger, f, ensure_ascii=False, indent=1)

@@ -1141,3 +1141,59 @@ def test_the_turn_lands_the_world_footprint_inside_the_declared_rect():
 def test_degenerate_input_returns_the_slot_unchanged():
     turn, fw, fd, why = M.orient_to_slot(0.0, 0.4, 0.5, 1.0, rot=0.0)
     assert turn == 0.0 and (fw, fd) == (0.5, 1.0) and "degenerate" in why
+
+
+# ---------------------------------------------------------------------------
+# THE PRACTICAL MUST BE INSIDE ITS OWN SHADE — the p2r57..p2r59 defect.
+#
+# NEGATIVE CONTROL, and it is the point of these three tests: the FIRST one fails
+# against the code as it stood before 2026-08-24. element5_lighting computed the
+# emitter offset from a hardcoded PROBE cabinet (0.5, 0.5, 0.52) and build_room added
+# it to the REAL cabinet's H. D-115 re-slotted the real nightstand to 0.40 and the two
+# parted company: emitter 715.0 mm against a dome apex of 704.3 mm.
+#
+# The test that was already there — `test_lamp_glow_z_derives_from_the_built_shade` in
+# test_element5_lighting.py — passed through all of it, because it re-derives the answer
+# from the SAME probe constants the code uses. A test that recomputes the thing under
+# test can only ever agree with it. These tests state the physical invariant instead.
+PROBE_W, PROBE_D, PROBE_H = 0.5, 0.5, 0.52
+
+
+@pytest.mark.parametrize("w,d,h", [
+    (0.40, 0.40, 0.40),      # D-115's real slot — the size that broke it
+    (0.46, 0.46, 0.50),      # the drawn carcass 460 at the D-045 mattress datum
+    (0.50, 0.50, 0.52),      # the old probe
+    (0.35, 0.55, 0.45),      # a non-square cabinet
+    (0.30, 0.30, 0.30),      # small enough to lose the drawer split
+])
+def test_the_emitter_is_inside_the_dome_at_every_cabinet_size(w, d, h):
+    emit = M.nightstand_lamp_emitter_z(w, d, h)
+    apex = M.nightstand_lamp_dome_apex_z(w, d, h)
+    shade = next(p for p in M.nightstand_lamp_parts(w, d, h, lamp=True)
+                 if p[0] == "lamp_shade")
+    rim = shade[3]
+    assert emit is not None and apex is not None
+    assert emit < apex, (f"the practical at {emit * 1000:.1f} mm is ABOVE the dome apex "
+                         f"{apex * 1000:.1f} mm — it lights the shade from outside")
+    assert emit > rim - 0.010, (f"the practical at {emit * 1000:.1f} mm has dropped below "
+                                f"the shade's open mouth at {rim * 1000:.1f} mm")
+
+
+def test_the_stored_probe_offset_is_wrong_for_the_real_cabinet():
+    """The defect itself, pinned as a fact so nobody re-introduces the shortcut."""
+    probe_shade = next(p for p in M.nightstand_lamp_parts(PROBE_W, PROBE_D, PROBE_H,
+                                                          lamp=True)
+                       if p[0] == "lamp_shade")
+    z_off = probe_shade[3] + probe_shade[6] / 2.0 - PROBE_H     # element5_lighting's number
+    w = d = h = 0.40                                            # D-115's real slot
+    assert h + z_off > M.nightstand_lamp_dome_apex_z(w, d, h), (
+        "the probe offset no longer escapes the real dome — if this ever passes, the "
+        "probe and the real cabinet have converged and this test should be retired "
+        "with a note saying which change did it")
+    assert M.nightstand_lamp_emitter_z(w, d, h) < M.nightstand_lamp_dome_apex_z(w, d, h)
+
+
+def test_no_lamp_means_no_emitter_rather_than_zero():
+    """R11's exit-code law applied to a number: 'could not derive' must not read as 0.0."""
+    parts = M.nightstand_lamp_parts(0.4, 0.4, 0.4, lamp=False)
+    assert not any(p[0].startswith("lamp_") for p in parts)

@@ -10,6 +10,7 @@ instrument's FIRST night are pinned as regressions:
     see it.
 """
 import copy
+import json
 
 import sheet_recon as sr
 
@@ -398,3 +399,46 @@ def test_gate_line_names_superseded_and_tolerates_an_old_summary():
     old = sr.gate_line({"drawn": 18, "matched": 17, "gaps": 0, "unresolved": 1,
                         "blocking": 0, "frustum_source": "floor_poly"})
     assert "0 superseded" in old
+
+
+# --- the BUILD can ask the drawing for a number now (p2r62) --------------------
+# R12 says the sheet outranks our derivations, and until this the law was enforced
+# only AFTER the fact, by the reconciliation gate. The build itself had no reader,
+# so every drawn dimension in the model was one somebody had transcribed — and the
+# headboard band is what that cost: it was sized from the MATTRESS WIDTH, so the
+# owner's standard-size order narrowed it 288 mm below the ink with nothing to say so.
+
+def test_the_build_can_read_a_drawn_rect_by_id_or_key(tmp_path):
+    p = tmp_path / "sheet.json"
+    p.write_text(json.dumps({"rows": [
+        {"id": "SR-18", "key": "headboard_band", "rect_mm": [5143, 80, 60, 2088]}]}),
+        encoding="utf-8")
+    assert sr.drawn_rect_mm("SR-18", str(p)) == [5143.0, 80.0, 60.0, 2088.0]
+    assert sr.drawn_rect_mm("headboard_band", str(p)) == [5143.0, 80.0, 60.0, 2088.0]
+
+
+def test_a_missing_row_is_none_and_never_a_number(tmp_path):
+    """The caller decides what silence means, because 'the sheet says nothing here'
+    and 'the sheet could not be read' are different facts and only the caller knows
+    which one may proceed. Returning a default here would be the vacuous zero."""
+    p = tmp_path / "sheet.json"
+    p.write_text(json.dumps({"rows": [{"id": "SR-01", "rect_mm": [0, 0, 1, 1]}]}),
+                 encoding="utf-8")
+    assert sr.drawn_rect_mm("SR-18", str(p)) is None
+    assert sr.drawn_rect_mm("SR-01", str(tmp_path / "nope.json")) is None
+
+
+def test_a_malformed_rect_is_refused_rather_than_half_read(tmp_path):
+    p = tmp_path / "sheet.json"
+    p.write_text(json.dumps({"rows": [{"id": "SR-18", "rect_mm": [5143, 80, 60]},
+                                      {"id": "SR-19"}]}), encoding="utf-8")
+    assert sr.drawn_rect_mm("SR-18", str(p)) is None
+    assert sr.drawn_rect_mm("SR-19", str(p)) is None
+
+
+def test_the_live_ledger_still_answers_the_row_the_build_asks_for():
+    """Pin the LIVE row, because the build reads it by this exact id. A renamed or
+    dropped SR-18 must fail here rather than in a render three days later."""
+    got = sr.drawn_rect_mm("SR-18")
+    assert got and len(got) == 4, "the build's headboard line reads SR-18 by name"
+    assert got[3] > 2000, f"the drawn band is ~2088 mm long; ledger says {got}"

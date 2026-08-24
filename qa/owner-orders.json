@@ -70,8 +70,19 @@
       "standing": true,
       "retired_by": null,
       "obeyed_where": "CLAUDE.md, pipeline/scripts/critique_call.py",
-      "obeyed_how": "critique_call.py builds the bundle and calls Gemini directly; the owner-paste ritual is the fallback, not the default.",
-      "obeyed_assert": []
+      "obeyed_how": "critique_call.py builds the bundle and calls Gemini directly; the owner-paste ritual is the fallback, not the default. ASSERTED 2026-08-24 (p2r62): `rule_gate.critic_lag` counts rounds since BOTH judges last saw a frame and prints it into the render path. It read 4 the morning it was written — r58-r61 were playblast-only rounds closed on the builder's own eye. The counter PRINTS and does not block: the frame under judgment does not exist yet when a pre-render gate runs, so a refusal here would fall on the render that clears it. The blocking form belongs where a ROUND CLOSES and is not built (D-128).",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "_lag, _last, _half = critic_lag\\(",
+          "why": "His order is about the RENDER SERIES, not the source tree, so the assertion pins the counter's CALL SITE inside the live gate — not the existence of critique_call.py, which was true on all four of the rounds r58-r61 that no judge ever saw."
+        },
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "CRITIC LADDER: \\{_lag\\} round\\(s\\) since both judges saw a frame",
+          "why": "The number has to reach the render path, because that is the channel he reads (R11). A lag nobody prints is the queue-with-no-consumer defect wearing a counter."
+        }
+      ]
     },
     {
       "id": "ORD-2026-08-04-stop-and-ask-for-critique",
@@ -84,8 +95,19 @@
       "standing": true,
       "retired_by": null,
       "obeyed_where": "CLAUDE.md, pipeline/scripts/critique_call.py",
-      "obeyed_how": "R7c is the rule text; the bundle builder refuses target/anchors by code so blindness is enforced by the ask's construction.",
-      "obeyed_assert": []
+      "obeyed_how": "R7c is the rule text; the bundle builder refuses target/anchors by code so blindness is enforced by the ask's construction. ASSERTED 2026-08-24 (p2r62): `rule_gate.critic_lag` counts rounds since BOTH judges last saw a frame and prints it into the render path. It read 4 the morning it was written — r58-r61 were playblast-only rounds closed on the builder's own eye. The counter PRINTS and does not block: the frame under judgment does not exist yet when a pre-render gate runs, so a refusal here would fall on the render that clears it. The blocking form belongs where a ROUND CLOSES and is not built (D-128).",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "def critic_lag\\(critique_dir, round_now\\)",
+          "why": "C2 is half the ladder and the half that is easiest to skip, because it costs a spawned agent rather than an API call. The counter refuses to call a round judged on one answer."
+        },
+        {
+          "file": "pipeline/scripts/rule_gate.py",
+          "pattern": "both = \\[n for n, \\(c2, c3\\) in j\\.items\\(\\) if c2 and c3\\]",
+          "why": "`and`, not `or` — a bundle dir holding a single ANSWER reads like the ladder ran in a directory listing. Three rounds in this lane's history (r34, r36, r44) are exactly that, and nothing had ever counted them."
+        }
+      ]
     },
     {
       "id": "ORD-2026-08-05-object-must-justify-itself",

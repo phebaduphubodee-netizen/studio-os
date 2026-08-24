@@ -1457,3 +1457,121 @@ def test_a_standard_that_cannot_load_does_not_read_as_a_dishonest_ledger():
     assert not [x for x in v if DEBT.NO_STANDARD in x], (
         "a row that could not be re-verified was filed as a blocking violation")
     assert "critic debt" in {n for n, _r, _w in roster}
+
+
+# --- the round counter could not see its own tail, and the ladder had no count -
+# Measured on the live tree 2026-08-24: `count_rounds_room` returned 57 while
+# pipeline/output already held p2r58, p2r59q, p2r60q and p2r61q. Four rounds that
+# each spent a build were outside the counter's range — not inside a gap its max()
+# steps over — and the same four rounds went unjudged, because both critic orders
+# carry `obeyed_assert: []` and nothing anywhere counted frames against judges.
+
+def _round_renders(tmp_path, *names):
+    d = tmp_path / "output"
+    d.mkdir(exist_ok=True)
+    for n in names:
+        (d / n).write_bytes(b"")
+    return str(d)
+
+
+def _round_gates(tmp_path, *rounds):
+    d = tmp_path / "viz"
+    d.mkdir(exist_ok=True)
+    for r in rounds:
+        (d / f"gate-DELIV001-P2r{r}-2026-08-24.md").write_text("x", encoding="utf-8")
+    return str(d)
+
+
+def test_a_round_that_rendered_and_never_closed_still_counts_as_spend(tmp_path):
+    gates = _round_gates(tmp_path, 56, 57)
+    out = _round_renders(tmp_path, "room_bedroom_suite_eye_p2r57.png",
+                   "room_bedroom_suite_eye_p2r58_ql.png",
+                   "room_bedroom_suite_eye_p2r61q_ql.png",
+                   "room_bedroom_suite_eye_p2r61q_ql.blend")
+    assert RG.count_rounds_room(gates) == 57, "the artefact reading is unchanged"
+    assert RG.count_rounds_room_open(out) == 61, (
+        "the tail after the last gate artefact is spend the cap counter cannot see")
+
+
+def test_the_open_counter_reads_evidence_not_a_self_report(tmp_path):
+    assert RG.count_rounds_room_open(str(tmp_path / "nope")) == 0
+    assert RG.count_rounds_room_open(_round_renders(tmp_path)) == 0, (
+        "an empty render dir is zero rounds, not a crash and not a pass")
+
+
+def test_the_open_counter_ignores_a_name_with_no_round_token(tmp_path):
+    out = _round_renders(tmp_path, "AB_camera_A-canonical_vs_B-bedhero.png",
+                   "room_bedroom_suite_eye_cam_verify_ql.png")
+    assert RG.count_rounds_room_open(out) == 0
+
+
+def _judge_bundle(tmp_path, name, c2=True, c3=True):
+    d = tmp_path / "critique" / name
+    d.mkdir(parents=True, exist_ok=True)
+    if c2:
+        (d / "ANSWER_claude-local-c2.md").write_text("x", encoding="utf-8")
+    if c3:
+        (d / "ANSWER_gemini25pro.md").write_text("x", encoding="utf-8")
+    return str(tmp_path / "critique")
+
+
+def test_the_lag_is_zero_when_both_judges_saw_the_current_frame(tmp_path):
+    crit = _judge_bundle(tmp_path, "critique-room_bedroom_suite_eye_p2r62")
+    assert RG.critic_lag(crit, 62) == (0, 62, [])
+
+
+def test_four_playblast_rounds_with_no_judged_frame_are_four(tmp_path):
+    """The live state on 2026-08-24, which is what earned this counter."""
+    crit = _judge_bundle(tmp_path, "critique-room_bedroom_suite_eye_p2r57")
+    lag, last, _half = RG.critic_lag(crit, 61)
+    assert (lag, last) == (4, 57)
+
+
+def test_one_judge_is_not_the_ladder(tmp_path):
+    """A bundle dir holding a single ANSWER reads like the ladder ran, in a
+    directory listing. p2r34 and p2r36 hold Gemini only; p2r44 holds C2 only."""
+    crit = _judge_bundle(tmp_path, "critique-room_bedroom_suite_eye_p2r60", c2=False)
+    _judge_bundle(tmp_path, "critique-room_bedroom_suite_eye_p2r57")
+    lag, last, half = RG.critic_lag(crit, 60)
+    assert (lag, last, half) == (3, 57, [60]), (
+        "a half-judged round must not close the lag, and must be named")
+
+
+def test_nothing_ever_judged_is_not_a_lag_of_zero(tmp_path):
+    crit = _judge_bundle(tmp_path, "critique-room_bedroom_suite_eye_p2r60",
+                   c2=False, c3=False)
+    assert RG.critic_lag(crit, 60) == (60, None, [])
+
+
+def test_the_room_gate_prints_the_ladder_lag_and_the_open_tail(capsys):
+    """CONTROL FOR THE WHOLE POINT: these numbers must reach the render path,
+    because that is the channel he reads (R11). A counter nobody prints is the
+    queue-with-no-consumer defect wearing a counter."""
+    roster = []
+    RG.check_room({"masses": []}, roster=roster,
+                  spec={"model_assertions": [], "items": []})
+    names = {n for n, _r, _w in roster}
+    assert "critic ladder lag" in names, roster
+    out = capsys.readouterr().out
+    assert "R1 CAP" in out
+    lag_note = [w for n, _r, w in roster if n == "critic ladder lag"][0]
+    assert "round(s) since" in lag_note or "NO frame" in lag_note, lag_note
+
+
+def test_the_cap_line_spends_the_open_tail_at_the_call_site(monkeypatch, capsys):
+    """PIN THE CALL SITE, not only the counter — the first mutation run against
+    this file survived every test because `_open = 0` at the call site is
+    invisible to a test that calls `count_rounds_room_open` directly. That is the
+    same shape as the render_dir bug two sections up: the guard was right and the
+    caller handed it something else.
+    """
+    monkeypatch.setattr(RG, "count_rounds_room", lambda _d: 57)
+    monkeypatch.setattr(RG, "count_rounds_room_open", lambda _d: 61)
+    monkeypatch.setattr(RG, "count_full_frames_room", lambda _d, _wh: 52)
+    RG.check_room({"masses": []}, roster=[],
+                  spec={"model_assertions": [], "items": []})
+    out = capsys.readouterr().out
+    assert "spent 61 round(s)" in out, (
+        "the cap counter took the smaller of two honest readings of its own lane")
+    assert "OPEN ROUNDS: r58..r61" in out, (
+        "four rounds that rendered and never wrote a gate artefact must be named")

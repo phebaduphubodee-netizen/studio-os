@@ -59,6 +59,54 @@ GARMENT_LEN_MM = (700, 1900)   # shirt floor (ORD-2026-08-12) .. long-coat ceili
 SIDE_TABLE_TOP_MM = ERGO.TABLE_H_MM["side_table"]          # (380, 480)
 BENCH_SEAT_TOP_MM = (400, 450)  # knowledge/ergonomics tv-viewing md, seat row
 
+# ---- THE RELATION TO *THIS* BED, which the two bands above cannot see -------------
+# D-045 is an OWNER ORDER (2026-08-12, from the p2r26 image): a bedside surface sits at
+# the SLEEPING PLANE minus 20 mm. D-115 kept that relation and re-solved it (band +/-30)
+# and D-115's own question named the mechanism in these words: "เลขเก็บผลลัพธ์
+# ไม่ใช่ความสัมพันธ์" — a number stores a RESULT, not a RELATIONSHIP. It then stored a
+# result: the slot was typed to the chosen model's natural size. At p2r58 the bed became
+# the Metropol set and the plane moved 425 -> 513; the two tops did not follow, and on
+# 2026-08-24 they measure 113 mm and 107 mm below the plane against a band that allows 50.
+#
+# WHY THE EXISTING BANDS PASS IT GREEN, which is the class this rung adds. SIDE_TABLE_TOP_MM
+# is the generic ergonomic range (380-480 +/-25 -> 355-505) and D-045 REFUSED it BY NAME
+# ("vault band 380-480 อ่านเป็น generic ของเตียงต่ำ ไม่ใช่ของ mattress 600"). A 400 mm top
+# sits comfortably inside it. So the guard that runs says ok while the relation the owner
+# actually signed is broken by 63 mm — a rung answering a question nobody asked.
+#
+# THE PLANE IS MEASURED FROM THE BUILT SCENE BY MATERIAL, NOT BY NAME. R9b: "a rule that
+# names the objects it applies to will always exempt the next one" — mesh names are a
+# convention the importer can and does miss (`Sheet`, 1.35 M polys, kept its vendor name
+# and every name-based instrument is blind to it). The mattress wears `bed_mattress`
+# because the whole-bed role splitter dressed it, and that is a contract.
+BEDSIDE_BELOW_PLANE_MM = (20, 30)     # D-045 offset, D-115 band
+MATTRESS_MATERIAL = "bed_mattress"
+
+
+def _by_instance(objs):
+    """Group one prefix's meshes into PIECES by Blender's dedupe suffix.
+
+    `side_table__acq0/acq1/acq2` is one table; `…acq0.001/acq1.001/acq2.001` is its twin.
+    A one-mesh piece lands in the '' group and is unaffected.
+    """
+    out = {}
+    for o in objs:
+        m = re.search(r"\.(\d{3})$", o["name"])
+        out.setdefault(m.group(1) if m else "", []).append(o)
+    return out
+
+
+def sleeping_plane_mm(objs):
+    """Top of whatever wears the mattress material, in mm — or None.
+
+    None is NOT zero and NOT a pass: `check` files the relation as UNMEASURED, because
+    "could not look" must never print like "looked and it was fine" (R11's exit-code law
+    applied to a number).
+    """
+    tops = [o["aabb"][1][2] for o in objs
+            if MATTRESS_MATERIAL in (o.get("materials") or []) and o.get("aabb")]
+    return _mm(max(tops)) if tops else None
+
 _GARMENT = re.compile(r"^mill__style_garment")
 
 
@@ -110,12 +158,29 @@ def load_deficits(root=REPO, path=None):
 
 
 def _sig(deficits, cls, measured_mm):
+    """The signed row covering this measurement, or None.
+
+    TWO DIRECTIONS, and the row must name which. For a garment rail the measurement IS
+    the length and SMALLER is worse, so `signed_down_to_mm` is the floor. For the
+    sleeping-plane relation the measurement is HOW FAR BELOW the plane the top sits and
+    LARGER is worse, so a floor would sign off on arbitrarily worse instances — the exact
+    opposite of this file's own CLASS != INSTANCE law, which says a signature never
+    stretches past the instance that was signed.
+
+    A row that names NEITHER bound is refused: an unbounded signature converts every
+    future failure of that class into an interim, which is how a signed deficit stops
+    being a deficit and becomes an exemption.
+    """
     for r in deficits:
         if r.get("class") != cls:
             continue
-        floor = r.get("signed_down_to_mm")
+        floor, ceil = r.get("signed_down_to_mm"), r.get("signed_up_to_mm")
+        if floor is None and ceil is None:
+            return None
         if floor is not None and measured_mm < floor:
             return None   # worse than what was signed — the signature does not stretch
+        if ceil is not None and measured_mm > ceil:
+            return None   # worse in the other direction, same law
         return r
     return None
 
@@ -162,6 +227,46 @@ def check(dump, deficits):
                           else "fail")
             if f["state"] == "fail":
                 f["why"] = "outside the ergonomic side-table band"
+            findings.append(f)
+
+    # ---- the relation, once, for both pieces that answer to the sleeping plane ----
+    plane = sleeping_plane_mm(objs)
+    for cls, prefix in (("bedside_datum", "side_table__"), ("bench_datum", "bench__")):
+        group = [o for o in objs if o["name"].startswith(prefix)]
+        if not group:
+            continue
+        off, tol = BEDSIDE_BELOW_PLANE_MM
+        if plane is None:
+            findings.append({
+                "cls": cls, "what": f"{prefix}* vs the sleeping plane",
+                "band": f"plane-{off} +/-{tol}", "measured": 0, "state": "fail",
+                "why": f"no mass wears {MATTRESS_MATERIAL!r} in this dump, so the "
+                       f"relation COULD NOT BE MEASURED — which is not a pass"})
+            continue
+        # ONE VERDICT PER PIECE, NOT PER MESH. Caught by this rung on its own first
+        # multi-mesh object (p2r61q, 2026-08-24): the incoming nightstand is THREE meshes
+        # — a leg, a sub-part and the round top — and judging each of them separately
+        # asked "is this leg a bedside surface". The bedside surface is the TOP of the
+        # piece, so the parts of one piece are grouped and reduced with max().
+        # The instance key is Blender's own dedupe suffix (`.001`), which is what
+        # distinguishes the north table from the south one; a piece that is one mesh has
+        # an empty suffix and behaves exactly as before. The unit test that passed this
+        # bug used a single-mesh fixture, which is the whole lesson.
+        for inst, parts in sorted(_by_instance(group).items()):
+            t = _top(parts)
+            what = (f"{prefix}*{inst} top {t} vs plane {plane}"
+                    if prefix == "side_table__" else f"seat top {t} vs plane {plane}")
+            below = plane - t
+            f = {"cls": cls, "what": what,
+                 "band": f"{max(off-tol, 0)}-{off+tol} mm below the plane "
+                         f"(D-045 owner order, D-115 band)", "measured": below}
+            f["state"] = "ok" if abs(below - off) <= tol else "fail"
+            if f["state"] == "fail":
+                over = below - (off + tol) if below > off else (off - tol) - below
+                f["why"] = (f"{below} mm below the sleeping plane, {over} mm outside the "
+                            f"band the owner's own relation allows — the generic "
+                            f"ergonomic band passes this same number GREEN, which is "
+                            f"the class this row exists to catch")
             findings.append(f)
 
     bench = [o for o in objs if o["name"].startswith("bench__")]

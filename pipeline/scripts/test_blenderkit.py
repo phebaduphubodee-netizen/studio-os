@@ -474,5 +474,140 @@ class TestMainExitContract(unittest.TestCase):
         self.assertIn("lapsed", self._runs()[0]["refusals"]["p-1"]["why"])
 
 
+class TestResultsAreOutsideTheFreeze(unittest.TestCase):
+    """The split of 2026-08-24: RUNNING the test must not edit the test.
+
+    Before the split, recording one `free_baseline` — the very next step the criteria
+    file's own protocol prescribes — moved the digest and made `status` print
+    "CHANGED SINCE THE CLOCK STARTED ... the flattering-scorer defect". These tests pin
+    both halves: recording a result is invisible to the hash, and CHANGING THE TEST
+    (a query, a control flag, the pass rule, or adding a class) is still caught.
+    """
+
+    def _classes(self):
+        with open(BK.CLASSES, encoding="utf-8") as fh:
+            return json.load(fh)
+
+    def _digest_for(self, obj):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "classes.json")
+            with open(p, "w", encoding="utf-8") as fh:
+                json.dump(obj, fh, ensure_ascii=False, indent=1)
+            return BK.current_digest(classes_path=p)
+
+    def test_recording_a_result_does_not_touch_the_criteria_file(self):
+        """The results file is a separate path; the digest never reads it."""
+        before = BK.current_digest()
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "results.json")
+            with open(p, "w", encoding="utf-8") as fh:
+                json.dump({"classes": {"cushion_throw": {"free_baseline": "0 of 20"}}}, fh)
+            self.assertEqual(BK.load_results(p)["classes"]["cushion_throw"]["free_baseline"],
+                             "0 of 20")
+        self.assertEqual(before, BK.current_digest())
+
+    def test_missing_results_file_is_empty_not_an_error(self):
+        self.assertEqual(BK.load_results(os.path.join(tempfile.gettempdir(),
+                                                      "no-such-results.json")), {})
+
+    def test_editing_a_query_still_flips_the_digest(self):
+        """NEGATIVE CONTROL. Loosening a freeze is the flattering-scorer move; this
+        proves the freeze was not loosened, only relieved of the results.
+
+        Both sides are re-serialised the same way, because the digest is over BYTES:
+        comparing a re-emitted file against the on-disk one measures the JSON writer,
+        not the edit. (That byte-sensitivity is itself real and deliberate — a
+        whitespace reformat of the criteria file flips the freeze, which is the
+        conservative direction for a freeze to be wrong in.)"""
+        base = self._classes()
+        edited = json.loads(json.dumps(base))
+        edited["classes"][0]["queries"].append("asset_type:model+something+new")
+        self.assertNotEqual(self._digest_for(edited), self._digest_for(base))
+
+    def test_adding_a_class_still_flips_the_digest(self):
+        """Choosing the test set after seeing results is exactly what must be caught,
+        so the owner's new object classes go in `out_of_test`, never in here."""
+        edited = json.loads(json.dumps(self._classes()))
+        edited["classes"].append({"key": "table_lamp", "control": False,
+                                  "asset_scale_class": "table_lamp",
+                                  "queries": ["asset_type:model+table+lamp"],
+                                  "free_baseline": None, "paid_result": None})
+        self.assertNotEqual(self._digest_for(edited), self._digest_for(self._classes()))
+
+    def test_changing_the_pass_rule_still_flips_the_digest(self):
+        edited = json.loads(json.dumps(self._classes()))
+        edited["_pass_rule"] = edited["_pass_rule"].replace(">= 3", ">= 1")
+        self.assertNotEqual(self._digest_for(edited), self._digest_for(self._classes()))
+
+    def test_the_real_results_file_declares_its_out_of_test_classes(self):
+        """A class recorded here that is NOT pre-registered must be visibly fenced off."""
+        res = BK.load_results()
+        if not res:
+            self.skipTest("no results recorded yet")
+        registered = {c["key"] for c in self._classes()["classes"]}
+        for key in (res.get("classes") or {}):
+            self.assertIn(key, registered,
+                          f"{key} is recorded as C2 evidence but was never "
+                          f"pre-registered — it belongs under `out_of_test`")
+        self.assertIn("out_of_test", res)
+
+
+class TestInstrumentFreeze(unittest.TestCase):
+    """D-120's recorded blind spot, closed 2026-08-24.
+
+    Half of C2's pass rule is "passes dim_check in its asset_scale class". The criteria
+    digest hashes no code, so widening a band moved that criterion while `status` kept
+    printing MATCH. Five of the seven classes still need bands WRITTEN before their first
+    paid fetch — the moment a widened band is most tempting and least visible.
+    """
+
+    def _asc(self):
+        import asset_scale
+        return asset_scale
+
+    def test_the_shipped_instrument_matches_its_stamp(self):
+        self.assertEqual(BK.instrument_digest(), BK.INSTRUMENT_FROZEN_SHA,
+                         "BANDS or MIN_DEPTH_RATIO moved without re-stamping "
+                         "INSTRUMENT_FROZEN_SHA and saying which band and why")
+
+    def test_widening_a_band_is_caught(self):
+        a = self._asc()
+        wide = dict(a.BANDS)
+        wide["nightstand"] = (300.0, 900.0, "z", "widened with no source")
+        self.assertNotEqual(BK.instrument_digest(wide, a.MIN_DEPTH_RATIO),
+                            BK.INSTRUMENT_FROZEN_SHA)
+
+    def test_adding_a_band_is_caught(self):
+        a = self._asc()
+        more = dict(a.BANDS)
+        more["book_stack"] = (20.0, 200.0, "z", "a new class")
+        self.assertNotEqual(BK.instrument_digest(more, a.MIN_DEPTH_RATIO),
+                            BK.INSTRUMENT_FROZEN_SHA)
+
+    def test_relaxing_a_depth_ratio_is_caught(self):
+        """The planar refusal is the other half of the assert; relaxing it lets a cutout
+        through as a solid, which is the D-109 defect class."""
+        a = self._asc()
+        r = dict(a.MIN_DEPTH_RATIO)
+        r[sorted(r)[0]] = 0.01
+        self.assertNotEqual(BK.instrument_digest(a.BANDS, r),
+                            BK.INSTRUMENT_FROZEN_SHA)
+
+    def test_it_is_honest_that_it_started_late(self):
+        """It cannot speak for 08-22..08-24 and must not imply it can."""
+        self.assertEqual(BK.INSTRUMENT_FROZEN_AT, "2026-08-24")
+        self.assertNotEqual(BK.INSTRUMENT_FROZEN_AT, "2026-08-22")
+
+    def test_the_two_digests_are_independent(self):
+        """Re-stamping the instrument must never touch the criteria evidence, which was
+        stamped at the clock start and is the only proof the criteria did not move."""
+        a = self._asc()
+        wide = dict(a.BANDS)
+        wide["nightstand"] = (300.0, 900.0, "z", "widened")
+        before = BK.current_digest()
+        BK.instrument_digest(wide, a.MIN_DEPTH_RATIO)
+        self.assertEqual(before, BK.current_digest())
+
+
 if __name__ == "__main__":
     unittest.main()

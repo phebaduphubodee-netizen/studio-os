@@ -125,6 +125,19 @@ SPEC = os.path.join(REPO, "projects", "PRJ-2026-002_c001-house", "03_layout",
                     "master-suite.CANONICAL.spec.json")
 DECISIONS = os.path.join(REPO, "qa", "open-decisions.json")
 CLASSES = os.path.join(REPO, "qa", "blenderkit-month-classes.json")
+# THE RESULTS DO NOT LIVE IN THE FROZEN FILE, and finding out why cost a probe.
+# `criteria_digest` hashes CLASSES whole. The protocol in that file's own `_what` says
+# `free_baseline` and then `paid_result` are "filled IN ORDER" — so RUNNING the test as
+# written edits the bytes the freeze protects, and `status` answers the honest move with
+# "CHANGED SINCE THE CLOCK STARTED ... the flattering-scorer defect". Measured 2026-08-24:
+# filling ONE cushion_throw baseline and changing nothing else moved the digest from
+# d95d5e9d... to 67b709df.... A machine that calls compliance a defect is switched off,
+# which is R13's third-state warning arriving one level up, at the freeze itself.
+# THE FIX KEEPS THE HASH AT FULL STRENGTH rather than loosening it: results move to their
+# own unhashed file, and CLASSES stays byte-frozen. Editing a query, a control flag or the
+# pass rule STILL prints CHANGED — and so does ADDING A CLASS, which is correct, because
+# choosing the test set after seeing results is the very thing the freeze exists to catch.
+RESULTS = os.path.join(REPO, "qa", "blenderkit-month-results.json")
 PANEL_PROMPT = os.path.join(REPO, "docs", "blenderkit-month", "style-panel-prompt.md")
 
 # THE QUERY GRAMMAR, MEASURED 2026-08-23 — not read off a page, tested.
@@ -1145,6 +1158,66 @@ def read_spec(path=None):
         return None
 
 
+_SEP_BYTE = bytes([0])          # field separator, kept as a name so no source file carries a NUL
+
+
+def instrument_digest(bands=None, ratios=None):
+    """sha256 over the SCALE INSTRUMENT itself — asset_scale.BANDS and MIN_DEPTH_RATIO.
+
+    WHY IT IS A SECOND DIGEST AND NOT AN EXTRA INPUT TO THE FIRST. `criteria_digest`
+    hashes D-119's `in_effect`, the class file and the panel prompt, and its stored value
+    was stamped at the first paid download on 2026-08-22. That value is EVIDENCE: it
+    proves those three things have not moved since the clock started, and re-stamping it
+    to admit a fourth input would destroy the only thing it is for. So the fourth input
+    gets its own digest, stamped when it was actually first taken, and says so.
+
+    WHAT IT CLOSES. D-120 recorded the hole in writing and it was still open today:
+    "criteria_digest แฮช D-119 in_effect + classes + prompt — ไม่แฮชโค้ดของ rung จึงยัง
+    พิมพ์ MATCH ทั้งที่ instrument เปลี่ยน". Half of C2's pass rule is "passes dim_check in
+    its asset_scale class", so WIDENING A BAND moves the criterion without touching a
+    single byte the criteria digest reads. Five of the seven classes still need bands
+    written before their first paid fetch — which is exactly when a widened band would be
+    most tempting and least visible.
+
+    HONEST ABOUT ITS OWN START DATE: this digest begins on 2026-08-24, day 2 of the month,
+    not at the clock start. It cannot say anything about 08-22 to 08-24, and `status` must
+    not let it imply otherwise.
+    """
+    SEP = _SEP_BYTE
+    if bands is None or ratios is None:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import asset_scale as _asc
+        bands = _asc.BANDS if bands is None else bands
+        ratios = getattr(_asc, "MIN_DEPTH_RATIO", {}) if ratios is None else ratios
+    h = hashlib.sha256()
+    for k in sorted(bands):
+        h.update(repr((k, tuple(bands[k]))).encode("utf-8"))
+        h.update(SEP)
+    h.update(SEP + b"RATIOS" + SEP)
+    for k in sorted(ratios):
+        h.update(repr((k, ratios[k])).encode("utf-8"))
+        h.update(SEP)
+    return h.hexdigest()
+
+
+INSTRUMENT_FROZEN_AT = "2026-08-24"
+INSTRUMENT_FROZEN_SHA = "5c8c1a3df1d403250fa8b08ec87d1c7c2841ebce5cd09fff5331ce6d576b8e14"
+
+
+def load_results(path=None):
+    """The month's RESULTS — baselines and paid outcomes — read from the unhashed file.
+
+    Returns {} when the file is absent, because "no results yet" is a real state and
+    must not be an error. It is deliberately NOT merged back into CLASSES: the whole
+    point is that running the test cannot edit the test.
+    """
+    try:
+        with open(path or RESULTS, encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, ValueError):
+        return {}
+
+
 def current_digest(decisions_path=None, classes_path=None, prompt_path=None):
     """The criteria digest as the files stand now; None when D-119 is absent."""
     try:
@@ -1380,6 +1453,16 @@ def status(key, today=None, cache=None, log=None):
         if stored and now:
             print(f"  criteria freeze ({CRITERIA} + classes + panel prompt): "
                   f"{'MATCH' if stored == now else 'CHANGED SINCE THE CLOCK STARTED — an edit after seeing results is the flattering-scorer defect; say so in the gate'}")
+            _ind = instrument_digest()
+            print("  instrument freeze (asset_scale BANDS + MIN_DEPTH_RATIO), stamped "
+                  + INSTRUMENT_FROZEN_AT + " — NOT at the clock start, so it says "
+                  "nothing about 2026-08-22..24: "
+                  + ("MATCH" if _ind == INSTRUMENT_FROZEN_SHA else
+                     "CHANGED — half of C2's pass rule is 'passes dim_check in its "
+                     "asset_scale class', so a widened band moves the criterion "
+                     "without touching a byte the criteria digest reads (D-120's "
+                     "recorded blind spot). Say in the gate WHICH band moved, and "
+                     "its cited source."))
     else:
         print(f"  MONTH CLOCK: not started — no full-plan asset fetched yet "
               f"({ASK}: pay the 30-day glimpse, paste the key; the clock starts "
@@ -1387,10 +1470,23 @@ def status(key, today=None, cache=None, log=None):
     try:
         with open(CLASSES, encoding="utf-8") as fh:
             classes = json.load(fh).get("classes") or []
-        missing = [c["key"] for c in classes if not c.get("free_baseline")]
+        res = load_results()
+        rec = res.get("classes") or {}
+        missing = [c["key"] for c in classes
+                   if not (c.get("free_baseline")
+                           or (rec.get(c["key"]) or {}).get("free_baseline"))]
         print(f"  C2 classes pre-registered: {len(classes)} · free baseline "
               f"still to run BEFORE a paid fetch in that class: "
               f"{', '.join(missing) if missing else 'none'}")
+        paid = {k: v for k, v in rec.items() if (v or {}).get("paid_result")}
+        inreg = {c["key"] for c in classes}
+        print(f"  C2 paid results recorded: "
+              f"{', '.join(sorted(paid)) if paid else 'none'} "
+              f"(in {os.path.relpath(RESULTS, REPO)}, deliberately OUTSIDE the hash)")
+        extra = sorted(set(rec) - inreg)
+        if extra:
+            print(f"  OUT-OF-TEST classes (shopped for, NOT evidence for C2 — they were "
+                  f"not pre-registered): {', '.join(extra)}")
     except (OSError, ValueError):
         print(f"  C2 classes: {os.path.relpath(CLASSES, REPO)} unreadable")
     print(f"  criteria (frozen at the first paid download): {CRITERIA} in "
