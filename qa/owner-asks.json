@@ -336,6 +336,19 @@
       "answer": "จ่ายตังแล้ว",
       "answered_date": "2026-08-22",
       "answer_context": "พี่พิมพ์ 'จ่ายตังแล้ว' ทางแชท 2026-08-22 ดึก แล้วกด login/Authorize ในแท็บ Chrome ที่ `blenderkit.py key --login` เปิดไว้ (listener detached รอบที่ 3) → token เขียนลง `.env` (access 30 ตัวอักษร หมดอายุ 175 ชม. + refresh) → `/me` = currentPlanName 'Full'. ไม่มีการ copy key ผ่านแชทเลย · ที่ /me ยังบอกไม่ได้: เป็นแท็บ '30 day glimpse' หรือ Monthly/Yearly — ดูที่หน้า My Plan ของพี่"
+    },
+    {
+      "id": "ASK-032",
+      "ask": "**หัวเตียง: แผงที่แบบวาด หรือหัวเตียงของเตียงที่ซื้อมา — ตอบจากภาพได้เลย** · เตียง Metropol ที่พี่เลือก มีหัวเตียงบุนวมของตัวเอง **1998 x 410 x 927 มม.** (กว้างเท่าเตียงพอดี ยืนจากพื้น) และ build **ตัดทิ้ง** เพราะแบบวาดแผง SR-18 หนา 60 มม. ไว้ และ R12 บอกว่าแบบชนะสิ่งที่เรา derive เอง — สองอันอยู่ที่เดียวกันไม่ได้ · ในเฟรม p2r58 หัวเตียงที่เห็นคือแผงเทาแบนที่เราปั้นเอง และในสายตาผมมันคือชิ้นที่ อ่อนที่สุดในภาพ · **นี่เป็นคำถามของพี่ ไม่ใช่ของผม** เพราะ R12 ให้แบบชนะ derivation ของเรา แต่พี่ชนะแบบ (พี่ทำมาแล้วกับขนาดเตียงที่ D-114) · (ก) คงแผงตามแบบ = ไม่ต้อง ทำอะไร (ข) ใช้หัวเตียงของ asset = เลิก strip ชิ้นนั้น ถอนแผง แล้วเตียงต้องขยับออก จากผนังตามความลึก 410 มม. ซึ่งกินเข้ามาในห้อง (ค) ชี้ทางที่สาม",
+      "first_routed": "2026-08-24",
+      "where": "pipeline/scripts/wholebed_rules.py, qa/sheet-recon.json, qa/open-decisions.json, pipeline/output/room_bedroom_suite_eye_p2r58_ql.png",
+      "money": false,
+      "status": "open",
+      "answer": null,
+      "answered_date": null,
+      "answer_context": null,
+      "note": "แถวที่เกี่ยวข้อง: SR-18 ใน qa/sheet-recon.json · D-121 ใน qa/open-decisions.json",
+      "read_first": null
     }
   ]
 }

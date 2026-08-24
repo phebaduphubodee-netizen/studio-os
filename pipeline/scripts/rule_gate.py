@@ -644,6 +644,38 @@ def owner_channel(unit, decisions_path=None, note=None, decisions=None):
     return v
 
 
+# `deliverable_check.STANDARD_REL`, duplicated ON PURPOSE and pinned by a test.
+# Importing that module to read one path costs `from PIL import Image` at its
+# line 45, and Blender's bundled Python has no PIL — so on the ONLY lane that
+# renders, importing it in order to find a filename was the entire reason the
+# standard could not be loaded. `test_rule_gate` pins this string to the real
+# constant, so the copy cannot drift away from it.
+DELIVERABLE_STANDARD_REL = os.path.join("qa", "deliverable-standard.json")
+
+
+def _deliverable_standard():
+    """The deliverable standard as a dict, or None — WITHOUT importing PIL.
+
+    `deliverable_check.load_standard` is `open()` + `json.load()` and needs no
+    imaging at all; the only thing that made it unreachable inside Blender was
+    its own module's top-level `from PIL import Image`. The real module still
+    wins wherever it can be imported (plain python), so a future change to how
+    the standard is read stays in one place; the direct read is the fallback
+    that keeps the render path working.
+    """
+    try:
+        import deliverable_check as _DCH          # plain python: authoritative
+        return _DCH.load_standard()
+    except Exception:                             # noqa: BLE001 - Blender: no PIL
+        pass
+    try:
+        with open(os.path.join(REPO_ROOT, DELIVERABLE_STANDARD_REL),
+                  encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, ValueError):                 # pragma: no cover
+        return None
+
+
 def ledger_rungs(unit, decisions_path=None, note=None, print_log=False):
     """R3's DECISION LOG and R7's CRITIC-DEBT ledger — in ONE function, for the
     same reason `owner_channel` is one function: so that no lane can end up with
@@ -739,20 +771,38 @@ def ledger_rungs(unit, decisions_path=None, note=None, print_log=False):
         # VIOLATION: two of them against today's ledger, both false. `plan_status`
         # already carries the fix and says why in its own comment — "a false alarm
         # at the top of every session is how a warning column gets ignored".
-        try:
-            import deliverable_check as _DCH
-            std = _DCH.load_standard()
-        except Exception:                                   # noqa: BLE001
-            std = None
-        v += DEBT.check(led, plan_phases=DEBT._plan_phases(), standard=std)
+        std = _deliverable_standard()
+        _dv = DEBT.check(led, plan_phases=DEBT._plan_phases(), standard=std)
+        # COULD-NOT-VERIFY IS NOT DISHONESTY, and keeping the two apart is the
+        # whole reason `debt_check.NO_STANDARD` has a name. Without this split the
+        # rung went red on the FIRST render it ever ran on (2026-08-23, inside
+        # Blender, where the standard could not load) — and a rung that is red on
+        # every render is a rung somebody switches off, which debt_check's own
+        # file says in those words. The rows still PRINT, every run; they simply
+        # do not stop a frame over a file the gate could not open.
+        # THE CLOSURE HALF OF THIS RUNG IS A PIXEL RUNG and it is running in the
+        # wrong interpreter. Its doors OPEN THE FRAME, so they need PIL, which
+        # Blender's bundled Python does not have — the same layer law that put
+        # deliverable_check, pixel_check, bed_pixels, dim_check and
+        # existence_check out of process. Spawning this one too is real work and
+        # is NOT done here; what is done here is refusing to let its absence
+        # masquerade as a finding. NAMED FOLLOW-UP, not a silent gap.
+        _blocked = [x for x in _dv if not DEBT.is_unverified(x)]
+        _unverified = [x for x in _dv if DEBT.is_unverified(x)]
+        v += _blocked
         if led is not None:
             v += DEBT.ratchet(led)
             t = DEBT.tally(led)
             _note("critic debt", True,
                   f"{t['open']} open / {t['built']} built / {t['refuted']} "
                   f"refuted, {t['none_yet']} with no instrument"
-                  + ("" if std else " — NO STANDARD LOADED, so every image door "
-                                    "reads NOT RUN"))
+                  + ("" if not _unverified else
+                     f" — {len(_unverified)} closed row(s) COULD NOT BE "
+                     f"RE-VERIFIED here (their doors open the frame and this "
+                     f"interpreter has no imaging library); NOT counted against "
+                     f"the ledger, printed below"))
+        for _u in _unverified:
+            print(f"  CRITIC DEBT — could not re-verify: {_u}")
     return v, decisions
 
 

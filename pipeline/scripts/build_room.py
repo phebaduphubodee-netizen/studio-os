@@ -6256,24 +6256,80 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
     #             bench walkway, which is the ink's call, not a knob's).
     # s = min(reach, contain); the FILL refusal below then re-checks the
     # WHOLE kept bed against MIN_FILL as before.
-    cl = _wbr.frame_cluster(parts, anchor)
-    cl_lo0 = min(p["lo"][0] for p in cl); cl_hi0 = max(p["hi"][0] for p in cl)
-    cl_lo1 = min(p["lo"][1] for p in cl); cl_hi1 = max(p["hi"][1] for p in cl)
-    s_cl, _cf_l, _cf_w = _wbr.plan_scale_whole(cl_hi0 - cl_lo0, cl_hi1 - cl_lo1,
-                                               along, across)
-    s = s_cl
-    _fld = _wbr.made_field(parts, anchor)
-    if _fld:
-        _f_l = (max(p["hi"][0] for p in _fld) - min(p["lo"][0] for p in _fld))
-        _f_w = (max(p["hi"][1] for p in _fld) - min(p["lo"][1] for p in _fld))
-        s_fld, _, _ = _wbr.plan_scale_whole(_f_l, _f_w, along, across)
-        if s_fld is not None and s_cl is not None and s_fld < s_cl:
-            s = s_fld
-            print(f"  whole bed: scale capped by FIELD CONTAINMENT "
-                  f"{s_fld:.4f} (cluster reach wanted {s_cl:.4f}) — the soft "
-                  f"field meets the drawn rectangle, never overflows it")
+    # THE FIT IS ON THE MATTRESS, AND THIS IS D-120 ITEM 8 CARRIED OUT.
+    #
+    # It used to fit the FRAME CLUSTER into the slot. The slot is 2000 x 1800 —
+    # which D-114 set to a MATTRESS standard (Thai king 6ft) on the owner's own
+    # order. So the hook was pushing a frame, rails and all, into a mattress
+    # rectangle, and every upholstered bed came out 0.84-0.91 of itself. On the
+    # bed now being integrated the two readings are not close: cluster-fit gave
+    # scale 0.8413 and a mattress that then measures as a US 'full', 195 mm from
+    # any Thai standard; mattress-fit gives 1.0000 and a mattress 20 mm from
+    # th_king_6ft, inside the +-50 bare-slab tolerance. Same file, same room.
+    #
+    # `wholebed_bench` was corrected on 2026-08-22 and the build was not, so the
+    # bench has been printing `hook_scale_today` and `hook_agrees` beside its own
+    # answer ever since — a debt that names itself in every row rather than a
+    # comment nobody reads. This closes it: both now compute the same number by
+    # the same call, which is the only thing that makes a bench PASS a prediction
+    # of the picture.
+    # PROBE FIRST — `pick_mattress` reads cover / top_med / relief, and `_parts()`
+    # hands back FRESH dicts that carry none of them. The bench learned this the
+    # hard way and says so in its own comment ("the first cut's row['surface_facts']
+    # was [] on every row and the frame rule downstream saw no facts at all"); the
+    # build hit the identical wall on its first mattress-fit run, refusing every
+    # bed with "no part carries probe facts — unprobed". One probe, two callers,
+    # the same three numbers the rule was calibrated on (the bedcloth_fit law).
+    import wholebed_dump as _wbd
+    _facts = {}
+    for _p in parts:
+        try:
+            _f = _wbd.surface_facts(_p)
+        except Exception as e:                              # noqa: BLE001
+            print(f"  whole bed: could not probe {_p['name']!r} ({e}) — it cannot "
+                  f"be the mattress, and that is a refusal rather than a guess")
+            continue
+        _facts[_p["name"]] = _f
+        _p.update(_f)
+    print(f"  whole bed: probed {len(_facts)}/{len(parts)} parts for the mattress "
+          f"rule (cover / top_med / relief)")
+
+    def _reprobe(ps):
+        """Re-apply the probe to a rebuilt part list — see the note above."""
+        for _q in ps:
+            if _q["name"] in _facts:
+                _q.update(_facts[_q["name"]])
+        return ps
+
+    matt, m_note = _wbr.pick_mattress(parts, anchor, drawn_plan_m2=along * across)
+    if matt is None:
+        # NEVER FALL BACK TO THE FRAME. `pick_mattress` says so in its own
+        # docstring and R10 says why: typing a number for a dimension that could
+        # not be measured is the defect, not the workaround. The bench may fall
+        # back because its product is a contact sheet and it marks the row
+        # UNMEASURED; a build's product is the frame of record.
+        return _bail(f"no mattress slab could be identified in this file "
+                     f"({m_note}) — refusing to size the bed off its frame, "
+                     f"which is the D-120 defect by name")
+    m_sz = _wbr.size(matt)
+    s = _wbr.mattress_scale(m_sz[0], m_sz[1], along, across)
     if s is None:
-        return _bail("frame cluster has no extent — nothing to fit")
+        return _bail("the mattress slab has no extent — nothing to fit")
+    cl = _wbr.frame_cluster(parts, anchor)
+    print(f"  whole bed: mattress {matt['name']!r} native "
+          f"{m_sz[0] * 1000:.0f} x {m_sz[1] * 1000:.0f} mm (slot axes) -> scale "
+          f"{s:.4f} into the drawn {along * 1000:.0f} x {across * 1000:.0f} mm")
+    # THE FIELD-CONTAINMENT CAP IS GONE FROM THIS PATH, deliberately, because the
+    # two rules contradict each other and the newer one is his.
+    # The cap shrank the bed until its soft field sat inside the drawn rectangle.
+    # `mattress_scale` says in its own docstring: "The frame then overhangs the
+    # slot by its own rails — that overhang is reported, and the owner's order is
+    # to move the surroundings to it (2026-08-22: หาขนาดมาตรฐานแล้วปรับของรอบ ๆ
+    # ให้มาชิด), never to shrink the bed into the mattress slot." Capping here
+    # would re-grow the exact shrink D-120 was written to end. So the overhang is
+    # MEASURED AND PRINTED into the render path instead, where his eye rules it
+    # (R3) — a bed past the drawn foot line eats the drawn bench walkway, and
+    # that is a judgement about circulation, not a number a knob should take.
     all_l = max(p["hi"][0] for p in parts) - min(p["lo"][0] for p in parts)
     all_w = max(p["hi"][1] for p in parts) - min(p["lo"][1] for p in parts)
     fill_l = min(1.0, s * all_l / along)
@@ -6290,7 +6346,7 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
         _wv = _wbr.field_verdict(fill_l, fill_w, signed=field_deficit_signed)
         if _wv != "interim":
             return _bail(f"the kept bed fills {fill_l:.2f}x{fill_w:.2f} of the "
-                         f"drawn footprint at cluster scale {s:.3f} "
+                         f"drawn footprint at mattress scale {s:.3f} "
                          f"(< {_wbr.MIN_FILL}) and nothing signed says so — "
                          f"a different bed, not a fit")
         _s = field_deficit_signed or {}
@@ -6302,13 +6358,15 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
         M = _Mx.Translation(piv) @ _Mx.Scale(s, 4) @ _Mx.Translation(-piv)
         for o in _roots():
             o.matrix_world = M @ o.matrix_world
-        parts = _parts()
+        parts = _reprobe(_parts())
         anchor = next(p for p in parts if p["name"] == anchor["name"])
         cl = _wbr.frame_cluster(parts, anchor)
-    print(f"  whole bed: scale {s:.4f} on the FRAME CLUSTER "
-          f"({len(cl)}/{len(parts)} parts in the denominator), fills "
-          f"{fill_l:.2f} x {fill_w:.2f} of the drawn {along * 1000:.0f} x "
-          f"{across * 1000:.0f} mm footprint")
+    print(f"  whole bed: scale {s:.4f} from the MATTRESS "
+          f"({len(cl)}/{len(parts)} parts in the frame cluster), the whole bed "
+          f"spans {fill_l:.2f} x {fill_w:.2f} of the drawn {along * 1000:.0f} x "
+          f"{across * 1000:.0f} mm footprint. The OVERHANG is not measurable "
+          f"yet — the bed is still where the importer left it; it is measured "
+          f"and printed below, after the contact block puts it in the room.")
 
     # ---- the ink's no-footboard test, re-run on the staged result -----------
     plane, tree = _plane_of(parts)
@@ -6343,6 +6401,31 @@ def _place_bed_frame(slug, x0, y0, W, D, rot, base_m, matt_m, duvt_m, pill_m,
         o.matrix_world.translation += _Vec(delta)
     parts = _parts()
     anchor = next(p for p in parts if p["name"] == anchor["name"])
+    cl = _wbr.frame_cluster(parts, anchor)
+    # THE OVERHANG, MEASURED WHERE THE BED ACTUALLY STANDS. It was briefly
+    # computed above the contact block, which was wrong by construction: up
+    # there the bed is still wherever the importer dropped it, so the number
+    # described the file's origin rather than the room. A confident wrong
+    # number is worse than none — this repo's own lesson from the dump/beauty
+    # mismatch, applied to a print.
+    #
+    # Edges are named by WORLD AXIS, not foot/head/side. `overhang_staged_mm`
+    # uses the friendlier names but assumes the head runs along +x, which holds
+    # after the bench's canonical rotation and does NOT hold here: this hook
+    # keeps world axes and picks `along`/`across` from `rot`, so on a y-head bed
+    # those labels come out swapped. A wrong label on a true number is its own
+    # defect.
+    _ovh = {k: int(round(v * 1000)) for k, v in (
+        ("x-", max(0.0, x0 - min(p["lo"][0] for p in cl))),
+        ("x+", max(0.0, max(p["hi"][0] for p in cl) - (x0 + W))),
+        ("y-", max(0.0, y0 - min(p["lo"][1] for p in cl))),
+        ("y+", max(0.0, max(p["hi"][1] for p in cl) - (y0 + D))),
+    ) if v > 0.0005}
+    print(f"  whole bed: frame cluster vs the drawn rectangle — "
+          + (f"OVERHANGS by {_ovh} mm. D-114 moves the surroundings to the bed; "
+             f"it does not shrink the bed (mattress_scale's own rule). Whether "
+             f"the walkway reads tight is your call from the image."
+             if _ovh else "inside it on all four edges."))
 
     # placement is final — bake so object space is world metres (texture space
     # + weld distances mean what they say; see _bake_transform_to_mesh)

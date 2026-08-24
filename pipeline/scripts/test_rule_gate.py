@@ -1343,3 +1343,48 @@ def test_no_rung_reaches_one_entry_point_and_not_the_other():
         f"{sorted(stale)} are declared not-applicable to the room lane but no "
         f"longer exist in check() — an exemption for a rung nobody has is how "
         f"the list stops describing anything")
+
+
+def test_the_deliverable_standard_loads_without_pil():
+    """The gate's copy of the standard path must not drift, and must not need PIL.
+
+    Found 2026-08-23, on the first render after the critic-debt rung was wired
+    into `check_room`: `deliverable_check` does `from PIL import Image` at module
+    scope, Blender's bundled Python has no PIL, so `load_standard()` — which is
+    `open()` plus `json.load()` and needs no imaging whatever — was unreachable
+    on the ONLY lane that renders. Every image door then returned NOT RUN and
+    two of those were filed as ledger VIOLATIONS, failing the build.
+
+    So the path is duplicated here deliberately, and this pins the copy.
+    """
+    import deliverable_check as DC
+    assert RG.DELIVERABLE_STANDARD_REL == DC.STANDARD_REL, (
+        "rule_gate's copy of the deliverable-standard path has drifted from "
+        "deliverable_check.STANDARD_REL — the copy exists only to avoid the PIL "
+        "import, not to become a second source of truth")
+    assert RG._deliverable_standard() == DC.load_standard()
+
+
+def test_a_standard_that_cannot_load_does_not_read_as_a_dishonest_ledger():
+    """COULD-NOT-VERIFY and DISHONEST are different findings, and only the second
+    may stop a render.
+
+    Without the split the debt rung was red on every render — and debt_check's own
+    file says a rung that is red on every render is a rung somebody switches off.
+    The rows must still be reported; they must not be counted against the ledger.
+    """
+    import debt_check as DEBT
+    led = DEBT.load()
+    assert led is not None, "the live critic-debt ledger must be readable"
+
+    without = DEBT.check(led, plan_phases=DEBT._plan_phases(), standard=None)
+    unverified = [x for x in without if DEBT.NO_STANDARD in x]
+    assert unverified, ("this test is decoration unless the live ledger has at "
+                        "least one closed row with an image door")
+
+    roster, v = [], []
+    v += RG.ledger_rungs("DELIV-001", None,
+                         lambda n, ran, why="": roster.append((n, ran, why)))[0]
+    assert not [x for x in v if DEBT.NO_STANDARD in x], (
+        "a row that could not be re-verified was filed as a blocking violation")
+    assert "critic debt" in {n for n, _r, _w in roster}

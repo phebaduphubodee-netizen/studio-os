@@ -731,10 +731,39 @@ def _resolve_guard(rid, d, scene):
             f"defect has no instrument, so the row stays open.")
 
 
+# The detail a row carries when the deliverable STANDARD could not be loaded.
+# Named rather than spelled twice because a caller has to be able to tell this
+# apart from a real closure failure: "we could not verify" and "the ledger is
+# lying" are different findings, and only the second may stop a render. Callers
+# match on this constant, never on the sentence.
+NO_STANDARD = "no standard loaded"
+
+
+# The verdict `verify_closures` reports when a door DID NOT LOOK. Its own
+# docstring: "NOT RUN  no evidence was given. NOT RUN IS NEVER PASS." It is also
+# never PROOF OF A DISHONEST LEDGER, and the difference decides whether a render
+# stops. PARTIAL and UNRESOLVED mean the door ran and the row did not close —
+# those block. NOT RUN means the door could not run at all: no standard, no PIL
+# in this interpreter, an unimportable guard. Callers ask through the predicate
+# below rather than matching the sentence, because this module owns the format
+# string that builds it.
+NOT_RUN = "NOT RUN"
+
+
+def is_unverified(violation):
+    """True when a `verify_closures` line reports a door that DID NOT LOOK.
+
+    Not the same question as `is this row honest`. A caller that blocks a render
+    on this is reporting `we could not check` as `you lied`, which would make the
+    rung red on every render — and a rung that is red on every render is a rung
+    somebody switches off."""
+    return f"returns {NOT_RUN} " in violation
+
+
 def _resolve_row(rid, d, door, img, scene_meas, standard, corroborated=False):
     row = d.get("row")
     if standard is None:
-        return (rid, "NOT RUN", "no standard loaded")
+        return (rid, "NOT RUN", NO_STANDARD)
     t = _d(_d(standard).get("rows")).get(row)
     if not t:
         return (rid, "NOT RUN", f"{row} is not in the standard")

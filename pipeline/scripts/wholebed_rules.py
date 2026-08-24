@@ -771,8 +771,33 @@ def carry_ons(parts, plane_z, anchor):
             out.append((p, "flanking cabinet riding along in the file — the "
                            "sheet draws this room's nightstands (R12)"))
         else:
-            out.append((p, "backdrop panelling riding along in the file — the "
-                           "band is the headboard of record (R12)"))
+            # TWO THINGS RISE PAST THE PLANE OFF THE FRAME AND THEY ARE NOT THE
+            # SAME OBJECT, though the strip verdict is the same for both. A
+            # BACKDROP WALL is wider than the bed it stands behind (81d895fd:
+            # 2,759 mm against a 1,842 mm frame, 590 mm proud each side). The
+            # CANDIDATE'S OWN HEADBOARD is bed-width (Metropol: 1,998 mm against
+            # 1,842). This docstring already said the rule strips both — "its own
+            # headboard duplicates the band" — but the printed reason called every
+            # one of them backdrop panelling, and on 2026-08-23 that sentence went
+            # into a decision row as the FACT "this candidate has no headboard of
+            # its own to cut". It has one, 1998 x 410 x 927 mm, and we cut it.
+            # Same outcome, honest reason: the verdict is unchanged and only the
+            # sentence differs, because the sentence is what the next round reads.
+            _w = max(size(p)[0], size(p)[1])
+            _aw = max(size(anchor)[0], size(anchor)[1])
+            if _w > _aw * 1.15:
+                out.append((p, f"backdrop panelling riding along in the file "
+                               f"({_w * 1000:.0f} mm wide against the frame's "
+                               f"{_aw * 1000:.0f}) — the band is the headboard "
+                               f"of record (R12)"))
+            else:
+                out.append((p, f"the CANDIDATE'S OWN HEADBOARD ({_w * 1000:.0f} mm, "
+                               f"bed-width) — stripped because the sheet draws the "
+                               f"band at SR-18 and R12 makes the drawing the "
+                               f"headboard of record, NOT because the part is "
+                               f"scenery. What the money bought here is discarded "
+                               f"by that rule; if his eye wants it back, that is an "
+                               f"owner call over the sheet, like D-114 was"))
     return out
 
 
