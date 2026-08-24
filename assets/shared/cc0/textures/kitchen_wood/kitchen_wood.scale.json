@@ -1,0 +1,11 @@
+{
+ "slug": "kitchen_wood",
+ "dimensions_mm": [
+  600.0000238418579,
+  600.0000238418579
+ ],
+ "tile_m": 0.6,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/kitchen_wood",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

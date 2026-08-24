@@ -1,0 +1,11 @@
+{
+ "slug": "plywood",
+ "dimensions_mm": [
+  499.999940395355,
+  499.999940395355
+ ],
+ "tile_m": 0.5,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/plywood",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

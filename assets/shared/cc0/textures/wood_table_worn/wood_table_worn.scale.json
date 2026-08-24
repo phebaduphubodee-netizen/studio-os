@@ -1,0 +1,11 @@
+{
+ "slug": "wood_table_worn",
+ "dimensions_mm": [
+  549.9999523162842,
+  550.0000715255737
+ ],
+ "tile_m": 0.55,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/wood_table_worn",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

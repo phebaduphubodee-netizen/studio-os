@@ -1,0 +1,11 @@
+{
+ "slug": "wood_floor",
+ "dimensions_mm": [
+  1699.9996900558472,
+  1699.9996900558472
+ ],
+ "tile_m": 1.7,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/wood_floor",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

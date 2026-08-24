@@ -1,0 +1,11 @@
+{
+ "slug": "oak_veneer_01",
+ "dimensions_mm": [
+  1830.0000429153442,
+  1830.0000429153442
+ ],
+ "tile_m": 1.83,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/oak_veneer_01",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "plastered_wall_03",
+ "dimensions_mm": [
+  4000.0,
+  4000.0
+ ],
+ "tile_m": 4.0,
+ "aspect": 1.0,
+ "source": "https://api.polyhaven.com/info/plastered_wall_03",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

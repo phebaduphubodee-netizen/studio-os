@@ -1392,6 +1392,9 @@ import material_presets as _matpre
 # textile colour the bespoke builders used to type by hand now comes from here BY NAME —
 # see value_ladder.py for the measurement that made it necessary.
 import value_ladder as _vl
+# R8's "scale is ASSERTED on every ingest", texture side. Pure (layer law: no bpy
+# in rule code, so it is importable and testable under plain python).
+import texture_scale as _texscale
 # The dark furniture-leg tone, ONE definition. _build_bench and _build_tub_chair each held
 # their own copy (0.26/0.21/0.16 vs 0.24/0.19/0.14) under docstrings that each said the
 # other's was theirs. Not a soft good, so it is not a value_ladder rung — but it is the same
@@ -1794,6 +1797,33 @@ def _texset(slug):
             out[m] = max(hits, key=lambda p: (
                 int((re.search(r"_(\d+)k", os.path.basename(p)) or [0, 0])[1]), p))
     return out
+
+
+def _tile_m_for(slug):
+    """THE DOOR. The world size of one repeat of `slug`, as its publisher
+    declares it — never a number typed here.
+
+    IT IS ONE FUNCTION AND NOT A CONSTANT AT EACH CALLER for the reason
+    `_model_path` gives on the mesh side, in its own words: "A rule spread
+    across the callers is a rule with an exemption per caller." The mesh side
+    learned it the expensive way and the texture side is not going to learn it
+    again.
+
+    FAILS LOUD. An unasserted texture must not acquire a plausible default,
+    because a plausible default is exactly what 2.4 m was: it sat beside a
+    declared 1.6999997 m for seven weeks, drawing 266.67 mm floorboards from a
+    photograph whose own boards measure 188.889 mm — a stocked 189 mm engineered
+    -oak width, against a rendered width no supplier was found selling
+    (knowledge/_inbox/web-engineered-oak-plank-widths-2026-08-24.md; extra-wide
+    oak is sold at 220/260/300, not 267)."""
+    t = _texscale.declared_tile_m(slug)
+    if t is None:
+        raise RuntimeError(
+            f"texture {slug!r} has no asserted scale — no sidecar at "
+            f"{_texscale.sidecar_path(slug)}. R8: scale is ASSERTED on every "
+            f"ingest, never assumed. Run: python pipeline/scripts/"
+            f"texture_scale.py --backfill {slug}")
+    return t
 
 
 def _hdri_file(slug):
@@ -4769,7 +4799,29 @@ def _suite_materials(spec=None):
             continue
         n = obj.name
         if n == "floor":
-            _planar_uv(obj, tile_m=2.4)
+            # STY-7 (2026-08-24). WAS `tile_m=2.4`, a bare literal against a
+            # texture whose publisher declares 1699.99969 mm = 1.4118x life size.
+            # The artefact was MEASURED: 9 board joints across the tile (AO +
+            # Displacement, confirmed by FFT and autocorrelation), pitch
+            # 188.889 mm — a stocked 189 mm engineered-oak width. At 2.4 m those
+            # boards rendered 266.67 mm, ABOVE the 150-250 mm that PLANK_PITCH_MM
+            # two hundred lines up already calls "the real range", and a width no
+            # supplier was found selling. The floor was the one surface in this
+            # frame whose scale nobody had asserted — millwork 1.83 and the walls'
+            # 4.0 both reproduce their metadata exactly.
+            # It hid because _planar_uv divides u and v by the same tile_m, so the
+            # stretch is isotropic: the boards keep their aspect ratio and the
+            # floor looks internally consistent from the inside.
+            _ftile = _tile_m_for(FLOOR_SLUG)
+            if globals().get("_FLOOR_TILE_LEGACY"):
+                # A leg of the STY-7 A/B: the exact pre-2026-08-24 mapping.
+                # Written as a MULTIPLE of the asserted size rather than as the
+                # old bare 2.4, so even the control names its own departure and
+                # no unasserted tile literal re-enters the tree — the sweep
+                # ratchet in texture_scale.py would otherwise count the A/B leg
+                # as a new defect, which is the ratchet doing its job.
+                _ftile *= 1.4118
+            _planar_uv(obj, tile_m=_ftile)
             obj.data.materials.append(floor)
             continue
         if n.startswith("wall_0"):                       # south edge = the hero backdrop
@@ -9910,6 +9962,24 @@ if __name__ == "__main__":
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True
+    if "--floor-tile-legacy" in _post_dashdash():
+        # A leg of the STY-7 A/B: the floor mapped at 1.4118x the size Poly Haven
+        # declares for wood_floor, which is what `tile_m=2.4` was. B leg = the
+        # committed default (the asserted 1.6999997 m). The pair exists because
+        # a geometric prediction said correcting the scale would NOT be free: at
+        # 2.4 m the visible floor shows no repeated texture at all, and at 1.7 m
+        # the sliver left of the bed and the sliver right of it would carry the
+        # same boards (3.40 m apart = exactly 2 tiles, on a frontal camera).
+        # MEASURED ON THE PAIR (p2r66qA vs p2r65q, identical settings): the
+        # duplicate did not appear. Left-vs-right NCC went -0.0170 -> -0.0287
+        # (rows above 0.5: 0.224 -> 0.158, i.e. the corrected leg repeats LESS),
+        # and the column-profile autocorrelation peak sat at lag 24 px in BOTH
+        # legs — immobile across a 1.41x texture change, which proves that peak
+        # is geometry and light, not texture. Say it exactly: two instruments
+        # found nothing and one of them is demonstrably blind to the question.
+        # The pair stays runnable so the next person can re-ask it.
+        globals()["_FLOOR_TILE_LEGACY"] = True
+        print("  [A/B] floor mapping: legacy 1.4118x (pre-STY-7) leg")
     if "--wood-fold-legacy" in _post_dashdash():
         # A leg of the p2r15 veneer-mapping A/B: exact p2r14 state (feature_scale
         # 0.46 uniform, grain folding at z = k*842 mm). B leg = committed default.

@@ -1,0 +1,11 @@
+{
+ "slug": "rough_linen",
+ "dimensions_mm": [
+  270.7081392676629,
+  271.29998803138733
+ ],
+ "tile_m": 0.270708,
+ "aspect": 1.002186,
+ "source": "https://api.polyhaven.com/info/rough_linen",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

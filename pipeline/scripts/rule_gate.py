@@ -888,6 +888,41 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
         for _ln in STY.style_lines(_sty):
             if _ln:
                 print("  " + _ln)
+    # TEXTURE SCALE — R8's "asserted on every ingest", texture side (STY-8).
+    #
+    # Wired HERE for the same reason the style rung is, and the reason is not
+    # style: `build_room.py` calls `check_room` ONLY. `check()` belongs to the
+    # retired reproduction lane and `enforce()` has no production caller, so a
+    # register wired to either is a queue with no consumer — which is the exact
+    # defect this register was built to end.
+    #
+    # It is PURE (no PIL, no bpy: it reads sidecars, the registry and source
+    # text), so unlike existence_check / dim_check / pixel_check it needs no
+    # subprocess. The layer law is satisfied by the module, not by a spawn.
+    try:
+        import texture_scale as TEX
+    except ImportError as e:                                # pragma: no cover
+        v.append(f"texture_scale is not importable ({e}) — refusing to render "
+                 f"past a texture register that cannot be read.")
+        note("texture scale", False, "texture_scale not importable")
+    else:
+        _tex = TEX.load(root=REPO_ROOT)
+        if _tex is None:
+            # COULD NOT RUN is not a pass — R11's own sentence.
+            v.append(f"texture-scale registry unreadable at {TEX.REGISTRY_REL}. "
+                     f"'Could not look' must never print like 'looked and it "
+                     f"was fine'.")
+            note("texture scale", False, "registry unreadable")
+        else:
+            v += TEX.check(_tex, root=REPO_ROOT)
+            _ts = TEX.summary(_tex, root=REPO_ROOT)
+            note("texture scale", True,
+                 f"{_ts['asserted']}/{_ts['cached']} set(s) asserted, "
+                 f"{_ts['sites']} mapped site(s), {_ts['departures']} signed "
+                 f"departure(s), backlog {_ts['sweep']}/{_ts['baseline']}")
+            for _ln in TEX.lines(_tex, root=REPO_ROOT):
+                if _ln:
+                    print("  " + _ln)
     # R1's COUNTER, on the lane that has spent the most and been counted the least
     # (p2r49, ORD-2026-07-28). It is wired here rather than left to `check()` for the
     # same reason the owner-channel rungs are: `check()` is the reproduction lane's

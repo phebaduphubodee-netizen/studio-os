@@ -1,0 +1,11 @@
+{
+ "slug": "poly_wool_herringbone",
+ "dimensions_mm": [
+  270.0788548673393,
+  275.70000290870667
+ ],
+ "tile_m": 0.270079,
+ "aspect": 1.020813,
+ "source": "https://api.polyhaven.com/info/poly_wool_herringbone",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}

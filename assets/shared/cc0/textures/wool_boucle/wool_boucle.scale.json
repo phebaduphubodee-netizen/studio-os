@@ -1,0 +1,11 @@
+{
+ "slug": "wool_boucle",
+ "dimensions_mm": [
+  314.78237097288206,
+  390.10000228881836
+ ],
+ "tile_m": 0.314782,
+ "aspect": 1.239269,
+ "source": "https://api.polyhaven.com/info/wool_boucle",
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+}
