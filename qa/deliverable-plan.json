@@ -709,15 +709,17 @@
           "id": "STY-7",
           "what": "THE FLOOR IS RENDERED 41% OVERSIZED, and this is a world-standard defect rather than a taste one. Poly Haven declares the `wood_floor` artefact 1699.9997 x 1699.9997 mm (fetched live from api.polyhaven.com/info/wood_floor, 2026-08-24 — the endpoint needs a User-Agent header or it answers 403). build_room maps the floor at `_planar_uv(obj, tile_m=2.4)`, so every feature in that photograph — plank, grain, wear — lands at 2400/1700 = 1.412x its real size. The repo already states the physical band as a named constant for exactly this reason: PLANK_PITCH_MM = 180.0, '150-250 mm is the real range', with the comment 'a procedural texture's feature size has to be PHYSICAL or it scales with whatever object wears it'. The floor is the one surface where that law is not applied. FIX: tile_m from the artefact's declared dimension (STY-8 makes it readable), not a literal. NOT DONE TONIGHT AND THE REASON IS NAMED: it changes pixels on the largest floor area in the frame and it FIGHTS P2r-2, whose instrument is 'no periodic autocorrelation peak' — shrinking the tile from 2.4 m to 1.7 m puts ~41% MORE repeats across the same floor. The two must be judged in one round, on one crop, or the honest fix will read as a regression to the tiling rung.",
           "where": "pipeline/scripts/build_room.py (_planar_uv call at the floor branch)",
-          "status": "todo",
-          "why": "Filed 2026-08-24 by the STY-3 design pass, which set out to choose a floor COLOUR and found a floor SIZE error instead. It outranks the colour question on evidence: the colour argument rests on our own declared 60/30/10, the size one on the artefact's own published dimension."
+          "status": "done",
+          "why": "Filed 2026-08-24 by the STY-3 design pass, which set out to choose a floor COLOUR and found a floor SIZE error instead. It outranks the colour question on evidence: the colour argument rests on our own declared 60/30/10, the size one on the artefact's own published dimension.",
+          "closed_by": "057a7ba (2026-08-24). The floor's UV scale is DERIVED from the publisher's declared 1699.99969 mm, not typed. Proved in the built file rather than the source: UV read out of both .blend files gives 2.400000 m before and 1.700000 m after. A/B playblast pair at identical settings (p2r66qA legacy / p2r65q asserted) — the eye reads narrower boards, more joints, a floor that looks laid rather than blown up. NUMBERS THIS ROW CARRIED THAT WERE WRONG, corrected in the same commit: it argued from PLANK_PITCH_MM (180 mm, 150-250 mm 'the real range') — a constant THIS REPO chose for its OWN procedural veneer, so the frame was being convicted by a number we invented, which is the self-consistency shape R7b warns about by name. Measured from the maps instead: 9 board joints across the tile (FFT k=9 and circular autocorrelation agree; joint score separates from mid-board by ~10x so the count is threshold-independent), pitch 188.889 mm, and 9 x 189 = 1701 mm against the declared 1699.99969 — the publisher's own metadata confirming itself to 0.06%. Rendered width was 266.67 mm, not 254. 189 mm is a stocked engineered-oak width and ~267 mm was not found on sale (knowledge/_inbox/web-engineered-oak-plank-widths-2026-08-24.md). THE PREDICTED COST DID NOT APPEAR. This row and review #73 both said the fix FIGHTS P2r-2. Measured: P2r-2's rung contains ZERO floor pixels, so it cannot see the change at all; and on the A/B pair the duplicate the geometry predicted (left sliver vs right sliver, 3.40 m = exactly 2 tiles) did not show — NCC -0.0170 -> -0.0287, rows above 0.5 falling 0.224 -> 0.158, and the column-profile autocorrelation peak immobile at lag 24 px across a 1.41x texture change, which proves that peak is geometry and light rather than texture. Stated honestly: two instruments found nothing and one of them is demonstrably blind to the question."
         },
         {
           "id": "STY-8",
           "what": "TEXTURE INGEST ASSERTS NO SCALE, which is why STY-7 could sit unchallenged. `assets.fetch_model` calls asset_scale.write_sidecar and prints 'UNIT NOT ASSERTED' when it cannot; `assets.fetch_texture` does neither and never reads the API's `dimensions` field, although the field is right there in the same response the download URLs come from. So R8's 'scale is ASSERTED on every ingest, never assumed' has an implementation on the model path and none on the texture path, and a magic 2.4 could sit beside a 1.7 m artefact with nothing able to compare them. FIX: record the declared dimensions on fetch, and let the mapping read them. ADMISSION (D-112): this is not a new instrument, it extends ORD-2026-08-22-front-door-dims — built dimensions judged against a WORLD standard, no allowlist — onto the one asset class that was exempt by omission.",
           "where": "pipeline/scripts/assets.py, pipeline/scripts/asset_scale.py",
-          "status": "todo",
-          "why": "A defect class with no instrument. 16 cached texture sets, zero with a recorded physical size; every tile_m in the repo is therefore a typed number that nothing can check — the same shape as the typed positions R9 was written for."
+          "status": "done",
+          "why": "A defect class with no instrument. 16 cached texture sets, zero with a recorded physical size; every tile_m in the repo is therefore a typed number that nothing can check — the same shape as the typed positions R9 was written for.",
+          "closed_by": "057a7ba (2026-08-24). texture_scale.py + qa/texture-scale.json + a <slug>.scale.json beside all 16 cached sets + the door `_tile_m_for` in build_room + a BLOCKING rung in rule_gate.check_room + 30 tests + a coverage-map row. Shape copied wholesale from the mesh side (asset_scale's three sites: ingest writes, one door reads, the gate re-checks) rather than invented, and from asset_scale's own docstring lesson — the fetcher is the CONVENIENCE, never the guarantee, because 'a step that only happens if each downloader remembers it is not a step'. ONE CORRECTION TO THIS ROW'S OWN TEXT: it said fetch_texture 'never reads the API's dimensions field, although the field is right there in the same response the download URLs come from'. It is NOT. /files/<slug> carries urls, resolutions and md5s and no dimensions; the field lives at /info/<slug>, a second request. That is why the assertion is a --backfill command rather than a line added to the fetcher. THREE STATES, not two: a mapping is asserted, or carries a SIGNED departure (axis + ratio + why — the millwork's 1.5301x along-grain stretch and the soft goods' 3.1399x meso-band mapping are both legal and both now written down), or carries DATED DEBT with a named restart action that prints its measured ratio into the render path every run (the rug, 4.81x). What it may never be is silent, and what it may never do is print as asserted — R13's third state, because a rung that hard-fails everything on day one gets switched off. NO ALLOWLIST, learned the hard way inside this commit: the first sweep anchored on `tile_m=` / `uv_scale=` / `grain_run_m=`, reported 12 hits and read like a clean census, and had missed the TRN lanes entirely because they carry the tile as the fifth element of a positional tuple. Anchoring on a keyword IS an allowlist one level down — it names the syntax it applies to and exempts the next syntax. Re-anchored on the SLUG (data we already hold): 12 -> 30 hits, now a down-only ratchet at 29."
         },
         {
           "id": "STY-9",
@@ -3510,8 +3512,67 @@
         "STY/STY-1",
         "STY/STY-1b"
       ]
+    },
+    {
+      "commit": "057a7baf0c282762135673a9e8d02c4746cf7264",
+      "verdicts": {
+        "P2": "keep: the phase's own levers are untouched. This round spent itself on a WORLD-STANDARD defect (a texture drawn 1.41x life size) rather than on P2r-2 or P2r-5, and the honest reason to keep P2 unchanged is that the round CORRECTED the plan's reading of it rather than advancing it. Two corrections, both measured: (1) the goal string printed 'autocorr peak 0.597 vs floor 0.564' at every session open for 15 rounds; live on p2r64 it is 0.477 vs floor 0.509 — NOT periodic, the declared cut HOLDS and has since p2r55. (2) review #73 said STY-7 'fights' P2r-2; the rung contains ZERO floor pixels and cannot see a floor change at all. What is actually open on P2r-2 is the repeat its own instrument cannot reach — a real ~364 px wall period against a crop whose lag ceiling is 264 px, ACCEPTed by the p2r64 gate and named independently by C2 ('grain runs continuously across the grooves, a visible mirror axis mid-wall'). R1 applies: that mechanism has had six rounds of shader tuning, so the next move is a NEW CROP, not a seventh parameter pass. P2r-5 remains the strongest unspent lever and four of C3's six p2r64 items are its family.",
+        "P4": "keep: unchanged and still correctly sequenced after objects, per the owner's build order (dimension -> objects -> light). Nothing this round touched light. One standing hazard is now better understood rather than resolved: STY-9's palette ratchet is a down-only ceiling measured on p2r57, and a gamma move in P4 could wedge the build. Confirmed this round that the wedge is NOT armed by rendering — style_check only requires the named frame to exist on disk, and style_measure has no automated caller — so P4 is not blocked; it is armed only by voluntarily running style_measure, which STY-9 already forbids in writing.",
+        "P3": "keep: untouched this round and its position after P4 is unchanged.",
+        "P5": "keep: still blocked on the phases ahead of it. No new information this round changes its shape.",
+        "STY": "change: STY-7 and STY-8 close, and the phase's centre of gravity moves from COLOUR to SCALE because that is where the measurable defects turned out to be. STY-7 shipped (floor 2.400000 -> 1.700000 m, proved by reading UV out of both .blend files) and STY-8 shipped as a general mechanism with two down-only ratchets. What the round ADDS to this phase, unplanned and measured: the rug renders at 4.81x the size its artefact declares — the largest unasserted ratio in the live frame, larger than the floor's — and it is filed as DATED DEBT rather than fixed, because C2 filed an independent rug item at p2r64 ('a sticker on the floor: no thickness, no binding, no crush, a fine uniform herringbone noise') and nobody has tested whether the two are the same defect. That is the next STY unit and it must MEASURE THE ON-SCREEN PITCH BEFORE it retypes a number. Also corrected inside this phase: STY-3's pixel census (5.11/44.32/10.08) was seven rounds stale and quoted as current — re-measured on p2r64 with the repo's own decoder, floor 4.42 / millwork oak 26.86 / rug 4.23, which HARDENS STY-3's refutation since the floor is now smaller than the figure that killed it. STY-9 stands unchanged and still forbids running style_measure."
+      },
+      "changed": [
+        "STY"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a",
+        "STY/STY-1",
+        "STY/STY-1b",
+        "STY/STY-7",
+        "STY/STY-8"
+      ]
     }
   ],
-  "last_review_commit": "7ad411a5e768006532e1bbc1610f59fae44eb348",
+  "last_review_commit": "057a7baf0c282762135673a9e8d02c4746cf7264",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
