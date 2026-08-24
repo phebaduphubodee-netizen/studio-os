@@ -54,6 +54,39 @@ Four rules, each enforcing a clause of that sentence:
      LOCKED TO HIM.                `decided_by` must read "owner". Re-deciding
                                    it means deleting what he said, in a diff.
 
+  5. `in_effect_assert` READS      Rule 2 checks that the file EXISTS. It cannot
+     THE FILE, NOT THE PATH.       check that the file SAYS what the row claims,
+                                   and the docstring above called rule 2 "the
+                                   only check here that can catch me writing a
+                                   resolution I did not carry out" — which was
+                                   true, and not enough.
+
+WHAT RULE 5 COST, measured 2026-08-24 and the reason it exists: the two bedside
+tables carry FOUR written records of the same two numbers, and the file they all
+name agrees with none of them.
+
+    D-114 `in_effect`          SR-09 y 2036, SR-10 y -285
+    D-115 `in_effect`          y 2036 / -184        (decided_by OWNER, "ลุย")
+    spec SR-07 sheet_ref_note  SR-09 y1943, SR-10 y-248
+    spec item notes            "hug y2036" / "hug y-184"
+    spec DATA fields           y 2005 / y -210      <- what actually renders
+
+Every one of those rows passed all four rules, because `where` named a path that
+exists. The owner-locked row said 2036 and the builder typed 2005, which is a
+21 mm OVERLAP into the bed instead of the 10 mm gap his row describes — and the
+spec's own prose contradicts the spec's own data INSIDE THE SAME JSON OBJECT.
+
+This is R13 one level down. Owner ORDERS got `obeyed_assert`, which greps the
+actual code, on 2026-08-16 and the register has been honest since. DECISIONS
+never got the same rung: 124 rows, zero content assertions. So the shape is
+borrowed wholesale from orders_check rather than reinvented.
+
+RATCHET, NOT BIG BANG (the shape existence_check's `baseline_unrowed` and the
+spec-ratchet already use, for the reason R13 names in its own last paragraph: a
+machine that hard-fails every historical row on day one gets switched off and
+joins them). A row at or past `_assert_ratchet_from` MUST carry an assertion.
+Older rows are grandfathered, COUNTED, and printed — never silently exempt.
+
 WHAT THIS COSTS, stated because it should not have to be rediscovered: R3's
 reason for existing was that builders catch only 30-50% of their own defects,
 and the owner's rung was the answer to that. Removing it does not remove the
@@ -72,9 +105,11 @@ CLI-ONLY: no importer outside `rule_gate.py` and this module's tests.
 import argparse
 import json
 import os
+import re
 import sys
 
 DECISIONS_REL = "qa/open-decisions.json"
+RATCHET_KEY = "_assert_ratchet_from"
 
 REQUIRED = ("id", "unit", "decided_round", "decided_date", "decided_by",
             "question", "in_effect", "where", "because", "reverse_by")
@@ -113,6 +148,77 @@ def _paths(where):
     if not isinstance(where, str):
         return []
     return [p.strip() for p in where.split(",") if p.strip()]
+
+
+def _row_num(did):
+    """D-115 -> 115. Non-conforming ids sort last (None) so the ratchet never
+    silently exempts a row whose id it could not read."""
+    m = re.match(r"^D-(\d+)$", str(did or ""))
+    return int(m.group(1)) if m else None
+
+
+def _read(root, rel):
+    try:
+        with open(os.path.join(root, rel), encoding="utf-8") as f:
+            return f.read()
+    except OSError:
+        return None
+
+
+def assert_violations(did, d, root):
+    """Rule 5. Borrowed verbatim in shape from orders_check's `obeyed_assert`,
+    because the defect is the same defect and a second dialect would be a second
+    thing to get wrong."""
+    out = []
+    aa = d.get("in_effect_assert")
+    if aa is None:
+        return out
+    if not isinstance(aa, list) or not aa:
+        return [f"{did}: `in_effect_assert` must be a non-empty list of "
+                f"{{file, pattern, why}} objects."]
+    for i, a in enumerate(aa):
+        tag = f"{did} assert[{i}]"
+        if not isinstance(a, dict):
+            out.append(f"{tag}: not an object.")
+            continue
+        rel, pat, why = a.get("file"), a.get("pattern"), a.get("why")
+        if not rel or not pat:
+            out.append(f"{tag}: needs both `file` and `pattern`.")
+            continue
+        if not why or len(str(why).strip()) < 20:
+            out.append(f"{tag}: needs a `why` saying what the pattern proves. A "
+                       f"pattern with no reason is a pattern nobody can audit, "
+                       f"and this rung exists because an assertion once matched "
+                       f"its own failure string.")
+        txt = _read(root, rel)
+        if txt is None:
+            out.append(f"{tag}: names {rel}, which cannot be read. An assertion "
+                       f"that cannot run must never read like one that passed.")
+            continue
+        try:
+            hit = re.search(pat, txt, re.M) is not None
+        except re.error as e:
+            out.append(f"{tag}: pattern is not a valid regex ({e}).")
+            continue
+        if not hit:
+            out.append(f"{tag}: /{pat}/ no longer matches {rel}. The row says "
+                       f"what is true in the repo because of this decision, and "
+                       f"the repo now says otherwise — reopen the row or carry "
+                       f"the decision out; do not let the two drift.")
+    return out
+
+
+def assert_debt(data, unit=None):
+    """(with, without, baseline) over the rows this unit owns. `without` is the
+    grandfathered backlog — printed, never a violation, and it can only fall."""
+    base = _row_num(data.get(RATCHET_KEY)) if isinstance(data, dict) else None
+    with_a = without = 0
+    for d in rows_for(data, unit):
+        if d.get("in_effect_assert"):
+            with_a += 1
+        else:
+            without += 1
+    return with_a, without, base
 
 
 def check(data, unit, repo_root=None, path_hint=DECISIONS_REL):
@@ -165,6 +271,19 @@ def check(data, unit, repo_root=None, path_hint=DECISIONS_REL):
             v.append(f"{did} claims decided_by='owner' with no "
                      f"`owner_override` text. The builder may not sign for him "
                      f"— that is the one thing removing his rung did NOT change.")
+
+        # 5. THE ROW'S NUMBERS AGAINST THE FILE THE ROW NAMES.
+        v += assert_violations(did, d, root)
+        base = _row_num(data.get(RATCHET_KEY))
+        n = _row_num(did)
+        if base is not None and not d.get("in_effect_assert") and (
+                n is None or n >= base):
+            v.append(f"{did} is at or past the assertion ratchet "
+                     f"(D-{base:03d}) and carries no `in_effect_assert`. Rule 2 "
+                     f"proves the file exists; only this proves it says what "
+                     f"the row claims. Four written records of one pair of "
+                     f"numbers, none matching the file, is what a register "
+                     f"without this rung looks like.")
     return v
 
 

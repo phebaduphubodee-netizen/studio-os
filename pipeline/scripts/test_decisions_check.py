@@ -186,3 +186,98 @@ def test_every_real_row_is_serialisable_and_carries_the_override_scaffold():
         for k in ("owner_override", "override_date"):
             assert k in d, f"{d.get('id')} cannot record an override"
         assert json.dumps(d, ensure_ascii=False)
+# --------------------------------------------------- rule 5: in_effect_assert --
+# Both-sides controls. Rule 5 exists because four written records of the SAME two
+# numbers all passed rules 1-4 while the file they named agreed with none of them,
+# so every clause that makes it bite is shown biting.
+def _arow(tmp_path, **over):
+    r = {"id": "D-200", "unit": "U", "decided_round": 1,
+         "decided_date": "2026-08-24", "decided_by": "builder",
+         "question": "q", "in_effect": "y is 2036", "where": "f.json",
+         "because": "b", "reverse_by": "r"}
+    r.update(over)
+    (tmp_path / "f.json").write_text('{"y": 2036}', encoding="utf-8")
+    return r
+
+
+def _chk(tmp_path, row, ratchet=None):
+    data = {"decisions": [row]}
+    if ratchet:
+        data["_assert_ratchet_from"] = ratchet
+    return DC.check(data, "U", repo_root=str(tmp_path))
+
+
+def test_assert_passes_when_the_file_says_what_the_row_claims(tmp_path):
+    row = _arow(tmp_path, in_effect_assert=[
+        {"file": "f.json", "pattern": '"y": 2036',
+         "why": "the hug gap the owner-locked row states"}])
+    assert _chk(tmp_path, row) == []
+
+
+def test_assert_bites_when_the_file_says_something_else(tmp_path):
+    """THE LIVE DEFECT, in miniature: the row says 2036, the file says 2005."""
+    row = _arow(tmp_path, in_effect_assert=[
+        {"file": "f.json", "pattern": '"y": 2005',
+         "why": "the number the builder actually typed"}])
+    v = _chk(tmp_path, row)
+    assert len(v) == 1 and "no longer matches" in v[0]
+
+
+def test_assert_on_an_unreadable_file_is_a_violation_not_a_pass(tmp_path):
+    row = _arow(tmp_path, in_effect_assert=[
+        {"file": "gone.json", "pattern": "x",
+         "why": "a file that is not there at all"}])
+    v = _chk(tmp_path, row)
+    assert len(v) == 1 and "cannot be read" in v[0]
+
+
+def test_assert_needs_a_why_long_enough_to_audit(tmp_path):
+    row = _arow(tmp_path, in_effect_assert=[
+        {"file": "f.json", "pattern": '"y": 2036', "why": "because"}])
+    v = _chk(tmp_path, row)
+    assert any("nobody can audit" in x for x in v)
+
+
+def test_assert_needs_file_and_pattern_and_rejects_junk(tmp_path):
+    assert any("needs both" in x for x in _chk(
+        tmp_path, _arow(tmp_path, in_effect_assert=[{"file": "f.json"}])))
+    assert any("non-empty list" in x for x in _chk(
+        tmp_path, _arow(tmp_path, in_effect_assert=[])))
+    assert any("not an object" in x for x in _chk(
+        tmp_path, _arow(tmp_path, in_effect_assert=["nope"])))
+
+
+def test_a_broken_regex_is_reported_not_raised(tmp_path):
+    row = _arow(tmp_path, in_effect_assert=[
+        {"file": "f.json", "pattern": "(unclosed",
+         "why": "a pattern that cannot compile at all"}])
+    v = _chk(tmp_path, row)
+    assert len(v) == 1 and "not a valid regex" in v[0]
+
+
+def test_the_ratchet_grandfathers_old_rows_and_bites_new_ones(tmp_path):
+    old = _arow(tmp_path, id="D-100")
+    assert _chk(tmp_path, old, ratchet="D-150") == []
+    new = _arow(tmp_path, id="D-150")
+    v = _chk(tmp_path, new, ratchet="D-150")
+    assert len(v) == 1 and "assertion ratchet" in v[0]
+
+
+def test_an_unreadable_id_is_not_exempted_by_the_ratchet(tmp_path):
+    """A row whose id the ratchet cannot parse must fail closed, not sail past."""
+    v = _chk(tmp_path, _arow(tmp_path, id="D-oops"), ratchet="D-150")
+    assert any("assertion ratchet" in x for x in v)
+
+
+def test_without_a_ratchet_key_nothing_is_forced(tmp_path):
+    assert _chk(tmp_path, _arow(tmp_path, id="D-999")) == []
+
+
+def test_assert_debt_counts_the_grandfathered_backlog(tmp_path):
+    data = {"_assert_ratchet_from": "D-150", "decisions": [
+        _arow(tmp_path, id="D-001"),
+        _arow(tmp_path, id="D-002", in_effect_assert=[
+            {"file": "f.json", "pattern": "y", "why": "a long enough reason here"}]),
+    ]}
+    with_a, without, base = DC.assert_debt(data, "U")
+    assert (with_a, without, base) == (1, 1, 150)

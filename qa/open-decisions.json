@@ -1831,7 +1831,19 @@
    "because": "การยัดโมเดลคลาสสิกให้เตี้ยลง (z-squash 0.66) ทำลายลายแกะและคงสไตล์ที่ชน; การหด slot ให้ตัวเลขสวย (C ที่ 352มม.) ได้โต๊ะจิ๋วข้างเตียง 1795; ตัวที่ผ่านทั้ง relation และ panel มีตัวเดียวในชั้นฟรีที่โหลดมา",
    "reverse_by": "พี่ดู p2r57 แล้วไม่เอา -> ชี้จากภาพ: กลับตัวเดิม = คืน model/slot/ตำแหน่งใน 3 items (เลขเดิมอยู่ใน git ที่ commit นี้เอง) หรือชี้ตัวอื่นจาก audition (aud_*.png ใน scratchpad, 8 ตัว) หรือสั่งหาเพิ่ม (Blendkit ฟรีที่ผ่านมิติมี 27, ยังโหลดแค่ 8)",
    "owner_override": "ลุย",
-   "override_date": "2026-08-22"
+   "override_date": "2026-08-22",
+   "in_effect_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"sheet_ref\": \"SR-09\",\\s*\\n\\s*\"x\": 4803,\\s*\\n\\s*\"y\": 2036",
+     "why": "SR-09's hug seat. D-115 states y 2036 and the spec carried 2005 for two rounds — a 21 mm OVERLAP into the bed rect where his row describes a 10 mm gap, and a 57 mm asymmetry against its twin. Anchored to the sheet_ref so an unrelated item carrying the same integer cannot satisfy it."
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"sheet_ref\": \"SR-10\",\\s*\\n\\s*\"x\": 4803,\\s*\\n\\s*\"y\": -184",
+     "why": "SR-10's hug seat, the twin. D-115 states -184; the spec carried -210 (a 36 mm gap against the north side's -21 mm). With both armed the pair can only drift together, and drifting together is the symmetric case his eye already passed once."
+    }
+   ]
   },
   {
    "id": "D-116",
@@ -1959,5 +1971,6 @@
    "where": "pipeline/scripts/build_room.py, pipeline/scripts/wholebed_rules.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
    "reverse_by": "คืน block scale เดิมใน _place_bed_frame (s = min(cluster reach, field containment) — โค้ดเดิมอยู่ใน git ที่ commit ก่อนหน้า) แล้วลบแถวนี้; ภาพจะ กลับไปเป็นเตียงที่หดเข้าช่อง · หรือพี่ชี้จากภาพว่าเฟรมล้นเข้า walkway มากไป -> นั่นไม่ใช่การคืน cap แต่เป็นการเลือกเตียงที่เฟรมแคบกว่า หรือขยับ bench ตามคำสั่ง 08-22 (ปรับของรอบ ๆ ให้มาชิดเตียง)"
   }
- ]
+ ],
+ "_assert_ratchet_from": "D-124"
 }

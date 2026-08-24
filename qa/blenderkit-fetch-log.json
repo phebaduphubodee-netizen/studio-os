@@ -431,6 +431,18 @@
     "currentPlanName": "Full",
     "remainingPrivateQuota": "2147483647"
    }
+  },
+  {
+   "at": "2026-08-24T02:33:47-04:00",
+   "date_local": "2026-08-24",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
   }
  ]
 }

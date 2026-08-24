@@ -679,7 +679,7 @@
         },
         {
           "id": "STY-3",
-          "what": "sign the floor — the largest surface in the room and the 60% dominant it has never had. NOT by pointing at oak_wood_floor: that preset is the same slug minus the anti-tiling drift, so it would regress MA-03 and change the wood not at all. Author a preset that is actually a different finish with variation >= 0.05, render the pair, re-measure the palette gap",
+          "what": "RE-AIMED 2026-08-24 ON MEASUREMENT — the row as written is refuted by its own numbers and MUST NOT be run in its old form. Old text: sign the floor as its own preset with variation >= 0.05, render the pair, re-measure the palette gap. WHAT IS WRONG WITH IT, in the order it matters: (1) ITS PREMISE IS FALSE IN THE UNIT THE METRIC MEASURES. It calls the floor 'the largest surface in the room, the single highest-area change available'. In the frame of record the floor is 5.11% of PIXELS; the millwork is 44.32% and the D1-A rug 10.08%. 5% of a frame cannot mechanically supply a 30-point dominant-share move, so whatever the gap does is a k-means re-partition, not the floor becoming a 60% dominant. (2) THE DIRECTION IT NAMES FIGHTS AN ACCEPTED CRITIC ITEM. Tinting the floor toward the signed oak #C7B896 aims it at the MILLWORK'S own albedo mean, putting ~49% of the frame on one oak colour — while the accepted C2 item reads 'ทั้งห้องโทนเดียว วัสดุแยกไม่ออก ไม้พื้นกับตู้อ่านเป็นเนื้อเดียว' (triaged ACCEPT). (3) 'variation >= 0.05' IS ALREADY IN FORCE on the live floor, so it is a no-regress condition and not a discriminator — and because `variation` exists on the `pbr` factory alone, the phrase silently forbids `image_wood`, which is the factory that HAS mean-normalisation to a signed colour, roughness normalisation, book-matched ping-pong and per-object decorrelation. The wording picks the worse engine. (4) A TINT IS THE FLATTERING-SCORER SHAPE this phase already has a standing aim against in writing ('every R8-ACQUIRE object carries its own PBR maps rather than a tint'). WHAT THE ROW BECOMES: the floor question is a MATERIAL-IDENTITY question, not a palette-number one. Do STY-7 (the measured 1.41x scale error) first, because a swap that does not fix it re-ships the same defect under a new slug; then choose a floor that is a different FINISH from the millwork rather than closer to it; and do NOT close on the palette gap until STY-9 is settled.",
           "where": "pipeline/scripts/material_presets.py",
           "status": "todo",
           "why": "The single highest-area change available in this room, and the one most likely to move the 0.300 palette gap. Rides as the second variable of a round the lane was going to spend anyway — the next round belongs to the Metropol integration (D-121 item 4)."
@@ -704,6 +704,27 @@
           "where": "CLAUDE.md",
           "status": "todo",
           "why": "A rule that is not in CLAUDE.md is forgotten by the next session."
+        },
+        {
+          "id": "STY-7",
+          "what": "THE FLOOR IS RENDERED 41% OVERSIZED, and this is a world-standard defect rather than a taste one. Poly Haven declares the `wood_floor` artefact 1699.9997 x 1699.9997 mm (fetched live from api.polyhaven.com/info/wood_floor, 2026-08-24 — the endpoint needs a User-Agent header or it answers 403). build_room maps the floor at `_planar_uv(obj, tile_m=2.4)`, so every feature in that photograph — plank, grain, wear — lands at 2400/1700 = 1.412x its real size. The repo already states the physical band as a named constant for exactly this reason: PLANK_PITCH_MM = 180.0, '150-250 mm is the real range', with the comment 'a procedural texture's feature size has to be PHYSICAL or it scales with whatever object wears it'. The floor is the one surface where that law is not applied. FIX: tile_m from the artefact's declared dimension (STY-8 makes it readable), not a literal. NOT DONE TONIGHT AND THE REASON IS NAMED: it changes pixels on the largest floor area in the frame and it FIGHTS P2r-2, whose instrument is 'no periodic autocorrelation peak' — shrinking the tile from 2.4 m to 1.7 m puts ~41% MORE repeats across the same floor. The two must be judged in one round, on one crop, or the honest fix will read as a regression to the tiling rung.",
+          "where": "pipeline/scripts/build_room.py (_planar_uv call at the floor branch)",
+          "status": "todo",
+          "why": "Filed 2026-08-24 by the STY-3 design pass, which set out to choose a floor COLOUR and found a floor SIZE error instead. It outranks the colour question on evidence: the colour argument rests on our own declared 60/30/10, the size one on the artefact's own published dimension."
+        },
+        {
+          "id": "STY-8",
+          "what": "TEXTURE INGEST ASSERTS NO SCALE, which is why STY-7 could sit unchallenged. `assets.fetch_model` calls asset_scale.write_sidecar and prints 'UNIT NOT ASSERTED' when it cannot; `assets.fetch_texture` does neither and never reads the API's `dimensions` field, although the field is right there in the same response the download URLs come from. So R8's 'scale is ASSERTED on every ingest, never assumed' has an implementation on the model path and none on the texture path, and a magic 2.4 could sit beside a 1.7 m artefact with nothing able to compare them. FIX: record the declared dimensions on fetch, and let the mapping read them. ADMISSION (D-112): this is not a new instrument, it extends ORD-2026-08-22-front-door-dims — built dimensions judged against a WORLD standard, no allowlist — onto the one asset class that was exempt by omission.",
+          "where": "pipeline/scripts/assets.py, pipeline/scripts/asset_scale.py",
+          "status": "todo",
+          "why": "A defect class with no instrument. 16 cached texture sets, zero with a recorded physical size; every tile_m in the repo is therefore a typed number that nothing can check — the same shape as the typed positions R9 was written for."
+        },
+        {
+          "id": "STY-9",
+          "what": "DO NOT RATCHET ON THE PALETTE GAP UNTIL IT IS STABLE — and until this row is settled, do not run `style_measure` on a new frame, because that write is the only thing that arms the hazard. MEASURED 2026-08-24: gap_worst is chaotic at the scale of its own remaining slack. Multiplying the frame of record by 1.01 — an operation that changes no material, no palette and no design — moves it 0.3002 -> 0.2261. That excursion, 0.074, is 3.7x the whole remaining slack (ceiling 0.3202 - worst 0.3002 = 0.0200), and it is NON-MONOTONIC: x1.001 -> 0.3002, x1.01 -> 0.2261, x1.03 -> 0.2907, x1.15 -> 0.2809, gamma 1.10 -> 0.3114. Worse, the frame of record is a near-worst-case OUTLIER of its own metric: 13 of 15 perturbations land at 0.223-0.231, including a 30% DARKENING (x0.70 -> 0.2264) — two adjacent lightness clusters collapse and the dominant share jumps ~0.30 -> ~0.37. So almost ANY change 'improves' the gap and ratchets the ceiling down onto k-means noise. THE WEDGE, worked through: if a round lands the likely ~0.22, style_measure sets gap_ceiling = min(0.3202, 0.24) = 0.24 permanently. The next open phase is P4 lighting, under the owner's own objects-before-light order; a tone change of the size measured above (gamma 1.10 -> 0.3114) then exceeds 0.24, style_check returns a violation, and build_room prints RULE GATE FAILED and calls os._exit(1) BEFORE build() — so the build that would fix the palette cannot render at all, playblasts included. WHAT TO DO INSTEAD: make the statistic stable before it gates anything — a fixed cluster seeding or a perturbation-invariant summary, with the instability above as its acceptance test (a x1.01 multiply must not move the verdict). One of the four escape hatches is already closed: a COULD-NOT-RUN no longer deletes gap_ceiling (fixed 2026-08-24, with the first tests style_measure has ever had). The other three remain and are all dishonest: --no-rule-gate bypasses the WHOLE gate; re-pointing at an older frame is unconstrained; and a hand-edit is unguarded because the ratchet lives only in style_measure's own min(). SEPARATE AND ALREADY LIVE: the register is committed while the frame it names is gitignored (pipeline/output/), so on any clone style_check fires 'palette_measured names frame ..., which does not exist' and the same os._exit(1) fires before render. The R11 rung's verdict depends on an untracked local artefact.",
+          "where": "pipeline/scripts/style_fingerprint.py, pipeline/scripts/style_measure.py, qa/style-of-record.json",
+          "status": "todo",
+          "why": "A ratchet is only as honest as the statistic under it. This one is measured to move 3.7x its own slack under a no-op, and it gates the production render path with a hard os._exit(1). Filed before anything armed it, which is the whole point."
         }
       ],
       "exit_test": "style_check exits 0 inside check_room on the deliverable frame of record with zero legacy-unsigned slots and zero none-yet prohibitions; the STYLE line prints at every session open and in the render path; the measured palette gap has fallen from its 2026-08-23 seed of 0.300 and its ceiling has fallen with it; and every in-frustum ACQUIRED mass carries a style verdict. Exit 2 could-not-run never counts as clear.",
@@ -3372,8 +3393,66 @@
         "STY/STY-1",
         "STY/STY-1b"
       ]
+    },
+    {
+      "commit": "753e5b31e33a57b8bcf3d2c4e322893e52dcfd72",
+      "verdicts": {
+        "P2": "keep: the phase is untouched by tonight — the two levers named DO NEXT (P2r-2 wood figure, P2r-5 material response) are still the strongest measured surface work and nothing tonight consumed them. Tonight was DRW/R13 work that ran interleaved, which is what a standing program is for.",
+        "P4": "keep: unstarted and correctly sequenced after P2 — objects before light stands (owner 2026-08-08), and styling density is a completeness question that only makes sense once the surface levers land.",
+        "P3": "keep: light stays after objects. Nothing tonight touched it and the ordering rationale (a light table built over wrong geometry buries the geometry error, measured once at 240W vs a real 37W) is unchanged.",
+        "P5": "keep: blocked is the honest state — it gates on P2 exit, which has not moved tonight.",
+        "DRW": "change: the phase is marked done with 6/6 and tonight proved that was premature in one specific way — its own ledger was carrying a stale reading of the drawing (SR-09/SR-10 rect_mm was the lamp circle, SR-18 ran through both niches), and its gate had never once been spawned by a render despite qa/coverage-map.json declaring it blocking. Both are now fixed and the phase can return to done, but it needs ONE new row it does not have: a rung that catches a rect_mm that disagrees with the ink, because nothing today would have found the lamp-for-table substitution except a human opening the sheet. Propose DRW-7: --extract already re-runs the clusterer; make it also re-measure EXISTING rows rather than only hunting unaccounted ink, and print any row whose stored rect_mm no longer reproduces from the strokes. That is the half of the two-reader reconciliation that was never built: the machine reconciles BUILD against ledger, and nothing reconciles LEDGER against ink.",
+        "STY": "keep: 2/7 and it is the next order in line — ORD-2026-08-23-style-before-objects is 1 day unobeyed with STY-2 (the style verdict field + existence_check rule) and STY-3 (sign the floor) both builder-only. Tonight did not touch it; it is what I go to next."
+      },
+      "changed": [
+        "DRW"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a",
+        "STY/STY-1",
+        "STY/STY-1b"
+      ]
     }
   ],
-  "last_review_commit": "a8be7cdcf5c6b38ae3ff82f022d02cca5ce61579",
+  "last_review_commit": "753e5b31e33a57b8bcf3d2c4e322893e52dcfd72",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }

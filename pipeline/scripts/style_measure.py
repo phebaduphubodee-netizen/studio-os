@@ -90,6 +90,18 @@ def write(frame_rel, result, reason, repo_root=None, today=None,
         block["could_not_run"] = reason
         block.update({k: prev.get(k) for k in
                       ("dominant_share", "secondary_share", "accent_share")})
+        # THE RATCHET SURVIVES A COULD-NOT-RUN. `data["palette_measured"] = block`
+        # replaces the block wholesale, so anything not copied here is DELETED —
+        # and before 2026-08-24 that included gap_ceiling. One could-not-run
+        # therefore erased a ratchet whose whole definition is that it only ever
+        # falls, and the next successful run re-seeded it from that frame's own
+        # worst + 0.02, however much wider the gap had become. A rung that cannot
+        # look must not get to reset the record of what it saw last time it could:
+        # that is R11's sentence turned inside out, "could not look" quietly
+        # editing the history of "looked".
+        block.update({k: prev[k] for k in
+                      ("gap_worst", "gap_ceiling", "gap_since", "close_by",
+                       "_honest_note") if k in prev})
     else:
         pal = result["palette"]
         block.update({

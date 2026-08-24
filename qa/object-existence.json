@@ -221,40 +221,40 @@
    "why": "Drawn. It is in the frustum only as a sliver past the wardrobe bay."
   },
   {
-   "assembly": "side_table@4803,2005",
+   "assembly": "side_table@4803,2036",
    "identity": "Bedside table, one acquired mesh (Blendkit 341b04e0 Modern Nightstand 02, greige waterfall), 400 x 400 in plan, top at ~400 mm = sleeping plane - 25 (D-115 re-derivation of D-045's datum relation).",
    "exists": "sheet:SR-09",
    "held_by": "floor",
    "operable": false,
    "verdict": "keep",
-   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y 2200) to hug the standard-size bed at a 10 mm slot gap — his order 2026-08-22 verbatim in ORD-2026-08-22-bed-standard-size-hug / D-114; the drawn position served the drawn 7-ft bed that D-114 retired."
+   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y 2200) to hug the standard-size bed at a 10 mm slot gap — his order 2026-08-22 verbatim in ORD-2026-08-22-bed-standard-size-hug / D-114; the drawn position served the drawn 7-ft bed that D-114 retired. | RE-KEYED 2026-08-24: the assembly name embeds the piece's PLAN COORDINATE, so carrying out D-115's owner-locked hug numbers (y 2005->2036 / -210->-184, which make the twins symmetric to 0.0 mm against the 57 mm they were) renamed it and orphaned this row. Paid once because the position stays typed; a DERIVED position would re-key it every round, which is why that plan was refused."
   },
   {
-   "assembly": "side_table@4803,-210",
+   "assembly": "side_table@4803,-184",
    "identity": "Bedside table, one acquired mesh (Blendkit 341b04e0 Modern Nightstand 02, greige waterfall), 400 x 400 in plan, top at ~400 mm = sleeping plane - 25 (D-115 re-derivation of D-045's datum relation).",
    "exists": "sheet:SR-10",
    "held_by": "floor",
    "operable": false,
    "verdict": "keep",
-   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y -450) to hug the standard-size bed at a 10 mm slot gap — ORD-2026-08-22-bed-standard-size-hug / D-114."
+   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y -450) to hug the standard-size bed at a 10 mm slot gap — ORD-2026-08-22-bed-standard-size-hug / D-114. | RE-KEYED 2026-08-24: the assembly name embeds the piece's PLAN COORDINATE, so carrying out D-115's owner-locked hug numbers (y 2005->2036 / -210->-184, which make the twins symmetric to 0.0 mm against the 57 mm they were) renamed it and orphaned this row. Paid once because the position stays typed; a DERIVED position would re-key it every round, which is why that plan was refused."
   },
   {
-   "assembly": "nightstand@4869,2071",
+   "assembly": "nightstand@4869,2102",
    "identity": "Table lamp on the north bedside table: base, stem, shade, emitter.",
    "exists": "not-in-drawing: element 8 / D3 styling; the furniture plan draws the table but not what stands on it",
-   "held_by": "side_table@4803,2005",
+   "held_by": "side_table@4803,2036",
    "operable": false,
    "verdict": "keep",
-   "why": "A bedside table with a lamp is what the spec's own item name says it is ('โต๊ะข้างเตียง เหนือ (มีโคมไฟ)'), and the lamp rests on the measured top. Rides its table's p2r56 hug move (D-114)."
+   "why": "A bedside table with a lamp is what the spec's own item name says it is ('โต๊ะข้างเตียง เหนือ (มีโคมไฟ)'), and the lamp rests on the measured top. Rides its table's p2r56 hug move (D-114). | RE-KEYED 2026-08-24: the assembly name embeds the piece's PLAN COORDINATE, so carrying out D-115's owner-locked hug numbers (y 2005->2036 / -210->-184, which make the twins symmetric to 0.0 mm against the 57 mm they were) renamed it and orphaned this row. Paid once because the position stays typed; a DERIVED position would re-key it every round, which is why that plan was refused."
   },
   {
-   "assembly": "nightstand@4869,-143",
+   "assembly": "nightstand@4869,-117",
    "identity": "Table lamp on the south bedside table: base, stem, shade, emitter — mirror of the north lamp.",
    "exists": "not-in-drawing: element 8 / D3 styling; the furniture plan draws the table but not what stands on it",
-   "held_by": "side_table@4803,-210",
+   "held_by": "side_table@4803,-184",
    "operable": false,
    "verdict": "keep",
-   "why": "Same justification as its north mirror ('โต๊ะข้างเตียง ใต้ (มีโคมไฟ)' is the item's own name). It enters the in-frame roster at p2r56 because the hug move (D-114) brought its table 165 mm further into the eye frustum; the lamp itself is unchanged."
+   "why": "Same justification as its north mirror ('โต๊ะข้างเตียง ใต้ (มีโคมไฟ)' is the item's own name). It enters the in-frame roster at p2r56 because the hug move (D-114) brought its table 165 mm further into the eye frustum; the lamp itself is unchanged. | RE-KEYED 2026-08-24: the assembly name embeds the piece's PLAN COORDINATE, so carrying out D-115's owner-locked hug numbers (y 2005->2036 / -210->-184, which make the twins symmetric to 0.0 mm against the 57 mm they were) renamed it and orphaned this row. Paid once because the position stays typed; a DERIVED position would re-key it every round, which is why that plan was refused."
   },
   {
    "assembly": "e5_cove_pelmet",
@@ -491,6 +491,17 @@
    "operable": false,
    "verdict": "keep",
    "why": "Holds a real load path (guard spanning the opening, anchored at jambs); removing it would make the slider the invented object. New-to-frame by camera move, not by build."
+  },
+  {
+   "assembly": "Sheet",
+   "identity": "The flat sheet of the ACQUIRED Metropol bed set (e2418055) — the layer between the mattress and the blanket. 1,354,622 polys, the heaviest single object in the scene (the duvet is 388k), plan x3273..3849 y78..2157 z81..541.",
+   "exists": "not-in-drawing: element 3 bedding — the furniture plan draws the bed, not the layers of a made bed (same ground as the pillows and duvet)",
+   "held_by": "bed",
+   "operable": false,
+   "verdict": "fix",
+   "since": "2026-08-24",
+   "fix_by": "Give it a ROLE in wholebed_rules so it takes a signed bedding material. Today it is the set's one UNCLASSIFIED part and build_room prints that at every build — 'UNCLASSIFIED part Sheet keeps its imported material' — so it renders a stranger's `Brown textured fabric` against D3-1's signed greige linen family, which is exactly the defect the _CASE_GOODS material policy was written for at p2r37 (*มันใส่วัสดุของตัวเองมา*). MEASURED, so the urgency is not overstated: the duvet's AABB encloses it on every axis except ~28 mm at the hem and ~26-41 mm at the sides, and no brown band is separable in the p2r59q frame — the warm-pixel share of the bed-foot band is 0.84%, which is floor edge. So this is a latent material defect on a part that is currently almost entirely hidden, plus a real 1.35M-poly cost for it.",
+   "why": "ROWED 2026-08-24, and it is a backlog row rather than a new object: existence_check exits 0 on the p2r57 dump and 1 on p2r58, so the Metropol bed brought this part in at p2r58 (d57ea4f) and that round was committed with this blocking gate failing. Rowing it is not approving it — the verdict is `fix` and the action is named."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."
