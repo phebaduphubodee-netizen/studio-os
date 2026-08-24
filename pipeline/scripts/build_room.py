@@ -404,6 +404,41 @@ def _score_deliverable(name, quick=False, frame=True):
               "is honest; the wrong-sized thing fabricates a reading.")
         sys.stdout.flush()
         os._exit(1)
+    # ---- SHEET-FIRST — the DRAWING against the BUILD (R12 / ORD-2026-08-11-sheet-first,
+    # owner "คุณมองแบบออกมั้ย?"). R12 says in its own words that an in-frustum drawn mass
+    # with no match and no signed gap FAILS THE RENDER GATE. That could only ever be
+    # true if the render path ran the gate, and for 13 days nothing did: `git log -S`
+    # over build_room.py and rule_gate.py returned ZERO commits mentioning
+    # sheet_recon.py, while qa/coverage-map.json declared it a blocking scene-dump
+    # rung. The dump has carried camera.floor_poly_mm FOR this rung since DRW-1b (see
+    # the comment above where it is written) and nothing ever read it.
+    # Spawned for the layer reason (it is pure python; build_room is bpy). It reads
+    # the SCENE DUMP, so like dim_check it runs on quick too — a drawn mass that
+    # vanished is arithmetic, not pixels, and must not survive to a full frame.
+    # --no-save: this is the only rung the render path spawns that would otherwise
+    # WRITE a tracked repo file; the verdicts are still recomputed in full.
+    # Exit contract: 1 = a drawn mass is UNRESOLVED, 2 = COULD NOT RUN, and 2 never
+    # counts as clear (R12's own sentence, and R11's).
+    _sr = subprocess.run(
+        [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "sheet_recon.py"), "--gate", dump_path, "--no-save"],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    for ln in (_sr.stdout or "").splitlines():
+        print(f"DRW {ln}")
+    if _sr.returncode == 2:
+        for ln in (_sr.stderr or "").splitlines()[-6:]:
+            print(f"DRW !! {ln}")
+        print("BUILD FAILED: the sheet-recon rung COULD NOT RUN. A gate that could "
+              "not open the drawing must never read like one that did.")
+        sys.stdout.flush()
+        os._exit(1)
+    if _sr.returncode == 1:
+        print("BUILD FAILED: a mass the DRAWING draws is in frustum with no match "
+              "and no signed gap (R12). The sheet outranks every derivation of "
+              "ours — the conflict reopens the derivation, never the sheet.")
+        sys.stdout.flush()
+        os._exit(1)
     cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "deliverable_check.py"), "--scene-dump", dump_path]
     if frame and not quick:

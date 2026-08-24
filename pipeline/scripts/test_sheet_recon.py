@@ -130,11 +130,33 @@ def test_floor_standing_refuses_ceiling_objects():
 
 
 # ------------------------------------------------------------------ verdicts --
-def _row(cov=None, gap=None):
+def _row(cov=None, gap=None, superseded=None):
     r = {"rect_mm": (0, 0, 100, 100), "gap": gap}
+    if superseded is not None:
+        r["superseded"] = superseded
     if cov is not None:
         r["match"] = {"candidates": [{"assembly": "a", "coverage": cov}]}
     return r
+
+
+# A supersession that is valid in every field — each test below breaks exactly
+# ONE of them, so the thing being refused is never ambiguous.
+_SUP_OK = {"reason": "moved in to hug the bed after it went to a standard size",
+           "decided_by": "builder", "by_order": "ORD-X", "built_as": "side_table/t"}
+_NAMES = {"side_table", "side_table/t"}
+_OIDS = {"ORD-X", "ORD-Y"}
+
+
+def _sup(**over):
+    s = dict(_SUP_OK)
+    s.update(over)
+    return s
+
+
+def _v(sup, names=None, oids=None):
+    return sr.verdict_of(_row(superseded=sup),
+                         built_names=_NAMES if names is None else names,
+                         order_ids=_OIDS if oids is None else oids)
 
 
 def test_verdict_matched_gap_unresolved():
@@ -282,3 +304,97 @@ def test_gate_line_names_the_counts():
     line = sr.gate_line({"drawn": 18, "matched": 17, "gaps": 0, "unresolved": 1,
                          "blocking": 0, "frustum_source": "floor_poly"})
     assert "18 drawn" in line and "1 UNRESOLVED" in line and "0 blocking" in line
+# ------------------------------------------------------- superseded (4th state) --
+# Both-sides controls: the state exists to let a drawn mass leave its rect when an
+# OWNER ORDER moved it, so every guard that makes that safe is shown refusing.
+def test_superseded_passes_when_every_field_holds():
+    assert _v(_sup()) == ("superseded", None)
+
+
+def test_superseded_needs_reason_and_a_real_decider():
+    v, w = _v(_sup(reason=""))
+    assert v == "UNRESOLVED" and "reason" in w
+    v, w = _v(_sup(decided_by="pending"))
+    assert v == "UNRESOLVED" and "pending" in w
+
+
+def test_superseded_without_an_order_is_drift():
+    v, w = _v(_sup(by_order=None))
+    assert v == "UNRESOLVED" and "drift" in w
+
+
+def test_superseded_by_an_order_that_does_not_exist_is_refused():
+    v, w = _v(_sup(by_order="ORD-nope"))
+    assert v == "UNRESOLVED" and "ORD-nope" in w
+
+
+def test_superseded_must_name_the_thing_that_is_built():
+    v, w = _v(_sup(built_as=None))
+    assert v == "UNRESOLVED" and "built_as" in w
+
+
+def test_moved_is_never_where_lost_hides():
+    """THE guard the state exists for: a supersession whose built_as is absent
+    from the frame must NOT clear the gate — otherwise 'we moved it' is a place
+    to hide 'we lost it', which is the headboard defect DRW-1 was built for."""
+    v, w = _v(_sup(built_as="side_table/gone"))
+    assert v == "UNRESOLVED" and "lost" in w
+
+
+def test_unreadable_orders_file_skips_only_the_order_check():
+    # order_ids=None (file unreadable) must not turn the row green by accident:
+    # built_as is still required and still checked.
+    assert _v(_sup(), oids=None) == ("superseded", None)
+    v, _w = _v(_sup(built_as="side_table/gone"), oids=None)
+    assert v == "UNRESOLVED"
+
+
+def test_supersession_goes_stale_when_the_piece_comes_back():
+    v, w = sr.verdict_of(_row(cov=0.9, superseded=_SUP_OK),
+                         built_names=_NAMES, order_ids=_OIDS)
+    assert v == "matched" and "STALE SUPERSESSION" in w
+
+
+def test_built_names_covers_assemblies_and_their_parts():
+    asm = sr.assemblies_from_dump([_obj("side_table__acq0", 0, 0, 0, .4, .4, .4)])
+    names = sr.built_names_from(asm)
+    assert "side_table" in names and "side_table/side_table__acq0" in names
+
+
+def test_a_bare_mesh_name_survives_the_piece_moving():
+    """A split prefix names assemblies by COORDINATE (side_table@4803,2005), so a
+    signature written against an assembly name goes stale the moment the piece
+    moves. The bare mesh name is position-free and must be legal."""
+    def dump(y_a, y_b):
+        return sr.assemblies_from_dump([
+            _obj("side_table__acq0", 4.803, y_a, 0, 5.203, y_a + .4, .4),
+            _obj("side_table__acq0.001", 4.803, y_b, 0, 5.203, y_b + .4, .4)])
+    before = sr.built_names_from(dump(2.005, -0.21))
+    after = sr.built_names_from(dump(2.057, -0.26))     # both hugged 52/50 mm
+    assert "side_table@4803,2005" in before
+    assert "side_table@4803,2005" not in after          # the coordinate name moved
+    assert "side_table__acq0" in before and "side_table__acq0" in after
+
+
+def test_reconcile_counts_superseded_and_it_does_not_block():
+    objs = [_obj("side_table__acq0", 4.803, 2.005, 0.0, 5.203, 2.405, 0.4)]
+    rows = [{"id": "SR-09", "rect_mm": [4724, 2219, 460, 460],
+             "floor_standing": True, "gap": None,
+             "superseded": {"reason": "hug", "decided_by": "builder",
+                            "by_order": "ORD-2026-08-22-bed-standard-size-hug",
+                            "built_as": "side_table/side_table__acq0"}}]
+    out, s = sr.reconcile(copy.deepcopy(rows), _dump(objs), "f.json",
+                          today="2026-08-24")
+    assert out[0]["verdict"] == "superseded", out[0].get("warning")
+    assert s["superseded"] == 1 and s["unresolved"] == 0 and s["blocking"] == 0
+
+
+def test_gate_line_names_superseded_and_tolerates_an_old_summary():
+    line = sr.gate_line({"drawn": 21, "matched": 18, "gaps": 0, "superseded": 2,
+                         "unresolved": 1, "blocking": 0,
+                         "frustum_source": "floor_poly"})
+    assert "2 superseded" in line
+    # a summary written before this state existed must still print, as 0
+    old = sr.gate_line({"drawn": 18, "matched": 17, "gaps": 0, "unresolved": 1,
+                        "blocking": 0, "frustum_source": "floor_poly"})
+    assert "0 superseded" in old

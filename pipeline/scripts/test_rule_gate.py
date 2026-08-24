@@ -1345,6 +1345,75 @@ def test_no_rung_reaches_one_entry_point_and_not_the_other():
         f"the list stops describing anything")
 
 
+def test_every_blocking_scene_dump_rung_is_actually_spawned_by_the_render():
+    """THE SECOND HALF of the guard above, for the rungs rule_gate never sees.
+
+    `test_no_rung_reaches_one_entry_point_and_not_the_other` covers rungs inside
+    rule_gate's roster. It cannot see the four checks build_room spawns as
+    SUBPROCESSES — existence_check, dim_check, sheet_recon, placement_check — and
+    that is exactly where the defect was hiding on 2026-08-24: qa/coverage-map.json
+    declared `sheet_recon (R12)` a BLOCKING scene-dump rung, plan_status printed
+    that map at every session open, and `git log -S "sheet_recon.py" --
+    build_room.py rule_gate.py` returned zero commits for the entire history. The
+    render dutifully wrote `camera.floor_poly_mm` into every scene dump FOR that
+    rung's frustum test and then never ran it. Thirteen days.
+
+    The invariant: a rung this repo's own map calls BLOCKING at the scene-dump
+    stage is either genuinely spawned by the render, or carries a dated
+    `room_lane_debt` saying it is not. What it may never be is silently declared.
+
+    THE EXEMPTION IS DATA, NEVER A NAME IN THIS TEST — R9b's lesson, in its own
+    words: "A rule that names the objects it applies to will always exempt the
+    next one." The two guards it names were written around `vase` and
+    `candlestick` and left 8 of 13 objects unguarded.
+
+    The spawn test is `"<script>.py")` — an argv element with its closing paren,
+    not a bare mention. build_room carried two COMMENTS naming sheet_recon while
+    never spawning it, and the owner-order assertion that was supposed to catch
+    this was a bare text search those comments would have satisfied.
+    """
+    import re as _re
+
+    cmap = json.load(open(os.path.join(RG.REPO_ROOT, "qa", "coverage-map.json"),
+                          encoding="utf-8"))
+    src = open(os.path.join(RG.REPO_ROOT, "pipeline", "scripts", "build_room.py"),
+               encoding="utf-8").read()
+
+    undeclared, stale, unscripted = [], [], []
+    for r in cmap.get("rungs", []):
+        if r.get("stage") != "scene-dump" or not r.get("blocking"):
+            continue
+        script = r["name"].split()[0] + ".py"
+        if not os.path.exists(os.path.join(RG.REPO_ROOT, "pipeline", "scripts", script)):
+            unscripted.append((r["name"], script))
+            continue
+        spawned = _re.search(r'"%s"\)' % _re.escape(script), src) is not None
+        debt = r.get("room_lane_debt") or {}
+        if spawned:
+            if debt:
+                stale.append(r["name"])
+            continue
+        if debt.get("since") and debt.get("why") and debt.get("restart_by"):
+            continue
+        undeclared.append((r["name"], script))
+
+    assert not unscripted, (
+        f"{unscripted}: the map names a scene-dump rung whose script does not "
+        f"exist under pipeline/scripts. Either the row is stale or this test's "
+        f"name->file derivation has drifted; both are worth a look.")
+    assert not undeclared, (
+        f"{undeclared} are declared BLOCKING at the scene-dump stage in "
+        f"qa/coverage-map.json and are NOT spawned by build_room.py. This is the "
+        f"sheet_recon state: a rung the map says stops a render, that no render "
+        f"runs. Spawn it in _score_deliverable, or give the row a "
+        f"`room_lane_debt` with since/why/restart_by so the hole is dated and "
+        f"printed instead of implied.")
+    assert not stale, (
+        f"{stale} carry a `room_lane_debt` but ARE spawned by build_room.py — "
+        f"delete the debt. An exemption that outlives the hole it described is "
+        f"how the map stops describing anything.")
+
+
 def test_the_deliverable_standard_loads_without_pil():
     """The gate's copy of the standard path must not drift, and must not need PIL.
 
