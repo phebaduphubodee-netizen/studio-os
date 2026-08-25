@@ -3751,6 +3751,111 @@ def _dress_scene(spec):
                         print(f"  lane D: bench throw dropped — place_model "
                               f"refused {_BENCH_THROW_MODEL[:8]} (see its own "
                               f"print); the frame ships without a throw")
+        # ---------------------------------------------------------------- p2r75
+        # FOLD STACKS ACQUIRED (ORD-2026-08-25b item 3: "ผ้าที่พับ...ยังเป็น
+        # โมเดลปั้นเอง"): every hand-lofted mill__style_fold{S} stack leaves and
+        # a panel-passed acquired stack takes its exact shelf spot — centre and
+        # shelf face measured from the group it replaces (R9), long axis kept.
+        from mathutils import Vector as _V75
+        _folds = {}
+        for _o in list(bpy.data.objects):
+            if (_o.type == 'MESH' and _o.name.startswith('mill__style_fold')
+                    and 'foldacq' not in _o.name):
+                _s = _o.name.split('fold')[1].split('_')[0]
+                _folds.setdefault(_s, []).append(_o)
+        _fi = 0
+        for _s, _grp in sorted(_folds.items()):
+            _gb = [(o.matrix_world @ _V75(c)) for o in _grp for c in o.bound_box]
+            _g0 = (min(p.x for p in _gb), min(p.y for p in _gb),
+                   min(p.z for p in _gb))
+            _g1 = (max(p.x for p in _gb), max(p.y for p in _gb))
+            _gcx, _gcy = (_g0[0] + _g1[0]) / 2.0, (_g0[1] + _g1[1]) / 2.0
+            _fid = _FOLD_STACK_MODELS[_fi % len(_FOLD_STACK_MODELS)]
+            _fmp = _model_path(_fid)
+            if _fmp is None:
+                print(f"  fold stack {_s}: acquired model {_fid[:8]} refused — "
+                      f"the hand-built stack STAYS (loud, never silent)")
+                continue
+            try:
+                with open(_ascale.sidecar_path(_fmp), encoding="utf-8") as _ff_:
+                    _fsc = json.load(_ff_)["bbox_mm"]
+                _fnx, _fny, _fnz = (float(_fsc["x_mm"]) / 1000.0,
+                                    float(_fsc["y_mm"]) / 1000.0,
+                                    float(_fsc["z_mm"]) / 1000.0)
+            except (OSError, ValueError, KeyError, TypeError) as _fe_:
+                print(f"  fold stack {_s}: sidecar unreadable ({_fe_}) — "
+                      f"the hand-built stack STAYS")
+                continue
+            _grot = 0.0 if (((_g1[0] - _g0[0]) >= (_g1[1] - _g0[1]))
+                            == (_fnx >= _fny)) else 90.0
+            for _o in _grp:
+                bpy.data.objects.remove(_o, do_unlink=True)
+            if place_model(_fmp, _gcx - _fnx / 2.0, _gcy - _fny / 2.0,
+                           _fnx, _fny, _fnz, rot=_grot, z0=_g0[2],
+                           tag=f"mill__style_foldacq{_s}"):
+                print(f"  fold stack {_s}: ACQUIRED {_fid[:8]} on the same "
+                      f"shelf face {_g0[2] * 1000:.0f} mm (hand loft removed)")
+                _fi += 1
+            else:
+                print(f"  fold stack {_s}: place_model refused {_fid[:8]} — "
+                      f"shelf spot now EMPTY (declared; absence over a wrong "
+                      f"object, R10)")
+        # ---------------------------------------------------------------- p2r75
+        # FLOOR PLANT (ORD-2026-08-25b item 4 "ให้ห้องมีชีวิต"): first CLEAR
+        # floor spot from a deterministic candidate ring — tested against the
+        # built scene, never typed (R9); no clear spot = no plant, loudly.
+        _pl_mp = _model_path(_FLOOR_PLANT_MODEL)
+        if _pl_mp is None:
+            print("  floor plant DROPPED — model refused/unavailable")
+        else:
+            try:
+                with open(_ascale.sidecar_path(_pl_mp), encoding="utf-8") as _pf_:
+                    _psc = json.load(_pf_)["bbox_mm"]
+                _pnx, _pny, _pnz = (float(_psc["x_mm"]) / 1000.0,
+                                    float(_psc["y_mm"]) / 1000.0,
+                                    float(_psc["z_mm"]) / 1000.0)
+            except (OSError, ValueError, KeyError, TypeError):
+                _pnx = 0.0
+                print("  floor plant DROPPED — sidecar unreadable")
+            _pl_done = False
+            if _pnx > 0.0:
+                # far corners FIRST — the first pass placed the ficus 0.9 m in
+                # front of the eye stand [1400,1125] and its foliage swallowed
+                # the frame's right third: geometric clearance never asked "is
+                # this in the camera's throat". Near-stand spots are OUT.
+                for _pcx, _pcy in ((4.55, 2.28), (3.30, 2.28), (2.62, -0.08),
+                                   (2.75, 3.85), (2.75, 4.45)):
+                    # >=0.45 off every wall — the far-corner ring all failed
+                    # because an 807 mm canopy hugging a wall ALWAYS laps it
+                    _clear = True
+                    for _oo in bpy.data.objects:
+                        if _oo.type != 'MESH' or _oo.hide_render:
+                            continue
+                        _ob = [(_oo.matrix_world @ _V75(c))
+                               for c in _oo.bound_box]
+                        _zl = min(p.z for p in _ob)
+                        _zh = max(p.z for p in _ob)
+                        if _zh < 0.06 or _zl > 1.4:
+                            continue        # floor/rug slabs and ceiling gear
+                        if (min(p.x for p in _ob) < _pcx + _pnx / 2.0
+                                and max(p.x for p in _ob) > _pcx - _pnx / 2.0
+                                and min(p.y for p in _ob) < _pcy + _pny / 2.0
+                                and max(p.y for p in _ob) > _pcy - _pny / 2.0):
+                            _clear = False
+                            break
+                    if not _clear:
+                        continue
+                    if place_model(_pl_mp, _pcx - _pnx / 2.0,
+                                   _pcy - _pny / 2.0, _pnx, _pny, _pnz,
+                                   rot=0.0, z0=0.0, tag="deco_plant"):
+                        print(f"  floor plant ACQUIRED {_FLOOR_PLANT_MODEL[:8]} "
+                              f"at ({_pcx:.2f},{_pcy:.2f}) — first clear spot "
+                              f"of the tested ring")
+                        _pl_done = True
+                    break
+            if not _pl_done and _pnx > 0.0:
+                print("  floor plant DROPPED — no clear floor spot in the "
+                      "tested ring (never silent)")
         # ---------------------------------------------------------------- p2r74
         # WARDROBE CONTENTS (ORD-2026-08-25-six-items item 4 + C2#3 "ชั้นว่าง
         # เกือบหมด"): panel-passed soft storage rests on MEASURED shelf tops —
@@ -3921,6 +4026,23 @@ _WARDROBE_SHELF_MODELS = (                                        # all 3/3
     "7302438e-83d7-4224-ab6f-3c2c51bfb518",   # rattan tray-basket
 )
 _WARDROBE_FLOOR_MODEL = "4152f818-48ed-48e1-a76b-c0bf1bb0b54f"    # slippers, 2/3
+# p2r75 (ORD-2026-08-25b five-items, panel 2026-08-25c): ids below pass the
+# blind panel or carry its verdict in the gate; a losing verdict changes the id.
+_RUG_MODEL = "0fd746ae-5d11-41d8-a41f-101ba6b4ce50"        # 2427x3024 — 0.97 of slot, no stretch
+_FOLD_STACK_MODELS = (                                     # item 3: hand-built folds leave
+    # panel 2026-08-25c: ONLY the sage sweatshirt passed (inside 2/3);
+    # the striped stack and graphic tees failed OUTSIDE 3/3 on colour/ornament
+    # — repetition across shelves is the declared cost of a one-winner class,
+    # varied by each spot's own orientation
+    "b54819e4-6551-4509-b76c-2bce9ada8cf8",   # folded sweatshirt, sage
+)
+_FLOOR_PLANT_MODEL = "878fa112-8acc-426f-b7cf-2363711ec321"  # ficus
+_NS_LIFE_MODELS = {                                        # item 4: nightstand life
+    # panel 2026-08-25c: dish + pitcher inside 3/3; BOTH clocks failed
+    # (retro twin-bell = period novelty) — no clock enters the frame
+    "dish": "8d6dd7a7-b9a0-43b5-826f-b0bb7dabd303",
+    "carafe": "ac0d7cbf-616c-42a4-91dd-5c94cfbd7bff",
+}
 WALL_RGBA = (0.83, 0.80, 0.75, 1.0)    # matte warm-white paint
 RUG_SLUG = "poly_wool_herringbone"
 
@@ -4904,10 +5026,20 @@ def _place_garment_rails(models, parts, cut_first=None):
                     _hc = (sum(p.y for p in _hz) / len(_hz) if along_x
                            else sum(p.x for p in _hz) / len(_hz))
                     _da_ = _bar_amid - _hc
-                    if abs(_da_) < 0.003:
+                    # p2r75 (owner: "เสื้อราวซ้ายล่างยังลอย"): the hook must
+                    # also sit ON THE BAR ALONG THE RUN — the bar (282 mm) is
+                    # shorter than the gable clear-run (354), and the end
+                    # cluster's hook hung in the void beside the bar's tip.
+                    _hr = (sum(p.x for p in _hz) / len(_hz) if along_x
+                           else sum(p.y for p in _hz) / len(_hz))
+                    _dr_ = 0.0
+                    if _bar_run is not None:
+                        _dr_ = (max(_bar_run[0] + 0.025, min(_hr,
+                                    _bar_run[1] - 0.025)) - _hr)
+                    if abs(_da_) < 0.003 and abs(_dr_) < 0.003:
                         continue
-                    _offv = (Vector((0.0, _da_, 0.0)) if along_x
-                             else Vector((_da_, 0.0, 0.0)))
+                    _offv = (Vector((_dr_, _da_, 0.0)) if along_x
+                             else Vector((_da_, _dr_, 0.0)))
                     for o in objs:
                         o.matrix_world = _Mx.Translation(_offv) @ o.matrix_world
                     _n_hook += 1
@@ -7581,6 +7713,11 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
                 if _hms:
                     _big = max(_hms, key=lambda o: len(o.data.vertices))
                     _big.name = "bed__headboard"
+                _hb_acq_done = True
+                # ^ dropped in a p2r74 edit and nobody noticed for two rounds:
+                # every build since made BOTH panels — the acquired one AND the
+                # fallback band as bed__headboard.001 with its welts hiding
+                # behind it. The gate variable is the whole point of the gate.
                 # SIGNED linen, not the vendor's fabric: roles come from
                 # MATERIAL (D-103), so a vendor-dressed panel over the bed is
                 # a no-role mass the blind bed-pixels rung refuses — and his
@@ -10109,9 +10246,12 @@ def build_suite(spec, label="suite"):
                                     _lnx = 0.0
                                 _ltop = max(_tops)
                                 _ltag = f"nightstand__lampacq{int(round(ym * 1000))}"
+                                # p2r75: lamp biased to the WALL side of the top
+                                # (+x) so the front strip holds the life objects
+                                # — derived off the table's own width
                                 if _lnx > 0.0 and place_model(
                                         _lmp,
-                                        xm + (wm - _lnx) / 2.0,
+                                        xm + (wm - _lnx) * 0.74,
                                         ym + (dm - _lny) / 2.0,
                                         _lnx, _lny, _lnz, rot=0.0, z0=_ltop,
                                         tag=_ltag):
@@ -10143,6 +10283,48 @@ def build_suite(spec, label="suite"):
                                           f"measured top {_ltop * 1000:.0f} mm, "
                                           f"emitter at mid-shade "
                                           f"{(_ltop + _lnz * 0.62) * 1000:.0f}")
+                                    # p2r75 (ORD-2026-08-25b item 4): ONE life
+                                    # object per table on the freed front strip
+                                    # — dish on the north table, water pitcher
+                                    # on the south (panel-passed; both clocks
+                                    # failed the panel and stay out). Rest on
+                                    # the measured top (R9).
+                                    _life_key = "dish" if ym > 1.0 else "carafe"
+                                    _life_id = _NS_LIFE_MODELS.get(_life_key)
+                                    _life_mp = (_model_path(_life_id)
+                                                if _life_id else None)
+                                    if _life_mp is None:
+                                        print(f"    life object ({_life_key}) "
+                                              f"DROPPED — model unavailable")
+                                    else:
+                                        try:
+                                            with open(_ascale.sidecar_path(
+                                                    _life_mp),
+                                                    encoding="utf-8") as _nf_:
+                                                _nsc = json.load(_nf_)["bbox_mm"]
+                                            _nnx, _nny, _nnz = (
+                                                float(_nsc["x_mm"]) / 1000.0,
+                                                float(_nsc["y_mm"]) / 1000.0,
+                                                float(_nsc["z_mm"]) / 1000.0)
+                                        except (OSError, ValueError, KeyError,
+                                                TypeError):
+                                            _nnx = 0.0
+                                            print(f"    life object "
+                                                  f"({_life_key}) DROPPED — "
+                                                  f"sidecar unreadable")
+                                        if _nnx > 0.0 and place_model(
+                                                _life_mp,
+                                                xm + wm * 0.16 - _nnx / 2.0,
+                                                ym + (dm - _nny) / 2.0,
+                                                _nnx, _nny, _nnz, rot=0.0,
+                                                z0=_ltop,
+                                                tag=f"nightstand__life"
+                                                    f"{int(round(ym * 1000))}"):
+                                            print(f"    + life object "
+                                                  f"{_life_key} "
+                                                  f"{_life_id[:8]} on the "
+                                                  f"front strip, top "
+                                                  f"{_ltop * 1000:.0f} mm")
                             if not _lp_done:
                                 _nightstand_lamp(xm, ym, wm, dm, max(_tops),
                                                  it.get("lamp"), glow=_gl,
@@ -10160,7 +10342,41 @@ def build_suite(spec, label="suite"):
                       f"did not pass the gate; a hand-built free-form object is what "
                       f"R8 forbids and D8 counts")
         if kind == "rug":
-            _add_rug("rug__" + str(nm).replace(" ", "_"), xm, ym, wm, dm)
+            # p2r75 (ORD-2026-08-25b item 5, "พรมยังไม่สวย หาจาก blendkit มา"):
+            # the rug is ACQUIRED — his eye supersedes D-028's box-test keep.
+            # Natural 2427x3024 fills the drawn 2500x3100 at 0.97 with NO
+            # stretch; vendor weave kept (the bought look IS the order). The
+            # built ring/pile rug stands down to loud fallback.
+            _rug_done = False
+            if _RUG_MODEL:
+                _rmp = _model_path(_RUG_MODEL)
+                if _rmp is not None:
+                    try:
+                        with open(_ascale.sidecar_path(_rmp),
+                                  encoding="utf-8") as _rf_:
+                            _rsc = json.load(_rf_)["bbox_mm"]
+                        _rnx, _rny = (float(_rsc["x_mm"]) / 1000.0,
+                                      float(_rsc["y_mm"]) / 1000.0)
+                        _rnz = float(_rsc["z_mm"]) / 1000.0
+                    except (OSError, ValueError, KeyError, TypeError):
+                        _rnx = 0.0
+                    if _rnx > 0.0:
+                        # long axis onto the slot's long axis, centre on the
+                        # slot centre, local dims + cardinal rot (M4 law)
+                        _rrot = 0.0 if ((wm >= dm) == (_rnx >= _rny)) else 90.0
+                        if place_model(_rmp, xm + (wm - _rnx) / 2.0,
+                                       ym + (dm - _rny) / 2.0,
+                                       _rnx, _rny, _rnz, rot=_rrot, z0=0.0,
+                                       tag="rug"):
+                            _rug_done = True
+                            print(f"  rug ACQUIRED {_RUG_MODEL[:8]} at natural "
+                                  f"{_rnx * 1000:.0f}x{_rny * 1000:.0f} in the "
+                                  f"drawn {wm * 1000:.0f}x{dm * 1000:.0f} slot "
+                                  f"(no stretch), vendor weave kept")
+            if not _rug_done:
+                print("  rug FELL BACK to the built ring/pile rug "
+                      "(acquired rug unavailable — loud, never silent)")
+                _add_rug("rug__" + str(nm).replace(" ", "_"), xm, ym, wm, dm)
             continue
         # HERO: build a MODERN sofa from primitives (every CC0 sofa is vintage Victorian, which
         # clashes with the modern room). Back to the south wall, facing +Y (the room).

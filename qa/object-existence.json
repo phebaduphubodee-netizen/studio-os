@@ -162,7 +162,7 @@
   },
   {
    "assembly": "rug",
-   "identity": "Rug under the bed, 3100 x 2500, 19 mm thick with contact dents pressed by whatever actually stands on it.",
+   "identity": "Acquired rug (BlenderKit 0fd746ae Carpet, panel 2026-08-25c inside 3/3 — greige tonal texture), natural 2427x3024 filling the drawn 2500x3100 at 0.97 with NO stretch; vendor weave kept per his item 5 \"พรมยังไม่สวย หาจาก blendkit มา\". Replaced the hand-built ring/pile rug at p2r75 (that build is the loud fallback). Previous identity (hand-built, D-028 box-test keep) superseded by his eye.",
    "exists": "not-in-drawing: D1-A, an owner-signed styling decision (the anti-monopoly rug); the furniture plan draws no rug",
    "held_by": "floor",
    "operable": false,
@@ -502,6 +502,15 @@
    "operable": false,
    "verdict": "keep",
    "why": "D-137; the last solver-baked cloth's replacement."
+  },
+  {
+   "assembly": "deco_plant",
+   "identity": "Acquired ficus floor plant (BlenderKit 878fa112, panel 2026-08-25c inside 3/3 — muted olive foliage, plain charcoal pot), 807x803x1271 natural, standing at (2.20,0.62) — the first CLEAR floor spot of a deterministic tested ring (R9: position tested against the built scene, never typed). ORD-2026-08-25b item 4: his GO on lived-in styling.",
+   "exists": "not-in-drawing: styling per his item 4 — a furniture plan draws no plant",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His order; vendor foliage kept (a plant IS its leaves)."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."

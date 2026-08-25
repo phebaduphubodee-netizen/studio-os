@@ -809,6 +809,51 @@
           "why": "item 5 — the spec renders the panel winner, not 1cf77b3a"
         }
       ]
+    },
+    {
+      "id": "ORD-2026-08-25b-five-items-after-p2r74",
+      "date": "2026-08-25",
+      "verbatim": "พรมยังไม่สวย หาจาก blendkit มา",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-list-2026-08-25b-five-items.md",
+      "commands": "Five itemized fixes from the p2r74 frames (full verbatim in recorded_at): (1) nightstands FACE THE ROOM — drawers currently open into the bed, an unopenable drawer fails R10 SENSE; (2) the LOWER-LEFT built-in rail's garments still float — instance verdict on the hook mechanism at that rail; (3) the folded cloth stacks in the built-in are still hand-built — the acquire class order reaches mill__style_fold*; (4) ADD the idea-list objects — his GO on lived-in styling; (5) the RUG is not beautiful — acquire from BlenderKit (his eye supersedes D-028's box-test keep).",
+      "subject": "p2r74-five-items",
+      "scope": "instance-list",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "status": "obeyed",
+      "since": "2026-08-25",
+      "obeyed_where": "pipeline/scripts/build_room.py,pipeline/scripts/value_ladder.py",
+      "obeyed_how": "All five in pixels at p2r75 (eye + wardrobe fulls, build gate fully green for the first time incl. the ladder). (1) nightstands rot 90 — drawer fronts face the room, verified in the crop; (2) hooks clamped INTO the bar run (the end cluster hung in the 36 mm void past the bar tip); (3) every mill__style_fold stack replaced by the panel-passed sage sweatshirt stack on its own measured shelf face (two candidates failed the panel outside 3/3 and stayed out); (4) life: gold dish + water pitcher on the freed nightstand strips (both clocks failed the panel — no clock ships), ficus at the corridor clear-spot (2.75,3.85) after the first spot put 0.9 m of foliage in the camera throat — the clearance test now asks about the lens too; (5) rug acquired 0fd746ae at natural 2427x3024 (0.97 of the drawn slot, no stretch), vendor weave kept. BONUS CATCH: the p2r74 headboard gate variable (_hb_acq_done = True) had been dropped in an edit — every build since made BOTH headboards (.001 + welts hiding behind the panel); restored with a comment naming the class.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_RUG_MODEL = \"0fd746ae",
+          "why": "item 5"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "b54819e4-6551-4509-b76c-2bce9ada8cf8",
+          "why": "item 3 — the one panel-passed stack id"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_bar_run\\[0\\] \\+ 0\\.025",
+          "why": "item 2 — the hook-into-bar-run clamp"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_hb_acq_done = True",
+          "why": "the restored gate variable — deleting it re-doubles the headboard silently"
+        },
+        {
+          "file": "pipeline/scripts/value_ladder.py",
+          "pattern": "\"bed__pillowsoft0\": \\(\"D-138\"",
+          "why": "the pillowcase declaration that ended the silent-behind-BEDPX eye failure"
+        }
+      ]
     }
   ]
 }

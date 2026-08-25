@@ -1696,6 +1696,391 @@
     ],
     "refusal": null
    }
+  },
+  {
+   "at": "2026-08-25T15:21:42-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wool rug modern",
+   "pages": 1,
+   "n": 3,
+   "free": 2,
+   "full_plan": 1,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:43-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "rug beige minimal",
+   "pages": 1,
+   "n": 6,
+   "free": 0,
+   "full_plan": 6,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:45-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded clothes stack",
+   "pages": 1,
+   "n": 98,
+   "free": 32,
+   "full_plan": 66,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:47-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded sweater",
+   "pages": 1,
+   "n": 99,
+   "free": 34,
+   "full_plan": 65,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:49-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "potted plant indoor",
+   "pages": 1,
+   "n": 100,
+   "free": 20,
+   "full_plan": 80,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:51-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "olive tree pot",
+   "pages": 1,
+   "n": 100,
+   "free": 26,
+   "full_plan": 74,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:52-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "decor tray set",
+   "pages": 1,
+   "n": 100,
+   "free": 16,
+   "full_plan": 84,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "water carafe glass",
+   "pages": 1,
+   "n": 100,
+   "free": 79,
+   "full_plan": 21,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:21:57-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "alarm clock retro",
+   "pages": 1,
+   "n": 83,
+   "free": 38,
+   "full_plan": 45,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T15:27:02-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0fd746ae-5d11-41d8-a41f-101ba6b4ce50",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3023.9,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:27:19-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "4fdb482d-2642-4388-ae57-8097afa99519",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 410.7,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:27:35-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0b960a0d-01f7-4038-95bf-6915f58360f1",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 395.1,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:27:41-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b54819e4-6551-4509-b76c-2bce9ada8cf8",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "throw_folded",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 320.4,
+    "band_mm": [
+     200.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:28:01-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "878fa112-8acc-426f-b7cf-2363711ec321",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "potted_plant",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1271.0,
+    "band_mm": [
+     500.0,
+     1800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:28:13-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a98c3dbb-0b7c-4a2e-9fa7-dcb6f49053ed",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "potted_plant",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1081.6,
+    "band_mm": [
+     500.0,
+     1800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:28:43-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "654892e1-2af7-4e2d-9976-1cf6987ec9da",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "tray_decor",
+   "resolution": "blend",
+   "scale": {
+    "ok": false,
+    "measured_mm": 279.3,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": "thinnest axis is 17.8 mm against a longest of 279.3 — ratio 0.0637 below the class floor 0.1. This is a CUTOUT, not a tray_decor. A bounds check cannot see it, which is why this line exists"
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:28:50-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "8d6dd7a7-b9a0-43b5-826f-b0bb7dabd303",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "tray_decor",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 175.5,
+    "band_mm": [
+     150.0,
+     400.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T15:28:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "18261a8a-bd63-4bbb-a4df-7fb70f40b49d",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …aco.dll\n15:28:53 | INFO: Starting glTF 2.0 export\n15:28:53 | INFO: Extracting primitive: Mesh\n15:28:53 | INFO: Primitives created: 1\n15:28:53 | INFO: Extracting primitive: Cylinder.030\n15:2"
+  },
+  {
+   "at": "2026-08-25T15:28:58-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ac0d7cbf-616c-42a4-91dd-5c94cfbd7bff",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "vase",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 266.6,
+    "band_mm": [
+     80.0,
+     900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:29:02-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "94bf975c-9a39-4e6d-af64-e268b03c8446",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "clock_small",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 145.7,
+    "band_mm": [
+     100.0,
+     300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:29:07-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "04a809ed-65dc-411d-9c56-d8877c040f8a",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "clock_small",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 156.8,
+    "band_mm": [
+     100.0,
+     300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T15:29:29-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "18261a8a-bd63-4bbb-a4df-7fb70f40b49d",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …aco.dll\n15:29:28 | INFO: Starting glTF 2.0 export\n15:29:28 | INFO: Extracting primitive: Mesh\n15:29:28 | INFO: Primitives created: 1\n15:29:28 | INFO: Extracting primitive: Cylinder.030\n15:2"
   }
  ]
 }

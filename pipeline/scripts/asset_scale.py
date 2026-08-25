@@ -219,6 +219,20 @@ BANDS = {
                   "240-320 mm long (EU 38-46 lasts); a boxed/paired set "
                   "stays under 360 on its long plan axis (declared "
                   "assumption anchored to real shoe lasts)"),
+    # ORD-2026-08-25b (five-items) classes
+    "potted_plant": (500.0, 1800.0, "z",
+                     "ORD-2026-08-25b item 4 (life): an indoor floor plant with "
+                     "its pot — below 500 it is a tabletop succulent, above "
+                     "1800 it fights the 2800 ceiling (declared assumption "
+                     "anchored to retail indoor-plant heights)"),
+    "clock_small": (100.0, 300.0, "z",
+                    "ORD-2026-08-25b item 4: a bedside clock is hand-sized "
+                    "(retail alarm clocks 100-200 mm tall; 300 admits a large "
+                    "desk clock) — declared assumption"),
+    "tray_decor": (150.0, 400.0, "maxxy",
+                   "ORD-2026-08-25b item 4: a decor tray on a 480 mm bedside "
+                   "top beside a 298 mm lamp — the band is what the surface "
+                   "arithmetic leaves (declared assumption)"),
     "headboard": (1400.0, 2400.0, "maxxy",
                   "ORD-2026-08-25-six-items item 6 + D-131/ASK-032: the bed "
                   "is a 1800 Thai king (D-114) and the sheet inks the band "
@@ -284,6 +298,9 @@ MIN_DEPTH_RATIO = {
     # Diagnosed against maxxy per the band, so the ratio reads z/longest-plan.
     "throw_folded": 0.10,
     "book_stack": 0.15,     # a stack is solid; a book-cover decal is not
+    "potted_plant": 0.15,   # pot + canopy have plan depth; a billboard leaf card does not
+    "tray_decor": 0.10,     # a tray with objects has some height
+    "clock_small": 0.30,    # a clock body is a volume, not a face card
     "basket_box": 0.30,     # containers are volumes in plan
     "shoe_pair": 0.20,      # a shoe stands ~1/4 of its length
     "headboard": 0.02,      # legitimately a thin wide panel — but never zero

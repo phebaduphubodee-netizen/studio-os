@@ -967,7 +967,9 @@
    "note": "NE of bed head against BF14; INK x4701.8-5203.2 y2200.1-2698.4 (~501x498, was spec 300x300) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12: h derived from the MATTRESS DATUM, top = mattress 600 - 20; recorded D-045; plan ink has no heights) | p2r57 (D-115): THE DATUM MOVED AND THE NUMBER DID NOT — the acquired bed's plane is 425, so D-045's own relation gives top ~405, and the classic model (700-class) could never reach it by footprint fit. Slot re-set to the chosen model's natural 400x400x400 (top 400 = plane-25, inside the relation band), re-seated at wall x4803 / hug y2036 (10mm rect gap to the standard-bed rect). Style: 3-judge panel top pick (greige waterfall) over the classical piece both critics flagged (C2 p2r56 #4).",
    "model": "24c65eb4-765b-43f3-a171-266521dd06b1",
    "model_note": "24c65eb4 Asta (p2r74, panel 2026-08-25b inside 3/3 — the only candidate whose top sits in the D-045 band at natural scale; replaced 1cf77b3a on his p2r73 verdict, CLASS≠INSTANCE). The prior note argued for the outgoing model and was refreshed with the swap — prose must never contradict the data beside it.",
-   "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74)."
+   "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74).",
+   "rot": 90,
+   "_p2r75_rot_note": "rot -> 90 both sides (ORD-2026-08-25b item 1: drawers opened INTO the bed — pull pressed against the mattress in the p2r74 crop, R10 SENSE unopenable). Front now faces -x (the room/foot). The Asta has no measured MODEL_FRONT_DEG row; this rot was verified by eye on the quick, and measuring its native front joins the registry debt."
   },
   {
    "name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
@@ -978,7 +980,7 @@
    "w": 480,
    "d": 431,
    "h": 480,
-   "rot": 180,
+   "rot": 90,
    "lamp": {
     "kind": "drum",
     "finish": "turned wood + linen drum (Kendra 18d17256, p2r74 — his item 2 retired the brass dome pair; D-138)",
@@ -992,7 +994,8 @@
    "note": "SE of bed head against BF14; INK x4701.8-5203.2 y-450.2-51.3 (~501x501, was spec 300x294) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12: top = mattress 600 - 20; recorded D-045) | p2r57 (D-115): same datum re-derivation as its NE twin — slot to the model's natural 400x400x400 (top 400 = plane-25), wall x4803, hug y-184 (10mm rect gap).",
    "model": "24c65eb4-765b-43f3-a171-266521dd06b1",
    "model_note": "24c65eb4 Asta (p2r74, panel 2026-08-25b inside 3/3 — the only candidate whose top sits in the D-045 band at natural scale; replaced 1cf77b3a on his p2r73 verdict, CLASS≠INSTANCE). The prior note argued for the outgoing model and was refreshed with the swap — prose must never contradict the data beside it.",
-   "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74)."
+   "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74).",
+   "_p2r75_rot_note": "rot -> 90 both sides (ORD-2026-08-25b item 1: drawers opened INTO the bed — pull pressed against the mattress in the p2r74 crop, R10 SENSE unopenable). Front now faces -x (the room/foot). The Asta has no measured MODEL_FRONT_DEG row; this rot was verified by eye on the quick, and measuring its native front joins the registry debt."
   },
   {
    "name": "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)",

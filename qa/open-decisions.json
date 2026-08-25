@@ -2289,6 +2289,35 @@
      "why": "print ของกลไกตะขอ-บนราว (ข้อ 3) — ลบ derivation แล้วตะขอกลับไปลอย"
     }
    ]
+  },
+  {
+   "id": "D-139",
+   "unit": "DELIV-001",
+   "subject": "five-items execution p2r75 (facing/hooks/folds/life/rug) + the dropped-gate-variable lesson",
+   "decided_round": 75,
+   "decided_date": "2026-08-25",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-25b-five-items-after-p2r74",
+   "question": "ลิสต์ 5 ข้อจากเฟรม p2r74 ลงพิกเซลอย่างไร และทำไม build ถึงเพิ่งเขียวเต็มทั้งเกตเป็นครั้งแรก?",
+   "in_effect": "(1) โต๊ะ rot=90 หน้าลิ้นชักออกหาห้อง (R10 SENSE — ลิ้นชักเปิดได้); Asta ยังไม่มีแถว MODEL_FRONT_DEG ที่วัดจริง = registry debt มีชื่อ. (2) ตะขอ clamp เข้าช่วงราวจริง ±25มม. (ราว 282 สั้นกว่าช่องโล่ง 354 — ตัวริมเคยห้อยในช่องว่างข้างปลายราว). (3) fold stacks ปั้นเองทั้ง 12 กอง แทนด้วย b54819e4 (ตัวเดียวที่ผ่าน panel c; อีกสองตก outside 3/3) บนหน้าชั้นเดิมที่วัด — การซ้ำลายคือราคาที่ประกาศของคลาสที่ผ่านตัวเดียว. (4) จานทอง+เหยือก inside 3/3 ลงแถบหน้าโต๊ะ (โคมเลื่อนชิดผนัง 0.74w), นาฬิกาตกทั้งคู่จึงไม่มีในเฟรม; ficus ที่ (2.75,3.85) หลังบทเรียน camera-throat (จุด clear แรกอยู่หน้ากล้อง 0.9ม. ใบไม้กลืนครึ่งเฟรม — clearance เรขาคณิตไม่เคยถามเรื่องเลนส์). (5) พรม 0fd746ae natural 2427x3024 = 0.97 ของช่อง ไม่ยืด, ผิว vendor ตามคำสั่ง. BUG ที่จับได้: p2r74 edit ทำ `_hb_acq_done = True` หล่น — ทุก build หลังจากนั้นสร้างหัวเตียงซ้อนสองใบ (.001+welts ซ่อนหลังแผง) เงียบ; ที่โผล่คือ ladder stop ซึ่งเองก็ถูก BEDPX บังมาตั้งแต่ r74 (pillowcase วัดไม่ได้โดยโครงสร้าง — ตอนนี้ DECLARED_ABSENT อ้างแถวนี้ ตามกฎเดียวกับ coverlet D-107/D-086).",
+   "where": "pipeline/scripts/build_room.py,pipeline/scripts/value_ladder.py,projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "because": "คำสั่งพี่เป็นข้อ ๆ + บาร์พิกเซลของ ORD-2026-08-25-p2-exit-is-his-eye",
+   "reverse_by": "พี่ชี้จากภาพรายชิ้นหนึ่งประโยค — เปลี่ยน id/เอาออกเป็น declared gap; หมุนโต๊ะกลับ = spec rot; พรมเดิม = ลบ _RUG_MODEL แล้ว ring/pile กลับ",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_hb_acq_done = True",
+     "why": "gate variable ที่เคยหล่น — หล่นอีก = หัวเตียงคู่เงียบ"
+    },
+    {
+     "file": "pipeline/scripts/value_ladder.py",
+     "pattern": "\"bed__pillowsoft0\": \\(\"D-138\"",
+     "why": "การประกาศที่ปลด stop เงียบหลัง BEDPX"
+    }
+   ]
   }
  ],
  "_assert_ratchet_from": "D-124"

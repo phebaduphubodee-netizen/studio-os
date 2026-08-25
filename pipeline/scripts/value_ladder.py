@@ -591,6 +591,16 @@ ACQUIRED_AS = {
 # here to quiet a rung is the defect; the row is only honest when the absence was
 # already decided somewhere a reader can check.
 DECLARED_ABSENT = {
+    "bed__pillowsoft0": ("D-138", "the acquired headset (8a57766d combo re-dressed "
+                                  "per D-107) is ONE fused mesh wearing bed_duvet — "
+                                  "no separate lying-pillow surface wears bed_pillow, "
+                                  "so the pillowcase rung has no object to rank BY "
+                                  "CONSTRUCTION, same law as the coverlet below. The "
+                                  "stop this declaration lifts had been failing the "
+                                  "eye build silently behind BEDPX's louder stop "
+                                  "since p2r74; a set whose pillows arrive as their "
+                                  "own meshes resolves through ACQUIRED_AS and is "
+                                  "measured again."),
     "bed__throw": ("D-083", "the acquired cloth set falls to the bed line itself "
                             "— 0 mm of line left for a runner to hang in "
                             "(measured 85-95 mm proud at every rung, and the "
