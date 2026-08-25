@@ -3753,8 +3753,70 @@
         "STY/STY-7",
         "STY/STY-8"
       ]
+    },
+    {
+      "commit": "e2bc0fdfa489e5a70a4ac2edc92c5147d4bfc265",
+      "verdicts": {
+        "P2": "keep: p2r75 ปิดลิสต์ 5 ข้อของพี่ + build เขียวเต็มทุกเกตครั้งแรกของเลน (สอง stop ที่ซ่อนกันเป็นชั้น — BEDPX บัง ladder บังหัวเตียงคู่ — ถูกแกะครบ) · lever ถัดไป: P2r-5 material response ยังเป็นเสียง #1 ทั้งสองกรรมการ (ผ้า/หัวเตียง weave/หมอน) และตอนนี้มี instance ใหม่ของมันคือ stack sage กับพรมซื้อ",
+        "P4": "change: เสียงกรรมการสองรอบติดยก 'เทาเดียว+ห้องว่าง' เป็น #1-#2 และพี่เองสั่ง 'ใส่ของไอเดียเพิ่มได้เลย' — P4 ไม่ควรรอ P2r ปิดแบบสุดขั้วอีกต่อไป: เสนอเปิดครึ่ง P4-lite (ของสี/วัสดุตัด + เก้าอี้ vanity + sightline check ของ life objects) ควบคู่ P2r-5 โดยยังไม่แตะ density เต็ม",
+        "P3": "keep: ใบงานสะสมครบชุดแล้ว (scallop เบลอ, เงาสัมผัสโต๊ะ/โคม, sconce backplate, pool โคม) — เปิดเมื่อ P2r-5 รอบหน้าปิด",
+        "P5": "keep: blocked ตามโครงสร้าง",
+        "STY": "keep: ก้าวแรกของสีจริงลงเฟรมแล้ว (terracotta โคม, sage stacks, เขียว ficus) — วัดผลที่ความเห็นกรรมการรอบหน้า; slot ค้าง 5 ช่องเดิม",
+        "P0": "keep: done",
+        "P1": "keep: done",
+        "DRW": "keep: done/standing"
+      },
+      "changed": [
+        "P4"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a",
+        "STY/STY-1",
+        "STY/STY-1b",
+        "STY/STY-7",
+        "STY/STY-8"
+      ]
     }
   ],
-  "last_review_commit": "e05b2a100cab08868dcfd4d5d6a99b27bf778dbd",
+  "last_review_commit": "e2bc0fdfa489e5a70a4ac2edc92c5147d4bfc265",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
