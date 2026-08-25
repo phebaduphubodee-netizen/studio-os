@@ -724,6 +724,24 @@
           "why": "the scale is NOT retreated: the tile still derives from the publisher sidecar door (TS-006's assert, shared)"
         }
       ]
+    },
+    {
+      "id": "ORD-2026-08-25-p2-exit-is-his-eye",
+      "date": "2026-08-25",
+      "verbatim": "จะให้ปิด P2 ทั้งที่ผมยังไม่ชอบของในงาน ผมบอกไปแล้วว่าให้แก้อะไรบ้างเป็นข้อ ๆ แต่ผลที่ได้คือไม่มีอะไรเปลี่ยน",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-verdict-2026-08-25-p2-exit.md",
+      "commands": "No phase closes while he still dislikes the objects in the frame — his eye is a standing exit condition ABOVE every builder-written condition (the r7 rows, crop harness and critic-silence clauses stay necessary, never sufficient). The builder proposal to close P2 to unlock P3/P4 is OVERRULED and locked to him. Second half: his itemized fix orders must land in the FRAME — an order proven obeyed by grep on code while the frame does not visibly change in his eye is obeyed in letter only; obedience of a visual order is demonstrated in pixels beside his words, or it is not demonstrated.",
+      "subject": "phase-exit",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "status": "not-obeyed",
+      "since": "2026-08-25",
+      "not_obeyed_because": "The P2 exit test as written carries no owner-eye clause (its conditions are instrument rows + critic-silence, all builder-authored), and on 2026-08-25 he states the itemized orders have produced no change he can see — so as of today the order is, by its own test, not yet carried out.",
+      "restart_by": "Builder action, two halves: (1) audit every itemized visual order (2026-08-12..08-24) against the frame of record p2r71 with measurements — for each: his words, what the lane did, what the pixels show, verdict landed / landed-invisible / not-done / reverted — archived beside the renders; (2) carry the un-landed ones into build rounds until the pixel evidence exists, and add the owner-eye clause to the P2 exit test at the next plan review."
     }
   ]
 }
