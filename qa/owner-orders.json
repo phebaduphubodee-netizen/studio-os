@@ -690,6 +690,40 @@
         }
       ],
       "restart_by": "STY-2, and it is the builder's alone: add a style verdict field to qa/object-existence.json rows (inside | edge | outside | not-judged with judged_by and since), one rule in existence_check.py refusing an in-frustum ACQUIRED mass that is not-judged past its date, and route the existing 3-agent sighted panel at it. Then sign the floor slot — the largest surface in the room and the 60% dominant this room has never had — as its own preset with variation >= 0.05, and re-measure the palette gap."
+    },
+    {
+      "id": "ORD-2026-08-24-fix-rug-surface-not-scale",
+      "date": "2026-08-24",
+      "verbatim": "แก้ผิวพรม ไม่ถอยสเกล",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r67-2026-08-24.md",
+      "commands": "His ruling on the rug regression (taken through the decision UI, locked in gate #66): keep the publisher-asserted texture scale and fix what the critics actually measured — no pile read, no edge thickness, no contact shadow (independently measured inverted: floor +15.9 codes toward the rug edge on p2r64, +9.49 on p2r69). Rolling the scale back would hide the three real defects under an over-large pattern, so the scale may not be retreated as a fix for the rug's look. The CLASS half stands: any future 'the rug looks worse since the scale fix' round starts at the surface, never at the tile number.",
+      "subject": "rug-surface",
+      "scope": "class",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "status": "obeyed",
+      "obeyed_where": "pipeline/scripts/build_room.py",
+      "obeyed_how": "p2r70: three mechanisms, all scoped to the rug. (1) CONTACT — the rolled-edge rings in _add_rug end 0.5 mm BELOW the floor top; the old skirt stopped at +2 mm (a slab-era z-fighting literal from 2026-07-02 whose rationale died in the 2026-08-10 pile rewrite), so the whole rug floated and the floor BRIGHTENED toward the edge instead of darkening. (2) EDGE — three perimeter rings with an outward binding bulge overhanging a tucked contact ring: a visible cross-section, and an occlusion wedge Cycles turns into the pool's tight dark rim. (3) PILE — _wire_rug_fibre: the part-metallic Metal map (mean 51/255, 89.5% nonzero) is cut from a wool rug, the never-wired AO map is multiplied in mean-normalised (x1.1752) so tuft contrast rises without moving the signed value 130, and Sheen 0.4 (the one nonzero pro value, at _SHEEN_CAP) gives the angular response C2 named. The tile numbers _rtile/_rtile_v are untouched.",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "\\(0\\.0030, -0\\.0005\\)\\)             # contact, tucked under the bulge",
+          "why": "the contact ring BELOW the floor top — the line that ends the 2 mm float; zeroing it back to +0.002 breaks this grep"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "^    _wire_rug_fibre\\(pile_m\\)",
+          "why": "the CALL in _add_rug — the fibre wiring runs on every built rug, not a flag someone must type"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_rtile = _tile_m_for\\(RUG_SLUG\\)",
+          "why": "the scale is NOT retreated: the tile still derives from the publisher sidecar door (TS-006's assert, shared)"
+        }
+      ]
     }
   ]
 }

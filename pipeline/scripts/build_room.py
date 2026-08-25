@@ -2985,7 +2985,9 @@ def _add_rug(name, x, y, w, d, thick=0.014):
             py = y + d * j / ny
             edge = min(i, nx - i, j, ny - j)
             if edge == 0:
-                pz = z0 + thick * 0.55           # perimeter dips — a bound, rolled edge
+                # bound rolled edge; ±1 mm of clump noise so the TOP silhouette
+                # is not a die line either (same C2 charge as the rings below)
+                pz = z0 + thick * (0.55 + 0.14 * (_n2(i, j, 3.0) - 0.5))
             else:
                 und = 0.0020 * math.sin(i * 0.23 + j * 0.11) * math.sin(j * 0.17 - i * 0.05)
                 tuft = 0.0016 * (_n2(i, j, 1.0) - 0.5)
@@ -2996,17 +2998,58 @@ def _add_rug(name, x, y, w, d, thick=0.014):
         for i in range(nx):
             a = j * row + i
             faces.append((a, a + 1, a + row + 1, a + row))
-    # skirt: perimeter ring down to the floor line (open underside — nothing sees it)
+    # ROLLED EDGE TO FLOOR CONTACT (p2r70, owner verdict 2026-08-24 "แก้ผิวพรม
+    # ไม่ถอยสเกล" — C2-p2r68#1 "ฆ่างาน": ไม่มีความหนาที่ขอบ + ไม่มีเงาสัมผัส).
+    # What this replaces was a single vertical skirt stopping at z0-0.002 =
+    # +2 mm — THE RUG FLOATED 2 mm ABOVE THE FLOOR for the whole lane. The 2 mm
+    # descends from the 2026-07-02 slab-era literal "sits just above the floor
+    # to avoid z-fighting" (add_box at z=0.004); a vertical skirt cannot z-fight
+    # a horizontal floor, so the rationale died in the 2026-08-10 pile rewrite
+    # and the number survived it. Measured cost on p2r69: the floor BRIGHTENS
+    # +9.49 codes toward the rug edge (93% of 294 clean columns) — an inverted
+    # contact shadow, because an open 2 mm slit under a lit pale edge bounces
+    # light onto the floor instead of occluding it. placement_check never saw it:
+    # its own docstring names the hole (touching ANYTHING escapes FLOATING, and
+    # the bed stands on the rug).
+    # The profile: three perimeter rings — outward bulge at mid-height (the
+    # sewn binding's cross-section, R4b pool band: contact is a rim TIGHT to
+    # the base), then a tucked-under contact ring 0.5 mm BELOW the floor top so
+    # contact is guaranteed, not adjacent. The bulge overhanging the tuck is
+    # what makes Cycles produce the dark contact line the pool shows.
     per = ([j * row for j in range(ny + 1)] + [ny * row + i for i in range(1, nx + 1)]
            + [j * row + nx for j in range(ny - 1, -1, -1)] + [i for i in range(nx - 1, 0, -1)])
-    base_ix = len(verts)
-    for p in per:
-        vx, vy, _vz = verts[p]
-        verts.append((vx, vy, z0 - 0.002))
+
+    def _outward(p):
+        i, j = p % row, p // row
+        ox = -1.0 if i == 0 else (1.0 if i == nx else 0.0)
+        oy = -1.0 if j == 0 else (1.0 if j == ny else 0.0)
+        n = math.hypot(ox, oy) or 1.0
+        return ox / n, oy / n
+    rings = ((0.0035, z0 + thick * 0.38),   # binding roll, max bulge
+             (0.0045, z0 + thick * 0.15),   # lower roll
+             (0.0030, -0.0005))             # contact, tucked under the bulge
+    # SILHOUETTE JITTER (C2-p2r68#1: "ขอบเป็นเส้นตรงเป๊ะจากซ้ายถึงขวา"): fibre
+    # clumps at the bound edge put ±2.5 mm of lateral noise on the silhouette at
+    # the vertex pitch (~25 mm) — same deterministic hash as the field tufts, so
+    # the edge is never a die line. The CONTACT ring's height stays exact
+    # (contact is a guarantee, not a texture); its plan offset still jitters.
+    rings = tuple((off, rz, 0.0025, (0.0008 if rz > 0 else 0.0))
+                  for off, rz in rings)
+    prev = list(per)
     np_ = len(per)
-    for k in range(np_):
-        a, b = per[k], per[(k + 1) % np_]
-        faces.append((b, a, base_ix + k, base_ix + (k + 1) % np_))
+    for ri, (off, rz, jxy, jz) in enumerate(rings):
+        base_ix = len(verts)
+        for p in per:
+            vx, vy, _vz = verts[p]
+            ox, oy = _outward(p)
+            i_, j_ = p % row, p // row
+            oj = off + jxy * (_n2(i_, j_, 5.0 + ri) - 0.5) * 2.0
+            zj = rz + jz * (_n2(i_, j_, 9.0 + ri) - 0.5) * 2.0
+            verts.append((vx + ox * oj, vy + oy * oj, zj))
+        for k in range(np_):
+            a, b = prev[k], prev[(k + 1) % np_]
+            faces.append((b, a, base_ix + k, base_ix + (k + 1) % np_))
+        prev = list(range(base_ix, base_ix + np_))
     me = bpy.data.meshes.new(name)
     me.from_pydata(verts, [], faces)
     me.validate()
@@ -3037,6 +3080,7 @@ def _add_rug(name, x, y, w, d, thick=0.014):
     _rtile_v = _tile_v_m_for(RUG_SLUG)
     _planar_uv(obj, tile_m=_rtile, tile_v_m=_rtile_v)
     pile_m = _pbr_material("rug_" + name, RUG_SLUG)
+    _wire_rug_fibre(pile_m)         # BEFORE crush shade: crush hooks the live Base Color chain
     obj.data.materials.append(pile_m)
     _wire_crush_shade(pile_m)
     # r7 (C2-r6#12 + C3-r6#5 + C1-r6 LOOK, all three: "กุ๊นพลาสติกซีด"): the binding is
@@ -3053,6 +3097,94 @@ def _add_rug(name, x, y, w, d, thick=0.014):
             p.material_index = 1
     obj["ph_model"] = True            # keeps its two slots; no router, no global bevel
     return obj
+
+
+def _wire_rug_fibre(m):
+    """P2r70 pile READ (C2-p2r68#1, rated ฆ่างาน; owner verdict locked 2026-08-24
+    "แก้ผิวพรม ไม่ถอยสเกล"): the pile rendered as "ระนาบทาสี" — detail_std 3.81 on
+    p2r69 against oak 17.15, and "ไม่มีการเปลี่ยนค่าความสว่างเมื่อผิวหันเข้า/ออกจากแสง".
+    Three shader-side causes, each measured before this was written (2026-08-25):
+
+    1. METAL MAP CUT. _pbr_material wires any cached Metal map into Metallic;
+       this slug's Metal_2k.jpg probes mean 51/255 with 89.5% of pixels nonzero
+       (max 250) — a wool rug rendering part-METALLIC across the whole field,
+       which kills the diffuse response that would carry tuft shading. Wool is
+       metallic 0; the input is unlinked and pinned.
+    2. AO, MEAN-NORMALISED. AO_2k.jpg (mean 216.98/255 = 0.851, std 22.9) exists
+       on disk and was never globbed by _texset — the per-tuft self-shadowing
+       channel with ±11% luma contrast at the chevron scale (7.3 px at 1.6 m,
+       above the defocus disc where the 3.5 mm weft is correctly below it).
+       Multiplied into Base Color through a 1/0.851 = 1.1752 gain so the rug's
+       SIGNED mean value (130, DEBT-16 table) does not move: this adds the
+       detail_std the critics measure without re-litigating the value ladder.
+       TONE, not relief — the channel that survives this room's soft light
+       (the twice-measured sub-quantization law in _wire_crush_shade below).
+    3. SHEEN. The pile's Sheen Weight was Blender's default 0.0 — wool pile is
+       the strongest angular-response case in the room ("พรมขนจริงจะ 'เปลี่ยนสี'
+       เมื่อมองต่างมุม" is C2's own physics). 0.4 is the one nonzero value the
+       102-material pro dump contains (src2_Italian_Flat "Fabric", exactly at
+       _SHEEN_CAP), clamped at the write site per the write-point law."""
+    nt = m.node_tree
+    bsdf = next((n for n in nt.nodes if n.type == 'BSDF_PRINCIPLED'), None)
+    if not bsdf or not bsdf.inputs["Base Color"].links:
+        return                      # flat-colour fallback path: nothing to wire
+    for lk in list(bsdf.inputs["Metallic"].links):
+        nt.links.remove(lk)
+    _set(bsdf, "Metallic", 0.0)
+    _set(bsdf, "Sheen Weight", min(0.4, _SHEEN_CAP))
+    _set(bsdf, "Sheen Roughness", 0.35)
+    ts = _texset(RUG_SLUG)
+    if ts and "AO" in ts:
+        src = bsdf.inputs["Base Color"].links[0].from_socket
+        ao = _img_node(nt, ts["AO"], non_color=True)
+        gain = nt.nodes.new("ShaderNodeMath")
+        gain.operation = 'MULTIPLY'
+        gain.inputs[1].default_value = 1.1752   # 1 / measured AO mean 0.851
+        nt.links.new(ao.outputs["Color"], gain.inputs[0])
+        mix = nt.nodes.new("ShaderNodeMixRGB")
+        mix.blend_type = 'MULTIPLY'
+        mix.inputs["Fac"].default_value = 1.0
+        nt.links.new(src, mix.inputs["Color1"])
+        nt.links.new(gain.outputs["Value"], mix.inputs["Color2"])
+        nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    # PILE LAY AS TONE (p2r70b — the half of "ไม่มีขน" a texture map cannot carry).
+    # Measured ceiling first: all three cached maps hold ~0.5% contrast at the
+    # 9.6 mm chevron scale (band_std 1.2-1.4/255) — their energy sits at the
+    # 3.5 mm weft, which this camera's defocus disc (CoC 5-6 px) removes. So no
+    # amplitude on AO/normal/sheen can make the WEAVE read at 1.6-2.2 m; what a
+    # real pile shows at that distance is its LAY — 0.3-0.5 m patches of
+    # brushed-light / brushed-dark fibre ("ขนล้มคนละทิศ", C2's own physics).
+    # ALBEDO, not sheen: the sheen lever measures ~1 code across its whole range
+    # under this room's light (bracketed 2026-08-25; the pro dump's 94/102
+    # sheen-zero rows say the same), while tone survives — the same law that put
+    # the crush cue in colour. ±9% at noise scale 2.5/m, mock pair
+    # _mock_rug_lay_a045/a090 (amplitude law: 0.13 loud, 0.09 settle).
+    # Same construction as _pbr_material's `variation` block — object coords,
+    # origin at world zero.
+    # STATUS AS SHIPPED (p2r71, measured): the chain is IN the .blend and every
+    # node evaluates (bisect probe: MapRange/noise render when linked direct),
+    # but the multiply's effect on the frame measures <= 1 code — the amplitude
+    # question is OPEN, and the probe harness itself returned contradictory
+    # results on saved blends (fieldonly == fieldwide across a 9x band change),
+    # so no number was tuned blind. Next spin on this knob must arrive as a
+    # bracketed decision with a TRUSTED probe, per D-135's open_question — this
+    # comment is the honest label R11 demands, not a claim of effect.
+    src2 = bsdf.inputs["Base Color"].links[0].from_socket
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    lay = nt.nodes.new("ShaderNodeTexNoise")
+    lay.inputs["Scale"].default_value = 2.5
+    lay.inputs["Detail"].default_value = 4.0
+    nt.links.new(tc.outputs["Object"], lay.inputs["Vector"])
+    lmr = nt.nodes.new("ShaderNodeMapRange")
+    lmr.inputs["To Min"].default_value = 0.91
+    lmr.inputs["To Max"].default_value = 1.09
+    nt.links.new(lay.outputs["Fac"], lmr.inputs["Value"])
+    lmix = nt.nodes.new("ShaderNodeMixRGB")
+    lmix.blend_type = 'MULTIPLY'
+    lmix.inputs["Fac"].default_value = 1.0
+    nt.links.new(src2, lmix.inputs["Color1"])
+    nt.links.new(lmr.outputs["Result"], lmix.inputs["Color2"])
+    nt.links.new(lmix.outputs["Color"], bsdf.inputs["Base Color"])
 
 
 def _wire_crush_shade(m):
