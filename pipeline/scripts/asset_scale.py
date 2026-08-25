@@ -187,6 +187,21 @@ BANDS = {
                    "nightstand + dome lamp, D-045 mattress-datum usability) + "
                    "knowledge/brand-standards/render-quality.md:79 (table "
                    "lamps = task tier, a tabletop object)"),
+    # a FOLDED throw/blanket presented as a stack on furniture. Diagnosed on the
+    # plan footprint (maxxy) because the fold count sets the height, not the
+    # class: a real throw is ~1300x1700 flat (retail standard 50x60in) and folds
+    # to a 250-750 mm footprint in quarters/thirds; below ~200 the object reads
+    # as a face towel (towel_folded's territory), above ~900 it is a bedspread.
+    # First consumers: the four 2026-08-25 BlenderKit candidates measured
+    # 246-724 mm on their long plan axis (qa/blenderkit-fetch-log.json), on a
+    # bench slot drawn 504x1008 (SR-08).
+    "throw_folded": (200.0, 900.0, "maxxy",
+                     "ORD-2026-08-15-loose-furniture-is-acquired (the bench "
+                     "throw is the last hand-simulated cloth in frame) + "
+                     "pipeline/scripts/bathroom.py acc_hand_towel_counter "
+                     "(300x200 folded towel, the class boundary below) + the "
+                     "2026-08-25 candidate measurements 246-724 mm in "
+                     "qa/blenderkit-fetch-log.json"),
 }
 
 # ------------------------------------------------------------ slot roles (P2h) --
@@ -242,6 +257,10 @@ def slot_roles(slots, z0, z1):
 MIN_DEPTH_RATIO = {
     "garment_hung": 0.06,   # a shirt on a hanger is >= ~90 mm front-to-back
     "hanger": 0.02,
+    # a folded stack has real thickness (fold count x cloth ply, >= ~60 mm on a
+    # 400 mm footprint); a flat throw-shaped decal is the billboard this refuses.
+    # Diagnosed against maxxy per the band, so the ratio reads z/longest-plan.
+    "throw_folded": 0.10,
     "vase": 0.25,           # a lathed body is near-square in plan
     "branch_dried": 0.05,
     "chair": 0.35,

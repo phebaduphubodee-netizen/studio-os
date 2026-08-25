@@ -15,21 +15,31 @@
  "sites": [
   {
    "id": "TS-001",
-   "slug": "wood_floor",
-   "surface": "DELIV-001 room floor (the `floor` object, material floor_pbr)",
+   "slug": "laminate_floor_02",
+   "surface": "DELIV-001 room floor (the `floor` object, material m_floor_oak_engineered_floor_photo since the STY-3 signing 2026-08-25; was floor_pbr/wood_floor)",
    "tile_m": 1.7,
    "departure": null,
-   "why": "The publisher's own number, read through _tile_m_for at build time. Nothing here is typed: the code calls the door, the door reads the sidecar, and the sidecar is re-derivable from the API.",
+   "why": "The publisher's own number, read through _tile_m_for at build time. Nothing here is typed: the code calls the door, the door reads the sidecar, and the sidecar is re-derivable from the API. SINCE 2026-08-25 (same day, review M1) the floor's UV TILE derives from _FLOOR_RENDER_SLUG — the slug of the preset that actually RENDERS — stashed at the material pick so the UV site cannot re-guess it. The earlier same-day wording had the texture from the preset slug while the tile still derived from FLOOR_SLUG: two sidecars agreeing at 1.700 m by coincidence, with the registry watching the wrong slug.",
    "assert": [
     {
      "file": "pipeline/scripts/build_room.py",
-     "pattern": "_ftile = _tile_m_for\\(FLOOR_SLUG\\)[\\s\\S]{0,900}?_planar_uv\\(obj, tile_m=_ftile\\)",
-     "why": "Proves the floor UV scale is DERIVED from the asserted size and then USED — both halves in one pattern, because either alone can be true while the floor renders at something else. This is the exact line that read tile_m=2.4 for seven weeks. The assertion has already earned its keep once: adding the --floor-tile-legacy A/B leg changed this call site, and the rung went red on its own author in the same minute."
+     "pattern": "_ftile = _tile_m_for\\(globals\\(\\)\\.get\\(\"_FLOOR_RENDER_SLUG\", FLOOR_SLUG\\)\\)[\\s\\S]{0,900}?_planar_uv\\(obj, tile_m=_ftile\\)",
+     "why": "Proves the floor UV scale is DERIVED from the asserted size OF THE SLUG THAT RENDERS and then USED — both halves in one pattern, because either alone can be true while the floor renders at something else. Predecessor pattern read tile_m=2.4 for seven weeks; the rung has gone red on its own author twice (the --floor-tile-legacy leg, and this M1 rewrite)."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "globals\\(\\)\\[\"_FLOOR_RENDER_SLUG\"\\] = \\(",
+     "why": "Proves the render slug is stashed where the material CHOICE is made. Deleting the stash makes the UV site fall back to FLOOR_SLUG silently — the exact coincidence-dependence this row exists to refuse."
     },
     {
      "file": "pipeline/scripts/build_room.py",
      "pattern": "def _tile_m_for\\(slug\\)",
      "why": "Proves the door still exists. If the helper is deleted the assertion above could be satisfied by a local variable of the same name."
+    },
+    {
+     "file": "pipeline/scripts/material_presets.py",
+     "pattern": "\"oak_engineered_floor_photo\": dict\\([\\s\\S]{0,900}?slug=\"laminate_floor_02\"",
+     "why": "Proves the floor preset still wears the set whose 1.700 m the UV derivation above assumes. FLOOR_SLUG is still 'wood_floor' at build_room.py and _planar_uv derives the floor tile from IT, not from the selected preset — the two agree only because both sidecars declare 1.700 m. If either slug's declared size ever changes, the floor renders at the other one's scale and nothing else in this file would notice."
     }
    ],
    "since": "2026-08-24"

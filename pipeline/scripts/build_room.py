@@ -3681,61 +3681,71 @@ def _dress_scene(spec):
             _rbox(f"deco__bench_book{bi}_sp", bx0, by0, bz0, bL, 0.005, bT,
                   bm, bevw=0.002, seg=2)
             placed += 1
-        # [2] the throw: a sheet lying on the north half, overhanging the end,
-        # dropped by the solver onto the seat it must fall past — pinned on its
-        # on-bench strip the way a tucked throw really is (the unpinned-sheet
-        # slide-off is a recorded failure shape)
+        # [2] the throw — ACQUIRED since p2r72 (ORD-2026-08-15 "ลบ furniture ที่
+        # ปั้นเองทุกชิ้น" + C2-p2r64#3 "ผ้าคลุมม้านั่ง = แผ่นโฟมแข็ง หนาคงที่
+        # 30-40มม. ไม่กดเบาะเลย", triaged ACCEPT -> เส้นทาง ACQUIRE ไม่ใช่ re-sim):
+        # the solver bake (folded_sheet + bake_sheet + dent, ~10 rounds of cloth
+        # micro-mechanisms) is retired with its history in git. A folded blanket
+        # mesh comes through the same sidecar door as every other cloth in the
+        # frame; z rests on the MEASURED bench top (R9), and a throw that cannot
+        # be placed is DROPPED LOUDLY — the build survives, absence is not a
+        # defect object. The seat dent retired with the sim (its travel was
+        # derived FROM the bake); C2's undented-seat item transfers to the
+        # acquired mesh's own contact, judged at the crop.
         _seat = _bench_obj                      # built OR acquired; see the note above
         if _seat is not None:
-            tv, tf = softgoods.folded_sheet(bx + 0.045, by + bd - 0.46, bw - 0.09,
-                                            0.66, _btop + 0.02, band=0.18, head="y-",
-                                            cell=0.035, salt=11,
-                                            # p2r23 (_EDGE_WANDER): the 180° crease
-                                            # line wanders per column — the fourth
-                                            # round of "สันตรง" dies in the feedstock
-                                            crease_wander=(0.010 if _EDGE_WANDER
-                                                           else 0.0))
-            _pin = [k for k, p in enumerate(tv) if p[1] < by + bd - 0.28]
-            try:
-                # fabric "knit", not "linen" (p2r21, C2-r19/r20 "slab-crisp knife
-                # edges" on this object two rounds running): this piece IS a throw,
-                # and drape's own FABRIC table gives throws the knit row ("heavy but
-                # LIMP", bending 0.35) — the bed throw already bakes with it. Linen's
-                # bending 1.2 held the pre-bent 180° crease as a stiff shell, which
-                # is exactly the ruler-straight double ridge in the crop. No new
-                # knob: the object was wearing another class's fabric row.
-                _to = drape.bake_sheet("deco__bench_throw", tv, tf, [_seat],
-                                       frames=45, fabric="knit",
-                                       mat=bpy.data.materials.get("bed_duvet"),
-                                       pin=_pin, thickness=0.010, collide_dist=0.012,
-                                       shred_guard=True,
-                                       # p2r28 (_GRAVITY_RAMP): same first-third
-                                       # ramp as the duvet — the folded stack
-                                       # SETTLES onto the seat instead of
-                                       # slapping it; None = p2r27 exact
-                                       gravity_ramp=(15 if _GRAVITY_RAMP
-                                                     else None))
-                _to["ph_model"] = 1
-                placed += 1
-                # p2r28 (_BENCH_DENT, DR §3 — the site C2 filed four rounds
-                # running): the seat foam yields under the stack. Travel is the
-                # declared press (16 mm -> ~half that in dent at goal 0.5, per
-                # the probe); the throw is then lowered by the MEASURED dent,
-                # so the final contact is derived from the sim (R9). Styling
-                # lane: a dent that cannot run drops LOUDLY, the build
-                # survives — an undented seat is not a defect object.
-                if _BENCH_DENT:
-                    try:
-                        _dent = drape.dent_soft_body(_seat, _to, 0.016,
-                                                     frames=30, press_frame=18)
-                        _to.location.z -= _dent
-                    except drape.DrapeError as _de:
-                        print(f"  lane D: bench dent dropped ({_de})")
-            except drape.DrapeError as _te:
-                # lane D is styling, never structure: a throw that cannot settle is
-                # DROPPED LOUDLY, the build survives (no analytic twin needed here —
-                # absence of a throw is not a defect object)
-                print(f"  lane D: bench throw dropped ({_te})")
+            _thr_mp = _model_path(_BENCH_THROW_MODEL)
+            if _thr_mp is None:
+                print(f"  lane D: bench throw dropped — acquired model "
+                      f"{_BENCH_THROW_MODEL[:8]} refused/unavailable (see MODEL "
+                      f"REFUSED above); the frame ships without a throw")
+            else:
+                try:
+                    with open(_ascale.sidecar_path(_thr_mp), encoding="utf-8") as _tf_:
+                        _tsc = json.load(_tf_)["bbox_mm"]
+                    _tnx = float(_tsc["x_mm"]) / 1000.0
+                    _tny = float(_tsc["y_mm"]) / 1000.0
+                    _tnz = float(_tsc["z_mm"]) / 1000.0
+                except (OSError, ValueError, KeyError) as _tse:
+                    _tnx = _tny = _tnz = 0.0
+                    print(f"  lane D: bench throw dropped — sidecar unreadable "
+                          f"({_tse})")
+                if _tnx > 0.0:
+                    # slot = the blanket's own natural size at s=1.0 in its NATIVE
+                    # orientation, rot=0 always (review M4: passing world-swapped
+                    # dims WITH a cardinal rot double-swaps against model_fit's
+                    # local-dims contract and would silently shrink the blanket 8%
+                    # on a wide bench — a folded blanket lies either way, so the
+                    # native lay is always physical), seated toward the bench's
+                    # north end like the old bake
+                    _tw, _td = _tnx, _tny
+                    _tx = bx + (bw - _tw) / 2.0
+                    _ty = by + max(bd - _td - 0.06, 0.0)
+                    if place_model(_thr_mp, _tx, _ty, _tw, _td, _tnz,
+                                   rot=0.0, z0=_btop,
+                                   tag="deco"):
+                        _new_thr = [o for o in bpy.data.objects
+                                    if o.type == 'MESH'
+                                    and o.name.startswith("deco__acq")]
+                        # the ladder rung stays: the throw wore bed_duvet through
+                        # every solver round, and the acquired mesh wears the same
+                        # signed cloth — a stranger's albedo on the nearest-camera
+                        # cloth is the p2r38 bench wound (value_ladder R9 note)
+                        _bdm = bpy.data.materials.get("bed_duvet")
+                        if _bdm is not None:
+                            for _o2 in _new_thr:
+                                _o2.data.materials.clear()
+                                _o2.data.materials.append(_bdm)
+                        placed += 1
+                        print(f"  lane D: bench throw ACQUIRED "
+                              f"{_BENCH_THROW_MODEL[:8]} ({_tw * 1000:.0f}x"
+                              f"{_td * 1000:.0f}x{_tnz * 1000:.0f} natural, "
+                              f"rested on the measured bench top "
+                              f"{_btop * 1000:.0f})")
+                    else:
+                        print(f"  lane D: bench throw dropped — place_model "
+                              f"refused {_BENCH_THROW_MODEL[:8]} (see its own "
+                              f"print); the frame ships without a throw")
     tbl = next((it for it in items if it.get("kind") in ("coffee_table", "round_table")
                 and float(it["x"]) > 4000), None)
     if tbl:
@@ -3795,6 +3805,13 @@ def _dress_scene(spec):
 # floor/millwork texture choices (swap FLOOR_SLUG to 'marble_01' or 'grey_cartago_01'
 # for a marble scheme). Kept as constants so the iteration loop can retune in one place.
 FLOOR_SLUG = "wood_floor"
+# p2r72 (ORD-2026-08-15 loose-furniture-is-acquired): the bench throw is ACQUIRED —
+# the last hand-simulated cloth left the frame with this constant. The 3-judge
+# style panel (2026-08-25, verdicts in _private/deliv-001/style-panel-2026-08-25/
+# throw/) ruled UNANIMOUSLY: this id (Folded Blanket, plain matte grey) = inside
+# 3/3; the wool candidate 91685141 first wired here = edge 3/3 on its vendor
+# colour. A losing panel verdict changes THIS id, never re-opens the solver bake.
+_BENCH_THROW_MODEL = "b89bc1af-06cc-41f3-ac42-a93c383372f2"
 WALL_RGBA = (0.83, 0.80, 0.75, 1.0)    # matte warm-white paint
 RUG_SLUG = "poly_wool_herringbone"
 
@@ -3808,11 +3825,16 @@ _LIGHT_STORY = False
 # the healthy-vs-shredded gap the thresholds are calibrated on)
 _SHRED_MODE = ""
 
-# --garment-yaw90 (r7, C2-r6#6 "โปโลหันหน้าเข้ากล้อง"): the B leg of the rail-yaw
-# A/B — every acquired garment set turns a further 90° so garments face ALONG the
-# rail run (hanger-on-rod orientation) instead of out at the aisle (boutique
-# display). A flag, not a source edit, so both legs re-render identically (R6).
-_GARMENT_YAW90 = False
+# FACE-ON HANG IS THE DEFAULT since p2r72 (ORD-2026-08-12 "สเกลดูแปลก", carried
+# out by its own named restart: yaw 90, shoulder span into the carcass DEPTH).
+# The r6 A/B that refused this leg ran against a depth slot taken from the same
+# styling placeholder p2r49 proved wrong for the drop — not settled evidence
+# (the ORD row's restart_by says exactly this). What makes it work now is the
+# derived across-run slot in _place_garment_rails: the bay depth is measured
+# from the BUILT carcass (600 mm class), not the 190-360 mm loft placeholder,
+# so a 573 mm hanger fits face-on at adult scale. A leg: --no-garment-yaw90
+# re-renders the r26 orientation for the pair.
+_GARMENT_YAW90 = True
 # ORD-2026-08-12 (*"สเกลดูแปลก"*). The DROP half of this mechanism shipped at p2r49 and
 # is unconditional (see `_place_garment_rails`: the clear drop is derived from the rail
 # down to whatever is really under it, 1005 mm against the placeholder's 847). The RUN
@@ -4104,11 +4126,107 @@ def _place_garment_rails(models, parts, cut_first=None):
                   f"(rail {z1 * 1000:.0f} down to {_z_bot * 1000:.0f}), against the "
                   f"loft placeholder's {((z1 - z0) * 1000):.0f} mm")
         z0 = _z_bot
-        along_x = (x1 - x0) >= (y1 - y0)
+        # p2r73 third pass — THE RUN AXIS IS THE BAR'S LONG AXIS, NOT THE LOFT'S.
+        # The diagnostic run proved the loft placeholder has its axes SWAPPED on
+        # the north bays (it reads run=y where the physical brass bar spans x),
+        # so every derivation downstream double-flipped: "face-on" put a 573 mm
+        # shoulder across a 362 mm bay and through both gables. The bar cannot
+        # be wrong about its own axis.
+        _bar_obj = None
+        for _o in bpy.data.objects:
+            if (_o.type != 'MESH' or _o.hide_render or not _o.data.vertices
+                    or not _o.name.startswith("mill__") or "rail" not in _o.name):
+                continue
+            _M = _o.matrix_world
+            _cs = [_M @ Vector(c) for c in _o.bound_box]
+            if abs(max(c.z for c in _cs) - z1) > 0.15:
+                continue
+            _bx0, _bx1 = min(c.x for c in _cs), max(c.x for c in _cs)
+            _by0, _by1 = min(c.y for c in _cs), max(c.y for c in _cs)
+            if _bx1 < x0 - 0.10 or _bx0 > x1 + 0.10 or _by1 < y0 - 0.10 or _by0 > y1 + 0.10:
+                continue                                # not this rail's bar in plan
+            _bar_obj = (_bx0, _bx1, _by0, _by1)
+            break
+        if _bar_obj is not None:
+            along_x = (_bar_obj[1] - _bar_obj[0]) >= (_bar_obj[3] - _bar_obj[2])
+        else:
+            along_x = (x1 - x0) >= (y1 - y0)            # loft fallback, pre-p2r73
         # pre-rotation slot: the set's row runs its native x; yaw turns it onto the rail
         run, depth = (x1 - x0, y1 - y0) if along_x else (y1 - y0, x1 - x0)
         cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
-        yaw = (0.0 if along_x else 90.0) + (90.0 if _GARMENT_YAW90 else 0.0) \
+        # ---------------------------------------------------------------- p2r73
+        # THE BAY IS READ FROM ITS OWN WALLS. Anchor = the BAR (found above, its
+        # long axis fixed the run). Bounds = the two GABLES flanking the bar:
+        # their faces along the run bound where cloth may exist (garments layer
+        # into each other — real closet physics — never into a panel), and their
+        # shared across-run extent IS the carcass depth the shoulder span hangs
+        # into. Nothing is typed (R9); an underived rail falls back per-rail to
+        # the pre-p2r72 hang (R11: could-not-derive never prints as derived).
+        _ax_bounds = None
+        _run_bounds = None
+        _bar_amid = None
+        if _bar_obj is not None:
+            if along_x:
+                _bar_run = (_bar_obj[0], _bar_obj[1])
+                _bar_amid = (_bar_obj[2] + _bar_obj[3]) / 2.0
+            else:
+                _bar_run = (_bar_obj[2], _bar_obj[3])
+                _bar_amid = (_bar_obj[0] + _bar_obj[1]) / 2.0
+            _gl = _gh = None          # (face, across_lo, across_hi) each side
+            for _o in bpy.data.objects:
+                if (_o.type != 'MESH' or _o.hide_render or not _o.data.vertices
+                        or not _o.name.startswith("mill__")
+                        or _o.name.startswith("mill__style_")):
+                    continue
+                _M = _o.matrix_world
+                _cs = [_M @ Vector(c) for c in _o.bound_box]
+                _zl, _zh = min(c.z for c in _cs), max(c.z for c in _cs)
+                if _zh < z0 + 0.05 or _zl > z1 - 0.05:
+                    continue                            # not at hanging height
+                if along_x:
+                    _rl, _rh = min(c.x for c in _cs), max(c.x for c in _cs)
+                    _al, _ah = min(c.y for c in _cs), max(c.y for c in _cs)
+                else:
+                    _rl, _rh = min(c.y for c in _cs), max(c.y for c in _cs)
+                    _al, _ah = min(c.x for c in _cs), max(c.x for c in _cs)
+                if not ((_rh - _rl) < 0.05 and (_ah - _al) > 0.30):
+                    continue                            # not a gable
+                if _al > _bar_amid or _ah < _bar_amid:
+                    continue                            # not the wall beside this bar
+                if _rh <= _bar_run[0] + 0.02:
+                    if _gl is None or _rh > _gl[0]:
+                        _gl = (_rh, _al, _ah)
+                elif _rl >= _bar_run[1] - 0.02:
+                    if _gh is None or _rl < _gh[0]:
+                        _gh = (_rl, _al, _ah)
+            if _gl is not None and _gh is not None:
+                _run_bounds = (_gl[0] + 0.004, _gh[0] - 0.004)
+                _ax_bounds = (max(_gl[1], _gh[1]) + 0.005,
+                              min(_gl[2], _gh[2]) - 0.005)
+                depth = _ax_bounds[1] - _ax_bounds[0]
+                # the RUN too is the bay's, not the loft's — rail 2's loft drew
+                # 190 mm where the gables sit 354 mm apart, and the run term
+                # lofted the rail over a number no wall agrees with
+                run = _run_bounds[1] - _run_bounds[0]
+                _rmid = (_run_bounds[0] + _run_bounds[1]) / 2.0
+                if along_x:
+                    cx, cy = _rmid, _bar_amid
+                else:
+                    cx, cy = _bar_amid, _rmid
+                print(f"  garment rail {salt}: BAY READ FROM ITS WALLS - bar at "
+                      f"{_bar_amid * 1000:.0f} across, clear run "
+                      f"{(_run_bounds[1] - _run_bounds[0]) * 1000:.0f} mm between "
+                      f"gable faces, depth {depth * 1000:.0f} mm from the gables' "
+                      f"own extent; loft placeholder was "
+                      f"{((y1 - y0) if along_x else (x1 - x0)) * 1000:.0f} mm across")
+        if _ax_bounds is None:
+            _why = ("no bar mesh at rail height" if _bar_obj is None
+                    else "gables not found both sides of the bar")
+            print(f"  garment rail {salt}: bay NOT derived ({_why}) - this rail "
+                  f"falls back to the pre-p2r72 across-rail hang")
+
+        _yaw90_eff = bool(_GARMENT_YAW90 and _ax_bounds is not None)
+        yaw = (0.0 if along_x else 90.0) + (90.0 if _yaw90_eff else 0.0) \
             + (180.0 if salt % 2 else 0.0)
         tag = f"mill__style_garmentacq{salt}"
         # model_fit's fill-share gate encodes the FURNITURE slot semantic (a chair must
@@ -4147,7 +4265,10 @@ def _place_garment_rails(models, parts, cut_first=None):
         # size reads as children's clothes on an adult rail — hanging it fabricates a
         # wrong object where an absence would be honest. A tier-matched set that only
         # fits sub-floor is a DECLARED GAP (R8: procurement, never a modelling task).
-        GARMENT_SCALE_FLOOR = 0.6
+        GARMENT_SCALE_FLOOR = 0.8 if _yaw90_eff else 0.6
+        # 0.8 = the ORD-2026-08-12 done-bar (703 mm shell), reachable only on the
+        # face-on leg; a fallback rail keeps the old floor so it hangs the old way
+        # instead of lofting (review M2/M3 — the A leg must stay the old build)
         best, gap = None, None
         for _slug_c in (str(m) for m in models):
             _mp_c, _n_c = _sidecar(_slug_c)
@@ -4155,7 +4276,7 @@ def _place_garment_rails(models, parts, cut_first=None):
                 continue
             _nx, _ny, _nz = _n_c
             # yaw90 leg: native y lies along the run, native x across the depth
-            _ra, _da = (_ny, _nx) if _GARMENT_YAW90 else (_nx, _ny)
+            _ra, _da = (_ny, _nx) if _yaw90_eff else (_nx, _ny)
             # p2r27 ADULT-SCALE LAW (owner verdict from the p2r26 image:
             # "ผ้าที่แขวนยังดูไม่สมจริง (สเกลดูแปลก)" — and the numbers agreed:
             # every rail ran s_fit 0.70-0.81, shells rendered 570-637 mm long
@@ -4217,7 +4338,7 @@ def _place_garment_rails(models, parts, cut_first=None):
             continue
         _key, slug, _mp, (nx, ny, nz), s_fit = best
         sw, sd, sh = nx * s_fit, ny * s_fit, nz * s_fit
-        sr = sd if _GARMENT_YAW90 else sw        # run-aligned extent of one copy
+        sr = sd if _yaw90_eff else sw            # run-aligned extent of one copy
         # r6 (LOOK r5 + C2-r5#8): the slack term was `run + 0.10`, which let the
         # placed span exceed the rail run by up to ~100mm — hangers past the end of
         # the SHORT rails. A copy count must fit the run it hangs from, full stop.
@@ -4299,8 +4420,14 @@ def _place_garment_rails(models, parts, cut_first=None):
             _spread = [max(c) - min(c) if c else 0.0 for c in _cx]
             _sep = 0 if _spread[0] >= _spread[1] else 1
             _cent = _cx[_sep]
+            # p2r73 (review B2): a ROD is wide AND THIN — the width test alone
+            # classed two fused 5.9k-poly garment meshes (615 mm tall) as rods,
+            # and a "rod" bypasses _fits, the swing clamp and both culls, which
+            # is how one set crossed two gables into the neighbouring bay. A
+            # thick wide mesh is joined cloth and must stay in the body.
             wide = [i for i in range(len(cms))
-                    if (_extent(cms[i], _axi)[1] - _extent(cms[i], _axi)[0]) > 0.5 * sr]
+                    if (_extent(cms[i], _axi)[1] - _extent(cms[i], _axi)[0]) > 0.5 * sr
+                    and (_extent(cms[i], 2)[1] - _extent(cms[i], 2)[0]) < 0.20]
             body = [i for i in range(len(cms)) if i not in wide]
             # split threshold from the DATA: within-garment consecutive centres sit
             # a few mm apart (panels of one shirt), between-garment several times
@@ -4429,8 +4556,16 @@ def _place_garment_rails(models, parts, cut_first=None):
             # for true perpendicular hang; the angle the depth allows is the
             # angle a real hanger could sit at).
             from mathutils import Matrix as _Mx
-            _lo_a, _hi_a = (y0, y1) if along_x else (x0, x1)  # across-run bounds
-            _lo_r, _hi_r = (x0, x1) if along_x else (y0, y1)  # along-run bounds
+            # p2r72: the across-run containment judges against the DERIVED carcass
+            # slot when one exists — bounding a face-on adult garment by the loft
+            # placeholder would cull the very mechanism the derivation above opened
+            _lo_a, _hi_a = (_ax_bounds if _ax_bounds
+                            else ((y0, y1) if along_x else (x0, x1)))
+            # along-run bounds: the measured CLEAR RUN between gables when
+            # derived (p2r73 — the loft was drawn wider than the bay and let
+            # garments cross into the neighbouring bay), else the loft's
+            _lo_r, _hi_r = (_run_bounds if _run_bounds
+                            else ((x0, x1) if along_x else (y0, y1)))
             _n_sw, _degs = 0, []
             _n_cull = 0
             _prop = []          # (objs, px, py, hw, hd, signed_th) — 0.0 = stays put
@@ -4449,12 +4584,12 @@ def _place_garment_rails(models, parts, cut_first=None):
                 if not (ctr_a - ext_a >= _lo_a - 0.012
                         and ctr_a + ext_a <= _hi_a + 0.012):
                     return False
-                # the ALONG-run containment belongs to the parked adult-scale
-                # lane only — r26's garments always overhung their slot a
-                # little, nothing ever checked it, and enforcing it on the A
-                # leg culled a passed round's closet (the A/B law: the A leg
-                # is the OLD build exactly)
-                if _ADULT_SCALE:
+                # the ALONG-run containment arms on the adult-scale lane AND the
+                # face-on leg (p2r73, review B2): a swung face-on garment spreads
+                # ~569 mm across a 400-466 mm run, and with this check off it
+                # walked through both gables. The r26 A leg keeps it off exactly
+                # as before (the A/B law: the A leg is the OLD build exactly).
+                if _ADULT_SCALE or _yaw90_eff:
                     return (ctr_r - ext_r >= _lo_r - 0.012
                             and ctr_r + ext_r <= _hi_r + 0.012)
                 return True
@@ -4883,7 +5018,16 @@ def _suite_materials(spec=None):
             return _material_from_preset(f"m_{role}_{preset_key}", preset_key)
         return legacy()
 
-    floor = _pick(_sur.get("floor"), "floor",
+    _floor_sel = None if globals().get("_FLOOR_LEGACY_SLUG") else _sur.get("floor")
+    # p2r72 (review M1): the floor UV tile must derive from the slug that actually
+    # RENDERS. With the signed preset the pixels come from the preset's slug while
+    # FLOOR_SLUG kept driving the tile — two sidecars agreeing at 1.700 m only by
+    # coincidence, and the registry watched the wrong one. The render slug is
+    # stashed here, where the choice is made, so the UV site cannot re-guess it.
+    globals()["_FLOOR_RENDER_SLUG"] = (
+        (_matpre.factory_args(_floor_sel).get("slug") or FLOOR_SLUG)
+        if _floor_sel else FLOOR_SLUG)
+    floor = _pick(_floor_sel, "floor",
                   # MA-03 (knowledge/classifications/render-defects.md): a large continuous
                   # surface must not show a repeating grid. The floor is the largest surface
                   # in every frame and was the ONE that passed no drift, while the feature
@@ -5063,7 +5207,7 @@ def _suite_materials(spec=None):
             # It hid because _planar_uv divides u and v by the same tile_m, so the
             # stretch is isotropic: the boards keep their aspect ratio and the
             # floor looks internally consistent from the inside.
-            _ftile = _tile_m_for(FLOOR_SLUG)
+            _ftile = _tile_m_for(globals().get("_FLOOR_RENDER_SLUG", FLOOR_SLUG))
             if globals().get("_FLOOR_TILE_LEGACY"):
                 # A leg of the STY-7 A/B: the exact pre-2026-08-24 mapping.
                 # Written as a MULTIPLE of the asserted size rather than as the
@@ -6072,8 +6216,11 @@ def _place_bed_cloth(slug, rect, line, top_z, hang_to, cov_mat, duv_mat, head,
     parameterisation is still the guess.
 
     WHAT IS ACQUIRED: the duvet + its turned-down top sheet, as one dressed set.
-    NOT the pillows (already acquired, D-025) and NOT the foot throw (a signed
-    DD element in its own cloth).
+    NOT the pillows (already acquired, D-025). The foot/bench throw was carved
+    out of this scope as "a signed DD element in its own cloth" and stayed the
+    LAST hand-simulated cloth in frame for ten days — since p2r72 it is acquired
+    too, through the deco lane (_BENCH_THROW_MODEL), so no cloth in the frame is
+    solver-baked any more.
 
     PART SELECTION IS GEOMETRIC, NEVER BY NAME — the file's meshes are called
     Mesh_0..Mesh_10 and this repo has already been burned by trusting a
@@ -8356,9 +8503,14 @@ def _nightstand_lamp(x0, y0, W, D, H, lamp=None, glow=None, cabinet=True, body_m
         _sb = _principled(shade_m)[1]
         if _sb:
             _set(_sb, "Emission Color", (*glow["rgb"], 1.0))
-            # a small bulb needs more strength than the old whole-drum lightbox to
-            # read as lit; PH-02 still holds (tuned down until the windows win)
-            _set(_sb, "Emission Strength", 4.0)
+            # p2r72: 4.0 was set while the bulb rendered 0 px (fully occluded by its
+            # own dome) — a strength on an invisible surface is MA-04's forbidden half.
+            # Now that the practical escapes the envelope (visible_shadow=False below)
+            # and the dome has a lit lining, the envelope only needs to read as a lit
+            # glass, not as the light itself. No numeric bound exists in the corpus
+            # (pbr-material-behavior.md:126) — this is the declared low leg; the knob
+            # for "โคมมืดเกินไป" is practicals.lamp_watts, per D-125's reverse_by.
+            _set(_sb, "Emission Strength", 1.5)
     # LOOK round-3: the lamp was a stack of BOXES wearing a "dome/mushroom" docstring —
     # the literal ก้อนเหลี่ยม the owner named. The pure part list (envelopes + the
     # containment proof) is untouched; each lamp part is now materialised as a turned
@@ -8408,12 +8560,34 @@ def _nightstand_lamp(x0, y0, W, D, H, lamp=None, glow=None, cabinet=True, body_m
                     b0, b1 = a0 + _seg, a1 + _seg
                     _dfs.append((a0, a1, b1, b0))
             _smooth_mesh_obj("nightstand__lamp_shade", _dvs, _dfs, brass_m)
+            # p2r72 (C2-p2r62#1 + C3-p2r64#1, persisting through r67: "โป๊ะเรืองทั้งใบ /
+            # stem สว่างใต้โป๊ะ / ในโป๊ะมืด"): the dome shell is zero-thickness brass on
+            # BOTH faces, so the 12 W practical under it lit nothing it could bounce
+            # from. A real spun shade carries a reflector lining; this is that lining —
+            # the same loft 1.5% inside, its own diffuse warm-white material, so the
+            # practical's light has a matte surface to wash and the mouth reads lit.
+            _lvs = []
+            for i in range(_rings + 1):
+                t = (i / _rings) * (math.pi / 2.0)
+                rr = max(r * 0.98 * 0.985 * math.cos(t), 0.0012)
+                zz = oz + _dome_h * 0.985 * math.sin(t)
+                for k in range(_seg):
+                    a = 2.0 * math.pi * k / _seg
+                    _lvs.append((ccx + rr * math.cos(a), ccy + rr * math.sin(a), zz))
+            lining_m = _solid("lamp_lining", (0.90, 0.84, 0.72, 1.0), rough=0.6, spec=0.3)
+            _smooth_mesh_obj("nightstand__lamp_lining", _lvs, _dfs, lining_m)
             # the BULB under the dome: what actually glows now that the shade is metal.
             # Its span comes from millwork so the PRACTICAL can be put at its centre by
             # deriving, not by repeating the numbers here (see the light below).
-            _cyl_frustum("nightstand__lamp_bulb", ccx, ccy, 0.024, 0.019,
-                         oz + millwork.LAMP_BULB_DZ0, oz + millwork.LAMP_BULB_DZ1,
-                         shade_m, seg=16)
+            _bulb = _cyl_frustum("nightstand__lamp_bulb", ccx, ccy, 0.024, 0.019,
+                                 oz + millwork.LAMP_BULB_DZ0, oz + millwork.LAMP_BULB_DZ1,
+                                 shade_m, seg=16)
+            # p2r72, the measured trap: _cyl_frustum caps the TOP, so this envelope was
+            # an opaque closed-top tube AROUND the point light — the only escape was the
+            # open bottom, a Ø48 mm downward cone that burned the stem (lum 233 vs frame
+            # 148) and left the dome interior dark. A glass envelope does not shadow its
+            # own filament.
+            _bulb.visible_shadow = False
     if glow and lamp:
         ld = bpy.data.lights.new("lamp_glow", type='POINT')
         # lane-A story: practicals CARRY the hero frame (Kelly focal glow)
@@ -10006,8 +10180,12 @@ if __name__ == "__main__":
         _spec["_light_story"] = True
         globals()["_LIGHT_STORY"] = True
     if "--garment-yaw90" in _post_dashdash():
-        # B leg of the r7 rail-yaw A/B (C2-r6#6): garments face along the run
+        # no-op since p2r72 (yaw-90 is the default); kept so old pair commands rerun
         globals()["_GARMENT_YAW90"] = True
+    if "--no-garment-yaw90" in _post_dashdash():
+        # A leg of the p2r72 face-on pair: the r26 across-rail orientation exactly
+        globals()["_GARMENT_YAW90"] = False
+        print("  [A/B] garments: across-rail (pre-p2r72) leg")
     _wb = next((a.split("=", 1)[1] for a in _post_dashdash()
                 if a.startswith("--wood-bump=")), None)
     if _wb:
@@ -10120,13 +10298,16 @@ if __name__ == "__main__":
         globals()["_DUVET_TUCKS"] = True
         print("  [A/B] duvet crease: hands ON (twice-R1-stopped site, opt-in leg)")
     if "--no-gravity-ramp" in _post_dashdash():
-        # A leg of the p2r28 settle A/B — stock gravity from frame 1
+        # A leg of the p2r28 settle A/B — stock gravity from frame 1. Since p2r72
+        # only the DUVET path consumes this (the bench bake retired with D-137)
         globals()["_GRAVITY_RAMP"] = False
-        print("  [A/B] duvet+bench settle: full gravity from frame 1 (pre-p2r28) leg")
+        print("  [A/B] duvet settle: full gravity from frame 1 (pre-p2r28) leg")
     if "--no-bench-dent" in _post_dashdash():
-        # A leg of the p2r28 cushion A/B — the rigid seat the critics filed
+        # NO-OP since p2r72: the dent's only consumer was the retired bench bake
+        # (D-137 — dent travel derived FROM the bake). Kept so recorded commands
+        # still run; it changes nothing and says so.
         globals()["_BENCH_DENT"] = False
-        print("  [A/B] bench seat: rigid under the stack (pre-p2r28) leg")
+        print("  [A/B] bench dent: NO-OP since p2r72 (bake retired, D-137)")
     if "--bed-cloth-acq" in _post_dashdash():
         # p2r44: now the DEFAULT (his order), kept as a no-op flag so the
         # commands recorded in nine gate artifacts still run
@@ -10216,6 +10397,13 @@ if __name__ == "__main__":
     if "--flat-accents" in _post_dashdash():
         # A leg of the p2r20 accent-maps A/B — the exact p2r19 cement/backing
         globals()["_FLAT_ACCENTS"] = True
+    if "--floor-legacy-slug" in _post_dashdash():
+        # A leg of the STY-3 floor-signing A/B: the pre-signature floor
+        # (_pbr_material("floor_pbr", FLOOR_SLUG, variation=0.05) — the dark
+        # wood_floor photograph, ignoring the spec's signed floor preset).
+        # B leg = the committed spec selection (oak_engineered_floor_photo).
+        globals()["_FLOOR_LEGACY_SLUG"] = True
+        print("  [A/B] floor material: legacy wood_floor (pre-signature) leg")
     if "--floor-tile-legacy" in _post_dashdash():
         # A leg of the STY-7 A/B: the floor mapped at 1.4118x the size Poly Haven
         # declares for wood_floor, which is what `tile_m=2.4` was. B leg = the

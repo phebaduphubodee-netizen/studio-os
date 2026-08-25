@@ -73,7 +73,10 @@ LAMP_SHADE_H = 0.190   # drum shade height
 # R9's law is why it is here and not there: a position derivable from a contact must never
 # be typed, and a probe constant IS a typed position wearing a derivation's name.
 LAMP_DOME_H_OVER_R = 0.62   # mushroom proportion: dome height / shade radius
-LAMP_BULB_DZ0      = -0.005 # bulb bottom, relative to the shade envelope's oz
+LAMP_BULB_DZ0      = 0.005  # bulb bottom, relative to the shade envelope's oz — POSITIVE
+                            # since p2r72: the old -0.005 hung the glass 5 mm below the
+                            # rim (C2-p2r62#1 "stem สว่างใต้โป๊ะ"); the rim now hides the
+                            # envelope with margin instead of by luck
 LAMP_BULB_DZ1      = 0.045  # bulb top
 NS_TOE_H     = 0.035   # nightstand toe-shadow height
 NS_TOE_R     = 0.022   # toe set-back from every face (symmetric — rot-honesty)

@@ -325,6 +325,22 @@ PRESETS = {
              "shadow-gaps read against (D2-A backing); dark-stained veneer photograph, signed "
              "colour preserved as the albedo mean",
         source="element1-oak-signature-wall_DD-2026-07-16.md D2-A + gate-DELIV001-P2r19 C2#1"),
+    "oak_engineered_floor_photo": dict(
+        # STY-3 floor signing (2026-08-25). laminate_floor_02 is the only OTHER
+        # actual-floor photograph on the shelf: measured mean linear (0.330, 0.218,
+        # 0.127) sits between today's wood_floor (0.217, 0.117, 0.055) and the signed
+        # oak (0.571, 0.479, 0.305) — lighter and less red than the floor it replaces,
+        # still separable from the millwork above it. Its sidecar declares 1.700 m,
+        # scale-identical to wood_floor, so the floor UV derivation from FLOOR_SLUG
+        # stays numerically honest (TS-001 carries the cross-slug assert).
+        # DECLARED LOSS: the set is Diffuse-only 1k — no Rough, no nor_gl map.
+        factory="pbr", slug="laminate_floor_02", tint=None, variation=0.05,
+        tier="DESIGN-INTENT",
+        desc="light engineered-oak plank floor, natural matt — a photographed plank set "
+             "distinct in tone from the millwork oak above it",
+        source="02_concept/concept.md:55,74 (engineered oak, matt) + "
+               "knowledge/styles/color-composition.md:363 (Albers de-monopoly: the floor "
+               "must not repeat the joinery's timber)"),
 
     # -- ELEMENT-2 palette (PRJ-2026-002 master suite WEST wall, 2026-07-17). The west wall is the
     # -- COOL counterpoint to the warm oak signature: a Caesarstone vanity counter + a frameless

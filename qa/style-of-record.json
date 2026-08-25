@@ -17,7 +17,7 @@
   "what_he_was_right_about": "The builder argued back that the drawing constrains the style toward oak. It does not: 0 of 21 rows in qa/sheet-recon.json carry any material word, and the oak default traces to concept.md citing a template-status studio file as 'studio default direction, not filled identity'. He was right and the argument was wrong — drawn GEOMETRY was being confused with chosen FINISH."
  },
  "_slot_floor": 9,
- "_unsigned_ceiling": 6,
+ "_unsigned_ceiling": 5,
  "_unsigned_ceiling_law": "THE CEILING ONLY EVER FALLS. Six of nine slots are legacy-unsigned today. A slot may be signed, never un-signed; a new addressable role arrives signed, or the ceiling rises by a decision row and not by an edit. This exists because the rule below that compares this register against the spec compares two files the builder wrote in the same commit — coverage-map calls that class a, self-consistency, and it is the class D-112 was written about. A count that may only fall cannot be satisfied by editing both sides to agree.",
  "style": {
   "name": "Warm Contemporary Thai-Tropical Minimal",
@@ -103,13 +103,12 @@
   {
    "slot": "floor",
    "kind": "surface",
-   "status": "legacy-unsigned",
-   "since": "2026-07-14",
-   "renders_as": "_pbr_material('floor_pbr', slug 'wood_floor', variation=0.05) — the CC0 photograph's own colour, no tint, mean linear (0.217, 0.117, 0.055) against the signed oak's (0.571, 0.479, 0.305)",
-   "why_it_matters": "the largest surface in every frame, concept.md's declared 60% dominant, and the ONLY large surface with no signed material. It is also 2.6-5.6x darker and redder than every other wood in the room, so 'the oak room' has never had an oak floor.",
-   "nearest_preset": "oak_wood_floor — SAME slug 'wood_floor', tint None, variation 0.0",
-   "do_not_sign_to_the_nearest_preset": "oak_wood_floor is not a different floor. It is the texture already rendering, MINUS the anti-tiling drift: signing it would set variation 0.05 -> 0.0 and REGRESS MA-03 (knowledge/classifications/render-defects.md — a large continuous surface must not show a repeating grid), while changing the wood not at all. An A/B pair built that way has no B.",
-   "restart_by": "author a floor preset that is actually a different finish — its own slug or tint, carrying variation >= 0.05 — and render the pair. That is a preset commit plus a render round, not a one-line spec edit, and it is the highest-area single change available in this room."
+   "status": "signed",
+   "preset": "oak_engineered_floor_photo",
+   "signed_by": "builder",
+   "signed_date": "2026-08-25",
+   "signed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json,projects/PRJ-2026-002_c001-house/02_concept/concept.md",
+   "note": "the 42-day unsigned slot closed (ORD-2026-08-23-style-before-objects, STY-3 re-aimed form: a material-identity choice, not a palette-number one). A DIFFERENT FINISH, not a tint toward the millwork: laminate_floor_02 measures linear (0.330,0.218,0.127) against the old wood_floor (0.217,0.117,0.055) and the signed oak (0.571,0.479,0.305) — lighter and less red than the floor it replaces, still separable from the joinery above it (color-composition.md:363, Albers quantity = size x recurrence; the ACCEPTED C2 item 'ไม้พื้นกับตู้อ่านเป็นเนื้อเดียว'). E2 holds: engineered finish named, no solid-wood build. DECLARED LOSS: the set is Diffuse-only 1k, so this floor carries no Rough and no nor_gl map where wood_floor carried both — judged at the A/B pair. variation 0.05 preserved so MA-03 does not regress. Scale: sidecar declares 1.700 m, identical to wood_floor, so the UV derivation from FLOOR_SLUG stays honest — TS-001 carries the cross-slug assert."
   },
   {
    "slot": "glazing",

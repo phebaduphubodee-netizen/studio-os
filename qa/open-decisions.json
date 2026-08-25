@@ -2197,6 +2197,64 @@
      "why": "the AO gain is the measured 1/mean, not a knob someone re-tuned silently — the open_question says a change must arrive as a bracketed decision, and a changed number breaks this grep"
     }
    ]
+  },
+  {
+   "id": "D-136",
+   "unit": "DELIV-001",
+   "subject": "garment face-on hang with carcass-derived depth",
+   "decided_round": 72,
+   "decided_date": "2026-08-25",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-12-garment-scale-is-wrong",
+   "question": "เสื้อผ้าแขวนยัง 547-637 มม. (ตุ๊กตา) เพราะ s_fit ถูกกดโดย slot ความลึก 190-360 มม. ที่มาจาก loft placeholder ของเราเอง ขณะที่ตู้จริงลึกคลาส 600 — กลไกไหนพาถึง done-bar 0.8 ของแถวคำสั่งโดยไม่ทำราวโล่ง?",
+   "in_effect": "FINAL FORM (p2r73, third pass — the review killed two earlier forms the same day): THE BAY IS READ FROM ITS OWN WALLS. (1) run axis = แกนยาวของราวทองเหลืองจริง ไม่ใช่ของ loft (diagnostic พิสูจน์ว่า loft สลับแกนบน north bays ทำให้ทุก derivation ก่อนหน้า double-flip: ไหล่ 573มม. กางขวางช่อง 362มม. ทะลุ gable สองใบ); (2) ขอบเขตทั้งสองแกน + ความลึก = หน้า/ช่วงของ gable สองใบที่ขนาบราว (clear run 354-761มม., depth 590มม. = ตัวตู้จริง); (3) run สำหรับ s-fit/n_cp ก็มาจาก gable (ราว 2 เคย loft เพราะ loft วาด 190 ที่ผนังห่างกัน 354); (4) yaw-90 ติดอาวุธต่อราว เฉพาะเมื่อ derive ครบ (bar+gable คู่) — ราวที่อ่านไม่ได้ถอยไปแขวนแบบเดิม ไม่ loft; (5) rod = กว้าง+บาง (<200มม. z) — mesh ผ้าหลอมหนาเข้า cluster/containment; (6) containment ตามแนวราวติดอาวุธ บนเลก face-on. ผล quick สุดท้าย: s_fit 1.000 ทั้ง 9 ราว (เสื้อ 879มม.), ราวยาวได้ 2 ชุด, ทุกชุดในช่อง ภายใน grace 12มม. GARMENT_SCALE_FLOOR = 0.8 บนเลก face-on (เลก fallback คง 0.6 เพื่อไม่ loft). คำแพ้ r6 (D-031 ข้อ 5) supersede — มันวัดกับ slot placeholder ที่ทั้งลึกผิดและแกนผิด.",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "กฎเดียวกับ drop ที่ p2r49 ต่ออีกแกน: มิติที่ derive จาก contact ได้ต้องไม่ถูกพิมพ์ (R9) และการ scale คนให้พอดีเฟอร์นิเจอร์คือคำผิดที่คำสั่งพี่ชี้เอง",
+   "reverse_by": "พี่ดูเฟรมตู้ room_bedroom_suite_eye_p2r72w.png (full, กล้อง corner_ne_legacy เดียวกับที่พี่ตัดสิน p2r26) แล้วบอกหนึ่งประโยค — ถ้า face-on อ่านแย่กว่าเดิม flip _GARMENT_YAW90 = False กลับและแถว ORD กลับเป็น not-obeyed พร้อม restart ใหม่; ถ้าราวไหนโล่ง (DECLARED GAP/culled prints) นั่นคือ R5 kill และ revert ทั้งชุดในคอมมิตเดียว",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^_GARMENT_YAW90 = True",
+     "why": "default ไม่ใช่ opt-in — R13"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "GARMENT_SCALE_FLOOR = 0\\.8",
+     "why": "done-bar ของแถวคำสั่ง (703มม.) บนเลก face-on; เลก fallback คง 0.6 โดยตั้งใจ (กันราว loft)"
+    }
+   ]
+  },
+  {
+   "id": "D-137",
+   "unit": "DELIV-001",
+   "subject": "bench throw acquired (last hand-simulated cloth leaves the frame)",
+   "decided_round": 72,
+   "decided_date": "2026-08-25",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-15-loose-furniture-is-acquired",
+   "question": "deco__bench_throw เป็นผ้า solver-bake ผืนสุดท้ายในเฟรม (107,691 px, ใกล้กล้องสุด) สวมชื่อข้อยกเว้น 'signed DD element' ที่แกะมันออกจากคำสั่ง acquire คลาสผ้า — ยังยืนได้มั้ย?",
+   "in_effect": "ไม่ยืน: throw เป็นของซื้อ (BlenderKit b89bc1af Folded Blanket (panel winner), คลาสใหม่ throw_folded band 200-900 maxxy อ้างแหล่ง, sidecar assert แล้วทั้ง 4 candidate) วางผ่าน place_model บน bench top ที่วัดจริง (R9), แต่งกลับเป็น bed_duvet เพื่อรักษา value-ladder rung เดิม. ตัวเลือกสุดท้ายรอ 3-judge style panel บน 3 ตัวที่ผ่าน fill (b89bc1af/e54a717c/91685141) — panel แพ้ = เปลี่ยน id ไม่ใช่กลับไป bake. Seat dent retire ไปกับ sim อย่างเปิดเผย (travel มัน derive จาก bake); ข้อ C2 เบาะไม่ยุบย้ายไปตัดสินที่ crop ของ mesh ซื้อ. FREE-BASELINE ของคลาสนี้ไม่ได้วัดก่อน paid fetch → คลาสนี้ OUT-OF-TEST สำหรับรายงานเดือน BlenderKit (ตาม _pass_rule) — บันทึกตรง ๆ ไม่ back-date PANEL RAN 2026-08-25 (same session, before the full frame): C=b89bc1af inside 3/3 เอกฉันท์ · A=91685141 (ตัวที่ wire ครั้งแรก) edge 3/3 ทุกคนชี้สี vendor · B=e54a717c outside 3/3 — id เปลี่ยนเป็น b89bc1af ตาม reverse_by ของแถวนี้เอง; nuance ที่ว่าเราถอดสี vendor ทิ้งแล้วไม่ถูกใช้ง้างคำตัดสิน (builder เถียง panel = self-judging, R7).",
+   "where": "pipeline/scripts/build_room.py,pipeline/scripts/asset_scale.py,assets/shared/blenderkit/b89bc1af-06cc-41f3-ac42-a93c383372f2/b89bc1af-06cc-41f3-ac42-a93c383372f2.glb",
+   "because": "ORD-2026-08-14/15 จ่ายบทเรียนนี้แล้วบนเตียง: ผ้า free-form ปั้น/sim เองไม่เคยผ่านตาพี่ใน 10 รอบ — R8 บอก ACQUIRE ตั้งแต่ก่อน vertex แรก",
+   "reverse_by": "พี่ดู crop ม้านั่ง p2r72 แล้วบอกหนึ่งประโยค — ผืนที่ซื้อไม่ผ่านตา = เปลี่ยน id ตัวใหม่ (CLASS ≠ INSTANCE, R13); เอา throw ออกทั้งชิ้น = ลบ _BENCH_THROW_MODEL แล้วเฟรม ships ไม่มี throw อย่างประกาศ",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_BENCH_THROW_MODEL = \"b89bc1af",
+     "why": "id ที่เฟรมสวมจริง — เปลี่ยน id ได้, กลับไป bake_sheet ไม่ได้"
+    },
+    {
+     "file": "pipeline/scripts/asset_scale.py",
+     "pattern": "\"throw_folded\": \\(200\\.0, 900\\.0, \"maxxy\"",
+     "why": "คลาสสเกลที่ประตู ingest ใช้ตัดสิน — ลบแล้วของทั้งสี่กลับเป็น unasserted"
+    }
+   ]
   }
  ],
  "_assert_ratchet_from": "D-124"

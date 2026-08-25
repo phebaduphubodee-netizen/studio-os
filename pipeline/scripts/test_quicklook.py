@@ -145,9 +145,11 @@ def test_light_story_reaches_every_consumer():
                 'e5_cove_pelmet', '_ies_beam(ld, "1.IES"', '_sc.get("cove"',
                 # B2: the coverlet feedstock enters per-corner biased (the owed debt)
                 'sim_surface=True, salt=5',
-                # lane D: the bench carries life — books + a PINNED simulated throw
-                # wearing the duvet's own handle (no new colour ever enters this way)
-                'deco__bench_book', 'deco__bench_throw',
+                # lane D: the bench carries life — books + an ACQUIRED folded throw
+                # (p2r72, D-137: the last solver-baked cloth left the frame; the
+                # throw now enters through _model_path/place_model and is re-dressed
+                # in the duvet's own handle, so no new colour ever enters this way)
+                'deco__bench_book', '_BENCH_THROW_MODEL',
                 'bpy.data.materials.get("bed_duvet")',
                 '_e5.STORY_FSTOP if _LIGHT_STORY else 9.0',
                 '_ies_beam(ld, "5.ies"', '_ies_beam(ld, "7.IES"',

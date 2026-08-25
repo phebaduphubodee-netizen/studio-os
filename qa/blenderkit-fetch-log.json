@@ -954,6 +954,235 @@
     ],
     "refusal": null
    }
+  },
+  {
+   "at": "2026-08-25T10:20:10-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-25T10:22:15-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw blanket bench",
+   "pages": 1,
+   "n": 100,
+   "free": 35,
+   "full_plan": 65,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:26-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "draped blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 68,
+   "full_plan": 32,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:28-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "plaid blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 15,
+   "full_plan": 85,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:30-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 41,
+   "full_plan": 59,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:31-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bed runner cloth",
+   "pages": 1,
+   "n": 0,
+   "free": 0,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:50-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw blanket sofa drape",
+   "pages": 1,
+   "n": 100,
+   "free": 35,
+   "full_plan": 65,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:22:52-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bedspread throw",
+   "pages": 1,
+   "n": 76,
+   "free": 24,
+   "full_plan": 52,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:23:19-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b89bc1af",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset b89bc1af is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-08-25T10:23:20-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0cb10427",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset 0cb10427 is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-08-25T10:23:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e54a717c",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "asset e54a717c is not in the catalogue any more (search returned 0 other rows)"
+  },
+  {
+   "at": "2026-08-25T10:24:01-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded blanket",
+   "pages": 1,
+   "n": 100,
+   "free": 41,
+   "full_plan": 59,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T10:24:17-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b89bc1af-06cc-41f3-ac42-a93c383372f2",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T10:24:22-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "0cb10427-c1fd-417c-8f89-ffefa7ebdb28",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T10:24:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e54a717c-9647-4dba-90a4-8e6a9e10603e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T10:24:33-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "91685141-46db-4c62-be7d-96ec72c1d56c",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": null,
+   "resolution": "blend",
+   "scale": {
+    "ok": null,
+    "measured_mm": null,
+    "band_mm": null,
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
   }
  ]
 }

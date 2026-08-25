@@ -152,7 +152,7 @@
   },
   {
    "assembly": "bench",
-   "identity": "Foot-of-bed bench — ONE acquired mesh (Ottoman_01), 498 x 710 in plan, top measured at 501 mm.",
+   "identity": "Foot-of-bed bench — ONE acquired mesh (BlenderKit 5b8e98d7, asserted bench_seat 409.1 mm on z, D-114/D-115 hug: 8.6 mm gap to the bed foot rail). Identity refreshed 2026-08-25; the previous text named Ottoman_01 at 501 mm, stale since the 08-22 model swap.",
    "exists": "sheet:SR-08",
    "held_by": "floor",
    "operable": false,
@@ -171,7 +171,7 @@
   },
   {
    "assembly": "deco",
-   "identity": "Two books and a folded throw on the bench.",
+   "identity": "Two books and a folded throw on the bench. THE THROW IS ACQUIRED since p2r72 (BlenderKit b89bc1af Folded Blanket — the 2026-08-25 3-judge panel winner (inside 3/3), class throw_folded, 346x375x147 natural, dressed in bed_duvet) — the last solver-baked cloth left the frame with it (D-137). Books remain hand-built (_rbox), a standing violation of ORD-2026-08-15 named in audit-orders-vs-frame-2026-08-25.md.",
    "exists": "not-in-drawing: element 8 styling; a furniture plan draws no books",
    "held_by": "bench",
    "operable": false,

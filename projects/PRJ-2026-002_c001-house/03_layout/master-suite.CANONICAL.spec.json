@@ -103,6 +103,7 @@
   "schema": "interior-ai/materials@0.1",
   "note": "ELEMENT-1 BUILD-LAYER palette, owner-signed 2026-07-16 (D1/D2/D4/D6 — see element1-oak-signature-wall_DD-2026-07-16.md). Anti mono-timber: LIGHT oak on the feature walls + millwork (30% secondary); COOL plaster walls as the 60% ground (Albers D1-A: a warm wall washes the oak out); satin brass hang-rail as the 10% accent (auto-routed to the open-wardrobe rail parts) + cool microcement drawer fronts / dressing-tower back (D6-A, auto-routed to the open-wardrobe front/back parts). SUPERSEDES the proof render's warm_white_paint + birch_veneer stand-ins now that build_room renders the open:true joinery + the 40/20 slat rhythm (2026-07-16 build layer).",
   "surfaces": {
+   "floor": "oak_engineered_floor_photo",
    "walls": "cool_plaster",
    "feature_wall": "oak_veneer",
    "millwork": "oak_veneer_photo"
