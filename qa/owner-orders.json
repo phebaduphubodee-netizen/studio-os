@@ -747,10 +747,23 @@
       ],
       "standing": true,
       "retired_by": null,
-      "status": "not-obeyed",
+      "status": "obeyed",
       "since": "2026-08-25",
-      "not_obeyed_because": "The P2 exit test as written carries no owner-eye clause (its conditions are instrument rows + critic-silence, all builder-authored), and on 2026-08-25 he states the itemized orders have produced no change he can see — so as of today the order is, by its own test, not yet carried out.",
-      "restart_by": "Builder action, two halves: (1) audit every itemized visual order (2026-08-12..08-24) against the frame of record p2r71 with measurements — for each: his words, what the lane did, what the pixels show, verdict landed / landed-invisible / not-done / reverted — archived beside the renders; (2) carry the un-landed ones into build rounds until the pixel evidence exists, and add the owner-eye clause to the P2 exit test at the next plan review."
+      "restart_by": "Builder action, two halves: (1) audit every itemized visual order (2026-08-12..08-24) against the frame of record p2r71 with measurements — for each: his words, what the lane did, what the pixels show, verdict landed / landed-invisible / not-done / reverted — archived beside the renders; (2) carry the un-landed ones into build rounds until the pixel evidence exists, and add the owner-eye clause to the P2 exit test at the next plan review.",
+      "obeyed_where": "qa/deliverable-plan.json,projects/PRJ-2026-002_c001-house/04_visualization/audit-orders-vs-frame-2026-08-25.md",
+      "obeyed_how": "Both restart halves done the same day. (1) AUDIT: every itemized order measured against the frame (audit-orders-vs-frame-2026-08-25.md, commit 5bf6945). (2) BUILD: the four un-landed builder-side orders landed in pixels at p2r72-73 (garments 879mm face-on on their real bars, lamp un-trapped + lined, last hand-simulated cloth replaced by the panel-chosen acquired throw, floor slot signed) — DELIVERABLE QUALIFIES 9/1, commit 3b38fb3; the still-parked items (bench ASK-024, headboard ASK-032) are owner asks, printed every session. (3) MECHANISM: the OWNER-EYE CLAUSE is now exit condition (6) of P2 — his eye outranks every builder-written condition, and a visual order counts as obeyed only with pixels beside his words. His eye stays the live judge: this row being obeyed never means he likes the frame — it means nothing can close over him.",
+      "obeyed_assert": [
+        {
+          "file": "qa/deliverable-plan.json",
+          "pattern": "OWNER-EYE CLAUSE, added 2026-08-25 per ORD-2026-08-25-p2-exit-is-his-eye",
+          "why": "the clause itself, in the exit test the plan actually reads — deleting it reopens the R11 finish-line defect"
+        },
+        {
+          "file": "qa/deliverable-plan.json",
+          "pattern": "demonstrated in pixels beside his words \\(not by grep, not by register status\\)",
+          "why": "the second half of his sentence — obedience of a visual order is pixel-demonstrated, never letter-demonstrated"
+        }
+      ]
     }
   ]
 }
