@@ -764,6 +764,51 @@
           "why": "the second half of his sentence — obedience of a visual order is pixel-demonstrated, never letter-demonstrated"
         }
       ]
+    },
+    {
+      "id": "ORD-2026-08-25-six-items-after-p2r73",
+      "date": "2026-08-25",
+      "verbatim": "หาโมเดลหนังสือจาก blendkit มาใส่",
+      "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-list-2026-08-25-six-items.md",
+      "commands": "Six itemized fixes given from the p2r73 frame pair, one row because they arrived as one list (full verbatim of all six lines reproduces in recorded_at): (1) BOOKS acquired from BlenderKit; (2) LAMPS: a NEW acquired model replaces the built brass pair — his eye failed it even after the p2r72 light fix, and this instance-family order overrules R8's lathe-build classing for lamps here; (3) GARMENT HANG: hangers must actually HOOK the bar (hook centre on the bar line, wrapping it) — instance verdict on the p2r73 mechanism, hangers currently float around the bar; (4) WARDROBE CONTENTS: ideas + acquisitions beyond clothes; (5) NIGHTSTANDS: a different purchase — he dislikes 1cf77b3a (CLASS≠INSTANCE, the acquire class order stands, the answer is another model); (6) HEADBOARD (the grey panel, not the slat wall): reads stiff and mismatched with the bed — supersedes the builder's option-ก parking of ASK-032; he has spoken from the image.",
+      "subject": "p2r73-six-items",
+      "scope": "instance-list",
+      "units": [
+        "DELIV-001"
+      ],
+      "standing": true,
+      "retired_by": null,
+      "status": "obeyed",
+      "since": "2026-08-25",
+      "obeyed_where": "pipeline/scripts/build_room.py,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r74-2026-08-25.md",
+      "obeyed_how": "All six in pixels at p2r74 (three full frames: eye + his p2r26 wardrobe camera + the corridor). Books e96bf8f6 / lamps Kendra / nightstands Asta / headboard Padded Queen 2059 (+29 from the inked SR-18 band) — every id through the 3-judge blind panel at >=2/3 inside; hangers hook their bars within ±1.2 mm measured; wardrobe holds 2 acquired pieces on clear shelves with 2 dropped LOUDLY plus the ideas list in the gate. Two review passes killed two of my own defects before render (flush headboard −146 mm / tables 259 mm asymmetric; garments through gables). Both critics filed 16 items on the frame — none touches his six subjects. His eye can reverse any piece in one sentence (D-138 reverse_by).",
+      "obeyed_assert": [
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_BED_HEADBOARD_MODEL = \"d7e2a7bc",
+          "why": "item 6 — the id the frame wears"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_NIGHTSTAND_LAMP_MODEL = \"18d17256",
+          "why": "item 2 — the brass pair stays only as loud fallback"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "_BENCH_BOOKS_MODEL = \"e96bf8f6",
+          "why": "item 1"
+        },
+        {
+          "file": "pipeline/scripts/build_room.py",
+          "pattern": "hook\\(s\\) pulled onto the bar line",
+          "why": "item 3 — deleting the derivation refloats the hangers silently"
+        },
+        {
+          "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+          "pattern": "24c65eb4-765b-43f3-a171-266521dd06b1",
+          "why": "item 5 — the spec renders the panel winner, not 1cf77b3a"
+        }
+      ]
     }
   ]
 }

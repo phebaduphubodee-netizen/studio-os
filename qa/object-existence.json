@@ -170,13 +170,13 @@
    "why": "Signed, and its size is derived from the bed it sits under."
   },
   {
-   "assembly": "deco",
-   "identity": "Two books and a folded throw on the bench. THE THROW IS ACQUIRED since p2r72 (BlenderKit b89bc1af Folded Blanket — the 2026-08-25 3-judge panel winner (inside 3/3), class throw_folded, 346x375x147 natural, dressed in bed_duvet) — the last solver-baked cloth left the frame with it (D-137). Books remain hand-built (_rbox), a standing violation of ORD-2026-08-15 named in audit-orders-vs-frame-2026-08-25.md.",
+   "assembly": "deco_books",
+   "identity": "Acquired book stack on the bench (e96bf8f6, panel inside 3/3, vendor covers kept — a book IS its printed matter), resting on the measured bench top (R9). Split from the old combined deco row at p2r74: distinct tags ended the item-id stem collision review B caught.",
    "exists": "not-in-drawing: element 8 styling; a furniture plan draws no books",
    "held_by": "bench",
    "operable": false,
    "verdict": "keep",
-   "why": "Styling that a bench in a bedroom plausibly carries; z derived from the bench top MEASURED at 501 mm (D-065), not typed."
+   "why": "His item 1. D-138."
   },
   {
    "assembly": "mill@3254,4621",
@@ -221,32 +221,22 @@
    "why": "Drawn. It is in the frustum only as a sliver past the wardrobe bay."
   },
   {
-   "assembly": "side_table@4803,2036",
-   "identity": "Bedside table, one acquired mesh (Blendkit 341b04e0 Modern Nightstand 02, greige waterfall), 400 x 400 in plan, top at ~400 mm = sleeping plane - 25 (D-115 re-derivation of D-045's datum relation).",
-   "exists": "sheet:SR-09",
+   "assembly": "side_table",
+   "identity": "BOTH bedside tables, acquired (BlenderKit 24c65eb4 Asta, panel 2026-08-25b inside 3/3 — the only candidate inside the D-045 top band; replaced 1cf77b3a on his p2r73 verdict 'ผมไม่ชอบอันนี้', CLASS≠INSTANCE). Natural 479x430x480 at scale 1.0 (slot opened to natural — the old 450 slot forced 0.938 and broke the datum), top 480 = plane-40 inside the D-045 band. Positions DERIVED, never typed (R9): hug + re-seat along the acquired 2059 headboard band to clear its wings — the drawn pockets' own composition (SR-09/SR-10, p2r74). FAMILY ROW by design: coordinate-keyed rows chased every derived re-seat and went stale twice in one day.",
+   "exists": "sheet:SR-09,SR-10",
    "held_by": "floor",
    "operable": false,
    "verdict": "keep",
-   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y 2200) to hug the standard-size bed at a 10 mm slot gap — his order 2026-08-22 verbatim in ORD-2026-08-22-bed-standard-size-hug / D-114; the drawn position served the drawn 7-ft bed that D-114 retired. | RE-KEYED 2026-08-24: the assembly name embeds the piece's PLAN COORDINATE, so carrying out D-115's owner-locked hug numbers (y 2005->2036 / -210->-184, which make the twins symmetric to 0.0 mm against the 57 mm they were) renamed it and orphaned this row. Paid once because the position stays typed; a DERIVED position would re-key it every round, which is why that plan was refused."
-  },
-  {
-   "assembly": "side_table@4803,-184",
-   "identity": "Bedside table, one acquired mesh (Blendkit 341b04e0 Modern Nightstand 02, greige waterfall), 400 x 400 in plan, top at ~400 mm = sleeping plane - 25 (D-115 re-derivation of D-045's datum relation).",
-   "exists": "sheet:SR-10",
-   "held_by": "floor",
-   "operable": false,
-   "verdict": "fix",
-   "why": "Drawn. Its height was raised to the mattress datum at p2r27 on the owner's own order (D-045). MOVED p2r56 from the drawn seat (y -450) to hug the standard-size bed at a 10 mm slot gap — ORD-2026-08-22-bed-standard-size-hug / D-114. | RE-KEYED 2026-08-24: the assembly name embeds the piece's PLAN COORDINATE, so carrying out D-115's owner-locked hug numbers (y 2005->2036 / -210->-184, which make the twins symmetric to 0.0 mm against the 57 mm they were) renamed it and orphaned this row. Paid once because the position stays typed; a DERIVED position would re-key it every round, which is why that plan was refused. | BROKEN AT p2r60 BY A RESIZE, NOT A MOVE (measured p2r62, 2026-08-24). The r60 model swap changed this item's w/d from 400 to 449 and left x/y untouched — and `y` is the bbox MIN CORNER, so the piece grew NORTHWARD, which is away from the bed for its twin and INTO the bed for this one. BEFORE (400): north 2036..2436, south -184..216, inner faces 910 mm from the bed centre on both sides — symmetric to 0.0 mm, exactly as D-115 claimed. AFTER (449): north 2036..2485 (inner still 910 from centre), south -184..265 (inner 861) — 49 mm asymmetric, and this top now takes 39 mm out of `bed__headboard` (y226..2026, z0..1100, x5144..5204) in all three axes. Nothing failed, because a coordinate is always a legal coordinate: R9's own sentence, reproduced by the round that swapped the model.",
-   "fix_by": "CONVERT THE PAIR TO A DERIVED MIRROR, DO NOT TYPE A THIRD NUMBER. gate-DELIV001-P2r57 wrote the rule for exactly this moment: 'iterate 2 ครั้ง = ขีดสุด stop-loss R9 — ครั้งหน้าที่ของพวกนี้ขยับ ต้อง convert เป็น contact-derived ก่อน ห้าม nudge ครั้งที่สาม'. The relation is: each bedside piece's INNER face sits one gap from the bed's headboard face, mirrored about the bed centre-line — a y-axis `mirror_about`, which placement.py already models on x and would need the axis generalised. The rung that would have caught this is placement_check (R9b), declared blocking in qa/coverage-map.json and never spawned by build_room; it is already filed as room_lane_debt (2026-08-24)."
+   "why": "Drawn both sides. Swapped + re-seated per ORD-2026-08-25-six-items items 5-6; the family form is stricter on held_by per existence_check's own docstring."
   },
   {
    "assembly": "nightstand",
-   "identity": "The two bedside table lamps, mirror twins: base, stem, spun brass dome shade, and the bulb the dome encloses (millwork.nightstand_lamp_parts + nightstand_lamp_emitter_z, one definition for the mesh and the light, D-125).",
+   "identity": "Two acquired bedside lamps (BlenderKit 18d17256 Kendra — turned wood base + linen drum shade, panel 2026-08-25b inside 3/3), resting on the measured Asta table tops (R9), each with its own 12 W practical at bulb height derived from the placed shade bbox. Replaced the built spun-brass dome pair at p2r74 on his item 2; the brass build (with its p2r72 lining) remains as the loud fallback in code. Every lamp mesh is shadow-transparent — the declared trade that keeps the practical out of the vendor-opaque shade trap; the cost (no lamp silhouette/contact shadow) is recorded in the p2r74 gate.",
    "exists": "not-in-drawing: element 8 / D3 styling — the furniture plan draws a 300 mm lamp circle on each bedside carcass (pen 0.12, measured from the strokes 2026-08-24) but carries no elevation, so the lamp is IN the drawing in plan and its form is ours",
    "held_by": "side_table",
    "operable": false,
    "verdict": "keep",
-   "why": "A bedside table with a lamp is what the spec's own item name says it is ('โต๊ะข้างเตียง (มีโคมไฟ)'), and each lamp rests on the measured top of its own table. ONE ROW COVERS BOTH TWINS because their justification is one sentence twice — they are mirror instances of a single decision, not two objects with two reasons. | RE-KEYED TWICE IN ONE DAY, AND THAT IS WHY THE KEY IS NOW A PREFIX (p2r62, 2026-08-24). The first re-key (04:00, from D-115's owner-locked hug) was TYPED: the lamp's new coordinate was obtained by adding the TABLE's move to the lamp's old number instead of reading the built scene, and it landed on @4869,2102 while the dump said @4869,2102 — correct that morning by luck of the arithmetic. The second break needed no move at all: D-125 gave millwork the one definition of the dome and its bulb, and the rebuilt shade is 80.2 mm taller with its plan min 8.2 mm in on both axes, so the assembly renamed itself to @4877,2110 / @4877,-109 and BOTH rows orphaned. MEASURED across the round series (existence_check re-run standalone on each scene dump): r59 clean, r60 clean, r61 2 unrowed, r62 2 unrowed — so p2r61 shipped a BUILD FAILED frame and the round was reported closed, because the orchestrator prints the failure and exits 0 (the same confession the p2r57 gate artifact already wrote down). | THE KEY IS THE DEFECT, not the numbers: an existence row answers WHAT IS IT / DOES IT EXIST / DOES IT MAKE SENSE, and none of those three answers change when a shade grows 80 mm. Position is R9's question and placement_check is its rung. existence_check's own comment prescribes exactly this repair — a bare-prefix row covers every component of the prefix — and the prefix form is strictly MORE checked than the coordinate form was: `held_by` is touch-tested only when the row key resolves in `by_name`, which is prefix-keyed, so neither coordinate row had ever had its load path measured."
+   "why": "His item 2 (2026-08-25). D-138; D3-3 brass-accent supersession noted in the gate."
   },
   {
    "assembly": "e5_cove_pelmet",
@@ -494,6 +484,24 @@
    "since": "2026-08-24",
    "fix_by": "Give it a ROLE in wholebed_rules so it takes a signed bedding material. Today it is the set's one UNCLASSIFIED part and build_room prints that at every build — 'UNCLASSIFIED part Sheet keeps its imported material' — so it renders a stranger's `Brown textured fabric` against D3-1's signed greige linen family, which is exactly the defect the _CASE_GOODS material policy was written for at p2r37 (*มันใส่วัสดุของตัวเองมา*). MEASURED, so the urgency is not overstated: the duvet's AABB encloses it on every axis except ~28 mm at the hem and ~26-41 mm at the sides, and no brown band is separable in the p2r59q frame — the warm-pixel share of the bed-foot band is 0.84%, which is floor edge. So this is a latent material defect on a part that is currently almost entirely hidden, plus a real 1.35M-poly cost for it.",
    "why": "ROWED 2026-08-24, and it is a backlog row rather than a new object: existence_check exits 0 on the p2r57 dump and 1 on p2r58, so the Metropol bed brought this part in at p2r58 (d57ea4f) and that round was committed with this blocking gate failing. Rowing it is not approving it — the verdict is `fix` and the action is named."
+  },
+  {
+   "assembly": "wardrobe",
+   "identity": "Acquired soft storage on the wardrobe shelves (p2r74, ORD-2026-08-25-six-items item 4, panel 2026-08-25b all >=2/3 inside): canvas storage box c590fee3, rattan basket 90a1129e, rattan tray 7302438e, slippers 4152f818 — one piece per bay, resting on MEASURED shelf tops (R9), vendor materials kept (natural fibre IS the read).",
+   "exists": "not-in-drawing: wardrobe styling per his item 4 — a furniture plan draws no shelf contents",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His order asked for wardrobe contents beyond clothes; every piece passed the blind panel and rests on a measured face."
+  },
+  {
+   "assembly": "deco_throw",
+   "identity": "Acquired folded throw on the bench (b89bc1af, panel 2026-08-25 inside 3/3, dressed in the signed bed_duvet — D-137), resting on the measured bench top. Own tag since p2r74 (item-id stem collision fix).",
+   "exists": "not-in-drawing: bench styling; a furniture plan draws no throw",
+   "held_by": "bench",
+   "operable": false,
+   "verdict": "keep",
+   "why": "D-137; the last solver-baked cloth's replacement."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."

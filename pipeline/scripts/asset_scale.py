@@ -202,6 +202,28 @@ BANDS = {
                      "(300x200 folded towel, the class boundary below) + the "
                      "2026-08-25 candidate measurements 246-724 mm in "
                      "qa/blenderkit-fetch-log.json"),
+    # ORD-2026-08-25-six-items-after-p2r73 classes — each band cites its ruler
+    "book_stack": (40.0, 350.0, "z",
+                   "ORD-2026-08-25-six-items item 1: a lying stack of real "
+                   "closed books — hardcovers run 210-280 mm tall / 20-45 mm "
+                   "thick, so 2-6 lying volumes stand 40-350 mm; below reads "
+                   "as one pamphlet, above as a shop display (declared "
+                   "assumption, no vault row for book dims)"),
+    "basket_box": (120.0, 600.0, "z",
+                   "ORD-2026-08-25-six-items item 4 (wardrobe contents): "
+                   "woven baskets / fabric storage boxes for 350-500 mm open "
+                   "bays — retail storage cubes run 280-330 mm, laundry "
+                   "baskets to ~600 (declared assumption)"),
+    "shoe_pair": (200.0, 360.0, "maxxy",
+                  "ORD-2026-08-25-six-items item 4: an adult shoe is "
+                  "240-320 mm long (EU 38-46 lasts); a boxed/paired set "
+                  "stays under 360 on its long plan axis (declared "
+                  "assumption anchored to real shoe lasts)"),
+    "headboard": (1400.0, 2400.0, "maxxy",
+                  "ORD-2026-08-25-six-items item 6 + D-131/ASK-032: the bed "
+                  "is a 1800 Thai king (D-114) and the sheet inks the band "
+                  "at 2088 (SR-18) — a headboard narrower than 1400 cannot "
+                  "back this mattress, wider than 2400 eats both nightstands"),
 }
 
 # ------------------------------------------------------------ slot roles (P2h) --
@@ -261,6 +283,10 @@ MIN_DEPTH_RATIO = {
     # 400 mm footprint); a flat throw-shaped decal is the billboard this refuses.
     # Diagnosed against maxxy per the band, so the ratio reads z/longest-plan.
     "throw_folded": 0.10,
+    "book_stack": 0.15,     # a stack is solid; a book-cover decal is not
+    "basket_box": 0.30,     # containers are volumes in plan
+    "shoe_pair": 0.20,      # a shoe stands ~1/4 of its length
+    "headboard": 0.02,      # legitimately a thin wide panel — but never zero
     "vase": 0.25,           # a lathed body is near-square in plan
     "branch_dried": 0.05,
     "chair": 0.35,

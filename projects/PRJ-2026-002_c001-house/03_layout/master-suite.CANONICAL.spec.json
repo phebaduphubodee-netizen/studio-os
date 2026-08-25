@@ -57,11 +57,12 @@
    "asserted_mm": 2377.4,
    "asserted_on": "2026-08-23"
   },
-  "1cf77b3a-cbab-4fb1-aa9e-6029820303c1": {
+  "24c65eb4-765b-43f3-a171-266521dd06b1": {
    "class": "nightstand",
    "axis": "z",
-   "asserted_mm": 470.1,
-   "asserted_on": "2026-08-24"
+   "asserted_mm": 480.0,
+   "asserted_on": "2026-08-25",
+   "_why_swapped": "ORD-2026-08-25-six-items item 5 — his eye failed 1cf77b3a from the p2r73 frame; panel 2026-08-25b: Asta inside 3/3 and the only candidate whose top (480) sits inside the D-045 band. CLASS≠INSTANCE: the acquire class order stands, the instance changed."
   }
  },
  "model_assertions_note": "P2r-9 (2026-08-16). EVERY MODEL REFERENCE ASSERTS ITS OWN SIZE HERE, AS DATA, and pipeline/scripts/model_assert_check.py diffs each row against that file's own `<asset>.scale.json` sidecar AND against a live re-measure of the file, on every build. WHY IT IS A FIELD AND NOT A SENTENCE: until today these numbers lived only in the `*_note` prose beside them, and on p2r36 `bed_models_note` asserted 2198.1 mm on y for ub806591a — the size of 2b142a32, the candidate this lane REJECTED. The file's own sidecar read 1599.9 mm and was right the whole time, but nothing compared the two, so a 1505x1600 mm duvet was scaled onto a 2000x2149 mm bed and its hem came to rest on the mattress face. The owner saw it in one sentence before any instrument did. A measurement kept where only a human re-reading prose can check it is not a measurement. `asserted_on` is provenance and is not checked; class/axis/asserted_mm are, three ways, and a row nothing references is refused by name.",
@@ -950,12 +951,12 @@
    "sheet_ref": "SR-09",
    "x": 4803,
    "y": 2036,
-   "w": 449,
-   "d": 449,
-   "h": 470,
+   "w": 480,
+   "d": 431,
+   "h": 480,
    "lamp": {
-    "kind": "dome",
-    "finish": "brass",
+    "kind": "drum",
+    "finish": "turned wood + linen drum (Kendra 18d17256, p2r74 — his item 2 retired the brass dome pair; D-138)",
     "cct_k": 2850
    },
    "design": {
@@ -964,8 +965,9 @@
     "ref": "element3-bed_DD-2026-07-18.md"
    },
    "note": "NE of bed head against BF14; INK x4701.8-5203.2 y2200.1-2698.4 (~501x498, was spec 300x300) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12: h derived from the MATTRESS DATUM, top = mattress 600 - 20; recorded D-045; plan ink has no heights) | p2r57 (D-115): THE DATUM MOVED AND THE NUMBER DID NOT — the acquired bed's plane is 425, so D-045's own relation gives top ~405, and the classic model (700-class) could never reach it by footprint fit. Slot re-set to the chosen model's natural 400x400x400 (top 400 = plane-25, inside the relation band), re-seated at wall x4803 / hug y2036 (10mm rect gap to the standard-bed rect). Style: 3-judge panel top pick (greige waterfall) over the classical piece both critics flagged (C2 p2r56 #4).",
-   "model": "1cf77b3a-cbab-4fb1-aa9e-6029820303c1",
-   "model_note": "P2 2026-08-24 (r60) — SWAPPED off 341b04e0 'Modern Nightstand 02' on THREE MEASUREMENTS, not taste. (1) THE OWNER'S OWN RELATION: D-045 (his order from the p2r26 image) says a bedside surface sits at the sleeping plane minus 20 mm, band +/-30 (D-115). p2r58 made the bed the Metropol set and the plane moved 425 -> 520 (measured from the dump, not declared); 341b04e0 is a 450 mm CUBE, so its top can only reach the band by scaling to 1.096, which puts its plan at 493 against a drawn 460. 1cf77b3a is 448.7 x 449.2 x 470.1 — at scale 1.0 the top lands INSIDE the band and the plan sits 2.4% under the ink. It is the only candidate of eight that satisfies the drawn plan AND the owner's datum AND the style panel at scale 1.0. (2) THE SURFACE, which is where the outgoing piece silently broke its own selection rule: the p2r37 model_note says the slot goes to the asset that BRINGS A SURFACE ('only the two committed CC0 assets carry any PBR maps at all'), and 341b04e0 renders with image_tex = 0 — ZERO maps — so 'case goods have no material, all one flat grey' (C2 p2r47#12, p2r49#8, p2r56#9, p2r57#1) stayed true of it. 1cf77b3a carries base + normal + metallicRoughness over 2 materials (asset_scale.pbr_map_roles on the fetched GLB). (3) STYLE, judged before the swap and not by the builder: the frozen 3-judge blind panel of 2026-08-24 (docs/blenderkit-month/style-panel-prompt.md, same 5 anchors as the 08-23 bolzan run, incumbent hidden among 8 lettered thumbnails) returns 2 of 3 INSIDE for this piece. The incumbent scored 3 of 3, and that is the one axis on which it wins — recorded because a swap that hides its own cost is the flattering scorer. Free tier, THB 0, royalty_free; scale ASSERTED 470.1 mm in band 300-800."
+   "model": "24c65eb4-765b-43f3-a171-266521dd06b1",
+   "model_note": "24c65eb4 Asta (p2r74, panel 2026-08-25b inside 3/3 — the only candidate whose top sits in the D-045 band at natural scale; replaced 1cf77b3a on his p2r73 verdict, CLASS≠INSTANCE). The prior note argued for the outgoing model and was refreshed with the swap — prose must never contradict the data beside it.",
+   "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74)."
   },
   {
    "name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
@@ -973,13 +975,13 @@
    "sheet_ref": "SR-10",
    "x": 4803,
    "y": -184,
-   "w": 449,
-   "d": 449,
-   "h": 470,
+   "w": 480,
+   "d": 431,
+   "h": 480,
    "rot": 180,
    "lamp": {
-    "kind": "dome",
-    "finish": "brass",
+    "kind": "drum",
+    "finish": "turned wood + linen drum (Kendra 18d17256, p2r74 — his item 2 retired the brass dome pair; D-138)",
     "cct_k": 2850
    },
    "design": {
@@ -988,8 +990,9 @@
     "ref": "element3-bed_DD-2026-07-18.md"
    },
    "note": "SE of bed head against BF14; INK x4701.8-5203.2 y-450.2-51.3 (~501x501, was spec 300x294) + round lamp symbol | h 520->580 (p2r27, owner order 2026-08-12: top = mattress 600 - 20; recorded D-045) | p2r57 (D-115): same datum re-derivation as its NE twin — slot to the model's natural 400x400x400 (top 400 = plane-25), wall x4803, hug y-184 (10mm rect gap).",
-   "model": "1cf77b3a-cbab-4fb1-aa9e-6029820303c1",
-   "model_note": "P2 2026-08-24 (r60) — SWAPPED off 341b04e0 'Modern Nightstand 02' on THREE MEASUREMENTS, not taste. (1) THE OWNER'S OWN RELATION: D-045 (his order from the p2r26 image) says a bedside surface sits at the sleeping plane minus 20 mm, band +/-30 (D-115). p2r58 made the bed the Metropol set and the plane moved 425 -> 520 (measured from the dump, not declared); 341b04e0 is a 450 mm CUBE, so its top can only reach the band by scaling to 1.096, which puts its plan at 493 against a drawn 460. 1cf77b3a is 448.7 x 449.2 x 470.1 — at scale 1.0 the top lands INSIDE the band and the plan sits 2.4% under the ink. It is the only candidate of eight that satisfies the drawn plan AND the owner's datum AND the style panel at scale 1.0. (2) THE SURFACE, which is where the outgoing piece silently broke its own selection rule: the p2r37 model_note says the slot goes to the asset that BRINGS A SURFACE ('only the two committed CC0 assets carry any PBR maps at all'), and 341b04e0 renders with image_tex = 0 — ZERO maps — so 'case goods have no material, all one flat grey' (C2 p2r47#12, p2r49#8, p2r56#9, p2r57#1) stayed true of it. 1cf77b3a carries base + normal + metallicRoughness over 2 materials (asset_scale.pbr_map_roles on the fetched GLB). (3) STYLE, judged before the swap and not by the builder: the frozen 3-judge blind panel of 2026-08-24 (docs/blenderkit-month/style-panel-prompt.md, same 5 anchors as the 08-23 bolzan run, incumbent hidden among 8 lettered thumbnails) returns 2 of 3 INSIDE for this piece. The incumbent scored 3 of 3, and that is the one axis on which it wins — recorded because a swap that hides its own cost is the flattering scorer. Free tier, THB 0, royalty_free; scale ASSERTED 470.1 mm in band 300-800."
+   "model": "24c65eb4-765b-43f3-a171-266521dd06b1",
+   "model_note": "24c65eb4 Asta (p2r74, panel 2026-08-25b inside 3/3 — the only candidate whose top sits in the D-045 band at natural scale; replaced 1cf77b3a on his p2r73 verdict, CLASS≠INSTANCE). The prior note argued for the outgoing model and was refreshed with the swap — prose must never contradict the data beside it.",
+   "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74)."
   },
   {
    "name": "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)",

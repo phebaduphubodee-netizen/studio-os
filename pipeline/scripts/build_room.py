@@ -3653,34 +3653,39 @@ def _dress_scene(spec):
         # stand [1400,-120] aims NE, so south+west faces carry the read). R8: all
         # boxes with radii -> BUILD. The page band between dark boards is the one
         # cue that says "book" at 3 m.
-        pg_m = _solid("bench_book_pages", (0.88, 0.86, 0.80, 1.0), rough=0.75, spec=0.3)
-        # top cover 0.045 linear (r7, C3-r7#6): the "ink" board was authored at 0.20
-        # LINEAR, which displays as sRGB ~0.48 — a mid-grey wearing the word "dark".
-        # A cover that reads ink needs ~0.04-0.05 linear; the one-glance "books" cue
-        # is the VALUE CONTRAST between board and page block, and 0.20 never had it.
-        # no bench mass -> no books ON it (an object resting on nothing is the
-        # floating-mass defect R9b exists to catch, not a styling win)
-        for bi, bc in enumerate(() if _bench_obj is None else
-                                ((0.78, 0.74, 0.68, 1.0), (0.045, 0.042, 0.040, 1.0))):
-            bm = _solid(f"bench_book{bi}", bc, rough=0.55, spec=0.4)
-            bL = 0.215 - bi * 0.013
-            bW = 0.155 - bi * 0.010
-            bT = 0.030
-            bx0 = bx + (bw - 0.215) * 0.5 + bi * 0.010
-            by0 = by + 0.085 + bi * 0.007
-            bz0 = _btop + bi * bT            # MEASURED contact, never the spec's h
-            brd = 0.0028                       # a hardcover board
-            _rbox(f"deco__bench_book{bi}_b0", bx0, by0, bz0, bL, bW, brd,
-                  bm, bevw=0.001, seg=1)
-            # pages: 1 mm clear of the spine wall's inner face (no coplanar seam),
-            # boards overhang them 4-5 mm on the three open sides like a real case
-            _rbox(f"deco__bench_book{bi}_pg", bx0 + 0.004, by0 + 0.006, bz0 + brd,
-                  bL - 0.008, bW - 0.011, bT - 2 * brd, pg_m, bevw=0.001, seg=1)
-            _rbox(f"deco__bench_book{bi}_b1", bx0, by0, bz0 + bT - brd, bL, bW, brd,
-                  bm, bevw=0.001, seg=1)
-            _rbox(f"deco__bench_book{bi}_sp", bx0, by0, bz0, bL, 0.005, bT,
-                  bm, bevw=0.002, seg=2)
-            placed += 1
+        # p2r74 (ORD-2026-08-25-six-items item 1 + C2-p2r72#5/C3#4 "หนังสือเป็น
+        # block เปล่า"): the books are ACQUIRED — a panel-passed stack through
+        # the same sidecar door as every other bought mass, resting on the
+        # MEASURED bench top (R9). The two-board+page-block hand construction
+        # retired with its history in git; books keep the vendor's own covers
+        # (a book's identity IS its printed matter — re-dressing it in a studio
+        # solid would rebuild the very block his order names).
+        if _bench_obj is not None:
+            _bk_mp = _model_path(_BENCH_BOOKS_MODEL)
+            if _bk_mp is None:
+                print(f"  lane D: bench books dropped — model "
+                      f"{_BENCH_BOOKS_MODEL[:8]} refused/unavailable")
+            else:
+                try:
+                    with open(_ascale.sidecar_path(_bk_mp), encoding="utf-8") as _bf_:
+                        _bsc = json.load(_bf_)["bbox_mm"]
+                    _bnx, _bny, _bnz = (float(_bsc["x_mm"]) / 1000.0,
+                                        float(_bsc["y_mm"]) / 1000.0,
+                                        float(_bsc["z_mm"]) / 1000.0)
+                except (OSError, ValueError, KeyError, TypeError) as _bse:
+                    _bnx = 0.0
+                    print(f"  lane D: bench books dropped — sidecar unreadable ({_bse})")
+                if _bnx > 0.0:
+                    _bkx = bx + (bw - _bnx) * 0.5
+                    _bky = by + 0.085
+                    if place_model(_bk_mp, _bkx, _bky, _bnx, _bny, _bnz,
+                                   rot=0.0, z0=_btop, tag="deco_books"):
+                        placed += 1
+                        print(f"  lane D: bench books ACQUIRED "
+                              f"{_BENCH_BOOKS_MODEL[:8]} "
+                              f"({_bnx * 1000:.0f}x{_bny * 1000:.0f}x"
+                              f"{_bnz * 1000:.0f} natural, on the measured "
+                              f"bench top {_btop * 1000:.0f})")
         # [2] the throw — ACQUIRED since p2r72 (ORD-2026-08-15 "ลบ furniture ที่
         # ปั้นเองทุกชิ้น" + C2-p2r64#3 "ผ้าคลุมม้านั่ง = แผ่นโฟมแข็ง หนาคงที่
         # 30-40มม. ไม่กดเบาะเลย", triaged ACCEPT -> เส้นทาง ACQUIRE ไม่ใช่ re-sim):
@@ -3723,10 +3728,10 @@ def _dress_scene(spec):
                     _ty = by + max(bd - _td - 0.06, 0.0)
                     if place_model(_thr_mp, _tx, _ty, _tw, _td, _tnz,
                                    rot=0.0, z0=_btop,
-                                   tag="deco"):
+                                   tag="deco_throw"):
                         _new_thr = [o for o in bpy.data.objects
                                     if o.type == 'MESH'
-                                    and o.name.startswith("deco__acq")]
+                                    and o.name.startswith("deco_throw__acq")]
                         # the ladder rung stays: the throw wore bed_duvet through
                         # every solver round, and the acquired mesh wears the same
                         # signed cloth — a stranger's albedo on the nearest-camera
@@ -3746,6 +3751,97 @@ def _dress_scene(spec):
                         print(f"  lane D: bench throw dropped — place_model "
                               f"refused {_BENCH_THROW_MODEL[:8]} (see its own "
                               f"print); the frame ships without a throw")
+        # ---------------------------------------------------------------- p2r74
+        # WARDROBE CONTENTS (ORD-2026-08-25-six-items item 4 + C2#3 "ชั้นว่าง
+        # เกือบหมด"): panel-passed soft storage rests on MEASURED shelf tops —
+        # one piece per shelf, spread across bays, z from the shelf face (R9).
+        # Every piece keeps its vendor material (rattan/canvas ARE the read).
+        from mathutils import Vector
+        # eye-height shelves FIRST (tw0/tw1 ~1.3-1.8 m): the first quick put
+        # both pieces on ni0 (418 mm) where the camera barely sees them
+        _lvl_pref = {'tw0': 0, 'tw1': 1, 'ni1': 2, 'ni0': 3}
+        _shelves = sorted((o for o in bpy.data.objects
+                           if o.type == 'MESH' and 'shelf' in o.name
+                           and o.name.startswith('mill__bay')
+                           and o.name.rsplit('_', 1)[-1] in _lvl_pref),
+                          key=lambda o: (_lvl_pref[o.name.rsplit('_', 1)[-1]],
+                                         o.name))
+        # the FLOOR model goes to the LOWEST shelf class, never the eye band
+        # (review C: slippers were queued with the boxes and stored at 1788 mm)
+        _wc_plan = ([(m, False) for m in _WARDROBE_SHELF_MODELS]
+                    + [(_WARDROBE_FLOOR_MODEL, True)])
+        _lo_shelves = sorted((o for o in bpy.data.objects
+                              if o.type == 'MESH' and 'shelf' in o.name
+                              and o.name.startswith('mill__bay')
+                              and o.name.rsplit('_', 1)[-1] in ('ni0', 'fl')),
+                             key=lambda o: o.name)
+
+        def _shelf_occupied(s0, s1, stop, need_h):
+            # review C blocker: the first cut placed two pieces INSIDE the
+            # existing folded-linen stacks — shelf SIZE was checked, occupancy
+            # never. Any mesh already standing on this shelf face refuses it.
+            for _oo in bpy.data.objects:
+                if (_oo.type != 'MESH' or _oo.hide_render
+                        or _oo.name.startswith('mill__bay')):
+                    continue
+                _ob = [(_oo.matrix_world @ Vector(c)) for c in _oo.bound_box]
+                _o0 = (min(p.x for p in _ob), min(p.y for p in _ob),
+                       min(p.z for p in _ob))
+                _o1 = (max(p.x for p in _ob), max(p.y for p in _ob),
+                       max(p.z for p in _ob))
+                if (_o0[0] < s1[0] and _o1[0] > s0[0]
+                        and _o0[1] < s1[1] and _o1[1] > s0[1]
+                        and _o0[2] < stop + need_h and _o1[2] > stop + 0.005):
+                    return _oo.name
+            return None
+
+        _used_bays = set()
+        for _wid, _is_floor in _wc_plan:
+            _wmp = _model_path(_wid)
+            if _wmp is None:
+                print(f"  lane D: wardrobe piece {_wid[:8]} DROPPED — model "
+                      f"refused/unavailable (never a silent skip, R11)")
+                continue
+            try:
+                with open(_ascale.sidecar_path(_wmp), encoding="utf-8") as _wf_:
+                    _wsc = json.load(_wf_)["bbox_mm"]
+                _wnx, _wny, _wnz = (float(_wsc["x_mm"]) / 1000.0,
+                                    float(_wsc["y_mm"]) / 1000.0,
+                                    float(_wsc["z_mm"]) / 1000.0)
+            except (OSError, ValueError, KeyError, TypeError) as _we_:
+                print(f"  lane D: wardrobe piece {_wid[:8]} DROPPED — sidecar "
+                      f"unreadable ({_we_})")
+                continue
+            _laid = False
+            for _sh in (_lo_shelves if _is_floor else _shelves):
+                _bay = _sh.name.split('_shelf_')[0]
+                _lvl = _sh.name.rsplit('_', 1)[-1]
+                if ((_bay, _lvl) in _used_bays
+                        or sum(1 for b, _ in _used_bays if b == _bay) >= 2):
+                    continue                # spread: max two pieces per bay
+                _sb = [(_sh.matrix_world @ Vector(c)) for c in _sh.bound_box]
+                _s0 = (min(p.x for p in _sb), min(p.y for p in _sb))
+                _s1 = (max(p.x for p in _sb), max(p.y for p in _sb))
+                _sw_, _sd_ = _s1[0] - _s0[0], _s1[1] - _s0[1]
+                if _sw_ < _wnx + 0.02 or _sd_ < _wny + 0.02:
+                    continue                # shelf too small for this piece
+                _stop = max(p.z for p in _sb)
+                _occ = _shelf_occupied(_s0, _s1, _stop, _wnz + 0.02)
+                if _occ:
+                    continue                # something already lives here
+                if place_model(_wmp, _s0[0] + (_sw_ - _wnx) / 2.0,
+                               _s0[1] + (_sd_ - _wny) / 2.0, _wnx, _wny, _wnz,
+                               rot=0.0, z0=_stop, tag="wardrobe"):
+                    print(f"  lane D: wardrobe piece {_wid[:8]} on "
+                          f"{_sh.name.split('mill__')[-1]} top "
+                          f"{_stop * 1000:.0f} mm (shelf clear of prior "
+                          f"occupants)")
+                    _used_bays.add((_bay, _lvl))
+                    _laid = True
+                    break
+            if not _laid:
+                print(f"  lane D: wardrobe piece {_wid[:8]} DROPPED — no "
+                      f"clear shelf of its class left (never a silent skip)")
     tbl = next((it for it in items if it.get("kind") in ("coffee_table", "round_table")
                 and float(it["x"]) > 4000), None)
     if tbl:
@@ -3812,6 +3908,19 @@ FLOOR_SLUG = "wood_floor"
 # 3/3; the wool candidate 91685141 first wired here = edge 3/3 on its vendor
 # colour. A losing panel verdict changes THIS id, never re-opens the solver bake.
 _BENCH_THROW_MODEL = "b89bc1af-06cc-41f3-ac42-a93c383372f2"
+# p2r74 (ORD-2026-08-25-six-items, panel 2026-08-25b — verdicts archived in
+# _private/deliv-001/style-panel-2026-08-25b/): every id below passed the
+# 3-judge blind panel at >=2/3 inside; a losing verdict on any of them changes
+# the id, never re-opens a hand build.
+_BENCH_BOOKS_MODEL = "e96bf8f6-ef13-4121-be3b-6e2c6ff7fecb"      # inside 3/3
+_NIGHTSTAND_LAMP_MODEL = "18d17256-c091-4d83-9afc-3dfc2247fa36"   # Kendra, 3/3
+_BED_HEADBOARD_MODEL = "d7e2a7bc-3060-40fa-864c-d4db2af3be9d"     # Padded Queen, 3/3
+_WARDROBE_SHELF_MODELS = (                                        # all 3/3
+    "c590fee3-5d46-45cc-88c6-fb8a92bc56b5",   # canvas storage box
+    "90a1129e-ffa0-4494-a990-3e59dfdcb3ef",   # rattan basket
+    "7302438e-83d7-4224-ab6f-3c2c51bfb518",   # rattan tray-basket
+)
+_WARDROBE_FLOOR_MODEL = "4152f818-48ed-48e1-a76b-c0bf1bb0b54f"    # slippers, 2/3
 WALL_RGBA = (0.83, 0.80, 0.75, 1.0)    # matte warm-white paint
 RUG_SLUG = "poly_wool_herringbone"
 
@@ -4771,6 +4880,42 @@ def _place_garment_rails(models, parts, cut_first=None):
             elif clusters:
                 print(f"  garment rail {salt} copy {_ci_copy}: 0/{len(clusters)} "
                       f"swung — bay too shallow at every tried angle (D-031)")
+            # p2r74 (owner list item 3, "ไม้แขวนลอยอยู่รอบ ๆ ราวแขวน ไม่ได้แขวน
+            # จริง"): THE HOOK IS ON THE BAR, PER GARMENT. The set is depth-
+            # stacked, so centring the SET on the bar left every outer garment's
+            # hook floating beside it. Each cluster's HOOK ZONE (its top 70 mm —
+            # the hanger's hook and crown) is translated across-run onto the bar
+            # line; the body fans below exactly the way pushed clothes do. A
+            # position derivable from a contact is never typed (R9) — the delta
+            # comes from the bar the pre-walk measured. (The elif above must
+            # stay attached to `if _n_sw:` — the first cut of this block was
+            # inserted between them and re-aimed the D-031 diagnostic at the
+            # wrong condition, review M4.)
+            if _bar_amid is not None and _ax_bounds is not None:
+                bpy.context.view_layer.update()
+                _n_hook = 0
+                for (objs, px, py, hw, hd, sth), _sl in zip(_prop, _slid):
+                    _pts = [(o.matrix_world @ Vector(c)) for o in objs
+                            for c in o.bound_box]
+                    _ztop = max(p.z for p in _pts)
+                    _hz = [p for p in _pts if p.z > _ztop - 0.07]
+                    if not _hz:
+                        continue
+                    _hc = (sum(p.y for p in _hz) / len(_hz) if along_x
+                           else sum(p.x for p in _hz) / len(_hz))
+                    _da_ = _bar_amid - _hc
+                    if abs(_da_) < 0.003:
+                        continue
+                    _offv = (Vector((0.0, _da_, 0.0)) if along_x
+                             else Vector((_da_, 0.0, 0.0)))
+                    for o in objs:
+                        o.matrix_world = _Mx.Translation(_offv) @ o.matrix_world
+                    _n_hook += 1
+                if _n_hook:
+                    bpy.context.view_layer.update()
+                    print(f"  garment rail {salt} copy {_ci_copy}: {_n_hook} "
+                          f"hook(s) pulled onto the bar line (hook zone "
+                          f"centre -> bar across, R9 contact)")
         swapped.add(salt)
         _cutnote = f", cut first piece x{n_cut // max(1, len(copies))}" if n_cut else ""
         print(f"  ACQUIRED garment rail {salt} <- {slug} x{n_cp} "
@@ -7393,7 +7538,69 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
     # `emit`'s OTHER guard — "no part leaves the bed's plan bbox" — is deliberately not
     # reproduced, because SR-18 reads this band as architecture bounded by the drawn
     # pockets rather than as a bedding part, so the bed's bbox is not its authority.
-    if _hb_len > 0.01:
+    # p2r74 (ORD-2026-08-25-six-items item 6, "หัวเตียงดูแข็งและไม่เข้ากับเตียง"):
+    # the panel is ACQUIRED — the panel-passed Padded Queen (2059 mm natural)
+    # replaces the flat built band, and 2059 sits 29 mm inside the sheet's own
+    # inked 2088 (SR-18) — the first headboard this lane has built that honours
+    # the drawing's between-the-pockets composition within the studio's ±50.
+    # The largest imported mesh is RENAMED to exactly `bed__headboard` so the
+    # whole-bed butt/shim logic, the recon ledger and the whole-bed removal
+    # filter all keep resolving. Fallback = the built band, loudly.
+    _hb_acq_done = False
+    if _BED_HEADBOARD_MODEL and _hb_len > 0.01:
+        _hmp = _model_path(_BED_HEADBOARD_MODEL)
+        _hnx = 0.0
+        if _hmp is not None:
+            try:
+                with open(_ascale.sidecar_path(_hmp), encoding="utf-8") as _hf_:
+                    _hsc = json.load(_hf_)["bbox_mm"]
+                _hnx, _hny, _hnz = (float(_hsc["x_mm"]) / 1000.0,
+                                    float(_hsc["y_mm"]) / 1000.0,
+                                    float(_hsc["z_mm"]) / 1000.0)
+            except (OSError, ValueError, KeyError, TypeError) as _hse:
+                print(f"  headboard acquire: sidecar unreadable ({_hse})")
+        if _hnx > 0.0:
+            _hlen = max(_hnx, _hny)
+            _hdep = min(_hnx, _hny)
+            # CENTRED ON THE BED, derived: `_hb_off = 0` meant centred only
+            # while the band length equalled `across` — with the 2059 panel that
+            # equivalence broke silently (review M2: band +146 mm off the ink,
+            # tables asymmetric 259 mm dead-centre in the eye frame — the rug's
+            # 226 mm class again). One parameter was carrying two things.
+            _hoff_c = _hb_off + (across - _hlen) / 2.0
+            _ax0, _ay0, _adx, _ady = box(0.0, _hoff_c, _hdep, _hlen)
+            _hcx = _ax0 + _adx / 2.0
+            _hcy = _ay0 + _ady / 2.0
+            # M4 law: local dims + a cardinal rot, positioned by CENTRE
+            _rot_hb = 0.0 if ((_ady >= _adx) == (_hny >= _hnx)) else 90.0
+            if place_model(_hmp, _hcx - _hnx / 2.0, _hcy - _hny / 2.0,
+                           _hnx, _hny, _hnz, rot=_rot_hb, z0=0.0,
+                           tag="bed__headboardacq"):
+                _hms = [o for o in bpy.data.objects if o.type == 'MESH'
+                        and o.name.startswith("bed__headboardacq")]
+                if _hms:
+                    _big = max(_hms, key=lambda o: len(o.data.vertices))
+                    _big.name = "bed__headboard"
+                # SIGNED linen, not the vendor's fabric: roles come from
+                # MATERIAL (D-103), so a vendor-dressed panel over the bed is
+                # a no-role mass the blind bed-pixels rung refuses — and his
+                # item 6 said the panel must BELONG TO THE BED, which is what
+                # wearing the bed's own signed base linen does. The quilting
+                # lives in the 78k-face geometry; the signed cloth carries the
+                # colour (same split D-107 uses for the whole bed).
+                for _ho in _hms + [o for o in bpy.data.objects
+                                   if o.name == "bed__headboard"]:
+                    _ho.data.materials.clear()
+                    _ho.data.materials.append(base_m)
+                _ink_d = (_hb_ink[3] - _hlen * 1000.0) if (_hb_ink and
+                          _hb_ink[3] > 0.05) else None
+                print(f"  headboard ACQUIRED {_BED_HEADBOARD_MODEL[:8]} at "
+                      f"natural {_hlen * 1000:.0f} mm"
+                      + (f" — {_ink_d:+.0f} mm from the inked 2088 band, "
+                         f"inside the ±50 convention" if _ink_d is not None
+                         else "")
+                      + "; the built band and its welts stand down")
+    if not _hb_acq_done and _hb_len > 0.01:
         _hbx0, _hby0, _hbdx0, _hbdy0 = box(0.0, _hb_off, 0.06, _hb_len)
         _rbox("bed__headboard", _hbx0, _hby0, 0.0, _hbdx0, _hbdy0, 1.10,
               base_m, bevw=0.02, seg=5)
@@ -7417,36 +7624,39 @@ def _build_bed(x0, y0, W, D, H, rot=0.0, pillow_models=None, bed_models=None,
     # instead of two conventions. Three copies of one idea in three functions is not
     # "the same upholstery", it is three chances to drift (the comment the bench's own
     # material block already makes about tone).
-    _HB_ROLL_W = 1.40           # upholstery fabric roll, trade standard; the seam driver
-    _hb_t, _hb_z1 = 0.06, 1.10
-    _hbx, _hby, _hbdx, _hbdy = box(0.0, _hb_off, _hb_t, _hb_len)
-    _n_pan = max(1, int(math.ceil(_hb_len / _HB_ROLL_W - 1e-9)))
-    _seams = 0
-    for _i in range(1, _n_pan):
-        # WHICH FACE IS THE ROOM-FACING ONE — and the first cut of this block GOT IT
-        # WRONG, in the exact shape R9 names. It reasoned about world axes ("the wide
-        # extent is the run, so the thin one is the face") and then added `_hbdx` to
-        # push the cord proud, which lands it on the WALL side whenever the bed's head
-        # points at -x. The id mask settled it in one line: `bed__headboard_welt_v1`
-        # rendered ZERO pixels — a seam built, measured, reported and INVISIBLE, and
-        # `edge_shadow` had scored 0.87x on a crop that must have been reading the top
-        # cord or the panel arris instead. A crop is a REGION; only the id mask answers
-        # per OBJECT.
-        # The fix is not a corrected sign — a sign that can be wrong will be wrong
-        # again. The panel was placed by `box()` in the bed's own head->foot frame, so
-        # the room-facing face is simply `_hb_t` BACK FROM THE HEAD, and the same helper
-        # returns its world point. No axis, no sign, no nudge.
-        _cx, _cy, _, _ = box(_hb_t, _hb_off + _hb_len * _i / _n_pan, 0.0, 0.0)
-        _cyl_frustum(f"bed__headboard_welt_v{_i}", _cx, _cy, 0.009, 0.009,
-                     0.02, _hb_z1 - 0.04, base_m, seg=12, cap=False)
-        _seams += 1
-    # and the piped cord along the top edge — the base rings its top edge the same way
-    _rbox("bed__headboard_welt_top", _hbx - 0.006, _hby - 0.006, _hb_z1 - 0.019,
-          _hbdx + 0.012, _hbdy + 0.012, 0.016, base_m, bevw=0.0075, seg=3)
-    print(f"  headboard upholstery: {_seams} vertical welt seam(s) + top piped cord "
-          f"— {_n_pan} panel(s) across {_hb_len * 1000:.0f} mm, DERIVED from the "
-          f"{_HB_ROLL_W * 1000:.0f} mm fabric roll (a panel wider than the roll cannot "
-          f"be made in one piece)")
+    if not _hb_acq_done:
+        # the sewn-band upholstery belongs to the BUILT fallback only —
+        # the acquired panel carries its own quilting (p2r74)
+        _HB_ROLL_W = 1.40           # upholstery fabric roll, trade standard; the seam driver
+        _hb_t, _hb_z1 = 0.06, 1.10
+        _hbx, _hby, _hbdx, _hbdy = box(0.0, _hb_off, _hb_t, _hb_len)
+        _n_pan = max(1, int(math.ceil(_hb_len / _HB_ROLL_W - 1e-9)))
+        _seams = 0
+        for _i in range(1, _n_pan):
+            # WHICH FACE IS THE ROOM-FACING ONE — and the first cut of this block GOT IT
+            # WRONG, in the exact shape R9 names. It reasoned about world axes ("the wide
+            # extent is the run, so the thin one is the face") and then added `_hbdx` to
+            # push the cord proud, which lands it on the WALL side whenever the bed's head
+            # points at -x. The id mask settled it in one line: `bed__headboard_welt_v1`
+            # rendered ZERO pixels — a seam built, measured, reported and INVISIBLE, and
+            # `edge_shadow` had scored 0.87x on a crop that must have been reading the top
+            # cord or the panel arris instead. A crop is a REGION; only the id mask answers
+            # per OBJECT.
+            # The fix is not a corrected sign — a sign that can be wrong will be wrong
+            # again. The panel was placed by `box()` in the bed's own head->foot frame, so
+            # the room-facing face is simply `_hb_t` BACK FROM THE HEAD, and the same helper
+            # returns its world point. No axis, no sign, no nudge.
+            _cx, _cy, _, _ = box(_hb_t, _hb_off + _hb_len * _i / _n_pan, 0.0, 0.0)
+            _cyl_frustum(f"bed__headboard_welt_v{_i}", _cx, _cy, 0.009, 0.009,
+                         0.02, _hb_z1 - 0.04, base_m, seg=12, cap=False)
+            _seams += 1
+        # and the piped cord along the top edge — the base rings its top edge the same way
+        _rbox("bed__headboard_welt_top", _hbx - 0.006, _hby - 0.006, _hb_z1 - 0.019,
+              _hbdx + 0.012, _hbdy + 0.012, 0.016, base_m, bevw=0.0075, seg=3)
+        print(f"  headboard upholstery: {_seams} vertical welt seam(s) + top piped cord "
+              f"— {_n_pan} panel(s) across {_hb_len * 1000:.0f} mm, DERIVED from the "
+              f"{_HB_ROLL_W * 1000:.0f} mm fabric roll (a panel wider than the roll cannot "
+              f"be made in one piece)")
     # ------------------------------------------------------------------ p2r52
     # THE WHOLE BED IS ACQUIRED (P2r-21, D-106): when the spec names a frame,
     # our base + mattress LEAVE THE SCENE the way the audition removed them
@@ -9759,6 +9969,114 @@ def build_suite(spec, label="suite"):
                     if kind == "side_table" and it.get("lamp"):
                         _new = [o for o in bpy.data.objects
                                 if o not in _pre_acq and o.type == 'MESH']
+                        # p2r74: the acquired headboard (2059, the sheet's own
+                        # between-the-pockets width) is WIDER than the hugged
+                        # bed, so each table clears its wing by a DERIVED shift
+                        # along the band axis — never a typed coordinate (R9).
+                        # The drawn composition put the tables in pockets beside
+                        # a 2088 band; this walks them back toward the ink.
+                        _hbo = bpy.data.objects.get("bed__headboard")
+                        if _hbo is not None and _new:
+                            from mathutils import Vector
+                            # datum = the headboard panel alone, deliberately:
+                            # the table MUST hug the bed frame, so a whole-bed
+                            # union here would fire on the intended contact.
+                            # Review D's 12.9 mm south residue existed only on
+                            # the FLUSH panel; the centred panel (review M2
+                            # fix) spans past the frame at both ends, so
+                            # clearing the panel clears the rail too.
+                            _hbb = [(_hbo.matrix_world @ Vector(c))
+                                    for c in _hbo.bound_box]
+                            _h0 = (min(p.x for p in _hbb), min(p.y for p in _hbb))
+                            _h1 = (max(p.x for p in _hbb), max(p.y for p in _hbb))
+                            _tb = [(o.matrix_world @ Vector(c)) for o in _new
+                                   for c in o.bound_box]
+                            _t0 = (min(p.x for p in _tb), min(p.y for p in _tb))
+                            _t1 = (max(p.x for p in _tb), max(p.y for p in _tb))
+                            _ovx = min(_t1[0], _h1[0]) - max(_t0[0], _h0[0])
+                            _ovy = min(_t1[1], _h1[1]) - max(_t0[1], _h0[1])
+                            if _ovx > 0.002 and _ovy > 0.002:
+                                _band_y = (_h1[1] - _h0[1]) >= (_h1[0] - _h0[0])
+                                _ov = _ovy if _band_y else _ovx
+                                _tc = ((_t0[1] + _t1[1]) / 2.0 if _band_y
+                                       else (_t0[0] + _t1[0]) / 2.0)
+                                _hc = ((_h0[1] + _h1[1]) / 2.0 if _band_y
+                                       else (_h0[0] + _h1[0]) / 2.0)
+                                _sgn_ = 1.0 if _tc >= _hc else -1.0
+                                _shift = _sgn_ * (_ov + 0.008)
+                                _rts = set()
+                                for _o in _new:
+                                    _r = _o
+                                    while _r.parent is not None:
+                                        _r = _r.parent
+                                    _rts.add(_r.name)
+                                for _rn in _rts:
+                                    _r = bpy.data.objects[_rn]
+                                    if _band_y:
+                                        _r.location.y += _shift
+                                    else:
+                                        _r.location.x += _shift
+                                if _band_y:
+                                    ym += _shift
+                                else:
+                                    xm += _shift
+                                bpy.context.view_layer.update()
+                                print(f"    side_table re-seated "
+                                      f"{abs(_shift) * 1000:.0f} mm along the "
+                                      f"headboard band to clear its wing "
+                                      f"(overlap was {_ov * 1000:.0f} mm — "
+                                      f"derived, the drawn pockets' own "
+                                      f"composition)")
+                            # DEPTH-AXIS clearance (review D: the typed x plus
+                            # every slot widening sent the extra depth INTO the
+                            # slat wall — 80 mm buried at p2r74's first cut).
+                            # The wall is measured, the shift derived (R9).
+                            bpy.context.view_layer.update()
+                            _tb2 = [(o.matrix_world @ Vector(c)) for o in _new
+                                    for c in o.bound_box]
+                            _t0 = (min(p.x for p in _tb2), min(p.y for p in _tb2))
+                            _t1 = (max(p.x for p in _tb2), max(p.y for p in _tb2))
+                            for _wo in bpy.data.objects:
+                                if (_wo.type != 'MESH' or _wo.hide_render
+                                        or not _wo.name.startswith('mill__')
+                                        or 'lampacq' in _wo.name):
+                                    continue
+                                _wb = [(_wo.matrix_world @ Vector(c))
+                                       for c in _wo.bound_box]
+                                if (max(p.z for p in _wb)
+                                        - min(p.z for p in _wb)) < 1.5:
+                                    continue            # only tall wall skins
+                                _w0 = (min(p.x for p in _wb), min(p.y for p in _wb))
+                                _w1 = (max(p.x for p in _wb), max(p.y for p in _wb))
+                                _ox2 = min(_t1[0], _w1[0]) - max(_t0[0], _w0[0])
+                                _oy2 = min(_t1[1], _w1[1]) - max(_t0[1], _w0[1])
+                                if _ox2 > 0.002 and _oy2 > 0.002:
+                                    _dax = _ox2 <= _oy2   # shift the thin axis
+                                    _ov2 = _ox2 if _dax else _oy2
+                                    _wc_ = (((_w0[0] + _w1[0]) / 2.0) if _dax
+                                            else ((_w0[1] + _w1[1]) / 2.0))
+                                    _tc2 = (((_t0[0] + _t1[0]) / 2.0) if _dax
+                                            else ((_t0[1] + _t1[1]) / 2.0))
+                                    _sg2 = -1.0 if _tc2 <= _wc_ else 1.0
+                                    _sh2 = _sg2 * (_ov2 + 0.002)
+                                    for _rn in _rts:
+                                        _r = bpy.data.objects[_rn]
+                                        if _dax:
+                                            _r.location.x += _sh2
+                                        else:
+                                            _r.location.y += _sh2
+                                    if _dax:
+                                        xm += _sh2
+                                    else:
+                                        ym += _sh2
+                                    bpy.context.view_layer.update()
+                                    print(f"    side_table pulled "
+                                          f"{abs(_sh2) * 1000:.0f} mm out of "
+                                          f"{_wo.name.split('mill__')[-1][:24]} "
+                                          f"(wall overlap {_ov2 * 1000:.0f} mm "
+                                          f"— derived from the wall's own "
+                                          f"face, R9)")
+                                    break
                         _tops = [max((o.matrix_world @ v.co).z for v in o.data.vertices)
                                  for o in _new if o.data.vertices]
                         if _tops:
@@ -9766,11 +10084,73 @@ def build_suite(spec, label="suite"):
                             _gl = (dict(_g5, rgb=_e5.lamp_rgb(
                                 (it.get("lamp") or {}).get("cct_k", 2850)))
                                 if _g5 else None)
-                            _nightstand_lamp(xm, ym, wm, dm, max(_tops),
-                                             it.get("lamp"), glow=_gl, cabinet=False)
-                            print(f"    + bedside lamp kept, resting on the acquired "
-                                  f"top at {max(_tops) * 1000:.0f} mm "
-                                  f"(spec cabinet height was {hm * 1000:.0f})")
+                            # p2r74 (ORD-2026-08-25-six-items item 2): the lamp
+                            # is ACQUIRED — his eye failed the built brass pair
+                            # even after the p2r72 un-trap, and the order names
+                            # the route. The panel winner rests on the measured
+                            # top (R9); the practical point derives from the
+                            # PLACED lamp's own bbox (mid-shade), and every lamp
+                            # mesh is shadow-transparent so the light is not
+                            # trapped inside a vendor-opaque shade — the exact
+                            # defect the brass lamp taught this file.
+                            _lp_done = False
+                            _lmp = _model_path(_NIGHTSTAND_LAMP_MODEL)
+                            if _lmp is not None:
+                                try:
+                                    with open(_ascale.sidecar_path(_lmp),
+                                              encoding="utf-8") as _lf_:
+                                        _lsc = json.load(_lf_)["bbox_mm"]
+                                    _lnx, _lny, _lnz = (
+                                        float(_lsc["x_mm"]) / 1000.0,
+                                        float(_lsc["y_mm"]) / 1000.0,
+                                        float(_lsc["z_mm"]) / 1000.0)
+                                except (OSError, ValueError, KeyError,
+                                        TypeError):
+                                    _lnx = 0.0
+                                _ltop = max(_tops)
+                                _ltag = f"nightstand__lampacq{int(round(ym * 1000))}"
+                                if _lnx > 0.0 and place_model(
+                                        _lmp,
+                                        xm + (wm - _lnx) / 2.0,
+                                        ym + (dm - _lny) / 2.0,
+                                        _lnx, _lny, _lnz, rot=0.0, z0=_ltop,
+                                        tag=_ltag):
+                                    _lms = [o for o in bpy.data.objects
+                                            if o.type == 'MESH'
+                                            and o.name.startswith(_ltag)]
+                                    for _lo in _lms:
+                                        _lo.visible_shadow = False
+                                    if _gl:
+                                        _ld = bpy.data.lights.new(
+                                            "lamp_glow", type='POINT')
+                                        _ld.energy = (_gl["watts"] *
+                                                      _e5.story_scales(
+                                                          _LIGHT_STORY)["lamps"])
+                                        _ld.color = tuple(_gl["rgb"])
+                                        _ld.shadow_soft_size = 0.05
+                                        _lz = _ltop + _lnz * 0.62  # mid-shade,
+                                        # derived from the placed lamp's own
+                                        # height — never a typed z (R9)
+                                        _lob = bpy.data.objects.new(
+                                            "lamp_glow", _ld)
+                                        _lob.location = (xm + wm / 2.0,
+                                                         ym + dm / 2.0, _lz)
+                                        bpy.context.scene.collection\
+                                            .objects.link(_lob)
+                                    _lp_done = True
+                                    print(f"    + bedside lamp ACQUIRED "
+                                          f"{_NIGHTSTAND_LAMP_MODEL[:8]} on the "
+                                          f"measured top {_ltop * 1000:.0f} mm, "
+                                          f"emitter at mid-shade "
+                                          f"{(_ltop + _lnz * 0.62) * 1000:.0f}")
+                            if not _lp_done:
+                                _nightstand_lamp(xm, ym, wm, dm, max(_tops),
+                                                 it.get("lamp"), glow=_gl,
+                                                 cabinet=False)
+                                print(f"    + bedside lamp FELL BACK to the "
+                                      f"built brass (acquired lamp "
+                                      f"unavailable) on top "
+                                      f"{max(_tops) * 1000:.0f} mm")
                         else:
                             print("    !! acquired side_table has no measurable top "
                                   "— the lamp is NOT placed rather than guessed")

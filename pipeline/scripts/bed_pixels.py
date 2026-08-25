@@ -153,6 +153,14 @@ ROLE_BY_MATERIAL = {
     "bed_throw":    BEDDING,
     "bed_pillow":   HEAD,
     "bed_base":     FRAME,        # base, welts and headboard: one upholstery token
+    # p2r74: the 144 mm acquired headboard re-derived the bed's head contact
+    # and moved the whole bed 84 mm toward the foot, so the mattress plan now
+    # laps the foot bench by 41 mm (the duvet fall drapes over the bench edge —
+    # real made-bed behaviour). The bench then tripped assertion 2 as an
+    # UNKNOWN material touching the core. It is CLASSIFIED, not exempted-by-
+    # being-new: a bench is furniture at the foot, never sleeping surface —
+    # the same sentence bed_base carries.
+    "acq_bench_seat": OTHER,      # foot bench (P2h role-split token)
 }
 
 # WHERE THIS DISAGREES WITH THE 2026-08-17 DIAGNOSIS, said out loud so the two

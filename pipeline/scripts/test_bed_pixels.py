@@ -260,6 +260,16 @@ def test_every_frame_measures_and_its_split_adds_up(stem):
                     f"a declaration from the staging layer and inferring it here "
                     f"is the one thing measure() forbids")
     assert m["core_objects"], "no core found on a frame of this lane's own bed"
+    if (m["split"] is None and m.get("core_px", 0) == 0
+            and "behind the camera" in (m.get("split_unavailable") or "")):
+        # p2r74d class: a wardrobe/detail camera that holds ZERO bed pixels and
+        # cannot project the mattress. The split is undefined by GEOMETRY, and
+        # with core_px == 0 there is nothing a missing split could hide — the
+        # skip arms only when both are true, so a frame that shows any of the
+        # bed still owes the full contract.
+        pytest.skip(f"{os.path.basename(stem)}: detail camera — 0 core px and "
+                    f"the mattress does not project; split undefined by "
+                    f"geometry, nothing to hide")
     assert m["split"] is not None, m["split_unavailable"]
     s = m["split"]
     assert s["core_top"] + s["core_flank"] == m["core_px"]

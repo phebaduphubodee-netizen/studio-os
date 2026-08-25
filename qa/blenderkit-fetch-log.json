@@ -1183,6 +1183,519 @@
     "refusal": null
    },
    "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:19:02-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "book stack",
+   "pages": 1,
+   "n": 100,
+   "free": 21,
+   "full_plan": 79,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:04-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "books decor",
+   "pages": 1,
+   "n": 100,
+   "free": 12,
+   "full_plan": 88,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:06-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "table lamp modern",
+   "pages": 1,
+   "n": 100,
+   "free": 39,
+   "full_plan": 61,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:07-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bedside lamp",
+   "pages": 1,
+   "n": 100,
+   "free": 48,
+   "full_plan": 52,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:09-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "nightstand modern",
+   "pages": 1,
+   "n": 100,
+   "free": 40,
+   "full_plan": 60,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:11-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bedside table",
+   "pages": 1,
+   "n": 100,
+   "free": 36,
+   "full_plan": 64,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:13-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wicker basket",
+   "pages": 1,
+   "n": 100,
+   "free": 70,
+   "full_plan": 30,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:15-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "storage box fabric",
+   "pages": 1,
+   "n": 100,
+   "free": 38,
+   "full_plan": 62,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:16-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "shoes sneakers",
+   "pages": 1,
+   "n": 100,
+   "free": 50,
+   "full_plan": 50,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:19:18-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "headboard upholstered",
+   "pages": 1,
+   "n": 100,
+   "free": 38,
+   "full_plan": 62,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-25T13:26:16-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6afdfecd-910b-4523-a88f-76385dfd6323",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 58.2,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:26:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e96bf8f6-ef13-4121-be3b-6e2c6ff7fecb",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 51.8,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:26:25-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "55486511-6374-4c64-ab5b-76dfb0c6e2a4",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "book_stack",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 66.8,
+    "band_mm": [
+     40.0,
+     350.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:26:32-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "18d17256-c091-4d83-9afc-3dfc2247fa36",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 490.0,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:26:38-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "19f02d7d-b343-46f5-864c-6d77cfe49bf0",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 419.8,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:26:43-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "01bb0e45-4bcf-472e-ac3c-b2baf4d12336",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 404.1,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:26:54-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dcebfd80-b646-430f-8900-a9ad6869999e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "table_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 300.0,
+    "band_mm": [
+     250.0,
+     1100.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:27:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "24c65eb4-765b-43f3-a171-266521dd06b1",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 480.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:27:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "11ec5eeb-5d03-4442-9294-4be621522bff",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 500.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:27:33-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "bc74535c-4460-41c2-b6b7-f756fcc08dd0",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 550.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:27:38-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6d4ccb0c-bf53-4a7a-bf67-3c7f28c2351a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "nightstand",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 550.0,
+    "band_mm": [
+     300.0,
+     800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:27:57-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "90a1129e-ffa0-4494-a990-3e59dfdcb3ef",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "basket_box",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 134.0,
+    "band_mm": [
+     120.0,
+     600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:28:14-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "7302438e-83d7-4224-ab6f-3c2c51bfb518",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "basket_box",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 120.3,
+    "band_mm": [
+     120.0,
+     600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:28:21-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "c590fee3-5d46-45cc-88c6-fb8a92bc56b5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "basket_box",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 229.7,
+    "band_mm": [
+     120.0,
+     600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-08-25T13:28:27-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "7355c546-8ed9-4352-b332-2c9f26160a4c",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "shoe_pair",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 236.0,
+    "band_mm": [
+     200.0,
+     360.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:28:31-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "4152f818-48ed-48e1-a76b-c0bf1bb0b54f",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "shoe_pair",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 261.6,
+    "band_mm": [
+     200.0,
+     360.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-08-25T13:28:38-04:00",
+   "date_local": "2026-08-25",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "d7e2a7bc-3060-40fa-864c-d4db2af3be9d",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "headboard",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2059.0,
+    "band_mm": [
+     1400.0,
+     2400.0
+    ],
+    "refusal": null
+   }
   }
  ]
 }

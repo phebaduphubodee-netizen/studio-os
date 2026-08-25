@@ -149,7 +149,9 @@ def test_light_story_reaches_every_consumer():
                 # (p2r72, D-137: the last solver-baked cloth left the frame; the
                 # throw now enters through _model_path/place_model and is re-dressed
                 # in the duvet's own handle, so no new colour ever enters this way)
-                'deco__bench_book', '_BENCH_THROW_MODEL',
+                # p2r74: the bench books too are ACQUIRED (ORD-2026-08-25-six-items
+                # item 1) — the pin follows the constant, same shape as the throw
+                '_BENCH_BOOKS_MODEL', '_BENCH_THROW_MODEL',
                 'bpy.data.materials.get("bed_duvet")',
                 '_e5.STORY_FSTOP if _LIGHT_STORY else 9.0',
                 '_ies_beam(ld, "5.ies"', '_ies_beam(ld, "7.IES"',
