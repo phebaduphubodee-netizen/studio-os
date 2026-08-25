@@ -1826,6 +1826,23 @@ def _tile_m_for(slug):
     return t
 
 
+def _tile_v_m_for(slug):
+    """THE DOOR's V half. Same contract as `_tile_m_for`, same failure mode.
+
+    A tile has two axes and one number may not stand for both — the registry has
+    said so in writing since it was built, and the reader side did not. The rug is
+    what exposed it: `poly_wool_herringbone` publishes 270.0789 x 275.7000 mm, and
+    a U-only door renders it square, quietly stretching V by 2.08%."""
+    t = _texscale.declared_tile_v_m(slug)
+    if t is None:
+        raise RuntimeError(
+            f"texture {slug!r} has no asserted V scale — no sidecar at "
+            f"{_texscale.sidecar_path(slug)}. R8: scale is ASSERTED on every "
+            f"ingest, never assumed. Run: python pipeline/scripts/"
+            f"texture_scale.py --backfill {slug}")
+    return t
+
+
 def _hdri_file(slug):
     import glob
     for ext in ("hdr", "exr"):
@@ -1863,17 +1880,23 @@ def _det01(tag):
     return (zlib.crc32(tag.encode("utf-8")) % 10000) / 10000.0
 
 
-def _planar_uv(obj, tile_m=2.0, u_off=0.0, v_off=0.0):
+def _planar_uv(obj, tile_m=2.0, u_off=0.0, v_off=0.0, tile_v_m=None):
     """Top-down planar UV from local XY so tiled PBR maps land at real-world scale
-    (repeat every tile_m). from_pydata meshes carry no UV, so image nodes would
-    otherwise sample a flat colour and normal maps would have no tangent.
-    u_off/v_off shift the sampling window (in tiles) so two objects sharing a
-    texture don't show the SAME grain."""
+    (repeat every tile_m across U, every tile_v_m across V). from_pydata meshes
+    carry no UV, so image nodes would otherwise sample a flat colour and normal
+    maps would have no tangent. u_off/v_off shift the sampling window (in tiles)
+    so two objects sharing a texture don't show the SAME grain.
+
+    `tile_v_m` DEFAULTS TO `tile_m`, which keeps every existing caller identical —
+    but a non-square set that passes only `tile_m` is being stretched along V, and
+    the registry has forbidden that in writing since it was built. Pass both
+    whenever the sidecar's two dimensions differ."""
     me = obj.data
+    tv = tile_m if tile_v_m is None else tile_v_m
     uv = me.uv_layers.get("UVMap") or me.uv_layers.new(name="UVMap")
     for loop in me.loops:
         co = me.vertices[loop.vertex_index].co
-        uv.data[loop.index].uv = (co.x / tile_m + u_off, co.y / tile_m + v_off)
+        uv.data[loop.index].uv = (co.x / tile_m + u_off, co.y / tv + v_off)
 
 
 def _wall_uv(obj, tile_m=2.0, u_off=0.0, v_off=0.0):
@@ -1982,7 +2005,15 @@ def _solid(name, rgba, rough, metallic=0.0, sheen=0.0, coat=0.0, ior=1.5, spec=0
         _set(bsdf, "IOR", ior)
         _set(bsdf, "Specular IOR Level", spec)
         if sheen:
-            _set(bsdf, "Sheen Weight", sheen)
+            # CLAMPED AT THE WRITE, not at the caller (P2r-5, 2026-08-24). Only
+            # `_woven` capped, so `_solid` and `_retint_upholstery` wrote straight
+            # past the ceiling and `acq_bench_seat` shipped 0.45 on 9.68% of the
+            # frame's pixels. What hid it: the only enforcement outside `_woven`
+            # was `test_quicklook.py:165`, a SOURCE-STRING assert — it proved the
+            # text `_SHEEN_CAP = 0.4` exists while 0.45 rendered. R11's law one
+            # level down: a test that reads the source is not a test that the
+            # value reached the frame.
+            _set(bsdf, "Sheen Weight", min(sheen, _SHEEN_CAP))
             # 2026-07-22 (vault audit): this was a hardcoded 0.3 on EVERY sheen material,
             # carrying no citation and unable to tell linen from velvet — while the studio's
             # own scatter-identity rule (pbr-material-behavior.md:102-106, MA-01) says those
@@ -2302,11 +2333,20 @@ _SCONCE_LENS = True
 # forgetting to type it (D-032's own words). Reverse: set None (D-051).
 _SCONCE_LENS_STRENGTH = 84.0
 
-_SHEEN_CAP = 0.4           # ground-truth ceiling: max sheen measured in ANY pro file = 0.4
-#                            (Italian Flat, 7 fabric mats; Poly Haven cloth runs 0.0 with the
-#                            maps doing the work). Ours ran 0.7-1.0 — we were buying fabric
-#                            realism in a channel the pros barely spend in, and the flat fuzz
-#                            highlight it bought is half the "clay" verdict.
+_SHEEN_CAP = 0.4           # PROVENANCE RESTATED 2026-08-24 (P2r-5). It is NOT a "ground-truth
+#                            ceiling" in the sense of a measured distribution's maximum. Re-dumped:
+#                            sheen over 102 pro Principled materials is {0.0: 94, 0.2: 1, 0.4: 7},
+#                            LINKED 0/102 — and all eight nonzero values live in ONE file by ONE
+#                            author (src2_Italian_Flat, seven identical 0.4s). So 0.4 is "the max
+#                            observed in a single archviz file"; every other pro file is 0.0 with
+#                            the maps doing the work. The 0/102 LINKED count is what makes it a
+#                            genuine reading rather than a censoring artefact.
+#                            The DIRECTION still holds and is why the cap stays: ours ran 0.7-1.0,
+#                            buying fabric realism in a channel the pros barely spend in, and that
+#                            flat fuzz highlight is half the "clay" verdict.
+#                            NOT a pixel lever — 0.45 -> 0.40 measures ~0.42 sRGB codes, below the
+#                            8-bit step. It is a RULE, enforced because rules that are only
+#                            declared get written past (see the two clamps below).
 
 
 def _woven(name, rgba, rough, cloth, sheen=0.0, spec=0.5, coat=0.0, ior=1.5, maps=None,
@@ -2850,6 +2890,69 @@ def _exterior_world_args(spec, slug, strength, rot_deg, exposure, look=""):
             env["look"] or look)
 
 
+_CENTRE_ON_TOL_MM = 1.0
+
+
+def _resolve_centre_on(spec, it, xm, ym, wm, dm):
+    """R9 for the ROOM ITEM LOOP: an item may declare that it is CENTRED ON another
+    item, and the builder solves it instead of anyone typing the coordinate.
+
+    WHAT PAID FOR IT (p2r68, C2 item 17). The rug's `y` was typed -350 while the bed
+    sat at 226..2026. That is a legal coordinate and no rung could object: the rug is
+    not floating, does not overhang, and is perfectly axis-aligned, so placement_check
+    (R9b) passes it on all three of its questions. Measured from the built scene, the
+    rug ran 555.1 mm past the bed on one side and 103.1 mm on the other — a 5.4x
+    asymmetry, 226 mm off centre, so you step off one side of the bed onto bare floor.
+    A blind critic found it by eye in one pass; sixty-six rounds of instruments did
+    not, because none of them asked whether a thing is SYMMETRIC about what it serves.
+
+    THE COORDINATE STAYS IN THE SPEC, and that is deliberate. Plan rects are read by
+    sheet_recon, the spec ratchet and the clearance checks, so deleting `y` would blind
+    them. Instead the number is DERIVED here every build and the typed value must still
+    equal the derivation — the same shape as `_tile_m_for` plus its registry assert:
+    store the value, and keep a rung that proves it is still the derived one. When the
+    bed moves, the rug follows or the build FAILS; what it may never do is silently
+    drift, which is exactly what a stored result does.
+
+    FAILS CLOSED (placement.py's law): an unresolvable reference raises rather than
+    defaulting to the typed value, because a relationship that quietly falls back to
+    the number it was meant to replace is the defect wearing a nicer name."""
+    co = it.get("centre_on")
+    if not co:
+        return xm, ym
+    ref_kind = co.get("kind")
+    axes = co.get("axis", "")
+    cands = [o for o in spec.get("items", []) if o.get("kind") == ref_kind]
+    if len(cands) != 1:
+        raise SystemExit(
+            f"BUILD FAILED: {it.get('name') or it.get('kind')!r} declares centre_on "
+            f"kind={ref_kind!r}, which matches {len(cands)} items. Name a kind that "
+            f"matches exactly one — an ambiguous datum silently centres on whichever "
+            f"one the loop happened to see first.")
+    ref = cands[0]
+    out = {"x": xm, "y": ym}
+    for ax, span, own in (("x", "w", wm), ("y", "d", dm)):
+        if ax not in axes:
+            continue
+        ref_centre = (float(ref[ax]) + float(ref[span]) / 2.0) * MM
+        derived = ref_centre - own / 2.0
+        typed = out[ax]
+        drift_mm = abs(derived - typed) / MM
+        if drift_mm > _CENTRE_ON_TOL_MM:
+            raise SystemExit(
+                f"BUILD FAILED: {it.get('name') or it.get('kind')!r} declares it is "
+                f"centred on {ref_kind!r} in {ax}, but its typed {ax} is "
+                f"{typed / MM:.1f} mm and the derivation says {derived / MM:.1f} mm "
+                f"({drift_mm:.1f} mm apart). A stored coordinate that no longer equals "
+                f"its own derivation is the drift this rule exists to stop — move the "
+                f"spec value onto the derivation, or drop the centre_on claim.")
+        out[ax] = derived
+        print(f"  [R9 centre_on] {it.get('kind')} {ax} DERIVED from {ref_kind} "
+              f"centre {ref_centre / MM:.1f} -> {derived / MM:.1f} mm "
+              f"(typed {typed / MM:.1f}, drift {drift_mm:.2f} mm)")
+    return out["x"], out["y"]
+
+
 def _add_rug(name, x, y, w, d, thick=0.014):
     """ONE displaced-pile rug mesh (P2 r6, D8's last five rows + DEBT-14 + C2-r5#9
     "พรมสติ๊กเกอร์").
@@ -2916,7 +3019,23 @@ def _add_rug(name, x, y, w, d, thick=0.014):
         p.use_smooth = True
     obj = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(obj)
-    _planar_uv(obj, tile_m=1.3)
+    # THE RUG'S TILE COMES THROUGH THE DOOR, BOTH AXES (STY-8's law, TS-006).
+    # It was the bare literal 1.3 for the whole lane, which rendered the weave at
+    # u 4.8134 / v 4.7153 x life size — the largest unasserted ratio in the frame,
+    # and larger than the floor's 1.41 that STY-7 fixed. The literal carried no
+    # recorded intent, so there was nothing to sign a departure against.
+    # WHY LIFE SIZE AND NOT A COMPROMISE. The texture has TWO fundamentals
+    # (U 9.627 mm chevron, V 3.4945 mm weft). At the declared tile and this rug's
+    # own measured depths (1.608/1.716/2.251 m, CoC 5.79/5.16/2.91 px) the chevron
+    # lands at 7.29/6.40/3.72 px with MTF ~+0.40 at EVERY visible depth — it
+    # survives the defocus disc — while the weft drops to 2.69-3.77 px and is
+    # suppressed. A 3.5 mm wool weft seen at 1.7 m through this aperture IS below
+    # resolution in life: that is the correct outcome, not an artefact. An
+    # intermediate tile has no measurement behind it and would be a number changed
+    # to look productive.
+    _rtile = _tile_m_for(RUG_SLUG)
+    _rtile_v = _tile_v_m_for(RUG_SLUG)
+    _planar_uv(obj, tile_m=_rtile, tile_v_m=_rtile_v)
     pile_m = _pbr_material("rug_" + name, RUG_SLUG)
     obj.data.materials.append(pile_m)
     _wire_crush_shade(pile_m)
@@ -8432,7 +8551,9 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
                     nt.links.remove(l)
                 tr.default_value = 0.0
                 opaqued.append((m.name, "linked" if was is None else round(was, 3)))
-        _set(b, "Sheen Weight", sheen)
+        # the second uncapped write (see `_solid`): this one is the wider aperture
+        # of the two — `retint_sheen` defaults to 0.85 and presets reach 1.0.
+        _set(b, "Sheen Weight", min(sheen, _SHEEN_CAP))
         _set(b, "Sheen Roughness", 0.35)
         rg = b.inputs.get("Roughness")
         if rg is not None and not rg.is_linked:
@@ -9205,6 +9326,7 @@ def build_suite(spec, label="suite"):
         wm, dm = float(it["w"]) * MM, float(it["d"]) * MM
         hm = max(float(it.get("h", 400)) * MM, 0.05)
         rot = float(it.get("rot", 0.0))
+        xm, ym = _resolve_centre_on(spec, it, xm, ym, wm, dm)
         # ---------------------------------------------------------- R8 ACQUIRE FIRST
         # P2f. An item that DECLARES `model` is an acquisition decision, and it is
         # tried BEFORE any bespoke builder — which is the whole change, because the

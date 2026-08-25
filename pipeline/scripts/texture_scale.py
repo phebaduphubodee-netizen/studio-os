@@ -193,6 +193,26 @@ def declared_dimensions_mm(slug, root=None):
     return (u, v)
 
 
+def declared_tile_v_m(slug, root=None):
+    """The world size of one repeat ACROSS V, in metres, as published. None when
+    nobody asserted it.
+
+    IT EXISTS BECAUSE `declared_tile_m` IS ONLY HALF THE ASSERTION. This law's own
+    words are "A tile has TWO axes. `tile_m` asserts U and `tile_v_m` asserts V;
+    one number may not stand for both, because four of the sixteen cached sets are
+    not square." The registry has honoured that since birth (`tile_v_m` at the site
+    level) but the READER side stopped at U, so every caller that went through the
+    door got a square tile whatever the sidecar said. `poly_wool_herringbone` is
+    270.0789 x 275.7000 mm — a 2.08% aspect the U-only door silently discarded.
+
+    Falls back to the U size for a genuinely square set, so a caller may always
+    pass both and a square tile costs nothing."""
+    d = declared_dimensions_mm(slug, root)
+    if d is None:
+        return None
+    return d[1] / 1000.0
+
+
 def declared_aspect(slug, root=None):
     """v/u of the published tile. 1.0 for a square set.
 

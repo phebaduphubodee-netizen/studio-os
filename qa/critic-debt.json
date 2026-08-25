@@ -527,6 +527,29 @@
      "pipeline/output/room_bedroom_suite_eye_p2r8.png"
     ]
    }
+  },
+  {
+   "id": "DEBT-22",
+   "class": "rug-off-centre",
+   "defect": "the rug is not centred on the bed it serves: 555 mm of rug beyond the bed on one side and 103 mm on the other, so one side of the bed steps onto bare floor",
+   "object": "rug",
+   "kind": "placement",
+   "filed_in": "C2 blind local critic, p2r67 item 17 (2026-08-24)",
+   "recurrence": {
+    "files": 1,
+    "of": 28,
+    "first_round": "p2r67",
+    "last_round": "p2r67",
+    "note": "1 of the same 28-answer corpus the other twenty rows are ranked against, so the ranking stays reproducible. It is a low count because it was filed once, not because it is weak: the world measurement is unambiguous (555.1 vs 103.1 mm across the bed) and no earlier critic was ever asked about rug PLACEMENT — every prior rug item was about its surface."
+   },
+   "crosses_into": "P4",
+   "due_phase": "P2",
+   "closes_when": {
+    "door": "none_yet",
+    "blocked_on": "a SYMMETRY question that nothing in the repo asks. placement_check (R9b) asks FLOATING / OVERHANG / OFF-AXIS and a 226 mm off-centre rug passes all three — it is not floating, does not overhang, and is perfectly axis-aligned. What is needed: for an object that SERVES another (rug under bed), the margins on opposing sides across the served object must agree to within a stated tolerance, read off the built scene. Scope must be derived from the rule's own premise (R9b), never from a list of object names — 'serves' is already expressible as rest_on/centre_on in placement.py."
+   },
+   "_why_this_door": "MEASURED IN THE WORLD, not from pixels — and the critic's own pixel method could NOT have proven it: the rug runs off the right frame edge (mask reaches x=2399), so its right edge is not in the frame and the on-screen centre it computed is unsupportable. From p2r67.scene.json: rug AABB x 2.200..5.300 y -0.350..2.150 (3100 x 2500 mm), bed__frame__acq0 x 3.108..5.141 y 0.205..2.047 (2033 x 1842 mm). Across-bed margins 555.1 mm vs 103.1 mm = 5.4x; centre offset 226 mm. THE EYE FOUND WHAT, THE SCENE FOUND HOW MUCH — R10b's law, and this is the cleanest instance the lane has produced. WHY NO INSTRUMENT SAW IT IN 66 ROUNDS: placement_check (R9b) asks FLOATING / OVERHANG / OFF-AXIS and is explicitly no-allowlist, but none of its three questions is 'is this symmetric about the thing it serves'. A rug 226 mm off centre is not floating, does not overhang, and is perfectly axis-aligned. The guard is not broken; the question was never asked. Same shape as R10's finding that nothing governed WHETHER an object should exist.",
+   "status": "open"
   }
  ]
 }

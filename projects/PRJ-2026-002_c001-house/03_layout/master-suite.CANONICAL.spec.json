@@ -859,11 +859,16 @@
    "name": "พรมใต้เตียง (anti-monopoly rug, D1-A)",
    "kind": "rug",
    "x": 2200,
-   "y": -350,
+   "y": -124,
    "w": 3100,
    "d": 2500,
    "sheet_ref": "not-in-drawing: D1-A owner-signed styling decision (anti-monopoly rug) — the furniture plan draws no rug",
-   "note": "D1-A owner-signed: a large soft neutral rug DEMOTES the oak floor's visual weight so oak reads as the 30% secondary, not a 60% co-monopolist (Albers 60-30-10). Also cuts the warm floor-bounce that kept the cool-plaster ground reading beige (LOOK 2026-07-16). Poly-wool herringbone; footprint wraps under the bed + the foreground."
+   "note": "D1-A owner-signed: a large soft neutral rug DEMOTES the oak floor's visual weight so oak reads as the 30% secondary, not a 60% co-monopolist (Albers 60-30-10). Also cuts the warm floor-bounce that kept the cool-plaster ground reading beige (LOOK 2026-07-16). Poly-wool herringbone; footprint wraps under the bed + the foreground.",
+   "centre_on": {
+    "kind": "bed",
+    "axis": "y",
+    "why": "C2 filed it by eye at p2r68 and the built scene confirmed it: the rug ran 555.1 mm past the bed on one side and 103.1 mm on the other (5.4x, 226 mm off centre), so one side of the bed stepped onto bare floor. The y was TYPED and a typed coordinate encodes a RESULT, so it stayed legal while the relationship it was supposed to express broke. Now the builder derives it and refuses a drift > 1 mm. Across-bed margins are 350/350 mm. x is NOT centred and must not be: the rug deliberately runs further at the foot (908 mm) than at the head (159 mm), which is what a bedroom rug does."
+   }
   },
   {
    "name": "เตียง 7'x6.5' หัวตะวันออก",

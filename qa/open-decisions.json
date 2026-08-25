@@ -2092,6 +2092,82 @@
      "why": "The reader itself. Without it the build has no way to ask the sheet anything and every drawn dimension in the model goes back to being a transcription."
     }
    ]
+  },
+  {
+   "id": "D-132",
+   "unit": "DELIV-001",
+   "subject": "พรมกลับไปเป็นขนาดจริง — ทั้งสองแกน",
+   "decided_round": 68,
+   "decided_date": "2026-08-24",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-01-freeform-acquire",
+   "question": "TS-006 เป็นแถวหนี้ที่เขียน restart_by ไว้ว่า 'วัด pitch บนจอก่อน ห้ามพิมพ์เลขใหม่' — วัดแล้วจะแก้เป็นขนาดที่ผู้เผยแพร่ประกาศ หรือเซ็นเป็น departure หรือปล่อยเป็นหนี้ต่อ",
+   "in_effect": "**แก้เป็นขนาดจริง 0.270079 (U) x 0.2757 (V) ผ่านประตู `_tile_m_for` / `_tile_v_m_for`** และเงื่อนไข restart ถูกปลดหนี้ก่อนแตะเลข · วัดสี่วิธีอิสระบน เฟรมที่เรนเดอร์แล้ว ได้ตรงกันว่า tile เดิมคือ 1300.0 +/- 2.0 มม. = u 4.813 / v 4.715 เท่าของจริง · **must-catch**: โค้ดชุดเดียวกันยิงใส่พื้นของเฟรมเดียวกัน คืน 2.40000 +/- 0.002 และปฏิเสธ 1.700 ถูกต้อง พร้อมกู้ความกว้างแผ่น 188.90-188.97 มม. เทียบ sidecar 188.889 · **must-not-accuse**: สลับพิกเซล +0.011, พรม x ไม้ +0.058, พื้น x herringbone +0.038 · **ทำไมขนาดจริง ไม่ใช่ค่ากลาง**: เท็กซ์เจอร์มีสองความถี่มูลฐาน — chevron 9.627 มม. (U) กับ weft 3.4945 มม. (V) · ที่ขนาดจริงและที่ความลึกของพรมเอง (1.608/1.716/2.251 ม., CoC 5.79/5.16/2.91 px) chevron ตกที่ 7.29/6.40/3.72 px MTF ~+0.40 **ทุกความลึกที่มองเห็น คือรอดจากวงเบลอ** ส่วน weft ตกที่ 2.69-3.77 px และถูกกลบ — ผ้าขนสัตว์เส้นพุ่ง 3.5 มม. มองที่ 1.7 ม. ผ่านรูรับแสงนี้ **ของจริงก็ไม่เห็น** นั่นคือผลที่ถูก ไม่ใช่ artifact · ไม่มีการวัดไหนรองรับค่ากลาง และค่ากลางคือการเปลี่ยน ตัวเลขให้ดูขยัน · **สองแกนเพราะชุดนี้ไม่จัตุรัส** (270.0789 x 275.7000) และกฎเขียนเองว่า เลขเดียวยืนแทนสองแกนไม่ได้ — ทะเบียนมีช่อง tile_v_m มาตั้งแต่เกิด แต่**ฝั่งอ่านหยุดที่ U** จึงสร้าง `declared_tile_v_m` + `_tile_v_m_for` รอบนี้",
+   "where": "pipeline/scripts/build_room.py, pipeline/scripts/texture_scale.py, qa/texture-scale.json",
+   "because": "1.3 เป็น literal เปล่าที่ไม่มีเจตนาบันทึกไว้ จึงไม่มีอะไรให้เซ็น departure เทียบ · TS law เขียนเองว่า departure ถูกกฎถ้าเซ็น แต่ 'บาร์ literal ที่อ่านเหมือนคำประกาศ' คือสิ่งที่ปฏิเสธ · และ 4.81 เท่า แรงกว่าพื้น 1.41 เท่าที่ STY-7 แก้ไปแล้ว",
+   "reverse_by": "คืน `_planar_uv(obj, tile_m=1.3)` ที่ build_room และคืนบล็อก debt ใน TS-006 — gate จะพิมพ์ค่าออกมาในรอบเดียว · **ถ้าตาพี่ (R3/C4) ปฏิเสธการอ่านแบบขนาดจริงบนคู่ภาพ ที่เรนเดอร์จริง ทางถอยไม่ใช่ literal เดิม** แต่เป็นแถว departure ที่เซ็นแล้ว พร้อม axis + ratio + why ที่อ้างการวัด DOF (V ที่ 2.69-3.77 px เทียบ CoC 2.91-5.79 px)",
+   "open_question": "**ตัดสินด้วยเรนเดอร์จริงแล้ว และผลไม่เข้าข้างการตัดสินใจนี้เท่าที่ forward model บอกไว้** · p2r68 (full fidelity, ตัวแปรเดียว: พรม meanDiff 4.548 / 11.74% เกิน 8 code, ทุกอย่างอื่น <1) · **พลังงานลายทอในหน้ากากพรม ลดลงจริง**: high-pass RMS sigma2 3.052 -> 1.731 (**-43%**), sigma4 5.339 -> 3.703 (-30.6%), sigma8 8.481 -> 7.256 (-14%) · **CONTROL: millwork oak 26.86% ของเฟรม 20.733 -> 20.732 = 0.0%** ยืนยันไม่มีอะไรอื่นขยับ · ครอป 100% ที่ความละเอียดเต็ม: ขา p2r67 อ่านเป็นลาย chevron ชัด ขา p2r68 **แทบไม่มีลายเลย** · **แปลว่าคำทำนายของฝ่าย C2 ('แก้สเกลแล้วจะเละ/หายไป') ถูกยืนยันด้วยเฟรมจริง และข้อโต้แย้งของ ฝ่ายค้าน ('U รอดจาก DOF ที่ MTF ~+0.40 chevron ยังอ่านได้') ถูกหักล้างด้วยเฟรมจริง** — forward model ทำนายผิดในทิศที่เข้าข้างการเปลี่ยน · **ที่ยังยืน**: สเกลนี้ถูกต้องตามฟิสิกส์ (พรมขนสัตว์จริงมองที่ 1.7-2.2 ม. ไม่โชว์ chevron ใหญ่) และ literal 1.3 ไม่มีเจตนาบันทึกไว้ · **ที่เปิดค้าง**: 'ถูกตามฟิสิกส์' กับ 'ขายงานได้' เป็นคนละ คำถาม (R4) และ C2 ฟ้องที่ p2r64 ว่าพรมเป็นสติกเกอร์ที่มี 'ลาย herringbone ละเอียดสม่ำเสมอ' อยู่แล้ว — **การทำให้ละเอียดลงอีกอาจทำให้ข้อนั้นแย่ลง ซึ่งเป็นความเสี่ยงที่แถวหนี้ TS-006 เขียนเตือนไว้เองว่า 'a scale fix shipped blind could move that item either way'** · **คำตัดสินสุดท้ายเป็นของพี่จากภาพ (R3/C4)** และทางถอยที่ถูกคือแถว departure ที่เซ็นแล้ว ไม่ใช่ literal 1.3 เดิม",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_rtile = _tile_m_for\\(RUG_SLUG\\)\\s*\\n\\s*_rtile_v = _tile_v_m_for\\(RUG_SLUG\\)\\s*\\n\\s*_planar_uv\\(obj, tile_m=_rtile, tile_v_m=_rtile_v\\)",
+     "why": "Both doors read AND the result used, in one pattern. Either half alone can be true while the rug renders at something else — which is exactly how a bare 1.3 survived the whole lane beside a sidecar declaring 0.270079."
+    },
+    {
+     "file": "qa/texture-scale.json",
+     "pattern": "\"id\": \"TS-006\",[\\s\\S]{0,400}?\"tile_m\": 0\\.270079,\\s*\\n\\s*\"tile_v_m\": 0\\.2757",
+     "why": "The registry row carries the declared size on BOTH axes. Anchored to the TS id so another site's identical number cannot satisfy it."
+    }
+   ]
+  },
+  {
+   "id": "D-133",
+   "unit": "DELIV-001",
+   "subject": "guard ที่ต่อสายไว้แล้วแดงอยู่ และไม่มีใครกดรัน — p2_exit อยู่ในลิสต์",
+   "decided_round": 68,
+   "decided_date": "2026-08-24",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-09-every-mechanism-opens-the-picture",
+   "question": "`cloth_highlights.py` (เครื่องมือที่ประกาศไว้ของ P2r-5) ไม่มี consumer เลย — เป็นข้อบกพร่องเดี่ยว หรือเป็นคลาส",
+   "in_effect": "**เป็นคลาส และเรามี guard ที่จับมันได้อยู่แล้ว ต่อสายไว้แล้ว และมันแดงมาตลอด** · `python scripts/reachability_check.py` → **exit 1, `=== VIOLATIONS (15) ===`** · `190 instruments | 102 reached | 7 CLI-ONLY | 81 UNREACHED` และ **48 ในกลุ่มที่ไม่มีใครเรียก มี test suite ของตัวเองที่เขียวอยู่** — เขียวกับไม่มีใครเรียก หน้าตาเหมือนกันจากข้างนอก · รายชื่อรวม **`p2_exit`** ซึ่งคือ **ตัว exit test ของเฟส P2 เอง** พร้อม `dim_check` · `existence_check` (โปรแกรมของ R10) · `edge_shadow` · `bed_pixels` · `glance` · `gen_diff` (ไอเดียของพี่เอง) · `cloth_highlights` · และอีก 7 · **มันถูกต่อสายไว้ที่ `scripts/test_guards.sh:341` ซึ่งเป็นคำสั่งที่เขียนอยู่ใน CLAUDE.md** (`bash scripts/test_guards.sh`) · นี่จึงไม่ใช่ข้อบกพร่องที่ไม่มีเครื่องมือมองเห็น — **มันคือ guard ที่ทำงานถูกต้อง ฟ้องถูกต้อง และไม่มีใครกดรันคำสั่งนั้น** · ข้อความของ guard เองเขียนไว้ว่า 'an instrument outside every path is a document — cap_check (R1's stop-loss) was one for 34 rounds'",
+   "where": "scripts/reachability_check.py, scripts/test_guards.sh, qa/reachability-baseline.txt",
+   "because": "คิวที่ผู้บริโภคไม่เคยมาเยือน คือ defect ที่ CLAUDE.md เขียนไว้เป็นเหตุผลว่าทำไมแผนต้องเป็น โปรแกรมไม่ใช่เอกสาร · รอบนี้พบว่ามันเกิดกับ **ตัว guard เอง**: เราสร้างเครื่องจับ แล้วไม่ได้เอาเครื่องจับไปไว้ในทางที่มีคนเดิน · และ gate run เดียวกันยังพิมพ์ `repo_first: 26 qa/ register(s) with no reader` ซึ่งเป็นคลาสเดียวกันฝั่งข้อมูล",
+   "reverse_by": "ไม่มีอะไรให้ย้อน — รอบนี้ไม่ได้แก้ violation สักข้อ **บันทึกว่ามันแดง** และตั้งเป็นหนี้ที่มีชื่อ · ปิดได้เมื่อทั้ง 15 ข้อถูก wire เข้าทางที่มีคนเดิน หรือประกาศ `CLI-ONLY:` พร้อมชื่อคนกด หรือ baseline พร้อมเหตุผล แล้ว guard exit 0 · **ห้ามปิดด้วยการ baseline เฉย ๆ ทั้งชุด**",
+   "in_effect_assert": [
+    {
+     "file": "scripts/test_guards.sh",
+     "pattern": "reachability_check\\.py\"[\\s\\S]{0,300}?REACH BROKEN",
+     "why": "Proves the guard is still WIRED into the documented command (`bash scripts/test_guards.sh`). The row's whole claim is that the defect is not a missing instrument but an instrument nobody runs — if this wiring were ever deleted the row would become false in the opposite direction and must reopen."
+    }
+   ]
+  },
+  {
+   "id": "D-134",
+   "unit": "DELIV-001",
+   "subject": "C3 ให้อันดับที่แกว่งบนพิกเซลเดิม — เส้นรายงานใช้ได้ แต่ข้อ top-3 ใช้ไม่ได้",
+   "decided_round": 68,
+   "decided_date": "2026-08-24",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-02-gemini-judges-every-render",
+   "question": "exit test ของ P2 ใช้ 'กรรมการทั้งสองไม่มี surface-realism ใน top 3' เป็นเงื่อนไขปิดเฟส และ gate พิมพ์จำนวนข้อดิบเป็นเส้นแนวโน้มทุกรอบ — ทั้งสองอย่างถือว่ารายการนั้นวัดภาพ แต่ไม่เคยมีใครรัน control",
+   "in_effect": "**รัน control ครั้งแรกในประวัติเลน: ถาม C3 ด้วยพิกเซลเดิมเป๊ะ (md5 เดียวกัน) p2r64 สี่ครั้ง · p2r67 สามครั้ง** · ผลแยกเป็นสองส่วนที่ต่างกันมาก และผมเคยสรุปผิด ก่อนแก้บั๊ก parser ของตัวเอง · **(1) จำนวนข้อดิบนิ่ง**: p2r64 = 6,6,6,6 · p2r67 = 5,5,6 → **เส้นรายงานที่ gate พิมพ์ เชื่อถือได้** · **(2) ตัวตนของข้อและสมาชิก top-3 แกว่งหนัก**: ที่ p2r64 มีเพียง `bedding` ที่ปรากฏ 4/4 และอยู่ top-3 4/4 · `โคมทองเหลือง` 1/4 · `ขอบลิ้นชัก` 1/4 · `ลายไม้ซ้ำ` 1/4 · `พรม` 2/4 · และคำตอบ 'ถ้าต้องเลือกแก้ข้อเดียว' ออกมา **3 แบบจาก 4 ครั้ง** · **ดังนั้นเงื่อนไข top-3 กำลังถูกตัดสินด้วย noise ส่วนเงื่อนไขนับจำนวนไม่ใช่** · **สิ่งที่แข็งจริง**: `bedding` คือ 4/4 และ 3/3 อยู่ top-3 ทั้งเจ็ดครั้ง และเป็นคำตอบ 'แก้ข้อเดียว' 3/3 ที่ p2r67 — เจ็ดครั้งอิสระตรงกัน และ C2 blind ก็ให้หมอนเป็นข้อ 1 ที่ p2r64 ด้วย",
+   "where": "qa/deliverable-plan.json, _private/deliv-001/critique/critique-c3control_p2r64_rerun, _private/deliv-001/critique/critique-c3rep_p2r64_ask2, _private/deliv-001/critique/critique-c3rep_p2r67_ask2",
+   "because": "R7b บอกว่าตาหา 'อะไรผิด' และเครื่องมือหา 'เท่าไร' — แต่ถ้าตานั้นตอบไม่เหมือนเดิม บนภาพเดิม การนับครั้งเดียวก็ไม่ใช่การอ่านภาพ · นี่เป็นคลาสเดียวกับ flattering scorer แต่กลับด้าน: ไม่ใช่เกณฑ์ที่เข้าข้างเรา แต่เป็นเกณฑ์ที่**สุ่ม** และรอบไหนโชคดีก็ผ่าน",
+   "reverse_by": "ลบไดเรกทอรี critique-c3rep_* / critique-c3control_* แล้วเลิกอ้างแถวนี้ · **แต่ก่อนจะใช้ top-3 เป็นเงื่อนไขปิดเฟสอีกครั้ง ต้องนิยามใหม่เป็น 'ปรากฏใน k จาก n ครั้ง' ไม่ใช่ครั้งเดียว** — ไม่งั้นเฟสจะปิดหรือไม่ปิดด้วยการสุ่ม",
+   "open_question": "n ยังน้อย (4 และ 3) และ **ผมไม่ได้ pre-register จำนวนครั้งก่อนดูผล** — ตัวเลขความถี่จึงเป็นทิศทาง ไม่ใช่ค่าที่ควรเอาไปตั้งเป็น cut ตอนนี้",
+   "in_effect_assert": [
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "BOTH independent critics \\(C2 blind-local \\+ C3 cross-vendor\\) file no surface-realism item in their top 3",
+     "why": "Proves the exit clause this row qualifies is still worded as a single-ask top-3 test. When it is rewritten as 'appears in k of n asks' this pattern stops matching and the row must be revisited — which is the correct trigger, because that rewrite is the fix."
+    }
+   ]
   }
  ],
  "_assert_ratchet_from": "D-124"

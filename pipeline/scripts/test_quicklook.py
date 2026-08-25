@@ -157,12 +157,36 @@ def test_light_story_reaches_every_consumer():
         assert pin in SRC, pin
 
 
+def _assert_every_sheen_write_is_capped():
+    """EVERY write of Sheen Weight is a literal or is clamped to _SHEEN_CAP.
+
+    THIS REPLACES A TEST THAT PASSED WHILE THE RULE WAS BROKEN. The old assertion
+    was `'min(sheen, _SHEEN_CAP)' in SRC` — a SOURCE-STRING existence check. The
+    string existed (in `_woven`), so the test was green for the whole lane while
+    `_solid` and `_retint_upholstery` wrote the socket uncapped and
+    `acq_bench_seat` shipped sheen 0.45 on 9.68% of the frame's pixels.
+    Measured 2026-08-24 by a value-anchored sweep of all 84 built materials.
+
+    A check anchored on ONE spelling of the rule is an allowlist one level down:
+    it names the site it covers and exempts the next site. So this counts the
+    WRITES instead, and fails when a new one appears uncapped."""
+    import re
+    writes = re.findall(r'_set\(\s*\w+\s*,\s*"Sheen Weight"\s*,\s*([^)]+)\)', SRC)
+    assert writes, "no Sheen Weight write found — the pattern moved, fix this test"
+    bad = [w.strip() for w in writes
+           if "_SHEEN_CAP" not in w and not re.fullmatch(r"[\d.]+", w.strip())]
+    assert not bad, (
+        "uncapped Sheen Weight write(s): %r — clamp at the write site, not at the "
+        "caller. _SHEEN_CAP is a rule and rules that are only declared get written "
+        "past." % bad)
+
+
 def test_lane_b_fabric_maps_reach_the_bed_textiles():
     """Ground-truth lane B armour: the CC0 linen set must be OFFERED to every bed
     textile + the bench (maps=), the sheen cap must guard the _solid call, and the
     A/B flag must be parseable — any of these silently dropped reverts the lane."""
     assert SRC.count('maps="rough_linen"') >= 6      # 5 bed cloths + bench seat
-    assert 'min(sheen, _SHEEN_CAP)' in SRC
+    _assert_every_sheen_write_is_capped()
     assert '"--fabric-maps" in _post_dashdash()' in SRC
     assert '_FABRIC_MAPS' in SRC
     for pin in ('subsurf=p.get("subsurf", 0)', 'subsurf=_p.get("subsurf", 0)'):
