@@ -497,7 +497,7 @@
           "why_now": "filed the round a blind critic caught it; cheap to trace with the matmask that already exists."
         }
       ],
-      "exit_test": "REOPENED BAR (owner overrule 2026-08-11; ratified 'ok' after the builder argued against a raw C3-item-count cut — the argument and counter-proposal are in gate-DELIV001-P3r2's addendum thread). To close P2: (1) the r7 rows all still hold — D5/D8/D9 PASS, MODEL-FIT REJECT 0, imported >=8, QUALIFIES; (2) FOUR 100% crops judged beside anchors, one per judged defect class, run by the P2r-7 harness: DUVET fold-structure energy (the r7 throw-crop method), TWO ADJACENT WOOD BOARDS (autocorrelation: no periodic peak), RUG EDGE (rollover, not a 90-degree step), GARMENT SHELLS (coincident duplicate pairs = 0 from the built scene); (3) OWNER-RATIFIED JUDGE CLAUSE, outside the builder's hands: BOTH independent critics (C2 blind-local + C3 cross-vendor) file no surface-realism item in their top 3, AND the ACCEPTED-after-triage surface-realism items across both critics total <= 2 — every refutation must carry a measurement the owner can audit and overrule from the image; (4) REPORTING LINE, not a cut: C3's raw item count prints at every gate so the trend stays visible (7 at p3r1, 5 at p3r2). The owner overrules any of this from the image at any time. (5) SECOND REPORTING LINE, added 2026-08-16 after review: the DELIVERED-WORK VALUE BAND. The friend's duvet planes measure 0.505-0.674 of their own frame's 99th-percentile luma; ours are printed the same way at every gate. It is a line and not a cut because the ladder's own signed targets are the authority on value and one of them (duvet 181 = 0.80 of p99) sits above this band - which is a question to settle against the ANCHOR POOL (R4), not a rung to fail a frame on today. (6) OWNER-EYE CLAUSE, added 2026-08-25 per ORD-2026-08-25-p2-exit-is-his-eye and it OUTRANKS every clause above: the phase does not close while he still dislikes the objects in the frame — conditions (1)-(5) are NECESSARY, never sufficient. His verdict is given from the RENDER (his channel), needs one sentence, and no builder-written measurement may argue it down; a close proposed while a standing dislike of his is unanswered is the R11 finish-line defect by name. Mechanically: before declaring P2 closed, the gate artifact must cite either his approving words on the closing frame, or his silence across the closing frame plus the two frames before it with every itemized visual order of his demonstrated in pixels beside his words (not by grep, not by register status).",
+      "exit_test": "REOPENED BAR (owner overrule 2026-08-11; ratified 'ok' after the builder argued against a raw C3-item-count cut — the argument and counter-proposal are in gate-DELIV001-P3r2's addendum thread). To close P2: (1) the r7 rows all still hold — D5/D8/D9 PASS, MODEL-FIT REJECT 0, imported >=8, QUALIFIES; (2) FOUR 100% crops judged beside anchors, one per judged defect class, run by the P2r-7 harness: DUVET fold-structure energy (the r7 throw-crop method), TWO ADJACENT WOOD BOARDS (autocorrelation: no periodic peak), RUG EDGE (rollover, not a 90-degree step), GARMENT SHELLS (coincident duplicate pairs = 0 from the built scene); (3) OWNER-RATIFIED JUDGE CLAUSE, outside the builder's hands: BOTH independent critics (C2 blind-local + C3 cross-vendor) file no surface-realism item in their top 3, AND the ACCEPTED-after-triage surface-realism items across both critics total <= 2 — every refutation must carry a measurement the owner can audit and overrule from the image; (4) REPORTING LINE, not a cut: C3's raw item count prints at every gate so the trend stays visible (7 at p3r1, 5 at p3r2). The owner overrules any of this from the image at any time. (5) SECOND REPORTING LINE, added 2026-08-16 after review: the DELIVERED-WORK VALUE BAND. The friend's duvet planes measure 0.505-0.674 of their own frame's 99th-percentile luma; ours are printed the same way at every gate. It is a line and not a cut because the ladder's own signed targets are the authority on value and one of them (duvet 181 = 0.80 of p99) sits above this band - which is a question to settle against the ANCHOR POOL (R4), not a rung to fail a frame on today. (6) OWNER-EYE CLAUSE, added 2026-08-25 per ORD-2026-08-25-p2-exit-is-his-eye and it OUTRANKS every clause above: the phase does not close while he still dislikes the objects in the frame — conditions (1)-(5) are NECESSARY, never sufficient. His verdict is given from the RENDER (his channel), needs one sentence, and no builder-written measurement may argue it down; a close proposed while a standing dislike of his is unanswered is the R11 finish-line defect by name. Mechanically: before declaring P2 closed, the gate artifact must cite either his approving words on the closing frame, or his silence across the closing frame plus the two frames before it with every itemized visual order of his demonstrated in pixels beside his words (not by grep, not by register status).\n\nAMENDED 2026-08-26 (review #82, verdict 'change') — CLAUSE (2) HAD NEVER BEEN EVALUATED, and clause (1) is now MET.\n  * CLAUSE (1) IS MET, first time in the lane: p2r78rc reads 8 pass / 2 fail, DELIVERABLE: QUALIFIES (5/6 scored, all mandatory rows pass), D5 8.4276 in band, D8 0, D9 0. p2r77 read 6 pass / 4 fail and DID NOT QUALIFY. What moved it was the owner's camera (D-152) plus the daylight-portal demotion: D2 34.49->27.55, D3 2.792->3.086, D6 0.672->0.923, crossing together.\n  * CLAUSE (2) WAS NEVER A MEASUREMENT. Every crop in `p2_exit.CROPS` is a FRACTION OF THE FRAME and the camera under them is not a constant. Measured from the render's own matmask: `rug_edge` held 0.8% rug at p2r77 (50% bed_base, 29% bench — the '6.0 px ROLLED (pass)' was the BED PLINTH's edge) and 3.9% at p2r78rc (93% open pile, no boundary in the box at all, passing off pile noise). `duvet_fold` held 21% then 15% duvet, the rest curtain and floor, so '2.1x the delivered comforter' was largely curtain pleats. In the same frame C3 filed the rug as flat with no edge — the eye and the instrument were never in disagreement, the instrument was pointed elsewhere.\n  * TWO CONDITIONS ARE ADDED TO CLAUSE (2), and they are about whether a reading is a reading: (2a) every crop must clear the SUBJECT GUARD (D-153) — a rung whose declared box is under 50% its own declared subject prints BOX COULD NOT RUN and the harness exits 2; a number from an off-subject box does not count as a judged crop. (2b) every rung whose PASS is 'we found nothing' must show a POSITIVE CONTROL firing in the same frame on the same pixels (owed since D-056; `wood_boards` now tiles its own left half and scores 0.993 vs floor 0.532, so its clean 0.0 is a reading). Exit 2 never counts as clear.\n  * FIRST HONEST READINGS of the two cloth surfaces, and both point where the critics pointed: throw 3.682x and duvet 2.115x the delivered comforter's fold energy, measured on those materials' OWN pixels rather than on a box.\n  * CLAUSE (6) IS UNCHANGED AND STILL OUTRANKS ALL OF THIS. He said 'ยังดีไม่พอ' on 2026-08-22 and has not withdrawn it. (1)-(5) are NECESSARY, NEVER SUFFICIENT.",
       "exit_result": "SUPERSEDED — the r7 MET record moved to exit_result_superseded_r7; the reopened bar above is unmet as of 2026-08-11.",
       "_reviewed": true,
       "_owner_reopen": "OWNER OVERRULE 2026-08-11 (R3 — locked to him): ผมไม่เห็นด้วยที่ข้าม phase 2 ไป. The r7 close stood on its exit test (crops + QUALIFIES), but the p3r2 critique tables are still dominated by SURFACE-REALISM findings — bedding reads as felt (both critics' #1), wood figure tiles, rug edge reads printed, garments read cardboard — and the builder's review routed them to P4 (density), which relabels P2-class work instead of doing it. The owner overruled that routing from the image. P2 reopens with those findings as its work list; P4 waits behind it. The exit test below was too narrow and is allowed to be wrong (plan law); it is superseded by the reopen list.",
@@ -511,7 +511,7 @@
     {
       "id": "P4",
       "title": "Styling density — completeness, not realism",
-      "goal": ">=12 loose objects in a room that has zero.",
+      "goal": "RE-AIMED 2026-08-26 (review #82, verdict 'change'). The old goal read '>=12 loose objects in a room that has zero' — AND THE ROOM NEVER HAD ZERO. D7 printed 0 because `item_convention.item_id` could not read the names the build writes: `place_model` names a bought styling object `deco_<stem>__acq<N>` (ONE underscore after 'deco', because the double underscore is the item/part separator) while the convention tested `startswith('deco__')`, so `deco_books__acq0`, `deco_books__acq1` and `deco_bedthrow__acq0` — all three IN FRUSTUM — matched no rule, matched no exclusion, and fell to a bare `return None` indistinguishable from a deliberate exclusion. THE REAL NUMBER on the frame of record is **D7 = 2 (bedthrow, books) against a required 12**, plus 51 in-frustum names the convention cannot classify either way. The phase's target is unchanged at 12; what changed is that it is now a climb from a measured 2 rather than from a vacuous 0, so a round can tell progress from noise. The direction the old number was wrong in flattered nobody — it made a sparsely-styled room look like an empty one.",
       "status": "open",
       "_evidence": "SC-4 says object count does not move perceived realism. It is here because the owner's own words were 'reads as unfinished file', which is a completeness judgement. Do not claim it makes the frame look real.",
       "work": [
@@ -526,13 +526,21 @@
           "what": "an item-id convention on built parts, emitted by scene_dump, so D7 can be read",
           "where": "pipeline/scripts/scene_dump.py",
           "why": "D7 is the only row in the standard that no reader can answer. It is unscored today and becomes mandatory when CATALOG.json's styling_short_by reaches 0 — at which point an unreadable row becomes a blocking one.",
-          "status": "todo"
+          "status": "done",
+          "closed_by": "BUILT and wired before this review: `item_convention.py` (pure, imported by both sides so there is one definition), `scene_dump` stamps `item_id` + `in_frustum` + `occluded` per record at schema scene-dump@2, and `deliverable_check.measure_scene_built` counts distinct in-frustum items — so D7 reads a number instead of NOT RUN. CLOSED HERE ONLY WITH ITS OWN FAILURE RECORDED (2026-08-26): the convention went blind on the acquired deco naming and the blindness printed as the number 0, which the module's own header forbids in the next sentence ('a 0 from a reader that cannot see is not a 0') — it had said that about an OLD DUMP SCHEMA and never about an UNRECOGNISED NAME. Fixed the same day: `classify()` returns (id, verdict) with verdict in {item, excluded, unknown}, and `count_items` returns the in-frustum names it could not classify IN THE RETURN VALUE rather than in a helper — a channel the caller must remember to read is a queue whose consumer never visits it. `deliverable_check` prints that list beside the count."
         },
         {
           "id": "P4c",
           "what": "the ABSENT-object question: what must a room of this type contain that this frame has none of",
           "where": "pipeline/scripts/rule_gate.py",
           "why": "C2#9, counted in the built scene and every count is ZERO: sockets 0, switches 0, handles/pulls 0, AC vents 0, bedside reading lights 0, wall skirting 0 (the 5 plinths are cabinet plinths). NOTHING IN THIS REPO ASKS THIS QUESTION IN EITHER DIRECTION. R10 asks whether a PRESENT object justifies itself; deliverable_check scores what is in the frame; placement_check judges where built things sit. A missing required object is invisible to all three. That is the same shape as R10 was before the owner named it, one step further out — and it is why a frame can pass every rung and still read as a showroom nobody has moved into.",
+          "status": "todo"
+        },
+        {
+          "id": "P4d",
+          "what": "empty the unknown list: every in-frustum name must land in a rule or in an exclusion, both by a recorded decision",
+          "where": "pipeline/scripts/item_convention.py",
+          "why": "51 in-frustum names on the frame of record are neither counted nor excluded — they are simply unread, and that is the state D7 spent its life in without anyone being able to see it. While the list is non-empty the density number is a claim about the CONVENTION and not about the room, so it cannot close this phase. Two rules, not one: a name that IS a loose styling item gets a rule; a name that is not (walls, glazing, sconces, curtains) gets an exclusion with a reason. An allowlist that swallows the remainder is refused by name — that is R9b, and it is how this convention went blind in the first place.",
           "status": "todo"
         }
       ],
@@ -3935,8 +3943,126 @@
         "STY/STY-7",
         "STY/STY-8"
       ]
+    },
+    {
+      "commit": "848c19f1af2ae4e80a98310b44985b3de378e2a2",
+      "verdicts": {
+        "P2": "change: เงื่อนไขข้อ (2) ของเฟสนี้ — สี่ crop 100% เทียบ anchor — **ไม่เคยถูกประเมินจริงเลย** และวันนี้เพิ่งวัดได้เป็นครั้งแรก · จากที่วัดด้วย matmask ของเฟรมเอง: rug_edge มีพรมในกล่อง 0.8% ที่ p2r77 (ที่เหลือฐานเตียง 50% + ม้านั่ง 29%) และ 3.9% ที่ p2r78rc (พรมล้วนแต่ไม่มีขอบในกล่อง) — พิมพ์ ROLLED (pass) ทั้งสองครั้ง · duvet_fold ผ้านวม 21%->15% ที่เหลือผ้าม่าน 48% + พื้น 22% · เขียน exit_test ข้อ (2) ใหม่ให้บังคับสองอย่างที่ไม่มีอยู่: (ก) ทุก crop ต้องผ่าน subject guard (D-153) ไม่ใช่แค่มีเลขออกมา (ข) rung ที่ตอบว่า 'ไม่เจอ'ต้องมี positive control ยิงติดในเฟรมเดียวกัน (D-056 ค้างมาห้ารอบ ตอนนี้ autocorrมีแล้ว) · และบันทึกว่าเงื่อนไขข้อ (1) MET แล้วที่ p2r78rc (8 ผ่าน/2 ตก QUALIFIES, D5/D8/D9 ผ่าน) พร้อมคำเตือนที่ข้อ (6) เขียนไว้เองว่า (1)-(5) จำเป็นแต่ไม่เคยพอ · เลขที่ซื่อสัตย์ชุดแรกของสองผิวนี้ชี้ทางเดียวกับกรรมการ: throw 3.682x, duvet 2.115x",
+        "P4": "change: แถวคะแนนของเฟสนี้เอง (D7) พิมพ์ 0 มาตลอดโดยที่ห้องมีของแต่งอยู่ในเฟรม — convention รู้จัก deco__ ส่วน build เขียน deco_<stem>__acq<N> ของสามชิ้นจึงตกท้ายฟังก์ชันไปที่ return None แยกไม่ออกจากการถูกยกเว้นโดยตั้งใจ · แก้แล้ววันนี้ เลขจริงคือ **D7 = 2 เทียบเกณฑ์ 12** บวก 51 ชื่อในเฟรมที่จัดประเภทไม่ได้ทั้งสองทาง · เขียน goal ของเฟสใหม่รอบเป้าที่ 2->12 (เดิมเขียนรอบ 0 ซึ่งไม่เคยจริง) และเพิ่มงานหนึ่งข้อ: ไล่ 51 ชื่อนั้นให้เข้ากฎหรือเข้าข้อยกเว้นอย่างใดอย่างหนึ่ง — ตราบใดที่รายการนั้นยังไม่ว่าง เลขความหนาแน่นยังเป็นคำกล่าวเรื่อง convention ไม่ใช่เรื่องห้อง · เฟสไม่เปิด ลำดับ P2->P4 ไม่ขยับ",
+        "P3": "keep: รอบนี้ไม่แตะ P3 เลย ทั้ง goal และ exit test ยังตรงกับสิ่งที่เหลือจริงตามที่รีวิว 81 เพิ่งเขียนใหม่ · ไม่มีอะไรจากรอบนี้ที่เปลี่ยนสิ่งที่ P3 ต้องทำ — งานแสงของรอบ 78 (portal 0.20, key sun azimuth) ปิดไปแล้วในฐานะกลไกของ P2 ไม่ใช่การเปิด P3 · ทบทวนแล้วไม่มีการเปลี่ยนแปลง",
+        "P5": "keep: ยัง blocked ตามเดิมและเหตุผลไม่เปลี่ยน — เฟสตัดสินเปิดไม่ได้จนกว่า P2 จะปิด และ P2 ปิดไม่ได้จนกว่าพี่จะพอใจกับของในเฟรม (เงื่อนไข 6 ของ P2) · รอบนี้ทำให้เครื่องมือที่ P5 จะใช้ตัดสินเชื่อถือได้ขึ้น แต่ไม่ได้ปลดล็อกอะไร · ทบทวนแล้วไม่มีการเปลี่ยนแปลง",
+        "STY": "keep: รอบนี้ไม่แตะ STY และไม่มีอะไรที่วัดได้วันนี้เปลี่ยนสิ่งที่โปรแกรมนี้ต้องทำ — slot ที่ยังไม่เซ็นห้าช่อง (เก่าสุด 43 วัน) และ palette gap 0.300 ยังเป็นงานของ STY-2..4 ตามเดิม · หนึ่งข้อที่ควรบันทึกไว้เป็นการเช็คไขว้ ไม่ใช่การเปลี่ยนแผน: exit test ของ STY บังคับว่า 'ทุก ACQUIRED mass ที่อยู่ในเฟรมต้องมี style verdict' และวันนี้ item_convention รายงานว่ามี 51 ชื่อในเฟรมที่มันจัดประเภทไม่ได้ทั้งสองทาง — คนละทะเบียนกัน แต่เป็นคำถามเดียวกันว่า 'อะไรอยู่ในเฟรมและมีใครรู้จักมันบ้าง' ถ้า STY-x รอบหน้าจะนับ in-frustum ให้เทียบสองรายการนี้กันก่อน · ทบทวนแล้วไม่มีการเปลี่ยนแปลง"
+      },
+      "changed": [
+        "P2",
+        "P4"
+      ],
+      "note": "รีวิว 82 — รอบเครื่องมือล้วน 0 เรนเดอร์ · คำถามที่เปิดรอบคือของพี่: 'ผลครั้งนี้จะทำให้ P2 ดีขึ้นมั้ย' ตอบว่าขยับได้หนึ่งจากหกเงื่อนไข และการตอบให้ซื่อสัตย์ทำให้พบว่าเกตที่ใช้ตัดสินสองเฟส (P2 ข้อ 2, P4 แถว D7) วัดของที่ตัวเองตั้งชื่อไม่ได้ · defect class เดียวกันสี่ครั้งในรอบเดียว และ repo เคยเจอสองในสี่นั้นมาแล้ว (fdb6fae 08-16, 1ecb152 08-17) แล้วบันทึกเป็นประโยคเรื่องเคสนั้น ไม่ใช่กลไกที่ตรวจทุกเคส — R9b เป๊ะ ๆ · D-153/154/155",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a",
+        "STY/STY-1",
+        "STY/STY-1b",
+        "STY/STY-7",
+        "STY/STY-8"
+      ]
+    },
+    {
+      "commit": "848c19f1af2ae4e80a98310b44985b3de378e2a2",
+      "verdicts": {
+        "P2": "keep: รีวิว 82 เพิ่งแก้ exit_test ของเฟสนี้ไปเมื่อครู่ (ข้อ 2a/2b + บันทึกว่าข้อ 1 MET) และยังไม่มีการวัดใหม่หลังจากนั้น — ทบทวนแล้วไม่มีการเปลี่ยนแปลง",
+        "P4": "keep: รีวิว 82 เพิ่งเขียน goal ใหม่รอบ D7 = 2 เทียบ 12, ปิด P4b พร้อมบันทึกความล้มเหลวของมันเอง และเพิ่ม P4d (ไล่ 51 ชื่อที่จัดประเภทไม่ได้) — รีวิวนี้เกิดขึ้นเพราะการปิด P4b ซึ่งเป็นผลของรีวิว 82 เอง ไม่ใช่งานใหม่ · ทบทวนแล้วไม่มีการเปลี่ยนแปลง",
+        "P3": "keep: ไม่มีอะไรเกิดขึ้นกับ P3 ระหว่างรีวิว 82 กับรีวิวนี้ · ทบทวนแล้วไม่มีการเปลี่ยนแปลง",
+        "P5": "keep: ยัง blocked ด้วยเหตุผลเดิม (P2 ยังไม่ปิด) · ทบทวนแล้วไม่มีการเปลี่ยนแปลง",
+        "STY": "keep: ไม่มีอะไรเกิดขึ้นกับ STY ระหว่างรีวิว 82 กับรีวิวนี้ · ทบทวนแล้วไม่มีการเปลี่ยนแปลง"
+      },
+      "changed": [],
+      "note": "รีวิว 83 — รีวิวนี้ถูกเรียกโดยการปิด P4b ซึ่งเป็นการ 'ทำตาม' verdict ของรีวิว 82 เอง ไม่ใช่งาน build ใหม่ · ไม่มีการวัดใหม่ระหว่างสองรีวิว ทุกเฟสจึง keep และพูดตรง ๆ ว่าไม่มีการเปลี่ยนแปลง ตามที่กฎของไฟล์นี้บังคับให้พูดเป็นคำ ๆ",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a",
+        "P4/P4b",
+        "STY/STY-1",
+        "STY/STY-1b",
+        "STY/STY-7",
+        "STY/STY-8"
+      ]
     }
   ],
-  "last_review_commit": "2a13fe6f912c5df5185080fc254fab4c6ce0c33f",
+  "last_review_commit": "848c19f1af2ae4e80a98310b44985b3de378e2a2",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
