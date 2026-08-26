@@ -54,6 +54,21 @@ _ACC = re.compile(r"^mill__acc_([a-z_0-9]+?)(?:__|$)")
 # objects** — the row that P4 is scored on, reading zero off a naming
 # convention the build stopped following rather than off the room.
 _DECO_ACQ = re.compile(r"^deco_([a-z0-9_]+?)__acq\d+", re.I)
+# BUILT-IN CONTENTS, ADDED p2r80b (ORD-2026-08-26-builtin-contents-unnatural).
+# The p2r80 full frame put a hero bag and a rattan basket IN FRUSTUM as
+# `wardrobe__acq<N>` and display pieces as `bookshelf_display__acq<N>`, and D7
+# printed 2 — the p2r79 class, one prefix over. Those bare-tag names are
+# UNGROUPABLE (one GLB imports as many meshes; Blender's .00N dedup makes
+# `wardrobe__acq0.001` a DIFFERENT item from `wardrobe__acq0`), so the build
+# now tags per item (`wardrobe_bag__acq*`, `bookshelf_vase__acq*`) and this
+# rule counts one item per stem. LEGACY names: `wardrobe__acq<N>` CANNOT match
+# (one underscore where the rule needs two) and stays in the unknown channel —
+# grouping it would fabricate a count the naming cannot carry. The p2r80
+# transitional `bookshelf_display__acq<N>` DOES match and collapses all five
+# display pieces into ONE item — an under-count, which is the conservative
+# direction for a min-threshold row; it disappears with the next build's
+# per-item stems.
+_BUILTIN_ACQ = re.compile(r"^(wardrobe|bookshelf)_([a-z0-9_]+?)__acq\d+", re.I)
 _EXCLUDE = re.compile(r"style_garment|style_hanger|^rug__|lamp|^bed__|^bench__|"
                       r"^mill__(?!style_fold|acc_)|^e5_|^wall|^floor|^ceil")
 
@@ -88,6 +103,9 @@ def classify(name):
     m = _DECO_ACQ.match(n)
     if m:
         return m.group(1).lower(), "item"
+    m = _BUILTIN_ACQ.match(n)
+    if m:
+        return f"{m.group(1).lower()}_{m.group(2).lower()}", "item"
     m = _ACC.match(n)
     if m:
         return f"acc_{m.group(1)}", "item"

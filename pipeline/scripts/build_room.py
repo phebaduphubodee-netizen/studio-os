@@ -4108,9 +4108,27 @@ def _dress_scene(spec):
         # ni2 (1718 mm) joined the map off the p2r76c scene read — it was the
         # one consistently EMPTY level precisely because no code could see it
         _lvl_pref = {'tw0': 0, 'ni2': 1, 'tw1': 2, 'ni1': 3, 'ni0': 4}
+        # p2r80 (ORD-2026-08-26-builtin-contents-unnatural): membership comes
+        # from the ANCHOR REGISTRY, never a name prefix. The old
+        # startswith('mill__bay') filter was an allowlist wearing a string
+        # (R9b): it admitted the walk-in's two bays and silently excluded
+        # BF09-3 — the one wardrobe the EYE CAMERA sees — so every basket,
+        # tray, bag and vessel landed where no deliverable frame looks.
+        _ward_shelf_hosts = {a["name"]: str(a.get("piece") or "")
+                             for a in _STYLE_ANCHORS
+                             if str(a.get("kind", "")) in ("wardrobe", "closet")
+                             and str(a.get("part", "")).startswith("shelf")}
+        # eye-visible open wardrobes = spec-declared open builtins (their
+        # anchor piece is the builtin's own name). NORMALIZED THE SAME WAY THE
+        # MILLWORK CALLER DOES (build_room ~10943 replaces spaces before
+        # naming): the first quick of p2r80 matched the raw spec string
+        # against the sanitized piece, found nothing, and the story block
+        # skipped WITHOUT A SOUND — the bag left the frame entirely.
+        _b3_hosts = {str(b.get("name", "")).replace(" ", "_")
+                     for b in (spec.get("builtins") or ())
+                     if b.get("kind") == "wardrobe" and b.get("open")}
         _shelves = sorted((o for o in bpy.data.objects
-                           if o.type == 'MESH' and 'shelf' in o.name
-                           and o.name.startswith('mill__bay')
+                           if o.type == 'MESH' and o.name in _ward_shelf_hosts
                            and o.name.rsplit('_', 1)[-1] in _lvl_pref),
                           key=lambda o: (_lvl_pref[o.name.rsplit('_', 1)[-1]],
                                          o.name))
@@ -4124,13 +4142,16 @@ def _dress_scene(spec):
         # order = story priority (p2r76d: two bays hold ~6 free cells, so the
         # tail of this list is ALLOWED to drop — bag/shoes/vessels carry the
         # narrative, box/basket/tray/slippers are texture)
-        _wc_plan = ([(_WARDROBE_BAG_MODEL, False),
-                     (_WARDROBE_SHOES_MODEL, True)]
+        # p2r80: when an eye-visible open wardrobe exists, the HERO BAG moves
+        # to ITS story block below — the narrative line is "ของชิ้นโปรดวางแบบเห็น"
+        # (the favourite is DISPLAYED), and the walk-in is outside the eye
+        # frustum. One bag in the house, shown where the deliverable looks.
+        _wc_plan = (([] if _b3_hosts else [(_WARDROBE_BAG_MODEL, False)])
+                    + [(_WARDROBE_SHOES_MODEL, True)]
                     + [(m, False) for m in _WARDROBE_SHELF_MODELS]
                     + [(_WARDROBE_FLOOR_MODEL, True)])
         _lo_shelves = sorted((o for o in bpy.data.objects
-                              if o.type == 'MESH' and 'shelf' in o.name
-                              and o.name.startswith('mill__bay')
+                              if o.type == 'MESH' and o.name in _ward_shelf_hosts
                               and o.name.rsplit('_', 1)[-1] in ('ni0', 'fl')),
                              key=lambda o: o.name)
 
@@ -4139,8 +4160,13 @@ def _dress_scene(spec):
             # existing folded-linen stacks — shelf SIZE was checked, occupancy
             # never. Any mesh already standing on this shelf face refuses it.
             for _oo in bpy.data.objects:
+                # p2r80: carcass is not an occupant — the old skip named only
+                # 'mill__bay', so BF09-3's own gables/backs (Thai-named piece)
+                # would have starved every one of its cells the same way the
+                # walls once did. Styling pieces (mill__style_*) still count.
                 if (_oo.type != 'MESH' or _oo.hide_render
-                        or _oo.name.startswith('mill__bay')):
+                        or (_oo.name.startswith('mill__')
+                            and not _oo.name.startswith('mill__style'))):
                     continue
                 # ORD-25c (read off the built scene, not guessed): the deep
                 # BF09-1-1 shelf AABBs extend into the room walls, so the WALL
@@ -4161,6 +4187,167 @@ def _dress_scene(spec):
 
         _used_bays = set()      # real placements only — the cap counts these
         _closed_cells = set()   # hero closure: cells barred without counting
+
+        # p2r80b — PER-ITEM TAGS so the D7 counter can read the names. The
+        # first p2r80 full tagged everything "wardrobe": place_model then
+        # names meshes wardrobe__acq<N>, a shape item_convention classifies
+        # as UNKNOWN (multi-mesh imports + Blender .00N dedup make the bare
+        # tag ungroupable) — the p2r79 blindness class, one prefix over.
+        # A name that carries its item stem is countable; these are.
+        _B3_TAGS = {
+            _WARDROBE_BAG_MODEL: "wardrobe_bag",
+            "90a1129e-ffa0-4494-a990-3e59dfdcb3ef": "wardrobe_basket",
+            "c590fee3-5d46-45cc-88c6-fb8a92bc56b5": "wardrobe_box",
+        }
+        # the open wardrobe's FRONT direction, derived once from the spec: the
+        # cell's depth axis is the builtin's short plan axis, and the front is
+        # the side facing the room's centroid (never typed). Needed because a
+        # 600 mm deep niche cell centres its occupant 200+ mm behind the
+        # gable line, and the p2r80 full frame proved what that does: the
+        # hero bag rendered as a sliver behind the tower gable — the story
+        # line is 'วางแบบเห็น' and depth-centring un-delivered it.
+        _b3_front = {}
+        # FRONT = toward the FURNITURE THE UNIT SERVES (mill_axis's own law),
+        # never the outline centroid: p2r80b measured what the centroid does
+        # in an L-shaped suite — the outline runs north through the dressing
+        # gallery, its centroid sat PAST the unit, and the "front" pull moved
+        # the bag from y3.026 to y3.202: deeper into the niche, fully hidden.
+        _fitems = spec.get("items") or []
+        if _fitems:
+            _rcx = (sum((float(it["x"]) + float(it["w"]) / 2.0)
+                        for it in _fitems) / len(_fitems)) * MM
+            _rcy = (sum((float(it["y"]) + float(it["d"]) / 2.0)
+                        for it in _fitems) / len(_fitems)) * MM
+            for _b in (spec.get("builtins") or ()):
+                if str(_b.get("name", "")).replace(" ", "_") not in _b3_hosts:
+                    continue
+                _bw_, _bd_ = float(_b["w"]) * MM, float(_b["d"]) * MM
+                _bcx = float(_b["x"]) * MM + _bw_ / 2.0
+                _bcy = float(_b["y"]) * MM + _bd_ / 2.0
+                _ax = 'y' if _bd_ <= _bw_ else 'x'
+                _sgn = ((1.0 if _rcy > _bcy else -1.0) if _ax == 'y'
+                        else (1.0 if _rcx > _bcx else -1.0))
+                _b3_front[str(_b.get("name", "")).replace(" ", "_")] = (_ax, _sgn)
+
+        def _place_on_cell(_mid, _cell, _need_gap=0.02, _dx_off=0.0,
+                           _front=None):
+            """One acquired piece onto ONE named shelf cell: z from the built
+            face (R9), plan centred + a measured breath off-centre, occupancy
+            and fit refused loudly. Returns True only on a real placement.
+            `_front=(axis, sign, setback_m)` pulls the piece to a measured
+            setback from the cell's FRONT edge on that axis (R9 form (c):
+            offset from a named edge) instead of depth-centring it."""
+            _mp = _model_path(_mid)
+            if _mp is None:
+                print(f"  lane D/B3: {_mid[:8]} DROPPED — model refused/"
+                      f"unavailable (never a silent skip)")
+                return False
+            try:
+                with open(_ascale.sidecar_path(_mp), encoding="utf-8") as _cf_:
+                    _csc = json.load(_cf_)["bbox_mm"]
+                _cx, _cy, _cz = (float(_csc["x_mm"]) / 1000.0,
+                                 float(_csc["y_mm"]) / 1000.0,
+                                 float(_csc["z_mm"]) / 1000.0)
+            except (OSError, ValueError, KeyError, TypeError) as _ce_:
+                print(f"  lane D/B3: {_mid[:8]} DROPPED — sidecar unreadable "
+                      f"({_ce_})")
+                return False
+            _cb = [(_cell.matrix_world @ Vector(c)) for c in _cell.bound_box]
+            _c0 = (min(p.x for p in _cb), min(p.y for p in _cb))
+            _c1 = (max(p.x for p in _cb), max(p.y for p in _cb))
+            _cw_, _cd_ = _c1[0] - _c0[0], _c1[1] - _c0[1]
+            if _cw_ < _cx + _need_gap or _cd_ < _cy + _need_gap:
+                print(f"  lane D/B3: {_mid[:8]} DROPPED — face "
+                      f"{_cw_ * 1000:.0f}x{_cd_ * 1000:.0f} too small for "
+                      f"{_cx * 1000:.0f}x{_cy * 1000:.0f} (loud)")
+                return False
+            _ctop = max(p.z for p in _cb)
+            _occ = _shelf_occupied(_c0, _c1, _ctop, _cz + 0.02)
+            if _occ:
+                print(f"  lane D/B3: {_mid[:8]} DROPPED — cell occupied by "
+                      f"{_occ} (loud)")
+                return False
+            _px_ = _c0[0] + (_cw_ - _cx) / 2.0 + _dx_off
+            _py_ = _c0[1] + (_cd_ - _cy) / 2.0
+            if _front is not None:
+                _fax, _fsgn, _fset = _front
+                if _fax == 'y':
+                    _py_ = (_c1[1] - _fset - _cy) if _fsgn > 0 else (_c0[1] + _fset)
+                else:
+                    _px_ = ((_c1[0] - _fset - _cx) if _fsgn > 0
+                            else (_c0[0] + _fset)) + _dx_off
+            return place_model(_mp, _px_, _py_, _cx, _cy, _cz,
+                               rot=0.0, z0=_ctop,
+                               tag=_B3_TAGS.get(_mid, "wardrobe"))
+
+        # ------------------------------------------------------------- p2r80
+        # BF09-3 STORY BLOCK (ORD-2026-08-26-builtin-contents-unnatural, on
+        # his p2r78rc verdict "ของในตู้ built-in ยังไม่เป็นธรรมชาติ"): the open
+        # wardrobe the EYE CAMERA sees gets its contents from the narrative's
+        # own shelf-story lines (styling-narrative-2026-08-25.md), cell by
+        # cell — never first-fit leftovers. Empty cells that remain are the
+        # narrative's own rule ("เว้นว่างจริง >=1 ช่องต่อ column") plus
+        # decor-placement-grammar §1's 60/40 occupancy law — declared, kept.
+        _b3_cells = {}
+        for _shn, _pc in _ward_shelf_hosts.items():
+            if _pc in _b3_hosts:
+                _so = bpy.data.objects.get(_shn)
+                if _so is not None:
+                    _b3_cells[_shn.rsplit('_', 1)[-1]] = _so
+        if _b3_cells:
+            _b3_story = (
+                # (id, level token, front-pull?, narrative line). front-pull:
+                # the hero is DISPLAYED ('วางแบบเห็น') — measured 50 mm setback
+                # from the cell's front edge; p2r80's first full depth-centred
+                # it and the camera got a sliver behind the tower gable.
+                (_WARDROBE_BAG_MODEL, 'ni1', True,
+                 "กระเป๋าหนังภรรยา — ชั้นระดับตา ของชิ้นโปรดวางแบบเห็น (hero, alone)"),
+                ("90a1129e-ffa0-4494-a990-3e59dfdcb3ef", 'fl', False,
+                 "ตะกร้าหวายมีฝา — ผ้ารอส่งซัก อยู่ชั้นล่าง"),
+                ("c590fee3-5d46-45cc-88c6-fb8a92bc56b5", 'fh', False,
+                 "กล่องผ้าเก็บตามฤดู — ชั้นสูงเพราะนาน ๆ หยิบ"),
+                # tw0 stays AIR on purpose: tw1 already carries a fold stack,
+                # and the narrative's law is >=1 empty cell per column — a
+                # tower with both cells filled is the warehouse read. The
+                # tray debuts on the bookshelf's garden bay instead.
+            )
+            for _bi, (_mid, _lvl, _fpull, _line) in enumerate(_b3_story):
+                _cell = _b3_cells.get(_lvl)
+                if _cell is None:
+                    print(f"  lane D/B3: no '{_lvl}' cell on the open "
+                          f"wardrobe — {_mid[:8]} DROPPED (loud)")
+                    continue
+                _bay = _cell.name.split('_shelf_')[0]
+                if ((_bay, _lvl) in _used_bays
+                        or (_bay, _lvl) in _closed_cells):
+                    continue
+                _host_pc = _ward_shelf_hosts.get(_cell.name, "")
+                _fr = ((_b3_front[_host_pc][0], _b3_front[_host_pc][1], 0.05)
+                       if _fpull and _host_pc in _b3_front else None)
+                if _fpull and _fr is None:
+                    print(f"  REVIEW lane D/B3: {_mid[:8]} wants a front pull "
+                          f"but no front derivation exists for host "
+                          f"{_host_pc!r} — falling back to centred (loud)")
+                if _place_on_cell(_mid, _cell,
+                                  _dx_off=(-0.035 if _bi % 2 else 0.035),
+                                  _front=_fr):
+                    _used_bays.add((_bay, _lvl))
+                    print(f"  lane D/B3: {_mid[:8]} on "
+                          f"{_cell.name.split('mill__')[-1]} — {_line}")
+                    if _mid == _WARDROBE_BAG_MODEL:
+                        # hero alone in its lit cell: the niche column above
+                        # and below the bag stays AIR (reference read + the
+                        # narrative's own empty-cell law)
+                        for _l_ in ('ni0', 'ni2'):
+                            _closed_cells.add((_bay, _l_))
+        elif _b3_hosts:
+            # hosts declared but zero cells resolved = a WIRING BREAK between
+            # the spec name and the anchor piece, and the hero bag has no
+            # home. The first quick of p2r80 hit exactly this and said
+            # nothing; a story block that cannot find its stage must SHOUT.
+            print(f"  REVIEW lane D/B3: open wardrobe host(s) {sorted(_b3_hosts)} "
+                  f"declared but NO shelf cells resolved from anchors — the "
+                  f"story block placed NOTHING (bag/basket/box all skipped)")
         # ORD-25c VESSEL PAIR — placed FIRST (p2r76f: the two-bay eye/mid band
         # holds six cells and filled 6/6, so order IS priority; the pair's
         # height story outranks the low rattan tray nobody's camera sees) — one cell, one idea, two heights (332 vs 66 mm;
@@ -4329,6 +4516,119 @@ def _dress_scene(spec):
             if not _laid:
                 print(f"  lane D: wardrobe piece {_wid[:8]} DROPPED — no "
                       f"clear shelf of its class left (never a silent skip)")
+
+        # ------------------------------------------------------------- p2r80
+        # BOOKSHELF DISPLAY (ORD-2026-08-26-builtin-contents-unnatural): the
+        # ex-TV shelf's spec prose — "odd groupings (3/5), one sculptural
+        # object per bay, light objects high" — had ZERO consumers, so its 18
+        # built faces rendered bare through every round while the prose read
+        # as decided. This block IS the consumer. Numeric rules cited from
+        # knowledge/styles/decor-placement-grammar.md §5: similar pieces
+        # stagger diagonally (X-pattern), >=25% of a dressed face stays
+        # empty (enforced by fit margin + centring), most cells stay air —
+        # this unit's signed job is the garden reading THROUGH it. Folded
+        # knits stay refused here (KNIT_KINDS, styling.py — wrong object for
+        # a display shelf); display objects are a different lane, this one.
+        # Cells derive from _STYLE_ANCHORS (kind == "bookshelf"), never names.
+        import re as _re80
+        _bk_cells = {}
+        for _a in _STYLE_ANCHORS:
+            if (str(_a.get("kind")) != "bookshelf"
+                    or not str(_a.get("part", "")).startswith("shelf")):
+                continue
+            _m = _re80.match(r"shelf(\d+)_(\d+)$", str(_a["part"]))
+            _bo = bpy.data.objects.get(str(_a.get("name")))
+            if _m and _bo is not None:
+                _bk_cells[(int(_m.group(1)), int(_m.group(2)))] = (_a, _bo)
+        if _bk_cells:
+            # which index is the LEVEL is measured off the anchors (z spread),
+            # never assumed from the name (the name is a label, not a datum)
+            _zspread_first = (max(a["z"] for (_i, _j), (a, _) in _bk_cells.items())
+                             - min(a["z"] for (_i, _j), (a, _) in _bk_cells.items()))
+            _by_first = {}
+            for (_i, _j), (_a, _) in _bk_cells.items():
+                _by_first.setdefault(_i, []).append(_a["z"])
+            _first_is_level = (max(max(v) - min(v) for v in _by_first.values())
+                               < _zspread_first * 0.5)
+            def _bk(_lv, _by):
+                return _bk_cells.get((_lv, _by) if _first_is_level
+                                     else (_by, _lv))
+            _n_lv = max((_i if _first_is_level else _j)
+                        for (_i, _j) in _bk_cells) + 1
+            _n_by = max((_j if _first_is_level else _i)
+                        for (_i, _j) in _bk_cells) + 1
+            # X-pattern plan (5 dressed cells of 18 = the unit stays mostly
+            # air): books low-band staggered across bays 0-1, sculpturals on
+            # the opposite diagonal, the garden bay carries ONE low piece.
+            # Ids: month-fetched, scale-asserted (qa/blenderkit-fetch-log);
+            # panel judges the ensemble at the quick (ORD-25c — a losing
+            # verdict changes an id, never re-opens a build).
+            # per-item tag stems (p2r80b): a bare shared tag names meshes the
+            # D7 convention cannot group — the p2r79 blindness class
+            _bk_plan = (
+                ("6afdfecd-910b-4523-a88f-76385dfd6323", 1, 0, "books0", "books, low north"),
+                ("ac0d7cbf-616c-42a4-91dd-5c94cfbd7bff", 3, 0, "vase", "vase, upper north"),
+                ("55486511-6374-4c64-ab5b-76dfb0c6e2a4", 2, 1, "books1", "books, mid centre"),
+                ("265d7b9b-adfd-4633-9980-31e4ff5744fd", 4, 1, "bowl", "carved bowl, upper centre"),
+                ("8d6dd7a7-b9a0-43b5-826f-b0bb7dabd303", 0, 2, "tray", "tray, low in the garden bay"),
+            )
+            _bk_done = 0
+            for _mid, _lv, _by, _stem, _line in _bk_plan:
+                if _lv >= _n_lv - 1 or _by >= _n_by:
+                    print(f"  bookshelf: plan cell L{_lv}/B{_by} outside the "
+                          f"built {_n_lv}x{_n_by} grid — {_mid[:8]} DROPPED")
+                    continue
+                _hit = _bk(_lv, _by)
+                _above = _bk(_lv + 1, _by)
+                if _hit is None or _above is None:
+                    print(f"  bookshelf: cell L{_lv}/B{_by} or its ceiling "
+                          f"board missing — {_mid[:8]} DROPPED (loud)")
+                    continue
+                _a, _bo = _hit
+                _aa, _ = _above
+                _clear = _aa["z"] - (_a["z"] + _a["dz"])
+                _mp = _model_path(_mid)
+                if _mp is None:
+                    print(f"  bookshelf: {_mid[:8]} DROPPED — model refused/"
+                          f"unavailable (loud)")
+                    continue
+                try:
+                    with open(_ascale.sidecar_path(_mp), encoding="utf-8") as _bf_:
+                        _bsc = json.load(_bf_)["bbox_mm"]
+                    _bx, _by_, _bz = (float(_bsc["x_mm"]) / 1000.0,
+                                      float(_bsc["y_mm"]) / 1000.0,
+                                      float(_bsc["z_mm"]) / 1000.0)
+                except (OSError, ValueError, KeyError, TypeError) as _be_:
+                    print(f"  bookshelf: {_mid[:8]} DROPPED — sidecar "
+                          f"unreadable ({_be_})")
+                    continue
+                if _bz > _clear - 0.02:
+                    print(f"  bookshelf: {_mid[:8]} DROPPED — {_bz * 1000:.0f}mm "
+                          f"tall vs {_clear * 1000:.0f}mm clear at L{_lv}/B{_by} "
+                          f"(fit refused, loud)")
+                    continue
+                _fb = [(_bo.matrix_world @ Vector(c)) for c in _bo.bound_box]
+                _f0 = (min(p.x for p in _fb), min(p.y for p in _fb))
+                _f1 = (max(p.x for p in _fb), max(p.y for p in _fb))
+                _fw, _fd = _f1[0] - _f0[0], _f1[1] - _f0[1]
+                if _fw < _bx + 0.02 or _fd < _by_ + 0.02:
+                    print(f"  bookshelf: {_mid[:8]} DROPPED — face too small "
+                          f"at L{_lv}/B{_by} (loud)")
+                    continue
+                _ftop = max(p.z for p in _fb)
+                if _shelf_occupied(_f0, _f1, _ftop, _bz + 0.02):
+                    continue
+                # grammar §1: a breath off dead-centre, alternating side
+                _off = 0.03 if _bk_done % 2 else -0.03
+                if place_model(_mp, _f0[0] + (_fw - _bx) / 2.0,
+                               _f0[1] + (_fd - _by_) / 2.0 + _off,
+                               _bx, _by_, _bz, rot=0.0, z0=_ftop,
+                               tag=f"bookshelf_{_stem}"):
+                    _bk_done += 1
+                    print(f"  bookshelf: {_mid[:8]} on L{_lv}/B{_by} — {_line}")
+            print(f"  bookshelf display: {_bk_done}/5 planned pieces placed "
+                  f"({len(_bk_cells)} faces built; the empties are the "
+                  f"unit's declared air, not an omission)")
     tbl = next((it for it in items if it.get("kind") in ("coffee_table", "round_table")
                 and float(it["x"]) > 4000), None)
     if tbl:

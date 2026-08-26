@@ -496,12 +496,12 @@
   },
   {
    "assembly": "wardrobe",
-   "identity": "Acquired soft storage on the wardrobe shelves (p2r74, ORD-2026-08-25-six-items item 4, panel 2026-08-25b all >=2/3 inside): canvas storage box c590fee3, rattan basket 90a1129e, rattan tray 7302438e, slippers 4152f818 — one piece per bay, resting on MEASURED shelf tops (R9), vendor materials kept (natural fibre IS the read).",
-   "exists": "not-in-drawing: wardrobe styling per his item 4 — a furniture plan draws no shelf contents",
+   "identity": "Acquired soft storage on the wardrobe shelves (p2r74, ORD-2026-08-25-six-items item 4, panel 2026-08-25b all >=2/3 inside): canvas storage box c590fee3, rattan basket 90a1129e, rattan tray 7302438e, slippers 4152f818 — one piece per bay, resting on MEASURED shelf tops (R9), vendor materials kept (natural fibre IS the read). EXTENDED p2r80 (ORD-2026-08-26-builtin-contents-unnatural, his 'ของในตู้ built-in ยังไม่เป็นธรรมชาติ' on p2r78rc): the EYE-VISIBLE open wardrobe BF09-3 now carries its narrative shelf story — sienna doctor bag f8573a9c at niche eye level ni1 ('ของชิ้นโปรดวางแบบเห็น', hero alone: ni0/ni2 stay air), lidded rattan basket 90a1129e (2nd and last instance) low at fl (laundry line), canvas box c590fee3 (2nd and last instance) high at fh (seasonal line); tw0 left DELIBERATELY empty (>=1 empty cell per column, the narrative's own warehouse-guard). Cells resolved from _STYLE_ANCHORS by kind, never a name prefix (the mill__bay filter that had exempted BF09-3 was the R9b allowlist class).",
+   "exists": "not-in-drawing: wardrobe styling per his item 4 + the ORD-25c narrative shelf-story lines (styling-narrative-2026-08-25.md) — a furniture plan draws no shelf contents",
    "held_by": "mill",
    "operable": false,
    "verdict": "keep",
-   "why": "His order asked for wardrobe contents beyond clothes; every piece passed the blind panel and rests on a measured face."
+   "why": "His orders (item 4 + 08-26 builtin verdict) ask for cabinet contents where the camera looks; every id passed a blind panel, rests on a measured face, and each B3 site cites its narrative line."
   },
   {
    "assembly": "deco_throw",
@@ -529,7 +529,88 @@
    "operable": false,
    "verdict": "keep",
    "why": "ORD-2026-08-25c styling narrative (her-side story) + vignette-reading doc rule 4; id chosen p2r78 by the shopping list's E1 line (greige x charcoal woven) and the measured value floor."
+  },
+  {
+   "assembly": "bookshelf_display",
+   "identity": "Display objects on the ex-TV west bookshelf (p2r80, ORD-2026-08-26-builtin-contents-unnatural): the unit's own spec prose — 'odd groupings (3/5), one sculptural object per bay, light objects high' — had ZERO consumers, so all 18 built faces rendered bare while the prose read as decided. Five pieces now sit in an X-pattern per knowledge/styles/decor-placement-grammar.md S5: book stacks 6afdfecd (L1/B0) and 55486511 (L2/B1) on the low diagonal, vase ac0d7cbf (L3/B0) and carved bowl 265d7b9b (L4/B1, 2nd and last instance) on the opposite diagonal, shallow tray 8d6dd7a7 alone at L0/B2 — the garden bay keeps one low silhouette so the through-view stays the point. 13 of 18 faces stay AIR by grammar (>=25% face empty, books <=1/3, most cells empty on a see-through unit). Every placement z derives from its built board face (R9); fit and occupancy fail closed.",
+   "exists": "not-in-drawing: display styling per the builtin's own signed design.decision (D2-1 option B display prose) + ORD-2026-08-26; a furniture plan draws no shelf contents",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "His 08-26 verdict names the built-ins' contents; the spec's own display prose finally has a consumer; ids are month-fetched scale-asserted, ensemble panel judges them on this round's frames (a losing verdict changes an id, never re-opens a build)."
+  },
+  {
+   "assembly": "wardrobe_bag",
+   "identity": "Sienna doctor bag f8573a9c at BF09-3 niche eye level ni1 — narrative line 'กระเป๋าหนังภรรยา (ของชิ้นโปรดวางแบบเห็น)'; hero alone (ni0/ni2 closed to air); front-pulled 50 mm from the cell's front edge, front derived toward the furniture-items centroid (p2r80b measured the outline-centroid version pulling it INTO the niche, y3.026->3.202, hidden). Same physical object as the 'wardrobe' umbrella row's bag — the per-item tag (p2r80b, so D7 can group a multi-mesh import) made it its own assembly, and this row is that name's justification.",
+   "exists": "not-in-drawing: styling per ORD-2026-08-26 + narrative shelf story — a furniture plan draws no bag",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Panel-passed id (25d triage runner-up after the cognac tote failed at hero distance); rests on the measured ni1 face; the displayed-favourite story line is the reason it exists where the camera looks."
+  },
+  {
+   "assembly": "wardrobe_basket",
+   "identity": "Lidded rattan basket 90a1129e (2nd and last instance; 1st sits in the walk-in) at BF09-3 fl — narrative line 'ตะกร้าหวายมีฝา ผ้ารอส่งซัก อยู่ชั้นล่าง'. Per-item tag p2r80b; same acquisition as the 'wardrobe' umbrella row's basket.",
+   "exists": "not-in-drawing: styling per ORD-2026-08-26 + narrative shelf story",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Panel-passed id, measured shelf face, vendor rattan kept (natural fibre IS the read); a laundry basket low in an open wardrobe is the lived-in beat the narrative wrote."
+  },
+  {
+   "assembly": "wardrobe_box",
+   "identity": "Canvas storage box c590fee3 (2nd and last instance) at BF09-3 fh (z2.5, above the eye camera's frustum by design) — narrative line 'กล่องผ้าเก็บตามฤดู วางชั้นสูงเพราะนาน ๆ หยิบ'. Per-item tag p2r80b.",
+   "exists": "not-in-drawing: styling per ORD-2026-08-26 + narrative shelf story",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "The seasonal-storage story line puts it high on purpose; wardrobe cameras see it, the eye camera does not, and both are the story working."
+  },
+  {
+   "assembly": "bookshelf_books0",
+   "identity": "Book stack 6afdfecd at ex-TV bookshelf L1/B0 (X-pattern low band, north bay) — decor-placement-grammar S5 + the unit's own signed display prose. Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per the builtin's signed design.decision (D2-1 B) + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Month-fetched, scale-asserted; books low = weight low, the grammar's cited rule; panel judges on frame."
+  },
+  {
+   "assembly": "bookshelf_books1",
+   "identity": "Book stack 55486511 at ex-TV bookshelf L2/B1 (X-pattern low band, centre bay). Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Second book beat sits diagonal to the first (grammar S5: similar pieces stagger, never stack in a column)."
+  },
+  {
+   "assembly": "bookshelf_vase",
+   "identity": "Vase ac0d7cbf at ex-TV bookshelf L3/B0 (sculptural diagonal, upper north). Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B ('one sculptural object per bay') + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "The prose asked for a sculptural per bay; month-fetched, scale-asserted, matte ceramic inside the style matrix bounds."
+  },
+  {
+   "assembly": "bookshelf_bowl",
+   "identity": "Carved wooden shallow bowl 265d7b9b (2nd and last instance; 1st is the walk-in vessel pair's low half) at ex-TV bookshelf L4/B1. Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Sculptural beat on the opposite diagonal to the vase; low organic silhouette, style-matrix material (raw wood)."
+  },
+  {
+   "assembly": "bookshelf_tray",
+   "identity": "Shallow tray 8d6dd7a7 alone at ex-TV bookshelf L0/B2 — the garden bay keeps ONE low piece so the through-view stays the point (the bay's signed job). Per-item tag p2r80b.",
+   "exists": "not-in-drawing: display styling per D2-1 B + ORD-2026-08-26",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "One low silhouette against the glass; more would defeat the see-through bay the owner chose in D2-1 option B."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."
-}
+}

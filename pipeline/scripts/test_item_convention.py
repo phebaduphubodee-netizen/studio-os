@@ -106,3 +106,25 @@ def test_count_items_returns_the_names_it_could_not_classify():
 def test_the_frustum_zero_case_still_reports_not_run_with_an_empty_unknown_list():
     n, ids, ran, unknown = IC.count_items([{"name": "deco__bench_throw"}])
     assert (n, ids, ran, unknown) == (0, [], False, [])
+
+
+def test_builtin_contents_carry_their_stem_and_bare_legacy_stays_unknown():
+    """p2r80b (ORD-2026-08-26-builtin-contents-unnatural): built-in contents
+    are tagged per item (`wardrobe_bag__acq*`, `bookshelf_vase__acq*`) so the
+    counter can group a multi-mesh import; the p2r80 frame's bare-tag
+    `wardrobe__acq<N>` names are UNGROUPABLE (Blender .00N dedup makes acq0 and
+    acq0.001 different pieces) and must stay in the unknown channel — the
+    p2r79 lesson: a count over names the reader cannot group is a claim about
+    the convention, not the room."""
+    assert IC.item_id("wardrobe_bag__acq0") == "wardrobe_bag"
+    assert IC.item_id("wardrobe_bag__acq3") == "wardrobe_bag"
+    assert IC.item_id("wardrobe_basket__acq0.001") == "wardrobe_basket"
+    assert IC.item_id("bookshelf_vase__acq0") == "bookshelf_vase"
+    assert IC.item_id("bookshelf_books0__acq1.002") == "bookshelf_books0"
+    # legacy bare tag: one underscore where the rule needs two -> unknown
+    assert IC.classify("wardrobe__acq0")[1] == "unknown"
+    assert IC.classify("wardrobe__acq0.001")[1] == "unknown"
+    # p2r80 transitional: groups as ONE item (under-count, conservative),
+    # gone once the per-stem tags land
+    assert IC.item_id("bookshelf_display__acq0") == "bookshelf_display"
+    assert IC.item_id("bookshelf_display__acq2.001") == "bookshelf_display"
