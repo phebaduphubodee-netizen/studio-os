@@ -362,7 +362,7 @@ def measure_scene_built(dump):
             if not o.get("hidden_render")]
     if not objs:
         raise NotRun("scene dump holds no visible mesh objects")
-    n_items, item_ids, items_ran = count_items(objs)
+    n_items, item_ids, items_ran, unknown_names = count_items(objs)
     prim, flat, styling = [], [], []
     for o in objs:
         words = object_words(o.get("name", ""), o.get("materials") or ())
@@ -393,6 +393,13 @@ def measure_scene_built(dump):
     if items_ran:
         out["loose_objects"] = n_items
         out["_loose_item_ids"] = item_ids
+        # IN FRUSTUM AND UNRECOGNISED BY THE CONVENTION (p2r79). Carried out of
+        # the counter so the row can print it: this count went to 0 on a frame
+        # holding three visible bought styling objects, because the build names
+        # them `deco_books__acq0` and the convention only knew `deco__`. A count
+        # is a claim about the room only to the extent that the reader can read
+        # the room's names.
+        out["_loose_unknown_names"] = unknown_names
     return out
 
 
@@ -508,6 +515,21 @@ def main(argv=None):
                   f"{scene['loose_objects']} loose item(s) in frustum "
                   f"[{', '.join(scene.get('_loose_item_ids', []))}] "
                   f"(item_convention@P4b; no occlusion test)")
+            _unk = scene.get("_loose_unknown_names") or []
+            if _unk:
+                # WHAT THE READER COULD NOT READ, printed beside what it counted
+                # (p2r79). D7 went to 0 on a frame holding three bought styling
+                # objects because the convention knew one spelling of `deco` and
+                # the build writes another. The count above is a claim about the
+                # room only as far as this list is empty.
+                print(f"  ...and {len(_unk)} in-frustum name(s) the convention "
+                      f"could not classify EITHER WAY — not counted, not "
+                      f"excluded, so the number above may be a reading of the "
+                      f"convention rather than of the room:")
+                for n in _unk[:12]:
+                    print(f"    {n}")
+                if len(_unk) > 12:
+                    print(f"    ... and {len(_unk) - 12} more")
         else:
             print(f"scene: {scene['_visible_meshes']} visible mesh objects, "
                   f"{scene['styling_parts']} carrying a styling word "
