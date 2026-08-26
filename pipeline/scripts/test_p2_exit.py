@@ -309,9 +309,282 @@ def test_the_registry_contact_site_is_named_not_typed():
     for key, spec in PE.CROPS.items():
         if spec["kind"] != "shadow_contact":
             continue
-        assert len(spec["contact"]) == 2, key
-        assert len(spec["control_contact"]) == 2, key
-        assert tuple(spec["contact"]) != tuple(spec["control_contact"]), key
+        # WHAT THIS ROW HAS TO BE IS PAIRS, NOT TWO OF THEM. The assertion here
+        # read `len(spec["contact"]) == 2` and so pinned the NUMBER OF PAIRS at
+        # whatever it happened to be the day it was written. That is a count
+        # with no meaning: the registry's own comment says a site is named and
+        # "lists the material pairs that can carry it", one per leg — so the
+        # test forbade the very thing the field is for, and adding the acquired
+        # leg's dressing (`acq_bed_throw`, 2026-08-26) failed it. Pin the
+        # invariant the docstring actually states instead.
+        for field in ("contact", "control_contact"):
+            pairs = PE._pairs(spec[field])
+            assert pairs, f"{key}: {field} names no pair"
+            for p in pairs:
+                assert len(p) == 2 and all(isinstance(m, str) and m
+                                           for m in p), f"{key}: {field} {p!r}"
+                assert p[0] != p[1], f"{key}: {field} {p!r} is a material on itself"
+        assert (set(PE._pairs(spec["contact"]))
+                .isdisjoint(PE._pairs(spec["control_contact"]))), key
         assert "ours_box" not in spec, f"{key}: a derived site must not carry a box"
         rb = spec.get("retired_box")
         assert rb and rb.get("why"), key
+
+
+# ------------------------------------------------- the subject guard (p2r79)
+#
+# WHAT THESE PIN, and it is a defect this harness shipped rather than a
+# hypothetical: every `ours_box` is a FRACTION OF THE FRAME, the owner adopted a
+# different camera on 2026-08-26 (D-152), and every frozen box slid onto other
+# objects in the same move without a single rung noticing. Measured after the
+# fact from the matmask: `rug_edge` held 0.8% rug at p2r77 and 3.9% at p2r78rc
+# while printing ROLLED (pass) both times — the first reading was the BED
+# PLINTH's edge, the second was open pile with no edge in the box at all.
+# `duvet_fold` was 21% then 15% duvet, the rest curtain and floor, so "2.1x the
+# delivered comforter" was largely curtain pleats.
+
+def _subject_frame(tmp_path, subject_frac, stem="room_x_subj"):
+    """A frame whose declared box is `subject_frac` its own subject and the rest
+    a decoy material, with the luminance identical either way — so anything the
+    guard catches, it catches from the MASK and not from the picture."""
+    H, W = 1200, 1600
+    rng = np.random.default_rng(3)
+    L = 150.0 + 25.0 * rng.standard_normal((H, W))
+    rgb = np.repeat(np.clip(L, 0, 255).astype(np.uint8)[:, :, None], 3, axis=2)
+    p = tmp_path / f"{stem}.png"
+    Image.fromarray(rgb).save(p)
+    ids = np.full((H, W), 5, dtype=np.int32)            # decoy everywhere
+    cut = int(H * subject_frac)
+    ids[:cut, :] = 7                                    # subject at the top
+    _matmask_png(str(p).rsplit(".", 1)[0], ids,
+                 {"the_subject": 7, "the_decoy": 5})
+    return p
+
+
+def _run_only(p, spec, tag="t"):
+    """Run the harness with ONE synthetic rung in the registry, restoring it
+    afterwards whatever happens.
+
+    THE ARCHIVE DIRS ARE REDIRECTED INTO tmp_path TOO. `PE.run` saves every crop
+    it takes under the project's stage dir, so a test that runs it writes
+    synthetic crops into the repo — `p2-exit-crops/probe/` is exactly that,
+    left behind by an earlier test and committed. A test that dirties the
+    working tree teaches everyone to ignore `git status`."""
+    old = dict(PE.CROPS)
+    stage, private = PE.STAGE_DIR, PE.PRIVATE_DIR
+    try:
+        PE.CROPS.clear()
+        PE.CROPS["probe"] = spec
+        PE.STAGE_DIR = os.path.join(os.path.dirname(str(p)), "_stage")
+        PE.PRIVATE_DIR = os.path.join(os.path.dirname(str(p)), "_private")
+        return PE.run(str(p), tag=tag)
+    finally:
+        PE.CROPS.clear()
+        PE.CROPS.update(old)
+        PE.STAGE_DIR, PE.PRIVATE_DIR = stage, private
+
+
+def test_subject_share_reads_the_mask_not_the_picture(tmp_path):
+    p = _subject_frame(tmp_path, 0.80)
+    (id_arr, n2i), why = PE._decoded_matmask(str(p))
+    assert id_arr is not None, why
+    share, occ = PE._subject_share(id_arr, n2i, PE._norm_img(str(p)),
+                                   (0.0, 0.0, 1.0, 1.0), ("the_subject",))
+    assert 0.79 < share < 0.81
+    assert occ[0][0] == "the_subject"
+
+
+def test_a_box_that_is_not_on_its_subject_is_refused(tmp_path, capsys):
+    """The whole point. The box is legal, the crop is measurable, the picture is
+    unremarkable — and the rung must still refuse, because what is under the box
+    is not what the rung is named after."""
+    p = _subject_frame(tmp_path, 0.20)
+    rc = _run_only(p, {"kind": "autocorr", "declared": "test",
+                       "ours_box": (0.0, 0.0, 1.0, 1.0),
+                       "subject_materials": ("the_subject",)})
+    out = capsys.readouterr().out
+    assert rc == 2, out
+    assert "BOX COULD NOT RUN" in out
+    assert "the_decoy" in out, "the refusal must name what IS under the box"
+
+
+def test_a_box_on_its_subject_runs(tmp_path, capsys):
+    """The other side of the control: the guard must not simply always refuse."""
+    p = _subject_frame(tmp_path, 0.80)
+    rc = _run_only(p, {"kind": "autocorr", "declared": "test",
+                       "ours_box": (0.0, 0.0, 1.0, 1.0),
+                       "subject_materials": ("the_subject",)})
+    out = capsys.readouterr().out
+    assert rc == 0, out
+    assert "subject check" in out and "80.0%" in out
+
+
+def test_every_box_rung_declares_its_subject():
+    """NO ALLOWLIST (R9b). This repo had already found this exact defect on ONE
+    crop — cloth_edge's `retired_box`, p2r41: "a working control proved the
+    METHOD could see; nothing ever checked that the BOX HELD A BOUNDARY" — and
+    fixed it as a note about that one box, leaving four others unchecked for
+    fifteen rounds. A rule that names the objects it applies to will always
+    exempt the next one, so the requirement is on the SHAPE of a registry entry:
+    if you measure inside a typed box, you say what is supposed to be in it."""
+    for key, spec in PE.CROPS.items():
+        if "ours_box" not in spec:
+            continue
+        subj = spec.get("subject_materials")
+        assert subj, f"{key}: a typed box with no declared subject cannot be checked"
+        assert all(isinstance(m, str) and m for m in PE._names(subj)), key
+
+
+def test_the_subject_floor_is_a_can_i_see_it_bar_not_a_quality_bar():
+    """Pinned so a future round cannot quietly raise it into a quality cut, or
+    drop it to where a box that is mostly something else still counts."""
+    assert 0.40 <= PE.SUBJECT_MIN_SHARE <= 0.60
+
+
+# ------------------------------- ledger vs frame, and the namespace collision
+
+def test_absent_by_declaration_needs_every_named_material():
+    """One present leg makes a site present. If any name in the list is not
+    declared absent, the rung may not print a signed absence over it."""
+    # the argument is a MATERIAL name; the table is keyed by OBJECT and the
+    # lookup normalises `bed__x` -> `bed_x` to bridge them (see the collision
+    # test below for why that bridge is only ever half-true)
+    assert PE._absent_by_declaration("bed_throw")
+    assert PE._absent_by_declaration(("bed_throw", "bed_coverlet"))
+    assert PE._absent_by_declaration(("bed_throw", "acq_bed_throw")) is None
+
+
+def test_a_material_with_pixels_is_present_whatever_the_ledger_says(tmp_path):
+    """THE COLLISION, pinned. `value_ladder.DECLARED_ABSENT` is keyed by OBJECT
+    and this rung names a MATERIAL, and the lookup bridged them with a
+    `bed__`->`bed_` mangle. On the acquired set that inverts the meaning: D-086
+    declares the OBJECT `bed__duvet` absent precisely BECAUSE the bought set is
+    one fused mesh, and D-138 says that mesh WEARS the material `bed_duvet`. So
+    the material renders while its object is correctly signed absent, and the
+    harness printed "absent by decision, not unmeasured" over 7% of the frame."""
+    H, W = 1200, 1600
+    rng = np.random.default_rng(5)
+    L = 150.0 + 25.0 * rng.standard_normal((H, W))
+    rgb = np.repeat(np.clip(L, 0, 255).astype(np.uint8)[:, :, None], 3, axis=2)
+    p = tmp_path / "room_x_ledger.png"
+    Image.fromarray(rgb).save(p)
+    ids = np.full((H, W), 7, dtype=np.int32)
+    _matmask_png(str(p).rsplit(".", 1)[0], ids, {"bed_duvet": 7})
+    (id_arr, n2i), _why = PE._decoded_matmask(str(p))
+    # the ledger says the OBJECT is gone, and the name-mangled lookup happily
+    # reports that as the MATERIAL being gone ...
+    assert PE._absent_by_declaration("bed_duvet")
+    # ... and the frame says the MATERIAL is right there. The frame wins.
+    assert PE._has_pixels(id_arr, n2i, ("bed_duvet",)) == ["bed_duvet"]
+    assert PE._has_pixels(id_arr, n2i, ("bed_throw",)) == []
+
+
+# ------------------------------------- the edge site is derived, not typed
+
+def _sloped_edge_frame(tmp_path, rise, stem="room_x_slope"):
+    """Floor above, rug below, the boundary sloping across the frame — the shape
+    a real rug's far edge has. `rise` is how many rows the transition is spread
+    over. The DECLARED box deliberately sits somewhere else entirely."""
+    H, W = 1200, 1600
+    L = np.full((H, W), 150.0)
+    ids = np.zeros((H, W), dtype=np.int32)
+    for x in range(W):
+        y = 300 + int(400 * x / W)                       # the sloping contact
+        L[:y, x] = 190.0
+        for k in range(rise):
+            f = (k + 1) / float(rise + 1)
+            L[y + k, x] = 190.0 + (150.0 - 190.0) * f
+        ids[:y, x] = 3                                   # floor
+        ids[y:, x] = 4                                   # rug
+    rgb = np.repeat(np.clip(L, 0, 255).astype(np.uint8)[:, :, None], 3, axis=2)
+    p = tmp_path / f"{stem}.png"
+    Image.fromarray(rgb).save(p)
+    _matmask_png(str(p).rsplit(".", 1)[0], ids, {"floor": 3, "rug": 4})
+    return p
+
+
+def test_the_edge_site_is_derived_from_the_mask_not_the_declared_box(tmp_path):
+    """The typed box points at open rug with no boundary in it — exactly the
+    p2r78rc state. Derived from the contact, the rung finds the edge anyway and
+    measures the rise it was built with."""
+    p = _sloped_edge_frame(tmp_path, rise=10)
+    ours = PE._norm_img(str(p))
+    (id_arr, n2i), _ = PE._decoded_matmask(str(p))
+    spec = {"kind": "edge_profile", "declared": "test",
+            "contact": (("floor", "rug"),), "cut_rise_px": 3.0}
+    c, _, res = PE.rung_edge(ours, spec, id_arr, n2i)
+    assert c is not None
+    assert res["site"] == "floor over rug"
+    assert res["cols"] > 500
+    assert res["rise_px_median"] >= 4.0, res
+
+
+def test_a_sharp_step_still_reads_sharp_through_the_derived_site(tmp_path):
+    """The negative control for the rung above: same sloped geometry, no rise.
+    A derivation that made every edge look rolled would be worse than the box."""
+    p = _sloped_edge_frame(tmp_path, rise=1, stem="room_x_slope_hard")
+    ours = PE._norm_img(str(p))
+    (id_arr, n2i), _ = PE._decoded_matmask(str(p))
+    spec = {"kind": "edge_profile", "declared": "test",
+            "contact": (("floor", "rug"),), "cut_rise_px": 3.0}
+    _c, _, res = PE.rung_edge(ours, spec, id_arr, n2i)
+    assert res["rise_px_median"] <= 3.0, res
+
+
+def test_contact_strip_straightens_the_line():
+    """A sloped boundary in a plain rectangular crop is mostly not-the-boundary,
+    and edge_rise_width's per-column argmax then finds whatever else is there.
+    Every column of the rectified strip must carry the transition at the SAME
+    offset, which is what makes the per-column measurement about the edge."""
+    L = np.zeros((200, 300))
+    cols = {}
+    for x in range(300):
+        y = 40 + x // 3
+        L[:y, x] = 200.0
+        L[y:, x] = 100.0
+        cols[x] = y
+    strip = PE._contact_strip(L, cols, half=16)
+    assert strip is not None and strip.shape[0] == 33
+    # the same profile in every column: bright above the centre, dark below
+    assert np.allclose(strip[15, :], 200.0)
+    assert np.allclose(strip[16, :], 100.0)
+
+
+def test_contact_strip_drops_columns_it_cannot_window():
+    """Clamping a window that runs off the image would silently measure a
+    different offset — so those columns leave, and if none survive the rung
+    refuses rather than answering from three of them."""
+    L = np.zeros((50, 100))
+    assert PE._contact_strip(L, {x: 2 for x in range(100)}, half=16) is None
+
+
+# ---------------------------- the autocorr rung's own positive control (p2r79)
+
+def test_the_autocorr_rung_carries_a_tiled_positive_control():
+    """A clean absence test that never demonstrates it CAN fire is a rung that
+    prints 'no defect' and 'could not see' in the same words. D-056 already cost
+    five rounds of exactly that. The control is built from the crop itself, so it
+    survives a camera change that shrinks the repeat below `min_lag`."""
+    unique = _panels(unique=True)
+    im = Image.fromarray(np.clip(unique, 0, 255).astype(np.uint8))
+    _c, _a, res = PE.rung_autocorr(im.convert("RGB"),
+                                   {"ours_box": (0.0, 0.0, 1.0, 1.0)})
+    assert res["periodic"] is False, "unique figure must read clean"
+    assert res["control_fired"] is True, (
+        "and the same estimator on the same pixels must still fire on a repeat")
+
+
+def test_a_clean_autocorr_with_a_dead_control_is_could_not_run(tmp_path, capsys):
+    """Flat grey: nothing to find, and nothing findable. The rung must refuse
+    rather than report the flat crop as a passing wood panel."""
+    H, W = 1200, 1600
+    Image.fromarray(np.full((H, W, 3), 128, dtype=np.uint8)).save(
+        tmp_path / "room_x_flat.png")
+    rc = _run_only(tmp_path / "room_x_flat.png",
+                   {"kind": "autocorr", "declared": "test",
+                    "ours_box": (0.1, 0.1, 0.9, 0.9),
+                    "subject_materials": ("the_subject",)})
+    out = capsys.readouterr().out
+    # no matmask beside this frame -> the subject guard refuses first, which is
+    # itself the right answer; assert the harness never calls it a pass
+    assert rc == 2, out

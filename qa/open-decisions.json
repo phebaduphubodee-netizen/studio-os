@@ -2681,6 +2681,102 @@
      "why": "the reversal named in reverse_by must exist as a renderable key, or 'one sentence reverses it' is prose"
     }
    ]
+  },
+  {
+   "id": "D-153",
+   "unit": "DELIV-001",
+   "subject": "p2-exit-subject-guard",
+   "decided_round": 79,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "P2's exit crops are declared as FRACTIONS OF THE FRAME. The owner's camera adoption (D-152) moved the frame under all of them. Does any rung still measure the object it is named after?",
+   "in_effect": "**ไม่ — สองในสี่ crop ของเกต P2 ไม่ได้วัดของที่ตัวเองตั้งชื่อไว้ และมันพิมพ์ว่า PASS ทั้งคู่** วัดจาก matmask ของเฟรมเอง: `rug_edge` มีพรมอยู่ในกล่อง **0.8%** ที่ p2r77 (ที่เหลือคือฐานเตียง 50% + ม้านั่ง 29% — เลข `6.0 px ROLLED (pass)` คือขอบ**ฐานเตียง**) และ **3.9%** ที่ p2r78rc (พรมล้วน 93% แต่**ไม่มีขอบพรมอยู่ในกล่องเลย** — `4.0 px ROLLED (pass)` วัดจาก noise ของขนพรม) · `duvet_fold` มีผ้านวม **21%** ที่ p2r77 และ **15%** ที่ p2r78rc ที่เหลือเป็นผ้าม่าน 48% + พื้น 22% — ตัวเลข '2.1x ของผ้านวมงานส่งจริง' ที่อ้างมาหลายรอบส่วนใหญ่คือ**จีบผ้าม่าน** · **สิ่งที่สร้าง**: ทุก entry ที่วัดในกล่องพิมพ์ต้องประกาศ `subject_materials` และ `_subject_share` อ่านจาก matmask ก่อนยิงทุกครั้ง ต่ำกว่า `SUBJECT_MIN_SHARE` = 0.50 → **BOX COULD NOT RUN** พร้อมพิมพ์ว่าอะไรอยู่ใต้กล่องจริง ๆ (exit 2 ไม่ใช่ pass) · 0.50 เป็น **เกณฑ์ 'มองเห็นมั้ย' ไม่ใช่เกณฑ์คุณภาพ** — ต่ำกว่าครึ่งแปลว่าเลขที่พิมพ์ เป็นเรื่องของอย่างอื่น · กล่องที่อยู่บนของจริงผ่านสบาย ๆ (wood_boards 63-66%) · **ไม่มี allowlist (R9b)**: repo นี้เจอ defect เดียวกันนี้มาแล้วที่ crop เดียว (`cloth_edge.retired_box`, p2r41 เขียนเองว่า 'a working control proved the METHOD could see; nothing ever checked that the BOX HELD A BOUNDARY') แล้วแก้เป็น**หมายเหตุของกล่องนั้นกล่องเดียว** อีกสี่กล่องไม่มีใครตรวจอีกสิบห้ารอบ",
+   "where": "pipeline/scripts/p2_exit.py",
+   "because": "R9 ในปริภูมิภาพ: กล่องคือ**พิกัด** มันเข้ารหัส 'ขอบอยู่ตรงไหนตอนกล้องตัวเก่า' แล้วยังถูกกฎหมายต่อไปหลังกล้องขยับ เหมือน pos_mm ที่ยังถูกต้องหลังของข้างล่างเปลี่ยนขนาด · R11: 'could not look' ต้องไม่พิมพ์เหมือน 'looked and it was fine'",
+   "reverse_by": "ลบ `subject_materials` ออกจาก entry ที่ต้องการ แล้ว guard จะข้ามมันไปเงียบ ๆ (แต่ `test_every_box_rung_declares_its_subject` จะแดงทันที ซึ่งเป็นเจตนา) · จะปรับเกณฑ์ให้แก้ `SUBJECT_MIN_SHARE` — มีเทสต์ปักช่วง 0.40-0.60 ไว้กันไม่ให้กลายเป็นเกณฑ์คุณภาพหรือหย่อนจนไร้ความหมาย",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "SUBJECT_MIN_SHARE = 0\\.50",
+     "why": "the floor must be a number in the code, not a sentence in this row"
+    },
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "BOX COULD NOT RUN",
+     "why": "an off-subject box must refuse out loud; if this string goes, the guard has been turned back into a comment"
+    },
+    {
+     "file": "pipeline/scripts/test_p2_exit.py",
+     "pattern": "def test_every_box_rung_declares_its_subject",
+     "why": "no allowlist: the requirement is on the SHAPE of a registry entry, and the test is what keeps the next box from being exempt"
+    }
+   ]
+  },
+  {
+   "id": "D-154",
+   "unit": "DELIV-001",
+   "subject": "rug-edge-site-derived",
+   "decided_round": 79,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "rug_edge's typed box never held the rug's edge. Re-type it, or derive it?",
+   "in_effect": "**DERIVE — ไซต์มาจาก matmask ไม่ใช่จากกล่องที่พิมพ์** `contact` ระบุคู่วัสดุ (พื้นอยู่เหนือพรมในปริภูมิภาพที่ขอบไกลของพรม) แล้วเฟรมเป็นคนบอกว่าขอบอยู่ตรงไหน · ต้อง**ดัดเส้นให้ตรงก่อนวัด** (`_contact_strip`): ขอบพรมจริงลาดเฉียงข้ามเฟรม กล่องสี่เหลี่ยมของเส้นลาดส่วนใหญ่จึงไม่ใช่เส้นนั้น และ argmax รายคอลัมน์จะไปเจออย่างอื่นแทน · **บนเฟรมของ record ได้ 12.0 px จาก 582 คอลัมน์สัมผัสจริง** (เทียบกล่องเก่าที่ให้ 4.0 px จาก pixel ที่ไม่ใช่ขอบ) · **และเพิ่มครึ่งที่สอง report-only: มันทอดเงาเป็นเส้นมั้ย** 96.4% ของคอลัมน์ median 11.7 codes — เพราะเกณฑ์ rise width เป็น**ด้านเดียว**: มันปฏิเสธขอบตัด 90 องศา แต่พรมที่เป็นแค่การเปลี่ยนสีทาบนพื้นให้ ramp กว้างนุ่มที่ผ่านฉลุย รอบเดียวกันนี้ C3 ยื่นว่าพรม 'แบนราบ ไม่มีความหนา ไม่มีขอบ' — **เลข 96.4% หักล้างข้อนั้นด้วยการวัด ไม่ใช่ด้วยรสนิยม (R7)** · กล่องเดิมเก็บไว้เป็น `retired_box` พร้อมเหตุผล",
+   "where": "pipeline/scripts/p2_exit.py",
+   "because": "R9: ความสัมพันธ์ที่ derive ได้ห้ามพิมพ์ · cloth_edge ได้การแก้แบบเดียวกันนี้ที่ p2r41 แล้วไม่ได้ถูกนำไปใช้กับกล่องที่ต้องการมันที่สุด",
+   "reverse_by": "ลบคีย์ `contact` ออกจาก `CROPS['rug_edge']` แล้วคืน `ours_box` จาก `retired_box.ours_box` — rung จะกลับไปวัดในกล่องพิมพ์ทันที (เก็บไว้ครบทั้งค่าและเหตุผล)",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "\"contact\": \\(\\(\"m_floor_oak_engineered_floor_photo\", \"Texture\"\\)",
+     "why": "the rug's site must be a named material pair, not a fraction of the frame"
+    },
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "def _contact_strip",
+     "why": "a sloped boundary measured in a plain rectangular crop is mostly not the boundary"
+    },
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "does it CAST A LINE",
+     "why": "the rise-width cut is one-sided; without this second half a rug painted on the floor passes it"
+    }
+   ]
+  },
+  {
+   "id": "D-155",
+   "unit": "DELIV-001",
+   "subject": "mask-outranks-ledger",
+   "decided_round": 79,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "throw_weave printed 'N/A BY DECLARATION — absent by decision, not unmeasured' while the object it names renders at frame centre. Which is the authority on whether a material is in the frame?",
+   "in_effect": "**mask ชนะ ledger เสมอ และ ledger ถูกถามก็ต่อเมื่อ mask บอกว่าไม่มี pixel** · **เหตุคือการชนกันของ namespace ไม่ใช่ ledger ผิด**: `value_ladder.DECLARED_ABSENT` คีย์ด้วยชื่อ**วัตถุ** (`bed__duvet`, `bed__throw`) ส่วน rung นี้ตั้งชื่อด้วยชื่อ**วัสดุ** แล้วโค้ดเชื่อมสองอย่างด้วยการแปลงสตริง `bed__` → `bed_` · บนชุดที่ซื้อมามันกลับหัวพอดี: D-086 ประกาศว่า**วัตถุ** `bed__duvet` ไม่มี **เพราะ**ชุดที่ซื้อเป็น mesh หลอมชิ้นเดียว และ D-138 เขียนไว้เองว่า mesh ชิ้นนั้น**สวมวัสดุ** `bed_duvet` — วัสดุจึงเรนเดอร์อยู่ 6.99% ของเฟรมโดยที่วัตถุถูกเซ็นว่าไม่มีอย่างถูกต้อง · **ราคาที่จ่ายไปแล้ว**: throw_weave ตั้งชื่อ `bed_throw` ขาที่ซื้อมาสวมชื่อ `acq_bed_throw` การหาไม่เจอตกไปที่ `_absent_by_declaration` แล้วพิมพ์เป็นการขาดที่เซ็นแล้ว — **ทั้งที่วัตถุนั้นคือสิ่งที่กรรมการทั้งสองเจ้าจัดอันดับ 1 และ 2 ในรอบเดียวกัน และ Gemini บอกว่าถ้าแก้ได้ข้อเดียวให้แก้อันนี้** · **สิ่งที่สร้าง**: ทุกช่องที่รับชื่อวัสดุรับ**รายการ**ของชื่อที่ dress ไซต์เดียวกันได้ (`_names`), `_has_pixels` ถามเฟรมก่อน, และ `_absent_by_declaration` ตอบก็ต่อเมื่อ**ทุกชื่อ**ถูกประกาศว่าไม่มี — ขาที่ยังอยู่ขาเดียวทำให้ไซต์นั้นมีอยู่ · **ผล**: throw ที่วัดไม่ได้มาหลายรอบวัดได้แล้วที่ **3.682x** ของ comforter งานส่งจริง (กล่องเดิมให้ 1.644x) และ `cloth_edge` ที่ตายไปเพราะไม่มี control (D-138 หลอมหมอนหาย) กลับมามีชีวิตด้วย control ที่มีอยู่จริงในเฟรม: **0.893x ผ่านเกณฑ์ 0.5**",
+   "where": "pipeline/scripts/p2_exit.py",
+   "because": "R12 ในระดับหนึ่งลง: เมื่อเอกสารของเราขัดกับสิ่งที่วัดได้ ให้เปิด derivation ใหม่ ไม่ใช่เชื่อเอกสาร · 'a queue whose consumer never visits it' รูปกลับด้าน — แถวที่ไม่มีใครเทียบกับความจริง",
+   "reverse_by": "คืน `mask_material` เป็นสตริงเดียวและตัด `_has_pixels` ออกจาก dispatch แล้ว rung จะกลับไปเชื่อ ledger ก่อนเฟรม (เทสต์ `test_a_material_with_pixels_is_present_whatever_the_ledger_says` จะแดง)",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "def _has_pixels",
+     "why": "the frame must be asked before the register, in code"
+    },
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "\"mask_material\": \\(\"bed_throw\", \"acq_bed_throw\"",
+     "why": "the acquired leg's dressing must be listed, or the site goes missing again the next time a set changes"
+    },
+    {
+     "file": "pipeline/scripts/p2_exit.py",
+     "pattern": "\\(\"bed_duvet\", \"acq_bed_throw\"\\)",
+     "why": "cloth_edge's pair list must carry the acquired dressing too — the same miss, one rung over"
+    }
+   ]
   }
  ],
  "_assert_ratchet_from": "D-124"

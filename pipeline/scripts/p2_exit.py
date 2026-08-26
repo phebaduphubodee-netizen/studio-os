@@ -67,6 +67,14 @@ CROPS = {
         "anchor": ANCHOR_BEDROOM,
         "anchor_box": (0.30, 0.83, 0.52, 0.99),  # foreground comforter with loft
         "declared": "2026-08-11 from the p3r2 frame, before p2r8 existed",
+        # SUBJECT ADDED 2026-08-26 (p2r79). Measured from the matmask on the two
+        # frames this box has judged most recently: at p2r77 the box held 21%
+        # duvet / 28% curtain_sheer / 22% floor, and at p2r78rc 15% duvet / 48%
+        # curtain. The "2.1x the delivered comforter" this rung printed for
+        # rounds was mostly CURTAIN PLEATS — vertical high-frequency structure
+        # scored against their foreground comforter.
+        "subject_materials": ("bed_duvet", "bed_coverlet", "Brown textured fabric"),
+        "mask_material": ("bed_duvet", "bed_coverlet"),
     },
     "throw_weave": {
         "kind": "octave_energy",
@@ -83,25 +91,70 @@ CROPS = {
         # neighbours cannot bleed into the blur. Both halves print: the box
         # stays as the r7 trend line, the mask answers whether the cloth or
         # the crop moved.
-        "mask_material": "bed_throw",
+        #
+        # THE SITE IS NAMED, THE MATERIALS THAT CAN CARRY IT ARE LISTED
+        # (2026-08-26, p2r79 — the same correction cloth_edge got at p2r41, and
+        # it should have been made here in the same commit). This half named the
+        # single string "bed_throw", the acquired set dresses the SAME object as
+        # `acq_bed_throw`, and the lookup miss fell through to
+        # `_absent_by_declaration` — so the rung printed "N/A BY DECLARATION,
+        # absent by decision, not unmeasured" on a frame that renders the throw
+        # at 888-1195 x 946-1078 px. Both critics on this very frame put that
+        # object's fringe at #1 and #2 and Gemini named it the one thing to fix.
+        # A DECLARED ABSENCE MUST BE CHECKED AGAINST THE MASK BEFORE IT PRINTS:
+        # a material that has pixels is present, whatever the ledger says.
+        "mask_material": ("bed_throw", "acq_bed_throw", "bed_coverlet"),
+        "subject_materials": ("bed_throw", "acq_bed_throw", "bed_coverlet",
+                              "bed_duvet", "Brown textured fabric"),
     },
     "wood_boards": {
         "kind": "autocorr",
         "asks": "two adjacent veneer panels: no periodic figure repeat above the noise floor",
         "ours_box": (0.24, 0.03, 0.46, 0.20),    # two bay back-panels, no contents
         "declared": "2026-08-11 from the p3r2 frame (C3#2 tiling = positive control)",
+        # The one box that survived the camera move: 66% veneer at p2r77, 63% at
+        # p2r78rc (the 17% that entered is `e5_pelmet`, the cove head that came
+        # into frame with the ceiling). Kept as declared; the guard now says so
+        # out loud instead of nobody knowing either way.
+        "subject_materials": ("m_millwork_oak_veneer_photo", "m_mill_backing"),
     },
     "rug_edge": {
         "kind": "edge_profile",
         "asks": "rug boundary reads as a rolled-over edge, not a 90-degree step",
-        "ours_box": (0.06, 0.82, 0.32, 0.99),    # binding + floor, bottom-left
-        "declared": "2026-08-11 from the p3r2 frame",
+        # THE SITE IS DERIVED FROM THE MASK, NOT TYPED (2026-08-26, p2r79 —
+        # cloth_edge's p2r41 correction, finally applied to the box that needed
+        # it most). The rug's edge is a CONTACT between two materials, so the
+        # registry names the pair and the frame says where it is. In image space
+        # the floor lies ABOVE the rug at the rug's far edge.
+        "contact": (("m_floor_oak_engineered_floor_photo", "Texture"),
+                    ("m_floor_oak_engineered_floor_photo", "rug_pile"),
+                    ("floor", "Texture")),
+        "subject_materials": ("Texture", "rug_pile",
+                              "m_floor_oak_engineered_floor_photo"),
+        "declared": "2026-08-11 from the p3r2 frame; SITE RE-DERIVED 2026-08-26",
         # CUT DECLARED at P2r-3 (was report-only): an ideal step reads 0-1 px by
         # this rung's own first-crossing rule and a resample-sharp real step
         # 1-2 px (edge_rise_width docstring), so >= 3.0 px sits strictly above
         # the whole step band. Grounded before the cut went live: the frame it
         # judges read 5.0 px two consecutive rounds (p2r14/p2r15).
         "cut_rise_px": 3.0,
+        "retired_box": {
+            "ours_box": (0.06, 0.82, 0.32, 0.99),
+            "why": "THE BOX NEVER HELD THE EDGE, and it passed the declared cut "
+                   "for fifteen rounds by measuring something else. Measured from "
+                   "the matmask: at p2r77 it held 50% bed_base, 29% acq_bench_seat, "
+                   "12% rug and 8% bed_duvet -- 0.8% of it was the rug/floor "
+                   "boundary this rung is named after, so `6.0 px -> ROLLED (pass)` "
+                   "was the BED PLINTH's edge against the rug. At p2r78rc the "
+                   "owner's camera (D-152) slid the same fractions onto 93% open "
+                   "rug field with no far edge in it at all, and it printed "
+                   "`4.0 px -> ROLLED (pass)` off pile noise. In the same frame "
+                   "C3 filed the rug as reading flat with no visible edge or "
+                   "thickness -- the eye and the instrument did not disagree, the "
+                   "instrument was never pointed at the thing. Kept rather than "
+                   "deleted: a retired box with no record is how the same site "
+                   "gets re-typed next round (cloth_edge's own words, p2r41).",
+        },
     },
     "garment_shells": {
         "kind": "dup_shells",
@@ -121,15 +174,32 @@ CROPS = {
         # bed_throw, the acquired leg as bed_coverlet — so the registry names the
         # site and lists the pairs that can carry it. Every present pair is
         # measured and the WORST is the answer (see rung_shadow_contact).
+        # `acq_bed_throw` ADDED 2026-08-26 (p2r79): the acquired leg dresses the
+        # accessory cloth under that name and it renders at frame centre, so a
+        # pair list without it made the site "not in this frame" and the rung
+        # printed a signed absence over an object that is plainly there. Same
+        # correction as the throw_weave mask half in this commit.
         "contact": (("bed_duvet", "bed_throw"),
+                    ("bed_duvet", "acq_bed_throw"),
                     ("bed_duvet", "bed_coverlet")),
         # THE CONTROL IS PART OF THE RUNG, not an afterthought. A low score here means
         # "no edge" only if the test demonstrably fires on an edge that certainly
         # occludes; otherwise it means "could not see" (R11). This control is the
         # ACQUIRED pillow's sham hem lying on our own cloth: same frame, same light,
         # same class of contact, and a pillow indisputably occludes.
+        # THE CONTROL LIST GREW 2026-08-26 (p2r79) BECAUSE THE ONLY CONTROL WENT
+        # AWAY. D-138 records that the acquired headset arrives as ONE fused
+        # mesh, so no surface wears `bed_pillow` any more and the rung refused
+        # every frame for lack of a control — a correct refusal that had no way
+        # back. These are added under the rung's own criterion, which is
+        # CERTAINTY OF OCCLUSION and not material class: a bench and a bed
+        # plinth stand ON the rug, so if this frame's light produces contact
+        # darkening at all, it produces it there. `max` picks the strictest
+        # control that fires, so a longer list can only make the ratio harder.
         "control_contact": (("bed_pillow", "bed_duvet"),
-                            ("bed_pillow", "bed_coverlet")),
+                            ("bed_pillow", "bed_coverlet"),
+                            ("acq_bench_seat", "Texture"),
+                            ("bed_base", "Texture")),
         # SAME OBJECT, OTHER EDGES - report-only, and they are what make the finding
         # an argument instead of a number. The throw's hanging edges line at 95-99%
         # while its lying-flat hem lines at 35%, so the cause is not the cloth, not
@@ -191,6 +261,79 @@ def _erode(mask, r):
     return m
 
 
+def _names(v):
+    """One material name or several. A rung names a SITE; the materials that can
+    dress it differ by leg (simulated vs acquired), so every registry field that
+    takes a material takes a list of the names that can carry the same site."""
+    return (v,) if isinstance(v, str) else tuple(v)
+
+
+# HOW MUCH OF A DECLARED BOX MUST ACTUALLY BE ITS OWN SUBJECT.
+#
+# WHY THIS NUMBER EXISTS AT ALL (p2r79). Every box in this registry is a
+# FRACTION OF THE FRAME, and the frame's camera is not a constant: the owner
+# adopted the room-contained camera on 2026-08-26 (D-152) and every frozen box
+# slid onto different objects in the same move. Nothing checked. The rungs went
+# on printing passes:
+#   rug_edge   0.8% rug at p2r77, 3.9% at p2r78rc — it scored the BED PLINTH,
+#              then open pile with no edge in the box, and printed ROLLED both times
+#   duvet_fold  21% duvet at p2r77, 15% at p2r78rc — the rest curtain and floor,
+#              so "2.1x the delivered comforter" was mostly curtain pleats
+# This repo had already found the identical defect on ONE crop (cloth_edge's
+# `retired_box`, p2r41: "a working control proved the METHOD could see; nothing
+# ever checked that the BOX HELD A BOUNDARY") and fixed it as a note about that
+# one box. R9b's law, which this file is now obeying: a rule that names the
+# objects it applies to will always exempt the next one. So the check is
+# universal — every box-based rung declares its subject and is refused when the
+# box is not on it.
+#
+# THE FLOOR IS 0.50 and it is deliberately generous. This is not a quality bar,
+# it is a CAN-I-SEE-IT bar: below half, the number a rung prints is mostly about
+# something the rung is not named after, and "could not look" must never print
+# like "looked and it was fine" (R11's exit-code contract). Every box that was
+# genuinely on its subject clears it comfortably (wood_boards 63-66%); the two
+# that were not do not come close.
+SUBJECT_MIN_SHARE = 0.50
+
+
+def _subject_share(id_arr, name_to_id, ours_im, box, materials):
+    """(share, [(material, share)]) of a declared box that is actually the
+    materials the box names, measured on the render's own matmask.
+
+    The mask is native resolution and the boxes are fractions, so both are
+    expressed as fractions here and no pixel-space comparison is made — two
+    coordinate systems compared silently is its own defect class in this repo."""
+    H, W = id_arr.shape
+    x0, y0, x1, y1 = box
+    sub = id_arr[int(y0 * H):int(y1 * H), int(x0 * W):int(x1 * W)]
+    if sub.size == 0:
+        return 0.0, []
+    id_to_name = {i: n for n, i in name_to_id.items()}
+    vals, counts = np.unique(sub, return_counts=True)
+    occ = sorted(((id_to_name.get(int(v), f"id{int(v)}"), int(n) / sub.size)
+                  for v, n in zip(vals, counts)), key=lambda t: -t[1])
+    want = set(_names(materials))
+    share = sum(s for n, s in occ if n in want)
+    return share, occ[:4]
+
+
+def _has_pixels(id_arr, name_to_id, materials):
+    """Which of the named materials actually render in this frame.
+
+    THE GUARD ON A DECLARED ABSENCE (p2r79). `_absent_by_declaration` reads a
+    LEDGER, and a ledger is a claim about a decision, not about this frame. The
+    throw's mask half printed "absent by decision, not unmeasured" for rounds
+    while `acq_bed_throw` rendered 0.80% of the frame at its centre — the object
+    both critics ranked first. A material with pixels is present, whatever the
+    register says, and the register is then the thing that is wrong."""
+    out = []
+    for m in _names(materials):
+        mid = name_to_id.get(m)
+        if mid is not None and bool((id_arr == mid).any()):
+            out.append(m)
+    return out
+
+
 def _absent_by_declaration(material):
     """(decision_id, why) when this material's object is absent BY A SIGNED
     DECISION, else None.
@@ -199,19 +342,31 @@ def _absent_by_declaration(material):
     read by everything that needs it, rather than a second copy here that can
     drift. Both modules are pure python, so the import is free. A missing or
     unreadable table returns None, i.e. falls back to COULD NOT RUN, because the
-    fail-closed direction is to keep reporting the unknown."""
+    fail-closed direction is to keep reporting the unknown.
+
+    WITH SEVERAL NAMES it answers only when EVERY one of them is declared absent.
+    One present leg makes the site present, and a site that is present must be
+    measured or reported unreadable — never waved through as signed."""
+    got = []
     try:
         import value_ladder as _vl
-        for obj, (dec, why) in getattr(_vl, "DECLARED_ABSENT", {}).items():
-            # EXACT ONLY. A looser match (endswith, contains) would silence a
-            # REAL could-not-run on a neighbouring material, and that is the one
-            # direction this function must never fail in — the whole point of
-            # the exit-code contract is that an unknown stays an unknown.
-            if obj.replace("bed__", "bed_") == material:
-                return dec, why
+        table = {obj.replace("bed__", "bed_"): v
+                 for obj, v in getattr(_vl, "DECLARED_ABSENT", {}).items()}
     except Exception:                                   # pragma: no cover
         return None
-    return None
+    for name in _names(material):
+        # EXACT ONLY. A looser match (endswith, contains) would silence a
+        # REAL could-not-run on a neighbouring material, and that is the one
+        # direction this function must never fail in — the whole point of
+        # the exit-code contract is that an unknown stays an unknown.
+        if name not in table:
+            return None
+        got.append(table[name])
+    if not got:
+        return None
+    # several rows -> name every decision, so the gate cites what it leaned on
+    ids = "+".join(sorted({d for d, _w in got}))
+    return ids, got[0][1]
 
 
 def rung_octave_mask(ours_im, render_path, spec, lo=4, hi=32):
@@ -224,19 +379,24 @@ def rung_octave_mask(ours_im, render_path, spec, lo=4, hi=32):
     if not (os.path.exists(mj) and os.path.exists(mp)):
         return None, "no matmask beside the render"
     meta = json.load(open(mj, encoding="utf-8"))
-    wanted = spec["mask_material"]
-    mid = next((int(k) for k, v in meta.get("ids", {}).items() if v == wanted),
-               None)
-    if mid is None:
-        return None, f"material {wanted!r} not in matmask ids"
+    # ONE SITE, SEVERAL MATERIALS THAT CAN CARRY IT (p2r79). A single string was
+    # a name lookup that missed whenever the same object shipped under another
+    # leg's material — and the miss printed as a signed absence. Every listed
+    # material that is PRESENT joins the mask; the absent ones are reported.
+    wanted = _names(spec["mask_material"])
+    present = {v: int(k) for k, v in meta.get("ids", {}).items() if v in wanted}
+    if not present:
+        return None, (f"none of {', '.join(wanted)} are in the matmask ids")
     # the mask png stores ids as value_probe's sRGB palette triples (levels of
     # 51), never raw indices — decode first, or every lookup reads channel
     # noise as "zero pixels"
     import value_probe as _vp
     ids = _vp.decode_ids(np.asarray(Image.open(mp).convert("RGB")))
-    mask_full = ids == mid
+    mask_full = np.zeros(ids.shape, dtype=bool)
+    for mid in present.values():
+        mask_full |= ids == mid
     if not mask_full.any():
-        return None, f"{wanted!r} has zero pixels in the mask"
+        return None, f"{', '.join(present)} have zero pixels in the mask"
     # to LE1600 (the same normalise rule as the luminance), NEAREST — an id is
     # a label, interpolating one invents materials
     w, h = ours_im.size
@@ -244,8 +404,8 @@ def rung_octave_mask(ours_im, render_path, spec, lo=4, hi=32):
                       .resize((w, h), Image.NEAREST)) > 127
     core = _erode(mask, hi // 2)
     if core.sum() < 2000:
-        return None, (f"eroded {wanted!r} core is {int(core.sum())} px — too "
-                      f"thin to band-measure")
+        return None, (f"eroded {'+'.join(present)} core is {int(core.sum())} px "
+                      f"— too thin to band-measure")
     L = _lum_arr(ours_im)
     band = np.abs(dc._blur(L, lo // 2) - dc._blur(L, hi // 2))
     e_ours = float(band[core].mean())
@@ -360,10 +520,34 @@ def autocorr_peak(L, min_lag=24, despike_win=9):
 
 
 def rung_autocorr(ours_im, spec):
+    """Periodic figure repeat in the declared crop, WITH THE POSITIVE CONTROL
+    THAT PROVES THE RUNG COULD HAVE FOUND ONE.
+
+    THE CONTROL IS PART OF THE RUNG, not an afterthought — this file's own law,
+    written for cloth_edge and owed here since D-056. A clean reading from an
+    absence test means "no repeat" only if the same estimator, on the same
+    pixels, at the same resolution, demonstrably fires when a repeat IS there.
+    Otherwise it means "could not see", and the two must never print alike (R11).
+    The control is built from THIS crop: its own left half, duplicated. That
+    makes it immune to the thing that would otherwise silence the rung — a
+    camera change altering the crop's pixel pitch until the repeat falls under
+    `min_lag` or inside the despike window, which is exactly what a wider lens
+    does to a slat wall."""
     c = _crop(ours_im, spec["ours_box"])
-    peak, lag, floor = autocorr_peak(_lum_arr(c))
-    return c, None, {"peak": round(peak, 3), "lag_px": lag,
-                     "floor": round(floor, 3), "periodic": peak > floor}
+    L = _lum_arr(c)
+    peak, lag, floor = autocorr_peak(L)
+    half = L.shape[1] // 2
+    res = {"peak": round(peak, 3), "lag_px": lag, "floor": round(floor, 3),
+           "periodic": peak > floor}
+    if half >= 24:
+        cp, cl, cf = autocorr_peak(np.concatenate([L[:, :half], L[:, :half]],
+                                                  axis=1))
+        res.update(control_peak=round(cp, 3), control_lag=cl,
+                   control_floor=round(cf, 3), control_fired=cp > cf)
+    else:
+        res.update(control_fired=False,
+                   control_why="crop too narrow to build a tiled control")
+    return c, None, res
 
 
 def edge_rise_width(L, lo_frac=0.1, hi_frac=0.9):
@@ -394,10 +578,74 @@ def edge_rise_width(L, lo_frac=0.1, hi_frac=0.9):
     return float(np.median(widths)) if widths else float("nan")
 
 
-def rung_edge(ours_im, spec):
+def _contact_strip(L, cols, half=16):
+    """A RECTIFIED strip: one column per contact column, each vertically centred
+    on THAT column's own contact row.
+
+    A rug's far edge recedes across the frame, so a plain rectangular crop of a
+    sloped boundary is mostly not-the-boundary and `edge_rise_width`'s per-column
+    argmax then finds whatever else is in the column. Straightening the line
+    first is what makes the per-column measurement about the edge itself.
+    Columns whose window would leave the image are dropped, not clamped —
+    clamping would silently measure a different offset."""
+    H, W = L.shape
+    keep = [x for x in sorted(cols)
+            if 0 <= x < W and half <= cols[x] < H - half]
+    if not keep:
+        return None
+    return np.stack([L[cols[x] - half:cols[x] + half + 1, x] for x in keep],
+                    axis=1)
+
+
+def rung_edge(ours_im, spec, id_arr=None, name_to_id=None):
+    """Rise width of the boundary this rung is named after.
+
+    THE SITE COMES FROM THE MASK WHEN THE REGISTRY NAMES A CONTACT (p2r79), and
+    from the declared box only when it does not. A box is a coordinate: it
+    encodes where the edge WAS under one camera, and stays perfectly legal after
+    the camera moves — which is R9's law about typed positions, in image space.
+    Returns (archive_crop, None, res); res carries `site` so the gate line says
+    which of the two it measured."""
+    if spec.get("contact") and id_arr is not None:
+        best, best_pair = None, None
+        for pair in _pairs(spec["contact"]):
+            try:
+                cols = _contact_in(ours_im, id_arr, name_to_id, pair)
+            except es.NoFeature:
+                continue
+            if cols and (best is None or len(cols) > len(best)):
+                best, best_pair = cols, pair
+        if not best:
+            return None, None, {"rise_px_median": None, "site": "contact",
+                                "could_not_run": (
+                                    "no contact columns for any declared pair "
+                                    + " / ".join(" over ".join(p) for p in
+                                                 _pairs(spec["contact"])))}
+        strip = _contact_strip(_lum_arr(ours_im), best)
+        if strip is None or strip.shape[1] < 20:
+            return None, None, {"rise_px_median": None, "site": "contact",
+                                "could_not_run": "contact line too near the "
+                                                 "frame edge to window"}
+        w = edge_rise_width(strip)
+        # AND WHETHER IT CASTS A LINE, report-only (p2r79). Rise width alone is
+        # ONE-SIDED: the cut refuses a hard 90-degree step, and a rug that is
+        # only a colour change painted on the floorboards gives a WIDE soft ramp
+        # that sails past it. On the frame this was written against, C3 filed the
+        # rug as "flat, part of the floor, no thickness, no edge" in the same
+        # round the rung printed ROLLED. An object with thickness darkens the
+        # floor where it meets it; a texture swap cannot. The number prints so
+        # the eye and the instrument are arguing about the same thing — it cuts
+        # nothing until it has been read beside anchors (R4).
+        pct, med, n = es.shadow_line_at(_lum_arr(ours_im), best)
+        return (_contact_crop(ours_im, best), None,
+                {"rise_px_median": round(w, 2) if w == w else None,
+                 "site": " over ".join(best_pair), "cols": len(best),
+                 "line_pct": round(pct, 1), "line_med": round(med, 1),
+                 "line_n": n})
     c = _crop(ours_im, spec["ours_box"])
     w = edge_rise_width(_lum_arr(c))
-    return c, None, {"rise_px_median": round(w, 2) if w == w else None}
+    return c, None, {"rise_px_median": round(w, 2) if w == w else None,
+                     "site": "declared box"}
 
 
 def rung_shadow_line(ours_im, spec):
@@ -605,12 +853,56 @@ def run(render_path, scene_path=None, only=None, tag=None):
     scene_path = scene_path or render_path.rsplit(".", 1)[0] + ".scene.json"
     ours_im = _norm_img(render_path)
 
+    # ONE DECODE, SHARED. Every rung that needs to know WHAT it is looking at
+    # rather than only WHERE reads this. It is fetched before the loop because
+    # the subject guard below applies to every box-based rung — a check that is
+    # fetched per-rung is a check somebody forgets to fetch for the next rung.
+    mm, mm_why = _decoded_matmask(render_path)
+    id_arr, name_to_id = mm if mm else (None, None)
+
     could_not = []
     broken = []
     keys = [only] if only else list(CROPS)
     for key in keys:
         spec = CROPS[key]
         kind = spec["kind"]
+        # THE SUBJECT GUARD, and it runs before every box rung with no allowlist.
+        # A declared box is a fraction of the frame; the camera under it is not a
+        # constant (D-152 moved it on 2026-08-26 and every box slid with it).
+        # A rung whose box is not on its own subject has not measured that
+        # subject, and must say so rather than print a number about something
+        # else. See SUBJECT_MIN_SHARE for what this cost before it existed.
+        box_blind = None
+        if spec.get("ours_box") and spec.get("subject_materials"):
+            if id_arr is None:
+                could_not.append((key, f"subject unverifiable: {mm_why}"))
+                print(f"[{key}] COULD NOT RUN — cannot check the box is on its "
+                      f"subject: {mm_why}")
+                continue
+            share, occ = _subject_share(id_arr, name_to_id, ours_im,
+                                        spec["ours_box"],
+                                        spec["subject_materials"])
+            occ_s = ", ".join(f"{n} {s * 100:.0f}%" for n, s in occ)
+            if share < SUBJECT_MIN_SHARE and not spec.get("contact"):
+                # THE BOX IS BLIND, THE RUNG IS NOT NECESSARILY. A mask half
+                # scopes the same measurement to the subject's own pixels and is
+                # unaffected by where the camera put them, so it still runs and
+                # still answers — the box half is what gets refused. Killing the
+                # whole rung here would have thrown away the only reading that
+                # survives a camera move.
+                box_blind = (f"box is {share * 100:.1f}% its declared subject "
+                             f"(needs >= {SUBJECT_MIN_SHARE * 100:.0f}%); under "
+                             f"it: {occ_s}")
+                print(f"[{key}] BOX COULD NOT RUN — the declared box is only "
+                      f"{share * 100:.1f}% "
+                      f"{'/'.join(_names(spec['subject_materials']))}; what is "
+                      f"actually under it: {occ_s}")
+                if not spec.get("mask_material"):
+                    could_not.append((key, box_blind))
+                    continue
+            else:
+                print(f"[{key}] subject check: box is {share * 100:.1f}% its own "
+                      f"subject (floor {SUBJECT_MIN_SHARE * 100:.0f}%) — {occ_s}")
         if kind == "dup_shells":
             if not os.path.exists(scene_path):
                 could_not.append((key, f"no scene dump at {scene_path}"))
@@ -633,17 +925,35 @@ def run(render_path, scene_path=None, only=None, tag=None):
             print(f"[{key}] COULD NOT RUN — anchor image missing")
             continue
         if kind == "octave_energy":
-            ours_c, anchor_c, res = rung_octave(ours_im, spec)
-            p1 = _save(ours_c, STAGE_DIR, tag, f"{key}-ours-100pct.png")
-            _save(anchor_c, PRIVATE_DIR, tag, f"{key}-anchor-100pct.png")
-            _save(_composite(ours_c, anchor_c), PRIVATE_DIR, tag,
-                  f"{key}-beside-anchor.png")
-            print(f"[{key}] energy ours {res['ours']} vs anchor {res['anchor']} "
-                  f"-> {res['ratio']}x  (crop: {p1}; composite: _private, local-only)")
+            if box_blind is None:
+                ours_c, anchor_c, res = rung_octave(ours_im, spec)
+                p1 = _save(ours_c, STAGE_DIR, tag, f"{key}-ours-100pct.png")
+                _save(anchor_c, PRIVATE_DIR, tag, f"{key}-anchor-100pct.png")
+                _save(_composite(ours_c, anchor_c), PRIVATE_DIR, tag,
+                      f"{key}-beside-anchor.png")
+                print(f"[{key}] energy ours {res['ours']} vs anchor "
+                      f"{res['anchor']} -> {res['ratio']}x  (crop: {p1}; "
+                      f"composite: _private, local-only)")
             if spec.get("mask_material"):
                 mres, why = rung_octave_mask(ours_im, render_path, spec)
                 declared = _absent_by_declaration(spec.get("mask_material"))
-                if mres is None and declared:
+                # THE MASK IS THE AUTHORITY ON WHETHER A MATERIAL IS IN THE
+                # FRAME, and the ledger is consulted only when it is not
+                # (p2r79). The two answer questions in DIFFERENT NAMESPACES:
+                # `value_ladder.DECLARED_ABSENT` is keyed by OBJECT
+                # (`bed__duvet`, `bed__throw`), while this rung names a
+                # MATERIAL — and the lookup used to bridge them with a
+                # `bed__`->`bed_` string mangle. On an ACQUIRED set that is
+                # exactly backwards: D-086 declares the object `bed__duvet`
+                # absent BECAUSE the bought set is one fused mesh, and D-138
+                # says in its own words that that fused mesh WEARS `bed_duvet`.
+                # So the material renders 6.99% of this frame while its object
+                # is correctly signed absent. Asking the mask first makes the
+                # collision impossible: pixels present -> measure them; no
+                # pixels -> then a signed absence is a real answer.
+                shown = (_has_pixels(id_arr, name_to_id, spec["mask_material"])
+                         if id_arr is not None else [])
+                if mres is None and declared and not shown:
                     # ABSENT ON PURPOSE IS NOT COULD-NOT-RUN. p2r44: his order
                     # put the bed cloth on the acquire path, the acquired set
                     # falls to the bed line itself, and the greige foot runner
@@ -655,15 +965,28 @@ def run(render_path, scene_path=None, only=None, tag=None):
                           f"material this half measures is absent by decision, "
                           f"not unmeasured. {declared[1]}")
                 elif mres is None:
-                    could_not.append((key, f"mask half: {why}"))
+                    if declared and shown:
+                        why = (f"{why} — and note {declared[0]} declares this "
+                               f"site absent while {', '.join(shown)} renders "
+                               f"here: that row is about the OBJECT, this rung "
+                               f"is about the MATERIAL, and neither answers the "
+                               f"other")
+                    could_not.append((key, f"mask half: {why}"
+                                           + (f"; and {box_blind}" if box_blind
+                                              else "")))
                     print(f"[{key}] MASK HALF COULD NOT RUN — {why} "
                           f"(the box number above is composition-blind trend, "
                           f"not a substitute)")
                 else:
-                    print(f"[{key}] mask-scoped ({spec['mask_material']}): "
+                    print(f"[{key}] mask-scoped "
+                          f"({'+'.join(_names(spec['mask_material']))}): "
                           f"energy {mres['ours']} vs anchor {mres['anchor']} "
                           f"-> {mres['ratio']}x  ({mres['core_px']} core px of "
-                          f"{mres['mask_px']}, bbox {mres['bbox']})")
+                          f"{mres['mask_px']}, bbox {mres['bbox']})"
+                          + ("  [THE ANSWER — the declared box is blind on this "
+                             "frame]" if box_blind else ""))
+            elif box_blind:
+                could_not.append((key, box_blind))
         elif kind == "autocorr":
             c, _, res = rung_autocorr(ours_im, spec)
             p1 = _save(c, STAGE_DIR, tag, f"{key}-ours-100pct.png")
@@ -672,26 +995,51 @@ def run(render_path, scene_path=None, only=None, tag=None):
                 broken.append(key)
             print(f"[{key}] autocorr peak {res['peak']} @ lag {res['lag_px']}px "
                   f"vs floor {res['floor']} -> {verdict}  (crop: {p1})")
+            if not res["periodic"] and not res.get("control_fired"):
+                # a clean absence test whose control did not fire has not looked
+                why = res.get("control_why") or (
+                    f"tiled control read {res.get('control_peak')} vs floor "
+                    f"{res.get('control_floor')}")
+                could_not.append((key, f"positive control did not fire: {why}"))
+                print(f"[{key}] COULD NOT RUN — clean, but the tiled positive "
+                      f"control did not fire either ({why}); on these pixels "
+                      f"this rung cannot tell 'no repeat' from 'cannot see'")
+            elif res.get("control_fired"):
+                print(f"[{key}]   positive control (this crop's own left half, "
+                      f"tiled): peak {res['control_peak']} @ lag "
+                      f"{res['control_lag']}px vs floor {res['control_floor']} "
+                      f"-> fires, so the clean reading above is a reading")
         elif kind == "edge_profile":
-            c, _, res = rung_edge(ours_im, spec)
-            p1 = _save(c, STAGE_DIR, tag, f"{key}-ours-100pct.png")
+            c, _, res = rung_edge(ours_im, spec, id_arr, name_to_id)
             w = res["rise_px_median"]
             cut = spec.get("cut_rise_px")
-            if w is None:
-                # no measurable transition inside a box declared to hold one —
+            if c is None or w is None:
+                # no measurable transition where one was declared to be —
                 # "could not look" must never print like "looked and it was fine"
-                could_not.append((key, "no luminance transition found in the box"))
-                print(f"[{key}] COULD NOT RUN — no transition in the declared box")
-            elif cut is not None:
+                why = res.get("could_not_run") or (
+                    f"no luminance transition at the site ({res.get('site')})")
+                could_not.append((key, why))
+                print(f"[{key}] COULD NOT RUN — {why}")
+                continue
+            p1 = _save(c, STAGE_DIR, tag, f"{key}-ours-100pct.png")
+            if cut is not None:
                 ok = w >= cut
                 if not ok:
                     broken.append(key)
                 print(f"[{key}] edge 10-90% rise width median = {w} px vs cut "
                       f">= {cut} -> {'ROLLED (pass)' if ok else 'STEP (cut broken)'}"
-                      f"  (crop: {p1})")
+                      f"  [site: {res.get('site')}"
+                      + (f", {res['cols']} contact columns" if "cols" in res else "")
+                      + f"]  (crop: {p1})")
+                if "line_pct" in res:
+                    print(f"[{key}]   does it CAST A LINE: {res['line_pct']}% of "
+                          f"columns (median {res['line_med']} codes, "
+                          f"n={res['line_n']}) — report-only; a wide soft ramp "
+                          f"passes the rise cut whether the object has "
+                          f"thickness or is painted on")
             else:
                 print(f"[{key}] edge 10-90% rise width median = {w} px  "
-                      f"(report-only; crop: {p1})")
+                      f"[site: {res.get('site')}] (report-only; crop: {p1})")
 
         elif kind == "shadow_contact":
             co, cc, res = rung_shadow_contact(ours_im, render_path, spec)
