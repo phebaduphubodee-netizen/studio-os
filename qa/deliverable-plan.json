@@ -3874,8 +3874,69 @@
         "STY/STY-7",
         "STY/STY-8"
       ]
+    },
+    {
+      "commit": "2a13fe6f912c5df5185080fc254fab4c6ce0c33f",
+      "verdicts": {
+        "P2": "change: เฟสนี้ชื่อ SURFACE แต่สิ่งที่ยกเฟรมข้ามเกณฑ์คืนนี้เป็น LIGHT+LENS ทั้งหมด — D2/D3/D6 พลิก PASS พร้อมกันจาก daylight level 0.20 (D-147) ไม่ใช่จากงานผิววัสดุสักชิ้น. เลน P2 ที่เหลือยังตรงเดิม (P2r-2 ไม้ · P2r-5 ผ้า) และ C2/C3 รอบนี้ลงเลนนั้นเกือบทั้งหมด (พู่ throw · หมอนแข็ง · ผ้าหุ้มม้านั่ง · ลิ้นชักไม่มีร่อง) แต่ **เพิ่มเงื่อนไขใหม่ที่วัดได้**: C2 blind สรุปเองว่า ข้อ 1/3/5/6/8/9 เป็นข้อเดียวกัน คือไม่มีอะไรในเฟรมทอดเงาลงบนอะไร มีแต่ proximity AO — และการวัดของผมเห็นด้วย (ดวงอาทิตย์ = 0.017 codes บนกล้อง record). ดังนั้น P2 ต้องเลิกถือว่างานผ้าเดี่ยว ๆ จะปิดเฟสได้: object-level occlusion เป็นเงื่อนไขร่วม",
+        "P4": "keep: charter เดิมถูกต้องและคืนนี้ยิ่งชัด — C2 จัดชั้นว่างเป็นเสียงอันดับ 4 จาก 19 ข้อ (loudest unfinished-set signal after the cloth) และหนังสือปกกลับหัว 180 องศาถูกจับโดยทั้ง C2 และกรรมการตาสด. D-144 ยังบังคับ accent ลงรอบ build ถัดไป; รอบนี้ไม่ได้ลง accent สีเพราะการทดลอง (D-151) ถูกเรนเดอร์หักล้าง ซึ่งเป็นผลที่ถูกต้อง ไม่ใช่การเลื่อน",
+        "P3": "change: **เป้าของเฟสนี้ขยับแล้วโดยที่เฟสยังไม่เปิด** — goal เขียนไว้ว่า p1 luminance จาก 51 ไปหา 13 และคืนนี้ p1 บนเฟรมเต็มลงจาก 34.7 เป็น 27.7 ด้วยกลไกของ P3 แท้ ๆ (occlusion+exposure ตามคำของ goal เอง ไม่ใช่โคมเพิ่ม). ต้องเขียน goal ใหม่ให้ตรงกับสิ่งที่เหลือจริง: (ก) แยกกำลังของ daylight ออกจากบทบาทขั้วสีเย็น — D10 ตก 7.0 เหลือ 3.63 เพราะ portal เดียวแบกสองอย่าง (คลาสหนึ่งพารามิเตอร์แบกสองอย่าง) (ข) object-level occlusion ที่ C2 ชี้ (ค) โคมที่เปล่งแสงแต่ไม่ส่องอะไร (C2 วัดใต้โคมขวา 100.5 เทียบ 123.3 = มืดกว่าที่ห่างออกไป) — สามข้อนี้คือ P3 ที่แท้จริง ไม่ใช่ p1 ตัวเดียว",
+        "P5": "keep: rung ตัดสินที่รอบก่อนเพิ่ง change เข้ามา (sighted closure verifier + blind panel รอบใหม่) ยังไม่ได้ใช้จริงสักครั้ง — ไม่มีข้อมูลใหม่พอจะ change ซ้ำ. สิ่งที่รอบนี้เพิ่มให้ P5 คือ **คู่ A/B กล้องที่รอตาพี่** ซึ่งเข้าช่องทาง OWNER-EYE clause เดิมพอดี ไม่ต้องแก้ charter",
+        "STY": "keep: โปรแกรมเก้าแถวเดิมยังถูก และคืนนี้ไม่ได้แตะ slot ไหนเลย. แต่บันทึกไว้ให้รอบหน้า: การหรี่ daylight เปลี่ยน palette ที่วัดได้ (D10) โดยไม่ผ่าน slot ใด — แปลว่า palette ของห้องนี้ไม่ได้ถูกกำหนดโดยเก้าแถวอย่างเดียว แสงก็กำหนดด้วย และ style_measure ที่ freeze อยู่จะอ่านค่าหลังแสงเปลี่ยนไม่ตรงกับที่ signed ไว้",
+        "DRW": "keep: sheet_recon 21 drawn / 21 matched / 0 UNRESOLVED บนทั้งสองเฟรมของรอบนี้ — ไม่มีอะไรในรอบ light+lens แตะแบบ"
+      },
+      "changed": [
+        "P2",
+        "P3"
+      ],
+      "note": "",
+      "done_at_review": [
+        "DRW/DRW-1",
+        "DRW/DRW-1b",
+        "DRW/DRW-2",
+        "DRW/DRW-3",
+        "DRW/DRW-4",
+        "DRW/DRW-5",
+        "P0/P0a",
+        "P0/P0b",
+        "P0/P0c",
+        "P0/P0d",
+        "P0/P0e",
+        "P0/P0f",
+        "P1/P1a",
+        "P1/P1b",
+        "P2/P2a",
+        "P2/P2b",
+        "P2/P2d",
+        "P2/P2e",
+        "P2/P2f",
+        "P2/P2g",
+        "P2/P2h",
+        "P2/P2i",
+        "P2/P2j",
+        "P2/P2k",
+        "P2/P2r-1",
+        "P2/P2r-15",
+        "P2/P2r-16",
+        "P2/P2r-17",
+        "P2/P2r-18",
+        "P2/P2r-19",
+        "P2/P2r-21",
+        "P2/P2r-24",
+        "P2/P2r-3",
+        "P2/P2r-4",
+        "P2/P2r-6",
+        "P2/P2r-7",
+        "P2/P2r-8",
+        "P2/P2r-9",
+        "P3/P3a",
+        "STY/STY-1",
+        "STY/STY-1b",
+        "STY/STY-7",
+        "STY/STY-8"
+      ]
     }
   ],
-  "last_review_commit": "b3d580e90ec7443938c0167cb6619b016af40ca8",
+  "last_review_commit": "2a13fe6f912c5df5185080fc254fab4c6ce0c33f",
   "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
