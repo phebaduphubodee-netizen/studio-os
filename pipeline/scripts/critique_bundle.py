@@ -62,6 +62,9 @@ class RefusedError(ValueError):
 # because there is nothing else in it. The render is hard-linked where the
 # filesystem allows it, so the guarantee costs no bytes.
 C2_ASK = "c2-ask"
+# Named, not inlined, so `assert_blind` can refuse it by name if it ever turns up
+# inside the blind ask (see the OWNER_NOTE comment for what it is doing here).
+OWNER_NOTE_NAME = "OWNER-NOTE-not-part-of-the-ask.md"
 C2_ASK_NOTE = """This directory IS the C2 ask (R7c). It holds the render and the
 standing cold-critic prompt, and nothing else, by construction — see
 `critique_bundle.assert_blind`. Point the fresh-context agent HERE, never at the
@@ -178,7 +181,31 @@ README = """# ส่งให้ Gemini ตัดสินในฐานะ des
 
 และเกณฑ์การชั่งน้ำหนัก (R7b): **ตาบอกว่า "อะไร" ผิด เครื่องมือบอกว่า "เท่าไร"
 และ "ปุ่มไหน"** — ถ้าสองอย่างขัดกันเรื่อง *มีปัญหาหรือไม่* ให้ตาชนะ
-{note}"""
+"""
+
+# THE ROUND NOTE LIVES OUTSIDE THE BUNDLE, and this filename is the whole fix.
+#
+# It used to be appended to README.md as "## หมายเหตุรอบนี้", one directory above the
+# render — and on 2026-08-26 the C2 critic opened it and said so in its own verdict:
+# *"README.md contains a line naming what this round changed. I read it before opening
+# the image and deliberately used none of it — but a bundle built for a blind rung
+# should not carry that line."* It was right, and the blind sub-directory (`c2-ask/`)
+# that exists precisely to prevent this did prevent nothing, because the ASK NAMED THE
+# PARENT DIRECTORY. R7c's law is that blindness is enforced by the ASK'S CONSTRUCTION;
+# a construction that only works when the spawner types the right path is a procedure,
+# not a construction.
+#
+# So the note stops living anywhere a critic can wander into. It goes to a file the
+# blind reader has no reason to open and whose name says who it is for, and README.md
+# keeps only the paste ritual, which is the same for every round and tells a judge
+# nothing about this one.
+OWNER_NOTE = """# หมายเหตุรอบนี้ — สำหรับเจ้าของ/ผู้ triage เท่านั้น
+
+ไฟล์นี้ **ไม่ใช่ส่วนหนึ่งของ ask** ทั้ง C2 (fresh-context local) และ C3 (Gemini)
+ตัดสินจาก render + PROMPT.md เท่านั้น — กรรมการที่เห็นเฉลยไม่ใช่กรรมการอีกต่อไป
+
+{note}
+"""
 
 
 def build(render, out_dir, note=""):
@@ -191,8 +218,10 @@ def build(render, out_dir, note=""):
     shutil.copy2(render, os.path.join(d, os.path.basename(render)))
     shutil.copy2(PROMPT, os.path.join(d, "PROMPT.md"))
     with open(os.path.join(d, "README.md"), "w", encoding="utf-8") as fh:
-        fh.write(README.format(render=os.path.basename(render),
-                               note=("\n## หมายเหตุรอบนี้\n\n" + note) if note else ""))
+        fh.write(README.format(render=os.path.basename(render)))
+    if note:
+        with open(os.path.join(d, OWNER_NOTE_NAME), "w", encoding="utf-8") as fh:
+            fh.write(OWNER_NOTE.format(note=note))
     c2_ask_dir(d, os.path.basename(render))
     return d
 

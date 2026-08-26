@@ -2482,6 +2482,171 @@
      "why": "ลิสต์ที่ accent ต้องมาจากมีอยู่จริง"
     }
    ]
+  },
+  {
+   "id": "D-145",
+   "unit": "DELIV-001",
+   "subject": "key-sun-azimuth-convention",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "ทำไมแสงคีย์ที่ 'พิสูจน์แล้วว่าถึงเฟรม' ตั้งแต่ p2r35 ถึงไม่เคยทำให้เฟรมมีทิศแสง?",
+   "in_effect": "**ลำแสงวิ่งขนานกับกระจกที่มันควรส่องผ่าน — dot(beam, inward normal) = +0.000 พอดี เพี้ยน 74 องศา** · โค้ดเดิมคำนวณ atan2 บน normal ที่กลับเครื่องหมาย (ทิศจากห้องไปหาดวงอาทิตย์) แล้วยัดเข้า rotation_euler.z ตรง ๆ แต่ SUN ที่ rotation (pi/2-elev,0,rot) เปล่งแสงตาม d_xy = sin(theta)*(-sin rot, cos rot) ซึ่งคือ inward normal **หมุน 90 องศา** ไม่ใช่ค่าลบของมัน · แก้เป็น rot = atan2(-nx, ny) ได้ dot +0.853 · เพิ่ม **rung fail-closed**: คำนวณเวกเตอร์ลำแสงกลับจาก euler ที่เพิ่งตั้ง แล้ว SystemExit ถ้า dot < 0.30 เพราะฟังก์ชันนี้ส่งดวงอาทิตย์ผิดทิศมาสองครั้งแล้ว (ครั้งแรกเครื่องหมาย elevation) และทั้งสองครั้ง 'การวัดวัตต์' บอกว่ากลไกถึงเฟรม — **ทิศทางพิสูจน์ด้วยปริมาณไม่ได้**",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "p2r35 อ่านหลักฐาน '+3.87 codes 11 เท่า เห็นลำแสงบนพื้นไม้' ว่ากลไกใช้ได้ · แสงมาถึงจริงและสว่างขึ้นจริง แต่ **มาถึง ไม่เท่ากับ มาถึงจากทิศที่ถูก** และไม่มีเครื่องมือไหนในเลนถามคำถามที่สอง — รูปเดียวกับ R7b (เช็คความสอดคล้องกับเลขที่เราเลือกเอง) ยกขึ้นอีกชั้น",
+   "reverse_by": "คืนบรรทัด atan2 บน normal ที่กลับเครื่องหมาย แล้วลบบล็อก dot-check (rung จะตกทันทีเพราะ 0.000 < 0.30) แล้วลบแถวนี้",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_az = math\\.atan2\\(-_nvec\\[0\\], _nvec\\[1\\]\\)",
+     "why": "the corrected azimuth derivation itself — if this line reverts the beam runs along the glass again and the frame silently loses its light direction"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "if _dot < 0\\.30:",
+     "why": "the fail-closed guard that makes a wrong beam impossible to ship; without it the derivation above is a convention nobody re-checks"
+    }
+   ]
+  },
+  {
+   "id": "D-147",
+   "unit": "DELIV-001",
+   "subject": "daylight-portal-level",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "พื้นค่ามืดของเฟรม (value floor) ที่กรรมการตาสดวัดว่าขาด มาจากไหน และคันโยกไหนคืนมันได้",
+   "in_effect": "**portal แสงธรรมชาติคือตัวทำให้เฟรมแบน และรอบนี้วัดได้** · 170 W ของ area light ยืนอยู่ในกระจก เทียบกับไฟฟ้าอุ่น ~300 W ที่ story สร้างมาเพื่อโชว์ — เรื่องตอนเย็นที่จัดแสงเหมือนเที่ยงวัน · ลดเหลือ **level 0.20**: บล็อก 40px ต่ำกว่า L60 ขึ้นจาก 2.41% เป็น 6.19%, ต่ำกว่า L80 จาก 10.26% เป็น **17.00%** (เข้าแถบงานส่งจริง 16.6-23.6%) ขณะที่ **median แทบไม่ขยับ 160.6 เป็น 154.3** — เงาตก มิดโทนอยู่ นั่นคือรูปร่างของ value floor · **คำอธิบายรุ่นแรกถูกทิ้งเพราะมันเท็จ**: ผมเขียนว่า 'portal เก็บส่วน diffuse ดวงอาทิตย์รับหน้าที่ลำแสง' ซึ่งจริงเรื่องแสงธรรมชาติแต่เท็จเรื่องซีนนี้ (ดวงอาทิตย์ให้ผล 0.017 codes = noise ตาม D-146) — เหตุผลที่ฟังดูเป็นฟิสิกส์แต่ไม่ได้วัด คือแผลที่ repo นี้จ่ายซ้ำ",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "วัดสี่ขาบน quick pair เดียวกัน เทียบ anchor สองเฟรมของงานส่งจริง · p50 ที่ไม่ขยับคือหลักฐานว่านี่ไม่ใช่การหรี่ภาพทั้งใบ",
+   "reverse_by": "--daylight-level=1.0 คืน portal เต็มงบแบบ p2r77 (หรือแก้ default _DAYLIGHT_LEVEL) แล้วลบแถวนี้",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_dsplit = float\\(globals\\(\\)\\.get\\(\"_DAYLIGHT_LEVEL\", 0\\.20\\)\\)",
+     "why": "the level is applied unconditionally at 0.20 — the number the value-floor measurement was taken at and the one the gate quotes"
+    }
+   ]
+  },
+  {
+   "id": "D-148",
+   "unit": "DELIV-001",
+   "subject": "eye-lane-depth-of-field",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "ทำไมของที่ใกล้ตาคนดูที่สุดในเฟรม กลับเบลอที่สุด",
+   "in_effect": "**f/2.8 โฟกัสที่ subject ทำให้โซนคมเริ่มที่ 2.58 ม. ขณะที่มวลใกล้สุดในเฟรม (ม้านั่งปลายเตียง) ยืนที่ 1.25 ม.** · แทนที่จะพิมพ์ค่ารูรับแสง เขียนความสัมพันธ์ลงไป: โฟกัสที่ hyperfocal ของมวลใกล้สุดที่อยู่ในเฟรม แล้วรูรับแสงเป็นผลลัพธ์ (f/10.1 ที่ 2.26 ม. คมตั้งแต่ 1.13 ม. ถึงอนันต์) · CoC derive จากความละเอียดที่เราส่งจริง (2 px ที่ 2400 = 0.030 มม.) ไม่ใช่ค่ามาตรฐานการพิมพ์ · ถ้ารูรับแสงที่ต้องใช้เกินเพดาน ให้ **ปิด DOF** แล้วพิมพ์บอก — เลนส์ที่ถือห้องไม่ไหวคือคำโกหกเรื่องห้อง ไม่ใช่สไตล์",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "ค่าเดิม f/2.8 มาจาก ground-truth study ที่วัด **camera datablock ในไฟล์ของคนอื่น** ('pro scene cameras 1.4-2.4') · พูลที่เราถูกตัดสินด้วยจริง (R4 anchors) เป็น deep-focus ใน **พิกเซล**: หนังสือบนม้านั่งหน้าสุดของ anchor วัด laplacian variance 1090 เทียบผนังไกล 215 ขณะที่ของหน้าสุดของเรา 5.7-18.9 เทียบระนาบหมอน 104 · การวัดงานที่ส่งจริง outrank การวัดเครื่องมือ",
+   "reverse_by": "ลบบล็อก DOF DERIVED ใน add_suite_eye_camera คืนสองบรรทัดเดิม (focus = ระยะ subject, fstop = _e5.STORY_FSTOP) แล้วลบแถวนี้",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "DOF DERIVED: nearest in-frame mass",
+     "why": "the derived branch prints its own numbers into the render path; if the print is gone the derivation is gone and the frame is back on a typed f/2.8"
+    }
+   ]
+  },
+  {
+   "id": "D-149",
+   "unit": "DELIV-001",
+   "subject": "frame-geometry-rung-and-contained-camera",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "สามข้อที่กรรมการตาสดวัดจากพิกเซล (เพดานหาย ของหน้าสุดไม่มีพื้นรอง เบลอหน้า) ตัดสินก่อนเรนเดอร์ได้มั้ย และกล้องต้องเปลี่ยนมั้ย",
+   "in_effect": "**สร้าง pipeline/scripts/frame_geometry.py** — ฉายมวลของ spec ผ่านกล้องของ spec แล้วตอบก่อนเรนเดอร์ว่าอะไรอยู่ในเฟรม อะไรตกขอบ อะไรอยู่ในระยะชัด · บนกล้องของ record: ยอด BF14 ฉายที่ v=0.4533 เทียบครึ่งเฟรม 0.375 (**ยอดผนังระแนงอยู่นอกภาพ 0.098**) · จุดสัมผัสพื้นของม้านั่ง v=-0.5223 เทียบ -0.375 (**ของใกล้สุดไม่มีพื้นรองรับ**) · **กล้องของ record ไม่ถูกแตะ** — D-118 เป็นแถวของพี่ (owner_override 'ดีแต่ fur ยังไม่สวย') การเปลี่ยนเองคือแผล D-072/R13 ซ้ำ · แทนด้วย variant `room_contained` ในสเปก (stand 1240, lens 21, shift -0.0878, EYE_CAM_HEIGHT_M=1.05) ที่ solve จากข้อจำกัดสองข้อพร้อม margin 2% แล้วเรนเดอร์เป็น **คู่ A/B ให้ตาพี่ตัดสิน วิธีเดียวกับที่ D-118 ถูกตัดสิน** · ราคาที่ต้องบอกพี่: AABB ของเตียงลดจาก 0.344 เหลือ 0.175 ของพื้นที่เฟรม",
+   "where": "pipeline/scripts/frame_geometry.py",
+   "because": "rung ทุกตัวในเลนวัด SCENE หรือวัด PIXELS ไม่มีตัวไหนวัด **การจับคู่ระหว่างสองอย่างนั้น** ซึ่งเป็นที่อยู่ของทั้งสามข้อ · ของแถมที่ไม่ได้ตั้งใจ: โคมที่ล้างผนังระแนง (e5_trim_bf14_wash_0..3 ที่ z 2.74) อยู่นอก frustum — พอเพดานเข้าเฟรม แหล่งกำเนิดของแสงที่สว่างที่สุดในภาพก็ปรากฏ ปิดข้อ 'วอชไร้ที่มา' ด้วยการเคลื่อนไหวเดียวกัน",
+   "reverse_by": "พี่ชี้จากคู่ภาพว่าเอากล้องเดิม = ไม่ต้องทำอะไร (record ยังเป็นของเดิม) · จะปิดเครื่องมือ = ลบ import frame_geometry ใน build_room ลบไฟล์และเทสต์ แล้วลบแถวนี้",
+   "in_effect_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"room_contained\"",
+     "why": "the A/B leg must live in the spec, not in a command line (D-032's law); test_frame_geometry re-solves it every run so a stale variant fails"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"stand_mm\": \\[\\s*1400,",
+     "why": "the camera of record is untouched: his stand stays 1400 — this must fail loudly if a builder ever swaps the record camera without his words"
+    }
+   ]
+  },
+  {
+   "id": "D-150",
+   "unit": "DELIV-001",
+   "subject": "one-cloth-per-adjacent-surface",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "ผ้าพับสองผืนโทนเดียวกันห่างกัน 30 ซม. ในเฟรม เก็บทั้งคู่หรือไม่",
+   "in_effect": "**ผ้าบนม้านั่งออกจากเฟรม เหลือของแบน (หนังสือ) ตามกติกา** · กรรมการตาสดอ่านสองผืนนี้ว่า 'prop inventory ไม่ใช่นิสัยของคน' และ anchor ทั้งสองเฟรมไม่วางของคลาสเดียวกันบนพื้นผิวติดกัน · shopping list ของ ORD-25c เขียนกฎนี้ไว้ก่อนเรนเดอร์แล้วในบรรทัด E1 ('ม้านั่งลดเหลือของแบน' เมื่อ throw ลงเตียง) · **ไม่ใช่การกลับคำตัดสิน panel 3/3 ของ b89bc1af** — คำตัดสินนั้นเป็นเรื่อง id ที่ตำแหน่งหนึ่ง ส่วนนี่คือตำแหน่งนั้นเลิกจัดด้วยผ้า",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "กติกา vignette ของเราเองบวกการอ่านงานส่งจริง · แถวใน object-existence เปลี่ยนเป็น keep-but-not-placed ไม่ถูกลบ (แถวไม่เคยออกจากทะเบียน)",
+   "reverse_by": "--bench-throw คืนผ้าผืนนั้นโดยไม่แตะอย่างอื่น แล้วลบแถวนี้",
+   "obeys": "ORD-2026-08-25c-story-driven-styling",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_seat = _bench_obj if globals\\(\\)\\.get\\(\"_BENCH_THROW\", False\\) else None",
+     "why": "the site is opt-in now; if this reverts to a bare assignment the second cloth is back in the frame with no decision behind it"
+    }
+   ]
+  },
+  {
+   "id": "D-151",
+   "unit": "DELIV-001",
+   "subject": "throw-swap-refuted-by-its-own-render",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "สลับ throw เป็นผ้าขนสัตว์ที่ 'มืดที่สุดในแคช' แล้วเฟรมดีขึ้นมั้ย",
+   "in_effect": "**ไม่ และการเรนเดอร์หักล้างมันในเฟรมเดียว** · ผมสลับด้วยการวัดสองอย่างที่จริงทั้งคู่ (เฟรมไม่มีของมืดที่ตั้งใจ 4.31% ต่ำกว่า L60 เทียบ anchor 9.87/19.96% และผิว base colour ของขนสัตว์ 91685141 มืดที่สุดในแคช L=99.3 เทียบ plaid 133.0) แล้วเฟรมกลับมาพร้อม **แผ่นสีแซลมอนกลางเตียง** · **หัววัดตอบคำถามที่มันถูกสร้างมาให้ตอบ** — มันรายงาน luminance ไม่มีช่อง hue เลย 'มืด' กับ 'เทาเข้ม' จึงเป็นคำเดียวกันสำหรับมัน · วัดซ้ำหลังเรนเดอร์: ขนสัตว์คือ hue 356 องศา sat 0.289 = แดง และเลยแถบผ้าที่ anchor วัดได้ (warm +24..+30, sat 0.18-0.21) · panel 3 กรรมการเขียนคำตอบไว้แล้วในวลีเดียว **'edge 3/3 ON ITS VENDOR COLOUR'** และผมอ่านมันเป็นคำตัดสินเรื่องตำแหน่ง ทั้งที่มันเป็นคำตัดสินเรื่องสี · **คืน plaid** — value floor ไม่ใช่งานของวัตถุชิ้นนี้ มันมาจาก D-147",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "R7b ระดับล่าง: ตาบอกว่าอะไรผิด เครื่องมือที่ผมสร้างถูกออกแบบให้บอกว่า 'อย่างอื่น' เท่าไร · บันทึกเต็มเพราะผมทำแผลคลาสเดียวกับที่กำลังรวบรวมอยู่ ในเซสชันเดียวกัน",
+   "reverse_by": "--throw-wool เรนเดอร์ขาขนสัตว์ให้ตาพี่ตัดสิน (คู่ภาพอยู่บนดิสก์แล้ว) ถ้าพี่เอาขนสัตว์ ให้เปลี่ยน _BED_THROW_MODEL แล้วลบแถวนี้",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_BED_THROW_MODEL = \"0623e2fd-7a59-4489-9eba-fbfad9239e13\"",
+     "why": "the plaid is the shipped id; if it silently becomes the wool again the frame gets its salmon slab back with no verdict behind it"
+    }
+   ]
+  },
+  {
+   "id": "D-146",
+   "unit": "DELIV-001",
+   "subject": "key-sun-default-and-what-it-is-worth",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "question": "แสงคีย์ทิศทาง (D-059/D-060 ที่จอด default OFF มา 43 รอบ) เปิดเป็น default ได้หรือยัง และมันให้อะไรกับเฟรมจริง",
+   "in_effect": "**เปิดเป็น default แล้ว (_KEY_SUN = True) และมูลค่าของมันขึ้นกับกล้อง ซึ่งวัดได้ทั้งสองฝั่ง** · ที่ **กล้องของ record** ลำแสง (หลังแก้ทิศตาม D-145) ให้ผลต่าง 0.017 codes เทียบขา sun~0 — **noise ล้วน** และไม่ขยับตามพลังงานเลย: 0, 4, 8, 16 W/m2 ให้ค่าห่างกันในระดับ noise ทั้งหมด (w4 เทียบ w16 = mean 0.015, max 13, 1.4% ของพิกเซล) · ที่ **กล้อง room_contained** ลำแสงเดียวกันให้ mean 0.62 codes, max 189, **10.6% ของพิกเซล — มากกว่า 36 เท่า** · เหตุผลเป็นเรขาคณิตล้วน: ลำแสงตกบน พื้นและระนาบที่ crop ของกล้อง record ตัดทิ้ง — ซึ่งเป็นพื้นเดียวกับที่ frame_geometry วัดว่าหายไป (D-149) · **สรุปสามประโยค**: (1) กลไกนี้ถูกเรียกว่า 'พิสูจน์แล้ว' ตั้งแต่ p2r35 ด้วยการวัดที่มองไม่เห็นว่าทิศผิด (2) หลังแก้ทิศ มันยังไม่ถึงเฟรมของ record เพราะเฟรมนั้นตัดพื้นทิ้ง (3) มันเห็นได้ทันทีในเฟรมที่ไม่ตัดพื้น — ดังนั้นข้อโต้แย้งเรื่องกล้องกับข้อโต้แย้งเรื่องแสงเป็นข้อเดียวกัน · ค่าที่ตั้งไว้ 2.0 W/m2 คือค่าเดิมของ D-060 ไม่ใช่ค่าที่ bracket เลือก — bracket บอกว่า **ในช่วง 0-16 ค่าพลังงานไม่ใช่คันโยกบนกล้องนี้** จึงไม่มีเหตุผลจะขยับมัน และการขยับมันคือการหมุนปุ่มที่ไปไม่ถึง",
+   "where": "pipeline/scripts/build_room.py",
+   "because": "R13: คำสั่ง/การตัดสินที่ทำเป็น opt-in คือสิ่งที่ไม่ถูกทำ — D-060 เขียน reverse_by ว่า 'รัน --key-sun เพื่อเปิดขา B' แล้วไม่มีสคริปต์ ไม่มี make target ไม่มีเอกสารไหนในทั้ง repo พิมพ์ธงนั้นเลยสักครั้งใน 43 รอบ · และ R1: กลไกนี้ผ่านการวนมา 5 รอบที่ p2r35 บวก 7 ขา quick คืนนี้ — การเปิด default ปิดวงนี้พร้อมตัวเลข แทนที่จะปล่อยให้มันค้างเป็น 'รอคู่ภาพตัดสิน' อีกสี่สิบรอบ",
+   "reverse_by": "--no-key-sun เรนเดอร์ขา A (rig ก่อน p2r78 เป๊ะ) · จะปิดถาวรให้ตั้ง _KEY_SUN = False แล้วลบแถวนี้",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "^_KEY_SUN = True",
+     "why": "the default itself — the whole point of this row is that the mechanism is no longer waiting for someone to type a flag, so the line must read True or the row is false"
+    }
+   ]
   }
  ],
  "_assert_ratchet_from": "D-124"

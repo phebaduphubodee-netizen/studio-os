@@ -82,6 +82,11 @@ import sheet_recon as _sr       # bpy-free: R12's ledger. The BUILD reads the dr
                                 # the after-the-fact gate, so every drawn dimension in the model
                                 # was one somebody had transcribed
 import camera_config   # eye-camera height + its coupled LOS threshold (M3.2 designer-cited, testable)
+import frame_geometry  # bpy-free: WHAT THE LENS CONTAINS — the projection of the spec's own
+                       # masses through the spec's own camera. Answers before a render the
+                       # three things the p2r77 sighted panel could only measure after one:
+                       # is the wall/ceiling junction in frame, is the nearest mass's floor
+                       # contact in frame, and is that nearest mass inside the depth of field.
 import placement_gate  # bpy-free pure logic: scene_zone_decision (owner-signed below_grade -> excluded)
 import floor_openings  # bpy-free pure logic: opening TYPE -> sill/head render defaults + the
 #   sliding two-leaf rule. ONE schema for openings across build_floor (plan slabs) and build_room
@@ -1359,11 +1364,77 @@ def add_suite_eye_camera(spec, outline_m, h):
     cam_data.shift_y = RENDER_SHIFT_Y if _sv is None else float(_sv)  # frame down without tilting (two-point kept)
     try:
         cam_data.dof.use_dof = True
-        cam_data.dof.focus_distance = (tgt - eye).length
-        # lane B (ground-truth study): every pro scene camera measured f/1.4-2.4;
-        # our f/9 was past even asset-turnaround aperture. The story pair opens to
-        # STORY_FSTOP; the CD/documentation state keeps its crisp f/9.
-        cam_data.dof.aperture_fstop = _e5.STORY_FSTOP if _LIGHT_STORY else 9.0
+        # DEPTH OF FIELD IS DERIVED FROM THE ROOM, NOT TYPED (p2r78, R9 applied to the
+        # lens). The old two lines focused at the SUBJECT and opened to STORY_FSTOP =
+        # f/2.8, adopted 2026-07-30 from a ground-truth study whose sentence was "every
+        # pro scene camera measured f/1.4-2.4" — a reading of CAMERA DATABLOCKS IN OTHER
+        # PEOPLE'S FILES. What it produced here, measured by frame_geometry on the
+        # camera of record: the sharp zone starts at 2.58 m and the nearest mass in the
+        # frame (the foot bench) stands at 1.25 m, so THE NEAREST OBJECT TO THE VIEWER
+        # WAS THE BLURRIEST THING IN THE PICTURE. The sighted panel measured the same
+        # thing from the pixels — p99 laplacian 7-9 across the whole bottom third
+        # against 68-81 in the pillow plane — while the delivered anchors this studio is
+        # judged against (R4) run their FOREGROUND sharper than their far walls (bench
+        # book 1090 vs far panel wall 215). A measurement of the delivered work outranks
+        # a measurement of the tools, so the relationship is written down instead of the
+        # number: focus at the hyperfocal distance for the nearest in-frame mass, and
+        # let the aperture be whatever that costs.
+        _dof_set = False
+        try:
+            _cam_g = {"ex": ex, "ey": ey, "tx": tx, "ty": ty, "eye_h": _eye_h,
+                      "lens_mm": cam_data.lens, "shift_y": cam_data.shift_y,
+                      "res_w": camera_config.DELIVERABLE_RES[0],
+                      "res_h": camera_config.DELIVERABLE_RES[1]}
+            _nm = frame_geometry.nearest_mass(spec, _cam_g)
+            if _nm:
+                _n, _focus, _coc, _near, _far, _ok = frame_geometry.dof_from_geometry(
+                    cam_data.lens, _nm[0], camera_config.DELIVERABLE_RES[0])
+                if _ok:
+                    cam_data.dof.focus_distance = _focus
+                    cam_data.dof.aperture_fstop = _n
+                    _dof_set = True
+                    print(f"  DOF DERIVED: nearest in-frame mass '{_nm[1]}' at "
+                          f"{_nm[0]:.2f} m -> focus {_focus:.2f} m at f/{_n:.1f} "
+                          f"(CoC {_coc:.4f} mm = {frame_geometry.COC_PX:.0f} px at "
+                          f"{camera_config.DELIVERABLE_RES[0]}), sharp "
+                          f"{_near:.2f} m -> infinity")
+                else:
+                    # A lens that cannot hold the room is a lie about the room, not a
+                    # look. Turning DoF OFF is the honest state; it is never silent.
+                    cam_data.dof.use_dof = False
+                    _dof_set = True
+                    print(f"  DOF OFF: holding the nearest mass '{_nm[1]}' at "
+                          f"{_nm[0]:.2f} m sharp needs an aperture past the ceiling — "
+                          f"a defocused foreground is not a style this frame chose")
+            # AND THE FRAMING FACTS GO INTO THE RENDER PATH, not into a report.
+            # D-133's finding, applied to the instrument built this round: 81 of this
+            # repo's 190 instruments are reached by nothing, and 48 of those have green
+            # test suites — green and uncalled look identical from outside. So the two
+            # containment questions print on every build, in his channel, whether they
+            # pass or fail. A frame that crops its own room says so out loud.
+            _fr = frame_geometry.framing_report(spec, _cam_g)
+            _te, _nf = _fr.get("top_edge"), _fr.get("nearest_mass")
+            if _te:
+                print(f"  FRAME CONTAINS: {'yes' if _te['in_frame'] else 'NO '} — "
+                      f"{_te['what']} at v={_te['v']:+.4f} vs frame half-height "
+                      f"{_te['v_max']:.3f}"
+                      + ("" if _te["in_frame"] else
+                         f"  << the room's own top edge is OUTSIDE the picture by "
+                         f"{_te['shortfall_v']:+.4f}"))
+            if _nf:
+                print(f"  FRAME CONTAINS: {'yes' if _nf['floor_contact_in_frame'] else 'NO '} — "
+                      f"floor contact of the nearest mass '{_nf['name']}' "
+                      f"({_nf['depth_m']:.2f} m) at v={_nf['floor_contact_v']:+.4f} vs "
+                      f"{_nf['v_min']:.3f}"
+                      + ("" if _nf["floor_contact_in_frame"] else
+                         "  << the nearest thing in frame stands on nothing"))
+            print(f"  FRAME SHARE: bed {_fr['share']['bed_only']:.3f} of frame area, "
+                  f"bed+bench {_fr['share']['bed_zone']:.3f} (AABB proxy, no occlusion)")
+        except Exception as _de:                             # noqa: BLE001
+            print(f"  (DOF derive unavailable: {_de})")
+        if not _dof_set:
+            cam_data.dof.focus_distance = (tgt - eye).length
+            cam_data.dof.aperture_fstop = _e5.STORY_FSTOP if _LIGHT_STORY else 9.0
     except Exception:
         pass
     bpy.context.scene.camera = cam
@@ -2255,7 +2326,29 @@ _DUVET_TUCKS = False
 # the A leg must reproduce the shipped p2r34 frame exactly, or the comparison is against
 # a memory instead of an image. B leg: --key-sun (optionally --key-sun=<W> for the loud
 # bracket the amplitude-bisect law requires before a settled value is chosen).
-_KEY_SUN = False
+# DEFAULT FLIPPED TO TRUE AT p2r78, AND THE 42 ROUNDS IT SPENT AT False ARE THE RECORD.
+# The mechanism was proven to REACH THE FRAME at p2r35 — signed mean +0.34 -> +3.87 codes
+# (11x) with a beam visible on the wood floor and a cabinet's shadow edge, after four
+# separate blockers were cleared (flag membership test, rotation sign, portal-derived
+# azimuth, glazing shadow-transparency). Then D-060 parked it "default OFF until a
+# rendered pair decides it", `reverse_by` reading "run --key-sun to open leg B", and
+# NOBODY EVER TYPED THE FLAG: a repo-wide grep finds no script, make target or doc that
+# passes it. That is R13's sentence exactly — *an order carried out as an OPT-IN is an
+# order that was not carried out, because nobody types the flag* — and here the builder
+# did it to its own decision.
+#
+# WHAT IT COST, measured 2026-08-26 by a sighted panel against two delivered anchors:
+# our value range p99/p1 = 6.88 against 12.54 and 10.80, 0.45% of pixels below 0.08
+# against 1.0-1.3%, and mirrored halves of the room disagreeing about where the light
+# comes from (left pillow 162 brighter than right pillow 149 with the window on the
+# RIGHT). D-059 had already written the reason in its own words — *"เงาสัมผัสจึงไม่
+# available ทางเรขาคณิต"*, 463.7 W of 592.2 W from area/point emitters and no SUN object
+# anywhere on this lane — and then four more rounds of cloth work went by, and then
+# thirty-eight more rounds of everything else.
+#
+# Reverse: --no-key-sun renders the A leg (byte-identical rig to p2r77). The energy is
+# still bracketed with --key-sun=<W> per the amplitude-bisect law.
+_KEY_SUN = True
 _KEY_SUN_W = 2.0
 _GRAVITY_RAMP = True
 _BENCH_DENT = True
@@ -3700,7 +3793,23 @@ def _dress_scene(spec):
         # defect object. The seat dent retired with the sim (its travel was
         # derived FROM the bake); C2's undented-seat item transfers to the
         # acquired mesh's own contact, judged at the crop.
-        _seat = _bench_obj                      # built OR acquired; see the note above
+        #
+        # p2r78 — THE BENCH CLOTH LEAVES THE FRAME, and the reason is composition,
+        # not the id. Two folded grey cloths sat 30 cm apart in the picture (this one
+        # on the seat, the throw on the bed foot), same tone, same fold language; the
+        # sighted panel read them as "a duplicated story beat — prop inventory, not a
+        # person's habit", and neither delivered anchor repeats an object CLASS on
+        # adjacent surfaces. The shopping list wrote the same rule before any of this
+        # was rendered: E1's second half says once a woven throw lands on the bed,
+        # "ม้านั่งลดเหลือของแบน" — flat objects only on a seat plane. The books stay.
+        # This is not a verdict against b89bc1af, whose 3/3 panel win stands for the
+        # site it was judged at; it is that the site is no longer styled with cloth.
+        # Reverse: --bench-throw puts it back with nothing else changed.
+        _seat = _bench_obj if globals().get("_BENCH_THROW", False) else None
+        if _seat is None and _bench_obj is not None:
+            print("  lane D: bench throw NOT PLACED — one cloth per adjacent surface "
+                  "(shopping-list E1; the bed carries the throw this round). "
+                  "--bench-throw restores it")
         if _seat is not None:
             _thr_mp = _model_path(_BENCH_THROW_MODEL)
             if _thr_mp is None:
@@ -4343,6 +4452,29 @@ _WARDROBE_VESSEL_PAIR = (                                       # one cell, one 
 )
 # bed-foot throw (vignette rule: the throw breaks the grid diagonally at the
 # foot, once, never twins) — folded woven plaid, greige x charcoal, cream fringe
+#
+# p2r78 SWAPPED THIS TO THE WOOL BLANKET AND THE RENDER OVERTURNED IT IN ONE FRAME.
+# Keep the whole episode here, because it is the repo's own recurring defect committed
+# by the builder inside the very session that was cataloguing it.
+#
+# The swap's reasons were both measurements: the frame carried no designed dark (4.31%
+# of pixels under L60 against delivered anchors at 9.87% and 19.96%), and of every
+# folded-cloth id in our cache the wool's base-colour texture was the darkest — mean
+# luminance 99.3 against this plaid's 133.0. Both numbers are true. The frame came back
+# with a SALMON SLAB lying dead centre on the bed.
+#
+# THE PROBE ANSWERED THE QUESTION IT WAS BUILT TO ASK. It reported luminance and had no
+# hue channel at all, so "dark" and "dark GREY" were the same word to it. Re-measured
+# after the render: the wool is hue 356 deg at saturation 0.289 — red, and past the
+# anchor-measured textile band (warm R-B +24..+30, sat 0.18-0.21) rather than inside it.
+# The 3-judge panel of 2026-08-25 had already written the finding in one phrase, "edge
+# 3/3 ON ITS VENDOR COLOUR", and the swap read that as a verdict about a site when it
+# was a verdict about a colour. R7b's sentence, one level down: the eye said WHAT was
+# wrong and the instrument was built to say how much of something else.
+#
+# So the plaid stays. The value floor is not this object's job — it came from the
+# daylight level (_add_story_daylight), measured. Reverse: --throw-wool renders the
+# wool leg for the owner's own eye, since the pair now exists on disk.
 _BED_THROW_MODEL = "0623e2fd-7a59-4489-9eba-fbfad9239e13"
 _FLOOR_PLANT_MODEL = "878fa112-8acc-426f-b7cf-2363711ec321"  # ficus
 _NS_LIFE_MODELS = {                                        # item 4: nightstand life
@@ -6364,13 +6496,37 @@ def _add_story_daylight(spec):
         print("  story daylight: no eye_camera stand/aim in spec -> no portals")
         return 0
     _sc = _e5.story_scales(True)
+    #
+    # THE PORTALS WERE THE FLAT-MAKER, AND THIS IS THE ROUND THAT MEASURED IT (p2r78).
+    # 170 W of area light standing in the glass, against ~300 W of warm electrics that
+    # the story exists to feature — an evening story lit as if it were noon. What that
+    # costs, measured on the frame of record beside two delivered anchors: 2.41% of
+    # 40-px blocks under L60 and 10.26% under L80, against anchors at 8.3/16.6% and
+    # 18.1/23.6%. The frame had no value floor, and a sighted panel read it as "pale
+    # midtone mush" before any of these numbers existed.
+    #
+    # At 0.20 the same frame measures 6.19% and 17.00% — inside the delivered band —
+    # while the MEDIAN barely moves (160.6 -> 154.3). That is the shape a value floor
+    # has: the shadows fall, the midtones stay. It is a level, not a trick.
+    #
+    # SAY WHAT IT IS AND IS NOT. The first version of this line justified the cut as a
+    # sky/sun SPLIT — "the portals keep the diffuse fifth and the key sun carries the
+    # beam" — which is a true sentence about daylight and a FALSE sentence about this
+    # scene: the sun contributes 0.017 codes here, render noise (four bracket legs,
+    # 0 to 16 W/m2, all within noise of each other). A justification that sounds
+    # physical and is not measured is the defect this repo keeps paying for, so the
+    # reason stands on the measurement instead: these portals were over-powered for
+    # the story the room declares. Bracketed with --daylight-level=<f>; at 1.0 the
+    # portals are exactly what p2r77 shipped.
+    _dsplit = float(globals().get("_DAYLIGHT_LEVEL", 0.20))
     n, watts = 0, 0.0
     for p in _e5.daylight_portals(spec, stand, aim):
         ld = bpy.data.lights.new(f"story_daylight_{p['name']}", type='AREA')
         ld.shape = 'RECTANGLE'
         ld.size = p["len_mm"] * MM * 0.98            # along the glass run
         ld.size_y = (p["z1"] - p["z0"]) * MM * 0.96  # sill to head
-        ld.energy = p["area_m2"] * _e5.DAYLIGHT_W_PER_M2 * _sc.get("daylight", 1.0)
+        ld.energy = (p["area_m2"] * _e5.DAYLIGHT_W_PER_M2
+                     * _sc.get("daylight", 1.0) * _dsplit)
         ld.color = _e5.DAYLIGHT_RGB
         lo = bpy.data.objects.new(ld.name, ld)
         lo.location = (p["cx"] * MM + p["nx"] * 0.03,
@@ -6384,17 +6540,32 @@ def _add_story_daylight(spec):
         watts += ld.energy
     print(f"  story daylight: {n} glass portal(s) outside the eye frame, "
           f"{watts:.0f} W total ({_e5.DAYLIGHT_W_PER_M2:.0f} W/m2 x "
-          f"{_sc.get('daylight', 1.0):.2f})")
+          f"{_sc.get('daylight', 1.0):.2f}"
+          + (f" x level {_dsplit:.2f} — p2r78: the portals were the frame's "
+             f"flat-maker, measured" if _dsplit != 1.0 else "") + ")")
     return n
 
 
-# The scene's sun direction is NOT a new number: `_sky_environment` already declares
-# one for the Nishita sky (sun_elevation 0.55 rad, sun_rotation 2.3 rad), and the key
-# below is derived from it so the cast shadows agree with the sky the room is standing
-# under. Typing a second, different sun angle here would be the same defect as a typed
-# z next to a declared contact (R9) — one direction, one source.
-KEY_SUN_ELEVATION = 0.55
-KEY_SUN_ROTATION = 2.3
+# THE PROVENANCE SENTENCE THAT USED TO SIT HERE WAS FALSE, and it was false in the
+# direction that reads as rigour. It said: "the sun direction is NOT a new number —
+# `_sky_environment` already declares one (sun_elevation 0.55, sun_rotation 2.3) and the
+# key is derived from it, so the cast shadows agree with the sky the room stands under."
+# `_sky_environment` HAS ZERO CALLERS anywhere in this repo (mapped 2026-08-26): this
+# lane's world is an HDRI (`rainforest_trail` via `_hdri_world`), and no Nishita sky node
+# exists in the scene at all. So these two lines were copies of constants from an
+# unreachable function, cited as a derivation. D-060's open item — "two suns that do not
+# agree" — was never two suns; it was one derived azimuth and one orphaned constant pair,
+# and the round that named the debt could have closed it by reading the call graph.
+#
+# WHAT IS ACTUALLY DERIVED, and it is the half that matters: the AZIMUTH comes from the
+# area-weighted inward normal of the room's own daylight portals (below), so the beam
+# enters where the drawing put glass. ELEVATION IS STILL TYPED — say it plainly rather
+# than let a comment imply otherwise. A real derivation would come from site latitude
+# and a date/time the client's brief does not carry, so this is a DECLARED ASSUMPTION
+# (R10's word) at ~31.5 deg above the horizon, and the fallback rotation below is dead
+# weight kept only so the exception path has a number.
+KEY_SUN_ELEVATION = 0.55        # DECLARED ASSUMPTION, not a derivation (see above)
+KEY_SUN_ROTATION = 2.3          # fallback only — reached solely if portal solve raises
 # The real sun subtends 0.526 deg = 0.00918 rad. Using the physical value rather than a
 # chosen softness is what makes the shadow edge honest; every softening knob in this
 # scene already lives in the AREA emitters.
@@ -6441,25 +6612,48 @@ def _add_key_sun(spec):
     # the area-weighted inward normal of the portals makes the beam agree with the
     # apertures the drawing actually has (R9: derive from the thing, never type a
     # second number that has to be kept in sync by hand).
-    _az = None
+    #
+    # THE CONVENTION WAS WRONG FOR 43 ROUNDS AND THE MEASUREMENT THAT "PROVED" THE
+    # MECHANISM COULD NOT SEE IT. The first cut computed atan2 over the NEGATED
+    # normals — the direction from the room TOWARD the sun — and fed it straight into
+    # rotation_euler.z. But a Blender SUN at rotation (pi/2 - elev, 0, rot) emits along
+    #     d = ( -sin(pi/2-elev) * sin(rot),  sin(pi/2-elev) * cos(rot),  -cos(pi/2-elev) )
+    # whose horizontal part is the inward normal turned by 90 degrees, not its negation.
+    # Measured on this plan 2026-08-26: the shipped beam ran at -113.4 deg with
+    # **dot(beam, inward normal) = +0.000** — the sunlight travelled exactly ALONG the
+    # plane of the glass it was supposed to come through, 74 deg off the aperture.
+    #
+    # Why p2r35 called the mechanism proven anyway, said plainly because the shape
+    # recurs: its evidence was "+0.34 -> +3.87 codes, 11x, and a beam visible on the
+    # wood floor". Light DID arrive and it DID brighten the frame. Arriving is not the
+    # same as arriving from the right direction, and nothing in the lane asked the
+    # second question — R7b's "self-consistency check against a number we chose
+    # ourselves", one level up. What surfaced it was the p2r78 bracket: 2 W and 8 W
+    # both LOWERED the frame's dark-mass share (40-px blocks under L60: 2.41% -> 1.56%
+    # -> 1.07%) and neither moved the left-right split by one code — the signature of a
+    # light adding wash instead of adding a side.
+    #
+    # Solve it forward instead of negating: we want d_xy parallel to the area-weighted
+    # INWARD normal n, and d_xy = sin(theta) * (-sin rot, cos rot), so rot = atan2(-nx, ny).
+    _az, _nvec = None, None
     try:
         _cam = spec.get("eye_camera") or {}
         _ports = _e5.daylight_portals(spec, _cam.get("stand_mm"), _cam.get("aim_mm"))
-        _sx = sum(-p["nx"] * p["area_m2"] for p in _ports)
-        _sy = sum(-p["ny"] * p["area_m2"] for p in _ports)
-        if _sx or _sy:
-            _az = math.atan2(_sy, _sx)
+        _ax = sum(p["nx"] * p["area_m2"] for p in _ports)
+        _ay = sum(p["ny"] * p["area_m2"] for p in _ports)
+        _an = math.hypot(_ax, _ay)
+        if _an > 1e-9:
+            _nvec = (_ax / _an, _ay / _an)
+            _az = math.atan2(-_nvec[0], _nvec[1])
     except Exception as _ae:                             # noqa: BLE001
         print(f"  key sun: portal azimuth unavailable ({_ae}) — falling back to the "
-              f"sky's declared rotation, which a ray-cast has already shown reaches "
+              f"orphaned constant, which a ray-cast has already shown reaches "
               f"no pane on this plan")
     _rot = _az if _az is not None else KEY_SUN_ROTATION
-    if _az is not None and abs(_az - KEY_SUN_ROTATION) > 0.05:
-        print(f"  key sun: DISAGREEMENT NAMED — the sky declares sun_rotation "
-              f"{KEY_SUN_ROTATION:.2f} rad ({math.degrees(KEY_SUN_ROTATION):.0f} deg) "
-              f"but the daylight portals face {math.degrees(_az):.0f} deg. The beam "
-              f"follows the GLASS; the sky texture is left alone this round so the "
-              f"A/B tests one change, and aligning it is the named next step.")
+    if _az is None:
+        print(f"  key sun: azimuth FELL BACK to the orphaned constant "
+              f"{math.degrees(KEY_SUN_ROTATION):.0f} deg — a ray-cast has already shown "
+              f"it reaches no pane on this plan, so treat this frame's beam as unsound")
     sd = bpy.data.lights.new("key_sun", type='SUN')
     sd.energy = _KEY_SUN_W
     sd.color = _e5.DAYLIGHT_RGB
@@ -6500,7 +6694,32 @@ def _add_key_sun(spec):
     # law demands a LOUD bracket before a settled value; at the intended 2.0 W this would
     # have read as "the mechanism does not reach the frame" and killed a correct idea.
     so.rotation_euler = (1.5707963 - KEY_SUN_ELEVATION, 0.0, _rot)
-    bpy.context.scene.collection.objects.link(so)
+    #
+    # THE BEAM IS RE-DERIVED FROM THE ROTATION WE JUST SET AND CHECKED AGAINST THE
+    # GLASS — fail-closed, because this is the second time this one function has
+    # shipped a sun pointing somewhere it should not (first the elevation sign, now
+    # the azimuth convention) and both times a watts measurement said "the mechanism
+    # reaches the frame". A direction cannot be verified by an amount. So: recompute
+    # the emission vector from the object's own euler, dot it with the aperture's
+    # inward normal, and REFUSE to render a beam that is not entering the room.
+    _th = 1.5707963 - KEY_SUN_ELEVATION
+    _beam = (-math.sin(_th) * math.sin(_rot),
+             math.sin(_th) * math.cos(_rot),
+             -math.cos(_th))
+    if _nvec is not None:
+        _dot = _beam[0] * _nvec[0] + _beam[1] * _nvec[1]
+        if _dot < 0.30:
+            raise SystemExit(
+                f"--eye key sun REFUSED: the beam ({_beam[0]:+.3f},{_beam[1]:+.3f}) "
+                f"is not entering the room through its own glass — dot with the "
+                f"area-weighted inward normal ({_nvec[0]:+.3f},{_nvec[1]:+.3f}) is "
+                f"{_dot:+.3f}, under the 0.30 floor. At exactly 0.000 the sunlight "
+                f"runs ALONG the plane of the window, which is what shipped from "
+                f"p2r35 to p2r77 and read as 'the room is evenly lit'. Fix the "
+                f"azimuth derivation, never the floor.")
+        print(f"  key sun: beam ({_beam[0]:+.3f},{_beam[1]:+.3f},{_beam[2]:+.3f}) "
+              f"vs glass inward normal ({_nvec[0]:+.3f},{_nvec[1]:+.3f}) -> "
+              f"dot {_dot:+.3f} — it enters through the apertures")
     print(f"  KEY SUN: {sd.energy:.2f} W/m2, disc {KEY_SUN_ANGLE:.5f} rad "
           f"(the real sun's 0.526 deg), elevation {KEY_SUN_ELEVATION} rad / "
           f"azimuth {math.degrees(_rot):.0f} deg DERIVED from the daylight portals' own "
@@ -11549,17 +11768,38 @@ if __name__ == "__main__":
     # is the revert-by-omission class (D-032) wearing a calibration knob. Accept both
     # spellings explicitly.
     if any(a == "--key-sun" or a.startswith("--key-sun=") for a in _post_dashdash()):
-        # p2r35 A/B: the directional key derived from the declared sky sun. Defaults
-        # OFF for this round so the A leg is the shipped p2r34 frame byte-for-byte
-        # and the eye judges the pair, not a memory. Optional loud bracket for the
-        # amplitude-bisect law: --key-sun=8 renders the LOUD leg that proves the
-        # mechanism reaches the frame before the settled value is chosen.
+        # ON BY DEFAULT SINCE p2r78 (see _KEY_SUN's comment). The flag survives for its
+        # OTHER half only: the amplitude bracket. --key-sun=8 renders the LOUD leg the
+        # bisect law requires before a settled value is chosen.
         globals()["_KEY_SUN"] = True
         _ksw = next((a.split("=", 1)[1] for a in _post_dashdash()
                      if a.startswith("--key-sun=")), None)
         if _ksw:
             globals()["_KEY_SUN_W"] = float(_ksw)
             print(f"  [calibration] key sun energy overridden to {_ksw} W/m2")
+    _dsp = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--daylight-level=")
+                 or a.startswith("--daylight-split=")), None)
+    if _dsp:
+        # amplitude bracket for the daylight portals (see _add_story_daylight).
+        # 1.0 = the pre-p2r78 portals at full budget. --daylight-split= is kept as
+        # a spelling so the p2r78 bracket legs re-run verbatim from the gate.
+        globals()["_DAYLIGHT_LEVEL"] = float(_dsp)
+        print(f"  [calibration] daylight portals scaled to {_dsp} of budget")
+    if "--bench-throw" in _post_dashdash():
+        # A leg of the p2r78 one-cloth-per-surface change (see _dress_scene [2])
+        globals()["_BENCH_THROW"] = True
+        print("  [A/B] bench throw restored (two folded cloths in frame)")
+    if "--throw-wool" in _post_dashdash():
+        # B leg of the p2r78 bed-throw question (see _BED_THROW_MODEL): the wool the
+        # luminance probe picked and the render refused. Runnable so his eye can rule.
+        globals()["_BED_THROW_MODEL"] = "91685141-46db-4c62-be7d-96ec72c1d56c"
+        print("  [A/B] bed throw: wool 91685141 (hue 356 deg, sat 0.289 — the salmon leg)")
+    if "--no-key-sun" in _post_dashdash():
+        # The A leg. Named explicitly so a comparison against "the frame we used to
+        # ship" is a RENDER and not a memory (D-059's own rule for this pair).
+        globals()["_KEY_SUN"] = False
+        print("  [A/B] key sun OFF — the pre-p2r78 rig (no directional light in the room)")
     if "--adult-scale" in _post_dashdash():
         # B leg of the PARKED adult-scale lane (R1-stopped at p2r27 after three
         # quick cycles — see _ADULT_SCALE's comment: cluster anatomy breaks the

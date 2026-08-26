@@ -1200,8 +1200,25 @@ def instrument_digest(bands=None, ratios=None):
     return h.hexdigest()
 
 
+# RE-STAMPED 2026-08-26 (p2r78), and the reason this line was stale is worth more than
+# the line. The freeze test has been RED since the 08-24 stamp: nine classes were added
+# to asset_scale.BANDS across p2r74/75/77 — throw_folded, book_stack, book_single,
+# basket_box, shoe_pair, potted_plant, clock_small, tray_decor, headboard — each with a
+# cited reason in its own tuple, and none of them re-stamped here. That is the benign
+# direction (additions, no existing band edited, so no past verdict changes), which is
+# exactly why nobody noticed.
+#
+# WHAT DID NOTICE, AND WHAT DID NOT: three gate artifacts in a row reported "tests
+# green" from PER-FILE runs (54 + 55 + 141). A full `pytest pipeline/scripts` was red
+# the whole time. A suite reported by the sum of its chosen subsets is the selected-
+# sample defect this repo has already filed once (plan-gate, 2026-08-xx) — the set that
+# gets run is chosen by the person whose change is being tested.
+# FROZEN_AT stays 2026-08-24: it records when the freeze STARTED — its own test says
+# the instrument "cannot speak for 08-22..08-24 and must not imply it can" — so moving
+# it to the re-stamp date would erase the honest gap. The SHA is what tracks the bands.
 INSTRUMENT_FROZEN_AT = "2026-08-24"
-INSTRUMENT_FROZEN_SHA = "5c8c1a3df1d403250fa8b08ec87d1c7c2841ebce5cd09fff5331ce6d576b8e14"
+INSTRUMENT_RESTAMPED_AT = "2026-08-26"
+INSTRUMENT_FROZEN_SHA = "e49106d7d175a0e9b7514c09784d64758e8e53ae24ff41158561d598ac735a90"
 
 
 def load_results(path=None):

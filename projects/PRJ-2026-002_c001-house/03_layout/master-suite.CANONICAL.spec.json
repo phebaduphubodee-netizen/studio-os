@@ -684,6 +684,20 @@
    "shift_y": -0.02,
    "in_subroom": "wardrobe",
    "note": "ELEMENT 7 (D-E7-7 view 3, aim recomputed against the NARROWED baycut): stands clear-floor east, looks WEST at the party wall. Aim ON the doorway plane (x3254 ≈ the ink bay face; the 0.95-scaled ray ends ~x3336, east of the ensuite bbox which stays a ray-block under in_subroom='wardrobe' — an aim INSIDE the ensuite fails _spot_is_clear by construction). MUST SEE: the ensuite doorway rendering OPEN through the narrowed 898 baycut (the e6 catch re-tested from the bay side) — the full e4/e6 ensuite reads through it; the MOUTH STUB reads as a stepped jamb at the passage's south edge FROM THE BAY SIDE only (the bay wall is solid y6596-6698 below the cut) — it does NOT read as a recess from the ensuite side, where the doubled party wall occludes it (E7R-2 correction; the stub is joinery-tier, this bay-side step is the honest render of it); BF09-2's north end at the mouth line + its east mineral fronts at frame left (second half of the 8th-omission pin). The scribe sliver + north-leg west end sit at far frame right and read as a plain mineral surface at this angle (the 73mm filler line is not resolvable — recorded, not a verified MUST-SEE). The SW BF10-junction is occluded by BF09-2 (watch-item, unobservable here)."
+  },
+  "room_contained": {
+   "stand_mm": [
+    1240,
+    1125
+   ],
+   "aim_mm": [
+    5180,
+    1125
+   ],
+   "lens_mm": 21,
+   "shift_y": -0.0878,
+   "eye_h_env_m": 1.05,
+   "note": "ROOM-CONTAINED A/B LEG (p2r78, 2026-08-26) — NOT a replacement for the camera of record. D-118's bed-foot camera is decided_by OWNER and carries his words in owner_override ('ดีแต่ fur ยังไม่สวย'), so it is locked to him (R13); this variant exists so the SAME question he already answered once gets answered again the SAME way — from an A/B pair of renders (that is literally how D-118 was decided). WHAT IT FIXES, all three measured BEFORE a render by pipeline/scripts/frame_geometry.py on the camera of record: (1) the top of BF14 projects to v=0.4533 against a frame half-height of 0.375, i.e. the slat wall's own top edge is 0.098 frame-units OUTSIDE the picture — the wall has no height and no ceiling junction, which is why three sighted readers called the frame a backdrop; (2) the bench's floor contact projects to v=-0.5223 against -0.375, so the nearest mass in the frame stands on nothing; (3) with the fixtures that wash the slat wall (e5_trim_bf14_wash_0..3, z=2.74 m) themselves out of frustum, the brightest event in the frame has no visible source. Including the ceiling puts the four wash cans back in the picture, so (3) is closed by the same move. DERIVED, NOT TYPED: stand is the westmost spot that keeps 0.3 m clear of the BF09 bookshelf (x 306..906) per camera_config._spot_is_clear; lens+shift are the solve of the two containment constraints above with 2% margin (frame_geometry.solve_framing, headroom 0.019 = 46 px); render this leg with EYE_CAM_HEIGHT_M=1.05 (inside the M3.2 designer band 1.0-1.2, and the env override keeps camera_config's coupled LOS threshold in step). COST, stated so he can price it: the bed's own AABB drops from 0.344 to 0.175 of frame area — his standing note on this camera is that a fixed wardrobe made the bed read small, and this trades bed size for the room reading as a room. That trade is HIS call, from the pair."
   }
  },
  "exterior": {
@@ -968,7 +982,9 @@
    "model": "24c65eb4-765b-43f3-a171-266521dd06b1",
    "model_note": "24c65eb4 Asta (p2r74, panel 2026-08-25b inside 3/3 — the only candidate whose top sits in the D-045 band at natural scale; replaced 1cf77b3a on his p2r73 verdict, CLASS≠INSTANCE). The prior note argued for the outgoing model and was refreshed with the swap — prose must never contradict the data beside it.",
    "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74).",
-   "facing_derive": {"away_from_wall": "E"},
+   "facing_derive": {
+    "away_from_wall": "E"
+   },
    "_p2r77_facing_note": "p2r75 TYPED rot 90 with a note claiming the front faced -x; under the pinned convention rot 90 faces +X — INTO wall BF14, exactly his 'ตอนนี้มันหันหน้าเข้ากำแพง' (2026-08-25 night). Two typed facings on this object were both wrong (p2r74 into the bed, p2r75 into the wall) — R9 stop-loss: the third value is not typed. The relationship is declared (hugs the east wall; the drawer front opens into the room), rot derives to 270 via placement.face_rot, and the native front is MEASURED -90 (front_probe 2026-08-26: the S elevation carries the only pull; the N elevation is the blank framed back that fooled both crop reads)."
   },
   {
@@ -980,7 +996,9 @@
    "w": 480,
    "d": 431,
    "h": 480,
-   "facing_derive": {"away_from_wall": "E"},
+   "facing_derive": {
+    "away_from_wall": "E"
+   },
    "lamp": {
     "kind": "drum",
     "finish": "turned wood + linen drum (Kendra 18d17256, p2r74 — his item 2 retired the brass dome pair; D-138)",
@@ -1008,7 +1026,9 @@
    "w": 510,
    "d": 546,
    "h": 750,
-   "facing_derive": {"toward_wall": "W"},
+   "facing_derive": {
+    "toward_wall": "W"
+   },
    "_p2r77_facing_note": "same facing (W, into BF11's kneehole) now DERIVED via placement.face_rot, not typed (R9 for rotation). Native front MEASURED 0° not -90 (front_probe 2026-08-26, registry row tub_chair_c): under model_rot's old fail-open default this acquired stool rendered 90° off — showing BF11 its side — in every frame since it entered the spec.",
    "note": "vanity stool at the BF11 makeup table (owner 07-16, ex 'desk chair')",
    "design": {

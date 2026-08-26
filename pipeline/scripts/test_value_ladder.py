@@ -244,12 +244,28 @@ def test_check_render_flags_a_rung_that_misses_its_target():
 
 def test_check_render_flags_a_missing_object():
     """The probe not seeing a piece is a finding, not a pass. An occluded or renamed
-    object must never read as 'no violation'. (Example migrated bed__coverlet ->
-    bed__pillowsoft0 at p2r52, when the coverlet's absence became DECLARED (D-107,
-    the whole-bed winner has no spread layer) — the rule is unchanged and the
-    declaration path has its own test.)"""
+    object must never read as 'no violation'.
+
+    THIS TEST'S EXAMPLE HAS NOW MIGRATED TWICE AND THE SECOND MIGRATION IS THE POINT.
+    It began on bed__coverlet, moved to bed__pillowsoft0 at p2r52 when the coverlet's
+    absence became DECLARED (D-107) — and by 2026-08-26 pillowsoft0 had been declared
+    absent too, so deleting it produced a NOTE instead of a violation and this test had
+    been RED on HEAD for at least three rounds while gate artifacts reported "tests
+    green" from per-file runs.
+
+    The rule never changed; the example kept being eaten. FOUR of the ladder's SEVEN
+    objects now sit in DECLARED_ABSENT, which is worth saying out loud: a scoring
+    ladder whose rungs are mostly declared absent is close to a ladder that cannot
+    fail. So the example is pinned to a rung that is NOT declarable — bed__base, the
+    bed's own upholstered box, which is not cloth and cannot be shopped away — and the
+    test asserts the invariant that made it worth writing: at least one ladder object
+    must remain outside DECLARED_ABSENT, or this test is measuring nothing.
+    """
+    live = [obj for _n, obj, _t in vl.LADDER if obj not in vl.DECLARED_ABSENT]
+    assert live, ("every ladder object is DECLARED_ABSENT — the ladder can no longer "
+                  "report a missing object, which is the failure this test exists for")
     m = _on_target()
-    del m["bed__pillowsoft0"]
+    del m["bed__base"]
     out = vl.check_render(m)
     assert any("no measurement" in v for v in out)
 

@@ -361,6 +361,10 @@ KNOWN_FRAMES = frozenset((
     "ensuite_mirror", "ensuite_towels_west", "ensuite_vanity", "ensuite_wet",
     "wardrobe_bay_doorlane", "wardrobe_bay_dressing", "wardrobe_bay_entry",
     "west_bookshelf", "west_vanity",
+    # p2r78 A/B leg (D-149). Added the same hour the spec variant was, because
+    # test_known_frames_match_the_canonical_spec_cameras caught the omission on its
+    # first run — which is the whole reason that test pins a FILE and not a promise.
+    "room_contained",
 ))
 
 # Targets re-anchored 2026-07-28 to the measured pebble-fix geometry (standing king

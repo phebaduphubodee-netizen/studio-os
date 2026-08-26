@@ -257,6 +257,15 @@
    "why": "A pelmet with an open end shows the strip from the side."
   },
   {
+   "assembly": "e5_cove_pelmet_ret_s",
+   "identity": "The pelmet's SOUTH return, closing its other end against the wall — the mirror of e5_cove_pelmet_ret_n, which has carried a row since the pelmet was built.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "mill@2353,-450",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same reason as the north return: a pelmet with an open end shows the strip from the side. IT ARRIVED WITH THE CAMERA, NOT WITH A BUILD — this part has existed since the cove was built and had no row because no frame ever showed it; the p2r78 room_contained leg puts the ceiling in frame and the ratchet caught it on its first run (\"an object new to the frame must arrive with its justification\"). Worth keeping the sentence: widening a camera can add unjustified objects to a frame without anyone building anything."
+  },
+  {
    "assembly": "e5_trim_dl5",
    "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane.",
    "exists": "not-in-drawing: element 5 RCP",
@@ -496,12 +505,12 @@
   },
   {
    "assembly": "deco_throw",
-   "identity": "Acquired folded throw on the bench (b89bc1af, panel 2026-08-25 inside 3/3, dressed in the signed bed_duvet — D-137), resting on the measured bench top. Own tag since p2r74 (item-id stem collision fix).",
+   "identity": "Acquired folded throw on the bench (b89bc1af, panel 2026-08-25 inside 3/3, dressed in the signed bed_duvet — D-137), resting on the measured bench top. NOT PLACED SINCE p2r78: one cloth per adjacent surface. Two folded grey cloths sat 30 cm apart in the frame and a sighted panel read them as a duplicated story beat; the shopping list's own E1 line had already written the rule ('ม้านั่งลดเหลือของแบน' once a woven throw lands on the bed). The id's 3/3 panel win is untouched — the SITE is no longer styled with cloth. --bench-throw restores it.",
    "exists": "not-in-drawing: bench styling; a furniture plan draws no throw",
    "held_by": "bench",
    "operable": false,
-   "verdict": "keep",
-   "why": "D-137; the last solver-baked cloth's replacement."
+   "verdict": "remove",
+   "why": "R10's own words: an object that cannot justify its place leaves the frame as a declared decision, and the absent thing is honest. D-137 still stands for the ID (b89bc1af won its 3-judge panel); what p2r78 removes is the SITE's cloth, because two folded grey cloths 30 cm apart read as prop inventory. The row stays in the ledger because rows never leave it, and --bench-throw puts the mesh back. (First cut of this row said verdict 'keep-but-not-placed' and the R10 gate refused it by name — an enum with four states does not get a fifth because a builder wanted a softer word.)"
   },
   {
    "assembly": "deco_plant",
@@ -514,13 +523,13 @@
   },
   {
    "assembly": "deco_bedthrow",
-   "identity": "Acquired woven plaid throw at the bed foot (0623e2fd, ensemble panel 2026-08-25d IN x3), laid at 15 deg on the duvet's own measured surface, weighted to the window side; material renamed acq_bed_throw so BEDPX classifies it BEDDING.",
+   "identity": "Acquired folded WOOL throw at the bed foot (91685141 since p2r78; was the woven plaid 0623e2fd, ensemble panel 2026-08-25d IN x3), laid at 15 deg on the duvet's own measured surface, weighted to the window side; material renamed acq_bed_throw so BEDPX classifies it BEDDING. SWAPPED on two measurements: the frame carried no designed dark (4.31% of pixels under L60 against delivered anchors at 9.87% and 19.96%), and of every folded-cloth id in our cache the wool's base-colour texture is the darkest — 99.3 against the outgoing plaid's 133.0. --throw-plaid returns the plaid.",
    "exists": "not-in-drawing: bed styling; the vignette rule every reference frame repeats (one throw breaks the made-bed grid at the foot, never twins)",
    "held_by": "bed",
    "operable": false,
    "verdict": "keep",
-   "why": "ORD-2026-08-25c styling narrative (her-side story) + vignette-reading doc rule 4."
+   "why": "ORD-2026-08-25c styling narrative (her-side story) + vignette-reading doc rule 4; id chosen p2r78 by the shopping list's E1 line (greige x charcoal woven) and the measured value floor."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."
-}
+}
