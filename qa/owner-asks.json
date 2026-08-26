@@ -407,12 +407,12 @@
   },
   {
    "id": "ASK-034",
-   "ask": "PROCUREMENT SHEET หนึ่งหน้า (projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md) — 5 บรรทัด เงิน/สิทธิ์: (1) ชุดผ้าเตียง hero 3dsky ~$5-15/โมเดล เพดานเสนอ $30; (2) ชุดเสื้อผ้า flat-file (ลองฟรีก่อน ไม่ได้ค่อย ~$5-10); (3) Marvelous Designer $39/เดือน หลังผล BlenderKit month; (4) engine/Enscape — จอดจนถึง real-client run; (5) ลิงก์ 3DSKY ใน Discord ใช้ไม่ได้ตาม licence — ยืนยัน/veto. ตอบได้ในห้านาที ทีละบรรทัด",
+   "ask": "PROCUREMENT SHEET หนึ่งหน้า (projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md) — 5 บรรทัด เงิน/สิทธิ์: (1) ถอนแล้ว 2026-08-26 โดย builder หลังพี่ถาม 'เสีย blendkit แล้ว ยังต้องเสียเพิ่มอีกหรอ' — ชั้นเตียงที่จ่ายแล้วเดินไป 10 จาก 135 และคลาสผ้าคลุมเดิน 4 จาก 11 paid; '0/22 ตกวัด' เป็นตัวเลขของชั้นฟรีเท่านั้น (รูปเดียวกับ D-074: ยังไม่เดิน != ไม่มีของ); (2) ชุดเสื้อผ้า flat-file (ลองฟรีก่อน ไม่ได้ค่อย ~$5-10); (3) Marvelous Designer $39/เดือน หลังผล BlenderKit month; (4) engine/Enscape — จอดจนถึง real-client run; (5) ลิงก์ 3DSKY ใน Discord ใช้ไม่ได้ตาม licence — ยืนยัน/veto. ตอบได้ในห้านาที ทีละบรรทัด",
    "first_routed": "2026-08-25",
    "where": "projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md",
    "status": "open",
-   "money": "yes — เพดานรวมที่เสนอ ~$70-85 + subscription ที่พี่เลือก",
-   "note": "queue drain D-143: สี่ ask เงินเดิม (001/003/025/026) + ความเสี่ยง 027 ถูกรวมเป็นชีทเดียว",
+   "money": "yes — เพดานรวมที่เสนอลดเหลือ ~$40-55 หลังถอนบรรทัด 1 (2026-08-26) + subscription ที่พี่เลือก",
+   "note": "queue drain D-143: สี่ ask เงินเดิม (001/003/025/026) + ความเสี่ยง 027 ถูกรวมเป็นชีทเดียว || 2026-08-26: บรรทัด 1 ถูกถอนโดย builder เอง ไม่ใช่โดยพี่ — เหตุผลและตัวเลขอยู่ท้าย procurement-sheet-2026-08-26.md เงินจริงที่ยังขออนุมัติตอนนี้คือ ฿0 (บรรทัด 2 ลองฟรีก่อน, 3-4 จอด, 5 ไม่ใช่เงิน)",
    "read_first": [
     "docs/DECISIONS-render-assets.md",
     "docs/LICENSING.md",
