@@ -112,16 +112,17 @@
  },
  "eye_camera": {
   "stand_mm": [
-   1400,
+   1240,
    1125
   ],
   "aim_mm": [
    5180,
    1125
   ],
-  "lens_mm": 26,
-  "shift_y": -0.14,
-  "note": "CAMERA OF RECORD SINCE 2026-08-22 (D-118, owner 'ดี' on the A/B pair AB_camera_A-canonical_vs_B-bedhero.png): the bed-foot hero, adopted from eye_camera_variants.bed_hero after the RANK verdict 'ตู้ fix ไว้ทำให้เตียงดูเล็ก' and the two-mode measurement (delivered work always commits — bed-as-subject: camera ~1.1-1.2 m, sleep surface <=0.3 of frame, bed cut by a frame edge; ours committed to neither). Stand WEST of the foot in the clear band, look EAST across the bed to the BF14 slat wall; frontal-axial, both nightstands symmetric; shift_y -0.14 looks down to kill the empty upper wall. IN THE SPEC, NOT A FLAG (D-032's law: a render state that lives only in the command line is reverted by forgetting to type it). The old NE-corner framing is preserved verbatim as eye_camera_variants.corner_ne_legacy — one --eyecam away, and D-118's reverse_by names it."
+  "lens_mm": 21,
+  "shift_y": -0.0878,
+  "eye_h_m": 1.05,
+  "note": "CAMERA OF RECORD SINCE 2026-08-26 — HIS CHOICE FROM THE A/B PAIR (D-152). He was shown room_bedroom_suite_eye_p2r78.png (the bed-foot hero he adopted at D-118) beside room_bedroom_suite_eye_p2r78rc.png (this one) with the trade stated in numbers, and answered with this frame's name. Decided the same way D-118 was decided: from the pair, by his eye, in one line. WHAT THIS CAMERA CONTAINS THAT THE OTHER DID NOT, measured before either render by pipeline/scripts/frame_geometry.py and printed as FRAME CONTAINS on every build: (1) the top of the BF14 slat wall and the wall/ceiling junction — on the outgoing camera that top edge projected to v=0.4533 against a frame half-height of 0.375, i.e. the room's own top edge sat OUTSIDE the picture, which is why three sighted readers called the frame a backdrop; (2) the foot bench's floor contact (v=-0.5223 vs -0.375 before), so the nearest mass in the frame stands on a floor; (3) the four cans that wash the slat wall (e5_trim_bf14_wash_*, z 2.74 m) were out of frustum, so the brightest event in the frame had no visible source — the ceiling coming into frame closes that with the same move. DERIVED, NOT TYPED: stand_mm is the westmost spot keeping 0.3 m clear of the BF09 bookshelf per camera_config._spot_is_clear; lens_mm and shift_y are the solve of those two containment constraints at 2% margin (frame_geometry.solve_framing, headroom 0.019 = 46 px) and test_frame_geometry re-solves them every run, so a hand-retuned lens fails a test rather than drifting. eye_h_m IS IN THE SPEC AND NOT ON THE COMMAND LINE: this framing only holds at 1.05 m, and it spent its A/B life as EYE_CAM_HEIGHT_M=1.05 typed in a shell. A render state that lives only in the command line is reverted by forgetting to type it (D-032), and an order carried out as an opt-in is an order that was not carried out (R13) — so his camera does not depend on anyone's shell. COST HE ACCEPTED, stated to him before he chose: the bed's own AABB drops from 0.344 to 0.175 of frame area. REVERSAL: eye_camera_variants['bed_foot_hero_2026-08-22'] holds the outgoing block verbatim — one --eyecam away, and D-152's reverse_by names it."
  },
  "light_warm": [
   1.0,
@@ -696,8 +697,21 @@
    ],
    "lens_mm": 21,
    "shift_y": -0.0878,
-   "eye_h_env_m": 1.05,
-   "note": "ROOM-CONTAINED A/B LEG (p2r78, 2026-08-26) — NOT a replacement for the camera of record. D-118's bed-foot camera is decided_by OWNER and carries his words in owner_override ('ดีแต่ fur ยังไม่สวย'), so it is locked to him (R13); this variant exists so the SAME question he already answered once gets answered again the SAME way — from an A/B pair of renders (that is literally how D-118 was decided). WHAT IT FIXES, all three measured BEFORE a render by pipeline/scripts/frame_geometry.py on the camera of record: (1) the top of BF14 projects to v=0.4533 against a frame half-height of 0.375, i.e. the slat wall's own top edge is 0.098 frame-units OUTSIDE the picture — the wall has no height and no ceiling junction, which is why three sighted readers called the frame a backdrop; (2) the bench's floor contact projects to v=-0.5223 against -0.375, so the nearest mass in the frame stands on nothing; (3) with the fixtures that wash the slat wall (e5_trim_bf14_wash_0..3, z=2.74 m) themselves out of frustum, the brightest event in the frame has no visible source. Including the ceiling puts the four wash cans back in the picture, so (3) is closed by the same move. DERIVED, NOT TYPED: stand is the westmost spot that keeps 0.3 m clear of the BF09 bookshelf (x 306..906) per camera_config._spot_is_clear; lens+shift are the solve of the two containment constraints above with 2% margin (frame_geometry.solve_framing, headroom 0.019 = 46 px); render this leg with EYE_CAM_HEIGHT_M=1.05 (inside the M3.2 designer band 1.0-1.2, and the env override keeps camera_config's coupled LOS threshold in step). COST, stated so he can price it: the bed's own AABB drops from 0.344 to 0.175 of frame area — his standing note on this camera is that a fixed wardrobe made the bed read small, and this trades bed size for the room reading as a room. That trade is HIS call, from the pair."
+   "eye_h_m": 1.05,
+   "note": "ADOPTED AS THE CAMERA OF RECORD 2026-08-26 (D-152) — this key is kept so every command and gate artifact that names --eyecam=room_contained keeps rendering the same camera. The authority is spec.eye_camera; this is its twin, not a second opinion."
+  },
+  "bed_foot_hero_2026-08-22": {
+   "stand_mm": [
+    1400,
+    1125
+   ],
+   "aim_mm": [
+    5180,
+    1125
+   ],
+   "lens_mm": 26,
+   "shift_y": -0.14,
+   "note": "THE CAMERA OF RECORD FROM 2026-08-22 TO p2r78, kept verbatim as the named reversal of the 2026-08-26 adoption (D-152). It is the frame in room_bedroom_suite_eye_p2r78.png — the A leg of the pair he chose from. Its own history is below, unedited:\n\nCAMERA OF RECORD SINCE 2026-08-22 (D-118, owner 'ดี' on the A/B pair AB_camera_A-canonical_vs_B-bedhero.png): the bed-foot hero, adopted from eye_camera_variants.bed_hero after the RANK verdict 'ตู้ fix ไว้ทำให้เตียงดูเล็ก' and the two-mode measurement (delivered work always commits — bed-as-subject: camera ~1.1-1.2 m, sleep surface <=0.3 of frame, bed cut by a frame edge; ours committed to neither). Stand WEST of the foot in the clear band, look EAST across the bed to the BF14 slat wall; frontal-axial, both nightstands symmetric; shift_y -0.14 looks down to kill the empty upper wall. IN THE SPEC, NOT A FLAG (D-032's law: a render state that lives only in the command line is reverted by forgetting to type it). The old NE-corner framing is preserved verbatim as eye_camera_variants.corner_ne_legacy — one --eyecam away, and D-118's reverse_by names it."
   }
  },
  "exterior": {

@@ -361,10 +361,15 @@ KNOWN_FRAMES = frozenset((
     "ensuite_mirror", "ensuite_towels_west", "ensuite_vanity", "ensuite_wet",
     "wardrobe_bay_doorlane", "wardrobe_bay_dressing", "wardrobe_bay_entry",
     "west_bookshelf", "west_vanity",
-    # p2r78 A/B leg (D-149). Added the same hour the spec variant was, because
+    # p2r78 A/B leg (D-149), adopted as the camera of record 2026-08-26 (D-152).
+    # Added the same hour the spec variant was, because
     # test_known_frames_match_the_canonical_spec_cameras caught the omission on its
     # first run — which is the whole reason that test pins a FILE and not a promise.
     "room_contained",
+    # the outgoing bed-foot hero, kept as D-152's named reversal. It is a REAL camera
+    # someone can render, so the probe must recognise it rather than RAISE on a frame
+    # that legitimately exists — and the same file-pinned test caught this one too.
+    "bed_foot_hero_2026-08-22",
 ))
 
 # Targets re-anchored 2026-07-28 to the measured pebble-fix geometry (standing king

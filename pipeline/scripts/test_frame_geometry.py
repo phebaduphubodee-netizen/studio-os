@@ -16,9 +16,27 @@ REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 SPEC = os.path.join(REPO, "projects", "PRJ-2026-002_c001-house", "03_layout",
                     "master-suite.CANONICAL.spec.json")
 
-# The camera of record (D-118, decided_by owner) at the deliverable resolution.
+# THE OUTGOING CAMERA (bed-foot hero, D-118) at the deliverable resolution — the camera
+# of record from 2026-08-22 until the owner chose the room-contained leg from the A/B
+# pair on 2026-08-26 (D-152). It stays pinned here BY VALUE and not by spec lookup,
+# because these tests are the record of what was measurably wrong with it: three sighted
+# readers said "backdrop", and this block is the geometry that made them right. A test
+# that re-read the spec would have quietly started describing the new camera and the
+# evidence would have evaporated with the edit.
 CAM = {"ex": 1.400, "ey": 1.125, "tx": 5.180, "ty": 1.125, "eye_h": 1.15,
        "lens_mm": 26.0, "shift_y": -0.14, "res_w": 2400, "res_h": 1800}
+
+
+def _record_cam():
+    """The camera the spec declares TODAY, resolved the way build_room resolves it."""
+    import camera_config
+    s = _spec()
+    ov = s["eye_camera"]
+    return {"ex": ov["stand_mm"][0] / 1000.0, "ey": ov["stand_mm"][1] / 1000.0,
+            "tx": ov["aim_mm"][0] / 1000.0, "ty": ov["aim_mm"][1] / 1000.0,
+            "eye_h": camera_config.spec_eye_h_m(s),
+            "lens_mm": float(ov["lens_mm"]), "shift_y": float(ov["shift_y"]),
+            "res_w": 2400, "res_h": 1800}
 
 
 def _spec():
@@ -45,9 +63,10 @@ class TestProjection(unittest.TestCase):
         self.assertLess(v1, v0)
 
 
-class TestTheCameraOfRecordCropsTheRoom(unittest.TestCase):
+class TestTheOutgoingCameraCroppedTheRoom(unittest.TestCase):
     """The three findings a sighted panel measured from p2r77's pixels, reproduced
-    here from geometry alone — which is the point of the module."""
+    here from geometry alone — which is the point of the module. This camera is no
+    longer the record (D-152); these tests keep WHY it was replaced."""
 
     def setUp(self):
         self.spec = _spec()
@@ -121,22 +140,42 @@ class TestSolve(unittest.TestCase):
         self.assertTrue(r["top_edge"]["in_frame"])
         self.assertTrue(r["nearest_mass"]["floor_contact_in_frame"])
 
-    def test_the_shipped_variant_reproduces_its_own_claim(self):
-        """qa: the room_contained variant in the spec must still satisfy the two
-        constraints its note says it was solved for — a camera whose stated reason no
-        longer holds is a typed camera wearing a derivation."""
+    def test_the_camera_of_record_reproduces_its_own_claim(self):
+        """THE ROW THAT MATTERS AFTER 2026-08-26. The owner's camera (D-152) says in
+        its own note that it contains the slat wall's top and the nearest mass's floor
+        contact. A camera whose stated reason no longer holds is a typed camera wearing
+        a derivation, so the claim is re-solved from the spec on every test run — if a
+        mass moves, or someone hand-retunes the lens, this fails instead of drifting."""
         spec = _spec()
-        v = (spec.get("eye_camera_variants") or {}).get("room_contained")
-        self.assertIsNotNone(v, "the p2r78 A/B leg left the spec")
-        cam = dict(CAM, ex=v["stand_mm"][0] / 1000.0, ey=v["stand_mm"][1] / 1000.0,
-                   tx=v["aim_mm"][0] / 1000.0, ty=v["aim_mm"][1] / 1000.0,
-                   lens_mm=float(v["lens_mm"]), shift_y=float(v["shift_y"]),
-                   eye_h=float(v["eye_h_env_m"]))
-        rep = fg.framing_report(spec, cam)
+        rep = fg.framing_report(spec, _record_cam())
         self.assertTrue(rep["top_edge"]["in_frame"],
-                        "the variant no longer contains the slat wall's top")
+                        "the camera of record no longer contains the slat wall's top")
         self.assertTrue(rep["nearest_mass"]["floor_contact_in_frame"],
-                        "the variant no longer contains the bench's floor contact")
+                        "the camera of record no longer contains the nearest mass's "
+                        "floor contact")
+
+    def test_the_record_camera_height_comes_from_the_spec_not_a_shell(self):
+        """His framing only holds at 1.05 m and it spent its A/B life as an env var.
+        The height must travel with the camera (D-032 / R13), so the spec carries it
+        and the resolver must prefer it over the module default."""
+        import camera_config
+        spec = _spec()
+        self.assertIn("eye_h_m", spec["eye_camera"],
+                      "the record camera's lens height is not in the spec — it is one "
+                      "forgotten shell prefix away from re-cropping the room")
+        self.assertAlmostEqual(camera_config.spec_eye_h_m(spec),
+                               float(spec["eye_camera"]["eye_h_m"]), places=6)
+        self.assertNotAlmostEqual(camera_config.spec_eye_h_m(spec),
+                                  camera_config.DEFAULT_EYE_CAM_HEIGHT_M, places=6)
+
+    def test_the_outgoing_camera_is_preserved_verbatim_as_the_reversal(self):
+        """D-152's reverse_by names a key; the key must exist and must still be the
+        block that shipped, or the reversal is a sentence rather than a path."""
+        v = (_spec().get("eye_camera_variants") or {}).get("bed_foot_hero_2026-08-22")
+        self.assertIsNotNone(v, "the outgoing camera of record left the spec")
+        self.assertEqual(list(v["stand_mm"]), [1400, 1125])
+        self.assertEqual(float(v["lens_mm"]), 26.0)
+        self.assertAlmostEqual(float(v["shift_y"]), -0.14, places=6)
 
 
 if __name__ == "__main__":

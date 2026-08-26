@@ -1889,7 +1889,8 @@
    "because": "ตาพี่ตัดสินจากคู่ภาพตาม R3 — 'ดี' คือคำตัดสินโหมดเตียงพระเอก และคำถาม fur ถูกถามกลับแบบสี่ตัวเลือกเพื่อไม่อ่านคำตอบกำกวมแบบเข้าทางตัวเอง (บทเรียน flattering-reader ในแผ่น RANK 08-07)",
    "reverse_by": "พี่ชี้จากภาพ: กลับมุมเดิม = คืน eye_camera จาก eye_camera_variants.corner_ne_legacy (ค่าเดิม verbatim อยู่ตรงนั้น + git) แล้วลบแถวนี้ · fur ข้อไหนไม่ใช่ที่พี่หมายถึง บอกคำเดียว ผมย้ายคิว",
    "owner_override": "ดีแต่ fur ยังไม่สวย",
-   "override_date": "2026-08-22"
+   "override_date": "2026-08-22",
+   "superseded_by": "D-152"
   },
   {
    "id": "D-119",
@@ -2645,6 +2646,39 @@
      "file": "pipeline/scripts/build_room.py",
      "pattern": "^_KEY_SUN = True",
      "why": "the default itself — the whole point of this row is that the mechanism is no longer waiting for someone to type a flag, so the line must read True or the row is false"
+    }
+   ]
+  },
+  {
+   "id": "D-152",
+   "unit": "DELIV-001",
+   "subject": "camera-of-record",
+   "decided_round": 78,
+   "decided_date": "2026-08-26",
+   "decided_by": "owner",
+   "owner_override": "room_bedroom_suite_eye_p2r78rc",
+   "override_date": "2026-08-26",
+   "supersedes": "D-118",
+   "question": "คู่ A/B กล้อง (bed-foot hero ที่พี่รับไว้ที่ D-118 เทียบ room_contained ที่ solve จากข้อจำกัดสองข้อ) — เอาทางไหน",
+   "in_effect": "**พี่ตอบด้วยชื่อเฟรม B: `room_bedroom_suite_eye_p2r78rc` — กล้อง room_contained เป็น กล้องของ record ตั้งแต่ 2026-08-26** ตัดสินด้วยวิธีเดียวกับ D-118 เป๊ะ: จากคู่ภาพ ด้วยตาพี่ หนึ่งบรรทัด · **สิ่งที่กล้องนี้มีและกล้องเดิมไม่มี** (วัดก่อนเรนเดอร์ทั้งคู่ด้วย frame_geometry และพิมพ์เป็นบรรทัด FRAME CONTAINS ทุก build): (1) ยอดผนังระแนง BF14 + รอยต่อเพดาน — บนกล้องเดิมยอดนั้นฉายที่ v=0.4533 เทียบครึ่งเฟรม 0.375 คือ **ขอบบนของห้องอยู่นอกภาพ** ซึ่งเป็นเหตุที่กรรมการตาสดสามคนอ่านเฟรมว่าเป็น backdrop (2) จุดสัมผัสพื้นของม้านั่ง (v=-0.5223 เทียบ -0.375 เดิม) — ของใกล้สุดในเฟรมยืนบนพื้นจริง (3) โคมสี่ดวงที่ล้างผนัง ระแนง (z 2.74 ม.) เคยอยู่นอก frustum ทำให้แสงที่สว่างที่สุดในภาพไม่มีที่มา — เพดานเข้าเฟรม ปิดข้อนี้ด้วยการเคลื่อนไหวเดียวกัน · **ราคาที่บอกพี่ก่อนเลือก**: AABB ของเตียงลดจาก 0.344 เหลือ 0.175 ของพื้นที่เฟรม · **สิ่งที่ต้องแก้เพื่อให้คำสั่งนี้ไม่กลายเป็น opt-in**: กล้องนี้ เฟรมได้อย่างที่เห็นเฉพาะที่ระดับตา 1.05 ม. ซึ่งตลอดช่วง A/B อยู่ในตัวแปร shell `EYE_CAM_HEIGHT_M=1.05` — ตอนนี้เป็น `eye_camera.eye_h_m` ในสเปก และ `camera_config.spec_eye_h_m` ให้สเปกชนะ env (env ยังใช้ทำ A/B เก่าได้) เพราะสถานะเรนเดอร์ที่อยู่แต่บนบรรทัดคำสั่งถูกย้อนด้วยการลืมพิมพ์ (D-032) และคำสั่งที่ทำเป็น opt-in คือคำสั่งที่ไม่ถูกทำ (R13)",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "because": "R3: พี่ตัดสินจาก render ซึ่งเป็นช่องทางของพี่ · D-118 เป็นแถวของพี่เอง การเปลี่ยนกล้องจึงทำได้ ทางเดียวคือคำของพี่บนคู่ภาพ ไม่ใช่การวัดของ builder — และนั่นคือสิ่งที่เกิดขึ้น: ผมวัดว่ากล้องเดิม ตัดอะไรทิ้ง สร้างขาทดลอง เรนเดอร์คู่ บอกราคาเป็นตัวเลข แล้วหยุดรอ",
+   "reverse_by": "พี่ประโยคเดียว — `--eyecam=bed_foot_hero_2026-08-22` เรนเดอร์กล้องเดิมได้ทันที (บล็อกเดิม เก็บ verbatim อยู่ในสเปก) · จะคืนถาวรให้ก็อปบล็อกนั้นกลับเป็น eye_camera แล้วลบแถวนี้ ซึ่งจะปลุก D-118 กลับมาเป็นแถวที่มีผล",
+   "in_effect_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"stand_mm\": \\[\\s*1240,",
+     "why": "his camera is the one the spec declares; if the stand goes back to 1400 without his words the builder has overruled an owner row, which is the D-072 defect this register exists to make impossible"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"eye_h_m\": 1\\.05",
+     "why": "the lens height that makes his framing hold must live in the spec, not in a shell variable — without this line the camera silently re-crops the room at the module default of 1.15"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"bed_foot_hero_2026-08-22\"",
+     "why": "the reversal named in reverse_by must exist as a renderable key, or 'one sentence reverses it' is prose"
     }
    ]
   }

@@ -1353,7 +1353,12 @@ def add_suite_eye_camera(spec, outline_m, h):
     cam_data = bpy.data.cameras.new("Camera")
     cam_data.lens = sol["lens_mm"]
     cam_data.sensor_fit = 'HORIZONTAL'
-    _eye_h = camera_config.EYE_CAM_HEIGHT_M  # designer 1.0–1.2 m (M3.2 GS-15; was 1.5); env EYE_CAM_HEIGHT_M for A/B
+    # The solve resolves it: spec eye_camera.eye_h_m > env EYE_CAM_HEIGHT_M > designer
+    # default (camera_config.spec_eye_h_m). It comes from the SOLVE and not from the
+    # module constant so the height that framed the shot travels with the shot — the
+    # owner's camera of record (2026-08-26) frames what it frames at 1.05 m, and a
+    # height that lives on the command line is reverted by forgetting to type it.
+    _eye_h = sol.get("eye_h") or camera_config.EYE_CAM_HEIGHT_M
     eye = Vector((ex, ey, _eye_h))
     tgt = Vector((tx, ty, _eye_h))           # LEVEL look -> two-point preserved
     cam = bpy.data.objects.new("Camera", cam_data)

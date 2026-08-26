@@ -196,7 +196,37 @@ def _seg_hits_box(x0, y0, x1, y1, bb):
     return True
 
 
-def _build_obstacles(spec, outline_m, exclude_subroom=None):
+def spec_eye_h_m(spec):
+    """The lens height THIS spec declares, else the designer default.
+
+    WHY A SPEC KEY AND NOT AN ENV VAR (2026-08-26, p2r78rc). The owner picked the
+    room-contained camera from an A/B pair, and that camera only frames what it framed
+    at 1.05 m — a height that had lived in `EYE_CAM_HEIGHT_M=1.05` on the command line.
+    A render state that lives only in the command line is reverted by forgetting to type
+    it (D-032), and an order carried out as an opt-in is an order that was not carried
+    out (R13). His camera therefore cannot depend on anyone remembering a shell prefix.
+
+    Order: spec eye_camera.eye_h_m > env EYE_CAM_HEIGHT_M > designer default. The env
+    keeps working ABOVE the module default so the historical A/B (1.5 m) still
+    reproduces, and below the spec so the frame of record is not silently re-aimed by a
+    stray variable in someone's shell.
+    """
+    ov = (spec or {}).get("eye_camera") or {}
+    v = ov.get("eye_h_m")
+    if v is None:
+        return eye_cam_height_m()
+    try:
+        h = float(v)
+    except (TypeError, ValueError):
+        raise EyeCameraError(f"eye_camera.eye_h_m {v!r} is not a number")
+    if not (0.3 <= h <= 2.2):
+        raise EyeCameraError(
+            f"eye_camera.eye_h_m {h} m is outside 0.3-2.2 m — a lens on the floor or "
+            f"above the door is a typo, not a camera")
+    return h
+
+
+def _build_obstacles(spec, outline_m, exclude_subroom=None, eye_h=None):
     """The stand-vs-ray obstacle split, factored out so the AUTO grid solve and the MANUAL
     eye_camera override validate against the SAME geometry (no split-brain). Returns
     (stand_blocks, ray_blocks) as lists of (x0,y0,x1,y1) AABBs in metres.
@@ -216,6 +246,11 @@ def _build_obstacles(spec, outline_m, exclude_subroom=None):
       camera must be allowed to stand within it (element 4 ensuite). Only the focused subroom is
       dropped — every OTHER subroom + all built-ins still occlude, so the shot cannot see through
       a wall into a different zone."""
+    # COUPLED, not two literals: an object blocks a LEVEL ray at eye height H iff it is
+    # taller than ~H, so the ray threshold must follow whatever height this solve is
+    # actually using — including a per-spec one.
+    _eye = eye_cam_height_m() if eye_h is None else float(eye_h)
+    _ray_min = ray_block_min_h_m(_eye)
     stand_blocks, ray_blocks = [], []
     for sr in spec.get("subrooms", []):
         if exclude_subroom and str(exclude_subroom).lower() in str(sr.get("name", "")).lower():
@@ -229,7 +264,7 @@ def _build_obstacles(spec, outline_m, exclude_subroom=None):
         stand_blocks.append(_box_m(b))
         base = float(b.get("mount_mm", 0) or 0) * MM
         top = base + float(b.get("h", 0) or 0) * MM
-        if base <= EYE_CAM_HEIGHT_M and top >= RAY_BLOCK_MIN_H_M:
+        if base <= _eye and top >= _ray_min:
             ray_blocks.append(_box_m(b))
     for it in spec.get("items", []):
         if it.get("kind") != "rug" and float(it.get("h", 400)) * MM >= _STAND_BLOCK_MIN_H_M:
@@ -307,8 +342,9 @@ def solve_eye_camera(spec, outline_m=None):
     tx = (float(main["x"]) + float(main["w"]) / 2.0) * MM
     ty = (float(main["y"]) + float(main["d"]) / 2.0) * MM
 
+    eye_h = spec_eye_h_m(spec)
     stand_blocks, ray_blocks = _build_obstacles(
-        spec, outline_m, (spec.get("eye_camera") or {}).get("in_subroom"))
+        spec, outline_m, (spec.get("eye_camera") or {}).get("in_subroom"), eye_h=eye_h)
 
     # ---- MANUAL OVERRIDE: spec["eye_camera"] places the standing spot by hand -----------
     # The auto solve below takes the FARTHEST clear grid spot — great for a plain box, but for
@@ -357,7 +393,8 @@ def solve_eye_camera(spec, outline_m=None):
             lens = min(_LENS_SNAP, key=lambda f: abs(f - 36.0 * standoff / max(2.0 * subj_dim, 3.5)))
         shift_y = float(ov["shift_y"]) if ov.get("shift_y") is not None else None
         return {"ex": ex, "ey": ey, "tx": tx, "ty": ty, "lens_mm": lens, "shift_y": shift_y,
-                "standoff_m": standoff, "hero": hero, "main": main, "n_clear": 1, "manual": True}
+                "standoff_m": standoff, "hero": hero, "main": main, "n_clear": 1, "manual": True,
+                "eye_h": eye_h}
 
     # ---- AUTO: farthest clear grid spot with a line of sight ----------------------------
     xs = [p[0] for p in outline_m]
@@ -381,7 +418,8 @@ def solve_eye_camera(spec, outline_m=None):
     raw = 36.0 * standoff / req_w               # 36 mm-sensor pinhole approximation
     lens = min(_LENS_SNAP, key=lambda f: abs(f - raw))
     return {"ex": ex, "ey": ey, "tx": tx, "ty": ty, "lens_mm": lens,
-            "standoff_m": standoff, "hero": hero, "main": main, "n_clear": len(cands), "manual": False}
+            "standoff_m": standoff, "hero": hero, "main": main, "n_clear": len(cands),
+            "manual": False, "eye_h": eye_h}
 
 
 def frame_subject_share(spec, solve, outline_m=None, n_rays=41):

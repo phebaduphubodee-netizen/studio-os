@@ -466,7 +466,10 @@ def cam_from_spec(spec, res=(2400, 1800), eye_h=None):
         try:
             sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
             import camera_config
-            eye_h = camera_config.EYE_CAM_HEIGHT_M
+            # the SPEC's height first — this reader must see the same lens the
+            # renderer will build, or its containment answers are about a camera
+            # nobody is going to use
+            eye_h = camera_config.spec_eye_h_m(spec)
         except Exception:                                    # noqa: BLE001
             eye_h = 1.15
     aim = ov.get("aim_mm")
