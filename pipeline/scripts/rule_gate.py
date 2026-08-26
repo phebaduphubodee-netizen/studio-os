@@ -923,6 +923,34 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
             for _ln in TEX.lines(_tex, root=REPO_ROOT):
                 if _ln:
                     print("  " + _ln)
+    # MODEL FRONT — R8's "asserted on every ingest", ORIENTATION side (2026-08-26,
+    # debate proposal 1, owner-approved the same night the class shipped twice:
+    # nightstand drawer fronts in the wall they hug behind a gate claiming
+    # 'verified from crop', and a tub chair 90° off in every frame it ever
+    # appeared in). Wired HERE for the same reason style/texture are: build_room
+    # calls check_room ONLY. Every spec-named model must carry a MEASURED front
+    # row; a mass whose model has a real front may not TYPE its facing (R9 for
+    # rotation — facing_derive declares the relationship, placement.face_rot
+    # solves it). The printed lines below are facing_reader's first gate-path
+    # consumer: the instrument that could answer "which way does this face" had
+    # a green test suite and zero callers on the night it was needed.
+    try:
+        import front_registry as FRONT
+    except ImportError as e:                                # pragma: no cover
+        v.append(f"front_registry is not importable ({e}) — refusing to render "
+                 f"past a facing law that cannot be read.")
+        note("model front", False, "front_registry not importable")
+    else:
+        _reg = FRONT.load(root=REPO_ROOT)
+        if spec is None:
+            note("model front", False,
+                 "no full spec given, so the model facings could not be read")
+        else:
+            v += FRONT.check_spec(_reg, spec)
+            note("model front", True, FRONT.summary(_reg, spec))
+            for _ln in FRONT.face_lines(spec, _reg):
+                if _ln:
+                    print("  " + _ln)
     # R1's COUNTER, on the lane that has spent the most and been counted the least
     # (p2r49, ORD-2026-07-28). It is wired here rather than left to `check()` for the
     # same reason the owner-channel rungs are: `check()` is the reproduction lane's
@@ -951,6 +979,16 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
             else "NOT SET — his call, ASK-023"))
     if _declared:
         v += _cap_v
+        # THE COUNTDOWN IS THE COURTESY LAYER, THE COUNTER IS THE MECHANISM
+        # (D-141). Printed into the render path — his channel — so the budget
+        # is visible on every frame, not only on the frame that breaches it.
+        print(f"  R1 CAP: DELIV-001 has spent {_rounds} round(s) and {_frames} "
+              f"full-fidelity frame(s) against a cap of "
+              f"{_row.get('cap_rounds')}/{_row.get('cap_full_frames')} — "
+              f"{max(0, int(_row['cap_rounds']) - _rounds)} round(s) / "
+              f"{max(0, int(_row['cap_full_frames']) - _frames)} frame(s) left "
+              f"before the forced R1 stop (breach also starts the real-client "
+              f"run, D-141).")
     else:
         # NOT a violation, and this is the R13 third state rather than a loophole:
         # only the owner may set a cap, so blocking here would halt the lane on an

@@ -297,8 +297,13 @@ def test_blocked_by_must_name_an_ask_he_is_actually_holding():
 
 
 def test_a_real_open_ask_is_a_legitimate_blocker():
+    # ASK-006 (the blind RANK sheet — his eye) rather than ASK-001: the 08-25
+    # queue drain (D-143) withdrew ASK-001 into the procurement sheet, and this
+    # test reads the LIVE ask ledger by design — a blocker must name something
+    # he is actually still holding. If ASK-006 ever closes, point this at any
+    # currently-open row; the test's premise is the liveness itself.
     o = _order(status="not-obeyed", not_obeyed_because="x", since="2026-08-13",
-               blocked_by="ASK-001")
+               blocked_by="ASK-006")
     assert OC.check_orders(_led([o]), REPO) == []
 
 
@@ -458,3 +463,107 @@ def test_a_well_formed_stance_still_resolves():
     led = _led([_order(id="ORD-a")])
     v = OC.check_decisions(led, _dec([_row(obeys="ORD-a")]), "DELIV-001", REPO)
     assert not any("stance as" in s for s in v), v
+
+
+# --- the visual-closure law (2026-08-26, debate proposal 1) -------------------
+
+
+def _verdict_file(tmp_path, name="v.json", **kw):
+    import json as _json
+    d = {"order": "ORD-x", "item": 1, "owner_sentence": "x",
+         "frames": ["f.png"], "verdict": "VISIBLE", "evidence": []}
+    d.update(kw)
+    p = tmp_path / name
+    p.write_text(_json.dumps(d, ensure_ascii=False), encoding="utf-8")
+    return str(p)
+
+
+def test_visual_obeyed_needs_verdicts():
+    o = _order(visual=True)
+    v = OC.check_orders(_led([o]), REPO)
+    assert any("closure_verdicts" in s for s in v)
+
+
+def test_visual_obeyed_with_visible_verdict_is_clean(tmp_path):
+    o = _order(visual=True, closure_verdicts=[_verdict_file(tmp_path)])
+    assert OC.check_orders(_led([o]), REPO) == []
+
+
+def test_not_visible_verdict_blocks_obeyed(tmp_path):
+    o = _order(visual=True, closure_verdicts=[
+        _verdict_file(tmp_path, verdict="NOT-VISIBLE")])
+    v = OC.check_orders(_led([o]), REPO)
+    assert any("could not point at pixels" in s for s in v)
+
+
+def test_overturned_verdict_no_longer_supports_closure(tmp_path):
+    # the item-1 night: the verifier said VISIBLE, the front probe overturned it
+    o = _order(visual=True, closure_verdicts=[
+        _verdict_file(tmp_path, overturned={"by": "front_probe"})])
+    v = OC.check_orders(_led([o]), REPO)
+    assert any("OVERTURNED" in s for s in v)
+
+
+def test_unreadable_verdict_is_unknown_not_obeyed():
+    o = _order(visual=True, closure_verdicts=["no/such/verdict.json"])
+    v = OC.check_orders(_led([o]), REPO)
+    assert any("unreadable" in s for s in v)
+
+
+def test_new_instance_list_must_declare_visual():
+    o = _order(date="2026-08-27", scope="instance-list")
+    v = OC.check_orders(_led([o]), REPO)
+    assert any("must declare `visual`" in s for s in v)
+    o2 = _order(date="2026-08-27", scope="instance-list", visual=False)
+    assert not any("must declare" in s for s in OC.check_orders(_led([o2]), REPO))
+
+
+def test_visual_not_obeyed_with_green_asserts_is_the_honest_state():
+    # source greps holding while the frame is refuted is EXACTLY p2r75 —
+    # a visual row may sit not-obeyed without the pessimism complaint.
+    o = _order(visual=True, status="not-obeyed", not_obeyed_because="refuted",
+               since="2026-08-25", restart_by="re-render + re-verify",
+               obeyed_assert=[{"file": "CLAUDE.md", "pattern": "R13",
+                               "why": "still true in source"}])
+    v = OC.check_orders(_led([o]), REPO)
+    assert not any("pessimistic" in s for s in v)
+
+
+def test_negative_control_the_real_ord25b_cannot_reclaim_obeyed():
+    """THE NIGHT, replayed against the real ledger: flip the real ORD-25b row
+    back to 'obeyed' and the verdict files on disk refuse it — items 2-4 are
+    still NOT-VISIBLE. (item1's entry now points at the p2r77 VISIBLE verdict,
+    honestly earned: derived facing + fresh verifier with arrows on both pulls.)
+    'It would have caught the false closure' stays a measurement, not a claim."""
+    data = OC.load(repo_root=REPO)
+    row = next(o for o in data["orders"]
+               if o["id"] == "ORD-2026-08-25b-five-items-after-p2r74")
+    assert row.get("visual") is True
+    replay = dict(row, status="obeyed")
+    v = OC.check_orders(_led([replay]), REPO)
+    assert sum("could not point at pixels" in s for s in v) >= 3   # items 2-4
+
+
+def test_negative_control_the_real_overturned_verdict_still_refuses():
+    """The archived p2r76 item-1 verdict (VISIBLE, then OVERTURNED by the front
+    probe) stays on disk as history — a row citing it can never print obeyed.
+    The eye that read the blank framed back as a drawer front is permanently
+    outvoted by the measurement, in the file itself."""
+    o = _order(visual=True, closure_verdicts=[
+        "projects/PRJ-2026-002_c001-house/04_visualization/closure-verdicts/"
+        "ORD-2026-08-25b/item1/verdict.json"])
+    v = OC.check_orders(_led([o]), REPO)
+    assert any("OVERTURNED" in s for s in v)
+
+
+def test_gate_grammar_refuses_the_closing_phrase(tmp_path):
+    g = tmp_path / "projects" / "p" / "04_visualization"
+    g.mkdir(parents=True)
+    (g / "gate-X-2026-08-27.md").write_text(
+        u"ลงพิกเซลครบ",
+        encoding="utf-8")
+    v = OC.check_gate_grammar(str(tmp_path))
+    assert len(v) == 1 and "refused by name" in v[0]
+    # pre-ratchet gates are history, not violations
+    (g / "gate-Y-2026-08-25.md").write_text(u"x", encoding="utf-8")
+    assert len(OC.check_gate_grammar(str(tmp_path))) == 1

@@ -1,0 +1,94 @@
+{
+ "order": "ORD-2026-08-25b-five-items-after-p2r74",
+ "item": 1,
+ "owner_sentence": "โต๊ะหัวเตียงหันหน้าผิดด้าน (ลิ่นชักเข้าเตียง = เปิดไม่ได้)",
+ "frames": [
+  "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r76.png",
+  "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r75w.png"
+ ],
+ "verdict": "VISIBLE",
+ "evidence": [
+  {
+   "frame": "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r76.png",
+   "bbox_px": [
+    540,
+    870,
+    800,
+    1070
+   ],
+   "arrow_tip_px": [
+    666,
+    950
+   ],
+   "crop": "ev1_left_pull_p2r76.png",
+   "what": "Vertical bar pull standing proud at the bed-side edge of the LEFT nightstand's room-facing drawer front (no such hardware on its outer corner) - graspable from open room space."
+  },
+  {
+   "frame": "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r76.png",
+   "bbox_px": [
+    420,
+    930,
+    700,
+    1090
+   ],
+   "arrow_tip_px": [
+    545,
+    1029
+   ],
+   "crop": "ev2_left_reveal_p2r76.png",
+   "what": "Thin uniform shadow reveal between the inset drawer face and the bottom frame rail on the LEFT nightstand's room-facing face - inset-drawer gap, not a deep fixed-panel recess."
+  },
+  {
+   "frame": "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r76.png",
+   "bbox_px": [
+    1660,
+    870,
+    1920,
+    1070
+   ],
+   "arrow_tip_px": [
+    1733,
+    950
+   ],
+   "crop": "ev3_right_pull_p2r76.png",
+   "what": "Mirrored vertical bar pull at the bed-side edge of the RIGHT nightstand's room-facing drawer front, catching room light - drawer hardware facing open room space."
+  },
+  {
+   "frame": "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r76.png",
+   "bbox_px": [
+    1700,
+    930,
+    1980,
+    1090
+   ],
+   "arrow_tip_px": [
+    1860,
+    1022
+   ],
+   "crop": "ev4_right_reveal_p2r76.png",
+   "what": "Same thin uniform drawer reveal along the bottom of the RIGHT nightstand's room-facing inset drawer face."
+  },
+  {
+   "frame": "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r75w.png",
+   "bbox_px": [
+    1150,
+    930,
+    1420,
+    1130
+   ],
+   "arrow_tip_px": [
+    1327,
+    992
+   ],
+   "crop": "ev5_left_front_oblique_p2r75w.png",
+   "what": "Wardrobe-camera oblique of the same wardrobe-side nightstand: the framed drawer front with its edge pull faces the open room (toward the foot of the room), not the bed."
+  }
+ ],
+ "note": "Judged blind from pixels only. Both nightstands present, on the face oriented toward the open room (toward the p2r76 camera at the foot of the bed), a full-width inset drawer front: a thin uniform reveal gap around the panel plus a proud vertical bar pull mounted at the bed-adjacent edge of that front. The pulls are mirrored about the bed (left unit: right edge; right unit: left edge) and absent from the outer corners, which reads as hardware, not structure. Pulling from these bars opens the drawer into open room space. Caveat for the next builder: the bed-facing side faces of both units are occluded by the mattress in both frames, so nothing is asserted about what is on those sides - only that an operable drawer front demonstrably faces the room.",
+ "overturned": {
+  "by": "measurement (front_probe.py, 4-view orthographic elevation, 2026-08-26)",
+  "what": "The Asta model has exactly ONE face with a pull — a routed recess, visible only in the S elevation (probe/front_S.png); the N elevation (probe/front_N.png) is a blank framed back with no hardware. Under the pinned convention (front=(sin rot,-cos rot)) the spec rot 90 put that pulled face at +X, INSIDE wall BF14 which both tables hug — so the faces this verdict arrowed as fronts are the framed BACKS, and the two 'pulls' were frame stiles read at render resolution. The owner said it from the frame: หันหน้าเข้ากำแพง.",
+  "consequence": "This VISIBLE no longer supports closure. The fix is derived facing (facing_derive away_from_wall E -> rot 270, placement.face_rot) with the native front measured -90 in qa/model-front-registry.json; re-run this verifier on the frame that carries it (p2r77+).",
+  "triage": "R7: a refutation carries a measurement, never taste. The eye finds WHAT (a credible drawer-front read); the measurement finds WHICH WAY (the probe + the convention algebra)."
+ }
+}

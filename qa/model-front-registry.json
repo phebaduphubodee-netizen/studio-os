@@ -1,0 +1,21 @@
+{
+ "_law": "FRONT AXIS IS ASSERTED AT INGEST, LIKE SCALE (debate proposal 1, owner 'ลุยเต็มที่ ผมอนุมัติทุกอย่าง' 2026-08-25). Every model id a spec mass names carries a MEASURED native-front row here: front_deg = the azimuth (+X=0, +Y=90) the mesh's functional front points at when placed with rot 0, measured by pipeline/scripts/front_probe.py (four orthographic elevations, sighted-signed) — or null with no_front_reason for a rotation-invariant mass. build_room.model_rot FAILS CLOSED on a missing row: before 2026-08-26 it defaulted a missing entry to -90.0, which is how the Asta nightstands shipped facing the wall BF14 with a gate claiming 'verified from crop' (his refutation the same night), and how the vanity tub chair rendered 90 degrees off in every frame since it entered the spec, unnoticed.",
+ "_convention": "S elevation shows the front -> -90 | E -> 0 | N -> 90 | W -> 180. THE LAW (build_room.py): place_model.rot = spec_rot - 90 - front_deg. A mass whose model has a numeric front_deg may not carry a typed `rot`; it declares `facing_derive` ({\"away_from_wall\": \"E\"} / {\"toward_wall\": \"W\"}) and the rot is derived (R9 applied to rotation).",
+ "models": {
+  "24c65eb4-765b-43f3-a171-266521dd06b1": {
+   "name": "Asta nightstand (BlenderKit)",
+   "front_deg": -90.0,
+   "measured": "front_probe 4-view ortho 2026-08-26: the S elevation is the ONLY face with a pull (routed recess in the drawer face); the N elevation is a blank framed back — the panel that fooled both the p2r75 gate's crop-read ('verified from crop') and the closure verifier's first pass. Probe thumbs archived in closure-verdicts/ORD-2026-08-25b/item1/probe/."
+  },
+  "tub_chair_c": {
+   "name": "vanity tub chair (3D Warehouse)",
+   "front_deg": 0.0,
+   "measured": "front_probe 4-view ortho 2026-08-26: the E elevation shows the open seat + inner backrest (the front); W is the closed outer shell. NOT -90 — under the fail-open default this stool has rendered 90 degrees off (showing BF11 its side) in every frame since it entered the spec."
+  },
+  "5b8e98d779b84786ba8131ba3662c698": {
+   "name": "bed-foot bench (BlenderKit, quilted)",
+   "front_deg": null,
+   "no_front_reason": "upholstered bench, no functional front (no drawer, door, or seat direction); the long faces are identically quilted in the probe elevations. rot passes through unchanged, which preserves the slot-aspect orientation logic that already places it."
+  }
+ }
+}

@@ -511,6 +511,15 @@
    "operable": false,
    "verdict": "keep",
    "why": "His order; vendor foliage kept (a plant IS its leaves)."
+  },
+  {
+   "assembly": "deco_bedthrow",
+   "identity": "Acquired woven plaid throw at the bed foot (0623e2fd, ensemble panel 2026-08-25d IN x3), laid at 15 deg on the duvet's own measured surface, weighted to the window side; material renamed acq_bed_throw so BEDPX classifies it BEDDING.",
+   "exists": "not-in-drawing: bed styling; the vignette rule every reference frame repeats (one throw breaks the made-bed grid at the foot, never twins)",
+   "held_by": "bed",
+   "operable": false,
+   "verdict": "keep",
+   "why": "ORD-2026-08-25c styling narrative (her-side story) + vignette-reading doc rule 4."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."

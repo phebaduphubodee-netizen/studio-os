@@ -1,0 +1,42 @@
+{
+  "order": "ORD-2026-08-25b-five-items-after-p2r74",
+  "item": 1,
+  "owner_sentence": "โต๊ะหัวเตียงหันหน้าผิดด้าน (ลิ่นชักเข้าเตียง = เปิดไม่ได้)",
+  "frames": [
+    "pipeline/output/room_bedroom_suite_eye_p2r77.png"
+  ],
+  "verdict": "VISIBLE",
+  "evidence": [
+    {
+      "frame": "pipeline/output/room_bedroom_suite_eye_p2r77.png",
+      "bbox_px": [
+        521,
+        940,
+        578,
+        972
+      ],
+      "arrow_tip_px": [
+        547,
+        957
+      ],
+      "crop": "p2r77_ev1.png",
+      "what": "Left nightstand: a horizontal bar pull standing proud of the drawer face, with a routed dark finger recess behind it and a drawer reveal line above, on the face oriented toward open room space (toward the camera / foot of the room), with clear floor in front of it."
+    },
+    {
+      "frame": "pipeline/output/room_bedroom_suite_eye_p2r77.png",
+      "bbox_px": [
+        1825,
+        944,
+        1881,
+        968
+      ],
+      "arrow_tip_px": [
+        1853,
+        957
+      ],
+      "crop": "p2r77_ev2.png",
+      "what": "Right nightstand: the same protruding bar pull with routed recess and shadow depth, plus the drawer reveal, on the face oriented toward open room space (toward the camera / foot of the room), not toward the bed beside it."
+    }
+  ],
+  "note": "Blind pixels-only check. Camera faces the headboard wall; both nightstands flank the bed and present their pull-bearing drawer faces to the camera, i.e. into open room aisle space at the foot side - the bed sits beside each unit, not in front of the drawer. Hardware verified at 4x zoom: each pull is a 3D bar with top-edge highlight and a dark routed recess behind it (shadow depth), so this is positive front evidence, not a framed inset back panel. A person standing in the room could grasp either pull and open the drawer without the bed obstructing the pull path."
+}

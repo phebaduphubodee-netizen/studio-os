@@ -47,10 +47,8 @@ audit_model_fit
 benchmark_precut
 benchmark_reader
 blind_wall_lane
-census
 closure_run
 confidence
-critique_bundle
 critique_call
 cross_signal
 derive_curve_priors
@@ -66,7 +64,6 @@ floor2_defect_gate
 floorplancad_adapter
 glazing_candidates
 golden_set_curate
-id_mask
 judge_calibrate
 kind_priors
 look_bench
@@ -86,7 +83,6 @@ rot_reconcile
 self_audit
 structured3d_adapter
 style_embed
-style_fingerprint
 suite_elevations
 suite_package
 suite_plan
@@ -109,6 +105,5 @@ trn002_station
 trn002_station_r2
 unit_adoption_lane
 upscale
-value_probe
 wall_aware_lane
 wall_detect

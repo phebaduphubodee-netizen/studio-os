@@ -124,10 +124,24 @@ def test_the_law_agrees_with_the_render_calibrated_autoface_anchor():
             assert BR.model_rot(spec_rot, slug) == pytest.approx(anchor)
 
 
-def test_an_unmapped_slug_defaults_to_the_measured_norm_not_to_zero():
-    """Defaulting the native front to 0 would inject a silent 90 deg error on any slug that slipped
-    past the completeness check. Default to the measured norm (-90) so the fallback is the truth."""
-    assert BR.model_rot(123.0, "not_a_real_slug") == pytest.approx(123.0)
+def test_an_unmapped_slug_fails_closed():
+    """OVERTURNED 2026-08-26 (debate proposal 1, owner-approved). This test used to PIN the
+    fail-open default ('default to the measured norm -90 so the fallback is the truth') — and that
+    default is exactly how the Asta nightstands rendered with their drawer fronts inside the wall
+    (native -90 happened to hold, but the SPEC rot was wrong and nothing could say which way the
+    front pointed) and how the tub chair (native 0, not -90) rendered 90 deg off in every frame.
+    A fallback that is usually the truth is a silent, unbounded rotation error on the day it is
+    not. The law now: a slug in neither MODEL_FRONT_DEG nor qa/model-front-registry.json STOPS
+    THE BUILD — probe it, sign the row, build."""
+    with pytest.raises(SystemExit):
+        BR.model_rot(123.0, "not_a_real_slug")
+
+
+def test_a_registry_row_resolves_like_the_table():
+    """The acquire shelf goes through qa/model-front-registry.json: the Asta (-90) collapses to
+    spec rot, the tub chair (native 0) gets the 90 deg correction the fail-open era never applied."""
+    assert BR.model_rot(270.0, "24c65eb4-765b-43f3-a171-266521dd06b1") == pytest.approx(270.0)
+    assert BR.model_rot(270.0, "tub_chair_c") == pytest.approx(180.0)
 
 
 # ---- what the spec's w/d MEAN (the reason model_fit takes no rot) --------------------------------

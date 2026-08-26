@@ -74,6 +74,9 @@ import quicklook      # bpy-free pure logic: R5 playblast-ladder rung (--quick) 
                       # first LOOK before any full-fidelity frame; kills bad work
                       # early, never certifies good work
 import asset_scale as _ascale   # bpy-free: glTF bounds, scale assertion, PBR map roles
+import front_registry as _freg  # bpy-free: the FRONT LAW's pure half (2026-08-26) — measured
+                                # native fronts per model id; model_rot fails closed on it, the
+                                # item loop derives facing_derive through it (R9 for rotation)
 import sheet_recon as _sr       # bpy-free: R12's ledger. The BUILD reads the drawing's own
                                 # numbers here (drawn_rect_mm); until p2r62 the only reader was
                                 # the after-the-fact gate, so every drawn dimension in the model
@@ -3751,6 +3754,115 @@ def _dress_scene(spec):
                         print(f"  lane D: bench throw dropped — place_model "
                               f"refused {_BENCH_THROW_MODEL[:8]} (see its own "
                               f"print); the frame ships without a throw")
+        # ------------------------------------------------------------ ORD-25c
+        # BED-FOOT THROW — the vignette rule every reference frame repeats: ONE
+        # woven throw breaks the made-bed grid at an angle near the foot,
+        # weighted to her side, never twins. Geometry is derived: the bed's own
+        # AABB gives the foot strip (the far end from bed__headboard), the
+        # duvet surface under the throw's footprint gives z (rest_on, R9), and
+        # the 15° swing is applied about the throw's own centre after a
+        # cardinal place (same mechanism as the ORD-25c garment swing).
+        _bt_mp = _model_path(_BED_THROW_MODEL)
+        _bed_ms = [o for o in bpy.data.objects
+                   if o.type == 'MESH' and o.name.startswith('bed__')
+                   and 'headboard' not in o.name]
+        _hb_ms = [o for o in bpy.data.objects
+                  if o.type == 'MESH' and 'bed__headboard' in o.name]
+        if _bt_mp is None:
+            print(f"  lane D: bed throw DROPPED — {_BED_THROW_MODEL[:8]} "
+                  f"refused/unavailable (never a silent skip)")
+        elif not _bed_ms or not _hb_ms:
+            print("  lane D: bed throw DROPPED — bed or headboard meshes not "
+                  "found to derive the foot strip (loud)")
+        else:
+            from mathutils import Vector as _Vbt
+            import mathutils as _mubt
+            try:
+                with open(_ascale.sidecar_path(_bt_mp), encoding="utf-8") as _bf_:
+                    _bsc = json.load(_bf_)["bbox_mm"]
+                _btx, _bty, _btz = (float(_bsc["x_mm"]) / 1000.0,
+                                    float(_bsc["y_mm"]) / 1000.0,
+                                    float(_bsc["z_mm"]) / 1000.0)
+            except (OSError, ValueError, KeyError, TypeError) as _be_:
+                _btx = None
+                print(f"  lane D: bed throw DROPPED — sidecar unreadable ({_be_})")
+            if _btx is not None:
+                _bb = [(o.matrix_world @ _Vbt(c)) for o in _bed_ms for c in o.bound_box]
+                _b0 = (min(p.x for p in _bb), min(p.y for p in _bb))
+                _b1 = (max(p.x for p in _bb), max(p.y for p in _bb))
+                _hbb = [(o.matrix_world @ _Vbt(c)) for o in _hb_ms for c in o.bound_box]
+                _hcx = (min(p.x for p in _hbb) + max(p.x for p in _hbb)) / 2.0
+                _hcy = (min(p.y for p in _hbb) + max(p.y for p in _hbb)) / 2.0
+                _long_x = (_b1[0] - _b0[0]) >= (_b1[1] - _b0[1])
+                if _long_x:
+                    _foot = _b1[0] if _hcx < (_b0[0] + _b1[0]) / 2.0 else _b0[0]
+                    _fdir = 1.0 if _foot == _b1[0] else -1.0
+                    _tcx = _foot - _fdir * (0.12 + _bty / 2.0)
+                    _tcy = _b0[1] + (_b1[1] - _b0[1]) * 0.62   # her (window) side
+                else:
+                    _foot = _b1[1] if _hcy < (_b0[1] + _b1[1]) / 2.0 else _b0[1]
+                    _fdir = 1.0 if _foot == _b1[1] else -1.0
+                    _tcy = _foot - _fdir * (0.12 + _bty / 2.0)
+                    _tcx = _b0[0] + (_b1[0] - _b0[0]) * 0.62
+                # rest_on: the duvet's own top under the footprint
+                _fzs = []
+                for _o in _bed_ms:
+                    _ob = [(_o.matrix_world @ _Vbt(c)) for c in _o.bound_box]
+                    _o0 = (min(p.x for p in _ob), min(p.y for p in _ob))
+                    _o1 = (max(p.x for p in _ob), max(p.y for p in _ob))
+                    if (_o0[0] < _tcx + _btx / 2.0 and _o1[0] > _tcx - _btx / 2.0
+                            and _o0[1] < _tcy + _bty / 2.0 and _o1[1] > _tcy - _bty / 2.0):
+                        _fzs.append(max(p.z for p in _ob))
+                if not _fzs:
+                    print("  lane D: bed throw DROPPED — no bed surface under "
+                          "the derived foot footprint (loud)")
+                else:
+                    _pre_bt = {o.name for o in bpy.data.objects}
+                    if place_model(_bt_mp, _tcx - _btx / 2.0, _tcy - _bty / 2.0,
+                                   _btx, _bty, _btz, rot=(0.0 if _long_x else 90.0),
+                                   z0=max(_fzs) - 0.012, tag="deco_bedthrow"):
+                        _nbt = [o for o in bpy.data.objects
+                                if o.name not in _pre_bt and o.type == 'MESH']
+                        _rotm = (_mubt.Matrix.Translation((_tcx, _tcy, 0.0))
+                                 @ _mubt.Matrix.Rotation(math.radians(15.0), 4, 'Z')
+                                 @ _mubt.Matrix.Translation((-_tcx, -_tcy, 0.0)))
+                        _rts = set()
+                        for _o in _nbt:
+                            _r = _o
+                            while _r.parent is not None:
+                                _r = _r.parent
+                            _rts.add(_r.name)
+                        for _rn in _rts:
+                            _r = bpy.data.objects[_rn]
+                            _r.matrix_world = _rotm @ _r.matrix_world
+                        # role channel for BEDPX: the throw lies ON the core,
+                        # so its material must carry a name the rung knows
+                        _seen_bt = set()
+                        for _o in _nbt:
+                            for _m in _o.data.materials:
+                                if _m is not None and _m.name not in _seen_bt:
+                                    _seen_bt.add(_m.name)
+                        for _o in _nbt:
+                            if not any(m is not None and m.name == "acq_bed_throw"
+                                       for m in _o.data.materials):
+                                if _o.data.materials and _o.data.materials[0] is not None:
+                                    _o.data.materials[0].name = "acq_bed_throw"
+                        _miss_bt = [o.name for o in _nbt
+                                    if not any(m is not None
+                                               and m.name == "acq_bed_throw"
+                                               for m in o.data.materials)]
+                        if _miss_bt:
+                            print(f"  lane D: bed throw role WARNING — mesh(es) "
+                                  f"{_miss_bt} carry no acq_bed_throw material; "
+                                  f"BEDPX will name them (loud, never silent)")
+                        placed += 1
+                        print(f"  lane D: bed-foot throw ACQUIRED "
+                              f"{_BED_THROW_MODEL[:8]} at 15° on the duvet foot "
+                              f"({_tcx * 1000:.0f},{_tcy * 1000:.0f}), z from "
+                              f"the bed's own surface (ORD-25c)")
+                    else:
+                        print(f"  lane D: bed throw dropped — place_model "
+                              f"refused {_BED_THROW_MODEL[:8]} (loud)")
         # ---------------------------------------------------------------- p2r75
         # FOLD STACKS ACQUIRED (ORD-2026-08-25b item 3: "ผ้าที่พับ...ยังเป็น
         # โมเดลปั้นเอง"): every hand-lofted mill__style_fold{S} stack leaves and
@@ -3763,8 +3875,23 @@ def _dress_scene(spec):
                     and 'foldacq' not in _o.name):
                 _s = _o.name.split('fold')[1].split('_')[0]
                 _folds.setdefault(_s, []).append(_o)
-        _fi = 0
+        _fi = 0     # placed-count: cycles the model tuple (unchanged semantics)
+        _si = 0     # spot ordinal: drives the bare pattern, counts every spot
         for _s, _grp in sorted(_folds.items()):
+            # ORD-25c BREATHING SPACE (vignette rule 6/9: a third to half of
+            # cells deliberately BARE; the p2r76a quick proved the inverse
+            # failure too — the new, larger stacks ate every shelf face and
+            # starved the boxes/bag/vessels into DROPPED): every third fold
+            # spot gives its shelf back, hand loft removed, nothing placed.
+            # Two counters, learned the minute this was one: sharing _fi made
+            # the bare pattern swallow model index 2, so sage never placed.
+            _si += 1
+            if _si % 3 == 0:
+                for _o in _grp:
+                    bpy.data.objects.remove(_o, do_unlink=True)
+                print(f"  fold stack {_s}: shelf left BARE — breathing space "
+                      f"(ORD-25c, every third spot)")
+                continue
             _gb = [(o.matrix_world @ _V75(c)) for o in _grp for c in o.bound_box]
             _g0 = (min(p.x for p in _gb), min(p.y for p in _gb),
                    min(p.z for p in _gb))
@@ -3864,7 +3991,9 @@ def _dress_scene(spec):
         from mathutils import Vector
         # eye-height shelves FIRST (tw0/tw1 ~1.3-1.8 m): the first quick put
         # both pieces on ni0 (418 mm) where the camera barely sees them
-        _lvl_pref = {'tw0': 0, 'tw1': 1, 'ni1': 2, 'ni0': 3}
+        # ni2 (1718 mm) joined the map off the p2r76c scene read — it was the
+        # one consistently EMPTY level precisely because no code could see it
+        _lvl_pref = {'tw0': 0, 'ni2': 1, 'tw1': 2, 'ni1': 3, 'ni0': 4}
         _shelves = sorted((o for o in bpy.data.objects
                            if o.type == 'MESH' and 'shelf' in o.name
                            and o.name.startswith('mill__bay')
@@ -3873,7 +4002,17 @@ def _dress_scene(spec):
                                          o.name))
         # the FLOOR model goes to the LOWEST shelf class, never the eye band
         # (review C: slippers were queued with the boxes and stored at 1788 mm)
-        _wc_plan = ([(m, False) for m in _WARDROBE_SHELF_MODELS]
+        # ORD-25c display props join the plan: the HERO BAG leads (first pick
+        # of the eye shelves, and its bay is then CLOSED — the reference read's
+        # concentration rule: one hero alone in its lit cell); derbies are a
+        # floor-class piece like the slippers; the vessel pair is placed as
+        # ONE idea after this loop (two heights, one cell).
+        # order = story priority (p2r76d: two bays hold ~6 free cells, so the
+        # tail of this list is ALLOWED to drop — bag/shoes/vessels carry the
+        # narrative, box/basket/tray/slippers are texture)
+        _wc_plan = ([(_WARDROBE_BAG_MODEL, False),
+                     (_WARDROBE_SHOES_MODEL, True)]
+                    + [(m, False) for m in _WARDROBE_SHELF_MODELS]
                     + [(_WARDROBE_FLOOR_MODEL, True)])
         _lo_shelves = sorted((o for o in bpy.data.objects
                               if o.type == 'MESH' and 'shelf' in o.name
@@ -3889,6 +4028,12 @@ def _dress_scene(spec):
                 if (_oo.type != 'MESH' or _oo.hide_render
                         or _oo.name.startswith('mill__bay')):
                     continue
+                # ORD-25c (read off the built scene, not guessed): the deep
+                # BF09-1-1 shelf AABBs extend into the room walls, so the WALL
+                # itself was counted as an occupant and starved the whole bay
+                # into DROPPED. Architecture a shelf abuts is not an occupant.
+                if _oo.name.startswith(('wall', 'ceiling', 'floor')):
+                    continue
                 _ob = [(_oo.matrix_world @ Vector(c)) for c in _oo.bound_box]
                 _o0 = (min(p.x for p in _ob), min(p.y for p in _ob),
                        min(p.z for p in _ob))
@@ -3900,7 +4045,82 @@ def _dress_scene(spec):
                     return _oo.name
             return None
 
-        _used_bays = set()
+        _used_bays = set()      # real placements only — the cap counts these
+        _closed_cells = set()   # hero closure: cells barred without counting
+        # ORD-25c VESSEL PAIR — placed FIRST (p2r76f: the two-bay eye/mid band
+        # holds six cells and filled 6/6, so order IS priority; the pair's
+        # height story outranks the low rattan tray nobody's camera sees) — one cell, one idea, two heights (332 vs 66 mm;
+        # the reference read: pairs differ in height, sculptural beside flat,
+        # sharing one footprint zone). Placed as a unit: both fit or neither.
+        _vp_meta = []
+        for _vid in _WARDROBE_VESSEL_PAIR:
+            _vmp = _model_path(_vid)
+            if _vmp is None:
+                _vp_meta = []
+                print(f"  lane D: vessel pair DROPPED — {_vid[:8]} refused/"
+                      f"unavailable (never a silent skip)")
+                break
+            try:
+                with open(_ascale.sidecar_path(_vmp), encoding="utf-8") as _vf_:
+                    _vsc = json.load(_vf_)["bbox_mm"]
+                _vp_meta.append((_vmp, float(_vsc["x_mm"]) / 1000.0,
+                                 float(_vsc["y_mm"]) / 1000.0,
+                                 float(_vsc["z_mm"]) / 1000.0))
+            except (OSError, ValueError, KeyError, TypeError) as _ve_:
+                _vp_meta = []
+                print(f"  lane D: vessel pair DROPPED — sidecar unreadable "
+                      f"({_ve_})")
+                break
+        if len(_vp_meta) == 2:
+            (_vmp1, _v1x, _v1y, _v1z), (_vmp2, _v2x, _v2y, _v2z) = _vp_meta
+            # DEPTH-STACKED, read off the built shelves (p2r76c): the cells
+            # are 447-600 wide but 600-864 deep, so the pair composes tall-
+            # behind / low-in-front — which is also the reference read (the
+            # sculptural piece overlaps the flat one, sharing a footprint).
+            # The 40 mm plan overlap is that shared footprint; both stand
+            # CENTERED in plan so a shelf AABB that laps a wall keeps
+            # >=140 mm of clearance on either side.
+            _need_w = max(_v1x, _v2x)
+            _need_d = _v1y + _v2y - 0.040
+            _vlaid = False
+            # the pair yields tw0 (the hero bag's own preferred level) and
+            # composes at ni2/tw1 — running first must not steal the hero cell
+            _vp_pref = {'ni2': 0, 'tw1': 1, 'tw0': 2, 'ni1': 3, 'ni0': 4}
+            for _sh in sorted(_shelves,
+                              key=lambda o: (_vp_pref[o.name.rsplit('_', 1)[-1]],
+                                             o.name)):
+                _bay = _sh.name.split('_shelf_')[0]
+                _lvl = _sh.name.rsplit('_', 1)[-1]
+                if ((_bay, _lvl) in _used_bays or (_bay, _lvl) in _closed_cells
+                        or sum(1 for b, _ in _used_bays if b == _bay) >= 3):
+                    continue
+                _sb = [(_sh.matrix_world @ Vector(c)) for c in _sh.bound_box]
+                _s0 = (min(p.x for p in _sb), min(p.y for p in _sb))
+                _s1 = (max(p.x for p in _sb), max(p.y for p in _sb))
+                _sw_, _sd_ = _s1[0] - _s0[0], _s1[1] - _s0[1]
+                if _sw_ < _need_w + 0.02 or _sd_ < _need_d + 0.06:
+                    continue
+                _stop = max(p.z for p in _sb)
+                if _shelf_occupied(_s0, _s1, _stop, max(_v1z, _v2z) + 0.02):
+                    continue
+                _dmid = _s0[1] + _sd_ / 2.0
+                _vy1 = _dmid + _need_d / 2.0 - _v1y          # vase, rear half
+                _vy2 = _dmid - _need_d / 2.0                 # bowl, front half
+                _vx1 = _s0[0] + (_sw_ - _v1x) / 2.0 - 0.035  # a breath off-centre
+                _vx2 = _s0[0] + (_sw_ - _v2x) / 2.0 + 0.035
+                if (place_model(_vmp1, _vx1, _vy1, _v1x, _v1y, _v1z,
+                                rot=0.0, z0=_stop, tag="wardrobe")
+                        and place_model(_vmp2, _vx2, _vy2, _v2x, _v2y, _v2z,
+                                        rot=0.0, z0=_stop, tag="wardrobe")):
+                    _used_bays.add((_bay, _lvl))
+                    print(f"  lane D: vessel pair (vase 332 + bowl 66) on "
+                          f"{_sh.name.split('mill__')[-1]} top "
+                          f"{_stop * 1000:.0f} mm — one cell, tall behind low")
+                    _vlaid = True
+                break
+            if not _vlaid:
+                print("  lane D: vessel pair DROPPED — no clear eye/mid shelf "
+                      "deep enough for the pair (never a silent skip)")
         for _wid, _is_floor in _wc_plan:
             _wmp = _model_path(_wid)
             if _wmp is None:
@@ -3921,9 +4141,10 @@ def _dress_scene(spec):
             for _sh in (_lo_shelves if _is_floor else _shelves):
                 _bay = _sh.name.split('_shelf_')[0]
                 _lvl = _sh.name.rsplit('_', 1)[-1]
-                if ((_bay, _lvl) in _used_bays
-                        or sum(1 for b, _ in _used_bays if b == _bay) >= 2):
-                    continue                # spread: max two pieces per bay
+                if ((_bay, _lvl) in _used_bays or (_bay, _lvl) in _closed_cells
+                        or sum(1 for b, _ in _used_bays if b == _bay) >= 3):
+                    continue                # spread: max three pieces per bay
+                #                             (two bays total, p2r76d scene read)
                 _sb = [(_sh.matrix_world @ Vector(c)) for c in _sh.bound_box]
                 _s0 = (min(p.x for p in _sb), min(p.y for p in _sb))
                 _s1 = (max(p.x for p in _sb), max(p.y for p in _sb))
@@ -3934,6 +4155,7 @@ def _dress_scene(spec):
                 _occ = _shelf_occupied(_s0, _s1, _stop, _wnz + 0.02)
                 if _occ:
                     continue                # something already lives here
+                _pre_objs = {o.name for o in bpy.data.objects}
                 if place_model(_wmp, _s0[0] + (_sw_ - _wnx) / 2.0,
                                _s0[1] + (_sd_ - _wny) / 2.0, _wnx, _wny, _wnz,
                                rot=0.0, z0=_stop, tag="wardrobe"):
@@ -3942,6 +4164,52 @@ def _dress_scene(spec):
                           f"{_stop * 1000:.0f} mm (shelf clear of prior "
                           f"occupants)")
                     _used_bays.add((_bay, _lvl))
+                    if _wid == _WARDROBE_BAG_MODEL:
+                        # hero rule, sized to THIS wardrobe (2 bays, p2r76e):
+                        # the hero keeps its cell plus the two vertically
+                        # adjacent ones; closing the whole eye/mid band left
+                        # the vessel pair no legal cell anywhere. Boot shelf
+                        # stays open (shoes under a hero bag is a real closet).
+                        for _l_ in ('ni1', 'ni2'):
+                            _closed_cells.add((_bay, _l_))
+                    if _wid == _WARDROBE_SHOES_MODEL:
+                        # panel 25d condition: the whitish scuff reads
+                        # neglected in a housekeeper-kept home — darken the
+                        # scan toward polished chestnut; a LOOK that still
+                        # reads scuffed makes D2 a declared gap.
+                        _new_sh = [o for o in bpy.data.objects
+                                   if o.name not in _pre_objs and o.type == 'MESH']
+                        _dk_done = set()
+                        for _oo in _new_sh:
+                            for _sl in _oo.data.materials:
+                                if _sl is None or _sl.name in _dk_done:
+                                    continue
+                                _dk_done.add(_sl.name)
+                                _nt = _sl.node_tree
+                                if not _nt:
+                                    continue
+                                _bsdf = next((n for n in _nt.nodes
+                                              if n.type == 'BSDF_PRINCIPLED'), None)
+                                if _bsdf is None:
+                                    continue
+                                _bc = _bsdf.inputs['Base Color']
+                                if _bc.links:
+                                    _mix = _nt.nodes.new('ShaderNodeMix')
+                                    _mix.data_type = 'RGBA'
+                                    _mix.blend_type = 'MULTIPLY'
+                                    _mix.inputs['Factor'].default_value = 1.0
+                                    _src_sock = _bc.links[0].from_socket
+                                    _nt.links.remove(_bc.links[0])
+                                    _nt.links.new(_src_sock, _mix.inputs['A'])
+                                    _mix.inputs['B'].default_value = (0.52, 0.45, 0.40, 1.0)
+                                    _nt.links.new(_mix.outputs['Result'], _bc)
+                                else:
+                                    _c = _bc.default_value
+                                    _bc.default_value = (_c[0] * 0.52, _c[1] * 0.45,
+                                                         _c[2] * 0.40, _c[3])
+                        print(f"  lane D: derbies darkened toward polished "
+                              f"chestnut ({len(_dk_done)} material(s)) — "
+                              f"panel 25d condition")
                     _laid = True
                     break
             if not _laid:
@@ -4030,12 +4298,52 @@ _WARDROBE_FLOOR_MODEL = "4152f818-48ed-48e1-a76b-c0bf1bb0b54f"    # slippers, 2/
 # blind panel or carry its verdict in the gate; a losing verdict changes the id.
 _RUG_MODEL = "0fd746ae-5d11-41d8-a41f-101ba6b4ce50"        # 2427x3024 — 0.97 of slot, no stretch
 _FOLD_STACK_MODELS = (                                     # item 3: hand-built folds leave
-    # panel 2026-08-25c: ONLY the sage sweatshirt passed (inside 2/3);
-    # the striped stack and graphic tees failed OUTSIDE 3/3 on colour/ornament
-    # — repetition across shelves is the declared cost of a one-winner class,
-    # varied by each spot's own orientation
-    "b54819e4-6551-4509-b76c-2bce9ada8cf8",   # folded sweatshirt, sage
+    # panel 2026-08-25c: ONLY the sage sweatshirt passed (inside 2/3) — its
+    # "repetition across shelves is the declared cost" clause is RETIRED by
+    # ORD-2026-08-25c: ensemble panel 2026-08-25d admitted a white/cream chino
+    # stack and a grey stack (photogrammetry folds, in-band), so the cycle now
+    # carries three colour stories and sage lands at most every third spot.
+    # The grey stack carries the panel's own condition: cool cast — the cycle
+    # order keeps it between the two warm stacks, never first.
+    "2751554e-41f5-49f4-9de0-b2411b475fb3",   # folded chinos, white/cream — 25d
+    "f601337c-54e5-45f9-89b0-061af71e9a29",   # folded cloths, grey — 25d (cool, quarantined mid-cycle)
+    "b54819e4-6551-4509-b76c-2bce9ada8cf8",   # folded sweatshirt, sage — 25c
 )
+# ORD-2026-08-25c STORY-DRIVEN STYLING (owner: "ลุยยาว ๆ ให้หมด") — the garment
+# POOL replaces the 2-set monoculture the owner named ("ซ้ำกันไปหมด"). Every id
+# passed the 2026-08-25d ensemble panel (3 lenses judging the SET against the
+# styling narrative; verdicts archived in _private/deliv-001/style-panel-2026-
+# 08-25d/). Blocks mirror the narrative's wardrobe ratios (~40 light / 30 dark
+# / 30 earth + her long rail). CAP: 4 placed instances per id per build — a
+# 7-id pool at cap 2 is 14 garments over 9 rails = the boutique-bare read
+# C2-r4#4 already refuted; cap 3 exhausted at rail 7 and dropped that rail
+# back to the 2-set monoculture (quick p2r76a), so cap 4 = 28 ceiling, a
+# filled-but-not-cloned closet (a real wardrobe repeats shirts; nine rails of
+# ONE set was the disease, not repetition itself). The three v-neck recolors
+# share ONE mesh: never two of them adjacent on a rail.
+_GARMENT_POOL = {
+    "light": ("b8343587-bb5a-4534-9ab7-3189c05cb15a",   # white button-up
+              "6fc15682-70da-4fb6-8fac-22617c28276f"),  # white v-neck
+    "dark":  ("0c4fe8e5-4985-4126-9247-976cc76082bf",   # charcoal button-up (shadow bays — panel M)
+              "52ae357f-e517-47d2-84dc-911928919697"),  # navy v-neck
+    "earth": ("550f674a-4eb2-4728-985e-4fb627929fb8",   # khaki button-up (not the closest lit bay — panel M)
+              "13858ca1-270e-422d-94e1-e04bfad179e0"),  # beige v-neck
+    "long":  ("1f6d368c-59f7-45f7-aa72-90ba9d832287",), # sage tiered maxi (rail end, partial occlusion)
+}
+# wardrobe display props (panel 25d): the cognac tote c46b5c9d was killed by
+# the materiality judge AT HERO DISTANCE (plastic read) — f8573a9c is the
+# triage runner-up (pebbled grain + stitching); a losing LOOK makes D1 a
+# declared gap, never a re-model. Derbies keep only with the darken pass over
+# the whitish scuff (story judge: a housekeeper-kept home polishes its shoes).
+_WARDROBE_BAG_MODEL = "f8573a9c-0797-4607-9416-199f8da16fd8"    # sienna doctor bag — hero, alone in its bay
+_WARDROBE_SHOES_MODEL = "8e006d2e-6010-48cf-8699-e9fc4e72ef1a"  # chestnut derbies — lowest shelf, retinted darker
+_WARDROBE_VESSEL_PAIR = (                                       # one cell, one idea: 332 vs 66 mm
+    "ae43e44c-78a8-4102-ae84-eddcc6e53ab7",   # speckled stoneware vase, tall half
+    "265d7b9b-adfd-4633-9980-31e4ff5744fd",   # carved wooden shallow bowl, low half
+)
+# bed-foot throw (vignette rule: the throw breaks the grid diagonally at the
+# foot, once, never twins) — folded woven plaid, greige x charcoal, cream fringe
+_BED_THROW_MODEL = "0623e2fd-7a59-4489-9eba-fbfad9239e13"
 _FLOOR_PLANT_MODEL = "878fa112-8acc-426f-b7cf-2363711ec321"  # ficus
 _NS_LIFE_MODELS = {                                        # item 4: nightstand life
     # panel 2026-08-25c: dish + pitcher inside 3/3; BOTH clocks failed
@@ -4316,6 +4624,12 @@ def _place_garment_rails(models, parts, cut_first=None):
              bb.get("z_mm", 0) / 1000.0)
         return (mp, n) if all(v > 0 for v in n) else (None, None)
 
+    # ORD-2026-08-25c: pool bookkeeping across rails — cap 3 instances per id
+    # per build (comment at _GARMENT_POOL for the arithmetic), and the rail
+    # index drives the deterministic block pattern, so a rebuild reproduces
+    # the same closet exactly (no randomness anywhere in this lane).
+    _gpool_used = {}
+    _salt_order = sorted(by_rail)
     for salt in sorted(by_rail):
         vs = [v for p in by_rail[salt] for v in p["verts"]]
         x0, x1 = min(v[0] for v in vs), max(v[0] for v in vs)
@@ -4364,6 +4678,7 @@ def _place_garment_rails(models, parts, cut_first=None):
         # shoulder across a 362 mm bay and through both gables. The bar cannot
         # be wrong about its own axis.
         _bar_obj = None
+        _bar_mesh = None
         for _o in bpy.data.objects:
             if (_o.type != 'MESH' or _o.hide_render or not _o.data.vertices
                     or not _o.name.startswith("mill__") or "rail" not in _o.name):
@@ -4377,6 +4692,7 @@ def _place_garment_rails(models, parts, cut_first=None):
             if _bx1 < x0 - 0.10 or _bx0 > x1 + 0.10 or _by1 < y0 - 0.10 or _by0 > y1 + 0.10:
                 continue                                # not this rail's bar in plan
             _bar_obj = (_bx0, _bx1, _by0, _by1)
+            _bar_mesh = _o          # ORD-25c: the hanger wire wears the bar's own brass
             break
         if _bar_obj is not None:
             along_x = (_bar_obj[1] - _bar_obj[0]) >= (_bar_obj[3] - _bar_obj[2])
@@ -4460,6 +4776,212 @@ def _place_garment_rails(models, parts, cut_first=None):
         yaw = (0.0 if along_x else 90.0) + (90.0 if _yaw90_eff else 0.0) \
             + (180.0 if salt % 2 else 0.0)
         tag = f"mill__style_garmentacq{salt}"
+        # ------------------------------------------------------------ ORD-25c
+        # SINGLES FROM THE POOL, story-blocked per rail. Fires only on a rail
+        # whose bay is fully derived (bar + both gables); an underived rail
+        # keeps the set path below — could-not-derive never silently changes
+        # mechanism (R11). Falls back to the set path loudly if the pool
+        # placed nothing (cap exhausted, sidecars missing, place refused).
+        if _GARMENT_POOL and _ax_bounds is not None and _yaw90_eff:
+            _idx = _salt_order.index(salt)
+            _drop = z1 - z0
+            _HANG_RESERVE = 0.150            # hanger hook+body between bar and collar
+            _GFLOOR = 0.8                    # the face-on done-bar (ORD-2026-08-12);
+            #                                  this branch only runs on the yaw90 leg
+            # her long rail: the deepest drop that actually fits the maxi;
+            # short rails walk the 40/30/30 pattern of the narrative
+            _long_id = _GARMENT_POOL["long"][0]
+            _lmp, _ln = _sidecar(_long_id)
+            # the dress hangs wherever it clears the 0.8 scale floor — the
+            # first cut demanded 0.95 of natural and both 1447 mm drops
+            # refused a 1446 mm maxi, so no rail ever took it (quick p2r76a)
+            _is_long = (_lmp is not None and _ln is not None
+                        and _drop >= _ln[2] * 0.8 + _HANG_RESERVE
+                        and _gpool_used.get(_long_id, 0) < 1)
+            _block = ("light", "dark", "earth", "light", "light",
+                      "dark", "earth", "light", "dark")[_idx % 9]
+            # density from the run itself (p2r76 corner LOOK: 2 clustered at
+            # the hidden end read as ONE garment from the room — the exact
+            # boutique-bare read C2-r4#4 refuted); ~160 mm of run per garment
+            _n_st = max(2, min(4, int(run / 0.16)))
+            _ids = []
+            if _is_long:
+                _ids.append(_long_id)
+                _n_st = max(2, _n_st - 1)
+            _src = list(_GARMENT_POOL[_block])
+            _src = _src[_idx % len(_src):] + _src[:_idx % len(_src)]
+            # top up from the warm blocks only (the dark block is quarantined
+            # to its own rails — panel 25d: cool drift compounds)
+            for _extra in (_GARMENT_POOL["light"], _GARMENT_POOL["earth"]):
+                for _eid in _extra:
+                    if _eid not in _src:
+                        _src.append(_eid)
+            for _gid in _src:
+                if len(_ids) >= _n_st + (1 if _is_long else 0):
+                    break
+                if _gid in _ids or _gpool_used.get(_gid, 0) >= 4:
+                    continue
+                _ids.append(_gid)
+            _placed_n = 0
+            if _ids:
+                _rlo, _rhi = _run_bounds
+                # story cluster: garments pushed toward one gable (the taken
+                # side alternates by salt), air left at the other — the pitch
+                # walks a fixed pattern so no two rails space identically
+                _pitches = (0.130, 0.170, 0.110, 0.150)
+                _side = 1 if salt % 2 else -1
+                _a = (_rlo + 0.070) if _side < 0 else (_rhi - 0.070)
+                _base_rot = (90.0 if along_x else 0.0) + (180.0 if salt % 2 else 0.0)
+                for _gi, _gid in enumerate(_ids):
+                    if not (_rlo + 0.050 <= _a <= _rhi - 0.050):
+                        print(f"  garment rail {salt}: run exhausted after "
+                              f"{_placed_n} garment(s) — the rest of this "
+                              f"rail's block stays air (loud)")
+                        break
+                    _gmp, _gn = _sidecar(_gid)
+                    if not _gmp:
+                        print(f"  garment rail {salt}: {_gid[:8]} sidecar missing — skipped (loud)")
+                        continue
+                    _gnx, _gny, _gnz = _gn
+                    _gs = min(1.0, (_drop - _HANG_RESERVE) / _gnz)
+                    if _gs < _GFLOOR:
+                        print(f"  garment rail {salt}: {_gid[:8]} fits only at "
+                              f"{_gs:.2f} of natural (< {_GFLOOR}) — skipped, "
+                              f"an absent garment is honest (R10)")
+                        continue
+                    _sx, _sy, _sz = _gnx * _gs, _gny * _gs, _gnz * _gs
+                    # face-on: shoulder into the carcass depth; the bay decides
+                    # the swing angle exactly as a real shallow closet does
+                    _cosd = max(-1.0, min(1.0, (depth - 0.03) / _sx))
+                    _theta = math.degrees(math.acos(_cosd))
+                    # deterministic swing variation — uniform angles are the CG
+                    # tell; only POSITIVE offsets may grow (a negative one
+                    # widens the depth footprint past the derived margin)
+                    _theta += (0.0, 3.0, 5.0, 1.5)[(salt + _gi) % 4]
+                    _theta = max(0.0, min(70.0, _theta))
+                    if along_x:
+                        _gx, _gy = _a, _bar_amid
+                    else:
+                        _gx, _gy = _bar_amid, _a
+                    _tagg = f"{tag}s{_gi}"
+                    _z0g = z1 - _HANG_RESERVE * _gs - _sz
+                    if not place_model(_gmp, _gx - _sx / 2.0, _gy - _sy / 2.0,
+                                       _sx, _sy, _sz, rot=_base_rot,
+                                       z0=_z0g, tag=_tagg):
+                        print(f"  garment rail {salt}: place_model refused {_gid[:8]} (loud)")
+                        continue
+                    _gms = [o for o in bpy.data.objects
+                            if o.type == 'MESH' and o.name.startswith(f"{_tagg}__acq")]
+                    if not _gms:
+                        continue
+                    bpy.context.view_layer.update()
+                    # swing about the garment's own plan centre + settle its
+                    # top to the derived collar height (both from the built
+                    # meshes, not the sidecar — R9: read the contact)
+                    _cs = [(o.matrix_world @ Vector(c)) for o in _gms for c in o.bound_box]
+                    _pcx = (min(p.x for p in _cs) + max(p.x for p in _cs)) / 2.0
+                    _pcy = (min(p.y for p in _cs) + max(p.y for p in _cs)) / 2.0
+                    _top = max(p.z for p in _cs)
+                    import mathutils as _mu
+                    _rotm = (_mu.Matrix.Translation((_pcx, _pcy, 0.0))
+                             @ _mu.Matrix.Rotation(math.radians(_theta * _side), 4, 'Z')
+                             @ _mu.Matrix.Translation((-_pcx, -_pcy, 0.0)))
+                    _dzg = (z1 - _HANG_RESERVE * _gs) - _top
+                    _roots = set()
+                    for _o in _gms:
+                        _r = _o
+                        while _r.parent is not None:
+                            _r = _r.parent
+                        _roots.add(_r.name)
+                    for _rn in _roots:
+                        _r = bpy.data.objects[_rn]
+                        _r.matrix_world = _rotm @ _r.matrix_world
+                        _r.location = (_r.location.x, _r.location.y, _r.location.z + _dzg)
+                    bpy.context.view_layer.update()
+                    # CONTAINMENT ALONG THE RUN — the swung garment must not
+                    # cross a gable (the exact p2r72 defect, re-guarded here
+                    # because the swing widens the run footprint after
+                    # place_model already approved the un-swung one)
+                    _cs = [(o.matrix_world @ Vector(c)) for o in _gms for c in o.bound_box]
+                    if along_x:
+                        _glo, _ghi = min(p.x for p in _cs), max(p.x for p in _cs)
+                    else:
+                        _glo, _ghi = min(p.y for p in _cs), max(p.y for p in _cs)
+                    _shift = 0.0
+                    if _glo < _rlo + 0.004:
+                        _shift = (_rlo + 0.004) - _glo
+                    elif _ghi > _rhi - 0.004:
+                        _shift = (_rhi - 0.004) - _ghi
+                    if abs(_shift) > 1e-9:
+                        for _rn in _roots:
+                            _r = bpy.data.objects[_rn]
+                            _lx, _ly, _lz = _r.location
+                            _r.location = ((_lx + _shift, _ly, _lz) if along_x
+                                           else (_lx, _ly + _shift, _lz))
+                        bpy.context.view_layer.update()
+                        _cs = [(o.matrix_world @ Vector(c)) for o in _gms for c in o.bound_box]
+                    # the hanger hangs from the garment's FINAL centre — read
+                    # back from the built meshes, never from the intent
+                    _gx = (min(p.x for p in _cs) + max(p.x for p in _cs)) / 2.0
+                    _gy = (min(p.y for p in _cs) + max(p.y for p in _cs)) / 2.0
+                    # the WIRE HANGER — R8(b): a bent wire is a swept measured
+                    # profile, so building it is legal and it is the one part
+                    # these panel-passed garments do not ship with. Hook wraps
+                    # the bar (contact: bar top ~ z1), stem drops to the
+                    # collar, shoulder stubs follow the garment's own swing.
+                    _hz_hook = z1 - 0.011
+                    _hcrv = bpy.data.curves.new(f"{_tagg}_hanger", 'CURVE')
+                    _hcrv.dimensions = '3D'
+                    _hcrv.bevel_depth = 0.0018
+                    _hcrv.bevel_resolution = 3
+                    _ru = (1.0, 0.0) if along_x else (0.0, 1.0)   # run unit (plan)
+                    _du = (0.0, 1.0) if along_x else (1.0, 0.0)   # depth unit
+                    _neck = (_gx, _gy, z1 - _HANG_RESERVE * _gs + 0.004)
+                    _sp1 = _hcrv.splines.new('POLY')
+                    _arc = []
+                    for _ai in range(7):                    # hook arc across the bar
+                        _aa = math.radians(200 - _ai * 40)  # 200 -> -40 degrees
+                        _arc.append((_gx + _du[0] * 0.022 * math.cos(_aa),
+                                     _gy + _du[1] * 0.022 * math.cos(_aa),
+                                     _hz_hook + 0.022 * math.sin(_aa)))
+                    _arc.append(_neck)
+                    _sp1.points.add(len(_arc) - 1)
+                    for _pi, _pp in enumerate(_arc):
+                        _sp1.points[_pi].co = (_pp[0], _pp[1], _pp[2], 1.0)
+                    _thr2 = math.radians(_theta * _side)
+                    _wux = _du[0] * math.cos(_thr2) - _du[1] * math.sin(_thr2)
+                    _wuy = _du[0] * math.sin(_thr2) + _du[1] * math.cos(_thr2)
+                    _half = 0.185 * _gs
+                    _sp2 = _hcrv.splines.new('POLY')
+                    _sp2.points.add(2)
+                    _sp2.points[0].co = (_neck[0] - _wux * _half, _neck[1] - _wuy * _half,
+                                         _neck[2] - 0.058, 1.0)
+                    _sp2.points[1].co = (_neck[0], _neck[1], _neck[2], 1.0)
+                    _sp2.points[2].co = (_neck[0] + _wux * _half, _neck[1] + _wuy * _half,
+                                         _neck[2] - 0.058, 1.0)
+                    _hob = bpy.data.objects.new(f"{_tagg}_hanger", _hcrv)
+                    # the bar carries no material at styling time (the suite
+                    # router paints millwork later, by MESH part name, and a
+                    # curve never passes through it) — so the hanger wears the
+                    # same satin-brass PRESET the rails will wear, built once
+                    _hbm = bpy.data.materials.get("hanger_brass")
+                    if _hbm is None:
+                        _hbm = _material_from_preset("hanger_brass", "satin_brass")
+                    _hcrv.materials.append(_hbm)
+                    bpy.context.scene.collection.objects.link(_hob)
+                    _gpool_used[_gid] = _gpool_used.get(_gid, 0) + 1
+                    _placed_n += 1
+                    _a -= _side * _pitches[(salt + _gi) % 4]
+            if _placed_n:
+                print(f"  garment rail {salt}: POOL hang — {_placed_n} single "
+                      f"garment(s), block {_block}"
+                      f"{' + long dress' if _is_long else ''}, clustered "
+                      f"{'high' if _side > 0 else 'low'} end, swing derived "
+                      f"from the bay depth (ORD-25c)")
+                swapped.add(salt)
+                continue
+            print(f"  garment rail {salt}: pool placed nothing (caps/sidecars) "
+                  f"— falling back to the SET path (loud)")
         # model_fit's fill-share gate encodes the FURNITURE slot semantic (a chair must
         # fill its slot); a rail dressing does not — a set occupying 60% of a rail's run
         # is a real closet. So the uniform scale is solved HERE by the same min-ratio,
@@ -6148,10 +6670,35 @@ assert set(MODEL_MAP.values()) <= set(MODEL_FRONT_DEG), \
     f"MODEL_MAP slugs missing a measured native front: {set(MODEL_MAP.values()) - set(MODEL_FRONT_DEG)}"
 
 
+_FRONT_REG = None                    # cached registry read (one file open per build)
+
+
 def model_rot(spec_rot, slug):
     """The Z-rotation place_model must apply, from the spec's facing and the mesh's native front.
-    PURE. See THE LAW above. Returns spec_rot unchanged while every native front is -90."""
-    return float(spec_rot) - 90.0 - MODEL_FRONT_DEG.get(slug, -90.0)
+    See THE LAW above.
+
+    FAILS CLOSED since 2026-08-26 (debate proposal 1, owner-approved). This function used to end
+    with `.get(slug, -90.0)` — a fail-open default that handed every ACQUIRED asset (UUID slug,
+    guaranteed absent from the hand-typed table above) an ASSUMED native front. Measured cost, the
+    night it was closed: the Asta nightstands shipped with their drawer fronts inside the wall
+    they hug while the gate printed 'verified from crop', and the vanity tub chair (native front
+    0, not -90) rendered 90 degrees off in every frame since it entered the spec. Scale has been
+    asserted at every ingest since P2r-9; this is the same law for orientation. A model with no
+    measured row now STOPS THE BUILD — probe it (front_probe.py), sign the row in
+    qa/model-front-registry.json, and the build unblocks."""
+    if slug in MODEL_FRONT_DEG:
+        return float(spec_rot) - 90.0 - MODEL_FRONT_DEG[slug]
+    global _FRONT_REG
+    if _FRONT_REG is None:
+        _FRONT_REG = _freg.load() or {}
+    fr = _freg.front_deg(_FRONT_REG, slug)
+    if _freg.is_missing(fr):
+        raise SystemExit(
+            f"FRONT LAW: model '{slug}' has no measured front row in "
+            f"{_freg.REGISTRY_REL} and is not a CC0 MODEL_FRONT_DEG slug. An assumed front is a "
+            f"silent, unbounded rotation error (the p2r75 nightstands). Run front_probe.py on the "
+            f"cached mesh, sign the azimuth (S=-90 E=0 N=90 W=180, or null + reason), then build.")
+    return _freg.resolve_rot(spec_rot, fr)
 
 
 def _rotate_about_z(objs, cx, cy, deg):
@@ -9535,11 +10082,36 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
     import math
     from mathutils import Matrix, Vector
     before = set(bpy.data.objects)
+    _imgs_before = set(bpy.data.images)
     try:
         bpy.ops.import_scene.gltf(filepath=path)
     except Exception as e:
         print(f"  (gltf import failed {os.path.basename(path)}: {e})")
         return False
+    # ORD-25c VRAM LAW — learned from a CUDA OOM on quick p2r76b: 18 garment
+    # instances of 4K-textured GLBs overran the 6 GB card mid-render. Vendor
+    # resolutions don't exist for GLB (the API offers one file), so the cap
+    # is applied HERE, on the images this import just added: small props
+    # (footprint < 1 m) hold no more than 1K, larger pieces 2K. Deterministic,
+    # printed, and scoped to the new images only — the tuned scene textures
+    # (floor, rug photos) are never touched.
+    _img_cap = 1024 if max(w, d) < 1.0 else 2048
+    _shrunk = 0
+    for _img in bpy.data.images:
+        if _img in _imgs_before:
+            continue
+        try:
+            _iw, _ih = _img.size
+            if max(_iw, _ih) > _img_cap:
+                _f = _img_cap / float(max(_iw, _ih))
+                _img.scale(max(1, int(_iw * _f)), max(1, int(_ih * _f)))
+                _shrunk += 1
+        except (RuntimeError, ValueError) as _ie:
+            print(f"  (vram cap: could not scale image {_img.name}: {_ie} — "
+                  f"loud, it stays full size)")
+    if _shrunk:
+        print(f"  (vram cap: {_shrunk} texture(s) of {os.path.basename(path)[:12]} "
+              f"scaled to <= {_img_cap}px — footprint {max(w, d):.2f} m)")
     news = [o for o in bpy.data.objects if o not in before]
     meshes = [o for o in news if o.type == 'MESH']
     if not meshes:
@@ -9978,7 +10550,11 @@ def build_suite(spec, label="suite"):
         xm, ym = float(it["x"]) * MM, float(it["y"]) * MM
         wm, dm = float(it["w"]) * MM, float(it["d"]) * MM
         hm = max(float(it.get("h", 400)) * MM, 0.05)
-        rot = float(it.get("rot", 0.0))
+        # FRONT LAW (2026-08-26): a facing that can be derived from a relationship is never
+        # typed. `facing_derive` ({"away_from_wall": "E"} / {"toward_wall": "W"}) resolves
+        # through placement.face_rot; `rot` + `facing_derive` together raises (two sources for
+        # one axis, R9). The p2r75 nightstands were the second WRONG typed facing on one object.
+        rot = _freg.spec_rot_of(it, nm)
         xm, ym = _resolve_centre_on(spec, it, xm, ym, wm, dm)
         # ---------------------------------------------------------- R8 ACQUIRE FIRST
         # P2f. An item that DECLARES `model` is an acquisition decision, and it is

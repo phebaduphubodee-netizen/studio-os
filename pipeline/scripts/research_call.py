@@ -1,5 +1,7 @@
 """research_call.py — TEXT deep-research calls to Gemini for THIS studio.
 
+CLI-ONLY: run by hand for grounded DR calls (the uncontaminated caller; BRAINDEAD/gemini_query.py carries a contaminated system prompt) — triage 2026-08-25.
+
   python pipeline/scripts/research_call.py --prompt-file Q.md --out docs/research/x.md \
       [--mode deep|pro|flash] [--tag slug]
 

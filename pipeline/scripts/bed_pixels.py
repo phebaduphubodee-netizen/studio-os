@@ -161,6 +161,10 @@ ROLE_BY_MATERIAL = {
     # being-new: a bench is furniture at the foot, never sleeping surface —
     # the same sentence bed_base carries.
     "acq_bench_seat": OTHER,      # foot bench (P2h role-split token)
+    # ORD-25c: the acquired bed-foot throw (panel 2026-08-25d) lies ON the
+    # core by design — bedding, same sentence as bed_throw; build_room renames
+    # the scan's material to this name at import so the role channel holds.
+    "acq_bed_throw": BEDDING,
 }
 
 # WHERE THIS DISAGREES WITH THE 2026-08-17 DIAGNOSIS, said out loud so the two

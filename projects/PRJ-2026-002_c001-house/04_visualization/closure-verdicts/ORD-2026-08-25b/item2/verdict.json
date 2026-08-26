@@ -1,0 +1,40 @@
+{
+  "order": "ORD-2026-08-25b-five-items-after-p2r74",
+  "item": 2,
+  "owner_sentence": "เสื้อที่แขวนบนราวด้านซ้ายล่างของตู้ Built-in ยังลอย / เสื้อผ้าที่แขวนในตู้ก็ยังซ้อน",
+  "frames": [
+    "pipeline/output/room_bedroom_suite_eye_p2r75w.png"
+  ],
+  "verdict": "NOT-VISIBLE",
+  "evidence": [
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [327, 756, 354, 778],
+      "arrow_tip_px": [344, 772],
+      "crop": "crop_e1_llrail_darkloop_float.png",
+      "what": "LOWER-LEFT rail (the rail the owner names): a dark hanger wire forms a wide open loop ENTIRELY BELOW the gold bar - its apex only grazes the bar's bottom edge and no part of the wire crosses the gold face or clears the top edge. The hook curls around air, not the bar. Floating."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [315, 750, 340, 792],
+      "arrow_tip_px": [333, 764],
+      "crop": "crop_e2_llrail_whitehook_float.png",
+      "what": "LOWER-LEFT rail, white wooden hanger: its wire rises, apexes AT the bar's bottom edge and curls back down without ever crossing the gold face. At 8x the gold face is unbroken across x300-359 - neither this wire nor the dark loop beside it has any limb over the bar. Floating."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [328, 216, 352, 265],
+      "arrow_tip_px": [339, 225],
+      "crop": "crop_e3_ulrail_whitehook_float.png",
+      "what": "UPPER-LEFT rail, middle white hanger: the full n-curl of its hook is visible IN FRONT of the bar's gold face - gold pixels continue above the apex, and BOTH legs of the curl descend to the same hanger below the bar. A wrapped hook shows one front limb plus an arc clearing the top edge (as the correctly hooked neighbours on this same rail do); a curl whose apex stays on the face with both legs below cannot contain the bar. Floating."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [318, 228, 350, 262],
+      "arrow_tip_px": [331, 239],
+      "crop": "crop_e4_ulrail_darkhook_float.png",
+      "what": "UPPER-LEFT rail, dark hook beside the white one: its arc grazes the bar's underside and both ends descend below the bar - the curl never clears the top edge and nothing crosses the gold face at this x. Floating, same signature as E3."
+    }
+  ],
+  "note": "Half A (contact) FAILS: four hooks hang with their curls around air rather than the bar - two of them on the exact lower-left rail the owner's sentence names. The fix did land on SOME hooks: lower-left far-left stem (tip bends over the top), lower-left third hook (tip descends in front of the gold face), upper rail right hook (doubled curl above the bar, stem below, middle occluded by the bar - the correct signature), and all three middle-bay hooks read as properly wrapped at 8x. The correct/incorrect signatures are cleanly distinguishable at 8x: correct = one limb crossing the gold face + arc clearing the top edge; defective = complete curl visible on/below the face with both legs returning to the same hanger. No hanger hangs past a rail end. Half B (interpenetration): no provable garment-through-garment found at 100% - all cluster boundaries (upper-left three garments, middle-bay black-over-white, lower-left black-jacket/grey-sleeves) read as plausible front/back layering; the closest candidate (glossy black strip crossing the grey right sleeve in the lower-left bay, ~x400-480 y1080-1250) is explainable as the jacket's front edge draping in front and was not counted. The owner's 'ยังซ้อน' is therefore not refuted by a found clash, but the sentence fails regardless on the floating hooks. Measurement that would close half B: a depth/id pass over the three garment clusters (cloth shells are too blurred at render resolution to prove surface crossing from RGB alone)."
+}

@@ -968,8 +968,8 @@
    "model": "24c65eb4-765b-43f3-a171-266521dd06b1",
    "model_note": "24c65eb4 Asta (p2r74, panel 2026-08-25b inside 3/3 — the only candidate whose top sits in the D-045 band at natural scale; replaced 1cf77b3a on his p2r73 verdict, CLASS≠INSTANCE). The prior note argued for the outgoing model and was refreshed with the swap — prose must never contradict the data beside it.",
    "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74).",
-   "rot": 90,
-   "_p2r75_rot_note": "rot -> 90 both sides (ORD-2026-08-25b item 1: drawers opened INTO the bed — pull pressed against the mattress in the p2r74 crop, R10 SENSE unopenable). Front now faces -x (the room/foot). The Asta has no measured MODEL_FRONT_DEG row; this rot was verified by eye on the quick, and measuring its native front joins the registry debt."
+   "facing_derive": {"away_from_wall": "E"},
+   "_p2r77_facing_note": "p2r75 TYPED rot 90 with a note claiming the front faced -x; under the pinned convention rot 90 faces +X — INTO wall BF14, exactly his 'ตอนนี้มันหันหน้าเข้ากำแพง' (2026-08-25 night). Two typed facings on this object were both wrong (p2r74 into the bed, p2r75 into the wall) — R9 stop-loss: the third value is not typed. The relationship is declared (hugs the east wall; the drawer front opens into the room), rot derives to 270 via placement.face_rot, and the native front is MEASURED -90 (front_probe 2026-08-26: the S elevation carries the only pull; the N elevation is the blank framed back that fooled both crop reads)."
   },
   {
    "name": "โต๊ะข้างเตียง ใต้ (มีโคมไฟ)",
@@ -980,7 +980,7 @@
    "w": 480,
    "d": 431,
    "h": 480,
-   "rot": 90,
+   "facing_derive": {"away_from_wall": "E"},
    "lamp": {
     "kind": "drum",
     "finish": "turned wood + linen drum (Kendra 18d17256, p2r74 — his item 2 retired the brass dome pair; D-138)",
@@ -995,7 +995,7 @@
    "model": "24c65eb4-765b-43f3-a171-266521dd06b1",
    "model_note": "24c65eb4 Asta (p2r74, panel 2026-08-25b inside 3/3 — the only candidate whose top sits in the D-045 band at natural scale; replaced 1cf77b3a on his p2r73 verdict, CLASS≠INSTANCE). The prior note argued for the outgoing model and was refreshed with the swap — prose must never contradict the data beside it.",
    "_p2r74_note": "slot opened to the Asta model's NATURAL 479x430x480 (ORD-2026-08-25-six-items item 5): the old 450 slot forced scale 0.938 and dropped the top to 450 — 20 mm outside the D-045 datum band. Never squeeze a bought mass out of its own datum; position stays derived (hug + headboard-wing clearance, p2r74).",
-   "_p2r75_rot_note": "rot -> 90 both sides (ORD-2026-08-25b item 1: drawers opened INTO the bed — pull pressed against the mattress in the p2r74 crop, R10 SENSE unopenable). Front now faces -x (the room/foot). The Asta has no measured MODEL_FRONT_DEG row; this rot was verified by eye on the quick, and measuring its native front joins the registry debt."
+   "_p2r77_facing_note": "twin of SR-09: facing DERIVED (away_from_wall E -> rot 270), typed rot DELETED not zeroed; native front measured -90 (front_probe 2026-08-26)."
   },
   {
    "name": "สตูลโต๊ะเครื่องแป้ง (หันเข้า BF11)",
@@ -1008,7 +1008,8 @@
    "w": 510,
    "d": 546,
    "h": 750,
-   "rot": 270,
+   "facing_derive": {"toward_wall": "W"},
+   "_p2r77_facing_note": "same facing (W, into BF11's kneehole) now DERIVED via placement.face_rot, not typed (R9 for rotation). Native front MEASURED 0° not -90 (front_probe 2026-08-26, registry row tub_chair_c): under model_rot's old fail-open default this acquired stool rendered 90° off — showing BF11 its side — in every frame since it entered the spec.",
    "note": "vanity stool at the BF11 makeup table (owner 07-16, ex 'desk chair')",
    "design": {
     "element": 2,

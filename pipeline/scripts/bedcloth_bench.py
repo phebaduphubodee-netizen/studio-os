@@ -1,4 +1,6 @@
 """BED-CLOTH ACQUISITION BENCH — measure every candidate set against THIS bed,
+
+CLI-ONLY: run by hand for the D-104/D-119 bed-cloth lane (blender -b ... bedcloth_shoot, then this bench); named in qa/open-decisions.json rows 1130/1393/1440 — triage 2026-08-25 (docs/instrument-triage-2026-08-25.md).
 before any of them costs a build.
 
 Run:  blender -b <built>.blend --python bedcloth_bench.py -- <cache_dir> <out.json>

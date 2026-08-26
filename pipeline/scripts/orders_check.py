@@ -124,6 +124,28 @@ ORDER_MARKERS = ("พี่สั่ง", "คำสั่งพี่", "คำ
 # class was misclassified. The bed cloth got ten.
 STOP_LOSS = 3
 
+# --- THE VISUAL-CLOSURE LAW (2026-08-26, debate proposal 1, owner-approved) ---
+# What it ends, in one night's count: gate-P2r75 printed all five of his items
+# "ลงพิกเซลครบ" with every rung green — the closer typed the fix, read its own
+# crop of its own quick render, wrote "verified", and the register printed
+# obeyed. Hours later he refuted three closures from the frame, and the item
+# that failed was the ONE of five with no obeyed_assert at all. A visual order
+# therefore closes on PIXELS SOMEONE ELSE POINTED AT, never on the closer's
+# prose: `visual: true` rows claiming "obeyed" must carry `closure_verdicts` —
+# files written by a fresh-context sighted verifier who received ONLY the
+# owner's sentence and the full-fidelity frame, and answered with an annotated
+# crop (arrow on the satisfying pixels) or NOT-VISIBLE. His own words on the
+# frame close a row too (they ARE a verdict; record them in the file). A
+# verdict later `overturned` by a MEASUREMENT no longer supports the closure —
+# the same night this landed, the verifier read the nightstands' blank framed
+# BACKS as drawer fronts and the front probe overturned it: the eye finds WHAT,
+# the measurement finds WHICH WAY (R7b's law, applied to the verifier itself).
+VISUAL_RATCHET_FROM = "2026-08-26"
+# The closing phrase of the self-judged era, refused by name in gate artifacts
+# the way "พร้อมให้ตัดสิน" already is. Gates print BUILT + evidence; the owner
+# or the verifier says closed.
+BANNED_CLOSURE_PHRASES = ("ลงพิกเซลครบ",)
+
 
 def _repo_root():
     return os.path.dirname(os.path.dirname(os.path.dirname(
@@ -274,7 +296,12 @@ def check_orders(data, repo_root=None, path_hint=ORDERS_REL):
         broken = _assert_violations(oid, o, root)
         if st == "obeyed":
             v += broken
-        elif not broken and o.get("obeyed_assert"):
+        elif not broken and o.get("obeyed_assert") and not o.get("visual"):
+            # A VISUAL row is exempt from this pessimism check on purpose: its
+            # source asserts prove the code was typed, and the p2r75 night
+            # proved that is not the same fact as the frame changing — a
+            # visual row goes not-obeyed on a NOT-VISIBLE verdict while every
+            # grep it carries still holds, and that state is the honest one.
             v.append(f"{oid} is filed NOT-OBEYED while every assertion it "
                      f"carries holds. Say it is obeyed, or the record is "
                      f"pessimistic in a way that makes the honest rows unreadable.")
@@ -299,6 +326,19 @@ def check_orders(data, repo_root=None, path_hint=ORDERS_REL):
                          f"name the thing he is actually holding, or it is the "
                          f"builder's own decision to disobey wearing his name.")
 
+        # 7. A VISUAL ORDER CLOSES ON POINTED-AT PIXELS, NEVER ON THE CLOSER'S
+        #    PROSE (the p2r75 night: five "closed" items, three refuted by his
+        #    eye in hours, the failing one the only one with no assert).
+        if o.get("visual"):
+            if st == "obeyed":
+                v += _verdict_violations(oid, o, root)
+        elif o.get("scope") == "instance-list" and "visual" not in o \
+                and str(o.get("date", "")) >= VISUAL_RATCHET_FROM:
+            v.append(f"{oid}: an itemized instance-list order filed after "
+                     f"{VISUAL_RATCHET_FROM} must declare `visual` true/false "
+                     f"explicitly — an opt-in flag nobody types is an order "
+                     f"that was not carried out (R13's own sentence).")
+
         # 4. ONLY HE MAY RETIRE HIS OWN ORDER.
         if not o.get("standing"):
             rb = o.get("retired_by")
@@ -311,6 +351,73 @@ def check_orders(data, repo_root=None, path_hint=ORDERS_REL):
                          f"decision row id. Retirement is a decision he made, "
                          f"and it has to be findable.")
 
+    # THE CLOSURE GRAMMAR travels with the ledger check so every caller gets it
+    # (rule_gate.owner_channel calls check_orders directly, not check()).
+    v += check_gate_grammar(root)
+    return v
+
+
+def _verdict_violations(oid, o, root):
+    """The visual-closure rungs. FAILS CLOSED: an unreadable verdict file is a
+    check that did not run, and 'could not look' must never print like 'looked
+    and it was fine' (R11's exit-2 law, applied to the verifier's own record)."""
+    v = []
+    cvs = o.get("closure_verdicts") or []
+    if not cvs:
+        v.append(f"{oid} is a VISUAL order claiming obeyed with no "
+                 f"`closure_verdicts`. Source-greps prove the code was typed, "
+                 f"not that the frame changed — his words on the frame, or a "
+                 f"blind sighted verifier's arrowed crop, are the only closure "
+                 f"evidence for an order about what he SEES.")
+        return v
+    for rel in _paths(",".join(cvs) if isinstance(cvs, list) else cvs):
+        p = os.path.join(root, rel)
+        try:
+            with open(p, encoding="utf-8") as f:
+                vd = json.load(f)
+        except (OSError, ValueError):
+            v.append(f"{oid}: closure verdict {rel} is unreadable — UNKNOWN, "
+                     f"not obeyed.")
+            continue
+        if vd.get("overturned"):
+            v.append(f"{oid}: verdict {rel} was OVERTURNED by a measurement "
+                     f"({str(vd['overturned'])[:90]}…) and no longer supports "
+                     f"the closure. Re-run the verifier on the frame that "
+                     f"carries the fix.")
+        elif vd.get("verdict") != "VISIBLE":
+            v.append(f"{oid}: verdict {rel} says {vd.get('verdict')!r} — the "
+                     f"verifier could not point at pixels satisfying his "
+                     f"sentence, so the row may not print obeyed. His words: "
+                     f"\"{_norm(vd.get('owner_sentence'))[:60]}\"")
+    return v
+
+
+def check_gate_grammar(root, since=VISUAL_RATCHET_FROM):
+    """Gate artifacts written from `since` onward may not close a visual item
+    in prose: the closing phrase of the self-judged era is refused by name,
+    exactly the way 'พร้อมให้ตัดสิน' was retired. A gate says BUILT and shows
+    evidence; the owner or the verifier says closed."""
+    import glob as _glob
+    v = []
+    for p in _glob.glob(os.path.join(root, "projects", "*",
+                                     "04_visualization", "gate-*.md")):
+        m = re.search(r"(\d{4}-\d{2}-\d{2})\.md$", os.path.basename(p))
+        if not m or m.group(1) < since:
+            continue
+        try:
+            with open(p, encoding="utf-8") as f:
+                txt = f.read()
+        except (OSError, UnicodeDecodeError):
+            v.append(f"gate artifact {os.path.basename(p)} is unreadable — "
+                     f"could not check its closure grammar.")
+            continue
+        for phrase in BANNED_CLOSURE_PHRASES:
+            if phrase in txt:
+                v.append(f"gate artifact {os.path.basename(p)} closes in "
+                         f"prose ({phrase!r}) — refused by name since "
+                         f"{since}. Print BUILT + evidence; closure belongs "
+                         f"to his words or a sighted verdict file "
+                         f"(closure_verdicts).")
     return v
 
 

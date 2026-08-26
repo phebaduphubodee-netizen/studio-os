@@ -238,6 +238,28 @@ BANDS = {
                   "is a 1800 Thai king (D-114) and the sheet inks the band "
                   "at 2088 (SR-18) — a headboard narrower than 1400 cannot "
                   "back this mattress, wider than 2400 eats both nightstands"),
+    # ORD-2026-08-25c (story-driven styling): three classes the shopping list
+    # needs that no earlier order created. All three are declared assumptions
+    # anchored to retail/print dimensions, not vault rows — the same tier as
+    # book_stack above, and they widen nothing that exists (book_stack keeps
+    # its 40 floor: a SINGLE closed book is a different object, not a thin
+    # stack — collapsing the two would let a pamphlet pass as a pile).
+    "book_single": (10.0, 60.0, "z",
+                    "ORD-2026-08-25c: ONE closed book lying flat — hardcover "
+                    "boards + block run 15-45 mm, 60 admits a heavy ledger; "
+                    "below 10 is a leaflet, above 60 is a stack's business "
+                    "(declared assumption, same anchor as book_stack)"),
+    "handbag": (250.0, 500.0, "maxxy",
+                "ORD-2026-08-25c: a woman's tote/day bag reads 300-450 mm on "
+                "its long axis at retail (declared assumption anchored to "
+                "listed tote dims; below 250 is a clutch, above 500 a travel "
+                "bag — both the wrong story for an eye-level display bay)"),
+    "magazine_flat": (200.0, 420.0, "maxxy",
+                      "ORD-2026-08-25c: a large-format magazine is A4-to-"
+                      "coffee-table sized — 210x280 closed up to ~300x420 as "
+                      "an open spread (declared assumption anchored to print "
+                      "formats; the z axis is fabric-thin so the band reads "
+                      "the plan axis)"),
 }
 
 # ------------------------------------------------------------ slot roles (P2h) --
@@ -298,6 +320,13 @@ MIN_DEPTH_RATIO = {
     # Diagnosed against maxxy per the band, so the ratio reads z/longest-plan.
     "throw_folded": 0.10,
     "book_stack": 0.15,     # a stack is solid; a book-cover decal is not
+    # ORD-2026-08-25c classes: a closed book IS a thin slab (its z band already
+    # refuses decals harder than a ratio could), a magazine is legitimately
+    # planar — both declared None so exempt-by-nature and unchecked stay
+    # distinguishable; a handbag has a real gusset.
+    "book_single": None,
+    "magazine_flat": None,
+    "handbag": 0.25,        # gusset >= ~90 mm on a 360 mm tote
     "potted_plant": 0.15,   # pot + canopy have plan depth; a billboard leaf card does not
     "tray_decor": 0.10,     # a tray with objects has some height
     "clock_small": 0.30,    # a clock body is a volume, not a face card

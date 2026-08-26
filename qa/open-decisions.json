@@ -2318,6 +2318,170 @@
      "why": "การประกาศที่ปลด stop เงียบหลัง BEDPX"
     }
    ]
+  },
+  {
+   "id": "D-140",
+   "unit": "DELIV-001",
+   "subject": "story-driven styling program executed p2r76 (narrative -> vignettes -> list -> wide search -> ensemble panel -> pool wiring)",
+   "decided_round": 76,
+   "decided_date": "2026-08-25",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-25c-story-driven-styling",
+   "question": "โปรแกรม 5 ขั้นของ ORD-25c ลงพิกเซลอย่างไร และแต่ละกลไกถอยอย่างไร?",
+   "in_effect": "(1) NARRATIVE เป็นไฟล์ที่พี่ overrule ได้รายบรรทัด (styling-narrative-2026-08-25.md) + vignette rules 9 ข้อจากงานส่งจริง 13 เฟรม (vignette-reading-2026-08-25.md) + shopping list ก่อนแคตตาล็อก (shopping-list-2026-08-25.md). (2) ENSEMBLE PANEL 3 เลนส์ (palette/materiality/story) ตัดสินทั้งเซ็ต 21 ชิ้นเทียบ narrative — ฆ่า 8 (ledger หนังสือ, นิตยสารทั้งคู่, กอง knit teal, เสื้อขาวตัวที่สาม, ชุดแจกันมะฮอกกานี 5 ใบ, กองขนหนู, กระเป๋า cognac ตัว hero→สลับตัวรอง f8573a9c); verdicts + คำตอบดิบสามฉบับใน _private/deliv-001/style-panel-2026-08-25d/. (3) _GARMENT_POOL 7 id สามบล็อกค่าสี + เดรส, cap 4 instance/id/build, n ต่อราวจาก run (~160มม./ตัว), cluster ปลายราว deterministic จาก salt, swing derive จาก depth (+offset บวกเท่านั้น), containment ตามราว re-check หลัง swing, ไม้แขวนลวด = curve bevel (R8b) hook เกี่ยว bar จริง วัสดุ satin_brass preset. (4) fold stacks 3 สี (ขาวชิโน/เทา/sage) วนโดยตัวนับแยกจาก bare pattern; ทุก spot ที่สามเว้น BARE (breathing space). (5) ตู้: กระเป๋า hero เดี่ยวระดับตา (ปิดช่องติดกันแนวตั้ง), รองเท้า darken x(0.52,0.45,0.40) ชั้นล่าง, คู่แจกันสูงหลัง-ต่ำหน้า ni2, กล่อง/ตะกร้าตาม occupancy; ถาดหวาย+slippers DROP โดยประกาศ (ช่อง eye/mid 6 ช่องเต็ม — ตู้ 2 bay ถือได้เท่านี้). (6) bed-foot throw 0623e2fd วาง 15° บนผิว duvet ที่วัดจริง เยื้องฝั่งหน้าต่าง วัสดุ rename acq_bed_throw (BEDPX role BEDDING). (7) VRAM LAW ใน place_model: texture ใหม่ของ import ถูก cap 1K (<1ม.) / 2K — จาก CUDA OOM จริงบน quick. (8) occupancy ข้าม architecture (ผนังเคยถูกนับเป็นผู้ครอบครองทั้ง bay); ni2 เข้า level map. ยังไม่ถูกเติม — tier อื่นยังไม่ค้นรอบนี้ (จาก panel+triage): หนังสือคว่ำไร้ตัวหนังสือ (C1), นิตยสารไร้ text (E2), กองกางเกงเข้ม, เบลเซอร์/เชิ้ตแขนยาว formal, รองเท้าผู้หญิง, เดรสยาวตัวที่สอง — ทั้งหมดคือของที่ pull นี้ไม่มีในแบบที่ผ่าน EDGE.",
+   "tiers": {
+    "cc0": "not-attempted",
+    "warehouse": "not-attempted",
+    "furnimesh": "not-attempted",
+    "cc-by": "not-attempted",
+    "paid-per-model": "not-attempted",
+    "paid-subscription": "searched",
+    "paid-pack": "not-attempted"
+   },
+   "where": "pipeline/scripts/build_room.py,pipeline/scripts/asset_scale.py,pipeline/scripts/bed_pixels.py,qa/object-existence.json,projects/PRJ-2026-002_c001-house/04_visualization/styling-narrative-2026-08-25.md,projects/PRJ-2026-002_c001-house/04_visualization/vignette-reading-2026-08-25.md,projects/PRJ-2026-002_c001-house/04_visualization/shopping-list-2026-08-25.md",
+   "because": "คำวิจารณ์พี่: 'ซ้ำกันไปหมด และดูจัดวางไม่เป็นธรรมชาติ' — รากคือ single-candidate panel + วางกึ่งกลาง; แก้ที่เกณฑ์เลือก (เซ็ตเทียบเรื่อง) และที่วาง (เรื่องกำหนดอสมมาตร ไม่ใช่ random)",
+   "reverse_by": "พี่ชี้จากภาพรายชิ้น: เสื้อ/กอง/ของชิ้นไหนไม่เอา = เปลี่ยน id ใน pool/tuple หรือถอดเป็น declared gap; ปิดทั้งโปรแกรม = ลบ singles branch (_GARMENT_POOL = {} ทำให้ทุกราวกลับ SET path เดิม), คืน _FOLD_STACK_MODELS ตัวเดียว, ลบ _wc_plan ส่วนขยาย + bed throw block — โค้ดเดิมอยู่ git ที่คอมมิตนี้",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_GARMENT_POOL = \\{",
+     "why": "singles branch มีชีวิตอยู่ — pool ว่าง = กลับ SET path เดิม"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_n_st = max\\(2, min\\(4, int\\(run / 0\\.16\\)\\)\\)",
+     "why": "จำนวนต่อราว derive จาก run ไม่ใช่พิมพ์"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "every third fold",
+     "why": "breathing space — ทุก spot ที่สามเว้น BARE"
+    },
+    {
+     "file": "pipeline/scripts/bed_pixels.py",
+     "pattern": "\"acq_bed_throw\": BEDDING",
+     "why": "throw ซื้อเข้า BEDPX role ไม่ใช่หลุด rung"
+    }
+   ]
+  },
+  {
+   "id": "D-141",
+   "unit": "DELIV-001",
+   "subject": "R1-cap",
+   "decided_round": 77,
+   "decided_date": "2026-08-25",
+   "decided_by": "owner",
+   "owner_override": "ลุยเต็มที่ ผมอนุมัติทุกอย่าง (อนุมัติ debate proposal 4 ทั้งข้อ — docs/process-debate-2026-08-25.md)",
+   "override_date": "2026-08-25",
+   "obeys": "ORD-2026-07-28-see-your-own-work-and-be-able-to-stop",
+   "question": "cap ของ DELIV-001 เป็นเท่าไร และบังคับด้วยอะไร (ASK-023 ที่ค้าง 9 วัน)",
+   "in_effect": "cap_rounds 89 / cap_full_frames 93 (= spend คืนที่อนุมัติ 77/69 + default +12/+24) ในแถว units.DELIV-001 ของ qa/curriculum-caps.json — rule_gate.cap_check อ่านแถวนี้ใน check_room ทุก build และ FAIL เมื่อทะลุ (counter ไม่ใช่ prose); ทะลุ = R1 stop บังคับ + real-client run (ORD-2026-08-22) เริ่มทันทีโดย DELIV-001 เหลือเป็น testbed ข้างใน; ASK-023 ปิดเป็น answered ด้วยคำพี่",
+   "where": "qa/curriculum-caps.json",
+   "because": "เลนวิ่ง 6.3x ของ budget ที่เขียนไว้เพราะ cap เป็นตัวหนังสือและคำถาม re-base จมในคิว 26 ข้อ — budget ที่ fail build ไม่ได้ไม่ใช่ budget (มติวงดีเบต, ฝ่ายค้าน verify แล้ว)",
+   "reverse_by": "พี่บอกเลขใหม่ (หรือ 'no cap') หนึ่งประโยค — แก้แถว units.DELIV-001 แล้ว counter ตามทันที",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "qa/curriculum-caps.json",
+     "pattern": "\"cap_rounds\": 89",
+     "why": "เลขที่อนุมัติต้องอยู่ในไฟล์ที่ cap_check อ่านจริง"
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "v \\+= _cap_v",
+     "why": "cap ที่ประกาศแล้วต้อง BLOCK ไม่ใช่พิมพ์"
+    }
+   ]
+  },
+  {
+   "id": "D-142",
+   "unit": "DELIV-001",
+   "subject": "instrument-triage-execution",
+   "decided_round": 77,
+   "decided_date": "2026-08-25",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-25d-debate-proposals-approved",
+   "question": "ผล wire-or-delete 81 instruments ลงมือเมื่อไร อย่างไร",
+   "in_effect": "ตาราง verdict เต็มอยู่ docs/instrument-triage-2026-08-25.md (17 ALREADY-REACHED / 10 WIRE / 55 DELETE). ทำแล้วคืนนั้น: facing_reader wired (front_registry -> check_room + build_room), CLI-ONLY 5 ตัว, baseline ตัด 5 แถวปิดแล้ว. DEFAULT ที่เหลือ: 4 code wires (cloth_highlights + texture_check ที่ spawn block ของ build_room; glb_flatten + mesh_density ที่ warehouse.py post-fetch) และ 55 DELETE + test files ของมัน ลงเป็น commit เดียวใน build session ถัดไป (ไม่ทำกลางคืนที่ pane อื่นถือ uncommitted อยู่); กฎถาวรที่มากับตาราง: instrument ใหม่ไม่ลงถ้าไม่มี consumer ใน commit เดียวกัน",
+   "where": "docs/instrument-triage-2026-08-25.md",
+   "because": "เครื่องที่ตอบคำถามคืน nightstand มีอยู่แล้วและ 0 คนเรียก — ปัญหาของ fleet คือ reachability ไม่ใช่ capability (มติวง + verify)",
+   "reverse_by": "พี่ชี้ชื่อ instrument ที่ไม่ให้ลบ = ย้ายแถวเป็น exception; ยกเลิกทั้งโปรแกรม = ลบไฟล์ตารางแล้ว git checkout คืนของที่ลบ",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "docs/instrument-triage-2026-08-25.md",
+     "pattern": "Execution status",
+     "why": "ตารางต้องบันทึกสถานะลงมือของตัวเอง ไม่ใช่เป็นเอกสารเปล่า"
+    },
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "import front_registry as FRONT",
+     "why": "facing_reader ต้องมี consumer จริงใน gate path (ผ่าน front_registry)"
+    }
+   ]
+  },
+  {
+   "id": "D-143",
+   "unit": "DELIV-001",
+   "subject": "owner-ask-queue-drain",
+   "decided_round": 77,
+   "decided_date": "2026-08-25",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-25d-debate-proposals-approved",
+   "question": "คิว ask 26 ข้อ (ตอบจริง 5/33, เก่าสุด 52 วัน) ระบายอย่างไรโดยไม่ทิ้งสักข้อ",
+   "in_effect": "26 -> 6 open: ASK-004 (คำถามถึงเพื่อน designer) / ASK-006 (blind RANK — ตาพี่) / ASK-018 (ลายเซ็น ToU) / ASK-022 (ปฏิทินคำสั่ง — พี่เท่านั้นถอนได้) / ASK-032 (หัวเตียง+cap เตียง ตอบจากภาพ; รวม 033) / ASK-034 (procurement sheet ใหม่ 5 บรรทัด). ASK-023 = answered ด้วยคำพี่ (D-141). อีก 20 ข้อ withdrawn โดยแต่ละแถวถือเหตุผล+default ของตัวเองใน withdrawn_reason (default ที่ผมตัดสินแทนภายใต้ R3: เตียง styled / sconce lit / sheers ตาม board / กล้องเดิมถึง P5 / ไม้สองโทนตามโน้ตเซ็น / ไม่วัดห้องจนกว่า real-client / ฯลฯ — ครบใน withdrawn_reason รายแถว) — แถวไม่หาย สถานะเปลี่ยนเท่านั้น (กฎ asks_check)",
+   "where": "qa/owner-asks.json,projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md",
+   "because": "คิวที่ consumer ไม่เคยเข้า = คลาส defect อันดับหนึ่งของ repo ใช้กับ attention ของพี่ — 'ผมคนเดียวชี้ไม่ไหว' คือราคาของมัน (มติวง root cause 5)",
+   "reverse_by": "พี่พิมพ์เลข ASK ที่จะคืนสถานะ open หนึ่งประโยค — แถวยังอยู่ครบทุกแถว; default ข้อไหนไม่เอา ประโยคเดียวเช่นกัน",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "qa/owner-asks.json",
+     "pattern": "ASK-034",
+     "why": "ชีทรวมเงินต้องมีแถว ask ของตัวเอง ไม่งั้นเงินหายเงียบ"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md",
+     "pattern": "Marvelous Designer",
+     "why": "ชีทต้องมีของจริงอยู่ข้างใน"
+    }
+   ]
+  },
+  {
+   "id": "D-144",
+   "unit": "DELIV-001",
+   "subject": "grey-family-voice-third-round-stop",
+   "decided_round": 77,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-25d-debate-proposals-approved",
+   "question": "เสียงกรรมการตระกูล #1 (เทาโทนเดียว+ชั้นว่าง) ถูก ACCEPT แล้ว route มาสามรอบติด (r74/r75/r77) โดยไม่มี hue ลงเฟรม — เมื่อไรหยุด route?",
+   "in_effect": "ตาม amendment ที่พี่อนุมัติในวง (designer stop condition): รอบ build เต็มรอบถัดไปของเลนนี้ต้องลงชุด accent textile ของ narrative (บรรทัด palette ใน shopping-list-2026-08-25.md ของ ORD-25c) เป็นเงื่อนไขของรอบ ไม่ใช่ route ไปเลนอนาคตอีก — พี่อนุมัติ provisional accents เดินคู่ลำดับ ORD-25c แล้ว (ORD-25d dispute-1 reading); การ ACCEPT ครั้งที่สี่โดยไม่มีพิกเซลเปลี่ยน = convene วงดีเบต (trigger ตามมติวง)",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r77-2026-08-26.md",
+   "because": "accepted-and-routed คือคิวที่ไม่มี consumer รูปแบบใหม่ — 357/22 ของ critic items เกิดจาก shape นี้ (มติวง root cause); C2#2 รอบนี้คือครั้งที่สามของเสียงเดียวกัน",
+   "reverse_by": "พี่หนึ่งประโยค (ยกเลิกเงื่อนไข หรือเลื่อนรอบ) — แถวนี้เป็นเงื่อนไขของ builder ต่อ builder ไม่ได้รอพี่",
+   "open_question": null,
+   "in_effect_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r77-2026-08-26.md",
+     "pattern": "D-144: รอบ build ถัดไปต้องลงชุด accent",
+     "why": "เงื่อนไขต้องพิมพ์อยู่ในบันทึกรอบที่กรรมการ file ครั้งที่สาม"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/04_visualization/shopping-list-2026-08-25.md",
+     "pattern": ".",
+     "why": "ลิสต์ที่ accent ต้องมาจากมีอยู่จริง"
+    }
+   ]
   }
  ],
  "_assert_ratchet_from": "D-124"

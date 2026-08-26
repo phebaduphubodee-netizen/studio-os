@@ -1,0 +1,118 @@
+{
+  "order": "ORD-2026-08-25b-five-items-after-p2r74",
+  "item": 4,
+  "owner_sentence": "ใส่ของที่เป็นไอเดียเพิ่มเติมมาได้เลย ห้องจะได้ดูมีชีวิตมากขึ้น",
+  "frames": [
+    "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r76.png",
+    "c:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\pipeline\\output\\room_bedroom_suite_eye_p2r75w.png"
+  ],
+  "verdict": "NOT-VISIBLE",
+  "evidence": [
+    {
+      "frame": "room_bedroom_suite_eye_p2r76.png",
+      "bbox_px": [
+        0,
+        60,
+        440,
+        720
+      ],
+      "arrow_tip_px": [
+        200,
+        320
+      ],
+      "crop": "e1_bare_shelf_cubbies_eye.png",
+      "what": "BARE: open shelf unit upper cubbies — empty wood, nothing displayed on any shelf"
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r76.png",
+      "bbox_px": [
+        240,
+        740,
+        540,
+        1020
+      ],
+      "arrow_tip_px": [
+        400,
+        900
+      ],
+      "crop": "e2_bare_desk_nook_eye.png",
+      "what": "BARE: desk nook work surface — completely empty"
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        860,
+        120,
+        1270,
+        900
+      ],
+      "arrow_tip_px": [
+        1005,
+        575
+      ],
+      "crop": "e3_bare_shelf_column_w.png",
+      "what": "BARE: shelf column beside bed — empty cubby (only two folded garments in the whole column)"
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        1080,
+        180,
+        1270,
+        560
+      ],
+      "arrow_tip_px": [
+        1190,
+        350
+      ],
+      "crop": "e4_bare_upper_cubby_w.png",
+      "what": "BARE: upper open cubby beside bed — empty"
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r76.png",
+      "bbox_px": [
+        400,
+        600,
+        780,
+        1180
+      ],
+      "arrow_tip_px": [
+        555,
+        890
+      ],
+      "crop": "f1_found_nightstand_eye.png",
+      "what": "FOUND: terrazzo pebble beside lit wood-body lamp, left nightstand"
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r76.png",
+      "bbox_px": [
+        1380,
+        1270,
+        1800,
+        1560
+      ],
+      "arrow_tip_px": [
+        1570,
+        1400
+      ],
+      "crop": "f2_found_bench_book_eye.png",
+      "what": "FOUND: white DESIGN book on tray, foot bench (folded blanket at other end)"
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        140,
+        150,
+        760,
+        700
+      ],
+      "arrow_tip_px": [
+        350,
+        450
+      ],
+      "crop": "f3_found_hung_garments_w.png",
+      "what": "FOUND: hung garments on brass rails, wardrobe (~10 pieces, 3 bays)"
+    }
+  ],
+  "note": "Judged from pixels only. Objects found: eye frame — wood-body lamp + speckled terrazzo pebble (L nightstand); lamp + white carafe/vase, EMPTY, no stems (R nightstand); knotted-fringe throw folded on bed foot; folded grey blanket + white 'DESIGN' book on tray on bench. Wardrobe frame — ~10 garments on hangers across 3 bays; 3 folded sage-green garments on shelves (one with care label); same lamp+pebble; book+blanket on bench; plant leaves ~95% occluded behind the wardrobe partition at the frame edge. Why NOT-VISIBLE: every object sits in the bed cluster (nightstands/bed/bench). The room's dominant display surface in the main camera — the floor-to-ceiling open shelf unit, ~left quarter of frame — is 100% empty (6+ bare cubbies), the desk nook is bare wood, most cubbies of the w-frame shelf column are empty, the one vase is empty, and no plant/organic matter reads in the main frame at all. Count and placement logic are fine but the overall read is a styled furniture-catalog bed inside an undressed room: still staged, not lived-in. Near-miss, not a sterile room — but the added objects have not yet reached the surfaces that carry the lived-in read."
+}

@@ -1,0 +1,73 @@
+{
+  "order": "ORD-2026-08-25b-five-items-after-p2r74",
+  "item": 5,
+  "owner_sentence": "พรมยังไม่สวย หาจาก blendkit มา",
+  "frames": [
+    "pipeline/output/room_bedroom_suite_eye_p2r76.png",
+    "pipeline/output/room_bedroom_suite_eye_p2r75w.png"
+  ],
+  "verdict": "VISIBLE",
+  "evidence": [
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        100,
+        1400,
+        600,
+        1750
+      ],
+      "arrow_tip_px": [
+        245,
+        1595
+      ],
+      "crop": "arrow_ward_edge_binding.png",
+      "what": "Rug edge is a rounded rollover with visible serged-binding ribs (repeating light stitch lumps along the lip) and a soft contact shadow on the wood under the lip; the corner is radiused, not a razor 90-degree step."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        450,
+        1550,
+        950,
+        1800
+      ],
+      "arrow_tip_px": [
+        650,
+        1670
+      ],
+      "crop": "arrow_ward_field_texture.png",
+      "what": "Field texture at 100%: directional abrasion streaks with lighter slub flecks running one weave direction - reads as a vintage-washed short-pile/viscose product, not isotropic noise; motif patches ~100-300 mm at this footprint, plausible for a ~2.4x3.0 m rug, no visible tiling repeat."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r75w.png",
+      "bbox_px": [
+        850,
+        1500,
+        1450,
+        1800
+      ],
+      "arrow_tip_px": [
+        1140,
+        1740
+      ],
+      "crop": "arrow_ward_bench_contact.png",
+      "what": "Contact shadow pools under the bench base and the rug texture continues into the darkened zone - the bench sits ON the rug and the rug sits ON the floor; no float gap."
+    },
+    {
+      "frame": "room_bedroom_suite_eye_p2r76.png",
+      "bbox_px": [
+        40,
+        1600,
+        340,
+        1800
+      ],
+      "arrow_tip_px": [
+        200,
+        1740
+      ],
+      "crop": "arrow_eye_shadow_on_rug.png",
+      "what": "In the eye frame the bed-skirt corner casts a soft diagonal shadow ON the rug and the distressed streak texture stays continuous through the shadow - grounding evidence that the rug is a lit surface lying flat, not a pasted stain plane."
+    }
+  ],
+  "note": "Judged from pixels only, blind to build history. The rug reads as a credible purchased product: distressed vintage-wash field with directional grain, serged rollover binding, radiused corner, and contact shadows in both frames. Weakest area: the eye frame's far rug-to-wood boundary near (2235,1565) is soft (distance/DOF) - the thickness lip is faint there, but it is a soft transition, not a knife edge, and the wardrobe frame shows the same edge treatment sharply. Whether the rug is beautiful remains the owner's call; this verdict covers credibility only."
+}

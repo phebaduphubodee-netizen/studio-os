@@ -1,387 +1,423 @@
 {
-  "_law": "WHAT I ASKED HIM — the other direction of the same channel `qa/owner-orders.json` holds. An ask here has three states and no fourth: OPEN, ANSWERED (his words + the date), or WITHDRAWN (with a reason). It may not simply stop being asked, which is what happened to every row below.",
-  "_why_it_exists": "Measured 2026-08-16, by fan-out over the gate artifacts, the plan, the decision register and docs/: TWENTY-ONE asks were routed to the owner and then dropped. The repo's own audit had already found one of them and written the sentence in these words — 'It was not answered and not withdrawn; it stopped being asked' (docs/orders-vs-frame-audit-2026-08-15.md:81) — and then that audit was a DOCUMENT, so nothing consumed it and four more rounds dropped four more asks. The sharpest instances: `owner_questions_carried_forward` in scene-graph.json has ZERO readers in the whole repo; `floor2-owner-decision-queue.md` exists solely to hold five owner questions and has not been opened in 36 days; the r19 pair was abbreviated to the bare tokens 'Q1 · Q2' across eight gates until the questions themselves were no longer written down anywhere; and the blind RANK sheet was REMOVED as a finish-line condition at r34 precisely because it had gone unanswered — the one rung that looked at the picture, deleted for not being answered, four rounds before he said the frame was nowhere near done.",
-  "_the_rule": "NOTHING HERE BLOCKS ANYTHING — R3, his order of 2026-08-08: 'เอาผมออกจาก gate เลย ไม่ต้องรอผม'. He reads RENDERS, not documents, so this ledger prints in the render path and at every session open, with each ask's AGE IN DAYS. Age is the metric because the failure mode is not refusal, it is silence on our side. If an ask stops being worth asking, the builder WITHDRAWS it with a reason and the row stays.",
-  "_count_floor": 27,
-  "asks": [
-    {
-      "id": "ASK-001",
-      "ask": "ซื้อโมเดลผ้าคลุมเตียงจากชั้นที่เสียเงินมั้ย — 3dsky $5-15/โมเดล (ถูกสุด, ซื้อทีละใบ) · BlenderKit $118.80/ปี (ต่อเข้า Blender ได้, ซื้อครั้งเดียวใช้ได้ทุกคลาส) · Chocofur ~EUR 25/pack. สเปกที่วัดมาแล้ว: ผัง >= 1820 x 1969 มม. ที่สเกล <= 1.0 · coverage ด้วยรังสี >= 80% · ตกข้าง >= 3 ด้าน · เป็นเตียงที่จัดแล้ว มีผ้าพับกลับที่หัวเตียง · เหลือเส้นปลายเตียงว่างให้ผ้าคาดเกรจ์",
-      "first_routed": "2026-08-16",
-      "where": "qa/open-decisions.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
-      "status": "open",
-      "money": "yes — $5-15 one model, or $118.80/yr for the tier",
-      "note": "ชั้นเสียเงินไม่เคยถูกลองเลยสักครั้งตั้งแต่พี่ยกเลิกกำแพง ฿0 เมื่อ 2026-08-01 (15 วัน). D-074 ประกาศว่า 'ไม่มีของ' จากการค้น 68 โฟลเดอร์ที่เป็นของฟรีล้วน — นั่นคือคำพูดเรื่องเรา ไม่ใช่เรื่องโลก",
-      "read_first": "docs/LICENSING.md, docs/DECISIONS-render-assets.md, qa/sourcing-tiers.json",
-      "read_first_found": "**อ่านย้อนหลัง 2026-08-17 (repo_first rule 2) — และการอ่านนั้นเปลี่ยนคำถามนี้**: `docs/LICENSING.md` จัดอันดับ **FurniMesh ไว้ที่ 1** ว่า 'cleanest' และเป็น 'the ONLY source legal to script-fetch' — **ฟรี ใช้เชิงพาณิชย์ได้ ไม่ต้องให้เครดิต 9,778+ โมเดล GLB/OBJ/SKP/BLEND** ตอนที่ ask นี้ถูกส่งถึงพี่ ไม่มีใครเปิดไฟล์นั้นเลย จึงเสนอให้พี่จ่ายเงินทั้งที่ตารางใบอนุญาตของเราเองชี้ของฟรีไว้ก่อนแล้ว **ask นี้ควรรอจนกว่า FurniMesh จะถูกลองจริง** ไม่ใช่เพราะชั้นเสียเงินไม่ดี แต่เพราะเรายังไม่รู้ว่าต้องการมันมั้ย"
+ "_law": "WHAT I ASKED HIM — the other direction of the same channel `qa/owner-orders.json` holds. An ask here has three states and no fourth: OPEN, ANSWERED (his words + the date), or WITHDRAWN (with a reason). It may not simply stop being asked, which is what happened to every row below.",
+ "_why_it_exists": "Measured 2026-08-16, by fan-out over the gate artifacts, the plan, the decision register and docs/: TWENTY-ONE asks were routed to the owner and then dropped. The repo's own audit had already found one of them and written the sentence in these words — 'It was not answered and not withdrawn; it stopped being asked' (docs/orders-vs-frame-audit-2026-08-15.md:81) — and then that audit was a DOCUMENT, so nothing consumed it and four more rounds dropped four more asks. The sharpest instances: `owner_questions_carried_forward` in scene-graph.json has ZERO readers in the whole repo; `floor2-owner-decision-queue.md` exists solely to hold five owner questions and has not been opened in 36 days; the r19 pair was abbreviated to the bare tokens 'Q1 · Q2' across eight gates until the questions themselves were no longer written down anywhere; and the blind RANK sheet was REMOVED as a finish-line condition at r34 precisely because it had gone unanswered — the one rung that looked at the picture, deleted for not being answered, four rounds before he said the frame was nowhere near done.",
+ "_the_rule": "NOTHING HERE BLOCKS ANYTHING — R3, his order of 2026-08-08: 'เอาผมออกจาก gate เลย ไม่ต้องรอผม'. He reads RENDERS, not documents, so this ledger prints in the render path and at every session open, with each ask's AGE IN DAYS. Age is the metric because the failure mode is not refusal, it is silence on our side. If an ask stops being worth asking, the builder WITHDRAWS it with a reason and the row stays.",
+ "_count_floor": 27,
+ "asks": [
+  {
+   "id": "ASK-001",
+   "ask": "ซื้อโมเดลผ้าคลุมเตียงจากชั้นที่เสียเงินมั้ย — 3dsky $5-15/โมเดล (ถูกสุด, ซื้อทีละใบ) · BlenderKit $118.80/ปี (ต่อเข้า Blender ได้, ซื้อครั้งเดียวใช้ได้ทุกคลาส) · Chocofur ~EUR 25/pack. สเปกที่วัดมาแล้ว: ผัง >= 1820 x 1969 มม. ที่สเกล <= 1.0 · coverage ด้วยรังสี >= 80% · ตกข้าง >= 3 ด้าน · เป็นเตียงที่จัดแล้ว มีผ้าพับกลับที่หัวเตียง · เหลือเส้นปลายเตียงว่างให้ผ้าคาดเกรจ์",
+   "first_routed": "2026-08-16",
+   "where": "qa/open-decisions.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "status": "withdrawn",
+   "money": "yes — $5-15 one model, or $118.80/yr for the tier",
+   "note": "ชั้นเสียเงินไม่เคยถูกลองเลยสักครั้งตั้งแต่พี่ยกเลิกกำแพง ฿0 เมื่อ 2026-08-01 (15 วัน). D-074 ประกาศว่า 'ไม่มีของ' จากการค้น 68 โฟลเดอร์ที่เป็นของฟรีล้วน — นั่นคือคำพูดเรื่องเรา ไม่ใช่เรื่องโลก",
+   "read_first": "docs/LICENSING.md, docs/DECISIONS-render-assets.md, qa/sourcing-tiers.json",
+   "read_first_found": "**อ่านย้อนหลัง 2026-08-17 (repo_first rule 2) — และการอ่านนั้นเปลี่ยนคำถามนี้**: `docs/LICENSING.md` จัดอันดับ **FurniMesh ไว้ที่ 1** ว่า 'cleanest' และเป็น 'the ONLY source legal to script-fetch' — **ฟรี ใช้เชิงพาณิชย์ได้ ไม่ต้องให้เครดิต 9,778+ โมเดล GLB/OBJ/SKP/BLEND** ตอนที่ ask นี้ถูกส่งถึงพี่ ไม่มีใครเปิดไฟล์นั้นเลย จึงเสนอให้พี่จ่ายเงินทั้งที่ตารางใบอนุญาตของเราเองชี้ของฟรีไว้ก่อนแล้ว **ask นี้ควรรอจนกว่า FurniMesh จะถูกลองจริง** ไม่ใช่เพราะชั้นเสียเงินไม่ดี แต่เพราะเรายังไม่รู้ว่าต้องการมันมั้ย",
+   "withdrawn_reason": "bundled into the one-page procurement sheet (projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md, ASK-034) — one money read instead of four scattered asks."
+  },
+  {
+   "id": "ASK-002",
+   "ask": "ชั้น asset ที่เสียเงินโดยรวม — เอาอันไหน (BlenderKit Full $118.80/yr ที่ต่อเข้า Blender ได้ / Chocofur packs / 3dsky ทีละใบ / Dimensiva ~EUR 29/mo) — **สเปกที่ต้องซื้อ (คมขึ้นหลัง probe 2026-08-17): ไม่ใช่ 'ผ้านวมผืนใหญ่ขึ้น' แต่คือชุดที่ปั้นมาในสภาพ 'เตียงที่จัดแล้ว' คือผ้านวมปูคลุมพื้นที่นอนทั้งผืน ไม่ใช่พับเปิดไว้ครึ่งหนึ่ง**",
+   "first_routed": "2026-07-01",
+   "where": "docs/DECISIONS-render-assets.md",
+   "status": "answered",
+   "answer": "ลุย BlenderKit",
+   "answered_date": "2026-08-18",
+   "answer_context": "ตอบผ่านหน้าสรุป ASK-028 (เตียงทั้งหลัง) ซึ่งลิสต์ตัวเลือกชั้นเสียเงินชุดเดียวกับ ask นี้ — คำตอบของคำถาม 'เอาอันไหน' คือ BlenderKit Full $118.80/ปี · ขั้นลงมือ (สมัคร account + วาง API key ซึ่งเป็นตัวตน/เงินของพี่) แยกเป็น ASK-029",
+   "money": "yes — the only priced ask in the repo",
+   "note": "ปิดไปเมื่อ 2026-07-12 ว่า DECLINED ด้วยเหตุผล 'Budget = ฿0' — แล้วพี่ยกเลิกฐานนั้นเองเมื่อ 2026-08-01 ('฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้') คำตอบเดิมจึงเป็นโมฆะ แต่หน้าเอกสารยัง 'ดูเหมือนปิดแล้ว' เพราะขีดฆ่าไว้ 46 วัน ศูนย์การซื้อถูกส่งถึงพี่ · **p2r49 — ตอนนี้มีตัวเลขแล้ว ไม่ใช่ความรู้สึก**: cut ใหม่ 'duvet share' อ่านมาจากเตียงงานส่งจริง 7 ใบ (80/90/95/95/100/100/100 ทุกใบ 'made') · re-bench ชั้นฟรีทั้ง 22 ตัวบน metric นี้ = **ผ่าน 0 ตัว** และ ตัวที่ดีที่สุดคือ 43.2% ซึ่งเป็นตัวที่ใส่อยู่แล้ว · รองลงมา 42.8 (ตกข้าง 1/4), 42.7 (ตัวที่พี่ปฏิเสธเองว่า 'เละ'), 39.2 (คลุมแค่ 73.4%) · คลาสที่ชั้นฟรีไม่มีคือ เครื่องนอน sim-authored ที่ผ้านวมคลุมพื้นที่นอนทั้งผืน · **probe 08-17 (พี่ถามเอง: ย่อเตียง/ขยายผ้าไม่ได้หรือ): ย่อที่นอนถึง 1200 มม. ได้ 59.8% · ขยายผ้า 1.37x ได้ 59.3% (ชายยื่น 557 มม. กองเกือบถึงพื้น) · ขยายด้านกว้าง 2.00x ได้ 63.5% · หมุน 90 องศา 44.5% — ไม่มีทางไหนถึง 80 เพราะเนื้อผ้าอยู่ในรอยยับกับชายที่ห้อย ไม่ได้อยู่บนที่นอน (ลอยเหนือที่นอนจริงแค่ 1.397 จาก 3.584 ตร.ม.)**",
+   "read_first": "docs/LICENSING.md, docs/DECISIONS-render-assets.md, qa/sourcing-tiers.json",
+   "read_first_found": "**อ่านย้อนหลัง 2026-08-17 (repo_first rule 2)**: เหมือน ASK-001 — `docs/LICENSING.md` ชี้ FurniMesh (ฟรี) ไว้อันดับ 1 มาตลอด และ ask นี้ถูกส่งถึงพี่ 47 วันโดยไม่เคยอ้างไฟล์นั้น · สเปกที่ต้องซื้อยังถูกต้อง (ชุดที่ปั้นมาในสภาพเตียงจัดแล้ว) แต่ลำดับผิด: ลองชั้นฟรีที่ตารางเรา อนุมัติไว้เองก่อน แล้วค่อยกลับมาที่ราคา"
+  },
+  {
+   "id": "ASK-003",
+   "ask": "ชุดเสื้อผ้า flat-file สำหรับช่องตู้ลึก 190-360 มม. — ซื้อ (หรือหาของฟรี) หรือปล่อยเป็น declared gap",
+   "first_routed": "2026-08-13",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r27-2026-08-13.md",
+   "status": "withdrawn",
+   "money": "yes — unpriced; 3D Warehouse may serve it at ฿0",
+   "note": "ยื่นที่ r27 แล้วพูดซ้ำอีก 8 ครั้ง (r28 x4, r29 x2, r30, r31) แล้วหายไปเลยตั้งแต่ r33 — audit ของเราเองเขียนไว้ว่า 'ไม่ได้ถูกตอบ ไม่ได้ถูกถอน มันแค่เลิกถูกถาม' · **p2r49: ยังเปิดอยู่ แต่ไม่ใช่ตัวบล็อกคำสั่งอีกแล้ว** — วัดจากฉากที่สร้างแล้วพบว่าเทอมที่บีบคือ DROP ซึ่งมาจาก placeholder ที่เราวาดเอง ไม่ใช่การไม่มีของ (D-100) · ของถูก acquire มาแล้วและ assert ขนาดไว้ 879.3 มม. · ข้อนี้เปลี่ยนสถานะจาก 'ทางแก้' เป็น 'ทางเลือกสำรอง' ถ้ากลไกแขวนหันหน้า (yaw 90) ล้ม",
+   "read_first": "docs/LICENSING.md, qa/sourcing-tiers.json",
+   "read_first_found": "**อ่านย้อนหลัง 2026-08-17**: ตารางใบอนุญาตอนุมัติ 3D Warehouse (Combined-Work) และ FurniMesh ไว้แล้ว ทั้งคู่ ฿0 — ask นี้จึงเป็นทางเลือกสำรอง ไม่ใช่ทางแรก",
+   "withdrawn_reason": "bundled into the procurement sheet (ASK-034); free tiers get one more pass first (D-143)."
+  },
+  {
+   "id": "ASK-004",
+   "ask": "SC-3 สองคำถามสำหรับเพื่อนดีไซเนอร์ของพี่: (1) ชิ้นไหนเขาปั้นเอง ชิ้นไหนซื้อ (2) ลูกค้าไทยส่งกลับมาแก้เรื่องอะไรบ่อยที่สุด",
+   "first_routed": "2026-08-09",
+   "where": "qa/deliverable-plan.json",
+   "status": "open",
+   "money": "no",
+   "note": "ข้อเดียวในทั้ง repo ที่มีคนอ่านจริง (plan_status พิมพ์ทุก session) และยังไม่ถูกตอบ 7 วัน — ช่องทางใช้ได้ ที่ขาดคือทะเบียน"
+  },
+  {
+   "id": "ASK-005",
+   "ask": "เตียงที่ 'จัดแล้ว' กับเตียงที่ 'เพิ่งลุก' — DD ที่เซ็นเขียนว่าห้องถูกจัด แต่ชุดผ้าที่ทิ้งตัวสวยที่สุดในตลาดฟรีคือเตียงเพิ่งลุก จะแลกมั้ย",
+   "first_routed": "2026-08-15",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r31-2026-08-15.md",
+   "status": "withdrawn",
+   "money": "no — but it decides which asset class we would be buying",
+   "note": "D-073 อ่านสเปกใหม่แล้วพบว่าประโยคห้ามยับใช้กับหมอนสามใบที่หัวเตียงเท่านั้น ไม่ใช่เครื่องนอนทั้งชุด — ครึ่งหนึ่งของคำถามจึงตอบด้วยเอกสารได้ ที่เหลือคือรสนิยมของพี่",
+   "withdrawn_reason": "self-decided default (D-143, R3 delegation): the frame ships the STYLED bed per the signed DD; 'เพิ่งลุก' is one sentence from him to reverse."
+  },
+  {
+   "id": "ASK-006",
+   "ask": "ตอบ blind RANK sheet — เรียง A-F จากขายได้ที่สุดไปน้อยที่สุด พร้อมเหตุผลสั้น ๆ ต่อช่อง",
+   "first_routed": "2026-08-07",
+   "where": "training/TRN-002/RANK-ask-2026-08-07.md, _private/benchmark/look-bench/blind_room_bedroom_suite_eye_p2r57_s57.png, pipeline/output/RANK-SHEET_p2r57_ตอบในแชทได้เลย.png",
+   "status": "open",
+   "money": "no",
+   "note": "8 แผ่นถูกสร้าง 0 ครั้งถูกตอบ แล้วถูกถอดออกจากเส้นชัยที่ r34 เพราะไม่มีใครตอบ — CLAUDE.md R11 บันทึกเองว่านั่นคือการถอดขั้นเดียวที่มองรูปจริงออก แล้ว 4 รอบต่อมาพี่บอกว่าเฟรมยังไม่ใกล้เสร็จ · CHANNEL AUTOPSY 2026-08-22 — พี่พูดเอง: 'ระบบ RANK sheet ผมไม่เคยเปิดดูเลยสักครั้ง ไม่รู้ด้วยว่ามันอยู่ไหน' — สิบแผ่นพร้อมเฉลยนั่งอยู่ใน _private/benchmark/look-bench/ และตัว ask อยู่ใน md ทั้งคู่ไม่ใช่ช่องของเขา (ช่องเขา = โฟลเดอร์ render + แชท) กลไกเดียวกับ 21 asks ที่หายใน R13 ไม่ใช่เขาเมิน · แผ่น salt27 เฉลยถูกเปิดแล้ว (บันทึกใน RANK-ask md) ใช้ไม่ได้ · 08-22: สร้างแผ่นใหม่ s57 จากเฟรมปัจจุบัน p2r57 แล้ววางสำเนาใน pipeline/output (gitignored — งานเพื่อนไม่มีทางเข้า git) ชื่อไฟล์บอกวิธีตอบ · คำตอบ = พิมพ์เรียง A-F ในแชทกับ Claude แล้ว builder บันทึกลงแถวนี้ · กติกาเดิม: อย่าเปิด .ANSWER.txt ก่อนตอบ · ข้อจำกัดแผ่น: room_hint ว่าง → 5 ช่อง delivered แนวนอนทุกช่อง แต่ไม่การันตีห้องนอนทุกช่อง · PARTIAL ANSWER 2026-08-22 (ช่องแชททำงานวันแรก): 'คำตอบของผมคือสัดส่วนตู้ built-in ที่ fix ไว้ ทำให้ เตียงดูเล็กมาก ๆ ทำยังไงดี?' — เหตุผลรูปข้อบกพร่องต่อช่องของเรา ตรงเกณฑ์แผ่น; วัดตาม + คิวลง D-117 (สองโหมดของงานส่งจริง, เฟรมเราไม่เลือกข้าง, lever = กล้อง); การเรียง A-F เต็มยังเปิดรอ"
+  },
+  {
+   "id": "ASK-007",
+   "ask": "sconce ใน r30 อ่านว่า 'ติดไฟอยู่' หรือยัง และ day-night story จะเอาแบบไหน",
+   "first_routed": "2026-08-14",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r30-2026-08-14.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ยื่นครั้งเดียว ไม่เคยพูดซ้ำ",
+   "withdrawn_reason": "self-decided default (D-143): sconces read lit, evening-warm story — P3's lane owns the number; his eye reverses from the frame."
+  },
+  {
+   "id": "ASK-008",
+   "ask": "ผ้าม่าน — design call ที่ผมไม่ควรตัดสินเอง",
+   "first_routed": "2026-08-14",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r30-2026-08-14.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "มาจาก r28-C2#11 ยื่นครั้งเดียวแล้วหายไป",
+   "withdrawn_reason": "self-decided default (D-143): the reference-board sheers stand as the curtain answer until his sentence — the ask sat 12 days because 'design call' and 'no default' are how queues rot; a standing default is reversible, an open question is not."
+  },
+  {
+   "id": "ASK-009",
+   "ask": "กล้อง/องค์ประกอบ — โต๊ะข้างเตียงขวาโดนขอบเฟรมตัด และเตียงถูกครอปด้วยริก จะขยับกล้องมั้ย",
+   "first_routed": "2026-08-13",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r27-2026-08-13.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ตาราง triage เขียนว่า 'ACCEPT -> owner/camera call' แล้วไม่มี escalate section ในทั้ง r39 และ r41 — คำว่า escalate ถูกเขียนในช่องตาราง ไม่ได้ถูกส่งไปไหน",
+   "withdrawn_reason": "self-decided default (D-143): camera rig unchanged through P2-P4; re-framed at P5 hero-camera pass where composition is that phase's whole subject."
+  },
+  {
+   "id": "ASK-010",
+   "ask": "ไม้สามชนิดที่ไม่เข้ากัน (พื้นส้ม / ตู้แอชเย็น / ระแนงแอชอุ่น) — DD เซ็นตระกูลโอ๊คอุ่นไว้ จะเอาสองโทนหรือรวมเป็นตระกูลเดียว",
+   "first_routed": "2026-08-16",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r39-2026-08-16.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "'Escalated, not decided by me' เขียนไว้ในช่องตาราง แต่ไม่มี decision row และไม่มี escalate section",
+   "withdrawn_reason": "self-decided default (D-143): two-tone per the owner-signed materials note; the STY nine-row program (D-122) now owns wood-family coherence with a measured rung."
+  },
+  {
+   "id": "ASK-011",
+   "ask": "duvet-overflow story — ความยับต้องมีเรื่องเล่า และม้วนชายหนา ๆ อ่านเป็น 'หนา' หรือเป็นความผิดพลาด",
+   "first_routed": "2026-08-12",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r26-2026-08-12.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ยื่น 3 รอบ (r26, r27, r28) แล้วหายไป — ขณะที่เครื่องนอนเป็นข้อ #1 ของกรรมการทั้งสองรายติดกัน 16+ รอบ",
+   "withdrawn_reason": "superseded by ORD-2026-08-25c: the styling narrative IS the duvet story; the round that executes it answers this in pixels."
+  },
+  {
+   "id": "ASK-012",
+   "ask": "Q1 ความลึกตู้เสื้อผ้า · Q2 ชั้นหนังสือ/ทีวี",
+   "first_routed": "2026-08-12",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r19-2026-08-12.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ยื่น 8 รอบติด (r19->r27) แล้วศูนย์ตั้งแต่ r28 — และแย่กว่านั้นคือมันหดเหลือแค่โทเคน 'Q1 · Q2' จนไม่มีไฟล์ไหนในรีโปเขียนคำถามเต็มไว้อีกเลย ถึงพี่อยากตอบก็ตอบไม่ได้",
+   "withdrawn_reason": "self-decided (D-143): sheet-recon signed values govern both depths (R12 sheet-outranks-derivations made the question obsolete)."
+  },
+  {
+   "id": "ASK-013",
+   "ask": "jewel niche + ช่องแสง — จากกล้องตัวนี้มันอ่านออกมั้ย หรือควรขยับ",
+   "first_routed": "2026-08-12",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r20-2026-08-12.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ยื่น 5 รอบ (r20->r24) แล้วหายไป — วัดได้ว่าสร้างแล้ว อยู่ในเฟรม แต่ 0 พิกเซล",
+   "withdrawn_reason": "superseded by ORD-2026-08-25c's vignette pass — niche legibility is judged per-vignette there, in-camera."
+  },
+  {
+   "id": "ASK-014",
+   "ask": "floor2 stage-03 ค้าง 5 ข้อ: s2 เป็นช่องเปิด/บานคู่/ผนังทึบ · tg1/tg2 · ช่องฝักบัว · อ่างสองใบ · เส้นขอบ",
+   "first_routed": "2026-07-11",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/floor2-owner-decision-queue.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ไฟล์นี้มีอยู่เพื่อถือคำถามพวกนี้อย่างเดียว ไม่ถูกแตะมา 36 วัน และไม่มีสคริปต์หรือพิธีกรรมไหนอ่านมันเลย",
+   "withdrawn_reason": "floor2 lane is PAUSED (its instruments carry DELETE verdicts in docs/instrument-triage-2026-08-25.md); the five questions reopen with the lane, unchanged."
+  },
+  {
+   "id": "ASK-015",
+   "ask": "ทิศเตียงห้องนอนใหญ่ N-S หรือ E-W (เตียงลึก 2134 แบบ N-S ผ่านทางเดิน 610/910 ไม่ได้)",
+   "first_routed": "2026-07-04",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/clearance-report.md",
+   "status": "withdrawn",
+   "withdrawn_reason": "ตอบจากแบบของลูกค้าแทน (R12/DRW 2026-08-11) — ทิศมาจากเส้นหมึกในแบบ ไม่ใช่จากคำตอบของพี่ จึงถอนอย่างเป็นทางการแทนที่จะปล่อยค้าง",
+   "withdrawn_date": "2026-08-16",
+   "money": "no",
+   "note": "คีย์ owner_questions_carried_forward ใน scene-graph.json ไม่มีผู้อ่านเลยแม้แต่รายเดียวในทั้งรีโป — instance ที่บริสุทธิ์ที่สุดของ queue ที่ไม่มีคนมาเก็บ"
+  },
+  {
+   "id": "ASK-016",
+   "ask": "ขนาดห้องที่ประเมินไว้ (sitting_room ลึก 3300 · living_room 4800x4200) — ต้องการให้วัดจริงมั้ย",
+   "first_routed": "2026-07-04",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/clearance-report.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ติดป้ายตัวเองว่า 'เป็นความมั่นใจ ไม่ใช่ตัวบล็อก' ซึ่งเป็นวิธีที่มันค้างมา 43 วันพอดี",
+   "withdrawn_reason": "self-decided default (D-143): no re-measure — estimated dims stand for the render lane; a real-client run re-opens it where measurement has a customer."
+  },
+  {
+   "id": "ASK-017",
+   "ask": "petcave — มันคืออะไรและมิติเท่าไร (กรรมการหกรายอ่านได้หกแบบ)",
+   "first_routed": "2026-08-07",
+   "where": "training/TRN-002/identifiability-partition-2026-08-07.md",
+   "status": "withdrawn",
+   "money": "possibly — R8 ส่ง identity ที่แก้ไม่ตกไปที่การจัดซื้อ",
+   "note": "ไม่เคยถูกส่งเข้าช่องไหนเลย มันถูกเรียกว่า owner ask อยู่ในเอกสารวิเคราะห์เท่านั้น — แล้ว r35/r36 ผมก็วัดและพิมพ์มิติเองซึ่งตรงข้ามกับสิ่งที่ ask บอก",
+   "withdrawn_reason": "self-decided (D-143): petcave is outside every DELIV-001 camera; identity gap re-opens if any lane frames it."
+  },
+  {
+   "id": "ASK-018",
+   "ask": "เซ็นแบบฟอร์ม ToU ของชุดข้อมูล 3D-FRONT / Structured3D / ZInD (ฟรี แต่ต้องมีลายเซ็นเจ้าของ)",
+   "first_routed": "2026-07-06",
+   "where": "docs/strategy.md",
+   "status": "open",
+   "money": "no — datasets are free; the blocker is a signature",
+   "note": "มีทั้งเลนที่บันทึกไว้ว่ารออนุมัติที่ไม่เคยถูกยื่น และ checklist ที่เขียนว่า 'staged for the owner' หาไม่เจอบนดิสก์"
+  },
+  {
+   "id": "ASK-019",
+   "ask": "ใช้ skill `banana-claude` หรือเก็บ tools/gemini_image.py ของเราเอง",
+   "first_routed": "2026-07-01",
+   "where": "docs/DECISIONS-render-assets.md",
+   "status": "withdrawn",
+   "withdrawn_reason": "สคริปต์ของเราพิสูจน์ความสามารถเดียวกันที่ $0 แล้ว skill เพิ่มแค่ prompt polish — ถอนเพราะไม่คุ้มค่าที่จะรบกวนพี่ ไม่ใช่เพราะลืม",
+   "withdrawn_date": "2026-08-16",
+   "money": "no",
+   "note": "ask ที่เล็กที่สุดและค้างนานที่สุดในรีโป (46 วัน)"
+  },
+  {
+   "id": "ASK-020",
+   "ask": "ผ้าคาดปลายเตียงสีเกรจ์ — ยอมให้หายไปจากเฟรมชั่วคราวมั้ย ถ้าเลกที่ซื้อยังหาผ้าคาดที่ผ่านการวัดไม่ได้",
+   "first_routed": "2026-08-16",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "status": "withdrawn",
+   "money": "no — แต่ผูกกับ ASK-001",
+   "note": "สเปกที่เซ็นเขียนว่า 'อย่าเอาออก' พร้อมเหตุผลว่ามันกันไม่ให้เตียงอ่านเป็นก้อนซีดก้อนเดียว — ทางเลือกคือซื้ออีกชิ้น (แคชมี th_a..th_f) หรือประกาศเป็น gap ที่เซ็นแล้ว ไม่ใช่กลับไปปั้นเอง",
+   "withdrawn_reason": "overtaken: an acquired throw is IN the frame since p2r72-75; the greige runner question died with the hand-built cloth."
+  },
+  {
+   "id": "ASK-021",
+   "ask": "ยืนยันว่าผ้าคลุมเตียงชุดที่สอง (0afd4c6f) ที่ผ่านการวัดแล้ว อ่านออกมาโอเคมั้ย — หรือให้ไปหาของใหม่ทั้งหมด",
+   "first_routed": "2026-08-16",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "status": "withdrawn",
+   "money": "no",
+   "note": "ตัวที่พี่ตก (8635b5b9) กับตัวนี้คือสองตัวเดียวจาก 68 ที่ผ่านเกณฑ์วัดได้ — ถ้าตัวนี้ตกด้วย ตลาดฟรีในแคชหมดแล้วจริง ๆ และ ASK-001 คือทางเดียวที่เหลือ",
+   "withdrawn_reason": "overtaken: the set it asks about was superseded by the panel-passed set now in frame; cloth response is P2r-5's queued lever."
+  },
+  {
+   "id": "ASK-022",
+   "ask": "ปฏิทินคำสั่ง: มีคำสั่งไหนใน qa/owner-orders.json ที่พี่ถือว่าเลิกใช้แล้วบ้าง (ผมถอนเองไม่ได้ตามกฎ)",
+   "first_routed": "2026-08-16",
+   "where": "qa/owner-orders.json",
+   "status": "open",
+   "money": "no",
+   "note": "คำสั่งจะไม่หมดอายุเอง มีแต่พี่ที่ถอนได้ — ถ้าไม่มีช่องนี้ ทะเบียนคำสั่งจะกลายเป็นของที่โตอย่างเดียวไม่มีวันหด"
+  },
+  {
+   "id": "ASK-023",
+   "ask": "cap ของเลน DELIV-001 ควรเป็นเท่าไร — กี่รอบ / กี่เฟรม full-fidelity ก่อนต้องหยุดแล้วทบทวน (กฎในไฟล์ caps เขียนเองว่ามีแต่พี่ที่ขยับ cap ได้ ผมจึงตั้งเลขเองไม่ได้)",
+   "first_routed": "2026-08-16",
+   "where": "qa/curriculum-caps.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "status": "answered",
+   "money": "no",
+   "note": "D-021 บอกว่า R1 cap ไม่ใช้กับ room lane เพราะ cap ประกาศต่อ unit ใน curriculum-caps.json — แล้วไม่เคยมีแถว DELIV-001 ถูกเพิ่มเลย grep นับได้ 0 ตลอด 44 รอบ ตัวหยุดยังทำงาน (R1 หยุดเลนนี้หลายครั้ง) แต่ตัวนับไม่มี",
+   "answer": "'ลุยเต็มที่ ผมอนุมัติทุกอย่าง' (2026-08-25 กลางคืน) on debate proposal 4, which carried the number: cap = +12 rounds / +24 full frames from that night's spend -> 89 rounds / 93 frames in qa/curriculum-caps.json, enforced by rule_gate.cap_check (blocking). Breach = forced R1 stop + real-client run starts. He re-numbers it in one sentence.",
+   "answered_date": "2026-08-25"
+  },
+  {
+   "id": "ASK-024",
+   "ask": "ม้านั่งปลายเตียงที่แบบวาดเป็น 504 x 1008 มม. (1:2.0) — ยังไม่มีตัวไหน เป็นทรงนั้น **และช่องที่ขาดสลับแกนแล้ว**: ตัวที่ใช้อยู่ตอนนี้คือ Blendkit ฟรี 'Minimal modern bench' 5b8e98d7 (เข้าเฟรม p2r57, 08-22, แทน Ottoman_01 ตัวเดิม) ซึ่งเติม **ยาว 1000 จาก 1008 มม. = 99.2%** แต่ **กว้าง 393 จาก 504 มม. = 78.0%** — ซื้อ/หาตัวที่ทรงถูกมั้ย",
+   "first_routed": "2026-08-16",
+   "where": "qa/open-decisions.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
+   "status": "withdrawn",
+   "money": "no ตอนนี้ — พี่จ่ายเดือน Blendkit Full ไปแล้ว 2026-08-22 (ORD-2026-08-22-blenderkit-one-month, ASK-031 ตอบ 'จ่ายตังแล้ว') เหลือถึงราว 2026-09-21 ระหว่างนี้ทั้งชั้นฟรีและชั้นเสียเงินเป็น **ค่าใช้จ่ายส่วนเพิ่ม ฿0** และตามสัญญา Art. 5.3 ที่ DR อ่านมา licence ไม่ตายพร้อม subscription จึงใช้ต่อได้หลังหมดเดือน · **ถ้าเดือนหมดแล้วยังไม่เจอ** ค่อยกลับมาเป็นคำถามเรื่องเงิน ($5-15/โมเดลที่ 3dsky)",
+   "note": "D-069 ยื่นเป็น SOURCING GAP เมื่อ 08-16 จากการค้นชั้นฟรีล้วน — rung ที่สร้างรอบนี้จับได้และเปลี่ยนเป็น procurement ask ที่มีราคา · กรรมการ blind ยืนยันด้วยตาโดยไม่เห็นแบบเลย",
+   "read_first": "docs/LICENSING.md, qa/sourcing-tiers.json",
+   "read_first_found": "**อ่านย้อนหลัง 2026-08-17**: ชั้นฟรีที่ตารางอนุมัติยังไม่ถูกค้นด้วยสัดส่วน 1:2.0 ที่แบบวาด และ FurniMesh ยังไม่เคยถูกแตะ — เงินยังไม่ใช่ทางเดียว",
+   "amended": "2026-08-24",
+   "amended_why": "**ตัวเลขในแถวนี้เก่า และเก่าเพราะเปลี่ยนของ ไม่ใช่เพราะวัดใหม่** — พี่ทักเอง 2026-08-24 และการไล่กลับพิสูจน์ว่าเขาถูก พร้อมเหตุผลที่คมกว่าที่เขาพูด: '709 จาก 1000' วัดเมื่อ p2r39 (2026-08-16, gate-DELIV001-P2r39:36,100-103) กับ **ของคนละตัว** คือ Ottoman_01 จาก 3D Warehouse อัตราส่วน 1:1.42 ซึ่งลง 498 x 709 — เต็มความกว้าง ขาดความยาว. p2r57 (2026-08-22) เปลี่ยนเป็น Blendkit ฟรี 5b8e98d7 native 1006.9 x 395.8 x 409.1 (อัตราส่วน 1:2.544) scale 0.993 (assets/shared/blenderkit/5b8e98d779b84786ba8131ba3662c698/*.scale.json) — **เต็มความยาว ขาดความกว้าง**. วัดจาก scene dump วันนี้ (pipeline/output/room_bedroom_suite_eye_p2r59q_ql.scene.json): bench__acq0 = 393.0 x 1000.0 x 365.6 มม., bench__acq1 (ขา) = 295.9 x 808.8 x 61.0. **ช่องที่ยังขาดพลิกแกน 90 องศา: จาก 70.9% ของความยาว มาเป็น 78.0% ของความกว้าง — แบบ 1:2.0 ยังไม่ถูก match อยู่ดี แค่พลาดคนละด้าน** และ MIN_FILL 0.62 ปล่อยผ่านทั้งสองครั้ง ซึ่งเป็นหน้าที่ของมัน. บทเรียนของแถวนี้ไม่ใช่ 'ตัวเลขเก่าไปหนึ่งรอบ' แต่คือ **ask ที่ฝังตัวเลขของ instance ไว้ในตัวคำถาม จะเก่าเงียบ ๆ ทุกครั้งที่ instance ถูกเปลี่ยน** — ทะเบียนนี้ยังไม่มี rung ไหนอ่านตัวเลขในช่อง `ask` เทียบ scene dump (คลาสเดียวกับกฎ 5 `in_effect_assert` ที่เพิ่งใส่ให้ decision log เมื่อ 08-24)",
+   "now_waiting_on": "BUILDER — ไม่ใช่พี่. คำถามเดิมเป็นเรื่องเงิน และเงินถูกจ่ายไปแล้ว สิ่งที่เหลือคือผมต้องไปค้นชั้นที่พี่จ่ายไว้ ด้วยตัวกรองขนาดฝั่ง server (dimensionX_gte/lte ที่วัดไว้เมื่อ 08-23) ให้ตรงช่อง 504 x 1008 x ~410 แล้วผ่านสายตากรรมการ 3 คนตาม docs/blenderkit-month/style-panel-prompt.md",
+   "slot_mm": {
+    "drawn_ink_SR-08": [
+     504,
+     1008
+    ],
+    "spec_slot": [
+     498,
+     1000
+    ],
+    "h_target": 410,
+    "current_fill_pct": {
+     "length_y": 99.2,
+     "width_x": 78.0
     },
-    {
-      "id": "ASK-002",
-      "ask": "ชั้น asset ที่เสียเงินโดยรวม — เอาอันไหน (BlenderKit Full $118.80/yr ที่ต่อเข้า Blender ได้ / Chocofur packs / 3dsky ทีละใบ / Dimensiva ~EUR 29/mo) — **สเปกที่ต้องซื้อ (คมขึ้นหลัง probe 2026-08-17): ไม่ใช่ 'ผ้านวมผืนใหญ่ขึ้น' แต่คือชุดที่ปั้นมาในสภาพ 'เตียงที่จัดแล้ว' คือผ้านวมปูคลุมพื้นที่นอนทั้งผืน ไม่ใช่พับเปิดไว้ครึ่งหนึ่ง**",
-      "first_routed": "2026-07-01",
-      "where": "docs/DECISIONS-render-assets.md",
-      "status": "answered",
-      "answer": "ลุย BlenderKit",
-      "answered_date": "2026-08-18",
-      "answer_context": "ตอบผ่านหน้าสรุป ASK-028 (เตียงทั้งหลัง) ซึ่งลิสต์ตัวเลือกชั้นเสียเงินชุดเดียวกับ ask นี้ — คำตอบของคำถาม 'เอาอันไหน' คือ BlenderKit Full $118.80/ปี · ขั้นลงมือ (สมัคร account + วาง API key ซึ่งเป็นตัวตน/เงินของพี่) แยกเป็น ASK-029",
-      "money": "yes — the only priced ask in the repo",
-      "note": "ปิดไปเมื่อ 2026-07-12 ว่า DECLINED ด้วยเหตุผล 'Budget = ฿0' — แล้วพี่ยกเลิกฐานนั้นเองเมื่อ 2026-08-01 ('฿0 + CC0/public-domain เท่านั้น ยกเลิกข้อนี้') คำตอบเดิมจึงเป็นโมฆะ แต่หน้าเอกสารยัง 'ดูเหมือนปิดแล้ว' เพราะขีดฆ่าไว้ 46 วัน ศูนย์การซื้อถูกส่งถึงพี่ · **p2r49 — ตอนนี้มีตัวเลขแล้ว ไม่ใช่ความรู้สึก**: cut ใหม่ 'duvet share' อ่านมาจากเตียงงานส่งจริง 7 ใบ (80/90/95/95/100/100/100 ทุกใบ 'made') · re-bench ชั้นฟรีทั้ง 22 ตัวบน metric นี้ = **ผ่าน 0 ตัว** และ ตัวที่ดีที่สุดคือ 43.2% ซึ่งเป็นตัวที่ใส่อยู่แล้ว · รองลงมา 42.8 (ตกข้าง 1/4), 42.7 (ตัวที่พี่ปฏิเสธเองว่า 'เละ'), 39.2 (คลุมแค่ 73.4%) · คลาสที่ชั้นฟรีไม่มีคือ เครื่องนอน sim-authored ที่ผ้านวมคลุมพื้นที่นอนทั้งผืน · **probe 08-17 (พี่ถามเอง: ย่อเตียง/ขยายผ้าไม่ได้หรือ): ย่อที่นอนถึง 1200 มม. ได้ 59.8% · ขยายผ้า 1.37x ได้ 59.3% (ชายยื่น 557 มม. กองเกือบถึงพื้น) · ขยายด้านกว้าง 2.00x ได้ 63.5% · หมุน 90 องศา 44.5% — ไม่มีทางไหนถึง 80 เพราะเนื้อผ้าอยู่ในรอยยับกับชายที่ห้อย ไม่ได้อยู่บนที่นอน (ลอยเหนือที่นอนจริงแค่ 1.397 จาก 3.584 ตร.ม.)**",
-      "read_first": "docs/LICENSING.md, docs/DECISIONS-render-assets.md, qa/sourcing-tiers.json",
-      "read_first_found": "**อ่านย้อนหลัง 2026-08-17 (repo_first rule 2)**: เหมือน ASK-001 — `docs/LICENSING.md` ชี้ FurniMesh (ฟรี) ไว้อันดับ 1 มาตลอด และ ask นี้ถูกส่งถึงพี่ 47 วันโดยไม่เคยอ้างไฟล์นั้น · สเปกที่ต้องซื้อยังถูกต้อง (ชุดที่ปั้นมาในสภาพเตียงจัดแล้ว) แต่ลำดับผิด: ลองชั้นฟรีที่ตารางเรา อนุมัติไว้เองก่อน แล้วค่อยกลับมาที่ราคา"
-    },
-    {
-      "id": "ASK-003",
-      "ask": "ชุดเสื้อผ้า flat-file สำหรับช่องตู้ลึก 190-360 มม. — ซื้อ (หรือหาของฟรี) หรือปล่อยเป็น declared gap",
-      "first_routed": "2026-08-13",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r27-2026-08-13.md",
-      "status": "open",
-      "money": "yes — unpriced; 3D Warehouse may serve it at ฿0",
-      "note": "ยื่นที่ r27 แล้วพูดซ้ำอีก 8 ครั้ง (r28 x4, r29 x2, r30, r31) แล้วหายไปเลยตั้งแต่ r33 — audit ของเราเองเขียนไว้ว่า 'ไม่ได้ถูกตอบ ไม่ได้ถูกถอน มันแค่เลิกถูกถาม' · **p2r49: ยังเปิดอยู่ แต่ไม่ใช่ตัวบล็อกคำสั่งอีกแล้ว** — วัดจากฉากที่สร้างแล้วพบว่าเทอมที่บีบคือ DROP ซึ่งมาจาก placeholder ที่เราวาดเอง ไม่ใช่การไม่มีของ (D-100) · ของถูก acquire มาแล้วและ assert ขนาดไว้ 879.3 มม. · ข้อนี้เปลี่ยนสถานะจาก 'ทางแก้' เป็น 'ทางเลือกสำรอง' ถ้ากลไกแขวนหันหน้า (yaw 90) ล้ม",
-      "read_first": "docs/LICENSING.md, qa/sourcing-tiers.json",
-      "read_first_found": "**อ่านย้อนหลัง 2026-08-17**: ตารางใบอนุญาตอนุมัติ 3D Warehouse (Combined-Work) และ FurniMesh ไว้แล้ว ทั้งคู่ ฿0 — ask นี้จึงเป็นทางเลือกสำรอง ไม่ใช่ทางแรก"
-    },
-    {
-      "id": "ASK-004",
-      "ask": "SC-3 สองคำถามสำหรับเพื่อนดีไซเนอร์ของพี่: (1) ชิ้นไหนเขาปั้นเอง ชิ้นไหนซื้อ (2) ลูกค้าไทยส่งกลับมาแก้เรื่องอะไรบ่อยที่สุด",
-      "first_routed": "2026-08-09",
-      "where": "qa/deliverable-plan.json",
-      "status": "open",
-      "money": "no",
-      "note": "ข้อเดียวในทั้ง repo ที่มีคนอ่านจริง (plan_status พิมพ์ทุก session) และยังไม่ถูกตอบ 7 วัน — ช่องทางใช้ได้ ที่ขาดคือทะเบียน"
-    },
-    {
-      "id": "ASK-005",
-      "ask": "เตียงที่ 'จัดแล้ว' กับเตียงที่ 'เพิ่งลุก' — DD ที่เซ็นเขียนว่าห้องถูกจัด แต่ชุดผ้าที่ทิ้งตัวสวยที่สุดในตลาดฟรีคือเตียงเพิ่งลุก จะแลกมั้ย",
-      "first_routed": "2026-08-15",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r31-2026-08-15.md",
-      "status": "open",
-      "money": "no — but it decides which asset class we would be buying",
-      "note": "D-073 อ่านสเปกใหม่แล้วพบว่าประโยคห้ามยับใช้กับหมอนสามใบที่หัวเตียงเท่านั้น ไม่ใช่เครื่องนอนทั้งชุด — ครึ่งหนึ่งของคำถามจึงตอบด้วยเอกสารได้ ที่เหลือคือรสนิยมของพี่"
-    },
-    {
-      "id": "ASK-006",
-      "ask": "ตอบ blind RANK sheet — เรียง A-F จากขายได้ที่สุดไปน้อยที่สุด พร้อมเหตุผลสั้น ๆ ต่อช่อง",
-      "first_routed": "2026-08-07",
-      "where": "training/TRN-002/RANK-ask-2026-08-07.md, _private/benchmark/look-bench/blind_room_bedroom_suite_eye_p2r57_s57.png, pipeline/output/RANK-SHEET_p2r57_ตอบในแชทได้เลย.png",
-      "status": "open",
-      "money": "no",
-      "note": "8 แผ่นถูกสร้าง 0 ครั้งถูกตอบ แล้วถูกถอดออกจากเส้นชัยที่ r34 เพราะไม่มีใครตอบ — CLAUDE.md R11 บันทึกเองว่านั่นคือการถอดขั้นเดียวที่มองรูปจริงออก แล้ว 4 รอบต่อมาพี่บอกว่าเฟรมยังไม่ใกล้เสร็จ · CHANNEL AUTOPSY 2026-08-22 — พี่พูดเอง: 'ระบบ RANK sheet ผมไม่เคยเปิดดูเลยสักครั้ง ไม่รู้ด้วยว่ามันอยู่ไหน' — สิบแผ่นพร้อมเฉลยนั่งอยู่ใน _private/benchmark/look-bench/ และตัว ask อยู่ใน md ทั้งคู่ไม่ใช่ช่องของเขา (ช่องเขา = โฟลเดอร์ render + แชท) กลไกเดียวกับ 21 asks ที่หายใน R13 ไม่ใช่เขาเมิน · แผ่น salt27 เฉลยถูกเปิดแล้ว (บันทึกใน RANK-ask md) ใช้ไม่ได้ · 08-22: สร้างแผ่นใหม่ s57 จากเฟรมปัจจุบัน p2r57 แล้ววางสำเนาใน pipeline/output (gitignored — งานเพื่อนไม่มีทางเข้า git) ชื่อไฟล์บอกวิธีตอบ · คำตอบ = พิมพ์เรียง A-F ในแชทกับ Claude แล้ว builder บันทึกลงแถวนี้ · กติกาเดิม: อย่าเปิด .ANSWER.txt ก่อนตอบ · ข้อจำกัดแผ่น: room_hint ว่าง → 5 ช่อง delivered แนวนอนทุกช่อง แต่ไม่การันตีห้องนอนทุกช่อง · PARTIAL ANSWER 2026-08-22 (ช่องแชททำงานวันแรก): 'คำตอบของผมคือสัดส่วนตู้ built-in ที่ fix ไว้ ทำให้ เตียงดูเล็กมาก ๆ ทำยังไงดี?' — เหตุผลรูปข้อบกพร่องต่อช่องของเรา ตรงเกณฑ์แผ่น; วัดตาม + คิวลง D-117 (สองโหมดของงานส่งจริง, เฟรมเราไม่เลือกข้าง, lever = กล้อง); การเรียง A-F เต็มยังเปิดรอ"
-    },
-    {
-      "id": "ASK-007",
-      "ask": "sconce ใน r30 อ่านว่า 'ติดไฟอยู่' หรือยัง และ day-night story จะเอาแบบไหน",
-      "first_routed": "2026-08-14",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r30-2026-08-14.md",
-      "status": "open",
-      "money": "no",
-      "note": "ยื่นครั้งเดียว ไม่เคยพูดซ้ำ"
-    },
-    {
-      "id": "ASK-008",
-      "ask": "ผ้าม่าน — design call ที่ผมไม่ควรตัดสินเอง",
-      "first_routed": "2026-08-14",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r30-2026-08-14.md",
-      "status": "open",
-      "money": "no",
-      "note": "มาจาก r28-C2#11 ยื่นครั้งเดียวแล้วหายไป"
-    },
-    {
-      "id": "ASK-009",
-      "ask": "กล้อง/องค์ประกอบ — โต๊ะข้างเตียงขวาโดนขอบเฟรมตัด และเตียงถูกครอปด้วยริก จะขยับกล้องมั้ย",
-      "first_routed": "2026-08-13",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r27-2026-08-13.md",
-      "status": "open",
-      "money": "no",
-      "note": "ตาราง triage เขียนว่า 'ACCEPT -> owner/camera call' แล้วไม่มี escalate section ในทั้ง r39 และ r41 — คำว่า escalate ถูกเขียนในช่องตาราง ไม่ได้ถูกส่งไปไหน"
-    },
-    {
-      "id": "ASK-010",
-      "ask": "ไม้สามชนิดที่ไม่เข้ากัน (พื้นส้ม / ตู้แอชเย็น / ระแนงแอชอุ่น) — DD เซ็นตระกูลโอ๊คอุ่นไว้ จะเอาสองโทนหรือรวมเป็นตระกูลเดียว",
-      "first_routed": "2026-08-16",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r39-2026-08-16.md",
-      "status": "open",
-      "money": "no",
-      "note": "'Escalated, not decided by me' เขียนไว้ในช่องตาราง แต่ไม่มี decision row และไม่มี escalate section"
-    },
-    {
-      "id": "ASK-011",
-      "ask": "duvet-overflow story — ความยับต้องมีเรื่องเล่า และม้วนชายหนา ๆ อ่านเป็น 'หนา' หรือเป็นความผิดพลาด",
-      "first_routed": "2026-08-12",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r26-2026-08-12.md",
-      "status": "open",
-      "money": "no",
-      "note": "ยื่น 3 รอบ (r26, r27, r28) แล้วหายไป — ขณะที่เครื่องนอนเป็นข้อ #1 ของกรรมการทั้งสองรายติดกัน 16+ รอบ"
-    },
-    {
-      "id": "ASK-012",
-      "ask": "Q1 ความลึกตู้เสื้อผ้า · Q2 ชั้นหนังสือ/ทีวี",
-      "first_routed": "2026-08-12",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r19-2026-08-12.md",
-      "status": "open",
-      "money": "no",
-      "note": "ยื่น 8 รอบติด (r19->r27) แล้วศูนย์ตั้งแต่ r28 — และแย่กว่านั้นคือมันหดเหลือแค่โทเคน 'Q1 · Q2' จนไม่มีไฟล์ไหนในรีโปเขียนคำถามเต็มไว้อีกเลย ถึงพี่อยากตอบก็ตอบไม่ได้"
-    },
-    {
-      "id": "ASK-013",
-      "ask": "jewel niche + ช่องแสง — จากกล้องตัวนี้มันอ่านออกมั้ย หรือควรขยับ",
-      "first_routed": "2026-08-12",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r20-2026-08-12.md",
-      "status": "open",
-      "money": "no",
-      "note": "ยื่น 5 รอบ (r20->r24) แล้วหายไป — วัดได้ว่าสร้างแล้ว อยู่ในเฟรม แต่ 0 พิกเซล"
-    },
-    {
-      "id": "ASK-014",
-      "ask": "floor2 stage-03 ค้าง 5 ข้อ: s2 เป็นช่องเปิด/บานคู่/ผนังทึบ · tg1/tg2 · ช่องฝักบัว · อ่างสองใบ · เส้นขอบ",
-      "first_routed": "2026-07-11",
-      "where": "projects/PRJ-2026-002_c001-house/03_layout/floor2-owner-decision-queue.md",
-      "status": "open",
-      "money": "no",
-      "note": "ไฟล์นี้มีอยู่เพื่อถือคำถามพวกนี้อย่างเดียว ไม่ถูกแตะมา 36 วัน และไม่มีสคริปต์หรือพิธีกรรมไหนอ่านมันเลย"
-    },
-    {
-      "id": "ASK-015",
-      "ask": "ทิศเตียงห้องนอนใหญ่ N-S หรือ E-W (เตียงลึก 2134 แบบ N-S ผ่านทางเดิน 610/910 ไม่ได้)",
-      "first_routed": "2026-07-04",
-      "where": "projects/PRJ-2026-002_c001-house/03_layout/clearance-report.md",
-      "status": "withdrawn",
-      "withdrawn_reason": "ตอบจากแบบของลูกค้าแทน (R12/DRW 2026-08-11) — ทิศมาจากเส้นหมึกในแบบ ไม่ใช่จากคำตอบของพี่ จึงถอนอย่างเป็นทางการแทนที่จะปล่อยค้าง",
-      "withdrawn_date": "2026-08-16",
-      "money": "no",
-      "note": "คีย์ owner_questions_carried_forward ใน scene-graph.json ไม่มีผู้อ่านเลยแม้แต่รายเดียวในทั้งรีโป — instance ที่บริสุทธิ์ที่สุดของ queue ที่ไม่มีคนมาเก็บ"
-    },
-    {
-      "id": "ASK-016",
-      "ask": "ขนาดห้องที่ประเมินไว้ (sitting_room ลึก 3300 · living_room 4800x4200) — ต้องการให้วัดจริงมั้ย",
-      "first_routed": "2026-07-04",
-      "where": "projects/PRJ-2026-002_c001-house/03_layout/clearance-report.md",
-      "status": "open",
-      "money": "no",
-      "note": "ติดป้ายตัวเองว่า 'เป็นความมั่นใจ ไม่ใช่ตัวบล็อก' ซึ่งเป็นวิธีที่มันค้างมา 43 วันพอดี"
-    },
-    {
-      "id": "ASK-017",
-      "ask": "petcave — มันคืออะไรและมิติเท่าไร (กรรมการหกรายอ่านได้หกแบบ)",
-      "first_routed": "2026-08-07",
-      "where": "training/TRN-002/identifiability-partition-2026-08-07.md",
-      "status": "open",
-      "money": "possibly — R8 ส่ง identity ที่แก้ไม่ตกไปที่การจัดซื้อ",
-      "note": "ไม่เคยถูกส่งเข้าช่องไหนเลย มันถูกเรียกว่า owner ask อยู่ในเอกสารวิเคราะห์เท่านั้น — แล้ว r35/r36 ผมก็วัดและพิมพ์มิติเองซึ่งตรงข้ามกับสิ่งที่ ask บอก"
-    },
-    {
-      "id": "ASK-018",
-      "ask": "เซ็นแบบฟอร์ม ToU ของชุดข้อมูล 3D-FRONT / Structured3D / ZInD (ฟรี แต่ต้องมีลายเซ็นเจ้าของ)",
-      "first_routed": "2026-07-06",
-      "where": "docs/strategy.md",
-      "status": "open",
-      "money": "no — datasets are free; the blocker is a signature",
-      "note": "มีทั้งเลนที่บันทึกไว้ว่ารออนุมัติที่ไม่เคยถูกยื่น และ checklist ที่เขียนว่า 'staged for the owner' หาไม่เจอบนดิสก์"
-    },
-    {
-      "id": "ASK-019",
-      "ask": "ใช้ skill `banana-claude` หรือเก็บ tools/gemini_image.py ของเราเอง",
-      "first_routed": "2026-07-01",
-      "where": "docs/DECISIONS-render-assets.md",
-      "status": "withdrawn",
-      "withdrawn_reason": "สคริปต์ของเราพิสูจน์ความสามารถเดียวกันที่ $0 แล้ว skill เพิ่มแค่ prompt polish — ถอนเพราะไม่คุ้มค่าที่จะรบกวนพี่ ไม่ใช่เพราะลืม",
-      "withdrawn_date": "2026-08-16",
-      "money": "no",
-      "note": "ask ที่เล็กที่สุดและค้างนานที่สุดในรีโป (46 วัน)"
-    },
-    {
-      "id": "ASK-020",
-      "ask": "ผ้าคาดปลายเตียงสีเกรจ์ — ยอมให้หายไปจากเฟรมชั่วคราวมั้ย ถ้าเลกที่ซื้อยังหาผ้าคาดที่ผ่านการวัดไม่ได้",
-      "first_routed": "2026-08-16",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
-      "status": "open",
-      "money": "no — แต่ผูกกับ ASK-001",
-      "note": "สเปกที่เซ็นเขียนว่า 'อย่าเอาออก' พร้อมเหตุผลว่ามันกันไม่ให้เตียงอ่านเป็นก้อนซีดก้อนเดียว — ทางเลือกคือซื้ออีกชิ้น (แคชมี th_a..th_f) หรือประกาศเป็น gap ที่เซ็นแล้ว ไม่ใช่กลับไปปั้นเอง"
-    },
-    {
-      "id": "ASK-021",
-      "ask": "ยืนยันว่าผ้าคลุมเตียงชุดที่สอง (0afd4c6f) ที่ผ่านการวัดแล้ว อ่านออกมาโอเคมั้ย — หรือให้ไปหาของใหม่ทั้งหมด",
-      "first_routed": "2026-08-16",
-      "where": "projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
-      "status": "open",
-      "money": "no",
-      "note": "ตัวที่พี่ตก (8635b5b9) กับตัวนี้คือสองตัวเดียวจาก 68 ที่ผ่านเกณฑ์วัดได้ — ถ้าตัวนี้ตกด้วย ตลาดฟรีในแคชหมดแล้วจริง ๆ และ ASK-001 คือทางเดียวที่เหลือ"
-    },
-    {
-      "id": "ASK-022",
-      "ask": "ปฏิทินคำสั่ง: มีคำสั่งไหนใน qa/owner-orders.json ที่พี่ถือว่าเลิกใช้แล้วบ้าง (ผมถอนเองไม่ได้ตามกฎ)",
-      "first_routed": "2026-08-16",
-      "where": "qa/owner-orders.json",
-      "status": "open",
-      "money": "no",
-      "note": "คำสั่งจะไม่หมดอายุเอง มีแต่พี่ที่ถอนได้ — ถ้าไม่มีช่องนี้ ทะเบียนคำสั่งจะกลายเป็นของที่โตอย่างเดียวไม่มีวันหด"
-    },
-    {
-      "id": "ASK-023",
-      "ask": "cap ของเลน DELIV-001 ควรเป็นเท่าไร — กี่รอบ / กี่เฟรม full-fidelity ก่อนต้องหยุดแล้วทบทวน (กฎในไฟล์ caps เขียนเองว่ามีแต่พี่ที่ขยับ cap ได้ ผมจึงตั้งเลขเองไม่ได้)",
-      "first_routed": "2026-08-16",
-      "where": "qa/curriculum-caps.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
-      "status": "open",
-      "money": "no",
-      "note": "D-021 บอกว่า R1 cap ไม่ใช้กับ room lane เพราะ cap ประกาศต่อ unit ใน curriculum-caps.json — แล้วไม่เคยมีแถว DELIV-001 ถูกเพิ่มเลย grep นับได้ 0 ตลอด 44 รอบ ตัวหยุดยังทำงาน (R1 หยุดเลนนี้หลายครั้ง) แต่ตัวนับไม่มี"
-    },
-    {
-      "id": "ASK-024",
-      "ask": "ม้านั่งปลายเตียงที่แบบวาดเป็น 504 x 1008 มม. (1:2.0) — ยังไม่มีตัวไหน เป็นทรงนั้น **และช่องที่ขาดสลับแกนแล้ว**: ตัวที่ใช้อยู่ตอนนี้คือ Blendkit ฟรี 'Minimal modern bench' 5b8e98d7 (เข้าเฟรม p2r57, 08-22, แทน Ottoman_01 ตัวเดิม) ซึ่งเติม **ยาว 1000 จาก 1008 มม. = 99.2%** แต่ **กว้าง 393 จาก 504 มม. = 78.0%** — ซื้อ/หาตัวที่ทรงถูกมั้ย",
-      "first_routed": "2026-08-16",
-      "where": "qa/open-decisions.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r44-2026-08-16.md",
-      "status": "open",
-      "money": "no ตอนนี้ — พี่จ่ายเดือน Blendkit Full ไปแล้ว 2026-08-22 (ORD-2026-08-22-blenderkit-one-month, ASK-031 ตอบ 'จ่ายตังแล้ว') เหลือถึงราว 2026-09-21 ระหว่างนี้ทั้งชั้นฟรีและชั้นเสียเงินเป็น **ค่าใช้จ่ายส่วนเพิ่ม ฿0** และตามสัญญา Art. 5.3 ที่ DR อ่านมา licence ไม่ตายพร้อม subscription จึงใช้ต่อได้หลังหมดเดือน · **ถ้าเดือนหมดแล้วยังไม่เจอ** ค่อยกลับมาเป็นคำถามเรื่องเงิน ($5-15/โมเดลที่ 3dsky)",
-      "note": "D-069 ยื่นเป็น SOURCING GAP เมื่อ 08-16 จากการค้นชั้นฟรีล้วน — rung ที่สร้างรอบนี้จับได้และเปลี่ยนเป็น procurement ask ที่มีราคา · กรรมการ blind ยืนยันด้วยตาโดยไม่เห็นแบบเลย",
-      "read_first": "docs/LICENSING.md, qa/sourcing-tiers.json",
-      "read_first_found": "**อ่านย้อนหลัง 2026-08-17**: ชั้นฟรีที่ตารางอนุมัติยังไม่ถูกค้นด้วยสัดส่วน 1:2.0 ที่แบบวาด และ FurniMesh ยังไม่เคยถูกแตะ — เงินยังไม่ใช่ทางเดียว",
-      "amended": "2026-08-24",
-      "amended_why": "**ตัวเลขในแถวนี้เก่า และเก่าเพราะเปลี่ยนของ ไม่ใช่เพราะวัดใหม่** — พี่ทักเอง 2026-08-24 และการไล่กลับพิสูจน์ว่าเขาถูก พร้อมเหตุผลที่คมกว่าที่เขาพูด: '709 จาก 1000' วัดเมื่อ p2r39 (2026-08-16, gate-DELIV001-P2r39:36,100-103) กับ **ของคนละตัว** คือ Ottoman_01 จาก 3D Warehouse อัตราส่วน 1:1.42 ซึ่งลง 498 x 709 — เต็มความกว้าง ขาดความยาว. p2r57 (2026-08-22) เปลี่ยนเป็น Blendkit ฟรี 5b8e98d7 native 1006.9 x 395.8 x 409.1 (อัตราส่วน 1:2.544) scale 0.993 (assets/shared/blenderkit/5b8e98d779b84786ba8131ba3662c698/*.scale.json) — **เต็มความยาว ขาดความกว้าง**. วัดจาก scene dump วันนี้ (pipeline/output/room_bedroom_suite_eye_p2r59q_ql.scene.json): bench__acq0 = 393.0 x 1000.0 x 365.6 มม., bench__acq1 (ขา) = 295.9 x 808.8 x 61.0. **ช่องที่ยังขาดพลิกแกน 90 องศา: จาก 70.9% ของความยาว มาเป็น 78.0% ของความกว้าง — แบบ 1:2.0 ยังไม่ถูก match อยู่ดี แค่พลาดคนละด้าน** และ MIN_FILL 0.62 ปล่อยผ่านทั้งสองครั้ง ซึ่งเป็นหน้าที่ของมัน. บทเรียนของแถวนี้ไม่ใช่ 'ตัวเลขเก่าไปหนึ่งรอบ' แต่คือ **ask ที่ฝังตัวเลขของ instance ไว้ในตัวคำถาม จะเก่าเงียบ ๆ ทุกครั้งที่ instance ถูกเปลี่ยน** — ทะเบียนนี้ยังไม่มี rung ไหนอ่านตัวเลขในช่อง `ask` เทียบ scene dump (คลาสเดียวกับกฎ 5 `in_effect_assert` ที่เพิ่งใส่ให้ decision log เมื่อ 08-24)",
-      "now_waiting_on": "BUILDER — ไม่ใช่พี่. คำถามเดิมเป็นเรื่องเงิน และเงินถูกจ่ายไปแล้ว สิ่งที่เหลือคือผมต้องไปค้นชั้นที่พี่จ่ายไว้ ด้วยตัวกรองขนาดฝั่ง server (dimensionX_gte/lte ที่วัดไว้เมื่อ 08-23) ให้ตรงช่อง 504 x 1008 x ~410 แล้วผ่านสายตากรรมการ 3 คนตาม docs/blenderkit-month/style-panel-prompt.md",
-      "slot_mm": {
-        "drawn_ink_SR-08": [
-          504,
-          1008
-        ],
-        "spec_slot": [
-          498,
-          1000
-        ],
-        "h_target": 410,
-        "current_fill_pct": {
-          "length_y": 99.2,
-          "width_x": 78.0
-        },
-        "measured_from": "pipeline/output/room_bedroom_suite_eye_p2r59q_ql.scene.json bench__acq0",
-        "measured_on": "2026-08-24"
-      }
-    },
-    {
-      "id": "ASK-025",
-      "ask": "**engine ของสตูดิโอ — Blender ใช่คำตอบมั้ย** พี่ถามเอง 2026-08-17: \"ทำไมต้องยึดติดกับ blender โปรแกรมอื่นเราใช้ไม่ได้หรอ\" · คำถามนี้ไม่เคยถูกตัดสิน: `pipeline/CLAUDE.md` เขียนไว้เองว่า engine-of-record = build_room.py เป็นแค่ PROPOSED (2026-07-13) และ \"NOT yet owner-confirmed, so do not cite it as settled\" ให้เอาไปยืนยันที่ docs/strategy.md ก่อน — ผ่านมา 35 วัน docs/ ไม่มีบรรทัดไหนยืนยัน · **ทะเบียนทั้งหมดยืนยันว่าไม่เคยตัดสิน**: decision row 102 แถว = 0 แถวพูดถึง engine หรือ renderer · owner order 20 ข้อ = 0 ข้อ",
-      "first_routed": "2026-08-17",
-      "where": "pipeline/CLAUDE.md, docs/strategy.md",
-      "status": "open",
-      "money": "yes — Enscape ต้องมี host CAD (SketchUp Pro/Revit/Rhino) จึงเป็นค่า subscription สองชั้น ราคายังไม่ verify (อยู่ใน DR 2026-08-17)",
-      "note": "**หลักฐานที่ทำให้คำถามนี้มีน้ำหนัก วัดเมื่อ 2026-08-17**: (1) งานส่งจริงที่เราไล่ตาม — ในภาพ 1,787 ใบใต้ _private/discord ที่ชื่อไฟล์ยังบอกว่าเรนเดอร์ด้วยอะไร **Enscape 228 · D5 2 · อย่างอื่น 0** (99.1% Enscape) · (2) ของฟรีที่เราใช้ **96/96 โฟลเดอร์เป็น SketchUp 3D Warehouse** — เราใช้ของ SketchUp โดยไม่ใช้ SketchUp · (3) ภาษีอะแดปเตอร์ที่จ่ายไปทั้งหมดเมื่อ p2r46-r48 เป็นค่าแปลง SketchUp→Blender ล้วน ๆ: exporter เขียน 1 primitive/สามเหลี่ยม ทำให้ mesh_density อ่านผ้า 133,108 tri เป็น 1 tri · import 297,640 primitive กินเวลาเป็นชั่วโมงจนต้องเขียน glb_flatten.py (360MB→35.5MB) · fit ต้องแก้เพราะ 6 ใน 9 ชุดถูกปฏิเสธด้วยความสูงของเตียงที่แถมมาในไฟล์ · (4) และ **ทุกตัวเลือกที่ผมเคยเอาไปให้พี่ (ASK-001/ASK-002) เป็นชั้น asset ที่ต่อเข้า Blender ได้ทั้งนั้น** — ทางเลือกที่ไม่เคยถูกตัดสิน กำหนดทางเลือกที่พี่ได้เห็นไปแล้วเงียบ ๆ · **สิ่งที่ค้านการย้าย และผมวัดเอง**: gradient แสงบนผ้านวมเรา 45.5 vs งานส่งจริง 46.1 — Cycles โมเดลแสงบนผ้าได้เท่า Enscape ความต่างอยู่ที่โครงสร้างพับของ mesh (ละเอียด 1.5x / หยาบ 0.8x) ซึ่งเป็นสมบัติของ ASSET ไม่ใช่ของ RENDERER · และ pipeline ทั้งหมด (build_room 537KB, placement solver, sheet_recon, id_mask, gate 11 โมดูล, 3,191 tests) รัน headless ใน Blender — Enscape ไม่มี headless API (ข้อนี้ยังไม่ verify ใน repo, อยู่ในคำถาม DR) · **สามชั้นที่แยกกันได้**: engine ที่สร้างห้องจากแบบ / คลัง asset + ฟอร์แมตต้นทาง / renderer — การวินิจฉัยเตียง 2026-08-17 ชี้ไปที่ **ชั้นกลางอย่างเดียว** ซึ่งเปลี่ยนได้ฟรี และไม่ต้องรอคำตอบข้อนี้",
-      "read_first": "pipeline/CLAUDE.md, docs/strategy.md, docs/LICENSING.md",
-      "read_first_found": "อ่านก่อนยื่นจริง: `pipeline/CLAUDE.md` §Engine of record (PROPOSED, NOT owner-confirmed) · `docs/strategy.md` ไม่มีบรรทัดยืนยัน · `docs/LICENSING.md` แสดงว่าชั้น asset ที่เราใช้ เป็น SketchUp ทั้งหมด ซึ่งเป็นครึ่งหนึ่งของน้ำหนักคำถามนี้"
-    },
-    {
-      "id": "ASK-026",
-      "ask": "**Marvelous Designer สำหรับเตียง hero — เอามั้ย** DR 2026-08-17 ตอบว่า สตูดิโอจริงแบ่งงานเครื่องนอนเป็นสองทาง: 80-90% โหลดเตียงสำเร็จมาแล้ว**สร้างวัสดุใหม่เอง** (ทิ้ง texture ที่ติดมา ทำ PBR จาก fabric scan) · 10-20% **sim เองใน Marvelous Designer** สำหรับ hero shot / master suite / ภาพระยะใกล้ — ซึ่งเฟรมนี้เข้าข่ายอย่างหลังตามคำอธิบายของ DR เอง · **MD ไม่เคยถูกเอ่ยถึงในทั้ง repo มาก่อน** ห้ารอบที่เราล้มเรื่องผ้าเป็นการเขียน physics ใน Blender ด้วยมือทั้งหมด ซึ่งไม่ใช่วิธีที่วงการเขาทำ",
-      "first_routed": "2026-08-17",
-      "where": "knowledge/_inbox/nlm-free-asset-sources/2026-08-17-free-asset-sources.md, qa/owner-orders.json",
-      "status": "open",
-      "money": "yes — ราคายังไม่ verify (DR ไม่ได้ให้ และผมไม่เดา)",
-      "note": "**ทำไมต้องเป็นคำสั่งพี่ ไม่ใช่คำตัดสินผม**: พี่สั่ง 2026-08-14 และย้ำ 08-15 ว่า ผ้าเตียงต้องเป็นของที่ซื้อมา · D-072 เคยกลับคำสั่งนั้นด้วยตัวเองและกลายเป็นที่มาของ R13 ผมจะไม่ทำซ้ำ · **แต่ MD ไม่ใช่การกลับคำสั่งเสียทีเดียว** — มันคือการซื้อ *เครื่องมือ* ไม่ใช่การกลับไปปั้นผ้าด้วยมือ และ DR บอกว่าเป็นวิธีมาตรฐานของ hero shot · ถ้าพี่เอา ผมลงเป็นแถวใน owner-orders.json ก่อนแตะโค้ด · ถ้าพี่ไม่เอา เส้นทางเหลือ FurniMesh + 3dsky free tier + 11 ไฟล์เตียงบนชั้นที่ยังไม่เคย bench",
-      "read_first": "knowledge/_inbox/nlm-free-asset-sources/2026-08-17-free-asset-sources.md, docs/LICENSING.md",
-      "read_first_found": "อ่านก่อนยื่นจริง: staging ของ DR (วิธีทำงานจริงของสตูดิโอ 80-90% / 10-20%) และตารางใบอนุญาต ซึ่งไม่มี Marvelous Designer อยู่เลย — เพราะมันเป็นเครื่องมือ ไม่ใช่แหล่ง asset"
-    },
-    {
-      "id": "ASK-027",
-      "ask": "**ลิงก์ 3DSKY ที่แชร์ใน Discord ของพี่ — ใช้ไม่ได้ตามใบอนุญาต ยืนยันมั้ย** `knowledge/_inbox/discord/MY-DATA-PEAT/model-for-sale/` เก็บลิงก์ Dropbox ของชุด **3DSKY FURNITURE 2024 / 2022 / PROP / LIGHTING / TREE** ที่โพสต์ไว้ในเซิร์ฟเวอร์ของพี่เอง · นั่นคือโมเดลจากคลังเสียเงินที่ถูกแจกต่อ",
-      "first_routed": "2026-08-17",
-      "where": "docs/LICENSING.md, knowledge/_inbox/discord/MY-DATA-PEAT/model-for-sale",
-      "status": "open",
-      "money": "no — แต่เป็นความเสี่ยงทางธุรกิจ",
-      "note": "**กฎในไฟล์ของเราเองตอบไว้แล้ว** (`docs/LICENSING.md`): \"the personal-use restriction **travels with the file** — her sharing it does not launder the license\" · ผมจึง **ไม่เอามาใช้เป็นแหล่ง** และแจ้งไว้เป็นแถวแทนที่จะเก็บเงียบ · สิ่งที่จะเปลี่ยนคำตอบนี้ได้มีอย่างเดียว: พี่ถือ license 3dsky ของตัวเอง — และถ้าถืออยู่แล้ว ASK-001/ASK-002 ต้องแก้ เพราะมันตั้งราคาไว้เหมือนเรายังไม่มี · หมายเหตุ: DR บอกว่า 3dsky มี **free tier 3 โหลด/24 ชม.** และหมวด Bed มี 15,167 ตัว (ยังไม่ verify) ถ้าจริง เราเข้าถึงคลังเดียวกันได้ที่ ฿0 วันละ 3 ตัว โดยไม่ต้องแตะลิงก์พวกนี้เลย"
-    },
-    {
-      "id": "ASK-028",
-      "ask": "**ซื้อโมเดลเตียง 7'x6.5' ตามแบบ — ชั้นฟรีวัดจนหมดแล้ว ไม่มีของ** แบบวาดเตียง near-square 2149 กว้าง x 2000 ยาว (7'x6.5') h600 duvet ถึงขอบ ไม่มี footboard · วัด 2026-08-18: 18 stagings ในห้องจริง + probe showroom 2 ไฟล์ — field กว้างสุดที่ทำได้ 1,910 มม. (0.89) และตัวที่ผ่านขนาดล้วน bare-อ่าน 'most' จาก panel ตาบอด · สเปกที่ตัวซื้อต้องผ่าน (เข้า bench อัตโนมัติ): made-bed field >= 1,891 มม. กว้าง ที่ยาว <= 2,000 (field_fill >= 0.88 ทั้งสองแกน) + duvet เต็มผืน + ไม่มี footboard + headboard แยกชิ้นได้ · เส้นทาง: (1) 3dsky free tier 3 โหลด/วัน (DR อ้าง หมวด Bed 15,167 ตัว — ยังไม่ verify, ต้องสมัคร account ซึ่งเป็นตัวตนของพี่) (2) 3dsky ต่อใบ ~$5-18 (3) BlenderKit Full $118.80/ปี (ASK-002 เดิม) (4) Chocofur/Dimensiva ตาม ASK-002 · ระหว่างรอ เฟรมคง f52472c1 (จัดเต็มแต่เล็ก 0.72 ของแบบ) พร้อม deficit พิมพ์ทุก render (D-108)",
-      "first_routed": "2026-08-18",
-      "where": "qa/owner-orders.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r53-2026-08-18.md, _private/deliv-001/bed-size-2026-08-18",
-      "status": "answered",
-      "answer": "ลุย BlenderKit",
-      "answered_date": "2026-08-18",
-      "answer_context": "เส้นทางที่เลือก = (3) BlenderKit Full $118.80/ปี — ปิด ASK-002 (48 วัน) ในประโยคเดียวกัน · สิ่งที่เหลือเป็นขั้นลงมือของพี่ล้วน ๆ (สมัคร/จ่าย/วาง key) = ASK-029 · ฝั่ง builder เดินล่วงหน้าแล้ววันเดียวกัน: กวาด catalog สาธารณะ 991 assets → เตียงทั้งหลังในหน้าต่างขนาดแบบ 174 ตัว (full-plan 148) → shortlist คัดด้วยตา 12 ชุดขนาน — ดู qa/blenderkit-search-log.json ส่วน wholebed_2026_08_18",
-      "money": "yes — ตั้งแต่ ฿0 (free tier ที่ต้อง account พี่) ถึง $118.80/ปี",
-      "note": "R13: 'ยังไม่ได้ซื้อ' ไม่ใช่ 'ไม่มีของ' — แต่รอบนี้วัดฝั่งโลกครบแล้ว: ของฟรีไม่มีจริง แถวนี้จึงเป็น ask เรื่องเงิน/ตัวตนล้วน ๆ ไม่มี builder action ค้าง",
-      "read_first": [
-        "docs/DECISIONS-render-assets.md",
-        "docs/LICENSING.md",
-        "qa/warehouse-search-log.json",
-        "qa/blenderkit-search-log.json",
-        "knowledge/_inbox/dr-whole-bed-swap-2026-08-17.md",
-        "_private/deliv-001/whole-bed-audition-2026-08-17/README.md",
-        "_private/deliv-001/bed-size-2026-08-18/rebench/wholebed_bench.json",
-        "_private/deliv-001/bed-size-2026-08-18/rebench-new/wholebed_bench.json"
-      ]
-    },
-    {
-      "id": "ASK-029",
-      "ask": "**Blendkit Full (ชื่อใหม่ของ BlenderKit หลัง rebrand 06-10) — ขั้นลงมือที่เป็นตัวตน/เงินของพี่ล้วน ๆ (อนุมัติแล้ว 'ลุย BlenderKit' 2026-08-18, เลือกรายเดือน 08-22):** (1) สมัคร/จ่ายที่ **blendkit.com** — Full Plan **$9.90/เดือน** (ราคา verify 08-22) ด้วยบัตรของพี่ (2) เอา API key จากหน้า profile (blendkit.com/profile) มาวางใน `.env` ที่รากรีโปเป็นบรรทัด `BLENDERKIT_API_KEY=<key>` — เท่านั้น จบ · ทันทีที่ key อยู่ในไฟล์ ฝั่ง builder ดาวน์โหลด shortlist ที่คัดไว้แล้ว (panel 12 ชุดผ่าน 129 จาก 174: full-plan 118 · free 11) เข้า wholebed_bench อัตโนมัติด้วยเกณฑ์ที่เข้า bench ไปแล้ว (field_fill >= 0.88 ทั้งสองแกน + duvet เต็มผืน + ไม่มี footboard) · **อัปเดต 2026-08-22 (D-114): แถวนี้ไม่ใช่ critical path ของเตียงอีกแล้ว** — คำสั่ง bed-too-small ถูก retire เพราะเป้าเปลี่ยนเป็นขนาดมาตรฐานซึ่งเตียงปัจจุบันผ่าน field 1.00x1.00 แล้ว; เหลือสถานะ library upgrade (bench ทางเลือก, คลาสอื่น, แก้สไตล์ชนตาม C2 p2r56 ข้อ 4)",
-      "first_routed": "2026-08-18",
-      "where": "qa/owner-orders.json, qa/blenderkit-search-log.json, _private/deliv-001/bed-size-2026-08-18/blenderkit-shortlist",
-      "status": "answered",
-      "money": "yes — เส้นทางที่พี่เลือก 2026-08-22 ('สมัครเดือนเดียวก่อนไม่ได้หรอ'): รายเดือน — และราคาปัจจุบันถูกกว่าที่เคยบันทึก: **$9.90/เดือน** (verify 2026-08-22 บน blendkit.com/plans/pricing หลัง rebrand; ตัวเลข $17.90/$118.80 ในทะเบียนเป็นราคาก่อน rebrand) — จ่ายเดือนเดียว bench คลัง full-plan 135 ตัวภายในเดือนนั้น ต่ออายุตัดสินจากผลวัด",
-      "note": "แยกจาก ASK-028 เพราะสถานะต่างกัน: ASK-028 คือคำถาม 'เอาทางไหน' (ตอบแล้ว) แถวนี้คือการกระทำที่เหลือ ซึ่งมีแต่พี่ทำได้ — builder ไม่มีบัตร ไม่มีตัวตนไปสมัครแทน · **แก้ p2r54 (คืนเดียวกัน): ข้อความก่อนหน้าของ note นี้ ('ชั้นฟรีให้เตียงที่ผ่าน bench ทุกข้อแล้ว — คำสั่งเตียงเล็กไม่รอ key นี้') อยู่ได้ 4 ชั่วโมงแล้วเป็นเท็จ — ความกว้าง field ที่ 'ผ่าน' เป็นของแผงผนังหัวเตียง 2,759 มม. ที่ติดมากับไฟล์ ไม่ใช่ของเตียง (D-109; เครื่องมือแก้แล้ว) เตียงเองถึงแค่ 1.00x0.835 และถูก stage เป็น interim ที่ sign deficit** · **แถวนี้จึงกลับมาเป็น critical path ของ ORD-2026-08-18-bed-too-small**: ชั้นฟรีวัดหมดจริงแล้วด้วยเครื่องมือที่ซื่อสัตย์ (12/12 stage, 0 ผ่าน field cut) เหลือคลัง full-plan 135 ตัวหลัง key นี้ทางเดียว — key ลง .env เมื่อไร shortlist วิ่งเข้า bench ด้วยกฎที่แก้แล้วอัตโนมัติ · **ลดระดับอีกครั้งในชั่วโมงเดียวกัน (D-110): พี่ calibrate ว่าขนาดตามแบบมี tolerance ของพี่เอง ('ไม่ได้ fix ขนาดนั้น... แต่เปลี่ยนได้') — แถวนี้จึงเหลือสถานะ 'เส้นทางถ้าตาพี่ปฏิเสธ interim 0.835 จากเฟรม p2r54' ไม่ใช่ทางบังคับ** เงินก้อนนี้ตัดสินหลังพี่เห็นภาพ ไม่ใช่ก่อน",
-      "read_first": [
-        "docs/LICENSING.md",
-        "qa/sourcing-tiers.json",
-        "docs/DECISIONS-render-assets.md",
-        "qa/blenderkit-search-log.json",
-        "_private/deliv-001/bed-size-2026-08-18/blenderkit-shortlist/shortlist.json"
-      ],
-      "read_first_found": "อ่านจริง 2026-08-18 ก่อนแก้แถวนี้: `docs/LICENSING.md` และ `qa/sourcing-tiers.json` อนุมัติชั้น paid ไว้แล้วโดยหลักการ (ราคา+ใบอนุญาตบันทึกตั้งแต่ 2026-07-01) — แถวนี้ไม่ได้เสนอชั้นใหม่ แค่เป็นการจ่ายจริงของชั้นที่ตารางเรามีอยู่แล้ว และ ASK-028 อนุมัติจำนวนเงินไว้แล้ว ('ลุย BlenderKit') · ชั้นฟรีของแพลตฟอร์มเดียวกันถูกวัดจนถึงหน้าสุดท้ายแล้ว (2,147 assets) ก่อนที่แถวนี้จะเหลือสถานะเรื่องคลัง",
-      "security_note_2026_08_22": "RESOLVED ในวันเดียวกัน — 301 จาก blenderkit.com ไป blendkit.com เป็น REBRAND จริง ไม่ใช่เว็บปลอม: BlenderKit เปลี่ยนชื่อเป็น Blendkit 2026-06-10 (Blender Foundation ขอไม่ให้ใช้คำ 'Blender' ในชื่อสินค้า; add-on v3.21.0 เขียนเอง 'formerly known as BlenderKit'; ยืนยัน 3 ทาง: redirect ออกจาก origin จริง (Heroku NEL headers) + BlenderNation 06-24 + release notes ทางการ) · คำเตือน typosquat เดิมของ builder เป็น false alarm ที่แก้แล้ว — จ่ายที่ blendkit.com ได้เลย (API key: blendkit.com/profile ลง .env เป็น BLENDERKIT_API_KEY เหมือนเดิม)",
-      "answer": "สมัคร blenderkit 1 เดือนเลย ผมอยากจะรู้ว่ามันจะทำให้งานดีขึ้นยังไง",
-      "answered_date": "2026-08-22",
-      "answer_context": "ตอบทางแชทเย็น 08-22 (verbatim ใน docs/owner-advice-2026-08-22.md §6) → ORD-2026-08-22-blenderkit-one-month · คำสั่ง = คำตอบของ 'เอาไหม/ทางไหน' (หนึ่งเดือน); การกระทำที่เหลือ (จ่าย + วาง key) แยกเป็น ASK-031 เพราะ asks_check มีสามสถานะเท่านั้น — ไม่มี 'เขาบอกไปแล้วแต่ยังไม่ได้ทำ' · **ราคาที่แถวนี้บันทึกไว้ ($9.90/เดือน) ผิด**: ตรวจ markup หน้าราคาเย็นเดียวกัน — การ์ด Full มีสามแท็บ '30 day glimpse' $19.90 ไม่ต่ออัตโนมัติ · Monthly $17.90 · Yearly $9.90/เดือน ($118.80/ปี) และหน้าเปิดที่แท็บ Yearly; 'สมัคร 1 เดือน' ตามคำสั่ง = glimpse $19.90"
-    },
-    {
-      "id": "ASK-030",
-      "ask": "เพื่อน designer ใช้เวลาเท่าไรต่อ 1 เฟรมห้องนอน — ไม้บรรทัดของคำว่า 'เราช้า' ที่ repo ไม่เคยมี (คำถามข้อ 3 จาก process review 2026-08-22)",
-      "first_routed": "2026-08-22",
-      "where": "docs/process-review-2026-08-22.md",
-      "status": "answered",
-      "answer": "4 วัน",
-      "answered_date": "2026-08-22",
-      "money": "no",
-      "note": "การอ่านเป็นของ builder (พี่แก้ได้): 1 เฟรมห้องนอน ~4 วัน — เทียบเรา 16 วันบนเฟรมเดียวและยังไม่จบ = ช้ากว่า ~4 เท่าโดย wall-clock ไม่ใช่ร้อยเท่า แต่ 4 วันของเขารวมทั้ง scene จากของซื้อบนเครื่องมือเรียลไทม์ · สองคำถามที่เหลือของ SC-3 (ปั้นเอง/ซื้อ · ลูกค้าส่งกลับ) ยังเปิดที่ ASK-004"
-    },
-    {
-      "id": "ASK-031",
-      "ask": "**เอา API key ลง `.env` — ทางที่ไม่ต้อง copy อะไร (ทางหลัก):** `python pipeline/scripts/blenderkit.py key --login` ทำสิ่งเดียวกับ add-on (OAuth PKCE ของ Blendkit: client_id/port/redirect ของ add-on เอง, อ่านจาก source สาธารณะ 2026-08-22) → Chrome เปิดหน้า blendkit.com/o/authorize → **พี่แค่ login Google / กด Authorize ในแท็บนั้น** → redirect กลับ localhost → token เขียนลง `.env` (access + refresh + หมดอายุ; refresh อัตโนมัติ) → `status` พิมพ์ plan จาก /me · ทางสำรอง: (ก) หน้า profile → `blenderkit.py key <ค่า>` รันเองใน terminal (ห้ามวาง key ลงแชท) (ข) ติดตั้ง extension BlenderKit ใน Blender แล้ว `key --from-blender` · การจ่าย: พี่บอก 'จ่ายตังแล้ว' 2026-08-22 คืน — /me จะยืนยันว่าเป็น '30 day glimpse' หรือแท็บอื่น",
-      "first_routed": "2026-08-22",
-      "where": "docs/blenderkit-month-2026-08-22.md, pipeline/scripts/blenderkit.py, .env.example, qa/owner-orders.json",
-      "status": "answered",
-      "money": "yes — $19.90 once (glimpse); Monthly $17.90 / Yearly $118.80 are the other tabs and are not what he ordered",
-      "note": "แยกจาก ASK-029 (ตอบแล้ว 'สมัคร blenderkit 1 เดือนเลย' 08-22) — คำสั่งคือคำตอบ การกระทำเป็น ask ใหม่ · ORD-2026-08-22-blenderkit-one-month อยู่ในสถานะ not-obeyed blocked_by แถวนี้จนกว่า key จะลงไฟล์ · เกณฑ์ 'ดีขึ้นยังไง' ล็อกไว้ที่ D-119 ก่อนโหลดตัวแรก; การต่ออายุไม่ได้ตัดสินล่วงหน้า — วัน 30 จะมี ask ใหม่พร้อมตัวเลข · 2026-08-22 คืน: พี่บอก 'สมัครแล้วด้วย google account' + ส่งลิงก์คู่มือ add-on (docs.blender.org 2.93 blenderkit) — เช็คแล้ว key ยังไม่อยู่ใน .env และเครื่องนี้ยังไม่มี add-on/extension BlenderKit (userpref ลงวันที่ 07-04) จึงเพิ่มสองทางข้างบน (`key <ค่า>` / `key --from-blender`) · 'สมัครด้วย google' = บัญชี; การซื้อ glimpse เป็นอีกคลิก — /me จะบอกว่า plan ไหนเมื่อ key ลง · 2026-08-22 ดึก: พี่ถาม 'หา key เองเลยไม่ได้หรอ' + 'จ่ายตังแล้ว' → สร้าง `key --login` (flow เดียวกับ add-on: /o/authorize + PKCE S256 + state → localhost:62485/consumer/exchange/ → POST /o/token/; endpoint ยืนยันด้วย code ปลอม = 400 invalid_grant) · รัน 2 ครั้ง (5 + 9 นาที) Chrome เปิดแท็บได้ (default browser = Chrome) แต่ไม่มี redirect กลับ = ยังไม่มีมือพี่ในแท็บ → ปล่อย listener detached 2 ชม. (pid ใน scratchpad/bk_login.out) รอพี่กด; key ลงเมื่อไร `status` เห็นเอง",
-      "read_first": [
-        "docs/blenderkit-month-2026-08-22.md",
-        "qa/sourcing-tiers.json",
-        "qa/blenderkit-month-classes.json"
-      ],
-      "answer": "จ่ายตังแล้ว",
-      "answered_date": "2026-08-22",
-      "answer_context": "พี่พิมพ์ 'จ่ายตังแล้ว' ทางแชท 2026-08-22 ดึก แล้วกด login/Authorize ในแท็บ Chrome ที่ `blenderkit.py key --login` เปิดไว้ (listener detached รอบที่ 3) → token เขียนลง `.env` (access 30 ตัวอักษร หมดอายุ 175 ชม. + refresh) → `/me` = currentPlanName 'Full'. ไม่มีการ copy key ผ่านแชทเลย · ที่ /me ยังบอกไม่ได้: เป็นแท็บ '30 day glimpse' หรือ Monthly/Yearly — ดูที่หน้า My Plan ของพี่"
-    },
-    {
-      "id": "ASK-032",
-      "ask": "**หัวเตียง: แผงที่แบบวาด หรือหัวเตียงของเตียงที่ซื้อมา — ตอบจากภาพได้เลย** · เตียง Metropol ที่พี่เลือก มีหัวเตียงบุนวมของตัวเอง **1998 x 410 x 927 มม.** (กว้างเท่าเตียงพอดี ยืนจากพื้น) และ build **ตัดทิ้ง** เพราะแบบวาดแผง SR-18 หนา 60 มม. ไว้ และ R12 บอกว่าแบบชนะสิ่งที่เรา derive เอง — สองอันอยู่ที่เดียวกันไม่ได้ · ในเฟรม p2r58 หัวเตียงที่เห็นคือแผงเทาแบนที่เราปั้นเอง และในสายตาผมมันคือชิ้นที่ อ่อนที่สุดในภาพ · **นี่เป็นคำถามของพี่ ไม่ใช่ของผม** เพราะ R12 ให้แบบชนะ derivation ของเรา แต่พี่ชนะแบบ (พี่ทำมาแล้วกับขนาดเตียงที่ D-114) · (ก) คงแผงตามแบบ = ไม่ต้อง ทำอะไร (ข) ใช้หัวเตียงของ asset = เลิก strip ชิ้นนั้น ถอนแผง แล้วเตียงต้องขยับออก จากผนังตามความลึก 410 มม. ซึ่งกินเข้ามาในห้อง (ค) ชี้ทางที่สาม",
-      "first_routed": "2026-08-24",
-      "where": "pipeline/scripts/wholebed_rules.py, qa/sheet-recon.json, qa/open-decisions.json, pipeline/output/room_bedroom_suite_eye_p2r58_ql.png",
-      "money": false,
-      "status": "open",
-      "answer": null,
-      "answered_date": null,
-      "answer_context": null,
-      "note": "แถวที่เกี่ยวข้อง: SR-18 ใน qa/sheet-recon.json · D-121 ใน qa/open-decisions.json\n\n**วัดหมึกจริงแล้ว 2026-08-24** (stroke histogram — pen weight กับระยะ ไม่ใช่กะด้วยตา; ตาผมพลาดสองครั้งในคืนเดียวกันตอนหา crop จึงไม่ใช้ตาตัดสินเลขอีก):\n* แผงที่แบบวาด (SR-18) = **หนา 60มม. (x5143..5203) ยาว 2088มม. (y80..2168)** และ **จบตรงช่องโต๊ะข้างเตียงทั้งสองข้างพอดี** โดยมี cap ปลายแผงวาดไว้เห็นชัด\n* ช่องโต๊ะข้างเตียงเป็น **ช่องสถาปัตย์ ~501มม. เขียนด้วย pen 0.60** (x4702..5203, y2200..2698 กับ y-450..51) — ไม่ใช่เฟอร์นิเจอร์ลอย\n* **แปลว่า 'แผงบาง + ช่องขนาบสองข้าง' เป็นชุดเดียวกันในแบบ** หัวเตียงของ asset ลึก 410มม. = ลึกกว่าที่วาด 350มม. และจะกลืนช่องทั้งสองที่เริ่มตรงจุดที่แผงจบพอดี\n→ ทางเลือก (ข) ไม่ใช่แค่ 'ไม่ตรงแบบ' แต่ **เข้ากันไม่ได้เชิงเรขาคณิตกับคู่ช่องที่แบบขนาบไว้** ซึ่งทำให้ (ก) แข็งขึ้นด้วยการวัด ไม่ใช่ด้วยอำนาจของ R12 อย่างเดียว. ระหว่างที่พี่ยังไม่ตอบ เลนเดินด้วย (ก) ตาม R3 และพี่กลับคำจากภาพได้ทุกเมื่อ.\n\n**และสิ่งที่เจอเพิ่มซึ่งไม่ได้อยู่ในคำถามเดิม — พร้อมคำแก้ของผมเอง:** ความยาวแผงใน build มาจาก **ความกว้างที่นอน** (`across`, build_room.py:6862) ไม่ใช่จากช่องสองข้าง. ตอนเขียนที่ p2r11 ช่องที่วาด 2149 กับแผง 2088 เป็นเลขใกล้กันจึงไม่มีใครเห็น; พอคำสั่ง 08-22 หดเตียงเหลือ 1800 แผงก็หดตาม 288มม. เงียบ ๆ. **ตอนแรกผมอ่านว่านี่คือ defect ที่ตาพี่เห็น — ผิด**: คำตอบที่ถูกหลัง hug คือ 'ระหว่างโต๊ะสองตัว' = ~1820มม. ส่วน build ให้ 1800มม. ห่างกัน 20มม. จึงมองไม่เห็น. ที่ยังผิดจริงคือ **derivation** (หนึ่ง parameter แบกสองความหมาย) ซึ่งจะเลื่อน อีกครั้งรอบหน้าที่เตียงเปลี่ยน — ลงเป็นหนี้ไว้ ไม่ใช่รอบเร่งด่วน",
-      "read_first": null
-    },
-    {
-      "id": "ASK-033",
-      "ask": "**cap ของเตียงบนแกนยาว — บังคับตามหมึก หรือปล่อย** · แถว SR-07 เก็บสี่เหลี่ยมเตียงที่วาดไว้ โดยสลับแกน (ป้าย 7'x6.5' ถูกวางลง x/y กลับกัน) แก้แล้ววันนี้เป็น 2000 ยาว x 2149 ขวาง ตามหมึกจริง · cap ของ wholebed_bench อ่านแถวนี้ตรง ๆ จึงย้ายจาก '1981 ขวาง/2134 ยาว' เป็น '2149 ขวาง/2000 ยาว' · re-score จากตัวเลขที่ bench เก็บไว้แล้ว โดยไม่รัน bench ใหม่: **เตียงที่พี่เลือก (e2418055) เกินแกน ยาว 23มม.** · 17aff0ff เกิน 18 · b4915f0a เกิน 165 · เหลือแต่ชุด US-full ที่พี่ปฏิเสธเองที่ยังเข้า · มันชนที่ความยาวที่นอนพอดีเพราะ 2000 ที่วาดรวมแผงหัวเตียง 60มม. เข้าไปด้วย เหลือ 1940 ให้เตียง ซึ่งไม่ใช่ขนาดมาตรฐานที่พี่สั่งไว้ · (ก) ปล่อย — cap บังคับแกนขวางอย่างเดียว ซึ่งเป็นสิ่งเดียวที่ docstring ของมันเถียงไว้ ('แบบวาดเตียงที่กว้างที่สุดที่ห้องนี้รับได้') และทุกตัวผ่านโดยเหลือ 138มม. · (ข) บังคับ — เตียงปัจจุบันตก 23มม. ต้องหาตัวใหม่ที่ frame ≤ 2000 · (ค) ทางที่สาม",
-      "first_routed": "2026-08-24",
-      "where": "qa/sheet-recon.json, qa/open-decisions.json, pipeline/scripts/wholebed_bench.py",
-      "money": false,
-      "status": "open",
-      "answer": null,
-      "answered_date": null,
-      "answer_context": null,
-      "note": "แถวที่เกี่ยวข้อง: D-128 · ระหว่างที่พี่ยังไม่ตอบ เลนเดินด้วย (ก) ตาม R3 — เตียงไม่ถูกเปลี่ยน และ bench ไม่ถูกรันซ้ำบนอำนาจของแถวนี้ · พี่กลับคำจากภาพได้ทุกเมื่อ",
-      "read_first": "docs/DECISIONS-render-assets.md, qa/sheet-recon.json"
-    }
-  ]
+    "measured_from": "pipeline/output/room_bedroom_suite_eye_p2r59q_ql.scene.json bench__acq0",
+    "measured_on": "2026-08-24"
+   },
+   "withdrawn_reason": "tracked by ORD-2026-08-22-blenderkit-one-month per its own note — zero marginal cost until the month ends; re-opens as money only if the month closes empty."
+  },
+  {
+   "id": "ASK-025",
+   "ask": "**engine ของสตูดิโอ — Blender ใช่คำตอบมั้ย** พี่ถามเอง 2026-08-17: \"ทำไมต้องยึดติดกับ blender โปรแกรมอื่นเราใช้ไม่ได้หรอ\" · คำถามนี้ไม่เคยถูกตัดสิน: `pipeline/CLAUDE.md` เขียนไว้เองว่า engine-of-record = build_room.py เป็นแค่ PROPOSED (2026-07-13) และ \"NOT yet owner-confirmed, so do not cite it as settled\" ให้เอาไปยืนยันที่ docs/strategy.md ก่อน — ผ่านมา 35 วัน docs/ ไม่มีบรรทัดไหนยืนยัน · **ทะเบียนทั้งหมดยืนยันว่าไม่เคยตัดสิน**: decision row 102 แถว = 0 แถวพูดถึง engine หรือ renderer · owner order 20 ข้อ = 0 ข้อ",
+   "first_routed": "2026-08-17",
+   "where": "pipeline/CLAUDE.md, docs/strategy.md",
+   "status": "withdrawn",
+   "money": "yes — Enscape ต้องมี host CAD (SketchUp Pro/Revit/Rhino) จึงเป็นค่า subscription สองชั้น ราคายังไม่ verify (อยู่ใน DR 2026-08-17)",
+   "note": "**หลักฐานที่ทำให้คำถามนี้มีน้ำหนัก วัดเมื่อ 2026-08-17**: (1) งานส่งจริงที่เราไล่ตาม — ในภาพ 1,787 ใบใต้ _private/discord ที่ชื่อไฟล์ยังบอกว่าเรนเดอร์ด้วยอะไร **Enscape 228 · D5 2 · อย่างอื่น 0** (99.1% Enscape) · (2) ของฟรีที่เราใช้ **96/96 โฟลเดอร์เป็น SketchUp 3D Warehouse** — เราใช้ของ SketchUp โดยไม่ใช้ SketchUp · (3) ภาษีอะแดปเตอร์ที่จ่ายไปทั้งหมดเมื่อ p2r46-r48 เป็นค่าแปลง SketchUp→Blender ล้วน ๆ: exporter เขียน 1 primitive/สามเหลี่ยม ทำให้ mesh_density อ่านผ้า 133,108 tri เป็น 1 tri · import 297,640 primitive กินเวลาเป็นชั่วโมงจนต้องเขียน glb_flatten.py (360MB→35.5MB) · fit ต้องแก้เพราะ 6 ใน 9 ชุดถูกปฏิเสธด้วยความสูงของเตียงที่แถมมาในไฟล์ · (4) และ **ทุกตัวเลือกที่ผมเคยเอาไปให้พี่ (ASK-001/ASK-002) เป็นชั้น asset ที่ต่อเข้า Blender ได้ทั้งนั้น** — ทางเลือกที่ไม่เคยถูกตัดสิน กำหนดทางเลือกที่พี่ได้เห็นไปแล้วเงียบ ๆ · **สิ่งที่ค้านการย้าย และผมวัดเอง**: gradient แสงบนผ้านวมเรา 45.5 vs งานส่งจริง 46.1 — Cycles โมเดลแสงบนผ้าได้เท่า Enscape ความต่างอยู่ที่โครงสร้างพับของ mesh (ละเอียด 1.5x / หยาบ 0.8x) ซึ่งเป็นสมบัติของ ASSET ไม่ใช่ของ RENDERER · และ pipeline ทั้งหมด (build_room 537KB, placement solver, sheet_recon, id_mask, gate 11 โมดูล, 3,191 tests) รัน headless ใน Blender — Enscape ไม่มี headless API (ข้อนี้ยังไม่ verify ใน repo, อยู่ในคำถาม DR) · **สามชั้นที่แยกกันได้**: engine ที่สร้างห้องจากแบบ / คลัง asset + ฟอร์แมตต้นทาง / renderer — การวินิจฉัยเตียง 2026-08-17 ชี้ไปที่ **ชั้นกลางอย่างเดียว** ซึ่งเปลี่ยนได้ฟรี และไม่ต้องรอคำตอบข้อนี้",
+   "read_first": "pipeline/CLAUDE.md, docs/strategy.md, docs/LICENSING.md",
+   "read_first_found": "อ่านก่อนยื่นจริง: `pipeline/CLAUDE.md` §Engine of record (PROPOSED, NOT owner-confirmed) · `docs/strategy.md` ไม่มีบรรทัดยืนยัน · `docs/LICENSING.md` แสดงว่าชั้น asset ที่เราใช้ เป็น SketchUp ทั้งหมด ซึ่งเป็นครึ่งหนึ่งของน้ำหนักคำถามนี้",
+   "withdrawn_reason": "bundled into the procurement sheet (ASK-034); not a purchase decision until the real-client run defines the workflow it must serve."
+  },
+  {
+   "id": "ASK-026",
+   "ask": "**Marvelous Designer สำหรับเตียง hero — เอามั้ย** DR 2026-08-17 ตอบว่า สตูดิโอจริงแบ่งงานเครื่องนอนเป็นสองทาง: 80-90% โหลดเตียงสำเร็จมาแล้ว**สร้างวัสดุใหม่เอง** (ทิ้ง texture ที่ติดมา ทำ PBR จาก fabric scan) · 10-20% **sim เองใน Marvelous Designer** สำหรับ hero shot / master suite / ภาพระยะใกล้ — ซึ่งเฟรมนี้เข้าข่ายอย่างหลังตามคำอธิบายของ DR เอง · **MD ไม่เคยถูกเอ่ยถึงในทั้ง repo มาก่อน** ห้ารอบที่เราล้มเรื่องผ้าเป็นการเขียน physics ใน Blender ด้วยมือทั้งหมด ซึ่งไม่ใช่วิธีที่วงการเขาทำ",
+   "first_routed": "2026-08-17",
+   "where": "knowledge/_inbox/nlm-free-asset-sources/2026-08-17-free-asset-sources.md, qa/owner-orders.json",
+   "status": "withdrawn",
+   "money": "yes — ราคายังไม่ verify (DR ไม่ได้ให้ และผมไม่เดา)",
+   "note": "**ทำไมต้องเป็นคำสั่งพี่ ไม่ใช่คำตัดสินผม**: พี่สั่ง 2026-08-14 และย้ำ 08-15 ว่า ผ้าเตียงต้องเป็นของที่ซื้อมา · D-072 เคยกลับคำสั่งนั้นด้วยตัวเองและกลายเป็นที่มาของ R13 ผมจะไม่ทำซ้ำ · **แต่ MD ไม่ใช่การกลับคำสั่งเสียทีเดียว** — มันคือการซื้อ *เครื่องมือ* ไม่ใช่การกลับไปปั้นผ้าด้วยมือ และ DR บอกว่าเป็นวิธีมาตรฐานของ hero shot · ถ้าพี่เอา ผมลงเป็นแถวใน owner-orders.json ก่อนแตะโค้ด · ถ้าพี่ไม่เอา เส้นทางเหลือ FurniMesh + 3dsky free tier + 11 ไฟล์เตียงบนชั้นที่ยังไม่เคย bench",
+   "read_first": "knowledge/_inbox/nlm-free-asset-sources/2026-08-17-free-asset-sources.md, docs/LICENSING.md",
+   "read_first_found": "อ่านก่อนยื่นจริง: staging ของ DR (วิธีทำงานจริงของสตูดิโอ 80-90% / 10-20%) และตารางใบอนุญาต ซึ่งไม่มี Marvelous Designer อยู่เลย — เพราะมันเป็นเครื่องมือ ไม่ใช่แหล่ง asset",
+   "withdrawn_reason": "bundled into the procurement sheet (ASK-034); sequenced after the BlenderKit-month verdict per its own note."
+  },
+  {
+   "id": "ASK-027",
+   "ask": "**ลิงก์ 3DSKY ที่แชร์ใน Discord ของพี่ — ใช้ไม่ได้ตามใบอนุญาต ยืนยันมั้ย** `knowledge/_inbox/discord/MY-DATA-PEAT/model-for-sale/` เก็บลิงก์ Dropbox ของชุด **3DSKY FURNITURE 2024 / 2022 / PROP / LIGHTING / TREE** ที่โพสต์ไว้ในเซิร์ฟเวอร์ของพี่เอง · นั่นคือโมเดลจากคลังเสียเงินที่ถูกแจกต่อ",
+   "first_routed": "2026-08-17",
+   "where": "docs/LICENSING.md, knowledge/_inbox/discord/MY-DATA-PEAT/model-for-sale",
+   "status": "withdrawn",
+   "money": "no — แต่เป็นความเสี่ยงทางธุรกิจ",
+   "note": "**กฎในไฟล์ของเราเองตอบไว้แล้ว** (`docs/LICENSING.md`): \"the personal-use restriction **travels with the file** — her sharing it does not launder the license\" · ผมจึง **ไม่เอามาใช้เป็นแหล่ง** และแจ้งไว้เป็นแถวแทนที่จะเก็บเงียบ · สิ่งที่จะเปลี่ยนคำตอบนี้ได้มีอย่างเดียว: พี่ถือ license 3dsky ของตัวเอง — และถ้าถืออยู่แล้ว ASK-001/ASK-002 ต้องแก้ เพราะมันตั้งราคาไว้เหมือนเรายังไม่มี · หมายเหตุ: DR บอกว่า 3dsky มี **free tier 3 โหลด/24 ชม.** และหมวด Bed มี 15,167 ตัว (ยังไม่ verify) ถ้าจริง เราเข้าถึงคลังเดียวกันได้ที่ ฿0 วันละ 3 ตัว โดยไม่ต้องแตะลิงก์พวกนี้เลย",
+   "withdrawn_reason": "bundled into the procurement sheet (ASK-034) as a one-line confirm/veto."
+  },
+  {
+   "id": "ASK-028",
+   "ask": "**ซื้อโมเดลเตียง 7'x6.5' ตามแบบ — ชั้นฟรีวัดจนหมดแล้ว ไม่มีของ** แบบวาดเตียง near-square 2149 กว้าง x 2000 ยาว (7'x6.5') h600 duvet ถึงขอบ ไม่มี footboard · วัด 2026-08-18: 18 stagings ในห้องจริง + probe showroom 2 ไฟล์ — field กว้างสุดที่ทำได้ 1,910 มม. (0.89) และตัวที่ผ่านขนาดล้วน bare-อ่าน 'most' จาก panel ตาบอด · สเปกที่ตัวซื้อต้องผ่าน (เข้า bench อัตโนมัติ): made-bed field >= 1,891 มม. กว้าง ที่ยาว <= 2,000 (field_fill >= 0.88 ทั้งสองแกน) + duvet เต็มผืน + ไม่มี footboard + headboard แยกชิ้นได้ · เส้นทาง: (1) 3dsky free tier 3 โหลด/วัน (DR อ้าง หมวด Bed 15,167 ตัว — ยังไม่ verify, ต้องสมัคร account ซึ่งเป็นตัวตนของพี่) (2) 3dsky ต่อใบ ~$5-18 (3) BlenderKit Full $118.80/ปี (ASK-002 เดิม) (4) Chocofur/Dimensiva ตาม ASK-002 · ระหว่างรอ เฟรมคง f52472c1 (จัดเต็มแต่เล็ก 0.72 ของแบบ) พร้อม deficit พิมพ์ทุก render (D-108)",
+   "first_routed": "2026-08-18",
+   "where": "qa/owner-orders.json, projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r53-2026-08-18.md, _private/deliv-001/bed-size-2026-08-18",
+   "status": "answered",
+   "answer": "ลุย BlenderKit",
+   "answered_date": "2026-08-18",
+   "answer_context": "เส้นทางที่เลือก = (3) BlenderKit Full $118.80/ปี — ปิด ASK-002 (48 วัน) ในประโยคเดียวกัน · สิ่งที่เหลือเป็นขั้นลงมือของพี่ล้วน ๆ (สมัคร/จ่าย/วาง key) = ASK-029 · ฝั่ง builder เดินล่วงหน้าแล้ววันเดียวกัน: กวาด catalog สาธารณะ 991 assets → เตียงทั้งหลังในหน้าต่างขนาดแบบ 174 ตัว (full-plan 148) → shortlist คัดด้วยตา 12 ชุดขนาน — ดู qa/blenderkit-search-log.json ส่วน wholebed_2026_08_18",
+   "money": "yes — ตั้งแต่ ฿0 (free tier ที่ต้อง account พี่) ถึง $118.80/ปี",
+   "note": "R13: 'ยังไม่ได้ซื้อ' ไม่ใช่ 'ไม่มีของ' — แต่รอบนี้วัดฝั่งโลกครบแล้ว: ของฟรีไม่มีจริง แถวนี้จึงเป็น ask เรื่องเงิน/ตัวตนล้วน ๆ ไม่มี builder action ค้าง",
+   "read_first": [
+    "docs/DECISIONS-render-assets.md",
+    "docs/LICENSING.md",
+    "qa/warehouse-search-log.json",
+    "qa/blenderkit-search-log.json",
+    "knowledge/_inbox/dr-whole-bed-swap-2026-08-17.md",
+    "_private/deliv-001/whole-bed-audition-2026-08-17/README.md",
+    "_private/deliv-001/bed-size-2026-08-18/rebench/wholebed_bench.json",
+    "_private/deliv-001/bed-size-2026-08-18/rebench-new/wholebed_bench.json"
+   ]
+  },
+  {
+   "id": "ASK-029",
+   "ask": "**Blendkit Full (ชื่อใหม่ของ BlenderKit หลัง rebrand 06-10) — ขั้นลงมือที่เป็นตัวตน/เงินของพี่ล้วน ๆ (อนุมัติแล้ว 'ลุย BlenderKit' 2026-08-18, เลือกรายเดือน 08-22):** (1) สมัคร/จ่ายที่ **blendkit.com** — Full Plan **$9.90/เดือน** (ราคา verify 08-22) ด้วยบัตรของพี่ (2) เอา API key จากหน้า profile (blendkit.com/profile) มาวางใน `.env` ที่รากรีโปเป็นบรรทัด `BLENDERKIT_API_KEY=<key>` — เท่านั้น จบ · ทันทีที่ key อยู่ในไฟล์ ฝั่ง builder ดาวน์โหลด shortlist ที่คัดไว้แล้ว (panel 12 ชุดผ่าน 129 จาก 174: full-plan 118 · free 11) เข้า wholebed_bench อัตโนมัติด้วยเกณฑ์ที่เข้า bench ไปแล้ว (field_fill >= 0.88 ทั้งสองแกน + duvet เต็มผืน + ไม่มี footboard) · **อัปเดต 2026-08-22 (D-114): แถวนี้ไม่ใช่ critical path ของเตียงอีกแล้ว** — คำสั่ง bed-too-small ถูก retire เพราะเป้าเปลี่ยนเป็นขนาดมาตรฐานซึ่งเตียงปัจจุบันผ่าน field 1.00x1.00 แล้ว; เหลือสถานะ library upgrade (bench ทางเลือก, คลาสอื่น, แก้สไตล์ชนตาม C2 p2r56 ข้อ 4)",
+   "first_routed": "2026-08-18",
+   "where": "qa/owner-orders.json, qa/blenderkit-search-log.json, _private/deliv-001/bed-size-2026-08-18/blenderkit-shortlist",
+   "status": "answered",
+   "money": "yes — เส้นทางที่พี่เลือก 2026-08-22 ('สมัครเดือนเดียวก่อนไม่ได้หรอ'): รายเดือน — และราคาปัจจุบันถูกกว่าที่เคยบันทึก: **$9.90/เดือน** (verify 2026-08-22 บน blendkit.com/plans/pricing หลัง rebrand; ตัวเลข $17.90/$118.80 ในทะเบียนเป็นราคาก่อน rebrand) — จ่ายเดือนเดียว bench คลัง full-plan 135 ตัวภายในเดือนนั้น ต่ออายุตัดสินจากผลวัด",
+   "note": "แยกจาก ASK-028 เพราะสถานะต่างกัน: ASK-028 คือคำถาม 'เอาทางไหน' (ตอบแล้ว) แถวนี้คือการกระทำที่เหลือ ซึ่งมีแต่พี่ทำได้ — builder ไม่มีบัตร ไม่มีตัวตนไปสมัครแทน · **แก้ p2r54 (คืนเดียวกัน): ข้อความก่อนหน้าของ note นี้ ('ชั้นฟรีให้เตียงที่ผ่าน bench ทุกข้อแล้ว — คำสั่งเตียงเล็กไม่รอ key นี้') อยู่ได้ 4 ชั่วโมงแล้วเป็นเท็จ — ความกว้าง field ที่ 'ผ่าน' เป็นของแผงผนังหัวเตียง 2,759 มม. ที่ติดมากับไฟล์ ไม่ใช่ของเตียง (D-109; เครื่องมือแก้แล้ว) เตียงเองถึงแค่ 1.00x0.835 และถูก stage เป็น interim ที่ sign deficit** · **แถวนี้จึงกลับมาเป็น critical path ของ ORD-2026-08-18-bed-too-small**: ชั้นฟรีวัดหมดจริงแล้วด้วยเครื่องมือที่ซื่อสัตย์ (12/12 stage, 0 ผ่าน field cut) เหลือคลัง full-plan 135 ตัวหลัง key นี้ทางเดียว — key ลง .env เมื่อไร shortlist วิ่งเข้า bench ด้วยกฎที่แก้แล้วอัตโนมัติ · **ลดระดับอีกครั้งในชั่วโมงเดียวกัน (D-110): พี่ calibrate ว่าขนาดตามแบบมี tolerance ของพี่เอง ('ไม่ได้ fix ขนาดนั้น... แต่เปลี่ยนได้') — แถวนี้จึงเหลือสถานะ 'เส้นทางถ้าตาพี่ปฏิเสธ interim 0.835 จากเฟรม p2r54' ไม่ใช่ทางบังคับ** เงินก้อนนี้ตัดสินหลังพี่เห็นภาพ ไม่ใช่ก่อน",
+   "read_first": [
+    "docs/LICENSING.md",
+    "qa/sourcing-tiers.json",
+    "docs/DECISIONS-render-assets.md",
+    "qa/blenderkit-search-log.json",
+    "_private/deliv-001/bed-size-2026-08-18/blenderkit-shortlist/shortlist.json"
+   ],
+   "read_first_found": "อ่านจริง 2026-08-18 ก่อนแก้แถวนี้: `docs/LICENSING.md` และ `qa/sourcing-tiers.json` อนุมัติชั้น paid ไว้แล้วโดยหลักการ (ราคา+ใบอนุญาตบันทึกตั้งแต่ 2026-07-01) — แถวนี้ไม่ได้เสนอชั้นใหม่ แค่เป็นการจ่ายจริงของชั้นที่ตารางเรามีอยู่แล้ว และ ASK-028 อนุมัติจำนวนเงินไว้แล้ว ('ลุย BlenderKit') · ชั้นฟรีของแพลตฟอร์มเดียวกันถูกวัดจนถึงหน้าสุดท้ายแล้ว (2,147 assets) ก่อนที่แถวนี้จะเหลือสถานะเรื่องคลัง",
+   "security_note_2026_08_22": "RESOLVED ในวันเดียวกัน — 301 จาก blenderkit.com ไป blendkit.com เป็น REBRAND จริง ไม่ใช่เว็บปลอม: BlenderKit เปลี่ยนชื่อเป็น Blendkit 2026-06-10 (Blender Foundation ขอไม่ให้ใช้คำ 'Blender' ในชื่อสินค้า; add-on v3.21.0 เขียนเอง 'formerly known as BlenderKit'; ยืนยัน 3 ทาง: redirect ออกจาก origin จริง (Heroku NEL headers) + BlenderNation 06-24 + release notes ทางการ) · คำเตือน typosquat เดิมของ builder เป็น false alarm ที่แก้แล้ว — จ่ายที่ blendkit.com ได้เลย (API key: blendkit.com/profile ลง .env เป็น BLENDERKIT_API_KEY เหมือนเดิม)",
+   "answer": "สมัคร blenderkit 1 เดือนเลย ผมอยากจะรู้ว่ามันจะทำให้งานดีขึ้นยังไง",
+   "answered_date": "2026-08-22",
+   "answer_context": "ตอบทางแชทเย็น 08-22 (verbatim ใน docs/owner-advice-2026-08-22.md §6) → ORD-2026-08-22-blenderkit-one-month · คำสั่ง = คำตอบของ 'เอาไหม/ทางไหน' (หนึ่งเดือน); การกระทำที่เหลือ (จ่าย + วาง key) แยกเป็น ASK-031 เพราะ asks_check มีสามสถานะเท่านั้น — ไม่มี 'เขาบอกไปแล้วแต่ยังไม่ได้ทำ' · **ราคาที่แถวนี้บันทึกไว้ ($9.90/เดือน) ผิด**: ตรวจ markup หน้าราคาเย็นเดียวกัน — การ์ด Full มีสามแท็บ '30 day glimpse' $19.90 ไม่ต่ออัตโนมัติ · Monthly $17.90 · Yearly $9.90/เดือน ($118.80/ปี) และหน้าเปิดที่แท็บ Yearly; 'สมัคร 1 เดือน' ตามคำสั่ง = glimpse $19.90"
+  },
+  {
+   "id": "ASK-030",
+   "ask": "เพื่อน designer ใช้เวลาเท่าไรต่อ 1 เฟรมห้องนอน — ไม้บรรทัดของคำว่า 'เราช้า' ที่ repo ไม่เคยมี (คำถามข้อ 3 จาก process review 2026-08-22)",
+   "first_routed": "2026-08-22",
+   "where": "docs/process-review-2026-08-22.md",
+   "status": "answered",
+   "answer": "4 วัน",
+   "answered_date": "2026-08-22",
+   "money": "no",
+   "note": "การอ่านเป็นของ builder (พี่แก้ได้): 1 เฟรมห้องนอน ~4 วัน — เทียบเรา 16 วันบนเฟรมเดียวและยังไม่จบ = ช้ากว่า ~4 เท่าโดย wall-clock ไม่ใช่ร้อยเท่า แต่ 4 วันของเขารวมทั้ง scene จากของซื้อบนเครื่องมือเรียลไทม์ · สองคำถามที่เหลือของ SC-3 (ปั้นเอง/ซื้อ · ลูกค้าส่งกลับ) ยังเปิดที่ ASK-004"
+  },
+  {
+   "id": "ASK-031",
+   "ask": "**เอา API key ลง `.env` — ทางที่ไม่ต้อง copy อะไร (ทางหลัก):** `python pipeline/scripts/blenderkit.py key --login` ทำสิ่งเดียวกับ add-on (OAuth PKCE ของ Blendkit: client_id/port/redirect ของ add-on เอง, อ่านจาก source สาธารณะ 2026-08-22) → Chrome เปิดหน้า blendkit.com/o/authorize → **พี่แค่ login Google / กด Authorize ในแท็บนั้น** → redirect กลับ localhost → token เขียนลง `.env` (access + refresh + หมดอายุ; refresh อัตโนมัติ) → `status` พิมพ์ plan จาก /me · ทางสำรอง: (ก) หน้า profile → `blenderkit.py key <ค่า>` รันเองใน terminal (ห้ามวาง key ลงแชท) (ข) ติดตั้ง extension BlenderKit ใน Blender แล้ว `key --from-blender` · การจ่าย: พี่บอก 'จ่ายตังแล้ว' 2026-08-22 คืน — /me จะยืนยันว่าเป็น '30 day glimpse' หรือแท็บอื่น",
+   "first_routed": "2026-08-22",
+   "where": "docs/blenderkit-month-2026-08-22.md, pipeline/scripts/blenderkit.py, .env.example, qa/owner-orders.json",
+   "status": "answered",
+   "money": "yes — $19.90 once (glimpse); Monthly $17.90 / Yearly $118.80 are the other tabs and are not what he ordered",
+   "note": "แยกจาก ASK-029 (ตอบแล้ว 'สมัคร blenderkit 1 เดือนเลย' 08-22) — คำสั่งคือคำตอบ การกระทำเป็น ask ใหม่ · ORD-2026-08-22-blenderkit-one-month อยู่ในสถานะ not-obeyed blocked_by แถวนี้จนกว่า key จะลงไฟล์ · เกณฑ์ 'ดีขึ้นยังไง' ล็อกไว้ที่ D-119 ก่อนโหลดตัวแรก; การต่ออายุไม่ได้ตัดสินล่วงหน้า — วัน 30 จะมี ask ใหม่พร้อมตัวเลข · 2026-08-22 คืน: พี่บอก 'สมัครแล้วด้วย google account' + ส่งลิงก์คู่มือ add-on (docs.blender.org 2.93 blenderkit) — เช็คแล้ว key ยังไม่อยู่ใน .env และเครื่องนี้ยังไม่มี add-on/extension BlenderKit (userpref ลงวันที่ 07-04) จึงเพิ่มสองทางข้างบน (`key <ค่า>` / `key --from-blender`) · 'สมัครด้วย google' = บัญชี; การซื้อ glimpse เป็นอีกคลิก — /me จะบอกว่า plan ไหนเมื่อ key ลง · 2026-08-22 ดึก: พี่ถาม 'หา key เองเลยไม่ได้หรอ' + 'จ่ายตังแล้ว' → สร้าง `key --login` (flow เดียวกับ add-on: /o/authorize + PKCE S256 + state → localhost:62485/consumer/exchange/ → POST /o/token/; endpoint ยืนยันด้วย code ปลอม = 400 invalid_grant) · รัน 2 ครั้ง (5 + 9 นาที) Chrome เปิดแท็บได้ (default browser = Chrome) แต่ไม่มี redirect กลับ = ยังไม่มีมือพี่ในแท็บ → ปล่อย listener detached 2 ชม. (pid ใน scratchpad/bk_login.out) รอพี่กด; key ลงเมื่อไร `status` เห็นเอง",
+   "read_first": [
+    "docs/blenderkit-month-2026-08-22.md",
+    "qa/sourcing-tiers.json",
+    "qa/blenderkit-month-classes.json"
+   ],
+   "answer": "จ่ายตังแล้ว",
+   "answered_date": "2026-08-22",
+   "answer_context": "พี่พิมพ์ 'จ่ายตังแล้ว' ทางแชท 2026-08-22 ดึก แล้วกด login/Authorize ในแท็บ Chrome ที่ `blenderkit.py key --login` เปิดไว้ (listener detached รอบที่ 3) → token เขียนลง `.env` (access 30 ตัวอักษร หมดอายุ 175 ชม. + refresh) → `/me` = currentPlanName 'Full'. ไม่มีการ copy key ผ่านแชทเลย · ที่ /me ยังบอกไม่ได้: เป็นแท็บ '30 day glimpse' หรือ Monthly/Yearly — ดูที่หน้า My Plan ของพี่"
+  },
+  {
+   "id": "ASK-032",
+   "ask": "**หัวเตียง: แผงที่แบบวาด หรือหัวเตียงของเตียงที่ซื้อมา — ตอบจากภาพได้เลย** · เตียง Metropol ที่พี่เลือก มีหัวเตียงบุนวมของตัวเอง **1998 x 410 x 927 มม.** (กว้างเท่าเตียงพอดี ยืนจากพื้น) และ build **ตัดทิ้ง** เพราะแบบวาดแผง SR-18 หนา 60 มม. ไว้ และ R12 บอกว่าแบบชนะสิ่งที่เรา derive เอง — สองอันอยู่ที่เดียวกันไม่ได้ · ในเฟรม p2r58 หัวเตียงที่เห็นคือแผงเทาแบนที่เราปั้นเอง และในสายตาผมมันคือชิ้นที่ อ่อนที่สุดในภาพ · **นี่เป็นคำถามของพี่ ไม่ใช่ของผม** เพราะ R12 ให้แบบชนะ derivation ของเรา แต่พี่ชนะแบบ (พี่ทำมาแล้วกับขนาดเตียงที่ D-114) · (ก) คงแผงตามแบบ = ไม่ต้อง ทำอะไร (ข) ใช้หัวเตียงของ asset = เลิก strip ชิ้นนั้น ถอนแผง แล้วเตียงต้องขยับออก จากผนังตามความลึก 410 มม. ซึ่งกินเข้ามาในห้อง (ค) ชี้ทางที่สาม || (รวม ASK-033) cap ของเตียงบนแกนยาว — บังคับตามหมึก หรือปล่อย — ตอบจากภาพเดียวกันได้",
+   "first_routed": "2026-08-24",
+   "where": "pipeline/scripts/wholebed_rules.py, qa/sheet-recon.json, qa/open-decisions.json, pipeline/output/room_bedroom_suite_eye_p2r58_ql.png",
+   "money": false,
+   "status": "open",
+   "answer": null,
+   "answered_date": null,
+   "answer_context": null,
+   "note": "แถวที่เกี่ยวข้อง: SR-18 ใน qa/sheet-recon.json · D-121 ใน qa/open-decisions.json\n\n**วัดหมึกจริงแล้ว 2026-08-24** (stroke histogram — pen weight กับระยะ ไม่ใช่กะด้วยตา; ตาผมพลาดสองครั้งในคืนเดียวกันตอนหา crop จึงไม่ใช้ตาตัดสินเลขอีก):\n* แผงที่แบบวาด (SR-18) = **หนา 60มม. (x5143..5203) ยาว 2088มม. (y80..2168)** และ **จบตรงช่องโต๊ะข้างเตียงทั้งสองข้างพอดี** โดยมี cap ปลายแผงวาดไว้เห็นชัด\n* ช่องโต๊ะข้างเตียงเป็น **ช่องสถาปัตย์ ~501มม. เขียนด้วย pen 0.60** (x4702..5203, y2200..2698 กับ y-450..51) — ไม่ใช่เฟอร์นิเจอร์ลอย\n* **แปลว่า 'แผงบาง + ช่องขนาบสองข้าง' เป็นชุดเดียวกันในแบบ** หัวเตียงของ asset ลึก 410มม. = ลึกกว่าที่วาด 350มม. และจะกลืนช่องทั้งสองที่เริ่มตรงจุดที่แผงจบพอดี\n→ ทางเลือก (ข) ไม่ใช่แค่ 'ไม่ตรงแบบ' แต่ **เข้ากันไม่ได้เชิงเรขาคณิตกับคู่ช่องที่แบบขนาบไว้** ซึ่งทำให้ (ก) แข็งขึ้นด้วยการวัด ไม่ใช่ด้วยอำนาจของ R12 อย่างเดียว. ระหว่างที่พี่ยังไม่ตอบ เลนเดินด้วย (ก) ตาม R3 และพี่กลับคำจากภาพได้ทุกเมื่อ.\n\n**และสิ่งที่เจอเพิ่มซึ่งไม่ได้อยู่ในคำถามเดิม — พร้อมคำแก้ของผมเอง:** ความยาวแผงใน build มาจาก **ความกว้างที่นอน** (`across`, build_room.py:6862) ไม่ใช่จากช่องสองข้าง. ตอนเขียนที่ p2r11 ช่องที่วาด 2149 กับแผง 2088 เป็นเลขใกล้กันจึงไม่มีใครเห็น; พอคำสั่ง 08-22 หดเตียงเหลือ 1800 แผงก็หดตาม 288มม. เงียบ ๆ. **ตอนแรกผมอ่านว่านี่คือ defect ที่ตาพี่เห็น — ผิด**: คำตอบที่ถูกหลัง hug คือ 'ระหว่างโต๊ะสองตัว' = ~1820มม. ส่วน build ให้ 1800มม. ห่างกัน 20มม. จึงมองไม่เห็น. ที่ยังผิดจริงคือ **derivation** (หนึ่ง parameter แบกสองความหมาย) ซึ่งจะเลื่อน อีกครั้งรอบหน้าที่เตียงเปลี่ยน — ลงเป็นหนี้ไว้ ไม่ใช่รอบเร่งด่วน",
+   "read_first": null
+  },
+  {
+   "id": "ASK-033",
+   "ask": "**cap ของเตียงบนแกนยาว — บังคับตามหมึก หรือปล่อย** · แถว SR-07 เก็บสี่เหลี่ยมเตียงที่วาดไว้ โดยสลับแกน (ป้าย 7'x6.5' ถูกวางลง x/y กลับกัน) แก้แล้ววันนี้เป็น 2000 ยาว x 2149 ขวาง ตามหมึกจริง · cap ของ wholebed_bench อ่านแถวนี้ตรง ๆ จึงย้ายจาก '1981 ขวาง/2134 ยาว' เป็น '2149 ขวาง/2000 ยาว' · re-score จากตัวเลขที่ bench เก็บไว้แล้ว โดยไม่รัน bench ใหม่: **เตียงที่พี่เลือก (e2418055) เกินแกน ยาว 23มม.** · 17aff0ff เกิน 18 · b4915f0a เกิน 165 · เหลือแต่ชุด US-full ที่พี่ปฏิเสธเองที่ยังเข้า · มันชนที่ความยาวที่นอนพอดีเพราะ 2000 ที่วาดรวมแผงหัวเตียง 60มม. เข้าไปด้วย เหลือ 1940 ให้เตียง ซึ่งไม่ใช่ขนาดมาตรฐานที่พี่สั่งไว้ · (ก) ปล่อย — cap บังคับแกนขวางอย่างเดียว ซึ่งเป็นสิ่งเดียวที่ docstring ของมันเถียงไว้ ('แบบวาดเตียงที่กว้างที่สุดที่ห้องนี้รับได้') และทุกตัวผ่านโดยเหลือ 138มม. · (ข) บังคับ — เตียงปัจจุบันตก 23มม. ต้องหาตัวใหม่ที่ frame ≤ 2000 · (ค) ทางที่สาม",
+   "first_routed": "2026-08-24",
+   "where": "qa/sheet-recon.json, qa/open-decisions.json, pipeline/scripts/wholebed_bench.py",
+   "money": false,
+   "status": "withdrawn",
+   "answer": null,
+   "answered_date": null,
+   "answer_context": null,
+   "note": "แถวที่เกี่ยวข้อง: D-128 · ระหว่างที่พี่ยังไม่ตอบ เลนเดินด้วย (ก) ตาม R3 — เตียงไม่ถูกเปลี่ยน และ bench ไม่ถูกรันซ้ำบนอำนาจของแถวนี้ · พี่กลับคำจากภาพได้ทุกเมื่อ",
+   "read_first": "docs/DECISIONS-render-assets.md, qa/sheet-recon.json",
+   "withdrawn_reason": "merged into ASK-032 — both are answer-from-the-image bed-vs-ink questions; one look answers both."
+  },
+  {
+   "id": "ASK-034",
+   "ask": "PROCUREMENT SHEET หนึ่งหน้า (projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md) — 5 บรรทัด เงิน/สิทธิ์: (1) ชุดผ้าเตียง hero 3dsky ~$5-15/โมเดล เพดานเสนอ $30; (2) ชุดเสื้อผ้า flat-file (ลองฟรีก่อน ไม่ได้ค่อย ~$5-10); (3) Marvelous Designer $39/เดือน หลังผล BlenderKit month; (4) engine/Enscape — จอดจนถึง real-client run; (5) ลิงก์ 3DSKY ใน Discord ใช้ไม่ได้ตาม licence — ยืนยัน/veto. ตอบได้ในห้านาที ทีละบรรทัด",
+   "first_routed": "2026-08-25",
+   "where": "projects/PRJ-2026-002_c001-house/04_visualization/procurement-sheet-2026-08-26.md",
+   "status": "open",
+   "money": "yes — เพดานรวมที่เสนอ ~$70-85 + subscription ที่พี่เลือก",
+   "note": "queue drain D-143: สี่ ask เงินเดิม (001/003/025/026) + ความเสี่ยง 027 ถูกรวมเป็นชีทเดียว",
+   "read_first": [
+    "docs/DECISIONS-render-assets.md",
+    "docs/LICENSING.md",
+    "qa/sourcing-tiers.json"
+   ]
+  }
+ ]
 }

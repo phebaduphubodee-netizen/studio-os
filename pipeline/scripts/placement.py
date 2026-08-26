@@ -53,6 +53,46 @@ class PlacementError(ValueError):
     """Raised instead of guessing. Every message names the object and the axis."""
 
 
+def face_rot(declare, label="<object>"):
+    """R9 FOR ROTATION (2026-08-26, debate proposal 1 — the nightstand case).
+
+    A FACING that can be derived from a relationship must never be typed. The
+    p2r75 'fix' typed `rot: 90` on both nightstands with a note claiming the
+    front now faced -x; under the repo's own pinned convention (front =
+    (sin rot, -cos rot)) rot 90 faces +X — straight into the wall the tables
+    hug. Two typed facings on one object were both wrong; R9's stop-loss says
+    the second correction means the value is being TYPED, so the third is a
+    declaration, not another number.
+
+        {"away_from_wall": "E"}   front points AWAY from the named wall (the
+                                  wall the mass hugs) -> face W -> rot 270
+        {"toward_wall":   "W"}    front points AT the named wall/datum
+                                  -> face W -> rot 270
+
+    Cardinal letters only (N/S/E/W, the convention facing_reader pins). A
+    diagonal facing is a measured angle, not a relationship — type it as `rot`
+    on a mass whose model registry row says it has no functional front, or
+    extend this vocabulary with the new relationship by name."""
+    import facing_reader as _fr
+    if not isinstance(declare, dict) or len(declare) != 1:
+        raise PlacementError(
+            f"{label}: `facing_derive` must be exactly one of "
+            f"{{'away_from_wall': <NSEW>}} or {{'toward_wall': <NSEW>}}, got "
+            f"{declare!r}. Two relationships for one facing is the R9 defect.")
+    (key, wall), = declare.items()
+    if key not in ("away_from_wall", "toward_wall"):
+        raise PlacementError(
+            f"{label}: unknown facing relationship {key!r} — the vocabulary is "
+            f"'away_from_wall' / 'toward_wall', extended by name only.")
+    facing = _fr.opposite(wall) if key == "away_from_wall" else wall
+    rot = _fr.rot_from_facing(facing)
+    if rot is None:
+        raise PlacementError(
+            f"{label}: `{key}` names {wall!r}, not a cardinal N/S/E/W. A "
+            f"facing that cannot be named is a facing that must be measured.")
+    return float(rot)
+
+
 def support_table(masses):
     """{name: geometry} from the mass list. `c` is the centre, `s` the size."""
     t = {}

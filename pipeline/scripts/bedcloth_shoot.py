@@ -1,4 +1,6 @@
 """Dress THIS bed with each candidate and shoot it — the owner's own method (his
+
+CLI-ONLY: run by hand to shoot owner-eye bed-cloth candidates for bedcloth_bench; named in qa/open-decisions.json:1130 — triage 2026-08-25.
 designer friend judges every 3D Warehouse model by eye for style fit), with the
 machine doing only the parts an eye should not have to do: pruning junk, aligning the
 sleeping plane, and reporting coverage.
