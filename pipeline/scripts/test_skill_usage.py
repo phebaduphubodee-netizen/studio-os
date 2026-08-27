@@ -111,6 +111,17 @@ class Reporting(unittest.TestCase):
         self.assertIn("hook ยังไม่เคยยิงเลย", text)
         self.assertNotIn("ยังไม่เคยถูกเรียกเลย", text)
 
+    def test_a_call_with_no_session_stamp_still_proves_the_hook_fires(self):
+        """CAUGHT ON THE FIRST LIVE READING. A hook wired mid-session writes Skill rows
+        before any SessionStart can exist, and the first version of this report printed
+        'the hook has never fired' immediately under the row that hook had just written.
+        Any row, by either route, is proof the hook is alive."""
+        rows = [{"kind": "skill", "name": "camera-composition", "ts": "2026-08-27T11:38:28"}]
+        text = "\n".join(SU.report_lines(rows, self.ROS, {"wired_at": "2026-08-27"}))
+        self.assertNotIn("hook ยังไม่เคยยิงเลย", text)
+        self.assertIn("SessionStart stamp", text)          # says WHY there is no stamp
+        self.assertIn("agent:cold-critic-c2", text)        # and still names the unused
+
     def test_sessions_but_no_calls_names_every_unused_entry(self):
         rows = [{"kind": "session", "ts": "2026-08-27T09:00:00"}]
         text = "\n".join(SU.report_lines(rows, self.ROS, {"wired_at": "2026-08-27"}))

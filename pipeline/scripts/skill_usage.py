@@ -181,11 +181,20 @@ def report_lines(rows=None, ros=None, state=None, today=None):
     n_ag = len(ros) - n_sk
     out = ["", "SKILL/AGENT roster {} skill · {} agent (นับตั้งแต่ {}) — ถูกเรียกจริง {} "
                 "ครั้ง · session ที่เห็น {}".format(n_sk, n_ag, wired, calls, sessions)]
-    if sessions == 0:
+    # THE DISCRIMINATOR IS "NO EVIDENCE OF THE HOOK AT ALL", NOT "NO SESSION STAMP".
+    # Caught on this rung's first live reading, minutes after it shipped: the log held a
+    # real Skill row (the hook fired mid-session, before any SessionStart could) while
+    # `sessions` was 0, and the report printed "the hook has never fired" directly under
+    # the row that hook had just written. A confident wrong line is the exact failure this
+    # file was built to end, so the test is now: has ANY row ever arrived, by either route?
+    if sessions == 0 and calls == 0:
         out.append("            **hook ยังไม่เคยยิงเลย — ตัวเลขข้างบนพิสูจน์อะไรไม่ได้** "
                    "(ยังไม่ wired หรือยังไม่ได้ restart session) — .claude/settings.local.json "
                    "แล้ว `python pipeline/scripts/skill_usage.py selftest`")
         return out
+    if sessions == 0:
+        out.append("            (ยังไม่มี SessionStart stamp — hook เพิ่งถูกต่อสายกลางเซสชัน "
+                   "หรือเซสชันนี้เริ่มก่อนมันถูกต่อ; แถวที่นับได้ข้างบนพิสูจน์ว่า hook ทำงาน)")
     if never:
         out.append("            ยังไม่เคยถูกเรียกเลย: {}".format(", ".join(never)))
     if stale:
