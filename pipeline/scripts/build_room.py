@@ -6572,6 +6572,84 @@ def _ies_beam(ld, fname, norm=1.0):
     nt.links.new(mul.outputs["Value"], em.inputs["Strength"])
 
 
+def _casework_occupied_cells(spec):
+    """P2r-27 / ORD-2026-08-26b: the occupied shelf cells of the room's casework,
+    READ OFF THE BUILT SCENE (R9b — the file that renders is the file of record),
+    in the pure shape _e5.casework_strips takes (metres). A cell = one shelf
+    anchor's top face up to the lowest same-piece shelf/top member above it;
+    OCCUPIED = any non-carcass, non-architecture, render-visible mesh intersects
+    the cell volume (a garment hanging through the cell counts — the friend-pool
+    law lights bays with contents, not only bays with objects RESTING). Carcass,
+    walls and hidden meshes are not occupants — the same screen the contents
+    placer uses. Front direction per piece comes from millwork.mill_axis on the
+    builtin's own spec row: derived, never typed (R9)."""
+    from mathutils import Vector
+    shelves = [a for a in _STYLE_ANCHORS
+               if str(a.get("kind", "")) in ("wardrobe", "closet", "bookshelf")
+               and str(a.get("part", "")).startswith("shelf")]
+    if not shelves:
+        return []
+    outline = (spec.get("room") or {}).get("outline_mm") or []
+    if not outline:
+        return []
+    _rc = (sum(p[0] for p in outline) / len(outline) * MM,
+           sum(p[1] for p in outline) / len(outline) * MM)
+    _ic = [((float(it["x"]) + float(it["w"]) / 2.0) * MM,
+            (float(it["y"]) + float(it["d"]) / 2.0) * MM)
+           for it in spec.get("items", [])]
+    fronts = {}
+    for b in spec.get("builtins", []):
+        nm = str(b.get("name", "builtin")).replace(" ", "_")
+        axis, sign, _src = millwork.mill_axis(
+            float(b["x"]) * MM, float(b["y"]) * MM,
+            float(b["w"]) * MM, float(b["d"]) * MM, _rc, _ic, b.get("face"))
+        if axis is not None:
+            fronts[nm] = (axis, sign)
+    by_piece = {}
+    for a in _STYLE_ANCHORS:
+        by_piece.setdefault(str(a.get("piece") or ""), []).append(a)
+    occupants = []
+    for _oo in bpy.data.objects:
+        if (_oo.type != 'MESH' or _oo.hide_render
+                or (_oo.name.startswith('mill__')
+                    and not _oo.name.startswith('mill__style'))
+                or _oo.name.startswith(('wall', 'ceiling', 'floor'))):
+            continue
+        _ob = [(_oo.matrix_world @ Vector(c)) for c in _oo.bound_box]
+        occupants.append(((min(p.x for p in _ob), min(p.y for p in _ob),
+                           min(p.z for p in _ob)),
+                          (max(p.x for p in _ob), max(p.y for p in _ob),
+                           max(p.z for p in _ob))))
+    cells = []
+    for a in shelves:
+        piece = str(a.get("piece") or "")
+        if piece not in fronts:
+            continue
+        axis, sign = fronts[piece]
+        top = a["z"] + a["dz"]
+        x0, y0, x1, y1 = a["x"], a["y"], a["x"] + a["dx"], a["y"] + a["dy"]
+        ceil_z = None
+        for m in by_piece.get(piece, ()):
+            pn = str(m.get("part", ""))
+            if not (pn.startswith("shelf") or pn == "top") or m["z"] <= top + 1e-6:
+                continue
+            ox = max(0.0, min(x1, m["x"] + m["dx"]) - max(x0, m["x"]))
+            oy = max(0.0, min(y1, m["y"] + m["dy"]) - max(y0, m["y"]))
+            if ox * oy < 0.5 * a["dx"] * a["dy"]:
+                continue
+            ceil_z = m["z"] if ceil_z is None else min(ceil_z, m["z"])
+        if ceil_z is None:
+            continue                       # open-top cell: no soffit to mount on
+        occ = any(o0[0] < x1 and o1[0] > x0 and o0[1] < y1 and o1[1] > y0
+                  and o0[2] < ceil_z - 0.005 and o1[2] > top + 0.005
+                  for (o0, o1) in occupants)
+        if occ:
+            cells.append({"name": a["name"].replace("mill__", "")[-40:],
+                          "x": x0, "y": y0, "z_top": top, "ceil_z": ceil_z,
+                          "dx": a["dx"], "dy": a["dy"], "axis": axis, "sign": sign})
+    return cells
+
+
 def _add_e5_lights(spec, h_m):
     """ELEMENT 5 (element5-lighting_DD-2026-07-20.md): materialize the pure plan —
     ambient disks (mass-clipped grids), BF11 opal task strips (emissive mesh + aimed
@@ -6777,10 +6855,50 @@ def _add_e5_lights(spec, h_m):
             _aimed_light(f"{s['name']}_{tag}", ld, (sx - 0.045, sy, sz + aim_dz * 0.075),
                          (sx, sy, sz + aim_dz * 1.0))
             n += 1
+    # ------------------------------------------------------------------ P2r-27
+    # CASEWORK CONTENTS LIGHT (ORD-2026-08-26b; the friend-pool law read off 50
+    # delivered built-in frames: LIGHT EXISTS ONLY WHERE CONTENTS ARE). Runs
+    # after styling by call order (build_suite: _add_styling -> _dress_scene ->
+    # add_interior_lights), so occupancy is the BUILT scene's. One warm strip
+    # per occupied cell; an empty cell staying dark is the rule working.
+    _cw_strips, _cw_meta = _e5.casework_strips(spec, _casework_occupied_cells(spec))
+    if _cw_strips:
+        _cs_m = bpy.data.materials.get("e5_case_strip")
+        if _cs_m is None:
+            _cs_m = bpy.data.materials.new("e5_case_strip")
+            _cs_m.use_nodes = True
+            _nt2 = _cs_m.node_tree
+            _em2 = _nt2.nodes.new("ShaderNodeEmission")
+            _em2.inputs["Color"].default_value = (*_cw_strips[0]["rgb"], 1.0)
+            _em2.inputs["Strength"].default_value = 12.0
+            _nt2.links.new(_em2.outputs[0],
+                           _nt2.nodes.get("Material Output").inputs["Surface"])
+        for _st in _cw_strips:
+            _o = add_box(f"e5_casestrip_{_st['name']}", _st["x"], _st["y"],
+                         _st["z"], _st["dx"], _st["dy"], _st["dz"])
+            _o.data.materials.append(_cs_m)
+            _ld = bpy.data.lights.new(f"e5_case_{_st['name']}", type='AREA')
+            _ld.shape = 'RECTANGLE'
+            _ld.size = max(_st["dx"], _st["dy"])
+            _ld.size_y = min(_st["dx"], _st["dy"])
+            _ld.energy = _st["watts"]
+            _ld.color = _st["rgb"]
+            _lo = bpy.data.objects.new(f"e5_case_{_st['name']}", _ld)
+            # AREA emits along local -Z: hung just under the strip, washing the
+            # cell's contents below — position derives from the strip's own box
+            _lo.location = (_st["x"] + _st["dx"] / 2.0, _st["y"] + _st["dy"] / 2.0,
+                            _st["z"] - 0.004)
+            bpy.context.scene.collection.objects.link(_lo)
+            n += 1
+    if _cw_meta.get("declared"):
+        print(f"  e5 casework: {len(_cw_strips)} strip(s) over {_cw_meta['n_occupied']} "
+              f"occupied cell(s) — empty cells stay dark BY DESIGN (friend-pool law); "
+              f"skipped {[s['cell'] for s in _cw_meta['skipped']] or 'none'}")
     c = plan["meta"]["counts"]
     drops = plan["meta"]["dropped"]
     print(f"  e5 lights: {c['downlights']} ambient + {c['strips']} strips + bar + "
-          f"{c['spots']} spots + cove + {c['sconces']} sconces placed ({n} sources; "
+          f"{c['spots']} spots + cove + {c['sconces']} sconces + "
+          f"{len(_cw_strips)} casework strip(s) placed ({n} sources; "
           f"lamps glow via _build_nightstand); "
           f"clipped {len(drops)} grid can(s) inside full-height masses: "
           f"{sorted({d['mass'] for d in drops})}")

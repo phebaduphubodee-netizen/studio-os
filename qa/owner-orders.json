@@ -969,10 +969,32 @@
    ],
    "standing": true,
    "retired_by": null,
-   "status": "not-obeyed",
+   "status": "obeyed",
    "since": "2026-08-26",
-   "not_obeyed_because": "Point 2 CARRIED OUT: p2r82 rendered with both DD terminations in pixels (scene dump: 24 members top z=2.788; diff vs p2r81 concentrated at the base + ceiling line; gate QUALIFIES 8/2; neither critic files the ceiling-butt/floor-line class — TRIAGE.md in the p2r82 bundle). Points 1/5/6 hold by construction. Remaining: point 3 (p2r83 contents-light) and point 4 (contents story round) — the row flips to obeyed when p2r83 lands.",
-   "restart_by": "builder: run p2r83 (P2r-27 casework contents-light via element5 derivation + decision row), then the contents story round under ORD-2026-08-26"
+   "obeyed_where": "pipeline/scripts/millwork.py,pipeline/scripts/element5_lighting.py,pipeline/scripts/build_room.py,projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r82-2026-08-26.md,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r83-2026-08-27.md",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "SHADOW_TOP = 0.012",
+     "why": "point 2 — the ceiling scribe is a built constant, not prose"
+    },
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "ZOCALO_R  = 0.120",
+     "why": "point 2 — the recessed zocalo is a built constant"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"casework\"",
+     "why": "point 3 — the contents-light layer is declared in the spec"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def _casework_occupied_cells",
+     "why": "point 3 — occupancy is read off the built scene, never typed"
+    }
+   ],
+   "note": "Obeyed 2026-08-27: p2r82 (terminations, QUALIFIES, critics dropped the class) + p2r83 (10 strips/10 occupied cells verified against the scene dump; both critics filed nothing against the strips and no unlit-casework item). Point 4 (contents story) continues under its own order ORD-2026-08-26-builtin-contents-unnatural; points 5/6 hold by construction (bed untouched, main light still P3)."
   }
  ]
 }

@@ -52,11 +52,22 @@ _CCT_ANCHORS = ((2400.0, (1.0, 0.82, 0.60)), (3000.0, (1.0, 0.90, 0.80)))
 CCT_FAMILY = (2200.0, 3000.0)   # residential warm family (residential-lighting.md)
 NOMINAL_ELECTRIC_CCT = 3000.0   # every light_warm-tinted fixture's schedule CCT
 
-_TOP_KEYS = {"schema", "_provenance", "note", "ambient", "task", "accent", "practicals"}
+_TOP_KEYS = {"schema", "_provenance", "note", "ambient", "task", "accent", "practicals",
+             "casework"}
 _AMBIENT_KEYS = {"bedroom_target_lux", "wet_target_lux", "bay_target_lux",
                  "downlight_watts", "note"}
 _TASK_KEYS = {"bf11_mirror_strips", "ensuite_mirror_bar", "note"}
 _STRIP_KEYS = {"strip_w_mm", "depth_mm", "watts", "note"}
+# P2r-27 / ORD-2026-08-26b: casework contents-light — the friend-pool law "light exists
+# only where contents are", read off 50 delivered built-in frames (friend-study 2026-08-26).
+# The block declares the RULE + hardware numbers; WHICH cells fire is occupancy, known only
+# from the BUILT scene, so casework_strips() takes the occupied-cell list as an argument
+# (pure both sides; build_room derives occupancy by reading meshes, R9b: the file that
+# renders is the file of record). OPTIONAL block by module law so minimal test specs stand;
+# its removal from the canonical spec is guarded by the decision row's in_effect_assert,
+# not by this module.
+_CASEWORK_KEYS = {"strip_w_mm", "strip_h_mm", "watts_per_m", "cct_k", "inset_mm",
+                  "front_frac", "note"}
 # bar PROFILE (reveal/height/depth) deliberately NOT spec keys: bathroom.BAR_REVEAL/BAR_H/
 # BAR_D are the ONE source (the solid bar builds from them; scrutiny 2026-07-21 caught the
 # spec copy as a second unchecked source of truth — a spec carrying them now RAISES as
@@ -789,3 +800,61 @@ def daylight_portals(spec, stand_mm, aim_mm):
                     "z0": z0, "z1": z1, "len_mm": length, "nx": nx, "ny": ny,
                     "area_m2": (length / 1000.0) * ((z1 - z0) / 1000.0)})
     return out
+
+
+def casework_strips(spec, occupied_cells):
+    """P2r-27 / ORD-2026-08-26b — the friend-pool law: LIGHT EXISTS ONLY WHERE
+    CONTENTS ARE. One warm strip per OCCUPIED shelf cell, mounted under the cell's
+    ceiling member; empty cells stay dark BY DESIGN (their darkness is the rule
+    working, never a missing fixture).
+
+    PURE. `occupied_cells` comes from the caller (build_room reads the BUILT scene —
+    R9b: the file that renders is the file of record); each cell is a dict in METRES:
+      {name, x, y, z_top (shelf top face), ceil_z (bottom of the member above),
+       dx, dy (shelf plan extent), axis ('x'|'y' = DEPTH axis), sign (+1 front at
+       high end of the depth axis)}
+    Returns (strips, meta). Each strip: {name, x, y, z, dx, dy, dz, watts, cct_k,
+    rgb} — a box at the cell's soffit, front-third of the depth (front_frac), run
+    inset per side. RAISES on a malformed block or a CCT outside the warm family;
+    cells too small for the inset are SKIPPED AND DISCLOSED in meta (no silent cap).
+    Spec block absent -> ([], meta{declared:False}): the layer is opt-in per module
+    law; the canonical spec's row is guarded by its decision's in_effect_assert."""
+    blk = (spec or {}).get("lighting") or {}
+    cw = blk.get("casework")
+    if cw is None:
+        return [], {"declared": False, "n_occupied": len(occupied_cells or ()),
+                    "skipped": []}
+    _check_keys(cw, _CASEWORK_KEYS, "lighting.casework")
+    for k in ("strip_w_mm", "strip_h_mm", "watts_per_m", "cct_k", "inset_mm"):
+        _pos(cw, k, "casework")
+    ff = cw.get("front_frac", 0.33)
+    if not (isinstance(ff, (int, float)) and 0.0 < ff < 1.0):
+        _fail(f"casework.front_frac must be in (0,1), got {ff!r}")
+    rgb = lamp_rgb(cw["cct_k"])                      # RAISES outside 2200-3000K
+    w_m = float(cw["strip_w_mm"]) / 1000.0
+    h_m = float(cw["strip_h_mm"]) / 1000.0
+    inset = float(cw["inset_mm"]) / 1000.0
+    strips, skipped = [], []
+    for c in occupied_cells or ():
+        run_axis = "y" if c["axis"] == "x" else "x"
+        run = c["dy"] if run_axis == "y" else c["dx"]
+        depth = c["dx"] if c["axis"] == "x" else c["dy"]
+        length = run - 2.0 * inset
+        if length <= 0.02 or depth <= w_m or c["ceil_z"] - c["z_top"] < 4 * h_m:
+            skipped.append({"cell": c["name"], "why": "too small for the strip"})
+            continue
+        # depth position: front_frac of the depth measured from the FRONT face
+        if c["sign"] > 0:
+            d_lo = (c["x"] if c["axis"] == "x" else c["y"]) + depth * (1.0 - ff) - w_m / 2.0
+        else:
+            d_lo = (c["x"] if c["axis"] == "x" else c["y"]) + depth * ff - w_m / 2.0
+        z = c["ceil_z"] - h_m
+        if c["axis"] == "x":
+            box = {"x": d_lo, "y": c["y"] + inset, "dx": w_m, "dy": length}
+        else:
+            box = {"x": c["x"] + inset, "y": d_lo, "dx": length, "dy": w_m}
+        strips.append({"name": f"case_{c['name']}", "z": z, "dz": h_m,
+                       "watts": round(float(cw["watts_per_m"]) * length, 2),
+                       "cct_k": float(cw["cct_k"]), "rgb": rgb, **box})
+    return strips, {"declared": True, "n_occupied": len(occupied_cells or ()),
+                    "skipped": skipped}

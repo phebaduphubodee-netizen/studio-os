@@ -2777,6 +2777,40 @@
      "why": "cloth_edge's pair list must carry the acquired dressing too — the same miss, one rung over"
     }
    ]
+  },
+  {
+   "id": "D-156",
+   "unit": "DELIV-001",
+   "subject": "casework-contents-light",
+   "decided_round": 83,
+   "decided_date": "2026-08-26",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-26b-friend-study-craft-lane",
+   "question": "ตู้ built-in ที่กล้องเห็นไม่มีไฟในช่องเลย ขณะที่งานส่งจริงของเพื่อน (สำรวจ 50 เฟรม 2026-08-26) จ่ายไฟทุกช่องที่มีของและปิดบานทุกช่องที่ไม่จ่าย — เพิ่มเลเยอร์ไฟ casework ยังไงโดยไม่ละเมิดกฎ E5 (ห้าม baked fixture arrays) และไม่แตะเลเยอร์แสงหลักที่เป็นงาน P3?",
+   "in_effect": "เลเยอร์ casework ใหม่ใน spec.lighting (schema key 'casework', module element5_lighting._CASEWORK_KEYS): กฎ = LIGHT EXISTS ONLY WHERE CONTENTS ARE — strip อุ่น 2700K (ในครอบครัว PH-03) หนึ่งเส้นต่อ 'ช่องที่มีของ' เท่านั้น; occupancy อ่านจากฉากที่สร้างจริงหลัง styling (build_room._casework_occupied_cells: mesh ที่ไม่ใช่ carcass/สถาปัตย์ intersect ปริมาตรช่อง) แล้วส่งเข้า element5_lighting.casework_strips (pure: validate + CCT family + กล่อง strip จาก geometry ของช่องเอง — derive ไม่ใช่พิมพ์, R9); ช่องว่างที่มืดคือกฎทำงาน ไม่ใช่ไฟหาย; ตำแหน่ง front มาจาก millwork.mill_axis ของ builtin แถวเดิม",
+   "where": "pipeline/scripts/element5_lighting.py",
+   "in_effect_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"casework\"",
+     "why": "the decided layer must stay declared in the spec — removal is a revert that needs its own row"
+    },
+    {
+     "file": "pipeline/scripts/element5_lighting.py",
+     "pattern": "def casework_strips",
+     "why": "the pure half (validation + CCT family + derived strip boxes) must exist"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def _casework_occupied_cells",
+     "why": "occupancy must be read off the BUILT scene, never typed or spec-guessed"
+    }
+   ],
+   "reverse_by": "ลบ block lighting.casework ออกจาก spec (เลเยอร์เป็น opt-in ใน module) + ลบ hook ใน _add_e5_lights — คอมมิตเดียว; แถวนี้บันทึกการถอนพร้อมเหตุผล",
+   "note": "schedule lane (suite_rcp/schedules) ยังไม่รู้จัก strip พวกนี้เพราะจำนวนขึ้นกับ occupancy ตอน build — หนี้ที่ประกาศไว้: ปิดที่ stage-05 SKU pass (schedule ระบุ rule + qty per-occupied-bay) ก่อนใช้เอกสารชุดนั้นกับลูกค้า · stance นี้ทำตามข้อ 3 ของคำสั่ง (เลเยอร์ไฟ casework)",
+   "because": "ORD-2026-08-26b ข้อ 3 + การสำรวจงานส่งจริง 50 เฟรม (friend-study 2026-08-26): ทุกตู้ที่ขายได้จ่ายไฟเฉพาะช่องที่มีของ — ของเราช่องเปิดทั้งตู้ไม่มีไฟสักเส้น (C2 p2r82 #4 'ตู้โล่ง' คือญาติของ defect เดียวกัน); เลเยอร์แสงหลักเป็นงาน P3 แต่ strip คือ HARDWARE ของ joinery จึงเข้า P2 ได้ตาม build-order (วัตถุก่อนแสง)"
   }
  ],
  "_assert_ratchet_from": "D-124"
