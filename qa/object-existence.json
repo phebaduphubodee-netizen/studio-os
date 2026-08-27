@@ -646,6 +646,15 @@
    "operable": false,
    "verdict": "keep",
    "why": "A lit niche with a dark neighbour is the delivered-work grammar the rule was cut from, and the strip is what makes the light have a source. Bare-prefix row because a strip's assembly name carries the cell coordinate and the SET changes with the contents — the count is derived, so a row per instance would go stale on every styling move. ROW OWED SINCE p2r83, and the reason it matters: this rung has failed the build since p2r83 (1 unrowed) and p2r84 (3), and both frames shipped and closed gates with no line about it."
+  },
+  {
+   "assembly": "wardrobe_bookslean",
+   "identity": "Leaning book stack 9c2e5e24 (263x364x103 mm asserted) on the drawer tower's upper shelf `tw1`, sharing with the folded stack already there.",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26 + the ORD-25c narrative shelf story (หนังสือกองเอียงบนชั้นหอคอย ข้างกองผ้าพับ) — a furniture plan draws no books or blankets",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "PAID piece, same buy and the same door. Scale ASSERTED (103.4 mm vs 40-350). Panel 2/3 inside — palette called it `edge` for a primary-colour jacket graphic facing the room rather than a spine, which is a real cost and it is recorded here rather than argued away: it is ONE jacket in a stack of cream boards, and the two other lenses read it inside on the board material and on the off-square stacking."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."

@@ -4237,6 +4237,12 @@ def _dress_scene(spec):
             "c590fee3-5d46-45cc-88c6-fb8a92bc56b5": "wardrobe_box",
             _WARDROBE_SHOES_MODEL: "wardrobe_shoes",   # p2r84: shoes join the
             # visible bay — same per-item-tag law as p2r80b (D7 must read names)
+            # p2r86 — the three panel-passed paid pieces, tagged per item for the
+            # same reason: a bare `wardrobe` tag is ungroupable by
+            # item_convention (multi-mesh import + Blender .00N dedup), so D7
+            # would count the room's own contents as UNKNOWN. This is the
+            # blindness class's FOURTH prefix and the fix is unchanged.
+            "9c2e5e24-d178-46d4-ab76-5e7f6a1922de": "wardrobe_bookslean",
         }
         # the open wardrobe's FRONT direction, derived once from the spec: the
         # cell's depth axis is the builtin's short plan axis, and the front is
@@ -4404,6 +4410,39 @@ def _dress_scene(spec):
                 # and the narrative's law is >=1 empty cell per column — a
                 # tower with both cells filled is the warehouse read. The
                 # tray debuts on the bookshelf's garden bay instead.
+                #
+                # ---------------------------------------------------- p2r86
+                # THE POOL WAS THE BLOCKER AND THE POOL IS WHAT CHANGED. p2r84
+                # proved the visible set was locked by our own closure rules and
+                # unlocked them; the count still did not move, because every
+                # non-declared-air cell in this wardrobe was ALREADY occupied —
+                # 8 cells, 6 filled, ni0 and tw0 air BY THE NARRATIVE'S OWN LAW
+                # (>=1 empty per column). So more contents here can only arrive
+                # as SECOND objects in lived-in cells, which is precisely the
+                # friend pool's own cadence (1-2 per bay, survey 2026-08-26).
+                # C2 gave that a number at p2r85: headboard 7.9% + curtain 12.2%
+                # + ceiling 2.6% = 22.7% of the frame carrying no information.
+                # All three ids below are PAID BlenderKit pieces bought
+                # 2026-08-27 under ORD-2026-08-22, scale-asserted at the door,
+                # and passed by the blind 3-lens panel (>=2 of 3 'inside';
+                # verdicts in _private/deliv-001/style-panel-2026-08-27/).
+                ("9c2e5e24-d178-46d4-ab76-5e7f6a1922de", 'tw1', False, True,
+                 "หนังสือกองเอียงบนชั้นหอคอย ข้างกองผ้าพับ (panel 2/3)"),
+                # TWO MORE WERE BOUGHT FOR THIS BLOCK AND MEASURED OUT OF IT, and
+                # the number is the useful part: a SHARED cell offers the strip
+                # its neighbour leaves, and on this wardrobe that strip is
+                # 175-205 mm (this block's own comment measured it for the 311 mm
+                # box, and quick 1 of p2r86 re-measured it for two more pieces).
+                # d7d65e9d is 302 mm along the run and b89bc1af is 346 — neither
+                # clears, on any of the four derived candidate offsets. Turning a
+                # piece onto its narrow axis was tried and REFUSED one layer
+                # down: model_fit reads the mesh's native aspect against the slot
+                # and called 302x138 into 138x302 a 21%-fill mismatch, which is
+                # the guard being right. So the finding is a PROCUREMENT spec,
+                # not more placement code: the next contents buy for this wall
+                # must be <= ~200 mm on its long plan axis, or it must go to a
+                # cell nobody is sharing. Both pieces stay on the shelf, scale-
+                # asserted and panel-passed, for a wall that has room.
             )
             # row field 4: False = solo cell · True = share (second object,
             # landing-strip occupancy) · a float = solo with an EXPLICIT
@@ -4886,6 +4925,30 @@ _GARMENT_POOL = {
               "13858ca1-270e-422d-94e1-e04bfad179e0"),  # beige v-neck
     "long":  ("1f6d368c-59f7-45f7-aa72-90ba9d832287",), # sage tiered maxi (rail end, partial occlusion)
 }
+# GARMENTS THAT ARRIVE WITH THEIR OWN HANGER — BOUGHT, PANEL-PASSED, AND REFUSED
+# BY THE FRAME (p2r86). The buy was aimed at a real item C2 filed twice ("ไม่มี
+# ไม้แขวน ไม่มีตะขอ ไม่มีห่วง") and at P2r-31's structural half: a garment modelled
+# ON its hanger arrives as MESH, so the hanger becomes something scene_dump,
+# carry_check, existence_check, D7 and the map census can all see, where ours is
+# a CURVE none of them can. Three were bought under ORD-2026-08-22, scale-asserted
+# at the door, and two passed the blind 3-lens panel (03ede500 2/3, ef06e40e 3/3).
+#
+# THE R5 PLAYBLAST REFUSED THEM ANYWAY, and that is the rung working: in the frame
+# the hung piece reads as a sheet of folded CARD — hard creases, flat planes, no
+# drape — beside a pool garment that reads as cloth. So they do not ship, and the
+# empty set below is deliberate rather than forgotten.
+#
+# WHAT IT SAYS ABOUT THE PANEL, which is the part worth keeping: it judges VENDOR
+# THUMBNAILS, and a thumbnail cannot show how a mesh behaves in OUR light at OUR
+# distance. Panel 25d already paid this once — the cognac tote passed and was then
+# "killed by the materiality judge AT HERO DISTANCE (plastic read)". Same lesson,
+# now with a second instance and a mechanism attached: the panel is a filter on
+# CLASS and REGISTER, never a substitute for the frame.
+#
+# The mechanism stays wired because the ledger of what to do next needs it: the
+# moment a garment with its own hanger survives a playblast, its id goes here and
+# nothing else changes. Empty today, and the gate says so out loud.
+_GARMENT_WITH_HANGER = frozenset()
 # wardrobe display props (panel 25d): the cognac tote c46b5c9d was killed by
 # the materiality judge AT HERO DISTANCE (plastic read) — f8573a9c is the
 # triage runner-up (pebbled grain + stitching); a losing LOOK makes D1 a
@@ -5470,7 +5533,11 @@ def _place_garment_rails(models, parts, cut_first=None):
                         print(f"  garment rail {salt}: {_gid[:8]} sidecar missing — skipped (loud)")
                         continue
                     _gnx, _gny, _gnz = _gn
-                    _gs = min(1.0, (_drop - _HANG_RESERVE) / _gnz)
+                    # a garment modelled ON its hanger needs no reserve: its own
+                    # hook is the top of the set and lands on the bar (p2r86)
+                    _own_hanger = _gid in _GARMENT_WITH_HANGER
+                    _res = 0.0 if _own_hanger else _HANG_RESERVE
+                    _gs = min(1.0, (_drop - _res) / _gnz)
                     if _gs < _GFLOOR:
                         print(f"  garment rail {salt}: {_gid[:8]} fits only at "
                               f"{_gs:.2f} of natural (< {_GFLOOR}) — skipped, "
@@ -5491,7 +5558,7 @@ def _place_garment_rails(models, parts, cut_first=None):
                     else:
                         _gx, _gy = _bar_amid, _a
                     _tagg = f"{tag}s{_gi}"
-                    _z0g = z1 - _HANG_RESERVE * _gs - _sz
+                    _z0g = z1 - _res * _gs - _sz
                     if not place_model(_gmp, _gx - _sx / 2.0, _gy - _sy / 2.0,
                                        _sx, _sy, _sz, rot=_base_rot,
                                        z0=_z0g, tag=_tagg):
@@ -5513,7 +5580,7 @@ def _place_garment_rails(models, parts, cut_first=None):
                     _rotm = (_mu.Matrix.Translation((_pcx, _pcy, 0.0))
                              @ _mu.Matrix.Rotation(math.radians(_theta * _side), 4, 'Z')
                              @ _mu.Matrix.Translation((-_pcx, -_pcy, 0.0)))
-                    _dzg = (z1 - _HANG_RESERVE * _gs) - _top
+                    _dzg = (z1 - _res * _gs) - _top
                     _roots = set()
                     for _o in _gms:
                         _r = _o
@@ -5556,6 +5623,14 @@ def _place_garment_rails(models, parts, cut_first=None):
                     # these panel-passed garments do not ship with. Hook wraps
                     # the bar (contact: bar top ~ z1), stem drops to the
                     # collar, shoulder stubs follow the garment's own swing.
+                    if _own_hanger:
+                        # this one CAME with its hanger, as mesh — building a
+                        # second wire through the first is the defect the
+                        # reserve exists to avoid (p2r86)
+                        _gpool_used[_gid] = _gpool_used.get(_gid, 0) + 1
+                        _placed_n += 1
+                        _a -= _side * _pitches[(salt + _gi) % 4]
+                        continue
                     _hz_hook = z1 - 0.011
                     _hcrv = bpy.data.curves.new(f"{_tagg}_hanger", 'CURVE')
                     _hcrv.dimensions = '3D'
