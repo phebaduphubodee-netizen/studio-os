@@ -1267,3 +1267,61 @@ def test_open_front_dd_terminations_p2r26():
     # closed tall door runs are UNTOUCHED: their kick stays PLINTH_R (ergonomic, not float)
     closed = {p[0]: p for p in M.millwork_parts("wardrobe", D, 3.4, H, "x", -1)}
     assert abs(closed["plinth"][1] - M.PLINTH_R) < 1e-9
+
+
+# --- P2r-28: the SHAPE of a part is derived from the part -----------------------------------------
+# `RAIL_D` has carried the words "round rail modelled square" since it was written, and C2 read it
+# off two frames as "a flat square bar". The rail measures 24 px thick in the frame of record, so
+# the parenthesis was a defect, not a note. These pin that the shape is decided by the part's own
+# proportions and NEVER by a list of names (R9b: a rule that names its objects exempts the next one).
+
+def test_a_hang_rail_is_a_rod():
+    assert M.rod_axis(0.736, M.RAIL_D, M.RAIL_D) == "x"
+
+
+def test_its_own_end_socket_is_not_a_rod():
+    """Square-sectioned but stubby — a fixing plate, not a bar. The nearest REJECTED case,
+    and it sits ~13x below the cut."""
+    assert M.rod_axis(M.RAIL_SOCK_PR + M.RAIL_EMBED, M.RAIL_SOCK, M.RAIL_SOCK) is None
+
+
+def test_panels_shelves_and_rectangular_battens_are_not_rods():
+    assert M.rod_axis(M.CARC_T, 0.6, 2.8) is None            # gable
+    assert M.rod_axis(0.736, 0.6, M.CARC_T) is None          # shelf
+    assert M.rod_axis(2.4, 0.020, 0.010) is None             # batten: long, but NOT square
+
+
+@pytest.mark.parametrize("dims,want", [((M.RAIL_D, 0.9, M.RAIL_D), "y"),
+                                       ((M.RAIL_D, M.RAIL_D, 0.9), "z"),
+                                       ((0.9, M.RAIL_D, M.RAIL_D), "x")])
+def test_it_finds_the_axis_on_every_run_direction(dims, want):
+    assert M.rod_axis(*dims) == want
+
+
+@pytest.mark.parametrize("bad", [(0.0, 0.03, 0.03), (0.7, 0.0, 0.03), (-1.0, 0.03, 0.03)])
+def test_a_degenerate_part_is_never_a_rod(bad):
+    assert M.rod_axis(*bad) is None
+
+
+def test_the_sweep_selects_RAILS_AND_NOTHING_ELSE():
+    """The scope claim, PROVEN rather than asserted: run every millwork kind this module
+    builds and check that every part the predicate accepts is a hang rail. The version of
+    this rule that named `rail_*` would pass this test too — and would exempt the next rod
+    somebody adds, which is the whole reason the predicate is geometric."""
+    kinds = ("wardrobe", "closet", "cabinet", "dresser", "sideboard", "tv_unit",
+             "desk", "vanity", "bookshelf")
+    picked, total = [], 0
+    for k in kinds:
+        for axis, sign in (("x", 1), ("y", 1)):
+            try:
+                parts = M.millwork_parts(k, 3.3, 0.6, 2.8, axis, sign,
+                                         floor_standing=True, open_front=True)
+            except Exception:
+                continue
+            for (nm, _x, _y, _z, dx, dy, dz) in parts:
+                total += 1
+                if M.rod_axis(dx, dy, dz):
+                    picked.append(nm)
+    assert picked, "the sweep built no rods at all — the probe is broken, not the rule"
+    assert all(n.startswith("rail_") and "sock" not in n for n in picked),         f"the predicate reached past the rails: {sorted(set(picked))}"
+    assert len(picked) < total, "it cannot be selecting everything"

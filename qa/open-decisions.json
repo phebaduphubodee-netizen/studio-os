@@ -2991,6 +2991,40 @@
    "reverse_by": "ลบ .claude/agents/cold-critic-c2.md แล้ว C2 กลับไปเป็น prompt ที่พิมพ์มือทุกรอบ (ตาบอดขึ้นกับวินัย ไม่ใช่โครงสร้าง)",
    "note": "ไม่ใช่ตัวแทน C3 (ผู้ขายเดียวกับ builder) และไม่ใช่ sighted comparator ของ R10b — คนละคำถาม และไม่เคยถาม agent เดียวสองคำถาม",
    "because": "builder จับ defect ของตัวเองได้ 30-50% — rung นี้มีค่าเพราะมันไม่ได้ดูงานตอนถูกสร้าง และ 'ความไม่รู้' ที่ขึ้นกับการจำว่าต้องไม่เปิดไฟล์ไหน ไม่ใช่โครงสร้าง"
+  },
+  {
+   "id": "D-162",
+   "unit": "DELIV-001",
+   "subject": "rod-shape-is-derived-from-the-part",
+   "decided_round": 87,
+   "decided_date": "2026-08-27",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-05-object-must-justify-itself",
+   "question": "RAIL_D แบกคำว่า 'round rail modelled square' มาตั้งแต่วันที่มันถูกเขียน และ C2 อ่านออกจากเฟรมสองครั้งว่าเป็น 'แท่งเหลี่ยมแบน' — จะแก้ยังไงไม่ให้กลายเป็น allowlist ตามชื่อ (R9b) และไม่ให้ millwork ต้องรู้จัก bpy (layer law)?",
+   "in_effect": "รูปทรงถูก DERIVE จากสัดส่วนของชิ้นส่วนเอง: `millwork.rod_axis(dx,dy,dz)` (pure) คืนแกนถ้าหน้าตัดเป็นสี่เหลี่ยมจัตุรัส (ต่างกัน <=2มม.) และยาว >=4 เท่าของหน้าตัด — นอกนั้นคืน None · `build_room.add_rod` สร้างท่อ smooth-shaded ที่ inscribe อยู่ใน AABB เดิมทุกมิติ ฉะนั้น bbox / placement / load path / anchor registry อ่านได้เหมือนเดิมทุกตัว เปลี่ยนแค่ silhouette กับ specular · millwork ยังไม่รู้จัก bpy: มันตอบว่า 'อะไรคือ rod' และ materializer เป็นคนสร้าง",
+   "where": "pipeline/scripts/millwork.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "def rod_axis\\(",
+     "why": "the predicate is pure and unit-testable, in the layer that owns proportions"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_ax = millwork\\.rod_axis\\(dx, dy, dz\\)",
+     "why": "the materializer ASKS rather than matching a name — this is the line that makes the scope geometric"
+    },
+    {
+     "file": "pipeline/scripts/test_millwork.py",
+     "pattern": "test_the_sweep_selects_RAILS_AND_NOTHING_ELSE",
+     "why": "the scope claim is proven by sweeping every millwork kind, not asserted in a comment"
+    }
+   ],
+   "reverse_by": "ลบ 4 บรรทัด `_ax = millwork.rod_axis(...)` / if-else ใน materializer แล้วทุกชิ้นกลับเป็น add_box เหมือนเดิม (millwork.rod_axis จะกลายเป็นโค้ดที่ไม่มีใครเรียก ลบทิ้งได้)",
+   "note": "วัดแล้วว่าคุ้ม ก่อนสร้าง: ราวที่กล้องเห็นหนา 24 px ใน frame of record (id_mask บน p2r85: rail_full 3618 px, bbox 154x81, mean run 23.5) ซึ่งไกลเกินจุดที่หน้าเหลี่ยมกับ gradient โค้งเป็นภาพเดียวกัน · สิ่งที่ยังไม่แก้และตั้งใจ (R1 หนึ่งกลไกต่อรอบ): RAIL_D=30มม. ยังเกิน D4-A ที่เซ็นไว้ Ø25-28 อยู่ 2มม. — การขยับมันเปลี่ยน AABB ซึ่งจะไปกระทบ carry_check overlap ของเสื้อที่แขวนอยู่ จึงเป็นรอบของมันเอง",
+   "because": "R9b: 'a rule that names the objects it applies to will always exempt the next one' — sweep บน 9 kind x 2 axis คัดได้ 21 ชิ้นและทุกชิ้นคือราวแขวน ไม่มี panel/shelf/batten/cleat และไม่รวม socket ของราวเอง (หน้าตัดจัตุรัสแต่สั้น 0.29 = ต่ำกว่าเกณฑ์ 13 เท่า ส่วนราวสูงกว่า 6 เท่า)"
   }
  ],
  "_assert_ratchet_from": "D-124"

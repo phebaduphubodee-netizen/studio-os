@@ -1009,10 +1009,8 @@
    ],
    "standing": true,
    "retired_by": null,
-   "status": "not-obeyed",
+   "status": "obeyed",
    "since": "2026-08-27",
-   "not_obeyed_because": "กลไกครบแล้ว (roster 7 skill + 2 agent, counter, hook, roster พิมพ์ทุก session open) แต่ 'การเรียกใช้' เป็นพฤติกรรม ไม่ใช่ไฟล์ — และ qa/skill-usage.jsonl ยังว่างเปล่า. การประกาศว่าทำตามแล้วในวันที่สร้างเสร็จ คือรูปเดิมที่ R13 ถูกเขียนขึ้นมาเพื่อจับพอดี: คำสั่งที่ทำตามแบบ opt-in คือคำสั่งที่ยังไม่ได้ทำตาม เพราะไม่มีใครพิมพ์ flag",
-   "restart_by": "เรียก craft skill ตัวใดตัวหนึ่ง (camera-composition / styling-narrative / lighting-design) ในรอบที่มันใช้ได้จริง แล้ว hook จะเขียนแถวลง qa/skill-usage.jsonl เอง — obeyed_assert ข้างล่างจะเขียวด้วยตัวมันเอง ไม่ต้องมีใครมาแก้แถวนี้ · ถ้า hook ไม่ยิงเลยหลัง restart session ให้ดู .claude/settings.local.json (gitignored, เครื่องนี้เครื่องเดียว) แล้วรัน skill_usage.py selftest",
    "obeyed_where": "qa/skill-usage.jsonl,pipeline/scripts/skill_usage.py,pipeline/scripts/plan_status.py,CLAUDE.md,.claude/skills/README.md",
    "obeyed_assert": [
     {
@@ -1031,7 +1029,7 @@
      "why": "his condition sits in the file loaded at every session open, in his own words"
     }
    ],
-   "note": "D-160 carries the machinery. CAVEAT: the hook lives in .claude/settings.local.json which is gitignored — it runs on this machine only and a fresh clone counts zero; promoting it into the committed law layer is a PR and his call, the same route guard_web took."
+   "note": "CARRIED OUT BY ITS OWN TEST, and the flip is the evidence the rung is real. Filed not-obeyed at the hour it was given, with obeyed_assert #1 = a grep for a craft-skill row in qa/skill-usage.jsonl. At p2r87 the rail question turned out to be a framing question (the only in-frame rail's left fixing measures 0 px — cropped), `camera-composition` was invoked to settle it, the PreToolUse hook stamped the row, and the RENDER GATE then refused the build with 'filed NOT-OBEYED while every assertion it carries holds'. Nobody edited this row to make it true; the behaviour did, and the gate insisted. CAVEAT UNCHANGED: the hook lives in .claude/settings.local.json (gitignored) so it counts on this machine only — promoting it into the committed law layer is a PR and his call. D-160 carries the machinery."
   }
  ]
 }

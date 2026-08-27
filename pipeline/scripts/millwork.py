@@ -52,6 +52,45 @@ RAIL_D    = 0.030   # brass hang-rail section (round rail modelled square; Ø25-
 # exactly ON a gable face is a coincident-face z-fight), and the real fix for that
 # is the one a joiner uses: the rail DIES INTO the gable a couple of millimetres,
 # and a socket flange covers the junction. Never a nudge (R9).
+# A ROD IS A SHAPE, AND THE SHAPE IS DERIVED FROM THE PART (P2r-28, 2026-08-27).
+# `RAIL_D`'s own comment has said "round rail modelled square" since the day it was
+# written, and C2 read it off the frame twice ("a flat square bar", p2r84 A4). The rail
+# measures 24 px thick in the frame of record, which is far past the size where a square
+# facet and a curved specular gradient are the same picture — so the note was a real
+# defect wearing a parenthesis.
+#
+# THE SCOPE COMES FROM THE RULE'S OWN PREMISE, NOT FROM A LIST OF NAMES (R9b: "a rule that
+# names the objects it applies to will always exempt the next one"). A member with a SQUARE
+# cross-section that is many times longer than that section is a ROD — a bar, a rail, a
+# dowel — whatever it is called. Swept across every millwork kind this module builds, the
+# predicate selects 21 parts and every one of them is a hang rail: no panel, no shelf, no
+# batten, no cleat, and not the rail's own end socket (square-sectioned but stubby, 0.29).
+# The nearest thing it rejects sits 13x below the cut and the nearest thing it accepts 6x
+# above it, so the number is not load-bearing at the third decimal.
+ROD_SQUARE_TOL = 0.002   # |section a - section b| under this = a square section
+ROD_SLENDER    = 4.0     # length / section at or above this = a rod, not a block
+
+
+def rod_axis(dx, dy, dz, tol=ROD_SQUARE_TOL, slender=ROD_SLENDER):
+    """The axis a part runs along IF it is a rod (square section, slender), else None.
+
+    PURE. Returns 'x' | 'y' | 'z'. The materializer turns a rod into a smooth tube
+    inscribed in this same AABB, so nothing downstream of the box contract moves: the
+    bbox, the placement, the carry path and the anchor registry all read identically.
+    """
+    d = {"x": float(dx), "y": float(dy), "z": float(dz)}
+    if min(d.values()) <= 0:
+        return None
+    axis = max(d, key=lambda k: d[k])
+    a, b = [v for k, v in d.items() if k != axis]
+    if abs(a - b) > tol:
+        return None                      # rectangular section: a batten or a panel
+    section = max(a, b)
+    if section <= 0 or d[axis] / section < slender:
+        return None                      # stubby: a block, a cleat, an end socket
+    return axis
+
+
 RAIL_EMBED = 0.002  # how far each end buries itself in its gable — clears the
 #                     coincident face, and gives the load path a real contact
 RAIL_SOCK  = 0.048  # end socket/flange plate, square, centred on the rail (Ø48 cup)

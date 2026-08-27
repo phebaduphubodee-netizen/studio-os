@@ -10115,6 +10115,45 @@ def _smooth_mesh_obj(name, verts, faces, mat=None, own_mat=True, bevel=None, sub
     return o
 
 
+def add_rod(name, x, y, z, dx, dy, dz, axis, seg=24):
+    """A capped, smooth-shaded TUBE inscribed in the box (x,y,z,dx,dy,dz), running `axis`.
+
+    P2r-28. `millwork.rod_axis` decides WHAT is a rod, from the part's own proportions;
+    this only builds it. The tube is inscribed in the same AABB the box occupied, so the
+    bbox, the placement, the load path and the anchor registry all read exactly as before
+    — the only thing that changes is the silhouette and, with smooth shading, the
+    specular: a curved brass tube gets the gradient that says "round" at 24 px, where a
+    flat facet said "bar". Painted later BY NAME like every other mill part.
+    """
+    from math import cos, sin, tau
+    ai = {"x": 0, "y": 1, "z": 2}[axis]
+    lo = (x, y, z)[ai]
+    hi = lo + (dx, dy, dz)[ai]
+    per = [k for k in (0, 1, 2) if k != ai]                      # the two section axes
+    ctr = [(x, y, z)[k] + (dx, dy, dz)[k] / 2.0 for k in per]
+    r = min((dx, dy, dz)[k] for k in per) / 2.0
+    verts = []
+    for end in (lo, hi):
+        for i in range(seg):
+            a = tau * i / seg
+            v = [0.0, 0.0, 0.0]
+            v[ai] = end
+            v[per[0]] = ctr[0] + r * cos(a)
+            v[per[1]] = ctr[1] + r * sin(a)
+            verts.append(tuple(v))
+    faces = [(i, (i + 1) % seg, seg + (i + 1) % seg, seg + i) for i in range(seg)]
+    for j, end in enumerate((lo, hi)):                            # both ends capped: a rail
+        c = [0.0, 0.0, 0.0]                                       # dies INTO its gable and
+        c[ai] = end                                               # the visible end is a face
+        c[per[0]], c[per[1]] = ctr
+        verts.append(tuple(c))
+        ci = len(verts) - 1
+        base = j * seg
+        for i in range(seg):
+            faces.append((base + i, base + (i + 1) % seg, ci))
+    return _smooth_mesh_obj(name, verts, faces, own_mat=False)
+
+
 def _cyl_frustum(name, cx, cy, r_bot, r_top, z0, z1, mat, seg=24, cap=True):
     """A (tapered) cylinder via from_pydata — legs / round cushions."""
     from math import cos, sin, tau
@@ -10446,7 +10485,14 @@ def _build_millwork(name, kind, x0, y0, z0, W, D, H, room_ctr, item_ctrs=(), fac
     if not parts:
         return False                                 # panel / wall-hung low piece -> flush box
     for pn, px, py, pz, dx, dy, dz in parts:
-        o = add_box(f"mill__{name}__{pn}", x0 + px, y0 + py, z0 + pz, dx, dy, dz)
+        # SHAPE IS DERIVED FROM THE PART, never from its name (P2r-28 / R9b). A square
+        # section many times longer than itself is a rod — across every kind this module
+        # builds, that selects the hang rails and nothing else.
+        _ax = millwork.rod_axis(dx, dy, dz)
+        if _ax:
+            o = add_rod(f"mill__{name}__{pn}", x0 + px, y0 + py, z0 + pz, dx, dy, dz, _ax)
+        else:
+            o = add_box(f"mill__{name}__{pn}", x0 + px, y0 + py, z0 + pz, dx, dy, dz)
         o["mill_bevel"] = MILL_BEVEL_M               # a near-sharp arris, not the suite's 5mm round
         # ELEMENT 8 ANCHOR REGISTRY: record what was ACTUALLY built, so the styling layer
         # derives from it instead of from a number in a file. A garment must hang off the
