@@ -1,42 +1,261 @@
 {
  "_law": "THE MAP THE HEAD STOPPED BEING ABLE TO HOLD (owner 2026-08-22: 'project ใหญ่เกินกว่าที่ตรวจเช็คได้ว่าขั้นไหนผิดอะไรแล้วใช่ไหม' -> advice -> 'ลุย', ORD-2026-08-22-front-door-dims). One row per check the render lanes actually run, classified by (1) STAGE — where in the pipe it fires, and (2) COMPARES — what it holds the work against: a = our own spec/derivation/history (self-consistency), b = the client's sheet / the target / the delivered anchor pool, c = a WORLD standard independent of both, d = process-state (registers, orders, ledgers). The first full census (2026-08-22, 5-agent sweep) found 28 rungs: a=9 b=4 c=3 d=12, with ONE blocking world-standard check on the render path — which is the measured answer to why 'the bed is too small' had no asker. ADMISSION of new rows is governed by D-112 (a new instrument must give eyes to a none_yet critic-debt class, replace a proven liar, or be owner-ordered — printed in the gate that introduces it; enforcement is discipline in gate artifacts, NOT a new checker, by D-112's own words). The defect-class half of the map is qa/critic-debt.json's none_yet rows — this file does not duplicate them. plan_status prints this map's summary at every session open; a map nobody prints is the queue-with-no-consumer defect wearing a map.",
  "updated": "2026-08-24",
- "classes": {"a": "own-spec/self-history", "b": "sheet/target/anchor-pool", "c": "world-standard", "d": "process-state"},
- "stages": ["ingest", "spec", "bench", "scene-dump", "render", "process"],
+ "classes": {
+  "a": "own-spec/self-history",
+  "b": "sheet/target/anchor-pool",
+  "c": "world-standard",
+  "d": "process-state"
+ },
+ "stages": [
+  "ingest",
+  "spec",
+  "bench",
+  "scene-dump",
+  "render",
+  "process"
+ ],
  "rungs": [
-  {"name": "asset_scale (ingest assert)", "stage": "ingest", "compares": "c", "blocking": true, "note": "UNIT only, by its own docstring — size-for-class is dim_check's job"},
-  {"name": "texture_scale (STY-8)", "stage": "ingest", "compares": "c", "blocking": true, "note": "qa/texture-scale.json + <slug>.scale.json beside every cached set: the world size of one texture repeat as the PUBLISHER declares it, against the size the code maps it at. R8 says scale is asserted on every ingest; the mesh side has had asset_scale since 2026-08-01 and the texture side had nothing, so wood_floor was mapped at nine bare literals and the room floor drew 266.67 mm boards from a 188.9 mm photograph. PURE (no PIL/bpy) so check_room calls it directly rather than spawning it. Sweep backlog and scale-debt are both ratchets."},
-  {"name": "model_assert_check", "stage": "ingest", "compares": "a", "blocking": true, "note": "spec vs sidecar vs live re-measure; re-checks asset_scale bands"},
-  {"name": "audit_spec (R10 prov)", "stage": "spec", "compares": "a", "blocking": true},
-  {"name": "contact_check (R9)", "stage": "spec", "compares": "a", "blocking": true, "note": "repro lane"},
-  {"name": "contact_check.undeclared", "stage": "spec", "compares": "a", "blocking": false},
-  {"name": "craft_check (arc-minute)", "stage": "spec", "compares": "c", "blocking": false, "note": "advisory only"},
-  {"name": "pixel_check.unclaimed", "stage": "spec", "compares": "d", "blocking": false},
-  {"name": "coverage_check (R10)", "stage": "spec", "compares": "a", "blocking": true, "note": "repro lane; manifest is our own reading"},
-  {"name": "wholebed bench filters", "stage": "bench", "compares": "b+c", "blocking": true, "note": "qualifier, not gate; front-door anchor_std row added 2026-08-22; D-120 (2026-08-23): the size anchor is the MATTRESS by geometry (pick_mattress, probe cover/top_med/relief), bare-mattress tol +-50 (knowledge:45,124), scale lands the mattress in the slot, the FRAME is capped by the drawn bed rect SR-07 (b); carry_ons stripped at the bench as at the hook; cluster overhang + neighbour clearance REPORTED"},
-  {"name": "placement_check (R9b)", "stage": "scene-dump", "compares": "c", "blocking": true, "note": "physics: floating/overhang/off-axis", "room_lane_debt": {"since": "2026-08-24", "why": "DECLARED blocking here and spawned by neither render path: its only non-test callers are trn001_build.py:394 and trn002_build.py:543, both reproduction lanes, and build_room.py mentions it in one comment. Found 2026-08-24 by the guard in test_rule_gate that this row is now the first exemption to — the same sweep that found sheet_recon in this exact state, declared blocking for 13 days while `git log -S` showed no build had ever spawned it. R9b's own text says THE GUARD IS UNIVERSAL AND READS THE BUILT SCENE, so this is a real hole and not a lane distinction.", "restart_by": "Spawn placement_check beside sheet_recon/existence_check/dim_check in build_room._score_deliverable on the scene dump, exit contract 1=fail 2=hard-stop. Expected to surface a backlog on first run (the north nightstand is already 41.9mm inside bed__frame__acq0), so it lands with its own triage round, not inside an unrelated commit."}},
-  {"name": "sheet_recon (R12)", "stage": "scene-dump", "compares": "b", "blocking": true},
-  {"name": "existence_check (R10)", "stage": "scene-dump", "compares": "a", "blocking": true, "note": "vs human-signed ledger"},
-  {"name": "dim_check (front door)", "stage": "scene-dump", "compares": "c", "blocking": true, "note": "ADDED 2026-08-22, ORD-front-door-dims: built dims vs world standards, no allowlist"},
-  {"name": "pixel_check (R11)", "stage": "render", "compares": "b", "blocking": true, "note": "repro lane (target image)"},
-  {"name": "deliverable_check", "stage": "render", "compares": "b", "blocking": true, "note": "thresholds = delivered-pool percentiles; low score is not a stop, exit-2 is"},
-  {"name": "bed_pixels ratchet", "stage": "render", "compares": "a", "blocking": true, "note": "vs our own baseline; grounded once by sighted panel"},
-  {"name": "value_probe ladder", "stage": "render", "compares": "a", "blocking": true, "note": "signed tonal targets (D-076)"},
-  {"name": "p2_exit harness", "stage": "render", "compares": "b", "blocking": false, "note": "exit 1 is a score"},
-  {"name": "audit_bundle (R7 triage)", "stage": "process", "compares": "d", "blocking": true, "note": "repro lane"},
-  {"name": "audit_blind_ask (R7c)", "stage": "process", "compares": "d", "blocking": true, "note": "repro lane"},
-  {"name": "audit_learning", "stage": "process", "compares": "d", "blocking": true, "note": "repro lane"},
-  {"name": "baseline_ratchet", "stage": "process", "compares": "a", "blocking": true, "note": "repro lane; vs git HEAD predecessor"},
-  {"name": "audit_continuity", "stage": "process", "compares": "a", "blocking": true, "note": "repro lane"},
-  {"name": "R1 cap counter", "stage": "process", "compares": "d", "blocking": true},
-  {"name": "decisions_check", "stage": "process", "compares": "d", "blocking": true},
-  {"name": "orders_check (R13)", "stage": "process", "compares": "d", "blocking": true},
-  {"name": "asks_check (R13)", "stage": "process", "compares": "d", "blocking": true},
-  {"name": "sourcing_check (R13)", "stage": "process", "compares": "d", "blocking": true},
-  {"name": "repo_first", "stage": "process", "compares": "d", "blocking": true},
-  {"name": "debt_check", "stage": "process", "compares": "d", "blocking": true, "note": "repro lane; its none_yet rows are the map's defect-class half"},
-  {"name": "plan_status print rung", "stage": "process", "compares": "d", "blocking": false},
-  {"name": "style_check (STY-1)", "stage": "process", "compares": "d", "blocking": true, "note": "qa/style-of-record.json: nine material slots signed or dated-unsigned, prohibitions with a test, one style name. Wired into check_room (the lane that renders), not check()/enforce()"},
-  {"name": "style_measure palette gap (STY-1b)", "stage": "post-render", "compares": "a", "blocking": true, "note": "R11: the only style rung that OPENS THE PICTURE. style_fingerprint 60/30/10 area split off the frame of record vs concept.md§3; ratchet only ever falls. compares=a because the declared palette is our own document — it is self-consistency measured in PIXELS, not a world standard"}
+  {
+   "name": "asset_scale (ingest assert)",
+   "stage": "ingest",
+   "compares": "c",
+   "blocking": true,
+   "note": "UNIT only, by its own docstring — size-for-class is dim_check's job"
+  },
+  {
+   "name": "texture_scale (STY-8)",
+   "stage": "ingest",
+   "compares": "c",
+   "blocking": true,
+   "note": "qa/texture-scale.json + <slug>.scale.json beside every cached set: the world size of one texture repeat as the PUBLISHER declares it, against the size the code maps it at. R8 says scale is asserted on every ingest; the mesh side has had asset_scale since 2026-08-01 and the texture side had nothing, so wood_floor was mapped at nine bare literals and the room floor drew 266.67 mm boards from a 188.9 mm photograph. PURE (no PIL/bpy) so check_room calls it directly rather than spawning it. Sweep backlog and scale-debt are both ratchets."
+  },
+  {
+   "name": "model_assert_check",
+   "stage": "ingest",
+   "compares": "a",
+   "blocking": true,
+   "note": "spec vs sidecar vs live re-measure; re-checks asset_scale bands"
+  },
+  {
+   "name": "audit_spec (R10 prov)",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": true
+  },
+  {
+   "name": "contact_check (R9)",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "contact_check.undeclared",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": false
+  },
+  {
+   "name": "craft_check (arc-minute)",
+   "stage": "spec",
+   "compares": "c",
+   "blocking": false,
+   "note": "advisory only"
+  },
+  {
+   "name": "pixel_check.unclaimed",
+   "stage": "spec",
+   "compares": "d",
+   "blocking": false
+  },
+  {
+   "name": "coverage_check (R10)",
+   "stage": "spec",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane; manifest is our own reading"
+  },
+  {
+   "name": "wholebed bench filters",
+   "stage": "bench",
+   "compares": "b+c",
+   "blocking": true,
+   "note": "qualifier, not gate; front-door anchor_std row added 2026-08-22; D-120 (2026-08-23): the size anchor is the MATTRESS by geometry (pick_mattress, probe cover/top_med/relief), bare-mattress tol +-50 (knowledge:45,124), scale lands the mattress in the slot, the FRAME is capped by the drawn bed rect SR-07 (b); carry_ons stripped at the bench as at the hook; cluster overhang + neighbour clearance REPORTED"
+  },
+  {
+   "name": "placement_check (R9b)",
+   "stage": "scene-dump",
+   "compares": "c",
+   "blocking": true,
+   "note": "physics: floating/overhang/off-axis",
+   "room_lane_debt": {
+    "since": "2026-08-24",
+    "why": "DECLARED blocking here and spawned by neither render path: its only non-test callers are trn001_build.py:394 and trn002_build.py:543, both reproduction lanes, and build_room.py mentions it in one comment. Found 2026-08-24 by the guard in test_rule_gate that this row is now the first exemption to — the same sweep that found sheet_recon in this exact state, declared blocking for 13 days while `git log -S` showed no build had ever spawned it. R9b's own text says THE GUARD IS UNIVERSAL AND READS THE BUILT SCENE, so this is a real hole and not a lane distinction.",
+    "restart_by": "Spawn placement_check beside sheet_recon/existence_check/dim_check in build_room._score_deliverable on the scene dump, exit contract 1=fail 2=hard-stop. Expected to surface a backlog on first run (the north nightstand is already 41.9mm inside bed__frame__acq0), so it lands with its own triage round, not inside an unrelated commit.",
+    "partially_discharged_2026-08-27": "p2r85 carried out the LOAD-PATH half of this restart_by, in a different module and for a measured reason: the defect that forced it (nine hang rails 40 mm short of both gables) walks straight through FLOATING, and two of the nine were excused by the CLOTHES HANGING ON THEM. So the render now spawns `carry_check` (below), which asks what HOLDS a mass. THIS ROW IS NOT CLOSED: OVERHANG and OFF-AXIS are still unwired on this lane, and OFF-AXIS physically cannot run off scene-dump@2 (no rotation is recorded — a world AABB hides a tilt). Do not read the new rung as this one."
+   }
+  },
+  {
+   "name": "carry_check (P2r-28)",
+   "stage": "scene-dump",
+   "compares": "c",
+   "blocking": true,
+   "note": "load path: what carries each mass to the ground — RESTS-ON / HANGS-FROM / HUNG-ON / FIXED-IN / FASTENED-TO / ANCHORED-TO, ledgered backlog in qa/carry-ledger.json",
+   "admitted_by": "D-112: gives an eye to the class DEBT-19 excludes in its own covers-text ('a slab supported at one end and unsupported at the other') and re-arms DEBT-08 (seat-impossible) on a lane where placement_check has never been spawned. First run found the stool cushion floating 1.0 mm — DEBT-08's first live reading on this lane."
+  },
+  {
+   "name": "sheet_recon (R12)",
+   "stage": "scene-dump",
+   "compares": "b",
+   "blocking": true
+  },
+  {
+   "name": "existence_check (R10)",
+   "stage": "scene-dump",
+   "compares": "a",
+   "blocking": true,
+   "note": "vs human-signed ledger"
+  },
+  {
+   "name": "dim_check (front door)",
+   "stage": "scene-dump",
+   "compares": "c",
+   "blocking": true,
+   "note": "ADDED 2026-08-22, ORD-front-door-dims: built dims vs world standards, no allowlist"
+  },
+  {
+   "name": "pixel_check (R11)",
+   "stage": "render",
+   "compares": "b",
+   "blocking": true,
+   "note": "repro lane (target image)"
+  },
+  {
+   "name": "deliverable_check",
+   "stage": "render",
+   "compares": "b",
+   "blocking": true,
+   "note": "thresholds = delivered-pool percentiles; low score is not a stop, exit-2 is"
+  },
+  {
+   "name": "bed_pixels ratchet",
+   "stage": "render",
+   "compares": "a",
+   "blocking": true,
+   "note": "vs our own baseline; grounded once by sighted panel"
+  },
+  {
+   "name": "value_probe ladder",
+   "stage": "render",
+   "compares": "a",
+   "blocking": true,
+   "note": "signed tonal targets (D-076)"
+  },
+  {
+   "name": "p2_exit harness",
+   "stage": "render",
+   "compares": "b",
+   "blocking": false,
+   "note": "exit 1 is a score"
+  },
+  {
+   "name": "audit_bundle (R7 triage)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "audit_blind_ask (R7c)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "audit_learning",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "baseline_ratchet",
+   "stage": "process",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane; vs git HEAD predecessor"
+  },
+  {
+   "name": "audit_continuity",
+   "stage": "process",
+   "compares": "a",
+   "blocking": true,
+   "note": "repro lane"
+  },
+  {
+   "name": "R1 cap counter",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "decisions_check",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "orders_check (R13)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "asks_check (R13)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "sourcing_check (R13)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "repo_first",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true
+  },
+  {
+   "name": "debt_check",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "repro lane; its none_yet rows are the map's defect-class half"
+  },
+  {
+   "name": "plan_status print rung",
+   "stage": "process",
+   "compares": "d",
+   "blocking": false
+  },
+  {
+   "name": "style_check (STY-1)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": true,
+   "note": "qa/style-of-record.json: nine material slots signed or dated-unsigned, prohibitions with a test, one style name. Wired into check_room (the lane that renders), not check()/enforce()"
+  },
+  {
+   "name": "style_measure palette gap (STY-1b)",
+   "stage": "post-render",
+   "compares": "a",
+   "blocking": true,
+   "note": "R11: the only style rung that OPENS THE PICTURE. style_fingerprint 60/30/10 area split off the frame of record vs concept.md§3; ratchet only ever falls. compares=a because the declared palette is our own document — it is self-consistency measured in PIXELS, not a world standard"
+  }
  ]
 }

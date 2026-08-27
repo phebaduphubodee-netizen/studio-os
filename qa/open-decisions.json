@@ -2811,6 +2811,74 @@
    "reverse_by": "ลบ block lighting.casework ออกจาก spec (เลเยอร์เป็น opt-in ใน module) + ลบ hook ใน _add_e5_lights — คอมมิตเดียว; แถวนี้บันทึกการถอนพร้อมเหตุผล",
    "note": "schedule lane (suite_rcp/schedules) ยังไม่รู้จัก strip พวกนี้เพราะจำนวนขึ้นกับ occupancy ตอน build — หนี้ที่ประกาศไว้: ปิดที่ stage-05 SKU pass (schedule ระบุ rule + qty per-occupied-bay) ก่อนใช้เอกสารชุดนั้นกับลูกค้า · stance นี้ทำตามข้อ 3 ของคำสั่ง (เลเยอร์ไฟ casework)",
    "because": "ORD-2026-08-26b ข้อ 3 + การสำรวจงานส่งจริง 50 เฟรม (friend-study 2026-08-26): ทุกตู้ที่ขายได้จ่ายไฟเฉพาะช่องที่มีของ — ของเราช่องเปิดทั้งตู้ไม่มีไฟสักเส้น (C2 p2r82 #4 'ตู้โล่ง' คือญาติของ defect เดียวกัน); เลเยอร์แสงหลักเป็นงาน P3 แต่ strip คือ HARDWARE ของ joinery จึงเข้า P2 ได้ตาม build-order (วัตถุก่อนแสง)"
+  },
+  {
+   "id": "D-157",
+   "unit": "DELIV-001",
+   "subject": "hang-rail-lands-on-its-gables",
+   "decided_round": 85,
+   "decided_date": "2026-08-27",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-05-object-must-justify-itself",
+   "question": "ราวแขวนเสื้อทุกเส้นสั้นกว่าช่อง 40มม. ทั้งสองปลาย (millwork เขียนไว้เอง l0+0.04 / lw-0.08) — ท่อทองเหลืองที่ต้องมีคนรับสองข้างกลับไม่แตะอะไรเลย ทั้ง 9 ราว ทุกเฟรมที่เลนนี้เคยส่ง. inset นั้นมีเหตุผลจริง (ปลายราวที่ลงบนหน้า gable พอดี = coincident face z-fight) จะแก้ยังไงโดยไม่เอา z-fight กลับมา และไม่ใช่การ nudge?",
+   "in_effect": "ราวยาวเท่าความกว้างช่องจริง (derive จาก c0/cw ของช่องเอง ไม่ใช่ค่าคงที่) และฝังเข้า gable ข้างละ RAIL_EMBED = 2มม. — ฝังแทนที่จะเว้น ทำให้หน้าไม่ coplanar และ contact เป็นของจริง; ปลายละหนึ่ง SOCKET FLANGE 48มม. สี่เหลี่ยม ยื่นพ้นหน้า gable 12มม. (`<rail>_sock0/1`) = ฮาร์ดแวร์จริงที่ช่างใช้ปิดรอยต่อ. ชื่อ part ยังขึ้นต้น 'rail' เพื่อให้ router ทาทองเหลืองเหมือนราว",
+   "where": "pipeline/scripts/millwork.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "def hang_rail",
+     "why": "the rail builder must exist — the three call sites all route through it, so a revert cannot be partial"
+    },
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "RAIL_EMBED = 0.002",
+     "why": "the embed IS the fix; zeroing it re-opens the coincident face the 40mm inset was avoiding"
+    },
+    {
+     "file": "pipeline/scripts/test_millwork.py",
+     "pattern": "def test_every_hang_rail_LANDS_ON_ITS_GABLES",
+     "why": "the pin is on the CONTACT, not on a coordinate: every rail end must fall inside a gable"
+    }
+   ],
+   "reverse_by": "คืน `part(f\"rail_short{i}\", l0 + 0.04, max(lw - 0.08, 0.0), ...)` ทั้งสามจุดแล้วลบ hang_rail — คอมมิตเดียว; แต่ต้องลบ carry_check ออกจาก render path ด้วย ไม่งั้น build จะแดงทันที (ซึ่งคือเจตนา)",
+   "note": "ผลข้างเคียงที่วัดแล้วสองข้อ: (1) styling.find(anchors,'rail') จับ socket เป็นราวและ build ตาย — ประตู prefix ตัวที่สี่ของ repo นี้ แก้ด้วย styling.is_rail_member (รูปทรงตัดสิน ไม่ใช่ชื่อ) และใช้ที่ build_room bar-scan ด้วย; (2) ราวยาวขึ้น styling แขวนเสื้อกว้างขึ้น ของในตู้ขยับตำแหน่ง — ทำให้ wardrobe_vase/bowl เข้าเฟรมและ R10 ratchet แดง (แถวค้างจาก p2r83/p2r84 เขียนครบในคอมมิตนี้)",
+   "because": "R10 SENSE ข้อ (3) ถามตรง ๆ ว่า 'สร้างเป็นของจริงได้ไหม' — ท่อทองเหลืองยาว 3 เมตรที่ไม่มีอะไรรับสองปลาย สร้างไม่ได้ และมันอยู่ในทุกเฟรมที่เลนนี้เคยส่ง · R9 บอกว่าตำแหน่งที่ derive จาก contact ได้ ห้ามพิมพ์: 0.04 กับ 0.08 คือเลขที่พิมพ์ ส่วน 'ปลายราวอยู่ที่หน้า gable' คือความสัมพันธ์ · และเหตุผลเดิมของ inset (coincident face) ไม่ได้หายไป — ช่างแก้ด้วย flange กับการฝัง ไม่ใช่ด้วยช่องว่าง 40มม. · แถวนี้ผูกกับ ORD-2026-08-05 (R10) เพราะคำถาม SENSE ของคำสั่งนั้นถามตรงตัวว่า 'ขนาดและการก่อสร้างของมันเป็นไปได้ไหม — มันรับอะไรไว้หรือเปล่า มันแตะสิ่งที่มันพิงอยู่หรือเปล่า' ราวที่ไม่มีคนรับสองปลายคือคำตอบว่า 'ไม่' และ rung นี้คือเครื่องที่ถามคำถามนั้นได้เอง"
+  },
+  {
+   "id": "D-158",
+   "unit": "DELIV-001",
+   "subject": "carry-check-load-path-rung",
+   "decided_round": 85,
+   "decided_date": "2026-08-27",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-05-object-must-justify-itself",
+   "question": "ราวลอย 9 เส้นผ่านทุก rung ที่มีมา และสองในเก้าถูก 'ยกเว้น' จาก placement_check.FLOATING เพราะเสื้อที่แขวนอยู่บนมันเอง — จะรับ rung ใหม่ยังไงให้ไม่ใช่การเพิ่มกรรมการอีกตัว (D-112) และให้ scope มาจากตัวกฎเอง ไม่ใช่จากรายชื่อวัตถุ (R9b)?",
+   "in_effect": "`pipeline/scripts/carry_check.py` (pure, อ่าน scene-dump@2) ถาม 'อะไรรับมวลนี้ไว้' ด้วยความสัมพันธ์หกอย่างที่มีทิศทาง: RESTS-ON / HANGS-FROM / HUNG-ON / FIXED-IN / FASTENED-TO / ANCHORED-TO โดย COLUMN (พื้น หรือสิ่งที่ยืนบนพื้นต่อกันมา) เท่านั้นที่ยึด ANCHORED-TO ได้ — 'พิงกำแพงแล้วมั่นคง ไม่ได้แปลว่าเป็นกำแพง' — และ member ที่ร้อยผ่านมวลคือตัวรับ ไม่ใช่ตัวถูกรับ. build_room._score_deliverable spawn มัน blocking (1=มีมวลไม่มีคนรับและไม่มีแถว, 2=รันไม่ได้=หยุด). backlog อยู่ใน qa/carry-ledger.json แบบ ratchet: ไม่มีแถว=แดง, แถวที่หายแล้ว=แดง, จำนวนจริงเกิน covers_n=แดง",
+   "where": "pipeline/scripts/carry_check.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "\"carry_check\\.py\"\\)",
+     "why": "spawned as an argv element by the render path — a rung nothing calls is the state this one was built to end"
+    },
+    {
+     "file": "qa/coverage-map.json",
+     "pattern": "carry_check \\(P2r-28\\)",
+     "why": "the map must carry it, and the existing wiring guard in test_rule_gate then holds it to being spawned"
+    },
+    {
+     "file": "qa/carry-ledger.json",
+     "pattern": "\"rows\"",
+     "why": "the backlog is data with a date per row, never a number in prose"
+    }
+   ],
+   "reverse_by": "ลบ block ที่ spawn carry_check ใน _score_deliverable + ลบแถวใน coverage-map — คอมมิตเดียว. ราคาที่ต้องพิมพ์ตอนถอน: DEBT-19 กลับไปไม่มีตาอีกครั้ง และ DEBT-08 กลับไปอ่านจาก placement_check ที่เลนนี้ไม่เคยเรียก",
+   "note": "D-112 บังคับให้ gate ที่เสนอเครื่องมือใหม่ต้องพิมพ์ว่ามันตอบ debt class ไหน: DEBT-19 เขียนใน covers-text ของตัวเองว่ามองไม่เห็น 'แผ่นที่มีคนรับปลายเดียว' (ราวนี้ไม่มีสักปลาย) และ DEBT-08 (seat-impossible) ผูกกับ placement_check ซึ่งเลนนี้ไม่เคยเรียกเลย — รันแรกเจอเบาะสตูลลอย 1.0มม. = การอ่านจริงครั้งแรกของ DEBT-08 บนเลนนี้",
+   "because": "R6: guard ใหม่ต้องระบุคลาสที่ guard เดิมจับไม่ได้ — คลาสนี้คือ **'มวลที่ถูกยกเว้นด้วยของที่มันแบกอยู่'** ซึ่ง placement_check เขียนบอกไว้เองใน docstring ว่ารอดจาก FLOATING ถ้ามีอะไรแตะสักอย่าง และ build_room._recessed_trim ขอ rung นี้ไว้ตรง ๆ ว่า 'a rung that asks what HOLDS a mass, not whether it touches one' · D-112 อนุญาตเฉพาะเครื่องมือที่ให้ตากับ debt class ที่ยังไม่มีตา: DEBT-19 กับ DEBT-08 · R9b: scope มาจาก premise ของกฎเอง (มีเส้นทางรับน้ำหนักถึงพื้นไหม) ไม่ใช่จากรายชื่อวัตถุ — ไม่มี allowlist สักบรรทัด · แถวนี้ผูกกับ ORD-2026-08-05 (R10) เพราะคำถาม SENSE ของคำสั่งนั้นถามตรงตัวว่า 'ขนาดและการก่อสร้างของมันเป็นไปได้ไหม — มันรับอะไรไว้หรือเปล่า มันแตะสิ่งที่มันพิงอยู่หรือเปล่า' ราวที่ไม่มีคนรับสองปลายคือคำตอบว่า 'ไม่' และ rung นี้คือเครื่องที่ถามคำถามนั้นได้เอง"
   }
  ],
  "_assert_ratchet_from": "D-124"

@@ -144,6 +144,26 @@ def find(anchors, prefix, required=True):
     return hits
 
 
+# A HANG RAIL vs a RAIL FITTING, and the difference is decided by SHAPE, never by
+# name. p2r85 gave every rail the socket flange it needed to land on its gables
+# (P2r-28) — and named them `rail_short0_sock0` so the suite router would paint them
+# brass with the rail they carry. `find(anchors, "rail")` then handed styling a
+# 48 mm socket as a hang rail and the build died trying to breathe two garments
+# onto it. THAT IS THE FOURTH PREFIX-DOOR IN THIS REPO (`match: "handle"` paid by
+# `door_handle`; the wardrobe tag blindness twice, p2r79 and p2r84) and the answer
+# is the same one R9b gives for guard scope: derive the test from the rule's own
+# premise. A rail is something you can hang clothes ON — a long thin horizontal
+# member. A flange is not, at any name.
+RAIL_MEMBER_RATIO = 3.0
+
+
+def is_rail_member(dx, dy, dz, ratio=RAIL_MEMBER_RATIO):
+    """Is this anchor a hang RAIL (True) or a rail FITTING (False)? Shape only."""
+    run = max(dx, dy)
+    sect = max(min(dx, dy), dz)
+    return sect > 0 and run >= ratio * sect
+
+
 def _token(a):
     """What an anchor IS. Prefer the explicit `part` the builder recorded; fall back to
     the object name's trailing token.
@@ -225,7 +245,15 @@ def dress_rails(anchors, min_rails=1):
     RAISES if no rail is found at all: element 7's DD promised "satin-brass hang rails
     with garments" and material_presets still tells the beauty pass they are there, so a
     silent zero here is the exact revert-by-omission this element was written to end."""
-    rails = find(anchors, "rail", required=False)
+    tagged = find(anchors, "rail", required=False)
+    rails = [a for a in tagged
+             if is_rail_member(a["dx"], a["dy"], a["dz"])]
+    fittings = len(tagged) - len(rails)
+    if fittings:
+        # printed, never silent: if the shape filter ever ate a real rail this is
+        # the line that says so, and the `min_rails` guard below still fires
+        print(f"  styling: {len(rails)} hang rail(s), {fittings} rail fitting(s) "
+              f"(socket flanges) skipped — a flange is not something you hang on")
     if len(rails) < min_rails:
         _fail(f"expected at least {min_rails} hang rail(s) among {len(anchors)} built "
               f"parts, found {len(rails)} — the decided garments have nothing to hang on")

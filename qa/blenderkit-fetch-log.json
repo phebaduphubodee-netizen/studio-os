@@ -3084,6 +3084,109 @@
    "fetched": false,
    "exit": 1,
    "refusal": "ae43e44c-78a8-4102-ae84-eddcc6e53ab7 offers no '1K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-08-26T12:06:04-04:00",
+   "date_local": "2026-08-26",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-08-27T02:45:37-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+books+stack",
+   "pages": 1,
+   "n": 40,
+   "free": 13,
+   "full_plan": 27,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:46:06-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+tray+decor",
+   "pages": 1,
+   "n": 30,
+   "free": 8,
+   "full_plan": 22,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:46:07-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+hat+box",
+   "pages": 1,
+   "n": 5,
+   "free": 0,
+   "full_plan": 5,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:47:23-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+folded+towels",
+   "pages": 1,
+   "n": 25,
+   "free": 9,
+   "full_plan": 16,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:58:25-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bookend",
+   "pages": 1,
+   "n": 20,
+   "free": 13,
+   "full_plan": 7,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:58:26-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+perfume",
+   "pages": 1,
+   "n": 20,
+   "free": 18,
+   "full_plan": 2,
+   "fetched": false
+  },
+  {
+   "at": "2026-08-27T02:58:37-04:00",
+   "date_local": "2026-08-27",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+closet+decor",
+   "pages": 1,
+   "n": 25,
+   "free": 9,
+   "full_plan": 16,
+   "fetched": false
   }
  ]
 }

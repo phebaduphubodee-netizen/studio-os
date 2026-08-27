@@ -474,13 +474,29 @@ def coverage_lines():
         return ["", "COVERAGE unknown — the map holds zero rungs. Unknown, not zero."]
     def _n(cls):
         return sum(1 for r in rungs if cls in str(r.get("compares", "")))
-    world_block = [r["name"].split(" (")[0] for r in rungs
-                   if "c" in str(r.get("compares", "")) and r.get("blocking")]
+    # A RUNG WITH AN OPEN `room_lane_debt` IS NOT BLOCKING THIS LANE, whatever its
+    # `blocking` flag says, and printing it in the blocking list at every session
+    # open is the map lying in the one place the map is read. Found 2026-08-27:
+    # placement_check has printed here as one of five rungs "ที่ block" since the
+    # coverage map shipped, while its own row has carried a room_lane_debt since
+    # 2026-08-24 recording that NEITHER render path has ever spawned it. Same shape
+    # as everything else this file exists to stop: the true fact was in the file,
+    # in a field the consumer did not read.
+    world = [r for r in rungs
+             if "c" in str(r.get("compares", "")) and r.get("blocking")]
+    world_block = [r["name"].split(" (")[0] for r in world
+                   if not r.get("room_lane_debt")]
+    world_debt = [(r["name"].split(" (")[0], (r.get("room_lane_debt") or {}).get("since", "?"))
+                  for r in world if r.get("room_lane_debt")]
     out = ["", f"COVERAGE    เครื่องตรวจ {len(rungs)} rung (แผนที่ {cmap.get('updated', '?')}) — "
                f"เทียบตัวเอง {_n('a')} · กระบวนการ {_n('d')} · แบบ/target {_n('b')} · "
                f"โลกจริง {_n('c')}"]
     wb = ", ".join(world_block) if world_block else "ไม่มี — ตาพี่เป็นเครื่องเดียว"
     out.append(f"            โลกจริงที่ block: {wb}")
+    if world_debt:
+        wd = " · ".join(f"{n} (ตั้งแต่ {d})" for n, d in world_debt)
+        out.append(f"            **ประกาศว่า block แต่เลนนี้ไม่เคยเรียก: {wd}** "
+                   f"— อ่าน room_lane_debt.restart_by ใน qa/coverage-map.json")
     out.append("            defect class ที่ไม่มีเครื่องมอง = แถว none_yet ใน CRITIC DEBT "
                "ข้างบน · การรับ rung ใหม่ = D-112 (พิมพ์ใน gate ที่แนะนำมัน)")
     return out

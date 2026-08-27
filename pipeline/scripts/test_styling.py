@@ -615,3 +615,38 @@ def test_hanger_arms_wear_the_same_slope_as_the_cloth():
     assert sg.garment_slope(1.10, 3) == pytest.approx(
         min(0.0275 + 0.0105 * sg.dev(3, 1.0, 3 + 41), 0.25 * 1.10))
     assert 0.017 <= sg.garment_slope(1.10, 3) <= 0.038
+
+
+# --------------------------------------------------------------- the fourth prefix door
+
+def test_a_rail_socket_is_not_a_hang_rail():
+    """p2r85 gave every rail the socket flange it needed to land on its gables and
+    named them `rail_short0_sock0` so the suite router would paint them brass.
+    `find(anchors, "rail")` then handed styling a 48 mm flange as a hang rail and the
+    build died trying to breathe two garments onto it — THE FOURTH PREFIX DOOR in
+    this repo (`match: "handle"` paid by `door_handle`; the wardrobe tag blindness at
+    p2r79 and again at p2r84). The answer is R9b's: derive the test from the rule's
+    own premise. A rail is something you hang clothes ON."""
+    assert st.is_rail_member(0.652, 0.030, 0.030), "a 652 mm rail IS a rail"
+    assert st.is_rail_member(0.030, 0.689, 0.030), "on either axis"
+    assert not st.is_rail_member(0.014, 0.048, 0.048), "a socket flange is NOT"
+    assert not st.is_rail_member(0.650, 0.600, 0.018), "nor a shelf"
+    assert not st.is_rail_member(6.000, 0.110, 2.800), "nor a wall"
+
+
+def test_dress_rails_skips_the_fittings_and_still_finds_the_rails():
+    anchors = [
+        {"name": "mill__bay__rail_full", "part": "rail_full", "kind": "wardrobe",
+         "piece": "bay", "x": 0.0, "y": 0.0, "z": 1.85,
+         "dx": 0.652, "dy": 0.030, "dz": 0.030},
+        {"name": "mill__bay__rail_full_sock0", "part": "rail_full_sock0",
+         "kind": "wardrobe", "piece": "bay", "x": 0.0, "y": 0.0, "z": 1.841,
+         "dx": 0.014, "dy": 0.048, "dz": 0.048},
+        {"name": "mill__bay__rail_full_sock1", "part": "rail_full_sock1",
+         "kind": "wardrobe", "piece": "bay", "x": 0.638, "y": 0.0, "z": 1.841,
+         "dx": 0.014, "dy": 0.048, "dz": 0.048},
+    ]
+    tagged = st.find(anchors, "rail", required=False)
+    assert len(tagged) == 3, "all three carry the rail token — that is the trap"
+    rails = [a for a in tagged if st.is_rail_member(a["dx"], a["dy"], a["dz"])]
+    assert [a["part"] for a in rails] == ["rail_full"]

@@ -3814,3 +3814,96 @@ always passes a loaded register — so **all four R13 rungs silently do not run 
 `check()`**. Verified empirically: `decisions=None` rosters four rungs, the live
 register rosters zero. They do run under `check_room`, which is why DELIV-001 was
 never affected.
+
+---
+
+## 2026-08-27 — p2r85 · A MASS EXCUSED BY THE LOAD IT CARRIES (P2r-28, D-157/D-158)
+
+**THE DEFECT, and it is nine of one thing.** Every brass hang rail in the room
+stopped 40 mm short of BOTH gables — `millwork`'s own `l0 + 0.04` with length
+`lw - 0.08` — so a tube that must be carried at each end was carried at neither.
+Nine rails, in three wardrobes, on **every frame this lane has ever shipped**.
+Measured off the p2r84 scene dump, not read: BF09-3 cell `x 2.371-3.103` against
+a rail at `x 2.410-3.060`.
+
+**WHY EVERY RUNG MISSED IT, and the sharpest instance this repo has produced of
+its own recurring shape.** `placement_check` is the R9b guard and its FLOATING
+branch declares its own hole in its own docstring — *"an object with NO support
+escapes FLOATING if anything at all touches it"*. Run against p2r84 it convicts
+**seven** of the nine. The other two are excused **by the clothes hanging on
+them**: the contact graph reads `rail → garment → gable → floor` and calls that
+support. The vase-and-flowers hole with the ambiguity removed — a garment on a
+rail is unambiguously LOAD, not contents.
+
+And the guard was never spawned here anyway. `qa/coverage-map.json` has carried a
+`room_lane_debt` on that row since 2026-08-24 saying so, while `plan_status`
+printed `placement_check` in its **"โลกจริงที่ block"** list at every session open,
+because `coverage_lines` read `blocking` and not `room_lane_debt`. The true fact
+was in the file, in a field the consumer did not read. That is this repo's
+signature defect committed inside the module written to stop it, and it is fixed
+in the same commit: a rung with an open debt now prints its debt, loudly, with
+its date, and never in the blocking list.
+
+**THE RUNG (`carry_check.py`, D-158).** It asks what two other files ask for by
+name — `_recessed_trim`: *"a rung that asks what HOLDS a mass, not whether it
+touches one"*; DEBT-19's covers-text, which excludes *"a slab supported at one end
+and unsupported at the other"*. Six directional relations off the built AABBs —
+RESTS-ON, HANGS-FROM, HUNG-ON, FIXED-IN, FASTENED-TO, ANCHORED-TO — and a mass
+passes when one of them reaches something already carried, back to the ground.
+
+**Two asymmetries do all the work, and both were found by running it, not by
+reasoning about it:**
+
+1. **ANCHORING DOES NOT CHAIN.** An ANCHORED-TO carrier must be a COLUMN (the
+   ground, or what rests on it, transitively) — never merely something already
+   carried. *Leaning on a wall makes you stable; it does not make you a wall.*
+   Without this, a garment brushing a gable became a wall that could then carry
+   the rail it hangs from, and the defect the file exists for read GREEN.
+2. **A MEMBER THREADED THROUGH A MASS IS THE CARRIER, NOT THE CARRIED.** Deep
+   overlap is symmetric — a rail inside a hanger and a hanger over a rail are the
+   same six numbers — so HUNG-ON breaks the tie with the one asymmetry an AABB
+   does carry: a long thin HORIZONTAL member either passes clean out of the other
+   mass on its own long axis, or sits in the top quarter of a taller one.
+
+**AND A THIRD THING THE MEASUREMENT CORRECTED, worth keeping because it is the
+`flattering-scorer` shape inverted.** The first cut of HUNG-ON demanded a 5 mm
+overlap on every axis, which is a reasonable-sounding number and wrong: the
+garment sets in this room import their hanger as a **4 mm plate**, so seven real
+hangers read as hanging on nothing. What makes something a hook is that it
+reaches OVER the member, not how thick it is. A threshold nobody measured against
+the data it judges is a guess wearing a constant.
+
+**THE FIX IS A FLANGE, NEVER A NUDGE (D-157).** The 40 mm inset existed for a
+real reason — a rail whose end cap lands exactly ON a gable face is a coincident
+plane — and the joiner's answer to that is not a gap. The rail now spans the
+cell's own clear width (derived from the cell, R9), buries 2 mm in each gable so
+no faces are coplanar, and carries a **socket flange** at each end: the hardware
+that covers the junction in a real wardrobe.
+
+**THE SIDE EFFECT WAS THE FOURTH PREFIX DOOR IN THIS REPO.** The sockets are
+named `rail_short0_sock0` so the material router paints them brass with the rail
+they carry — and `styling.find(anchors, "rail")` promptly handed styling a 48 mm
+flange as a hang rail and killed the build. (`match: "handle"` already paid by
+`door_handle`; the wardrobe tag blindness at p2r79 and again at p2r84.) The fix is
+R9b's, one level down: `styling.is_rail_member` decides by SHAPE — a rail is a
+long thin horizontal member — and `build_room`'s bar-scan uses the same predicate,
+because it too broke on its first match and would have read the run off a fitting.
+
+**WHAT THE RUNG FOUND ON ITS FIRST HONEST RUN, beyond the rails: 32 masses**, all
+now rows in `qa/carry-ledger.json` with a date and a named restart action — a
+Juliet balcony rail bolted to nothing, a shower head connected to no plumbing at
+all, a whole ensuite family whose **wall plane was read off the furniture standing
+near the wall** (`wall_x = wc.x`, 50 mm out), two sheers hanging from a rod that
+exists only in the prose that names `rod_offset_mm`, and six acquired props seated
+on their bounding box rather than on the geometry that touches down. Rows may not
+go stale, and `covers_n` fails the build if a prefix starts absorbing new
+instances.
+
+**AND THE RUNG ABOVE IT HAD BEEN RED FOR TWO ROUNDS WITH NOBODY LOOKING.**
+`existence_check` is BLOCKING and it fails after `save()` and `render()`, so the
+PNG and the dump exist before the process exits 1. Re-run over the archive:
+p2r80/81/82 clean, **p2r83 = 1 unrowed, p2r84 = 3** — both rounds shipped their
+frame and closed a gate with no line about it. The four owed R10 rows are written
+in this commit. The lesson is not "read the exit code": it is that a hard stop
+placed AFTER the artefact it guards is a hard stop only for a process, and the
+round goes on around it.

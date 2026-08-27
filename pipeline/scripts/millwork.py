@@ -45,6 +45,17 @@ TOP_REC  = 0.030    # carcass set-back under the worktop lip
 # door run: every cue is a real recess/proudness that casts, never a fattened dimension.
 CARC_T    = 0.018   # carcass panel thickness (back / gables / shelves / top)
 RAIL_D    = 0.030   # brass hang-rail section (round rail modelled square; Ø25-28 D4-A)
+# A HANG RAIL IS CARRIED AT BOTH ENDS, and until p2r85 ours was carried at neither
+# (P2r-28). The old form inset the rail 40 mm from each gable — `l0 + 0.04`,
+# `lw - 0.08` — so nine brass tubes floated in nine cells on every frame this lane
+# has shipped. The inset existed for a real reason (a rail whose end cap lands
+# exactly ON a gable face is a coincident-face z-fight), and the real fix for that
+# is the one a joiner uses: the rail DIES INTO the gable a couple of millimetres,
+# and a socket flange covers the junction. Never a nudge (R9).
+RAIL_EMBED = 0.002  # how far each end buries itself in its gable — clears the
+#                     coincident face, and gives the load path a real contact
+RAIL_SOCK  = 0.048  # end socket/flange plate, square, centred on the rail (Ø48 cup)
+RAIL_SOCK_PR = 0.012  # how far that flange stands proud of the gable face
 SHELF_LIFT = 0.102  # rod-to-shelf-above clearance (hanger lift-off; Ask1 ergonomics)
 DRAWER_H  = 0.240   # floating-drawer face height
 DRAWER_REV = 0.010  # reveal between stacked drawer faces — 6mm was cabinet-true but
@@ -409,6 +420,13 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
                              f"no seat fits; check kneehole_width_m / kneehole_center_frac")
         toe = 0.06                                        # recessed toe-kick
         rec = min(0.04, depth * 0.3)                      # counter overhang / body set-back
+        # P2r-28: the drawer FRONT used to be drawn flush with the counter's front
+        # edge (`depth_off` 0) while the body it belongs to sat `rec` = 40 mm back —
+        # so each face hung in 20 mm of air with nothing behind it, and
+        # `carry_check` read all three as carried by nothing. A drawer front is
+        # screwed to what is behind it; it lands ON the body's front face, and the
+        # counter's overhang over the faces becomes real (rec - ft) instead of zero.
+        ft = min(0.020, rec)                              # drawer-front thickness
         for bi, (b0, b1) in enumerate(((0.0, kh_lo), (kh_hi, run))):
             bw = b1 - b0
             if bw <= 2 * CARC_T:
@@ -418,7 +436,8 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
             n_dr = max(2, int(round((H - ct - toe) / 0.22)))   # ~220 drawer faces
             fh = (H - ct - toe) / n_dr
             for i in range(n_dr):
-                part(f"drawer_front{bi}_{i}", b0, bw, 0.0, 0.02, toe + i * fh, fh - DRAWER_REV)
+                part(f"drawer_front{bi}_{i}", b0, bw, rec - ft, ft,
+                     toe + i * fh, fh - DRAWER_REV)
         return out
 
     # A SLAT WALL (bed-head battens, "ผนังระแนงหัวเตียง"). The GAPS between battens are what a
@@ -551,8 +570,33 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         # left sub-bay = double short-hang; cell = [CARC_T, bay_mid]
         l0, lw = CARC_T, max(bay_mid - CARC_T, 0.0)
         part("shelf_sh", l0, lw, 0.0, depth, z_shelf, CARC_T)
+
+        def hang_rail(nm, c0, cw, rz):
+            """A rail that LANDS ON BOTH GABLES, plus the socket flange at each end.
+
+            P2r-28, measured off the built p2r84 scene rather than read: cell
+            x2.371-3.103 against a rail x2.41-3.06 — 40 mm short at BOTH ends, a
+            brass tube carried by nothing, in all nine cells, on every frame this
+            lane has produced. `carry_check` now reads the same fact off the dump
+            and fails the render for it.
+
+            `c0`/`cw` are the cell's TRUE clear span (its left gable's inner face
+            to where the next slab starts), so the rail's length is DERIVED from
+            the cell rather than typed — the same correction P2r-8 made to the
+            shelves in this block. The sockets are named `rail_*` so the suite
+            material router paints them brass with the rail they carry."""
+            if cw <= 2 * RAIL_SOCK_PR + 0.02:
+                return                       # no cell this narrow hangs anything
+            dof = depth * 0.45               # rails sit mid-depth: garments hang into the open
+            part(nm, c0 - RAIL_EMBED, cw + 2 * RAIL_EMBED, dof, RAIL_D, rz, RAIL_D)
+            s_off = max(dof - (RAIL_SOCK - RAIL_D) / 2.0, 0.0)
+            s_z = rz - (RAIL_SOCK - RAIL_D) / 2.0
+            for si, a0 in ((0, c0 - RAIL_EMBED), (1, c0 + cw - RAIL_SOCK_PR)):
+                part(f"{nm}_sock{si}", a0, RAIL_SOCK_PR + RAIL_EMBED,
+                     s_off, RAIL_SOCK, s_z, RAIL_SOCK)
+
         for i, rz in enumerate((1.05, 2.05)):
-            part(f"rail_short{i}", l0 + 0.04, max(lw - 0.08, 0.0), depth * 0.45, RAIL_D, rz, RAIL_D)
+            hang_rail(f"rail_short{i}", l0, lw, rz)
         # right sub-bay = single full-hang (rail at 1.85 m -> ~1.75 m clear drop);
         # cell ends where the next slab STARTS: at bay_w with a tower (gable1
         # begins there), at run - CARC_T without one (the end gable's slab —
@@ -560,7 +604,7 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         r0 = bay_mid + CARC_T
         rw = max((bay_w if tower_w else bay_w - CARC_T) - r0, 0.0)
         part("shelf_fh", r0, rw, 0.0, depth, z_shelf, CARC_T)
-        part("rail_full", r0 + 0.04, max(rw - 0.08, 0.0), depth * 0.45, RAIL_D, 1.85, RAIL_D)
+        hang_rail("rail_full", r0, rw, 1.85)
         # p2r27 (owner order 2026-08-12, "ลุย" on the dead volume): the full-hang
         # cell's rail at 1.85 leaves ~0.6-0.7 m of bare carcass under the hung
         # garments — both the owner and C2-r26#9 read it as undesigned volume,

@@ -444,12 +444,53 @@ def test_open_hang_bay_has_BOTH_signed_zones():
     (one lower rail). The first cut emitted one rail at 2.37 m — above the signed full-hang height
     and dropping the short-hang zone. Pin both zones and a plausible full-hang height."""
     parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1, open_front=True)
-    rails = [p for p in parts if p[0].startswith("rail")]
+    rails = [p for p in parts if p[0].startswith("rail") and "_sock" not in p[0]]
     assert any(p[0].startswith("rail_short") for p in rails), "the double short-hang zone"
     assert sum(p[0].startswith("rail_short") for p in rails) == 2, "short-hang is DOUBLE (two rails)"
     assert any(p[0] == "rail_full" for p in rails), "the single full-hang rail"
     full = next(p for p in rails if p[0] == "rail_full")
     assert 1.6 <= full[3] <= 2.1, f"full-hang rail at a plausible height, got z={full[3]:.2f}"
+
+
+def test_every_hang_rail_LANDS_ON_ITS_GABLES():
+    """P2r-28, and the number that earned it: until p2r85 every rail was built at
+    `l0 + 0.04` with length `lw - 0.08` — 40 mm short of BOTH gables, nine brass
+    tubes carried at neither end on every frame this lane had shipped, measured off
+    the built p2r84 scene (BF09-3 cell x2.371-3.103 vs rail x2.41-3.06).
+
+    A rail must now REACH the slab at each end and bury itself RAIL_EMBED into it —
+    the inset existed to avoid a coincident face and the joiner's answer to that is
+    an embed plus a socket flange, never a gap. This test pins the CONTACT, not the
+    coordinate: for every rail, some vertical slab must overlap each of its ends."""
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1,
+                             open_front=True)
+    # axis "y" -> part tuple is (name, x, y, z, dx, dy, dz) with the run along y
+    slabs = [p for p in parts if p[0].startswith("gable")]
+    assert slabs, "the bay has gables to land on"
+    rails = [p for p in parts if p[0].startswith("rail") and "_sock" not in p[0]]
+    assert rails, "there are rails"
+    for r in rails:
+        a0, a1 = r[2], r[2] + r[5]                       # the rail's run extent
+        for end, e in (("low", a0), ("high", a1)):
+            assert any(s[2] - 1e-9 <= e <= s[2] + s[5] + 1e-9 for s in slabs), (
+                f"{r[0]}: its {end} end at {e:.4f} m lands inside no gable — a hang "
+                f"rail carried at one end is DEBT-19's own excluded case, and at "
+                f"neither end is what p2r84 measured")
+        socks = [p for p in parts if p[0] == f"{r[0]}_sock0" or p[0] == f"{r[0]}_sock1"]
+        assert len(socks) == 2, f"{r[0]}: a rail needs a socket flange at each end"
+
+
+def test_rail_sockets_route_brass_like_the_rail_they_carry():
+    """The socket is the same brass fitting as the rail. `mill_object_role` keys on
+    the trailing part token starting with 'rail', so the name has to keep that
+    prefix — a socket painted oak would read as a plywood lug."""
+    import material_presets as MP
+    parts = M.millwork_parts(OPEN["kind"], OPEN["W"], OPEN["D"], OPEN["H"], "y", -1,
+                             open_front=True)
+    socks = [p[0] for p in parts if "_sock" in p[0]]
+    assert socks, "sockets are emitted"
+    for n in socks:
+        assert MP.mill_object_role(f"mill__bay__{n}") == "brass", n
 
 
 def test_open_part_names_route_brass_and_microcement():

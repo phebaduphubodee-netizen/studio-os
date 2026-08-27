@@ -437,3 +437,46 @@ def test_git_output_is_decoded_as_utf8_not_the_locale_codec():
     assert any('decode("utf-8"' in ln for ln in code)
     # and the behaviour, on the actual Thai file that broke it
     assert PS._git("show", f"HEAD:{PS.PLAN_REL}") is not None
+
+
+def test_a_rung_with_an_open_room_lane_debt_does_not_print_as_blocking():
+    """qa/coverage-map.json is READ at every session open, and until 2026-08-27 the
+    reader took `blocking: true` at face value. `placement_check` therefore printed
+    in the "โลกจริงที่ block" list every single session while its OWN row had carried
+    a room_lane_debt since 2026-08-24 saying NEITHER render path has ever spawned
+    it. The true fact was in the file, in a field the consumer did not read — which
+    is the defect this whole module exists to stop, committed inside the module."""
+    rungs = [
+        {"name": "asset_scale (R8)", "stage": "scene-dump", "compares": "c",
+         "blocking": True},
+        {"name": "ghost_check (R9b)", "stage": "scene-dump", "compares": "c",
+         "blocking": True,
+         "room_lane_debt": {"since": "2026-01-01", "why": "never spawned",
+                            "restart_by": "spawn it"}},
+    ]
+    out = "\n".join(PS.coverage_lines.__wrapped__(rungs)) if hasattr(
+        PS.coverage_lines, "__wrapped__") else None
+    if out is None:                       # coverage_lines reads the repo file itself
+        import json as _j
+        import tempfile
+        fd, p = tempfile.mkstemp(suffix=".json")
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            _j.dump({"updated": "test", "rungs": rungs}, f)
+        try:
+            real = os.path.join(PS.REPO, "qa", "coverage-map.json")
+            orig = PS.REPO
+            import shutil
+            tmpdir = tempfile.mkdtemp()
+            os.makedirs(os.path.join(tmpdir, "qa"))
+            shutil.copy(p, os.path.join(tmpdir, "qa", "coverage-map.json"))
+            PS.REPO = tmpdir
+            out = "\n".join(PS.coverage_lines())
+            PS.REPO = orig
+            assert os.path.exists(real), "the real map is untouched"
+        finally:
+            os.unlink(p)
+    assert "asset_scale" in out
+    assert "ghost_check" not in out.split("โลกจริงที่ block:")[1].split("\n")[0], (
+        "a rung with an open room_lane_debt must not print in the blocking list")
+    assert "ประกาศว่า block แต่เลนนี้ไม่เคยเรียก" in out and "ghost_check" in out, (
+        "and it must print SOMEWHERE, with its date — silent is the failure mode")

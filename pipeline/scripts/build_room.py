@@ -387,6 +387,43 @@ def _score_deliverable(name, quick=False, frame=True):
               "or the ledger says something the built scene refutes.")
         sys.stdout.flush()
         os._exit(1)
+    # ---- CARRY (p2r85, P2r-28): WHAT HOLDS EACH MASS UP. This is the wiring
+    # qa/coverage-map.json's own `room_lane_debt` row has named since 2026-08-24 —
+    # `placement_check` is DECLARED blocking there and has never once been spawned
+    # by either render path, so R9b's "the guard is universal and reads the built
+    # scene" was true of two reproduction lanes and of nothing that ships.
+    # It is `carry_check` and not `placement_check` because the defect that forced
+    # it walks straight through FLOATING: every hang rail in the room stops 40 mm
+    # short of both gables, and two of the nine were EXCUSED BY THE CLOTHES HANGING
+    # ON THEM (rail -> garment -> gable -> floor read as a support chain). That hole
+    # is declared in placement_check's own docstring and asked for by name in
+    # `_recessed_trim` below — "a rung that asks what HOLDS a mass, not whether it
+    # touches one". D-112 admission: DEBT-19 excludes this class in writing and
+    # DEBT-08 has no live instrument on this lane.
+    # Spawned for the layer reason; reads the SCENE DUMP, so it runs on quick too —
+    # a member carried at neither end is arithmetic, not pixels, and must not
+    # survive to a full frame. Exit contract: 1 = a mass is carried by nothing and
+    # unrowed, 2 = COULD NOT RUN, and 2 never counts as clear.
+    _cy = subprocess.run(
+        [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "carry_check.py"), dump_path],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    for ln in (_cy.stdout or "").splitlines():
+        print(f"CARRY {ln}")
+    if _cy.returncode == 2:
+        for ln in (_cy.stderr or "").splitlines()[-6:]:
+            print(f"CARRY !! {ln}")
+        print("BUILD FAILED: the carrier rung COULD NOT RUN. A gate that could not "
+              "ask what holds a mass up must never read like one that asked.")
+        sys.stdout.flush()
+        os._exit(1)
+    if _cy.returncode == 1:
+        print("BUILD FAILED: a mass in this scene is carried by nothing and has no "
+              "row in qa/carry-ledger.json saying what is being done about it "
+              "(P2r-28). A part that cannot be built must not ship in a frame.")
+        sys.stdout.flush()
+        os._exit(1)
     # ---- FRONT DOOR — built dims vs WORLD standards (ORD-2026-08-22-front-door-dims,
     # owner "ลุย" on docs/owner-advice-2026-08-22.md; admitted per D-112 as the class
     # only his eye had an instrument for: bed 0.58x at p2r52, garments 570-637 mm at
@@ -5221,6 +5258,7 @@ def _place_garment_rails(models, parts, cut_first=None):
         # be wrong about its own axis.
         _bar_obj = None
         _bar_mesh = None
+        _bar_z1 = None
         for _o in bpy.data.objects:
             if (_o.type != 'MESH' or _o.hide_render or not _o.data.vertices
                     or not _o.name.startswith("mill__") or "rail" not in _o.name):
@@ -5231,13 +5269,60 @@ def _place_garment_rails(models, parts, cut_first=None):
                 continue
             _bx0, _bx1 = min(c.x for c in _cs), max(c.x for c in _cs)
             _by0, _by1 = min(c.y for c in _cs), max(c.y for c in _cs)
+            # p2r85: the rail now carries a SOCKET FLANGE at each end and its name
+            # also contains "rail" (the router paints it brass). This scan breaks
+            # on its FIRST hit, so a 48 mm flange would have become "the bar" and
+            # `along_x` would have read the run off a fitting. Same shape test
+            # styling uses — a rail is a long thin member, a flange is not.
+            if not styling.is_rail_member(_bx1 - _bx0, _by1 - _by0,
+                                          max(c.z for c in _cs) - min(c.z for c in _cs)):
+                continue
             if _bx1 < x0 - 0.10 or _bx0 > x1 + 0.10 or _by1 < y0 - 0.10 or _by0 > y1 + 0.10:
                 continue                                # not this rail's bar in plan
             _bar_obj = (_bx0, _bx1, _by0, _by1)
+            _bar_z1 = max(c.z for c in _cs)
             _bar_mesh = _o          # ORD-25c: the hanger wire wears the bar's own brass
             break
         if _bar_obj is not None:
             along_x = (_bar_obj[1] - _bar_obj[0]) >= (_bar_obj[3] - _bar_obj[2])
+            # ------------------------------------------------------------ p2r85b
+            # THE TOP COMES FROM THE BAR TOO, AND UNTIL NOW IT DID NOT. p2r49
+            # (D-100) found that `z0` — the bottom of the hang budget — came from
+            # a placeholder box we drew ourselves, and derived it from the built
+            # scene. It left `z1` alone. So the SAME defect sat one axis away for
+            # 36 rounds: the set's top was aligned to the LOFT's top while the
+            # brass bar it is supposed to hang from sat somewhere else, and this
+            # very loop knew it — the match test three lines up accepts a bar
+            # within 150 mm of `z1` and then uses `z1` anyway.
+            #
+            # MEASURED on the p2r85 frame of record, and C2 filed it by eye first
+            # ("the top of the garment is at (5,277), the underside of the brass
+            # rail above it is at (5,205) — a ~70 px gap of bare wood with nothing
+            # in it"): BF09-3's rail_full spans z 1850-1880 and the garment set
+            # hanging on it tops out at 1735 — 115 mm of air between the clothes
+            # and the rail, in the frame, on every frame this lane has shipped.
+            #
+            # The hanger's hook crown sits AT the bar's top face, so that is what
+            # the set's top is aligned to. Raising the top can only move the hem
+            # UP, away from whatever `_z_bot` found below, so the drop budget is
+            # strictly safer than before — and s_fit stops squeezing the garment
+            # into a box of our own drawing, which is D-100's whole point.
+            # A HOOK CLOSES OVER THE BAR, so the topmost point of a hung set sits
+            # PROUD of the bar's top face — it does not stop level with it. 5 mm is
+            # a DECLARED assumption and not a measurement, and it is stated here
+            # rather than inherited: the loft placeholder happened to carry exactly
+            # this offset, and aligning to the bar top with no clearance took it
+            # away and pushed one set's hook crown 2 mm UNDER the bar it hangs on —
+            # which carry_check caught on the very next playblast, unrowed.
+            _HOOK_CLEAR = 0.005
+            if abs((_bar_z1 + _HOOK_CLEAR) - z1) > 0.001:
+                print(f"  garment rail {salt}: TOP DERIVED from the bar "
+                      f"{(_bar_z1 + _HOOK_CLEAR) * 1000:.0f} mm (bar top "
+                      f"{_bar_z1 * 1000:.0f} + {_HOOK_CLEAR * 1000:.0f} hook clear), "
+                      f"not the loft placeholder's {z1 * 1000:.0f} mm "
+                      f"({((_bar_z1 + _HOOK_CLEAR) - z1) * 1000:+.0f} mm) — the "
+                      f"clothes hang FROM the rail (D-100 one axis over)")
+            z1 = _bar_z1 + _HOOK_CLEAR
         else:
             along_x = (x1 - x0) >= (y1 - y0)            # loft fallback, pre-p2r73
         # pre-rotation slot: the set's row runs its native x; yaw turns it onto the rail

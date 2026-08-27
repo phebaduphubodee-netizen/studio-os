@@ -610,6 +610,42 @@
    "operable": false,
    "verdict": "keep",
    "why": "One low silhouette against the glass; more would defeat the see-through bay the owner chose in D2-1 option B."
+  },
+  {
+   "assembly": "wardrobe_vase",
+   "identity": "Speckled stoneware vase ae43e44c, the TALL half of the walk-in vessel pair, moved into the camera-visible BF09-3 at niche cell ni2 (p2r84, ORD-2026-08-26-builtin-contents-unnatural). Per-item tag so D7 can name it — the third prefix of the p2r79/p2r80b blindness class.",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26 + the ORD-25c narrative shelf story — a furniture plan draws no vessels",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "MEASURED IN THE FRAME at p2r84: 3,211 px on the material mask, against 0 px for the same pair the round before, when the pair matched the WALK-IN's ni2 by alphabetical host order and was placed where no camera looks. It rests on the ni2 board face derived from the built geometry (R9). ROW OWED SINCE p2r84 AND WRITTEN AT p2r85: the tag arrived without its justification and this rung failed the build for it — see the p2r85 gate on why two rounds shipped anyway."
+  },
+  {
+   "assembly": "wardrobe_bowl",
+   "identity": "Carved wooden shallow bowl 265d7b9b, the LOW half of the same vessel pair, beside the vase at BF09-3 ni2 — tall-BESIDE-low at a 50 mm front setback, not depth-stacked (the ray says only the front ~200 mm of a 600 mm cell is visible from the record camera).",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26 + the narrative shelf story",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "413 px on the p2r84 material mask. One cell, one idea (332 vs 66 mm): the pair is a single composed beat, and the 2nd-and-last-instance rule for this bowl id is satisfied by the bookshelf_bowl row naming the other one. Rests on the measured ni2 face. Row owed since p2r84, written at p2r85."
+  },
+  {
+   "assembly": "wardrobe_shoes",
+   "identity": "Chestnut derbies 8e006d2e on the BF09-3 low shelf (fl) — the boot/basket shelf the p2r27 full-hang fit-out was designed to carry, dressed at p2r84 with a per-item tag.",
+   "exists": "not-in-drawing: shelf contents per ORD-2026-08-26; the drawing carries the shelf, not what stands on it",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "11,979 px in frame at p2r84 — the largest single content the wardrobe gained that round. Shoes on the lowest shelf of a full-hang cell is what that shelf is FOR (millwork's own comment: 'a real full-hang cell is finished with a boot/basket shelf under the drop'). Bare-prefix row: the assembly name carries coordinates and the two shoes are two spatial components of one placement. Row owed since p2r84, written at p2r85."
+  },
+  {
+   "assembly": "e5_casestrip_case_ตู้เสื้อผ้าเหนือเตียง_BF09-3",
+   "identity": "Casework LED strips inside BF09-3 (D-156, p2r83): a 10x4 mm 8 W/m 2700 K strip in the PH-03 family, one per cell that actually holds something, its box derived from the cell's own geometry and its occupancy read from the scene AFTER styling.",
+   "exists": "not-in-drawing: lighting layer per D-156, the rule read off 50 delivered built-in frames of the friend pool; an RCP draws no casework strip",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "A lit niche with a dark neighbour is the delivered-work grammar the rule was cut from, and the strip is what makes the light have a source. Bare-prefix row because a strip's assembly name carries the cell coordinate and the SET changes with the contents — the count is derived, so a row per instance would go stale on every styling move. ROW OWED SINCE p2r83, and the reason it matters: this rung has failed the build since p2r83 (1 unrowed) and p2r84 (3), and both frames shipped and closed gates with no line about it."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."
