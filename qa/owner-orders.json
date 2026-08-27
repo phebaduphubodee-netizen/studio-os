@@ -995,6 +995,43 @@
     }
    ],
    "note": "Obeyed 2026-08-27: p2r82 (terminations, QUALIFIES, critics dropped the class) + p2r83 (10 strips/10 occupied cells verified against the scene dump; both critics filed nothing against the strips and no unlit-casework item). Point 4 (contents story) continues under its own order ORD-2026-08-26-builtin-contents-unnatural; points 5/6 hold by construction (bed untouched, main light still P3)."
+  },
+  {
+   "id": "ORD-2026-08-27-builder-calls-its-own-skills",
+   "date": "2026-08-27",
+   "verbatim": "มีข้อแม้ว่าทั้งหมดนี้คุณต้องเป็นคนเรียกใช้เองเมื่อต้องใช้",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-order-2026-08-27-builder-calls-skills.md",
+   "commands": "Everything built in the 2026-08-27 skills round ships on ONE condition: the builder INVOKES these itself, at the moment the work matches, without being asked. The roster is not a menu to be offered to him — it is a set of moves to be made. Applies to every skill and agent in .claude/, including ones added later (CLASS order). Given immediately after 'เอาหมด ลุยยาว ๆ' approved the revised six-item list.",
+   "subject": "skill-invocation",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-27",
+   "not_obeyed_because": "กลไกครบแล้ว (roster 7 skill + 2 agent, counter, hook, roster พิมพ์ทุก session open) แต่ 'การเรียกใช้' เป็นพฤติกรรม ไม่ใช่ไฟล์ — และ qa/skill-usage.jsonl ยังว่างเปล่า. การประกาศว่าทำตามแล้วในวันที่สร้างเสร็จ คือรูปเดิมที่ R13 ถูกเขียนขึ้นมาเพื่อจับพอดี: คำสั่งที่ทำตามแบบ opt-in คือคำสั่งที่ยังไม่ได้ทำตาม เพราะไม่มีใครพิมพ์ flag",
+   "restart_by": "เรียก craft skill ตัวใดตัวหนึ่ง (camera-composition / styling-narrative / lighting-design) ในรอบที่มันใช้ได้จริง แล้ว hook จะเขียนแถวลง qa/skill-usage.jsonl เอง — obeyed_assert ข้างล่างจะเขียวด้วยตัวมันเอง ไม่ต้องมีใครมาแก้แถวนี้ · ถ้า hook ไม่ยิงเลยหลัง restart session ให้ดู .claude/settings.local.json (gitignored, เครื่องนี้เครื่องเดียว) แล้วรัน skill_usage.py selftest",
+   "obeyed_where": "qa/skill-usage.jsonl,pipeline/scripts/skill_usage.py,pipeline/scripts/plan_status.py,CLAUDE.md,.claude/skills/README.md",
+   "obeyed_assert": [
+    {
+     "file": "qa/skill-usage.jsonl",
+     "pattern": "\"kind\": \"skill\", \"name\": \"(camera-composition|styling-narrative|lighting-design)\"",
+     "why": "THE ORDER'S OWN TEST: a real craft-skill invocation, stamped by the hook — not a claim in prose. It flips this row to obeyed by itself the first time the builder actually calls one."
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "lines \\+= skill_lines\\(\\)",
+     "why": "the roster's usage is printed in the one channel the builder cannot skip"
+    },
+    {
+     "file": "CLAUDE.md",
+     "pattern": "THE BUILDER CALLS THEM ITSELF",
+     "why": "his condition sits in the file loaded at every session open, in his own words"
+    }
+   ],
+   "note": "D-160 carries the machinery. CAVEAT: the hook lives in .claude/settings.local.json which is gitignored — it runs on this machine only and a fresh clone counts zero; promoting it into the committed law layer is a PR and his call, the same route guard_web took."
   }
  ]
 }

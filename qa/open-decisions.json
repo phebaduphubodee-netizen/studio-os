@@ -2879,6 +2879,118 @@
    "reverse_by": "ลบ block ที่ spawn carry_check ใน _score_deliverable + ลบแถวใน coverage-map — คอมมิตเดียว. ราคาที่ต้องพิมพ์ตอนถอน: DEBT-19 กลับไปไม่มีตาอีกครั้ง และ DEBT-08 กลับไปอ่านจาก placement_check ที่เลนนี้ไม่เคยเรียก",
    "note": "D-112 บังคับให้ gate ที่เสนอเครื่องมือใหม่ต้องพิมพ์ว่ามันตอบ debt class ไหน: DEBT-19 เขียนใน covers-text ของตัวเองว่ามองไม่เห็น 'แผ่นที่มีคนรับปลายเดียว' (ราวนี้ไม่มีสักปลาย) และ DEBT-08 (seat-impossible) ผูกกับ placement_check ซึ่งเลนนี้ไม่เคยเรียกเลย — รันแรกเจอเบาะสตูลลอย 1.0มม. = การอ่านจริงครั้งแรกของ DEBT-08 บนเลนนี้",
    "because": "R6: guard ใหม่ต้องระบุคลาสที่ guard เดิมจับไม่ได้ — คลาสนี้คือ **'มวลที่ถูกยกเว้นด้วยของที่มันแบกอยู่'** ซึ่ง placement_check เขียนบอกไว้เองใน docstring ว่ารอดจาก FLOATING ถ้ามีอะไรแตะสักอย่าง และ build_room._recessed_trim ขอ rung นี้ไว้ตรง ๆ ว่า 'a rung that asks what HOLDS a mass, not whether it touches one' · D-112 อนุญาตเฉพาะเครื่องมือที่ให้ตากับ debt class ที่ยังไม่มีตา: DEBT-19 กับ DEBT-08 · R9b: scope มาจาก premise ของกฎเอง (มีเส้นทางรับน้ำหนักถึงพื้นไหม) ไม่ใช่จากรายชื่อวัตถุ — ไม่มี allowlist สักบรรทัด · แถวนี้ผูกกับ ORD-2026-08-05 (R10) เพราะคำถาม SENSE ของคำสั่งนั้นถามตรงตัวว่า 'ขนาดและการก่อสร้างของมันเป็นไปได้ไหม — มันรับอะไรไว้หรือเปล่า มันแตะสิ่งที่มันพิงอยู่หรือเปล่า' ราวที่ไม่มีคนรับสองปลายคือคำตอบว่า 'ไม่' และ rung นี้คือเครื่องที่ถามคำถามนั้นได้เอง"
+  },
+  {
+   "id": "D-159",
+   "unit": "DELIV-001",
+   "subject": "blenderkit-baseline-order-is-a-refusal",
+   "decided_round": 86,
+   "decided_date": "2026-08-27",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-22-blenderkit-one-month",
+   "question": "p2r86 ยิง paid fetch คลาส hung_garments ก่อน free baseline ของคลาสนั้น ทำให้คลาสปนเปื้อนถาวรสำหรับเกณฑ์ C2 ของ D-119 — โปรโตคอลถูกต้องอยู่แล้วและถูก 'พิมพ์' ทุกครั้งที่เรียก status แต่ builder ไม่ได้เรียก. กลไกที่ถูกต้องคืออะไร: skill/วินัย หรือ guard?",
+   "in_effect": "GUARD, fail closed. `blenderkit.baseline_refusal()` (pure) + การเรียกใน `fetch()` ทันทีที่รู้ tier — ก่อน byte แรกและก่อน resolve Blender. ปฏิเสธสองกรณี: (1) paid fetch ในคลาสที่ pre-register แล้วยังไม่มี free_baseline (อ่านทั้ง CLASSES และไฟล์ results ที่อยู่นอก hash) (2) paid fetch ที่ไม่ส่ง --assert-class เลย ซึ่งเป็นทั้งการผิด R8 และเป็นทางลอดของ guard ตัวนี้เอง. free fetch ไม่ถูกบล็อกเพราะการรัน free ทั้งชั้นคือ baseline. gate ด้วย key: ถ้าไม่มี key ความจริงคือ ASK-031 could-not-run (exit 2) ไม่ใช่ protocol refusal (exit 1)",
+   "where": "pipeline/scripts/blenderkit.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/blenderkit.py",
+     "pattern": "def baseline_refusal\\(",
+     "why": "the rule exists as code, not as a printed line in a sibling command"
+    },
+    {
+     "file": "pipeline/scripts/blenderkit.py",
+     "pattern": "gap = baseline_refusal\\(cls, tier\\) if key else None",
+     "why": "it is ON THE FETCH PATH — the defect was a correct check wired to a command nobody had to run"
+    },
+    {
+     "file": "pipeline/scripts/test_blenderkit.py",
+     "pattern": "test_the_refusal_is_ON_THE_FETCH_PATH",
+     "why": "a test that calls fetch() itself and proves no dir, no download, no Blender lookup"
+    },
+    {
+     "file": "qa/coverage-map.json",
+     "pattern": "blenderkit baseline order",
+     "why": "the map prints at every session open; a rung outside it is invisible to the operator"
+    }
+   ],
+   "reverse_by": "ลบการเรียก baseline_refusal ใน fetch() (บรรทัดเดียว) — คลาสที่ยังไม่มี baseline จะซื้อได้อีกครั้งทันที และ test_the_refusal_is_ON_THE_FETCH_PATH จะแดง",
+   "note": "ราคาที่จ่ายไปแล้ว: คลาส hung_garments ใช้เป็นหลักฐาน C2 ไม่ได้อีกแล้วไม่ว่าผลจะออกทางไหน · อีกสี่คลาส (wall_art, plant, cushion_throw, nightstand_objects) ยังสะอาด",
+   "because": "R11 เขียนรูปนี้ไว้เอง: 'the guard was declared mandatory and then printed as a suggestion for a human to copy'. rung ที่ต้องอาศัยการจำว่าต้องปีน คือ rung ที่ถูกข้ามในรอบที่มั่นใจที่สุด"
+  },
+  {
+   "id": "D-160",
+   "unit": "DELIV-001",
+   "subject": "skill-layer-gets-a-consumer",
+   "decided_round": 86,
+   "decided_date": "2026-08-27",
+   "decided_by": "owner",
+   "owner_override": "เอาหมด ลุยยาว ๆ + มีข้อแม้ว่าทั้งหมดนี้คุณต้องเป็นคนเรียกใช้เองเมื่อต้องใช้",
+   "override_date": "2026-08-27",
+   "obeys": "ORD-2026-08-27-builder-calls-its-own-skills",
+   "question": "skill ทั้งหกที่เขียน 2026-07-02 ยิงจริงสองวัน (concept.md, ffe-candidates.json, bom.md) แล้วเงียบ 54 วัน / 86 รอบ โดยไม่มีอะไรในรีโปรู้ได้เลย — เพราะ skill ที่ 'ไม่ถูกใช้' ไม่ทิ้งร่องรอย. จะเพิ่ม skill ใหม่ยังไงไม่ให้เป็น queue ที่ไม่มีผู้บริโภคอันที่เจ็ด?",
+   "in_effect": "ทะเบียนได้ผู้บริโภค: `pipeline/scripts/skill_usage.py` แสตมป์ทุก Skill/Agent call จาก hook (PreToolUse) ลง qa/skill-usage.jsonl (append-only เพราะมีสามเซสชันขนาน) และ plan_status พิมพ์จำนวนครั้ง + อายุการเรียกล่าสุดของทุกตัวในทะเบียนทุกครั้งที่เปิด session · roster ถูก DISCOVER จากดิสก์ ไม่ใช่รายชื่อที่พิมพ์ไว้ (allowlist defect) · SessionStart stamp เป็นตัวแยก 'ยังไม่มีใครเรียก' ออกจาก 'hook ไม่ทำงาน' — 0 แถว + 0 session พิมพ์ว่า UNKNOWN ไม่ใช่ ZERO · เพิ่ม craft skill สามตัว (camera-composition, styling-narrative, lighting-design) และถอน usd-validate + material-lint ออกจากทะเบียน (0 ไฟล์ .usda/.mtlx ในรีโป)",
+   "where": "pipeline/scripts/skill_usage.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "lines \\+= skill_lines\\(\\)",
+     "why": "printed at every session open — the one channel the builder cannot avoid"
+    },
+    {
+     "file": "pipeline/scripts/skill_usage.py",
+     "pattern": "def summarise\\(",
+     "why": "the counter is code with tests, not a claim in a README"
+    },
+    {
+     "file": "CLAUDE.md",
+     "pattern": "THE BUILDER CALLS THEM ITSELF",
+     "why": "his condition lives in the file loaded every session, in his own words"
+    },
+    {
+     "file": "docs/retired-skills/RETIRED.md",
+     "pattern": "usd-validate",
+     "why": "a retirement with its reason and its route back, not a deletion"
+    }
+   ],
+   "reverse_by": "ลบ lines += skill_lines() ใน plan_status (บรรทัดเดียว) แล้วทะเบียนกลับไปเงียบเหมือนเดิม · ถอน hook ออกจาก .claude/settings.local.json",
+   "note": "ข้อจำกัดที่ต้องพูดตรง ๆ: hook อยู่ใน .claude/settings.local.json ซึ่ง gitignored — มันทำงานบนเครื่องนี้เครื่องเดียว และ clone ใหม่จะนับเป็นศูนย์. การเลื่อนขึ้นไปอยู่ใน .claude/settings.json (law layer) เป็น PR และเป็นการตัดสินของพี่ ทางเดียวกับที่ guard_web เคยเดิน",
+   "because": "ข้อเสนอแรกของรอบนี้เขียนเกณฑ์รับของไว้ว่า 'ภายใน 3 รอบต้องมีหลักฐานว่าถูกเรียก' โดยไม่มีเครื่องวัดอยู่จริง = R13 'obedience there is only declared' ยกระดับขึ้นมาอีกชั้น"
+  },
+  {
+   "id": "D-161",
+   "unit": "DELIV-001",
+   "subject": "c2-blindness-is-a-file",
+   "decided_round": 86,
+   "decided_date": "2026-08-27",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-04-stop-and-ask-for-critique",
+   "question": "R7c บอกว่าความตาบอดของ C2 ถูกบังคับด้วย 'การก่อสร้างของคำถาม' แต่คำถามนั้นถูกพิมพ์ใหม่ด้วยมือทุกรอบ และเคยพลาดมาแล้วหนึ่งครั้ง (คำตอบ C3 นอนอยู่ในโฟลเดอร์ที่ C2 กำลังอ่าน). การก่อสร้างที่ทำซ้ำได้คืออะไร?",
+   "in_effect": "`.claude/agents/cold-critic-c2.md` — agent definition ที่มี tool list แบบ least privilege (Read, Glob, Write เท่านั้น: ไม่มี Bash ไม่มี Grep ไม่มี web) และ system prompt ที่ระบุการปฏิเสธเป็นชื่อ: ห้ามเปิด _private/ clients/ projects/ qa/ docs/ pipeline/ .git, ห้ามเปิด reference/target/anchor, ห้ามเปิด ANSWER_*.md พี่น้องในโฟลเดอร์เดียวกัน (และต้องรายงานว่ามันอยู่ตรงนั้น), อ่าน PROMPT.md เฉพาะใต้เส้นคั่น, เขียนไฟล์เดียวคือ ANSWER_claude-local-c2.md ในโฟลเดอร์ bundle. เพิ่มสองอย่างที่ builder หาจากที่อื่นไม่ได้: TOP 3 และรายการ CANNOT-BE-BUILT แยกต่างหาก",
+   "where": ".claude/agents/cold-critic-c2.md",
+   "in_effect_assert": [
+    {
+     "file": ".claude/agents/cold-critic-c2.md",
+     "pattern": "name: cold-critic-c2",
+     "why": "the ask is a file with a fixed identity, not a prompt retyped per round"
+    },
+    {
+     "file": ".claude/agents/cold-critic-c2.md",
+     "pattern": "tools: Read, Glob, Write",
+     "why": "least privilege is part of the construction — no Bash, no Grep, no egress"
+    },
+    {
+     "file": "CLAUDE.md",
+     "pattern": "cold-critic-c2",
+     "why": "the rung names its agent in the file loaded every session, so the round cannot forget which one"
+    }
+   ],
+   "reverse_by": "ลบ .claude/agents/cold-critic-c2.md แล้ว C2 กลับไปเป็น prompt ที่พิมพ์มือทุกรอบ (ตาบอดขึ้นกับวินัย ไม่ใช่โครงสร้าง)",
+   "note": "ไม่ใช่ตัวแทน C3 (ผู้ขายเดียวกับ builder) และไม่ใช่ sighted comparator ของ R10b — คนละคำถาม และไม่เคยถาม agent เดียวสองคำถาม",
+   "because": "builder จับ defect ของตัวเองได้ 30-50% — rung นี้มีค่าเพราะมันไม่ได้ดูงานตอนถูกสร้าง และ 'ความไม่รู้' ที่ขึ้นกับการจำว่าต้องไม่เปิดไฟล์ไหน ไม่ใช่โครงสร้าง"
   }
  ],
  "_assert_ratchet_from": "D-124"

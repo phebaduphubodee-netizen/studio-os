@@ -609,5 +609,97 @@ class TestInstrumentFreeze(unittest.TestCase):
         self.assertEqual(before, BK.current_digest())
 
 
+class BaselineOrderIsARefusal(unittest.TestCase):
+    """p2r86: three paid `hung_garments` were fetched before that class's free
+    baseline, permanently contaminating it for the month's own C2 criterion. The
+    protocol had been correct and PRINTED (in `status`) the whole time. These pin
+    that it is now a REFUSAL, and that the refusal sits on the fetch path itself —
+    not in a sibling command nobody is obliged to run."""
+
+    def _classes(self, baseline=None, key="hung_garments", scale="garment_hung"):
+        """A classes file in the p2r86 SHAPE, built from the real one so a schema
+        change here is a test failure and not a silent pass."""
+        with open(BK.CLASSES, encoding="utf-8") as fh:
+            real = json.load(fh)
+        row = next(c for c in real["classes"] if c.get("key") == key)
+        row = dict(row, asset_scale_class=scale, free_baseline=baseline)
+        real["classes"] = [row]
+        d = tempfile.mkdtemp()
+        path = os.path.join(d, "classes.json")
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(real, fh)
+        return path
+
+    def _results(self, blob=None):
+        d = tempfile.mkdtemp()
+        path = os.path.join(d, "results.json")
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(blob or {}, fh)
+        return path
+
+    def test_the_p2r86_fetch_is_refused(self):
+        why = BK.baseline_refusal("garment_hung", "full_plan",
+                                  self._classes(), self._results())
+        self.assertIsNotNone(why)
+        self.assertIn("hung_garments", why)
+        self.assertIn(BK.ORDER, why)
+        self.assertIn("DOES NOT COUNT", why)
+
+    def test_a_free_fetch_in_the_same_class_is_allowed(self):
+        """The order is about the ORDER of measurement, not about spending. Running
+        the free tier IS the baseline, so it can never be what the guard blocks."""
+        self.assertIsNone(BK.baseline_refusal("garment_hung", "free",
+                                              self._classes(), self._results()))
+
+    def test_a_recorded_baseline_opens_the_class(self):
+        rec = {"panel_passes": 0, "of": 20}
+        self.assertIsNone(BK.baseline_refusal("garment_hung", "full_plan",
+                                              self._classes(baseline=rec),
+                                              self._results()))
+
+    def test_the_baseline_may_live_in_the_unhashed_results_file(self):
+        """Filling it in CLASSES moves the criteria digest (measured 2026-08-24), so
+        the protocol writes results to the unhashed file. The guard must read BOTH or
+        it would refuse every class that obeyed the freeze correctly."""
+        res = self._results({"classes": {"hung_garments":
+                                         {"free_baseline": {"panel_passes": 0}}}})
+        self.assertIsNone(BK.baseline_refusal("garment_hung", "full_plan",
+                                              self._classes(), res))
+
+    def test_an_out_of_test_class_is_not_the_guards_business(self):
+        """`book_stack` was never pre-registered; status already prints those as
+        OUT-OF-TEST. A guard that blocked them would be inventing a rule."""
+        self.assertIsNone(BK.baseline_refusal("book_stack", "full_plan",
+                                              self._classes(), self._results()))
+
+    def test_an_unclassed_paid_fetch_is_refused_by_r8(self):
+        """The guard's own bypass: no class name, no join, no refusal. R8 already
+        forbids it (scale is ASSERTED on every ingest)."""
+        why = BK.baseline_refusal(None, "full_plan", self._classes(), self._results())
+        self.assertIsNotNone(why)
+        self.assertIn("R8", why)
+        self.assertIsNone(BK.baseline_refusal(None, "free",
+                                              self._classes(), self._results()))
+
+    def test_the_refusal_is_ON_THE_FETCH_PATH(self):
+        """The whole defect was a correct check wired to a command nobody had to run.
+        So: call fetch() itself with a PAID result and no baseline, and prove it
+        raises before a directory, a download or a Blender lookup happens."""
+        cache = tempfile.mkdtemp()
+        calls = []
+        real_find = BK.find_blender
+        BK.find_blender = lambda *a, **k: calls.append("blender")
+        try:
+            with self.assertRaises(BK.Refused) as cm:
+                BK.fetch("aaaa-1", key="k", cls="garment_hung", cache=cache,
+                         result=_result(free=False))
+        finally:
+            BK.find_blender = real_find
+        self.assertEqual(cm.exception.code, 1)
+        self.assertIn("hung_garments", str(cm.exception))
+        self.assertEqual(calls, [])
+        self.assertEqual(os.listdir(cache), [])
+
+
 if __name__ == "__main__":
     unittest.main()

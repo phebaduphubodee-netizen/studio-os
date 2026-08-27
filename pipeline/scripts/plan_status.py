@@ -504,6 +504,20 @@ def coverage_lines():
 
 # --------------------------------------------------------------- the report
 
+def skill_lines():
+    """THE ROSTER'S OWN LAST-USED AGE (2026-08-27). Every other ledger in this report
+    answers "what is owed"; this one answers "did the thing we built ever get used" —
+    the question the six skills of 2026-07-02 went 54 days without anyone asking.
+    Unreadable prints UNKNOWN, never nothing, same law as every section above."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import skill_usage
+        return skill_usage.report_lines()
+    except Exception as e:                                  # never break the brief
+        return ["", f"SKILL/AGENT unknown — skill_usage.py could not run ({e.__class__.__name__}). "
+                    "That is unknown, not zero."]
+
+
 def report(plan):
     lines = []
     cur = current(plan)
@@ -553,6 +567,7 @@ def report(plan):
     lines += sheet_lines()
     lines += style_lines()
     lines += coverage_lines()
+    lines += skill_lines()
 
     bad = unreadable_statuses(plan)
     if bad:

@@ -1,6 +1,6 @@
 {
  "_law": "THE MAP THE HEAD STOPPED BEING ABLE TO HOLD (owner 2026-08-22: 'project ใหญ่เกินกว่าที่ตรวจเช็คได้ว่าขั้นไหนผิดอะไรแล้วใช่ไหม' -> advice -> 'ลุย', ORD-2026-08-22-front-door-dims). One row per check the render lanes actually run, classified by (1) STAGE — where in the pipe it fires, and (2) COMPARES — what it holds the work against: a = our own spec/derivation/history (self-consistency), b = the client's sheet / the target / the delivered anchor pool, c = a WORLD standard independent of both, d = process-state (registers, orders, ledgers). The first full census (2026-08-22, 5-agent sweep) found 28 rungs: a=9 b=4 c=3 d=12, with ONE blocking world-standard check on the render path — which is the measured answer to why 'the bed is too small' had no asker. ADMISSION of new rows is governed by D-112 (a new instrument must give eyes to a none_yet critic-debt class, replace a proven liar, or be owner-ordered — printed in the gate that introduces it; enforcement is discipline in gate artifacts, NOT a new checker, by D-112's own words). The defect-class half of the map is qa/critic-debt.json's none_yet rows — this file does not duplicate them. plan_status prints this map's summary at every session open; a map nobody prints is the queue-with-no-consumer defect wearing a map.",
- "updated": "2026-08-24",
+ "updated": "2026-08-27",
  "classes": {
   "a": "own-spec/self-history",
   "b": "sheet/target/anchor-pool",
@@ -256,6 +256,20 @@
    "compares": "a",
    "blocking": true,
    "note": "R11: the only style rung that OPENS THE PICTURE. style_fingerprint 60/30/10 area split off the frame of record vs concept.md§3; ratchet only ever falls. compares=a because the declared palette is our own document — it is self-consistency measured in PIXELS, not a world standard"
+  },
+  {
+   "name": "blenderkit baseline order (fetch guard)",
+   "stage": "ingest",
+   "compares": "d",
+   "blocking": true,
+   "note": "D-159. A PAID fetch is REFUSED when its pre-registered C2 class has no free baseline recorded, and when a paid fetch carries no --assert-class at all (R8, and the guard's own bypass). The protocol was correct and PRINTED by `status` for five days; p2r86 fetched three paid hung_garments without running it and contaminated that class permanently for D-119's own criterion. Reads CLASSES and the unhashed results file, so obeying the criteria freeze does not read as a violation. Free fetches are never blocked — running the free tier IS the baseline. Gated on the key so ASK-031's could-not-run (2) still outranks a protocol refusal (1)."
+  },
+  {
+   "name": "skill_usage (roster consumer)",
+   "stage": "process",
+   "compares": "d",
+   "blocking": false,
+   "note": "D-160, owner-ordered 2026-08-27. Stamps every Skill/Agent invocation from a PreToolUse hook and prints each roster entry's call count and last-used age at every session open. NON-BLOCKING by design: it counts work, it does not police it. It is in this map because the six skills of 2026-07-02 fired for two days and then went 54 days unused with nothing able to tell. CAVEAT ON THE WIRING: the hook lives in .claude/settings.local.json, which is gitignored — it runs on this machine only, and a fresh clone counts zero. Promotion into the committed law layer is a PR and the owner's call."
   }
  ]
 }

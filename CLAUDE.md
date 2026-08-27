@@ -517,6 +517,28 @@ top of the session, before anything else.**
     that hard-fails every historical instance on day one gets switched off and
     joins them.
 
+## Skills and agents — THE BUILDER CALLS THEM ITSELF (owner order 2026-08-27)
+*"มีข้อแม้ว่าทั้งหมดนี้คุณต้องเป็นคนเรียกใช้เองเมื่อต้องใช้"*. The roster is not a menu to
+be offered; it is a set of moves to be MADE, at the moment the work matches, unasked.
+- **Craft (judgement — the one thing a guard cannot be):** `camera-composition` before any
+  camera change or "reads like a backdrop" verdict · `styling-narrative` before any
+  decor/shelf/vignette round or shopping round · `lighting-design` before any
+  lighting-led round or "flat / lit from nowhere" verdict.
+- **Critique:** spawn the `cold-critic-c2` AGENT for the C2 rung (R7c) — blindness is now
+  a file with a fixed ask and a least-privilege tool list, not a prompt retyped per round.
+- **Stage (dormant until the real-client run, ORD-2026-08-22):** `intake-parse`,
+  `concept-brief`, `qa-report`, `ffe-research`.
+- **It is measured.** `pipeline/scripts/skill_usage.py` stamps every Skill/Agent call from
+  a hook; `plan_status` prints each entry's call count and last-used age at every session
+  open. Never called for ≥14 days → call it or retire it. **The six skills of 2026-07-02
+  fired for two days and then went 54 days and 86 render rounds unused, and nothing in
+  the repo could tell** — the queue-with-no-consumer defect landing on the layer that was
+  supposed to prevent it.
+- **Choose the mechanism from the shape of the failure**: forgot → a guard that fails
+  closed · must not see something → an agent def · must happen every time → a hook ·
+  don't know how to make it good → a skill · everyone knows but nobody reads it → none of
+  those, and it is certainly not another document.
+
 ## Commands
 - Scaffold a project: `python3 scripts/scaffold_project.py PRJ-2026-001 client-slug`
 - Verify guard hooks:  `bash scripts/test_guards.sh`

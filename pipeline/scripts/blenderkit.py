@@ -1068,6 +1068,14 @@ def fetch(asset_base_id, key=None, cls=None, resolution="blend",
     prior = _source(base) or {}
     r = result or lookup(asset_base_id, key)
     tier = tier_of(r)
+    # FAIL CLOSED, before a byte moves and before Blender is resolved: the month's
+    # baseline order is a REFUSAL now, not a line `status` prints (see baseline_refusal).
+    # GATED ON THE KEY, and that is the exit-code contract rather than a nicety: with no
+    # key nothing can download, so the true answer is ASK-031's COULD-NOT-RUN (2), and a
+    # protocol refusal (1) printed over it would report a state that never arose.
+    gap = baseline_refusal(cls, tier) if key else None
+    if gap:
+        raise Refused(f"{asset_base_id}: {gap}", code=1)
     fe = file_entry(r, resolution)
     if fe is None:
         raise Refused(f"{asset_base_id} offers no {resolution!r} file (has: "
@@ -1233,6 +1241,65 @@ def load_results(path=None):
             return json.load(fh)
     except (OSError, ValueError):
         return {}
+
+
+def month_class_of(cls, classes_path=None):
+    """The pre-registered C2 class row whose `asset_scale_class` is `cls`, else None.
+
+    The join is on asset_scale_class because that is the ONLY class name a fetch ever
+    carries (`--assert-class`); the C2 `key` is the month's own name for the same set.
+    A class that is not pre-registered returns None and is not the guard's business —
+    `status` already prints those as OUT-OF-TEST. PURE.
+    """
+    try:
+        with open(classes_path or CLASSES, encoding="utf-8") as fh:
+            rows = json.load(fh).get("classes") or []
+    except (OSError, ValueError):
+        return None
+    return next((c for c in rows if c.get("asset_scale_class") == cls), None)
+
+
+def baseline_refusal(cls, tier, classes_path=None, results_path=None):
+    """Why this PAID fetch must not happen yet, or None. PURE.
+
+    THIS EXISTS BECAUSE THE CHECK WAS A PRINT (p2r86, 2026-08-27). The protocol in
+    `blenderkit-month-classes.json` says the free baseline of a class is filled BEFORE
+    any paid fetch in that class, and its own `_pass_rule` says a class measured in the
+    wrong order "does not count toward C2". `status` printed the list of classes still
+    owed a baseline on every call — and the builder fetched three paid `hung_garments`
+    without running `status` first, permanently contaminating that class for the month's
+    own criterion. R11 names this exact shape: "the guard was declared mandatory and then
+    printed as a suggestion for a human to copy". A rung that depends on remembering to
+    climb it is a rung that gets skipped on the rounds you are most sure of.
+
+    Two refusals, in cost order:
+      1. a PAID fetch with no --assert-class at all. R8 says scale is ASSERTED on every
+         ingest, never assumed — and an unclassed fetch is also the guard's own bypass
+         (no class name, no join, no refusal). Free fetches keep the old latitude.
+      2. a PAID fetch in a pre-registered class whose free baseline is not yet recorded.
+    """
+    if tier != "full_plan":
+        return None
+    if not cls:
+        return ("a PAID fetch with no --assert-class. R8: scale is ASSERTED on every "
+                "ingest, never assumed — and an unclassed paid fetch also walks past "
+                f"the {ORDER} baseline order, which can only be read through the class "
+                "name. Pass --assert-class <band from asset_scale.BANDS>.")
+    row = month_class_of(cls, classes_path)
+    if row is None:
+        return None
+    rec = (load_results(results_path).get("classes") or {}).get(row.get("key")) or {}
+    if row.get("free_baseline") or rec.get("free_baseline"):
+        return None
+    return (f"class {row.get('key')!r} (asset_scale {cls!r}) has NO free baseline "
+            f"recorded, and {ORDER}'s pre-registered protocol fills free_baseline "
+            f"BEFORE any paid fetch in that class. Its own _pass_rule: a class whose "
+            f"baseline is not recorded before its first paid fetch DOES NOT COUNT "
+            f"toward C2 — so this download would spend money and destroy the evidence "
+            f"it was meant to produce (it already did once, hung_garments at p2r86). "
+            f"Legal moves: run the free baseline for {row.get('key')!r} (20 free "
+            f"thumbnails through docs/blenderkit-month/style-panel-prompt.md, recorded "
+            f"in qa/blenderkit-month-results.json), or fetch a FREE asset in this class.")
 
 
 def current_digest(decisions_path=None, classes_path=None, prompt_path=None):
