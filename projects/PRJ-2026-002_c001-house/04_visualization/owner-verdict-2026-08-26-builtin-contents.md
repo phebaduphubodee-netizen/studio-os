@@ -24,3 +24,12 @@ Per R13 CLASS≠INSTANCE: it narrows what may ship; it repeals nothing.
 
 ## Consumed by
 ORD-2026-08-26-builtin-contents-unnatural (qa/owner-orders.json) — restart_by = the p2r80 round.
+
+## SECOND VERDICT — 2026-08-27, on p2r82/p2r83
+> **"ของในตู้ไม่เห็นเปลี่ยนเลย"**
+
+ถูกของเขา และวัดได้ว่าทำไม: เซ็ตของที่กล้องเห็นถูกล็อกที่ 5 ชิ้นโดยกฎปิดช่องของ
+p2r80 เอง (hero-closure ปิด ni0+ni2 · occupancy เช็คทั้งช่องทำให้ชิ้นที่สองต่อ
+ช่องเป็นไปไม่ได้เชิงโครงสร้าง) ขณะที่ survey งานเพื่อน 50 เฟรมอ่านว่า "ช่องโชว์
+ทุกช่องมีของ 1-2 ชิ้น ความว่างอยู่หลังบานทึบ" — p2r84 แก้ที่กฎสามจุด (ni2 เปิด /
+_share mode / กล่อง@sh + รองเท้า@fl) ด้วย id ที่ผ่าน panel แล้วทั้งหมด ไม่ซื้อเพิ่ม

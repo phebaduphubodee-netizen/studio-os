@@ -4198,6 +4198,8 @@ def _dress_scene(spec):
             _WARDROBE_BAG_MODEL: "wardrobe_bag",
             "90a1129e-ffa0-4494-a990-3e59dfdcb3ef": "wardrobe_basket",
             "c590fee3-5d46-45cc-88c6-fb8a92bc56b5": "wardrobe_box",
+            _WARDROBE_SHOES_MODEL: "wardrobe_shoes",   # p2r84: shoes join the
+            # visible bay — same per-item-tag law as p2r80b (D7 must read names)
         }
         # the open wardrobe's FRONT direction, derived once from the spec: the
         # cell's depth axis is the builtin's short plan axis, and the front is
@@ -4230,13 +4232,18 @@ def _dress_scene(spec):
                 _b3_front[str(_b.get("name", "")).replace(" ", "_")] = (_ax, _sgn)
 
         def _place_on_cell(_mid, _cell, _need_gap=0.02, _dx_off=0.0,
-                           _front=None):
+                           _front=None, _share=False):
             """One acquired piece onto ONE named shelf cell: z from the built
             face (R9), plan centred + a measured breath off-centre, occupancy
             and fit refused loudly. Returns True only on a real placement.
             `_front=(axis, sign, setback_m)` pulls the piece to a measured
             setback from the cell's FRONT edge on that axis (R9 form (c):
-            offset from a named edge) instead of depth-centring it."""
+            offset from a named edge) instead of depth-centring it.
+            `_share=True` (p2r84, ORD-2026-08-26 verdict 08-27) checks occupancy
+            over THIS PIECE'S own footprint instead of the whole cell — the
+            friend-pool cadence is 1-2 objects per bay, and the whole-cell test
+            made a second object structurally impossible: 'ของในตู้ไม่เห็น
+            เปลี่ยนเลย' was the code's own closure rules, not a styling gap."""
             _mp = _model_path(_mid)
             if _mp is None:
                 print(f"  lane D/B3: {_mid[:8]} DROPPED — model refused/"
@@ -4262,11 +4269,6 @@ def _dress_scene(spec):
                       f"{_cx * 1000:.0f}x{_cy * 1000:.0f} (loud)")
                 return False
             _ctop = max(p.z for p in _cb)
-            _occ = _shelf_occupied(_c0, _c1, _ctop, _cz + 0.02)
-            if _occ:
-                print(f"  lane D/B3: {_mid[:8]} DROPPED — cell occupied by "
-                      f"{_occ} (loud)")
-                return False
             _px_ = _c0[0] + (_cw_ - _cx) / 2.0 + _dx_off
             _py_ = _c0[1] + (_cd_ - _cy) / 2.0
             if _front is not None:
@@ -4276,6 +4278,43 @@ def _dress_scene(spec):
                 else:
                     _px_ = ((_c1[0] - _fset - _cx) if _fsgn > 0
                             else (_c0[0] + _fset)) + _dx_off
+            if _share:
+                # second-object mode: only THIS piece's landing strip must be
+                # clear (+10 mm breathing gap each side); the neighbour that
+                # already lives in the cell is the point, not a blocker. The
+                # SIDE is derived, never guessed (R9): try the requested side,
+                # then its mirror — the first clear strip wins; the first quick
+                # of p2r84 guessed one side and both new pieces landed on their
+                # neighbours.
+                _max_off = max((_cw_ - _cx) / 2.0 - 0.02, 0.0)
+                # candidates: requested side, its mirror, then the two cell
+                # edges — quick 3 measured the residual: the free strip beside
+                # an off-centred neighbour often exists ONLY at the edge
+                # (basket ends 3.473, derbies fit exactly at +max = 3.482+)
+                _sides = list(dict.fromkeys(
+                    [max(-_max_off, min(_max_off, _dx_off)),
+                     max(-_max_off, min(_max_off, -_dx_off)),
+                     _max_off, -_max_off]))
+                _occ, _px_ok = "nowhere to try", None
+                for _s_ in _sides:
+                    _try = _c0[0] + (_cw_ - _cx) / 2.0 + _s_
+                    _occ = _shelf_occupied((_try - 0.01, _c0[1]),
+                                           (_try + _cx + 0.01, _c1[1]),
+                                           _ctop, _cz + 0.02)
+                    if not _occ:
+                        _px_ok = _try
+                        break
+                if _px_ok is None:
+                    print(f"  lane D/B3: {_mid[:8]} DROPPED — both landing "
+                          f"strips occupied (last: {_occ}) (loud)")
+                    return False
+                _px_ = _px_ok
+            else:
+                _occ = _shelf_occupied(_c0, _c1, _ctop, _cz + 0.02)
+                if _occ:
+                    print(f"  lane D/B3: {_mid[:8]} DROPPED — cell occupied by "
+                          f"{_occ} (loud)")
+                    return False
             return place_model(_mp, _px_, _py_, _cx, _cy, _cz,
                                rot=0.0, z0=_ctop,
                                tag=_B3_TAGS.get(_mid, "wardrobe"))
@@ -4296,29 +4335,52 @@ def _dress_scene(spec):
                     _b3_cells[_shn.rsplit('_', 1)[-1]] = _so
         if _b3_cells:
             _b3_story = (
-                # (id, level token, front-pull?, narrative line). front-pull:
-                # the hero is DISPLAYED ('วางแบบเห็น') — measured 50 mm setback
-                # from the cell's front edge; p2r80's first full depth-centred
-                # it and the camera got a sliver behind the tower gable.
-                (_WARDROBE_BAG_MODEL, 'ni1', True,
+                # (id, level token, front-pull?, share?, narrative line).
+                # front-pull: the hero is DISPLAYED ('วางแบบเห็น') — measured
+                # 50 mm setback from the cell's front edge; p2r80's first full
+                # depth-centred it and the camera got a sliver behind the gable.
+                # share: SECOND object in an already-lived-in bay — the friend
+                # pool's cadence (survey 2026-08-26, 50 delivered built-ins) is
+                # 1-2 objects per bay with vacancy behind CLOSED fronts, and
+                # the owner's 08-27 verdict on p2r83 ("ของในตู้ไม่เห็นเปลี่ยน
+                # เลย") measured what the whole-cell closure rules had done:
+                # the visible set was locked at 5 pieces by our own code.
+                (_WARDROBE_BAG_MODEL, 'ni1', True, False,
                  "กระเป๋าหนังภรรยา — ชั้นระดับตา ของชิ้นโปรดวางแบบเห็น (hero, alone)"),
-                ("90a1129e-ffa0-4494-a990-3e59dfdcb3ef", 'fl', False,
-                 "ตะกร้าหวายมีฝา — ผ้ารอส่งซัก อยู่ชั้นล่าง"),
-                ("c590fee3-5d46-45cc-88c6-fb8a92bc56b5", 'fh', False,
+                # THE BASKET LEFT THIS WALL (p2r84 full 1, matmask: wicker =
+                # 0 px after the -175 shift — the mid gable occludes the left
+                # ~350 mm of fl from the record camera, so fl SHOWS exactly one
+                # object no matter the arithmetic). The laundry story is true
+                # in the walk-in; the VISIBLE cell goes to the piece the owner
+                # has never seen. Basket returns via the wc_plan pool.
+                ("c590fee3-5d46-45cc-88c6-fb8a92bc56b5", 'fh', False, False,
                  "กล่องผ้าเก็บตามฤดู — ชั้นสูงเพราะนาน ๆ หยิบ"),
+                # p2r84 (verdict 08-27) — a class his eye has not seen, on the
+                # SIDE OF THE CELL THE CAMERA SEES (+0.175 = the measured
+                # visible strip; the occluded left half stays air).
+                (_WARDROBE_SHOES_MODEL, 'fl', False, 0.175,
+                 "รองเท้าหนังของสามี — ชั้นล่างฝั่งที่กล้องเห็น (shoes low; ฐานตู้ = "
+                 "โซนของใช้จริง)"),
+                # (A second box on 'sh' stays OUT by measurement: the centred
+                # fold stack leaves 205/175 mm strips vs the box's 311.)
                 # tw0 stays AIR on purpose: tw1 already carries a fold stack,
                 # and the narrative's law is >=1 empty cell per column — a
                 # tower with both cells filled is the warehouse read. The
                 # tray debuts on the bookshelf's garden bay instead.
             )
-            for _bi, (_mid, _lvl, _fpull, _line) in enumerate(_b3_story):
+            # row field 4: False = solo cell · True = share (second object,
+            # landing-strip occupancy) · a float = solo with an EXPLICIT
+            # measured dx offset (the basket's -0.175 above)
+            for _bi, (_mid, _lvl, _fpull, _shr, _line) in enumerate(_b3_story):
+                _dxo = _shr if isinstance(_shr, float) else None
+                _shr = _shr is True
                 _cell = _b3_cells.get(_lvl)
                 if _cell is None:
                     print(f"  lane D/B3: no '{_lvl}' cell on the open "
                           f"wardrobe — {_mid[:8]} DROPPED (loud)")
                     continue
                 _bay = _cell.name.split('_shelf_')[0]
-                if ((_bay, _lvl) in _used_bays
+                if (((_bay, _lvl) in _used_bays and not _shr)
                         or (_bay, _lvl) in _closed_cells):
                     continue
                 _host_pc = _ward_shelf_hosts.get(_cell.name, "")
@@ -4329,17 +4391,22 @@ def _dress_scene(spec):
                           f"but no front derivation exists for host "
                           f"{_host_pc!r} — falling back to centred (loud)")
                 if _place_on_cell(_mid, _cell,
-                                  _dx_off=(-0.035 if _bi % 2 else 0.035),
-                                  _front=_fr):
+                                  _dx_off=(_dxo if _dxo is not None
+                                           else (0.15 if _bi % 2 else -0.15) if _shr
+                                           else (-0.035 if _bi % 2 else 0.035)),
+                                  _front=_fr, _share=_shr):
                     _used_bays.add((_bay, _lvl))
                     print(f"  lane D/B3: {_mid[:8]} on "
                           f"{_cell.name.split('mill__')[-1]} — {_line}")
                     if _mid == _WARDROBE_BAG_MODEL:
-                        # hero alone in its lit cell: the niche column above
-                        # and below the bag stays AIR (reference read + the
-                        # narrative's own empty-cell law)
-                        for _l_ in ('ni0', 'ni2'):
-                            _closed_cells.add((_bay, _l_))
+                        # HERO ALONE IN ITS CELL — ni1 only. p2r80 closed ni0
+                        # AND ni2 with it, and the 08-27 verdict priced that:
+                        # the friend pool keeps vacancy behind closed doors,
+                        # not in the display column (survey: 'vacancy rhythm
+                        # inverted'). ni0 stays AIR (>=1 empty per column);
+                        # ni2 opens — the vessel pair's own placement loop
+                        # prefers it (_vp_pref) and composes there naturally.
+                        _closed_cells.add((_bay, 'ni0'))
         elif _b3_hosts:
             # hosts declared but zero cells resolved = a WIRING BREAK between
             # the spec name and the anchor piece, and the hero bag has no
@@ -4387,13 +4454,29 @@ def _dress_scene(spec):
             # the pair yields tw0 (the hero bag's own preferred level) and
             # composes at ni2/tw1 — running first must not steal the hero cell
             _vp_pref = {'ni2': 0, 'tw1': 1, 'tw0': 2, 'ni1': 3, 'ni0': 4}
+            # EYE-VISIBLE HOSTS FIRST (p2r84, verdict 08-27): the first quick
+            # matched 'ni2' on the WALK-IN's bay (alphabetically first) and the
+            # pair composed where no deliverable frame looks — the p2r80 law
+            # ('shown where the deliverable looks') applies to every display
+            # piece, not only the hero bag.
             for _sh in sorted(_shelves,
-                              key=lambda o: (_vp_pref[o.name.rsplit('_', 1)[-1]],
+                              key=lambda o: (_ward_shelf_hosts.get(o.name, "")
+                                             not in _b3_hosts,
+                                             _vp_pref[o.name.rsplit('_', 1)[-1]],
                                              o.name)):
                 _bay = _sh.name.split('_shelf_')[0]
                 _lvl = _sh.name.rsplit('_', 1)[-1]
+                # the >=3 cap treats one BAY as one column — right for the
+                # walk-in's 600 mm bays, wrong for BF09-3 where the whole
+                # 3.3 m run shares one bay name (p2r84 quick 2: the cap ate
+                # ni2 and the pair composed in the walk-in no camera sees).
+                # B3 hosts are governed by the story + >=1-empty-per-column
+                # law instead, so the cap exempts them.
+                _cap_hit = (sum(1 for b, _ in _used_bays if b == _bay) >= 3
+                            and _ward_shelf_hosts.get(_sh.name, "")
+                            not in _b3_hosts)
                 if ((_bay, _lvl) in _used_bays or (_bay, _lvl) in _closed_cells
-                        or sum(1 for b, _ in _used_bays if b == _bay) >= 3):
+                        or _cap_hit):
                     continue
                 _sb = [(_sh.matrix_world @ Vector(c)) for c in _sh.bound_box]
                 _s0 = (min(p.x for p in _sb), min(p.y for p in _sb))
@@ -4407,12 +4490,34 @@ def _dress_scene(spec):
                 _dmid = _s0[1] + _sd_ / 2.0
                 _vy1 = _dmid + _need_d / 2.0 - _v1y          # vase, rear half
                 _vy2 = _dmid - _need_d / 2.0                 # bowl, front half
-                _vx1 = _s0[0] + (_sw_ - _v1x) / 2.0 - 0.035  # a breath off-centre
+                # EYE-VISIBLE HOST: compose ALONG THE RUN, both at the front
+                # (p2r84 full 1, matmask: Speckled Ceramic = 0 px — and the
+                # ray says why: from the record camera only the front ~200 mm
+                # of this 600-deep cell is visible; a rear-stacked tall piece
+                # is occluded at ANY front pull, the sightline enters the
+                # front plane at x=4.48 — the tower — for the rear band. So
+                # tall-BESIDE-low at a 50 mm front setback, the pair's other
+                # reference read; depth-stack stays for hosts no camera owns.)
+                _vhost = _ward_shelf_hosts.get(_sh.name, "")
+                _vx1 = _s0[0] + (_sw_ - _v1x) / 2.0 - 0.035
                 _vx2 = _s0[0] + (_sw_ - _v2x) / 2.0 + 0.035
+                if (_vhost in _b3_front and _b3_front[_vhost][0] == 'y'
+                        and _sw_ >= _v1x + _v2x + 0.08):
+                    _fy = (_s0[1] + 0.05) if _b3_front[_vhost][1] < 0 else None
+                    _vy1 = _fy if _fy is not None else (_s1[1] - 0.05 - _v1y)
+                    _vy2 = _fy if _fy is not None else (_s1[1] - 0.05 - _v2y)
+                    _vmid_x = _s0[0] + _sw_ / 2.0
+                    _vx1 = _vmid_x - _v1x - 0.020          # vase, left of centre
+                    _vx2 = _vmid_x + 0.020                 # bowl, right of centre
+                # PER-ITEM TAGS (p2r84): the bare "wardrobe" tag is the D7
+                # blindness class of p2r79/p2r80b on a THIRD prefix — the pair
+                # rendered in frame and the counter could not name it, so the
+                # room's own number was a reading of the convention. Same law,
+                # same fix: a name that carries its item stem is countable.
                 if (place_model(_vmp1, _vx1, _vy1, _v1x, _v1y, _v1z,
-                                rot=0.0, z0=_stop, tag="wardrobe")
+                                rot=0.0, z0=_stop, tag="wardrobe_vase")
                         and place_model(_vmp2, _vx2, _vy2, _v2x, _v2y, _v2z,
-                                        rot=0.0, z0=_stop, tag="wardrobe")):
+                                        rot=0.0, z0=_stop, tag="wardrobe_bowl")):
                     _used_bays.add((_bay, _lvl))
                     print(f"  lane D: vessel pair (vase 332 + bowl 66) on "
                           f"{_sh.name.split('mill__')[-1]} top "

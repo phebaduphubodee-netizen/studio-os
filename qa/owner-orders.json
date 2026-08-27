@@ -952,8 +952,8 @@
    "retired_by": null,
    "status": "not-obeyed",
    "since": "2026-08-26",
-   "not_obeyed_because": "Verdict given on p2r78rc; the round that dresses the in-frustum built-ins has not yet produced a frame.",
-   "restart_by": "p2r80 round: (a) route lane-D contents by anchor part/kind instead of the mill__bay name prefix so BF09-3 shelf cells are eligible; (b) give the bookshelf its own display dresser implementing its spec prose (odd groupings 3/5, one sculptural object per bay, light objects high) plus decor-placement-grammar S5 (>=25% of each shelf face empty, books <=1/3, X-pattern across the grid, <=2 instances per id); (c) contents follow styling-narrative-2026-08-25.md shelf story lines, each new object gets its existence row; close only with a VISIBLE sighted verdict on the new frame or his words.",
+   "not_obeyed_because": "STILL NOT OBEYED after p2r84, and the sighted rung says so rather than the builder: the round moved the visible set 5->8 pieces (vase 3211px + bowl 413px on ni2, derbies 11,979px on fl, measured on the frame's matmask) and the independent C2 critic STILL files the same class the owner filed — 'ตู้เสื้อผ้าเปิดโล่งทั้งผนัง แต่ว่างเปล่า', counting 4 recognisable objects against 5-6 empty shelves. THE BLOCKER IS THE POOL, NOT THE PLACEMENT: the friend survey reads 25-40 objects per delivered built-in frame; our entire acquired pool for this wall is ~8 pieces and all of them are already placed. No rearrangement of 8 objects reaches the delivered read.",
+   "restart_by": "builder: a FETCH round for wardrobe-contents classes the pool lacks (books-as-display with bookends, hat/storage boxes, perfume/jewellery trays, folded-stack colour variety, a plant) from the free tiers first per procurement-sheet line order; a paid line becomes an ASK with a price (R8, his call). Then re-place and re-judge. p2r84's placement machinery (share mode, per-item tags, front-pull) is built and stays.",
    "visual": true
   },
   {

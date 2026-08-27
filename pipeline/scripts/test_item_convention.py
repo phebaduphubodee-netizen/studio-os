@@ -128,3 +128,19 @@ def test_builtin_contents_carry_their_stem_and_bare_legacy_stays_unknown():
     # gone once the per-stem tags land
     assert IC.item_id("bookshelf_display__acq0") == "bookshelf_display"
     assert IC.item_id("bookshelf_display__acq2.001") == "bookshelf_display"
+
+
+def test_the_vessel_pair_carries_per_item_stems_p2r84():
+    """p2r84 — THE BLINDNESS CLASS ON ITS THIRD PREFIX. The BF09-3 vessel pair
+    (vase + bowl) rendered in frustum on the eye-visible niche and D7 could not
+    name it: both pieces were tagged the bare `wardrobe`, so they landed in the
+    unknown channel exactly as `wardrobe__acq*` did at p2r80b and
+    `deco_*__acq*` did at p2r79. The build now tags them per item; the rule
+    that already existed then counts them, and the two ids stay DISTINCT (one
+    cell, two objects — collapsing them would under-count the composed pair)."""
+    assert IC.item_id("wardrobe_vase__acq0") == "wardrobe_vase"
+    assert IC.item_id("wardrobe_bowl__acq0") == "wardrobe_bowl"
+    assert IC.item_id("wardrobe_vase__acq0.001") == "wardrobe_vase"
+    assert IC.classify("wardrobe_vase__acq0")[1] == "item"
+    # and the bare legacy tag must STILL be unknown, never silently grouped
+    assert IC.classify("wardrobe__acq0")[1] == "unknown"
