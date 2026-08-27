@@ -945,7 +945,9 @@
    "commands": "Instance verdict on the frame of record (p2r78rc) confirming the ORD-2026-08-25c styling class is still not carried out AT THE BUILT-INS THE EYE CAMERA SEES. Measured on the same frame before any fix: BF09-3 display niche 0 objects on all 3 shelves, full-bay + tower shelves empty; bookshelf ex-TV all 18 shelf surfaces empty while its own spec prose declares display contents; every dressed zone (shoes/vessels/trays/baskets/bags) sits in the walk-in, outside the eye frustum. Mechanisms named in recorded_at: KNIT_KINDS refuses kind bookshelf (display prose has zero consumers), lane-D mill__bay name-prefix filter excludes BF09-3 cells from contents (allowlist-shaped scope, R9b class). The fix must dress what the CAMERA sees per the styling narrative's shelf story and the cited shelf-grid grammar (knowledge/styles/decor-placement-grammar.md S5), never by repealing the walk-in dressing.",
    "subject": "builtin-contents",
    "scope": "instance",
-   "units": ["DELIV-001"],
+   "units": [
+    "DELIV-001"
+   ],
    "standing": true,
    "retired_by": null,
    "status": "not-obeyed",
@@ -953,6 +955,24 @@
    "not_obeyed_because": "Verdict given on p2r78rc; the round that dresses the in-frustum built-ins has not yet produced a frame.",
    "restart_by": "p2r80 round: (a) route lane-D contents by anchor part/kind instead of the mill__bay name prefix so BF09-3 shelf cells are eligible; (b) give the bookshelf its own display dresser implementing its spec prose (odd groupings 3/5, one sculptural object per bay, light objects high) plus decor-placement-grammar S5 (>=25% of each shelf face empty, books <=1/3, X-pattern across the grid, <=2 instances per id); (c) contents follow styling-narrative-2026-08-25.md shelf story lines, each new object gets its existence row; close only with a VISIBLE sighted verdict on the new frame or his words.",
    "visual": true
+  },
+  {
+   "id": "ORD-2026-08-26b-friend-study-craft-lane",
+   "date": "2026-08-26",
+   "verbatim": "ลุยยาว ๆ",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-verdict-2026-08-26b-friend-study-craft-lane.md",
+   "commands": "Approves the 6-point director plan from the friend-work bed/built-in study (same file): (1) R12 sheet check first [done in-session: ink x2352 reproduces, no door strokes, OPEN stays owner-signed D3-A 07-16 — the study's 'no doors' item is refuted as a defect]; (2) P2r-26 DD termination pass p2r82 (ceiling shadow-gap 12, zocalo setback 120 — both from the signed element1 DD); (3) P2r-27 casework contents-light p2r83, separate round, light only where contents are, via element5 derivation + decision row; (4) contents story continues under ORD-2026-08-26-builtin-contents-unnatural with the study's reference class; (5) the bed is not touched (ASK-002 unchanged); (6) light architecture stays P3.",
+   "subject": "builtin-craft",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-26",
+   "not_obeyed_because": "Point 2 CARRIED OUT: p2r82 rendered with both DD terminations in pixels (scene dump: 24 members top z=2.788; diff vs p2r81 concentrated at the base + ceiling line; gate QUALIFIES 8/2; neither critic files the ceiling-butt/floor-line class — TRIAGE.md in the p2r82 bundle). Points 1/5/6 hold by construction. Remaining: point 3 (p2r83 contents-light) and point 4 (contents story round) — the row flips to obeyed when p2r83 lands.",
+   "restart_by": "builder: run p2r83 (P2r-27 casework contents-light via element5 derivation + decision row), then the contents story round under ORD-2026-08-26"
   }
  ]
 }

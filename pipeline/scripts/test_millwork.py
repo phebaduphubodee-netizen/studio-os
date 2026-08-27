@@ -1197,3 +1197,32 @@ def test_no_lamp_means_no_emitter_rather_than_zero():
     """R11's exit-code law applied to a number: 'could not derive' must not read as 0.0."""
     parts = M.nightstand_lamp_parts(0.4, 0.4, 0.4, lamp=False)
     assert not any(p[0].startswith("lamp_") for p in parts)
+
+
+def test_open_front_dd_terminations_p2r26():
+    """P2r-26 / ORD-2026-08-26b (friend-study craft lane, 2026-08-26): the open dressing
+    wall carries the signed DD's two termination details, which the build omitted for six
+    weeks while the carcass butted the ceiling and the 18mm toe-kick never read.
+    (a) CEILING SCRIBE: every tall member (gables, backs, towerback top, mirror) stops
+        SHADOW_TOP (=12mm, the owner's own reveal number, D2-A) short of H;
+    (b) ZOCALO: the plinth is set back ZOCALO_R (=120mm, DD's 100-150 window), not the
+        18mm PLINTH_R kick of the closed-door runs."""
+    H, D = 2.8, 0.6
+    parts = M.millwork_parts("wardrobe", D, 3.4, H, "x", -1, open_front=True,
+                             niche_mirror=True)
+    by = {p[0]: p for p in parts}
+    z_hi = H - M.SHADOW_TOP
+    # (a) nothing reaches the ceiling; the tall members all stop exactly at z_hi
+    assert all(p[3] + p[6] <= z_hi + 1e-9 for p in parts), "a member crosses the scribe gap"
+    for nm in ("gable0", "gable1", "gable2", "gable3", "gable_bay", "back",
+               "back_niche", "niche_mirror"):
+        z0, dz = by[nm][3], by[nm][6]
+        assert abs((z0 + dz) - z_hi) < 1e-9, f"{nm} top {z0+dz} != z_hi {z_hi}"
+    assert abs((by["top"][3] + by["top"][6]) - z_hi) < 1e-9      # top slab under the gap
+    # (b) the zocalo set-back: plinth front face sits ZOCALO_R behind the carcass front.
+    # axis='x', sign=-1 -> front at the LOW x end, so near = depth_off = ZOCALO_R.
+    px, pdx = by["plinth"][1], by["plinth"][4]
+    assert abs(px - M.ZOCALO_R) < 1e-9 and abs(pdx - (D - M.ZOCALO_R)) < 1e-9
+    # closed tall door runs are UNTOUCHED: their kick stays PLINTH_R (ergonomic, not float)
+    closed = {p[0]: p for p in M.millwork_parts("wardrobe", D, 3.4, H, "x", -1)}
+    assert abs(closed["plinth"][1] - M.PLINTH_R) < 1e-9

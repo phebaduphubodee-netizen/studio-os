@@ -52,6 +52,12 @@ DRAWER_REV = 0.010  # reveal between stacked drawer faces — 6mm was cabinet-tr
 #                     lane C, C2#14 read the stack as sealed boxes); 10mm is still a
 #                     handleless shadow line, and now it survives the frame
 FLOAT_Z   = 0.450   # the drawer stack FLOATS — air/shadow reveal below it (D3-A)
+SHADOW_TOP = 0.012  # open-wall ceiling scribe: DD element1 termination law (10-15mm shadow-gap
+                    # reveal at floor/ceiling/wall) at the owner's own reveal number (12, D2-A
+                    # 2026-07-16c) — carcass butted the 2800 ceiling with no gap until p2r82
+ZOCALO_R  = 0.120   # open-wall zocalo set-back: DD element1 'recessed zocalo set back 100-150mm'
+                    # — the 18mm PLINTH_R toe-kick never read as a base shadow (p2r81 crop);
+                    # closed door runs keep PLINTH_R (kick depth is ergonomic there, not a float)
 
 # ELEMENT-3 nightstand joinery + dome-lamp stack (round-6 lane C). PUBLISHED so the
 # bpy layer derives the shade's emission-gradient window from the SAME numbers that
@@ -502,21 +508,25 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         # structure (oak): a recessed toe-kick, a top, the vertical gables, and an oak back over
         # every bay EXCEPT the tower (the tower gets a microcement back, D6-A — drawn side-by-side
         # so the two materials never interpenetrate or share a coincident face; review 2026-07-16).
+        # z_hi: every member stops SHADOW_TOP short of the ceiling so a dark scribe line runs
+        # the length of the wall (P2r-26 / ORD-2026-08-26b; the DD's own termination law,
+        # never built until p2r82). The bbox H is untouched — the label's 280 is nominal.
+        z_hi = max(H - SHADOW_TOP, CARC_T)
         z_lo = 0.0
         if floor_standing:
-            plr = min(PLINTH_R, depth * 0.5)
+            plr = min(ZOCALO_R, depth * 0.5)
             part("plinth", 0.0, run, plr, depth - plr, 0.0, min(PLINTH_H, H))
             z_lo = PLINTH_H
-        part("top", 0.0, run, 0.0, depth, H - CARC_T, CARC_T)
+        part("top", 0.0, run, 0.0, depth, z_hi - CARC_T, CARC_T)
         if tower_w:
-            part("back", 0.0, bay_w, depth - CARC_T, CARC_T, 0.0, H)                      # bay back
-            part("back_niche", bay_w + tower_w, niche_w, depth - CARC_T, CARC_T, 0.0, H)  # niche back
+            part("back", 0.0, bay_w, depth - CARC_T, CARC_T, 0.0, z_hi)                      # bay back
+            part("back_niche", bay_w + tower_w, niche_w, depth - CARC_T, CARC_T, 0.0, z_hi)  # niche back
             gpos = [0.0, bay_w, bay_w + tower_w, run - CARC_T]
         else:
-            part("back", 0.0, run, depth - CARC_T, CARC_T, 0.0, H)
+            part("back", 0.0, run, depth - CARC_T, CARC_T, 0.0, z_hi)
             gpos = [0.0, run - CARC_T]
         for gi, gx in enumerate(gpos):
-            part(f"gable{gi}", min(gx, run - CARC_T), CARC_T, 0.0, depth, 0.0, H)
+            part(f"gable{gi}", min(gx, run - CARC_T), CARC_T, 0.0, depth, 0.0, z_hi)
 
         # [1] hang-rail bay — split by a mid-gable into a DOUBLE short-hang zone (two stacked rails,
         # shirts/short garments) + a SINGLE full-hang zone (one lower rail, long garments), each with
@@ -524,7 +534,7 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
         # AND keep every bay shelf span <= MAX_SPAN. Rails ~mid-depth so garments hang into the open.
         z_shelf = H - 0.30
         bay_mid = bay_w * 0.5
-        part("gable_bay", min(bay_mid, run - CARC_T), CARC_T, 0.0, depth, 0.0, H)   # splits the bay
+        part("gable_bay", min(bay_mid, run - CARC_T), CARC_T, 0.0, depth, 0.0, z_hi)  # splits the bay
         # CELL ARITHMETIC (P2r-8, measured off the built scene 2026-08-11): every
         # cell's internals were sized `span - 2*CARC_T` as if BOTH flanking gable
         # thicknesses lay inside the span — but each span already starts at its
@@ -570,7 +580,7 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
             # starts at bay_w + tower_w): one CARC_T inside the span, not two
             t_off = bay_w + CARC_T
             t_w = tower_w - CARC_T
-            part("towerback", t_off, t_w, depth - CARC_T, CARC_T, z_lo, (H - CARC_T) - z_lo)
+            part("towerback", t_off, t_w, depth - CARC_T, CARC_T, z_lo, (z_hi - CARC_T) - z_lo)
             n_dr = 3
             for i in range(n_dr):
                 z_i = FLOAT_Z + i * DRAWER_H
@@ -600,7 +610,7 @@ def millwork_parts(kind, W, D, H, axis, sign, floor_standing=True, open_front=Fa
                 # 'mirror' token. depth_off is inward from the FRONT, so the oak back
                 # sits at depth - CARC_T; the mirror is the 6mm just in front of it.
                 part("niche_mirror", n_off, max(n_w, 0.0), depth - CARC_T - 0.006, 0.006,
-                     0.0, H)
+                     0.0, z_hi)
         return out
 
     # A TALL DOOR RUN (wardrobe / full-height cabinet): leaves proud of a set-back carcass, a
