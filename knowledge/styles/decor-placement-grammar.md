@@ -633,6 +633,235 @@ settled while this table exists.**
 - **Not one source states a number and then TESTS it.** These are assertions performed by people
   with taste. The anchor pool (R4) and his eye (R3) still arbitrate every disagreement in §9.7.
 
+## 10. AND WE ALREADY HELD THE ANSWER — the delivered work, counted (2026-08-28)
+
+> **PROVENANCE, and it is a correction.** Source is the studio's OWN sighted survey of the
+> owner's friend's DELIVERED CLIENT WORK: 51 frames across 4 projects, 15 local sighted agents,
+> run 2026-08-26 on his order *"ในงานเพื่อนผมมีเตียงและตู้ built-in มั้ย ลองไปดูเป็นตัวอย่างซิแล้วบอกผมว่า
+> งานเราขาดอะไร"*. Record: `_private/deliv-001/friend-builtin-bed-study-2026-08-26/REPORT.md` and
+> `workflow-full-output.json` (LOCAL-ONLY, gitignored — the images never leave this machine and
+> never enter git; ORD-2026-08-05). Every count below is OUR re-measurement of that survey's own
+> fields, taken 2026-08-28 by five mining lanes plus an adversarial verifier, and committed the
+> same way the duvet-share cut was.
+>
+> **WHY IT IS SECTION 10 AND NOT SECTION 1.** §9 above was harvested from YouTube on 2026-08-28
+> at the cost of 533 candidates and ten judge lanes, and it ended by filing four formal rows
+> saying certain things *"will never close on YouTube"* and must be measured from the anchor pool
+> or asked of a practitioner. The owner answered in one sentence:
+> *"ผมเคยให้คุณไปดูงานเพื่อนผมแล้วมาตอบผมแล้ว"* — **I already had you go and look at my friend's work
+> and report back.** He was right. Three of those four were already answered, two days earlier, by
+> a study he ordered and approved.
+>
+> **AND IT OUTRANKS §9 WHERE THEY DISAGREE.** §9 is Anglo-American consumer video. This is
+> delivered, paid, client-approved work in the owner's own market. A contradiction between the two
+> is decided by this section.
+
+### 10.1 THE NUMBER §9.11 SAID DID NOT EXIST — and it is ONE per bay, not two
+
+§9.11 closed with *"No number for density."* A formal gap row went further: *"Nobody states it
+anywhere, in any language."* **17 of the 51 surveyed entries carry an explicit per-cell cadence**,
+written by different agents across 4 projects. Counted:
+
+| measure | value | support |
+|---|---|---|
+| objects per bay — **the mode** | **ONE** object / family / cluster per cell | **11 of the 17** cadence statements say exactly one — *"one hero object per shelf"*, *"Roughly one object group per bay"* |
+| objects per bay — **the band** | **1–3** | *"exactly one empty shelf, everything else 1–3 objects"*; the report's headline *"1-2 objects/bay"* **rounded up and the mode is 1** |
+| vacancy across a RUN | **≈ one third of cells empty** | **3 agents, 3 frames, 2 projects, same figure** — *"roughly one-third of shelf cells empty"* · *"roughly a third of shelf area left dark/empty"* · *"At least a third of the shelf tiers are empty or hold a single object"* |
+| air within a shelf | *"each shelf keeps ~60% air"* | 1 frame only — the ONLY fill-fraction figure in all 51 |
+| the dense exception | **at most ONE dense row per frame** | 4 frames say it in their own words — *"the only dense object group"* · *"one dense zone (desk), the rest one-or-two objects per surface"* |
+| how dense is dense | a book row of **~4 to ~14** | 14 frames state a count; the report's *"~10-book row"* is a MIDPOINT, not a rule |
+| horizontal runs | **≈ 1 object group per metre** of counter | 5 frames — *"one styling moment per 3 m of counter"* · *"about 4 objects on ~1.2 m"* · *"Three groups across ~3m"* |
+| bays per run | typically **4–6 cells** | 11 entries count the cells structurally |
+| the governing rule | *"contents exist only where a light strip pays for them; every unlit bay is closed"* | **16 of the 17 run frames name per-bay internal LED** |
+
+> **THE "~25-40 OBJECTS PER FRAME" FIGURE IS NOT USABLE AND THE STUDY SAID SO FIRST.** It appears
+> exactly once in the whole artefact, in a lens summary, with **zero frames under it** — the
+> study's own completeness critic convicted it before this session existed (*"survey prose, not
+> per-frame counts — a range with no named frame at either bound"*). Where the survey DOES state a
+> total for a frame or zone it says **about five object groups**, three times. Do not cite 25-40.
+>
+> **AND A UNIT PROBLEM THAT MUST BE FIXED BEFORE ANY OF THIS BECOMES A CHECKER:** the survey uses
+> *"objects per cubby"*, *"object family per niche"*, *"object group per bay"* and *"styled cluster
+> per surface"* interchangeably across those 17 entries. A stack of books plus the thing on top is
+> one group or three objects depending on the sentence. **Count GROUPS, and say so in the rung.**
+
+### 10.2 THE RUN OF BAYS — MIRROR THE MASS, VARY THE CONTENT
+
+§9.3 imported an alternating-silhouette rule (Λ·V·Λ·V) from one YouTube stylist. The delivered
+survey says something adjacent and better evidenced — **and it corrects a claim this file made
+earlier the same day.** An earlier draft of this section said delivered runs always vary the
+object class between adjacent bays. **That is over-stated and the survey refutes it:**
+
+- **11 of 51** frames enumerate a run bay by bay with a different object class in each — *"Niche 1:
+  two clear glass candlesticks. Niche 2: a tight row of ~10 books… Niche 3: one small white
+  sculptural object. Niche 4: green-and-white flower arrangement."*
+- **But delivered work also repeats an identical object across adjacent bays and is NOT faulted for
+  it** — *"row 1 — two round brown leather hat boxes (one per niche)"*, and that same frame's
+  verdict is *"symmetric pairs, one hero per lit niche — polished"*. One tower runs handbags in 3
+  of its 4 cubbies.
+- **THE RULE, STATED DECISIVELY ONCE AND ECHOED ONCE:** *"nightstand vases nearly mirror each other
+  in MASS but not in CONTENT — deliberate near-symmetry"*, and *"symmetry broken only by the
+  differing objet sets."*
+- **What repeats is the RULE; what varies is the OBJECT.** 16 of 51 frames state the same per-bay
+  cadence in the same words. Sameness is named as a FAULT in delivered work **exactly once in 51
+  frames**, and it is about identical bed CLOTH, not bay contents.
+
+**Two more run-level rules the survey gives and §9 does not:**
+- **CLASS IS ZONED BY TIER, not by bay** — *"the styling grammar is consistent (boxes up, 2
+  garments mid, luggage low)"*, the same tiering in 5 frames.
+- **VACANCY IS PATTERNED, NOT RANDOM** — *"it works because the vacancy is patterned (each bay
+  keeps breathing room) rather than random"* · *"vacancy concentrated in one column so it reads
+  intentional."* And within a run, garments are *"colour-graded light-to-dark left-to-right."*
+
+> **AND THE PLINTH RULE OF §9.5 IS CONFIRMED IN HIS MARKET**: *"books-under-object as the repeating
+> move"*, *"gold wire geometric sculpture on 2 flat books"*, *"abstract cream face sculpture on a
+> base."*
+
+### 10.3 THE STUDY ALREADY RANKED THE OWNER'S VERDICT, AND IT RANKS (b) ABOVE (a)
+
+An ASK was raised to him asking whether *"contents read unnatural"* means (a) every bay is composed
+the same, or (b) the contents of a bay are wrong in themselves. **The study's own severity field
+answers the ranking, and the ASK should have read it first:**
+
+- Both **severity-3** rows in the contents lens are (b)-shaped: *"the vacancy rhythm is INVERTED —
+  most open shelf bays in the built-in are empty"*, and *"An ownership story — no personal-effects
+  classes at all: no jewelry, electronics, drinkware, perfume, florals, no consumable or
+  'lived-with' object anywhere."*
+- The mirror-copy row — the (a) evidence — is **severity 2, and 8th of 9** in its array: *"Left and
+  right nightstands each carry the same terracotta gourd vessel in mirrored position; the two bays
+  flanking the headboard repeat the same treatment."*
+
+> **SO THE BIGGER HALF IS WHAT IS IN THE BAYS, NOT THAT THEY MATCH.** Our bays are empty and hold
+> no personal-effects class at all; near-symmetry is something delivered work does on purpose.
+> What is still HIS is only whether fixing the cadence, the classes and the light ends the verdict
+> — ASK-035 is narrowed to that. The word *"unnatural"* appears **zero times** in the survey JSON:
+> the study answered a question, but never his question.
+
+### 10.4 READING AT A DISTANCE — the threshold is genuinely absent; the MECHANISM is not
+
+The gap row said a size threshold *"will never close on YouTube"*. Checked exhaustively against the
+survey: **"threshold", "across the room", "viewing distance", "stops reading", "becomes texture",
+"minimum size" occur ZERO times, and no dimension is recorded for any styled object in 51 frames.**
+The row stands **as a number**. But the survey answers the question a different way:
+
+- **LEGIBILITY IS BOUGHT WITH LIGHT AND CONTRAST, NOT SIZE** — *"One-to-two objects per shelf,
+  alternating dark/light so each lit niche has a silhouette"* · *"shadow-gap joinery reads because
+  every reveal carries either light or mirror."*
+- **DE-LEGIBILITY IS A DELIVERED TECHNIQUE, MEASURED IN STOPS** — *"the smoked lites knock the
+  contents back ~2 stops so the LED shelf bars and lit rail read as jewellery"* · *"smoked glass
+  knocks everything back a stop, then the paired cold and warm strips restore only the
+  silhouettes."* Contents are pushed BELOW the reading threshold on purpose.
+- **OUR OWN "BARELY READS" VERDICT BLAMES HEIGHT AND CROPPING, NOT SIZE** — *"The single basket
+  sits at ankle height where it barely reads."* The delivered rule is height plus company: *"bags
+  in company, at eye line, with companions."*
+- **AND ONE LINE THAT CORRECTS §8.4 DIRECTLY** — where §8.4's four sources say the answer to a
+  thing reading small is to buy it bigger: *"The concealed headboard back-light is the craft move:
+  it gives the wall depth and makes the low headboard read intentional instead of small."*
+- **THE ONE-POINT ELEVATION CAMERA IS NOT THE DEFECT** — 24 of 51 delivered frames use it and the
+  survey praises it (*"the money elevation"*, *"doubles as a client approval sheet for the
+  millwork"*). What delivered frames add is DEPTH DEVICES: a mirror terminating the axis (19 of 51
+  pair mirror with depth/doubling), a near mass entering the frame edge (11 of 51), a directional
+  floor converging on the vanishing point. Our fault is stated as *"every object at one distance"*.
+- Viewing geometry is recorded where object size is not: camera height **~1.2 m**, one frame at
+  **~24 mm equivalent**. A threshold needs both halves; we hold one.
+
+### 10.5 EIGHT MORE THINGS THAT WERE ALREADY THERE — including three that CONTRADICT §8 and §9
+
+**THE ONE RULE THAT ANSWERS ORD-2026-08-26 MOST DIRECTLY, and nobody had written it down: THE
+REGISTER IS CHOSEN PER BAY, BY ITS GLAZING.** 15 frames. A tinted or smoked-glass bay carries real
+household density — clothes, boxes, stacks — because the glass knocks it back and only silhouettes
+survive. An OPEN bay gets boutique cadence, 1–3 objects. *"The smoked-glass display cabinet is the
+joiner's trick worth naming — it implies contents and depth at almost zero styling cost and hides
+imperfection."*
+> **This decides §8.7's open contradiction** (a SHOP is merchandised sparse, a HOME closet is
+> stuffed) — and it decides it as BOTH, selected by the door. Our built-in is all open, so it is
+> all boutique register, and boutique register at our current count reads empty rather than sparse.
+
+**A LIT EMPTY CELL IS WORSE THAN AN UNLIT ONE** [5 frames] — the inverse of the light-pays-for-
+contents law, and the sharpest sentence in the whole survey about our own frame's failure mode:
+*"~10 lit empty shelf cells dominate the composition — the lighting asks you to look at contents
+that are not there; **two more objects per column would close it**."* That is a stated remedy with
+a count.
+
+**VERTICAL ZONING OF A WARDROBE BAY** [low tier 8 frames, high tier 6]: *"boxes up, 2 garments mid,
+luggage low."* Shoes and luggage at the base is the most consistent tier rule in the survey.
+
+**FOLDED STACKS — and this CLOSES the question §8.8 declared open** (*"it does not say how many
+stacks belong in a cell"*) [6 frames]: **one to two stacks per shelf, four to six items per stack**
+— *"top shelf two stacks of folded shirts (blue check + chambray, ~4-5 per stack)."*
+
+**HANGING DENSITY, SPLIT BY GLAZING** [16 frames]: **~8–12 garments on a rail behind glass, ~2–4 on
+an open display rail**, evenly spaced, varied silhouettes, and *"colour-graded light-to-dark
+left-to-right."* Our two-garment rails are open-display density on rails that read as storage.
+
+**THE ACCENT RULE HAS A COUNT AND A POSITION** [9 frames]: the saturated accent appears **one to
+three times** and lands at the frame's centre of gravity or on the most-crafted joinery —
+*"entire frame is beige/taupe/white/wood, then exactly two red handbags at the frame's center of
+gravity — a single-accent rule executed cleanly."*
+
+**THE OWNERSHIP STORY IS ONE WORKING ZONE, NOT 25–40 OBJECTS SPREAD OUT** [5 frames]: every
+"most lived-in" verdict in the survey lands on the same thing — a desk with real equipment.
+*"Reads plausibly lived-in — desk clutter is the tell that a person works here."*
+
+**SWITCH AND SOCKET PLATES ARE A DESIGNED, PRESENT OBJECT CLASS** [5 frames], and the survey files
+BOTH verdicts: present ones are credited as realism, and their absence is a named defect —
+*"Weak spot a joiner would note: no visible switches/sockets at nightstand height — cleaned for the
+render."* Our standing critic item "switch plate with no buttons" has its reference class here.
+
+#### THREE CONTRADICTIONS, AND §10 OUTRANKS §9 AND §8
+
+| the rule on disk | what delivered work does | support |
+|---|---|---|
+| **§8.4** — bedside lamps are always chosen too small; *"go two sizes bigger"* | the bedside lamp is frequently **DELETED** and replaced by architectural light — *"No table lamps — lighting at the head wall is entirely the paired sconces."* | 10 frames |
+| **§9.8** — one large matte-black mass confers presence on everything else | the fix for a one-hue, one-value frame is **SOURCE COUNT**, not a dark object — *"five distinct LED sources… in a monochrome box"*; and light between built-ins is RANKED so one wins (*"shelf LEDs graded dimmer than the headboard slot so the bed wall wins the hierarchy"*), with a lit BACK PLANE licensing an empty bay | 5 frames (+2) |
+| **§9.9** — *"looking like a catalog"* = every object at 0.000° off-axis, called the cheapest thing to test | a cheaper competing hypothesis, and it is about DRAPE not ANGLE — *"the throw hanging off one shelf edge is exactly the kind of imperfection that makes it read natural"*; believability comes from varied colour, drape and spacing | 8 frames |
+
+**And one contradiction the survey has with ITSELF, which our own frame is being judged by:** the
+whole-frame lens faults us for being *"a flat one-point elevation… a furniture elevation of one
+wall rather than a room you could walk into"* — while **21 of 51 delivered frames are exactly that
+and are praised for it** (*"a joiner could dimension the whole wall from this single frame"*). What
+the delivered elevation buys life with is not depth-layering but **CONTROLLED ASYMMETRY, one or two
+breaks and no more**: *"near-perfect bilateral symmetry broken only twice (the doorway glow on the
+right, the art print on the left)."* [5 frames]. **Nothing in §1–§9 has a symmetry-break rule.**
+
+### 10.6 WHAT THE SURVEY STILL DOES NOT ANSWER — so nobody over-claims the recovery
+
+**AND THE FIRST ITEM IS THE LIMIT THAT KEEPS §9 ALIVE.** The survey contains **no process at all**
+— not one of 51 entries describes a sequence, a step, or a person doing anything. It is 51
+descriptions of FINISHED FRAMES. It cannot confirm, refute or refine §8.1's design order, §9.1's
+pool-the-candidates step, §9.2's clear-and-reload, or §9.10's production cadence. **He sent us to
+look at OUTPUT, and an output cannot show a process.** §9 is the only source in this file for HOW
+the placing is done, and §10 is the only source for WHAT the result must measure. Neither replaces
+the other; what was wrong was declaring gaps in §10's territory without opening §10.
+
+
+- **Setback from the front edge of a bay: 0 of 51.** Every "front edge" mention in the survey is an
+  LED strip's position, never an object's.
+- **A size threshold: 0 of 51**, as above.
+- **Fraction of a bay's HEIGHT filled: 1 frame**, and it is an air impression, not a ratio.
+- **His verdict itself.** The study was asked *what our work lacks*; it was never asked what
+  *"ไม่เป็นธรรมชาติ"* means to him.
+- **หิ้งพระ and what may hang above a bed: absent**, and the Thai practice file does not have it
+  either. That one really is a practitioner question.
+
+### 10.7 WHAT THIS COST TO LEARN TWICE
+
+The shape recurred three times in one day, so it is written down rather than repeated:
+
+1. A video pick returned nothing and the row closed with *"placement heights are still unsourced"*
+   — while `nlm-th-bedroom-services/` had held them for 11 days as a PROVENANCE-ORPHAN.
+2. Four gap rows were filed saying certain answers *"will never close on YouTube"* — while three of
+   them sat in `_private/deliv-001/friend-builtin-bed-study-2026-08-26/`, from a study he ordered.
+3. A queued video was described as *"R4b reference of record for a class we hold ZERO references
+   of"* — a run of dressed identical bays. **The survey holds 17 frames of exactly that class**
+   (≥3 bays enumerated with contents), 16 of them with per-bay internal LED named, plus the
+   dressing cadence, the lighting law and the vacancy fraction.
+
+**The mechanism is not another document.** `gaps_youtube_cannot_close` rows now carry `searched` —
+the paths actually checked before the gap was declared, which must exist — printed at every session
+open by `video_curriculum.py`. It cannot prove a file was opened. It makes the omission visible at
+the moment the gap is written, which is the moment all three of these were written.
+
 ## Consumers & debts
 - STY-2 style_verdict criteria ← §7 (this was the missing half of ORD-2026-08-23).
 - ORD-2026-08-25c steps 1–4 ← §6 (methods), §1/§5 (vignette + shelf rules for step 4's LOOK loop).
@@ -654,5 +883,29 @@ settled while this table exists.**
   do it and we never have; p2r86 bought 9 and landed 0.
 - **§1's odd rule and §5's identical-item bound may not be cited as settled** while §9.7's
   disagreement table stands. Neither is deleted; both are contested by performance.
+- **§10 OUTRANKS §9 where they disagree** — delivered, paid, client-approved work in the owner's
+  own market beats an Anglo-American consumer video, every time.
+- ORD-2026-08-26 built-in contents unnatural ← **§10.5's glazing rule first** (the register is
+  chosen PER BAY by its door: smoked/tinted glass carries real household density, an OPEN bay gets
+  boutique cadence — ours is all open, so all boutique, and boutique at our count reads empty),
+  then **§10.1** (mode ONE object group per bay, band 1-3, ~1/3 of cells empty, contents only where
+  light pays), **§10.2** (mirror the MASS, vary the CONTENT; class zoned by tier — boxes up,
+  garments mid, luggage low) and **§10.3** (the study's own severity ranks EMPTY BAYS and NO
+  OWNERSHIP CLASS above mirror-copying). §9.3's alternating-silhouette rule is the weaker,
+  single-source version and is kept as the composition half only.
+- **§8.7's shop-sparse / home-stuffed contradiction is DECIDED** by §10.5: it is both, selected by
+  the glazing. **§8.8's declared-open question — how many stacks per cell — is CLOSED** by §10.5:
+  one to two stacks per shelf, four to six items per stack. VG-01 narrows to what remains.
+- Hanging density ← §10.5: **~8-12 garments behind glass, ~2-4 on an open display rail**, colour
+  graded light-to-dark. Our two-garment rails are open-display density on rails read as storage.
+- **A LIT EMPTY CELL IS WORSE THAN AN UNLIT ONE** (§10.5) — with a stated remedy and a count:
+  *"two more objects per column would close it."*
+- §8.4 (lamps too small → buy bigger), §9.8 (a dark anchor mass) and §9.9 (0.000-degree off-axis)
+  are each contradicted by delivered work in §10.5. **§10 outranks both.**
+- **Do not cite "~25-40 objects per delivered frame"** (§10.1) — zero frames support it and the
+  study's own audit convicted it. Where a total is stated it is about five object groups.
+- **Before declaring any gap, read `_private/deliv-001/` and `knowledge/_inbox/` first.** Three
+  gaps were filed on 2026-08-28 whose answers were already there; the rung that prints it is
+  `searched` on every `gaps_youtube_cannot_close` row (§10.4).
 - Numbers marked [SYNTH] must not gate anything; they may seed brackets that the anchor pool (R4)
   then decides — same law as the bed grammar's declared gaps.

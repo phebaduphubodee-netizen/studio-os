@@ -230,6 +230,53 @@ class TestIntegrity(unittest.TestCase):
         self.assertTrue(any("priority 'urgent'" in f for f in fails), fails)
 
 
+class TestGapSearched(unittest.TestCase):
+    """A gap is a claim about the WORLD; 'we did not look' is a claim about US. Three gap rows
+    were filed on 2026-08-28 whose answers were already on this disk. Every expectation here is
+    a literal."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def _write(self, rel, body="x"):
+        fp = os.path.join(self.tmp, rel)
+        os.makedirs(os.path.dirname(fp), exist_ok=True)
+        with open(fp, "w", encoding="utf-8") as fh:
+            fh.write(body)
+        return rel.replace("\\", "/")
+
+    def _led(self, gap):
+        return {"rows": [row()], "gaps_youtube_cannot_close": [gap]}
+
+    def test_a_gap_with_no_searched_is_debt_not_failure(self):
+        """DEBT, deliberately: every gap row predating this rung would hard-fail on day one,
+        and a machine that does that gets switched off (R13's own warning)."""
+        fails, debts = vc.check(self._led({"id": "VG-99", "need": "a thing"}), repo=self.tmp)
+        self.assertEqual(fails, [])
+        self.assertIn("gap-never-said-what-it-searched", [d[0] for d in debts])
+
+    def test_searched_must_be_a_non_empty_list(self):
+        fails, _ = vc.check(self._led({"id": "VG-99", "need": "a thing", "searched": []}),
+                            repo=self.tmp)
+        self.assertTrue(any("non-empty list" in f for f in fails), fails)
+        fails, _ = vc.check(self._led({"id": "VG-99", "need": "a thing", "searched": "somewhere"}),
+                            repo=self.tmp)
+        self.assertTrue(any("non-empty list" in f for f in fails), fails)
+
+    def test_a_searched_path_that_does_not_exist_is_a_failure(self):
+        fails, _ = vc.check(
+            self._led({"id": "VG-99", "need": "a thing", "searched": ["_private/nope/REPORT.md"]}),
+            repo=self.tmp)
+        self.assertTrue(any("does not exist" in f for f in fails), fails)
+
+    def test_a_gap_that_names_a_real_place_it_looked_is_clean(self):
+        s = self._write("_private/study/REPORT.md")
+        fails, debts = vc.check(self._led({"id": "VG-99", "need": "a thing", "searched": [s]}),
+                                repo=self.tmp)
+        self.assertEqual(fails, [])
+        self.assertEqual([d[0] for d in debts if d[0].startswith("gap-")], [])
+
+
 class TestHolesHeNamed(unittest.TestCase):
     """The hole rows exist because 21 asks routed to him were dropped, not refused. Every
     expectation is a literal."""

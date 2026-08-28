@@ -3025,6 +3025,180 @@
    "reverse_by": "ลบ 4 บรรทัด `_ax = millwork.rod_axis(...)` / if-else ใน materializer แล้วทุกชิ้นกลับเป็น add_box เหมือนเดิม (millwork.rod_axis จะกลายเป็นโค้ดที่ไม่มีใครเรียก ลบทิ้งได้)",
    "note": "วัดแล้วว่าคุ้ม ก่อนสร้าง: ราวที่กล้องเห็นหนา 24 px ใน frame of record (id_mask บน p2r85: rail_full 3618 px, bbox 154x81, mean run 23.5) ซึ่งไกลเกินจุดที่หน้าเหลี่ยมกับ gradient โค้งเป็นภาพเดียวกัน · สิ่งที่ยังไม่แก้และตั้งใจ (R1 หนึ่งกลไกต่อรอบ): RAIL_D=30มม. ยังเกิน D4-A ที่เซ็นไว้ Ø25-28 อยู่ 2มม. — การขยับมันเปลี่ยน AABB ซึ่งจะไปกระทบ carry_check overlap ของเสื้อที่แขวนอยู่ จึงเป็นรอบของมันเอง",
    "because": "R9b: 'a rule that names the objects it applies to will always exempt the next one' — sweep บน 9 kind x 2 axis คัดได้ 21 ชิ้นและทุกชิ้นคือราวแขวน ไม่มี panel/shelf/batten/cleat และไม่รวม socket ของราวเอง (หน้าตัดจัตุรัสแต่สั้น 0.29 = ต่ำกว่าเกณฑ์ 13 เท่า ส่วนราวสูงกว่า 6 เท่า)"
+  },
+  {
+   "id": "D-166",
+   "unit": "DELIV-001",
+   "subject": "sconce-height-derives-from-the-headboard-it-must-clear",
+   "decided_round": 88,
+   "decided_date": "2026-08-27",
+   "decided_by": "owner",
+   "owner_override": "ย้าย",
+   "override_date": "2026-08-27",
+   "obeys": "ORD-2026-08-27-every-round-sees-what-it-changed",
+   "question": "โคมผนัง bf14_sconce_0/1 ถูกหัวเตียงบัง 100% (raycast 9/9 ใน detail view) — เอาออก ย้าย หรือเปลี่ยนของ?",
+   "in_effect": "ย้าย และย้ายโดย DERIVE ไม่ใช่พิมพ์เลขใหม่ · element5_lighting.SCONCE_Z_MM = 1550 ยังอยู่ในฐานะ FLOOR (ข้อจำกัดเรื่องพ้นตู้ข้างเตียง+โคมตั้งโต๊ะยังจริง) · build_room อ่านผิวบนจริงของ bed__headboard ที่สร้างเสร็จแล้ว แล้วยกโคมไปที่ headboard_top + 12มม. + ครึ่งความสูงตัวโคม ถ้าค่านั้นสูงกว่า floor · 12มม. คือ reveal ที่ DD ของห้องนี้เซ็นไว้เอง (คำสั่งพี่ 2026-07-16c '12 / เสา 63') ไม่ใช่เลขที่คิดขึ้นใหม่ · ตัวโคม เลนส์บน-ล่าง และดวงไฟทั้งสองใช้ตัวแปร sz ตัวเดียวกัน จึงขยับพร้อมกันทั้งชุด",
+   "where": "pipeline/scripts/build_room.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "_hb_top = max\\(",
+     "why": "the headboard's own top face is READ from the built scene, which is the contact the height derives from"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "DERIVED from the built headboard top",
+     "why": "the move PRINTS in the render path with both numbers, so a silent re-typing of the constant cannot put the fixture back behind the panel"
+    }
+   ],
+   "reverse_by": "Delete the `_hb_top` block above the sconce loop in build_room.py and the fixtures return to element5_lighting.SCONCE_Z_MM exactly. Reversing puts both sconces back inside the headboard's shadow, so it should only be done if the headboard changes to something they clear.",
+   "note": "NOT YET VERIFIED IN PIXELS — the R1 cap stands at 88 rounds of 89 and the owner has not decided whether to re-base it, so no confirming render has been spent. WHAT IS MEASURED: headboard top z=1.666 on p2r85; sconce body 1.480-1.620, i.e. the whole fixture 46 mm BELOW the top of the thing in front of it; the detail camera's occlusion raycast returns bed__headboard on 9 of 9 rays. THE MECHANISM IS THE POINT, not the number: SCONCE_Z_MM's own comment says it 'clears nightstand + lamp' — it was solved against a different mass, the headboard was later acquired and grew, and a coordinate is always a legal coordinate so nothing failed. That is R9's datum cascade with a light fixture in it.",
+   "because": "The owner answered 'ย้าย' to the occlusion list. R9: a position that can be derived from a contact must never be typed — and the contact here is the headboard's top face, which the build knows exactly and the constant never did."
+  },
+  {
+   "id": "D-165",
+   "unit": "DELIV-001",
+   "subject": "detail-camera-is-aimed-by-the-object",
+   "decided_round": 88,
+   "decided_date": "2026-08-27",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-27-every-round-sees-what-it-changed",
+   "question": "109 จาก 213 มวลใน frustum (51.2%) ด้านสั้นต่ำกว่า 24 px และค่ากลางของทั้งเฟรมคือ 20.7 px · กล้อง variant ที่ประกาศไว้ 16 ตัวช่วยได้ 8 ชิ้นจาก 109 · จะทำกล้องเจาะยังไงไม่ให้กลายเป็นพิกัดพิมพ์มือแบบ p2_exit.CROPS ที่เน่าไปแล้วตอน D-152 ย้ายกล้อง?",
+   "in_effect": "pipeline/scripts/detail.py — solver บริสุทธิ์ (ไม่มี bpy) ใช้ projector ของ frame_geometry ตัวเดิม · เล็งจาก AABB ของวัตถุที่ BUILT จริง (ไม่ใช่บล็อกในสเปก เพราะประธานคือวัตถุที่เกิดหลังประกอบซีน) · ทิศมาจากแนวเส้นวัตถุ->กล้องพระเอก จึงเห็นหน้าเดียวกับที่เฟรมส่งจริงเห็น ห้ามแอบเลือกด้านที่สวยกว่า · ระยะ solve เป็นจุดยืนที่ใกล้ที่สุดที่ยังเก็บวัตถุทั้งชิ้นไว้ในเฟรมพร้อม margin · ความสูงเลนส์ derive จากความสูงวัตถุ · กล้อง LEVEL เหมือนกล้องห้อง · build_room รับผ่าน --detail=<ชื่อวัตถุ> · ไฟล์ออกมาขึ้นต้น detail_ และถ้ามองไม่เห็นจริงจะขึ้น OCCLUDED_ ด้วย",
+   "where": "pipeline/scripts/detail.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/detail.py",
+     "pattern": "def solve_detail_camera",
+     "why": "the solver itself, pure and testable under plain python"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "--detail=",
+     "why": "THE WIRING. A solver with no call site is this repo's signature defect; detail.py existing proves nothing until a build can aim it."
+    },
+    {
+     "file": "pipeline/scripts/detail.py",
+     "pattern": "MAX_SHIFT = 0.30",
+     "why": "the cap that makes a failed framing LOUD. Without it the solver pinned the lens to the hero's eye height and let shift absorb the rest, returning shift_y 0.854 against a hero camera running -0.088 — arithmetically valid, physically a shear, and it rendered a frame that was a view of nothing."
+    },
+    {
+     "file": "pipeline/scripts/test_detail.py",
+     "pattern": "def test_lens_height_is_derived_from_the_subject_not_the_hero",
+     "why": "that defect, as a test that can fail"
+    }
+   ],
+   "reverse_by": "Delete the --detail= block in build_room.py (one contiguous block above `save(name, ...)`) and remove detail.py + test_detail.py. Nothing else consumes them; the hero camera is untouched by this row and stays D-152's.",
+   "note": "MEASURED ON THE REAL SCENE (p2r85 dump), four subjects: bf14_sconce_0 26.1 -> 286.6 px at 0.35 m · wardrobe_bag__acq1 3.2 -> 47.3 px · BF09-3 shelf_ni1 7.1 -> 73.3 px at 0.86 m · nightstand__life2188__acq1 3.4 -> 20.9 px — AND THE LAST ONE IS THE POINT: some objects cannot clear the 24 px line even from the closest legal stand, which is a finding about the OBJECT and feeds the scope decision that is his (item C), not a camera to tune. TWO THINGS THIS ROW DOES NOT DO: a detail view may never CLOSE a work item (the `detail_` prefix is the enforcement, and the reason is p2r84's 413-px bowl, which looks fine at 1000x1000 while the real defect is that nothing in that cell reads at all); and the first render through this path came back as a black silhouette because the sconce is fully occluded by the headboard — the raycast that names the occluder was added for that, since a picture of the occluder must not be filed as a picture of the subject.",
+   "because": "R9, applied to the lens: a position that can be derived from a contact must never be typed. p2_exit.CROPS holds typed frame fractions and they went stale the moment the camera moved under them — rug_edge spent rounds measuring a box holding 0.8% rug. The answer to 'the builder might aim it flatteringly' is not 'never aim it', it is 'derive the aim'."
+  },
+  {
+   "id": "D-164",
+   "unit": "DELIV-001",
+   "subject": "bf14-batten-field-is-one-mesh",
+   "decided_round": 88,
+   "decided_date": "2026-08-27",
+   "decided_by": "owner",
+   "owner_override": "ค",
+   "override_date": "2026-08-27",
+   "obeys": "ORD-2026-08-27-every-round-sees-what-it-changed",
+   "question": "ระแนง BF14 77 ซี่ ซี่ละ ~10 px ในเฟรมส่งจริง (ต่ำกว่าเส้น 24 px ที่ repo เขียนเองที่ p2r87b) กิน 37% ของ palette และเป็น 77 แถวในทุก census — เก็บไว้ ทำเป็น texture หรือรวมเป็น mesh เดียว?",
+   "in_effect": "รวมเป็น MESH เดียวโดยเรขาคณิตไม่เปลี่ยนสักจุด (build_room.add_boxes) — 77 วัตถุเหลือ 1 · การคัดเลือกเป็นเชิงเรขาคณิตไม่ใช่ตามชื่อ: กลุ่มชิ้นส่วนที่มีหน้าตัดเท่ากันเป๊ะ จำนวน >= MERGE_FIELD_MIN(12) และสองมิติรองของหน้าตัดเล็กกว่า MERGE_FIELD_SECTION_M(0.060) ทั้งคู่ · วัดจากสเปกจริงทุก built-in: ระแนง BF14 x77 หน้าตัด 12x27 มม. (เข้าเกณฑ์) · ชั้นวางหนังสือ x18 หน้าตัด 18x576 มม. (ไม่เข้า — และเป็นเหตุผลที่ต้องมีเกณฑ์หน้าตัด เพราะการนับอย่างเดียวจะกลืนชั้นวางซึ่งเป็น ANCHOR ที่ styling ใช้วางของ) · socket ของราว x6 (ไม่เข้า เพราะน้อยกว่า 12)",
+   "where": "pipeline/scripts/build_room.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def add_boxes\\(name, boxes\\)",
+     "why": "one datablock holding N cuboids — the mechanism itself"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "MERGE_FIELD_SECTION_M = 0.060",
+     "why": "THE CUT THAT PROTECTS THE SHELVES. Without it a count-only rule merges the bookshelf's 18 shelves, and a shelf is an anchor styling places objects on. 60 mm sits between the batten's 27 and the shelf's 576 with a 21x margin."
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "BUILD_ROOM_NO_FIELD_MERGE",
+     "why": "the A/B control leg. The claim 'merging changes no vertex' needed a frame from THIS tree with the merge off to be falsifiable at all — and it was falsified: 28.0% of pixels differ, because the oak material varies grain per OBJECT (Object Info Random) and 77 objects carried 77 grain offsets."
+    }
+   ],
+   "reverse_by": "Set MERGE_FIELD_MIN above the field size (e.g. 999) at pipeline/scripts/build_room.py, or render any frame with BUILD_ROOM_NO_FIELD_MERGE=1, and the 77 battens come back as separate objects with no other change.",
+   "note": "MEASURED BEFORE AND AFTER, on like-for-like quick frames from the same tree. Batten FACE saturation: control (77 objects) 0.0892 · merged (1 mesh) 0.0820 · texture (the first attempt, REJECTED) 0.0188. The merge keeps 92% of the oak's warmth; the texture kept 21% and read as painted white board. WHAT THE MERGE DOES COST, stated because the builder claimed otherwise first: it is NOT pixel-identical. 28.0% of pixels differ (50,493 by >=8/255, max 60) because the oak photo material randomises grain per OBJECT, so a field of 77 lost 76 of its 77 grain offsets. The claim 'the pixels cannot move because the geometry does not' was wrong and the control leg is what proved it.",
+   "because": "The owner chose from three options presented with a measured frame pair; his word was 'ค'. The builder's earlier framing of the same decision ('ภาพเหมือนเดิม') was WRONG and is recorded as such in D-164's history: it was written from the 10-px-per-batten number without opening the frame, and the frame shows the batten wall is the room's signature surface, not a background detail. That error is the same defect the parent order is about."
+  },
+  {
+   "id": "D-163",
+   "unit": "DELIV-001",
+   "subject": "id-mask-scope-is-derived-from-the-frustum",
+   "decided_round": 88,
+   "decided_date": "2026-08-27",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-27-every-round-sees-what-it-changed",
+   "question": "id_mask ถูกเรียกด้วย allowlist ตามชื่อ ('bed__','bench__') จึงประกาศ 9 id บนซีนที่มี 564 mesh — ทุก rung ที่อ่าน id mask (บันไดโทน, bed_pixels, edge_drift) มองเห็นวัตถุ 1.6% ของภาพ จะขยายยังไงโดยไม่ทำให้ palette ล้นและไม่ตัดของทิ้งเงียบ ๆ?",
+   "in_effect": "ขอบเขต DERIVE จาก frustum ของซีนที่สร้างจริง: build_room เอา objs จาก scene_dump ที่ in_frustum และไม่ hidden_render แล้วเรียงตามปริมาตร AABB จากเล็กไปใหญ่ ส่งเป็น names_in · เรียงเล็กก่อนเพราะคำถามที่ mask นี้มีไว้ตอบคือ 'อะไรเล็กเกินกว่าจะอ่านออก' ฉะนั้นเปลือกห้อง (พื้น ฝ้า ผนัง — กล่องใหญ่สุด และเป็นของที่ไม่ต้องใช้ mask ก็รู้ว่าคืออะไร) คือสิ่งที่ยอมให้หลุดท้ายแถวได้ · วัดบน p2r85: 210 ชิ้นเข้าเกณฑ์ palette รับ 215 ตัดทิ้ง 0 → 9 เป็น 210 id (23 เท่า) · ของที่ไม่ได้อยู่ใน scope ยังเรนเดอร์เป็น void จึงยัง OCCLUDE เหมือนเดิม เปลี่ยนแค่ 'ระบุตัวไม่ได้' ไม่ใช่ 'ไม่อยู่ในภาพ' · sidecar เพิ่ม source.measured กับ source.unmeasured และพิมพ์ % ทุกรอบ",
+   "where": "pipeline/scripts/id_mask.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/id_mask.py",
+     "pattern": "def build_mask\\(out_png, filters=None, wears=None, names_in=None\\)",
+     "why": "the derived scope is a parameter of the instrument, and `filters` is demoted to a defaulted fallback rather than the way in"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "names_in=_targets",
+     "why": "THE WIRING, not the capability. id_mask accepting a derived scope changes nothing until the call site stops passing two name prefixes — that gap is this repo's signature defect and the reason the row is asserted here and not only in id_mask.py"
+    },
+    {
+     "file": "pipeline/scripts/id_mask.py",
+     "pattern": "src\\[\"unmeasured\"\\]",
+     "why": "no silent caps: a mask that could not carry every object must say how many it left, or a later reader cannot tell 'not in the mask' from 'not in the frame' — which is exactly what 49 masks on this lane could not tell anyone"
+    }
+   ],
+   "reverse_by": "Pass `filters=(\"bed__\", \"bench__\")` and drop `names_in=` at pipeline/scripts/build_room.py:394 to restore the allowlist. Reversing costs every object-level pixel number outside the bed and bench, so it should be reversed only for a measured reason (e.g. a palette collision proven on a real scene), never to make a rung quieter.",
+   "note": "สิ่งที่ยังไม่แก้และเป็นหนี้ที่ประกาศไว้: palette กว้าง 215 id (LEVELS 6 ระดับ) และ frustum ของซีนนี้กิน 210 — เหลือที่ว่าง 5 ชิ้น ซีนที่โตกว่านี้จะเริ่มตัดหาง วิธีแก้ที่ถูกคือเก็บ LEVELS ลง sidecar แล้วให้ decode_ids อ่านจากที่นั่น (มาสก์เก่ายังถอดรหัสด้วย 6 ระดับได้ ไม่พังของเดิม) — เป็นรอบของมันเอง ไม่ใช่รอบนี้ · และ id mask ยังตอบได้แค่ 'วัตถุไหนกินพิกเซลไหน' ไม่ได้ตอบว่าอ่านออกมั้ย เส้น 24 px เป็นคนละคำถาม",
+   "because": "R9b เขียนไว้เองว่า 'a rule that names the objects it applies to will always exempt the next one' — เขียนถึง placement_check ที่ครอบแค่ vase กับ candlestick จาก 5 คลาส แล้วไม่มีใครเอาประโยคเดียวกันกลับมาอ่านที่ id_mask ซึ่งแคบกว่าอีก (2 prefix จาก 564 mesh) · census 2026-08-27 วัดได้ว่าความจริงเชิงพิกเซลมีอยู่แค่ 69 จาก 217 ชิ้นในเฟรม ที่เหลือเป็นขอบเขตบนจาก AABB ไม่ใช่การวัด"
+  },
+  {
+   "id": "D-167",
+   "unit": "DELIV-001",
+   "subject": "gaps-must-name-what-they-searched",
+   "decided_round": 88,
+   "decided_date": "2026-08-28",
+   "decided_by": "owner",
+   "owner_override": "ผมเคยให้คุณไปดูงานเพื่อนผมแล้วมาตอบผมแล้ว",
+   "override_date": "2026-08-28",
+   "obeys": "ORD-2026-08-28-decor-placement-is-missing",
+   "question": "หลังปิดรอบวิดีโอ ผมยื่นแถว 'ปิดด้วย YouTube ไม่ได้' สี่แถว (VG-13..16) แล้วบอกว่าต้องไปวัดจาก anchor pool หรือถามคนทำจริง · พี่ตอบประโยคเดียวว่าเคยให้ไปดูงานเพื่อนแล้วและตอบกลับมาแล้ว — แถวไหนที่ 'ไม่รู้' จริง ๆ กับแถวไหนที่แค่ 'ไม่ได้เปิดดูของที่มีอยู่'?",
+   "in_effect": "สามในสี่แถวถูกตอบไปแล้วตั้งแต่ 2026-08-26 โดยการสำรวจงานส่งจริงของเพื่อนพี่ 51 เฟรม ที่พี่สั่งเองและอนุมัติเอง (_private/deliv-001/friend-builtin-bed-study-2026-08-26/) · วัดใหม่ 2026-08-28: (1) VG-15 เขียนว่า 'ไม่มีใครพูดถึงมันที่ไหนเลยในภาษาไหนเลย' — เท็จ 17 จาก 51 แถวมีจังหวะต่อช่องระบุชัด **โหมดคือ 1 กลุ่มต่อช่อง** (11 จาก 17 พูดว่าหนึ่ง — รายงานสรุปปัดขึ้นเป็น 1-2) แบนด์ 1-3 · ช่องว่างระดับรัน ~1/3 (3 เอเจนต์ 2 โปรเจกต์ เลขเดียวกัน) · แถวแน่น ~4 ถึง ~14 (ไม่ใช่ ~10) · ~1 กลุ่มต่อเมตรของเคาน์เตอร์ · 16 จาก 17 เฟรมของคลาสนี้ระบุไฟในช่อง ใต้กฎ 'มีของเฉพาะช่องที่ไฟจ่ายให้' (2) VG-14 ถามพี่ว่า 'เหมือนกันทุกช่อง' หรือ 'ของในช่องผิด' — รายงานเขียนไว้แล้วว่าของเราคือ 'mirror-copied, not person-placed' และ **severity field จัดอันดับไว้แล้วว่า (ข) ใหญ่กว่า**: severity 3 ทั้งสองข้อคือช่องว่างเปล่าและไม่มีคลาสของใช้ส่วนตัวเลย ส่วน mirror-copy เป็น severity 2 อันดับ 8/9 · กฎจริงของงานส่งจริงคือ 'สะท้อนมวล แต่เปลี่ยนของ' (3) แถว 6C0orv4gc8E เขียนว่าเป็น reference ของคลาสที่ 'เราไม่มีตัวอย่างเลยสักชิ้น' — เท็จ การสำรวจถือ 17 เฟรมของรันช่อง >=3 ช่องพร้อมของในแต่ละช่อง ในตลาดของพี่เอง · ลดเป็น should (4) VG-13 (ระยะที่อ่านของออก) ยังจริง — 0 จาก 51 ไม่มีมิติของ object ตกแต่งสักชิ้น แต่การสำรวจให้ **กลไก** แทน: ความอ่านออกซื้อด้วยแสงและคอนทราสต์ ไม่ใช่ขนาด และการทำให้อ่านไม่ออกวัดเป็น STOP · (5) VG-16 (หิ้งพระ) ตรวจแล้วยังว่างจริง เป็นคำถามของคนทำจริงจริง ๆ · กลั่นทั้งหมดลง knowledge/styles/decor-placement-grammar.md section 10 ซึ่ง **outrank section 9** (งานส่งจริงในตลาดพี่ ชนะคลิป YouTube อเมริกันทุกกรณี) · และกลไก: ทุกแถวใน gaps_youtube_cannot_close ต้องมีฟิลด์ `searched` = path ที่เปิดดูจริงก่อนประกาศว่าไม่รู้ และ path นั้นต้องมีอยู่จริง — เป็น DEBT ไม่ใช่ FAIL สำหรับ 12 แถวเก่าที่มีมาก่อนกฎ (คำเตือนของ R13 เอง)",
+   "where": "qa/video-curriculum.json,pipeline/scripts/video_curriculum.py,knowledge/styles/decor-placement-grammar.md,qa/owner-asks.json",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/video_curriculum.py",
+     "pattern": "gap-never-said-what-it-searched",
+     "why": "กลไกเอง ไม่ใช่คำอธิบาย · แถว gap ที่ไม่บอกว่าเปิดดูอะไรมาก่อนจะพิมพ์เป็นหนี้ทุก session และ path ที่ไม่มีอยู่จริงคือ FAIL — 'ไม่ได้ไปดู' เป็นคำกล่าวเกี่ยวกับเรา ไม่ใช่เกี่ยวกับโลก (รูปเดียวกับ D-074)"
+    },
+    {
+     "file": "pipeline/scripts/test_video_curriculum.py",
+     "pattern": "def test_a_searched_path_that_does_not_exist_is_a_failure",
+     "why": "เทสต์ที่ตกได้จริง ไม่ใช่คำกล่าวอ้างที่ตกไม่ได้ · negative control ตอนเขียน: VG-13..16 ถูกยื่นโดยไม่มี searched และ --check พิมพ์เป็นหนี้ทั้ง 16 แถวทันที"
+    },
+    {
+     "file": "knowledge/styles/decor-placement-grammar.md",
+     "pattern": "friend-builtin-bed-study-2026-08-26",
+     "why": "ARTEFACT ASSERTION (ORD-2026-08-27 item F) · id นี้จะปรากฏในไฟล์ knowledge ได้ก็ต่อเมื่อ การสำรวจงานเพื่อนพี่ถูกอ่านและกลั่นจริง — section 10 · ลบ section 10 ทิ้ง แถวนี้ก็ตกทันที"
+    },
+    {
+     "file": "knowledge/styles/decor-placement-grammar.md",
+     "pattern": "MIRROR THE MASS, VARY THE CONTENT",
+     "why": "กฎที่แก้คำที่ผมเขียนผิดเองในวันเดียวกัน · ฉบับแรกของ section 10 บอกว่างานส่งจริงเปลี่ยนคลาสของทุกช่องติดกัน ซึ่งเกินจริง — เอเจนต์ตรวจสอบยกตัวอย่างค้านได้ทันที (กล่องหมวกเหมือนกันสองใบ ช่องละใบ และถูกชม) ประโยคนี้คือกฎที่การสำรวจพูดจริง"
+    }
+   ],
+   "because": "รูปนี้เกิดสามครั้งในวันเดียว: (1) คลิปสวิตช์ให้ผลศูนย์ แล้วปิดแถวว่า 'ระดับติดตั้งยังไม่มีที่มา' ทั้งที่ nlm-th-bedroom-services ถือคำตอบไว้ 11 วันและขึ้น PROVENANCE-ORPHAN ตลอด (2) ยื่นสี่แถว 'YouTube ปิดไม่ได้' ทั้งที่สามแถวอยู่ในผลสำรวจงานเพื่อนพี่ (3) เขียนว่า 'คลาสที่เราไม่มีตัวอย่างเลย' ทั้งที่มี 17 เฟรม · เขียนกฎเป็นประโยคจะกลายเป็นครั้งที่สี่ · และการเพิ่มตัวนับให้ละเอียดขึ้นไม่ช่วย เพราะปัญหาไม่ใช่การนับ แต่คือการประกาศว่าไม่รู้โดยไม่เปิดของที่มี",
+   "reverse_by": "ลบฟิลด์ `searched` ออกจากทุกแถวใน gaps_youtube_cannot_close และลบบล็อกตรวจใน video_curriculum.check() (หนึ่ง hunk) · section 10 ของ decor-placement-grammar ย้อนได้ด้วยการลบ section เดียวและคืน ASK-035 เป็นฉบับแรก ซึ่งอยู่ใน git history ของวันเดียวกัน"
   }
  ],
  "_assert_ratchet_from": "D-124"

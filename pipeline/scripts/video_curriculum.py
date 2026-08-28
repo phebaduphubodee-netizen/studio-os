@@ -78,6 +78,30 @@ repo has already measured what happens otherwise: 21 asks routed to him and drop
 refused, dropped"*. His eye is the rung; this is only the ledger that stops its findings
 evaporating.
 
+A DECLARED GAP MUST NAME WHAT IT SEARCHED (added 2026-08-28, the same day, an hour later)
+`gaps_youtube_cannot_close` rows say a thing cannot be learned from video and must be measured
+or asked instead. **Three of them were filed that were already answered on this disk.** The
+owner said so in one sentence — *"ผมเคยให้คุณไปดูงานเพื่อนผมแล้วมาตอบผมแล้ว"*, I already had you go
+and look at my friend's work and report back — and he was right:
+
+  * VG-15 was filed as *"Nobody states it anywhere, in any language"* about the number of objects
+    per bay. `_private/deliv-001/friend-builtin-bed-study-2026-08-26/` had surveyed 51 frames of
+    delivered work two days earlier and **45 of the 51 `contents_styling` fields carry a count**
+    — *"One or two objects per cubby, nothing more"*, *"2 object groups, rest of shelf left
+    empty"*, *"a tight row of ~10 books — the only dense object group"*.
+  * VG-14 asked the owner to rule whether "unnatural" means sameness across bays. That study's
+    own report already said *"Our paired surfaces are mirror-copied, not person-placed."*
+  * A queued row called a celebrity closet *"R4b reference of record for a class we hold ZERO
+    references of"*. The same study holds **50 frames showing built-in casework**, in his market.
+
+THE SHAPE IS ONE THIS REPO HAS ALREADY NAMED AND PRICED: **a gap is a claim about the WORLD;
+"we did not look" is a claim about US** (D-074, R13 — `not-attempted` is refused by name there
+for exactly this). So a gap row now carries `searched`: what was actually checked before the
+gap was declared, as paths that must EXIST. It is not a proof of diligence and does not pretend
+to be — a liar can list a path without opening it. What it does is make the omission VISIBLE at
+the moment of writing, which is the moment the three above were written without anyone noticing
+that the local study corpus had never been opened.
+
 WHAT IT DOES NOT CLAIM. It cannot tell whether the watching taught anything — only whether
 it happened and whether anything was written down. The eye that judges whether the lesson
 landed is C2/C3/his (R7d: the builder does not convict on its own look).
@@ -240,6 +264,22 @@ def check(led, repo=REPO):
             debts.append(("unwatched-must", vid, r.get("queued_at")))
         if st == "watched" and not dist and not yn:
             debts.append(("watched-not-distilled", vid, r.get("watched_at")))
+
+    for g in (led.get("gaps_youtube_cannot_close") or []):
+        gid = g.get("id") or "<no id>"
+        searched = g.get("searched")
+        if searched is None:
+            debts.append(("gap-never-said-what-it-searched", gid, g.get("raised")))
+            continue
+        if not isinstance(searched, list) or not searched:
+            fails.append(f"{gid}: `searched` must be a non-empty list of paths that were "
+                         f"actually checked before this gap was declared")
+            continue
+        for s in searched:
+            sp = os.path.join(repo, str(s))
+            if not os.path.exists(sp):
+                fails.append(f"{gid}: searched names {s!r}, which does not exist — a gap "
+                             f"cannot cite a place nobody could have looked")
 
     for h in (led.get("holes_named") or []):
         hid = h.get("id") or "<no id>"
