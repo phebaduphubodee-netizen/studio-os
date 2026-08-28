@@ -171,6 +171,53 @@ def session_stamp(payload, log=None):
 
 # ----------------------------------------------------------------- the report --
 
+def off_roster(rows, ros, today=None):
+    """Names that were STAMPED but that `roster()` does not govern. PURE.
+
+    WHY THIS EXISTS, measured on this file 2026-08-28. `hook()` stamps EVERY Skill/Agent
+    call by name and has no allowlist — correctly, since an allowlist is the defect
+    `roster()`'s own docstring refuses. But `roster()` discovers only what THIS REPO ships
+    (`.claude/skills`, `.claude/agents`), so a skill installed at the machine level is
+    counted and never named: it can never appear under "ยังไม่เคยถูกเรียกเลย", never age
+    into the ≥14-day line, and never be told to justify itself.
+
+    The reading that made it a defect rather than a gap: the headline said "ถูกเรียกจริง 4
+    ครั้ง" while SIX of the SEVEN roster skills had never been called once — because two of
+    those four calls were `scrutinize` and `watch`, which the roster does not govern. A
+    total that borrows other lanes' work to describe this one is a flattering counter, the
+    family this repo has caught in a dozen places.
+
+    So the count is SPLIT and these rows are named. They are deliberately NOT merged into
+    the roster: "shipped by this repo" and "installed on this machine" are different
+    claims, and a fresh clone has the first and not the second.
+    """
+    known = {n for _k, n in ros}
+    today = today or date.today()
+    seen = {}
+    for r in rows:
+        if r.get("kind") not in ("skill", "agent"):
+            continue
+        n = r.get("name") or "?"
+        if n in known or n == "__selftest__":
+            continue
+        e = seen.setdefault(n, {"name": n, "kind": r["kind"], "calls": 0, "last": None})
+        e["calls"] += 1
+        ts = (r.get("ts") or "")[:10]
+        if ts and (e["last"] is None or ts > e["last"]):
+            e["last"] = ts
+    out = []
+    for e in sorted(seen.values(), key=lambda x: x["name"]):
+        e["age"] = None
+        if e["last"]:
+            try:
+                y, m, d = (int(x) for x in e["last"].split("-"))
+                e["age"] = (today - date(y, m, d)).days
+            except (ValueError, TypeError):
+                e["age"] = None
+        out.append(e)
+    return out
+
+
 def report_lines(rows=None, ros=None, state=None, today=None):
     rows = read_rows() if rows is None else rows
     ros = roster() if ros is None else ros
@@ -179,8 +226,16 @@ def report_lines(rows=None, ros=None, state=None, today=None):
     sessions, calls, last, never, stale = summarise(rows, ros, today)
     n_sk = sum(1 for k, _ in ros if k == "skill")
     n_ag = len(ros) - n_sk
+    off = off_roster(rows, ros, today)
+    off_calls = sum(e["calls"] for e in off)
+    # THE HEADLINE COUNTS THE ROSTER, NOT THE LOG. Before this split it printed the log's
+    # total, so calls to skills this roster does not govern made the roster look alive
+    # while six of its seven skills had never been called.
     out = ["", "SKILL/AGENT roster {} skill · {} agent (นับตั้งแต่ {}) — ถูกเรียกจริง {} "
-                "ครั้ง · session ที่เห็น {}".format(n_sk, n_ag, wired, calls, sessions)]
+                "ครั้ง{} · session ที่เห็น {}".format(
+                    n_sk, n_ag, wired, calls - off_calls,
+                    " (+{} นอกทะเบียน)".format(off_calls) if off_calls else "",
+                    sessions)]
     # THE DISCRIMINATOR IS "NO EVIDENCE OF THE HOOK AT ALL", NOT "NO SESSION STAMP".
     # Caught on this rung's first live reading, minutes after it shipped: the log held a
     # real Skill row (the hook fired mid-session, before any SessionStart could) while
@@ -202,6 +257,14 @@ def report_lines(rows=None, ros=None, state=None, today=None):
             STALE_DAYS, " · ".join("{} ({}d)".format(n, a) for n, a in stale)))
     if not never and not stale and calls:
         out.append("            ทุกตัวในทะเบียนถูกเรียกภายใน {} วัน".format(STALE_DAYS))
+    if off:
+        out.append("            ถูกประทับแต่ไม่อยู่ในทะเบียน (ติดตั้งระดับเครื่อง — กฎ ≥{}วัน "
+                   "เอื้อมไม่ถึง): {}".format(
+                       STALE_DAYS,
+                       " · ".join("{} ({}× {})".format(
+                           e["name"], e["calls"],
+                           "{}d".format(e["age"]) if e["age"] is not None else "?")
+                           for e in off)))
     out.append("            เรียกเองไม่ได้ = ถอนทิ้ง (owner 2026-08-27: "
                "'ทั้งหมดนี้คุณต้องเป็นคนเรียกใช้เองเมื่อต้องใช้')")
     return out

@@ -487,6 +487,10 @@ def main(argv):
     import argparse
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("spec")
+    ap.add_argument("--camera", default=None,
+                    help="a name from the spec's eye_camera_variants, measured "
+                         "instead of eye_camera. Same variant dict build_room's "
+                         "--eyecam= uses, so there is ONE definition of a view.")
     ap.add_argument("--res", default="2400x1800")
     ap.add_argument("--fstop", type=float, default=None,
                     help="report the CURRENT aperture's limits beside the derived one")
@@ -502,6 +506,18 @@ def main(argv):
     a = ap.parse_args(argv)
     W, H = (int(v) for v in a.res.lower().split("x"))
     spec = json.load(open(a.spec, encoding="utf-8"))
+    if a.camera:
+        # FAIL LOUD ON AN UNKNOWN NAME, exactly as build_room's --eyecam= does
+        # (build_room.py:12629): a typo'd view must never silently measure the hero
+        # one and report it as the variant's numbers.
+        _vars = spec.get("eye_camera_variants") or {}
+        if a.camera not in _vars:
+            print(f"frame_geometry: --camera={a.camera!r}: spec has no "
+                  f"eye_camera_variants[{a.camera!r}] "
+                  f"(known: {sorted(k for k in _vars if not k.startswith('_'))})",
+                  file=sys.stderr)
+            return 2
+        spec = dict(spec, eye_camera=_vars[a.camera])
     cam = cam_from_spec(spec, res=(W, H))
     if a.fstop:
         cam["fstop"] = a.fstop
@@ -522,6 +538,60 @@ def _frange(band):
     lo, hi = (float(v) for v in str(band).split(","))
     n = max(1, int(round((hi - lo) / 0.05)))
     return [lo + i * 0.05 for i in range(n + 1)]
+
+def behind_camera(spec, cam, min_area_m2=0.5):
+    """Masses standing BEHIND the eye, and the wall area they present to the room.
+
+    WHY THIS IS A READING AND NOT A CURIOSITY (2026-08-28, from a studio's own workflow at
+    06:45-07:00 of the 3D Shaker interior tutorial): *"when modelling walls don't overlook
+    the walls behind the camera — although they are not visible in your image they still
+    impact the lighting in your scene because they reflect a lot of light."*
+
+    Every rung in this lane restricts itself to what the frame CONTAINS — `_u_span` says so
+    in its own docstring, and it is right about geometry. But the light in the frame comes
+    from surfaces the frame does not contain, so a room that is open behind the eye renders
+    a picture whose fill has nowhere to come from. That is the R10 question ("every bright
+    thing needs a source") asked about the half of the room no rung has ever looked at.
+
+    Returns {'behind': [...], 'area_m2': float, 'open': bool}. `open` is True when the
+    total facing area behind the eye is under `min_area_m2` — i.e. there is effectively
+    nothing back there to bounce off. It is REPORTED, never a cut: a camera standing in a
+    doorway legitimately has little behind it, and this rung cannot tell that from a
+    missing wall. It says what is there; the eye says whether that is right.
+
+    WHAT IT DOES NOT SEE, AND THE NAME WOULD OTHERWISE HIDE IT. `_room_masses` reads
+    `spec["builtins"]` and `spec["items"]` — the room SHELL is not among them, because the
+    walls come from `room.outline` and are materialised in the Blender layer. So this
+    function measures the FURNITURE AND JOINERY behind the eye, never the wall the quote
+    above is actually about. Run on the canonical master-suite spec it returns 5.6 m2 from
+    two pieces (the west bookshelf at 0.33 m and the BF11 dressing table at 0.44 m) and
+    `open=False` — a "the room is closed behind you" answer carried entirely by cabinets.
+    Read it that way: a LOW number here means the fill light has little near-field furniture
+    to bounce off, and it says nothing at all about whether a wall was built. Whether the
+    shell behind the camera exists and carries a material is a question for the built
+    scene, not for a pure spec reader, and it is not answered anywhere yet.
+    """
+    (fx, fy), _right = _basis(cam["ex"], cam["ey"], cam["tx"], cam["ty"])
+    ex, ey = cam["ex"], cam["ey"]
+    out = []
+    for name, kind, x0, y0, x1, y1, z0, z1 in _room_masses(spec):
+        # A mass is behind the eye when EVERY corner of its footprint has a negative
+        # forward coordinate. Straddling masses (the side walls) are not behind.
+        corners = ((x0, y0), (x1, y0), (x0, y1), (x1, y1))
+        fwd = [((cx - ex) * fx + (cy - ey) * fy) for cx, cy in corners]
+        if max(fwd) >= 0:
+            continue
+        # The area it presents back into the room: its footprint's extent across the view
+        # axis times its height. An AABB is coarse and that is acknowledged — this is a
+        # presence check, not a radiosity solve.
+        across = [(-(cx - ex) * fy + (cy - ey) * fx) for cx, cy in corners]
+        width = max(across) - min(across)
+        height = max(0.0, z1 - z0)
+        out.append({"name": name, "kind": kind, "distance_m": -max(fwd),
+                    "facing_area_m2": width * height})
+    area = sum(r["facing_area_m2"] for r in out)
+    return {"behind": sorted(out, key=lambda r: -r["facing_area_m2"]),
+            "area_m2": area, "open": area < min_area_m2}
 
 
 if __name__ == "__main__":

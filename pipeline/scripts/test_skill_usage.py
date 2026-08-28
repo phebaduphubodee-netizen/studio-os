@@ -176,3 +176,42 @@ class ExitContract(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ------------------------------------------------------------------- off_roster
+
+def test_off_roster_names_what_the_roster_does_not_govern():
+    ros = [("skill", "camera-composition")]
+    rows = [{"kind": "skill", "name": "camera-composition", "ts": "2026-08-27T10:00:00"},
+            {"kind": "skill", "name": "watch", "ts": "2026-08-28T01:00:00"},
+            {"kind": "skill", "name": "watch", "ts": "2026-08-28T02:00:00"}]
+    off = SU.off_roster(rows, ros, today=date(2026, 8, 28))
+    assert [e["name"] for e in off] == ["watch"]
+    assert off[0]["calls"] == 2
+    assert off[0]["age"] == 0
+
+
+def test_off_roster_excludes_the_selftest_heartbeat():
+    off = SU.off_roster(
+        [{"kind": "skill", "name": "__selftest__", "ts": "2026-08-28T01:00:00"}], [])
+    assert off == []
+
+
+def test_off_roster_ignores_session_rows():
+    off = SU.off_roster(
+        [{"kind": "session", "name": "startup", "ts": "2026-08-28T01:00:00"}], [])
+    assert off == []
+
+
+def test_headline_does_not_borrow_off_roster_calls():
+    # THE DEFECT THIS FIXES: a total that counts calls the roster does not govern makes a
+    # dead roster read as a live one.
+    ros = [("skill", "styling-narrative")]
+    rows = [{"kind": "session", "name": "startup", "ts": "2026-08-28T00:00:00"},
+            {"kind": "skill", "name": "watch", "ts": "2026-08-28T01:00:00"},
+            {"kind": "skill", "name": "watch", "ts": "2026-08-28T02:00:00"}]
+    text = "\n".join(SU.report_lines(rows=rows, ros=ros, state={},
+                                              today=date(2026, 8, 28)))
+    assert "ถูกเรียกจริง 0 ครั้ง (+2 นอกทะเบียน)" in text
+    assert "styling-narrative" in text          # still named as never-called
+    assert "watch (2×" in text

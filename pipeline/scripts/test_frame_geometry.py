@@ -180,3 +180,47 @@ class TestSolve(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ------------------------------------------------------------------- behind_camera
+
+def _two_wall_spec():
+    return {"room": {"ceiling_mm": 2800},
+            "builtins": [
+                {"name": "back_wall", "kind": "wall", "x": 0, "y": 0,
+                 "w": 4000, "d": 100, "h": 2800},
+                {"name": "front_wall", "kind": "wall", "x": 0, "y": 5000,
+                 "w": 4000, "d": 100, "h": 2800}],
+            "items": []}
+
+
+def test_behind_camera_finds_the_wall_the_frame_cannot_show():
+    # The camera stands at y=4 looking at y=0, so the wall at y=5 is behind it. It never
+    # appears in the render and it is the surface most of the fill light comes off.
+    r = fg.behind_camera(_two_wall_spec(),
+                         {"ex": 2.0, "ey": 4.0, "tx": 2.0, "ty": 0.0, "eye_h": 1.6})
+    assert [b["name"] for b in r["behind"]] == ["front_wall"]
+    assert r["area_m2"] > 10.0
+    assert r["open"] is False
+
+
+def test_behind_camera_follows_the_aim_not_a_naming_convention():
+    r = fg.behind_camera(_two_wall_spec(),
+                         {"ex": 2.0, "ey": 0.5, "tx": 2.0, "ty": 5.0, "eye_h": 1.6})
+    assert [b["name"] for b in r["behind"]] == ["back_wall"]
+
+
+def test_a_mass_that_straddles_the_eye_plane_is_not_behind_it():
+    # THE REFUSAL THAT KEEPS THIS HONEST. Side walls run past the camera on both sides;
+    # counting them as "behind" would report a closed room in every scene ever built.
+    r = fg.behind_camera(_two_wall_spec(),
+                         {"ex": 2.0, "ey": 2.5, "tx": 4.0, "ty": 2.5, "eye_h": 1.6})
+    assert r["behind"] == []
+    assert r["open"] is True
+
+
+def test_an_open_room_is_reported_not_failed():
+    r = fg.behind_camera({"room": {}, "builtins": [], "items": []},
+                         {"ex": 0.0, "ey": 0.0, "tx": 1.0, "ty": 0.0, "eye_h": 1.6})
+    assert r["open"] is True
+    assert r["area_m2"] == 0.0
