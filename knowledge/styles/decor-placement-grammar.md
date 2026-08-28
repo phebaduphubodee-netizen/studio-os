@@ -656,6 +656,41 @@ settled while this table exists.**
 > delivered, paid, client-approved work in the owner's own market. A contradiction between the two
 > is decided by this section.
 
+### 10.0 HOW MUCH OF THIS IS CITABLE — read before using any number below
+
+An adversarial verifier re-checked every claim in this section against the raw JSON (99 quoted
+claims re-located by exact string match; 96 landed in the exact field named, 3 differed by
+punctuation only; **no lane fabricated a quote**). It then convicted the first draft of this
+section in six places. Four limits, and they bind everything in §10:
+
+1. **NOTHING IN THIS ARTEFACT IS A MEASUREMENT**, and the study's own audit set that standard
+   before this session existed (*"survey prose, not per-frame counts"*). Every number here is a
+   sighted agent's eye estimate, hedged *"~"* or *"roughly"*, written once, never re-counted by a
+   second agent, never checked against pixels. **The line that survives is narrower: a figure
+   attributable to a NAMED FRAME is a citable observation; a figure with no frame behind it is not
+   citable at all.** Use these to AIM a build and to bracket a target — never to settle a dispute.
+2. **ALL 51 ARE ENSCAPE RENDERS. ZERO PHOTOGRAPHS.** One entry even distinguishes *"render-quality
+   ones"* among them. So *"a run of dressed bays photographed by professionals"* IS still a class
+   we do not hold — the withdrawal of the "zero references" claim applies to the DRESSING, not to
+   the photography.
+3. **ZERO BAY DIMENSIONS IN 51 ENTRIES** — no width, clear height, depth, shelf thickness or rod
+   height anywhere. **§10 may be cited as a DRESSING reference and never as a geometry one.**
+4. **THE QUARANTINE, and it is the load-bearing unresolved call.** The study excluded project 002
+   from every head-to-head, because 002 is the TRN-001 reproduction target. But 002 is **30 of the
+   51 frames**, and it carries **11 of the 17** cadence frames and **2 of the 3** one-third-vacancy
+   frames. Counted 2026-08-28:
+
+   | claim | frames in quarantined 002 | UNENCUMBERED frames | verdict |
+   |---|---|---|---|
+   | per-bay cadence (§10.1) | 11 | **6** — four in 017, one in 024, one in 033 | **survives**, on three independent projects |
+   | ~1/3 of cells empty (§10.1) | 2 | **1** (024) | **weak — treat as a bracket, not a target** |
+   | run-of-bays reference class | 13 of 23 | **4** strict-class frames | survives as a class |
+
+   **FAIL-CLOSED RULE ADOPTED HERE:** a claim in §10 may gate or close work only if it survives on
+   the UNENCUMBERED frames. Everything else is a bracket. Whether 002 may serve as R4b
+   reference-of-record for a non-TRN lane is **an open call the study never made** — it is his,
+   and reversing it re-admits eleven frames to the cadence count.
+
 ### 10.1 THE NUMBER §9.11 SAID DID NOT EXIST — and it is ONE per bay, not two
 
 §9.11 closed with *"No number for density."* A formal gap row went further: *"Nobody states it
@@ -703,8 +738,12 @@ object class between adjacent bays. **That is over-stated and the survey refutes
   in MASS but not in CONTENT — deliberate near-symmetry"*, and *"symmetry broken only by the
   differing objet sets."*
 - **What repeats is the RULE; what varies is the OBJECT.** 16 of 51 frames state the same per-bay
-  cadence in the same words. Sameness is named as a FAULT in delivered work **exactly once in 51
-  frames**, and it is about identical bed CLOTH, not bay contents.
+  cadence in the same words. **CORRECTED by the verifier:** an earlier draft said sameness is
+  faulted in delivered work *"exactly once in 51 frames"*. **It is faulted THREE times, and one of
+  them is verbatim our own defect** — *"both beds' coverlets falling identically — the mirror
+  symmetry is one notch too perfect for lived-in"*, *"both windows read as identical light boxes"*,
+  and *"both refracted filament patterns look near-identical (**same asset mirrored**)"*, which is
+  word-for-word the fault filed against our lamps. The (a) side was understated threefold.
 
 **Two more run-level rules the survey gives and §9 does not:**
 - **CLASS IS ZONED BY TIER, not by bay** — *"the styling grammar is consistent (boxes up, 2
@@ -717,7 +756,7 @@ object class between adjacent bays. **That is over-stated and the survey refutes
 > move"*, *"gold wire geometric sculpture on 2 flat books"*, *"abstract cream face sculpture on a
 > base."*
 
-### 10.3 THE STUDY ALREADY RANKED THE OWNER'S VERDICT, AND IT RANKS (b) ABOVE (a)
+### 10.3 THE STUDY LEANS TOWARD (b), AND A LEAN IS NOT A RULING
 
 An ASK was raised to him asking whether *"contents read unnatural"* means (a) every bay is composed
 the same, or (b) the contents of a bay are wrong in themselves. **The study's own severity field
@@ -727,11 +766,27 @@ answers the ranking, and the ASK should have read it first:**
   most open shelf bays in the built-in are empty"*, and *"An ownership story — no personal-effects
   classes at all: no jewelry, electronics, drinkware, perfume, florals, no consumable or
   'lived-with' object anywhere."*
-- The mirror-copy row — the (a) evidence — is **severity 2, and 8th of 9** in its array: *"Left and
-  right nightstands each carry the same terracotta gourd vessel in mirrored position; the two bays
-  flanking the headboard repeat the same treatment."*
+- The mirror-copy row — the (a) evidence — is **severity 2**: *"Left and right nightstands each
+  carry the same terracotta gourd vessel in mirrored position; the two bays flanking the headboard
+  repeat the same treatment."*
+  > **CORRECTED by the verifier, and the correction matters:** an earlier draft called this
+  > *"8th of 9"* and used the ordering as a RANKING. The severities are `[3,3,2,2,2,2,2,2,2]` — the
+  > mirror-copy row is **TIED FOR LAST with six others**, and "8th" was array order inside a
+  > seven-way tie. Severity is nowhere DEFINED in the artefact, was assigned by one agent per lens,
+  > and the audit never validated it. **It can order the two 3s above the seven 2s and nothing
+  > finer.** The (b) side is better evidenced on its own terms, not because a rank says so.
 
-> **SO THE BIGGER HALF IS WHAT IS IN THE BAYS, NOT THAT THEY MATCH.** Our bays are empty and hold
+**AND THE (a)-SIDE "DELIVERED STANDARD" IS ONE SENTENCE FROM ONE AGENT ABOUT ONE FRAME** —
+*"every delivered vignette differs from its neighbour in object count and height"*, citing 896980
+only — **and the 51-frame survey contradicts that universal** (the hat-box row: *"two round brown
+leather hat boxes (one per niche)"*, verdict *"symmetric pairs, one hero per lit niche —
+polished"*). Neither pole is established as the delivered standard. And two frames DO credit
+bay-to-bay difference for reading natural — *"one dense zone (desk), the rest one-or-two objects
+per surface; reads plausibly inhabited"* — so §10.2 must not be read as "only within-bay facts
+matter".
+
+> **THE BIGGER HALF IS PROBABLY WHAT IS IN THE BAYS, NOT THAT THEY MATCH — but "probably" is the
+> honest word.** Our bays are empty and hold
 > no personal-effects class at all; near-symmetry is something delivered work does on purpose.
 > What is still HIS is only whether fixing the cadence, the classes and the light ends the verdict
 > — ASK-035 is narrowed to that. The word *"unnatural"* appears **zero times** in the survey JSON:
