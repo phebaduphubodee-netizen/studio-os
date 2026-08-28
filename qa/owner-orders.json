@@ -343,8 +343,8 @@
    "units": [
     "DELIV-001"
    ],
-   "standing": true,
-   "retired_by": null,
+   "standing": false,
+   "retired_by": "D-172",
    "obeyed_where": "pipeline/scripts/build_room.py, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
    "obeyed_how": "The obedience ROUTE moved: four solver mechanisms were tried and three R1-stopped (`_DUVET_TUCKS` still ships off as the residue of that), and the answer became acquisition rather than more tuning. So this order is now carried by the same line the 08-14 order asserts.",
    "obeyed_assert": [
@@ -353,7 +353,8 @@
      "pattern": "^_BED_CLOTH_ACQ = True",
      "why": "Its obedience route is the acquire leg, not another tuck mechanism."
     }
-   ]
+   ],
+   "note": " || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
   },
   {
    "id": "ORD-2026-08-13-gen-diff-runs-every-round",
@@ -475,8 +476,8 @@
    "units": [
     "DELIV-001"
    ],
-   "standing": true,
-   "retired_by": null,
+   "standing": false,
+   "retired_by": "D-172",
    "obeyed_where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json, qa/open-decisions.json",
    "obeyed_how": "The spec no longer names that slug; the audition moves to the second measured survivor and to tiers never searched.",
    "obeyed_assert": [
@@ -486,7 +487,8 @@
      "absent": true,
      "why": "He failed this exact set from the image; shipping it again is deciding his verdict away. The pattern names the SHIPPING key only — the scale assertion for that file stays, because it is a true measurement and erasing it would be tidying away the evidence."
     }
-   ]
+   ],
+   "note": " || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
   },
   {
    "id": "ORD-2026-08-16-fix-the-system-not-the-round",
@@ -710,8 +712,8 @@
    "units": [
     "DELIV-001"
    ],
-   "standing": true,
-   "retired_by": null,
+   "standing": false,
+   "retired_by": "D-172",
    "status": "obeyed",
    "obeyed_where": "pipeline/scripts/build_room.py",
    "obeyed_how": "p2r70: three mechanisms, all scoped to the rug. (1) CONTACT — the rolled-edge rings in _add_rug end 0.5 mm BELOW the floor top; the old skirt stopped at +2 mm (a slab-era z-fighting literal from 2026-07-02 whose rationale died in the 2026-08-10 pile rewrite), so the whole rug floated and the floor BRIGHTENED toward the edge instead of darkening. (2) EDGE — three perimeter rings with an outward binding bulge overhanging a tucked contact ring: a visible cross-section, and an occlusion wedge Cycles turns into the pool's tight dark rim. (3) PILE — _wire_rug_fibre: the part-metallic Metal map (mean 51/255, 89.5% nonzero) is cut from a wool rug, the never-wired AO map is multiplied in mean-normalised (x1.1752) so tuft contrast rises without moving the signed value 130, and Sheen 0.4 (the one nonzero pro value, at _SHEEN_CAP) gives the angular response C2 named. The tile numbers _rtile/_rtile_v are untouched.",
@@ -731,7 +733,8 @@
      "pattern": "_rtile = _tile_m_for\\(RUG_SLUG\\)",
      "why": "the scale is NOT retreated: the tile still derives from the publisher sidecar door (TS-006's assert, shared)"
     }
-   ]
+   ],
+   "note": " || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
   },
   {
    "id": "ORD-2026-08-25-p2-exit-is-his-eye",
@@ -967,8 +970,8 @@
    "units": [
     "DELIV-001"
    ],
-   "standing": true,
-   "retired_by": null,
+   "standing": false,
+   "retired_by": "D-172",
    "status": "obeyed",
    "since": "2026-08-26",
    "obeyed_where": "pipeline/scripts/millwork.py,pipeline/scripts/element5_lighting.py,pipeline/scripts/build_room.py,projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r82-2026-08-26.md,projects/PRJ-2026-002_c001-house/04_visualization/gate-DELIV001-P2r83-2026-08-27.md",
@@ -994,7 +997,7 @@
      "why": "point 3 — occupancy is read off the built scene, never typed"
     }
    ],
-   "note": "Obeyed 2026-08-27: p2r82 (terminations, QUALIFIES, critics dropped the class) + p2r83 (10 strips/10 occupied cells verified against the scene dump; both critics filed nothing against the strips and no unlit-casework item). Point 4 (contents story) continues under its own order ORD-2026-08-26-builtin-contents-unnatural; points 5/6 hold by construction (bed untouched, main light still P3)."
+   "note": "Obeyed 2026-08-27: p2r82 (terminations, QUALIFIES, critics dropped the class) + p2r83 (10 strips/10 occupied cells verified against the scene dump; both critics filed nothing against the strips and no unlit-casework item). Point 4 (contents story) continues under its own order ORD-2026-08-26-builtin-contents-unnatural; points 5/6 hold by construction (bed untouched, main light still P3). || RETIRED 2026-08-28 by D-172 (his 'ลุยตามนั้น' on the ASK-022 proposal). แถวยังอยู่ในไฟล์และอ่านได้ — สิ่งที่แถวนี้ถืออยู่ถูกย้ายออกก่อนถอน ดู D-172 in_effect"
   },
   {
    "id": "ORD-2026-08-27-builder-calls-its-own-skills",
@@ -1126,6 +1129,48 @@
     }
    ],
    "note": "HIS OBSERVATION IS THE RUNG HERE. No instrument in this repo could have produced it, and video_curriculum.py's docstring now says so in writing — including that the per-G coverage counter added the same day still cannot find a hole INSIDE a G-item.\n\nWHY THIS ROW READS OBEYED WHILE WORK REMAINS, because the first draft of it did not and the checker was right to refuse that. It was filed not-obeyed with every one of its assertions holding, which this ledger forbids by name: a row that is pessimistic while its own arithmetic says otherwise makes the honest not-obeyed rows unreadable. The order was FIND the videos, WATCH them, and LAND what they teach. 533 candidates were harvested across two harvests (no URL ever written by a model), ten judge lanes and a completeness critic scored them, 11 videos were watched (2 with extracted frames), and knowledge/styles/decor-placement-grammar.md gained section 9 — ~200 lines, 69 video-id citations, the first performed layer over a file that was 100% text research. That is the order.\n\nWHAT REMAINS IS NOT THIS ROW, AND IT IS NOT HIDDEN. The round generated 10 further queued rows (5 of them `must`) because the judges found better material than what had already been watched — a RUN of identical bays dressed by professionals (6C0orv4gc8E, xFpWtpSZhv0), an arrangement convicted inside a RENDER (KBRdBM6ySdU), a Thai practitioner working (9xrYzUXpe_o), the anti-repetition doctrine from game environment art (xE_tyKkm8nE). Those are tracked by HOLE-01 in qa/video-curriculum.json, whose `closes_when` is watched == distilled == total and which PRINTS its own 11/21 at every session open, right beside this row. Keeping this order not-obeyed until a queue that the work itself keeps growing runs dry would make it unfalsifiable.\n\nAND FOUR PIECES OF THE HOLE WILL NEVER CLOSE ON YOUTUBE — filed as VG-13..VG-16: the across-the-room reading threshold (measure it on our own frame with id_mask, do not search for it), whether `unnatural` means sameness-across-bays or wrongness-inside-one (ASK-035 — his sentence, or one crop to C2/C3), a number for bay contents (count it off the anchor pool, R4), and the Thai altar constraints (his designer friend). A third harvest at any of those returns nothing again."
+  },
+  {
+   "id": "ORD-2026-08-28c-retire-four-and-run-the-contents-round",
+   "date": "2026-08-28",
+   "verbatim": "ลุยตามนั้น",
+   "recorded_at": "qa/open-decisions.json",
+   "commands": "ตอบข้อความที่มีสองส่วน จึงบันทึกการอ่านไว้ตรง ๆ เพื่อให้พลิกได้ด้วยประโยคเดียว: (1) **อนุมัติข้อเสนอถอนคำสั่งทั้งฉบับ** (projects/PRJ-2026-002_c001-house/04_visualization/owner-orders-retirement-proposal-2026-08-28.md) — ถอน 4 แถว โดยย้ายของที่แต่ละแถวถืออยู่ ออกมาก่อนตามที่ข้อเสนอสัญญาไว้ · ไม่ถอนอีก 12 แถวตามเหตุผลรายแถวในนั้น · กลไกอยู่ที่ D-172 · (2) **อนุมัติให้เดินรอบ built-in contents ต่อ** ตามสามข้อที่พี่ชี้เองใน D-169 — ห้ามวางกึ่งกลางทุกช่อง · เติมให้แน่นขึ้น (ที่ว่างในช่องเยอะเกินไป) · ท่าวางกับรูปแบบความว่าง ต้องต่างกันรายช่อง — แล้วส่งเฟรมให้เขาตัดสิน เพราะเขาบอกเองว่า 'ต้องลองทำให้ผมเห็นภาพ ผมถึงจะตอบได้'",
+   "subject": "retirement-and-contents-round",
+   "scope": "instance",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-28",
+   "not_obeyed_because": "ส่วน (1) ทำเสร็จแล้วทั้งหมด — สี่แถวถูกถอน ของที่ถืออยู่ถูกย้ายก่อนถอน และ D-172 เฝ้าไว้ 5 assertion · **ส่วน (2) ยังไม่ได้เริ่ม** ไม่มีเฟรมใหม่ และคำสั่งนี้ปิดไม่ได้จนกว่าเขาจะได้เห็นภาพ ซึ่งเป็นเงื่อนไขที่เขาตั้งเองในประโยคเดียวกับที่ชี้สามข้อ",
+   "restart_by": "รอบ built-in contents: (ก) ตำแหน่งของในช่องต้อง derive ไม่ใช่ centre เสมอ — R9 ใช้กับแกนที่สาม ที่ยังไม่เคยถูกปกครอง (ข) เพิ่มความแน่นต่อกลุ่ม ไม่ใช่เพิ่มจำนวนกลุ่ม — เขาหักล้างการอ่าน '1 กลุ่มต่อช่อง = เป้า' ไปแล้ว (ค) ท่าวางและรูปแบบความว่างต้องต่างกันรายช่อง โดยยังคง ~1/3 ที่ว่างไว้ เพราะเขายืนยันว่าความว่างบางช่องถูก · แล้ว render และส่งเข้าแชท (บทเรียน ASK-006: ช่องของเขาคือแชท)",
+   "obeyed_where": "qa/open-decisions.json,qa/owner-orders.json,knowledge/materials/pbr-material-behavior.md",
+   "obeyed_assert": [
+    {
+     "file": "qa/open-decisions.json",
+     "pattern": "\"id\": \"D-172\"",
+     "why": "ส่วน (1) — การถอนเป็นแถวที่ล็อกกับคำเขา ไม่ใช่การแก้ไฟล์เงียบ ๆ · D-172 ถือ assertion 5 ข้อที่ย้ายมาจากแถวที่ถอน"
+    },
+    {
+     "file": "knowledge/materials/pbr-material-behavior.md",
+     "pattern": "สเกลเท็กซ์เจอร์ไม่ใช่ปุ่มปรับหน้าตา",
+     "why": "ส่วน (1) — หลักฐานว่าย้ายก่อนถอนจริง ไม่ใช่ถอนแล้วทิ้ง"
+    },
+    {
+     "file": "qa/open-decisions.json",
+     "pattern": "\"id\": \"D-169\"",
+     "why": "ส่วน (2) — สามข้อที่เขาชี้ต้องอ่านได้จากไฟล์ · แถวนี้ยัง not-obeyed อยู่เพราะยังไม่มีเฟรม ซึ่งทำให้ ledger ไม่ขัดกับสถานะตัวเอง"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def _bay_content_pose",
+     "why": "ส่วน (2) และ **มันตกวันนี้โดยตั้งใจ** (รูปเดียวกับ assertion detail.py ของ ORD-2026-08-27) — ชื่อฟังก์ชันที่ยังไม่มี ซึ่งจะมีก็ต่อเมื่อ *ท่าวาง* ของของในช่องถูก derive จริง แทนการวางกึ่งกลางเสมอ. สามข้อของพี่ใน D-169 ล้วนเป็นเรื่องท่าวางและความแน่นรายช่อง ไม่ใช่จำนวนกลุ่ม — assertion จึงเกาะที่นั่น และทำให้เลขคณิตของแถวตรงกับสถานะ not-obeyed จนกว่ารอบจะเดินจริง"
+    }
+   ],
+   "note": "อ่านคำว่า 'ลุยตามนั้น' ว่าครอบคลุมทั้งสองส่วนของข้อความก่อนหน้า และเขียนการอ่านนั้นไว้ตรง ๆ — ถ้าเขาหมายถึงแค่ส่วนใดส่วนหนึ่ง ประโยคเดียวพลิกได้และไม่มีแถวไหนถูกลบ"
   }
  ]
 }

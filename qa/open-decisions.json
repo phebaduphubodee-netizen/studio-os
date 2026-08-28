@@ -3304,6 +3304,49 @@
    ],
    "because": "เขาถามไว้ตั้งแต่ 08-26 ว่า 'เสีย blendkit แล้ว ยังต้องเสียเพิ่มอีกหรอ' — builder ถอนบรรทัดหนึ่ง ไปเองแล้วครั้งหนึ่ง คราวนี้เขาตัดทั้งชีทด้วยสามคำ",
    "reverse_by": "เขาอนุมัติบรรทัดใดบรรทัดหนึ่งเป็นรายบรรทัด ตามกฎ R8 (การใช้เงินเป็นการตัดสินของเขาต่อครั้ง)"
+  },
+  {
+   "id": "D-172",
+   "unit": "DELIV-001",
+   "subject": "retire-four-orders",
+   "decided_round": 88,
+   "decided_date": "2026-08-28",
+   "decided_by": "owner",
+   "owner_override": "ลุยตามนั้น",
+   "override_date": "2026-08-28",
+   "obeys": "ORD-2026-08-28c-retire-four-and-run-the-contents-round",
+   "question": "ASK-022 พี่สั่งให้ 'เสนอสิ่งที่จะถอนและอธิบาย' · เสนอไป 4 แถว (ไม่เสนอ 12) ที่ projects/PRJ-2026-002_c001-house/04_visualization/owner-orders-retirement-proposal-2026-08-28.md โดยขอให้ตอบรายข้อ 1-4 · พี่ตอบว่า 'ลุยตามนั้น' — อ่านว่าอนุมัติข้อเสนอทั้งฉบับตามที่เขียนไว้",
+   "in_effect": "**ถอน 4 แถว โดยย้ายของที่แต่ละแถวถืออยู่ออกมาก่อน ไม่ถอนเปล่า ๆ — ตามที่ข้อเสนอสัญญาไว้เอง:** (1) ORD-2026-08-12-bed-cloth-still-looks-wrong — ถูกแทนที่โดย 08-14 subject เดียวกัน assertion เดียวของมันคือบรรทัดเดียวกันเป๊ะ ไม่มีอะไรต้องย้าย · (2) ORD-2026-08-24-fix-rug-surface-not-scale — **ประโยคระดับคลาสย้ายแล้ว** ไปเป็น knowledge/materials/pbr-material-behavior.md section 5 ('สเกลเท็กซ์เจอร์ไม่ใช่ปุ่มปรับหน้าตา') พร้อมหลักฐานที่เรโปนี้จ่ายไปแล้ว (พื้นผิด 1.41x พรมผิด 4.81x) · assertion เดิมทั้ง 3 ข้อ เฝ้าโค้ดพรมที่ปั้นเองซึ่งลดชั้นเป็น loud fallback แล้วเพราะพรมเป็นของซื้อ · (3) ORD-2026-08-26b-friend-study-craft-lane — อนุมัติแผนหนึ่งรอบ ทั้ง 6 ข้อจบหรือย้ายบ้านแล้ว · **assertion 4 ข้อที่ตรึงค่าจริงย้ายมาอยู่บนแถวนี้** (SHADOW_TOP 0.012, ZOCALO_R 0.120, คีย์ casework ใน canonical spec, _casework_occupied_cells) จึงยังมี checker เฝ้าอยู่หลังแถวคำสั่งถอน · (4) ORD-2026-08-16-set-8635b5b9-is-refused — เตียงเป็นโมเดลซื้อทั้งตัวตั้งแต่ D-121 สาขาผ้าไม่ถูกเรียกอีกแล้ว ชุดนั้นส่งไม่ได้อยู่แล้ว · **แถวทั้งสี่ยังอยู่ในไฟล์** standing=false + retired_by=D-172 — ไม่มีแถวไหนถูกลบ (กฎของไฟล์: rows never leave)",
+   "where": "qa/owner-orders.json,knowledge/materials/pbr-material-behavior.md,pipeline/scripts/millwork.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "SHADOW_TOP = 0.012",
+     "why": "ย้ายมาจาก ORD-2026-08-26b — ร่องเงาที่ฝ้า 12 มม. จากตัวเลขของพี่เองใน D2-A ยังต้องถูกเฝ้าหลังแถวถอน"
+    },
+    {
+     "file": "pipeline/scripts/millwork.py",
+     "pattern": "ZOCALO_R  = 0.120",
+     "why": "ย้ายมาจาก ORD-2026-08-26b — zocalo ร่นเข้า 120 มม. จาก DD element1 ที่เซ็นแล้ว"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "\"casework\"",
+     "why": "ย้ายมาจาก ORD-2026-08-26b — ชั้น casework ในสเปกที่รอบนั้นสร้าง"
+    },
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "def _casework_occupied_cells",
+     "why": "ย้ายมาจาก ORD-2026-08-26b — กฎ 'ไฟมีเฉพาะที่มีของ' ของงานเพื่อน กลายเป็นฟังก์ชันนี้ และมันคือครึ่งหนึ่งของสามข้อที่พี่เพิ่งสั่งใน D-169"
+    },
+    {
+     "file": "knowledge/materials/pbr-material-behavior.md",
+     "pattern": "สเกลเท็กซ์เจอร์ไม่ใช่ปุ่มปรับหน้าตา",
+     "why": "บ้านใหม่ของประโยคจาก ORD-2026-08-24 · ถ้าหมวดนี้หาย การถอนแถวพรมจะกลายเป็นการทิ้ง กฎระดับคลาสไปเฉย ๆ ซึ่งคือสิ่งที่ข้อเสนอบอกว่าจะไม่ทำ"
+    }
+   ],
+   "because": "พี่ตอบ ASK-022 ว่าให้เสนอ แล้วตอบข้อเสนอว่า 'ลุยตามนั้น' · การถอนแถวคำสั่งเป็นสิ่งที่ builder ทำเองไม่ได้ตามกฎของไฟล์ จึงต้องเป็นแถวที่ล็อกกับคำเขา · และเหตุผลที่ไม่ถอนอีก 12 แถวอยู่ในข้อเสนอ โดยเฉพาะข้อที่ปฏิเสธทั้งหมวด: ไม่ถอนแถวไหนเพราะ 'มันเป็นกฎ R1-R13 แล้ว' เนื่องจาก CLAUDE.md builder แก้ได้ แต่ owner-orders.json แก้ไม่ได้ — ถอนแบบนั้นคือย้ายคำสั่งเขามาไว้ในมือ builder ซึ่งคือรูปเดียวกับ D-072",
+   "reverse_by": "พี่พูดประโยคเดียวว่าอยากได้แถวไหนกลับ → ตั้ง standing=true + retired_by=null บนแถวนั้น และ (ถ้าเป็นพรม) ย้ายประโยคกลับหรือปล่อยให้อยู่ทั้งสองที่ · ไม่มีแถวไหนถูกลบ ทุกแถวยังอ่านได้ในไฟล์"
   }
  ],
  "_assert_ratchet_from": "D-124"
