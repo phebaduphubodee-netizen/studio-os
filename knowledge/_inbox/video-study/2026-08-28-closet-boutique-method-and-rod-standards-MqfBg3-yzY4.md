@@ -148,6 +148,40 @@ character"*, a candle or diffuser, *"a stool, a storage bench, or a pretty rug"*
 
 ---
 
+## 4b. A THIRD SOURCE, FROM RETAIL — and it says LESS, not more
+
+Added 2026-08-28 from a third unit watched into this same file:
+`1NI4zETSrQs` — <https://www.youtube.com/watch?v=1NI4zETSrQs> · Pure London × JATC, *"The
+Do's and Don'ts of Visual Merchandising with Debbie Flowerday"* · 4 min 15 s · the speaker
+is **an associate lecturer in visual merchandising at London College of Fashion**, walking
+a real independent store.
+
+- **DENSITY: less, not more.** `[01:28]` *"when customers come inside **don't bombard them
+  with merchandise — keep it simple. They're more likely to buy if there's less
+  merchandise.**"*
+
+  This is the one instruction in the whole G2 group that points *against* the lane's
+  instinct. Our reflex on a wardrobe that reads wrong is to add more garments, more stacks,
+  more props. A merchandising lecturer's first rule for a space people are meant to enjoy
+  looking at is the opposite. **Whether our nine cells are too FULL has never been asked.**
+- **A FOCAL POINT, again.** `[01:02]` *"regardless whether your store is large or small it's
+  very important to **create a strong focal point**."* That is the fourth independent source
+  in this curriculum naming a focal point as a required part (see also `kmCHv3PG2XM`
+  `[05:47]` and `[09:11]`).
+- **SHELVES ARE DISPLAY, NOT STORAGE** — the same split as §2, from the retail side.
+  `[01:57]` *"**don't waste the shelves, create a display area** — and the **plants soften
+  the whole look** and engage the customer in the store identity."* `[01:28]` on
+  non-merchandise objects: *"there's nothing stopping you purchasing **books and ceramics**
+  as long as it relates to the store identity."*
+
+  Third independent source for **non-garment objects inside the casework**.
+- **THE SHELF BACK IS A SURFACE TO TREAT.** `[02:24]` *"these **panels** are absolutely
+  perfect — they create a **3D effect** and can be **painted or textured** depending on your
+  merchandise."*
+
+  Second independent source for treating the back of the cell differently from the carcass
+  (Erin Ross `[11:34]`: *"the backs of shelves painted in a bold color that really pops"*).
+
 ## 5. WHAT IS OWED FROM THESE UNITS
 
 1. **Row the rail height against the three standards (§1)** with a cited source, per the
