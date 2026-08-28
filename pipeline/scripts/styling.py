@@ -273,7 +273,122 @@ def dress_rails(anchors, min_rails=1):
 KNIT_KINDS = frozenset({"wardrobe", "closet"})
 
 
-def dress_shelves(anchors, every=2, n_items=4, kinds=KNIT_KINDS):
+# ---------------------------------------------------------------------------
+# WHERE A GROUP SITS INSIDE ITS CELL — the third axis, opened by D-169
+# ---------------------------------------------------------------------------
+# The owner, reading the frame on 2026-08-28: *"ตอนนี้ของมันวางช่องละหนึ่งชิ้น และวางตรง
+# กึ่งกลางเสมอ และเหลือช่องว่างในช่องนั้นเยอะเกินไป บางช่องเข้าใจได้ว่ามันว่าง แต่ทุกช่องจะว่าง
+# เหมือนกันและวางของในลักษณะเดียวกันเป๊ะ ๆ ไม่ได้"*
+#
+# Three defects, and all three were literally in this file:
+#   1. `stack_on_shelf` centred the group in BOTH axes — x with a +/-10% deviation, y with
+#      none at all — so every dressed cell posed its contents identically.
+#   2. Its own docstring said the pile is "pushed toward the shelf's front half". **The code
+#      centred it in depth.** A docstring is not a mechanism; this one had been describing a
+#      placement the code never made.
+#   3. `dress_shelves(every=2)` dressed every second cell in strict alternation, so the
+#      vacancy pattern was a column of holes and the ONLY thing that varied between dressed
+#      cells was a 4-high vs 3-high stack.
+#
+# R9 governs the fix: a pose is an ALIGNMENT TO A NAMED DATUM (a gable, the front edge),
+# never a typed coordinate and never a nudge. The cell's own gables give x; the piece's
+# derived front (millwork.mill_axis, carried on the anchor) gives depth. Where the front is
+# unknown the solver SAYS SO and falls back to depth-centre rather than guessing a side.
+BAY_CLEAR = 0.030          # air between a group and the gable it is pushed toward. A real
+#                            stack is set off the side panel; flush against it reads as a
+#                            box that was dropped in, not put down.
+BAY_POSES = ("left-front", "right-front", "left-back", "right-back", "centre-front")
+
+
+def _depth_axis(shelf):
+    """A shelf's depth is its SHORTER horizontal span — derived from the built anchor, not
+    declared. Returns 'y' or 'x'."""
+    return "y" if shelf["dy"] <= shelf["dx"] else "x"
+
+
+def bay_pose_name(idx):
+    """Which pose this cell takes. Deterministic, and stepped by a stride coprime with the
+    pose count so ADJACENT cells never repeat a pose (the owner's third item) while the run
+    stays reproducible frame to frame."""
+    return BAY_POSES[(idx * 2) % len(BAY_POSES)]
+
+
+def _bay_content_pose(shelf, w, d, idx, front=None):
+    """Origin of a group of footprint (w x d) inside `shelf`, derived from the cell's own
+    datums. Returns (x0, y0, pose_name, front_used).
+
+    Never overhangs: every datum is clamped into the cell, so a group wider than the cell
+    minus its clearances lands centred rather than proud — the invariant the stack tests
+    have held since r7 stays true by construction.
+    """
+    pose = bay_pose_name(idx)
+    xside, yside = pose.split("-")
+    dax = _depth_axis(shelf)
+    # which end of the depth axis is the FRONT
+    front_used = None
+    if front and str(front[0]) == dax:
+        front_used = 1 if float(front[1]) > 0 else -1
+
+    def _along(span, size, side, front_sign=None):
+        room = span - size
+        if room <= 2 * BAY_CLEAR:
+            return room * 0.5, "centred(no room)"
+        if side == "centre":
+            return room * 0.5, "centre"
+        near, far = BAY_CLEAR, room - BAY_CLEAR
+        if front_sign is not None:
+            # 'front' means the +sign end when the derived front points +, else the - end
+            fwd = far if front_sign > 0 else near
+            back = near if front_sign > 0 else far
+            return (fwd, "front") if side == "front" else (back, "back")
+        return (near if side in ("left", "front") else far), "unknown-front" if side in ("front", "back") else "side"
+
+    if dax == "y":
+        ox, _ = _along(shelf["dx"], w, xside)
+        oy, ynote = _along(shelf["dy"], d, yside, front_used)
+    else:
+        ox, ynote = _along(shelf["dx"], w, yside, front_used)
+        oy, _ = _along(shelf["dy"], d, xside)
+    return shelf["x"] + ox, shelf["y"] + oy, pose, (front_used, ynote)
+
+
+def bay_is_vacant(idx, n_cells=None):
+    """Which cells stay EMPTY. Delivered work in this market leaves roughly ONE THIRD of a
+    run's cells empty (decor-placement-grammar 10.1: three agents, three frames, two
+    projects) and the owner confirmed the principle himself — *"บางช่องเข้าใจได้ว่ามันว่าง"*.
+    What he refused is that they be empty the SAME way, which `every=2` guaranteed.
+
+    So: one cell in every three, and the empty slot SHIFTS along the run, which keeps the
+    fraction and removes the column of holes.
+
+    THE SHIFT IS `idx + idx//3`, NOT `idx % 3 == (idx//3) % 3`. The first form wrapped: at a
+    twelve-cell run it emptied cells 8 AND 9 back to back, which is not a design choice, it is
+    an arithmetic accident. Delivered work does sometimes concentrate vacancy on purpose
+    ("vacancy concentrated in one column so it reads intentional") — but a double that nobody
+    chose is not that. This form holds the third and never doubles: 9 cells -> 0,5,7;
+    12 -> 0,5,7,9; 18 -> 0,5,7,9,14,16.
+
+    A FRACTION NEEDS A DENOMINATOR, and the first cut of this function did not ask for one:
+    applied to a run of ONE cell it left that cell empty — a 100% vacancy rate dressed up as
+    33%, and the wardrobe test caught it immediately. A run shorter than three cells cannot
+    carry a one-in-three vacancy, so it carries none: leaving one of two cells empty is a
+    different design (50%), not this one."""
+    if n_cells is not None and n_cells < 3:
+        return False
+    return (idx + (idx // 3)) % 3 == 0
+
+
+def bay_stack_height(idx):
+    """Skyline. 4-vs-3 alternation gave a run two heights in a fixed beat; a four-step
+    cycle gives adjacent cells a different top edge without becoming noise."""
+    return (5, 3, 4, 2)[idx % 4]
+
+
+COMPANION_FRAC = (0.30, 0.42)   # a small second group: ~12.6% of the cell's plan area
+COMPANION_N = 2                 # two folded pieces — a companion, not a second pile
+
+
+def dress_shelves(anchors, every=None, n_items=None, kinds=KNIT_KINDS):
     """Folded knit stacks on open WARDROBE shelves — one dressed shelf in every `every`,
     so the joinery still reads as joinery and one bay per mass is left bare.
 
@@ -290,14 +405,39 @@ def dress_shelves(anchors, every=2, n_items=4, kinds=KNIT_KINDS):
     shelves = [a for a in find(anchors, "shelf", required=False)
                if str(a.get("kind", "")) in kinds]
     out = []
+    n_dressed = n_comp = n_skip = 0
     for i, sh in enumerate(shelves):
-        if i % every:
+        if bay_is_vacant(i, len(shelves)):
             continue
         if sh["dx"] < 0.20 or sh["dy"] < 0.20:
+            n_skip += 1
             continue                                  # too small to hold a folded stack
-        # alternate 4-high / 3-high piles (round-6 lane C): every dressed shelf holding
-        # the SAME count is its own kind of extruded block, one shelf up
-        out.extend(stack_on_shelf(sh, n=max(1, n_items - (i // every) % 2), salt=i))
+        front = sh.get("front")
+        out.extend(stack_on_shelf(sh, n=bay_stack_height(i), salt=i, idx=i,
+                                  front=front, tag=f"{i}a"))
+        n_dressed += 1
+        # A COMPANION in every other dressed cell, posed at the OTHER end of the same
+        # cell. Delivered runs read ONE TO THREE items per bay with a mode of one
+        # (decor-placement-grammar 10.1); a run of nothing but single piles is the
+        # "วางของในลักษณะเดียวกันเป๊ะ ๆ" he refused, and one more group is also the
+        # remedy the survey states in its own words — "two more objects per column
+        # would close it" (10.5).
+        if i % 2 == 0:
+            cw = sh["dx"] * COMPANION_FRAC[0]
+            cd = sh["dy"] * COMPANION_FRAC[1]
+            cx, cy, _p, _f = _bay_content_pose(sh, cw, cd, i + 2, front=front)
+            mx = sh["x"] + (sh["dx"] - sh["dx"] * 0.56) * 0.5
+            if abs(cx - mx) < (cw * 0.5):
+                continue                              # would sit on the main pile — skip,
+                #                                       and the cell keeps its single group
+            out.extend(stack_on_shelf(sh, n=COMPANION_N, salt=i + 101, idx=i + 2,
+                                      front=front, frac_w=COMPANION_FRAC[0],
+                                      frac_d=COMPANION_FRAC[1], tag=f"{i}b"))
+            n_comp += 1
+    print(f"  shelf contents: {n_dressed} dressed / {len(shelves)} cells "
+          f"({len(shelves) - n_dressed - n_skip} left vacant by design, "
+          f"{n_skip} too small) + {n_comp} companion group(s) — poses derived per cell "
+          f"(D-169: no cell is centred by default, no two adjacent cells share a pose)")
     return out
 
 
@@ -567,16 +707,30 @@ def _xlate(verts, ox, oy, oz, swap=False):
 # FOLDED STACKS — what fills an open shelf.
 # ---------------------------------------------------------------------------
 
-def stack_on_shelf(shelf, n=4, item_h=0.042, salt=0, frac_w=0.46, frac_d=0.62):
+def stack_on_shelf(shelf, n=4, item_h=0.042, salt=0, frac_w=0.56, frac_d=0.70,
+                   idx=None, front=None, tag=None):
     """A stack of folded knits sitting ON a shelf, sized as a FRACTION of the shelf's own
-    clear span so it can never overhang, and pushed toward the shelf's front half where a
-    real folded pile sits (and where the camera can see it)."""
+    clear span so it can never overhang.
+
+    FOOTPRINT RAISED 2026-08-28 (D-169, his words: *"เหลือช่องว่างในช่องนั้นเยอะเกินไป"*).
+    0.46 x 0.62 covered **28.5% of the shelf's plan area**; 0.56 x 0.70 covers **39.2%**,
+    which lands on the only fill figure the delivered-work survey states — *"each shelf
+    keeps ~60% air"* (decor-placement-grammar 10.1, ONE frame, so this is a bracket the
+    anchor pool may move, not a measurement).
+
+    POSE: pass `idx` (the cell's index in its run) and the group is placed by
+    `_bay_content_pose` against the cell's own gables and derived front. Without `idx` it
+    falls back to the pre-2026-08-28 centred placement — kept so the unit tests that fix
+    the ON-shelf / no-overhang invariants keep driving the same path they always did."""
     if not 0.0 < frac_w <= 1.0 or not 0.0 < frac_d <= 1.0:
         _fail(f"stack_on_shelf: fractions must be in (0,1] — got {frac_w}, {frac_d}")
     w = shelf["dx"] * frac_w
     d = shelf["dy"] * frac_d
-    x0 = shelf["x"] + (shelf["dx"] - w) * 0.5 + sg.dev(salt, shelf["dx"] * 0.10, salt)
-    y0 = shelf["y"] + (shelf["dy"] - d) * 0.5
+    if idx is None:
+        x0 = shelf["x"] + (shelf["dx"] - w) * 0.5 + sg.dev(salt, shelf["dx"] * 0.10, salt)
+        y0 = shelf["y"] + (shelf["dy"] - d) * 0.5
+    else:
+        x0, y0, _pose, _fu = _bay_content_pose(shelf, w, d, idx, front=front)
     z0 = shelf["z"] + shelf["dz"]                   # ON the shelf, never inside it
     parts = []
     for k, (ox, oy, oz, dx, dy, dz) in enumerate(
@@ -592,7 +746,7 @@ def stack_on_shelf(shelf, n=4, item_h=0.042, salt=0, frac_w=0.46, frac_d=0.62):
         # side). Footprint contract unchanged: fills the AABB, exact in z.
         cv, cf = sg.folded_knit(dx, dy, dz, nu=17, salt=salt * 7 + k)
         parts.append({
-            "name": f"mill__style_fold{salt}_{k}__{tok}", "shape": "mesh",
+            "name": f"mill__style_fold{tag or salt}_{k}__{tok}", "shape": "mesh",
             "verts": _xlate(cv, x0 + ox, y0 + oy, z0 + oz),
             "faces": cf, "subsurf": 1,
         })

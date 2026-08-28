@@ -566,6 +566,105 @@ def test_dress_shelves_dresses_a_wardrobe_shelf():
     assert st.dress_shelves(_wardrobe_anchors(), every=1)
 
 
+# --------------------------------------------- D-169: the three tells he named, as tests
+# 2026-08-28, his words on the frame: "ตอนนี้ของมันวางช่องละหนึ่งชิ้น และวางตรงกึ่งกลางเสมอ และเหลือ
+# ช่องว่างในช่องนั้นเยอะเกินไป บางช่องเข้าใจได้ว่ามันว่าง แต่ทุกช่องจะว่างเหมือนกันและวางของในลักษณะ
+# เดียวกันเป๊ะ ๆ ไม่ได้". Every expectation below is a literal.
+
+def _run(n, dx=0.864, dy=0.600):
+    """A run of n wardrobe cells, one above the next."""
+    P = {"piece": "W", "kind": "wardrobe"}
+    return [dict(P, name=f"mill__W__shelf_c{i}", part=f"shelf_c{i}",
+                 x=2.419, y=2.785, z=0.4 + i * 0.35, dx=dx, dy=dy, dz=0.018,
+                 front=("y", 1)) for i in range(n)]
+
+
+def test_no_two_adjacent_cells_share_a_pose():
+    """His third tell. A run whose cells all pose their contents the same way is the
+    'วางของในลักษณะเดียวกันเป๊ะ ๆ' he refused."""
+    poses = [st.bay_pose_name(i) for i in range(12)]
+    assert all(a != b for a, b in zip(poses, poses[1:])), poses
+
+
+def test_a_dressed_cell_is_not_centred_by_default():
+    """His first tell — 'วางตรงกึ่งกลางเสมอ'. At least one cell of a run must sit off the
+    plan centre of its own cell, and the centre pose must not be the majority."""
+    sh = _run(1)[0]
+    w, d = sh["dx"] * 0.56, sh["dy"] * 0.70
+    centre_x = sh["x"] + (sh["dx"] - w) * 0.5
+    offs = []
+    for i in range(9):
+        x0, _y, pose, _f = st._bay_content_pose(sh, w, d, i, front=("y", 1))
+        offs.append(abs(x0 - centre_x))
+    assert max(offs) > 0.05, offs                      # somebody is really off-centre
+    assert sum(1 for o in offs if o < 1e-9) <= 3       # centre is a pose, not the default
+
+
+def test_the_front_is_derived_and_absence_is_not_guessed():
+    """A pose in DEPTH needs the piece's front, and the front is derived from
+    millwork.mill_axis and carried on the anchor — never typed. With no front the solver
+    says so rather than picking a side."""
+    sh = _run(1)[0]
+    w, d = sh["dx"] * 0.56, sh["dy"] * 0.70
+    _x, y_front, _p, fu = st._bay_content_pose(sh, w, d, 0, front=("y", 1))
+    _x, y_back, _p, _fu = st._bay_content_pose(sh, w, d, 1, front=("y", 1))
+    assert fu[0] == 1 and fu[1] == "front"
+    assert y_front > y_back                            # +y front means the group moves +y
+    _x2, _y2, _p2, fu2 = st._bay_content_pose(sh, w, d, 0, front=None)
+    assert fu2[0] is None and fu2[1] == "unknown-front"
+
+
+def test_a_cross_axis_front_is_refused_rather_than_misread():
+    """If the piece's derived front is not the cell's DEPTH axis, the solver must not treat
+    it as one — that would push a pile sideways under the name of 'front'."""
+    sh = _run(1)[0]                                     # depth is y (0.600 < 0.864)
+    _x, _y, _p, fu = st._bay_content_pose(sh, 0.4, 0.4, 0, front=("x", 1))
+    assert fu[0] is None
+
+
+def test_vacancy_is_one_third_on_a_long_run():
+    """His own words keep the empty cells — 'บางช่องเข้าใจได้ว่ามันว่าง' — and the delivered
+    survey puts the fraction at roughly a third. What changed is that the empty slot SHIFTS
+    instead of being every second cell."""
+    n = 12
+    vac = [i for i in range(n) if st.bay_is_vacant(i, n)]
+    assert len(vac) == 4                                # 12 / 3
+    assert vac != [0, 2, 4, 6, 8, 10]                   # not the old alternation
+    assert all(b - a > 1 for a, b in zip(vac, vac[1:]))  # never two empties in a row
+
+
+def test_a_run_too_short_to_hold_a_third_leaves_nothing_vacant():
+    """A fraction needs a denominator. Applied to one cell, one-in-three emptied the only
+    cell there was — a 100% vacancy printed as 33%."""
+    assert st.bay_is_vacant(0, 1) is False
+    assert st.bay_is_vacant(0, 2) is False
+    assert st.bay_is_vacant(0, 3) is True
+
+
+def test_the_group_fills_more_of_the_cell_than_it_used_to():
+    """His second tell — 'เหลือช่องว่างในช่องนั้นเยอะเกินไป'. The old default covered 28.5%
+    of the cell's plan area; the delivered figure this lane holds is ~40% occupied."""
+    sh = _run(1)[0]
+    parts = st.stack_on_shelf(sh, idx=1, front=("y", 1))
+    xs = [sg.bbox(p["verts"]) for p in parts]
+    w = max(b[3] for b in xs) - min(b[0] for b in xs)
+    d = max(b[4] for b in xs) - min(b[1] for b in xs)
+    frac = (w * d) / (sh["dx"] * sh["dy"])
+    assert 0.34 < frac < 0.46, frac                     # 0.285 before; ~0.39 now
+
+
+def test_a_dressed_run_carries_companions_and_they_do_not_sit_on_the_pile():
+    """Delivered cells read ONE TO THREE items; a run of nothing but single piles is the
+    sameness he named. A companion may never intersect the main group's footprint."""
+    parts = st.dress_shelves(_run(9))
+    tags = {p["name"].split("__")[1] for p in parts}
+    assert any(t.startswith("style_fold") and t.endswith("b") is False for t in tags)
+    comp = [p for p in parts if "fold" in p["name"] and p["name"].split("fold")[1].split("_")[0].endswith("b")]
+    assert comp, "no companion group was placed in a nine-cell run"
+    main = [p for p in parts if "fold" in p["name"] and p["name"].split("fold")[1].split("_")[0].endswith("a")]
+    assert len(main) > len(comp)                        # companions are the minority
+
+
 def test_dress_shelves_ignores_an_anchor_with_no_kind():
     """An unlabelled anchor is not evidence that knits belong there."""
     nokind = [{k: v for k, v in a.items() if k != "kind"} for a in _wardrobe_anchors()]

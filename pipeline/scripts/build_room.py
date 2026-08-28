@@ -136,6 +136,46 @@ def add_box(name, x, y, z, dx, dy, dz):
     return obj
 
 
+def add_boxes(name, boxes):
+    """ONE object holding N cuboids — same geometry as N add_box calls, one datablock.
+
+    OWNER DECISION 2026-08-27 ("ค"), D-164. BF14's batten field is 77 separate objects;
+    each batten is 27 mm across at 3.96 m, so it lands ~10 px wide on the delivered
+    frame — under the 24 px line this repo set at p2r87b — yet those 77 objects were 37%
+    of the id-mask palette and 77 rows of every census and legibility count.
+
+    WHY MERGE RATHER THAN TEXTURE, which was tried first and measured: a texture version
+    of the same wall lost 79% of the oak's warmth (batten face saturation 0.089 -> 0.019
+    on like-for-like quick frames) and read as painted board. Merging changes NO vertex,
+    so the render is identical by construction — the pixels cannot move because the
+    geometry does not. What changes is only how many objects the scene needs to say it.
+
+    Normals are recalculated exactly as add_box does, and for the same reason: bad
+    winding makes the Bevel modifier flare into self-intersecting skirts.
+    """
+    v, f = [], []
+    for (x, y, z, dx, dy, dz) in boxes:
+        b = len(v)
+        v += [(x, y, z), (x + dx, y, z), (x + dx, y + dy, z), (x, y + dy, z),
+              (x, y, z + dz), (x + dx, y, z + dz), (x + dx, y + dy, z + dz),
+              (x, y + dy, z + dz)]
+        f += [(b + 0, b + 1, b + 2, b + 3), (b + 4, b + 5, b + 6, b + 7),
+              (b + 0, b + 1, b + 5, b + 4), (b + 1, b + 2, b + 6, b + 5),
+              (b + 2, b + 3, b + 7, b + 6), (b + 3, b + 0, b + 4, b + 7)]
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(v, [], f)
+    mesh.validate()
+    mesh.update()
+    import bmesh
+    bm = bmesh.new(); bm.from_mesh(mesh)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(mesh); bm.free()
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.scene.collection.objects.link(obj)
+    return obj
+
+
 def add_camera_and_light(w, d, h):
     """Draft camera + sun following the KB §8.3 architectural-render rules: a
     TWO-POINT-perspective camera (kept LEVEL so verticals stay vertical) at ~1.6m eye
@@ -278,6 +318,34 @@ def _score_deliverable(name, quick=False, frame=True):
     out = _outdir()
     _out_dir = out          # `out` is rebound to the scorer's stdout below; the
     #                         ladder rung needs the DIRECTORY after that point
+
+    # ---- EVERY REFUSAL IN THIS FUNCTION IS RECORDED, NOT TAKEN HERE (owner order
+    # 2026-08-27, "ลุยยาว ๆ" on the six-item audit list, item D). The ladder and
+    # bed rungs at the tail already worked this way, each carrying a comment that
+    # says why — "a gate that exits the instant it fires silences every instrument
+    # after it". Ten rungs ABOVE them did not, and the thing they silenced was the
+    # round's only EYE: `_gen_diff` was the caller's last statement, downstream of
+    # all ten `os._exit(1)` sites. MEASURED, which is why this is a fix and not a
+    # tidy-up: p2r83, p2r84 and p2r86 hold no gen-diff artefact, and rounds whose
+    # numeric rungs failed are exactly the rounds with the least idea what is wrong.
+    #
+    # THE ORDER IS NOW: every instrument speaks -> the eye looks -> the stops are
+    # taken. A stop still stops; it just no longer takes the eye down with it.
+    _stops = []
+    # ---- THE ROUND RECEIPT (item F, 2026-08-27). Every rung below already knows whether
+    # it ran; nothing wrote it down, so an order about a RECURRING ACTION could only ever
+    # be asserted against the continued existence of a source file. Handles are nulled
+    # here and read once at the end, so no rung's call site has to remember to report —
+    # a reporting step a caller must remember is the defect this receipt exists to close.
+    _ex = _cy = _dm = _sr = _lr = _br = _xr = _dl = None
+    _gd_ran = False
+
+    def _stop(tag):
+        """Record a refusal. The `print("BUILD FAILED: ...")` above each call site
+        is untouched, so no reason loses a word; `tag` only names the row in the
+        end-of-round summary."""
+        _stops.append(tag)
+
     dump_path = os.path.join(out, f"room_{name}.scene.json")
     objs = scene_dump.dump()
     _dump_doc = {"blend": bpy.data.filepath, "schema": "scene-dump@2",
@@ -346,9 +414,33 @@ def _score_deliverable(name, quick=False, frame=True):
         # would drag layer 1 into layer 2 (pipeline/CLAUDE.md).
         try:
             import id_mask
+            # SCOPE DERIVED FROM THE FRUSTUM, NOT FROM TWO NAME PREFIXES (2026-08-27,
+            # ORD-2026-08-27-every-round-sees-what-it-changed). This call passed
+            # ("bed__", "bench__") and therefore declared 9 ids for a 564-mesh scene:
+            # the tonal ladder, bed_pixels and every object-level pixel number on this
+            # lane were reading 1.6% of the picture. R9b's sentence, which this repo
+            # wrote about a different guard and did not re-apply here: "a rule that
+            # names the objects it applies to will always exempt the next one."
+            #
+            # SMALLEST FIRST, and that ordering is the point rather than a tiebreak.
+            # The palette holds 215 ids and the frustum holds ~217 objects, so a few
+            # must go; the question the mask exists to answer is which things are too
+            # SMALL to read, so the room shell (floor, ceiling, walls — the largest
+            # boxes, and the ones nobody needs a mask to identify) is what may fall
+            # off the end. Anything dropped is named in the sidecar, never silent.
+            def _vol(o):
+                b = o.get("aabb")
+                if not b:
+                    return float("inf")
+                (x0, y0, z0), (x1, y1, z1) = b
+                return abs(x1 - x0) * abs(y1 - y0) * abs(z1 - z0)
+            _targets = [o["name"] for o in
+                        sorted((o for o in objs
+                                if o.get("in_frustum") and not o.get("hidden_render")),
+                               key=_vol)]
             id_mask.build_mask(
-                os.path.join(out, f"room_{name}.idmask.png"), ("bed__", "bench__"),
-                wears=_wears)
+                os.path.join(out, f"room_{name}.idmask.png"),
+                wears=_wears, names_in=_targets)
         except Exception as _e:                         # noqa: BLE001
             print(f"  ID MASK FAILED ({type(_e).__name__}: {_e}) — the tonal "
                   f"ladder will print NOT RUN, never a pass")
@@ -357,6 +449,16 @@ def _score_deliverable(name, quick=False, frame=True):
         print("BUILD FAILED: no plain python interpreter on PATH to run "
               "deliverable_check (Blender's has no PIL/numpy). Refusing to finish a "
               "deliverable render whose scene rows could not be started.")
+        _stop("no plain python interpreter on PATH")
+        # THE ONE STOP THAT IS STILL TAKEN ON THE SPOT, and it is not an exception
+        # to the rule above — it is the rule's own test applied honestly. Every rung
+        # below spawns `[py, ...]`; with `py` None they do not fail, they raise
+        # TypeError and lose the round to a traceback. There is nothing left here to
+        # silence, so continuing would buy nothing and cost the clean refusal.
+        # The eye still goes first: `_gen_diff` finds its own interpreter and, on a
+        # machine with none, prints NOT RUN with that reason rather than staying mute.
+        if frame and not quick:
+            _gen_diff(name)
         sys.stdout.flush()
         os._exit(1)
     # ---- R10 EXISTENCE (p2r49): every object in the frame carries a written verdict,
@@ -380,13 +482,11 @@ def _score_deliverable(name, quick=False, frame=True):
             print(f"R10 !! {ln}")
         print("BUILD FAILED: the R10 existence rung COULD NOT RUN. A gate that could "
               "not look must never read like one that looked and was satisfied.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("R10 existence COULD NOT RUN")
     if _ex.returncode == 1:
         print("BUILD FAILED: R10 existence — objects in this frame are not justified, "
               "or the ledger says something the built scene refutes.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("R10 existence")
     # ---- CARRY (p2r85, P2r-28): WHAT HOLDS EACH MASS UP. This is the wiring
     # qa/coverage-map.json's own `room_lane_debt` row has named since 2026-08-24 —
     # `placement_check` is DECLARED blocking there and has never once been spawned
@@ -416,14 +516,12 @@ def _score_deliverable(name, quick=False, frame=True):
             print(f"CARRY !! {ln}")
         print("BUILD FAILED: the carrier rung COULD NOT RUN. A gate that could not "
               "ask what holds a mass up must never read like one that asked.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("carrier rung COULD NOT RUN")
     if _cy.returncode == 1:
         print("BUILD FAILED: a mass in this scene is carried by nothing and has no "
               "row in qa/carry-ledger.json saying what is being done about it "
               "(P2r-28). A part that cannot be built must not ship in a frame.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("a mass carried by nothing")
     # ---- FRONT DOOR — built dims vs WORLD standards (ORD-2026-08-22-front-door-dims,
     # owner "ลุย" on docs/owner-advice-2026-08-22.md; admitted per D-112 as the class
     # only his eye had an instrument for: bed 0.58x at p2r52, garments 570-637 mm at
@@ -445,14 +543,12 @@ def _score_deliverable(name, quick=False, frame=True):
             print(f"DIMS !! {ln}")
         print("BUILD FAILED: the front-door dim rung COULD NOT RUN. A gate that "
               "could not look must never read like one that looked and was fine.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("front-door dim rung COULD NOT RUN")
     if _dm.returncode == 1:
         print("BUILD FAILED: built dimensions violate a world standard with no "
               "signed deficit (ORD-2026-08-22-front-door-dims). The absent thing "
               "is honest; the wrong-sized thing fabricates a reading.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("built dimensions violate a world standard")
     # ---- SHEET-FIRST — the DRAWING against the BUILD (R12 / ORD-2026-08-11-sheet-first,
     # owner "คุณมองแบบออกมั้ย?"). R12 says in its own words that an in-frustum drawn mass
     # with no match and no signed gap FAILS THE RENDER GATE. That could only ever be
@@ -480,14 +576,12 @@ def _score_deliverable(name, quick=False, frame=True):
             print(f"DRW !! {ln}")
         print("BUILD FAILED: the sheet-recon rung COULD NOT RUN. A gate that could "
               "not open the drawing must never read like one that did.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("sheet-recon COULD NOT RUN")
     if _sr.returncode == 1:
         print("BUILD FAILED: a mass the DRAWING draws is in frustum with no match "
               "and no signed gap (R12). The sheet outranks every derivation of "
               "ours — the conflict reopens the derivation, never the sheet.")
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("a DRAWN mass in frustum with no match")
     cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "deliverable_check.py"), "--scene-dump", dump_path]
     if frame and not quick:
@@ -518,8 +612,7 @@ def _score_deliverable(name, quick=False, frame=True):
         for ln in (r.stderr or "").splitlines()[-6:]:
             print(f"SCORE !! {ln}")
         print("BUILD FAILED: " + msg)
-        sys.stdout.flush()
-        os._exit(1)
+        _stop("deliverable score")
 
     # ---- THE TONAL LADDER'S DECODE HALF (p2r31; see the id-mask block above for
     # why this rung exists at all). Spawned for the same layer reason as
@@ -662,6 +755,80 @@ def _score_deliverable(name, quick=False, frame=True):
     elif frame and not quick:
         print("P2EXIT -- NOT RUN: no beauty frame or scene dump beside this render")
 
+    # ---- WHAT THIS ROUND CHANGED IN THE PICTURE (delta.py; owner order 2026-08-27,
+    # item E). Until this line existed, NOTHING in the automatic path compared this
+    # round's frame to the previous round's PIXELS. Four rungs do compare
+    # round-over-round — audit_continuity, existence_check's unrowed high-water,
+    # debt_check's ratchet against git HEAD, bed_pixels' scalar baseline — and all
+    # four compare stored numbers or JSON. So "this round changed nothing visible"
+    # had no reader, and p2r86 had to discover it from a scene dump's `occluded`
+    # flag: a declaration ABOUT the picture, which is the exact shape R11 names.
+    #
+    # It is a REPORT and never a stop — it says what happened, it does not judge
+    # whether that was enough (that is his eye, R3). Spawned out of process for the
+    # layer reason every pixel rung here is: PIL + numpy are not in Blender's
+    # bundled Python. Exit 2 prints as COULD NOT RUN, which for THIS rung is the
+    # load-bearing case: "no previous frame" and "nothing changed" both want to
+    # print a zero and they mean opposite things.
+    if frame and os.path.isfile(_beauty):
+        _dl = subprocess.run(
+            [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "delta.py"), _beauty],
+            capture_output=True, text=True, encoding="utf-8",
+            errors="replace", env=env)
+        for ln in (_dl.stdout or "").splitlines():
+            print(f"DELTA {ln}")
+        if _dl.returncode not in (0, 2):
+            for ln in (_dl.stderr or "").splitlines()[-4:]:
+                print(f"DELTA !! {ln}")
+            print(f"DELTA -- exited {_dl.returncode}, which this rung does not "
+                  f"define — treat as not measured, never as no change")
+    elif frame:
+        print("DELTA -- NOT RUN: no beauty frame beside this render")
+
+    # ---- THE EYE, AND IT RUNS BEFORE ANY STOP IS TAKEN (owner order 2026-08-27).
+    # This call used to be the CALLER's last statement, downstream of every
+    # `os._exit(1)` in this function, so a round that failed a numeric rung shipped
+    # with nothing but numbers to explain itself. It is deliberately the LAST
+    # instrument (it is a paid network call and the slowest thing here) and the
+    # FIRST thing after them: every measurement has spoken, and now something with
+    # an eye looks, whatever the measurements said. Non-fatal by its own contract —
+    # `_gen_diff` prints NOT RUN with a reason and returns.
+    if frame and not quick:
+        _gen_diff(name)
+        _gd_ran = True
+
+    # ---- THE RECEIPT, WRITTEN BEFORE THE STOPS so a refused round still leaves evidence
+    # of what it ran. A round that fails is the round whose record matters most, and the
+    # first version of the eye rung was lost to exactly this ordering (item D).
+    try:
+        import round_receipt as _RR
+        _rc = _RR.new(name, quick=quick, frame=frame)
+        _RR.note(_rc, "rule_gate", True)          # pre-render, blocking; it got us here
+        _RR.note(_rc, "id_mask", os.path.isfile(_idm),
+                 measured=(json.load(open(_idj, encoding="utf-8")).get("source", {})
+                           .get("measured") if os.path.isfile(_idj) else None))
+        for _nm, _res_ in (("existence_check", _ex), ("carry_check", _cy),
+                           ("dim_check", _dm), ("sheet_recon", _sr),
+                           ("deliverable_check", locals().get("r")),
+                           ("value_probe", _lr), ("bed_pixels", _br),
+                           ("p2_exit", _xr), ("delta", _dl)):
+            if _res_ is None:
+                _RR.note(_rc, _nm, False, why="not reached on this rung/branch")
+            else:
+                _RR.note(_rc, _nm, True, exit_code=_res_.returncode)
+        _RR.note(_rc, "gen_diff", _gd_ran,
+                 why=None if _gd_ran else "full-fidelity eye frames only (R5)")
+        _RR.write(_rc, os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__)))))   # same walk as rule_gate:59
+        print(_RR.summary(_rc))
+    except Exception as _re:                      # noqa: BLE001
+        # A receipt that cannot be written must SAY so — a silent absence would read
+        # exactly like a round that never ran, which is the ambiguity it exists to end.
+        print(f"  RECEIPT NOT WRITTEN ({type(_re).__name__}: {_re}) — this round left "
+              f"no machine-readable evidence of what it ran")
+
+    # ---- THE STOPS, ALL OF THEM, TAKEN TOGETHER AND LAST.
     # THE LADDER'S STOP, TAKEN LAST so every other instrument above has spoken.
     # It is a HARD STOP and not a score, unlike deliverable_check (a standard the
     # phases exist to climb) and p2_exit (a declared cut): the tonal ladder is the
@@ -672,6 +839,19 @@ def _score_deliverable(name, quick=False, frame=True):
     # other instrument has now spoken. It is a HARD STOP because what raises it is
     # never a matter of degree — either the mattress is showing MORE than the
     # recorded baseline, or an object over it wears a material no role claims.
+    #
+    # THE TEN RUNGS ABOVE come first, because they are the ones that used to exit
+    # on the spot. Their reasons are already printed at their own call sites; this
+    # names them together so a round that broke four things is told about four.
+    if _stops:
+        print(f"BUILD FAILED: {len(_stops)} rung(s) refused this frame — "
+              + "; ".join(_stops))
+        print("  (each reason is printed in full at its own rung above; the eye "
+              "ran before this stop was taken, so the round has a look as well as "
+              "a verdict)")
+        sys.stdout.flush()
+        os._exit(1)
+
     if _bed_stop and frame and not quick:
         print(f"BUILD FAILED: {_bed_stop}")
         # AND THE LADDER'S REASON TOO, if it also fired. These are two separate
@@ -902,6 +1082,23 @@ def _environment(warm=False):
 
 
 MILL_BEVEL_M = 0.0012   # joinery arris: a cabinet edge is nearly sharp, not a 5mm round-over
+
+# A REPEATING FIELD OF STICKS IS ONE MESH (owner 2026-08-27, "ค"; D-164). BF14 carries 77
+# battens, each ~10 px wide on the delivered frame — 37% of the id palette and 77 rows of
+# every census, for members no rung and no eye ever addresses one at a time.
+#
+# BOTH CUTS ARE MEASURED, NOT CHOSEN, and the section cut is the one that matters: a bare
+# count would ALSO have swallowed the bookshelf's 18 shelves, and a shelf is an ANCHOR —
+# styling puts objects on a named shelf, so merging them would break the thing that places
+# books. Measured across every built-in in the canonical spec:
+#     BF14 battens      x77   two minor dims  12 x  27 mm   <- a stick
+#     bookshelf shelves x18   two minor dims  18 x 576 mm   <- a surface
+#     bookshelf verts   x4    two minor dims  18 x 600 mm   <- a surface
+#     BF09-3 sockets    x6    two minor dims  14 x  48 mm   <- a stick, but only 6
+# 60 mm sits between 27 and 576 with a 21x margin on the side that matters; 12 excludes the
+# socket group. Neither number is near anything it has to separate.
+MERGE_FIELD_MIN = 12          # members before a repeat is a FIELD and not a few named parts
+MERGE_FIELD_SECTION_M = 0.060  # a member this slender in BOTH minor dims is a stick, not a shelf
 
 # ELEMENT 8: the styling layer's anchor registry — every millwork part the build actually
 # emitted, in absolute metres. Filled by _build_millwork and by the wardrobe-bay routes;
@@ -2814,6 +3011,119 @@ def _veneer(name, rgba, rough):
     mr2.inputs["To Max"].default_value = min(1.0, rough + 0.06)
     nt.links.new(gz.outputs["Fac"], mr2.inputs["Value"])
     nt.links.new(mr2.outputs["Result"], bsdf.inputs["Roughness"])
+    return m
+
+
+def _slat_design_mm(spec):
+    """The batten rhythm, read from the SAME design block millwork read (D-164).
+
+    Falls back to millwork's own defaults so a spec with no headboard block cannot
+    produce a stripe pitch invented here — one definition of the rhythm, in the layer
+    that owns it.
+    """
+    import millwork as _mw
+    d = {}
+    for b in ((spec or {}).get("builtins") or []):
+        if b.get("kind") == "headboard":
+            d = b.get("design") or {}
+            break
+    return {"face": float(d.get("slat_face_mm", _mw.SLAT_W * 1000.0)),
+            "gap": float(d.get("slat_gap_mm", _mw.SLAT_GAP * 1000.0)),
+            "depth": float(d.get("slat_depth_mm", _mw.SLAT_PR * 1000.0))}
+
+
+def _backing_rgba(backing=None):
+    """The signed matte-black ply backer colour — what the eye saw in the reveal between
+    two battens.
+
+    READ FROM THE PRESET, NOT FROM THE BUILT MATERIAL, and the first version got this
+    wrong in the way this repo gets it wrong most often. `m_mill_backing` renders through
+    a PHOTO preset, so its Base Color is driven by an image texture and the BSDF socket's
+    `default_value` is Blender's unused 0.8 grey. Reading it returned (0.8, 0.8, 0.8) —
+    a groove BRIGHTER than the oak it sits between — and the whole signature wall
+    rendered as a pale wash. A default_value on a linked socket is not what renders; it
+    is what would render if nothing were connected.
+    """
+    return _matpre.srgb_hex_to_linear_rgba(
+        _matpre.PRESETS["matte_black_ply"]["hex"], clamp_band=False)
+
+
+def _slat_rhythm(m, axis, origin_m, pitch_m, face_m, groove_rgba, depth_m=0.012):
+    """Put a batten rhythm INTO a material — owner decision 2026-08-27, D-164.
+
+    BF14's 77 battens became one panel (millwork.SLAT_FIELD_AS_TEXTURE), so the rhythm
+    the geometry used to carry has to arrive here. Every number comes from the SAME
+    design block the geometry read (`slat_face_mm` / `slat_gap_mm` / `slat_depth_mm`)
+    and the field's own origin — nothing is tuned by eye, so the stripes land exactly
+    where the battens stood.
+
+    A SQUARE WAVE FROM MATH NODES, not a Wave texture: Wave's Scale-to-period mapping
+    is a thing I would have to guess, and a phase error here shifts every groove off
+    the battens it replaces. `frac(x/pitch) >= face/pitch` is exact and reads the same
+    in the file as it does in the render.
+
+    THE GROOVE IS THE BACKER'S COLOUR, not "darker oak". What the eye saw between two
+    battens was 12 mm of matte-black ply behind them, so that is what the stripe paints
+    — the same trade the geometry made, in albedo.
+
+    Object coordinates ARE world metres here: add_box bakes world positions into the
+    mesh and leaves the object at the origin.
+    """
+    nt, bsdf = _principled(m)
+    if not bsdf:
+        return m
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(tc.outputs["Object"], sep.inputs["Vector"])
+    sub = nt.nodes.new("ShaderNodeMath"); sub.operation = "SUBTRACT"
+    nt.links.new(sep.outputs[{"x": 0, "y": 1, "z": 2}[axis]], sub.inputs[0])
+    sub.inputs[1].default_value = float(origin_m)
+    mod = nt.nodes.new("ShaderNodeMath"); mod.operation = "MODULO"
+    nt.links.new(sub.outputs["Value"], mod.inputs[0])
+    mod.inputs[1].default_value = float(pitch_m)
+    gt = nt.nodes.new("ShaderNodeMath"); gt.operation = "GREATER_THAN"
+    nt.links.new(mod.outputs["Value"], gt.inputs[0])
+    gt.inputs[1].default_value = float(face_m)          # 1.0 inside the GROOVE
+
+    # ---- albedo: mix the groove colour OVER whatever already drives Base Color.
+    # INSERTED, never replaced: the oak is a photographed surface and dropping its
+    # map to paint stripes would trade the defect for a worse one (flat millwork is
+    # the judge datapoint this material exists to answer).
+    mix = nt.nodes.new("ShaderNodeMixRGB")
+    mix.blend_type = "MIX"
+    prev = next((lk for lk in nt.links if lk.to_socket is bsdf.inputs["Base Color"]), None)
+    if prev is not None:
+        src = prev.from_socket
+        nt.links.remove(prev)
+        nt.links.new(src, mix.inputs["Color1"])
+    else:
+        mix.inputs["Color1"].default_value = tuple(bsdf.inputs["Base Color"].default_value)
+    mix.inputs["Color2"].default_value = tuple(groove_rgba)
+    nt.links.new(gt.outputs["Value"], mix.inputs["Fac"])
+    nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+
+    # ---- relief: the face stands proud, the groove is recessed. Bump cannot hold a
+    # real 12 mm step and is not asked to — at ~10 px per batten it only has to keep
+    # the transition from reading as printed-on.
+    inv = nt.nodes.new("ShaderNodeMath"); inv.operation = "SUBTRACT"
+    inv.inputs[0].default_value = 1.0
+    nt.links.new(gt.outputs["Value"], inv.inputs[1])
+    bp = nt.nodes.new("ShaderNodeBump")
+    bp.inputs["Strength"].default_value = 0.6
+    try:
+        bp.inputs["Distance"].default_value = float(depth_m)
+    except Exception:
+        pass
+    nprev = next((lk for lk in nt.links if lk.to_socket is bsdf.inputs["Normal"]), None)
+    if nprev is not None:
+        src = nprev.from_socket
+        nt.links.remove(nprev)
+        try:
+            nt.links.new(src, bp.inputs["Normal"])      # ride ON the existing normal
+        except Exception:
+            pass
+    nt.links.new(inv.outputs["Value"], bp.inputs["Height"])
+    nt.links.new(bp.outputs["Normal"], bsdf.inputs["Normal"])
     return m
 
 
@@ -6741,6 +7051,29 @@ def _suite_materials(spec=None):
             # oak carcass. mill_object_role is pure (material_presets) so a plain-box fallback whose
             # spec name happens to contain 'front' is NOT mis-painted (it has no part token).
             _role = _matpre.mill_object_role(n)
+            if _role == "slatfield":
+                # D-164 (owner 2026-08-27, "Texture"). ONE material per field object,
+                # because the stripe's PHASE is a property of where that panel actually
+                # stands: derived from the object's own bbox, never typed. Same law as
+                # R9 — the origin can be read off the built thing, so it is not a number
+                # anybody gets to enter.
+                # add_box bakes WORLD coordinates into the mesh and leaves the object at
+                # the origin, so bound_box is already world metres — no matrix needed.
+                _xs = [c[0] for c in obj.bound_box]
+                _ys = [c[1] for c in obj.bound_box]
+                _ax = "y" if (max(_ys) - min(_ys)) >= (max(_xs) - min(_xs)) else "x"
+                _o = min(_ys) if _ax == "y" else min(_xs)
+                _sf = _slat_design_mm(spec)
+                # A COPY, not the shared oak. `_pick` returns the material BY NAME, so
+                # re-calling it would hand back `mill` itself and _slat_rhythm would
+                # then stripe every carcass, gable and shelf in the room.
+                _fm = mill.copy()
+                _fm.name = "m_millwork_oak_slatfield"
+                obj.data.materials.append(_slat_rhythm(
+                    _fm, _ax, _o,
+                    (_sf["face"] + _sf["gap"]) / 1000.0, _sf["face"] / 1000.0,
+                    _backing_rgba(backing), _sf["depth"] / 1000.0))
+                continue
             obj.data.materials.append(
                 {"brass": brass, "microcement": cement, "backing": backing,
                  "caesarstone": caesar, "mirror": mirror,
@@ -7080,8 +7413,35 @@ def _add_e5_lights(spec, h_m):
     n += 1
     _sc_body = _solid("e5_sconce_body", (0.60, 0.44, 0.20, 1.0), rough=0.32,
                       metallic=1.0, spec=0.6, aniso=0.65)
+    # ---- THE SCONCE HEIGHT DERIVES FROM THE HEADBOARD IT MUST CLEAR (owner 2026-08-27,
+    # "ย้าย"; D-166). `element5_lighting.SCONCE_Z_MM = 1550` is a typed constant whose own
+    # comment says it "clears nightstand + lamp" — it was derived against the WRONG mass.
+    # The headboard is an ACQUIRED model and grew: measured on p2r85 it tops out at
+    # z=1.666 while the sconce body spans 1.480-1.620, so BOTH fixtures sat entirely
+    # behind it. Every ray from the detail camera confirmed it (bed__headboard, 9 of 9).
+    #
+    # This is the datum cascade R9 was written about: a coordinate is always a legal
+    # coordinate, so when the thing it was measured against was replaced, nothing failed.
+    # The fix is not a bigger number — it is the RELATIONSHIP. The constant stays as a
+    # FLOOR (the nightstand clearance is still a real constraint); the headboard's own top
+    # face supplies the other, and whichever is higher wins.
+    _hb = bpy.data.objects.get("bed__headboard")
+    _hb_top = None
+    if _hb is not None and _hb.type == 'MESH' and _hb.data.vertices:
+        _hb_top = max((_hb.matrix_world @ _v.co).z for _v in _hb.data.vertices)
     for s in plan["sconces"]:
         sx, sy, sz = s["x"] * MM, s["y"] * MM, s["z"] * MM
+        if _hb_top is not None:
+            # 12 mm is the reveal this room's own DD signed for BF14 (the owner's
+            # engineering call 2026-07-16c, "12 / เสา 63") — the gap this design already
+            # uses where two planes must read as separate, borrowed rather than invented.
+            _need = _hb_top + 0.012 + 0.070          # + the body's own half-height
+            if _need > sz:
+                print(f"  E5 SCONCE {s['name']}: z {sz * 1000:.0f} -> "
+                      f"{_need * 1000:.0f} mm — DERIVED from the built headboard top "
+                      f"({_hb_top * 1000:.0f}) + the signed 12 mm reveal. The typed "
+                      f"{sz * 1000:.0f} was measured against the nightstand, not this.")
+                sz = _need
         # body: a brass cylinder standing 70mm off the slat face
         _cyl_frustum(s["name"], sx - 0.045, sy, 0.030, 0.030, sz - 0.070, sz + 0.070,
                      _sc_body, seg=16)
@@ -10484,7 +10844,47 @@ def _build_millwork(name, kind, x0, y0, z0, W, D, H, room_ctr, item_ctrs=(), fac
                                     open_front=bool(open_front), design=design)
     if not parts:
         return False                                 # panel / wall-hung low piece -> flush box
-    for pn, px, py, pz, dx, dy, dz in parts:
+    # THE BATTEN FIELD IS ONE OBJECT, AND EVERY VERTEX IS UNCHANGED (owner 2026-08-27
+    # "ค", D-164). The battens are still real geometry with real reveals, real contact
+    # shadows and real specular — they are simply carried in one mesh instead of 77.
+    # DERIVED FROM THE PART, NOT FROM A LIST OF NAMES: a member is a batten if it is one
+    # of MANY parts sharing an identical section, which is what a batten field IS. R9b's
+    # sentence is why this is not a name match — "a rule that names the objects it
+    # applies to will always exempt the next one", and the next slat wall will not be
+    # called BF14.
+    _sec = {}
+    for _i, _p in enumerate(parts):
+        _sec.setdefault((round(_p[4], 6), round(_p[5], 6), round(_p[6], 6)), []).append(_i)
+    _band = max(_sec.values(), key=len) if _sec else []
+    if _band:
+        _s = sorted((round(parts[_band[0]][4], 6), round(parts[_band[0]][5], 6),
+                     round(parts[_band[0]][6], 6)))[:2]
+        if len(_band) < MERGE_FIELD_MIN or _s[1] > MERGE_FIELD_SECTION_M:
+            _band = []                               # a few named parts, or a surface
+    if _band and os.environ.get("BUILD_ROOM_NO_FIELD_MERGE") == "1":
+        # THE CONTROL LEG, and it exists because the claim needs one. "Merging changes no
+        # vertex, so the render is identical" is falsifiable only against a frame built
+        # from THIS tree with the merge off — an older round is not a control, it is a
+        # different build (p2r87_ql predates the round-rail change and differs at 27.8%
+        # of pixels for reasons that have nothing to do with this).
+        print("  [A/B] field merge OFF by BUILD_ROOM_NO_FIELD_MERGE=1 — control leg")
+        _band = []
+    _bandset = set(_band)                            # INDICES: the loop below rebuilds the
+    #                                                  tuples, so identity would never match
+    if _band:
+        _bn = f"mill__{name}__slats"
+        o = add_boxes(_bn, [(x0 + parts[i][1], y0 + parts[i][2], z0 + parts[i][3],
+                             parts[i][4], parts[i][5], parts[i][6]) for i in _band])
+        o["mill_bevel"] = MILL_BEVEL_M
+        _STYLE_ANCHORS.append({"name": o.name, "piece": name, "part": "slats", "kind": kind,
+                               "x": x0 + parts[_band[0]][1], "y": y0 + parts[_band[0]][2],
+                               "z": z0 + parts[_band[0]][3], "dx": parts[_band[0]][4],
+                               "dy": parts[_band[0]][5], "dz": parts[_band[0]][6]})
+        print(f"  millwork '{name}': {len(_band)} identical members carried as ONE mesh "
+              f"({_bn}) — same vertices, 1 object instead of {len(_band)}")
+    for _idx, (pn, px, py, pz, dx, dy, dz) in enumerate(parts):
+        if _idx in _bandset:
+            continue                                 # already in the merged field mesh
         # SHAPE IS DERIVED FROM THE PART, never from its name (P2r-28 / R9b). A square
         # section many times longer than itself is a rod — across every kind this module
         # builds, that selects the hang rails and nothing else.
@@ -10498,9 +10898,14 @@ def _build_millwork(name, kind, x0, y0, z0, W, D, H, room_ctr, item_ctrs=(), fac
         # derives from it instead of from a number in a file. A garment must hang off the
         # rail that exists; if the rail stops being built, styling RAISES rather than
         # shipping a bare bar under prose that says otherwise (the e7 wound).
+        # D-169: the styling layer places contents INSIDE a cell against the piece's own
+        # front, and the front is DERIVED here (millwork.mill_axis, twelve lines above)
+        # rather than typed downstream — R9. Without it `_bay_content_pose` refuses to
+        # guess a depth side and centres, which is the behaviour it prints.
         _STYLE_ANCHORS.append({"name": o.name, "piece": name, "part": pn, "kind": kind,
                                "x": x0 + px, "y": y0 + py, "z": z0 + pz,
-                               "dx": dx, "dy": dy, "dz": dz})
+                               "dx": dx, "dy": dy, "dz": dz,
+                               "front": (axis, sign) if axis is not None else None})
     faces = {("x", 1): "E", ("x", -1): "W", ("y", 1): "N", ("y", -1): "S"}
     if src == "declared-cross-run":
         # The owner still WINS (we never override a signature) — but a wardrobe opened along its
@@ -12132,17 +12537,122 @@ def build_suite(spec, label="suite"):
         name += "_" + quicklook.QUICK_SUFFIX
         print(f"  QUICK-LOOK rung (R5): samples={_samples} res={_res} — a pass here "
               f"kills/continues work; only the full-fidelity pair closes a gate")
+    # ---- A DETAIL VIEW, AIMED BY THE OBJECT (owner order 2026-08-27, item B; D-165).
+    # Solved HERE and not from a spec block because the subject is a BUILT object: the
+    # sconce, the batten, the bought bag exist only after the scene is assembled, which
+    # is exactly why 16 hand-named spec cameras rescue 8 of the 109 illegible masses.
+    # The camera is derived end to end (detail.solve_detail_camera) — aim from the
+    # object's own world AABB, direction from the hero stand so the SAME face is shown,
+    # distance solved as the closest stand that still holds the whole object.
+    _dobj = globals().get("_DETAIL_OBJ")
+    if _dobj:
+        import detail as _DT
+        _o = bpy.data.objects.get(_dobj)
+        if _o is None:
+            print(f"BUILD FAILED: --detail={_dobj!r} names no object in the built scene")
+            sys.stdout.flush()
+            os._exit(1)
+        _w = [_o.matrix_world @ _v.co for _v in _o.data.vertices] if _o.type == 'MESH' else []
+        if not _w:
+            print(f"BUILD FAILED: --detail={_dobj!r} has no vertices to aim at")
+            sys.stdout.flush()
+            os._exit(1)
+        _aabb = ((min(p.x for p in _w), min(p.y for p in _w), min(p.z for p in _w)),
+                 (max(p.x for p in _w), max(p.y for p in _w), max(p.z for p in _w)))
+        # READ `.location`, NOT `matrix_world.translation`, AND THE DIFFERENCE COST A
+        # WRONG ANSWER. `matrix_world` is lazily evaluated: at this point in the build
+        # nothing has forced a depsgraph update since the camera was authored, so it
+        # still reads (0, 0, 0). The detail camera was then solved against a hero at the
+        # world origin, its stand landed at z=0 — exactly ON the floor plane — and the
+        # occlusion raycast self-hit, reporting `floor (9/9)` as the thing hiding a
+        # sconce 1.5 m up. A probe on the saved .blend named the real occluder in one
+        # pass: bed__headboard, 9 of 9 rays. Same defect family as reading a Principled
+        # socket's `default_value` while an image texture drives it — a value that is
+        # not the value that is in force.
+        bpy.context.view_layer.update()
+        _hcam = bpy.context.scene.camera
+        _hero = {"ex": _hcam.location.x, "ey": _hcam.location.y,
+                 "eye_h": _hcam.location.z,
+                 "tx": _hcam.location.x + 1.0, "ty": _hcam.location.y,
+                 "lens_mm": _hcam.data.lens,
+                 "shift_y": 0.0, "res_w": _res[0], "res_h": _res[1]}
+        if abs(_hero["eye_h"]) < 1e-6:
+            # A hero camera on the floor plane is not a camera; refusing here is what
+            # turns the silent wrong answer above into a stop.
+            print("BUILD FAILED: the hero camera reads z=0 — the detail solver would "
+                  "aim from the floor plane and every occlusion ray would self-hit")
+            sys.stdout.flush()
+            os._exit(1)
+        try:
+            _dc, _di = _DT.solve_detail_camera(_aabb, _hero, res=tuple(_res))
+        except _DT.CannotAim as _e:
+            # COULD NOT AIM IS NOT A BAD VIEW — it is no view, and it exits 1 rather
+            # than rendering the hero frame under a detail name (R11's sentence).
+            print(f"BUILD FAILED: DETAIL COULD NOT AIM at {_dobj!r} — {_e}")
+            sys.stdout.flush()
+            os._exit(1)
+        from mathutils import Vector as _V
+        _cam = bpy.context.scene.camera
+        # SAME CONVENTION AS add_suite_eye_camera, and it has to be: a detail view that
+        # tilted would not be diagnosing the geometry the level hero camera renders.
+        _eye = _V((_dc["ex"], _dc["ey"], _dc["eye_h"]))
+        _tgt = _V((_dc["tx"], _dc["ty"], _dc["eye_h"]))   # LEVEL look -> two-point kept
+        _cam.location = _eye
+        _cam.rotation_euler = (_tgt - _eye).to_track_quat('-Z', 'Y').to_euler()
+        _cam.data.lens = _dc["lens_mm"]
+        _cam.data.shift_y = _dc["shift_y"]
+        # ---- IS THE SUBJECT ACTUALLY VISIBLE FROM THE SOLVED STAND? A detail view of a
+        # thing standing behind something else is a picture of the something else, and
+        # the first one rendered was exactly that: the sconce solved to a clean 0.37 m
+        # stand and came back as a black silhouette, because the headboard is in the way.
+        # THE OCCLUSION IS THE FINDING, so it is named rather than left for a human to
+        # notice — "could not look" must never print like "looked" (R11).
+        _dep = bpy.context.evaluated_depsgraph_get()
+        _seen, _blockers = 0, {}
+        for _c in _DT._corners(_aabb) + [_DT._centre(_aabb)]:
+            _tgt2 = _V(_c)
+            _dir = (_tgt2 - _eye)
+            _len = _dir.length
+            if _len < 1e-6:
+                continue
+            _hit, _loc, _nrm, _idx, _ob, _mw = bpy.context.scene.ray_cast(
+                _dep, _eye, _dir.normalized(), distance=_len - 1e-4)
+            if not _hit or (_ob is not None and _ob.name == _dobj):
+                _seen += 1
+            elif _ob is not None:
+                _blockers[_ob.name] = _blockers.get(_ob.name, 0) + 1
+        if _seen == 0:
+            _top = sorted(_blockers.items(), key=lambda t: -t[1])[:3]
+            print(f"  DETAIL !! {_dobj} is NOT VISIBLE from any solved stand on the "
+                  f"hero's side — every ray is stopped first by: "
+                  + ", ".join(f"{n} ({c}/9)" for n, c in _top))
+            print(f"  DETAIL !! this frame is a picture of the OCCLUDER, not of the "
+                  f"subject. That is the finding: the object cannot be judged from the "
+                  f"delivered camera's side because something stands in front of it.")
+            name = "OCCLUDED_" + name
+        else:
+            print(f"  DETAIL: subject visible on {_seen}/9 rays from the solved stand")
+        # THE PREFIX IS THE ENFORCEMENT. A detail frame may diagnose and may never close
+        # a work item, and the cheapest place to make that true is the filename every
+        # closing rung reads.
+        name = "detail_" + _dobj.replace(" ", "_") + "__" + name
+        print(f"  DETAIL VIEW of {_dobj}: {_di['hero_short_px']:.1f} px on the hero "
+              f"camera -> {_di['short_px']:.1f} px from {_di['stand_m']:.2f} m "
+              f"({_di['short_px'] / max(1e-6, _di['hero_short_px']):.1f}x). DIAGNOSES "
+              f"ONLY — closure stays on the delivered frame and his eye (R3).")
     save(name, samples=_samples, res=_res)        # ONE source, so the .blend matches the PNG
     if spec.get("render"):
         render(name, samples=_samples, res=_res)
     if _eye_path:
+        # THE GEN-DIFF STEP MOVED INSIDE (owner order 2026-08-27, item D). It was
+        # here, and being here is what killed it: `_score_deliverable` holds ten
+        # `os._exit(1)` sites, so on any round a numeric rung refused, the process
+        # was gone before this line was reached. p2r83, p2r84 and p2r86 have no
+        # gen-diff artefact for exactly that reason. Its guard (full-fidelity eye
+        # frames only, ORD-2026-08-13, R5) is unchanged — it is now `frame and not
+        # quick` inside, which is these same two spec keys by another name.
         _score_deliverable(name, quick=bool(spec.get("_quick")),
                            frame=bool(spec.get("render")))
-        # THE ROUND'S LAST STEP, and it is his standing order (ORD-2026-08-13), not a
-        # flag. Full-fidelity frames only: a playblast is not the frame the protocol
-        # asks a question about, and R5 wants the quick rung cheap.
-        if spec.get("render") and not spec.get("_quick"):
-            _gen_diff(name)
     print(f"  built SUITE '{name}' {(max(xs)-min(xs)):.1f}x{(max(ys)-min(ys)):.1f}m + "
           f"{len(spec.get('builtins',[]))} built-ins + {len(spec.get('items',[]))} items")
     return f"OK: {label}"
@@ -12648,6 +13158,15 @@ if __name__ == "__main__":
         globals()["_EYECAM_NAME"] = _ecam
         _spec["_eye"] = True
         _spec["_suffix"] = _spec.get("_suffix") or _ecam
+    # --detail=<built object name>: a DIAGNOSTIC view aimed by the object (item B, D-165).
+    # It implies --eye (the hero camera is what it derives its direction from) and it is
+    # deliberately NOT a spec block: the subject is a built object, and a spec-side list of
+    # named views is the thing that was measured to rescue 8 of 109 illegible masses.
+    _dob = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--detail=")), None)
+    if _dob:
+        globals()["_DETAIL_OBJ"] = _dob
+        _spec["_eye"] = True
     _sfx_final = _spec.get("_suffix")
     if _sfx_final and (_sfx_final == quicklook.QUICK_SUFFIX
                        or str(_sfx_final).endswith("_" + quicklook.QUICK_SUFFIX)):
