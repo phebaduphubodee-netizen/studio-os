@@ -7442,6 +7442,30 @@ def _add_e5_lights(spec, h_m):
                       f"({_hb_top * 1000:.0f}) + the signed 12 mm reveal. The typed "
                       f"{sz * 1000:.0f} was measured against the nightstand, not this.")
                 sz = _need
+        # ---- CANOPY, and it is a carry relation rather than a decoration ------------
+        # carry_check refused the p2r89 and p2r90 frames over these two fixtures: 60x60x140
+        # boxes at z 1678..1818 that "nothing in this scene can hand their weight to",
+        # touching two masses with a carries-relation to neither. THE RUNG IS RIGHT — the
+        # body was a cylinder floating 15 mm clear of the slat face with no back plate, no
+        # canopy and no fixing, which is also the standing critic item "lamps with no
+        # anatomy" (P2r-29c) said in geometry instead of in words.
+        #
+        # THEY WERE CARRIED AT p2r85 AND LOST IT WITHOUT ANYTHING TOUCHING THEM: D-164
+        # merged the 77 BF14 battens into ONE datablock, so a sconce that used to sit
+        # against an individual batten now touches a single merged field it has no relation
+        # to. A merge that "changes no vertex" still changed what the scene can say about
+        # itself — worth keeping, because the merge's own A/B control was pixel-identical
+        # and could never have caught this.
+        #
+        # A real wall sconce lands a CANOPY on the wall plane and cantilevers the body off
+        # it. 40 mm deep: 10 mm let into the builtin face (so the canopy itself is carried
+        # by the wall, not resting against it) and 30 mm proud, which overlaps the body's
+        # back by 15 mm = 25% of the body's own 60 mm depth — clear of the 10% FIXED-IN
+        # containment cut P2r-30 is preparing, so this does not become carry debt the day
+        # that lands.
+        _cnp_d, _cnp_w = 0.040, 0.090
+        add_box(f"{s['name']}_canopy", sx - 0.030, sy - _cnp_w / 2.0, sz - _cnp_w / 2.0,
+                _cnp_d, _cnp_w, _cnp_w).data.materials.append(_sc_body)
         # body: a brass cylinder standing 70mm off the slat face
         _cyl_frustum(s["name"], sx - 0.045, sy, 0.030, 0.030, sz - 0.070, sz + 0.070,
                      _sc_body, seg=16)
