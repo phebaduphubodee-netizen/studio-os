@@ -103,6 +103,99 @@ class TestIntegrity(unittest.TestCase):
         self.assertEqual(fails, [])
         self.assertEqual(debts, [])
 
+    # ---- the third state: a pick that returned nothing (2026-08-28) -----------------
+    # Every expectation below is a literal. The state exists so that a video with NO usable
+    # content stops being a debt without anything being written into knowledge/ from a source
+    # that had nothing in it — and every test here is aimed at the way that state could rot
+    # into the cheap way out of a hard distillation.
+
+    def test_yield_none_with_reason_and_citation_clears_the_debt(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM returned no captions and its frames are "
+                                      "title cards; no usable content was obtained.")
+        fails, debts = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n,
+                    yield_none={"reason": "No English captions and every extracted frame is a "
+                                          "title card or a blank transition; nothing was said "
+                                          "or shown that could be quoted or measured.",
+                                "recorded_in": n})),
+            repo=self.tmp)
+        self.assertEqual(fails, [])
+        self.assertEqual(debts, [])
+
+    def test_yield_none_reason_that_is_a_token_is_refused_by_name(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        fails, _ = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n,
+                    yield_none={"reason": "nothing", "recorded_in": n})),
+            repo=self.tmp)
+        self.assertTrue(any("is a token, not a reason" in f for f in fails), fails)
+
+    def test_yield_none_short_reason_is_a_failure(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        fails, _ = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n,
+                    yield_none={"reason": "no captions, bad frames", "recorded_in": n})),
+            repo=self.tmp)
+        self.assertTrue(any("chars — under" in f for f in fails), fails)
+
+    def test_yield_none_recorded_in_must_cite_the_video_id_back(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        other = self._write("notes/b.md", "a unit about some entirely different video")
+        fails, _ = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n,
+                    yield_none={"reason": "No English captions and every extracted frame is a "
+                                          "title card or a blank transition; nothing usable.",
+                                "recorded_in": other})),
+            repo=self.tmp)
+        self.assertTrue(any("never mentions the video id" in f for f in fails), fails)
+
+    def test_yield_none_recorded_in_must_exist(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        fails, _ = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n,
+                    yield_none={"reason": "No English captions and every extracted frame is a "
+                                          "title card or a blank transition; nothing usable.",
+                                "recorded_in": "knowledge/nope.md"})),
+            repo=self.tmp)
+        self.assertTrue(any("recorded_in names a path that does not exist" in f
+                            for f in fails), fails)
+
+    def test_yield_none_needs_recorded_in_at_all(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        fails, _ = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n,
+                    yield_none={"reason": "No English captions and every extracted frame is a "
+                                          "title card or a blank transition; nothing usable."})),
+            repo=self.tmp)
+        self.assertTrue(any("no recorded_in" in f for f in fails), fails)
+
+    def test_yield_none_together_with_distilled_to_is_a_contradiction(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        d = self._write("knowledge/x.md", "kmCHv3PG2XM taught us a thing")
+        fails, _ = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n, distilled_to=d,
+                    yield_none={"reason": "No English captions and every extracted frame is a "
+                                          "title card or a blank transition; nothing usable.",
+                                "recorded_in": n})),
+            repo=self.tmp)
+        self.assertTrue(any("yielded something and nothing" in f for f in fails), fails)
+
+    def test_yield_none_on_an_unwatched_row_is_a_failure(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        fails, _ = vc.check(
+            led(row(yield_none={"reason": "No English captions and every extracted frame is a "
+                                          "title card or a blank transition; nothing usable.",
+                                "recorded_in": n})),
+            repo=self.tmp)
+        self.assertTrue(any("only a video somebody actually watched" in f for f in fails), fails)
+
+    def test_yield_none_must_be_an_object_not_a_flag(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        fails, _ = vc.check(
+            led(row(status="watched", watched_at="2026-08-28", notes=n, yield_none=True)),
+            repo=self.tmp)
+        self.assertTrue(any("must be an object" in f for f in fails), fails)
+
     def test_distilled_without_watching_is_a_failure(self):
         d = self._write("knowledge/x.md", "kmCHv3PG2XM")
         fails, _ = vc.check(led(row(distilled_to=d)), repo=self.tmp)
@@ -135,6 +228,85 @@ class TestIntegrity(unittest.TestCase):
         fails, _ = vc.check(led(row(status="maybe", priority="urgent")), repo=self.tmp)
         self.assertTrue(any("status 'maybe'" in f for f in fails), fails)
         self.assertTrue(any("priority 'urgent'" in f for f in fails), fails)
+
+
+class TestHolesHeNamed(unittest.TestCase):
+    """The hole rows exist because 21 asks routed to him were dropped, not refused. Every
+    expectation is a literal."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def _hole(self, **over):
+        h = {"id": "HOLE-01", "verbatim": "ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง",
+             "named_at": "2026-08-28", "measured": "0 of 56 watched rows show an object "
+                                                   "being placed on a surface",
+             "answered_by": ["kmCHv3PG2XM"], "closed_at": None}
+        h.update(over)
+        return h
+
+    def test_a_hole_with_nothing_queued_is_a_failure(self):
+        d = {"rows": [row()], "holes_named": [self._hole(answered_by=[])]}
+        fails, _ = vc.check(d, repo=self.tmp)
+        self.assertTrue(any("nothing queued against it" in f for f in fails), fails)
+
+    def test_a_hole_must_carry_his_words(self):
+        d = {"rows": [row()], "holes_named": [self._hole(verbatim="")]}
+        fails, _ = vc.check(d, repo=self.tmp)
+        self.assertTrue(any("no verbatim" in f for f in fails), fails)
+
+    def test_a_hole_must_carry_a_measurement(self):
+        d = {"rows": [row()], "holes_named": [self._hole(measured="")]}
+        fails, _ = vc.check(d, repo=self.tmp)
+        self.assertTrue(any("never counted" in f for f in fails), fails)
+
+    def test_answered_by_must_name_rows_that_exist(self):
+        d = {"rows": [row()], "holes_named": [self._hole(answered_by=["AAAAAAAAAAA"])]}
+        fails, _ = vc.check(d, repo=self.tmp)
+        self.assertTrue(any("is not a row in this ledger" in f for f in fails), fails)
+
+    def test_hole_state_counts_watched_and_distilled(self):
+        n = self._write("notes/a.md", "kmCHv3PG2XM")
+        dd = self._write("knowledge/x.md", "kmCHv3PG2XM")
+        rows = [row(status="watched", watched_at="2026-08-28", notes=n, distilled_to=dd),
+                row(id="Sz4TC-VJ2PQ", url="https://www.youtube.com/watch?v=Sz4TC-VJ2PQ")]
+        d = {"rows": rows,
+             "holes_named": [self._hole(answered_by=["kmCHv3PG2XM", "Sz4TC-VJ2PQ"])]}
+        state = vc.hole_state(d)
+        self.assertEqual(len(state), 1)
+        _, w, dist, tot = state[0]
+        self.assertEqual((w, dist, tot), (1, 1, 2))
+
+    def test_a_closed_hole_stops_printing(self):
+        d = {"rows": [row()],
+             "holes_named": [self._hole(closed_at="2026-09-01")]}
+        self.assertEqual(vc.hole_state(d), [])
+
+    def _write(self, rel, body):
+        p = os.path.join(self.tmp, rel)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write(body)
+        return rel.replace("\\", "/")
+
+
+class TestGCoverage(unittest.TestCase):
+    def test_dropped_rows_do_not_count_as_coverage(self):
+        d = {"rows": [row(g_items=["G1"], status="dropped", drop_reason="dup")]}
+        self.assertEqual(vc.g_coverage(d)["G1"], (0, 0, 0))
+
+    def test_a_row_feeds_every_g_item_it_names(self):
+        d = {"rows": [row(g_items=["G1", "G7"], status="watched", watched_at="2026-08-28",
+                          notes="n", distilled_to="k")]}
+        cov = vc.g_coverage(d)
+        self.assertEqual(cov["G1"], (1, 1, 1))
+        self.assertEqual(cov["G7"], (1, 1, 1))
+        self.assertEqual(cov["G4"], (0, 0, 0))
+
+    def test_watched_without_distillation_counts_watched_only(self):
+        d = {"rows": [row(g_items=["G2"], status="watched", watched_at="2026-08-28",
+                          notes="n")]}
+        self.assertEqual(vc.g_coverage(d)["G2"], (1, 1, 0))
 
 
 class TestAge(unittest.TestCase):

@@ -96,6 +96,17 @@ melamine, HPL, paint or veneer — plus the edges and the hardware.
 > question to settle is therefore not *what is our casework made of* but **what is it FACED
 > with**, which an owner can answer in a sentence.
 
+### 3.3 "หน้างานมันไม่เหมือนที่คุยกันไว้" / Site reality vs what was agreed — the same risk said from the maker's side
+
+`X7ZpE_YGgGk` (Indy Woodworking Thailand, 6 min 48 s) yields exactly one sentence, at `[00:00]`:
+*"ปัญหาหน้างานมัน**ไม่เหมือนที่เราคุยกันไว้**"* — on-site reality does not match what was agreed. It is kept
+because it is a Thai maker naming, in his own words, the exposure §3.1 prices from the
+contractor's side: the gap opens **on site, after the agreement**, which is why this market's
+answer is to move labour into the factory. **The source is otherwise thin and promotional** — a
+woodworker arguing that people should take his workshop course rather than learn from YouTube,
+with no dimensions, no detail and no critique — so this one line is the whole yield, it
+generalises no further than the sentence itself, and the video is **not to be re-picked**.
+
 ## 4. ห้องนอนมาสเตอร์ที่ส่งมอบจริง / A delivered Thai master suite, element by element
 
 From the designer walking the room he was hired to do. Style stated in his own words:
@@ -173,6 +184,66 @@ Real wood or parquet first; otherwise laminate, engineered wood or vinyl/SPC. **
 specifically discouraged in a Thai bedroom** — cold and slippery, and worse with elderly
 occupants. A wood or wood-look floor in a Thai bedroom is therefore the expected choice, not a
 stylistic flourish.
+
+## 9. ในบ้านลูกค้าจริง / Inside a real client's house — `m3UoGzkcYD4`
+
+dooDeco, *เซียนแต่งให้ EP.2*, 12 min, watched 2026-08-28 at a **Centro Ramintra 2 detached
+house** — the same segment as our project, which no other source in this file is. It is a
+built-in walkthrough, NOT a decor-placement lesson, and that limit is recorded rather than
+argued around: it was queued under a decor order and returned joinery. Four facts nothing else on
+disk has.
+
+### 9.1 บานเพ่ — the finger-groove front, named by the trade
+
+`[03:52]` *"บานเพ่ก็คือตู้ที่มีลักษณะการออกแบบหน้าบานให้มีร่องเว้า โดยที่มีการเซาะร่องหรือทำเป็นส่วนเว้าเข้าไปในตัวหน้าบานตู้
+เพื่อให้เราสามารถใช้นิ้วจับแบบเปิดหรือว่าปิด โดยที่ไม่ต้องมีมือจับยื่นออกมา"* — a door front with a routed recess so a
+finger opens it and no pull projects. He recommends it by register: *"สำหรับใครที่มีบ้านแนวเรียบหรูหรือ
+มินิมอล พลาดไม่ได้เลย"*.
+
+> **This names the detail our wardrobe is missing.** Our fronts carry neither pulls nor a groove,
+> and "switch plate with no buttons / no pulls" is a standing critic item. A routed rebate is
+> millwork — measurable, buildable by the R8 test — and it is what a Thai maker calls the answer
+> for a minimal house. §6 lists *long integrated door pulls* as a candidate device; this is the
+> same family with a Thai name and a stated reason.
+
+### 9.2 THE CELL IS DIMENSIONED FROM THE CLIENT'S OWN OBJECTS
+
+`[04:46]`–`[05:19]`: before the cell is drawn they ask the size of the client's fridge, TV, robot
+vacuum and cat feeder — *"เราก็จะวัดระยะจากของพวกนั้นน่ะแหละ… เราก็จะออกแบบมาไม่หลวมไม่แน่นมากจนเกินไป"*, and the
+client's own summary `[05:32]`: *"เครื่องใช้ไฟฟ้าเรามีสเปค ก็บอกมาตั้งแต่แรก ดีไซเนอร์จัดให้หมดเลย"*.
+
+> R10 spoken from the Thai trade side: **a cell exists because a named object goes in it**, and the
+> object's dimension is asked for, not assumed. Our own R10 pass found `desk_pier` typed at 60 mm
+> after the measurement said UNMEASURABLE — the same defect this workflow prevents by asking.
+
+### 9.3 A HORIZONTAL LINE IS DERIVED FROM ITS NEIGHBOUR, NOT TYPED
+
+`[07:28]`–`[07:41]`: the adjacent table top stands at *"ประมาณสัก 75 ซม."* (≈750 mm) and the
+headboard's line was set to meet it — *"ให้มันร้อยกันมา แล้วมันเจอกันพอดี มันจะได้ดูไม่ขัดตาแบบผิดระยะกัน"* (let it
+thread through and meet, so it does not jar as a wrong distance).
+
+> **R9's law, performed by a practitioner**: a position that can be derived from a contact is not
+> typed. The headboard band and the top of the piece beside it should share one line, and our spec
+> has never derived that relationship.
+
+### 9.4 AN OPEN CELL FOR CLOTHES NOT YET WASHED — a second Thai source
+
+`[08:56]`–`[09:09]`: *"ตู้โล่งตัวนี้อาจจะไว้เสื้อผ้าที่ยังไม่ได้ซัก… เหมาะเลยสำหรับคนที่มีเสื้อโค้ท เสื้อสูท ที่ใส่ซ้ำแล้วมันไม่อับ"*,
+with a garment steamer/spray in the same bay.
+
+> `decor-placement-grammar.md` §8.7 justified an open cell from ONE Thai source (next-day clothes,
+> a laundry basket, a bag display). **This is the second, and it is a different use again** —
+> worn-but-not-dirty outerwear, aired rather than stored. Promotes that line from [1SRC] to two
+> independent Thai sightings, and it is a USE our built-in could carry in frame.
+
+### 9.5 TWO MARKET FACTS, RECORDED WITHOUT A CLAIM ATTACHED
+
+- **A recess beside a column is boxed in rather than worked around** `[07:54]`–`[08:17]`: the old
+  photo showed a *หลืบเสา*; the built-in fills it so *"บ้านมันดูสมูทขึ้น มันดูโล่ง มันดูกลืนกันไปหมด"*.
+- **The revision count on a delivered Thai job** `[10:45]`: the client brought a clear reference,
+  the first image came back *"แทบจะเหมือนแบบนี้ 90%"*, and the whole job closed in *"2-3 ครั้ง"* of
+  adjustment. One data point, one job, and it is the client speaking — but it is the only figure
+  in this file for how many rounds a Thai residential job actually takes.
 
 ## 8. ช่องว่าง / Gaps — do not fill from model knowledge
 

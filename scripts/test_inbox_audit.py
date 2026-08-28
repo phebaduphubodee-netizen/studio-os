@@ -73,6 +73,30 @@ def test_unclassified_is_loud(tmp_path, monkeypatch):
     assert A.classify("knowledge/_inbox/some-new-stash/mystery.bin") == "UNCLASSIFIED"
 
 
+def test_a_sidecar_beside_an_anchor_is_an_attachment():
+    """An NLM/DR run dir is an anchor .md plus payload — the question that was asked, the
+    notebook source list. Those are payload, the same as discord raw.json. The lister is
+    injected so this drives the branch without a disk."""
+    assert A.classify("knowledge/_inbox/dr-thing-2026-01-01/QUESTION.txt",
+                      lister=lambda d: ["answer.md", "QUESTION.txt"]) == "ATTACHMENT"
+    assert A.classify("knowledge/_inbox/dr-thing-2026-01-01/sources-manifest.json",
+                      lister=lambda d: ["answer.md", "sources-manifest.json"]) == "ATTACHMENT"
+
+
+def test_the_same_sidecar_with_no_anchor_beside_it_stays_loud():
+    """The condition is the SIBLING anchor, never the file's own name — otherwise the
+    widening would let a bare stash of loose files vanish into ATTACHMENT, which is the one
+    thing this classifier exists to prevent."""
+    assert A.classify("knowledge/_inbox/some-new-stash/QUESTION.txt",
+                      lister=lambda d: ["QUESTION.txt", "notes.txt"]) == "UNCLASSIFIED"
+
+
+def test_an_unreadable_directory_fails_closed_to_unclassified():
+    def boom(d):
+        raise OSError("gone")
+    assert A.classify("knowledge/_inbox/vanished/thing.txt", lister=boom) == "UNCLASSIFIED"
+
+
 # ---------------------------------------------------------------- provenance -------------
 def test_provenance_is_code_not_data():
     """You cannot TAG your way out of debt. Provenance is a hard-coded allowlist; a marker

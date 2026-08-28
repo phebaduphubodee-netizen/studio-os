@@ -139,7 +139,25 @@ def _carries_attribution(path_rel):
 # which is the one thing it must never do: the whole value of the constant is that a new
 # provenance file cannot land without a human opening it. (Proposed 2026-08-08 by an audit
 # that read the drift as "the constant is stale". The constant was doing its job.)
-EXPECTED_PROVENANCE = 36
+EXPECTED_PROVENANCE = 38
+# 36 -> 38 on 2026-08-28, BOTH FILES OPENED FIRST, and the second one taught the guard
+# something about itself:
+# `blenderkit-month/2026-08-23-dr-maximizing-the-month.qa-history.json` — notebook f63696bf,
+#   conversation 11fd7935, 1 qa_pair. Landed 2026-08-23 and the constant was never moved, so
+#   the drift had been printing for five days. That is the guard working, not failing.
+# `dr-decor-placement-2026-08-26/qa-history.json` — notebook adee1655 (the same id the header
+#   of knowledge/styles/decor-placement-grammar.md names as its source), conversation
+#   6ba8a5aa, 7 qa_pairs including the two provenance-drill asks that forced citations past
+#   the DR's own synthesis report.
+#   **IT WAS INVISIBLE TO THIS AUDIT FOR TWO DAYS BECAUSE IT CARRIED A UTF-8 BOM.** It matched
+#   the filename pattern, but `_carries_attribution` opens the file, and `json.load` on a
+#   BOM'd file raises before it can read a single field — so a real provenance file with
+#   full attribution was silently classed as NOT provenance, and the count read 37 when the
+#   truth was 38. The drift number was RIGHT that something had changed and WRONG about how
+#   much, which is worse than either: it pointed at one new file while a second sat unread.
+#   Fixed at the source (BOM stripped from that unit's two JSONs, bytes otherwise identical,
+#   both re-parsed clean) rather than by teaching the reader `utf-8-sig` — a file the rest of
+#   the toolchain cannot json.load is broken wherever it is read, not only here.
 # 20 -> 21 on 2026-08-10, and the file was OPENED before the number moved, which is the
 # only reason this constant is worth having. The new one is
 # `dr-acquired-mesh-integration-2026-08-10.qa-history.json`: notebook id, title,
@@ -227,7 +245,20 @@ def rel(p):
     return os.path.relpath(p, ROOT).replace("\\", "/")
 
 
-def classify(path_rel):
+def _dir_has_anchor(dir_rel, lister=None):
+    """True when this staged directory holds a markdown anchor. INJECTABLE so the tests can
+    drive both branches without touching a disk; the default reads the real tree, the same
+    way `_carries_attribution` above already does."""
+    lister = lister or (lambda d: os.listdir(os.path.join(ROOT, d))
+                        if os.path.isdir(os.path.join(ROOT, d)) else [])
+    try:
+        names = lister(dir_rel)
+    except OSError:
+        return False
+    return any(str(n).lower().endswith(".md") for n in names)
+
+
+def classify(path_rel, lister=None):
     """Every staged file gets exactly one class. UNCLASSIFIED is a LOUD FAIL, by design:
     a stash the classifier does not recognise must not silently vanish from the debt."""
     name = os.path.basename(path_rel)
@@ -284,6 +315,25 @@ def classify(path_rel):
 
     if ext in ATTACHMENT_EXTS:
         return "ATTACHMENT"
+
+    # ...AND IT STOPPED ONE STEP SHORT AGAIN, which the comment above literally predicts of
+    # itself. The 2026-08-08 widening recognised "a markdown answer one level down inside
+    # _inbox" and nothing else in the same directory. But a research unit is not one file: an
+    # NLM/DR run dir lands an anchor .md, its qa-history.json, AND SIDECARS — the question
+    # that was asked (`QUESTION.txt`) and the notebook's own source list
+    # (`sources-manifest.json`). Two of those sat in UNCLASSIFIED, one since 2026-08-17 and
+    # one since 2026-08-26, for no reason but their extension.
+    #
+    # A sidecar is the same thing discord's `raw.json` already is: PAYLOAD BESIDE AN ANCHOR.
+    # So it is classed ATTACHMENT — but only when an anchor is actually there. The guard's
+    # whole doctrine is that an unrecognised stash must not vanish, so the condition is the
+    # SIBLING .md, not the file's own name: a bare directory of loose files with nothing to
+    # anchor them still fails loudly, and `some-new-stash/mystery.bin` still returns
+    # UNCLASSIFIED because that stash has no anchor (and, here, does not exist).
+    m = re.match(r"^(knowledge/_inbox/[^/]+)/[^/]+$", path_rel)
+    if m and _dir_has_anchor(m.group(1), lister=lister):
+        return "ATTACHMENT"
+
     return "UNCLASSIFIED"
 
 

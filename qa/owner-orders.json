@@ -1030,6 +1030,100 @@
     }
    ],
    "note": "CARRIED OUT BY ITS OWN TEST, and the flip is the evidence the rung is real. Filed not-obeyed at the hour it was given, with obeyed_assert #1 = a grep for a craft-skill row in qa/skill-usage.jsonl. At p2r87 the rail question turned out to be a framing question (the only in-frame rail's left fixing measures 0 px — cropped), `camera-composition` was invoked to settle it, the PreToolUse hook stamped the row, and the RENDER GATE then refused the build with 'filed NOT-OBEYED while every assertion it carries holds'. Nobody edited this row to make it true; the behaviour did, and the gate insisted. CAVEAT UNCHANGED: the hook lives in .claude/settings.local.json (gitignored) so it counts on this machine only — promoting it into the committed law layer is a PR and his call. D-160 carries the machinery."
+  },
+  {
+   "id": "ORD-2026-08-27-every-round-sees-what-it-changed",
+   "date": "2026-08-27",
+   "verbatim": "ลุยยาว ๆ",
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/owner-order-2026-08-27-pipeline-eyes.md",
+   "commands": "Approval of the six-item long-term fix list answering his three questions of 2026-08-27 — (1) is this system efficient, (2) do you actually SEE, (3) you only ever look at one fixed hero camera though you can move it. THE ITEMS: (D) the round's only EYE must run BEFORE any hard stop, (E) every round measures and prints WHAT IT CHANGED IN THE PIXELS, (B) a round may not close while the object it names is illegibly small in every view that exists — and a detail view may DIAGNOSE, never CLOSE, (C) an object that cannot reach the legibility threshold in the delivered frame is a SCOPE decision (remove it or replace it with something that reads) and that decision is his, (F) an obeyed_assert that greps a CONSTANT proves a file exists and never that anything ran — assertions must name an ARTEFACT, (A) the builder's own eye stops being a judging rung and becomes an aiming rung, because 0 of 367 filed critic items came from it.",
+   "subject": "the-round-must-see-its-own-change",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-27",
+   "not_obeyed_because": "Two of the six items are built (D, E); four are not (B, C, F, A). A CLASS order carried out in part is not carried out — the same reading that R13 was written to enforce, applied to the row that records R13's own successor.",
+   "restart_by": "REMAINING BUILDER DEBT: (F) ONLY. Build `qa/round-receipt-latest.json` — a machine-written record of what each render round actually ran and found — then convert the 10 rows the 2026-08-27 census flagged from CONSTANT assertions to ARTEFACT ones pointing at it. Those 10 will FLIP to not-obeyed when they do, which is the point: they include ORD-2026-08-09-every-mechanism-opens-the-picture, the order R11 itself came from, currently held up by a grep for a symbol. Each flipped row needs its own not_obeyed_because and restart_by — a machine that hard-fails every historical row on day one gets switched off (R13's own warning). DONE: (D) eye before the exits, (E) delta.py wired, (B) detail.py + --detail= wired with the diagnose-never-close prefix, (A) R7d in CLAUDE.md. (C) is NOT builder debt — it is a scope decision only he can take, and the measured list is ready: 109 of 213 in-frustum masses under 24 px, 77 of them the BF14 battens he has already answered, plus 43 masses rendering exactly 0 px.",
+   "obeyed_where": "pipeline/scripts/build_room.py,pipeline/scripts/delta.py,pipeline/scripts/test_delta.py,pipeline/scripts/test_gen_diff_ordering.py,pipeline/scripts/frame_geometry.py",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/build_room.py",
+     "pattern": "delta\\.py",
+     "why": "ITEM E, THE WIRING AND NOT THE FILE. delta.py existing proves nothing — 30 pixel-reading modules exist in this directory and the census of 2026-08-27 found critique_bundle.py, critique_call.py, glance.py and closure_run.py with ZERO production callers between them. This pattern matches the SPAWN inside _score_deliverable, so deleting the call site fails the row even if the module survives."
+    },
+    {
+     "file": "pipeline/scripts/test_gen_diff_ordering.py",
+     "pattern": "def test_no_exit_precedes_the_eye",
+     "why": "ITEM D, as a test that can FAIL rather than a claim that cannot. Negative control run at the hour it was written: the pre-patch build_room.py had 12 os._exit sites with no _gen_diff call before any of them; after, 0. Delete this test and the ordering is once again only asserted in a comment."
+    },
+    {
+     "file": "pipeline/scripts/test_delta.py",
+     "pattern": "def test_first_frame_of_a_line_exits_2_not_0",
+     "why": "ITEM E's ONE REAL FAILURE MODE. This instrument's could-not-run looks exactly like its pass: 'no previous frame' and 'nothing changed' both want to print a zero and they mean opposite things. R11's sentence, applied to the rung built to satisfy R11."
+    },
+    {
+     "file": "pipeline/scripts/frame_geometry.py",
+     "pattern": "--camera",
+     "why": "ITEM B's first half: the camera-composition skill documented a --camera flag that did not exist, so no variant view could be measured before rendering. Fail-loud on an unknown name, same contract as build_room's --eyecam=."
+    },
+    {
+     "file": "pipeline/scripts/detail.py",
+     "pattern": "def solve_detail_camera",
+     "why": "ITEM B's SECOND half, and it is deliberately an assertion that FAILS TODAY. The four assertions above cover only the two items that are finished, and a row whose every assertion holds while its status says not-obeyed is a row the checker is right to refuse — it reads as pessimism instead of debt. This one names the file that does not exist yet, so the ledger's own arithmetic agrees with the status until item B lands."
+    },
+    {
+     "file": "CLAUDE.md",
+     "pattern": "C1 IS AN AIMING RUNG, NOT A JUDGING RUNG",
+     "why": "ITEM A. The builder's LOOK sat in the ladder as a judge for a month and convicted nothing: 367 filed items, 285 C2, 82 C3, 0 from the builder's eye, against 1,125 images it opened in 29 days. R7d says so in the file loaded at every session open."
+    },
+    {
+     "file": "qa/round-receipt-latest.json",
+     "pattern": "gen_diff:ran",
+     "why": "ITEM F, and it fails today by design — no full-fidelity round has reported since the receipt shipped. Of 82 obeyed_assert entries across 37 orders only 3 (3.7%) name an ARTEFACT; 55 match a constant, a comment or a docstring, and 20 of 37 rows are held up by nothing a pipeline run could ever change. THE PATTERN IS A PROOF TOKEN AND THE FIRST ONE WAS NOT: asserting `\"gen_diff\"` matched the JSON KEY whether the rung ran or declined, the row's assertions all held while its status said not-obeyed, and the render gate refused the build over the contradiction — inside one run of shipping it. A key name is a constant assertion one file further along."
+    }
+   ],
+   "note": "WHAT THE ORDER COST TO EARN, measured before it was given and all of it reproducible: the render gate on this lane runs at build_room.py:12707 and the render at :12728, so all 13 of its rungs judge a frame that does not exist yet; the round's only eye (_gen_diff) sat downstream of 12 os._exit sites and p2r83/p2r84/p2r86 have no gen-diff artefact because of it; C2 and C3 have zero production callers and critique_bundle refuses more than one PNG, so the blind critic cannot see a before/after by construction; plan_status does open a picture, pinned from p2r8, 78 rounds old; 320 of 350 in-window frames are the one hero camera and the 13 rendered variant views all stop on 2026-07-28; and 111 of 210 in-frustum objects (52.9%) project to a short side under the 24 px line this repo wrote for itself at p2r87b. THE THING THAT MAKES ITEM A NON-OPTIONAL: the builder opened 1,125 images in 29 days and 0 of the 367 filed critic items came from its eye (285 C2 + 82 C3). It is not that the builder does not look; it is that looking is not what it is good for."
+  },
+  {
+   "id": "ORD-2026-08-28-decor-placement-is-missing",
+   "date": "2026-08-28",
+   "verbatim": "ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง",
+   "recorded_at": "qa/video-curriculum.json",
+   "commands": "HE READ THE CURRICULUM AND NAMED A HOLE IN IT: there is no video about the PLACEMENT of decor. The order is to close that hole — find the videos, WATCH them, and land what they teach in knowledge/. It is a CLASS order about a subject, not a verdict on one row.\n\nHE IS RIGHT AND IT IS MEASURED: of 56 watched rows, 0 show somebody choosing objects and putting them down. The watched set is bed-MAKING, rug SIZING, closet ORGANISING, merchandising, lighting, photography — every one about an object class this studio already builds. The 4 rows that ARE decor placement all sat at should/reference and the watch pass ran must-first.\n\nWHY NO INSTRUMENT FOUND IT, and this is the part worth keeping: G1 held 33 rows with 16 watched — the BEST-covered G-item in the program. The hole was inside it. The G-items were written by the builder from the builder's own defect list and the priorities were assigned by the same judges, so no counter over those categories could ever have found it. R7b one level up: an instrument answers the question it was built to ask. It also lands on R7d — a curriculum aimed by the builder's own sense of what matters has the same blind spot as the builder's own eye, and the correction came, as it has 367 times, from somebody else.",
+   "subject": "decor-placement-curriculum",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "not-obeyed",
+   "since": "2026-08-28",
+   "not_obeyed_because": "PARTLY CARRIED OUT, AND THE PART THAT IS DONE IS REAL — but the condition this row set for itself BEFORE the work started was hole_state() reading watched == distilled == total for HOLE-01, and it reads 11 of 21. Restating the condition now to declare success would be the self-judged-closure shape this repo has already named. WHAT IS DONE: 533 candidates harvested across two harvests (no URL ever written by a model), scored by ten independent judge lanes plus a completeness critic and a shortlist; 11 videos WATCHED (2 with extracted frames); knowledge/styles/decor-placement-grammar.md gained section 9, ~200 lines with 69 video-id citations, and it is the first performed layer over a file that was 100% text; thai-bedroom-and-built-in-practice.md gained section 9 from the Thai source. The stated measure of success in the original restart_by IS met — sections 1 and 5 are now contested by somebody performing the opposite on camera (section 9.7's disagreement table). WHAT IS NOT: 10 queued rows unwatched, 5 of them `must`.",
+   "restart_by": "BUILDER DEBT, no money and no signature. (1) Watch the 10 rows queued under HOLE-01 — ranked, with the risk of each already written down — and distil each; the 5 `must` rows print as debt at every session open. (2) The genuinely new question they answer is NOT more styling advice: it is a RUN of identical bays dressed by professionals (6C0orv4gc8E, xFpWtpSZhv0), an arrangement convicted inside a RENDER (KBRdBM6ySdU), a Thai practitioner working (9xrYzUXpe_o), and the anti-repetition doctrine from the one discipline that treats the repeat as its permanent enemy (xE_tyKkm8nE). (3) FOUR PIECES OF THIS HOLE WILL NEVER CLOSE ON YOUTUBE and are now rows VG-13..VG-16 in the curriculum: the across-the-room reading threshold (measure it on our own frame with id_mask), whether `unnatural` is sameness-across-bays or wrongness-inside-one (ASK-035, his sentence or a crop to C2/C3), a number for bay contents (count it off the anchor pool, R4), and the Thai altar constraints (his designer friend). Running a third harvest at any of those four returns nothing again.",
+   "obeyed_where": "qa/video-curriculum.json,pipeline/scripts/video_curriculum.py,pipeline/scripts/test_video_curriculum.py,knowledge/styles/decor-placement-grammar.md",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/video_curriculum.py",
+     "pattern": "def hole_state",
+     "why": "THE MECHANISM, not the words. A hole he names is a ROW that PRINTS until its queued rows are watched AND distilled. Without this function the observation is a sentence in a transcript — which is what happened to 21 of his asks: 'not refused, dropped'."
+    },
+    {
+     "file": "pipeline/scripts/test_video_curriculum.py",
+     "pattern": "def test_a_hole_with_nothing_queued_is_a_failure",
+     "why": "The rung as a test that can FAIL rather than a claim that cannot. Negative control run at the hour it was written: HOLE-01 was committed with answered_by empty and --check exited 1 naming it. A hole with nothing queued against it IS the dropped-ask shape, so the checker refuses it by name."
+    },
+    {
+     "file": "knowledge/styles/decor-placement-grammar.md",
+     "pattern": "HXbnHgIr_C4",
+     "why": "THE ARTEFACT ASSERTION, and it FAILS TODAY BY DESIGN (ORD-2026-08-27 item F: an assertion that greps a constant proves a file exists and never that anything ran). This names a video id that can only appear in that file once the video has actually been watched and something it taught has been written down. While it fails, the row's own arithmetic agrees with its status."
+    }
+   ],
+   "note": "HIS OBSERVATION IS THE RUNG HERE. No instrument in this repo could have produced it, and the docstring of video_curriculum.py now says so in writing, including that the per-G coverage counter added the same day still cannot find a hole INSIDE a G-item."
   }
  ]
 }

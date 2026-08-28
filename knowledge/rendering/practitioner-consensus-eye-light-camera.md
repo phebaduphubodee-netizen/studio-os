@@ -15,6 +15,8 @@
 > - `knowledge/_inbox/video-study/2026-08-28-why-a-room-feels-off-Sz4TC-VJ2PQ.md`
 > - `knowledge/_inbox/video-study/2026-08-28-two-long-form-a-designer-lecture-and-a-live-render-clinic-9eImuRVG4qM.md`
 >   (§8-§9, promoted in the second pass)
+> - `knowledge/_inbox/video-study/2026-08-28-drapery-grammar-and-the-triforce-of-realism-JgQdCad1Iiw.md`
+>   (§4 only — the realism unit; the drapery half of that unit belongs elsewhere)
 >
 > **TIER: REFERENCE.** Trade and craft practice spoken on camera, not measurement of any
 > artefact and not statute. Nothing here outranks `knowledge/codes-th/`, the client
@@ -24,7 +26,7 @@
 
 > **SOURCE VIDEO IDS carried by this file** (the staged units above hold the full
 > quotations and timestamps; a video whose content did NOT reach this file is
-> deliberately absent): `vXVLTBvLCbo` · `UmJaVnO3Sxw` · `aRWwOhjbvfs` · `4ORbpY6d9Zk` · `pkMssQPul9o` · `_XmBszDmyck` · `-VgtSL5ZpYc` · `Sz4TC-VJ2PQ` · `qbZoZiZg6I4`
+> deliberately absent): `vXVLTBvLCbo` · `UmJaVnO3Sxw` · `aRWwOhjbvfs` · `4ORbpY6d9Zk` · `pkMssQPul9o` · `_XmBszDmyck` · `-VgtSL5ZpYc` · `Sz4TC-VJ2PQ` · `qbZoZiZg6I4` · `0OVEJVbklV0`
 
 ## ลำดับอำนาจ / Authority
 
@@ -199,6 +201,91 @@ disagree; settle it against the anchor pool, not against one source.
   a trivial finish item: *"having the correct bowl or the correct vase almost feels like a
   frivolous thing… but it ridiculously really can tie the space together… it IS actually a
   focal point."*
+
+---
+
+## 6. THE THREE FORCES STATED AS ONE CLAIM — AND A THIRD ACQUISITION ROUTE THE RULES NEVER NAMED
+
+> Source video id for this section: `0OVEJVbklV0` (Kaizen, *"The Key to Realism in Blender
+> (or 3D)"*, 14 min 34 s). Staged unit:
+> `knowledge/_inbox/video-study/2026-08-28-drapery-grammar-and-the-triforce-of-realism-JgQdCad1Iiw.md`
+> §4 — the unit's other half is drapery and does not belong to this file.
+> **6.2 is SINGLE-SOURCE AND SPONSORED; read its disclosure before using any of it.**
+
+### 6.1 SUBJECT · LIGHTING · CAMERA — an independent arrival at this file's own shape
+
+`[00:44]` The three forces that decide whether an image reads as real are named as **the
+subject, the lighting, and the camera**. The example given is an animation of *"only simple
+models in a simple scene"* that was removed from r/blender for being judged real footage:
+*"The combination of model quality, environment, natural lighting and a hero role for the
+camera work had many believe that this was real."*
+
+**What this ADDS is exactly one thing: the triad as a single claim.** Every value in this
+file arrived from a source speaking about ONE force — the eye-and-brightness question (§1),
+the contrast argument (§2), the camera band (§4) — and the three-way split above them is
+**this file's own assembly**, never something a source stated. Here a fourth discipline (a
+Blender generalist; not the archviz reviewers, not the lighting director, not the interiors
+photographers) opens with the same split unprompted — though **only the opening carries
+it**: from `[02:49]` the video is a sponsored scanning tutorial, so this is a corroborating
+OPENING FRAMING and not a video built on the triad. **That is still an independent arrival at
+the STRUCTURE, so count it as the corroborating voice for the file's shape** — one source per force previously, now one source for the shape itself.
+
+**What it does NOT add, said plainly so nobody reads it as more:** no measurement, no
+threshold, no procedure, no fixture, no focal length. It cannot settle a single disagreement
+recorded in §2, §4.2 or §10, because it carries no number at all.
+
+**The one operational consequence.** The frame in the anecdote passed as real on *simple
+models* — so "the frame reads fake" is not by itself evidence that the geometry is at fault,
+and the unit's own reading is that a defect of this kind is unlikely to sit in any one of the
+three. This repo has repeatedly spent whole rounds inside one force. When a critic reads a
+frame as unreal, the triage names **which of the three** before a round is planned; *"unreal"*
+alone does not select a lane. Conviction still comes from C2, C3 or the owner (R7d) — this
+paragraph changes how a round is FRAMED, not who may close it.
+
+### 6.2 SCAN — a third branch beside build and acquire · **[1SRC · SPONSORED · unverified]**
+
+**THE DISCLOSURE FIRST, because it is the reason this is knowledge and not an advert.** The
+rest of that video is a sponsored tutorial for the scanning app it recommends, and it says so
+on camera `[02:49]`: *"my personal 3D scanning app of choice is Kiri, who — to be fully
+transparent — also sponsored this video."* Its content from that point is photogrammetry
+technique sold by an interested party, not general realism.
+
+**And it fails this file's own admission bar** (see the PROVENANCE block: two or more
+independent professionals, or it stays in `_inbox`). It is carried here anyway as a **POINTER
+with a debt**, not as a rule: **the technique must be confirmed from a non-sponsored source
+before any spend, any purchase, and before it is written into a rule.** Until that
+confirmation exists, nothing in 6.2 outranks anything.
+
+The claim `[02:07]`: *"we can take a huge shortcut in creating realistic models by using the
+power of **3D scanning** — this technique will let you capture **minute details,
+imperfections, textures** and the most complex geometry you can think of in a matter of
+minutes… all you really need is a **phone**."*
+
+**Why it is worth the row at all:** the studio's acquisition rule (R8) is a two-way fork —
+BUILD what can be produced from measured boxes, radii, profiles and outlines, or ACQUIRE
+everything free-form. **Photogrammetry from a phone is a third branch**, and it is the branch
+that yields the *"imperfections"* that neither of the other two gives: a built object has only
+the imperfections someone parameterised, and a bought object has only the ones its author
+modelled. This file is REFERENCE tier and **does not amend R8** — the amendment is an owed
+decision row, and its precondition is the non-sponsored confirmation above.
+
+**The scanning conditions, recorded because they are the part that would generalise** (if
+confirmed) `[04:57]` — they are lighting and coverage discipline, which is why they read like
+the rest of this file rather than like a product:
+
+| Condition | Statement |
+|---|---|
+| light quality | soft, **single-colour**, **EVEN** — the one place in this file where even light is the goal rather than the defect, because the scanner is reading surface colour, not composing a frame (§2 is unaffected) |
+| direct sun | never |
+| best free condition | overcast — *"nature's softbox"* |
+| the object | needs **feature points**; **featureless objects scan badly** |
+| capture | **overlap every frame** |
+
+**What does NOT transfer, so it is not rediscovered later:** this is a route to a model of a
+**real object physically in front of the camera**. It does nothing for the work being
+reproduced — the anchor pool is another studio's delivered photographs, and a photograph
+cannot be scanned. It also says nothing about licence, scale assertion on ingest, or trade
+dress, all of which still bind whatever route the mesh arrives by.
 
 ---
 

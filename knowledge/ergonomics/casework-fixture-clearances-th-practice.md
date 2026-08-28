@@ -25,7 +25,7 @@ Units are kept EXACTLY as the source gave them (cm / ซม. / มม. / inches)
 
 > **SOURCE VIDEO IDS carried by this file** (the staged units above hold the full
 > quotations and timestamps; a video whose content did NOT reach this file is
-> deliberately absent): `s9dEdHgCP-Y` · `eDUQkwlLzBk` · `EO62T1LHdNA` · `iJYto0muSd4` · `saFsrHObKyk` · `AbmVfYx8aTo` · `XeCPWJgb4Qg` · `axVhLMkgq2U`
+> deliberately absent): `s9dEdHgCP-Y` · `eDUQkwlLzBk` · `EO62T1LHdNA` · `iJYto0muSd4` · `saFsrHObKyk` · `AbmVfYx8aTo` · `XeCPWJgb4Qg` · `axVhLMkgq2U` · `22ijpgjmkWY`
 
 ## 1. เว้นระยะลิ้นชัก รับใต้ / รับข้าง / Drawer-box vs cabinet-opening deductions
 Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง`
@@ -327,6 +327,22 @@ pocket runs the **FULL WIDTH of the wall** (*"rather than just having 3/4 width,
 look a little bit silly"*), and the wardrobe casework stands **100 mm off the wall so the
 curtain tucks in behind it**.
 
+**สายที่สาม — ฝ้ายิปซัม / A third sighting, in plasterboard, and it carries no numbers.**
+`22ijpgjmkWY` (Technogips Pro, *"How to Build Decorative Hidden Curtain Rod"*, 3 min 20 s,
+watched 2026-08-28) has **no speech at all** — music and captions only — so **nothing from it
+is quoted here and nothing is measured from it**. Its frames show a proprietary gypsum profile
+screwed to a stud line to form the recessed pocket in the ceiling plane: the same
+**pocket → bracket → track** order this file already carries from `saFsrHObKyk` (manufacturer)
+and `XeCPWJgb4Qg` (site carpenter, the 300-325 mm setback above), but in **PLASTERBOARD**
+construction — which is the case a Thai ฝ้ายิปซัม ceiling actually is, and the reason it was kept.
+
+So the recessed-pocket assembly now stands at **three watched sightings** (`saFsrHObKyk` ·
+`XeCPWJgb4Qg` · `22ijpgjmkWY`) and still **two** dimensioned ones. It adds no clear depth, no
+setback, no width and no fixing pitch, and it does **not** touch §5: the Thai NITAS table
+(100-300 mm by curtain make-up, +50-100 mm with a cove light) remains the only numeric
+authority for what the pocket must give the fabric stack, and it outranks all three for a Thai
+project. Corroboration of an ASSEMBLY is not a source of NUMBERS.
+
 ---
 
 ## 9. ผ้าม่าน — ความฟู การแขวน และชาย / Drapery make-up — fullness, hang height, hem
@@ -374,6 +390,115 @@ unnamed gathers.
   (*"bedrooms are different than living rooms"*) · special conditions (baseboard heaters,
   radiators, an HOA requiring uniformity from outside) · window type and shape · and which of the
   five treatment families — drapery, shades, roller shades, blinds, shutters.
+
+## 10. ระดับสวิตช์ ปลั๊ก บัวเชิงผนัง และร่องเซาะ / Switch, socket, skirting and shadow-gap heights (bedroom)
+
+> **PROVENANCE.** Distilled 2026-08-28 from `knowledge/_inbox/nlm-th-bedroom-services/2026-08-17-bedroom-services.md`
+> and its transcript `knowledge/_inbox/nlm-th-bedroom-services/qa-history.json` — NotebookLM Deep
+> Research, notebook `7864b15c-68f8-4649-810f-36f3f7c31618`, conversation `1bee1917`, fired
+> 2026-08-17 after the vault was searched first and **this file was found to carry KITCHEN outlet
+> clearances only (§4.3)**.
+> **Tier REFERENCE — practice-report grounding, not domain truth and NOT statute.** NLM does not
+> hold Thai law and volunteers statutory numbers from model memory: nothing below may be cited as
+> a code value, and `knowledge/codes-th/` always outranks. The unit's own bracketed source markers
+> are still unresolved to titles; that debt rides with these numbers.
+>
+> **WHY IT SAT FOR ELEVEN DAYS, and it is worth one line.** The unit was consumed by
+> `build_room.py` in its own commit — five constants come straight off it — but nothing in
+> `knowledge/` ever cited it, so `inbox_audit` printed it as a PROVENANCE-ORPHAN from 2026-08-17
+> onward. On 2026-08-28 a video (`KX6ZYSo8apo`) was picked specifically to close the
+> setting-out-heights half of the switch-plate row, returned nothing usable, and was written off
+> with the words *"placement heights are still unsourced"* — **while the answer had been staged in
+> this repo for eleven days.** A queue whose consumer never visits it, in the shape where the
+> consumer is a later version of the same builder.
+
+### 10.1 สวิตช์ / Switch plates, bedroom
+
+| item | value | driver |
+|---|---|---|
+| door-side switch, centreline AFFL | **1200–1250 mm** | standing reach envelope, average Thai adult |
+| Universal Design / senior units | **900–1000 mm** | EIT (วสท.) recommendation; side-approach wheelchair reach capped 1100–1200 mm |
+| horizontal clear of finished architrave edge | **100–150 mm** | keeps the conduit box clear of the door sub-frame, and separates plate from trim visually |
+| bedside two-way switch (*สวิตช์สองทาง*) AFFL | **600–700 mm** | operated from a reclined position; sits **100–150 mm above the nightstand deck**, itself 500–550 mm |
+
+### 10.2 ปลั๊ก / Bedside sockets
+
+| item | value | driver |
+|---|---|---|
+| concealed behind the nightstand | **300–350 mm AFFL** | matches general-purpose outlet height; hides the lamp cable |
+| exposed, counter-level | **600–700 mm AFFL** | phone/laptop charging without bending |
+| Universal Design | **≥ 900 mm AFFL** | lower-back strain and fall risk in elderly units |
+| quantity per bedside | **2 duplex plates = 4 outlets** | one duplex of Type O grounded (TIS 166-2549, 3-pin round) + one hybrid with dual USB-A/USB-C ≥ 2.1 A |
+
+- Under EIT (วสท.) there are **no rigid residential height limits for outlets in dry spaces** — the
+  numbers above are convention, not code. Recorded as such because the distinction is the whole
+  reason this tier exists.
+- Ground floors of landed homes in flood-prone zones: circuits below the flood line must be on an
+  RCD/RCBO at **≤ 30 mA**. Not our room, kept because it is the one place a code value appears.
+
+### 10.3 บัวเชิงผนัง / Skirting — height, projection, and the architrave joint
+
+- **Height by ceiling volume**: 2400–2600 mm ceiling → **70–80 mm** (nominal 3″); 2700–3200 mm
+  ceiling → **100–150 mm** (nominal 4–6″). Proportion, not protection: tall skirting under a low
+  ceiling compresses the room.
+- **Projection**: **6–16 mm** for flat polymer or solid timber; **20–25 mm** for classic moulded or
+  hollow assemblies.
+- **Material is a CLIMATE decision here, not a cost one.** Thai humidity makes MDF/HDF swell and
+  delaminate. Standard alternatives: PVC 6–16 mm (termite-proof, ฿40–120/m); polystyrene 15–21 mm
+  (sharper profile lines, ฿150–300/m); **solid teak (ไม้สัก) milled 90 mm high × 12–14 mm thick,
+  ฿250–350/m** — the high-end default, naturally termite- and rot-resistant when kiln-dried.
+- **The architrave joint has two named methods and the choice is decided by which piece is
+  THICKER** — a rule our elevations have never carried:
+  - **A · flush butt (architrave thicker than skirting, the upscale standard):** e.g. a 20–21 mm
+    architrave against a 12–14 mm skirting. The skirting runs into the casing and butts square,
+    sitting inset — and that inset **creates a shadow line that masks wall-flatness deviation.**
+  - **B · 45° back-bevel (skirting thicker than architrave):** e.g. a 5 mm uPVC wrap against a
+    16–20 mm hollow PVC board. A butt joint would expose the skirting's raw end profile, so the
+    board is back-bevelled at 45° down to the architrave face and the joint filled with
+    colour-matched acrylic (*แด๊ป / DAP*) mixed with wood dust.
+
+### 10.4 ร่องเซาะ / The shadow gap (*บัวฝัง* · *เซาะร่อง*) — and why it is not a free swap
+
+- **Gap 10–15 mm high × 10–12 mm deep**, sized to fit extruded aluminium or UV-stable PVC
+  shadow-gap beads (U-channel / Z-profile plaster stops).
+- **The build sequence is the content**, because in Thai construction the wall is AAC block
+  (Superblock / Q-CON) with **15–20 mm hand-applied cement-sand plaster**, and cutting a straight
+  recess into wet plaster is labour-intensive and *"ruthlessly highlights"* any waviness. So: the
+  rigid bead is fastened and levelled to the RAW BLOCK first, the plasterers screed to its stop
+  flange, and **the wood floor slides into the horizontal recess — which conceals the flooring's
+  own expansion gap** while leaving it free to move.
+- **Cost, because it decides whether it is a detail or a decision** (THB per linear metre): PVC
+  bead 25–50 · anodised/powder-coated aluminium 150–350 · **skilled-mason labour premium 400–850**
+  · fully finished in a Bangkok luxury condo **600–1200**; with an integrated LED slot,
+  **1500–2500** (excluding driver and controller).
+- **NOT BUILT, and the reason is R8's test, recorded so nobody re-litigates it:** a shadow gap is a
+  RECESS — it cuts the wall prism — while skirting is a box added to it. Those are different
+  mechanisms with different first rounds. Skirting is the reversible choice; the shadow gap stays
+  named as the reversal.
+
+### 10.5 อยู่บนแบบยังไง / How it is drawn — the convention half
+
+- Elevations at **1:20** (switches sometimes 1:25); wall-to-floor details at **1:2 or 1:5**; a
+  shadow gap carries a **mandatory 1:1 or 1:2 section**.
+- A switch is a scaled plate box (**86 × 86 mm** square, or **120 × 70 mm** rectangular) overlaid
+  with a circled **"S"** subscripted **3** or **2W** for two-way. A socket is a box containing a
+  circle with **two parallel slashes** (duplex receptacle).
+- Both carry a vertical dimension string **FFL → box centreline**, plus a horizontal string to the
+  finished architrave edge or wall/column line.
+- **On coordination plans the nightstand is overlaid as a DASHED OUTLINE** to verify that concealed
+  outlets fall inside the furniture profile and exposed ones clear the deck with room for the
+  plug's bending radius. That is a check we can run in the scene, from geometry we already have.
+- The wall-to-floor detail enumerates: structural slab → screed → PE foam underlay → flooring
+  (e.g. 12 mm engineered timber) with an **8–10 mm peripheral expansion gap** → AAC block or stud →
+  **15 mm plaster/skim** → skirting profile with its adhesive cavity.
+
+### 10.6 อะไรที่ยังไม่ปิด / What this does not close
+
+- **The plate's own face geometry stays VG-07** (supplier catalogue): rocker vs push, plate reveal,
+  the actual moulding of a Thai 86 × 86 face. §10.5 gives the drawn box; it does not give the
+  object. The 2026-08-28 video pick aimed at exactly this returned nothing (`KX6ZYSo8apo`).
+- Every number here is a practice REPORT with unresolved source markers. It may seed a build and
+  may not settle a dispute against `knowledge/codes-th/`.
 
 ## หมายเหตุการกลั่นกรอง / Distillation notes
 - No pure-software / off-topic threads in this channel — all 7 threads carry casework/ergonomic content and are distilled above.

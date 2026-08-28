@@ -153,6 +153,34 @@
     "G3"
    ],
    "blocks": null
+  },
+  {
+   "id": "VG-13",
+   "need": "THE ACROSS-THE-ROOM TEST — at what pixel span a styled surface stops reading as objects and becomes texture, at our delivered resolution.",
+   "why_youtube_cannot": "390 candidates over two harvests produced NOT ONE row where a styled surface is judged from where the camera stands. It is not missing by accident: every trade that knows the threshold (theatre, retail, games) encodes it as a house rule and never publishes it.",
+   "measure_instead": "We already own the instrument. id_mask.py per-object masks on the hero frame → pixel span per mass at delivered resolution → which masses fall under the threshold. The 109 sub-24px count from 2026-08-27 is the first half of this measurement already taken.",
+   "raised": "2026-08-28"
+  },
+  {
+   "id": "VG-14",
+   "need": "WHETHER 'unnatural built-in contents' is SAMENESS ACROSS BAYS or WRONGNESS INSIDE ONE BAY. The two have opposite fixes (a run-level generative rule vs a per-bay grammar).",
+   "why_youtube_cannot": "No video has seen our wardrobe. Ten judge lanes across two harvests could not answer it and said so.",
+   "measure_instead": "ASK-035 — one sentence from him, or one crop put to C2/C3. R7d forbids the builder convicting on its own look.",
+   "raised": "2026-08-28"
+  },
+  {
+   "id": "VG-15",
+   "need": "A NUMBER FOR BAY CONTENTS: masses per bay, fraction of a bay's height filled, setback from the front edge, how many bays in a run may carry the same class.",
+   "why_youtube_cannot": "Nobody states it anywhere, in any language. The number-hunting judge lane admitted its own picks were only 'likely to say a number in passing'. Decorators assert; they do not measure.",
+   "measure_instead": "The anchor pool (R4) — count it off delivered work, the same way the duvet share cut (0.80) was read off seven delivered beds.",
+   "raised": "2026-08-28"
+  },
+  {
+   "id": "VG-16",
+   "need": "THE THAI BELIEF CONSTRAINTS — หิ้งพระ/โต๊ะหมู่บูชา forbidden zones, and what may hang above a bed. Both an object class we may have to model and a CONSTRAINT on where wall decor and the headboard may sit.",
+   "why_youtube_cannot": "Six candidate rows exist and all six were killed: fortune channels give ONE master's doctrine, and we would need three to get the intersection a client actually holds us to. The three feng-shui rows already in the ledger are Chinese-derived, a related but different tradition.",
+   "measure_instead": "The practitioner rung — one question to his designer friend: does this room need an altar, and what may not go above the bed. Lands as a decision row with a named source.",
+   "raised": "2026-08-28"
   }
  ],
  "rows": [
@@ -462,7 +490,7 @@
    "queued_at": "2026-08-28",
    "notes": "knowledge/_inbox/video-study/2026-08-28-closet-dimensions-from-a-closet-designer-s9dEdHgCP-Y.md",
    "watched_at": "2026-08-28",
-   "distilled_to": null
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md"
   },
   {
    "id": "eDUQkwlLzBk",
@@ -538,7 +566,7 @@
    "queued_at": "2026-08-28",
    "notes": "knowledge/_inbox/video-study/2026-08-28-drapery-grammar-and-the-triforce-of-realism-JgQdCad1Iiw.md",
    "watched_at": "2026-08-28",
-   "distilled_to": null
+   "distilled_to": "knowledge/rendering/practitioner-consensus-eye-light-camera.md"
   },
   {
    "id": "3SiZCxaNM28",
@@ -742,7 +770,7 @@
    "queued_at": "2026-08-28",
    "notes": "knowledge/_inbox/video-study/2026-08-28-rug-and-bedcover-numbers-1kItQdeo9oc.md",
    "watched_at": "2026-08-28",
-   "distilled_to": null
+   "distilled_to": "knowledge/rendering/bed-cloth-state-mechanisms.md"
   },
   {
    "id": "btuu8Bf8B30",
@@ -1028,7 +1056,7 @@
    "queued_at": "2026-08-28",
    "notes": "knowledge/_inbox/video-study/2026-08-28-luminance-ratios-and-the-led-dado-reK_jQ1UtaY.md",
    "watched_at": "2026-08-28",
-   "distilled_to": null
+   "distilled_to": "knowledge/ergonomics/casework-fixture-clearances-th-practice.md"
   },
   {
    "id": "xytOm6j_6a0",
@@ -1183,7 +1211,12 @@
    "queued_at": "2026-08-28",
    "notes": "knowledge/_inbox/video-study/2026-08-28-luminance-ratios-and-the-led-dado-reK_jQ1UtaY.md",
    "watched_at": "2026-08-28",
-   "distilled_to": null
+   "distilled_to": null,
+   "yield_none": {
+    "reason": "Picked to close the setting-out-heights half of the switch-plate row. It returned NO English captions, and its extracted frames are title cards and blank transitions (frame_0011 a stylised title, frame_0090 blank white). No usable content was obtained. Kept as watched rather than dropped so nobody re-picks it expecting numbers. CORRECTED 2026-08-28, same day: this row originally closed with the words \"placement heights are still UNSOURCED\", and that was WRONG WHEN IT WAS WRITTEN — knowledge/_inbox/nlm-th-bedroom-services/ had carried them since 2026-08-17 (switch 1200-1250 AFFL, bedside two-way 600-700, concealed socket 300-350) and had been printing as a PROVENANCE-ORPHAN the whole time. The video yielded nothing; the ROW yielded a finding, which is that the lane went looking outside for an answer it already held. Distilled the same day into knowledge/ergonomics/casework-fixture-clearances-th-practice.md section 10. What is still genuinely unsourced is only the plate FACE geometry (VG-07, supplier catalogue).",
+    "recorded_in": "knowledge/_inbox/video-study/2026-08-28-luminance-ratios-and-the-led-dado-reK_jQ1UtaY.md",
+    "recorded_at": "2026-08-28"
+   }
   },
   {
    "id": "KQZKc8PLV2A",
@@ -1259,7 +1292,7 @@
    "queued_at": "2026-08-28",
    "notes": "knowledge/_inbox/video-study/2026-08-28-thai-master-bedroom-and-builtin-materials-pLdNdOzWLfI.md",
    "watched_at": "2026-08-28",
-   "distilled_to": null
+   "distilled_to": "knowledge/styles/thai-bedroom-and-built-in-practice.md"
   },
   {
    "id": "4ORbpY6d9Zk",
@@ -1804,7 +1837,7 @@
     "G1",
     "G7"
    ],
-   "priority": "should",
+   "priority": "must",
    "why": "A high-end practitioner stating accessorizing as a FORMULA — counts per surface, height relationships between grouped objects, how much surface is deliberately left empty. That is the one shape of teaching this builder can actually consume: rules with numbers become spec rows. Transferable: a per-surface object count and height-ratio rule for our nightstand pair, bench and wardrobe cells, plus a stated STOP CONDITION for when a surface is finished rather than the current binary of empty-or-dumped.",
    "risk": "'Look expensive' framing pushes toward maximalist accessorizing; her counts may over-fill a restrained Thai suite, so take the ratios and the stop condition, not the quantity.",
    "rank": 63,
@@ -1813,11 +1846,12 @@
    "lanes": [
     "STYLING"
    ],
-   "status": "unwatched",
+   "status": "watched",
    "queued_at": "2026-08-28",
-   "notes": null,
-   "watched_at": null,
-   "distilled_to": null
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md",
+   "promoted": "PROMOTED should->must 2026-08-28 under HOLE-01 (owner: 'ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง'). The priority that parked this row is the same judgement that created the hole."
   },
   {
    "id": "iH390fkuLAg",
@@ -1935,7 +1969,7 @@
     "G1",
     "G7"
    ],
-   "priority": "should",
+   "priority": "must",
    "why": "Covers the second half of the owner's verdict — the small-object vignettes on the wardrobe's open shelves. A practising interior/product designer with a full-service studio, working out loud with the shelf visible. Transferable decision for each shelf: odd-numbered groups composed as a triangle (one vertical + one horizontal stack + one organic form), roughly a third of the shelf left EMPTY, and one material or colour repeated across shelves to tie the wall together — a rule set we can measure against the built scene per cell.",
    "risk": "Aimed at living-room bookshelves. Wardrobe shelves are shallower, hold folded goods rather than objets, and sit in a bedroom's value range — the composition rules transfer, the object list does not.",
    "rank": 68,
@@ -1944,11 +1978,12 @@
    "lanes": [
     "CLOSET / GARMENT / VIGNETTE — G2 standing owner verdict: the open built-in wardrobe contents read unnatural (hanging garments, hanger spacing, folded stacks, small-object vignettes on shelves)"
    ],
-   "status": "unwatched",
+   "status": "watched",
    "queued_at": "2026-08-28",
-   "notes": null,
-   "watched_at": null,
-   "distilled_to": null
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md",
+   "promoted": "PROMOTED should->must 2026-08-28 under HOLE-01 (owner: 'ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง'). The priority that parked this row is the same judgement that created the hole."
   },
   {
    "id": "zeGy48XwfeI",
@@ -2765,7 +2800,7 @@
     "G1",
     "G7"
    ],
-   "priority": "reference",
+   "priority": "must",
    "why": "A credentialed designer building surface vignettes with the objects on screen while she reasons. Our nightstand pair is currently lamp-only — a surface with one object on it is the cheapest, most visible half-made tell in the frame. Transferable: the object count per surface, the anchor-plus-tray convention, varied heights and the triangle, and the fraction of the surface left bare — encodeable as a nightstand and bench styling rule.",
    "risk": "This is the listicle genre the brief penalises, and it is coffee-table/console scale, not bedside scale — only usable if she states the reasoning with the object in hand; otherwise it is nine assertions.",
    "rank": 100,
@@ -2774,11 +2809,12 @@
    "lanes": [
     "STYLING"
    ],
-   "status": "unwatched",
+   "status": "watched",
    "queued_at": "2026-08-28",
-   "notes": null,
-   "watched_at": null,
-   "distilled_to": null
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md",
+   "promoted": "PROMOTED reference->must 2026-08-28 under HOLE-01 (owner: 'ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง'). The priority that parked this row is the same judgement that created the hole."
   },
   {
    "id": "K9V0cslPa6I",
@@ -2791,7 +2827,7 @@
     "G2",
     "G1"
    ],
-   "priority": "reference",
+   "priority": "must",
    "why": "A 21-minute deep pass on shelf composition from an architect/interior designer working with a New York studio — long enough to show the reasoning behind each move rather than the result. The decision worth taking is the one short-form styling videos skip: FRONT-TO-BACK LAYERING and varied object heights, so the silhouette across a bay is not a flat line at a single depth. Our shelves place every object on one plane at one height, which is a measurable defect once named.",
    "risk": "'7 easy steps' at 21 minutes may be padded, and it is bookshelf objects rather than wardrobe contents. Reference tier: watch after the four musts, and only for the layering and height-variation sections.",
    "rank": 101,
@@ -2800,11 +2836,12 @@
    "lanes": [
     "CLOSET / GARMENT / VIGNETTE — G2 standing owner verdict: the open built-in wardrobe contents read unnatural (hanging garments, hanger spacing, folded stacks, small-object vignettes on shelves)"
    ],
-   "status": "unwatched",
+   "status": "watched",
    "queued_at": "2026-08-28",
-   "notes": null,
-   "watched_at": null,
-   "distilled_to": null
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md",
+   "promoted": "PROMOTED reference->must 2026-08-28 under HOLE-01 (owner: 'ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง'). The priority that parked this row is the same judgement that created the hole."
   },
   {
    "id": "I_HNAtxFCmY",
@@ -3067,6 +3104,505 @@
    "notes": null,
    "watched_at": null,
    "distilled_to": null
+  },
+  {
+   "id": "88ipoYZ_TdY",
+   "url": "https://www.youtube.com/watch?v=88ipoYZ_TdY",
+   "title": "my job as a prop stylist (come on set with me to style a photoshoot)",
+   "channel": "Paige Wassel",
+   "minutes": 16.9,
+   "views": 78467,
+   "g_items": [
+    "G1",
+    "G8",
+    "G3"
+   ],
+   "priority": "must",
+   "why": "THE VIDEO THE CURRICULUM WAS MISSING. A freelance prop stylist on a real furniture-brand shoot — the only source in the ledger where somebody chooses objects and places them FOR A LENS. Yielded the file's first orientation rule (tilt it towards us), the occluder role, foreground/background as layers to populate, the deliberate mismatch of a repeated set, and the mid-event state.",
+   "risk": "Vlog format — the risk was 14 minutes of driving with 90 seconds of hands. It was not: the build is on camera.",
+   "rank": 1,
+   "primary_g": "G1",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "the-act",
+    "archviz"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-28",
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md"
+  },
+  {
+   "id": "9MPpF6UmQmc",
+   "url": "https://www.youtube.com/watch?v=9MPpF6UmQmc",
+   "title": "I Transformed this BACHELOR BEDROOM with only 7 items!!",
+   "channel": "Caroline Winkler",
+   "minutes": 30.7,
+   "views": 184458,
+   "g_items": [
+    "G1",
+    "G3",
+    "G6"
+   ],
+   "priority": "must",
+   "why": "A BEDROOM whose owner calls it bland — our own half-made verdict in a stranger's words — fixed with a counted, bounded seven-item buy. Yielded STRIP-FIRST as step one, and the sharpest statement in the corpus of why a room reads as nothing: the bed is 50% of it and its cloth was left white.",
+   "risk": "Essayistic and comedic format; the placement could have been a before/after with the middle cut. It was not.",
+   "rank": 3,
+   "primary_g": "G1",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "the-act"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-28",
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md"
+  },
+  {
+   "id": "IJ0FjYgnhfQ",
+   "url": "https://www.youtube.com/watch?v=IJ0FjYgnhfQ",
+   "title": "CLIENT PROJECT: Interior Design Installation Day (Behind-the-Scenes) | Julie Khuu",
+   "channel": "Julie Khuu",
+   "minutes": 10.0,
+   "views": 13807,
+   "g_items": [
+    "G1",
+    "G10"
+   ],
+   "priority": "must",
+   "why": "Installation day — the hour where a bought object list becomes a placed room, the exact step between our spec and our frame. Yielded: lay the whole accessory lot out before placing any of it, clear-and-reload by use-adjacency, two candidate tables carried to site and one rejected there, heavy and wall-mounted work on day one, the CLUSTER as the unit of placement, and negative space as the place the eye rests.",
+   "risk": "Install-day content is usually a sped-up montage; roughly four of its ten minutes are music over silent work.",
+   "rank": 2,
+   "primary_g": "G1",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "the-act"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-28",
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md"
+  },
+  {
+   "id": "vLTCa1gNhEs",
+   "url": "https://www.youtube.com/watch?v=vLTCa1gNhEs",
+   "title": "Interior Design — Go Behind The Scenes Of Our July Cover Shoot!",
+   "channel": "House & Home",
+   "minutes": 5.5,
+   "views": 71663,
+   "g_items": [
+    "G8",
+    "G1"
+   ],
+   "priority": "should",
+   "why": "A magazine cover shoot: a room built ONLY to be photographed, which is our deliverable's exact objective function. Yielded the EXCLUSION LIST as the first artefact, the matte-black mass that confers presence on everything else, and the firewood-niche contradiction of our more-than-three-identical prohibition.",
+   "risk": "Five minutes of narration over a finished set — no working state visible.",
+   "rank": 4,
+   "primary_g": "G8",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "lens-relationship",
+    "the-act"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-28",
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md"
+  },
+  {
+   "id": "AWWPnKYNklw",
+   "url": "https://www.youtube.com/watch?v=AWWPnKYNklw",
+   "title": "How to Style A Bookcase Like A Pro, With Stylist Erik Staalberg",
+   "channel": "HGTV Home",
+   "minutes": 3.5,
+   "views": 40711,
+   "g_items": [
+    "G2",
+    "G1"
+   ],
+   "priority": "should",
+   "why": "A named working stylist on an open grid of cells — the nearest public analogue to the built-in the owner says reads unnatural. Two-thirds canon; three lines earn it, and one of them is the parenting rule for small objects (friends of bigger items so they are not floating off in space).",
+   "risk": "HGTV shorts are often b-roll with tips narrated over them.",
+   "rank": 6,
+   "primary_g": "G2",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "the-act",
+    "builtin"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-28",
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md"
+  },
+  {
+   "id": "D76757KNu_k",
+   "url": "https://www.youtube.com/watch?v=D76757KNu_k",
+   "title": "BEHIND THE SCENES: INTERIOR STYLING A PRESS SHOW",
+   "channel": "Sarah Akwisombe",
+   "minutes": 3.3,
+   "views": 1677,
+   "g_items": [
+    "G8",
+    "G1"
+   ],
+   "priority": "reference",
+   "why": "A room dressed purely to be photographed and to sell. Queued for the lens question.",
+   "risk": "It was almost all b-roll and it is recorded as such: 55 transcript lines, of which speech is 13 and the rest is a pop song. ONE item survived — prep order is the inverse of placement order.",
+   "rank": 7,
+   "primary_g": "G8",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "the-act",
+    "lens-relationship"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-28",
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/decor-placement-grammar.md"
+  },
+  {
+   "id": "m3UoGzkcYD4",
+   "url": "https://www.youtube.com/watch?v=m3UoGzkcYD4",
+   "title": "EP.2 เซียนแต่งให้ | บุกบ้านลูกค้า แต่งบ้านสไตล์ Minimal Homey @Centro รามอินทรา 2",
+   "channel": "dooDeco",
+   "minutes": 12.0,
+   "views": 12577,
+   "g_items": [
+    "G9",
+    "G2",
+    "G5"
+   ],
+   "priority": "must",
+   "why": "A Thai designer inside a real Thai client DETACHED HOUSE — our exact market and segment, which no other source in the ledger is. Queued under HOLE-01 for decor placement; it returned JOINERY, and that is recorded rather than argued around. Yielded บานเพ่ (the routed finger-groove front, named by the trade), the cell dimensioned from the client own appliances, a headboard line DERIVED from the neighbouring table top, and a second Thai source for the open-cell use.",
+   "risk": "Thai home content is often sponsor-driven, and this is a design-build company own channel — the segment is right, the genre is promotional.",
+   "rank": 4,
+   "primary_g": "G9",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "the-act",
+    "thai"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-28",
+   "notes": "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md",
+   "watched_at": "2026-08-28",
+   "distilled_to": "knowledge/styles/thai-bedroom-and-built-in-practice.md"
+  },
+  {
+   "id": "6C0orv4gc8E",
+   "url": "https://www.youtube.com/watch?v=6C0orv4gc8E",
+   "title": "Inside Kendall Jenner's Home Closet | Vogue",
+   "channel": "Vogue",
+   "minutes": 11.4,
+   "views": 6170831,
+   "g_items": [
+    "G2",
+    "G1"
+   ],
+   "priority": "must",
+   "why": "R4b REFERENCE OF RECORD for a class we hold zero references of: a RUN of identical open bays, dressed AND lit AND shot by professionals. Watched for FRAMES, not for talk — fill fraction per bay, how much dark air is left, whether adjacent bays differ.",
+   "risk": "No decision is explained and no number is spoken; a presenter-led handheld edit would leave the bays soft and out of focus.",
+   "rank": 1,
+   "primary_g": "G2",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "bays"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "xFpWtpSZhv0",
+   "url": "https://www.youtube.com/watch?v=xFpWtpSZhv0",
+   "title": "Home Tour │ EP. 1 อวด #ตู้เสื้อผ้า Walk in Closet │Good Idea Outlet",
+   "channel": "บิ้วอินง่ายๆ By Good Idea Outlet",
+   "minutes": 6.7,
+   "views": 685,
+   "g_items": [
+    "G2",
+    "G9"
+   ],
+   "priority": "must",
+   "why": "The only row in 390 candidates that puts a THAI built-in wardrobe, in a real Thai house, with a real family clothes in it, on camera. The owner standing unnatural-contents verdict at point-blank range.",
+   "risk": "Vendor content sells the box: the likeliest outcome is a newly installed and therefore EMPTY carcass, which would teach the opposite of natural density.",
+   "rank": 2,
+   "primary_g": "G2",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "bays",
+    "thai"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "pX50W7ZVj_w",
+   "url": "https://www.youtube.com/watch?v=pX50W7ZVj_w",
+   "title": "ESSENTIA WATER PHOTO SHOOT BEHIND THE SCENES: A WEEK IN MY LIFE AS A SET DECORATOR & PROP STYLIST",
+   "channel": "SemiSuccessfulDIY",
+   "minutes": 25.0,
+   "views": 163,
+   "g_items": [
+    "G8",
+    "G1"
+   ],
+   "priority": "must",
+   "why": "One person holding BOTH our jobs — deciding what objects exist and then arranging them for a camera that is already pointed — across a whole week. At 163 views nothing has been polished into a lesson, which is the point.",
+   "risk": "A week in my life is vlog shape, and it is a beverage product shoot: tabletop scale, one hero object, seamless backdrop. The spatial problem may share nothing with a room.",
+   "rank": 3,
+   "primary_g": "G8",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "lens-relationship"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "KBRdBM6ySdU",
+   "url": "https://www.youtube.com/watch?v=KBRdBM6ySdU",
+   "title": "PORTFOLIO REVIEW - Image Analysis and Paintover #01",
+   "channel": "Arqui9 Visualisation",
+   "minutes": 16.1,
+   "views": 37879,
+   "g_items": [
+    "G3",
+    "G8"
+   ],
+   "priority": "must",
+   "why": "The only row in 390 where an arrangement is convicted INSIDE A RENDER by somebody who does our exact job — the operation C2/C3 perform in words, performed in pixels. A paintover states the correction as a POSITION, which is the form our build can consume.",
+   "risk": "Archviz portfolio reviews skew to exteriors, composition and post: all 16 minutes could be sky replacement and colour grade with not one object relocated.",
+   "rank": 4,
+   "primary_g": "G3",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "lens-relationship"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "9xrYzUXpe_o",
+   "url": "https://www.youtube.com/watch?v=9xrYzUXpe_o",
+   "title": "[4K] แปลงโฉมบ้าน 10 ปี │ 10 Years Home Makeover │ Life and Living Stylist Ep.14",
+   "channel": "vowvaris",
+   "minutes": 20.8,
+   "views": 1031,
+   "g_items": [
+    "G9",
+    "G1"
+   ],
+   "priority": "must",
+   "why": "The most credible Thai instance in 390 of the thing the curriculum measured at zero: somebody choosing objects and putting them down, in our market. Shot in 4K, so extracted frames are worth MEASURING.",
+   "risk": "Makeover episodes cut the work into a music montage and save the talking for before/after; it is styling for a RESIDENT, not for a lens.",
+   "rank": 5,
+   "primary_g": "G9",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "thai"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "ZIOE8U7gSe0",
+   "url": "https://www.youtube.com/watch?v=ZIOE8U7gSe0",
+   "title": "How to fold a T-shirt for display - 3 ways from a professional visual merchandiser",
+   "channel": "Marica Gigante - Visual Merchandising Evangelist",
+   "minutes": 11.3,
+   "views": 185284,
+   "g_items": [
+    "G2",
+    "G6"
+   ],
+   "priority": "should",
+   "why": "The folded module from hands that do it for money, against the retail fold rule already on disk — a merchandiser folds to a fixed BOARD dimension, which is why a shop stack still reads as an ordered block from across a room.",
+   "risk": "Could be eleven minutes of close-up hand technique with no dimension spoken and no stack shown from any distance.",
+   "rank": 6,
+   "primary_g": "G2",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "a-number",
+    "bays"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "WXjLGS3GmHI",
+   "url": "https://www.youtube.com/watch?v=WXjLGS3GmHI",
+   "title": "Closet rod tips and information - CLOSETbay",
+   "channel": "CLOSETbay",
+   "minutes": 3.7,
+   "views": 1270,
+   "g_items": [
+    "G2",
+    "G5"
+   ],
+   "priority": "should",
+   "why": "The closet trade allowance table spoken out loud — a manufacturer has to state linear rail per garment type because it has to cut the rail. Our hanging density is typed, not derived.",
+   "risk": "1,270 views from a vendor is as likely a bracket-and-hardware ad with no per-garment allowance ever stated.",
+   "rank": 7,
+   "primary_g": "G2",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "a-number"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "xE_tyKkm8nE",
+   "url": "https://www.youtube.com/watch?v=xE_tyKkm8nE",
+   "title": "Interior Level & Environment Design Tips for Solo Game Devs | Unity | Unreal",
+   "channel": "Seta - Level Design",
+   "minutes": 12.1,
+   "views": 58438,
+   "g_items": [
+    "G1",
+    "G8"
+   ],
+   "priority": "should",
+   "why": "The one discipline whose permanent enemy is the REPEAT, in our medium — an instanced scene judged through a frustum. Offset, rotate, break the run, hero versus filler, and a named set dressing pass with a stopping condition.",
+   "risk": "Level design most often means layout, sightlines and player flow, in which case twelve minutes never touch object placement.",
+   "rank": 8,
+   "primary_g": "G1",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "bays",
+    "a-number"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "pb2bPX1H1uI",
+   "url": "https://www.youtube.com/watch?v=pb2bPX1H1uI",
+   "title": "Your bedroom is in trouble because of these 9 things! (bedroom design mistakes, real cases)",
+   "channel": "ช่างเถอะ by พี่ปี้",
+   "minutes": 20.1,
+   "views": 162632,
+   "g_items": [
+    "G9",
+    "G3"
+   ],
+   "priority": "should",
+   "why": "A Thai practitioner naming what is WRONG with real Thai bedrooms, with the cases on screen — the closest thing on either sheet to a judging rung that shares our client eye. Listed by the shortlist as next-in-line below its own cut.",
+   "risk": "9 things is listicle shape and may resolve entirely into layout and construction complaints with nothing about decor.",
+   "rank": 9,
+   "primary_g": "G9",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "thai",
+    "naming"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  },
+  {
+   "id": "QA40N3p6YOU",
+   "url": "https://www.youtube.com/watch?v=QA40N3p6YOU",
+   "title": "Shea McGee Shows Us How To Style A Side Table I Style Improvised I HB",
+   "channel": "House Beautiful",
+   "minutes": 14.0,
+   "views": 8809,
+   "g_items": [
+    "G1",
+    "G6"
+   ],
+   "priority": "should",
+   "why": "Style Improvised is a format where the designer is handed objects and must compose a surface on camera — the DELIBERATION is the show, which the already-watched McGee bed-styling row does not contain. A side table is the nightstand class.",
+   "risk": "Repeats a voice already watched; 14 minutes could be mostly interview. If it is tips-to-camera it duplicates a watched row.",
+   "rank": 10,
+   "primary_g": "G1",
+   "agreed_by_lanes": 2,
+   "lanes": [
+    "the-act"
+   ],
+   "status": "unwatched",
+   "queued_at": "2026-08-28",
+   "notes": null,
+   "watched_at": null,
+   "distilled_to": null
+  }
+ ],
+ "title_and_channel_miss_rate": {
+  "measured": "2026-08-28",
+  "rate": "2 of 9 picks (22%)",
+  "which": [
+   "2stNv09sbe8",
+   "KX6ZYSo8apo"
+  ],
+  "means": "A row judged from its TITLE AND CHANNEL has a measured ~22% chance of returning nothing usable when actually watched. It applies in both directions: to trusting an unwatched row's `why`, and to any row DROPPED from its title without being watched (the 3 dropped rows of 2026-08-28 say so in their own drop_reason). It is a reason to watch before citing, not a reason to stop picking."
+ },
+ "holes_named": [
+  {
+   "id": "HOLE-01",
+   "named_by": "owner",
+   "named_at": "2026-08-28",
+   "verbatim": "ยังไม่เห็นมี video ที่เกี่ยวกับการจัดวางของตกแต่ง",
+   "gloss": "No video about the PLACEMENT / ARRANGING of decor.",
+   "measured": "TRUE, and exactly. Of the 56 watched rows, 0 are about arranging decorative objects on a surface. The watched set holds bed-MAKING, rug SIZING, closet ORGANISING, visual merchandising, lighting, photography — every one of them about an object class this studio already builds — and not one shows somebody choosing objects and putting them down. The 4 rows in the ledger that ARE decor placement (HXbnHgIr_C4 accessorizing formula, Sx1hsKQ1Mec coffee-table/console styling, Gh6xKtB0SLA decorating shelves, K9V0cslPa6I shelves in 7 steps) all sat at priority should/reference, and the watch pass ran must-first, so all 4 were unwatched.",
+   "why_no_counter_found_it": "G1 held 33 rows, 16 watched — by every count in this program the BEST-covered G-item there is. The hole was INSIDE it. The G-items were written by the builder from the builder's own defect list, and the priority that decided watch order was assigned by the same judges; a counter cannot find a hole in the category it is counting. Same shape as R7b one level up: an instrument answers the question it was built to ask. His eye did it in one sentence.",
+   "answered_by": [
+    "HXbnHgIr_C4",
+    "Sx1hsKQ1Mec",
+    "Gh6xKtB0SLA",
+    "K9V0cslPa6I",
+    "88ipoYZ_TdY",
+    "9MPpF6UmQmc",
+    "IJ0FjYgnhfQ",
+    "vLTCa1gNhEs",
+    "AWWPnKYNklw",
+    "D76757KNu_k",
+    "m3UoGzkcYD4",
+    "6C0orv4gc8E",
+    "xFpWtpSZhv0",
+    "pX50W7ZVj_w",
+    "KBRdBM6ySdU",
+    "9xrYzUXpe_o",
+    "ZIOE8U7gSe0",
+    "WXjLGS3GmHI",
+    "xE_tyKkm8nE",
+    "pb2bPX1H1uI",
+    "QA40N3p6YOU"
+   ],
+   "closed_at": null,
+   "closes_when": "every row in answered_by is watched AND distilled. Until then this row PRINTS at every session open — the 21-dropped-asks defect is what it exists to stop."
   }
  ]
 }

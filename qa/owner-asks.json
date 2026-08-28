@@ -418,6 +418,19 @@
     "docs/LICENSING.md",
     "qa/sourcing-tiers.json"
    ]
+  },
+  {
+   "id": "ASK-035",
+   "ask": "หนึ่งประโยค ไม่ใช่เงิน — **'ของในตู้ built-in ไม่เป็นธรรมชาติ' คือ (ก) ทุกช่องเหมือนกันหมด หรือ (ข) ของในช่องเดียวมันผิดเอง?** สองอย่างนี้แก้คนละทางกันสิ้นเชิง: (ก) แก้ด้วยกฎ generative ระดับ RUN (สลับซิลูเอต Λ/V ต่อกันทั้งแถว — knowledge/styles/decor-placement-grammar.md §9.3) ส่วน (ข) แก้ด้วยไวยากรณ์ในช่องเดียว (สามบทบาท · สามคอลัมน์ · หนังสือสามท่า · ต้องมีของแบน 1 ชิ้น — §9.4). **ทำไมต้องถามพี่:** harvest สองรอบ 533 คลิป กรรมการสิบเลน ตอบข้อนี้ไม่ได้เลยเพราะไม่มีคลิปไหน เคยเห็นตู้ของเรา และ builder ยื่น critic item ได้ 0 จาก 367 (R7d) จึงตัดสินเองไม่ได้ตามกฎ. ถ้าไม่อยากตอบเป็นคำ — ชี้ crop เดียวก็ได้ แล้วผมส่งให้ C2/C3 ตัดสินแทน",
+   "first_routed": "2026-08-28",
+   "where": "knowledge/styles/decor-placement-grammar.md",
+   "status": "open",
+   "money": "no",
+   "note": "มาจาก shortlist ของ harvest 2 ที่สรุปเองว่า 'unanswerable by any video… the cheapest and highest-value unresolved item in this whole round, and it has been sitting behind two harvests that could never have answered it.' ผูกกับ ORD-2026-08-26 ที่ยังไม่ทำตาม",
+   "read_first": [
+    "knowledge/styles/decor-placement-grammar.md",
+    "knowledge/_inbox/video-study/2026-08-28-decor-placement-the-hole-he-named.md"
+   ]
   }
  ]
 }

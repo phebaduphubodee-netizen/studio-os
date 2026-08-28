@@ -292,10 +292,9 @@ A rug is built as a hair field on a backing, guide-driven:
 > plane. A rug modelled as a surface with a material can produce neither, no matter how the
 > shader is tuned. The same mechanism answers the bouclé in §8.2, so this is one technique, not
 > two.
-> Edge treatments a real rug carries are in
-> `knowledge/_inbox/video-study/2026-08-28-rug-and-bedcover-numbers-1kItQdeo9oc.md` (serged deep
-> pile whose fibres hide the cut, or a flat weave with a ~50 mm fabric binding read as a
-> deliberate stripe).
+> Edge treatments a real rug carries are in **§9 below** (serged deep pile whose fibres hide the
+> cut, or a flat weave with a ~50 mm fabric binding read as a deliberate stripe) — one home for
+> the edge rule, not a pointer at the inbox unit it came from.
 
 ### 8.4 THE THREE SMALLER FABRIC LEVERS
 - **Colour is not a flat wash**: *"when you zoom in on fabric you'll see that there are a lot of
@@ -317,3 +316,86 @@ Tools named for putting fold structure into a shape that needs it: **scrape and 
 brushes** around seams, and *"the amazing **cloth sim brush** for adding wrinkles"*, plus bought
 wrinkle asset packs. This is R8b's law — do not hand-write what the software already generates
 — pointed at the specific case this file exists for.
+
+## 9. ขอบพรม / THE RUG EDGE — two legitimate edges, and a bead is not a chamfer
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-rug-and-bedcover-numbers-1kItQdeo9oc.md` §2.
+> Source video ids: `axFPC-8MS_0` (NCCarpetBinding, *"Handmade rug minimal edge serge vs. micro
+> serge and standard"*, 55 s — a fabricator showing ONE rug edged three ways) and `1kItQdeo9oc`
+> (Lisa Holt Design, rug sizing) for the flat-weave alternative.
+> Tier REFERENCE — trade practice demonstrated on camera, not a spec sheet.
+> §8.3 built the PILE. This section is what the pile has to END in; it is the other half of the
+> same defect, and neither half works alone.
+
+### 9.1 THE VARIABLE THE FABRICATOR NAMES IS DEPTH AND COVERAGE, NOT PROFILE
+
+Three grades of the same operation, in his own words — the whole 55 seconds is one variable:
+
+- `[00:00]` *"here is your **standard serge**, as far as depth into the carpet, how far it
+  stitches in"*
+- *"here is the **micro serge**… you just get a different stitch tongue and you can set the
+  **depth a little shorter**"*
+- `[00:23]` *"then there is the **minimal edge serge**, or the hand-serge machine… it is an
+  enormous difference as far as **coverage being at an absolute bare minimum**."*
+
+So a serged edge is a **stitched bead that WRAPS the cut edge**, and the three products differ
+only in how far the stitching penetrates and how much of the edge it covers. `frame_0013` shows
+it plainly: the pile runs to a cut edge, the bead wraps that edge, and the rug's own thickness
+reads as a **rolled shoulder** instead of a 90° step.
+
+**What this source does NOT give is a number.** Not one dimension is spoken in the clip — no bead
+radius, no serge depth in mm, no thread gauge. It establishes the ORDER (standard > micro >
+minimal) and the MECHANISM (a bead wrapping a thickness); it cannot be converted into a value.
+Typing one anyway would be R10's fabricated reading: he said "depth", he never said how much.
+
+### 9.2 TWO LEGITIMATE EDGES ARE NAMED, AND OUR RUG HAS NEITHER
+
+`1kItQdeo9oc` `[12:52]`: *"you can either do it **serged**, if it's a deep pile, so that you don't
+see the edge and you just have this lovely **deep pile flowing over the edges**. Or if it's sort
+of a flat weave like a sisal, then you can add a **binding** to the edge, which is a couple of
+inches wide, and it gives you a nice **accent strip** around the edge."*
+
+| Edge | What carries it | Geometry it implies at mm scale |
+|---|---|---|
+| **Serged deep pile** | the pile itself | fibres flow over the cut edge and HIDE it; the visible thickness IS the pile (≈20 mm on §8.3's build) and the terminating surface is strands, not a face. The bead is a thin rim following the backing's cut edge. |
+| **Bound flat weave** | a separate fabric strip | binding *"a couple of inches"* ≈ **50 mm** (2 in = 50.8 mm) folded over the edge onto the underside — a SECOND material with its own colour, read as a deliberate stripe, not a bevel of the field. |
+
+Both are built things. Neither is a chamfer, a bevel or a rounded corner on the field mesh.
+
+### 9.3 WHY THIS LANDS ON A FILED DEFECT
+
+The P2 exit clause's `rug_edge` crop asks whether the edge ROLLS or STEPS, and the measured answer
+has been a step. §8.3 supplies what rolls — a guide-driven hair field whose real thickness makes a
+cut edge roll. **This section supplies what it rolls INTO, and the finding is that our rug has
+neither legitimate edge**: it is a surface carrying a material, so there is nothing for a bead to
+wrap and no strands to flow over. No shader tuning reaches either state, and tuning the step down
+is not a third option — it is the absence of both.
+
+Two routes, and no third is named by either source — the pair is what was SAID, not a proof
+that nothing else exists (fringe, hand-hem and sealed edges are simply outside what was asked):
+
+1. **Serged deep pile** — build the pile (§8.3) and let the strands overhang the backing outline;
+   the edge then becomes an emergent property of the hair field rather than a modelled profile.
+   The bead is a thin wrapped rim on the backing's cut edge. Its depth and coverage are a LOOK
+   call — this source names three grades but measures none of them.
+2. **Bound flat weave** — no hair field at all; a woven-flat field plus a ~50 mm binding as a
+   separate mesh strip with its own material, wrapping the rug's thickness onto the underside. It
+   is correct only when it reads as a stripe, because that is what the source says it is for.
+
+### 9.4 WHAT DOES NOT TRANSFER — said plainly
+
+- The source is a **carpet-binding fabricator's 55-second side-by-side clip** for handmade area
+  rugs, not a room, not a residential brief. The vendor's own market is not recorded in the unit. Whether "micro serge" or a hand-serge
+  machine is obtainable from a Bangkok fabricator is UNKNOWN and was never asked. For a render
+  that does not matter; for a spec sheet handed to a client it does, and the three names are the
+  fabricator's own trade vocabulary and no Thai supplier is bound to them.
+- **The clip recommends nothing.** It is a side-by-side comparison with no room, no style and no
+  context, so it cannot tell us which grade a bedroom rug should carry. Reading a preference into
+  it would be inflating one source into a rule.
+- The `[12:52]` binding width is a designer's spoken *"couple of inches"*. **50 mm is the
+  conversion of an approximation** and must never harden into a threshold or a gate value.
+- §8.3's ≈20 mm pile comes from a **different video and a different demonstration**
+  (`qXKERWIATjw`). Pairing that length with this edge is OUR pairing; neither source states it.
+- Nothing here touches rug PLAN size, pad thickness or floor offset. Those numbers live in the
+  same inbox unit's §1 and are a separate debt.
