@@ -661,10 +661,10 @@
    "lanes": [
     "G6 — surfaces + soft goods (texture repetition, rug edge, cloth over-crumple, duvet coverage; 3D material realism AND how a bed is really made)"
    ],
-   "status": "unwatched",
+   "status": "watched",
    "queued_at": "2026-08-28",
-   "notes": null,
-   "watched_at": null,
+   "notes": "knowledge/_inbox/video-study/2026-08-28-trim-margins-lighting-physics-and-rug-pile-KQZKc8PLV2A.md",
+   "watched_at": "2026-08-28",
    "distilled_to": null
   },
   {
@@ -1049,11 +1049,12 @@
    "lanes": [
     "GAP-CURTAIN — recessed curtain pocket / pelmet / track (G5 cannot-be-built), plus stack-back / hem break / sheer hang (G6)"
    ],
-   "status": "unwatched",
+   "status": "dropped",
    "queued_at": "2026-08-28",
    "notes": null,
    "watched_at": null,
-   "distilled_to": null
+   "distilled_to": null,
+   "drop_reason": "NOT WATCHED, dropped by judgement on 2026-08-28. The recessed drapery track is now covered by three watched sources - saFsrHObKyk (manufacturer, with the 10 mm fixing hole and the extra fixing at the curtain stack), XeCPWJgb4Qg (site carpenter, 300-325 mm setback, framed before lining, blocked at the end) and 22ijpgjmkWY (gypsum profile, frames only) - and the repo's own Thai pocket-depth table in casework section 5 predates all of them. A 66-second installation guide for one manufacturer's extrusion is judged to add nothing. Judged from title and channel, not from watching."
   },
   {
    "id": "MdcgsWb-S_c",
@@ -1075,11 +1076,12 @@
    "lanes": [
     "GAP PASS 2 — G5 cannot-be-built: hang-rail support · shelf pins/sag · room services"
    ],
-   "status": "unwatched",
+   "status": "dropped",
    "queued_at": "2026-08-28",
    "notes": null,
    "watched_at": null,
-   "distilled_to": null
+   "distilled_to": null,
+   "drop_reason": "NOT WATCHED, dropped by judgement on 2026-08-28 after four rail sources were watched and promoted. The rail end condition (cup bracket on a trim plate, 1.6 mm cut allowance), the 1524-1829 mm intermediate-support threshold, the rod diameters and loads, and the double/single/long rod heights are now carried by iJYto0muSd4, eDUQkwlLzBk, s9dEdHgCP-Y and AbmVfYx8aTo and are distilled into knowledge/ergonomics/casework-fixture-clearances-th-practice.md section 8. A fifth installation walkthrough is judged unlikely to add a quantity this curriculum does not already hold. Judged from title and channel, NOT from watching - and the 22 percent miss rate this study measured for title-and-channel judging applies to this drop too, so re-open it if a rail question turns out to be unanswered."
   },
   {
    "id": "BFdvgpY4WyA",
@@ -1100,11 +1102,12 @@
    "lanes": [
     "GAP PASS 2 — G5 cannot-be-built: hang-rail support · shelf pins/sag · room services"
    ],
-   "status": "unwatched",
+   "status": "dropped",
    "queued_at": "2026-08-28",
    "notes": null,
    "watched_at": null,
-   "distilled_to": null
+   "distilled_to": null,
+   "drop_reason": "NOT WATCHED, dropped by judgement on 2026-08-28 for the same reason as MdcgsWb-S_c: the rail load path and shelving support are covered by four watched sources plus axVhLMkgq2U on shelf span, and promoted. Same caveat: judged from title and channel, not from watching."
   },
   {
    "id": "EO62T1LHdNA",
@@ -1201,10 +1204,10 @@
    "lanes": [
     "GAP PASS 2 — G5 cannot-be-built: hang-rail support · shelf pins/sag · room services"
    ],
-   "status": "unwatched",
+   "status": "watched",
    "queued_at": "2026-08-28",
-   "notes": null,
-   "watched_at": null,
+   "notes": "knowledge/_inbox/video-study/2026-08-28-trim-margins-lighting-physics-and-rug-pile-KQZKc8PLV2A.md",
+   "watched_at": "2026-08-28",
    "distilled_to": null
   },
   {
@@ -1436,10 +1439,10 @@
    "lanes": [
     "GAP second pass — (1) lighting a full-height open-front wardrobe wall (where the LED sits vs the cell face) and (2) luminance ratios / how bright each surface must be relative to the others [GAP-JOINLIGHT.tsv + GAP-LUX.tsv]"
    ],
-   "status": "unwatched",
+   "status": "watched",
    "queued_at": "2026-08-28",
-   "notes": null,
-   "watched_at": null,
+   "notes": "knowledge/_inbox/video-study/2026-08-28-trim-margins-lighting-physics-and-rug-pile-KQZKc8PLV2A.md",
+   "watched_at": "2026-08-28",
    "distilled_to": null
   },
   {
