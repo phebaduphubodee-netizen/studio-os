@@ -185,6 +185,9 @@ specifically discouraged in a Thai bedroom** — cold and slippery, and worse wi
 occupants. A wood or wood-look floor in a Thai bedroom is therefore the expected choice, not a
 stylistic flourish.
 
+> หมายเหตุการนับหมวด: ไม่มี §8 — หมวดถัดไปถูกเพิ่ม 2026-08-28 ในชื่อ §9 โดยข้ามเลข 8 ไป
+> และการไล่เลขใหม่จะทำให้การอ้างอิงข้ามไฟล์ที่มีอยู่แล้วพัง จึงปล่อยว่างไว้โดยตั้งใจ
+
 ## 9. ในบ้านลูกค้าจริง / Inside a real client's house — `m3UoGzkcYD4`
 
 dooDeco, *เซียนแต่งให้ EP.2*, 12 min, watched 2026-08-28 at a **Centro Ramintra 2 detached
@@ -245,7 +248,68 @@ with a garment steamer/spray in the same bay.
   adjustment. One data point, one job, and it is the client speaking — but it is the only figure
   in this file for how many rounds a Thai residential job actually takes.
 
-## 8. ช่องว่าง / Gaps — do not fill from model knowledge
+## 10. คำตอบจากคนทำจริง / A working Thai designer, answering two questions — 2026-08-28
+
+> **PROVENANCE.** ASK-004, routed to the owner 2026-08-09 and answered by him on 2026-08-28 relaying
+> his designer friend — the practitioner whose delivered work is this studio's anchor pool. Two
+> questions, two sentences back. **This is the SECOND practitioner input this repo has ever had**
+> (the first was "most furniture comes from 3D Warehouse", which a 154-line Deep Research had
+> missed entirely). Tier: PRACTITIONER — one working professional in this market, not literature
+> and not a survey. It is one voice; it is also the only voice of its kind we hold.
+
+### 10.1 อะไรที่เขาปั้นเอง / What he models, and it is R8 word for word
+
+> *"เค้าปั้นแค่อันที่เป็นของแข็งและมี dimension ครับชัดเจน"*
+> — he models ONLY things that are solid and have clear dimensions.
+
+**That is R8's test, arriving from outside the repo and stated more briefly than we state it.** Our
+rule asks whether an object can be produced by (a) boxes with radii, (b) sweeping a measured 1D
+profile, or (c) extruding a measured outline — three clauses that are all one thing: *solid, and
+dimensioned*. And the corollary is the half we paid five and six rounds each to learn: **he does
+not hand-model free form at all.** Garments, cut flowers, drapery, figures — not his line of work
+either.
+
+> **WHAT IT CHANGES FOR US: nothing in the rule, and quite a lot in confidence.** R8 was written
+> from our own scar tissue (785 hand-written lines of cloth physics ending at 3/12; a Buddha image
+> at five rounds; a lily spray at six). A practitioner in the same market drawing the same line
+> independently means the rule is not a local workaround for a weak modeller — it is how the trade
+> divides the work. Cite this the next time a round is tempted to sculpt something free-form
+> "just this once".
+
+### 10.2 ลูกค้าตีกลับเพราะอะไร / Why Thai clients send work back — and it is not craft
+
+> *"ลูกค้าตีกลับเพราะ style ไม่ตรงกับความต้องการ"*
+> — clients send it back because the STYLE does not match what they wanted.
+
+Not the dimensions. Not the finish. Not the render quality. **Style fit.**
+
+> **THIS IS THE MOST UNCOMFORTABLE LINE IN THIS FILE AND IT SHOULD STAY THAT WAY.** This studio has
+> spent 88 rounds on surface realism — wood repeat, fold energy, rug edge, duvet coverage, value
+> ladders — measuring the axis on which delivered work is apparently NOT rejected. The axis it IS
+> rejected on is the one the studio only started governing on 2026-08-23, when the owner ordered
+> that the style be chosen before objects are selected (ORD-2026-08-23) and the STY program was
+> opened. That order now has a market reason behind it and not only a design one.
+>
+> **THE COMPANION FINDING, from the same market and the same week:** a delivered Thai job closed in
+> *"2-3 ครั้ง"* of revision after the client supplied a clear reference and the first image came back
+> *"90%"* right (§9.5). Read together: the revisions that happen are FEW, and they are about STYLE.
+> A studio whose style is settled up front barely revises; a studio whose style is not will revise
+> regardless of how good its surfaces are.
+>
+> **WHAT IT DOES NOT SAY**, so nobody over-reads one sentence: it does not say surface realism is
+> free, and it does not say a badly-built frame ships. It says that among work good enough to be
+> DELIVERED, the thing that comes back is style. Both of our lanes stay open; what changes is which
+> one gets to declare itself finished first.
+
+### 10.3 ที่ยังไม่ได้ตอบ / The third question, still open
+
+A third question was added to ASK-004 the same day and he has not answered it: **the delivered work
+styles its display bays very sparse (one object group per bay, roughly a third of cells empty) — is
+that a design decision, or a budget/props-not-arrived one?** It matters because §10.1 of
+`decor-placement-grammar.md` is about to adopt that sparseness as a target. Ask it next time; do not
+assume the answer.
+
+## 11. ช่องว่าง / Gaps — do not fill from model knowledge
 
 - **No Thai critique of finished work exists in this corpus.** Every Thai source here is a
   fabricator explaining his own work, a teacher, or a build-along: they say what goes IN, never
