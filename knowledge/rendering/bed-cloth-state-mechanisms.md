@@ -242,3 +242,78 @@ sine-hem's measurement side.
 - §2-§6 are UNTESTED against our solver as of promotion; §1 is the only tested
   section. Consumption state must be updated here when a round consumes a row.
 - Nothing on knits, sheers, leather; settling drape only, no motion.
+
+
+## 8. ขนและขนผ้า / FUZZ AND PILE — the mechanism this file has never carried
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-surface-realism-tiling-and-fabric--VgtSL5ZpYc.md` and
+> `knowledge/_inbox/video-study/2026-08-28-trim-margins-lighting-physics-and-rug-pile-KQZKc8PLV2A.md`.
+> Source video ids: `3SiZCxaNM28` (why a fabric material reads fake) · `qXKERWIATjw` (building a
+> rug in Blender). Tier REFERENCE — craft technique demonstrated on camera.
+> §1-§7 above are cloth STATE mechanisms (what a surface does). This section is about what the
+> surface is MADE of, which none of them addresses.
+
+### 8.1 THE LAW THAT SITS ABOVE EVERY MECHANISM IN THIS FILE
+> *"**your model needs to represent fabric in its topology.** If we just toss a fabric material
+> on a sphere, we know that's a fabric material — but if we add some cloth wrinkles, or maybe
+> some indents, you can see how it begins to read much more realistically as fabric… **unless
+> you're going for an abstract look, you're going to want that object's topology and shape to
+> match the material that it is holding.**"*
+
+**A material cannot rescue a shape that does not belong to it.** This is R8's build-or-acquire
+test stated from the shader side, and it is why every mechanism in §1-§5 is a GEOMETRY
+mechanism rather than a texture one.
+
+### 8.2 FUZZ IS NAMED AS THE SINGLE BIGGEST FABRIC LEVER
+> *"tip number one and **the biggest tip in my opinion is add fuzz**."*
+
+Method, as demonstrated: a **particle system** with a **vertex group controlling density** so
+fuzz appears only where wanted · **simple children** · **kink set to curl or spiral** ·
+**length turned way down** · count raised · and *"then add a **hair node** that you can use to
+make it so the **light passes through the fuzz**."* The newer curve-based hair system is the
+higher-control alternative.
+
+For a bouclé in particular the fuzz is not a refinement — it is the defining feature of the
+material, and a bouclé rendered as a woven-and-sheened plane is missing the thing that makes it
+a bouclé.
+
+### 8.3 A RUG IS THE SAME MECHANISM AT A DIFFERENT LENGTH
+A rug is built as a hair field on a backing, guide-driven:
+- **guide hairs** placed with an Add brush, **count ~50** over the surface, then a **comb**
+  brush aims them — *"this is basically **telling all the other hairs what it should be
+  doing**… each one has an area in which it affects the fur around it."*
+- **length ~0.02 m = 20 mm** — explicitly *"not going to be fur, that's too long."*
+- **frizz** and **noise** modifiers stacked on top; **preserve length** enabled so combing does
+  not stretch the strands; viewport density reduced for working.
+
+> **Consequence for two separate filed defects at once.** A pile has real thickness, so its cut
+> edge **rolls** instead of stepping — and it catches light **per strand** rather than as a
+> plane. A rug modelled as a surface with a material can produce neither, no matter how the
+> shader is tuned. The same mechanism answers the bouclé in §8.2, so this is one technique, not
+> two.
+> Edge treatments a real rug carries are in
+> `knowledge/_inbox/video-study/2026-08-28-rug-and-bedcover-numbers-1kItQdeo9oc.md` (serged deep
+> pile whose fibres hide the cut, or a flat weave with a ~50 mm fabric binding read as a
+> deliberate stripe).
+
+### 8.4 THE THREE SMALLER FABRIC LEVERS
+- **Colour is not a flat wash**: *"when you zoom in on fabric you'll see that there are a lot of
+  little **micro segments of colours**, and oftentimes they're interweaving and blending
+  different colours to create a richer colour."* The same law as per-instance variation, at
+  thread scale.
+- **Stitches** — painted, brush-driven, or from a geometry-nodes asset.
+- **Sheen**, used deliberately beyond its physical purpose: *"by turning the sheen up **just a
+  little bit on ALL of my fabric materials**, it will help catch the light and give a more
+  natural falloff… **it's not technically physically accurate**, however… it reads better as
+  fabric in the final render."*
+
+Honest scorekeeping at promotion time: of that source's five levers, **sheen is the only one a
+BSDF preset already meets**; fuzz, thread-scale colour, stitching and the topology law are all
+unbuilt.
+
+### 8.5 WRINKLES COME FROM BRUSHES, NOT ONLY FROM SIMULATION
+Tools named for putting fold structure into a shape that needs it: **scrape and indent sculpt
+brushes** around seams, and *"the amazing **cloth sim brush** for adding wrinkles"*, plus bought
+wrinkle asset packs. This is R8b's law — do not hand-write what the software already generates
+— pointed at the specific case this file exists for.

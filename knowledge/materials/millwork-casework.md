@@ -185,3 +185,89 @@ restate values here:
 - Fire/safety or formaldehyde-emission classes (E0/E1*) not in corpus; if any
   such value ever gates a deliverable it must come via `knowledge/codes-th/`
   or a reviewed Authority-tier source.
+
+## 9. ตู้เสื้อผ้าเต็มผนัง จากการสร้างจริง / A wall-to-wall wardrobe as it is actually built
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-a-wall-to-wall-wardrobe-spec-and-thai-switch-plates-R1dKybdYyY8.md`,
+> `knowledge/_inbox/video-study/2026-08-28-a-built-illuminated-closet-and-a-ceiling-curtain-pocket-AbmVfYx8aTo.md`,
+> `knowledge/_inbox/video-study/2026-08-28-bed-fold-fractions-and-the-complete-led-channel-spec-bvX7qZg6xqI.md`
+> and `knowledge/_inbox/video-study/2026-08-28-luminance-ratios-and-the-led-dado-reK_jQ1UtaY.md`.
+> Source video ids: `R1dKybdYyY8` · `AbmVfYx8aTo` · `7-G5784wZN0` · `AAoo_VwqQZc`.
+> Tier REFERENCE — two cabinetmakers and two installers working on camera; US/UK practice, so
+> §6 (AWI grades) and §7 (tropical substrate behaviour) still govern where they overlap, and
+> Thai material reality is in `knowledge/styles/thai-bedroom-and-built-in-practice.md` §3.
+
+### 9.1 A FITTED WARDROBE IS THREE ELEMENT FAMILIES, NOT A GRID OF CELLS
+Stated as the whole build in one paragraph by a maker who then builds it:
+
+> *"First off, I'm constructing a **plinth** out of **25 by 100 mm planed redwood** for the
+> wardrobe to sit on. Secondly, the wardrobe will be made out of **five carcasses plus top
+> boxes above each**, made out of **18 mm moisture-resistant MDF**. And thirdly, the doors
+> will be made from a **12 mm MR MDF base piece with 12 mm MDF rails and stiles pinned and
+> glued to the front**."*
+
+**plinth → carcasses → top boxes**, each a distinct family: the plinth lifts the whole run off
+the floor and takes the levelling; the carcasses are the usable volume; the top boxes close to
+the ceiling as a separate band with their own reveal. A run modelled as one uniform field of
+identical cells is not what a fitted wardrobe is.
+
+The second maker confirms the pattern and adds that **depths need not be constant within one
+run**: seven modules, *"four… a full 20 inches deep while three stayed at 13 inches deep"*
+(**508 mm and 330 mm**) *"due to the space considerations of the room."*
+
+### 9.2 SCHEDULE OF PARTS
+| Part | Value |
+|---|---|
+| plinth | 25 × 100 mm planed softwood |
+| carcass | **18 mm** moisture-resistant MDF (one maker uses 19 mm ply throughout) |
+| doors | **12 mm** MR MDF base + 12 mm applied rails and stiles, pinned and glued |
+| shelves | **25 mm** birch ply |
+| drawer boxes | **12.7 mm** ply (*"for the larger drawers I probably should have used three quarter"*), bottoms **6.4 mm** glued in |
+| drawer divider | fitted on drawers over ~**860 mm** wide, *"to both strengthen and aid in organisation"* |
+| face frame | solid stock ripped to **38 mm** wide strips, pocket-screwed, glued where screws would show |
+| front trim | ripped from 25 × 125 mm stock |
+| hinges | concealed (Blum) for thick doors, with die-cast mounting plates |
+| shelf supports | 5 mm pins on the 32 mm grid — see `knowledge/ergonomics/casework-fixture-clearances-th-practice.md` §8.3 |
+
+Two process facts that change how a finished carcass reads, both already in §5's territory and
+now with the reason attached:
+- **Every exposed ply edge is banded** *"so it would look like solid wood"* — an unbanded cut
+  edge shows its core and is a visible material boundary.
+- **Pieces are pre-sanded and pre-stained BEFORE assembly**, which is why a real built-in has
+  consistent colour into its internal corners.
+
+### 9.3 THE LIGHT IS A JOINERY DETAIL, DECIDED BEFORE THE CARCASS IS CUT
+> *"**number one consideration at the beginning of a project, or during the cabinet design**…
+> is: how are we going to mount the under-cabinet lights?"*
+
+**Two ways to hide it, both joinery:**
+1. a **light rail** (trade: *style rail*) — a **12.7-19 mm lip** on the bottom edge that the
+   channel sits behind;
+2. a **dado**, *"so that they end up sitting **dead flush**."*
+
+**The channel schedule:**
+- **12.7 × 12.7 mm (½″) aluminium profile** — the default; square edges so a cabinetmaker can
+  set depth and width from a sample offcut.
+- **6.4 mm (¼″)** for tight details — check the tape is compatible with the width and depth.
+- **45° corner profile** to throw light at an angle, *"mounted **3½ inches (89 mm) behind the
+  face**… that's a pretty industry standard."*
+- All carry an **opaque or frosted lens** that diffuses and hides the tape; sold in **6 ft and
+  8 ft** lengths that **butt together** for long runs.
+- **Dado clearance:** the groove is cut the channel's width **+ 3.2 mm** (one maker went to
+  4.8 mm) so the extrusion can be inserted and removed; **dado depth = channel depth** so the
+  lens finishes flush. Cut with a **down-cut spiral bit** to avoid tear-out.
+- **End inset:** a 39″ channel in a 41″ shelf — **~25 mm short at each end**, not run wall to
+  wall.
+
+**And the wiring is cut in first:**
+> *"because I did want to illuminate these shelves with the **minimum amount of exposed wires**,
+> I did have to give a lot of consideration to that **during the initial construction**… cutting
+> **recesses and grooves for all the wiring and connectors**."*
+
+A third maker routes *"an **angled groove** into the wardrobe ceiling"* for the strips, switched
+by a **sensor**. **An illuminated shelf with no cable route behind it is not a shelf that could
+be wired** — the millwork equivalent of a lamp with no cord.
+
+Cross-ref: the lighting side of the same detail (why the source must not be visible, and what a
+baffled luminaire is) is `knowledge/lighting/lumen-method-and-fixture-placement.md` §8.2-§8.3.

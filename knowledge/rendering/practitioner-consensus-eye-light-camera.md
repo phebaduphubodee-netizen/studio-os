@@ -13,6 +13,8 @@
 > - `knowledge/_inbox/video-study/2026-08-28-interior-photography-the-editorial-look-is-a-focal-length-pkMssQPul9o.md`
 > - `knowledge/_inbox/video-study/2026-08-28-surface-realism-tiling-and-fabric--VgtSL5ZpYc.md`
 > - `knowledge/_inbox/video-study/2026-08-28-why-a-room-feels-off-Sz4TC-VJ2PQ.md`
+> - `knowledge/_inbox/video-study/2026-08-28-two-long-form-a-designer-lecture-and-a-live-render-clinic-9eImuRVG4qM.md`
+>   (§8-§9, promoted in the second pass)
 >
 > **TIER: REFERENCE.** Trade and craft practice spoken on camera, not measurement of any
 > artefact and not statute. Nothing here outranks `knowledge/codes-th/`, the client
@@ -200,7 +202,81 @@ disagree; settle it against the anchor pool, not against one source.
 
 ---
 
-## 6. WHAT THIS FILE DELIBERATELY DOES NOT CARRY
+## 7. COMPOSITION — promoted 2026-08-28 once a second and third source arrived
+
+> Source video ids for this section: `sdIMItJ8sx8` (composition rule set) · `pkMssQPul9o` and `_XmBszDmyck` (two interior photographers) · `2stNv09sbe8` (facing).
+
+At first promotion the composition material was single-source and was held in `_inbox` under
+this file's own two-source rule. Three sources now carry it.
+
+- **A focal point needs a COUNTERWEIGHT, not just a position.** *"you cannot just simply put
+  your focal point in one of the intersections and finish there. The best result will be
+  achieved when you **balance it with something**."* Thirds can also divide CONTENT, not only
+  mark points.
+- **Gaze direction is load-bearing.** *"even the **look direction** of the character is
+  important, because we naturally look in the same way the character is looking"*, and *"the
+  image will look really weird if she will look the other way."* Two more sources apply the
+  same rule to non-human objects: a chair turned inward *"directs her attention this way"*, and
+  pillows faced toward the door for the first impression. **Objects are oriented toward where a
+  person arrives from or looks toward.**
+- **Symmetry is about visual WEIGHT**: *"two things don't have to be exactly identical but they
+  should have the **same visual weight** and balance on both sides."*
+- **Colour can carry the focal point**: one saturated element in an otherwise restrained field.
+- **Add canvas before cropping**, then crop to a stated ratio on the thirds — so the crop is not
+  limited by what the camera happened to capture.
+- **Foreground closes the edges** and pushes the eye to the subject; work the environment,
+  background and foreground, not only the model.
+- **A viewport composition OVERLAY is used at the camera-setup stage** — thirds, diagonals,
+  golden ratio and triangle, and a centre cross for symmetry, drawn over the live camera.
+- The disclaimer every source repeats: *"these are only guidelines… artists should know them
+  but should never see them as limitations."*
+
+## 8. FOUR CHECKS THAT ARE ARITHMETIC ON AN EXISTING FRAME
+
+Promoted with §7. None needs a re-render.
+
+1. **Clipping.** *"**maximum black and maximum white are wrong**… areas that have **no detail,
+   just black holes** in your image… would be considered a mistake"*, and *"we **get lost** in
+   this area because that's just black and there's nothing interesting to guide our eyes."*
+   Measure: the fraction of pixels at 0 or 1 carrying no detail.
+2. **Brightest and most saturated region versus the subject** (§1's question, made numeric).
+3. **A lamp cannot beat the sun.** *"you cannot really see the daylight inside of the shot
+   because you're **overwhelming it with the light that's inside**… no lamp, no light bulb can be
+   stronger than the sun."* Measure: the interior-fixture contribution against the daylight
+   opening in the same frame.
+4. **Verticals at 0° and focal length in band** — both known before the render from the camera
+   itself.
+
+And one thing to ADD rather than measure: **deliberate small imperfection is praised and asked
+for more of** — *"you've added a small **wobble** on your tiles, which is absolutely amazing…
+this just helps us fool our viewer a little bit better, and this is something that you just need
+to do **MORE of**."*
+
+## 9. THREE IDEAS FROM PRACTICE THAT ARE NOT RULES
+
+Recorded because they change how a round is framed, not what a value is set to.
+
+- **The lift comes from the move that was not necessary.** The 1936 Bugatti Atlantic's riveted
+  seam existed because the alloy could not be welded — and was KEPT on the later cars that could
+  have been welded, because people liked it. *"**You always want a reason for doing something,
+  but you're looking for the thing that isn't necessarily the logical or necessary move that
+  brings, that LIFTS a project.**"* A room assembled entirely from necessary moves is complete
+  and inert. R10 forbids an object that cannot be justified; it does not forbid one whose
+  justification is not functional.
+- **Two named orders of work.** *Diagram first, architecture follows*: **"she makes a diagram of
+  how she's going to use the room and the architecture falls into place around it"** (Eileen
+  Gray; and Le Corbusier's own cabin). *Room first, furniture dropped in*: **"the room was
+  designed as an environment and the chair was dropped into it."** Both are legitimate; a lane
+  that has only ever run the second should at least know that it has.
+- **The same room without curation.** A palace bedroom photographed decades later with the same
+  canopies, the same light fixtures and *"some decent modernist furniture"* — *"it shows what
+  happens when you get sloppy."* Same content, no curation, visibly worse. That is the
+  half-made verdict named by an elite practitioner, with the cause placed on **curation** rather
+  than on content.
+
+---
+
+## 10. WHAT THIS FILE DELIBERATELY DOES NOT CARRY
 
 - **Anything said once.** Single-source rules stay in the staged units.
 - **Numbers for a bedroom's luminance ratios.** §2.3 is a workplace standard; a residential
@@ -212,3 +288,6 @@ disagree; settle it against the anchor pool, not against one source.
   the lighting solve with the anchor pool as arbiter.
 - **Judgements of beauty.** Nothing here lets the builder convict its own frame (R7d); these
   are questions to ask and report, and conviction still comes from C2, C3 or the owner.
+
+
+---

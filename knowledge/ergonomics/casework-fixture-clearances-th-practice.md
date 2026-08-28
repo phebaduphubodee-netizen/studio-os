@@ -244,7 +244,8 @@ Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/00
 > `knowledge/_inbox/video-study/2026-08-28-closet-dimensions-from-a-closet-designer-s9dEdHgCP-Y.md`,
 > `knowledge/_inbox/video-study/2026-08-28-material-spectrum-and-the-32mm-system-5gfcLreD2ZM.md`,
 > `knowledge/_inbox/video-study/2026-08-28-trade-details-rail-curtain-track-downlight-iJYto0muSd4.md`,
-> `knowledge/_inbox/video-study/2026-08-28-a-built-illuminated-closet-and-a-ceiling-curtain-pocket-AbmVfYx8aTo.md`.
+> `knowledge/_inbox/video-study/2026-08-28-a-built-illuminated-closet-and-a-ceiling-curtain-pocket-AbmVfYx8aTo.md`
+> and `knowledge/_inbox/video-study/2026-08-28-closet-boutique-method-and-rod-standards-MqfBg3-yzY4.md`.
 > **These are US/EU trade sources.** §2 above is Thai practitioner practice and **OUTRANKS
 > this section for a Thai project.** This section exists because §2's sheets give ZONE
 > heights across example layouts and never state a rod height, a carcass depth, a hanger
@@ -327,6 +328,52 @@ look a little bit silly"*), and the wardrobe casework stands **100 mm off the wa
 curtain tucks in behind it**.
 
 ---
+
+## 9. ผ้าม่าน — ความฟู การแขวน และชาย / Drapery make-up — fullness, hang height, hem
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-drapery-grammar-and-the-triforce-of-realism-JgQdCad1Iiw.md`.
+> Source video id: `JgQdCad1Iiw` (a designer's drapery primer). Tier REFERENCE, US practice.
+> §5 above gives the POCKET the track sits in; this gives the CLOTH that hangs from it.
+
+### 9.1 ความฟู / Fullness — the input a stack-back table needs
+| Style | Fullness | Stack |
+|---|---|---|
+| traditional, lush, belled at the hem | **~300 %** | wide |
+| contemporary **ripple fold** | **~150 %** | *"a narrow, slender stack"* |
+
+The hardware that belongs with the contemporary case is named: *"something as **invisible as a
+simple ripplefold track that's mounted in the ceiling**, and you don't see anything else"* —
+which is the condition §5's recessed pocket creates. **A floor-to-ceiling sheer on a concealed
+ceiling track is the ~150 % ripple-fold case**, and that is a specific pleat geometry, not
+unnamed gathers.
+
+### 9.2 ระดับแขวนและชาย / Two dimensioned rules of thumb
+- **Hang as close to the ceiling as possible — within 76-102 mm (3-4 in)**; where there is a
+  cornice, hang from the **bottom of the cornice**, never covering it.
+- **Hem: graze the floor.** Either allow a slight puddle (*"elegant… but a bit of a maintenance
+  issue"*) or hem **3.2-6.4 mm (⅛-¼ in) clear** — and clear of **the carpet top** where a rug
+  passes under, not of the floor.
+- The cardinal failure: *"**if they are too short, drapery tend to look like they have been
+  shrunk. And that's the thing you want to avoid at all costs.**"*
+
+### 9.3 คำศัพท์ที่สเปคต้องระบุ / Vocabulary a spec must state
+- **Working panels vs FIXED panels are different objects.** Drapery is *"fabric panels that hang
+  on either side of a window or a door **and they can be pulled across**"*; fixed side panels
+  *"don't move across, they just act as a decorative element."*
+- **Lining is a separate selection**: blackout / light-blocking (bedrooms, nurseries), privacy,
+  or thermal. A bedroom sheer with no lining is a choice, and should be recorded as one.
+- **Top styles**: tab top · single / double / **triple pleat** (*"really add a lot of fullness"*)
+  · **inverted or box pleat** (*"super tailored… but it does give a little bit of fullness"*) ·
+  grommet · ring-with-tab · plain/rod top · pocket or gathered top.
+- **Hardware**: rods; **double rods** for a sheer plus an over-drapery; **traverse rods** on long
+  spans; rings, hooks, finials, brackets, tiebacks; and **pull buttons**, because *"you're not
+  gonna be wanting to **pull the drapery from the front end** — that will actually pull it out of
+  line and out of shape eventually."*
+- Five factors chosen before any of the above: architectural style · privacy and light control
+  (*"bedrooms are different than living rooms"*) · special conditions (baseboard heaters,
+  radiators, an HOA requiring uniformity from outside) · window type and shape · and which of the
+  five treatment families — drapery, shades, roller shades, blinds, shutters.
 
 ## หมายเหตุการกลั่นกรอง / Distillation notes
 - No pure-software / off-topic threads in this channel — all 7 threads carry casework/ergonomic content and are distilled above.

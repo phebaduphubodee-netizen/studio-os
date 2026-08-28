@@ -387,3 +387,90 @@ carried here — they are outside-corpus rules-of-thumb held REFERENCE-in-unit
 until verified vs AWI / supplier / Thai practice. The ergonomics half is
 distilled separately at `knowledge/ergonomics/residential-clearances.md`
 (dressing-wall section).
+
+
+## 14. วัสดุเป็นสเปกตรัม ไม่ใช่แค่สัดส่วน / A material palette is a SPECTRUM, and colour is chosen against its backdrop
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-material-spectrum-and-the-32mm-system-5gfcLreD2ZM.md`
+> `knowledge/_inbox/video-study/2026-08-28-what-a-real-project-hands-over-w2Gw5rzFKjA.md`
+> and, for §14.3, `knowledge/_inbox/video-study/2026-08-28-why-a-room-feels-off-Sz4TC-VJ2PQ.md`.
+> Source video ids: `5gfcLreD2ZM` (a materials primer — **that video carries a sponsor read,
+> disclosed**) · `w2Gw5rzFKjA` (a studio preparing a client sign-off) · `Sz4TC-VJ2PQ`.
+> Tier REFERENCE. §2's 60/30/10 rule is unchanged; this section adds the axis that decides
+> whether a correct ratio can still fail.
+
+
+> **RELATIONSHIP TO §13, READ IT FIRST.** §13 already answers the mono-timber trap with
+> Albers' *quantity = size × recurrence* and gives the escape moves: demote the floor with a
+> large soft rug so the wood reads as the 30 % secondary, and **keep metal as the 10 % accent**.
+> This section does not repeat that. It adds the AXIS that explains why §13's metal accent is
+> the right instrument rather than one option among many, and it names a failure §2's ratio
+> arithmetic cannot detect.
+
+### 14.1 THE SPECTRUM
+> *"I think the **key to a successful material palette is to focus on CONTRAST**, and to think
+> about your materials **on a spectrum**."*
+
+Soft/natural to harsh/manmade, as he orders it:
+
+**woven textiles · wood → brick · natural stone · textured ceramics · leather · some
+concrete → linoleum · painted elements · fibreglass · acrylic · laminate → glass · glossy
+tiles → METALS**
+
+He corrects his own word mid-explanation, and the correction is the useful part: *"maybe a
+better word for it is like **sharper** or like **harsher**… we can all agree that metal feels
+harsher than fabric."*
+
+**Position is set by FINISH, not by material class:** *"a highly reflective polished marble
+floor is going to feel way harsher than a more raw matte limestone floor tile. So it's not as
+simple as saying stone is in one place."* A satin oak and a gloss-lacquered oak are different
+palette entries.
+
+### 14.2 WHY A CORRECT RATIO CAN STILL FAIL
+> *"the tried and true easiest way of doing this is to bring in some nice **wood furniture
+> with some fabric upholstery**, and then **sort of CUT IT with a much harsher material** —
+> like a metallic table for example — because when you bring in materials from the **further
+> ends of that spectrum** you get this interesting **tension and contrast** that just makes a
+> space feel more deep and ultimately more balanced."*
+
+> **A room can satisfy 60/30/10 by area and still read wrong if all three tiers sit at the
+> same end of the spectrum** — which is the same failure §13 describes as a monopoly, seen
+> along a different axis: §13 counts RECURRENCE of one material, this counts DISTANCE between
+> the materials chosen. Before adjusting any ratio, ask whether the palette contains
+> anything from the harsh end AT ALL, and whether it is large enough to read at the frame's
+> scale. That is a different measurement from a pixel share against a target ratio, and §2
+> cannot detect it.
+
+### 14.3 A COLD ROOM IS A TEXTILE PROBLEM — three independent sources
+| Source | Wording |
+|---|---|
+| studio principal, on a TV room | *"it's got **quite a cold feel**… **there's no soft furnishings, it's got a lot of glass, a lot of wood**"* — the fix is linen wallpaper and heavily textured bouclé |
+| designer, on a bedroom | *"there's **no colour** in this room, that's why it **feels cold**"*, and *"**anything wood, any natural material is immediately going to bring warmth**"* |
+| designer, on a bedroom | *"**Everything is very hard**… it just feels very rigid"* — the prescription is an upholstered frame and curtains |
+
+The three do not agree on the CAUSE (absent colour vs absent soft goods vs hard materials),
+and they do agree on the REMEDY: **add textile mass.** Not more wood, and not a hue change.
+
+### 14.4 A COLOUR IS CHOSEN AGAINST WHAT IT SITS IN FRONT OF
+> *"when you're picking the leather fabrics you have to be quite careful… **you always have to
+> think what it's going to be in front of**. It's quite an insipid sort of taupe — sometimes it
+> looks pink, sometimes it looks grey — so **if you don't get a really clear contrast**, the
+> bar stool could **clash** with that. So by going white, you know it's going to have a
+> **definite contrast** there."*
+
+This is §3's simultaneous-contrast principle applied as a SELECTION rule rather than a
+warning: an object's colour is specified for its separation from its own backdrop. Every
+object standing against a single dominant wall material is subject to it.
+
+### 14.5 COUNTS CAN BE LOW, AND A SCHEME CAN LOOK POOR AS A FLAT-LAY
+*"just keeping it very minimal on the cushions — **we've only got three cushions in this
+entire room**"*, and on a deliberately restrained bedroom scheme: *"it's more about the
+**form**… very serene and simple. **In a tray, like you say, that doesn't look that
+impressive.**"*
+
+Two correctives for anyone judging a scheme by its board: a delivered room can be sparse in
+decorative objects, and a flat-lay is not the room. Weigh against the opposite finding
+recorded in `knowledge/rendering/practitioner-consensus-eye-light-camera.md` — an archviz
+reviewer asking for a rendered closet to be **fuller** — **the sparse/full answer differs by
+object class, and neither is a general rule.**

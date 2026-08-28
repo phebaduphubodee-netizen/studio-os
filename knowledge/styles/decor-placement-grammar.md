@@ -138,6 +138,140 @@ Contemporary / Tropical Modern / Japandi-adjacent guides):
   accents — bounds how many off-style pieces may enter) · 70/20/10 colour proportioning ·
   mood-board motif analysis (§6.5) · prop-vetting cull questions (condition / durability / reusability).
 
+## 8. ลำดับที่ดีไซเนอร์ทำจริง / The order professionals work in, and the vocabulary they judge with
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-three-designers-one-bedroom-P5aaT-QUtFU.md`,
+> `knowledge/_inbox/video-study/2026-08-28-designer-redesigns-four-real-bedrooms-kmCHv3PG2XM.md`,
+> `knowledge/_inbox/video-study/2026-08-28-why-a-room-feels-off-Sz4TC-VJ2PQ.md`,
+> `knowledge/_inbox/video-study/2026-08-28-closet-boutique-method-and-rod-standards-MqfBg3-yzY4.md`
+> `knowledge/_inbox/video-study/2026-08-28-rug-and-bedcover-numbers-1kItQdeo9oc.md`
+> and, for §8.7's closet-density contradiction,
+> `knowledge/_inbox/video-study/2026-08-28-render-review-where-does-your-eye-go-vXVLTBvLCbo.md`.
+> Source video ids: `P5aaT-QUtFU` · `kmCHv3PG2XM` · `Sz4TC-VJ2PQ` · `MqfBg3-yzY4` ·
+> `1NI4zETSrQs` · `1kItQdeo9oc`. Tier REFERENCE — practice spoken on camera, not literature.
+
+### 8.1 A SIXTH METHOD FOR §6 — OBSERVED, NOT DOCUMENTED
+
+§6 lists five DOCUMENTED story→object methods. This adds a sixth of a different kind: not a
+method anyone wrote down, but **an invariant observed across three designers handed the same
+bedroom photograph**, plus a fourth working four real bedrooms.
+
+**first impression → story/vision sentence → FLOOR → WALLS → storage → bed and its
+orientation → the rest of the furniture → LIGHTING LAST.**
+
+- All three state a **story sentence before naming a single object**, and two of the three
+  derive it from **the person who will live there** rather than from a style name.
+- Lighting does not appear in any of the three until the final minutes. A lighting director
+  and an architect drawing lighting plans both independently say the same thing — light is
+  designed once furniture and finishes are known.
+- The fourth designer's per-room order is: whole-room verdict → **layout/orientation** → the
+  basics (cords, storage, mess) → **a focal point** → soft goods → colour last, derived from
+  something already in the room. His own words for the third step: *"attack the basics first
+  before we really get into the fun things."*
+
+> **What this adds to §6 in practice:** §6's methods all produce an object LIST. This produces
+> an ORDER, and the order says the list is not the first artefact — the story sentence is,
+> and the surfaces are settled before the objects.
+
+### 8.2 A FOCAL POINT IS A REQUIRED PART, NOT A NICETY
+Four independent sources name it as something a room must have and can lack: *"clearly, her
+room needs a sort of focal point"*, *"I think what I really want to do is create a focal
+point"*, *"it's very important to create a strong focal point"* (a visual-merchandising
+lecturer), and an archviz reviewer testing every image by where the eye lands.
+
+§4 records that there is NO cited total object count for a finished room. A focal point is the
+nearest thing to a completeness test that the practitioners actually use: **not how many
+objects, but whether one of them is the subject.**
+
+### 8.3 THE VOCABULARY — named defects a report can cite
+Collected because a builder that cannot NAME a defect cannot report one. Every phrase is a
+whole-room judgement made in under five words with the room visible.
+
+| Phrase | What it judges |
+|---|---|
+| *"quite a bit of clutter"* | object count / surface discipline |
+| *"it feels like a closet"* | circulation, not decoration |
+| *"a hallway that leads to kind of nowhere"* | leftover floor with no purpose |
+| *"a train of furniture"* | pieces in an unbroken line — *"let's try and just put some space between things"* |
+| *"plastered against the wall"* | no gap behind a piece — *"we've got to give it some wiggle room"* |
+| *"every wall completely covered in furniture"* | no **breathing room** |
+| *"all flat things on the wall — that falls flat"* | one KIND of object repeated; also *"when it's just all shelves everywhere"* |
+| *"it's just really, really boring"* | no focal point, no contrast |
+| *"everything is very hard"* / *"very rigid"* | absence of soft goods |
+| *"the room feels cold"* | see `knowledge/styles/color-composition.md` §14.3 |
+| *"it's almost like it's not done"* | too simple, too empty, no context |
+
+**Use limit (R7d):** these are for the builder to REPORT with, never to convict with. A defect
+enters the ledger from C2, C3 or the owner.
+
+### 8.4 OBJECTS ARE HABITUALLY CHOSEN TOO SMALL — four sources
+Two designers agreeing unprompted about the same object class: *"everybody goes too small on
+their bedside table lamps. If whatever size you pick, it's too small."* — *"go like two sizes
+bigger. I promise you."* A third states it at room scale: *"let each element be large and
+unapologetic — it could be the entire length of that wall."* A fourth specifies deliberately
+oversized pendants that a collaborating architect called an error, and stands by it.
+
+And why it is not a trivial finishing item: *"having the correct bowl or the correct vase
+almost feels like a frivolous thing, because it's not the sofa and it's not the rug… but it
+ridiculously really can tie the space together as the finishing piece. It's kind of like
+having the tux without the bow tie. **It IS actually a focal point.**"*
+
+§1's vignette rules say what goes on a surface; this says the pieces are probably a size or
+two under, and that the error is systematic rather than occasional.
+
+### 8.5 A PROPORTION CONSTANT FOR ANYTHING MOUNTED ABOVE SOMETHING
+*"the fireplace is the exact same width as the TV — to me that's the killer… speaking in the
+constants of design proportions, ideally a TV up there would be a little bit **smaller**. It
+ends up feeling kind of overwhelming; it won't feel balanced."*
+
+**A mounted object must be narrower than the element it sits on.** §2 sizes art to the wall
+and to the furniture below; this adds the failure state when the two are equal.
+
+### 8.6 THE CONTESTED RUG ITEM IN §3 GETS A THIRD VOICE, WITH A REASON
+§3 records the nightstands-ON versus nightstands-OFF camps as contested with neither winning.
+A designer states the ON position and gives a use-based reason rather than a styling one:
+
+> *"There's nothing I hate worse than walking in and seeing a little rug in front of a bed.
+> **What is that for?** You don't get off the bed in the front. **You get off the bed on the
+> side**, and when your feet hit that floor, you want your feet to hit a carpet. So **you want
+> that area rug to hold that whole space — bed AND nightstands.**"*
+
+This does not settle §3 — it is one more voice in the ON camp — but it converts the item from
+a taste dispute into a **testable predicate**: does the rug's plan extent contain the bed and
+both nightstands? Answerable from a scene dump with no render.
+
+Her general sizing rule is stated differently from §3's and measures a different thing:
+**102-152 mm (4-6 in) of rug beyond every furniture piece and all of its legs**, versus §3's
+457-610 mm beyond the bed's sides and foot. They are not in conflict; §3 sizes to the bed,
+this sizes to whatever the rug is asked to hold. And: **a pad goes under almost every rug**, so
+a rug's top surface is never at floor level.
+
+### 8.7 OPEN CASEWORK — §5 GETS ITS FIRST USE-BASED ANSWER
+§5 asks what an open shelf bay should contain. Three sources converge, and one of them is
+retail rather than residential:
+
+- **An open cell can be justified by a USE**, not only by a look: a Thai designer's wardrobe
+  reserves one open compartment with a rail *"for the clothes you will wear the next day"*,
+  another for a laundry basket, another as a bag display.
+- **A designed open wardrobe is not only clothes.** A stylist lists *"a small framed photo, a
+  clock, or some faux flowers… a display of favourite jewelry, a special handbag"*, and the
+  **backs of shelves painted in a bold colour**; a merchandising lecturer independently says
+  *"don't waste the shelves, create a display area"*, that plants *"soften the whole look"*,
+  and that shelf back panels *"create a 3D effect and can be painted or textured."*
+- **Density is contested and the two answers are opposite.** A merchandising lecturer: *"don't
+  bombard them with merchandise — keep it simple. They're more likely to buy if there's LESS
+  merchandise."* An archviz reviewer, of a rendered closet: *"maybe fill it even more — my
+  closet's stuffed with stuff. This is valuable real estate, you got to fill this up."*
+  **A SHOP is merchandised sparse; a HOME closet is full.** Contents styled to shop density
+  read as a display rather than as somebody's wardrobe — which is a testable hypothesis for
+  the "unnatural contents" verdict, not a resolved rule.
+
+Ordering rules that ARE agreed (a stylist with 20 years of luxury clients): **all garments
+face the same direction**; **one hanger colour family**, with the shoulder profile changing by
+garment class; **colour runs light-to-dark, restarted at each new category**; short and long
+garments get separate zones.
+
 ## Consumers & debts
 - STY-2 style_verdict criteria ← §7 (this was the missing half of ORD-2026-08-23).
 - ORD-2026-08-25c steps 1–4 ← §6 (methods), §1/§5 (vignette + shelf rules for step 4's LOOK loop).
