@@ -518,6 +518,20 @@ def skill_lines():
                     "That is unknown, not zero."]
 
 
+def video_lines():
+    """THE WATCHLIST'S OWN AGE (2026-08-28). The owner asked for videos to learn design
+    from; a list of links is the fifth instance of the queue-with-no-consumer defect this
+    repo has already measured four times, so the list is a ledger and this is its reader.
+    Advisory only — learning to see never blocks a frame. Unreadable prints UNKNOWN."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import video_curriculum
+        return video_curriculum.report_lines()
+    except Exception as e:                                  # never break the brief
+        return ["", f"VIDEO CURRICULUM unknown — video_curriculum.py could not run "
+                    f"({e.__class__.__name__}). That is unknown, not zero."]
+
+
 def report(plan):
     lines = []
     cur = current(plan)
@@ -568,6 +582,7 @@ def report(plan):
     lines += style_lines()
     lines += coverage_lines()
     lines += skill_lines()
+    lines += video_lines()
 
     bad = unreadable_statuses(plan)
     if bad:
