@@ -721,6 +721,20 @@
    "lens_mm": 26,
    "shift_y": -0.14,
    "note": "THE CAMERA OF RECORD FROM 2026-08-22 TO p2r78, kept verbatim as the named reversal of the 2026-08-26 adoption (D-152). It is the frame in room_bedroom_suite_eye_p2r78.png — the A leg of the pair he chose from. Its own history is below, unedited:\n\nCAMERA OF RECORD SINCE 2026-08-22 (D-118, owner 'ดี' on the A/B pair AB_camera_A-canonical_vs_B-bedhero.png): the bed-foot hero, adopted from eye_camera_variants.bed_hero after the RANK verdict 'ตู้ fix ไว้ทำให้เตียงดูเล็ก' and the two-mode measurement (delivered work always commits — bed-as-subject: camera ~1.1-1.2 m, sleep surface <=0.3 of frame, bed cut by a frame edge; ours committed to neither). Stand WEST of the foot in the clear band, look EAST across the bed to the BF14 slat wall; frontal-axial, both nightstands symmetric; shift_y -0.14 looks down to kill the empty upper wall. IN THE SPEC, NOT A FLAG (D-032's law: a render state that lives only in the command line is reverted by forgetting to type it). The old NE-corner framing is preserved verbatim as eye_camera_variants.corner_ne_legacy — one --eyecam away, and D-118's reverse_by names it."
+  },
+  "builtin_bay_hero_2026-08-28": {
+   "stand_mm": [
+    1500,
+    -200
+   ],
+   "aim_mm": [
+    4003,
+    2800
+   ],
+   "lens_mm": 18,
+   "shift_y": -0.0376,
+   "eye_h_m": 1.05,
+   "note": "CANDIDATE B for the A/B his ย้ายกล้อง asks for (D-174). Aimed at the FACE of BF09-3 so the dressed cells are the subject. EVERY NUMBER IS SOLVED, NOT TYPED (R9 applied to the lens). THE FIRST SWEEP WAS WRONG AND THE BUILD CAUGHT IT: it optimised the two containment constraints and never asked whether the camera could STAND there — stand (900,200) was refused by camera_config._spot_is_clear (within 0.3 m of a built-in / no line of sight). The second sweep filters on _spot_is_clear FIRST and then on containment: 27 of 273 legal stands satisfy both, and this is camera-composition preference order over them — longest lens that admits a solution (18 mm), then largest bed share (0.206). shift_y is the midpoint of the admissible interval (equal headroom). AND THE TRADE TURNED OUT NOT TO BE A TRADE: bed share 0.175 -> 0.206, i.e. the bed reads LARGER than on the camera of record, not smaller — which is the axis D-118 was decided on. What is spent is the lens: 21 -> 18 mm, more convergence over the bed length."
   }
  },
  "exterior": {
