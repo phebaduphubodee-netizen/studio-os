@@ -22,6 +22,11 @@ Units are kept EXACTLY as the source gave them (cm / ซม. / มม. / inches)
 
 ---
 
+
+> **SOURCE VIDEO IDS carried by this file** (the staged units above hold the full
+> quotations and timestamps; a video whose content did NOT reach this file is
+> deliberately absent): `s9dEdHgCP-Y` · `eDUQkwlLzBk` · `EO62T1LHdNA` · `iJYto0muSd4` · `saFsrHObKyk` · `AbmVfYx8aTo` · `XeCPWJgb4Qg` · `axVhLMkgq2U`
+
 ## 1. เว้นระยะลิ้นชัก รับใต้ / รับข้าง / Drawer-box vs cabinet-opening deductions
 Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/007_เว้นระยะสำหรับลิ้นชัก-รับใต้รับข้าง`
 (`thread.md`, text only, no image). "วิธีคำนวนภายในลูกลิ้นชัก" —
@@ -230,6 +235,96 @@ Source: staged unit `knowledge/_inbox/discord/MY-DATA-PEAT/dimension-interior/00
 | **6T@0.275=1.65** | ลูกนอน (Tread): treads × 0.275 m each = 1.65 m total (stair-run string). NB: source label reads "6T…" but its own text says "8 ลูก" — the count digit is inconsistent in the source; the per-tread 0.275 m and total 1.65 m are what govern |
 | VARIES | ระยะไม่แน่นอน ขึ้นกับหน้างาน / dimension varies with site conditions |
 | EQ | ระยะเฉลี่ยเท่ากัน จากการเฉลี่ยหน้างาน / equal-spaced, averaged on site (exact value not fixed on the drawing) |
+
+---
+
+## 8. มาตรฐานราวแขวน + ระบบ 32 มม. (cross-check จากการศึกษาวิดีโอ 2026-08-28) / Hanging standards + the 32 mm system
+
+> PROVENANCE: promoted 2026-08-28 from
+> `knowledge/_inbox/video-study/2026-08-28-closet-dimensions-from-a-closet-designer-s9dEdHgCP-Y.md`,
+> `knowledge/_inbox/video-study/2026-08-28-material-spectrum-and-the-32mm-system-5gfcLreD2ZM.md`,
+> `knowledge/_inbox/video-study/2026-08-28-trade-details-rail-curtain-track-downlight-iJYto0muSd4.md`,
+> `knowledge/_inbox/video-study/2026-08-28-a-built-illuminated-closet-and-a-ceiling-curtain-pocket-AbmVfYx8aTo.md`.
+> **These are US/EU trade sources.** §2 above is Thai practitioner practice and **OUTRANKS
+> this section for a Thai project.** This section exists because §2's sheets give ZONE
+> heights across example layouts and never state a rod height, a carcass depth, a hanger
+> width or a hole pitch — and those are the four things a builder must type.
+
+### 8.1 ราวแขวน / Rod heights — two independent sources agreeing
+
+| เงื่อนไข / Condition | ค่า / Value |
+|---|---|
+| แขวนชั้นเดียว / single hang, to top of rod | **66-68 in = 1676-1727 mm** |
+| แขวนคู่ ราวล่าง / double hang, lower rod | **40-42 in = 1016-1067 mm** |
+| แขวนคู่ ราวบน / double hang, upper rod | **80-84 in = 2032-2134 mm** |
+| ชั้นบนสุด / top shelf | **84 in = 2134 mm** |
+| แขวนกลาง / medium hang zone | **45 in = 1143 mm** |
+| แขวนยาว / long (maxi) hang zone | **60 in = 1524 mm** |
+
+A professional organiser gives 40-42 / 80-82; an ex-California-Closets designer gives
+*"42 and 84 — those were the rod heights"*. **They agree.**
+
+**Cross-check against §2.2 (Thai sheets), and it is close:** the Thai short-hang zone
+**1000-1150 mm** brackets the 1067 mm double-hang section almost exactly. The Thai
+full-length zone **1600-1750 mm** runs taller than the US long-hang **1524 mm** — plausibly
+because §2.1's Thai chart puts a hung coat at **1600 mm** and a dress at **1400 mm**, so the
+Thai sheet is sized to a coat. **Where they differ, §2 wins for a Thai project.**
+
+### 8.2 ความลึกตู้และไม้แขวน / Carcass depth and hanger width
+- ไม้แขวนไม้ / wooden hanger: **19 in = 483 mm** wide.
+- ความลึกตู้ขั้นต่ำสำหรับแขวน / minimum depth for hanging: **22 in = 559 mm**;
+  **24 in = 610 mm** is better *"because then you have big bulky coats"*.
+- โมดูลตู้ไม่จำเป็นต้องลึกเท่ากันทั้งแถว / **module depths may differ within one run** — a built
+  closet in the source mixes **20 in (508 mm)** and **13 in (330 mm)** modules
+  *"due to the space considerations of the room"*.
+
+### 8.3 ระบบ 32 มม. / The 32 mm system — line boring
+| Quantity | Value |
+|---|---|
+| ระยะรู / hole pitch | **32 mm** |
+| ขนาดรู / hole diameter | **5 mm** (accepts 5 mm Euro screws and shelf pins) |
+| ร่นจากขอบหน้า / setback from the front edge | **37 mm** |
+| ร่นจากร่องแผ่นหลัง / setback from the back-panel groove | **37 mm** |
+| ความสูงแผ่นข้าง / side-panel height | an exact multiple of 32 (a *balanced panel*) |
+
+The 37 is a compromise with drawer hardware — slides have a centre-line hole at **35 mm** and
+are set back from the front — so one column serves shelf pins, slides and frameless hinge
+plates. **The visual rule that comes with it:** both columns are the same distance from
+their own edge, *"that way it gives a balanced look… it's going to be the same distance when
+you're looking at it, and it just looks better."*
+
+### 8.4 การรับน้ำหนักและช่วงพาด / Load and span — one threshold, three trades
+- ราวโลหะกลวง / hollow metal rod **Ø 1¼-1½ in = 31.75-38.1 mm**, carrying **70-90 lb
+  (31.8-40.8 kg) across a 6 ft (1829 mm) span**; the round section *"functions like an arch
+  in architecture"*.
+- **ช่วงพาดเกิน 5-6 ft (1524-1829 mm) ต้องมีตัวรับกลาง / a span over 5-6 ft requires an
+  intermediate support**, fixed to the BACK wall.
+- ปลายราวนั่งใน cup bracket บน trim plate ทั้งสองข้าง / the rod ends sit in **cup brackets on
+  trim plates** on the side walls, and the rod is cut **about 1/16 in (1.6 mm) shy** of the
+  surface-to-surface opening. One cup closed, the opposite cup open-side-up.
+- ชั้นยาว / a long shelf takes a **solid front rail** (turning the plate into a T-section)
+  rather than a mid-divider; the same ~1500 mm threshold applies.
+- ระยะที่ spec ต้องระบุแต่ยังไม่มี / two clearances a spec must state and ours does not: rod to
+  back panel (*"far enough out that clothes won't rub against the back wall"*) and rod to the
+  shelf above (*"far enough below a shelf that you can hook the hangers in easily"*).
+
+### 8.5 หมายเหตุที่สำคัญกว่าตัวเลข / A note that matters more than any number above
+§5 of this file has carried **ดรอปฝ้าซ่อนราง / recessed curtain-pocket clear depths (100-300 mm
+by curtain make-up, +50-100 mm with a cove light)** since 2026-07-03, and a 2026-08-28 site
+source independently corroborates it — a carpenter setting a ceiling pocket back
+**300-325 mm**, framed **before the ceiling is lined**, blocked so the pocket box is fixed at
+its END rather than cantilevering past the last truss.
+
+**Nothing in `pipeline/` has ever read §5.** `casement_sheers.py` contains no pocket at all,
+and the render's curtain tops vanish into the ceiling slab — a defect all three critics have
+filed by eye. The table that answers it has been in this file, unconsumed, for eight weeks.
+Recorded here because it is this repo's own named failure shape (a queue whose consumer never
+visits it), landing on a knowledge file rather than on a queue.
+
+Two more from the same site source, both about the junction our spec does not describe: the
+pocket runs the **FULL WIDTH of the wall** (*"rather than just having 3/4 width, which would
+look a little bit silly"*), and the wardrobe casework stands **100 mm off the wall so the
+curtain tucks in behind it**.
 
 ---
 
