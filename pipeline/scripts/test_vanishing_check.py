@@ -208,3 +208,23 @@ def test_our_camera_may_be_given_as_a_field_of_view():
     sol = VC.solve(_doc())
     gap, _ = VC.compare(sol, our_fov_deg=sol["fov_h_deg"])
     assert gap == pytest.approx(0.0, abs=1e-9)
+
+
+def test_the_axis_that_produced_a_quarter_turn_error_is_refused():
+    """THE NEGATIVE CONTROL, in the frame's own numbers (2026-08-29).
+
+    Family B of the TRN-003 solve — the window transom at slope +0.04296 and the
+    island's front edge at -0.03109 — is 4.24 deg wide. It sails through the
+    conditioning test above (that one only catches a singularity, at 0.057 deg) and
+    it is the axis an island was built a quarter turn out of. Family A, the
+    cabinetry, is 25.97 deg wide and still solves.
+    """
+    B = [[[0, 690.88], [1000, 733.84]], [[0, 1270.75], [1000, 1239.66]]]
+    with pytest.raises(VC.VanishingError) as e:
+        VC.vanishing_point(B)
+    assert "4.2" in str(e.value) and "10.0" in str(e.value)
+
+    A = [[[0, 534.93], [1000, 265.09]], [[0, 1343.17], [1000, 1518.93]]]
+    (u, v), _resid, _cond = VC.vanishing_point(A)
+    # the solve of record put family A's vanishing point at (-1809, 1031)
+    assert abs(u + 1809) < 20 and abs(v - 1031) < 20

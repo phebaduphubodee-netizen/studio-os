@@ -67,11 +67,53 @@ Two things the builder cannot get anywhere else, so give them explicitly:
    no source, a cord that goes nowhere. Say what it is resting on, or that
    nothing is.
 
+## THE ANSWER FORMAT IS PART OF THE ASK (T7, owner order 2026-08-29)
+
+Return a NUMBERED LIST, `1.` `2.` `3.` …, contiguous, one defect per number.
+Prose is refused by `pipeline/scripts/critique_schema.py` and comes straight
+back to you. This is not tidiness: R7 requires a WRITTEN TRIAGE for every item,
+and a paragraph holding three complaints receives one triage line, so two of the
+three vanish and nobody can tell afterwards which.
+
+Every item carries these four tags, in any order, anywhere in the item:
+
+    where: <the place in frame, in words a person can point at>
+    stage: scaffolding | geometry | materials | composition | lighting
+    ground: reference | physics | opinion
+    sellability: high | medium | low
+
+* **where** — a claim with no place in frame cannot be verified, actioned, or
+  refuted with a measurement. "The lighting feels flat" is none of those; "the
+  floor under the island, lower-left third, has no contact shadow" is all three.
+* **stage** — tag the stage that OWNS the defect, which is often NOT the one the
+  round is working. This is load-bearing: when most of what you file belongs to
+  a stage upstream of the current round, the round is standing on a broken
+  foundation and is stopped on the spot. Say what you see; the routing is the
+  builder's problem, not yours.
+      scaffolding  the shell, its openings, and what exists at all
+      geometry     the shape, size and ORIENTATION of a mass
+      materials    surface, colour, roughness, believability of a finish
+      composition  arrangement, styling density, what sits where
+      lighting     key/fill, shadow, contact, mood
+* **ground** — `physics` when a built object of that kind could not behave that
+  way, `reference` only if you were actually given one, `opinion` otherwise. An
+  opinion is worth less, not nothing; the triage needs to know which it is.
+* **sellability** — would a client notice, and how much would it cost the sale.
+  Not how easy it looks to fix.
+
+ORIENTATION IS EXPLICITLY IN SCOPE and it is worth saying why. On 2026-08-29 a
+kitchen island in this studio was built a QUARTER TURN out of true — lying across
+the room instead of along the wall, its near end 420 mm inside the counter run,
+two solids in the same floor — and every automatic check passed, because turning
+an object changes no extent, no contact, no inventory. It took a person looking
+at the picture twice. If a mass looks laid the wrong way, that is a `geometry`
+item and it may be the most valuable thing you file.
+
 ## Your output
 
 Write EXACTLY ONE file and nothing else: `ANSWER_claude-local-c2.md`, inside the
 bundle directory you were given. Do not edit, move or delete any other file. Do
 not write a summary anywhere else in the repo.
 
-Your reply to the caller is the same text you wrote. Plain, itemized, no
+Your reply to the caller is the same text you wrote. Plain, NUMBERED, no
 preamble. Thai or English — whichever the prompt is in.

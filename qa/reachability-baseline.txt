@@ -54,7 +54,6 @@ cross_signal
 derive_curve_priors
 dim_string_score
 discord_ingest
-dwg_ingest
 eval_retrieval
 f2_facing_lane
 facade_reader
@@ -78,7 +77,6 @@ raster_overlay
 rationale
 rebuild_diff
 render_mask_labels
-research_call
 rot_reconcile
 self_audit
 structured3d_adapter
@@ -104,6 +102,5 @@ trn002_look
 trn002_station
 trn002_station_r2
 unit_adoption_lane
-upscale
 wall_aware_lane
 wall_detect

@@ -294,6 +294,62 @@ RESULTS.append(("lux tier statutory for 'Bathroom' (case-insensitive)",
                 any("statutory" in r["detail"] for r in _lux_hits),
                 _lux_hits or "no lux line (no ambient fixtures?)"))
 
+# --- kitchen aisles: the 2026-08-29 negative control --------------------------------
+# THE STATE THAT PRODUCED THE INCIDENT, not today's numbers (D-056). TRN-003's island
+# was built a quarter turn out: its long axis ran ACROSS the room instead of along the
+# kitchen wall, putting its near edge 420 mm INSIDE the 650 mm counter run. Every rung
+# in the render lane was green. These rows prove the checker convicts that layout, and
+# they are written in the room's real millimetres, converted at the boundary.
+MM = cc.MM_PER_IN
+
+
+def _in(mm):
+    return mm / MM
+
+
+# The room the plate shows: 8000 mm along the glazing wall, 6500 deep, 3514 ceiling.
+_kroom = cc.Room(_in(8000), _in(6500), _in(3514), rtype="kitchen")
+# The counter run against the kitchen wall: 650 mm deep, 2804 long.
+_bench = cc.Item("bench", "bench", 0, 0, _in(650), _in(2804))
+
+# WRONG: long axis 3072 mm across the room, near edge at x = 230 mm.
+_isl_wrong = cc.Item("island_slab", "island", _in(230), _in(2256), _in(3072), _in(1250))
+_res_wrong = cc.check(_kroom, [_bench, _isl_wrong])
+expect("TRN-003 NEGATIVE CONTROL: the island as built overlaps the counter run",
+       _res_wrong, "overlap: bench / island_slab", "FAIL", "420 mm")
+expect("...and the aisle row calls it an impossible kitchen, not a tight one",
+       _res_wrong, "kitchen aisle", "FAIL", "NEGATIVE aisle")
+
+# CORRECTED: long axis 3072 mm ALONG the wall, near edge at x = 1693 mm -> 1043 mm aisle.
+_isl_right = cc.Item("island_slab", "island", _in(1693), _in(2256), _in(1250), _in(3072))
+_res_right = cc.check(_kroom, [_bench, _isl_right])
+expect("TRN-003: the corrected island no longer overlaps",
+       _res_right, "kitchen aisle (island_slab <-> bench)", "WARN")
+_aisle = [r for r in _res_right if "kitchen aisle" in r["check"]]
+RESULTS.append(("...and it is REVIEW, not PASS: 1043 mm is under the studio's own "
+                "1219 mm opposing-counter figure",
+                bool(_aisle) and "1043 mm" in _aisle[0]["detail"], _aisle))
+
+# A genuinely generous aisle passes, so the rung can say yes.
+_isl_wide = cc.Item("island_slab", "island", _in(2000), _in(2256), _in(1250), _in(3072))
+expect("a 1350 mm aisle passes", cc.check(_kroom, [_bench, _isl_wide]),
+       "kitchen aisle (island_slab <-> bench)", "PASS")
+
+# The rules that had no reader now have one, and the row cites them.
+RESULTS.append(("kitchen_NKBA is actually read (the row names both authorities)",
+                any("NKBA" in r["detail"] and "P and Z" in r["detail"]
+                    for r in _res_right if "kitchen aisle" in r["check"]), None))
+
+# Landing + triangle: they report COULD NOT RUN rather than passing silently.
+_sink = cc.Item("sink", "sink", _in(100), _in(400), _in(600), _in(500))
+_res_nl = cc.check(_kroom, [_sink])
+expect("a sink on no counter reports COULD NOT RUN, never PASS",
+       _res_nl, "landing beside sink", "WARN", "COULD NOT RUN")
+_res_tri = cc.check(_kroom, [_sink, cc.Item("hob", "cooktop", _in(100), _in(1500),
+                                            _in(600), _in(600))])
+expect("two of three triangle vertices is COULD NOT RUN",
+       _res_tri, "work triangle", "WARN", "COULD NOT RUN")
+
 # --- report ------------------------------------------------------------------------
 fails = [(n, d) for n, ok, d in RESULTS if not ok]
 for n, ok, _d in RESULTS:

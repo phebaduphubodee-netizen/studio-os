@@ -3403,6 +3403,100 @@
    ],
    "because": "camera-composition บอกเองว่าห้ามเปลี่ยนกล้องกับของในรอบเดียวกัน — คู่จะอ่านไม่ออกว่าอะไรทำให้ดีขึ้น · และการวัดของ D-152 พิสูจน์แล้วว่ากล้องคือคันโยกเดี่ยวที่ใหญ่ที่สุดในเลนนี้ (6 ผ่าน 4 ตก -> 8 ผ่าน 2 ตก โดยไม่มีวัตถุไหนเปลี่ยนเลย)",
    "reverse_by": "เขาเลือกเฟรมเดิมในคู่ A/B → กล้องของบันทึกไม่ขยับ และรอบถัดไปกลับไปเป็นเรื่องของ ไม่ใช่เรื่องกล้อง"
+  },
+  {
+   "id": "D-175",
+   "unit": "DELIV-001",
+   "subject": "camera-of-record-moves-to-the-builtin",
+   "decided_round": 90,
+   "decided_date": "2026-08-28",
+   "decided_by": "owner",
+   "owner_override": "B",
+   "override_date": "2026-08-28",
+   "obeys": "ORD-2026-08-28c-retire-four-and-run-the-contents-round",
+   "question": "คู่ A/B ของกล้อง (ของในฉากเหมือนกันเป๊ะทั้งสองรูป ต่างกันแค่กล้อง) — A กล้องของบันทึก D-152 ที่เขาเลือกเองเมื่อ 08-26 · B กล้องใหม่ที่เล็งหน้าตู้ BF09-3",
+   "in_effect": "**กล้องของบันทึกย้ายไป B** — stand (1500,-200) aim (4003,2800) lens 18 shift -0.0376 eye 1.05 · กล้องเดิมของ D-152 **ไม่ถูกลบ** เก็บทั้งตัวเป็น variant `camera_of_record_2026-08-26_D152` การถอยคือคัดลอกกลับหนึ่งบรรทัด · **ทุกตัวเลข SOLVE ไม่ใช่พิมพ์** (R9 กับเลนส์): 273 จุดยืนที่ถูกกฎ x 3 เลนส์ วัดด้วย frame_geometry ก่อนเรนเดอร์ — 27 ผ่านเกณฑ์บรรจุทั้งสองข้อ แล้วใช้ลำดับของ camera-composition (เลนส์ยาวสุดที่ยังมี คำตอบ → bed share มากสุด) · shift คือจุดกึ่งกลางของช่วงที่รับได้ ไม่ใช่ค่าที่ค้างไว้ · **วัดเทียบกล้องที่มันแทน: bed share 0.175 -> 0.206 (เตียงอ่านใหญ่ขึ้น ซึ่งคือแกนที่ D-118 ตัดสิน), เลนส์ 21 -> 18 มม. (คือสิ่งที่จ่าย), และ D7 loose styling ในเฟรม 3 -> 5 โดยไม่มีวัตถุไหนขยับ** · **ผลข้างเคียงที่ต้องประกาศ: การวัดทุกอย่างก่อน p2r90 ถ่ายบนกล้องเก่า** — before/after ใด ๆ ที่คร่อมวันที่ 2026-08-28 ต้องระบุว่าใช้กล้องไหน ไม่งั้นเป็นการเทียบคนละเฟรม",
+   "where": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "in_effect_assert": [
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "CAMERA OF RECORD SINCE 2026-08-28",
+     "why": "กล้องของบันทึกคือค่าในสเปก ไม่ใช่ธงบรรทัดคำสั่ง — state ที่อยู่แค่ใน command line ถูก revert ด้วยการลืมพิมพ์"
+    },
+    {
+     "file": "projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+     "pattern": "camera_of_record_2026-08-26_D152",
+     "why": "กล้องที่เขาเลือกเองครั้งก่อนต้องยังอ่านได้ทั้งตัว — ถอยได้บรรทัดเดียว และเป็นหลักฐานว่า การวัดเก่าถ่ายบนอะไร"
+    }
+   ],
+   "because": "เขาตอบ 'B' หนึ่งตัวอักษรบนคู่ที่ของเหมือนกันทั้งสองรูป จึงเป็นคำตัดสินเรื่องกล้องล้วน ไม่ปนกับเรื่องของ · และ D-152 พิสูจน์แล้วว่ากล้องคือคันโยกเดี่ยวที่ใหญ่ที่สุดในเลนนี้",
+   "reverse_by": "คัดลอก variant `camera_of_record_2026-08-26_D152` กลับเข้า eye_camera หนึ่งบรรทัด — ไม่มีอะไรอื่นต้องแก้"
+  },
+  {
+   "id": "D-176",
+   "unit": "DELIV-001",
+   "subject": "orientation-is-a-checked-quantity",
+   "decided_round": 90,
+   "decided_date": "2026-08-29",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-29-pose-blindness-six-lanes",
+   "question": "ไม่มี rung ไหนในเรโปถามว่ามวลหันถูกทางมั้ย — ไอแลนด์ผิด 90 องศาเดินผ่านทุกด่านโดยไม่มีใครแดง",
+   "in_effect": "**ทิศทางกลายเป็นปริมาณที่ถูกวัด** — `pipeline/scripts/pose_check.py` วัด angular distance (เมตริกหลักของงาน 6DoF pose) แล้วบล็อกเมื่อเกิน tolerance · ต่อสายที่ `rule_gate.check` และ `check_room` **ทั้งสองทางเข้า** เพราะเรโปนี้เคย ต่อ rung ไว้กับทางที่ไม่มีใครเดินมาแล้วสามครั้ง · เพดาน tolerance 15 องศา ปฏิเสธด้วยชื่อ · **fold 0 (ทรงกลมรอบแกน เช่นถังทองเหลือง) ถูกปฏิเสธ ไม่ใช่ผ่าน** เพราะของที่ไม่มีทิศ ไม่มีทิศให้ตรวจ และแถวที่บอกว่าตรวจแล้วคือแถวที่รายงานการวัดที่ไม่ได้เกิดขึ้น · **ทิศอ้างอิงถูก DERIVE ไม่ใช่พิมพ์**: แถวใส่ `ref_recurrence` (พิกัดพิกเซลของของซ้ำสองชิ้น) แล้ว pose_check เรียก `recurrence.solve` เอง — R9 (พิกัดที่ derive ได้ห้ามพิมพ์) ขยายมาถึงแกนหมุน · negative control: ไอแลนด์ตามที่สร้างจริงพิมพ์ออกมา **90.0 องศา** exit 1",
+   "where": "pipeline/scripts/pose_check.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/rule_gate.py",
+     "pattern": "note\\(\\\"R-POSE orientation\\\"",
+     "why": "rung อยู่ใน roster ไม่ใช่แค่มีไฟล์"
+    },
+    {
+     "file": "pipeline/scripts/pose_check.py",
+     "pattern": "ref_recurrence",
+     "why": "ทิศอ้างอิง derive จาก recurrence"
+    },
+    {
+     "file": "pipeline/scripts/test_pose_check.py",
+     "pattern": "NEGATIVE CONTROL",
+     "why": "D-056: guard ที่เขียนหลังเหตุการณ์ ต้องถูกยิงใส่สภาพที่ทำให้เกิดเหตุ"
+    }
+   ],
+   "because": "การหมุนของไม่เปลี่ยน extent ไม่เปลี่ยนจุดสัมผัส ไม่เปลี่ยนบัญชีของ และไม่เปลี่ยนเหตุผลการมีอยู่ จึงมองไม่เห็นจากทุกเครื่องมือที่มีอยู่ **โดยโครงสร้าง** ไม่ใช่เพราะเครื่องไหนพัง",
+   "reverse_by": "ลบสองบล็อกใน rule_gate ที่ขึ้นต้นด้วย `_pv, _pn = audit_pose` และ `_pv2, _pn2 = audit_pose` — rung หายไป ไฟล์ยังอยู่ ไม่มีอะไรอื่นต้องแก้"
+  },
+  {
+   "id": "D-177",
+   "unit": "DELIV-001",
+   "subject": "a-rule-with-no-reader-is-a-number",
+   "decided_round": 90,
+   "decided_date": "2026-08-29",
+   "decided_by": "builder",
+   "owner_override": null,
+   "override_date": null,
+   "obeys": "ORD-2026-08-29-pose-blindness-six-lanes",
+   "question": "เลนที่ 2 ควรเป็นไฟล์ใหม่ แต่ `clearance_check.py` มีอยู่แล้ว และ `dimensional_rules.v0.2.json` ถือเลข island clearance มาตั้งแต่ 2026-07-02 — แล้วทำไมไอแลนด์ที่ทางเดินติดลบ 420 มม. ถึงผ่าน",
+   "in_effect": "**51 จาก 75 คีย์ในไฟล์กฎไม่มีเครื่องไหนอ่านเลย** ทั้งบล็อก kitchen_NKBA 7/7, bathroom 6/6, anthropometric_basics 5/5, doors_and_openings 4/4 · แก้สองชั้น: (ก) `clearance_check._kitchen` อ่าน kitchen_NKBA ครบทั้ง 7 คีย์ และ `Item.penetration_to` ให้ **ขนาด** ของการซ้อนทับ (เดิม gap_to หนีบเป็น 0.0 ทำให้ซ้อน 420 มม. กับแตะกันพอดี อ่านเป็นเลขเดียวกัน) · `Item.z_apart` แยก 'ซ้อนกันในผัง' ออกจาก 'ชนกัน' เมื่อทั้งคู่ประกาศช่วง Z — ไม่ประกาศ = ยังฟ้อง (R9b: ขอบเขตมาจากเหตุผลของกฎ ไม่ใช่จากสิ่งที่จะทำให้ false positive เงียบ) · (ข) `rules_reader_check.py` เป็น ratchet — กฎใหม่ที่ไม่มีผู้อ่าน = ตกที่เกต · พิมพ์ทุก session open · วันนี้ 44 ลดจาก 51 · **ทั้งสอง authority ถูกรายงานคู่กัน ไม่เลือกข้าง**: NKBA 42 นิ้วเป็นพื้น FAIL, P&Z 1219 มม. เป็นเป้า REVIEW — ไอแลนด์ที่แก้แล้วได้ 1043 จึงเป็น REVIEW ไม่ใช่ PASS",
+   "where": "pipeline/scripts/rules_reader_check.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/clearance_check.py",
+     "pattern": "def _kitchen\\(room, items\\)",
+     "why": "kitchen_NKBA มีผู้อ่านแล้ว"
+    },
+    {
+     "file": "qa/rules-reader-baseline.json",
+     "pattern": "anthropometric_basics.eye_height_standing_avg",
+     "why": "ratchet มีพื้นจริง — คีย์ที่ยังไม่มีผู้อ่านถูกระบุชื่อทีละข้อ ไม่ใช่นับรวม ๆ (คีย์ kitchen_NKBA ไม่อยู่ในรายชื่อนี้แล้ว ซึ่งคือผลของ (ก))"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "def rules_reader_lines",
+     "why": "ตัวเลขขึ้นหน้าเราทุก session ไม่ใช่รอให้ใครไปเปิดดู"
+    }
+   ],
+   "because": "นี่คือ defect ที่เก่าที่สุดของเรโปนี้ ลงมาอีกหนึ่งชั้น — 357 critic items/สร้าง ~22 · 61 DR/เขียนแล้วไม่มีใครอ่าน 39 · 21 gate artifact/มี verdict 2 · 6 skills/ไม่ถูกเรียก 54 วัน · **และตอนนี้คือไฟล์กฎเอง** · การเขียนเลขลงไฟล์กฎให้ความรู้สึกเหมือนสร้าง guard แต่ไม่ใช่",
+   "reverse_by": "ลบบล็อก `_rv, _rn = audit_rules_readers()` ทั้งสองที่ใน rule_gate และบรรทัด `lines += rules_reader_lines()` ใน plan_status — ratchet เงียบลง ไฟล์ยังอยู่"
   }
  ],
  "_assert_ratchet_from": "D-124"

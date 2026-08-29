@@ -970,6 +970,24 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
     _rounds = max(_closed, _open)
     _frames = count_full_frames_room(os.path.join(REPO_ROOT, "pipeline/output"),
                                      (2400, 1800))
+    # THE SAME TWO RUNGS AS check(), ON THIS LANE TOO. `build_room.py` calls
+    # check_room ONLY, and this file has already shipped the "wired to an entry
+    # point nobody walks" defect three times. The pose rung is lane-agnostic by
+    # construction: a mass turned a quarter turn is invisible to every other rung
+    # here whether or not the lane has a reference image.
+    _lv3, _ln3 = audit_planview(ROOM_LANE_PLAN_DIR)
+    v += _lv3
+    note("plan view", _ln3 is not None, _ln3 or "no plan drawn for the room lane")
+
+    _pv2, _pn2 = audit_pose(spec or gate_spec,
+                            os.path.join(REPO_ROOT, "projects"), None)
+    v += _pv2
+    note("R-POSE orientation", _pn2 is not None,
+         _pn2 or "no poses.json on this lane — NOTHING CLAIMS AN ORIENTATION")
+    _rv2, _rn2 = audit_rules_readers()
+    v += _rv2
+    note("rules have readers", _rn2 is not None, _rn2 or "baseline unreadable")
+
     _cap_v = cap_check(_row, _rounds, _frames)
     _declared = bool(_row and _row.get("cap_rounds") is not None
                      and _row.get("cap_full_frames") is not None)
@@ -1941,11 +1959,176 @@ def manifest_for(lane_dir, manifest_path=None):
 PIXEL_RUNGS = {"R11 pixels"}
 
 
+def audit_critique_form(bundle_dir):
+    """T7 — a critic's answer must be a NUMBERED, STAGE-SCOPED, FRAME-ANCHORED list.
+
+    Owed since the 2026-08-08 SEIG read, whose T6 half became coverage_check the
+    same day; ordered built 2026-08-29. The reason it is a GATE rung and not a
+    style note: R7 requires a written triage for EVERY critic item, and a prose
+    paragraph carrying three complaints receives one triage line — so two of the
+    three disappear and nothing downstream can tell. Counting is the precondition
+    for triaging, and this is where the counting is enforced.
+    """
+    try:
+        import critique_schema as CS
+    except ImportError as e:  # pragma: no cover - import path accident
+        return [f"critique_schema is not importable ({e})"]
+    out = []
+    try:
+        names = sorted(os.listdir(bundle_dir))
+    except OSError as e:
+        # A gate module that raises kills the render with a stack trace instead of
+        # a verdict. Say what could not be read and let the other rungs report.
+        return [f"critique bundle dir {bundle_dir} is unreadable ({e}) — the T7 form "
+                f"check COULD NOT RUN, which is not the same as passing"]
+    for name in names:
+        if not (name.startswith("ANSWER_") and name.endswith(".md")):
+            continue
+        path = os.path.join(bundle_dir, name)
+        try:
+            text = open(path, encoding="utf-8", errors="replace").read()
+        except OSError as e:
+            out.append(f"critic answer {name} is unreadable ({e})")
+            continue
+        _items, viol, _rep = CS.audit(text)
+        out += [f"{name}: {x}" for x in viol]
+    return out
+
+
+# Where the room lane's plan lives. Named as a constant for the same reason
+# `pipeline/output` is: check_room takes no lane dir, and a rung that silently
+# looks nowhere is a rung that silently passes.
+ROOM_LANE_PLAN_DIR = os.path.join(REPO_ROOT,
+                                  "projects/PRJ-2026-002_c001-house/03_layout")
+
+
+def audit_planview(lane_dir):
+    """THE PLAN IS A REQUIRED ARTEFACT OF A REPRODUCTION ROUND, not a nice-to-have.
+
+    Owner order 2026-08-29. The reason is one measurement: a kitchen island was
+    built a quarter turn out of true and survived a day of work, four instruments
+    and two renders, and IN PLAN it takes a quarter of a second — the difference
+    between a rectangle that is tall and one that is wide. Nobody saw it because
+    nobody ever drew one. Every image the lane produced was a perspective frame
+    from the single camera the plate was shot from, and in that view the island's
+    long axis ran almost along the line of sight: the one direction in which
+    perspective encodes an angle worst. The spatial-reasoning literature's own
+    convention says the same thing from the other side — rotation is DEFINED
+    relative to a top-down view.
+
+    The rung checks the ARTEFACT, not the picture: a lane with a blockout must
+    carry a `PLAN_*.png` no older than its spec. It cannot tell whether the plan
+    is correct, and says so rather than implying otherwise; what it can prevent is
+    a round in which the cheapest question was never asked.
+    """
+    if not lane_dir or not os.path.isdir(lane_dir):
+        return [], None
+    plans, newest = [], 0.0
+    for root, _dirs, files in os.walk(lane_dir):
+        for f in files:
+            if f.startswith("PLAN_") and f.lower().endswith(".png"):
+                p = os.path.join(root, f)
+                plans.append(p)
+                newest = max(newest, os.path.getmtime(p))
+    if not plans:
+        return ([f"NO PLAN VIEW in {lane_dir} — a reproduction round must draw the "
+                 f"masses from above before it renders them. Orientation is degenerate "
+                 f"in the reproduction camera and unambiguous from overhead; this is "
+                 f"the cheapest rung in the ladder and it was missing on the day an "
+                 f"island shipped a quarter turn out. ONE COMMAND CLEARS IT: "
+                 f"`python pipeline/scripts/planview.py --spec <this lane's spec.json> "
+                 f"--out {os.path.join(lane_dir, 'PLAN_r<N>.png')}`"], None)
+    specs = [os.path.join(lane_dir, f) for f in os.listdir(lane_dir)
+             if f.endswith(".json") or f.endswith("spec.py")]
+    stale = [os.path.basename(sp) for sp in specs
+             if os.path.isfile(sp) and os.path.getmtime(sp) > newest + 1.0]
+    if stale:
+        return ([f"the plan view in {lane_dir} is OLDER than {', '.join(sorted(stale))} "
+                 f"— a plan that predates the numbers it draws is a picture of a "
+                 f"previous room"], None)
+    return [], f"{len(plans)} plan(s), newest is current"
+
+
+def audit_pose(spec, lane_dir=None, poses_path=None):
+    """R-POSE — IS EVERY MASS TURNED THE RIGHT WAY. Blocking.
+
+    Added 2026-08-29 after a kitchen island was built a QUARTER TURN out of true
+    and every rung in this file stayed green. None of them was broken; they were
+    all asking something else. `coverage_check` asks PRESENCE and the island was
+    present. `contact_check` asks what holds it up and it rested on its own drums
+    exactly as well rotated. `placement_check` asks FLOATING / OVERHANG /
+    OFF-AXIS, and a box square to the world is on-axis whichever of its two
+    horizontal dimensions is the long one. `pixel_check` asks about features
+    somebody claimed, and until this rung there was no field to claim an
+    orientation in.
+
+    Turning an object changes no extent, no contact, no inventory and no
+    justification. It is invisible to every instrument here BY CONSTRUCTION.
+
+    The rung reports the count of masses with NO pose row rather than staying
+    quiet about them — the same honesty pixel_check prints ("78 of 79 masses
+    carried no claim"). A silent zero and a clean zero look identical from
+    outside, and this file has now shipped that mute three times.
+    """
+    path = poses_path or (os.path.join(lane_dir, "poses.json") if lane_dir else None)
+    try:
+        import pose_check as POSE
+    except ImportError as e:  # pragma: no cover - import path accident
+        return [f"pose_check is not importable ({e}) — refusing to render past a "
+                f"gate whose orientation rung is missing"], None
+    if not path or not os.path.isfile(path):
+        return [], None
+    try:
+        with open(path, encoding="utf-8") as f:
+            poses = json.load(f)
+    except (OSError, ValueError) as e:
+        return [f"pose file at {path} is unreadable ({e})"], None
+    rows, viol, cnr = POSE.audit(poses)
+    if not rows:
+        return [f"pose file at {path} carries no rows — a pose claim with no "
+                f"entries is the mute this rung exists to prevent"], None
+    miss, total = POSE.unclaimed(spec, poses)
+    # COULD NOT RUN is reported, never swallowed: a row whose reference was never
+    # measured must not print like a row that passed.
+    return viol + [f"POSE COULD NOT RUN — {c}" for c in cnr], \
+        f"{len(rows)} claimed, {len(miss)} of {total} masses unclaimed"
+
+
+def audit_rules_readers():
+    """Every rule in dimensional_rules must have a consumer. Blocking, repo-wide.
+
+    2026-08-29: 51 of 75 keys had none — whole blocks at zero, kitchen_NKBA among
+    them, which is why an island with a NEGATIVE 420 mm walkway passed. Writing a
+    number into a rules file feels like building a guard and is not one. The
+    ratchet may shrink and may never grow, so a NEW rule added without a consumer
+    fails here rather than joining the pile.
+    """
+    try:
+        import rules_reader_check as RRC
+    except ImportError as e:  # pragma: no cover - import path accident
+        return [f"rules_reader_check is not importable ({e})"], None
+    try:
+        rules = json.load(open(RRC.RULES, encoding="utf-8"))
+        base = set(json.load(open(RRC.BASELINE, encoding="utf-8"))["unread"])
+    except (OSError, ValueError, KeyError) as e:
+        return [f"the rules-reader baseline could not be read ({e}) — run "
+                f"`python pipeline/scripts/rules_reader_check.py --update-baseline` "
+                f"once; a ratchet with no floor is not a ratchet"], None
+    rows = RRC.audit(rules, RRC.sources())
+    unread = {r["id"] for r in rows if r["state"] != "READ"}
+    grew = sorted(unread - base)
+    v = [f"RULE WITH NO READER `{g}` is not in the baseline — either its consumer "
+         f"was deleted or a new rule was added without one, and a rule nothing "
+         f"reads is a number, not a guard" for g in grew]
+    return v, f"{len(rows) - len(unread)}/{len(rows)} rules have a reader"
+
+
 def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
           lane_dir=None, spec_path=None, manifest_path=None, roster=None,
           advisories=None, render_dir=None, caps_path=None,
           decisions_path=None, frame_path=None, target_path=None,
-          model_lines=None):
+          model_lines=None,
+          poses_path=None):
     """Return [violation str]. `roster`, `advisories` and `model_lines`, when
     given lists, are filled in so the caller can report WHAT RAN — see enforce()."""
     def note(name, ran_, why=""):
@@ -1981,6 +2164,8 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
     if bundle_dir:
         v += audit_bundle(bundle_dir, lane_dir)
         note("R7 triage", True)
+        v += audit_critique_form(bundle_dir)
+        note("T7 critique form", True, "numbered, stage-scoped, frame-anchored")
         v += audit_blind_ask(bundle_dir)
         note("R7c blind ask", True)
     else:
@@ -2088,6 +2273,21 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
             note("R11 pixels", False,
                  "no frame given — this run of the gate did NOT open the picture"
                  + (f" ({len(claims)} claims are waiting for one)" if claims else ""))
+
+    # R-POSE, the plan view and the rules-reader ratchet — all 2026-08-29.
+    _lv2, _ln2 = audit_planview(lane_dir)
+    v += _lv2
+    note("plan view", _ln2 is not None, _ln2 or "no plan drawn for this lane")
+
+    _pv, _pn = audit_pose(spec, lane_dir, poses_path)
+    v += _pv
+    note("R-POSE orientation", _pn is not None,
+         _pn or "no poses.json — NOTHING IN THIS SCENE CLAIMS AN ORIENTATION, and a "
+                "quarter turn is invisible to every other rung here")
+
+    _rv, _rn = audit_rules_readers()
+    v += _rv
+    note("rules have readers", _rn is not None, _rn or "baseline unreadable")
 
     if advisories is not None:
         craft_ran, craft_notes = audit_craft(spec)

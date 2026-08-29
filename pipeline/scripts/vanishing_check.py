@@ -79,7 +79,22 @@ class VanishingError(Exception):
 
 MIN_LINES_PER_AXIS = 2
 MAX_RESIDUAL_PX = 6.0      # RMS distance from the fitted VP to its own marked lines
-MIN_CONDITION = 1e-6       # normal-equation determinant, scaled — below this: parallel
+MIN_CONDITION = 1e-6       # normal-equation determinant, scaled — below this: SINGULAR
+# ...AND THAT NUMBER IS NOT THE GATE, which this module learned the hard way one day
+# after it was written. For two unit lines the scaled determinant above is exactly
+# sin^2(theta), so `1e-6` refuses only pairs within **0.057 deg** of parallel: a
+# guard against dividing by zero, not against an unusable vanishing point. On
+# 2026-08-29 an island was built a quarter turn out from an axis whose two
+# supporting lines were **4.24 deg apart** — 175x above this threshold, and
+# numerically fine. fSpy's own manual states the practical limit in words: "when
+# the line segments used to define a vanishing point are near-parallel, the
+# vanishing point position cannot be computed accurately; a larger angle between
+# the lines yields better results." So the refusal that matters is ANGULAR and is
+# stated in degrees. Note what is deliberately NOT gated: how far off-frame the
+# vanishing point lands. A VP at infinity is the correct answer for lines truly
+# parallel to the image plane, and the pose literature is explicit that a large
+# covariance there does not imply a bad estimate.
+MIN_AXIS_ANGLE_DEG = 10.0
 
 
 # --------------------------------------------------------------------------- pure core
@@ -127,6 +142,22 @@ def vanishing_point(segments, min_lines=MIN_LINES_PER_AXIS,
             f"the lines of this axis are parallel in the image (conditioning {cond:.2e}) — "
             f"its vanishing point is at infinity and has no usable position. Mark edges "
             f"that visibly converge.")
+    # THE ANGULAR GATE, after the singularity check and before anything is solved.
+    # Order matters: exactly-parallel lines are a SINGULARITY and keep their own
+    # refusal above; what lands here is the case that reads fine numerically and is
+    # unusable in practice. The axis that produced a quarter-turn error on
+    # 2026-08-29 measured 4.24 deg, which is 175x above the threshold above.
+    import edge_direction as ED          # the angular gate lives there, with its tests
+    slopes = [((y1 - y0) / (x1 - x0) if abs(x1 - x0) > 1e-9 else 1e9)
+              for (x0, y0), (x1, y1) in segments]
+    widest = max(ED.pair_angle_deg(a, b) for a in slopes for b in slopes)
+    if widest < ED.MIN_FAMILY_ANGLE_DEG:
+        raise VanishingError(
+            f"the widest pair of lines on this axis is {widest:.2f} deg apart (need "
+            f"{ED.MIN_FAMILY_ANGLE_DEG}). Near-parallel segments put the vanishing "
+            f"point where fit noise moves it by kilometres (fSpy, Basics). This is the "
+            f"practical gate; the conditioning test above only catches an outright "
+            f"singularity, at 0.057 deg.")
     x = (-sac * sbb + sbc * sab) / det
     y = (-sbc * saa + sac * sab) / det
     resid = math.sqrt(sum((a * x + b * y + c) ** 2 for a, b, c in lines) / len(lines))

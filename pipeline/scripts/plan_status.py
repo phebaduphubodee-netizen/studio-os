@@ -333,6 +333,46 @@ def debt_lines(plan):
 
 # ------------------------------------------------------- his orders, my asks
 
+def rules_reader_lines():
+    """Every rule in dimensional_rules, and whether anything in the repo reads it.
+
+    Printed at session open because of what it measured the day it was written:
+    **51 of 75 rule keys had no reader** — whole blocks at zero, `kitchen_NKBA`
+    among them, which is why an island with a NEGATIVE 420 mm walkway passed
+    every rung. A number sitting in a rules file feels like a guard and is not
+    one, and this repo has now paid for that shape at five layers (357 critic
+    items / ~22 built · 61 DR units / 39 write-only · 21 gate artifacts / 2
+    verdicts · 6 skills / 54 days unused · and now the rules file itself).
+    Unreadable prints UNKNOWN, never nothing.
+    """
+    try:
+        import rules_reader_check as RRC
+    except ImportError as e:                            # pragma: no cover
+        return ["", f"RULES unknown — rules_reader_check is not importable ({e})"]
+    try:
+        rules = json.load(open(RRC.RULES, encoding="utf-8"))
+        base = set(json.load(open(RRC.BASELINE, encoding="utf-8"))["unread"])
+    except (OSError, ValueError, KeyError):
+        return ["", "RULES unknown — the reader baseline could not be read. "
+                    "That is unknown, not zero."]
+    rows = RRC.audit(rules, RRC.sources())
+    unread = {r["id"] for r in rows if r["state"] != "READ"}
+    grew = sorted(unread - base)
+    out = ["", f"กฎที่มีคนอ่าน {len(rows) - len(unread)}/{len(rows)} ข้อ "
+               f"— **{len(unread)} ข้อยังไม่มีเครื่องไหนอ่าน** (ratchet: ลดได้ เพิ่มไม่ได้)"]
+    blocks = {}
+    for r in rows:
+        if r["state"] != "READ":
+            blocks[r["id"].split(".")[0]] = blocks.get(r["id"].split(".")[0], 0) + 1
+    whole = [b for b, n in sorted(blocks.items())
+             if n == sum(1 for r in rows if r["id"].startswith(b + "."))]
+    if whole:
+        out.append(f"  ทั้งบล็อกยังไม่มีผู้อ่าน: {', '.join(whole)}")
+    for g in grew:
+        out.append(f"  !! `{g}` เป็นกฎใหม่ที่ไม่มีใครอ่าน — เขียนเลขลงไฟล์ไม่ใช่การสร้าง guard")
+    return out
+
+
 def order_lines():
     """His standing orders and whether the repo obeys each one TODAY.
 
@@ -563,6 +603,7 @@ def report(plan):
     # order lived through nine rounds with `_BED_CLOTH_ACQ = False` sitting
     # seventeen lines under a comment citing it.
     lines += order_lines()
+    lines += rules_reader_lines()
 
     oa = owner_actions(plan)
     if oa:
