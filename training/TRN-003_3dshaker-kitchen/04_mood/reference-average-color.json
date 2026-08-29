@@ -1,0 +1,15 @@
+{
+ "average_blur_srgb_hex": "#A39583",
+ "average_blur_srgb_0_255": [
+  162.9,
+  148.7,
+  130.6
+ ],
+ "as_blender_base_color_linear": [
+  0.3657,
+  0.2993,
+  0.2254
+ ],
+ "linear_mean_then_encoded_hex": "#AFA393",
+ "note": "3D Shaker reads this swatch off a Photoshop Average Blur and eyedroppers it into the override shader. Photoshop averages in DISPLAY space, so the two rows differ: the sRGB mean is the number he sees, the linear-mean row is the physically correct average. Both are recorded so the difference is visible."
+}

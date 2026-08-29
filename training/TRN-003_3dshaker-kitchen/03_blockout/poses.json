@@ -1,0 +1,40 @@
+{
+ "_what": "Island orientation, ours vs the plate. The reference axis is measured by RECURRENCE — two identical bronze drums at two depths — not by fitting the slab's oval edge.",
+ "poses": [
+  {
+   "id": "island_slab",
+   "ours": 90.0,
+   "ref_recurrence": {
+    "camera": {
+     "f_px": 4236.0,
+     "ppx": 720.0,
+     "ppy": 1031.0,
+     "height_mm": 1421.0,
+     "yaw_deg": 30.85,
+     "origin": [
+      6971.0,
+      11801.0
+     ]
+    },
+    "size_mm": 462.69898697539793,
+    "_what": "the two bronze drums on the island base, off z-drums.png",
+    "instances": [
+     {
+      "u_centre": 607.7315484804631,
+      "v_base": 1662.0,
+      "w_px": 205.46309696092618
+     },
+     {
+      "u_centre": 812.5,
+      "v_base": 1722.0,
+      "w_px": 225.0
+     }
+    ]
+   },
+   "fold": 2,
+   "method": "recurrence",
+   "tol_deg": 5.0,
+   "evidence": "the heading is DERIVED by pose_check from the drum pixels, never typed; overlay island_MEASURED.png"
+  }
+ ]
+}
