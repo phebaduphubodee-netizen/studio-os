@@ -47,9 +47,16 @@ def load(path=None):
 
 
 def save(plan, path=None):
+    # indent=1 AND newline="" — both are load-bearing, and both were found the
+    # same way: a --review that changed ONE row produced a 9,236-line diff.
+    # `indent=2` disagreed with the indent the file of record is written at, and
+    # a text-mode write on Windows turned every \n into \r\n. Either alone
+    # rewrites all 4,600 lines. The plan is the one file here whose DIFF is
+    # supposed to be the argument; a diff nobody can read is a record nobody
+    # checks.
     p = path or os.path.join(REPO, PLAN_REL)
-    with open(p, "w", encoding="utf-8") as fh:
-        json.dump(plan, fh, ensure_ascii=False, indent=2)
+    with open(p, "w", encoding="utf-8", newline="") as fh:
+        json.dump(plan, fh, ensure_ascii=False, indent=1)
         fh.write("\n")
 
 
