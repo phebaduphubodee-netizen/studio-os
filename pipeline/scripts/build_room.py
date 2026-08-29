@@ -337,7 +337,7 @@ def _score_deliverable(name, quick=False, frame=True):
     # be asserted against the continued existence of a source file. Handles are nulled
     # here and read once at the end, so no rung's call site has to remember to report —
     # a reporting step a caller must remember is the defect this receipt exists to close.
-    _ex = _cy = _dm = _sr = _lr = _br = _xr = _dl = None
+    _ex = _cy = _tf = _eh = _dm = _sr = _lr = _br = _xr = _dl = None
     _gd_ran = False
 
     def _stop(tag):
@@ -349,7 +349,7 @@ def _score_deliverable(name, quick=False, frame=True):
     dump_path = os.path.join(out, f"room_{name}.scene.json")
     objs = scene_dump.dump()
     _dump_doc = {"blend": bpy.data.filepath, "schema": "scene-dump@2",
-                 "objects": objs}
+                 "objects": objs, "render_res": scene_dump.render_res()}
     # DRW-1b: the camera's floor polygon rides every dump so sheet_recon can
     # frustum-test DRAWN rects (which carry no object flag). No camera -> key
     # absent -> the recon treats frustum as unknown, which BLOCKS (vacuous-zero
@@ -487,6 +487,88 @@ def _score_deliverable(name, quick=False, frame=True):
         print("BUILD FAILED: R10 existence — objects in this frame are not justified, "
               "or the ledger says something the built scene refutes.")
         _stop("R10 existence")
+    # ---- DOES A MODIFIER WIDTH STILL MEAN MILLIMETRES? (2026-08-29, learned from
+    # video 1i6woUR4iQA, whose closing line is "use reference, get measurements, and
+    # APPLY THE TRANSFORMS", and whose reason is mechanical: Solidify/Bevel/Mirror/
+    # Array/Screw read their widths in the object's LOCAL space.)
+    #
+    # THE REASON IT IS A RUNG AND NOT A COMMENT. `dimensions` and `bound_box` report
+    # WORLD size and stay correct under any scale, so an object at scale 2 renders an
+    # 18 mm solidify as 36 mm and placement_check, carry_check, dim_check and the
+    # p2_exit crops ALL read it as perfect. There was no key in the scene dump that
+    # could have caught it, so `scene_dump` now records `scale` + `local_space_mods`
+    # and this rung reads the pair.
+    #
+    # IT IS GREEN ON THE SCENE OF RECORD AND SHIPS STRICT FOR THAT REASON: p2r90 holds
+    # 496 meshes, 0 at non-unit scale, 244 BEVEL modifiers, 0 of them scaled. The
+    # invariant is held by `_bake_transform_to_mesh` below — whose 45-line docstring
+    # argues the case entirely in TEXTURE space and never mentions a modifier. So it
+    # was true by a side effect nobody wrote down, and one refactor from not being
+    # true. Exit 1 = a modifier width is silently multiplied; exit 2 = COULD NOT RUN,
+    # which includes a dump written before the key existed — absence of the key must
+    # never print like absence of the defect.
+    _tf = subprocess.run(
+        [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "transform_check.py"), dump_path],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    for ln in (_tf.stdout or "").splitlines():
+        print(f"XFORM {ln}")
+    if _tf.returncode == 2:
+        for ln in (_tf.stderr or "").splitlines()[-6:]:
+            print(f"XFORM !! {ln}")
+        print("BUILD FAILED: the transform rung COULD NOT RUN. A gate that could not "
+              "ask whether a bevel width means millimetres must never read like one "
+              "that asked.")
+        _stop("transform rung COULD NOT RUN")
+    if _tf.returncode == 1:
+        print("BUILD FAILED: a mesh in this scene carries a local-space modifier AND "
+              "a non-unit scale, so its solidify/bevel/array widths are multiplied by "
+              "that scale — and every AABB-reading rung in this repo reads it as "
+              "correct. Apply the transform where the object is built; do not widen "
+              "the tolerance.")
+        _stop("a modifier width no longer means millimetres")
+    # ---- CAN THE EDGES IN THIS FRAME CATCH A HIGHLIGHT AT ALL? (2026-08-29, the
+    # second half of what 1i6woUR4iQA is worth. At 07:14 he stops on a finished
+    # model and adds bevels to every wooden part, and his reason is a reading of
+    # the reference — the photos all carry a highlight along the edges.)
+    #
+    # HIS NUMBER DOES NOT TRANSFER AND HIS REASON DOES. He is shooting a PRODUCT on
+    # a sweep, where the object fills the frame and 3 mm is many pixels. Ours is a
+    # room: the millwork wall sits ~3.9 m out, and MILL_BEVEL_M = 0.0012 subtends
+    # ~0.37 px there. PROVENANCE OF THAT FIGURE, because it is not a full-fidelity
+    # measurement: the rung measured 0.18 px on the 1200x900 PLAYBLAST of record and
+    # it is stated here at the delivered 2400x1800 by the exact resolution ratio. The
+    # rung itself never converts — it refuses a dump whose resolution it does not
+    # know — so the doubling is this comment's, and is declared rather than implied. That number is RIGHT ABOUT
+    # THE WORLD — its own definition says so, "a cabinet edge is nearly sharp, not a
+    # 5mm round-over" — and it renders as nothing. Every bevel decision in this
+    # repo's history was taken in the millimetre domain with no instrument that
+    # could see the mapping to pixels. `scene_dump` now computes `mm_per_px` per
+    # object against the real camera, and this rung does the division.
+    #
+    # IT PRINTS AND NEVER STOPS, deliberately: to fail a frame I would have to know
+    # how many pixels wide an edge highlight must be, and nobody here has measured
+    # that off delivered work. The band that settles it is a reading of the ANCHOR
+    # POOL. Until then this is the DELIVERED-WORK VALUE BAND's shape — a reporting
+    # line into the render path (his channel, R11), not a cut. Its own exit 2 is
+    # printed loudly and does not stop the build either: a rung that has no
+    # authority over the frame must not acquire it through the back door of its own
+    # failure.
+    _eh = subprocess.run(
+        [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "edge_highlight.py"), dump_path],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    for ln in (_eh.stdout or "").splitlines():
+        print(f"EDGE {ln}")
+    if _eh.returncode != 0:
+        for ln in (_eh.stderr or "").splitlines()[-4:]:
+            print(f"EDGE !! {ln}")
+        print("EDGE !! the edge-highlight REPORT could not be produced. This is a "
+              "reporting line and does not stop the frame — but it did not look, "
+              "and a round that reads no EDGE lines has not been told its edges "
+              "are fine.")
     # ---- CARRY (p2r85, P2r-28): WHAT HOLDS EACH MASS UP. This is the wiring
     # qa/coverage-map.json's own `room_lane_debt` row has named since 2026-08-24 —
     # `placement_check` is DECLARED blocking there and has never once been spawned
@@ -809,6 +891,8 @@ def _score_deliverable(name, quick=False, frame=True):
                  measured=(json.load(open(_idj, encoding="utf-8")).get("source", {})
                            .get("measured") if os.path.isfile(_idj) else None))
         for _nm, _res_ in (("existence_check", _ex), ("carry_check", _cy),
+                           ("transform_check", _tf),
+                           ("edge_highlight", _eh),
                            ("dim_check", _dm), ("sheet_recon", _sr),
                            ("deliverable_check", locals().get("r")),
                            ("value_probe", _lr), ("bed_pixels", _br),
@@ -1911,8 +1995,37 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
         # per-leaf Z slip was considered and REFUSED: panels span their whole
         # grain run, so any slip folds the grain mid-panel, the exact p2r14
         # defect the mapping note above forbids.
+        # A LAY-UP IS A PROPERTY OF VENEER, AND THIS FACTORY WAS GIVING IT TO
+        # EVERYTHING (2026-08-29). `_image_wood` is the factory for three presets and
+        # only two of them are wood: `microcement_cool_photo` rides it as well, and
+        # got the 180 mm leaf window and the +/-4% per-leaf tone steps stamped onto a
+        # PLASTER photograph. Measured on the frame of record: 37 objects, 61.1 m2,
+        # 22 of them in frustum; the BF09-3 drawer fronts are 878 mm wide, so
+        # 878/180 = about five hard vertical block seams across each front, each with
+        # its own tone step. It reads as large-format travertine tile. Trowelled
+        # microcement is monolithic — that is the whole point of the material — so
+        # this was a manufacturing impossibility on the frame's second-largest
+        # millwork surface, and the eye that finally caught it was a critique of
+        # someone else's furniture tutorial.
+        #
+        # THE DISCRIMINATOR IS ALREADY IN THE DATA AND IS NOT A NAME TEST (R9b: a
+        # rule that names the objects it applies to will always exempt the next one).
+        # `grain_run_m` is declared as "the longest continuous veneer run" and both
+        # veneer presets carry 2.8; the plaster carries none. NO GRAIN RUN MEANS NO
+        # LEAVES, which is the same sentence in the material's own vocabulary — so a
+        # fourth preset added tomorrow is classified the day it is written, by the
+        # key it either has or does not have.
+        has_leaves = bool(grain_run_m)
+        if globals().get("_SURFACE_LEGACY"):
+            # THE A/B LEG, and it exists for the same reason `_WOOD_FOLD_LEGACY` and
+            # `_FLAT_ACCENTS` do: a change to a surface has to be re-runnable against
+            # the exact state it replaced, without a source edit. This leg restores
+            # BOTH pre-2026-08-29 behaviours together — the lay-up on every preset
+            # (including the plaster) and the Displacement-driven bump — because they
+            # were one state and comparing half of it would be comparing nothing.
+            has_leaves = True
         leaf_u = max((PLANK_PITCH_MM / 1000.0) * s, 1e-4)
-        for _i, _ax in enumerate(("X", "Y")):
+        for _i, _ax in enumerate(("X", "Y") if has_leaves else ()):
             lsnap = nt.nodes.new("ShaderNodeMath")
             lsnap.operation = 'SNAP'
             lsnap.inputs[1].default_value = leaf_u
@@ -1938,6 +2051,13 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
             nt.links.new(win.outputs["Result"], put.inputs[0])
             nt.links.new(frac.outputs["Value"], put.inputs[1])
             nt.links.new(put.outputs["Value"], cpp.inputs[_ax])
+        if not has_leaves:
+            # No lay-up: the mapped coordinate passes straight through on both
+            # in-plane axes. The Z pingpong below STAYS — it is the fail-soft that
+            # keeps a surface taller than one tile from tiling visibly, and it is
+            # about the TEXTURE's extent, not about leaves.
+            for _ax in ("X", "Y"):
+                nt.links.new(sxyz.outputs[_ax], cpp.inputs[_ax])
         pp = nt.nodes.new("ShaderNodeMath")
         pp.operation = 'PINGPONG'
         pp.inputs[1].default_value = 1.0
@@ -1950,23 +2070,31 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
         # coordinate is SNAPPED to its tile id and a white-noise of that id scales
         # brightness ±4% — each leaf its own tone, stepped at the joint like the
         # lay-up it imitates, deterministic (pure function of world position).
-        snp = nt.nodes.new("ShaderNodeVectorMath")
-        snp.operation = 'SNAP'
-        # p2r55: tone steps on the PHYSICAL leaf grid too (was the 1.19 m
-        # texture tile) — real leaves differ in tone at 180 mm pitch
-        snp.inputs[1].default_value = (max((PLANK_PITCH_MM / 1000.0) * s, 1e-4),
-                                       max((PLANK_PITCH_MM / 1000.0) * s, 1e-4),
-                                       1.0)
-        nt.links.new(va.outputs["Vector"], snp.inputs[0])
-        wn = nt.nodes.new("ShaderNodeTexWhiteNoise")
-        wn.noise_dimensions = '3D'
-        nt.links.new(snp.outputs["Vector"], wn.inputs["Vector"])
-        tone = nt.nodes.new("ShaderNodeMapRange")
-        tone.inputs["From Min"].default_value = 0.0
-        tone.inputs["From Max"].default_value = 1.0
-        tone.inputs["To Min"].default_value = 0.96
-        tone.inputs["To Max"].default_value = 1.04
-        nt.links.new(wn.outputs["Value"], tone.inputs["Value"])
+        # ...AND THE TONE STEPS GO WITH THE LEAVES. A stepped +/-4% brightness at a
+        # 180 mm pitch is the SIGNATURE of a lay-up — separate leaves off a flitch,
+        # each its own tone, stepping at the joint. Trowelled plaster has no joints,
+        # so on the microcement this was drawing a tile grid in value even where the
+        # colour map itself is isotropic (re-measured: grad_x/grad_y 0.923, nothing
+        # leaf-like in the photograph at all — the grid was entirely ours).
+        tone = None
+        if has_leaves:
+            snp = nt.nodes.new("ShaderNodeVectorMath")
+            snp.operation = 'SNAP'
+            # p2r55: tone steps on the PHYSICAL leaf grid too (was the 1.19 m
+            # texture tile) — real leaves differ in tone at 180 mm pitch
+            snp.inputs[1].default_value = (max((PLANK_PITCH_MM / 1000.0) * s, 1e-4),
+                                           max((PLANK_PITCH_MM / 1000.0) * s, 1e-4),
+                                           1.0)
+            nt.links.new(va.outputs["Vector"], snp.inputs[0])
+            wn = nt.nodes.new("ShaderNodeTexWhiteNoise")
+            wn.noise_dimensions = '3D'
+            nt.links.new(snp.outputs["Vector"], wn.inputs["Vector"])
+            tone = nt.nodes.new("ShaderNodeMapRange")
+            tone.inputs["From Min"].default_value = 0.0
+            tone.inputs["From Max"].default_value = 1.0
+            tone.inputs["To Min"].default_value = 0.96
+            tone.inputs["To Max"].default_value = 1.04
+            nt.links.new(wn.outputs["Value"], tone.inputs["Value"])
 
         def _img(path, non_color):
             n = _img_node(nt, path, non_color=non_color)
@@ -1985,13 +2113,19 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
                                               albedo[2] / max(map_mean[2], 1e-6), 1.0)
         nt.links.new(di.outputs["Color"], mul.inputs["Color1"])
         # per-leaf tone rides AFTER the mean-normalising multiply: ±4% symmetric
-        # about 1.0, so the signed-albedo-as-mean law survives to first order
-        tmul = nt.nodes.new("ShaderNodeMixRGB")
-        tmul.blend_type = "MULTIPLY"
-        tmul.inputs["Fac"].default_value = 1.0
-        nt.links.new(mul.outputs["Color"], tmul.inputs["Color1"])
-        nt.links.new(tone.outputs["Result"], tmul.inputs["Color2"])
-        nt.links.new(tmul.outputs["Color"], bsdf.inputs["Base Color"])
+        # about 1.0, so the signed-albedo-as-mean law survives to first order.
+        # With no lay-up there is no tone stage at all and the mean-normalised
+        # map goes straight to the shader — which also means the signed colour is
+        # now the albedo mean EXACTLY on those surfaces rather than to first order.
+        if tone is not None:
+            tmul = nt.nodes.new("ShaderNodeMixRGB")
+            tmul.blend_type = "MULTIPLY"
+            tmul.inputs["Fac"].default_value = 1.0
+            nt.links.new(mul.outputs["Color"], tmul.inputs["Color1"])
+            nt.links.new(tone.outputs["Result"], tmul.inputs["Color2"])
+            nt.links.new(tmul.outputs["Color"], bsdf.inputs["Base Color"])
+        else:
+            nt.links.new(mul.outputs["Color"], bsdf.inputs["Base Color"])
         if ts.get("Rough") and rough_mean:
             ri = _img(ts["Rough"], True)
             rm = nt.nodes.new("ShaderNodeMath")
@@ -2003,24 +2137,93 @@ def _image_wood(name, slug, tile_m, albedo, map_mean, rough, rough_mean=None,
         else:
             bsdf.inputs["Roughness"].default_value = rough
         import glob as _g
+        # RELIEF — AND THE 2026-08-11 CONCLUSION BELOW IS NOW OVERTURNED BY A
+        # MEASUREMENT OF THE MAP ITSELF (2026-08-29).
+        #
+        # What stood here was: "--wood-bump=1.0 (4x) moved the declared wood crop's
+        # band energy by 0.002 of 5.868 ... a 0.4 mm bump is sub-quantization at ANY
+        # strength. Do not bisect this again; the surviving suspect for the flat read
+        # is the ROUGH-MAP's contrast." The bracket was honest and its conclusion was
+        # mis-attributed, because NOBODY OPENED THE HEIGHT MAP. Measured:
+        # `oak_veneer_01_Displacement_2k.jpg` runs 249..253 with std **0.31** and
+        # 89.3% of its pixels on the single value 251; `plastered_wall_03`'s reads
+        # std 0.56. They are constants with compression noise on them. The knob was
+        # attached to a flat map, which is why turning it 4x did nothing — the
+        # knob-cannot-reach class, and the reason it hid is that a bracket measures
+        # the OUTPUT and never asks whether the INPUT carries a signal.
+        #
+        # HOW FLAT: with Distance 0.4 mm that map delivers a mean surface slope of
+        # **0.0010 deg**, against the **2.246 deg** the vendor's own `nor_gl` says
+        # this surface has — a factor of 2,246. The millwork has been mirror-flat in
+        # every frame this lane has produced.
+        #
+        # WHY NOT JUST USE nor_gl: a tangent-space normal map needs a tangent basis,
+        # and these from_pydata boxes carry no UVs (the docstring's own reason for
+        # Bump over NormalMap, still true). So the height source becomes the DIFFUSE
+        # luminance — for open-pore wood the dark grain lines ARE the valleys — and
+        # the Distance is DERIVED, not typed: solved per slug so that the resulting
+        # mean slope equals the vendor normal map's own, at that slug's asserted
+        # tile_m. The number lives in `<slug>.scale.json` beside the tile assertion,
+        # because it is a measured property of the artefact and not of this code.
+        #
+        # THE MEASUREMENT IS A SCRIPT, NOT A SENTENCE. `pipeline/scripts/relief_measure.py`
+        # re-derives every figure in that block from the texture files themselves and
+        # exits 1 when a stored number stops reproducing — the first draft of this comment
+        # said the sidecar "carries its own refusal test" when the refusal was a prose
+        # string and a hand-written boolean nothing checked. That file also records the
+        # three approximations this solve rests on (the gradient BASELINE it is valid at,
+        # the sRGB-vs-linear gap, and the dark=low assumption), so what is claimed here is
+        # the right ORDER of slope, not the vendor figure on the nose.
+        _relief = {}
+        try:
+            with open(os.path.join(_cc0_root(), "textures", slug,
+                                   f"{slug}.scale.json"), encoding="utf-8") as _f:
+                _relief = (json.load(_f) or {}).get("relief") or {}
+        except Exception:                                   # noqa: BLE001
+            pass
+        # A SLUG NOBODY MEASURED IS NOT A SLUG THAT WAS REFUSED, and `bool(.get())`
+        # collapses the two into the same False. The printed line below tells them apart.
+        _disp_measured = "displacement_map_usable_as_height" in _relief
+        _disp_ok = bool(_relief.get("displacement_map_usable_as_height"))
+        if globals().get("_SURFACE_LEGACY"):
+            _disp_ok = True          # the other half of the leg: bump off the flat map
+        _bd = _relief.get("bump_distance_m_from_diffuse")
         hits = _g.glob(os.path.join(_cc0_root(), "textures", slug, "*_Displacement_*"))
-        if hits:
+        if _disp_ok and hits:
             hi = _img(hits[0], True)
+            _h_out, _dist, _why = hi.outputs["Color"], 0.0004, "Displacement map"
+        elif _bd:
+            _h_out, _dist = di.outputs["Color"], float(_bd)
+            _why = (f"diffuse luminance @ {float(_bd) * 1000:.2f} mm, derived from "
+                    f"{slug}'s own nor_gl ({_relief.get('vendor_mean_slope_deg')} deg)")
+        else:
+            _h_out = _dist = None
+            _why = "NONE"
+            print(f"  !! {slug}: renders FLAT — "
+                  + ("its Displacement map was MEASURED and refused as a height field, "
+                     "and no diffuse-derived distance is stored"
+                     if _disp_measured else
+                     "no relief block exists for this slug, so nothing has been measured")
+                  + ". Run `python pipeline/scripts/relief_measure.py --write "
+                  + f"{slug}`; do not reach for the strength knob, it is not attached "
+                  + "to anything.")
+        if _h_out is not None:
             bump = nt.nodes.new("ShaderNodeBump")
-            # p2 wood "แบน" half (C3 twice) — BRACKETED 2026-08-11 AND THE KNOB
-            # CANNOT REACH: --wood-bump=1.0 (4x) moved the declared wood crop's
-            # band energy by 0.002 of 5.868 (quick pair, same camera) — at ~3 m
-            # under this room's diffuse light a 0.4 mm bump is sub-quantization
-            # at ANY strength. Do not bisect this again; the surviving suspect
-            # for the flat read is the ROUGH-MAP's contrast (C3's own words are
-            # "แสงสะท้อนสม่ำเสมอเกินไป" — a specular break-up claim, not a
-            # relief claim). --wood-bump=X stays as the calibration override;
-            # the committed value moves only with a recorded verdict.
+            # STRENGTH IS PART OF THE DERIVATION, NOT A SEPARATE TASTE KNOB. Blender's
+            # Bump blends between the geometric normal and the bumped one, so a
+            # Strength of 0.25 delivers about a quarter of the slope the Distance was
+            # solved for. On the old flat map that was harmless — a quarter of nothing
+            # — which is exactly how it survived. With a Distance derived to REPRODUCE
+            # the vendor's measured slope, damping it 4x would re-commit the same
+            # understatement the derivation exists to remove, so the derived path runs
+            # at 1.0 and the old 0.25 stays only on the (now unreachable) map path.
+            # --wood-bump=X remains the calibration override for a bracket.
             bump.inputs["Strength"].default_value = float(
-                globals().get("_WOOD_BUMP", 0.25))
-            bump.inputs["Distance"].default_value = 0.0004
-            nt.links.new(hi.outputs["Color"], bump.inputs["Height"])
+                globals().get("_WOOD_BUMP", 0.25 if _disp_ok else 1.0))
+            bump.inputs["Distance"].default_value = _dist
+            nt.links.new(_h_out, bump.inputs["Height"])
             nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+            print(f"  relief[{slug}]: {_why}")
         if coat:
             # the signed finish is a SATIN FILM (rough 0.38): the film is a real
             # second specular lobe, which C3-r4#4 read as missing ("ขาดการสะท้อน
@@ -11793,9 +11996,36 @@ def build_suite(spec, label="suite"):
         if sr.get("type") == "wardrobe":
             _wparts = wardrobe_bay.bay_parts(sr)
             for _p in _wparts:
-                _bo = add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
-                              _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
-                              _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
+                # SHAPE IS DERIVED FROM THE PART HERE TOO (P2r-29, 2026-08-29). The
+                # rod derivation landed at the `_build_millwork` materializer on
+                # 2026-08-27 under a commit that says "ราวแขวนกลมแล้ว" — and this is a
+                # SECOND materializer, for the wardrobe-BAY subrooms, which nobody
+                # pointed it at. Measured off the built scene the day after: 3 rails
+                # round, 25 rail parts square. The three round ones are BF09-3, which
+                # goes through `_build_millwork`; every rail in bayBF09-1-0 and
+                # bayBF09-1-1 came out a flat bar, which is what C2 read off p2r84
+                # ("ราวเป็นแท่งเหลี่ยม") and what the plan still lists under P2r-29.
+                #
+                # THE PREDICATE WAS NEVER THE PROBLEM — `rod_axis(0.3659, 0.030, 0.030)`
+                # returns 'x' when it is asked. It was never asked: a trace of the whole
+                # build shows it ACCEPTING exactly 3 parts, all of them the 736.5 mm
+                # BF09-3 rails, while the six bay rails were never offered to it at all.
+                # (The call count in the first draft of this line, 25, was read off a
+                # trace that printed only its first 40 calls plus every hit — the real
+                # figure is larger and was never the point. The 3 is the measured one.)
+                # A rule wired into one of the several places that build a mass governs
+                # only the masses that place builds.
+                #
+                # The comment below already says why a name match cannot do this job
+                # here ("a bay object's NAME is routed by material … a name-only match
+                # finds none of the bay's six rails"), which is the same argument that
+                # produced `rod_axis` — it just never reached this call site.
+                _pax = millwork.rod_axis(_p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
+                _mk = add_rod if _pax else add_box
+                _bo = _mk(_matpre.fixture_part_name(_p["mat"], _p["name"]),
+                          _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
+                          _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM,
+                          *((_pax,) if _pax else ()))
                 # ELEMENT 8: the bay's rails and shelves are anchors too — this is the
                 # dressing room the owner rejected twice for looking undesigned, and it is
                 # the mass with the most empty joinery in the suite.
@@ -11837,9 +12067,44 @@ def build_suite(spec, label="suite"):
                 for _p in _parts:
                     if _p["name"] in _tw_consumed:
                         continue
-                    add_box(_matpre.fixture_part_name(_p["mat"], _p["name"]),
-                            _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
-                            _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM)
+                    # THE SAME DERIVATION, AT THE THIRD PLACE IT IS NOW WIRED
+                    # (P2r-29, 2026-08-29). After the wardrobe bays were fixed, the
+                    # rail census on the built scene left `acc_towelbar_rail` square —
+                    # 20 x 20 mm in section, 610 mm long, a slenderness of 30. A towel
+                    # bar is a round brass tube for the same reason a hang rail is, and
+                    # it was a flat bar only because it is materialized here.
+                    #
+                    # IT CONVERTS THREE PARTS HERE, NOT ONE, and the other two are a
+                    # REVIEWED SIDE EFFECT rather than an accident: `vanity_tap0` and
+                    # `vanity_tap1` (45 x 45 x 240 mm, slenderness 5.3) also satisfy the
+                    # predicate. Real tapware IS round, so rounding them is correct — but
+                    # it is outside what this change set out to fix, and a class-wide
+                    # dispatch that quietly reshapes a second class is how the last one
+                    # went wrong. Named here so the next reader inherits the fact rather
+                    # than rediscovering it in a frame.
+                    #
+                    # WHAT IS *NOT* CLAIMED, because the first draft of this comment
+                    # claimed it and was wrong: this is not "the last square rod in the
+                    # scene". `_add_juliet_rail` is a further materializer with its own
+                    # part population, and `rod_axis` accepts a juliet bar's section
+                    # when it is asked. It is deliberately NOT wired here — extending
+                    # the predicate to a population without first sweeping that
+                    # population is the exact error this round exists to correct, and
+                    # it produced a 600 mm carcass-as-cylinder the first time.
+                    #
+                    # IT IS WIRED NOW RATHER THAN ROWED, because leaving it would be
+                    # the exact defect this round was opened to fix: on 2026-08-27 the
+                    # derivation landed at one of the materializers under a commit
+                    # saying "ราวแขวนกลมแล้ว", and a class-wide claim covered a
+                    # quarter of the class. A second partial fix would have earned the
+                    # same sentence.
+                    _fax = millwork.rod_axis(_p["dx"] * MM, _p["dy"] * MM,
+                                             _p["dz"] * MM)
+                    (add_rod if _fax else add_box)(
+                        _matpre.fixture_part_name(_p["mat"], _p["name"]),
+                        _p["x"] * MM, _p["y"] * MM, _p["z"] * MM,
+                        _p["dx"] * MM, _p["dy"] * MM, _p["dz"] * MM,
+                        *((_fax,) if _fax else ()))
                 n_fix += 1
             else:
                 add_box("fix__" + str(fx.get("name", "fixture")).replace(" ", "_"),
@@ -13107,6 +13372,13 @@ if __name__ == "__main__":
         # 0.46 uniform, grain folding at z = k*842 mm). B leg = committed default.
         globals()["_WOOD_FOLD_LEGACY"] = True
         print("  [A/B] veneer mapping: legacy folded (pre-p2r15) leg")
+    if "--surface-legacy" in _post_dashdash():
+        # A leg of the 2026-08-29 surface pair: the exact pre-fix state of BOTH
+        # `_image_wood` behaviours together — the veneer lay-up stamped on every
+        # preset including the plaster, and the Bump driven off the Displacement
+        # map. They were one state, so half a leg would compare nothing.
+        globals()["_SURFACE_LEGACY"] = True
+        print("  [A/B] surfaces: legacy leaf-grid-on-everything + flat-map bump leg")
     if "--no-crush-shade" in _post_dashdash():
         # A leg of the p2r16 rug A/B: dents stay geometry-only (pre-p2r16 read)
         globals()["_CRUSH_SHADE_OFF"] = True

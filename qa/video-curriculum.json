@@ -3610,6 +3610,33 @@
    "notes": "knowledge/_inbox/trn003-3dshaker-study/what-a-tutorial-workflow-actually-assumes.md",
    "watched_at": "2026-08-29",
    "distilled_to": "knowledge/rendering/measuring-a-room-from-one-photograph.md"
+  },
+  {
+   "id": "1i6woUR4iQA",
+   "url": "https://www.youtube.com/watch?v=1i6woUR4iQA",
+   "title": "Make ANY FURNITURE in Blender in 15 Minutes",
+   "channel": "Vertex Arcade",
+   "minutes": 16.0,
+   "views": 171638,
+   "g_items": [
+    "G6",
+    "G5",
+    "G1"
+   ],
+   "priority": "must",
+   "why": "The ONLY entry in this curriculum that builds one LOOSE piece of furniture end to end — research, model, material, light — by a working modeller, so it is the only one that can be laid beside build_room.py step for step. It matters because the repo's own count is that 48 hand-built loose pieces drew 7.56 critic items each against millwork's 1.01, and every other clip here critiques a finished room rather than showing the build. Transferable and now measured: (a) his research step is a RETAILER PRODUCT PAGE for reference AND dimensions — the tier the DRW-2 heights ladder does not have, against 8 declared assumptions printing at every session open; (b) bevel every hard edge at 2 segments and a few mm 'because the reference photos all carry a highlight along the edges' — ours runs the suite pass at 5 mm / 3 segments on a line whose own docstring calls that impossible; (c) do not build materials procedurally, buy the PBR set — curtain_sheer is procedural and is 17.64% of the frame's pixels; (d) his cushion recipe makes the SEAM the datum and keeps folds deliberately few, agreeing with our own 3.682x/2.115x fold-energy readings.",
+   "risk": "It is a PRODUCT SHOT on a white sweep. The whole lighting/rendering chapter (one neutral studio HDRI, white cyclorama) is correct for a catalogue plate and wrong for an interior whose light must come from its own openings — do not read it as lighting advice for the bedroom. It also hand-models upholstery, which R8 sends to ACQUIRE; the transferable half is his METRIC (the seam), not a licence to sculpt soft goods.",
+   "rank": 1,
+   "primary_g": "G6",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "CRAFT/MODELLING"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-29",
+   "notes": "knowledge/_inbox/video-study/2026-08-29-a-working-modellers-four-steps-1i6woUR4iQA.md",
+   "watched_at": "2026-08-29",
+   "distilled_to": null
   }
  ],
  "title_and_channel_miss_rate": {

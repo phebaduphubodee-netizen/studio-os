@@ -7,5 +7,17 @@
  "tile_m": 4.0,
  "aspect": 1.0,
  "source": "https://api.polyhaven.com/info/plastered_wall_03",
- "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed."
+ "note": "The world size of one repeat, as published. R8: scale is ASSERTED on ingest, never assumed.",
+ "relief": {
+  "vendor_mean_slope_tan": 0.029997,
+  "vendor_mean_slope_deg": 1.7182,
+  "diffuse_mean_grad_per_m": 6.3698,
+  "gradient_linear_per_m": 5.9164,
+  "gradient_baseline_mm": 3.9062,
+  "bump_distance_m_from_diffuse": 0.004709,
+  "displacement_map_std_8bit": 0.556,
+  "displacement_map_usable_as_height": false,
+  "measured": "2026-08-29",
+  "method": "DERIVED by pipeline/scripts/relief_measure.py, which re-runs and is the authority on every figure here. Run it to check them; do not hand-edit. See that file for the three declared approximations (gradient baseline, sRGB-vs-linear, dark=low)."
+ }
 }

@@ -69,10 +69,34 @@ RAIL_D    = 0.030   # brass hang-rail section (round rail modelled square; Ø25-
 # above it, so the number is not load-bearing at the third decimal.
 ROD_SQUARE_TOL = 0.002   # |section a - section b| under this = a square section
 ROD_SLENDER    = 4.0     # length / section at or above this = a rod, not a block
+# A ROD IS HARDWARE, AND HARDWARE HAS A SMALL SECTION AT ANY LENGTH (2026-08-29).
+# The two tests above describe a rod AND a column equally well — both are square and
+# both are slender — and the sweep behind them was run over ONE population, the parts
+# `millwork_parts` emits. The day the same predicate was pointed at the wardrobe-BAY
+# parts it accepted `bayBF09-1-1_carcass_blind4`, a **599.9 x 599.9 x 2800 mm oak
+# blind-corner carcass** (slenderness 4.67), and would have rendered a full-height
+# structural column as a cylinder, in frustum. The scope proof was extended to a new
+# population without being re-run over it — the same shape of defect as the commit
+# that said the rails were round while seven of ten were square.
+#
+# SECTION, NOT SLENDERNESS, IS THE DISCRIMINATOR THAT HOLDS. Slenderness is a
+# property of the CELL a rail happens to span, so a short rail in a narrow bay
+# (365.9 / 30 = 12.2) and a long one (773 / 30 = 25.8) sit far apart on it and a
+# narrower cell would push a real rail under any cut worth making. Section is a
+# property of the PART: a hang rail is 30 mm whatever it spans, a towel bar 20 mm,
+# and a carcass gable is 600 mm whatever its height.
+#
+# Measured over both live populations: the largest section that must be ACCEPTED is
+# 30.0 mm (RAIL_D, the hang rails) and the smallest that must be REJECTED is 599.9 mm.
+# The cut sits 3.3x above the first and 6.0x below the second, so like the tolerances
+# above it is not load-bearing at the third decimal.
+ROD_SECTION_MAX = 0.10   # a member thicker than this is structure, not hardware
 
 
-def rod_axis(dx, dy, dz, tol=ROD_SQUARE_TOL, slender=ROD_SLENDER):
-    """The axis a part runs along IF it is a rod (square section, slender), else None.
+def rod_axis(dx, dy, dz, tol=ROD_SQUARE_TOL, slender=ROD_SLENDER,
+             section_max=ROD_SECTION_MAX):
+    """The axis a part runs along IF it is a rod (small square section, slender),
+    else None.
 
     PURE. Returns 'x' | 'y' | 'z'. The materializer turns a rod into a smooth tube
     inscribed in this same AABB, so nothing downstream of the box contract moves: the
@@ -88,6 +112,9 @@ def rod_axis(dx, dy, dz, tol=ROD_SQUARE_TOL, slender=ROD_SLENDER):
     section = max(a, b)
     if section <= 0 or d[axis] / section < slender:
         return None                      # stubby: a block, a cleat, an end socket
+    if section > section_max:
+        return None                      # structure, not hardware: a carcass gable,
+        #                                  a pilaster, a full-height blind corner
     return axis
 
 

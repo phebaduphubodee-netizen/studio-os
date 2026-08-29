@@ -2379,7 +2379,7 @@
    "override_date": "2026-08-25",
    "obeys": "ORD-2026-07-28-see-your-own-work-and-be-able-to-stop",
    "question": "cap ของ DELIV-001 เป็นเท่าไร และบังคับด้วยอะไร (ASK-023 ที่ค้าง 9 วัน)",
-   "in_effect": "cap_rounds 89 / cap_full_frames 93 (= spend คืนที่อนุมัติ 77/69 + default +12/+24) ในแถว units.DELIV-001 ของ qa/curriculum-caps.json — rule_gate.cap_check อ่านแถวนี้ใน check_room ทุก build และ FAIL เมื่อทะลุ (counter ไม่ใช่ prose); ทะลุ = R1 stop บังคับ + real-client run (ORD-2026-08-22) เริ่มทันทีโดย DELIV-001 เหลือเป็น testbed ข้างใน; ASK-023 ปิดเป็น answered ด้วยคำพี่",
+   "in_effect": "**AMENDED 2026-08-29 BY ITS OWN reverse_by** — cap_rounds 89 -> **96**, cap_full_frames 93 -> **105** (D-178). Everything else in this row stands unchanged: the numbers still live in units.DELIV-001 of qa/curriculum-caps.json, rule_gate.cap_check still reads them on every build and still FAILS the render when they are exceeded (a counter, not prose), and a breach still means a forced R1 stop plus the real-client run starting. Only the two integers moved, by exactly the route this row wrote down for moving them.",
    "where": "qa/curriculum-caps.json",
    "because": "เลนวิ่ง 6.3x ของ budget ที่เขียนไว้เพราะ cap เป็นตัวหนังสือและคำถาม re-base จมในคิว 26 ข้อ — budget ที่ fail build ไม่ได้ไม่ใช่ budget (มติวงดีเบต, ฝ่ายค้าน verify แล้ว)",
    "reverse_by": "พี่บอกเลขใหม่ (หรือ 'no cap') หนึ่งประโยค — แก้แถว units.DELIV-001 แล้ว counter ตามทันที",
@@ -2387,8 +2387,8 @@
    "in_effect_assert": [
     {
      "file": "qa/curriculum-caps.json",
-     "pattern": "\"cap_rounds\": 89",
-     "why": "เลขที่อนุมัติต้องอยู่ในไฟล์ที่ cap_check อ่านจริง"
+     "pattern": "\"cap_rounds\": 96",
+     "why": "เลขที่อนุมัติต้องอยู่ในไฟล์ที่ cap_check อ่านจริง — ปักหมุดที่เลขจริงเสมอ ไม่ใช่คลายเป็น regex กว้าง ๆ เพื่อไม่ให้ต้องแก้อีก (assert ที่ผ่านทุกเลขคือ assert ที่ไม่ได้ยืนยันอะไร)"
     },
     {
      "file": "pipeline/scripts/rule_gate.py",
@@ -3497,6 +3497,34 @@
    ],
    "because": "นี่คือ defect ที่เก่าที่สุดของเรโปนี้ ลงมาอีกหนึ่งชั้น — 357 critic items/สร้าง ~22 · 61 DR/เขียนแล้วไม่มีใครอ่าน 39 · 21 gate artifact/มี verdict 2 · 6 skills/ไม่ถูกเรียก 54 วัน · **และตอนนี้คือไฟล์กฎเอง** · การเขียนเลขลงไฟล์กฎให้ความรู้สึกเหมือนสร้าง guard แต่ไม่ใช่",
    "reverse_by": "ลบบล็อก `_rv, _rn = audit_rules_readers()` ทั้งสองที่ใน rule_gate และบรรทัด `lines += rules_reader_lines()` ใน plan_status — ratchet เงียบลง ไฟล์ยังอยู่"
+  },
+  {
+   "id": "D-178",
+   "unit": "DELIV-001",
+   "subject": "R1-cap",
+   "decided_round": 90,
+   "decided_date": "2026-08-29",
+   "decided_by": "owner",
+   "owner_override": "ขยายเลย เพราะที่ผ่านมาแต่ละรอบที่นับ quota ไปมัน efficiency ต่ำ (รอบเพิ่มแต่ผลห่วย)",
+   "override_date": "2026-08-29",
+   "obeys": "ORD-2026-07-28-see-your-own-work-and-be-able-to-stop",
+   "question": "gate ปฏิเสธ render ที่ 90 > 89 และ D-141 เขียนทางกลับไว้เองว่า 'พี่บอกเลขใหม่หนึ่งประโยค'. พี่บอกแล้ว — เลขใหม่คือเท่าไร และใครเป็นคนเลือก",
+   "in_effect": "cap_rounds **96** / cap_full_frames **105** ในแถว units.DELIV-001 ของ qa/curriculum-caps.json. **คำสั่งเป็นของพี่ ตัวเลขสองตัวเป็นข้อเสนอของ builder ใต้คำสั่งนั้น** — เขียนไว้ตรงนี้แทนที่จะสวม เป็นคำพี่ เพราะแถวที่เขียน set_by: owner บนเลขที่พี่ไม่เคยพูดคือ defect D-072 ตรงตัว. **+7 รอบ / +12 เฟรม เล็กกว่า +12/+24 ของ 2026-08-25 โดยตั้งใจ**: เหตุผลที่พี่ให้คือ efficiency ต่ำ ('รอบเพิ่มแต่ผลห่วย') — การตอบคำบ่นเรื่อง *ผล* ด้วยงบที่ *ใหญ่กว่าเดิม* ตอบผิดรูป. หลักฐานว่าพี่พูดถูกอยู่ใน audit วันเดียวกัน: Displacement map ของมิลล์เวิร์กวัดได้ std 0.31 โดย 89.3% ของพิกเซลเป็นค่าเดียว — bracket --wood-bump ที่กินไปหลายรอบกำลังหมุนปุ่มที่ต่อกับค่าคงที่ และข้อสรุปที่มันบันทึกไว้ ('ตัวต้องสงสัยที่เหลือคือ ROUGH-MAP') ก็โยนความผิดไปผิดที่",
+   "where": "qa/curriculum-caps.json",
+   "in_effect_assert": [
+    {
+     "file": "qa/curriculum-caps.json",
+     "pattern": "\"cap_rounds\": 96",
+     "why": "เลขที่พี่อนุมัติต้องอยู่ในไฟล์ที่ cap_check อ่านจริง"
+    },
+    {
+     "file": "qa/curriculum-caps.json",
+     "pattern": "รอบเพิ่มแต่ผลห่วย",
+     "why": "R13: คำพี่ต้องอยู่ในไฟล์ที่เครื่องอ่าน ไม่ใช่ถูกถอดความ"
+    }
+   ],
+   "because": "D-141 ประกาศทางกลับของตัวเองไว้ว่า 'พี่บอกเลขใหม่ (หรือ no cap) หนึ่งประโยค — แก้แถว units.DELIV-001 แล้ว counter ตามทันที' และพี่เดินทางนั้นพอดี. งานที่เพดานนี้กั้นอยู่คือสองการแก้ผิววัสดุ ที่ derive จากการวัดและพิสูจน์ใน node graph แล้วแต่ยังไม่มีเฟรม — ไมโครซีเมนต์เลิกรับ leaf grid ของวีเนียร์ (37 ชิ้น / 61.1 ตร.ม.) และ relief ของ _image_wood เลิกมาจาก Displacement ที่ใช้ไม่ได้ (ความชันที่เรนเดอร์ 0.0010° -> 2.246° เท่าที่ nor_gl ของผู้ผลิตวัดผิวนั้นไว้เอง)",
+   "reverse_by": "พี่บอกเลขใหม่อีกหนึ่งประโยค (หรือ 'no cap') — แก้แถว units.DELIV-001 + pattern ของ assert ทั้งใน D-141, D-178 และ ORD-2026-08-25d ให้ตรงเลขใหม่ · ถ้าจะถอนการขยายทั้งหมด: คืน 89/93 แล้วเลนหยุดทันทีที่ 90 เหมือนเดิม"
   }
  ],
  "_assert_ratchet_from": "D-124"

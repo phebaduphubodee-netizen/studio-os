@@ -234,7 +234,22 @@ def write_sidecar(slug, dimensions_mm, source, root=None, note=None):
     d = texture_dir(slug, root)
     os.makedirs(d, exist_ok=True)
     dims = [float(x) for x in dimensions_mm]
-    rep = {
+    # KEYS THIS FUNCTION DOES NOT KNOW ABOUT SURVIVE A REWRITE (2026-08-29). The six
+    # fields below are what `--backfill` re-derives from the publisher; the sidecar is
+    # also the home of measurements this function never took — `relief`, added the same
+    # day, carries the Bump-height derivation the millwork surfaces depend on. Rebuilding
+    # the dict from scratch silently deleted it, so one `--backfill` would have returned
+    # the veneer to a flat map with nothing failing and nothing printed. A writer that
+    # owns SOME of a file must not behave as though it owns all of it.
+    rep = {}
+    try:
+        with open(sidecar_path(slug, root), encoding="utf-8") as _f:
+            _prev = json.load(_f)
+        if isinstance(_prev, dict):
+            rep.update(_prev)
+    except Exception:                                       # noqa: BLE001
+        pass                                                # no sidecar yet: fine
+    rep.update({
         "slug": slug,
         "dimensions_mm": dims,
         "tile_m": round(dims[0] / 1000.0, 6),
@@ -242,7 +257,7 @@ def write_sidecar(slug, dimensions_mm, source, root=None, note=None):
         "source": source,
         "note": note or ("The world size of one repeat, as published. R8: scale "
                          "is ASSERTED on ingest, never assumed."),
-    }
+    })
     with open(sidecar_path(slug, root), "w", encoding="utf-8", newline="") as f:
         json.dump(rep, f, indent=1, ensure_ascii=False)
         f.write("\n")

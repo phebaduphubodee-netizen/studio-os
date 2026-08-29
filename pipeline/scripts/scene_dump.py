@@ -119,6 +119,12 @@ def dump(scene=None):
     sc = scene or bpy.context.scene
     cam = sc.camera
     dg = bpy.context.evaluated_depsgraph_get()
+    # ONE source for the pixel count, used by the per-object mm_per_px below and shipped
+    # at the top of the dump by `render_res()`. Reading `sc.render.resolution_x` here and
+    # applying `resolution_percentage` there would let the divisor and the STATED
+    # resolution come apart by exactly that factor — which is the failure the render_res
+    # key exists to prevent, committed by the key's own neighbour.
+    _res_xy = render_res(sc)
     out = []
     for ob in sc.objects:
         if ob.type != "MESH":
@@ -143,6 +149,98 @@ def dump(scene=None):
                     if s.material and s.material.use_nodes),
                 "item_id": _ic.item_id(ob.name),
             }
+            # WORLD SCALE + THE MODIFIERS THAT CARE ABOUT IT (additive keys inside
+            # scene-dump@2, 2026-08-29 — the schema string does not move, because
+            # every consumer in this repo gates on the PRESENCE OF A KEY and none
+            # compares the version: `carry_check` refuses a dump with no `aabb`,
+            # `deliverable_check` reads D7 as NOT RUN with no `in_frustum`. A reader
+            # written against the older dump keeps working; a reader that needs
+            # these two keys must refuse when they are absent, never assume 1.0.)
+            # Read off the ORIGINAL object, never the evaluated one:
+            # by the time the depsgraph is done, Solidify and Bevel have already
+            # spent whatever scale they were handed, so the evaluated mesh cannot
+            # testify about the thing that shaped it.
+            #
+            # WHY THESE TWO NUMBERS AND NOT A THIRD. Solidify, Bevel, Mirror,
+            # Array, Screw and Skin all evaluate their widths in the object's
+            # LOCAL space, while `dimensions` and `bound_box` report WORLD size
+            # and stay correct — so an object at scale 2 renders an 18 mm
+            # solidify as 36 mm and every AABB-reading rung in this repo
+            # (placement_check, carry_check, dim_check, the p2_exit crops) reads
+            # it as perfect. The failure is invisible to all twelve keys above.
+            #
+            # THIS SCENE PASSES TODAY AND THAT IS THE REASON TO RECORD IT.
+            # `_bake_transform_to_mesh` (build_room.py) already performs a
+            # hand-rolled Ctrl+A at all three glTF import sites — but its
+            # docstring argues the case entirely in TEXTURE space and never
+            # mentions modifiers, so the 244 bevel widths in this scene mean
+            # millimetres by a side effect nobody wrote down. An invariant that
+            # holds by accident is one refactor from not holding, and until
+            # these keys existed nothing in the repo could have noticed the day
+            # it stopped.
+            _sc = ob.matrix_world.to_scale()
+            rec["scale"] = [round(v, 6) for v in _sc]
+            # `show_render` is the filter, not a nicety: every other key in this
+            # record comes from the EVALUATED object, which honours it. A BEVEL
+            # disabled for render would otherwise report a `bevel_m` for an edge that
+            # is not in the frame, and — paired with a non-unit scale — would make
+            # transform_check FAIL the build over a modifier that never evaluates.
+            _mods = [m for m in ob.modifiers if getattr(m, "show_render", True)]
+            rec["local_space_mods"] = sorted({
+                m.type for m in _mods
+                if m.type in ("SOLIDIFY", "BEVEL", "MIRROR", "ARRAY", "SCREW",
+                              "SKIN", "WIREFRAME")})
+            # THE BEVEL'S ACTUAL WIDTH, in metres, and its segment count. A second
+            # additive key with a second consumer (`edge_highlight.py`), and the
+            # reason it is not folded into the line above is that the two rungs ask
+            # different questions of the same modifier: transform_check asks whether
+            # the number still MEANS millimetres, edge_highlight asks whether that
+            # many millimetres can be SEEN from where the camera stands.
+            #
+            # Measured 2026-08-29 and it is why this key exists: at the eye camera's
+            # 18 mm lens across 2400 px, the millwork wall sits ~3.9 m out at
+            # ~3.2 mm/px, so `MILL_BEVEL_M = 0.0012` — a number chosen because a real
+            # cabinet arris is nearly sharp — subtends **0.37 px** and can render no
+            # highlight at all. It is right in the world and invisible in the frame,
+            # and no bevel decision in this repo's history consulted the mapping
+            # between the two.
+            _bevs = [m for m in _mods if m.type == "BEVEL"]
+            if _bevs:
+                # `width` under Blender's default OFFSET mode is the distance from the
+                # original edge along each adjacent face, so on a 90-degree arris the
+                # chamfer face that actually catches a highlight is ~1.41x this. The
+                # key is therefore a LOWER BOUND on the visible chamfer, and it is
+                # recorded as the modifier's own number rather than a converted one so
+                # the consumer can see which it has; `bevel_offset_type` rides along.
+                rec["bevel_m"] = round(max(float(m.width) for m in _bevs), 6)
+                rec["bevel_segments"] = max(int(m.segments) for m in _bevs)
+                rec["bevel_offset_type"] = sorted({
+                    getattr(m, "offset_type", "OFFSET") for m in _bevs})
+            # HOW BIG IS ONE MILLIMETRE, HERE, IN THIS FRAME. Computed INSIDE
+            # Blender against the scene's real camera and stored per object, so the
+            # judging layer stays pure arithmetic and can never drift from the lens
+            # that actually renders (layer law, pipeline/CLAUDE.md). Re-deriving it
+            # in a pure module would mean re-implementing Blender's lens+shift+
+            # sensor-fit model — an approximation of the thing we already have.
+            # Two points 10 mm apart, perpendicular to the view direction, at the
+            # object's own bbox centre; `None` when there is no camera, because a
+            # missing camera must read as "not measured" and never as a number.
+            if cam is not None:
+                try:
+                    _ctr = sum((ob.matrix_world @ _V(c) for c in ob.bound_box),
+                               _V((0.0, 0.0, 0.0))) / 8.0
+                    _vd = (_ctr - cam.matrix_world.translation)
+                    _perp = _V((-_vd.y, _vd.x, 0.0))
+                    if _perp.length > 1e-9 and _vd.length > 1e-9:
+                        _perp = _perp.normalized() * 0.010
+                        _a = _w2cv(sc, cam, _ctr)
+                        _b = _w2cv(sc, cam, _ctr + _perp)
+                        _dpx = math.hypot((_b.x - _a.x) * _res_xy[0],
+                                          (_b.y - _a.y) * _res_xy[1])
+                        if _dpx > 1e-9:
+                            rec["mm_per_px"] = round(10.0 / _dpx, 6)
+                except Exception:                           # noqa: BLE001
+                    pass
             # World AABB of the EVALUATED object (additive @2 key). First
             # consumer: p2_exit's coincident-duplicate-shell rung — the p3r2
             # .blend probe found glTF garment sets importing the same shell
@@ -288,6 +386,24 @@ def camera_floor_poly_mm(sc=None, far_m=30.0):
     return poly
 
 
+def render_res(sc=None):
+    """[x, y] pixels the scene is set to render at, resolution_percentage applied.
+
+    IT SHIPS WITH THE DUMP BECAUSE `mm_per_px` IS MEANINGLESS WITHOUT IT, and that
+    is not a theoretical worry — it bit on this key's first live run. A `_ql`
+    playblast .blend carries 1200x900 while the delivered frame is 2400x1800, so
+    every per-object `mm_per_px` read off a playblast is TWICE the delivered
+    figure and every "how many pixels does this edge subtend" answer is HALF.
+    R11's contract already says it in the pixel rung's own words: a sub-pixel
+    comparison at half resolution is a different measurement, and the rung refuses
+    rather than rescaling. A consumer that finds no resolution here must refuse
+    too — a pixel count whose resolution is unknown is not a measurement."""
+    sc = sc or bpy.context.scene
+    pct = (sc.render.resolution_percentage or 100) / 100.0
+    return [int(round(sc.render.resolution_x * pct)),
+            int(round(sc.render.resolution_y * pct))]
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     if argv and argv[0] == "--controls":
@@ -296,7 +412,8 @@ def main():
         raise SystemExit("scene_dump: need an output .json path (or --controls)")
     objs = dump()
     poly = camera_floor_poly_mm()
-    out = {"blend": bpy.data.filepath, "schema": "scene-dump@2", "objects": objs}
+    out = {"blend": bpy.data.filepath, "schema": "scene-dump@2", "objects": objs,
+           "render_res": render_res()}
     if poly:
         out["camera"] = {"floor_poly_mm": poly}
     with open(argv[0], "w", encoding="utf-8") as f:

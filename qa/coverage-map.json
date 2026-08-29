@@ -1,6 +1,6 @@
 {
  "_law": "THE MAP THE HEAD STOPPED BEING ABLE TO HOLD (owner 2026-08-22: 'project ใหญ่เกินกว่าที่ตรวจเช็คได้ว่าขั้นไหนผิดอะไรแล้วใช่ไหม' -> advice -> 'ลุย', ORD-2026-08-22-front-door-dims). One row per check the render lanes actually run, classified by (1) STAGE — where in the pipe it fires, and (2) COMPARES — what it holds the work against: a = our own spec/derivation/history (self-consistency), b = the client's sheet / the target / the delivered anchor pool, c = a WORLD standard independent of both, d = process-state (registers, orders, ledgers). The first full census (2026-08-22, 5-agent sweep) found 28 rungs: a=9 b=4 c=3 d=12, with ONE blocking world-standard check on the render path — which is the measured answer to why 'the bed is too small' had no asker. ADMISSION of new rows is governed by D-112 (a new instrument must give eyes to a none_yet critic-debt class, replace a proven liar, or be owner-ordered — printed in the gate that introduces it; enforcement is discipline in gate artifacts, NOT a new checker, by D-112's own words). The defect-class half of the map is qa/critic-debt.json's none_yet rows — this file does not duplicate them. plan_status prints this map's summary at every session open; a map nobody prints is the queue-with-no-consumer defect wearing a map.",
- "updated": "2026-08-27",
+ "updated": "2026-08-29",
  "classes": {
   "a": "own-spec/self-history",
   "b": "sheet/target/anchor-pool",
@@ -103,6 +103,25 @@
    "blocking": true,
    "note": "load path: what carries each mass to the ground — RESTS-ON / HANGS-FROM / HUNG-ON / FIXED-IN / FASTENED-TO / ANCHORED-TO, ledgered backlog in qa/carry-ledger.json",
    "admitted_by": "D-112: gives an eye to the class DEBT-19 excludes in its own covers-text ('a slab supported at one end and unsupported at the other') and re-arms DEBT-08 (seat-impossible) on a lane where placement_check has never been spawned. First run found the stool cushion floating 1.0 mm — DEBT-08's first live reading on this lane."
+  },
+  {
+   "name": "transform_check (apply-transforms)",
+   "stage": "scene-dump",
+   "compares": "a",
+   "blocking": true,
+   "note": "does a modifier width still mean millimetres — a mesh carrying SOLIDIFY/BEVEL/MIRROR/ARRAY/SCREW/SKIN/WIREFRAME must stand at scale 1, because those modifiers read their widths in LOCAL space while every AABB-reading rung in this repo reads WORLD size and stays green. Scope is the closed set of scale-sensitive MODIFIER TYPES, never a list of object names (R9b). Positive control fires every run; a dump written before the `scale` key exits 2.",
+   "admitted_by": "D-112 shape: learned 2026-08-29 from video 1i6woUR4iQA, whose closing line is 'use reference, get measurements, and APPLY THE TRANSFORMS'. GREEN on the scene of record when it shipped (p2r90: 496 meshes, 0 non-unit, 244 BEVEL modifiers, 0 of them scaled) — it is admitted not because it convicts something today but because the invariant was being held by a SIDE EFFECT nobody wrote down: `_bake_transform_to_mesh` does a hand-rolled Ctrl+A at all three glTF import sites and argues its whole 45-line docstring in TEXTURE space, never mentioning a modifier. `bpy.ops.object.transform_apply` appears 0 times repo-wide.",
+   "class_a_limit": "IT IS A SELF-CONSISTENCY RUNG AND MUST NOT BE READ AS MORE. It proves a declared width reaches the geometry unchanged; it cannot tell whether the width itself was the right number. R7b's law applies unaltered — this measures HOW MUCH, and only an eye says WHAT is wrong. Its sibling defect (the millwork arris at 1.2 mm is sub-pixel and renders no highlight at all) is invisible to it by construction."
+  },
+  {
+   "name": "edge_highlight (bevel px)",
+   "stage": "scene-dump",
+   "compares": "a",
+   "blocking": false,
+   "note": "REPORTING LINE, NOT A CUT. Divides each in-frame bevel's width by that object's own `mm_per_px` (computed inside Blender against the real camera) and prints how many subtend less than one pixel. Measured 2026-08-29: MILL_BEVEL_M = 0.0012 renders at 0.37 px on the wardrobe wall (~3.9 m, 18 mm lens, 2400 px) — right about the world, invisible in the frame.",
+   "why_not_blocking": "Failing a frame needs a threshold, and the pixel width an edge highlight must have has NEVER been measured off delivered work. A number invented in the rung would carry the rung's authority instead of the anchor pool's — the 'a number changed to look productive' defect. Same shape and same reason as the plan's DELIVERED-WORK VALUE BAND, which is a line for exactly this reason. Its own exit 2 also does not stop the build: a rung with no authority over the frame must not acquire it through the back door of its own failure.",
+   "promote_by": "Measure the edge-highlight width, in pixels at a known scale, off the anchor pool (R4). That reading — not this file — sets the cut, and promoting it is a deliberate edit to test_edge_highlight.py's `test_a_frame_where_every_edge_is_invisible_still_exits_0`.",
+   "class_a_note": "Filed 'b' on the first draft and that was wrong: class b is sheet/target/anchor-pool, and this rung reads NOTHING outside our own scene — a bevel width from our dump divided by a mm/px from our camera. It BECOMES a b-class rung only when the anchor-pool reading in `promote_by` exists to compare against, and misfiling it as b beforehand would have let the coverage map claim an outside comparison the repo does not have."
   },
   {
    "name": "sheet_recon (R12)",

@@ -1325,3 +1325,96 @@ def test_the_sweep_selects_RAILS_AND_NOTHING_ELSE():
     assert picked, "the sweep built no rods at all — the probe is broken, not the rule"
     assert all(n.startswith("rail_") and "sock" not in n for n in picked),         f"the predicate reached past the rails: {sorted(set(picked))}"
     assert len(picked) < total, "it cannot be selecting everything"
+
+
+def test_a_full_height_carcass_is_not_a_rod():
+    """THE REGRESSION THIS CEILING EXISTS FOR, as a number rather than a story.
+
+    `bayBF09-1-1_carcass_blind4` is a 599.9 x 599.9 x 2800 mm oak blind-corner carcass.
+    It is square in section and slender (4.67), so the first two tests call it a rod —
+    and on 2026-08-29 the predicate was pointed at the wardrobe-bay parts and accepted
+    it, which would have rendered a full-height structural column as a cylinder, in
+    frustum. Section is what separates hardware from structure."""
+    assert M.rod_axis(0.5999, 0.5999, 2.800) is None
+    assert M.rod_axis(0.3659, M.RAIL_D, M.RAIL_D) == "x"     # the rail beside it
+
+
+def test_the_section_ceiling_sits_between_the_two_populations():
+    """The cut is not load-bearing at the third decimal, and this pins the margin that
+    claim rests on: the largest section that must be ACCEPTED and the smallest that must
+    be REJECTED, both written here by hand rather than read from the module."""
+    assert M.RAIL_D <= M.ROD_SECTION_MAX / 3.0        # 30 mm rail, 3.3x of headroom
+    assert 0.5999 >= M.ROD_SECTION_MAX * 5.0          # 600 mm carcass, 6x clear
+
+
+def test_the_sweep_covers_the_WARDROBE_BAY_population_too():
+    """THE SCOPE PROOF, EXTENDED TO THE POPULATION THAT BROKE IT.
+
+    The sweep above runs `millwork_parts` and nothing else, and for as long as the
+    predicate was only consulted there that was the whole claim. On 2026-08-29 the
+    derivation was wired into the wardrobe-bay materializer as well — a DIFFERENT part
+    population — and the proof was not re-run over it. It accepted a carcass on the
+    first try. A scope claim covers the populations it was swept over and no others."""
+    import json as _json
+    import os as _os
+    _repo = _os.path.dirname(_os.path.dirname(_os.path.dirname(
+        _os.path.abspath(__file__))))
+    spec_p = _os.path.join(_repo, "projects", "PRJ-2026-002_c001-house", "03_layout",
+                           "master-suite.CANONICAL.spec.json")
+    if not _os.path.isfile(spec_p):
+        pytest.skip("canonical spec not on disk")
+    import wardrobe_bay
+    spec = _json.load(open(spec_p, encoding="utf-8"))
+    bays = [sr for sr in spec.get("subrooms", []) if sr.get("type") == "wardrobe"]
+    assert bays, "no wardrobe subroom in the spec — this proof has nothing to sweep"
+    picked, total = [], 0
+    for sr in bays:
+        for part in wardrobe_bay.bay_parts(sr):
+            total += 1
+            if M.rod_axis(part["dx"] * 0.001, part["dy"] * 0.001, part["dz"] * 0.001):
+                picked.append(part["name"])
+    assert picked, "the bay built no rods at all — the probe is broken, not the rule"
+    assert all("rail" in n and "sock" not in n for n in picked),         f"the predicate reached past the bay's rails: {sorted(set(picked))}"
+    assert len(picked) < total, "it cannot be selecting everything"
+
+
+def test_the_sweep_covers_the_BATHROOM_FIXTURE_population_too():
+    """The third population the derivation is now wired into (build_room's fixture
+    materializer). What it accepts here is NOT only rails — the two vanity taps
+    (45 x 45 x 240 mm) qualify as well — so this proof pins the REVIEWED result rather
+    than a slogan: every accepted part is round hardware, and nothing structural."""
+    import json as _json
+    import os as _os
+    _repo = _os.path.dirname(_os.path.dirname(_os.path.dirname(
+        _os.path.abspath(__file__))))
+    spec_p = _os.path.join(_repo, "projects", "PRJ-2026-002_c001-house", "03_layout",
+                           "master-suite.CANONICAL.spec.json")
+    if not _os.path.isfile(spec_p):
+        pytest.skip("canonical spec not on disk")
+    try:
+        import bathroom
+    except Exception:                                        # noqa: BLE001
+        pytest.skip("bathroom module unavailable")
+    spec = _json.load(open(spec_p, encoding="utf-8"))
+    # The fixtures live on the SUBROOMS, not at the top level — the first draft of this
+    # test read `spec["fixtures"]`, found nothing and SKIPPED, which is a scope proof
+    # that does not run wearing a green tick.
+    fx = [f for sr in spec.get("subrooms", []) for f in (sr.get("fixtures") or [])]
+    assert fx, "no fixtures on any subroom — this proof has nothing to sweep"
+    picked, total, biggest = [], 0, 0.0
+    for f in fx:
+        try:
+            parts = bathroom.fixture_parts(f)
+        except Exception:                                    # noqa: BLE001
+            continue
+        parts = list(parts or [])
+        for p in parts:
+            total += 1
+            dims = [p["dx"] * 0.001, p["dy"] * 0.001, p["dz"] * 0.001]
+            if M.rod_axis(*dims):
+                picked.append(p["name"])
+                biggest = max(biggest, sorted(dims)[1])
+    assert total, "fixture_parts yielded nothing for any of this spec's fixtures"
+    # nothing structural: every accepted section stays under the hardware ceiling
+    assert biggest <= M.ROD_SECTION_MAX,         f"the predicate reached structure in the fixture population: {sorted(set(picked))}"
+    assert len(picked) < total, "it cannot be selecting everything"
