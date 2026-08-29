@@ -24,8 +24,58 @@ paste where and what to bring back.
 """
 import argparse
 import os
+import re
 import shutil
 import sys
+
+# =========================================================================================
+# THE BLINDNESS GUARD, added 2026-08-29 because a C2 run caught the rung leaking to it.
+#
+# This builder has always refused the TARGET and the ANCHORS by construction, which is the
+# leak everyone thinks about. It never looked at the PROSE it copies in. The standing prompt
+# contained, in the same breath as the instruction to be blind: a named earlier render, how
+# many items a previous critic filed against it, and a worked example naming this studio's
+# own headline defect - the object, the direction it was wrong in, and the offset in
+# millimetres. A judge asked to find defects had been handed one to find and another judge's
+# catch.
+#
+# The C2 run filed it itself, under NOTES ON THE BUNDLE: "that paragraph tells the judge
+# which defect to hunt and hands it a previous judge's catch ... the blindness of this rung
+# was not clean and the builder should treat it as compromised."
+#
+# So the prompt is SCANNED now, and the bundle REFUSES rather than warning - R13's shape,
+# a guard that prints a suggestion is a guard nobody types.
+#
+# WHAT IT DOES NOT CATCH, said plainly: paraphrase. "A previous round had trouble with the
+# island" carries the same leak in words no pattern here can match. These stop the
+# mechanical recurrence; the discipline is still a person's.
+_LEAK = [
+    # NOTE the missing \b at the front of the third alternative, and it is deliberate:
+    # the first version had one and therefore MISSED "trn002_mat_r34_quick", because the
+    # underscore before "mat" is a word character so there is no boundary there. The
+    # negative control caught that - which is the whole reason a guard gets one.
+    (re.compile(r"(?:\bp\d+r\d+[a-z]*\b|\btrn\d{3}[_a-z0-9]*\b|[a-z]{2,}_r\d+[a-z]*)",
+                re.IGNORECASE), "names a specific earlier render or round"),
+    (re.compile(r"\bfiled\s+\d+\s+items?\b", re.IGNORECASE),
+     "reports how many items a previous critic filed"),
+    (re.compile(r"\b\d{2,}\s*mm\b"), "quotes a measured number from a past defect"),
+    (re.compile(r"\bQUARTER TURN\b"), "names a specific past defect"),
+]
+
+
+def blindness_scan(text, where):
+    """Refuse a prompt that hands the judge history. Raises SystemExit on any hit."""
+    hits = []
+    for rx, why in _LEAK:
+        for m in rx.finditer(text):
+            hits.append((m.group(0), why))
+    if hits:
+        lines = "\n".join("    %r - %s" % (t, w) for t, w in hits[:12])
+        raise SystemExit(
+            "BUNDLE REFUSED: %s carries build history into a BLIND ask.\n%s\n"
+            "  R7c: the ask must never carry build history, hypotheses, round numbers or "
+            "another critic's answer. Fix templates/cold-critic-prompt.md, not this check."
+            % (where, lines))
 
 PROMPT = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__)))), "templates", "cold-critic-prompt.md")
@@ -216,6 +266,8 @@ def build(render, out_dir, note=""):
     d = os.path.join(out_dir, f"critique-{stem}")
     os.makedirs(d, exist_ok=True)
     shutil.copy2(render, os.path.join(d, os.path.basename(render)))
+    blindness_scan(open(PROMPT, encoding="utf-8").read(),
+                   "templates/cold-critic-prompt.md")
     shutil.copy2(PROMPT, os.path.join(d, "PROMPT.md"))
     with open(os.path.join(d, "README.md"), "w", encoding="utf-8") as fh:
         fh.write(README.format(render=os.path.basename(render)))

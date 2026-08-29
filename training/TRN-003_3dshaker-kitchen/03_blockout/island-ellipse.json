@@ -1,0 +1,15 @@
+{
+ "centre_x_mm": 2318,
+ "centre_y_mm": 1344.366132535425,
+ "half_x_mm": 1399.9999999999948,
+ "half_y_mm": 3499.9999999999995,
+ "plane_z_mm": 827,
+ "n_points": 488,
+ "radial_resid_mean_mm": 605.5503423317077,
+ "radial_resid_p95_mm": 1631.4637092217438,
+ "u_range": [
+  430,
+  1078
+ ],
+ "far_tip_is_extrapolated": true
+}

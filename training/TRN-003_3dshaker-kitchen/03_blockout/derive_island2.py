@@ -36,9 +36,37 @@ FWD = np.array([-math.sin(YAW), -math.cos(YAW), 0.0])
 RGT = np.array([FWD[1], -FWD[0], 0.0])
 C = np.array([RS.CAM_TO_KITCHEN_WALL, RS.CAM_Y, RS.CAM_H])
 
-# read off z-drums.png (crop 430,1300 - 1010,1760, 25 px grid)
-NEAR = dict(u_left=700.0, u_right=925.0, v_base=1722.0)
-FAR = dict(u_left=505.0, v_base=1662.0)
+# SILHOUETTE COLUMNS, sub-pixel. CORRECTED 2026-08-29 (second pass, then confirmed by an
+# independent adversarial re-measure that reproduced every number and supplied the positive
+# control the first read never had).
+#
+# u_right WAS 925.0 AND THERE IS NO EDGE THERE. Mean |grad_u| over eleven 40-row bands from
+# v=1320 to v=1760, searched across u in [900,950]: the strongest gradient anywhere in that
+# window is 0.4-2.3 grey levels per px. At u=891 in the same bands: 4.2-83.2. The raw row at
+# v=1360 reads L=13 at u=890, 177 at u=895, then flat 178..184 all the way to u=960 - a
+# 165-level step at 891 and nothing at 925. The number was read off a 25 px grid by eye.
+#
+# WHAT IT COST: the drum came out 231 mm in radius instead of ~197, i.e. 15-19% too fat in
+# every frame this lane has produced, and the same over-wide silhouette moved the island's
+# centre-line. The three OTHER pixel readings in this block reproduce within 2 px
+# (FAR u_left 505 -> 506.98, NEAR u_left 700 -> 702.00), which is the positive control that
+# makes the 34 px miss a finding rather than instrument noise.
+#
+# The vertical-silhouette check that should have caught it: a vertical cylinder under a
+# level camera has vertical silhouettes, and the corrected right edge holds 890.95 / 891.25
+# / 891.64 / 891.50 / 892.27 across five row bands spanning the drum's whole 365 px height
+# (slope +0.002 px per row). 925 holds nothing to check.
+NEAR = dict(u_left=702.00, u_right=890.95, v_base=1722.0)
+FAR = dict(u_left=506.98, v_base=1662.0)
+# STILL NOT MEASURED HERE, and it matters: the FAR drum's silhouette WIDTH. The code below
+# PREDICTS it from the near drum's radius, and poses.json then stores that prediction as if
+# it were a reading - which is why recurrence.solve reports width_agreement = 0.0000%, an
+# exact zero, on both instances. A self-check between a number and the number it was
+# computed from is not a check. An independent read of the far right silhouette wanders
+# 173.3 / 175.8 / 178.8 / 182.7 / 183.5 px across five row bands (5.6% spread) because it is
+# a ~15 px ramp into a bright sliver of background, not a step - so the honest statement is
+# that the far drum corroborates the near one to about 6%, not to 0%.
+FAR_W_MEASURED = 178.7      # MEASURED, sd across row bands ~5.6% - weak, and said so
 
 
 def depth(v_base):

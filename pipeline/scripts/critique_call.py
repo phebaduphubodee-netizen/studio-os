@@ -122,11 +122,21 @@ def main():
     # binaries stay under _private/**, text (PROMPT/ANSWER/README) lives under
     # training/**. Resolve both; the answer archives on the text side.
     hits = [p for p in REPO.glob(f"_private/**/critique/{a.bundle}") if p.is_dir()]
-    if len(hits) != 1:
-        sys.exit(f"bundle '{a.bundle}' matched {len(hits)} render dirs — need exactly 1")
-    bundle = hits[0]
     text_hits = [p for p in REPO.glob(f"training/**/critique/{a.bundle}") if p.is_dir()]
-    text_dir = text_hits[0] if len(text_hits) == 1 else bundle
+    if not hits and len(text_hits) == 1:
+        # A TRAINING LANE WHOSE RENDER IS NOT UNDER _private IS STILL A VALID BUNDLE.
+        # The two-directory split exists because the DELIV lane's binaries are the
+        # friend's delivered client work and may never be committed. A training lane
+        # reproducing a PUBLIC magazine photograph has no such binary: its renders sit
+        # under training/ and are gitignored there by .gitignore:52, which is the same
+        # protection by a different route. Refusing this bundle sent the operator off to
+        # call the API by hand, which is exactly how a guard stops being used.
+        bundle = text_dir = text_hits[0]
+    else:
+        if len(hits) != 1:
+            sys.exit(f"bundle '{a.bundle}' matched {len(hits)} render dirs — need exactly 1")
+        bundle = hits[0]
+        text_dir = text_hits[0] if len(text_hits) == 1 else bundle
     render = bundle / (a.bundle.replace("critique-", "") + ".png")
     if not render.exists():
         sys.exit(f"bundle render {render.name} missing — the ONLY image allowed out")

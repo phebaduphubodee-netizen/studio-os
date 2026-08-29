@@ -16,18 +16,19 @@
       11801.0
      ]
     },
-    "size_mm": 462.69898697539793,
-    "_what": "the two bronze drums on the island base, off z-drums.png",
+    "size_mm": 388.5643270622287,
+    "_what": "the two bronze drums on the island base. BOTH silhouette widths are measured off the plate; neither is predicted from the other.",
+    "_conditioning": "near edge sd 0.04 px (a 165-level step); far edge sd ~5.6% across row bands (a ~15 px ramp into background). They are not equally trustworthy and the file says so.",
     "instances": [
      {
-      "u_centre": 607.7315484804631,
+      "u_centre": 596.33,
       "v_base": 1662.0,
-      "w_px": 205.46309696092618
+      "w_px": 178.7
      },
      {
-      "u_centre": 812.5,
+      "u_centre": 796.475,
       "v_base": 1722.0,
-      "w_px": 225.0
+      "w_px": 188.95000000000005
      }
     ]
    },

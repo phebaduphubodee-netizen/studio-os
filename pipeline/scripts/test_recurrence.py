@@ -108,25 +108,57 @@ check("three instances off their own line are refused as not a repeated row",
       "not a repeated row" in col, col)
 
 # ------------------------------------------------------------------ THE REAL DRUMS
-# Readings from training/TRN-003_3dshaker-kitchen/03_blockout/derive_island2.py,
-# taken off z-drums.png on a 25 px grid.
-DRUM_CAM = rc.Camera(f_px=4236.0, ppx=720.0, ppy=1031.0, height_mm=1421.0,
-                     yaw_deg=30.85, origin=(6971.0, 11801.0))
-NEAR = dict(u_centre=(700.0 + 925.0) / 2.0, v_base=1722.0, w_px=225.0)
-d_near = DRUM_CAM.depth_from_base(NEAR["v_base"])
-R = NEAR["w_px"] * d_near / (2 * DRUM_CAM.f)
-FAR_D = DRUM_CAM.depth_from_base(1662.0)
-w_far = 2 * R * DRUM_CAM.f / FAR_D
-FAR = dict(u_centre=505.0 + w_far / 2.0, v_base=1662.0, w_px=w_far)
-rd = rc.solve(DRUM_CAM, [FAR, NEAR], size_mm=2 * R, name="bronze drums")
-check("THE REAL DRUMS reproduce the 87.3 deg heading that overturned the build",
-      86.8 < rd["heading_deg"] < 87.8, f"{rd['heading_deg']:.2f}")
-check("...and their spacing lands on the 938-978 mm the lane measured",
-      930 < rd["spacing_mm"] < 990, f"{rd['spacing_mm']:.0f}")
-check("...and the drum diameter comes out near the 462 mm in room_spec",
-      450 < 2 * R < 495, f"{2 * R:.0f}")
-check("...and the implied vanishing column is nowhere near family B's 7814",
-      rd["vp_u"] < 0, f"{rd['vp_u']:.0f}")
+# CORRECTED 2026-08-29, and this block was a live instance of the defect it tests for.
+#
+# It used to hardcode NEAR = (700 + 925)/2 with w_px = 225 and then assert "the drum
+# diameter comes out near the 462 mm in room_spec". Both numbers were wrong and the test
+# was pinning them: u = 925 is not an edge on the plate (the strongest gradient anywhere
+# in u in [900,950] is 0.4-2.3 grey levels per px; at u = 891 it is 4.2-83.2), the near
+# drum is 188.9 px wide not 225, and room_spec now says DRUM_R = 194, i.e. 389 mm dia.
+# A test that asserts a refuted number does not merely fail to help - it makes the fix
+# look like the regression.
+#
+# It also built the FAR instance by COMPUTING its width from the near drum's radius, which
+# is exactly the circularity this module's own self-check exists to catch: fed that pair,
+# solve() reported width_agreement = 0.0000%, an exact zero, because the quantity being
+# checked had been manufactured from the quantity it was checked against. Both widths are
+# now independent readings, and the agreement is a real 3.4%.
+#
+# THE READINGS AND THE EXPECTED SIZE NOW COME FROM room_spec ITSELF rather than being
+# retyped here, so this test cannot drift away from the lane again.
+_TRN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                    "training", "TRN-003_3dshaker-kitchen", "03_blockout")
+sys.path.insert(0, _TRN)
+try:
+    import room_spec as _RS
+    import derive_island2 as _DI2
+except Exception as e:                                   # the lane is optional for CI
+    print(f"  [--] the real-drum block needs training/TRN-003 ({e}) - skipped")
+    _RS = None
+
+if _RS is not None:
+    DRUM_CAM = rc.Camera(f_px=4236.0, ppx=720.0, ppy=1031.0, height_mm=_RS.CAM_H,
+                         yaw_deg=30.85,
+                         origin=(_RS.CAM_TO_KITCHEN_WALL, _RS.CAM_Y))
+    near_w = _DI2.NEAR["u_right"] - _DI2.NEAR["u_left"]
+    NEAR = dict(u_centre=(_DI2.NEAR["u_left"] + _DI2.NEAR["u_right"]) / 2.0,
+                v_base=_DI2.NEAR["v_base"], w_px=near_w)
+    FAR = dict(u_centre=_DI2.FAR["u_left"] + _DI2.FAR_W_MEASURED / 2.0,
+               v_base=_DI2.FAR["v_base"], w_px=_DI2.FAR_W_MEASURED)
+    R = near_w * DRUM_CAM.depth_from_base(NEAR["v_base"]) / (2 * DRUM_CAM.f)
+    rd = rc.solve(DRUM_CAM, [FAR, NEAR], size_mm=2 * R, name="bronze drums")
+    check("THE REAL DRUMS reproduce the ~87 deg heading that overturned the build",
+          86.0 < rd["heading_deg"] < 88.0, f"{rd['heading_deg']:.2f}")
+    check("...and their spacing lands on the 930-990 mm the lane measured",
+          930 < rd["spacing_mm"] < 990, f"{rd['spacing_mm']:.0f}")
+    check("...and the diameter agrees with room_spec's OWN DRUM_R, not a typed number",
+          abs(2 * R - 2 * _RS.DRUM_R) < 12, f"{2*R:.0f} vs spec {2*_RS.DRUM_R}")
+    check("...and the far drum's width is an INDEPENDENT reading, so the self-check "
+          "can actually fail (0.0000% would mean it cannot)",
+          0.0005 < rd["instances"][0]["width_agreement"] < 0.05,
+          f"{rd['instances'][0]['width_agreement']:.4f}")
+    check("...and the implied vanishing column is nowhere near family B's 7814",
+          rd["vp_u"] < 0, f"{rd['vp_u']:.0f}")
 
 bad_rows = [r for r in RESULTS if not r[1]]
 for name, ok, detail in RESULTS:

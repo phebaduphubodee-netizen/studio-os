@@ -124,20 +124,41 @@ def drum_block():
     reference heading itself, so the number in the gate and the number in the
     measurement cannot drift apart — and recurrence's own self-check (base-row
     depth against silhouette-width depth) has to pass before the pose row can.
-    Readings are off z-drums.png on a 25 px grid; see derive_island2.py.
+    Readings come from derive_island2.py, which is the single copy.
+
+    REWRITTEN 2026-08-29, and the reason is the sharpest thing this lane found all day.
+
+    The version below used to COMPUTE the far drum's silhouette width from the near drum's
+    radius:  R = 225 * d_near / 2f ;  w_far = 2R * f / d_far.  recurrence.solve's whole
+    claim to be a measurement is its self-check - base-row depth against silhouette-width
+    depth, refuse if they disagree by more than 5%. Fed this block it reported
+    width_agreement = 0.0000%, EXACTLY zero, on both instances, because the quantity being
+    checked had been manufactured from the quantity it was checked against. A rung that
+    cannot fail is not a rung, and this one was built the previous day as the fix for a
+    different unfalsifiable number.
+
+    Both widths are now READ. And they do NOT agree to 0%: the near silhouette is a
+    165-level step and reads to sd 0.04 px, while the far one is a ~15 px ramp into a
+    bright sliver of background and wanders 5.6% across row bands. The predicted-vs-read
+    disagreement is 3.3%, inside recurrence's 5% bar - which is now a real pass.
     """
     import recurrence as RC
     cam = dict(f_px=4236.0, ppx=720.0, ppy=1031.0, height_mm=RS.CAM_H,
                yaw_deg=30.85, origin=[RS.CAM_TO_KITCHEN_WALL, RS.CAM_Y])
     c = RC.Camera(**cam)
-    d_near = c.depth_from_base(1722.0)
-    R = 225.0 * d_near / (2 * c.f)
-    w_far = 2 * R * c.f / c.depth_from_base(1662.0)
+    import derive_island2 as DI2          # the single copy of the pixel readings
+    near_w = DI2.NEAR["u_right"] - DI2.NEAR["u_left"]
+    R = near_w * c.depth_from_base(DI2.NEAR["v_base"]) / (2 * c.f)
     return dict(camera=cam, size_mm=2 * R,
-                _what="the two bronze drums on the island base, off z-drums.png",
-                instances=[dict(u_centre=505.0 + w_far / 2.0, v_base=1662.0, w_px=w_far),
-                           dict(u_centre=(700.0 + 925.0) / 2.0, v_base=1722.0,
-                                w_px=225.0)])
+                _what="the two bronze drums on the island base. BOTH silhouette widths are "
+                      "measured off the plate; neither is predicted from the other.",
+                _conditioning="near edge sd 0.04 px (a 165-level step); far edge sd ~5.6% "
+                              "across row bands (a ~15 px ramp into background). They are "
+                              "not equally trustworthy and the file says so.",
+                instances=[dict(u_centre=DI2.FAR["u_left"] + DI2.FAR_W_MEASURED / 2.0,
+                                v_base=DI2.FAR["v_base"], w_px=DI2.FAR_W_MEASURED),
+                           dict(u_centre=(DI2.NEAR["u_left"] + DI2.NEAR["u_right"]) / 2.0,
+                                v_base=DI2.NEAR["v_base"], w_px=near_w)])
 
 
 def main():

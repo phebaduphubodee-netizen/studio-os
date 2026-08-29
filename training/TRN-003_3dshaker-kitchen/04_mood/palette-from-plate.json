@@ -1,0 +1,317 @@
+{
+ "_what": "The tutorial's material split (16:30-22:45), as measured rows instead of eyedropper clicks. One row per tonal family; materials_trn003.py REFUSES to build a family that has no row here.",
+ "_the_trap_this_file_is_built_around": [
+  "EVERY sRGB TRIPLE BELOW IS AS PHOTOGRAPHED. It is illuminant x albedo under a warm low sun, NOT an albedo, and typing it into a Base Color field is the mistake the number invites. The plate's ceiling reads 208,189,163 - strongly warm - because the light is warm; the ceiling is white.",
+  "So the rows carry TWO fields and they mean different things. `target_srgb` is what the PLATE shows at that patch and is the thing our render is scored against. `srgb_hex` is the albedo we feed Blender, and it is SOLVED so that the rendered patch lands on the target - see palette_solve.py. Until that solve has run, `albedo_solved` is false and `srgb_hex` is a seed, not a measurement.",
+  "AND THE SOLVE IS A CALIBRATION, NOT A CHECK. Once albedo is fitted so our patch matches the plate's patch, 'our patch matches the plate' proves nothing - it is true by construction. The checks live elsewhere: shadow_delta's lit-minus-shadow on one material, the critics' eyes, and the patches NOT used in the fit."
+ ],
+ "_source": "Patch means measured on 01_reference/plates/REF-HERO.png through the solved camera, 2026-08-29. Patch standard deviations are recorded because a mean over a dirty box is not a reading: the red leather chair (sd 25-45 per channel, hue moving 355 to 16 deg across two patches) and the black tap (sd 78-83, the box caught background) FAILED that bar and are recorded as unmeasured rather than reported anyway.",
+ "_tutorial_note": "His split order, followed: darker base first, then lighter (marble, ceiling), then BLACK with a LOWERED IOR so the black reads deep, then the accent, then an even whiter shade, then metal, then a wood that is 'a bit more red'. Greenery and the sheer get a Translucent BSDF added to the Principled and mixed back, with the translucent colour brighter, warmer and more saturated than the diffuse one.",
+ "families": {
+  "base": {
+   "what": "the override colour every mass starts from - the plate's Photoshop average-blur",
+   "srgb_hex": "#A39583",
+   "target_srgb": [
+    163,
+    149,
+    131
+   ],
+   "roughness": 0.4,
+   "ior": 1.45,
+   "albedo_solved": false,
+   "source": "04_mood/reference-average-color.json - byte-identical to the hex he eyedroppers at 15:00"
+  },
+  "plaster": {
+   "what": "set-plaster ceiling and the walls behind the camera",
+   "srgb_hex": "#E8E6E2",
+   "target_srgb": [
+    208,
+    189,
+    163
+   ],
+   "patch_sd": [
+    1.8,
+    1.1,
+    1.4
+   ],
+   "roughness": 0.85,
+   "ior": 1.45,
+   "albedo_solved": false,
+   "note": "FLATTEST SURFACE IN THE FRAME by an order of magnitude - sd 1.8/1.1/1.4 over 11,200 px. At this camera a plaster map may render as literally nothing, which is why no texture row is spent on it yet."
+  },
+  "white": {
+   "what": "the white lacquer upper cabinet bank",
+   "srgb_hex": "#E0F1F9",
+   "target_srgb": [
+    215,
+    212,
+    205
+   ],
+   "patch_sd": [
+    6.1,
+    6.7,
+    8.0
+   ],
+   "roughness": 0.28,
+   "ior": 1.5,
+   "specular": 0.55,
+   "albedo_solved": true,
+   "note": "saturation 0.047 over 16,800 px. No map: buying a white-lacquer texture to render six grey levels of variation would be spending on something the picture cannot show.",
+   "solve_ratio": [
+    1.0859,
+    0.9894,
+    0.8741
+   ],
+   "solved_against": "p6_texture.png"
+  },
+  "black": {
+   "what": "the double oven, the stool frames and seats, the glazing frames and mullions",
+   "srgb_hex": "#191410",
+   "target_srgb": [
+    31,
+    22,
+    13
+   ],
+   "patch_sd": [
+    12.9,
+    9.9,
+    9.1
+   ],
+   "roughness": 0.45,
+   "ior": 1.28,
+   "albedo_solved": false,
+   "note": "IOR LOWERED ON PURPOSE - the tutorial at 21:00, 'for this color I'm also going to lower the IOR to make the black color more deep'. And the class name in the earlier brief was wrong: the stool tubes carry a sharp continuous specular streak down every member, so they are SEMI-GLOSS lacquered steel, not matte. Only the tap is matte, and the tap is not built yet.  ROUGHNESS RAISED 0.22 -> 0.45 on 2026-08-29, and the reason is a refusal rather than a preference: palette_solve read the plate's oven at 14,14,14 and ours at 186,159,129, a 4x-clamped ratio, and REFUSED the family with 'a 4x difference on a diffuse surface is not an albedo error - look for specular'. It was specular. Our oven is a flat glossy plane aimed straight at a 12.6 m window; the plate's is recessed glass seen at a grazing angle. Raising the roughness is the first-order fix; the recess is geometry this blockout does not have and it is a declared gap."
+  },
+  "stone_marble": {
+   "what": "the splashback, the bench top and the island slab",
+   "srgb_hex": "#7A8591",
+   "target_srgb": [
+    180,
+    179,
+    177
+   ],
+   "patch_sd": [
+    7.9,
+    8.0,
+    9.1
+   ],
+   "roughness": 0.18,
+   "ior": 1.55,
+   "sss": [
+    1.0,
+    0.7,
+    0.5
+   ],
+   "sss_scale": 0.03,
+   "rough_ramp": [
+    0.2,
+    0.8
+   ],
+   "rough_lo": 0.08,
+   "rough_hi": 0.4,
+   "tex_tint": 0.9,
+   "albedo_solved": true,
+   "note": "saturation 0.018 - a near-neutral pale grey-white with soft directional veining. The island slab top reads slightly warmer (192,187,178, sat 0.073) than the splashback; one family for now, and that difference is a candidate split if the frame asks for it. SSS is the tutorial's 26:00 step: weight 1, radius about (1, 0.7, 0.5), scale ~3 cm, with the colour texture through a ColorRamp as the WEIGHT so pale stone transmits and dark veins do not.",
+   "solve_ratio": [
+    1.9129,
+    1.6473,
+    1.3899
+   ],
+   "solved_against": "p6_texture.png"
+  },
+  "stone_travertine": {
+   "what": "the island's travertine body",
+   "srgb_hex": "#B4A893",
+   "target_srgb": [
+    199,
+    179,
+    158
+   ],
+   "patch_sd": [
+    7.1,
+    7.6,
+    8.5
+   ],
+   "roughness": 0.45,
+   "ior": 1.5,
+   "albedo_solved": true,
+   "note": "saturation 0.205. DECLARED GAP on the map: Poly Haven's whole 854-asset texture catalogue returns ZERO hits for travertine, searched over name, tags, categories and description. The stand-in map is grey_cartago_01, a veined limestone, used for BEDDING PATTERN ONLY with the colour driven from this row.",
+   "solve_ratio": [
+    1.2674,
+    1.2813,
+    1.3537
+   ],
+   "solved_against": "p6_texture.png"
+  },
+  "wood_oak": {
+   "what": "the tall cabinet bank, its plinth, the oven and fridge door leaves",
+   "srgb_hex": "#463725",
+   "target_srgb": [
+    129,
+    103,
+    77
+   ],
+   "patch_sd": [
+    13.7,
+    14.8,
+    15.8
+   ],
+   "roughness": 0.42,
+   "ior": 1.48,
+   "tex_tint": 0.8,
+   "albedo_solved": true,
+   "note": "GRAIN IS STRAIGHT AND VERTICAL - measured 90.0 / 90.0 / 90.0 deg on three door patches against a projected-vertical prediction of exactly 90.00. That is what rules out oak_veneer_01, the oak already on this disk, which is plain-sawn CATHEDRAL figure. No tint fixes a figure. Door leaves measure 749 mm and 669 mm.",
+   "solve_ratio": [
+    2.7336,
+    2.9582,
+    3.4423
+   ],
+   "solved_against": "p6_texture.png"
+  },
+  "wood_floor": {
+   "what": "the engineered oak plank floor",
+   "srgb_hex": "#F9EFF5",
+   "target_srgb": [
+    121,
+    102,
+    87
+   ],
+   "patch_sd": [
+    7.2,
+    6.2,
+    5.7
+   ],
+   "roughness": 0.35,
+   "ior": 1.47,
+   "normal_strength": 0.4,
+   "albedo_solved": true,
+   "note": "Patch taken IN SHADE on purpose - the lit bands are the sun, not the floor. PLANKS RUN ALONG WORLD +X, measured: dominant orientation 173-175 deg in six calm windows against a projected prediction of 173.1-174.1, with the +Y score 5-10x lower at every one. Positive control in the same image: windows dominated by the sun bands return +Y instead (10-14 deg found against 11.0-15.8 predicted), which is where a shadow cast through the glazing must lie. PLANK WIDTH WAS REFUSED, not measured - no autocorrelation maximum anywhere in 80-400 mm on three world-Y profiles; the only repeating feature sat at the cut-off of the detrend window, i.e. it was the filter's shape. The map's own pitch is 212 mm (128 px fundamental, ac 0.723, 8 boards across the declared 1700 mm tile), which is a stocked width.",
+   "solve_ratio": [
+    0.879,
+    0.5877,
+    0.3604
+   ],
+   "solved_against": "p6_texture.png"
+  },
+  "metal_bronze": {
+   "what": "the two bronze drums under the island slab",
+   "srgb_hex": "#8A6A45",
+   "target_srgb": [
+    85,
+    58,
+    30
+   ],
+   "target_srgb_lit": [
+    124,
+    96,
+    64
+   ],
+   "patch_sd": [
+    13.2,
+    11.5,
+    11.4
+   ],
+   "metallic": 1.0,
+   "roughness": 0.34,
+   "ior": 1.45,
+   "albedo_solved": false,
+   "note": "NOT A GAP AND NOT A PURCHASE. Poly Haven returns zero for brass, bronze, copper or stainless and its whole 26-asset Metal category is rust and corrugated iron - but an axially brushed metal is R8's BUILD case, generated from measurable numbers rather than free-form. MEASURED: the brush streaks run at 88-90 deg in the image on both drums, i.e. along the cylinder axis. Shade hue 31 deg sat 0.650; lit sat 0.488."
+  },
+  "sheer": {
+   "what": "the linen sheer across the glazing",
+   "srgb_hex": "#E6DFD3",
+   "translucent_hex": "#F2E4CC",
+   "target_srgb": [
+    210,
+    204,
+    189
+   ],
+   "patch_sd": [
+    20.9,
+    22.6,
+    27.3
+   ],
+   "roughness": 0.9,
+   "ior": 1.35,
+   "translucency": 0.45,
+   "albedo_solved": false,
+   "note": "DECLARED DEPARTURE, recorded rather than done silently: the only linen on this disk (rough_linen) is BLUE and OPAQUE, and a sheer transmits. Its nor_gl and Rough are used as weave micro-relief only; colour and transmission come from this row. Re-tinting a vendor's albedo is the exact axis the sighted panel has scored this studio down on before, so it is named here instead of hidden in a node."
+  },
+  "greenery": {
+   "what": "the canopy outside the glazing - geometry that exists to CAST, not to be seen",
+   "srgb_hex": "#3E4A22",
+   "translucent_hex": "#7C8A34",
+   "target_srgb": null,
+   "roughness": 0.75,
+   "ior": 1.35,
+   "translucency": 0.35,
+   "albedo_solved": false,
+   "note": "NO TARGET PATCH: the plate's greenery is blown-out sunlit foliage behind a sheer, and a mean over it is not a reading. Colour follows the tutorial's own rule instead (18:30) - 'very often the colour of the greenery is actually more yellow than green' and 'make it darker than you would think it should be' - and is declared as an ASSERTION, not a measurement."
+  },
+  "glass": {
+   "what": "the glazing",
+   "srgb_hex": "#FFFFFF",
+   "target_srgb": null,
+   "roughness": 0.0,
+   "ior": 1.28,
+   "albedo_solved": true,
+   "note": "His 28:15 exactly: white, zero roughness, transmission 1, IOR lowered for fewer reflections, and the DIFFUSE, GLOSSY and SHADOW rays disabled so putting the glass back does not move the lighting that was already set."
+  }
+ },
+ "light": {
+  "_what": "THE MOOD, SETTLED - the tutorial's stage 3b as numbers instead of shell flags.",
+  "_how_each_number_was_reached": [
+   "sun_w / hdri_strength / exposure: found by sweep and scored with shadow_delta on the floor. The rung compares lit-minus-shadow on ONE material, and it only counts once the two frames sit at the same place on the tone curve, so the exposure is SPENT matching the lit level and is no longer free to move the answer. At these values the floor reads lit 155 / shadow 66 = 90 against the plate's 176 / 100 = 76: PASS at +13 on a tolerance of 25.",
+   "sheer_is_the_fill: THE FINDING OF THIS ROUND. The tutorial hides the curtain during the mood stage (13:08). With it hidden, NOTHING reached the plate's ratio - the floor delta sat at 128-154 across a 7.5x sun sweep AND a 10x sky sweep, because in this room the shadow is lit by sun BOUNCE, not by sky: turning the sun down turned the fill down with it. Put the sheer back with its own shader and the same scene lands at 90. In this plate the sheer is not a decoration, it is the fill light, and the mood cannot be settled without it.",
+   "sun_rgb: MEASURED by palette_solve. Splitting each family's plate-vs-render ratio into a LEVEL (which belongs to the albedo) and a CHROMA (which belongs to the light) gave our light as 1.258 / 1.005 / 0.845 times the plate's - 49% warm on R/B. This correction is the inverse of that chroma, applied at half strength so the loop converges rather than oscillates.",
+   "sun_az: STILL A DIAL, and it is the one number in this block that is not measured. sun_solve.py returns 21.58 deg from four floor-shadow edges, but those four supposedly parallel edges disagree by 7.75 deg and it averages them anyway, and at 21.58 deg no beam reaches the floor the camera sees. 90 deg is a knob. The rung that would settle it is a gnomon - a vertical object whose base AND shadow tip are both visible gives the direction UNAMBIGUOUSLY and the elevation with it - and it is not built."
+  ],
+  "sun_w": 450.0,
+  "sun_el": 26.0,
+  "sun_az": 90.0,
+  "sun_az_status": "DIAL - not measured. See _how_each_number_was_reached.",
+  "sun_rgb": [
+   0.784,
+   0.997,
+   1.1945
+  ],
+  "hdri_strength": 2.0,
+  "hdri_sat": 1.35,
+  "exposure": 0.3,
+  "keep_sheer": true,
+  "measured_light_chroma_vs_plate": [
+   1.139,
+   1.002,
+   0.91
+  ],
+  "shadow_delta_at_these_values": {
+   "patch": "floor 250 1620 1440 1900",
+   "plate": [
+    176,
+    100,
+    76
+   ],
+   "ours": [
+    152,
+    56,
+    96
+   ],
+   "verdict": "PASS +20 (tol 25), lit level 24 inside the 30-level curve-match window"
+  },
+  "_iterations": [
+   {
+    "sun_rgb": [
+     0.893,
+     0.999,
+     1.087
+    ],
+    "chroma": [
+     1.139,
+     1.002,
+     0.91
+    ],
+    "note": "iteration 2: the light chroma error fell 49%->25% after iteration 1"
+   }
+  ]
+ }
+}
