@@ -3582,6 +3582,34 @@
    "notes": null,
    "watched_at": null,
    "distilled_to": null
+  },
+  {
+   "id": "dHS4u9YaIDw",
+   "url": "https://www.youtube.com/watch?v=dHS4u9YaIDw",
+   "title": "How to Make a Realistic Interior in Blender (New Technique)",
+   "channel": "3D Shaker",
+   "minutes": 36.7,
+   "views": null,
+   "g_items": [
+    "G10",
+    "G4",
+    "G6",
+    "G8"
+   ],
+   "priority": "must",
+   "why": "The only END-TO-END build in the corpus: one photograph to a finished frame, with the stage order stated out loud and defended - reference, camera solve, block out the WHOLE scene, mood on one grey override, material split, texture, post. It is the G10 process item and it doubles as G4 (an overcast HDRI first, the sun added separately, and the reason: 'we still need to leave some space for the sun') and G6 (reflections before colour, and why). It was not queued by the ranking process - the owner named it for TRN-003 and it was followed by DOING it, not summarising it, which is why its distillation carries measurements from our own reproduction alongside quotes from the video.  ||  ENTERED OUTSIDE THE RANKING PROCESS: named by the owner for the TRN-003 round, not surfaced by the harvest. Recorded here because the ledger's watched/distilled counters print at every session open, and a video watched off-ledger makes them wrong - which is the queue-with-no-consumer defect pointed at the counter itself. Transcript came from youtube-transcript-api (805 segments); the watch skill's caption path returned none for this video and its Whisper fallback has no key on this machine.  ||  SECOND SUCCESSOR, which this row's single-path field cannot hold: the PROCESS half went to knowledge/brand-standards/an-instrument-that-cannot-fail.md. Both successors are named in the DISTILLATION-LEDGER row for the staged unit, where multiple successors are allowed and every pin is verified present.",
+   "risk": "Its post stage runs a GENERATIVE AI upscaler over the finished frame, four passes at rising creativity, painting in what the artist likes. The published result is therefore substantially generated, and any comparison of a hand-built render against it is a comparison against a hybrid. The modelling, lighting and shading halves are unaffected by this and are where the value is.",
+   "rank": null,
+   "primary_g": "G10",
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "TRN-003 reproduction (owner order 2026-08-29)"
+   ],
+   "status": "watched",
+   "queued_at": "2026-08-29",
+   "notes": "knowledge/_inbox/trn003-3dshaker-study/what-a-tutorial-workflow-actually-assumes.md",
+   "watched_at": "2026-08-29",
+   "distilled_to": "knowledge/rendering/measuring-a-room-from-one-photograph.md"
   }
  ],
  "title_and_channel_miss_rate": {
