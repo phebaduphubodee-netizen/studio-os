@@ -64,8 +64,16 @@ general.
   while both CAN move; once the lit lobe is against the top of the range it stops, the
   shadow lobe keeps climbing, and the difference collapses. The tutorial never meets this
   because he eyedroppers marble mid-tones by hand and would never sample a blown highlight.
-  **The fix is to make his discipline a refusal:** refuse the patch when either lobe is
-  within 7 levels of the end of the range, or more than 2% of it is pinned there.
+  **The fix is to make his discipline a refusal:** refuse the patch when either lobe's
+  MEDIAN is within about 7 levels of the end of the range, or when enough of THAT LOBE is
+  pinned at the extreme to be holding its own median there.
+  **And the threshold is per-LOBE, which cost one more correction to learn.** The first
+  version refused when 2% of the WHOLE PATCH was pinned — and it then refused the best
+  reading the lane ever produced (lit 180 / shadow 92 against a target of 176 / 100)
+  because 2% of that patch sat at pure black in deep shade under an island, while the
+  shadow lobe's median was 92 and nothing was holding it anywhere. **A guard that refuses
+  a good reading for the wrong reason is not erring safely; it is how a rung gets switched
+  off.** Wrong denominator, and a threshold far below anything that can move a median.
 * **TWO FRAMES MUST SIT AT THE SAME PLACE ON THE TONE CURVE.** AgX is steep in the
   mid-tones and flat near white, so a frame reading 232 and one reading 176 cannot have
   their differences compared. Match the LIT level with exposure first, then compare the
@@ -83,6 +91,7 @@ we could do reached the reference's shadow contrast:
 | sky/HDRI strength, sheer hidden | 0.5 → 5.0 (10×) | 152 → 145 |
 | removing the tree canopy | on → off | 150 → 134 |
 | **putting the sheer back with its own shader** | — | **90 · PASS** |
+| **and then measuring the sun instead of dialling it** | az 90 / el 26 → 92.3 / 18.3 | **88 · PASS, and the lit levels 4 apart** |
 
 **Why the sky lever did almost nothing:** in this room the shadow is lit by SUN BOUNCE, not
 by sky, so turning the sun down turns the fill down with it and the ratio barely moves. A
@@ -169,7 +178,25 @@ The charter requires naming where the reference made a CHOICE rather than a meas
   camera is placed too low… it was taken somewhere around human eye level so we will set its
   height to 1.5 m."* A round number chosen because a box felt wrong.
 * **Sun rotation: a dial** — *"adjust its rotation to have the shadows in similar way as in
-  our reference."* A direction is not something an amount can confirm.
+  our reference."* A direction is not something an amount can confirm. **AND IT DOES NOT
+  HAVE TO BE A DIAL.** A GNOMON measures the whole vector from one photograph: any vertical
+  object whose floor contact is visible in sunlight gives the azimuth (search over WORLD
+  plan angle for the darkest ray leaving the base — never read an image slope), and any
+  member of known height whose shadow feature can be located gives the elevation. Four
+  bar-stool legs here agreed to 0.55° in azimuth and 0.65° in elevation, against a
+  positive control that unprojected a known 90.000° world line to 90.214°.
+  **And the 180° ambiguity is measurable, not assertable:** along the true ray the floor is
+  CONTINUOUSLY dark from the base outward; along the opposite ray it is dark only in short
+  intervals that sit exactly on the other legs. A cast shadow is attached to its caster;
+  a row of legs is not.
+* **What a shadow-BAND line cannot do, and it is the reason the first attempt failed.**
+  Fitting the edges of sunlight bands on the floor gives a direction modulo 180° and
+  nothing else, and it is easy to fit the wrong pixels: four "parallel" edges here
+  disagreed by 7.75° at rms 6.3–10.6 px, were averaged anyway, and produced an azimuth at
+  which the ray to a lit object must cross the glazing 8.4 m outside the glass — for every
+  elevation. **The disproof needed no new measurement, only the question "where does this
+  ray enter the room?"** The lane instead read it as a rendering problem and reached for a
+  knob, which is the more expensive mistake of the two.
 * **BLOCKING THE WINDOW: a deliberate, defensible cheat, and the best line in the video**
   (14:00): *"remember that the fact that the window is there doesn't necessarily mean that
   the light should be coming from there — photographers in some cases also block the light

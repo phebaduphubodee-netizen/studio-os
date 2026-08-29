@@ -18,6 +18,8 @@ gitignored). Before/after: `06_post/out/BEFORE_AFTER.png`.
 | 9 | No ceiling texture; **the plate's own sd of 1.8 decided it** | put `"plaster"` back in `materials_trn003.TEXTURE` |
 | 10 | Post does **not** run a generative upscaler | the reasons are in `06_post/post.py`'s docstring; `pipeline/scripts/upscale.py` is the disclosed alternative |
 | 11 | `critique_bundle` **refuses** a prompt carrying build history | delete `blindness_scan`'s call site |
+| 12 | The sun is **MEASURED**: az 92.3° / el 18.3°, gnomon, four legs | `sun_az` / `sun_el` in the palette file's `light` block |
+| 13 | `shadow_delta`'s clip SHARE test is per-LOBE, not per-patch, at 25% | `CLIP_SHARE = 0.02` and divide by `v.size` again |
 
 ## SPEND
 
@@ -35,6 +37,8 @@ agent. One five-agent recon workflow with adversarial verification.
 | our light's chroma vs the plate's | not measured | 1.258/1.005/0.845 → **1.139/1.002/0.910** |
 | drum diameter | 462 mm | **389 mm** (near silhouette 188.93 px, far corroborates to 3.4%) |
 | `recurrence` width self-check | 0.0000% — could not fail | **3.4% — a reading** |
+| sun azimuth / elevation | 21.58° averaged from a 7.75° disagreement, then overridden by a dial at 90 / 26 | **92.3 ± 0.55 / 18.3 ± 0.65, gnomon** |
+| floor lit−shadow, with the measured sun | 96 (PASS +20, lit 24 apart) | **88 (PASS +12, lit 4 apart)** |
 
 ## TRIAGE — C3 (Gemini 2.5 Pro, cross-vendor)
 
@@ -106,6 +110,20 @@ of a word boundary that could not match after an underscore.
 
 **What it cannot catch, and this is not a hedge:** paraphrase. "A previous round had trouble
 with the island" leaks exactly as much and no pattern will see it.
+
+## THE ERROR IN THIS GATE'S FIRST VERSION, LEFT IN RATHER THAN QUIETLY FIXED
+
+The first version of this artifact — and the commit under it — said the sun's azimuth was
+still a dial and named the gnomon as a rung "not built". **It was built, it had finished,
+and I had not read it.** A five-agent recon fan-out was launched at the start of the round;
+four legs reported and I acted on them; the sun leg finished later and I closed the round
+without opening it. The lane then shipped a frame at az 90 / el 26 while the answer,
+92.3 / 18.3, sat in a completed result.
+
+That is the queue-with-no-consumer defect landing on this round's own instruments, and it
+cost the frame 7.7° of elevation. Recording it here because the repo's rule is that a
+finding is worth more than a clean-looking gate: **work that finishes asynchronously has to
+be read before the round closes, not after.**
 
 ## WHAT THIS GATE DOES NOT CLAIM
 

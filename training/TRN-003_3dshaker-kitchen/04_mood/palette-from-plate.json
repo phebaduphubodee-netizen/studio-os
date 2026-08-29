@@ -267,9 +267,9 @@
    "sun_az: STILL A DIAL, and it is the one number in this block that is not measured. sun_solve.py returns 21.58 deg from four floor-shadow edges, but those four supposedly parallel edges disagree by 7.75 deg and it averages them anyway, and at 21.58 deg no beam reaches the floor the camera sees. 90 deg is a knob. The rung that would settle it is a gnomon - a vertical object whose base AND shadow tip are both visible gives the direction UNAMBIGUOUSLY and the elevation with it - and it is not built."
   ],
   "sun_w": 450.0,
-  "sun_el": 26.0,
-  "sun_az": 90.0,
-  "sun_az_status": "DIAL - not measured. See _how_each_number_was_reached.",
+  "sun_el": 18.3,
+  "sun_az": 92.3,
+  "sun_az_status": "MEASURED 2026-08-29 by GNOMON, and it is no longer a dial. Four bar-stool backrest-hoop legs are vertical tubes whose floor contact is visible in sunlight; each base unprojects to the floor plane and a 1-parameter search over WORLD plan azimuth finds the darkest ray leaving it (the search parameter is a world angle, so no image slope is ever read). Four legs: 92.53 / 92.46 / 91.98 / 92.00, spread 0.55 deg. Elevation from the footrest rail's shadow offset, four routes: 17.60 / 17.96 / 18.20 / 17.55, spread 0.65 deg.",
   "sun_rgb": [
    0.784,
    0.997,
@@ -311,7 +311,27 @@
      0.91
     ],
     "note": "iteration 2: the light chroma error fell 49%->25% after iteration 1"
+   },
+   {
+    "note": "sun az 90.0 -> 92.3 and el 26.0 -> 18.3, both MEASURED by gnomon. The az was a dial that happened to land 2.3 deg from the answer; the elevation was 7.7 deg out."
    }
-  ]
+  ],
+  "sun_measurement": {
+   "azimuth_plan_deg": 92.3,
+   "azimuth_spread_deg": 0.55,
+   "elevation_deg": 18.3,
+   "elevation_spread_deg": 0.65,
+   "travel_vector": [
+    -0.0381,
+    0.9487,
+    -0.314
+   ],
+   "how_the_180_deg_ambiguity_was_BROKEN_BY_MEASUREMENT_not_by_a_sentence": "Luminance sampled along BOTH opposite rays from one base. Along +92.55 deg the floor is CONTINUOUSLY dark from the base outward (L 83..126 over 1400 mm). Along 272.55 deg it is dark only in three SHORT intervals at t = 181, 472 and 660 mm - which are exactly the independently measured base positions of the other three legs - and is bright floor (L~240) beyond the last one. A cast shadow is continuous and attached to its caster; a row of legs is not. sun_solve resolved the same ambiguity with a sentence.",
+   "positive_control": "The cabinet toe/floor junction under the tall bank is a world line along +Y, so its true heading is 90.000 deg by construction. Sub-pixel fit rms 0.11 px; unprojected heading 90.214 deg, error +0.214 deg. That is the accuracy of the unprojection on the same plane the sun was measured on. The SAME fitter on two dirtier stretches of the SAME physical line gave rms 1.6-1.7 px and 86.6-86.8 deg - rms tells you which fit to believe, and it is exactly the test sun_solve's four edges fail at rms 6.3-10.6 px.",
+   "why_the_old_21.58_deg_put_no_beam_in_frame": "It is not a small error of the same measurement, it is a different family of pixels. At 21.58 deg the plan run from the glazing (y=-432) to a lit stool base at y=4219 is 12645 mm, of which 11759 mm is in +X, so the ray must cross the glazing at x = -8615 mm - missing the glass by 8.4 m, FOR EVERY ELEVATION, because it is a plan-direction argument. That is why the previous round had to turn the azimuth into a dial.",
+   "what_the_plate_actually_measures": "h/tan(e) = 585 +-4 mm, robustly, from the joint fit of eight rail shadows. Splitting it into a height and an angle is only as good as the 191 +-8 mm footrest-rail height: h=175 -> 16.75 deg, 185 -> 17.50, 193 -> 18.25, 200 -> 19.00. If the real SP01 footrest height is ever obtained, divide 585 by it and the elevation follows.",
+   "honest_caveat_on_independence": "The four legs are nearly collinear ALONG the sun direction, so their shadows superimpose on one line: four separate bases and four clean t-ranges, but not four separate shadow lines. The structurally different check is the seat edge - a member 3x taller, a different caster, a different shadow feature - at 17.55 deg.",
+   "negative_result_reported": "Floor plank joints could NOT be measured: every fit wandered at rms ~4.2 px with headings scattering 161-172 deg. Reported rather than averaged."
+  }
  }
 }

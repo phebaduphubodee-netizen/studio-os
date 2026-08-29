@@ -1,4 +1,41 @@
 #!/usr/bin/env python3
+"""SUPERSEDED 2026-08-29 - THIS FILE'S ANSWER IS REFUTED. Kept because the way it was
+wrong is the lesson, and because a deleted file cannot warn anybody.
+
+WHAT IT RETURNS: azimuth 21.58 deg, from four sunlight-band edges on the floor.
+WHAT IS TRUE:    azimuth 92.3 +-0.5 deg, elevation 18.3 +-0.65, measured by GNOMON from
+                 four bar-stool hoop legs. The measurement lives in
+                 04_mood/palette-from-plate.json -> light.sun_measurement.
+
+THREE THINGS WRONG HERE, and each one is a shape worth carrying:
+
+1. IT AVERAGES A DISAGREEMENT. The four edges return 22.12 / 18.07 / 25.82 / 20.29 - a
+   7.75 deg spread - and this file takes the mean and reports it with no refusal. Four
+   lines that are supposed to be PARALLEL disagreeing by 7.75 deg is a finding, not a
+   dataset. The gnomon's four legs agree to 0.55 deg, which is what agreement looks like.
+
+2. ITS OWN rms SAYS NOT TO BELIEVE IT. The four edge fits carry rms 6.3-10.6 px. On the
+   same plate and the same floor plane, a clean fit runs rms 0.11 px - and the positive
+   control at that quality (the cabinet toe/floor junction, a world line along +Y whose
+   true heading is 90.000 by construction) unprojects to 90.214 deg. rms is what tells
+   you which fit to believe, and this file never looks at its own.
+
+3. IT BREAKS THE 180 DEG AMBIGUITY WITH A SENTENCE. "the shadows fall away from the
+   glazing, so the sun travels along +this heading" is an assertion. The gnomon broke it
+   with pixels: along one ray the floor is CONTINUOUSLY dark from the base outward; along
+   the opposite ray it is dark only in three short intervals sitting exactly at the other
+   three legs' measured bases, and bright floor beyond the last one. A cast shadow is
+   continuous and attached to its caster; a row of legs is not.
+
+AND THE REFUTATION THAT NEEDED NO NEW MEASUREMENT AT ALL: at 21.58 deg, the plan run from
+the glazing (y=-432) to a lit stool base at y=4219 is 12645 mm, of which 11759 mm is in
++X - so the ray must cross the glazing at x = -8615 mm, missing the glass by 8.4 m, FOR
+EVERY ELEVATION. That is why renders at this azimuth put no beam in frame, and why the
+previous round turned the azimuth into a dial instead of doubting the number. The lane had
+the disproof in its own hands for a day and read it as a rendering problem.
+
+--- the original docstring follows, unedited ---
+"""
 """sun_solve.py - the sun's AZIMUTH read off the plate's own floor shadows.
 
 The tutorial says "adjust its rotation to have the shadows in similar way as in our

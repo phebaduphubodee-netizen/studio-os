@@ -16,8 +16,16 @@ studio's pipeline asks. Every existing rung reads an ABSOLUTE level - is the duv
 0.80 of p99, is the ratio in band - and an absolute level moves when the exposure
 moves, so it can be satisfied by turning the exposure knob without the light changing
 at all. The lit-minus-shadow difference on one material is a property of the LIGHTING
-RATIO between the key and the fill, and exposure cannot fake it: raising exposure
-raises both samples together.
+RATIO between the key and the fill.
+
+CORRECTION, 2026-08-29. This paragraph used to end "and exposure cannot fake it: raising
+exposure raises both samples together." That is FALSE and the file now proves it against
+itself - same lights, same scene, only the knob moving: -2.0 -> 128 FAIL, -1.0 -> 99 PASS,
+0.0 -> 70 PASS. Raising exposure lifts both lobes only while both CAN move; once the lit
+lobe is against the top of the display range it stops and the shadow lobe keeps climbing.
+Two refusals now stand where the claim did - see the clip guard and LIT_MATCH in
+compare(). Leaving the sentence in place would have been the worst outcome: a docstring
+arguing a rung is sound while the rung's own code refuses to act on it.
 
 WHAT IT IS NOT. It cannot tell you the light is coming from the wrong place - a lamp
 in the wrong corner reproduces the same delta. Direction stays a separate question
@@ -44,7 +52,11 @@ def desaturate(path):
 
 CLIP_HI = 248.0          # a lobe whose median is above this is against the ceiling
 CLIP_LO = 6.0            # ... or against the floor
-CLIP_SHARE = 0.02        # ... or this much of the patch is pinned at the extreme
+CLIP_SHARE = 0.25        # ... or this much of THAT LOBE is pinned at the extreme, which
+                         # is the level at which the pinning can hold the lobe's own
+                         # median. It was 0.02 OF THE WHOLE PATCH for one frame and that
+                         # was wrong twice over - wrong denominator, and a threshold far
+                         # below anything that can move a median.
 
 
 def two_modes(v, bins=64, min_share=0.10, min_sep=25.0):
@@ -107,8 +119,19 @@ def two_modes(v, bins=64, min_share=0.10, min_sep=25.0):
     # THE TUTORIAL NEVER HAD THIS PROBLEM because he samples marble MID-TONES by hand and
     # would never eyedropper a blown highlight. Making his discipline a refusal is what
     # ports the measurement rather than the gesture.
-    hi_share = float((v >= 254.0).sum()) / v.size
-    lo_share = float((v <= 1.0).sum()) / v.size
+    # THE SHARE TEST BELONGS TO THE LOBE IT COULD CORRUPT, NOT TO THE WHOLE PATCH.
+    # Corrected 2026-08-29, one frame after the guard was written, by the frame that first
+    # had a MEASURED sun in it: the floor read lit 180 / shadow 92 - the closest this lane
+    # has come to the plate's 176 / 100 - and the guard refused it, because 2% of the whole
+    # patch sat at pure black in the deep shade under the island. Those pixels are a tail;
+    # the shadow lobe's median was 92 and nothing was holding it anywhere. A guard that
+    # refuses the best reading it has ever been handed is miscalibrated, and refusing for
+    # the wrong reason is not the safe direction to err in - it is how a rung gets switched
+    # off. The tests that stay are the ones that mean something: a lobe whose MEDIAN is
+    # against the wall is not a reading, and a lobe with enough of ITSELF pinned to hold its
+    # own median there is not either.
+    hi_share = float((v >= 254.0).sum()) / max(hi.size, 1)
+    lo_share = float((v <= 1.0).sum()) / max(lo.size, 1)
     if lit >= CLIP_HI or shadow <= CLIP_LO or hi_share > CLIP_SHARE or lo_share > CLIP_SHARE:
         return dict(clipped=True, shadow=shadow, lit=lit,
                     hi_share=hi_share, lo_share=lo_share,

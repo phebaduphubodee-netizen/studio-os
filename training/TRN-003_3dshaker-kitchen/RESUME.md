@@ -26,11 +26,11 @@ python 03_blockout/fit_and_overlay.py --fixed          # camera vs plate: rms 4.
 python 03_blockout/make_plan.py                        # plans + poses + the negative control
 blender -b --factory-startup -P 05_build/build_kitchen.py -- \
         --stage texture --samples 256 --res-pct 100 --passes \
-        --out 05_build/out/p8_noisy.png                # light comes from the palette file
+        --out 05_build/out/p9_sun_noisy.png                # light comes from the palette file
 blender -b --factory-startup -P 05_build/build_kitchen.py -- \
         --stage texture --samples 256 --res-pct 100 --passes --denoise \
-        --out 05_build/out/p8_denoised.png
-python 06_post/post.py 05_build/out/p8_noisy.png 05_build/out/p8_denoised.png \
+        --out 05_build/out/p9_sun_denoised.png
+python 06_post/post.py 05_build/out/p9_sun_noisy.png 05_build/out/p9_sun_denoised.png \
         --out 06_post/out/TRN003_final.png --hp-opacity 0.15 --sheet 06_post/out/BEFORE_AFTER.png
 python 04_mood/shadow_delta.py 01_reference/plates/REF-HERO.png <render> \
         --patch floor 250 1620 1440 1900
@@ -50,11 +50,13 @@ python 04_mood/palette_solve.py <render>               # report; --apply writes 
   a 12 mm one (the glazing straddling the wall datum instead of sitting in it), and a bevel
   modifier that GREW the island by 10 mm instead of rounding it.
 * **The mood is settled by a measurement, not a dial** — `04_mood/palette-from-plate.json`
-  → `light`. Floor lit/shadow reads 152/56 = 96 against the plate's 176/100 = 76, PASS at
-  +20 on a tolerance of 25, with the lit levels 24 apart (inside the 30-level curve-match
-  window). **The finding that got it there: the sheer is the fill light.** With the curtain
+  → `light`. With the MEASURED sun in, the floor reads lit 180 / shadow 92 = 88 against the
+  plate's 176 / 100 = 76 — **PASS at +12** on a tolerance of 25, with the lit levels only 4
+  apart. **The finding that got it there: the sheer is the fill light.** With the curtain
   hidden as the tutorial does it, a 7.5× sun sweep and a 10× sky sweep both stayed at
-  128–154. Put the sheer back and the same scene lands at 90.
+  128–154, because the shadow in this room is lit by sun BOUNCE and not by sky — turning the
+  sun down turns the fill down with it. Put the sheer back and the same scene lands at 90;
+  put the measured sun in as well and it lands at 88 with the levels matched.
 * **Camera 106 mm, f = 4236 px, yaw 30.85° off the kitchen wall.** 3D Shaker's own fSpy
   solve of this photo gave rotation Z −30.302°; ours −30.85°, 0.55° apart.
 * **Average-blur colour `#A39583`** — byte-identical to the hex he eyedroppers at 15:00.
@@ -104,12 +106,19 @@ python 04_mood/palette_solve.py <render>               # report; --apply writes 
 
 ## What is NOT solid — pick this up first
 
-1. **THE SUN'S AZIMUTH IS STILL A DIAL.** `sun_solve.py` returns 21.58° from four
-   floor-shadow edges that disagree with each other by **7.75°** and averages them anyway,
-   and at 21.58° no beam reaches the floor the camera sees. The frame uses 90°, which is a
-   knob. **The rung that would settle it is a gnomon** — a vertical object whose base AND
-   shadow tip are both visible gives the direction unambiguously (no mod-180 problem) and
-   the elevation with it. The stools, the drums and the tap are all candidates. Not built.
+1. ~~THE SUN'S AZIMUTH IS STILL A DIAL~~ — **CLOSED, and it was closed by the gnomon.**
+   Azimuth **92.3° ± 0.55**, elevation **18.3° ± 0.65**, from four bar-stool hoop legs whose
+   floor contact is visible in sunlight: each base unprojects to the floor plane and a
+   1-parameter search over WORLD plan azimuth finds the darkest ray leaving it, so the
+   search parameter is a world angle and no image slope is ever read. Positive control: the
+   cabinet toe/floor junction is a world line along +Y, true heading 90.000 by construction,
+   and it unprojects to 90.214° at rms 0.11 px. The 180° ambiguity was broken by pixels, not
+   by a sentence. `sun_solve.py`'s 21.58° is refuted with no new measurement needed: at that
+   azimuth the ray to a lit stool base must cross the glazing at x = −8615 mm, missing the
+   glass by 8.4 m for EVERY elevation — which is exactly why renders at it put no beam in
+   frame, and why the lane turned it into a dial instead of doubting it. **The frame now
+   reads floor lit 180 / shadow 92 = 88 against the plate's 176 / 100 = 76 — PASS at +12
+   with the lit levels 4 apart, the best this lane has produced.**
 2. **THE FRAME GOT FLATTER AS THE COLOUR SOLVE CONVERGED.** The light-chroma error fell
    49% → 25% across two iterations and the picture lost contrast and material separation
    while it did. That is a metric improving and the picture getting worse, and it is
@@ -141,6 +150,9 @@ python 04_mood/palette_solve.py <render>               # report; --apply writes 
 
 ## Standing notes from the video that are still true
 
+* **the elevation was the bigger error, not the azimuth.** The dial sat at az 90 / el 26;
+  the measurement says 92.3 / 18.3. The azimuth was accidentally within 2.3° and the
+  elevation was 7.7° out — so the number that *looked* settled was the wrong one to trust;
 * the material override turns glass opaque and blacks the room (his 10:57) — and it does the
   same to the sheer, which is why `--keep-sheer` in the mood stage renders a black frame;
 * geometry that exists to cast a shadow must be IN the sun's path, which is set by the sun
