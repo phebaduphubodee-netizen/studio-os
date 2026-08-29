@@ -4641,8 +4641,70 @@
     "STY/STY-7",
     "STY/STY-8"
    ]
+  },
+  {
+   "commit": "a1188c14c2cc4e594358960bb10eb639e510d726",
+   "verdicts": {
+    "P2": "change: the exit test's clause (3) is an OWNER-RATIFIED JUDGE CLAUSE that rests entirely on what C2 and C3 file. Today a C2 run caught the blind prompt itself leaking build history - templates/cold-critic-prompt.md named an earlier render, reported how many items a previous critic filed against it, and narrated a past defect with its offset in millimetres. Every C2 run this lane has scored clause (3) against was handed hints. The template is cleaned and critique_bundle.blindness_scan now REFUSES a bundle carrying any of it, fail-closed, with a negative control that convicts the exact text that leaked. WHAT CHANGES: clause (3) is not re-run retrospectively - that would be inventing history - but the next frame judged under it must use the cleaned prompt and the gate artifact must record which prompt version its C2 items came from. Nothing else about P2 moves.",
+    "P3": "keep: and it gained one transferable finding worth naming before it opens. shadow_delta was measured to be passable with the exposure knob ALONE - same lights, same scene, -2.0 FAIL / -1.0 PASS / 0.0 PASS - because a lit lobe against the top of the display range stops moving while the shadow lobe keeps climbing, so the difference collapses. Its own docstring argued that was impossible. P3 is the LIGHT RANGE phase; its instruments should be audited for the same shape (an absolute level a view transform can walk) before it opens. The phase itself does not change.",
+    "P4": "keep: untouched. TRN-003 is a training lane and its styling has no bearing on DELIV-001's styling density.",
+    "P5": "keep: still blocked on P2/P3/P4, and this round changed none of their conditions.",
+    "STY": "keep: untouched by this round, with one thing to carry over when it resumes. palette_solve.py showed that a per-channel albedo fit will absorb a LIGHT-colour error into the surfaces - it proposed a #ABBCF0 floor and a #98A7B5 marble, a blue kitchen that would only render correctly under one light. Splitting the ratio into a LEVEL (the albedo's) and a CHROMA (the light's) turns the hidden error into a reported number. STY signs slot colours; the same split protects those signatures from silently paying for a wrong light."
+   },
+   "changed": [
+    "P2"
+   ],
+   "note": "",
+   "done_at_review": [
+    "DRW/DRW-1",
+    "DRW/DRW-1b",
+    "DRW/DRW-2",
+    "DRW/DRW-3",
+    "DRW/DRW-4",
+    "DRW/DRW-5",
+    "P0/P0a",
+    "P0/P0b",
+    "P0/P0c",
+    "P0/P0d",
+    "P0/P0e",
+    "P0/P0f",
+    "P1/P1a",
+    "P1/P1b",
+    "P2/P2a",
+    "P2/P2b",
+    "P2/P2d",
+    "P2/P2e",
+    "P2/P2f",
+    "P2/P2g",
+    "P2/P2h",
+    "P2/P2i",
+    "P2/P2j",
+    "P2/P2k",
+    "P2/P2r-1",
+    "P2/P2r-15",
+    "P2/P2r-16",
+    "P2/P2r-17",
+    "P2/P2r-18",
+    "P2/P2r-19",
+    "P2/P2r-21",
+    "P2/P2r-24",
+    "P2/P2r-26",
+    "P2/P2r-27",
+    "P2/P2r-3",
+    "P2/P2r-4",
+    "P2/P2r-6",
+    "P2/P2r-7",
+    "P2/P2r-8",
+    "P2/P2r-9",
+    "P3/P3a",
+    "P4/P4b",
+    "STY/STY-1",
+    "STY/STY-1b",
+    "STY/STY-7",
+    "STY/STY-8"
+   ]
   }
  ],
- "last_review_commit": "2d46992b831d5eaf25fee6424c6a562e17d19f11",
+ "last_review_commit": "a1188c14c2cc4e594358960bb10eb639e510d726",
  "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
