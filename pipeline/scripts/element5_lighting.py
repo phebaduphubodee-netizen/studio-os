@@ -45,10 +45,95 @@ import suite_lighting    # _grid_in_poly + _cu_llf (the same wired lumen method)
 
 SCHEMA = "e5-layers@0.1"
 
-# The repo's own CCT->RGB anchors (build_room light lore): 2400K amber and the
-# element-1 3000K warm-white. A practical's RGB interpolates between them — no
-# third colour convention is invented (D-E5-6).
-_CCT_ANCHORS = ((2400.0, (1.0, 0.82, 0.60)), (3000.0, (1.0, 0.90, 0.80)))
+# WAS: two eyeballed anchors, 2400K (1.0,0.82,0.60) and 3000K (1.0,0.90,0.80),
+# linearly interpolated — "build_room light lore" in its own words, and the word is
+# exact: neither anchor came from a spectrum. Measured 2026-09-01 against the
+# Planckian locus, the 3000K anchor's nearest blackbody is ~5725 K, 159 mireds from
+# the temperature the spec declares, and the frame proved it: neutral plaster under
+# a room this repo labels 3000K read R-B = +13 sRGB codes where a real 3000K room
+# reads about +143. A declared CCT that the code does not emit is the "one parameter
+# carrying two things" family with the two things being the label and the light.
+#
+# The fix is the physics, not a better guess: Planck's law -> CIE 1931 XYZ -> linear
+# sRGB. This is what a Blackbody node computes, and driving lamps by temperature
+# rather than by a picked RGB is the practice the chocofur archviz course states
+# twice (parts 22 and 24) as the thing that makes a whole interior sit on physical
+# values.
+#
+# NORMALISATION IS LUMINANCE, AND THAT IS A DELIBERATE SEPARATION. Normalising to
+# max=1 would have cut the frame's brightness at the same time as its colour (sum of
+# channels 2.70 -> 1.64), so a single edit would have moved two things and no A/B
+# could say which one the eye reacted to. Watts owns brightness; this function owns
+# chromaticity only, and Y is held at 1.0 so the change is purely chromatic.
+# If a later round ever wires a real Blackbody NODE into a shader graph, re-check the
+# convention there before assuming these numbers transfer — Cycles normalises its own
+# blackbody differently.
+
+# CIE 1931 2-degree colour matching functions, multi-lobe Gaussian fit (Wyman, Sloan
+# & Shirley 2013). Accurate to ~1% of peak, which is one to two orders tighter than
+# the error being corrected here.
+_CMF_LOBES = (
+    ((1.056, 599.8, 37.9, 31.0), (0.362, 442.0, 16.0, 26.7), (-0.065, 501.1, 20.4, 26.2)),
+    ((0.821, 568.8, 46.9, 40.5), (0.286, 530.9, 16.3, 31.1)),
+    ((1.217, 437.0, 11.8, 36.0), (0.681, 459.0, 26.0, 13.8)),
+)
+
+
+def _cmf(nm):
+    """CIE 1931 x-bar, y-bar, z-bar at one wavelength in nm."""
+    out = []
+    for lobes in _CMF_LOBES:
+        total = 0.0
+        for amp, mu, s1, s2 in lobes:
+            s = s1 if nm < mu else s2
+            total += amp * math.exp(-0.5 * ((nm - mu) / s) ** 2)
+        out.append(total)
+    return out
+
+
+def blackbody_lin_rgb(cct_k, _cache={}):
+    """A blackbody at cct_k as LINEAR sRGB, normalised to luminance Y = 1.0.
+
+    PURE and deterministic. Integrates Planck's law over 360-830 nm against the CIE
+    1931 observer, converts XYZ -> linear sRGB (sRGB/Rec.709 primaries, D65), clamps
+    negative channels (temperatures below ~1900K fall outside the sRGB gamut) and
+    scales so Y = 1.0.
+
+    Self-checking anchor: 6500 K returns approximately (1.04, 0.98, 1.03) — near
+    neutral, as D65-referred sRGB must. Any edit that breaks that has broken the
+    conversion, and test_blackbody_6500k_is_neutral pins it.
+    """
+    key = round(float(cct_k), 1)
+    if key in _cache:
+        return _cache[key]
+    h, c, kb = 6.62607015e-34, 2.99792458e8, 1.380649e-23
+    X = Y = Z = 0.0
+    for nm in range(360, 831):
+        w = nm * 1e-9
+        rad = (2 * h * c * c) / (w ** 5) / (math.exp(h * c / (w * kb * key)) - 1.0)
+        cx, cy, cz = _cmf(nm)
+        X += rad * cx
+        Y += rad * cy
+        Z += rad * cz
+    r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z
+    g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z
+    b = 0.0557 * X - 0.2040 * Y + 1.0570 * Z
+    r, g, b = (v if v > 0.0 else 0.0 for v in (r, g, b))
+    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    if lum <= 0.0:                      # unreachable for any physical CCT; fail loud
+        _fail(f"blackbody at {key:.0f}K produced non-positive luminance")
+    out = tuple(round(v / lum, 4) for v in (r, g, b))
+    _cache[key] = out
+    return out
+# THE A/B CONTROL LEG, and it is a control leg ONLY — the default is the physics.
+# The distinction matters because R13 prices the other shape: "an order carried out as
+# an OPT-IN is an order that was not carried out, because nobody types the flag." Here
+# the flag selects the RETIRED behaviour so the fix can be argued against without
+# editing source (R6), which is the same precedent `--no-fabric-maps` (D-022) and
+# `--surface-legacy` already set in this repo. Set by build_room's `--cct-legacy`.
+CCT_LEGACY = False
+_RETIRED_CCT_ANCHORS = ((2400.0, (1.0, 0.82, 0.60)), (3000.0, (1.0, 0.90, 0.80)))
+
 CCT_FAMILY = (2200.0, 3000.0)   # residential warm family (residential-lighting.md)
 NOMINAL_ELECTRIC_CCT = 3000.0   # every light_warm-tinted fixture's schedule CCT
 
@@ -537,15 +622,32 @@ def coplanar_backer_skins(spec):
 
 
 def lamp_rgb(cct_k):
-    """CCT -> the repo's RGB stand-in, linear between its own 2400K/3000K anchors.
-    RAISES outside the residential warm family (PH-03 by construction)."""
+    """CCT -> the LINEAR sRGB a blackbody at that temperature actually emits.
+
+    RAISES outside the residential warm family (PH-03 by construction) — that guard
+    is unchanged and still the only thing standing between the spec and a 4000K
+    fixture in a warm room.
+
+    CHANGED 2026-09-01. This used to interpolate between two colours picked by eye,
+    and the label it returned was not the light it produced: its "3000K" is a ~5725K
+    blackbody, 159 mireds out. See blackbody_lin_rgb above for the measurement and
+    for why the normalisation is luminance rather than max. The declared cct_k now
+    governs the emitted chromaticity, which is the whole point of declaring one.
+
+    The frame this changes, at the 3000K the spec declares:
+        was (1.094, 0.985, 0.875) at Y=1  ->  R-B = +0.219
+        now (1.755, 0.849, 0.271) at Y=1  ->  R-B = +1.483   (6.8x the separation)
+    Brightness is untouched by construction (Y = 1.0 both sides); only colour moves.
+    """
     c = float(cct_k)
     if not (CCT_FAMILY[0] <= c <= CCT_FAMILY[1]):
         _fail(f"electric CCT {c:.0f}K outside the residential warm family "
               f"{CCT_FAMILY[0]:.0f}-{CCT_FAMILY[1]:.0f}K (PH-03 / one-family law)")
-    (c0, a), (c1, b) = _CCT_ANCHORS
-    t = (c - c0) / (c1 - c0)
-    return tuple(round(a[i] + t * (b[i] - a[i]), 3) for i in range(3))
+    if CCT_LEGACY:                       # A leg of the A/B only — see the constant
+        (c0, a), (c1, b) = _RETIRED_CCT_ANCHORS
+        t = (c - c0) / (c1 - c0)
+        return tuple(round(a[i] + t * (b[i] - a[i]), 3) for i in range(3))
+    return blackbody_lin_rgb(c)
 
 
 def lamp_glow(spec):
@@ -738,10 +840,19 @@ def story_scales(enabled):
 # the story is one warm pole with no counterweight, and its counterweight was
 # always specified: garden daylight through the glass behind the eye camera.
 #
-# RGB is a shade-sky stand-in (~6500 K by the same convention as _CCT_ANCHORS'
-# warm stand-ins — deliberately cooler than the eye camera's 60 W fill
-# (0.85,0.90,1.0), which the story demotes to a whisper; a pole must be
-# READABLY cool against the 2850-3000 K electrics, not a hint of it).
+# RGB is a shade-sky stand-in, deliberately cooler than the eye camera's 60 W fill
+# (0.85,0.90,1.0), which the story demotes to a whisper; a pole must be READABLY
+# cool against the 2850-3000 K electrics, not a hint of it.
+#
+# THE "~6500 K" LABEL THIS COMMENT USED TO CARRY WAS WRONG AND IS REMOVED (2026-09-01).
+# A 6500 K blackbody is very nearly NEUTRAL — blackbody_lin_rgb(6500) returns
+# (1.042, 0.984, 1.034) — so this triple is nowhere near it; inverted against the
+# locus it sits past 20000 K, and shade sky genuinely does run 7000-10000 K+. The
+# number is not being changed, because a SKY IS NOT A BLACKBODY: it is Rayleigh-
+# scattered sunlight, its chromaticity leaves the Planckian locus, and the daylight
+# locus is a different curve. The label was the defect, not the value. Kept as a
+# declared stand-in rather than converted, and deliberately NOT routed through
+# lamp_rgb — which would refuse it anyway (PH-03, electric family only).
 DAYLIGHT_RGB = (0.76, 0.87, 1.0)
 # W/m² of glass. Amplitude-bisect, both rungs recorded (p3r2 quick pair,
 # 2026-08-11): the LOUD rung at 16 proved the pole reaches the frame — the

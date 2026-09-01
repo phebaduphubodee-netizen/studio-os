@@ -601,6 +601,40 @@ def fixture_part_name(mat, base):
 _DEFAULT_LIGHT_WARM = (1.0, 0.82, 0.60)                 # gate-proven 2400 K amber (build_room legacy)
 
 
+def parse_light_warm_cct(spec):
+    """spec['light_warm_cct_k'] -> a validated float CCT, or None when absent.
+
+    WHY THIS EXISTS (2026-09-01, owner order: he looked at the D-182 A/B and said he liked
+    the warmer frame BUT that "the light is orange in one place and white in another").
+    Measured: the room carried THREE independently-authored light colours —
+        downlights + spots + sconces + cove + strips   336 W   ~5660 K   (typed light_warm)
+        nightstand lamps                                2      ~2850 K   (Planckian, D-182)
+        sun + daylight portals                                 ~7705 K   (typed DAYLIGHT_RGB)
+    and before D-182 the first two were the SAME eyeballed triple (1.0, 0.9, 0.8), so the
+    room was uniformly wrong and therefore looked consistent. Fixing one call site and not
+    the other is what made the mismatch visible — R9b's own lesson, that a rule naming the
+    things it covers will always exempt the next one, landing on a colour instead of a mass.
+
+    The deeper defect is the same one D-182 names: the spec declares a COLOUR where it means
+    a TEMPERATURE. build_room's own comment at the second call site says so outright — the
+    typed triple is described as "a 3000 K warm-white" and it is a 5660 K blackbody.
+
+    So: a spec may now declare the temperature and let the physics produce the colour. The
+    typed `light_warm` path is untouched and still valid (it is what renders when no CCT is
+    declared), because a rendered value must never change from a refactor.
+    """
+    v = (spec or {}).get("light_warm_cct_k")
+    if v is None:
+        return None
+    try:
+        c = float(v)
+    except (TypeError, ValueError):
+        raise ValueError(f"light_warm_cct_k must be a number in kelvin, got {v!r}")
+    if not (1000.0 <= c <= 20000.0):
+        raise ValueError(f"light_warm_cct_k {c} is not a plausible kelvin value")
+    return c
+
+
 def parse_light_warm(spec):
     """spec['light_warm'] -> a validated (r,g,b) tuple in [0,1], or the DEFAULT amber when absent.
 

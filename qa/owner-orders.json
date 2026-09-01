@@ -1316,6 +1316,38 @@
     }
    ],
    "note": "Third cross-project observation (after R8, R9). Answer key pre-registered from ink reads BEFORE readers ran; interpreter proven with positive+negative controls before the planner saw it. || CLOSED 2026-08-31 same session: B = 6/6 readers, 0 WRONG in 90 reads, median 2.2mm, both traps + bed-head EAST caught by all — the reading half transfers. A2 modelling = 2 rounds, still NO-DIFFERENT-PRODUCT at stop-loss — thin-vocabulary route refuted; kernel expressiveness is the binding constraint. C = no gain as implemented (font text dropped in replay). Rules P1-P3 proposed in AUDIT.md await his ratification."
+  },
+  {
+   "id": "ORD-2026-09-01-learn-chocofur-course",
+   "date": "2026-09-01",
+   "verbatim": "เรียนและทำตาม playlist video นี้(เป็น course) เพื่อนำมาปรับใช้กับ project เรา",
+   "recorded_at": "knowledge/_inbox/video-study/2026-09-01-chocofur-blender-archviz-course-51-parts.md",
+   "commands": "คอร์ส chocofur 'Blender Archviz' 51 ตอน 12.5 ชม. (playlist PLYVR0A4acpNaFiTL-qmxH8fm4DJxqq-vp) — เรียนให้จบแล้วเอามาปรับใช้กับเลนจริง ไม่ใช่แค่สรุป. พี่ทักกลางทางสองครั้งซึ่งเปลี่ยนวิธีทำงานจริง ไม่ใช่คำเตือนลอย ๆ: (1) **'อย่าทำลวก ๆ'** — ตอนนั้นผมกำลังจะเรียนคอร์ส Blender จาก transcript ล้วน ซึ่งเป็น R11 เวอร์ชันการเรียน (คอร์ส Blender มี payload อยู่บนจอ ไม่ได้อยู่ในคำพูด: เขาพูดว่า 'ตั้งประมาณนี้' พลางลาก slider และมีแต่พิกเซลที่ถือตัวเลขนั้น) → เพิ่มชั้น pixel pass และติดป้าย implied_needs_frame ทุกข้อที่คำพูดไม่พอ (2) **'ค่อย ๆ ทำหน่อย อย่าทำทุกอย่างพร้อมกัน'** หลังเครื่องพี่ดับ 2 ครั้งจากการรันโหลดวิดีโอ+ffmpeg+สอง workflow พร้อมกัน → เปลี่ยนเป็นทีละงาน 8 ตอนต่อชุด และห้าม subagent เปิด Blender เอง ไม่ดับอีกเลย (3) **'ลุย'** = อนุมัติให้เดินต่อจากรายงานสรุป",
+   "subject": "learn-chocofur-archviz-course",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-09-01",
+   "not_obeyed_because": null,
+   "restart_by": null,
+   "obeyed_where": "knowledge/_inbox/video-study/2026-09-01-chocofur-blender-archviz-course-51-parts.md,pipeline/scripts/element5_lighting.py,pipeline/scripts/test_element5_lighting.py",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/element5_lighting.py",
+     "pattern": "^def blackbody_lin_rgb",
+     "why": "การเรียนคอร์สต้องลงเป็นโค้ดที่รันจริง ไม่ใช่บันทึก — ข้อที่คอร์สย้ำสองรอบ (ตอน 22/24: ขับแสงด้วยอุณหภูมิ ไม่ใช่สีที่จิ้ม) ต้องมีตัวตนในไปป์ไลน์"
+    },
+    {
+     "file": "pipeline/scripts/test_element5_lighting.py",
+     "pattern": "def test_old_eyeballed_anchors_would_fail_this_test",
+     "why": "และต้องมี rung ที่ตัดสินได้จริง — negative control พิสูจน์ว่าเทสต์คว่ำค่าเก่าได้"
+    }
+   ],
+   "note": "เรียนครบ 51/51 ตอน (transcript ครบทั้งหมด) → 1,571 teachings → เทียบกับโค้ดเรา 1,570 แถวพร้อม file:line → วัดกับเฟรมจริง 8 ข้อ ได้ 5 REFUTED / 2 PARTLY / 1 CONVICTED. **ผลที่มีค่าที่สุดคือข้อที่หักล้างผมเอง**: ผมรายงานว่า 'ผนังไม่มีเท็กซ์เจอร์ = 60% ของเฟรม' วัดแล้วผนัง painted กิน 0 พิกเซลจาก 4.32M และเพดานที่ใช้สูตรเดียวกันวัดได้ 1.03x ของงานส่งจริง — การอ่านโค้ดถูก (ประตูปิดจริง) แต่ผมกระโดดไปสรุปผลกับพิกเซลโดยไม่วัด. **ยังไม่จบ**: 203 ข้อที่ต้องดูภาพยังไม่ยืนยัน (YouTube ตอบ 429 วิดีโอได้ 11/51) และ 123 จาก 124 แถว lever สูงยังไม่ถูกวัด — ตัวถัดไปคือ Cycles Portal (ตอน 27-28)"
   }
  ]
 }

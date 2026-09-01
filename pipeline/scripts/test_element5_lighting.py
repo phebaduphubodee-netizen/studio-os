@@ -343,7 +343,19 @@ def test_lamp_glow_z_derives_from_the_built_shade(spec):
     want = shade[3] + shade[6] / 2.0 - 0.52
     assert g and abs(g["z_off_m"] - want) < 1e-9
     p = E5.plan(spec)
-    assert [l["rgb"] for l in p["lamps"]] == [(1.0, 0.88, 0.75)] * 2   # 2850K between anchors
+    # WAS: `== [(1.0, 0.88, 0.75)] * 2`, the eyeballed 2850K lore triple frozen into
+    # the assertion — against this file's own pinning rule three lines up. It is the
+    # reason the wrong colour survived: the only rung that looked at lamp colour was
+    # scoring it against the same picked number the code emitted, so both could be
+    # wrong together and the suite stayed green. Now the CCT is re-read FROM THE SPEC
+    # and the wiring is what is asserted (declared cct reaches the lamp). Whether that
+    # cct produces the right chromaticity is a different question with its own rung,
+    # scored against an independent locus formula — test_lamp_rgb_sits_on_the_
+    # planckian_locus, plus a negative control proving the old triple would fail it.
+    ccts = [(i.get("lamp") or {}).get("cct_k") for i in spec["items"]
+            if (i.get("lamp") or {}).get("cct_k")]
+    assert ccts, "spec of record carries no lamp cct_k — this test lost its subject"
+    assert [l["rgb"] for l in p["lamps"]] == [E5.lamp_rgb(c) for c in ccts]
 
 
 def test_cct_family_audit(spec):
@@ -450,3 +462,94 @@ def test_mirror_nudge_moves_strips(sp):
     p = E5.plan(sp)
     for s in p["strips"]:
         assert s["box"][2] == 900 and abs(s["light"]["z"] - (900 + m["h_mm"] / 2)) < 0.1
+
+
+# ---------------------------------------------------------------------------
+# CCT -> RGB is PHYSICS now, not lore (2026-09-01)
+#
+# The anchors these replaced were picked by eye and the label did not match the
+# light: the old "3000 K" was a ~5725 K blackbody, 159 mireds out. So the tests
+# below must not be able to pass by agreeing with the thing they test. They score
+# element5's SPECTRAL INTEGRAL against an INDEPENDENT closed-form approximation of
+# the Planckian locus (Kim et al. 2002, the cubic used across colour science and
+# derived from the CIE tables rather than from an integral of them). Two different
+# roads to the same curve; agreement is evidence, and a test that recomputed the
+# answer with the function under test would be the flattering-scorer shape this
+# repo has now caught fourteen times.
+# ---------------------------------------------------------------------------
+
+def _kim_planckian_xy(T):
+    """CIE 1931 xy on the Planckian locus, Kim et al. (2002) cubic. Valid 1667-4000 K.
+    INDEPENDENT of element5_lighting — no shared code path."""
+    x = (-0.2661239e9 / T ** 3 - 0.2343589e6 / T ** 2 + 0.8776956e3 / T + 0.179910)
+    if T < 2222.0:
+        y = -1.1063814 * x ** 3 - 1.34811020 * x ** 2 + 2.18555832 * x - 0.20219683
+    else:
+        y = -0.9549476 * x ** 3 - 1.37418593 * x ** 2 + 2.09137015 * x - 0.16748867
+    return x, y
+
+
+def _lin_rgb_to_xy(rgb):
+    """Linear sRGB (D65 primaries) -> CIE xy. Inverse of the matrix element5 applies."""
+    r, g, b = rgb
+    X = 0.4124 * r + 0.3576 * g + 0.1805 * b
+    Y = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    Z = 0.0193 * r + 0.1192 * g + 0.9505 * b
+    s = X + Y + Z
+    return X / s, Y / s
+
+
+@pytest.mark.parametrize("cct", [2200, 2400, 2700, 2850, 3000])
+def test_lamp_rgb_sits_on_the_planckian_locus(cct):
+    """The emitted chromaticity must BE the declared temperature's, within 0.005 in xy.
+
+    This is the test the old anchors could not have passed: their 3000 K sat about
+    0.075 away in x, fifteen times this tolerance.
+    """
+    gx, gy = _lin_rgb_to_xy(E5.lamp_rgb(cct))
+    kx, ky = _kim_planckian_xy(float(cct))
+    assert math.hypot(gx - kx, gy - ky) < 0.005, (
+        f"{cct}K: element5 gives xy=({gx:.4f},{gy:.4f}), Kim locus says "
+        f"({kx:.4f},{ky:.4f}) — the declared CCT is not the emitted colour")
+
+
+def test_old_eyeballed_anchors_would_fail_this_test():
+    """NEGATIVE CONTROL. The rung must be able to convict; prove it on the real
+    values it replaced, or 'it passes' means nothing."""
+    old_3000k = (1.0, 0.90, 0.80)          # verbatim, the retired _CCT_ANCHORS entry
+    gx, gy = _lin_rgb_to_xy(old_3000k)
+    kx, ky = _kim_planckian_xy(3000.0)
+    assert math.hypot(gx - kx, gy - ky) > 0.03, (
+        "the retired anchor now passes the locus test — either the tolerance has "
+        "been loosened past usefulness or the oracle has been broken")
+
+
+def test_blackbody_6500k_is_neutral():
+    """POSITIVE CONTROL on the conversion itself: sRGB is D65-referred, so a 6500 K
+    blackbody must come back very nearly neutral. Catches a transposed matrix, a
+    wrong Planck exponent or a normalisation slip in one line."""
+    r, g, b = E5.blackbody_lin_rgb(6500)
+    assert max(r, g, b) - min(r, g, b) < 0.08, f"6500K is not neutral: {(r, g, b)}"
+
+
+@pytest.mark.parametrize("cct", [2200, 2400, 2700, 2850, 3000])
+def test_lamp_rgb_preserves_luminance(cct):
+    """Y = 1.0 by construction. This is what keeps the colour fix from silently
+    also being a brightness change — watts owns brightness, this function does not."""
+    r, g, b = E5.lamp_rgb(cct)
+    assert abs(0.2126 * r + 0.7152 * g + 0.0722 * b - 1.0) < 1e-3
+
+
+def test_warmer_cct_is_actually_warmer():
+    """Monotonic: falling temperature must widen red-over-blue, every step."""
+    seps = [E5.lamp_rgb(t)[0] - E5.lamp_rgb(t)[2] for t in (3000, 2850, 2700, 2400, 2200)]
+    assert seps == sorted(seps), f"R-B not monotonic in falling CCT: {seps}"
+    assert seps[0] > 1.4, f"3000K separation {seps[0]:.3f} is not a warm lamp"
+
+
+def test_daylight_rgb_is_not_claimed_to_be_a_blackbody():
+    """The sky stand-in must stay OFF the electric path: a sky is Rayleigh-scattered,
+    not Planckian, and lamp_rgb refuses it by family anyway (PH-03)."""
+    with pytest.raises(ValueError, match="family"):
+        E5.lamp_rgb(6500)
+    assert E5.DAYLIGHT_RGB == (0.76, 0.87, 1.0)

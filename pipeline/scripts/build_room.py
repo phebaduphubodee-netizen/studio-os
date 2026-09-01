@@ -1001,6 +1001,33 @@ def _score_deliverable(name, quick=False, frame=True):
         os._exit(1)
 
 
+def _warm_rgb(spec):
+    """The colour of EVERY warm electric fixture in the room, from ONE place.
+
+    Added 2026-09-01 because there was no such place, and the owner saw the consequence
+    before any instrument did: "แสงที่นึงเป็นสีส้ม อีกที่แสงขาว". The room was authoring its
+    light colour in three independent spots, and D-182 corrected exactly one of them — so a
+    fix that was right in isolation split a room that had been uniformly wrong and therefore
+    looked whole. Measured on the p2r91 rig: 336 W of downlights/spots/sconces/cove/strips at
+    ~5660 K against two nightstand lamps at 2850 K, a gap of 1.380 in R-B that was 0 before.
+
+    A DECLARED CCT WINS OVER A TYPED TRIPLE, and that is the same law D-182 established: the
+    spec should declare the temperature and let physics produce the colour, because a typed
+    colour cannot be checked against the fixture schedule that names it. This function is the
+    single consumer of both, so the next fixture family added cannot pick up a fourth colour
+    convention without deleting this docstring first.
+
+    Normalisation is luminance (Y = 1.0), matching lamp_rgb, so switching a room from a typed
+    triple to its declared CCT moves chromaticity ONLY. That matters here: the callers below
+    clamp G and B at 1.0, and a Y-normalised warm white puts R above 1.0 and leaves G and B
+    under it, so the existing clamps stay untouched by construction rather than by luck.
+    """
+    cct = _matpre.parse_light_warm_cct(spec)
+    if cct is None:
+        return _matpre.parse_light_warm(spec)          # legacy typed path, byte-identical
+    return _e5.lamp_rgb(cct)                           # PH-03 family guard still applies
+
+
 def configure_cycles(samples=128, res=None):
     """Pin the engine of record + device + sampling. CYCLES because EEVEE needs EGL/Xvfb
     and is unsafe headless (pipeline/CLAUDE.md).
@@ -1029,6 +1056,28 @@ def configure_cycles(samples=128, res=None):
     except Exception as e:
         scn.cycles.device = 'CPU'
         print(f"  (GPU setup failed, CPU fallback: {e})")
+    # WHITE BALANCE — the control every real camera has and that this pipeline has never
+    # touched (Blender 5.1 carries it natively: use_white_balance / white_balance_temperature,
+    # default OFF at 6500 K). The chocofur archviz course names its absence outright in part
+    # 24 and builds one by hand out of a Blackbody multiplied into the world colour, because
+    # 2.80 had none. We do not need the hand-built version; we needed to know it was missing.
+    # Applied HERE so it lands on every path that renders or saves, the same reasoning that
+    # moved the engine pin into this function.
+    _wb = globals().get("_WHITE_BALANCE_K")
+    try:
+        # SET IT EITHER WAY, never only when asked. A full save bakes view_settings into the
+        # .blend, so a balanced render followed by an unflagged one FROM THAT FILE would keep
+        # the balance with nothing on screen or in the log saying so — a render state that
+        # survives the flag that created it is the --no-fabric-maps shape (D-022/D-032), and
+        # this repo has paid for it twice. Factory-startup happens to begin False; "happens
+        # to" is not a guarantee, so the off-branch is written down.
+        scn.view_settings.use_white_balance = bool(_wb)
+        if _wb:
+            scn.view_settings.white_balance_temperature = float(_wb)
+            print(f"  white balance: ON at {float(_wb):.0f}K")
+    except Exception as _e:                                       # noqa: BLE001
+        print(f"  white balance: COULD NOT SET ({_e}) — the frame's balance state is "
+              f"UNKNOWN, which must not read like a known one")
     scn.cycles.samples = samples
     try:
         scn.cycles.use_adaptive_sampling = True          # spend samples where noise remains
@@ -7556,7 +7605,7 @@ def _add_e5_lights(spec, h_m):
     (never a silent revert). The dome-lamp emitters live in _build_nightstand."""
     from math import radians
     plan = _e5.plan(spec)
-    warm = _matpre.parse_light_warm(spec)
+    warm = _warm_rgb(spec)
     # lane-A light story: photoshoot dimmer state over the SAME signed plan
     # (accent must read ~3x ambient to go focal — the vault row e5 cites)
     _sc = _e5.story_scales(bool(spec.get("_light_story")))
@@ -8149,7 +8198,7 @@ def add_interior_lights(spec, h_m):
     # palette (D1-A) needs a 3000 K warm-white, not amber, or the oak-bounce drowns the cool
     # plaster (proven by LOOK, 2026-07-16). No block -> the amber, byte-identical. A malformed
     # block RAISES (parse_light_warm) -> fail loud via build()'s top-level guard, not a silent lie.
-    warm = _matpre.parse_light_warm(spec)
+    warm = _warm_rgb(spec)
     watt = {"ambient": 16.0, "task": 40.0, "accent": 26.0}
     # the ACCENT wall-wash renders as ONE perfect pool -> the hybrid pass paints a
     # 'perfectly uniform glow of the linear accent lighting' (v004pro judge, the
@@ -13539,6 +13588,29 @@ if __name__ == "__main__":
         # 0.46 uniform, grain folding at z = k*842 mm). B leg = committed default.
         globals()["_WOOD_FOLD_LEGACY"] = True
         print("  [A/B] veneer mapping: legacy folded (pre-p2r15) leg")
+    _wb = next((a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--white-balance=")), None)
+    if _wb:
+        globals()["_WHITE_BALANCE_K"] = float(_wb)
+    _wcct = next((a.split("=", 1)[1] for a in _post_dashdash()
+                  if a.startswith("--warm-cct=")), None)
+    if _wcct:
+        # C leg of the 2026-09-01 lamp-colour work. B fixed the two nightstand lamps to the
+        # Planckian locus and the owner liked the frame but named what it broke: "แสงที่นึง
+        # เป็นสีส้ม อีกที่แสงขาว". This injects a DECLARED CCT for the other 336 W so the whole
+        # electric rig speaks one temperature. Kept as a flag, not a spec edit, until his eye
+        # picks — the canonical spec is where the choice LANDS, not where it is tried.
+        _spec["light_warm_cct_k"] = float(_wcct)
+        print(f"  [A/B] warm electrics driven by declared CCT {float(_wcct):.0f}K "
+              f"(was the typed light_warm triple)")
+    if "--cct-legacy" in _post_dashdash():
+        # A leg of the 2026-09-01 lamp-colour pair (D-182). B leg = committed default,
+        # the Planckian conversion. This leg restores the two eyeballed anchors whose
+        # "3000 K" is really a ~5725 K blackbody, so the fix can be argued against from
+        # a frame rather than from a spectrum. Chromaticity is the ONLY variable: both
+        # legs normalise to luminance Y = 1.0, so brightness cannot move between them.
+        _e5.CCT_LEGACY = True
+        print("  [A/B] lamp colour: legacy eyeballed-anchor leg (pre-D-182)")
     if "--surface-legacy" in _post_dashdash():
         # A leg of the 2026-08-29 surface pair: the exact pre-fix state of BOTH
         # `_image_wood` behaviours together — the veneer lay-up stamped on every
