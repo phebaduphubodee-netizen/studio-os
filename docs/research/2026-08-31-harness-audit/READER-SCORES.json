@@ -1,0 +1,212 @@
+{
+  "_what": "Mechanical scoring of the 6 blind sheet readers (wf_031bc1de-f6b journal results) against ANSWER-KEY.json. Bands: EXACT <=5mm, GOOD <=30mm, CLASS <=100mm, WRONG >100mm, MISSING = value not clearly stated.",
+  "_scored": "2026-08-31",
+  "_extraction_rules": [
+    "N3 (wardrobe leg depth): readers gave two BF09-1 leg depths; the FIRST-stated leg depth was extracted. Alternates noted per reader where the second leg would change the band (B3 only: east leg 600 would be EXACT).",
+    "N11 (bed E-W): the reader's bed.ew_mm field was used verbatim; prose alternates (A3's '2002 to panel contact') were NOT credited.",
+    "N15 (bench-to-bed gap): the gap row's mm field was used; A3's row states mm:30 (face-to-face) with 49 centreline-to-centreline in prose - scored 30 per rule.",
+    "N8: B-recolor reader 1 never stated a BF11-back-to-wall value anywhere -> MISSING."
+  ],
+  "truth_mm": {"N1": 1498.1, "N2": 2497.9, "N3": 599.9, "N4": 101.6, "N5": 898.2, "N6": 3199.4, "N7": 498.3, "N8": 250.8, "N9": 1799.7, "N10": 599.9, "N11": 1999.6, "N12": 2148.8, "N13": 498.3, "N14": 999.8, "N15": 50.8},
+  "readers": [
+    {
+      "arm": "A-raw", "reader": 1, "agentId": "ad341cbe3e44a4cf2",
+      "N": {
+        "N1": {"value": 1494, "delta": 4.1, "band": "EXACT"},
+        "N2": {"value": 2487, "delta": 10.9, "band": "GOOD"},
+        "N3": {"value": 598, "delta": 1.9, "band": "EXACT"},
+        "N4": {"value": 100, "delta": 1.6, "band": "EXACT"},
+        "N5": {"value": 847, "delta": 51.2, "band": "CLASS"},
+        "N6": {"value": 3187, "delta": 12.4, "band": "GOOD"},
+        "N7": {"value": 497, "delta": 1.3, "band": "EXACT"},
+        "N8": {"value": 250, "delta": 0.8, "band": "EXACT"},
+        "N9": {"value": 1800, "delta": 0.3, "band": "EXACT"},
+        "N10": {"value": 599, "delta": 0.9, "band": "EXACT"},
+        "N11": {"value": 2000, "delta": 0.4, "band": "EXACT"},
+        "N12": {"value": 2149, "delta": 0.2, "band": "EXACT"},
+        "N13": {"value": 484, "delta": 14.3, "band": "GOOD"},
+        "N14": {"value": 998, "delta": 1.8, "band": "EXACT"},
+        "N15": {"value": 53, "delta": 2.2, "band": "EXACT"}
+      },
+      "bands": {"EXACT": 11, "GOOD": 3, "CLASS": 1, "WRONG": 0, "MISSING": 0},
+      "C": {
+        "C1": "YES (drawn 497 vs label 600, delta 103; trust drawn front plane for layout, RFI the 600)",
+        "C2": "YES (drawn 499 vs 600, delta 101; trust ink for layout, RFI before manufacture)",
+        "C3": "YES (pillows east, head frame line coincides with BF14 west face, nightstands flank east)",
+        "C4": "YES (7' = N-S across drawn 2149, 6.5' = head-to-foot E-W)",
+        "C5": "YES (west chain measured 2851/2951/697 vs printed, sum 6500 stated; south 5501/5100)",
+        "C6": "YES (all heights + grand totals + carcass-depth arbitration declared unmeasurable)",
+        "C7": []
+      }
+    },
+    {
+      "arm": "A-raw", "reader": 2, "agentId": "aa622e17bda5a188a",
+      "N": {
+        "N1": {"value": 1499, "delta": 0.9, "band": "EXACT"},
+        "N2": {"value": 2504, "delta": 6.1, "band": "GOOD"},
+        "N3": {"value": 597, "delta": 2.9, "band": "EXACT"},
+        "N4": {"value": 129, "delta": 27.4, "band": "GOOD"},
+        "N5": {"value": 843, "delta": 55.2, "band": "CLASS"},
+        "N6": {"value": 3201, "delta": 1.6, "band": "EXACT"},
+        "N7": {"value": 500, "delta": 1.7, "band": "EXACT"},
+        "N8": {"value": 241, "delta": 9.8, "band": "GOOD"},
+        "N9": {"value": 1801, "delta": 1.3, "band": "EXACT"},
+        "N10": {"value": 601, "delta": 1.1, "band": "EXACT"},
+        "N11": {"value": 1941, "delta": 58.6, "band": "CLASS"},
+        "N12": {"value": 2151, "delta": 2.2, "band": "EXACT"},
+        "N13": {"value": 499, "delta": 0.7, "band": "EXACT"},
+        "N14": {"value": 1002, "delta": 2.2, "band": "EXACT"},
+        "N15": {"value": 49, "delta": 1.8, "band": "EXACT"}
+      },
+      "bands": {"EXACT": 10, "GOOD": 3, "CLASS": 2, "WRONG": 0, "MISSING": 0},
+      "C": {
+        "C1": "YES (drawn 500 vs label 600, -100; trust drawn 500 for space planning, flag the label)",
+        "C2": "YES (drawn 501 vs 600, -99; trust drawn depth, flag label)",
+        "C3": "YES (pillows against east edge, head 45mm from BF14 panel, nightstands flank east corners)",
+        "C4": "YES (7' mapped to N-S drawn 2151, 6.5' to E-W head-foot; calls 7' the long axis but the geometric mapping is correct)",
+        "C5": "YES (parts sum 6500.1 vs nominal 6500 +0.1; bottom 10597.5 vs 10600 -2.5)",
+        "C6": "YES (all heights, BF09-1 5200 composition, planter depth etc. declared unmeasurable)",
+        "C7": []
+      }
+    },
+    {
+      "arm": "A-raw", "reader": 3, "agentId": "aeb2346b31ab688dd",
+      "N": {
+        "N1": {"value": 1513, "delta": 14.9, "band": "GOOD"},
+        "N2": {"value": 2512, "delta": 14.1, "band": "GOOD"},
+        "N3": {"value": 594, "delta": 5.9, "band": "GOOD"},
+        "N4": {"value": 100, "delta": 1.6, "band": "EXACT"},
+        "N5": {"value": 875, "delta": 23.2, "band": "GOOD"},
+        "N6": {"value": 3217, "delta": 17.6, "band": "GOOD"},
+        "N7": {"value": 500, "delta": 1.7, "band": "EXACT"},
+        "N8": {"value": 240, "delta": 10.8, "band": "GOOD"},
+        "N9": {"value": 1801, "delta": 1.3, "band": "EXACT"},
+        "N10": {"value": 599, "delta": 0.9, "band": "EXACT"},
+        "N11": {"value": 1941, "delta": 58.6, "band": "CLASS"},
+        "N12": {"value": 2151, "delta": 2.2, "band": "EXACT"},
+        "N13": {"value": 499, "delta": 0.7, "band": "EXACT"},
+        "N14": {"value": 1002, "delta": 2.2, "band": "EXACT"},
+        "N15": {"value": 30, "delta": 20.8, "band": "GOOD"}
+      },
+      "bands": {"EXACT": 7, "GOOD": 7, "CLASS": 1, "WRONG": 0, "MISSING": 0},
+      "C": {
+        "C1": "YES (drawn 500 vs label 600, -100; trust drawn ink for space planning, flag label to signer)",
+        "C2": "YES (drawn 510 vs 600, -90; trust DRAWN depth, likely carcass-only label pattern)",
+        "C3": "YES (pillows hug east end, strokes touch BF14 panel, nightstands flank east, duvet fold east)",
+        "C4": "YES (7' = N-S width drawn 2151, 6.5' = E-W head-to-foot)",
+        "C5": "YES (measured 2849.7/2950.4/700.1 vs printed, sum 6500.2; south 5500.1/5100.4 sum 10600.5)",
+        "C6": "YES (all heights, chain grand totals, carcass-vs-drawn depth cause declared unmeasurable)",
+        "C7": [],
+        "note_N15": "gap row's mm field = 30 (face-to-face); prose notes 49 centreline-to-centreline, not credited per rule"
+      }
+    },
+    {
+      "arm": "B-recolor", "reader": 1, "agentId": "a6f765301cda6ec41",
+      "N": {
+        "N1": {"value": 1498, "delta": 0.1, "band": "EXACT"},
+        "N2": {"value": 2502, "delta": 4.1, "band": "EXACT"},
+        "N3": {"value": 599, "delta": 0.9, "band": "EXACT"},
+        "N4": {"value": 144, "delta": 42.4, "band": "CLASS"},
+        "N5": {"value": 881, "delta": 17.2, "band": "GOOD"},
+        "N6": {"value": 3200, "delta": 0.6, "band": "EXACT"},
+        "N7": {"value": 497, "delta": 1.3, "band": "EXACT"},
+        "N8": {"value": null, "delta": null, "band": "MISSING"},
+        "N9": {"value": 1802, "delta": 2.3, "band": "EXACT"},
+        "N10": {"value": 601, "delta": 1.1, "band": "EXACT"},
+        "N11": {"value": 1940, "delta": 59.6, "band": "CLASS"},
+        "N12": {"value": 2152, "delta": 3.2, "band": "EXACT"},
+        "N13": {"value": 499, "delta": 0.7, "band": "EXACT"},
+        "N14": {"value": 1002, "delta": 2.2, "band": "EXACT"},
+        "N15": {"value": 49, "delta": 1.8, "band": "EXACT"}
+      },
+      "bands": {"EXACT": 11, "GOOD": 1, "CLASS": 2, "WRONG": 0, "MISSING": 1},
+      "C": {
+        "C1": "YES (drawn 497 vs label 600, -103; trust drawn - BF10's verified 2500 run is struck from BF11's drawn face)",
+        "C2": "YES (drawn 507 vs 600, -93; trust drawn ink for placement, 60 reads as family nominal)",
+        "C3": "YES (pillows in red against east edge, frame 62mm from BF14, nightstands flank east; duvet fold at west read as foot)",
+        "C4": "YES (7' = N-S width drawn 2152, 6.5' = E-W head-to-foot drawn 1940)",
+        "C5": "YES-qualified (chain numerals outside crops; assumed nominal 2850+2950+700=6500 and checked drawn total 6502, +2mm)",
+        "C6": "YES (all heights, chain numerals, the 5500 example value declared unmeasurable)",
+        "C7": [],
+        "note_N8": "no BF11-back-to-wall standoff stated anywhere in the return - MISSING"
+      }
+    },
+    {
+      "arm": "B-recolor", "reader": 2, "agentId": "a89282fb1bad352ff",
+      "N": {
+        "N1": {"value": 1499, "delta": 0.9, "band": "EXACT"},
+        "N2": {"value": 2501, "delta": 3.1, "band": "EXACT"},
+        "N3": {"value": 599, "delta": 0.9, "band": "EXACT"},
+        "N4": {"value": 108, "delta": 6.4, "band": "GOOD"},
+        "N5": {"value": 889, "delta": 9.2, "band": "GOOD"},
+        "N6": {"value": 3199, "delta": 0.4, "band": "EXACT"},
+        "N7": {"value": 498, "delta": 0.3, "band": "EXACT"},
+        "N8": {"value": 207, "delta": 43.8, "band": "CLASS"},
+        "N9": {"value": 1809, "delta": 9.3, "band": "GOOD"},
+        "N10": {"value": 601, "delta": 1.1, "band": "EXACT"},
+        "N11": {"value": 1942, "delta": 57.6, "band": "CLASS"},
+        "N12": {"value": 2149, "delta": 0.2, "band": "EXACT"},
+        "N13": {"value": 499, "delta": 0.7, "band": "EXACT"},
+        "N14": {"value": 1002, "delta": 2.2, "band": "EXACT"},
+        "N15": {"value": 49, "delta": 1.8, "band": "EXACT"}
+      },
+      "bands": {"EXACT": 10, "GOOD": 3, "CLASS": 2, "WRONG": 0, "MISSING": 0},
+      "C": {
+        "C1": "YES (drawn 498 depth vs label 600, ~102; trust drawn front-face position, carcass depth needs source CAD/owner)",
+        "C2": "YES (drawn 505 vs 600, ~95; trust drawn front face, query 60 as series boilerplate)",
+        "C3": "YES (red pillow pair east, turned-down duvet NE corner, nightstands flank east, BF14 panel 60mm behind)",
+        "C4": "YES (drawn N-S 2149 matches 7' width, so 7' across and 6.5' head-to-foot)",
+        "C5": "NO (declared mm chains 'NOT present inside these crops'; ran only label-vs-ink sum checks, no chain-sum)",
+        "C6": "YES (all heights and all mm chains except the 3.05 declared unmeasurable)",
+        "C7": []
+      }
+    },
+    {
+      "arm": "B-recolor", "reader": 3, "agentId": "acb9e1b796860d1b2",
+      "N": {
+        "N1": {"value": 1502, "delta": 3.9, "band": "EXACT"},
+        "N2": {"value": 2503, "delta": 5.1, "band": "GOOD"},
+        "N3": {"value": 591, "delta": 8.9, "band": "GOOD"},
+        "N4": {"value": 117, "delta": 15.4, "band": "GOOD"},
+        "N5": {"value": 882, "delta": 16.2, "band": "GOOD"},
+        "N6": {"value": 3212, "delta": 12.6, "band": "GOOD"},
+        "N7": {"value": 500, "delta": 1.7, "band": "EXACT"},
+        "N8": {"value": 229, "delta": 21.8, "band": "GOOD"},
+        "N9": {"value": 1817, "delta": 17.3, "band": "GOOD"},
+        "N10": {"value": 600, "delta": 0.1, "band": "EXACT"},
+        "N11": {"value": 1941, "delta": 58.6, "band": "CLASS"},
+        "N12": {"value": 2153, "delta": 4.2, "band": "EXACT"},
+        "N13": {"value": 498, "delta": 0.3, "band": "EXACT"},
+        "N14": {"value": 1000, "delta": 0.2, "band": "EXACT"},
+        "N15": {"value": 49, "delta": 1.8, "band": "EXACT"}
+      },
+      "bands": {"EXACT": 7, "GOOD": 7, "CLASS": 1, "WRONG": 0, "MISSING": 0},
+      "C": {
+        "C1": "YES (drawn 500 vs label 600, -100; trust drawn for placement, flag label depth; also self-corrected an initial 2147 length misread)",
+        "C2": "YES (drawn 502 vs 600, ~98; trust drawn - coordinated with the 1248 walkway; flag for sign-off)",
+        "C3": "YES (red pillows east, turned-back duvet NE corner, BF14 64mm behind east edge, nightstands ~20mm off N/S edges)",
+        "C4": "YES (7' along the head wall N-S drawn 2153, 6.5' head-to-foot E-W drawn 1941)",
+        "C5": "YES-qualified (measured chain intervals 2850/2950/700, total 6500 printed; declared parts-vs-total uncheckable, values outside crops)",
+        "C6": "YES (all heights, chain numerals, fixture footprints declared unmeasurable)",
+        "C7": [],
+        "note_N3": "first-stated leg depth 591 (GOOD); its east leg 600 would be EXACT",
+        "unique_finding": "only reader to flag BF13 as unbuildable: drawn 4100 overlaps wall piers ~100mm both ends, clear bay 3894"
+      }
+    }
+  ],
+  "arm_summary": {
+    "A-raw": {
+      "n_rows": 45,
+      "bands": {"EXACT": 28, "GOOD": 13, "CLASS": 4, "WRONG": 0, "MISSING": 0},
+      "median_abs_delta_mm": 2.2,
+      "categorical": {"C1_yes": 3, "C2_yes": 3, "C3_yes": 3, "C4_yes": 3, "C5_yes": 3, "C6_yes": 3, "C7_tells": 0}
+    },
+    "B-recolor": {
+      "n_rows": 45,
+      "bands": {"EXACT": 28, "GOOD": 11, "CLASS": 5, "WRONG": 0, "MISSING": 1},
+      "median_abs_delta_mm": 2.25,
+      "categorical": {"C1_yes": 3, "C2_yes": 3, "C3_yes": 3, "C4_yes": 3, "C5_yes": 2, "C6_yes": 3, "C7_tells": 0}
+    },
+    "systematic_differences": "Accuracy is indistinguishable between arms (28 EXACT each; median 2.2 vs 2.25 mm), and both arms went 6/6 on the two label-vs-drawn depth traps, bed-head EAST with ink evidence, and the feet-label axis mapping, with zero contamination tells. The recolor bundle's crops carried no readable chain numerals (all three B readers report the 2850/2950/700/5500/5100 figures outside the crop windows, where all three A readers quote them as printed), so B calibrated on BF labels / the 3.05 dim / cross-crop stroke transfer instead - accuracy survived but chain-sum verification degraded (B2 scored NO on C5) and the only MISSING row is in B. Recolor systematically hurt exactly one measurement: party-wall thickness, where colour-separated finish lines were absorbed into the wall (A: 100/100/129 with two EXACT; B: 108/117/144 with zero EXACT); conversely all three B readers landed the sliding opening in GOOD (881-889) where two A readers fell to CLASS (843/847). N11 (bed E-W) is a convention failure shared by both arms: five of six readers committed the frame rectangle (~1941) instead of the key's head-to-foot 1999.6."
+  }
+}

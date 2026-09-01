@@ -1,0 +1,103 @@
+{
+  "plan_name": "charcoal_rolled_arm_3seater",
+  "assumed_overall_width_mm": 2030,
+  "components": [
+    {
+      "name": "deck",
+      "op": "box_round",
+      "size_mm": [1620, 850, 160],
+      "bevel_mm": 8, "bevel_segments": 2, "subsurf": 0,
+      "material_hint": "fabric",
+      "rest_on": "leg_front_left",
+      "x_anchor": {"ref": "origin", "ref_face": "center", "own_face": "center", "gap_mm": 0},
+      "y_anchor": {"ref": "origin", "ref_face": "center", "own_face": "center", "gap_mm": 0}
+    },
+    {
+      "name": "leg_front_left",
+      "op": "box_round",
+      "size_mm": [62, 62, 125],
+      "bevel_mm": 4, "bevel_segments": 2, "subsurf": 0,
+      "material_hint": "wood",
+      "rest_on": "floor",
+      "x_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": -160},
+      "y_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": 20}
+    },
+    {
+      "name": "leg_back_left",
+      "op": "box_round",
+      "size_mm": [62, 62, 125],
+      "bevel_mm": 4, "bevel_segments": 2, "subsurf": 0,
+      "material_hint": "wood",
+      "rest_on": "floor",
+      "x_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": -160},
+      "y_anchor": {"ref": "deck", "ref_face": "max", "own_face": "max", "gap_mm": -20}
+    },
+    { "name": "leg_front_right", "op": "mirror", "mirror_of": "leg_front_left", "mirror_about": "deck" },
+    { "name": "leg_back_right",  "op": "mirror", "mirror_of": "leg_back_left",  "mirror_about": "deck" },
+    {
+      "name": "arm_left",
+      "op": "extrude_profile",
+      "profile_plane": "xz",
+      "profile_mm": [[40,0],[26,200],[10,380],[0,450],[5,505],[35,540],[100,555],[150,532],[180,485],[195,430],[200,340],[205,0]],
+      "depth_mm": 850,
+      "bevel_mm": 12, "bevel_segments": 2, "subsurf": 1,
+      "material_hint": "fabric",
+      "rest_on": "leg_front_left",
+      "x_anchor": {"ref": "deck", "ref_face": "min", "own_face": "max", "gap_mm": 0},
+      "y_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": 0}
+    },
+    { "name": "arm_right", "op": "mirror", "mirror_of": "arm_left", "mirror_about": "deck" },
+    {
+      "name": "back_panel",
+      "op": "box_round",
+      "size_mm": [1620, 120, 585],
+      "bevel_mm": 10, "bevel_segments": 2, "subsurf": 0,
+      "material_hint": "fabric",
+      "rest_on": "deck",
+      "x_anchor": {"ref": "deck", "ref_face": "center", "own_face": "center", "gap_mm": 0},
+      "y_anchor": {"ref": "deck", "ref_face": "max", "own_face": "max", "gap_mm": 0}
+    },
+    {
+      "name": "seat_cushion_left",
+      "op": "box_round",
+      "size_mm": [540, 580, 160],
+      "bevel_mm": 30, "bevel_segments": 3, "crown_mm": 25, "subsurf": 1,
+      "material_hint": "fabric",
+      "rest_on": "deck",
+      "x_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": 0},
+      "y_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": 0}
+    },
+    {
+      "name": "seat_cushion_mid",
+      "op": "box_round",
+      "size_mm": [540, 580, 160],
+      "bevel_mm": 30, "bevel_segments": 3, "crown_mm": 25, "subsurf": 1,
+      "material_hint": "fabric",
+      "rest_on": "deck",
+      "x_anchor": {"ref": "deck", "ref_face": "center", "own_face": "center", "gap_mm": 0},
+      "y_anchor": {"ref": "deck", "ref_face": "min", "own_face": "min", "gap_mm": 0}
+    },
+    { "name": "seat_cushion_right", "op": "mirror", "mirror_of": "seat_cushion_left", "mirror_about": "deck" },
+    {
+      "name": "back_cushion_left",
+      "op": "box_round",
+      "size_mm": [540, 170, 450],
+      "bevel_mm": 35, "bevel_segments": 2, "crown_mm": 18, "subsurf": 1,
+      "material_hint": "fabric",
+      "rest_on": "seat_cushion_left",
+      "x_anchor": {"ref": "seat_cushion_left", "ref_face": "center", "own_face": "center", "gap_mm": 0},
+      "y_anchor": {"ref": "back_panel", "ref_face": "min", "own_face": "max", "gap_mm": 0}
+    },
+    {
+      "name": "back_cushion_mid",
+      "op": "box_round",
+      "size_mm": [540, 170, 450],
+      "bevel_mm": 35, "bevel_segments": 2, "crown_mm": 18, "subsurf": 1,
+      "material_hint": "fabric",
+      "rest_on": "seat_cushion_mid",
+      "x_anchor": {"ref": "seat_cushion_mid", "ref_face": "center", "own_face": "center", "gap_mm": 0},
+      "y_anchor": {"ref": "back_panel", "ref_face": "min", "own_face": "max", "gap_mm": 0}
+    },
+    { "name": "back_cushion_right", "op": "mirror", "mirror_of": "back_cushion_left", "mirror_about": "deck" }
+  ]
+}

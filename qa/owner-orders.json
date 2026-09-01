@@ -1259,6 +1259,63 @@
     }
    ],
    "note": "สิ่งที่ทำให้คำสั่งนี้ไม่ใช่แค่หกไฟล์: เลน 2 ไม่ใช่ของใหม่ — clearance_check.py มีอยู่แล้วตั้งแต่พอร์ต INTERIOR-AI และ dimensional_rules.v0.2.json ถือเลข island_clearance_all_sides มาตั้งแต่ 2026-07-02 · **51 จาก 75 คีย์ในไฟล์กฎนั้น ไม่มีเครื่องไหนอ่านเลย** ทั้งบล็อก kitchen_NKBA เป็นศูนย์ · เลข 1219 มม. ที่ตัดสิน ทั้งไอแลนด์ที่ผิด (-420) และที่แก้แล้ว (1043) นอนอยู่ใน knowledge/ergonomics/residential-clearances.md มาหลายเดือนโดยไม่มีผู้อ่าน · จึงสร้าง rules_reader_check.py เป็น ratchet: กฎใหม่ที่ไม่มีคนอ่าน = ตก"
+  },
+  {
+   "id": "ORD-2026-08-31-harness-audit-abc",
+   "date": "2026-08-31",
+   "verbatim": "ลุยให้หมดตามดุลพินิจคุณ",
+   "recorded_at": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+   "commands": "หลังดูคลิป BEHlmJCKvTA (Fable 5 ผ่าน SketchUp MCP อ่านแบบ+ปั้นดีกว่าเลนเรา ทั้งที่โมเดลเดียวกัน) พี่สังเกต 'ของเค้าอ่านแบบได้เก่งกว่าคุณเยอะมากทั้ง ๆ ที่ก็ fable เหมือนกัน' และ 'ก็ปั้นได้ดีกว่า' แล้วอนุมัติข้อเสนอสามข้อ: (A) audit ตามสูตร R8/R9 — เทียบ harness สองฝั่งเป็นตัวเลข แล้วออกกฎ ให้รอบ geometry พูด vocabulary ระดับสูง (B) ทดลองวัด: อ่าน sheet crop + สร้าง + เช็ค chain ใน context เดียว ให้ ink truth ตัดสิน เทียบ path ผ่านไฟล์ derivation (C) ย้อมสีเส้น dimension ให้ต่างจากผนังก่อนป้อนแบบ — ทำเป็นแขนหนึ่งของ B",
+   "subject": "harness-audit-abc",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-08-31",
+   "not_obeyed_because": null,
+   "restart_by": null,
+   "obeyed_where": "docs/research/2026-08-31-harness-audit/AUDIT.md,docs/research/2026-08-31-harness-audit/ANSWER-KEY.json,docs/research/2026-08-31-harness-audit/READER-SCORES.json,docs/research/2026-08-31-harness-audit/make_crops.py,docs/research/2026-08-31-harness-audit/model-exp/build_plan.py",
+   "obeyed_assert": [
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "ลุยให้หมดตามดุลพินิจคุณ",
+     "why": "คำพี่ verbatim อยู่ในไฟล์ที่ recorded_at ชี้"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "Zero WRONG bands across 90 numeric reads",
+     "why": "B (การทดลองอ่าน) วัดจบและบันทึกผลจริง ไม่ใช่แผน"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "R8 stop-loss \\(2 shape rounds\\) = STOP",
+     "why": "การทดลองปั้นจบที่ stop-loss ตามกฎ ไม่ลากรอบสาม"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "Rules proposed \\(for the owner to ratify — none wired yet\\)",
+     "why": "A จบด้วยกฎที่เสนอบนการวัด — การ wire รอพี่ ratify (P2 แตะ SketchUp seat ของพี่, P1 แตะไฟล์ gate ที่ pane ขนานถือ) บันทึกดัง ๆ ไม่เงียบ"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/ANSWER-KEY.json",
+     "pattern": "Written BEFORE any reader ran",
+     "why": "เฉลย pre-registered — กัน flattering scorer"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/model-exp/build_plan.py",
+     "pattern": "references unknown component",
+     "why": "interpreter fail-closed (R9) พิสูจน์ด้วย negative control ก่อนใช้"
+    },
+    {
+     "file": "docs/research/2026-08-31-harness-audit/AUDIT.md",
+     "pattern": "Arm C \\(dim recolor\\): no measured gain",
+     "why": "C ถูกทดลองจริงและบันทึกผลลบตรง ๆ — no-yield คือผลลัพธ์ ไม่ใช่หนี้"
+    }
+   ],
+   "note": "Third cross-project observation (after R8, R9). Answer key pre-registered from ink reads BEFORE readers ran; interpreter proven with positive+negative controls before the planner saw it. || CLOSED 2026-08-31 same session: B = 6/6 readers, 0 WRONG in 90 reads, median 2.2mm, both traps + bed-head EAST caught by all — the reading half transfers. A2 modelling = 2 rounds, still NO-DIFFERENT-PRODUCT at stop-loss — thin-vocabulary route refuted; kernel expressiveness is the binding constraint. C = no gain as implemented (font text dropped in replay). Rules P1-P3 proposed in AUDIT.md await his ratification."
   }
  ]
 }

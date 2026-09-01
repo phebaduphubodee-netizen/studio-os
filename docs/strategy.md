@@ -3907,3 +3907,54 @@ frame and closed a gate with no line about it. The four owed R10 rows are writte
 in this commit. The lesson is not "read the exit code": it is that a hard stop
 placed AFTER the artefact it guards is a hard stop only for a process, and the
 round goes on around it.
+
+## 2026-08-31 — The harness audit: same model, two harnesses, and which half transfers
+
+The owner watched an outsider drive the same model this lane runs on (Fable 5,
+via SketchUp MCP — video BEHlmJCKvTA) and filed his third cross-project
+observation: *"ของเค้าอ่านแบบได้เก่งกว่าคุณเยอะมากทั้ง ๆ ที่ก็ fable เหมือนกัน …
+ก็ปั้นได้ดีกว่า"*. Both prior observations (R8, R9) were right; this one split.
+Full record: `docs/research/2026-08-31-harness-audit/AUDIT.md`,
+ORD-2026-08-31-harness-audit-abc.
+
+**READING TRANSFERS, COMPLETELY AND CHEAPLY.** Six fresh-context readers, blind
+by bundle construction, one pass each over crops of our own drawing of record,
+scored against a pre-registered stroke-level answer key: 0 WRONG bands in 90
+reads, median |Δ| 2.2 mm, 6/6 on both label-600-vs-drawn-~500 traps, 6/6 on
+bed-head EAST — against this repo's own derivation-path history of 0-for-3 band
+placements and a NORTH read that cost three weeks. The mechanism is the harness,
+not the eyes: one context that reads where it builds, with instrument use
+(tick-centroid calibration cross-checked to 0.05%), first-pass. The planted-
+defect memory said this in miniature (C2 filed 285 with the same model the
+builder ran at 0/367); this is the same law measured on drawing-reading.
+
+**MODELLING DOES NOT TRANSFER THROUGH A THIN VOCABULARY.** Given the
+parameterisation choice, a reference photo, and one comparator-guided revision
+(the video's own iterate shape), the same model got frame proportions
+near-exact twice (W/H 1.93 vs 1.91; arm apex 74.2% vs 74.1%) and part
+construction wrong twice — both rounds NO-DIFFERENT-PRODUCT from fresh sighted
+judges, stopped at R8's two-round stop-loss. The video harness's edge is the
+CAD kernel's expressiveness (SketchUp's solid toolset plus its skills layer),
+not the model's choices: two of round-2's six defects were artifacts of the
+3-op interpreter we wrote for the experiment, and pre-commit scrutiny found a
+third (mirrors overwrite shared-mesh materials). Growing that interpreter
+op-by-op would be R8b's hand-write-what-a-kernel-has defect, third instance.
+
+**Dim recolor (his input-prep trick): no gain as implemented, and the test was
+voided in part by our own replay dropping font text and dash patterns —
+recorded UNTESTED, not refuted.**
+
+Rules proposed, none wired, awaiting his ratification (P2 touches his SketchUp
+seat; P1 touches gate files owned by live parallel panes at the time of the
+audit): P1 fresh-read-before-edit as an R12 extension; P2 loose-furniture
+geometry goes to a real kernel (ACQUIRE, or SketchUp MCP as scout) rather than
+a grown interpreter; P3 the blind reader fleet becomes a callable instrument
+(~1.2M subagent tokens per 6-reader/3-crop run, measured).
+
+Method notes worth keeping: pre-registering the answer key before any reader ran
+is what makes the 2.2 mm believable; the interpreter was proven with a positive
+AND negative control before the planner ever saw it; and the same session still
+shipped the exit-2-shape in miniature — an AUDIT line said "fixed engine-side"
+about a crown artifact a fresh judge then refiled in round 2 (corrected to
+"reduced" at scrutiny). The self-judged-closure law does not have exceptions
+for the auditor.

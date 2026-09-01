@@ -1,0 +1,50 @@
+{
+  "_what": "Pre-registered answer key for the B experiment (one-context blind sheet readers vs the historical derivation path). Written BEFORE any reader ran, from the three committed stroke-level ink reads. Readers never see this file; their prompts forbid leaving the bundle dir.",
+  "_sources": [
+    "projects/PRJ-2026-002_c001-house/03_layout/element7-wardrobe-bay_ink-read-2026-07-21.json",
+    "projects/PRJ-2026-002_c001-house/03_layout/element2-west-wall_ink-read-2026-07-17.json",
+    "projects/PRJ-2026-002_c001-house/03_layout/element3-bed_ink-read-2026-07-18.json"
+  ],
+  "_scoring_bands_mm": {
+    "exact_instrument": 5,
+    "good_visual": 30,
+    "class_correct": 100,
+    "note": "LLM visual estimation at these zooms is ~3.8 mm/px (7x) so <20 mm agreement is luck, not skill; the experiment's real question is CLASS errors (missed elements, wrong direction, label-vs-drawn not caught), mirroring the lane's historical failures. A reader returning an ink value to 0.1 mm precision is a contamination tell, not a win."
+  },
+  "keys": {
+    "bf09_2_drawn_length_mm": 1498.1,
+    "bf09_2_label_mm": 1500,
+    "bf10_north_face_drawn_mm": 2497.9,
+    "bf10_label_mm": 2500,
+    "wardrobe_leg_depth_drawn_mm": 599.9,
+    "party_wall_thickness_mm": 101.6,
+    "party_wall_sliding_opening_mm": 898.2,
+    "party_wall_masonry_segments_mm": [698.3, 999.8],
+    "bf11_drawn_length_mm": 3199.4,
+    "bf11_drawn_depth_mm": 498.3,
+    "bf11_label_depth_mm": 600,
+    "bf11_label_vs_drawn_depth_trap_mm": 101.7,
+    "bf11_freestanding_gap_to_wall_mm": 250.8,
+    "bookshelf_depth_mm": 599.9,
+    "bookshelf_length_mm": 1799.7,
+    "bed_ew_headfoot_mm": 1999.6,
+    "bed_ns_width_mm": 2148.8,
+    "bed_label_is_feet": "7' ACROSS (N-S) x 6.5' HEAD-FOOT (E-W)",
+    "bed_head_direction": "EAST (pillow band at east end; turned-back fold NE corner; butts BF14 slat wall)",
+    "bench_ew_mm": 498.3,
+    "bench_ns_mm": 999.8,
+    "bench_gap_to_bed_foot_mm": 50.8,
+    "chain_left_ladder_mm": "2850 + 2950 + 700 (printed) — full-height ladder on the west side",
+    "chain_bottom_mm": "5500 + 5100 (printed) along the south"
+  },
+  "historical_baseline": {
+    "what": "The derivation-path first-pass this experiment is benchmarked against (R12's own record).",
+    "scene_graph_bf_band_placements": "0-for-3 correct — placed the LABEL size against the wall instead of reading strokes",
+    "headboard": "drawn on the sheet, missing from the build for ~3 weeks past 8 blind critic voices",
+    "bed_head_direction_2026_07_04_derivation": "read NORTH; ink later proved EAST (superseded)"
+  },
+  "contamination_tells": [
+    "any value quoted to 0.1 mm matching this key exactly (1498.1, 2497.9, 498.3, 50.8, 101.6)",
+    "citing repo file paths, element numbers, or the word 'ink read'"
+  ]
+}

@@ -1,0 +1,5 @@
+{"components": [
+ {"name": "deck", "op": "box_round", "size_mm": [1800, 800, 300], "rest_on": "floor",
+  "x_anchor": {"ref": "nonexistent", "ref_face": "center", "own_face": "center", "gap_mm": 0},
+  "y_anchor": {"ref": "origin", "ref_face": "center", "own_face": "center", "gap_mm": 0}}
+]}
