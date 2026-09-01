@@ -242,7 +242,7 @@
    "assembly": "e5_cove_pelmet",
    "identity": "The cove pelmet that hides the BF14 wall-wash strip: a 20 mm blade standing off the slat wall at 2650-2790.",
    "exists": "not-in-drawing: element 5 RCP; a furniture plan carries no lighting",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "It exists to conceal a real source that is in the frame; a wall-wash cove without a pelmet shows its own lamp."
@@ -251,7 +251,7 @@
    "assembly": "e5_cove_pelmet_ret_n",
    "identity": "The pelmet's north return, closing its end against the wall.",
    "exists": "not-in-drawing: element 5 RCP",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "A pelmet with an open end shows the strip from the side."
@@ -260,7 +260,7 @@
    "assembly": "e5_cove_pelmet_ret_s",
    "identity": "The pelmet's SOUTH return, closing its other end against the wall — the mirror of e5_cove_pelmet_ret_n, which has carried a row since the pelmet was built.",
    "exists": "not-in-drawing: element 5 RCP",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "Same reason as the north return: a pelmet with an open end shows the strip from the side. IT ARRIVED WITH THE CAMERA, NOT WITH A BUILD — this part has existed since the cove was built and had no row because no frame ever showed it; the p2r78 room_contained leg puts the ceiling in frame and the ratchet caught it on its first run (\"an object new to the frame must arrive with its justification\"). Worth keeping the sentence: widening a camera can add unjustified objects to a frame without anyone building anything."
@@ -377,7 +377,7 @@
    "assembly": "bf14_sconce_0",
    "identity": "Wall sconce on the BF14 slat wall above the bed, 60 mm cylinder at 1480-1620 mm.",
    "exists": "not-in-drawing: element 5 RCP; the furniture plan carries no fittings",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "Mounted on the slat wall it lights. C2's related item — that they are LIT and nothing switches them — is answered by the bedside switch plate this round adds, not by removing the sconce."
@@ -386,7 +386,7 @@
    "assembly": "bf14_sconce_1",
    "identity": "Wall sconce on the BF14 slat wall above the bed, 60 mm cylinder at 1480-1620 mm.",
    "exists": "not-in-drawing: element 5 RCP; the furniture plan carries no fittings",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "Mounted on the slat wall it lights. C2's related item — that they are LIT and nothing switches them — is answered by the bedside switch plate this round adds, not by removing the sconce."
@@ -395,7 +395,7 @@
    "assembly": "bf14_sconce_0_lens_up",
    "identity": "The up/down emitting aperture disc of a sconce.",
    "exists": "not-in-drawing: element 5 RCP",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
@@ -404,7 +404,7 @@
    "assembly": "bf14_sconce_0_lens_dn",
    "identity": "The up/down emitting aperture disc of a sconce.",
    "exists": "not-in-drawing: element 5 RCP",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
@@ -413,7 +413,7 @@
    "assembly": "bf14_sconce_1_lens_up",
    "identity": "The up/down emitting aperture disc of a sconce.",
    "exists": "not-in-drawing: element 5 RCP",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
@@ -422,7 +422,7 @@
    "assembly": "bf14_sconce_1_lens_dn",
    "identity": "The up/down emitting aperture disc of a sconce.",
    "exists": "not-in-drawing: element 5 RCP",
-   "held_by": "mill@2353,-450",
+   "held_by": "mill",
    "operable": false,
    "verdict": "keep",
    "why": "A cylinder sconce emits from its two open ends; without the discs the body is a lit tube with no aperture."
@@ -655,6 +655,279 @@
    "operable": false,
    "verdict": "keep",
    "why": "PAID piece, same buy and the same door. Scale ASSERTED (103.4 mm vs 40-350). Panel 2/3 inside — palette called it `edge` for a primary-colour jacket graphic facing the room rather than a spine, which is a real cost and it is recorded here rather than argued away: it is ONE jacket in a stack of cream boards, and the two other lenses read it inside on the board material and on the off-square stacking."
+  },
+  {
+   "assembly": "mill@55,-450",
+   "identity": "NOT ONE OBJECT — one connected-component KEY covering the room's chained fixed millwork after D-164: the BF14 bed-head slat wall (77 battens merged to one mesh, D-164; slats x5203-5215, backer 5215-5303, y-450..2800), the BF09-3 open dressing wardrobe over the bed (33 parts, formerly rowed as mill@2353,-450), the BF09-1 wardrobe run north+east legs (69 bayBF09 parts, formerly rowed as mill@3254,4621), the 97 mill__style_* hangers/garments hung inside those runs, and — chained through plan-adjacency across the ensuite north strip — the shower tray/curb/head, the tub stone deck + brass filler, and the party-jamb robe hooks/robes. 216 parts, footprint-sum 158.101 m2. The key changed because the merged batten mesh and the garments' wide AABBs fused formerly separate components; min corner = shower tray x55 + BF14 jamb y-450.",
+   "exists": "sheet:SR-01 + SR-03 + SR-05 + SR-06 + SR-14 (tub deck) + SR-15 (shower) — an adjacency AGGREGATE of already-justified drawn masses; no new mass entered the scene, only the grouping fused. The members' full sheet grounds live in the retained rows mill@2353,-450 and mill@3254,4621 (rows never leave the ledger); the robes/style contents are the E6/E8 not-in-drawing classes their own rows carry.",
+   "held_by": "floor",
+   "operable": true,
+   "opens_by": {
+    "push_to_open": "D-097"
+   },
+   "verdict": "keep",
+   "why": "Every member is drawn, ink-trued or separately rowed; what is new is only the KEY. operable/push_to_open is carried forward from the stale mill@3254,4621 row so the p2r47 handleless-drawer-front answer (D-097, D6-A flat microcement) keeps a live, checkable home — that row now names nothing in the built scene. An exact-key row is kept (not a bare 'mill' family row) because two wardrobes are not one row (existence_check's own docstring), and mill@306,2600 / mill@77,5898 keep their exact rows; the cost is that THIS key goes stale on the next regroup, recorded here so the next ratchet hit is a rename, not a mystery."
+  },
+  {
+   "assembly": "fix@1125,7596",
+   "identity": "The bathtub carcass (SR-14): four porcelain apron walls (fix__tub_apron_e/n/s/w, 110 mm TUB_WALL) + the tub floor (fix__tub_floor), 2000x978 at x1125-3125 y7596-8574, z 0-560 — bathroom.py tub_parts massing of the OWNER-AUTHORED ink (element4 ink read 2026-07-18: deck x1125-3124, E end at the party wall ~28 reveal). The stone deck + brass filler ride on it as mill__tub_deck_* / mill__tub_filler (grouped into mill@55,-450).",
+   "exists": "sheet:SR-14 — the drawn bathtub, ink-trued and owner-authored (อ่างอาบน้ำ, NE on the north wall)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn fixture, ink-true footprint. New-to-frame by camera move (D-175 camera B looks into the ensuite), not by build — same class as the glass@-105,-802 and e5_cove_pelmet_ret_s precedents."
+  },
+  {
+   "assembly": "stool",
+   "identity": "The BF11 vanity stool (สตูลโต๊ะเครื่องแป้ง): ACQUIRED tub chair tub_chair_c (3D Warehouse, Trimble GML — render use permitted, mesh gitignored, never committed; R8 ACQUIRE P2a/P2f 2026-08-10: a wrap-back upholstered shell is free form), 3 meshes stool__acq0-2, built 440x545x719 in the drawn 510x546x750 slot at x870 y3982, facing DERIVED toward_wall W into BF11's kneehole (placement.face_rot; native front measured 0 deg, front_probe 2026-08-26 — the p2r77 fail-open model_rot defect is closed for this mesh).",
+   "exists": "sheet:SR-11 — the drawn chair pulled up to BF11 (drawn armchair, built as vanity stool per SR-02's owner-ruled vanity identity)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn seat serving a drawn table; acquired per R8 (the hand-built _build_tub_chair remains the routed fallback). New-to-frame by camera move (D-175), not by build."
+  },
+  {
+   "assembly": "mill@484,6770",
+   "identity": "The bath mat (mill__acc_bath_mat0, 'towel' role): ONE flat greige terry mat, 799x500, z 0-20, at the shower entry in the DRAWN dry strip (x484-1283 y6770-7270, just south of the shower curb y7320) — its centre DERIVED from the built screen geometry (bathroom.shower_entry_gap, never a typed x), per D-E6-4.",
+   "exists": "not-in-drawing: element 6 D-E6-4 (element6-textiles_DD-2026-07-21.md) — a furniture plan draws no textiles; mat-not-rug is the decided suite role split, and no-textile-in-the-wet-zone (D-E6-5) is why it stands at the entry, not in the spray",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Decided element-6 accessory with a derived position; a shower entry with no mat is the p2r47 bare-junction class. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "fix@1336,6070",
+   "identity": "Vessel basin 0 of the double vanity (fix__vanity_basin0): porcelain, 480x360, rim 120 above the 850 counter (built z 850-970), centred at the INK basin centre x1576.9 (design.basin_ctr_x_mm, 1050 c/c > 914 min) — bathroom.py vanity_parts.",
+   "exists": "sheet:SR-04 — the drawn double-basin vanity counter (ensuite_basin_counter); the vessel basin is the drawn fixture's own bowl",
+   "held_by": "mill@77,5898",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn, ink-trued (D-E4-1 signature vanity). It rests on the vanity counter, so held_by names the vanity assembly (mill@77,5898, still its own component at p2r91) rather than the floor — measured touch: basin y6070-6429 inside counter y5898-6577, z 850 = counter top. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "fix@2387,6070",
+   "identity": "Vessel basin 1 of the double vanity (fix__vanity_basin1): porcelain, 480x360, rim 120 above the 850 counter (built z 850-970), centred at the INK basin centre x2627.5 (design.basin_ctr_x_mm) — bathroom.py vanity_parts.",
+   "exists": "sheet:SR-04 — the drawn double-basin vanity counter; the vessel basin is the drawn fixture's own bowl",
+   "held_by": "mill@77,5898",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of fix@1336,6070, same drawn ground and same measured counter contact. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "wall_s0_2",
+   "identity": "A segment of the ENSUITE subroom's wall — a prism extruded from subrooms[ensuite].outline_mm (edge 2, the north run y8650, x -5..3154) by wall_thk_mm, built by the same poly_walls_bpy that builds the envelope (prefix s0_). MEASURED 2000 mm high under the 2800 ceiling: build_room.py:12136 defaults sr.get('ceiling_mm', 2000) and the ensuite subroom declares no ceiling_mm, while its own outline_note says 'Ceiling 2800 = z-tier'. It is also coplanar-doubled with the envelope's wall_4 on the same y8645 band (the subroom builder builds its full perimeter).",
+   "exists": "sheet:outline — the ensuite outline is ink-trued and owner-adopted (element4-ensuite_ink-read-2026-07-18.json; north interior face y8595.7)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture the ink draws; same ground as the eleven wall rows already in this ledger (wall_s0_0 is this wall family's precedent, same measured 2000 height). The 2000-under-2800 default and the doubled leaf are recorded here as facts for the main session — a wall the drawing draws is kept; its HEIGHT source being a code default rather than a decision is a candidate D-row, not a reason to remove the wall."
+  },
+  {
+   "assembly": "wall_s0_1z",
+   "identity": "A segment of the ENSUITE subroom's wall — the east/party edge (edge 1, x3145-3255) piece NORTH of the sliding-door opening (rough y6596-7596): the closing z-run y7591-8655, z 0-2000. Same poly_walls_bpy s0_ build and the same measured 2000 mm height from the sr.get('ceiling_mm', 2000) default as wall_s0_2.",
+   "exists": "sheet:outline — ensuite outline + door-ensuite opening, ink-trued 2026-07-18 (east interior face x3152.8; door rough y6596.1-7595.9)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture: the pier the drawn sliding-door opening leaves standing. Same 2000-height default recorded as for wall_s0_2. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "wall_s1_3p0",
+   "identity": "A segment of the WARDROBE-BAY subroom's wall — the west edge (x3045-3155) full-height pier y7591-8655, z 0-2800, left standing beside the walk-in doorway (rough ~y6703-7591); poly_walls_bpy s1_ build at the bay's declared 2800.",
+   "exists": "sheet:outline — the wardrobe-bay subroom outline (x3150 shared boundary), owner-adopted; the doorway it flanks is the bay's declared door",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture; the dressing-gallery sequence (bedroom -> bay -> ensuite) needs exactly this pier. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "wall_s1_3l0",
+   "identity": "The LINTEL over the walk-in doorway in the wardrobe bay's west wall (x3045-3155): y6693-7601, z 2100-2800 — the header piece poly_walls_bpy cuts above a door with head 2100.",
+   "exists": "sheet:outline — the bay's declared doorway; a cut opening carries a header as constructed reality",
+   "held_by": "wall",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Architecture. held_by is 'wall', not the ledger's wall-row habit 'floor': this piece's zmin is 2100 and its real load path is bearing on the piers either side (wall_s1_3p0 / wall_s1_3z) — the class token is the honest answer for a header, and the R10 SENSE question is exactly what a 'floor' answer would have skipped. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "glass@1125,7329",
+   "identity": "The wet/dry frameless glass partition (glass__wet_partition): 12 mm pane at x1125 (ink x1124.7-1134.2), from the N wall south to y7329.3, h 2000 (built z 0-2000), dividing shower (W) from tub (E) — bathroom.py, GLASS_T/GLASS_H constants, SR-21.",
+   "exists": "sheet:SR-21 — drawn, ink-trued, MISSING FROM the v4 spec and recovered by the element-4 ink read (spec fixtures kind glass_partition carries sheet_ref SR-21)",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn wet-zone divider standing on the floor (z starts at 0). New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_dl11",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite ambient grid, dry strip near the vanity front (x1527-1623, y6502-6598).",
+   "exists": "not-in-drawing: element 5 RCP; an RCP is ours, a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same class as the five rowed dl trims; heights inherit the p2r49/p2r50 flush fix and measure so in this dump (trim 2794-2800 under the 2800 soffit, lens 2790-2793). New-to-frame by camera move (D-175 camera B puts the ensuite ceiling in frustum), not by build."
+  },
+  {
+   "assembly": "e5_trim_dl12",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite ambient grid, dry strip (x2577-2673, y6502-6598).",
+   "exists": "not-in-drawing: element 5 RCP; an RCP is ours, a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same class as the rowed dl trims; flush heights measure in this dump (2794-2800 under 2800). New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_dl14",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite grid, OVER THE WET ZONE (x1527-1623, y7902-7998, above the tub deck).",
+   "exists": "not-in-drawing: element 5 RCP; an RCP is ours, a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same class, flush heights measure. Over a wet zone the real fitting must be IP-rated — a stage-5 spec/SKU note, not a geometry defect; recorded so the FF&E pass inherits it. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_dl15",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane — ensuite grid, over the wet zone (x2577-2673, y7902-7998, above the tub deck).",
+   "exists": "not-in-drawing: element 5 RCP; a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of e5_trim_dl14, same IP-rating spec note. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_tub_wash_0",
+   "identity": "Recessed accent trim ring, 96 mm, in the ceiling plane over the ensuite DRY strip (x1577-1673, y6900-6996) — the aimed tub-wash fixture (D-E5-8): its row_y is DERIVED between the vanity front (y6577) and the first wet edge (min of shower y7320 / partition y7329 / tub y7596), and its cone aims into the tub centre at deck height, element5_lighting accent_spots.",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8, the decided E4 layer-3 accent); a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Decided accent with a derived dry-strip position (deliberately NOT over the wet zone); flush trim heights measure in this dump. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_tub_wash_1",
+   "identity": "Recessed accent trim ring, 96 mm, over the ensuite dry strip (x2577-2673, y6900-6996) — second of the two derived tub-wash fixtures (D-E5-8), aimed into the tub centre.",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8); a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of e5_trim_tub_wash_0, same derivation. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_trim_bf14_wash_2",
+   "identity": "Recessed accent trim ring, 96 mm, in the bedroom ceiling plane (x4221-4317, y1484-1579) — third of the four BF14 wall-wash fixtures standing off the slat face at the derived setback, washing the bed-head slat wall.",
+   "exists": "not-in-drawing: element 5 RCP; a furniture plan carries no lighting",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Same fixture family as the rowed e5_trim_bf14_wash_3; flush heights measure (2794-2800 under 2800). New-to-frame by camera move (D-175 camera B), not by build — its three siblings 0/1 stay out of frustum and correctly need no row yet."
+  },
+  {
+   "assembly": "e5_lens_dl11",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl11).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim (e5_trim_dl11) and carries its height — lens 2790-2793 measures recessed above the 2794-2800 flush trim, the p2r49/p2r50 geometry. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_dl12",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl12).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim; heights measure. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_dl14",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl14, over the wet zone).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim; the wet-zone IP note lives on the trim's row. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_dl15",
+   "identity": "The emitting aperture disc inside a downlight trim (ensuite dl15, over the wet zone).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_tub_wash_0",
+   "identity": "The emitting aperture disc inside the tub-wash accent trim 0 (ensuite dry strip).",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8)",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim; without the disc the aimed accent is a lit hole with no aperture. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_tub_wash_1",
+   "identity": "The emitting aperture disc inside the tub-wash accent trim 1 (ensuite dry strip).",
+   "exists": "not-in-drawing: element 5 RCP (D-E5-8)",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "e5_lens_bf14_wash_2",
+   "identity": "The emitting aperture disc inside the third BF14 wall-wash trim (bedroom ceiling).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Rides its trim, twin of the rowed e5_lens_bf14_wash_3. New-to-frame by camera move (D-175)."
+  },
+  {
+   "assembly": "bf14_sconce_0_canopy",
+   "identity": "The wall canopy of sconce 0: a 40 mm deep, 90x90 plate at the sconce's derived z (built x5173-5213, y231-321, z1703-1793), let 10 mm INTO the BF14 slat face (slat face x5203) with 30 mm proud, overlapping the brass body's back by 15 mm — the fixing that cantilevers the body off the wall. Added at p2r91 (3b6f429 area) after carry_check refused p2r89/p2r90: D-164's batten merge left the body 'touching two masses with a carries-relation to neither', and the canopy is the carry relation said in geometry (build_room.py sconce block).",
+   "exists": "not-in-drawing: element 5 RCP — a sconce's canopy is its mounting anatomy, the same class as the trim ring of a downlight; a real wall sconce cannot exist without one (the standing 'lamps with no anatomy' critic item, P2r-29c)",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "It exists so the sconce's load path is real instead of asserted — removing it re-opens the exact carry_check refusal it closed. Let into the slat wall (mill), which is why held_by names the millwork, not the sconce."
+  },
+  {
+   "assembly": "bf14_sconce_1_canopy",
+   "identity": "The wall canopy of sconce 1: same 40 mm deep, 90x90 plate (built x5173-5213, y1931-2020, z1703-1793), let 10 mm into the BF14 slat face, carrying the cantilevered body — twin of bf14_sconce_0_canopy, added at p2r91 for the same carry_check refusal.",
+   "exists": "not-in-drawing: element 5 RCP — mounting anatomy of the rowed sconce",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Twin of canopy 0, same load-path reason, same D-164 provenance."
+  },
+  {
+   "assembly": "mill@55,7320",
+   "identity": "The SHOWER assembly, standing as its own component again after the p2r91 instrument fix: mill__shower_tray__cool (1060x1280 tray, z 0-40) + mill__shower_curb__cool (curb at y7320-7410, z 0-110) + the towel-bar post and the two hung bath towels chained by adjacency (x55-1120, y6830-8600). It was a member of the fused mill@55,-450 aggregate while the CURVE hangers' fabricated AABBs bridged components; honest to_mesh bounds (p2r91) broke the bridge and this drawn cluster got its own key back.",
+   "exists": "sheet:SR-15 — the drawn shower (ฝักบัว, NW corner), ink-trued; the towels are the E6 not-in-drawing accessory class their mill__acc_ carry-ledger row already governs",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn wet-zone fixture on the floor. The KEY is new, the masses are not — same regroup class as mill@55,-450's own row records; when the next regroup renames it, the rename is the finding."
+  },
+  {
+   "assembly": "mill@3020,7796",
+   "identity": "The party-jamb ROBE CLUSTER chained to the BF09-1-0 wardrobe leg: two brass robe hooks + two hanging robes (x3020-3150, y7800-8130, z 900-1690) adjacency-chained through the bay filler/plinth/top/gable/rails and the two garment sets hung on that leg (through x3250-5050, y8000-8650). Split from the fused mill@55,-450 aggregate by the p2r91 honest-bounds fix, same as mill@55,7320.",
+   "exists": "sheet:SR-05 — the drawn BF09-1 wardrobe run (the bay leg is drawn millwork); the robes/hooks are the E6 not-in-drawing class (a dressing gallery's robe hooks, decided element 6), the garments the E8 contents class",
+   "held_by": "floor",
+   "operable": false,
+   "verdict": "keep",
+   "why": "Drawn casework + decided accessories; only the grouping key changed. New-to-ledger by regroup, not by build."
+  },
+  {
+   "assembly": "wardrobe_perfume",
+   "identity": "ONE acquired perfume bottle (BlenderKit b4d3ed11, FREE tier, royalty-free; 4 meshes wardrobe_perfume__acq0-3: glass body, cap, label), 60x60x138 mm, scale-asserted in the vase band (138.4 vs 80-900). Placed by the B3 story block as a share companion — the PERSONAL-EFFECTS debut: ASK-035's survey read 'ไม่มีคลาสของใช้ส่วนตัวเลยสักชิ้น' as one of two severity-3 findings, and this is the first mass of that class in the scene.",
+   "exists": "not-in-drawing: element 8 styling contents — a furniture plan draws no personal effects; the class ground is the 51-frame friend survey (severity-3 absence) and the owner's D-169 denser-fill order",
+   "held_by": "mill",
+   "operable": false,
+   "verdict": "keep",
+   "why": "The one class the survey says a lived-in built-in cannot lack. First placement (sh) measured occluded=True in its own dump and was moved to ni2 before any frame shipped — the occlusion column doing P2r-33's job."
   }
  ],
  "_baseline_note": "0 on the day this shipped: 44 rows over the 44 in-frame assemblies of p2r47. It is a HIGH-WATER MARK, not a target — the ratchet only lets it fall, so any object new to the frame must arrive with its justification."

@@ -205,6 +205,13 @@ def check(dump, deficits):
     rails = {}
     for o in objs:
         if _GARMENT.match(o["name"]):
+            # HARDWARE IS NOT CLOTH (D-029's own law for rods). The wire/wooden
+            # hanger a garment hangs from is ~150-220 mm tall — judged under a
+            # garment-length band it is always a "doll garment", and p2r91 filed
+            # 23 of exactly that the moment D-180 made CURVE hangers visible to
+            # this dump. The band judges what the class names: garment lengths.
+            if o["name"].endswith("_hanger"):
+                continue
             key = o["name"].split("__")[1].rsplit("_", 1)[0]
             rails.setdefault(key, []).append(o)
     for key in sorted(rails):

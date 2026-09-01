@@ -165,6 +165,14 @@ ROLE_BY_MATERIAL = {
     # core by design — bedding, same sentence as bed_throw; build_room renames
     # the scan's material to this name at import so the role channel holds.
     "acq_bed_throw": BEDDING,
+    # p2r91 (D-181): ceiling luminaire anatomy — downlight/wash trim rings and
+    # aperture discs at z~2.79 m. They overlap the mattress ONLY in plan, which
+    # is the one axis this rung's overlap test reads, and a light fitting is
+    # never sleeping surface — the same sentence acq_bench_seat carries. This
+    # is a CLASSIFICATION, not an exemption: their pixels still count in the
+    # roster, they just answer OTHER when asked "are you lying on the bed".
+    "e5_trim_dark": OTHER,
+    "e5_trim_lens": OTHER,
 }
 
 # WHERE THIS DISAGREES WITH THE 2026-08-17 DIAGNOSIS, said out loud so the two

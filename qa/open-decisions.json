@@ -7,6 +7,32 @@
  "_the_cost_of_removing_the_rung": "R3 existed because builders catch only 30-50% of their own defects. Taking the owner out does not repeal the statistic — it moves the load onto C2 (fresh-context local) and C3 (Gemini), which are now the ONLY independent rungs between a defect and a delivered frame. A round that skips them is no longer cutting a corner; it is running with nothing.",
  "decisions": [
   {
+   "id": "D-181",
+   "unit": "DELIV-001",
+   "subject": "bed-pixels-rebaseline-and-luminaire-roles",
+   "decided_round": 91,
+   "decided_date": "2026-09-01",
+   "decided_by": "builder",
+   "obeys": "ORD-2026-08-25-p2-exit-is-his-eye",
+   "question": "bed_pixels รันได้ครั้งแรกบนกล้อง B แล้ว ratchet ปฏิเสธ baseline p2r54 (คนละกล้อง+คนละ semantics) และยื่นว่า trim/lens ดาวน์ไลท์ 3 ชิ้น 'ทับที่นอนในแปลน' โดย material ไม่มี role — ทำยังไงให้ rung วัดต่อได้โดยไม่หย่อนอะไร",
+   "in_effect": "(1) CLASSIFY ไม่ใช่ยกเว้น: e5_trim_dark กับ e5_trim_lens เข้า ROLE_BY_MATERIAL เป็น OTHER — ชิ้นส่วนโคมเพดาน (trim ring + aperture disc ที่ z~2.79m) ทับที่นอนเฉพาะใน PLAN ซึ่งเป็นแกนเดียวที่ rung มอง; มันไม่มีวันเป็น sleeping surface ประโยคเดียวกับ acq_bench_seat (2) RE-BASELINE โดยตั้งใจที่ p2r91: core_px 17,690 (5.0% ของ 355,398) แทนเลข p2r54 ที่ guard ทั้งสองของ rung ปฏิเสธเองโดยชื่อ (กล้อง B ตาม D-175 คำพี่ + fused->separable ตาม D-106) — ไม่ใช่การอนุญาตให้เตียงแย่ลง: เทียบข้ามกล้องคือการเทียบคนละเฟรม (บทเรียน D-175 บรรทัดสุดท้าย) (3) split flank/top เป็น null เพราะ projection ไม่ reproduce mask บนกล้องนี้ (พิมพ์ SPLIT NOT AVAILABLE พร้อมพยานสองแถว) — หนี้มีชื่อ: แก้ projection แล้วเติม split ให้ ratchet เฝ้า flank ได้อีกครั้ง",
+   "in_effect_assert": [
+    {
+     "file": "qa/bed-pixels-baseline.json",
+     "pattern": "room_bedroom_suite_eye_p2r91",
+     "why": "baseline ชี้เฟรมนี้จริง — แถวนี้โกหกไม่ได้ถ้าไฟล์ยังชี้ p2r54"
+    },
+    {
+     "file": "pipeline/scripts/bed_pixels.py",
+     "pattern": "e5_trim_dark",
+     "why": "การ classify อยู่ในตาราง role จริง ไม่ใช่ในคำอธิบายของแถวนี้"
+    }
+   ],
+   "reverse_by": "พี่ชี้จากภาพว่าเตียงโชว์ที่นอนมากไป -> เลข core_px ใน baseline ลดได้อย่างเดียว (กฎไฟล์เอง); ถอนการ classify: ลบสองบรรทัด e5_trim_* ใน ROLE_BY_MATERIAL แล้ว rung จะกลับมายื่นสามข้อเดิมทันที; คืน baseline เก่า: ย้าย _previous_baseline_p2r54 กลับขึ้น top-level แล้วลบแถวนี้",
+   "where": "qa/bed-pixels-baseline.json,pipeline/scripts/bed_pixels.py",
+   "because": "rung ที่เพิ่งวัดได้ครั้งแรกบนกล้อง B ต้องมี baseline ของกล้องตัวเอง ไม่งั้นมันไม่มีวันรันอีก (guard ของมันปฏิเสธการเทียบข้ามกล้าม/ข้าม semantics เองโดยชื่อ) และ trim โคมเป็น OTHER เพราะ plan-overlap เป็นแกนเดียวที่ test มอง — ของบนเพดานไม่ใช่ผ้าปูเตียง"
+  },
+  {
    "id": "D-006",
    "unit": "TRN-002",
    "subject": "round-closing-authority",
@@ -3614,7 +3640,9 @@
     }
    ],
    "because": "D-179 แก้ guard หนึ่งตัว แต่รูปของมัน — 'เครื่องที่ไฟเขียวไม่ได้ขึ้นกับสิ่งที่มันอ้างว่าตรวจ' — เป็นคลาสที่เรโปนี้นับมาแล้ว 15 ครั้ง การแก้ตัวเดียวแล้วหยุดคือ allowlist ในรูปของการตัดสินใจ · ทุกจุดในสิบข้อมี probe และหลายจุดมี negative control ที่ต้องแดงจริงก่อนจึงนับว่าแก้แล้ว · และรอบสครัตินัยก่อน commit พิสูจน์ประเด็นนี้กับตัวผมเอง: ข้อ (4) ผมแก้ที่ dump แล้วประกาศ ว่าเสร็จโดยไม่ไล่ไปถึงผู้บริโภค — probe แรกของผมพิสูจน์ผ่านเพราะมันตัดสิน MESH เท่านั้น การไล่ end-to-end จึงเจอทั้ง allowlist ชั้นสองและกล่องที่ผิด",
-   "reverse_by": "ต่อจุดไป: ลบ pattern ของ assert ที่เกี่ยวข้องออกจากแถวนี้พร้อมกับ revert โค้ด ไม่งั้น `decisions_check` rule 5 จะฟ้องทันทีว่าแถวกับไฟล์ไม่ตรงกัน · ถ้าจะถอนทั้งชุด: `git revert` commit นี้ แล้วลบ D-180 — แต่ต้องบันทึกว่ายอมรับกลับไปใช้ receipt ที่เขียน `ran=true` บน exit 2 และ rung OFF-AXIS ที่ตาบอดกับของที่ซื้อมาทุกชิ้น"
+   "reverse_by": "ต่อจุดไป: ลบ pattern ของ assert ที่เกี่ยวข้องออกจากแถวนี้พร้อมกับ revert โค้ด ไม่งั้น `decisions_check` rule 5 จะฟ้องทันทีว่าแถวกับไฟล์ไม่ตรงกัน · ถ้าจะถอนทั้งชุด: `git revert` commit นี้ แล้วลบ D-180 — แต่ต้องบันทึกว่ายอมรับกลับไปใช้ receipt ที่เขียน `ran=true` บน exit 2 และ rung OFF-AXIS ที่ตาบอดกับของที่ซื้อมาทุกชิ้น",
+   "obeys": "ORD-2026-08-27-every-round-sees-what-it-changed",
+   "because_stance": "รายการที่ (1)-(2) ของแถวนี้คือการทำให้ obeyed_assert ของคำสั่งนั้น (gen_diff:ran / receipt ran) อ่านหลักฐานจริงแทนการนับเจตนา — แถวนี้รับใช้คำสั่ง ไม่ได้ตัดสินทับ; ORD-2026-08-31-harness-audit-abc บันทึกใน because นี้ตามกฎ stance-เดียว"
   }
  ],
  "_assert_ratchet_from": "D-124"

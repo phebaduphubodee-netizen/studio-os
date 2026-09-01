@@ -446,10 +446,25 @@ def _score_deliverable(name, quick=False, frame=True):
                     return float("inf")
                 (x0, y0, z0), (x1, y1, z1) = b
                 return abs(x1 - x0) * abs(y1 - y0) * abs(z1 - z0)
-            _targets = [o["name"] for o in
-                        sorted((o for o in objs
-                                if o.get("in_frustum") and not o.get("hidden_render")),
-                               key=_vol)]
+            # BED ROLES ARE PINNED TO THE FRONT OF THE ROSTER (p2r91). Smallest-
+            # first exists so the ROOM SHELL falls off the 215-id end — but the
+            # bed is also a largest box, and on the first full frame after this
+            # ordering shipped, every bed-role object fell off with the walls and
+            # bed_pixels refused the frame (correctly: a rung that cannot POINT
+            # at the mattress must not report on it). Two rungs, two questions:
+            # the census asks "what is too small to read" and tolerates losing
+            # the shell; bed_pixels NEEDS the roles by construction. Pinning the
+            # handful of role-wearing meshes serves both; what falls off the end
+            # is still only the anonymous shell, and still named in the sidecar.
+            import bed_pixels as _bpx_roles
+            _role_names = {n for n, ms in _wears.items()
+                           if any(m in _bpx_roles.ROLE_BY_MATERIAL for m in ms)}
+            _infr = [o for o in objs
+                     if o.get("in_frustum") and not o.get("hidden_render")]
+            _targets = ([o["name"] for o in _infr if o["name"] in _role_names]
+                        + [o["name"] for o in
+                           sorted((o for o in _infr
+                                   if o["name"] not in _role_names), key=_vol)])
             id_mask.build_mask(
                 os.path.join(out, f"room_{name}.idmask.png"),
                 wears=_wears, names_in=_targets)
@@ -4822,6 +4837,9 @@ def _dress_scene(spec):
             # would count the room's own contents as UNKNOWN. This is the
             # blindness class's FOURTH prefix and the fix is unchanged.
             "9c2e5e24-d178-46d4-ab76-5e7f6a1922de": "wardrobe_bookslean",
+            # p2r91 — personal-effects debut (ASK-035's missing class), same
+            # per-item-tag law: D7 must read names.
+            "b4d3ed11-b129-4e28-aed9-66da021b7bbc": "wardrobe_perfume",
         }
         # the open wardrobe's FRONT direction, derived once from the spec: the
         # cell's depth axis is the builtin's short plan axis, and the front is
@@ -5007,6 +5025,19 @@ def _dress_scene(spec):
                 # verdicts in _private/deliv-001/style-panel-2026-08-27/).
                 ("9c2e5e24-d178-46d4-ab76-5e7f6a1922de", 'tw1', False, True,
                  "หนังสือกองเอียงบนชั้นหอคอย ข้างกองผ้าพับ (panel 2/3)"),
+                # p2r91 — the PERSONAL-EFFECTS class ASK-035 measured as absent
+                # as a CLASS (severity-3 in the friend survey: "ไม่มีคลาสของใช้
+                # ส่วนตัวเลยสักชิ้น"). Free-tier BlenderKit, scale-asserted
+                # 138 mm (vase band) — ~28 px at the record camera, above the
+                # 24 px legibility line. 60 mm plan axis clears the >=140 mm
+                # side strips the vessel pair's own comment measures on ni2.
+                # NOT 'sh': the first cut put it there and the dump answered
+                # in_frustum=True occluded=True — a 2.5 m shelf the eye camera
+                # cannot see into, which is P2r-33's defect class caught before
+                # a frame this time (the dump's occlusion column is the rung).
+                ("b4d3ed11-b129-4e28-aed9-66da021b7bbc", 'ni2', False, True,
+                 "น้ำหอมขวดโปรดของภรรยา — ชั้นระดับตา ข้างคู่ภาชนะ "
+                 "(ของใช้ส่วนตัว คลาสที่การสำรวจ 51 เฟรมวัดว่าหายทั้งคลาส)"),
                 # TWO MORE WERE BOUGHT FOR THIS BLOCK AND MEASURED OUT OF IT, and
                 # the number is the useful part: a SHARED cell offers the strip
                 # its neighbour leaves, and on this wardrobe that strip is
@@ -8079,6 +8110,10 @@ def _add_key_sun(spec):
     # has a third face: NEITHER can be verified without asking whether the thing
     # is there at all. So the assert below tests PRESENCE, not a property.
     bpy.context.scene.collection.objects.link(so)
+    # Blender 5.1: view_layer.objects does not reflect a link until the view layer
+    # is updated (probed headless: pre-link False, post-link False, post-update
+    # True) — without this the presence assert below false-positives on every run.
+    bpy.context.view_layer.update()
     if so.name not in bpy.context.view_layer.objects:
         raise SystemExit(
             "--eye key sun REFUSED: the sun object was built and configured but is "

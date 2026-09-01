@@ -2,38 +2,38 @@
  "_what": "The ratchet ceiling for bed_pixels: how much of our own mattress the frame is allowed to show before the build fails. NOT the target - see best_on_record and target below.",
  "_why_a_ratchet": "A flat cut at the delivered value fails 15 of 15 masked frames in this lane history, because the bare flank is in every frame this studio has made. A rung red on every render gets switched off (R13). So the absolute number PRINTS on every run into the render path and what BLOCKS is the number rising - which is the half nothing caught when it rose 23x between p2r31e and p2r44 while coverage read 94.0% and fall_sides read 4/4.",
  "_how_to_lower_it": "A round that covers more of the mattress re-runs bed_pixels and writes the lower numbers here, naming the round. It may only ever go DOWN. Raising it is a decision that needs a row in qa/open-decisions.json saying why the bed is allowed to get worse.",
- "frame": "room_bedroom_suite_eye_p2r54",
- "round": "p2r54",
- "date": "2026-08-18",
+ "frame": "room_bedroom_suite_eye_p2r91",
+ "round": "p2r91",
+ "date": "2026-09-01",
  "camera": {
   "res": [
    2400,
    1800,
    100
   ],
-  "lens": 24.0,
+  "lens": 18.0,
   "shift": [
    0.0,
-   -0.08
+   -0.0376
   ],
   "matrix": [
    [
-    0.622001,
-    -0.0,
-    -0.783016,
-    1.4
-   ],
-   [
-    -0.783016,
-    -0.0,
-    -0.622001,
-    -0.12
-   ],
-   [
+    0.767844,
     0.0,
+    -0.640637,
+    1.5
+   ],
+   [
+    -0.640637,
+    -0.0,
+    -0.767844,
+    -0.2
+   ],
+   [
+    -0.0,
     1.0,
     -0.0,
-    1.15
+    1.05
    ],
    [
     0.0,
@@ -43,11 +43,11 @@
    ]
   ]
  },
- "core_px": 4559,
- "core_flank": 3206,
- "core_top": 1353,
- "core_share": 0.009,
- "top_plane_px": 218522,
+ "core_px": 17690,
+ "core_flank": null,
+ "core_top": null,
+ "core_share": 0.05,
+ "top_plane_px": 355398,
  "best_on_record": {
   "frame": "room_bedroom_suite_eye_p2r54",
   "core_semantics": "fused_body:bed__frame__acq0",
@@ -68,6 +68,56 @@
   "authority": "_private/deliv-001/flank-panel-2026-08-17/readings.json",
   "note": "three blind sighted readers over 7 delivered frames: 16 of 18 legible readings none, 2 sliver, 0 above sliver; ours most 3 for 3. The panel answers on a word scale and delivered frames carry no object mask, so no delivered flank can be counted in pixels - this target is a direction with a fact behind it, not a measured px value."
  },
- "core_semantics": "fused_body:bed__frame__acq0",
- "_rebaselined_p2r54": "D-111: fused-body semantics (81d895fd models frame+mattress as one shell; every exposed body pixel counts as core — stricter than the separable count by construction). The ratchet's own semantics guard refused the cross-construction comparison; this baseline is the deliberate restart. The separable-era numbers stay in best_on_record.separable below for the day a separable bed returns. The shell wears the signed D3-1 base linen (value 114), so what shows reads as dark base, the delivered grammar; the cross-construction judge is the blind panel, run on this frame this round."
+ "core_semantics": "separable",
+ "_rebaselined_p2r54": "D-111: fused-body semantics (81d895fd models frame+mattress as one shell; every exposed body pixel counts as core — stricter than the separable count by construction). The ratchet's own semantics guard refused the cross-construction comparison; this baseline is the deliberate restart. The separable-era numbers stay in best_on_record.separable below for the day a separable bed returns. The shell wears the signed D3-1 base linen (value 114), so what shows reads as dark base, the delivered grammar; the cross-construction judge is the blind panel, run on this frame this round.",
+ "_rebaselined_p2r91": "D-181: the camera of record moved to B (D-175, HIS answer 'B') and the whole-bed acquisition (D-106) returned separable semantics, so BOTH ratchet guards refuse the p2r54 fused-body/old-camera numbers by name — this is the deliberate restart the rung asks for, not a raising. 17,690 px core at 5.0% of a 355,398 px sleeping surface, measured on the first full frame with the key sun. core_flank/core_top are null because the flank/top projection does not reproduce this mask on camera B (printed 'SPLIT NOT AVAILABLE' with the two witness rows) — the ratchet's own None-skip covers them until the projection is fixed; core_px is the row that holds.",
+ "_previous_baseline_p2r54": {
+  "frame": "room_bedroom_suite_eye_p2r54",
+  "round": "p2r54",
+  "date": "2026-08-18",
+  "camera": {
+   "res": [
+    2400,
+    1800,
+    100
+   ],
+   "lens": 24.0,
+   "shift": [
+    0.0,
+    -0.08
+   ],
+   "matrix": [
+    [
+     0.622001,
+     -0.0,
+     -0.783016,
+     1.4
+    ],
+    [
+     -0.783016,
+     -0.0,
+     -0.622001,
+     -0.12
+    ],
+    [
+     0.0,
+     1.0,
+     -0.0,
+     1.15
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  },
+  "core_px": 4559,
+  "core_flank": 3206,
+  "core_top": 1353,
+  "core_share": 0.009,
+  "top_plane_px": 218522,
+  "core_semantics": "fused_body:bed__frame__acq0"
+ }
 }

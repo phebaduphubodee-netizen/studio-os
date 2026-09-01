@@ -256,10 +256,14 @@ def test_the_render_path_spawns_it_and_hard_stops_on_2():
 def test_the_repo_ledger_and_the_committed_frame_agree():
     """The ledger is not a document: it is checked against the frame of record. If
     this fails, either the scene moved or a row went stale — both are the point."""
+    # FRAME OF RECORD MOVED p2r85 -> p2r91 (2026-09-01), in the same commit as
+    # the ledger edits it pins: two stale rows deleted (wardrobe_bag__ /
+    # wardrobe__acq3.001 — carried since the p2r90 seat fix) per the r89 gate's
+    # own law that such rows land with the commit that moves the record.
     dump = os.path.join(REPO, "pipeline", "output",
-                        "room_bedroom_suite_eye_p2r85.scene.json")
+                        "room_bedroom_suite_eye_p2r91.scene.json")
     if not os.path.exists(dump):
-        pytest.skip("p2r85 frame of record not on this machine")
+        pytest.skip("p2r91 frame of record not on this machine")
     objs = CC.load_dump(dump)
     led = CC.load_ledger(os.path.join(REPO, "qa", "carry-ledger.json"))
     v, _, _ = CC.check(objs, led)

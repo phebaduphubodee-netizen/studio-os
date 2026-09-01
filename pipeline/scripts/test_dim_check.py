@@ -88,6 +88,20 @@ def test_adult_rail_passes():
     assert r["state"] == "ok"
 
 
+def test_hanger_hardware_is_not_judged_as_a_garment():
+    # The p2r91 incident: D-180 made CURVE hangers visible to the dump and 23 of
+    # them were convicted as doll garments (their ~200 mm frames sit far below
+    # the 700 floor by construction — a hanger is hardware, not cloth, D-029).
+    # This pins the exclusion: a *_hanger mass files NO garment_rail row, and
+    # its presence does not poison the rail its garment hangs on.
+    objs = rail(0, 0.715) + [ob("mill__style_garmentacq0s0_hanger",
+                                (0.0, 0.0, 1.70), (0.40, 0.05, 1.90))]
+    findings, _ = DC.check(dump_of(objs), [])
+    rows = [f for f in findings if f["cls"] == "garment_rail"]
+    assert all(f["state"] == "ok" for f in rows)
+    assert not any("_hanger" in f["what"] for f in rows)
+
+
 # ---- height bands ---------------------------------------------------------------
 def test_side_table_and_bench_bands():
     d = dump_of([ob("side_table__acq0", (0, 0, 0), (0.4, 0.4, 0.400)),

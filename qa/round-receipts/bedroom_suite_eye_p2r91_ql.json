@@ -1,0 +1,65 @@
+{
+ "schema": "round-receipt@1",
+ "round": "bedroom_suite_eye_p2r91_ql",
+ "quick": true,
+ "frame": true,
+ "written_utc": "2026-09-01T06:06:58+00:00",
+ "rungs": {
+  "rule_gate": {
+   "ran": true
+  },
+  "id_mask": {
+   "ran": false
+  },
+  "existence_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "carry_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "transform_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "edge_highlight": {
+   "ran": true,
+   "exit": 0
+  },
+  "dim_check": {
+   "ran": true,
+   "exit": 0
+  },
+  "sheet_recon": {
+   "ran": true,
+   "exit": 0
+  },
+  "deliverable_check": {
+   "ran": true,
+   "exit": 1
+  },
+  "value_probe": {
+   "ran": false,
+   "why": "not reached on this rung/branch"
+  },
+  "bed_pixels": {
+   "ran": false,
+   "why": "not reached on this rung/branch"
+  },
+  "p2_exit": {
+   "ran": false,
+   "why": "not reached on this rung/branch"
+  },
+  "delta": {
+   "ran": false,
+   "exit": 2,
+   "why": "exit 2 = COULD NOT RUN (its own contract)"
+  },
+  "gen_diff": {
+   "ran": false,
+   "why": "full-fidelity eye frames only (R5)"
+  }
+ },
+ "proof": []
+}

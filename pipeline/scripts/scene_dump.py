@@ -270,15 +270,37 @@ def dump(scene=None):
             # .blend probe found glTF garment sets importing the same shell
             # twice (acq0==acq10), and a rung that reads the spec would never
             # see them. 0.1 mm agreement on all six numbers = one mesh twice.
-            _pts = [ev.matrix_world @ _V(c) for c in ev.bound_box]
+            if ob.type == "MESH":
+                _pts = [ev.matrix_world @ _V(c) for c in ev.bound_box]
+            else:
+                # `bound_box` IS ONLY TRUSTWORTHY FOR A MESH (placement_dump's
+                # own measured control, Blender 5.1.2: a bevelled hanger CURVE
+                # reports a 2.4x2.0x2.2 m box around a 400x4x198 mm wire). The
+                # to_mesh this loop already holds is what the renderer makes,
+                # so a non-mesh is measured from its vertices — the identical
+                # discipline placement_dump._world_aabb adopted in the same
+                # commit that widened the type list. p2r91 measured the cost of
+                # missing it here: 23 hanger curves each dumped as a 2215 mm
+                # mass, and dim_check convicted every one as a doll garment.
+                _pts = [ev.matrix_world @ v.co for v in me.vertices]
             rec["aabb"] = [
                 [round(min(p[i] for p in _pts), 6) for i in range(3)],
                 [round(max(p[i] for p in _pts), 6) for i in range(3)]]
             if cam is not None:
+                if ob.type == "MESH":
+                    _fr_pts = (ob.matrix_world @ _V(c) for c in ob.bound_box)
+                else:
+                    # same trap as the aabb: a curve's fabricated box can put
+                    # it in (or out of) the frustum it does not occupy — use
+                    # the honest world extents just measured.
+                    _lo, _hi = rec["aabb"]
+                    _fr_pts = (_V((_lo[0] if i & 1 else _hi[0],
+                                   _lo[1] if i & 2 else _hi[1],
+                                   _lo[2] if i & 4 else _hi[2]))
+                               for i in range(8))
                 rec["in_frustum"] = any(
                     0.0 <= p.x <= 1.0 and 0.0 <= p.y <= 1.0 and p.z > 0.0
-                    for p in (_w2cv(sc, cam, ob.matrix_world @ _V(c))
-                              for c in ob.bound_box))
+                    for p in (_w2cv(sc, cam, wp) for wp in _fr_pts))
                 # OCCLUSION, for item-carrying objects only (the first live D7
                 # count let two ensuite robe hooks through the west wall into a
                 # BEDROOM styling count — a frustum cone does not stop at
