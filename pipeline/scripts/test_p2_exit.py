@@ -588,3 +588,68 @@ def test_a_clean_autocorr_with_a_dead_control_is_could_not_run(tmp_path, capsys)
     # no matmask beside this frame -> the subject guard refuses first, which is
     # itself the right answer; assert the harness never calls it a pass
     assert rc == 2, out
+
+
+# ---------------------------------------------------------------------------
+# THE NOISE FLOOR MUST BE REACHABLE BY THE SIGNAL (TRN-004, 2026-08-29).
+#
+# Found by reproducing a tutorial and running this rung's own D-056 control on
+# the result: a PERFECT self-tiled repeat scored peak 1.000 against floor 1.260
+# and printed `not periodic`. A normalised autocorrelation cannot exceed 1.0, so
+# a floor at or above 1.0 is not a strict bar, it is a failed estimate — and a
+# verdict read against it is "could not look" wearing the face of "looked and it
+# was clear", which R11 outlaws by name.
+# ---------------------------------------------------------------------------
+def _perfect_repeat(w=260, h=200, seed=3):
+    """An image that IS a repeat by construction: random content, then its own
+    left half duplicated. Peak is 1.000 at lag w/2 or the estimator is broken."""
+    rng = np.random.default_rng(seed)
+    base = rng.random((h, w // 2))
+    base = base + np.linspace(0, 0.4, w // 2)[None, :]     # some broad structure
+    return np.concatenate([base, base], axis=1)
+
+
+def test_a_perfect_repeat_is_found_and_the_floor_stays_under_one():
+    L = _perfect_repeat()
+    peak, lag, floor = PE.autocorr_peak(L, min_lag=12)
+    assert peak > 0.9, f"a literal repeat scored {peak}"
+    assert lag == L.shape[1] // 2, f"found lag {lag}, expected {L.shape[1] // 2}"
+    assert floor < 1.0, (
+        f"floor {floor:.3f} is at or above the 1.0 ceiling the signal cannot "
+        f"exceed — the surrogate estimate failed")
+    assert peak > floor, "the rung must FIRE on a perfect repeat"
+
+
+def test_the_floor_is_stable_across_surrogate_seeds():
+    """At the shipped n=8 the floor ranged 0.541-1.260 over 12 seeds and one of
+    them blocked a perfect repeat. Pinning a seed made that reproducible, not
+    right. This asserts the estimator, not the pinned draw."""
+    L = _perfect_repeat()
+    A = L - L.mean(axis=1, keepdims=True)
+    p0 = A.mean(axis=0)
+    W = len(p0)
+    floors = []
+    for seed in range(8):
+        rng = np.random.default_rng(seed)
+        peaks = []
+        for _ in range(PE._SURROGATES):
+            sh = p0[rng.permutation(W)]
+            pk, _, _ = PE.autocorr_peak(np.tile(sh, (4, 1)), min_lag=12)
+            peaks.append(pk)
+        floors.append(float(np.mean(peaks) + 3.0 * np.std(peaks)))
+    assert max(floors) < 1.0, f"a seed produced an impossible floor: {max(floors):.3f}"
+    assert PE._SURROGATES >= 32, "8 surrogates was measured to be too few"
+
+
+def test_an_impossible_floor_is_could_not_run_never_a_pass():
+    """The structural guard, independent of the surrogate count: if the floor
+    ever comes back >= 1.0 the crop must carry NO verdict."""
+    res = {"peak": 0.0, "lag_px": 0, "floor": 1.26, "periodic": False,
+           "control_floor": 0.5}
+    for tag, f in (("frame", res["floor"]), ("control", res["control_floor"])):
+        if f >= PE._FLOOR_IMPOSSIBLE:
+            res["could_not_run"] = "impossible floor"
+            res["periodic"] = None
+            break
+    assert res["could_not_run"]
+    assert res["periodic"] is None, "an unrunnable rung must not report `not periodic`"

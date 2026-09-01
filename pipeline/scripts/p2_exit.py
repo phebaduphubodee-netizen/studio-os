@@ -442,6 +442,13 @@ def _median_filter_1d(p, win=9):
     return np.array([np.median(pad[i:i + win]) for i in range(len(p))])
 
 
+_SURROGATES = 32
+# A normalised autocorrelation cannot exceed 1.0, so a FLOOR at or above 1.0 is
+# not a strict bar — it is a failed estimate, and any verdict read against it is
+# "could not look" wearing the face of "looked and it was clear" (R11).
+_FLOOR_IMPOSSIBLE = 1.0
+
+
 def autocorr_peak(L, min_lag=24, despike_win=9):
     """Max normalised autocorrelation of the DESPIKED column-mean profile at
     lag >= min_lag, plus a noise floor from shuffled surrogates.
@@ -514,7 +521,16 @@ def autocorr_peak(L, min_lag=24, despike_win=9):
 
     peak, lag = _peak_of(p0)
     rng = np.random.default_rng(0)  # fixed seed: same frame -> same floor
-    floors = [_peak_of(p0[rng.permutation(W)])[0] for _ in range(8)]
+    # HOW MANY SURROGATES, and why it is no longer 8. `mean + 3*sd` over 8 draws
+    # puts a 3-sigma bar on top of an 8-sample sd, which is itself so noisy that
+    # the bar wanders further than the thing it is meant to bound. MEASURED on a
+    # PERFECT repeat (an image tiled with its own left half, peak 1.000 by
+    # construction) across 12 surrogate seeds: at n=8 the floor ranged
+    # 0.541-1.260 and 1 of 12 seeds landed ABOVE 1.000; at n=32, 0.625-0.980 and
+    # none did. The shipped seed was 0 — the single seed of the twelve that
+    # blocked a perfect repeat. Pinning a seed made the number reproducible
+    # without making it right: a reproducible draw is still one draw.
+    floors = [_peak_of(p0[rng.permutation(W)])[0] for _ in range(_SURROGATES)]
     floor = float(np.mean(floors) + 3.0 * np.std(floors))
     return peak, lag, floor
 
@@ -547,6 +563,21 @@ def rung_autocorr(ours_im, spec):
     else:
         res.update(control_fired=False,
                    control_why="crop too narrow to build a tiled control")
+    # A FLOOR AT OR ABOVE 1.0 IS NOT A HIGH BAR, IT IS A BROKEN MEASUREMENT.
+    # Found the only way it could be — by running the control and watching a
+    # perfect self-tiled repeat score peak 1.000 against floor 1.260 and print
+    # `not periodic`. Refuse rather than report: the whole point of the D-056
+    # control is that a clean absence has to be earned, and a floor the signal
+    # cannot reach by construction means the rung never had the chance to fail.
+    for _tag, _f in (("frame", floor), ("control", res.get("control_floor"))):
+        if _f is not None and _f >= _FLOOR_IMPOSSIBLE:
+            res["could_not_run"] = (
+                f"the {_tag} noise floor came back {_f:.3f}, at or above the 1.0 "
+                f"ceiling a normalised autocorrelation cannot exceed — the "
+                f"surrogate estimate failed, so this crop has NO verdict. Widen "
+                f"the crop or raise _SURROGATES; never read the clean as a pass.")
+            res["periodic"] = None
+            break
     return c, None, res
 
 
