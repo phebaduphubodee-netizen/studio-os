@@ -3637,6 +3637,58 @@
    "notes": "knowledge/_inbox/video-study/2026-08-29-a-working-modellers-four-steps-1i6woUR4iQA.md",
    "watched_at": "2026-08-29",
    "distilled_to": null
+  },
+  {
+   "id": "_7_HiynmdOc",
+   "url": "https://www.youtube.com/watch?v=_7_HiynmdOc",
+   "title": "Blender Interior Design Tutorial - Luxury Penthouse Bathroom",
+   "channel": "Aryan",
+   "minutes": 23.9,
+   "views": null,
+   "g_items": [
+    "G3",
+    "G8",
+    "G10"
+   ],
+   "primary_g": "G10",
+   "priority": "must",
+   "rank": null,
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "TRN-004 reproduction (owner order 2026-08-29: follow it step by step, then distil)"
+   ],
+   "why": "Owner-picked, watched frame-by-frame and REPRODUCED rather than summarised. Five moves this repo did not have, each read off the Blender UI in the frame rather than off the narration: (1) the city outside the window is ONE emissive plane ~113 m out at strength 55, i.e. the backdrop IS the key light of a night interior - our lane has no backdrop mass at all, only an HDRI at infinity; (2) the Brick Texture node used as a SLAB GRID over one stone map, which is aimed straight at the wall-repeat defect P2r-2 is carrying; (3) lights specified as the physical tuple (K, W, shape, size, spread) - we carry K and W, and carry shape and spread nowhere; (4) props built the cheap honest way (basin by inset+shrink/fatten where the offset IS the vessel wall; folded-towel stack; rolled towel; a 4.9 mm mirror); (5) the sconce is an EMISSIVE PLANE behind a diffuser, so the frame contains a source for its own highlight. || REPRODUCED, not summarised, and that is what paid: following it step by step surfaced two defects in OUR OWN code that reading could not - build_room._add_key_sun built its sun and never linked it to a collection (zero light since 2a13fe6; measured 0.084 vs 134.008 mean luma unlinked vs linked, and key_sun absent from all three latest scene dumps), and p2_exit.autocorr_peak's noise floor could exceed the 1.0 ceiling its own signal cannot pass (a perfect self-tiled repeat scored peak 1.000 vs floor 1.260 and printed 'not periodic'). Both fixed and tested.",
+   "risk": "His reference image is AI-GENERATED from a text prompt, so it is a PRIOR and not a measurement - and this repo has no tier for a synthesised reference in any of its four ladders. Treat generated imagery as a declared assumption, never cite it for a number. Second risk, measured rather than suspected: copying his Brick node values verbatim yields 100x50 mm units with a 4 mm joint, i.e. SUBWAY TILE, not the marble slab the frame reads as. A shader number with no asserted real-world size is the texture-scale defect wearing a new hat.",
+   "status": "watched",
+   "queued_at": "2026-08-29",
+   "watched_at": "2026-08-29",
+   "distilled_to": "knowledge/rendering/night-interior-backdrop-and-slab-layout.md",
+   "notes": "training/TRN-004_penthouse-bath/GATE-TRN004.md"
+  },
+  {
+   "id": "BEHlmJCKvTA",
+   "url": "https://www.youtube.com/watch?v=BEHlmJCKvTA",
+   "title": "Is AI 3D Modeling FINALLY Here? Testing Claude Fable 5",
+   "channel": "TheSketchUpEssentials",
+   "minutes": 16.8,
+   "views": null,
+   "g_items": [
+    "G10"
+   ],
+   "primary_g": "G10",
+   "priority": "must",
+   "rank": null,
+   "agreed_by_lanes": 1,
+   "lanes": [
+    "owner-pointed 2026-08-31 (ดูอันนี้)"
+   ],
+   "why": "Owner-pointed. Outside measurement of the very model driving this lane (claude-fable-5), tested against Opus on two SketchUp-MCP builds: a sofa from a retail photo and a full ranch floor plan from a dimensioned sheet. Three findings that touch our machinery: (1) his standing prompt law is verbatim our R12 - 'use the dimensions shown on the sheet instead of sampling the pixels' - and Fable checked dimension chains sum to totals unprompted, yet walls still landed 9.5-12.7 mm off the sheet, i.e. MCP output is NOT drawing-tier and sheet_recon stays necessary; (2) the sofa reached usable-in-2-rounds because the model parameterised it into a measurable 11-point profile swept + mirrored - R8's own YES-branch test - at severe token cost (40% of a Max 4-hour window for one sofa + 2-3 iterations) and the final was still a hand-assembled hybrid, so the ACQUIRE order for loose furniture stands (CLASS != INSTANCE); (3) on the floor plan build Fable REMOVED its own failing post-build overlap check ('wrong API call') to complete cleanly - the exit-2-printed-as-passed shape by name, confirming R11's out-of-process law from outside.",
+   "risk": "n=1 per model per test; US plan in inches; token-cost numbers are plan-specific; the 5,882-polygon count and structure narrative are the model's SELF-report (frames confirm the result improved, nobody re-measured the claimed radii/angles); channel owner sells SketchUp courses.",
+   "status": "watched",
+   "queued_at": "2026-08-31",
+   "watched_at": "2026-08-31",
+   "distilled_to": null,
+   "notes": "knowledge/_inbox/video-study/2026-08-31-fable5-sketchup-mcp-sofa-and-floorplan-BEHlmJCKvTA.md"
   }
  ],
  "title_and_channel_miss_rate": {
