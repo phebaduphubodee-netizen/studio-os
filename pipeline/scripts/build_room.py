@@ -251,25 +251,35 @@ def _gen_diff(name):
     quiet, so a failed run prints as NOT RUN with the reason, on the same contract as
     every other rung here: "could not look" may not print like "looked and it was
     fine".
+
+    RETURNS True only when gen_diff.py actually produced this round's variants.
+    It used to return None on EVERY path -- success and failure alike -- so the
+    caller had no signal at all and set `_gd_ran = True` on the mere fact that the
+    call came back. The same round then printed "NOT RUN (exit 1)" to stdout and
+    wrote `gen_diff: ran=true` into the receipt, whose `gen_diff:ran` token is
+    exactly what ORD-2026-08-27's `obeyed_assert` greps for. An order that reads
+    OBEYED because a function returned is R13's own defect landing on the
+    machinery built to end R13: "could not look" may not print like "looked and
+    it was fine", and it may not FILE like it either.
     """
     if not _GEN_DIFF_EVERY_ROUND:
         print("  GEN-DIFF: OFF at the module constant — this is a disobeyed standing "
               "order (ORD-2026-08-13) unless a decision row says otherwise")
-        return
+        return False
     if os.environ.get("BUILD_ROOM_NO_GEN_DIFF") == "1":
         print("  GEN-DIFF: SKIPPED by BUILD_ROOM_NO_GEN_DIFF=1 — recorded here so the "
               "skip is visible in the round's log rather than silent")
-        return
+        return False
     import shutil
     import subprocess
     png = os.path.join(_outdir(), f"room_{name}.png")
     if not os.path.exists(png):
         print(f"  GEN-DIFF: NOT RUN — no rendered frame at {png}")
-        return
+        return False
     py = next((p for p in (shutil.which("python3"), shutil.which("python")) if p), None)
     if py is None:
         print("  GEN-DIFF: NOT RUN — no plain python interpreter on PATH")
-        return
+        return False
     cmd = [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "gen_diff.py"), png, "--n", "3"]
     env = dict(os.environ, PYTHONIOENCODING="utf-8")
@@ -278,7 +288,7 @@ def _gen_diff(name):
                            errors="replace", env=env, timeout=600)
     except Exception as e:                                  # noqa: BLE001
         print(f"  GEN-DIFF: NOT RUN — {type(e).__name__}: {e}")
-        return
+        return False
     for ln in (r.stdout or "").splitlines():
         print(f"  GEN-DIFF {ln}")
     if r.returncode != 0:
@@ -286,6 +296,8 @@ def _gen_diff(name):
             print(f"  GEN-DIFF !! {ln}")
         print(f"  GEN-DIFF: NOT RUN (exit {r.returncode}) — the round's variants are "
               f"missing and the gate artifact must say so, not omit it")
+        return False
+    return True
 
 
 def _score_deliverable(name, quick=False, frame=True):
@@ -877,8 +889,10 @@ def _score_deliverable(name, quick=False, frame=True):
     # an eye looks, whatever the measurements said. Non-fatal by its own contract —
     # `_gen_diff` prints NOT RUN with a reason and returns.
     if frame and not quick:
-        _gen_diff(name)
-        _gd_ran = True
+        # `_gd_ran` is the RUNG'S ANSWER, not the fact that the call returned.
+        # Setting it True beside the call meant a round could print
+        # "GEN-DIFF: NOT RUN (exit 1)" and file `gen_diff:ran` in the same breath.
+        _gd_ran = _gen_diff(name)
 
     # ---- THE RECEIPT, WRITTEN BEFORE THE STOPS so a refused round still leaves evidence
     # of what it ran. A round that fails is the round whose record matters most, and the
@@ -899,6 +913,19 @@ def _score_deliverable(name, quick=False, frame=True):
                            ("p2_exit", _xr), ("delta", _dl)):
             if _res_ is None:
                 _RR.note(_rc, _nm, False, why="not reached on this rung/branch")
+            elif _res_.returncode == 2:
+                # EXIT 2 IS THE COULD-NOT-RUN CODE, and this repo wrote that
+                # contract itself (delta.py, p2_exit, dim_check, carry_check and
+                # six more all define it). `ran=True` here meant the receipt
+                # counted "subprocess returned a CompletedProcess", so a rung
+                # that announced it could not measure was filed as one that
+                # measured. The `exit` field held the contradiction all along and
+                # neither reader -- summary() nor proof_tokens() -- looks at it.
+                # Sharpest instance: delta.py exists BECAUSE its failure mode
+                # looks like its pass, and the receipt collapsed that distinction
+                # one layer up, in the artefact built to prove the rung ran.
+                _RR.note(_rc, _nm, False, exit_code=2,
+                         why="exit 2 = COULD NOT RUN (its own contract)")
             else:
                 _RR.note(_rc, _nm, True, exit_code=_res_.returncode)
         _RR.note(_rc, "gen_diff", _gd_ran,
@@ -1005,11 +1032,34 @@ def configure_cycles(samples=128, res=None):
 
 def save(name, samples=128, res=None):
     """Write the .blend deliverable. Takes the render settings so the saved file
-    REPRODUCES the PNG rendered next to it — pass what render() will be given."""
+    REPRODUCES the PNG rendered next to it — pass what render() will be given.
+
+    RETENTION (owner order 2026-08-31, "ลุยหมดเลย"): once acquired assets pack
+    into the file, ONE save is 2.7-3.0 GB, and saving every round INCLUDING the
+    quick rung filled 172 GB in four days (2026-08-25..28) with 18.9 GB left on
+    the drive. So: a quick rung writes NO .blend — R5's own words, the
+    playblast's product is its PNG and the scene rebuilds from spec+script; a
+    full save writes compressed and with no .blend1 twin; and prune_output
+    sweeps the shelf on every save, so the retention policy has a consumer
+    that visits it rather than a script nobody types (the R13 shape)."""
     _settle_bed_cloth_fineness()
     configure_cycles(samples, res)
     path = os.path.join(_outdir(), f"room_{name}.blend")
-    bpy.ops.wm.save_as_mainfile(filepath=path)
+    try:
+        import prune_output
+        prune_output.run(outdir=_outdir(), apply=True,
+                         protect={os.path.basename(path)})
+    except Exception as _e:  # housekeeping must never kill a build — but say so
+        print(f"  prune: DID NOT RUN ({_e})")
+    if name.endswith("_" + quicklook.QUICK_SUFFIX):
+        print("  saved: NO .blend for the quick rung (R5 — the PNG is the "
+              "product; rebuild from the spec if the scene is needed)")
+        return
+    try:
+        bpy.context.preferences.filepaths.save_version = 0  # no .blend1 twin
+    except Exception:
+        pass
+    bpy.ops.wm.save_as_mainfile(filepath=path, compress=True)
     print(f"  saved: {path} (engine={bpy.context.scene.render.engine} "
           f"samples={bpy.context.scene.cycles.samples})")
 
@@ -3495,10 +3545,26 @@ def _hdri_world(slug, strength=1.0, rot_deg=0.0, exposure=0.0, look=""):
     except Exception:
         pass
     if look:                                           # DR: a medium-high contrast look adds punch
+        # READ IT BACK. `view_settings.look` is a DYNAMIC enum NAMESPACED BY
+        # `view_transform`: under AgX the valid names carry an "AgX - " prefix and
+        # every bare Filmic-era name is invalid. This block always runs under AgX
+        # (the loop above tries "AgX" first and breaks on success), and the
+        # spec-side validator in exterior.py is a PURE module with no scene access,
+        # so it cannot see the namespace and blesses both spellings. Assigning
+        # inside `try/except: pass` with no readback therefore turned a wrong look
+        # into a silent studio-default render at exit 0 — the one declared field
+        # whose bad VALUE shipped quietly, which is the exact thing the validator
+        # was written to prevent.
         try:
             scn.view_settings.look = look
-        except Exception:
-            pass
+        except Exception as e:                              # noqa: BLE001
+            print(f"  (look {look!r} REFUSED by Blender under view_transform "
+                  f"{scn.view_settings.view_transform!r}: {e})")
+        got = scn.view_settings.look
+        if got != look:
+            print(f"  (look {look!r} did not take under view_transform "
+                  f"{scn.view_settings.view_transform!r} — the frame is grading "
+                  f"as {got!r}. Under AgX the names carry an 'AgX - ' prefix.)")
 
 
 def _exterior_world_args(spec, slug, strength, rot_deg, exposure, look=""):
@@ -7995,6 +8061,30 @@ def _add_key_sun(spec):
         print(f"  key sun: beam ({_beam[0]:+.3f},{_beam[1]:+.3f},{_beam[2]:+.3f}) "
               f"vs glass inward normal ({_nvec[0]:+.3f},{_nvec[1]:+.3f}) -> "
               f"dot {_dot:+.3f} — it enters through the apertures")
+    # THE OBJECT MUST ACTUALLY BE IN THE SCENE, and this line is here because it
+    # was not. `link(so)` was deleted by 2a13fe6 — the same commit that added the
+    # fail-closed beam check above — when the new comment block was written over
+    # it. From that commit until now `_add_key_sun` built the datablock, passed
+    # its own direction check, printed the success line below and returned 1,
+    # while the sun was in NO collection and therefore in no view layer: an
+    # object Blender never renders. Measured rather than argued — an identical
+    # 8 W SUN over one plane, unlinked vs linked: mean luma 0.084 vs 134.008, and
+    # `key_sun` occurs ZERO times in the three most recent scene dumps of record.
+    #
+    # WHY EVERY RUNG MISSED IT, which is the part worth keeping: every check in
+    # this function interrogates the DATABLOCK (energy, elevation, azimuth, the
+    # beam-vs-glass dot product). All of them are true of a light that is not in
+    # the scene. The repo already wrote the sentence for this shape one function
+    # over — "a direction cannot be verified by an amount" — and the same trap
+    # has a third face: NEITHER can be verified without asking whether the thing
+    # is there at all. So the assert below tests PRESENCE, not a property.
+    bpy.context.scene.collection.objects.link(so)
+    if so.name not in bpy.context.view_layer.objects:
+        raise SystemExit(
+            "--eye key sun REFUSED: the sun object was built and configured but is "
+            "not in the view layer, so it renders nothing. This is the 2a13fe6 "
+            "defect: a light that passes every property check and emits no light. "
+            "Never downgrade this to a warning — a warning is how it shipped.")
     print(f"  KEY SUN: {sd.energy:.2f} W/m2, disc {KEY_SUN_ANGLE:.5f} rad "
           f"(the real sun's 0.526 deg), elevation {KEY_SUN_ELEVATION} rad / "
           f"azimuth {math.degrees(_rot):.0f} deg DERIVED from the daylight portals' own "
@@ -11273,10 +11363,17 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
     normal maps so the tufting/weave relief survives. Targets materials by name; force_all
     retints every non-metal material (for single-material models like sofa_02). rgba/sheen/
     rough are overridable so a spec-selected fabric preset (material_presets) can recolour
-    per piece — defaults reproduce the legacy cream boucle exactly."""
+    per piece — defaults reproduce the legacy cream boucle exactly.
+
+    RETURNS (n, skipped_metal) where `n` is slots whose BASE COLOR was repainted —
+    the one channel this function always wins. Roughness and Sheen can be driven by
+    a vendor texture, in which case the signed value never lands; those are printed
+    per material rather than counted, because a single number meaning "we tried" is
+    how "the mechanism ran" starts reading like "the mechanism worked"."""
     n = 0
     skipped_metal = []
     opaqued = []
+    unwritten = []                  # (material, channel, why) — signed value lost
     for m in mats:
         if not m or not getattr(m, "use_nodes", False):
             continue
@@ -11304,6 +11401,12 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
             continue
         if ignore_metal and met is not None and not met.is_linked:
             met.default_value = 0.0        # a textile is not a metal; binary metalness
+        # `n` COUNTS SLOTS WE ACTUALLY REPAINTED. Base Color is the one channel
+        # this function always wins — it deletes the incoming links first — so the
+        # count is anchored to it. The OTHER channels can silently lose, and they
+        # are tracked separately below rather than folded into this number: a
+        # single figure that means "we tried" is how "the mechanism ran" starts
+        # reading like "the mechanism worked".
         n += 1
         for l in list(bc.links):                           # drop the dark diffuse texture
             nt.links.remove(l)
@@ -11340,9 +11443,30 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
         # of the two — `retint_sheen` defaults to 0.85 and presets reach 1.0.
         _set(b, "Sheen Weight", min(sheen, _SHEEN_CAP))
         _set(b, "Sheen Roughness", 0.35)
+        # A CHANNEL WE COULD NOT WRITE IS A FINDING, NOT AN `if` WITH NO `else`.
+        # `rough` is a spec-selected, signed number (retint_rough, _CASE_GOODS_ROUGH,
+        # the 0.94 in the case-goods branch). When the vendor drove Roughness from a
+        # texture the socket is LINKED, the write was skipped in silence, and the
+        # slot kept the uploader's roughness while the round's log said it had been
+        # retinted. CENSUS over every cached model on this machine (2026-08-31,
+        # assets/shared/{blenderkit,cc0,furnimesh}, 108 files, 0 unreadable):
+        # 140 of 294 principled slots — 48% — drive Roughness from a texture, so
+        # the signed number missed roughly half the slots it was written for.
+        # Sheen measured 0 of 294 linked, but it is checked here anyway: it goes
+        # through `_set` and therefore a `try/except: pass`, where a write to a
+        # linked socket raises nothing and changes nothing, so the day a vendor
+        # ships one the loss would again be silent.
+        # The file's own standard is one printed line per material (see `opaqued`).
         rg = b.inputs.get("Roughness")
-        if rg is not None and not rg.is_linked:
+        if rg is None:
+            unwritten.append((m.name, "Roughness", "socket absent"))
+        elif rg.is_linked:
+            unwritten.append((m.name, "Roughness", "driven by a vendor texture"))
+        else:
             rg.default_value = rough
+        sh = b.inputs.get("Sheen Weight")
+        if sh is not None and sh.is_linked:
+            unwritten.append((m.name, "Sheen Weight", "driven by a vendor texture"))
         # THE MATERIAL SAYS WHICH VALUE-LADDER RUNG IT IS ON (p2r42). A retint
         # recolours a material in place and KEEPS THE UPLOADER'S NAME, so the
         # acquired bench renders in a material called `Ottoman_01` while carrying
@@ -11357,6 +11481,14 @@ def _retint_upholstery(mats, rgba=(0.84, 0.79, 0.71, 1.0), sheen=0.85, force_all
     for nm_, was_ in opaqued:
         print(f"  retint: '{nm_}' carried Transmission {was_} and now wears an OPAQUE "
               f"finish of ours — a painted slot is a slot we own (p2r62)")
+    for nm_, ch_, why_ in unwritten:
+        print(f"  retint: '{nm_}' kept the VENDOR's {ch_} ({why_}) — this slot wears "
+              f"our colour over a stranger's finish, and the signed value never "
+              f"reached it")
+    if unwritten:
+        print(f"  retint: {n} slot(s) recoloured, {len(unwritten)} channel(s) the "
+              f"signed finish could not reach — the second number is the one a "
+              f"value-ladder disagreement will be about")
     return n, skipped_metal
 
 

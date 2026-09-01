@@ -60,6 +60,11 @@ import sys
 
 import bpy                                              # noqa: E402
 
+import placement_dump                                   # noqa: E402
+#   ^ for GEOMETRY_TYPES only. The two dumpers must agree on what counts as
+#     geometry; when the list was written out twice they were free to drift, and
+#     both were blind to the same CURVE population at the same time.
+
 CLUSTER_TOL_DEG = 15.0      # two faces are "the same direction" within this angle
 MIN_FACE_FRAC = 0.05        # drop faces below this share of the object's largest face
 AREA_COVER = 0.90           # count the clusters needed to carry this much area
@@ -126,11 +131,30 @@ def dump(scene=None):
     # key exists to prevent, committed by the key's own neighbour.
     _res_xy = render_res(sc)
     out = []
+    skipped_geometry = []
     for ob in sc.objects:
-        if ob.type != "MESH":
+        # THE TYPE LIST IS IMPORTED, NOT RETYPED. It used to be the literal
+        # `ob.type != "MESH"`, and the identical literal sat in placement_dump --
+        # two copies of one allowlist, free to drift, both blind to the same
+        # population. `build_room.py` builds every wardrobe hanger as a bevelled
+        # CURVE, so real delivered pixels were invisible to `carry_check` (which
+        # reads this dump) and to `placement_check` at the same time. R9b: a rule
+        # that names the objects it applies to will always exempt the next one --
+        # and a rule written down twice exempts it twice.
+        if ob.type not in placement_dump.GEOMETRY_TYPES:
             continue
         ev = ob.evaluated_get(dg)
-        me = ev.to_mesh()
+        try:
+            me = ev.to_mesh()
+        except Exception:                                   # noqa: BLE001
+            # A geometry object whose evaluation yields no mesh is a FINDING, not
+            # a row to drop in silence: it is exactly the state in which a rung
+            # reports "nothing wrong" because it saw nothing at all.
+            skipped_geometry.append(f"{ob.name} ({ob.type})")
+            continue
+        if me is None:
+            skipped_geometry.append(f"{ob.name} ({ob.type})")
+            continue
         try:
             n90, area = curved_clusters(me)
             mats = [s.material.name for s in ev.material_slots if s.material]
@@ -282,6 +306,9 @@ def dump(scene=None):
             out.append(rec)
         finally:
             ev.to_mesh_clear()
+    if skipped_geometry:
+        print(f"scene_dump: {len(skipped_geometry)} geometry object(s) produced no "
+              f"mesh and are absent from this dump: {', '.join(skipped_geometry)}")
     return out
 
 

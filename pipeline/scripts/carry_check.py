@@ -150,10 +150,37 @@ def load_dump(path):
                     "min": [float(v) * 1000.0 for v in ab[0]],
                     "max": [float(v) * 1000.0 for v in ab[1]],
                     "in_frustum": o.get("in_frustum")})
-    if objs and not seen_aabb:
-        raise ValueError("no object in this dump carries an `aabb` — this is not a "
-                         "scene-dump@2 and a carrier verdict cannot be computed "
-                         "from it")
+    # THREE ROUTES REACH ZERO MASSES AND ONLY ONE OF THEM USED TO REFUSE.
+    # The old guard was `if objs and not seen_aabb`, which covers exactly the case
+    # it was written for -- a placement_dump handed in by mistake. The other two
+    # sail through, and neither is hypothetical:
+    #   * SCHEMA DRIFT. `doc.get("objects", ...)` yields [] for any dump whose top
+    #     key is not `objects`, so `objs` is falsy and the guard never arms.
+    #   * EVERY OBJECT `hidden_render`. `objs` is non-empty and `seen_aabb` is
+    #     True, so the guard is bypassed by design and `out` is still empty.
+    # What makes this worse than a quiet zero is what `check()` does with it: with
+    # no names to match, EVERY ledger row files as LEDGER STALE, whose text tells
+    # the reader to "delete it in the commit that fixed it". A scene this module
+    # could not read is therefore reported as one in which all nine open defects
+    # are FIXED. The rung's own docstring sets the contract -- exit 2 = COULD NOT
+    # RUN -- and R11 states the law: "could not look" must never print like
+    # "looked and it was fine".
+    if not out:
+        if not objs:
+            raise ValueError(
+                "this dump lists no objects at all — a `scene-dump@2` has an "
+                "`objects` array, and a top-level key by any other name reads "
+                "here as an empty scene. A carrier verdict cannot be computed, "
+                "and an empty verdict would mark every ledger row FIXED.")
+        if not seen_aabb:
+            raise ValueError(
+                "no object in this dump carries an `aabb` — this is not a "
+                "scene-dump@2 and a carrier verdict cannot be computed from it")
+        raise ValueError(
+            f"all {len(objs)} object(s) in this dump are `hidden_render` — nothing "
+            f"is drawn, so nothing can be carried. That is a scene this rung "
+            f"cannot judge, not a scene with no defects; reporting it as clean "
+            f"would file every ledger row as STALE.")
     return out
 
 

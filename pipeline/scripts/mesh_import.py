@@ -167,7 +167,10 @@ def import_file(path):
     The only function here that touches bpy. On a missing glTF/FBX add-on it
     tries the enable-then-retry fallback build_room already uses, then imports.
     Raises MeshImportError (unknown ext / no importer) or whatever the operator
-    itself raises — callers that tolerate a bad candidate already catch."""
+    itself raises — callers that tolerate a bad candidate already catch.
+
+    Every returned object is converted to 'XYZ' rotation mode; see the comment at
+    the conversion for why that is a correctness requirement and not tidiness."""
     import bpy
 
     if not os.path.exists(path):
@@ -191,4 +194,36 @@ def import_file(path):
         op_path, op, kwargs = resolve(path, bpy.ops)
     before = set(bpy.data.objects)
     op(**kwargs)
-    return [o for o in bpy.data.objects if o not in before]
+    new = [o for o in bpy.data.objects if o not in before]
+
+    # EVERY IMPORT LANDS IN 'XYZ' ROTATION MODE, and this is a correctness fix,
+    # not tidiness. `bpy.ops.import_scene.gltf` leaves objects at 'QUATERNION',
+    # and on such an object `rotation_euler` is a DEAD ATTRIBUTE: reading it
+    # returns (0, 0, 0) however the object is really turned, and WRITING it
+    # stores the number and moves nothing. Both halves were live here:
+    #   * `trn001_styling.py` sets `r.rotation_euler.z = rot_z` to give an
+    #     acquired asset its plan yaw. `scale` and `location` on the lines either
+    #     side DO apply, so the log printed a placed, scaled asset that had never
+    #     been turned, and the plan dict carries no orientation field for any
+    #     downstream rung to catch it with.
+    #   * `placement_dump` read `rotation_euler` for R9's OFF-AXIS rung, so every
+    #     acquired asset reported zero tilt. (That reader now goes through
+    #     `matrix_world` and is mode-independent — belt and braces, because this
+    #     conversion cannot reach an object imported by some other path.)
+    # Probed on Blender 5.1.2 with a repo-built control in the same scene: the
+    # control reported its 20 deg correctly while an imported cube turned
+    # (20, 0, 35) reported (0, 0, 0). `rotation_mode` and `rotation_quaternion`
+    # appeared ZERO times in all of pipeline/scripts before this line.
+    # ASSIGNING THE MODE CONVERTS, IT DOES NOT DISCARD -- measured, because
+    # getting this wrong would silently re-orient every acquired asset in the
+    # repo. Probe: a cube exported at (20, -13, 35) deg with a non-uniform scale
+    # and an offset location, re-imported at QUATERNION, then converted; worst
+    # `matrix_world` element drift across the object was 5.96e-08 (float32
+    # epsilon -- it does not move), the euler then read exactly (20, -13, 35),
+    # and a subsequent `rotation_euler.z = 90 deg` write DID reach the matrix,
+    # which is the write that was doing nothing before. Re-run:
+    # `pipeline/scripts/probe_import_rotation.py`.
+    for o in new:
+        if o.rotation_mode != 'XYZ':
+            o.rotation_mode = 'XYZ'
+    return new

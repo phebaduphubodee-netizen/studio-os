@@ -130,6 +130,30 @@ class TestModelFiles(unittest.TestCase):
         self.assertEqual(MI.model_files(os.path.join("no", "such", "dir")), [])
 
 
+class _FakeObj:
+    """A stand-in Blender Object. It exists because the mock used to model objects
+    as bare STRINGS, so a test could not have caught `rotation_mode` being read or
+    written at all -- and every real bpy Object has that property, so the code is
+    right to assume it and the mock was wrong to omit it."""
+
+    def __init__(self, name, mode="QUATERNION"):
+        self.name = name
+        self._mode = mode
+        self.writes = 0
+
+    @property
+    def rotation_mode(self):
+        return self._mode
+
+    @rotation_mode.setter
+    def rotation_mode(self, v):
+        self._mode = v
+        self.writes += 1
+
+    def __repr__(self):
+        return f"_FakeObj({self.name!r}, {self._mode})"
+
+
 class TestImportFileMockBpy(unittest.TestCase):
     def _bpy(self, log, objects, ops):
         bpy = types.ModuleType("bpy")
@@ -137,25 +161,50 @@ class TestImportFileMockBpy(unittest.TestCase):
         bpy.ops = ops
         return bpy
 
-    def test_returns_only_the_new_objects(self):
-        log, objects = [], ["old_obj"]
+    def _import(self, existing, added):
+        """Run import_file against the mock, with `added` appearing on the call."""
+        log, objects = [], list(existing)
         op = _Op(log, "import_scene.gltf")
 
         def call_and_add(**kw):
             log.append(("import_scene.gltf", kw))
-            objects.append("new_obj")
+            objects.extend(added)
         op.__class__ = type("X", (_Op,), {"__call__": staticmethod(call_and_add)})
         ops = _ns(import_scene={"gltf": op})
         with tempfile.TemporaryDirectory() as tmp:
-            p = os.path.join(tmp, "m.glb")
-            open(p, "w").close()
+            path = os.path.join(tmp, "m.glb")
+            open(path, "w").close()
             sys.modules["bpy"] = self._bpy(log, objects, ops)
             try:
-                new = MI.import_file(p)
+                return MI.import_file(path), log, path
             finally:
                 del sys.modules["bpy"]
-        self.assertEqual(new, ["new_obj"])
-        self.assertEqual(log[0][1]["filepath"], p)
+
+    def test_returns_only_the_new_objects(self):
+        old, fresh = _FakeObj("old_obj"), _FakeObj("new_obj")
+        new, log, path = self._import([old], [fresh])
+        self.assertEqual([o.name for o in new], ["new_obj"])
+        self.assertEqual(log[0][1]["filepath"], path)
+
+    def test_every_imported_object_is_converted_to_xyz_rotation_mode(self):
+        """`import_scene.gltf` leaves objects at QUATERNION, on which
+        `rotation_euler` is a dead attribute: it reads (0,0,0) however the object
+        is turned, and writing it moves nothing. Both halves were live -- the
+        OFF-AXIS rung read it, and trn001_styling wrote its plan yaw into it --
+        so acquired assets were never turned and never convicted of not being."""
+        old = _FakeObj("old_obj", mode="QUATERNION")
+        a, b = _FakeObj("a", mode="QUATERNION"), _FakeObj("b", mode="AXIS_ANGLE")
+        new, _, _ = self._import([old], [a, b])
+        self.assertEqual([o.rotation_mode for o in new], ["XYZ", "XYZ"])
+        self.assertEqual(old.rotation_mode, "QUATERNION",
+                         "objects already in the scene must not be touched")
+
+    def test_an_object_already_in_xyz_is_not_reassigned(self):
+        """Assigning the mode converts the rotation; a needless write is a needless
+        chance to be wrong, and it would also hide a mock that never modelled it."""
+        obj = _FakeObj("a", mode="XYZ")
+        self._import([], [obj])
+        self.assertEqual(obj.writes, 0)
 
     def test_missing_file_raises_before_any_operator_runs(self):
         log = []

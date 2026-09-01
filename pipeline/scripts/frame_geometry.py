@@ -463,15 +463,34 @@ def cam_from_spec(spec, res=(2400, 1800), eye_h=None):
         raise SystemExit("frame_geometry: spec has no eye_camera.stand_mm "
                          "(auto-solve lives in camera_config.solve_eye_camera)")
     if eye_h is None:
+        # THE COMMENT BELOW WAS THE WHOLE ARGUMENT AND THE `except` CONTRADICTED
+        # IT. `camera_config.spec_eye_h_m` raises `EyeCameraError` for a height
+        # outside 0.3-2.2 m — "a lens on the floor or above the door is a typo,
+        # not a camera" — and `build_room.py` turns that same exception into
+        # `SystemExit` and refuses to build. Swallowing it here to a literal 1.15
+        # made the two readers of ONE spec key disagree by construction: set
+        # `eye_h_m` to 3.9 by a one-key typo and build_room refuses while this
+        # reader measured containment, DoF and bed_share for a camera nobody
+        # would ever build, printed them, and exited 0. The bare `except` also
+        # covered an ImportError, i.e. exactly the case where this reader cannot
+        # reach the renderer's definition at all — the loudest thing that can
+        # happen here, silenced into a default. The two `raise SystemExit` calls
+        # on either side of this block are the house style; this one joins them.
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         try:
-            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
             import camera_config
-            # the SPEC's height first — this reader must see the same lens the
-            # renderer will build, or its containment answers are about a camera
-            # nobody is going to use
+        except ImportError as e:
+            raise SystemExit(
+                f"frame_geometry: cannot import camera_config ({e}) — this reader "
+                f"would have to guess the eye height, and a measurement of a "
+                f"camera the renderer will not build is worse than no measurement")
+        # the SPEC's height first — this reader must see the same lens the
+        # renderer will build, or its containment answers are about a camera
+        # nobody is going to use
+        try:
             eye_h = camera_config.spec_eye_h_m(spec)
-        except Exception:                                    # noqa: BLE001
-            eye_h = 1.15
+        except camera_config.EyeCameraError as e:
+            raise SystemExit(f"frame_geometry: {e}")
     aim = ov.get("aim_mm")
     if not aim:
         raise SystemExit("frame_geometry: this reader needs eye_camera.aim_mm")

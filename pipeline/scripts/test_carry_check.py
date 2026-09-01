@@ -225,13 +225,32 @@ def test_selftest_passes():
 
 def test_the_render_path_spawns_it_and_hard_stops_on_2():
     """R11's sentence, applied here: 'could not look' must never print like 'looked
-    and it was fine'. The wiring is asserted against the CODE, not a comment."""
+    and it was fine'. The wiring is asserted against the CODE, not a comment.
+
+    MECHANISM CHANGED 2026-08-27, PROPERTY UNCHANGED (ORD-2026-08-27-every-round-
+    sees-what-it-changed, item D). Both branches used to call `os._exit(1)` on the
+    spot; they now call `_stop(...)`, and `_score_deliverable` takes every recorded
+    stop together at the end. The reason is that exiting on the spot silenced every
+    instrument after the one that fired — including the round's only EYE, which is
+    why p2r83/p2r84/p2r86 carry no gen-diff artefact.
+
+    This test now pins the property rather than the keyword, and pins it in TWO
+    halves on purpose: a `_stop()` that nothing ever reads would satisfy the first
+    half alone and would be a gate turned into a warning, which is the exact defect
+    this repo has shipped before ("declared mandatory and then printed as a
+    suggestion for a human to copy").
+    """
     src = open(os.path.join(REPO, "pipeline", "scripts", "build_room.py"),
                encoding="utf-8").read()
     assert '"carry_check.py")' in src, "spawned as an argv element, not mentioned"
     blk = src.split('"carry_check.py")', 1)[1].split("# ---- FRONT DOOR", 1)[0]
     assert "_cy.returncode == 2" in blk and "_cy.returncode == 1" in blk
-    assert blk.count("os._exit(1)") == 2, "both exit codes are hard stops"
+    # half 1: both exit codes still REFUSE the frame (neither is merely printed)
+    assert blk.count("_stop(") == 2, "both exit codes are hard stops"
+    # half 2: and the refusals are actually taken, with a real non-zero exit
+    assert "if _stops:" in src, "_stops is filled and never read — a stop that stopped"
+    tail = src.split("if _stops:", 1)[1][:600]
+    assert "os._exit(1)" in tail, "the recorded stops no longer exit the build"
 
 
 def test_the_repo_ledger_and_the_committed_frame_agree():
@@ -245,3 +264,50 @@ def test_the_repo_ledger_and_the_committed_frame_agree():
     led = CC.load_ledger(os.path.join(REPO, "qa", "carry-ledger.json"))
     v, _, _ = CC.check(objs, led)
     assert v == [], v
+
+
+# --------------------------------------------------------------------------
+# THE ZERO-MASS ROUTES. `load_dump` used to refuse exactly ONE of the ways it can
+# come back with nothing, and the other two mattered more than the one it caught:
+# with no names to match, `check()` files EVERY ledger row as LEDGER STALE, whose
+# own text tells the reader to delete it "in the commit that fixed it". A scene
+# this module could not read was therefore reported as a scene in which all nine
+# open defects were FIXED.
+
+def _dump_file(tmp_path, doc):
+    p = tmp_path / "d.json"
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    return str(p)
+
+
+def test_a_dump_whose_top_key_is_not_objects_is_refused(tmp_path):
+    """Schema drift. `doc.get("objects", ...)` yields [] and the old guard, which
+    began `if objs and ...`, never armed."""
+    with pytest.raises(ValueError, match="no objects at all"):
+        CC.load_dump(_dump_file(tmp_path, {"OBJECTS": [
+            {"name": "a", "aabb": [[0, 0, 0], [1, 1, 1]]}]}))
+
+
+def test_a_dump_in_which_everything_is_hidden_is_refused(tmp_path):
+    """`objs` is non-empty and `seen_aabb` is True, so the old guard was bypassed
+    by design and returned an empty list — indistinguishable from a clean scene."""
+    with pytest.raises(ValueError, match="hidden_render"):
+        CC.load_dump(_dump_file(tmp_path, {"objects": [
+            {"name": "a", "hidden_render": True,
+             "aabb": [[0, 0, 0], [1, 1, 1]]}]}))
+
+
+def test_a_placement_dump_handed_in_by_mistake_is_still_refused(tmp_path):
+    """The one route the original guard did cover. It must keep working."""
+    with pytest.raises(ValueError, match="aabb"):
+        CC.load_dump(_dump_file(tmp_path, {"objects": [
+            {"name": "a", "min": [0, 0, 0], "max": [1, 1, 1]}]}))
+
+
+def test_a_real_dump_still_loads(tmp_path):
+    """POSITIVE CONTROL. Without it, a `load_dump` that raised unconditionally
+    would pass all three tests above."""
+    got = CC.load_dump(_dump_file(tmp_path, {"objects": [
+        {"name": "a", "aabb": [[0, 0, 0], [1, 1, 1]]}]}))
+    assert [o["name"] for o in got] == ["a"]
+    assert got[0]["max"] == [1000.0, 1000.0, 1000.0]      # metres -> mm

@@ -43,6 +43,33 @@ def _world_aabb(ob, dg):
     an object with a rotation has a local box that does not describe what the
     camera sees."""
     ev = ob.evaluated_get(dg)
+
+    # `bound_box` IS ONLY TRUSTWORTHY FOR A MESH. Measured on Blender 5.1.2 for a
+    # bevelled CURVE built exactly as build_room builds a wardrobe hanger (three
+    # POLY points spanning 400 mm, bevel_depth 1.8 mm):
+    #     bound_box -> (-1.200, -1.000, 0.720) .. (1.200, 1.000, 2.915)
+    #     to_mesh   -> (-0.201, -0.002, 1.719) .. (0.201,  0.002, 1.917)
+    # The box is off by nearly 3 m in x and y. Feeding that to the placement rules
+    # is WORSE than the MESH-only blindness it replaced: every hanger would collide
+    # with everything (false INTERPENETRATION) while its huge box touched something
+    # and so escaped FLOATING — a guard reporting confidently from a wrong number.
+    # So a non-mesh is measured from the geometry the renderer actually makes.
+    if ob.type != "MESH":
+        try:
+            me = ev.to_mesh()
+        except Exception:                               # noqa: BLE001
+            return None
+        try:
+            if me is None or not me.vertices:
+                return None
+            pts = [ev.matrix_world @ v.co for v in me.vertices]
+            return {
+                "min": [min(p[i] for p in pts) * MM for i in range(3)],
+                "max": [max(p[i] for p in pts) * MM for i in range(3)],
+            }
+        finally:
+            ev.to_mesh_clear()
+
     try:
         bb = ev.bound_box
     except Exception:                                   # noqa: BLE001
@@ -58,24 +85,64 @@ def _world_aabb(ob, dg):
     }
 
 
+# TYPES THAT PUT REAL GEOMETRY IN THE FRAME. This used to be the single literal
+# "MESH", and that word was a TYPE ALLOWLIST sitting one layer upstream of a guard
+# whose own headline is that it carries no allowlist. `build_room.py` builds every
+# wardrobe hanger as a CURVE with a bevel_depth -- delivered, rendered pixels --
+# and a CURVE record was emitted with no `min`/`max`, so `placement_check._mesh()`
+# dropped it without a word and `carry_check` never saw it either. R9b in one
+# line: a rule that names the objects it applies to will always exempt the next
+# one. Everything here has an evaluated bound_box; nothing needs to be a MESH.
+GEOMETRY_TYPES = ("MESH", "CURVE", "SURFACE", "FONT", "META")
+
+
+def _poly_count(ev):
+    """Evaluated polygon count for anything in GEOMETRY_TYPES. A CURVE's `data` is
+    a Curve and has no `.polygons`, so it is converted -- the same conversion the
+    renderer does."""
+    data = getattr(ev, "data", None)
+    polys = getattr(data, "polygons", None)
+    if polys is not None:
+        return len(polys)
+    try:
+        me = ev.to_mesh()
+    except Exception:                                   # noqa: BLE001
+        return None
+    try:
+        return len(me.polygons)
+    finally:
+        ev.to_mesh_clear()
+
+
 def dump(scene=None):
     dg = bpy.context.evaluated_depsgraph_get()
     out = []
     for ob in (scene or bpy.context.scene).objects:
+        # ROTATION COMES FROM THE MATRIX, NOT FROM `rotation_euler`. That attribute
+        # is only the live channel while `rotation_mode == 'XYZ'`, and
+        # `bpy.ops.import_scene.gltf` leaves every object it imports at
+        # 'QUATERNION' -- on which `rotation_euler` reads (0, 0, 0) however the
+        # object is really turned. Probed on Blender 5.1.2 with a repo-built
+        # control in the same scene: the control reported its 20 deg correctly
+        # while an imported cube turned (20, 0, 35) reported (0, 0, 0). Every
+        # acquired asset in this repo arrives that way, so R9's OFF-AXIS rung was
+        # blind on exactly the population R8 tells us to prefer. `matrix_world`
+        # is mode-independent and cannot be blinded again.
         rec = {
             "name": ob.name,
             "type": ob.type,
             "hidden_render": bool(ob.hide_render),
+            "rotation_mode": ob.rotation_mode,
             # degrees, so a human reading the JSON can see "3.7" and not "0.0645"
             "rot_deg": [round(a * 180.0 / 3.141592653589793, 4)
-                        for a in ob.rotation_euler],
+                        for a in ob.matrix_world.to_euler()],
             "parent": ob.parent.name if ob.parent else None,
         }
-        if ob.type == "MESH":
+        if ob.type in GEOMETRY_TYPES:
             aabb = _world_aabb(ob, dg)
             if aabb:
                 rec.update(aabb)
-                rec["polys"] = len(ob.evaluated_get(dg).data.polygons)
+                rec["polys"] = _poly_count(ob.evaluated_get(dg))
         out.append(rec)
     return out
 
@@ -88,8 +155,16 @@ def main():
     with open(argv[0], "w", encoding="utf-8") as f:
         json.dump({"blend": bpy.data.filepath, "unit": "mm", "objects": objs},
                   f, indent=1, ensure_ascii=False)
-    meshes = sum(1 for o in objs if o["type"] == "MESH")
-    print(f"placement_dump: {len(objs)} objects ({meshes} mesh) -> {argv[0]}")
+    geo = sum(1 for o in objs if o["type"] in GEOMETRY_TYPES)
+    bounded = sum(1 for o in objs if "min" in o)
+    # THE DENOMINATOR PRINTS. Without it, a guard that silently dropped every
+    # unbounded record read exactly like a guard that found nothing wrong.
+    print(f"placement_dump: {len(objs)} objects ({geo} with geometry, "
+          f"{bounded} bounded) -> {argv[0]}")
+    if bounded < geo:
+        print(f"  {geo - bounded} geometry object(s) produced no bounds — they "
+              f"are invisible to every downstream rung; that is a finding, not a "
+              f"formatting detail")
 
 
 if __name__ == "__main__":

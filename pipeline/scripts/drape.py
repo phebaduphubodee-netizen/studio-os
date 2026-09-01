@@ -172,6 +172,86 @@ FABRIC = {
 }
 
 
+# --------------------------------------------------------------- keyframe shape
+# THE INTERPOLATION A KEY LANDS WITH IS NOT A DETAIL. `keyframe_insert` returns
+# True and lays the key down as BEZIER, so a two-key 0 -> 1 ramp eases in AND out
+# instead of travelling at a constant rate. Probed on Blender 5.1.2: a 1..12 ramp
+# reads 0.0233 at frame 2 where a linear one reads 0.0909, deviating up to 0.0946.
+# `preferences.edit.keyframe_new_interpolation_type` does NOT reach this path
+# headlessly (probed: set to LINEAR, keys still land BEZIER), so the shape can
+# only ever be chosen explicitly.
+#
+# WHY THIS IS A GUARD AND NOT A COMMENT. The check it replaces asserted
+# `keyframe_insert`'s RETURN VALUE -- which is True in exactly the case that goes
+# wrong, so it could not fail for the property it names. `_assert_keys` reads the
+# BUILT curve back and holds it to a declaration.
+#
+# MEASURED COST OF THE CHOICE, so nobody flips it casually (2026-08-31, the real
+# `bake_sheet` run twice with only the interpolation line differing, shipping
+# config: frames=120, fabric="duvet", quality=12, gravity_ramp=40, three tucks
+# ending 40/52/64, release 12). BEZIER -> LINEAR moves the SETTLED duvet by
+# RMS 7.014 mm, max 30.10 mm, 17.1% of vertices past 10 mm, the standing-fold
+# crown (max z) by 12.1 mm and the y span by 37.6 mm. Null control -- the same
+# module run twice -- is 0.000000 mm, so the solver is bit-deterministic and
+# every millimetre of that belongs to the interpolation. UNTUCKED the same change
+# washes out to 0.08 mm by the settle, which is why it only ever mattered where
+# the ramp actually fires. WHICH shape is RIGHT is not decided here: the
+# measurement says HOW MUCH, never WHICH (R7d -- the builder's eye may not
+# convict). BEZIER is the incumbent because it is what every measured result in
+# this file was taken under; changing it is a render round with a critic, not an
+# edit.
+RAMP_INTERP = "BEZIER"
+
+
+def _assert_keys(obj, data_path, index, expect, who, interp=RAMP_INTERP):
+    """Read the built F-curve back and hold it to `expect` and `interp`.
+
+    expect  [(frame, value), ...] -- every key that must exist, with the value the
+            curve must evaluate to there.
+    Fails LOUD. Uses `fcurves.find`, which is a LOOKUP and returns None when the
+    channel is absent; `fcurve_ensure_for_datablock` would CREATE the curve and
+    make the guard pass by manufacturing the very thing it is checking.
+    Note `action.fcurves` does not exist on Blender 5.1 -- the attribute is gone,
+    not deprecated -- so the walk goes through layers/strips/channelbags.
+    """
+    ad = obj.animation_data
+    act = ad.action if ad else None
+    if act is None:
+        raise DrapeError(f"{who}: no action after keyframe_insert -- nothing was "
+                         f"keyed, and a ramp that never ramped bakes under full "
+                         f"force while printing as ramped")
+    fc = None
+    for _lay in act.layers:
+        for _st in _lay.strips:
+            for _cb in _st.channelbags:
+                fc = _cb.fcurves.find(data_path, index=index)
+                if fc is not None:
+                    break
+            if fc is not None:
+                break
+        if fc is not None:
+            break
+    if fc is None:
+        raise DrapeError(f"{who}: no F-curve for {data_path}[{index}] -- the "
+                         f"keyframe path was accepted but wrote nothing readable")
+    kps = list(fc.keyframe_points)
+    if len(kps) != len(expect):
+        raise DrapeError(f"{who}: {data_path}[{index}] has {len(kps)} keys, "
+                         f"expected {len(expect)}")
+    bad = sorted({k.interpolation for k in kps if k.interpolation != interp})
+    if bad:
+        raise DrapeError(f"{who}: {data_path}[{index}] keys are {bad} but this "
+                         f"file declares RAMP_INTERP={interp!r}. That shape is "
+                         f"worth RMS 7.0 mm / max 30.1 mm on the settled duvet "
+                         f"-- do not change it without a render round")
+    for _f, _v in expect:
+        got = fc.evaluate(float(_f))
+        if abs(got - float(_v)) > 1e-4:
+            raise DrapeError(f"{who}: {data_path}[{index}] evaluates to "
+                             f"{got:.6f} at frame {_f}, expected {float(_v):.6f}")
+    return fc
+
+
 def _collider(obj, thickness=0.004, friction=40.0, damping=0.6):
     """Make `obj` deflect cloth. Idempotent — a mattress collides for every sheet
     dropped on it, and adding a second COLLISION modifier would double its field."""
@@ -295,6 +375,18 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
                  instead of bouncing rigid). Per-object, so co-baking pieces are
                  untouched; probed headless 2026-08-13 (fall@f12: 23 mm ramped
                  vs 535 mm stock). None = byte-identical.
+                 THE RAMP IS AN S-CURVE, NOT A LINE, and this sentence used to
+                 imply otherwise. `keyframe_insert` lands keys BEZIER, so gravity
+                 eases IN and OUT: on a 1..12 ramp it evaluates 0.0233 at frame 2
+                 where a straight line reads 0.0909 (max deviation 0.0946). The
+                 shape is declared by RAMP_INTERP and held by `_assert_keys`,
+                 because it is load-bearing — measured 2026-08-31 on the shipping
+                 duvet, BEZIER vs LINEAR moves the SETTLED result by RMS 7.014 mm
+                 / max 30.10 mm, 17.1% of vertices past 10 mm, the crown 12.1 mm
+                 and the y span 37.6 mm, against a null control of 0.000000 mm.
+                 It washes out to 0.08 mm on an UNTUCKED sheet, which is why it
+                 stayed invisible: this ramp only ever fires with tucks
+                 (build_room.py:10259), i.e. only in the case where it matters.
     tucks        [(vert_indices, (dx, dy, dz), end_frame), ...] — each is a HAND:
                  an animated empty drives a HOOK on those verts (created BEFORE
                  the cloth modifier, so it sits above it in the stack and moves
@@ -384,6 +476,13 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
             _em.location = (_c[0] + _tdelta[0], _c[1] + _tdelta[1],
                             _c[2] + _tdelta[2])
             _em.keyframe_insert("location", frame=int(_tend))
+            # A HAND'S TRAVEL SHAPE IS THE SAME KNOB AS THE RAMP'S: these keys
+            # land BEZIER too, and they run over frames 1..40/52/64 -- exactly
+            # the window in which the gravity ramp's shape is worth 30 mm.
+            for _ax in range(3):
+                _assert_keys(_em, "location", _ax,
+                             [(1, _c[_ax]), (int(_tend), _c[_ax] + _tdelta[_ax])],
+                             f"{name} tuck{_ti} hand")
             _vgt = obj.vertex_groups.new(name=f"drape_tuck{_ti}")
             _vgt.add(_tidx, 1.0, 'REPLACE')
             _hk = obj.modifiers.new(f"tuck{_ti}", 'HOOK')
@@ -430,6 +529,11 @@ def bake_sheet(name, verts, faces, colliders, *, frames=55, fabric="linen",
         if not (_ok1 and _ok2):
             raise DrapeError(f"{name}: effector-weight keyframe path refused "
                              f"({_ok1}/{_ok2}) — do not bake as if ramped")
+        # ...and the return value is NOT the property. keyframe_insert answers
+        # True in exactly the case that goes wrong, so read the curve back.
+        _assert_keys(obj,
+                     'modifiers["drape"].settings.effector_weights.gravity', 0,
+                     [(1, 0.0), (_gr, 1.0)], f"{name} gravity ramp")
     # LOCAL bending relief — DR blender-cloth-corner-drape rank 3 (the half whose
     # slot is still free: vertex_group_shrink is spent on slack, the BENDING group
     # is not). A standing corner ear is double curvature refused: the ANGULAR
@@ -997,6 +1101,12 @@ def dent_soft_body(target, presser, travel, *, frames=30, press_frame=18,
     presser.keyframe_insert("location", frame=1)
     presser.location = (rest.x, rest.y, rest.z - float(travel))
     presser.keyframe_insert("location", frame=int(press_frame))
+    # Same knob a third time: the press travels on a BEZIER ease, not at the
+    # constant rate the `travel`/`press_frame` pair reads as.
+    for _ax, _tgt in enumerate((rest.x, rest.y, rest.z - float(travel))):
+        _assert_keys(presser, "location", _ax,
+                     [(1, rest[_ax]), (int(press_frame), _tgt)],
+                     f"{target.name} dent presser")
     sc = bpy.context.scene
     sc.frame_start, sc.frame_end = 1, frames
     for f in range(1, frames + 1):

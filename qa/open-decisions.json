@@ -3525,6 +3525,96 @@
    ],
    "because": "D-141 ประกาศทางกลับของตัวเองไว้ว่า 'พี่บอกเลขใหม่ (หรือ no cap) หนึ่งประโยค — แก้แถว units.DELIV-001 แล้ว counter ตามทันที' และพี่เดินทางนั้นพอดี. งานที่เพดานนี้กั้นอยู่คือสองการแก้ผิววัสดุ ที่ derive จากการวัดและพิสูจน์ใน node graph แล้วแต่ยังไม่มีเฟรม — ไมโครซีเมนต์เลิกรับ leaf grid ของวีเนียร์ (37 ชิ้น / 61.1 ตร.ม.) และ relief ของ _image_wood เลิกมาจาก Displacement ที่ใช้ไม่ได้ (ความชันที่เรนเดอร์ 0.0010° -> 2.246° เท่าที่ nor_gl ของผู้ผลิตวัดผิวนั้นไว้เอง)",
    "reverse_by": "พี่บอกเลขใหม่อีกหนึ่งประโยค (หรือ 'no cap') — แก้แถว units.DELIV-001 + pattern ของ assert ทั้งใน D-141, D-178 และ ORD-2026-08-25d ให้ตรงเลขใหม่ · ถ้าจะถอนการขยายทั้งหมด: คืน 89/93 แล้วเลนหยุดทันทีที่ 90 เหมือนเดิม"
+  },
+  {
+   "id": "D-179",
+   "unit": "DELIV-001",
+   "subject": "cloth-keyframe-shape",
+   "decided_round": 92,
+   "decided_date": "2026-08-31",
+   "decided_by": "builder",
+   "question": "ramp ของ effector gravity ใน drape.py คีย์ 0.0 -> 1.0 สองจุด และ docstring อ่านเหมือนเส้นตรง แต่ keyframe_insert วาง key เป็น BEZIER เสมอ (probe Blender 5.1.2: ramp 1..12 อ่านได้ 0.0233 ที่เฟรม 2 ที่เส้นตรงต้องได้ 0.0909 เบี่ยงสูงสุด 0.0946) แล้ว guard ที่อยู่ตรงนั้นเช็ค 'ค่าที่ keyframe_insert คืนมา' ซึ่งเป็น True พอดีในเคสที่ผิด. คำถามคือรูปทรงไหนถูก และใครตัดสิน",
+   "in_effect": "**BEZIER ยังเป็นของเดิมที่ใช้ต่อ ประกาศชื่อไว้เป็น `RAMP_INTERP` ใน pipeline/scripts/drape.py และมี `_assert_keys` อ่าน curve กลับมาบังคับให้ตรง** ทั้งสามจุดที่ไฟล์นี้คีย์เฟรม: gravity ramp ของผ้า, มือ tuck แต่ละมือ, และตัวกด dent presser. **ผมไม่พลิกเป็น LINEAR เอง** เพราะการวัดบอก *เท่าไร* ไม่ได้บอก *อันไหนถูก* (R7d — ตาของ builder ตัดสินปิดไม่ได้). ตัวเลขที่วัดได้ 2026-08-31 ด้วย bake_sheet ตัวจริงรันสองครั้งต่างกันบรรทัดเดียว ที่ config ซึ่ง ship จริง (frames=120 fabric=duvet quality=12 gravity_ramp=40 tucks จบ 40/52/64 release 12): BEZIER -> LINEAR ขยับผ้าที่ **ตกนิ่งแล้ว** RMS 7.014 มม. / สูงสุด 30.10 มม. / 17.1% ของ vertex เกิน 10 มม. / ยอดจีบยืน (max z) 12.1 มม. / span y 37.6 มม. โดย **null control (โมดูลเดิมรันซ้ำ) = 0.000000 มม.** — solver เป็น bit-deterministic ทุกมิลลิเมตรจึงเป็นของ interpolation ล้วน ๆ. บนผ้าที่ **ไม่มี tuck** ความต่างเดียวกันเหลือ 0.08 มม. ตอนตกนิ่ง ซึ่งเป็นเหตุผล ที่มันซ่อนอยู่ได้: ramp นี้ยิงเฉพาะตอนมี tucks (build_room.py) คือยิงเฉพาะเคส ที่มันมีผล. positive control ที่พิสูจน์ว่าเครื่องวัดเห็น ramp ได้จริง: no-ramp vs ramp = 411.3 vs 23.4 มม. ที่เฟรม 12 (docstring เดิมบันทึก 23 มม. ไว้เอง)",
+   "where": "pipeline/scripts/drape.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/drape.py",
+     "pattern": "^RAMP_INTERP = \"BEZIER\"",
+     "why": "รูปทรงของ ramp ต้องเป็นค่าที่ประกาศชื่อไว้ในไฟล์ ไม่ใช่ค่าปริยายที่ไม่มีใครเขียน — ทั้ง guard และแถวนี้อ้างชื่อเดียวกัน"
+    },
+    {
+     "file": "pipeline/scripts/drape.py",
+     "pattern": "def _assert_keys\\(obj, data_path, index, expect, who, interp=RAMP_INTERP\\)",
+     "why": "guard ที่อ่าน curve กลับมาต้องมีอยู่จริง ไม่ใช่แค่ค่าที่ประกาศไว้เฉย ๆ แล้วไม่มีใครอ่าน"
+    },
+    {
+     "file": "pipeline/scripts/drape.py",
+     "pattern": "_assert_keys\\(obj,\\s*\\n\\s*'modifiers\\[\\\"drape\\\"\\]",
+     "why": "จุด gravity ramp ต้องเรียก guard จริง — ratchet กันการถอด guard ออกโดยเหลือแต่ค่าประกาศ"
+    },
+    {
+     "file": "pipeline/scripts/probe_drape_keys.py",
+     "pattern": "PREFLIGHT GREEN",
+     "why": "mutation probe ต้องมีอยู่และต้องมี preflight — guard ที่ไม่เคยถูกดูว่าแดงได้ คือ guard ที่ยังไม่ถูกพิสูจน์"
+    }
+   ],
+   "because": "guard เดิมเป็น 'เครื่องที่ตกไม่ได้' ตัวที่ 16 ของเรโปนี้: มันยืนยัน return value ของ keyframe_insert ซึ่งเป็น True พอดีในเคสที่รูปทรงผิด. `preferences.edit.keyframe_new_interpolation_type` ไปไม่ถึง path นี้ตอน headless (probe: ตั้งเป็น LINEAR แล้ว key ยังลง BEZIER) รูปทรงจึงเลือกได้ทางเดียวคือเขียนตรง ๆ. และ docstring ของ gravity_ramp บรรยายรูปทรงที่ไม่ตรงกับของจริงมาตลอด — เลข 'fall@f12: 23 มม.' ที่มันอ้าง ถูกวัดใต้ BEZIER อยู่แล้ว การจูนทั้งหมดจึงอิง พฤติกรรมจริง ไม่ใช่เฟรมพัง แต่เอกสารกับพฤติกรรมไม่ตรงกันคือหนี้ที่รอบหน้าจะสะดุด",
+   "reverse_by": "รอบ render ที่มีนักวิจารณ์: ตั้ง RAMP_INTERP = \"LINEAR\" (guard จะบังคับให้ทั้ง สามจุดตามทันที ไม่มีจุดไหนหลุด) -> bake ผ้านวมใหม่ -> เฟรมเต็ม -> C2 + C3 ตัดสิน ว่าอันไหนอ่านเหมือนเตียงที่ปูจริงมากกว่า แล้วอัปเดตแถวนี้ด้วยคำตัดสิน. ถ้าจะถอนทั้งหมด: ลบ RAMP_INTERP + _assert_keys + การเรียกทั้งสามจุด + probe_drape_keys.py แล้วคืน guard เดิมที่เช็ค _ok1/_ok2 อย่างเดียว — ซึ่งเท่ากับยอมรับกลับไปใช้ guard ที่ตกไม่ได้"
+  },
+  {
+   "id": "D-180",
+   "unit": "DELIV-001",
+   "subject": "guards-that-could-not-fail",
+   "decided_round": 92,
+   "decided_date": "2026-08-31",
+   "decided_by": "builder",
+   "question": "หลังพบว่า guard ของ drape.py ตกไม่ได้ (D-179) ผมกวาดทั้ง pipeline/scripts หา พี่น้องของมัน — guard ที่ยืนยันค่า return แทนสถานะจริง, การเขียนที่พึ่ง default ที่ไม่มีใครประกาศ, และ fallback เงียบ. เจอกี่จุด และแก้ยังไงไม่ให้เป็น allowlist",
+   "in_effect": "**10 จุด ยืนยันด้วย probe แล้วแก้ทั้งหมด** เรียงตามรัศมีความเสียหาย:\n(1) `build_room._gen_diff` return None ทุกทาง caller ตั้ง `_gd_ran = True` ข้าง ๆ → รอบเดียวกันพิมพ์ 'NOT RUN (exit 1)' และเขียน `gen_diff:ran` ซึ่งเป็น pattern ที่ `obeyed_assert` ของ ORD-2026-08-27 grep อยู่ **คำสั่งพี่อ่านว่าทำแล้วเพราะฟังก์ชัน return** — ตอนนี้คืน bool จริง\n(2) receipt เขียน `ran=True` จาก 'subprocess คืน CompletedProcess' ทั้งที่ exit 2 = COULD NOT RUN ตามสัญญาที่ 10 rung เขียนเอง · **`delta: ran=true, exit=2` อยู่บนดิสก์แล้ว** · แก้ที่ `round_receipt.note` ไม่ใช่ที่ call site (แก้ call site เดียว = allowlist)\n(3) `bpy.ops.import_scene.gltf` ทิ้ง `rotation_mode='QUATERNION'` และทั้ง pipeline/scripts ไม่มีคำนี้เลยสักครั้ง → `rotation_euler` เป็น attribute ตาย **อ่านได้ (0,0,0) เสมอ และเขียนแล้วไม่ขยับ** · rung OFF-AXIS ของ R9 จึงตาบอดกับของที่ ซื้อมาทุกชิ้น และ `trn001_styling` เขียน yaw ลงไปโดยของไม่เคยหมุน · แก้สองด้าน: normalise เป็น XYZ ตอน ingest ใน `mesh_import` และให้ `placement_dump` อ่าน `matrix_world` ซึ่งไม่ขึ้นกับ mode\n(4) `placement_dump` + `scene_dump` ใส่ bounds เฉพาะ `type == 'MESH'` — เป็น allowlist ที่นั่งอยู่เหนือ guard ที่โฆษณาว่าไม่มี allowlist · ไม้แขวน CURVE หายทั้งแถบ · ตอนนี้ใช้ `GEOMETRY_TYPES` ตัวเดียวร่วมกัน และพิมพ์ตัวหารทุกครั้ง\n(5) `carry_check.load_dump` ปฏิเสธ 1 ใน 3 ทางที่ได้ 0 มวล — อีกสองทาง (schema drift, ทุกชิ้น hidden_render) ทำให้ `check()` ฟ้องทุกแถวเป็น LEDGER STALE คือ **รายงานว่า defect ทั้ง 9 ถูกแก้แล้ว** · ปิดครบสามทาง\n(6) `_retint_upholstery` นับ `n += 1` ก่อนเขียน channel ใด ๆ = นับเจตนา · census ของผมเองบน asset cache ทั้งหมด (108 ไฟล์ 0 อ่านไม่ได้): **140 จาก 294 slot (48%) ขับ Roughness ด้วย texture** ค่าที่เซ็นไม่เคยลง · ตอนนี้พิมพ์ชื่อทุก slot ที่ไปไม่ถึง\n(7) `frame_geometry.cam_from_spec` กลืน `EyeCameraError` เป็น 1.15 ขณะที่ `build_room` แปลง exception เดียวกันเป็น SystemExit → ผู้อ่าน spec key เดียวกันสองตัว ขัดกันโดยโครงสร้าง · ตอนนี้ปฏิเสธเหมือนกัน\n(8) `detail.py` เดาว่ากล้องฮีโร่มองตาม +X และทิ้ง shift เป็น 0.0 ทั้งที่ matrix มีทิศอยู่แล้ว · ผมสำรวจ sidecar จริงทั้ง 49: **26 ตัว (53%) ไม่ได้มองตาม +X และ 49/49 มี shift_y ไม่เป็นศูนย์** · วัดผลต่างบนคู่จริง: `hero_short_px` 37.6 → 464.2 = **12.3 เท่า**\n(9) `view_settings.look` เป็น enum ที่ namespace ด้วย `view_transform` — assign อยู่ใน `try/except: pass` ไม่มี readback · probe: ใต้ AgX ชื่อ 'Medium High Contrast' โยน TypeError แล้วถูกกลืน เฟรมเกรดโดยไม่มี look · ตอนนี้อ่านกลับแล้วพิมพ์\n(10) `exterior._LOOK_RE` เป็น pure module มองไม่เห็น namespace จึงอนุมัติทั้งสองสะกด — comment เลิกอ้างว่าตัวเองคือรั้วที่ทำให้ค่าผิด fail loud\n(11) **สครัตินัยจับได้ก่อน commit — ข้อ (4) ของผมแก้ไม่ครบ:** `placement_check._mesh()` มี type allowlist **ชั้นที่สอง** (`o.get(\"type\") == \"MESH\"`) เรคคอร์ด CURVE จึงเดินทาง มาถึงแล้วถูกทิ้งที่ไฟล์ถัดไปแทน · แก้ dump อย่างเดียวไม่เปลี่ยนอะไรเลย · ตอนนี้ขอบเขต ตัดสินจาก **การมี bounds** ซึ่งเป็นสมมุติฐานจริงของกฎ (กฎพวกนี้ให้เหตุผลจาก AABB)\n(12) **และของที่อันตรายกว่าเดิม:** `ev.bound_box` เชื่อไม่ได้กับ non-MESH · วัดบนไม้แขวน CURVE ที่สร้างแบบเดียวกับ build_room: bound_box คืน (-1.200,-1.000,0.720)..(1.200,1.000,2.915) ขณะที่ `to_mesh` คืน (-0.201,-0.002,1.719)..(0.201,0.002,1.917) — **ผิดไปเกือบ 3 เมตร** · ถ้า commit ไปตอนนั้น ไม้แขวนทุกตัวจะป้อนกล่องผิดให้ guard: INTERPENETRATION เท็จเต็มไปหมด และกล่องยักษ์ก็ไป 'แตะ' ของอื่นจนรอด FLOATING = **guard ที่รายงานอย่างมั่นใจจากตัวเลขผิด ซึ่งแย่กว่าตาบอดที่มันมาแทน** · ตอนนี้ non-mesh วัดจาก geometry ที่ renderer สร้างจริง\n**หลักฐานปิดท้าย (regression ที่มีทั้งสองขั้ว):** ไม้แขวนสามตัวที่แขวนบนราวจริง → ไม่มี finding · ไม้แขวนตัวที่สี่ที่ลอยอยู่จริง → **FAIL FLOATING** · ก่อนแก้ทั้งสองอย่าง ไม่มีตัวไหนถูกมองเห็นเลย",
+   "where": "pipeline/scripts/round_receipt.py",
+   "in_effect_assert": [
+    {
+     "file": "pipeline/scripts/round_receipt.py",
+     "pattern": "^COULD_NOT_RUN = 2",
+     "why": "สัญญา exit 2 ต้องอยู่กับ field ไม่ใช่กับ caller ไม่งั้นแก้ที่เดียวคือ allowlist"
+    },
+    {
+     "file": "pipeline/scripts/placement_dump.py",
+     "pattern": "^GEOMETRY_TYPES = \\(\"MESH\", \"CURVE\", \"SURFACE\", \"FONT\", \"META\"\\)",
+     "why": "รายชื่อ type ต้องมีที่เดียวและกว้างกว่า MESH ไม่งั้นไม้แขวน CURVE หายอีก"
+    },
+    {
+     "file": "pipeline/scripts/placement_dump.py",
+     "pattern": "for a in ob\\.matrix_world\\.to_euler\\(\\)",
+     "why": "การหมุนต้องอ่านจาก matrix ซึ่งไม่ขึ้นกับ rotation_mode — rotation_euler ตายบนของที่ import มา"
+    },
+    {
+     "file": "pipeline/scripts/mesh_import.py",
+     "pattern": "o\\.rotation_mode = 'XYZ'",
+     "why": "ต้อง normalise ตอน ingest ไม่งั้นการเขียน rotation_euler ของ trn001_styling ยังไม่มีผล"
+    },
+    {
+     "file": "pipeline/scripts/detail.py",
+     "pattern": "look = \\(-m\\[0\\]\\[2\\], -m\\[1\\]\\[2\\]\\)",
+     "why": "ทิศกล้องต้องอ่านจากคอลัมน์ -Z ของ matrix ไม่ใช่สมมติว่า +X (26/49 ไม่ใช่ +X)"
+    },
+    {
+     "file": "pipeline/scripts/probe_import_rotation.py",
+     "pattern": "PROBE OK: conversion preserves the rotation",
+     "why": "การแปลง rotation_mode ต้องมี probe พิสูจน์ว่าไม่ทำให้ของหมุนเพี้ยน พร้อม positive control ที่ gate จริง"
+    },
+    {
+     "file": "pipeline/scripts/placement_check.py",
+     "pattern": "if not o\\.get\\(\\\"hidden_render\\\"\\) and \\\"min\\\" in o and \\\"max\\\" in o",
+     "why": "ขอบเขตต้องตัดสินจากการมี bounds ไม่ใช่จากชื่อ type — allowlist ชั้นที่สองต้องไม่กลับมา"
+    },
+    {
+     "file": "pipeline/scripts/placement_dump.py",
+     "pattern": "if ob\\.type != \"MESH\":",
+     "why": "non-mesh ต้องวัดจาก to_mesh ไม่ใช่ bound_box ซึ่งผิดไปเกือบ 3 เมตรบนไม้แขวน CURVE"
+    }
+   ],
+   "because": "D-179 แก้ guard หนึ่งตัว แต่รูปของมัน — 'เครื่องที่ไฟเขียวไม่ได้ขึ้นกับสิ่งที่มันอ้างว่าตรวจ' — เป็นคลาสที่เรโปนี้นับมาแล้ว 15 ครั้ง การแก้ตัวเดียวแล้วหยุดคือ allowlist ในรูปของการตัดสินใจ · ทุกจุดในสิบข้อมี probe และหลายจุดมี negative control ที่ต้องแดงจริงก่อนจึงนับว่าแก้แล้ว · และรอบสครัตินัยก่อน commit พิสูจน์ประเด็นนี้กับตัวผมเอง: ข้อ (4) ผมแก้ที่ dump แล้วประกาศ ว่าเสร็จโดยไม่ไล่ไปถึงผู้บริโภค — probe แรกของผมพิสูจน์ผ่านเพราะมันตัดสิน MESH เท่านั้น การไล่ end-to-end จึงเจอทั้ง allowlist ชั้นสองและกล่องที่ผิด",
+   "reverse_by": "ต่อจุดไป: ลบ pattern ของ assert ที่เกี่ยวข้องออกจากแถวนี้พร้อมกับ revert โค้ด ไม่งั้น `decisions_check` rule 5 จะฟ้องทันทีว่าแถวกับไฟล์ไม่ตรงกัน · ถ้าจะถอนทั้งชุด: `git revert` commit นี้ แล้วลบ D-180 — แต่ต้องบันทึกว่ายอมรับกลับไปใช้ receipt ที่เขียน `ran=true` บน exit 2 และ rung OFF-AXIS ที่ตาบอดกับของที่ซื้อมาทุกชิ้น"
   }
  ],
  "_assert_ratchet_from": "D-124"

@@ -79,10 +79,19 @@ def _ext(spec):
 
 # Blender view-transform LOOK names for tone grading — the contrast family (AgX
 # prefix optional so the same name serves AgX or Filmic) + "None"/"" (no look).
-# resolve_hdri validates a spec-declared `look` against this so a typo ("Agx - ...",
-# missing dash) fails LOUD instead of being swallowed by _hdri_world's version-
-# tolerant `try/except: pass` (review 2026-07-17b — look was the one declared field
-# whose bad VALUE shipped silently, contradicting "every declared field fails loud").
+# resolve_hdri validates a spec-declared `look` against this so a SHAPE typo
+# ("Agx - ...", missing dash) fails LOUD here rather than in the renderer.
+#
+# WHAT THIS REGEX CANNOT DO, stated because it used to claim otherwise: `look` is
+# a DYNAMIC enum NAMESPACED BY `view_transform`, and this is a pure module with no
+# scene access, so it never sees the one property that decides whether a name is
+# valid. The "AgX - " prefix being optional means it blesses BOTH namespaces
+# unconditionally — under AgX (which build_room always selects) 7 of the 15
+# strings it accepts do not exist. So this is a spelling check, not a validity
+# check, and the authoritative rung is the READBACK at the assignment in
+# build_room.py: assign, read `view_settings.look` back, and say so when it did
+# not take. A validator that cannot see the namespace must not be the thing a
+# "fails LOUD" promise rests on.
 _LOOK_RE = re.compile(
     r"^(None|(AgX - )?(Very High|High|Medium High|Base|Medium Low|Low|Very Low) "
     r"Contrast)$")

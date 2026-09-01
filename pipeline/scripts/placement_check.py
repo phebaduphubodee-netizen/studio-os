@@ -87,10 +87,31 @@ AXIS_TOL_DEG = 0.05
 DEEP_OVERLAP_MM = 5.0
 
 
-def _mesh(objs):
+def _rendered(objs):
+    """Every mass that reaches the frame and can be judged from its AABB.
+
+    THE TYPE TEST IS GONE, AND ITS REMOVAL IS THE POINT. This read
+    `o.get("type") == "MESH"`, which is a TYPE ALLOWLIST inside the guard whose own
+    headline is that it carries no allowlist — the second copy of one, since
+    `placement_dump` had the same literal and only emitted bounds for meshes.
+    Fixing the dump alone changed nothing: the records arrived and were dropped
+    here instead, one file further along. `build_room` builds every wardrobe
+    hanger as a bevelled CURVE, so real delivered pixels were unjudgeable by
+    FLOATING, OVERHANG and OFF-AXIS at once, and the guard reported nothing wrong
+    because it could see nothing at all.
+
+    WHAT DECIDES SCOPE NOW is the presence of BOUNDS, which is the rule's actual
+    premise: these checks reason about an AABB, so anything carrying one can be
+    judged and anything without one cannot. `placement_dump.GEOMETRY_TYPES` is the
+    single place that decides what has geometry, and it prints its own denominator
+    so a record dropped here is visible rather than assumed away.
+    """
     return [o for o in objs
-            if o.get("type") == "MESH" and not o.get("hidden_render")
-            and "min" in o and "max" in o]
+            if not o.get("hidden_render") and "min" in o and "max" in o]
+
+
+# Kept so an older caller does not silently get an empty list; it is the same set.
+_mesh = _rendered
 
 
 def ground_z(objs):
