@@ -1348,6 +1348,53 @@
     }
    ],
    "note": "เรียนครบ 51/51 ตอน (transcript ครบทั้งหมด) → 1,571 teachings → เทียบกับโค้ดเรา 1,570 แถวพร้อม file:line → วัดกับเฟรมจริง 8 ข้อ ได้ 5 REFUTED / 2 PARTLY / 1 CONVICTED. **ผลที่มีค่าที่สุดคือข้อที่หักล้างผมเอง**: ผมรายงานว่า 'ผนังไม่มีเท็กซ์เจอร์ = 60% ของเฟรม' วัดแล้วผนัง painted กิน 0 พิกเซลจาก 4.32M และเพดานที่ใช้สูตรเดียวกันวัดได้ 1.03x ของงานส่งจริง — การอ่านโค้ดถูก (ประตูปิดจริง) แต่ผมกระโดดไปสรุปผลกับพิกเซลโดยไม่วัด. **ยังไม่จบ**: 203 ข้อที่ต้องดูภาพยังไม่ยืนยัน (YouTube ตอบ 429 วิดีโอได้ 11/51) และ 123 จาก 124 แถว lever สูงยังไม่ถูกวัด — ตัวถัดไปคือ Cycles Portal (ตอน 27-28)"
+  },
+  {
+   "id": "ORD-2026-09-01-study-blenderkit-models",
+   "date": "2026-09-01",
+   "verbatim": "ผมมีไอเดียว่า การจะทำให้การซื้อ subscrition ได้ประโยชน์สูงสุดเดือนนี้ คือคุณข้องไปทำการศึกษา model ใต blenderkit เพื่อที่หลังจาก sub หมดคุณจะปั้นเองได้ และเข้าใจการออกแบบมากขึ้น",
+   "verbatim_amendments": [
+    "ไม่ใช่แค่ของที่อยู่ในเครื่องผมอยู่แล้ว วางแผนเรียนให้หมด",
+    "ผมจะสั่งให้คุณเรียนทุกวัน จนกว่าจะถึงวันหมด",
+    "สิ่งที่ผมกลัวคือคุณชอบข้ามงานในงาน (สรุปว่าเสร็จแล้ว เรียนเสร็จแล้ว ทำได้แล้ว แต่พอผมเป็นเช็คก็เจอว่ามันห่วย)"
+   ],
+   "recorded_at": "docs/blenderkit-study-2026-09-01.md",
+   "commands": "เรียนจากคลัง BlenderKit ทั้งคลัง ไม่ใช่แค่ 71 ไฟล์บนเครื่อง และเรียนทุกวันจนวัน 30 (2026-09-21) — พี่เป็นคนสั่งเปิดวันเรียน หลักสูตรเป็นข้อมูลใน qa/blenderkit-study-curriculum.json (22 หน่วย ทุกหน่วยผูก defect ที่เลนวัดได้จริง) อ่านโดย study_curriculum.py ที่ plan_status พิมพ์ทุก session — หน่วยที่เลยวันพิมพ์เป็นหนี้เอง. สิ่งที่หมดอายุวัน 30 คือสิทธิ์โหลด ไม่ใช่ไฟล์ที่โหลดแล้ว และ bottleneck ที่การเรียนตอบคือ vocabulary ของ kernel (harness audit 2026-08-31: ปั้นชน stop-loss ทั้งที่ massing <2%). วิธีต่อวัน: fetch → probe โครงสร้าง (topology/modifier/node tree เป็นตัวเลข) → เทียบ kernel เรา → โน้ตที่ทุกข้อถือตัวเลขจาก dump → practice rep เฉพาะคลาส BUILD. รั้วประกาศไว้ก่อน: ชั้นนี้อ่านโครงสร้างไม่ใช่พิกเซล (ครึ่งพิกเซลคือ R4 ของ D-119) · ห้าม paid fetch ในคลาส C2 ที่ยังไม่มี free baseline (วัน 13 คือวันปลด fence) · practice rep ไม่ละเมิด R8 — ข้อค้นพบที่ชี้ว่า free-form คลาสไหนปั้นถึงแล้ว = ข้อเสนอแก้ R8 ยื่นพี่ ไม่ใช่การละเมิดเงียบ ๆ.",
+   "subject": "study-blenderkit-models",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "status": "obeyed",
+   "since": "2026-09-01",
+   "not_obeyed_because": null,
+   "restart_by": null,
+   "obeyed_where": "docs/blenderkit-study-2026-09-01.md,pipeline/scripts/model_study_probe.py,qa/blenderkit-study-curriculum.json,pipeline/scripts/study_curriculum.py,knowledge/_inbox/model-study/",
+   "obeyed_assert": [
+    {
+     "file": "pipeline/scripts/model_study_probe.py",
+     "pattern": "owner idea 2026-09-01",
+     "why": "การศึกษาต้องมีเครื่องมืออ่านโครงสร้างจริง ไม่ใช่การเปิดไฟล์ดูเฉย ๆ — probe คือครึ่งที่ทำให้บทเรียนเป็นตัวเลขที่ตรวจกลับได้"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "lines \\+= study_lines\\(\\)",
+     "why": "'เรียนทุกวัน' ที่ไม่มีเครื่องอ่านตาราง = คิวที่ไม่มีผู้บริโภค — คำสั่งรายวันต้องพิมพ์ที่ session open และหน่วยที่เลยวันต้องพิมพ์เป็นหนี้"
+    },
+    {
+     "file": "qa/blenderkit-study-curriculum.json",
+     "pattern": "STUDY-D30-closeout",
+     "why": "'วางแผนเรียนให้หมด' ต้องมีแผนถึงวันสุดท้ายของสิทธิ์จริง ๆ ไม่ใช่แผนที่จบแค่ของบนเครื่อง"
+    },
+    {
+     "file": "pipeline/scripts/study_curriculum.py",
+     "pattern": "the learner may not grade the learner",
+     "why": "คำกลัวของพี่ ('สรุปว่าเสร็จแล้ว...แต่พอผมเช็คก็เจอว่ามันห่วย') ต้องเป็นการปฏิเสธในโค้ด ไม่ใช่คำสัญญา — หน่วยเรียน done ได้เฉพาะเมื่อ exam ที่ล็อกไว้ก่อนถูกตัดสินโดยคนที่ไม่ใช่ผู้เรียน และ practice rep ปิดได้เฉพาะ c2/c3/owner"
+    }
+   ],
+   "note": "เริ่ม 2026-09-01 (วัน 10 ของ month clock, เหลือ 20 วันของสิทธิ์ full-plan). ตัวอย่างแรกพิสูจน์วิธีแล้ว: เสื้อเชิ้ตแขวน full-plan = quad cage 2,332 verts + SUBSURF (~1,600 verts/m²) + ผ้า procedural ล้วนมี Sheen 0.2 — สวนกับสมมติฐาน sim-หนา ที่พาเราชน stop-loss. โน้ตกลั่นลง knowledge/_inbox/model-study/ (REFERENCE tier จนกว่าจะกลั่นเข้า knowledge/ ตาม flow)."
   }
  ]
 }

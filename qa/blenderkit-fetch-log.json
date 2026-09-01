@@ -3758,6 +3758,31 @@
     "refusal": null
    },
    "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T13:41:55-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-01T13:55:05-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain",
+   "pages": 1,
+   "n": 100,
+   "free": 21,
+   "full_plan": 79,
+   "fetched": false
   }
  ]
 }

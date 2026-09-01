@@ -1,0 +1,422 @@
+{
+ "_law": "ORD-2026-09-01-study-blenderkit-models — หลักสูตรเรียนจากคลัง BlenderKit ทั้งคลัง ไม่ใช่แค่ของบนเครื่อง (คำพี่: 'ไม่ใช่แค่ของที่อยู่ในเครื่องผมอยู่แล้ว วางแผนเรียนให้หมด' และ 'ผมจะสั่งให้คุณเรียนทุกวัน จนกว่าจะถึงวันหมด'). พี่เป็นคนสั่งเปิดวันเรียน; ไฟล์นี้บอกว่าวันนั้นเรียนอะไรและค้างอะไร. วันเรียนหนึ่งวัน = fetch (ถ้ามี) → probe (model_study_probe.py) → วิเคราะห์เทียบ kernel ของเรา → โน้ตลง knowledge/_inbox/model-study/ ที่ทุกข้อถือตัวเลขจาก dump → (เฉพาะคลาส BUILD) practice rep. หน่วยที่เลยวันแล้วยัง pending = หนี้ พิมพ์ที่ session open ไม่หายเอง.",
+ "_done_is_not_the_learners_sentence": "เพิ่ม 2026-09-01 หลังพี่พูดตรง ๆ: 'สิ่งที่ผมกลัวคือคุณชอบข้ามงานในงาน (สรุปว่าเสร็จแล้ว เรียนเสร็จแล้ว ทำได้แล้ว แต่พอผมเป็นเช็คก็เจอว่ามันห่วย)' — และ repo วัดมาแล้วว่าเขาถูก (builder จับ defect ตัวเอง 30-50% ตาม R3; ตา builder 0 conviction จาก 367; gate เคยเขียน 'มีลิ้นชัก+มือจับ' ที่พิกเซลไม่มี). กฎ: (1) ทุกหน่วยมี `exam` ที่ PRE-REGISTER ไว้ก่อนเรียน — บทเรียน harness audit: เฉลยต้องล็อกก่อนวัด; (2) หน่วยจะ done ได้ต้องมี `exam_evidence` (path/เลขที่ชี้กลับได้) และ `judged_by` ที่ไม่ใช่ 'builder' — โน้ตใช้ verifier-agent (fresh-context ฝ่ายค้านไล่เลขกลับ dump), รั้วเครื่องใช้ instrument, practice rep ต้องเป็น c2/c3/owner เท่านั้น; (3) โน้ตที่ verifier ตรวจแล้ว = แค่ 'ตัวเลขไม่โกหก' ยังไม่ใช่ 'เรียนแล้ว' — สถานะที่ซื่อสัตย์ของหน่วยโน้ตคือ notes-verified; (4) EXIT ของทั้งโปรแกรม: 'ปั้นเองได้' ประกาศได้เฉพาะเมื่อ rep ทั้งสาม (วัน 25-27) ผ่านกรรมการตาบอดที่ไม่ใช่ผู้เรียน และเฟรมเลนที่ใช้กฎพวกนี้ไม่โดน critic ยื่นซ้ำในคลาสนั้น — และคำสุดท้ายเป็นของพี่ อ่านจาก render (R3) เสมอ. study_curriculum.check() ปฏิเสธ done ที่ผิดกฎพวกนี้โดยชื่อ และพิมพ์ทุก session.",
+ "_fences": [
+  "C2-FENCE (D-119): ห้าม paid fetch ใน wall_art / plant / cushion_throw / nightstand_objects / hung_garments จนกว่า free baseline (20 thumbnail ผ่าน panel prompt ที่ล็อก) จะรันในคลาสนั้น — วัน 13 คือวันปลด fence นี้; check() อ่าน fence_gate จริง (เพิ่ม 2026-09-01 หลัง critic ชี้ว่า fence มีประโยคแต่ไม่มีผู้อ่าน) และวัน 13 พลาดหนึ่งวัน = สี่วัน paid (17/20/21/22) เลื่อนตามในนาฬิกาที่ถอยไม่ได้",
+  "GARMENT-PAID-STUDY DECIDED 2026-09-01 (gap 6 ของ critic, ตัดสินโดย builder พลิกได้ด้วยประโยคเดียว): ไม่ fetch garment paid เพิ่มก่อนวัน 13 — บนดิสก์มี garment full-plan 10 ตัวที่ผ่าแล้วในวัน 10 พอสำหรับการเรียนโครงสร้าง; คลาส hung_garments ปนเปื้อนสำหรับ C2 อยู่แล้ว (p2r86) แต่การซื้อเพิ่มระหว่าง fence ยังปิดจะทำให้เรื่องเล่า 'เรียน vs ซื้อเข้าเลน' แยกไม่ออกอีกชั้น — ถ้า INDEX/วันหลังชี้ว่าต้องมีตัวเรียนเพิ่มจริง เปิดเป็นข้อเสนอพร้อมเหตุผล ไม่ซื้อเงียบ ๆ",
+  "R8-FENCE: practice rep ลงมือปั้นได้เฉพาะคลาส BUILD (กล่อง+รัศมี / sweep โปรไฟล์ / extrude โครงร่าง) และเทคนิค R8b จาก DATA API — การศึกษาที่ชี้ว่าคลาส free-form ไหน 'ปั้นถึงแล้ว' (เช่น garment cage 2.3k quads + subsurf) = ข้อเสนอแก้ R8 ยื่นพี่พร้อมหลักฐาน A/B ไม่ใช่การละเมิดเงียบ ๆ",
+  "PACING (ORD chocofur ข้อ 2, เครื่องเคยดับ): Blender ทีละ process, ห้าม subagent เปิด Blender เอง, fetch ค่อยเป็นค่อยไป --resolution 2K",
+  "DISK: cache gitignored อยู่นอก git; ~1GB/วันเป็นเพดานโหลด; ห้ามลบ .blend เดิม (memory: disk-retention จนกว่า R4/D-119 จบ)"
+ ],
+ "_lane_debts": [
+  "D-183 trade dress ในเฟรม p2r91: Cartier-logo บน bookshelf_tray__acq1/acq2 (แก้: สลับ slot เป็น Rose Gold) + LV monogram บน hero bag 8f19d91a — เฟรมตระกูลนี้ NOT-CLIENT-FACING จนกว่ารอบ build จะแก้แล้ว supersede D-183"
+ ],
+ "_rep_fallback": "rep วัน 25-27 ตัวไหนตกกรรมการ = บันทึก not-passed ตามจริง + เสนอวันเรียนซ่อมหลังสิทธิ์หมด (ไฟล์บนดิสก์อ่านได้ตลอด — ที่หมดคือสิทธิ์โหลด) — ห้ามให้นาฬิกา 30 วันบีบให้ rep ปิดหลวม และ judged_by=owner ไม่มีกำหนดเวลา (R3: เขาอ่าน render ตามจังหวะของเขา)",
+ "clock": {
+  "first_paid": "2026-08-22",
+  "last_day": "2026-09-21",
+  "today_is_day": "date - 2026-08-22"
+ },
+ "units": [
+  {
+   "day": 10,
+   "date": "2026-09-01",
+   "id": "STUDY-D10-shelf71",
+   "title": "ผ่า 71 .blend ที่อยู่บนเครื่องแล้ว — 8 กลุ่มคลาส + verifier + synthesis",
+   "why": "vocabulary bottleneck (harness audit 2026-08-31); ของอยู่แล้วอ่านได้ตลอดไป เริ่มจากมันก่อนเงินหมด",
+   "fetch": null,
+   "deliverable": "knowledge/_inbox/model-study/2026-09-01-*.md + INDEX",
+   "exam": "โน้ตคลาส 8 ใบ + INDEX อยู่จริง · verifier ฝ่ายค้าน (fresh-context) ไล่ทุกเลขกลับ dump ครบทั้ง 8 ใบ (ขยายจาก 4 ใบเดิมตาม gap ของ critic — และใช้เคส bevel ถาด d3644708 ที่ critic จับได้เป็น known-answer test: verifier ที่อ่านโน้ต props ต้องเจอข้อผิดนี้) แล้วรายงาน checked/wrong/fixed · ทุกกฎใน INDEX ชี้โน้ตต้นทาง · gaps ของ completeness critic ถูกแปลงเป็นหน่วย/แถว/การแก้ครบทุกข้อ — สถานะสูงสุดที่หน่วยนี้ไปถึงได้คือ notes-verified ไม่ใช่ 'เรียนแล้ว'",
+   "status": "done",
+   "judged_by": "verifier-agent",
+   "exam_evidence": "knowledge/_inbox/model-study/2026-09-01-INDEX.md,knowledge/_inbox/model-study/2026-09-01-bed.md,knowledge/_inbox/model-study/2026-09-01-casegoods.md,knowledge/_inbox/model-study/2026-09-01-folded.md,knowledge/_inbox/model-study/2026-09-01-garment.md,knowledge/_inbox/model-study/2026-09-01-lamp.md,knowledge/_inbox/model-study/2026-09-01-materials-rug.md,knowledge/_inbox/model-study/2026-09-01-organic.md,knowledge/_inbox/model-study/2026-09-01-props.md,qa/blenderkit-study-stats.json",
+   "done_note": "notes-verified 2026-09-01: verifier ฝ่ายค้าน 8/8 โน้ต สองรอบ — รอบแรก (bed 49/17, folded 73/10, garment 138/10, materials 49/18) + รอบสอง (casegoods 32/7, lamp 69/14, organic 129/16, props 93/9) = ตรวจ 632 ข้อ ผิด 101 (16.0%) แก้ครบ 101; known-answer test ของ props: verifier เจอเอง; INDEX กระทบยอดกับการแก้รอบสองแล้ว (กฎ 9/10) · gaps 13 ข้อของ critic → D-183 (trade dress, lane debt), หน่วย D11b (ingest repair), fence reader ใน check(), exam วัน 11/14/22/28/29 แก้แล้ว, เลขประกาศเองแก้แล้ว · สถานะนี้คือ notes-verified — ยังไม่ใช่ \"เรียนแล้ว\" (การพิสูจน์คือ rep วัน 25-27 + เฟรมเลน + ตาพี่) · scrutinize ก่อน commit จับเพิ่ม 3 ข้อและแก้แล้ว: (1) ตารางสถิติที่โน้ตทุกใบอ้าง เกิดจากสคริปต์ใน scratchpad และอยู่ใต้ path ที่ gitignored → ย้ายเป็น subcommand `model_study_probe.py stats` เขียนลง qa/blenderkit-study-stats.json (positive control: ตารางใหม่ตรงตารางเดิมทุก field, 0 diff) (2) area_m2 คำนวณจาก scale เฉลี่ย = ผิดเมื่อ scale ไม่สม่ำเสมอ → แก้เป็น world-space จริง; วัดผลกระทบก่อนเก็บ: re-probe 3 asset ที่ถูกอ้างหนักสุด 19 mesh scale uniform ทุกตัว ความหนาแน่นไม่ขยับเลย (sample ไม่ใช่ทั้ง corpus — full re-probe อยู่ใน D11b) (3) INDEX ค้างสถานะ \"ยังไม่ผ่าน verifier\" ของ 4 โน้ต ที่ผ่านรอบสองไปแล้ว → กระทบยอดแล้ว"
+  },
+  {
+   "day": 11,
+   "date": "2026-09-02",
+   "id": "STUDY-D11-madebed",
+   "title": "MADE-BED / bedding sets — ผ้านวมจัดแล้วระดับส่งงาน",
+   "why": "แผลอันดับ 1 ของเลน: duvet ฟรี 0/22, ตัวในเฟรมเพดาน 73%, fold energy 2.1-3.7x งานส่งจริง; ASK-002 คือ procurement — วันนี้คือฝั่งความรู้",
+   "fetch": {
+    "queries": [
+     "bed set",
+     "bedding",
+     "duvet",
+     "made bed",
+     "bolster",
+     "pillow set"
+    ],
+    "tier": "full_plan+free",
+    "n": 8,
+    "fenced": false,
+    "note": "โหลด .blend 2K เป็นหลัก ไม่เอา GLB ก็ได้ (การเรียนใช้ .blend; GLB ไว้ค่อย export ตอนจะเข้าเลน) เพื่ออยู่ใต้เพดานดิสก์ 1GB — คืน 08-22 วัดแล้วเตียงตัวละ 49-211MB; เกินเพดานให้บันทึกยกเว้นเป็นลายลักษณ์ · bolster/pillow set เพิ่มตาม INDEX: pro มีหมอนแยกใบ 6/10 + bolster 3/10, ซีนเรามีหมอนเดี่ยว 0 ใบ (ไม่ติด fence — ไม่ใช่คลาส C2)"
+   },
+   "deliverable": "note 2026-09-02-madebed.md",
+   "exam": "ก่อน fetch ใหม่: probe ของที่นอนบนดิสก์อยู่แล้วก่อน — ชุดผ้าเตียง Keywest 3 ชุด (bk_daxing/bk_phoenix/bk_stansted, GLB-only) + เตียงในเฟรม 81d895fd ผ่านทาง GLB-import ของ probe (D11b) — คลาสแผลอันดับ 1 ห้ามซื้อใหม่ทั้งที่ของเก่ายังไม่ถูกเรียน (บทเรียน read-our-own-studies) · แล้วโน้ตผ่าน verifier ฝ่ายค้าน (เลขทุกตัว reproduce จาก dump) + อย่างน้อย 3 กฎเขียนเป็น testable: ระบุการวัดในเฟรมที่จะพิสูจน์/หักล้างมัน",
+   "status": "pending"
+  },
+  {
+   "day": 11,
+   "date": "2026-09-02",
+   "id": "STUDY-D11b-ingest-repair",
+   "title": "ซ่อมท่อ ingest — งานที่ทุกวันถัดไปพึ่งพา (finding ใหญ่สุดของวัน 10)",
+   "why": "GLB ฆ่าของที่ซื้อ: 19/39 material มี node ที่ glTF ไม่มีที่อยู่ · SUBSURF ถูกอบที่ viewport level = 1/4 ความละเอียดที่จ่ายเงิน (blenderkit.py export_glb ไม่ตั้ง levels=render_levels) · height map ถูกเสียบเข้า NORMALMAP ผิดความหมาย (พรม D-รูปแบบเดิม) — INDEX row วัน 14 พึ่ง 'หลังซ่อม ingest' แต่ก่อนหน้านี้ไม่มีหน่วยไหนเป็นเจ้าของ (gap ของ critic ข้อ 3) · งานสามชิ้น: (ก) export_glb อบ SUBSURF ที่ render_levels (ข) เส้นทาง append-from-.orig.blend สำหรับ hero asset (bpy.data.libraries.load — DATA API ที่ layer law อนุญาต, R4 ของ D-119 ต้องการอยู่แล้ว) (ค) probe เพิ่มทาง GLB-import สำหรับ 13 asset ที่ไม่มี .blend + field ที่โน้ตติดตัน (object scale, world bbox, displacement_method, VALTORGB stops, ชื่อ UV layer)",
+   "fetch": null,
+   "deliverable": "diff ใน blenderkit.py + model_study_probe.py + probe dump ของ 13 GLB-only assets",
+   "exam": "INSTRUMENT + positive control: re-export asset ตัวอย่างหนึ่งตัวแล้ว probe ยืนยัน (ก) face count ขึ้นตาม render_levels จริง (ข) probe GLB-import อ่าน bk_daxing ได้ (ค) negative control: asset ที่ไม่มีทั้ง .blend/GLB ต้อง refuse ไม่ใช่เขียน dump เปล่า — judged_by instrument · เพิ่ม 2026-09-01 (scrutinize): re-probe ทั้ง 71 ไฟล์ด้วยสูตร area world-space ที่แก้แล้ว + field scale ใหม่ แล้วรัน `stats` ใหม่ — คลาสไหนตัวเลขขยับ ถือว่าเลขใหม่ชนะโน้ตวันนี้ และต้องแก้โน้ตตามพร้อมบันทึกว่าขยับเท่าไร (วันนี้วัด sample 3 asset = 0 ขยับ แต่ sample ไม่ใช่ corpus)",
+   "status": "pending"
+  },
+  {
+   "day": 12,
+   "date": "2026-09-03",
+   "id": "STUDY-D12-curtains",
+   "title": "CURTAINS — ราง, จีบ, pocket, การจบบนเพดาน",
+   "why": "ม่านในเฟรมหายเข้า slab ไม่มี pocket (ทุก critic ยื่น, carry_check มองไม่เห็น); คลัง 595 ตัว 89% ต้องจ่าย — หมดสิทธิ์แล้วซื้อไม่ได้",
+   "fetch": {
+    "queries": [
+     "curtain",
+     "curtain track",
+     "sheer curtain"
+    ],
+    "tier": "full_plan+free",
+    "n": 8,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-03-curtains.md",
+   "exam": "โน้ตผ่าน verifier + ตอบคำถามที่วัดได้: รางม่าน pro ประกอบด้วยชิ้นอะไร (เลข object/dims) และม่านจบบนเพดานยังไง — เทียบ casement_sheers.py ของเรา file:line",
+   "status": "pending"
+  },
+  {
+   "day": 13,
+   "date": "2026-09-04",
+   "id": "STUDY-D13-baselines",
+   "title": "FREE BASELINES ของ 5 คลาสที่ D-119 ล็อก — ปลด fence",
+   "why": "หนี้ของ D-119 เอง (สถานะ status พิมพ์ทุกวันแต่ยังไม่มีใครรัน); ปลดให้วัน 17/20/21/22 เดินได้; hung_garments ปนเปื้อนแล้ว (p2r86) — บันทึกตามจริง รันที่เหลือ 4 คลาส",
+   "fetch": {
+    "queries": [
+     "wall art",
+     "indoor plant",
+     "cushion",
+     "nightstand decor"
+    ],
+    "tier": "free",
+    "n": 80,
+    "fenced": false,
+    "note": "20 thumbnail แรกต่อคลาสผ่าน panel prompt ที่ล็อก — โปรโตคอลใน qa/blenderkit-month-classes.json"
+   },
+   "deliverable": "baseline verdicts ใน _private/deliv-001/ + บรรทัดใน status",
+   "exam": "INSTRUMENT ตัดสิน ไม่ใช่ผม: `blenderkit.py status` เลิกพิมพ์ 4 คลาสนั้นในรายการ 'free baseline still to run' — สำเนา output แนบเป็นหลักฐาน",
+   "status": "pending"
+  },
+  {
+   "day": 14,
+   "date": "2026-09-05",
+   "id": "STUDY-D14-rug",
+   "title": "RUG — pile, ขอบ rollover, binding",
+   "why": "ORD-2026-08-25b ('พรมยังไม่สวย หาจาก blendkit มา') ยังยืน; rug_edge เพิ่งได้เครื่องวัดที่อ่านจริง (subject guard)",
+   "fetch": {
+    "queries": [
+     "rug",
+     "carpet wool",
+     "berber rug"
+    ],
+    "tier": "full_plan+free",
+    "n": 6,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-05-rug.md + candidate ส่งเลน P2",
+   "exam": "ต้องรันหลัง D11b (ingest ซ่อมแล้ว — INDEX row วัน 14 พึ่งมัน) · โน้ตผ่าน verifier + **ยืนยันหรือหักล้าง hypothesis จาก n=1** (Recipe D + กฎ TOP-10 ข้อ 4 สร้างจากพรมตัวเดียว 0fd746ae — corpus ใหม่ ≥6 ตัวต้องบอกว่ามันเป็นกฎจริงหรือความบังเอิญ) + candidate ≥2 ตัวส่งเข้าเลนพร้อมเลข scale/pile — การตัดสินว่าพรม 'สวยขึ้น' เป็นของเฟรมเลน (C2/C3/ตาพี่) ไม่ใช่ของโน้ต",
+   "status": "pending"
+  },
+  {
+   "day": 15,
+   "date": "2026-09-06",
+   "id": "STUDY-D15-seating",
+   "title": "UPHOLSTERED SEATING — เบาะอัด, piping, ตะเข็บ",
+   "why": "tub chair ในเฟรมเป็นของปั้นเอง (loose ปั้นเองโดนด่า 7.56 items/ชิ้น vs mill 1.01); armchair ในคลัง 7,166 ตัว",
+   "fetch": {
+    "queries": [
+     "armchair",
+     "lounge chair",
+     "ottoman"
+    ],
+    "tier": "full_plan+free",
+    "n": 6,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-06-seating.md",
+   "exam": "โน้ตผ่าน verifier + ระบุเป็นเลขว่าเบาะ pro ต่างจาก tub chair เราตรงไหน (density/ตะเข็บ/piping — เทียบ _ours dump)",
+   "status": "pending"
+  },
+  {
+   "day": 16,
+   "date": "2026-09-07",
+   "id": "STUDY-D16-wardrobe",
+   "title": "WARDROBE INTERNALS — ของในตู้, organiser, กล่อง, ชั้นพับ",
+   "why": "ORD-2026-08-26 'ของในตู้ built-in ยังไม่เป็นธรรมชาติ' + รอบ contents ค้าง (ORD-2026-08-28c); โน้ตวัน 10 กลุ่ม folded ให้ grammar — วันนี้หาของจริงประกอบ",
+   "fetch": {
+    "queries": [
+     "wardrobe organizer",
+     "closet storage",
+     "folded clothes"
+    ],
+    "tier": "full_plan+free",
+    "n": 6,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-07-wardrobe.md",
+   "exam": "โน้ตผ่าน verifier + grammar การจัดช่อง (จำนวน/ท่าวาง/ความว่าง) เป็นเลขจาก loc/rot จริงของ asset ที่โหลด — ให้รอบ contents ของเลนใช้",
+   "status": "pending"
+  },
+  {
+   "day": 17,
+   "date": "2026-09-08",
+   "id": "STUDY-D17-cushions",
+   "title": "CUSHION/THROW paid — หมอนขอบมีด vs กล่อง, การกอง",
+   "why": "คลาส C2 ที่ปลดจากวัน 13; หมอน/throw คือส่วนของ made-bed ที่ยังตกค้าง",
+   "fetch": {
+    "queries": [
+     "cushion",
+     "throw pillow",
+     "throw blanket"
+    ],
+    "tier": "full_plan",
+    "n": 6,
+    "fenced": true,
+    "fence_gate": "STUDY-D13-baselines"
+   },
+   "deliverable": "note 2026-09-08-cushions.md",
+   "exam": "โน้ตผ่าน verifier + เลขการกอง/การหมุนหมอน pro เทียบหมอนในเฟรมเรา (_ours)",
+   "status": "pending"
+  },
+  {
+   "day": 18,
+   "date": "2026-09-09",
+   "id": "STUDY-D18-lighting-fixtures",
+   "title": "LIGHTING FIXTURES — โคม, สายไฟ, emitter ในไฟล์มืออาชีพ",
+   "why": "sense list: 'โคมไม่มีสาย' ยังเปิด; LED strip อ่านเป็นแท่งดิบ (P2r-29b); ดูว่า pro ต่อ emitter/shade/cord ยังไง",
+   "fetch": {
+    "queries": [
+     "pendant lamp",
+     "wall lamp",
+     "floor lamp"
+    ],
+    "tier": "full_plan+free",
+    "n": 6,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-09-lighting-fixtures.md",
+   "exam": "โน้ตผ่าน verifier + คำตอบเป็นเลขว่า pro ทำสายไฟ/หลอด/ขั้วยังไง (object แยกไหม กี่ verts, CURVE bevel เท่าไร) — ป้อนตรงเข้า sense-item ของเลน",
+   "status": "pending"
+  },
+  {
+   "day": 19,
+   "date": "2026-09-10",
+   "id": "STUDY-D19-hardware",
+   "title": "SENSE-LIST HARDWARE — แอร์, ปลั๊ก/สวิตช์, มือจับประตู, รางม่าน",
+   "why": "P2r-29c: 'no aircon / door / socket / curtain track anywhere' — ทั้งรายการน่าจะซื้อ/โหลดได้จากคลังตรง ๆ",
+   "fetch": {
+    "queries": [
+     "air conditioner split",
+     "light switch",
+     "door handle",
+     "power socket"
+    ],
+    "tier": "full_plan+free",
+    "n": 8,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-10-hardware.md + candidate เข้าเลน",
+   "exam": "ของจริงบน shelf พร้อม scale sidecar ครบทุกคลาสในรายการ sense (INSTRUMENT: sidecar asserted) + โน้ตผ่าน verifier — การหายไปจากเฟรมหลังจากนี้เป็นการตัดสินใจ ไม่ใช่ความไม่มีของ",
+   "status": "pending"
+  },
+  {
+   "day": 20,
+   "date": "2026-09-11",
+   "id": "STUDY-D20-nightstand-objects",
+   "title": "NIGHTSTAND OBJECTS + tray sets paid — grammar การจัดวางจาก loc/rot จริง",
+   "why": "คลาส C2 ปลดจากวัน 13; HOLE-01 ของพี่ (การหยิบของมาวาง) — dumps มี loc/rot แล้ววัดท่าวางได้เป็นองศา/มม.",
+   "fetch": {
+    "queries": [
+     "nightstand decor",
+     "decor set",
+     "tray set"
+    ],
+    "tier": "full_plan",
+    "n": 6,
+    "fenced": true,
+    "fence_gate": "STUDY-D13-baselines"
+   },
+   "deliverable": "note 2026-09-11-nightstand-objects.md",
+   "exam": "โน้ตผ่าน verifier + กฎการวางเขียนแบบ R9 (offset จาก datum, มุม jitter เป็นแบนด์ตัวเลข) พร้อมเลขต้นทางจาก ≥3 ชุดจริง",
+   "status": "pending"
+  },
+  {
+   "day": 21,
+   "date": "2026-09-12",
+   "id": "STUDY-D21-wall-art",
+   "title": "WALL ART paid — กรอบ, ความลึก canvas, กระจก/passe-partout",
+   "why": "คลาส C2 ปลดจากวัน 13; ผนังเราว่างและ style ต้องการ art ตาม STY rows",
+   "fetch": {
+    "queries": [
+     "wall art",
+     "framed print",
+     "canvas art"
+    ],
+    "tier": "full_plan",
+    "n": 6,
+    "fenced": true,
+    "fence_gate": "STUDY-D13-baselines"
+   },
+   "deliverable": "note 2026-09-12-wall-art.md",
+   "exam": "โน้ตผ่าน verifier + โครงสร้างกรอบเป็นเลข (ลึก/ขอบ/กระจก) เทียบสิ่งที่ STY row ต้องการ",
+   "status": "pending"
+  },
+  {
+   "day": 22,
+   "date": "2026-09-13",
+   "id": "STUDY-D22-plants",
+   "title": "PLANTS paid — instancing ใบ, alpha cards, ความหนาแน่น",
+   "why": "คลาส C2 ปลดจากวัน 13; R8 ACQUIRE — บทเรียนคือรู้จักของดีตอนซื้อ ไม่ใช่หัดปั้น",
+   "fetch": {
+    "queries": [
+     "indoor plant",
+     "monstera",
+     "olive tree"
+    ],
+    "tier": "full_plan",
+    "n": 5,
+    "fenced": true,
+    "fence_gate": "STUDY-D13-baselines"
+   },
+   "deliverable": "note 2026-09-13-plants.md",
+   "exam": "โน้ตผ่าน verifier + acquisition checklist เป็นเลข (band ของ density/UV/instancing ที่แยกของดีจากของห่วย อ้าง dump ≥4 ตัว) + **ยืนยันหรือหักล้าง checklist ที่วัน 10 สร้างจาก n=2** (opacity+TRANSLUCENT+ngon≤0.005+img 22-29 ใบ — สองตัวอย่างยังเป็น hypothesis ไม่ใช่ band)",
+   "status": "pending"
+  },
+  {
+   "day": 23,
+   "date": "2026-09-14",
+   "id": "STUDY-D23-materials",
+   "title": "MATERIALS — node tree ผ้า/ไม้/ปูน 12-15 ตัว vs material_presets",
+   "why": "material ฟรีทั้งคลังตลอดไป แต่ 'อ่าน node tree เป็น' ต้องเรียนตอนนี้; P2r-2 ลายไม้ซ้ำ, P2r-5 ผ้าพลาสติก",
+   "fetch": {
+    "queries": [
+     "fabric material",
+     "boucle",
+     "oak veneer",
+     "plaster"
+    ],
+    "tier": "free-material",
+    "n": 15,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-14-materials.md",
+   "exam": "โน้ตผ่าน verifier + ≥2 recipe เขียนละเอียดพอที่วัน 26 จะ port ได้โดยไม่ต้องเปิดไฟล์ต้นทางอีก (node ต่อ node)",
+   "status": "pending"
+  },
+  {
+   "day": 24,
+   "date": "2026-09-15",
+   "id": "STUDY-D24-hdri",
+   "title": "HDRI interior — pro key ห้องนอนยังไง (62% paid)",
+   "why": "แสงเราถูกด่า 'flat/lit from nowhere' ซ้ำ; ground-truth study บอก gap 191-2500:1 — HDRI คือครูที่วัดได้",
+   "fetch": {
+    "queries": [
+     "interior hdri",
+     "window light hdri"
+    ],
+    "tier": "full_plan+free",
+    "n": 5,
+    "fenced": false
+   },
+   "deliverable": "note 2026-09-15-hdri.md",
+   "exam": "โน้ตผ่าน verifier + ค่าที่วัดจากไฟล์จริง (dynamic range, ทิศ key) เทียบ rig ของ element5_lighting",
+   "status": "pending"
+  },
+  {
+   "day": 25,
+   "date": "2026-09-16",
+   "id": "STUDY-D25-rep-casegoods",
+   "title": "PRACTICE REP 1 — reveal/bevel/มือจับ casegoods ลง millwork.py",
+   "why": "คลาส BUILD แท้ (กล่อง+รัศมี) — เอาเลข bevel/ช่องไฟจากโน้ตวัน 10 กลุ่ม casegoods ไปทำให้ตู้เรามีรายละเอียดระดับเดียวกับของซื้อ; A/B กับ acquired",
+   "fetch": null,
+   "deliverable": "diff ใน millwork.py + A/B quick render + บรรทัดในโน้ต",
+   "exam": "นี่คือข้อสอบจริง ไม่ใช่โน้ต — A/B render (ก่อน/หลัง ข้าง acquired อ้างอิง) ตัดสินโดย C2 blind + เลขในซีน build ตรงเลขที่โน้ตอ้าง (reveal มม./bevel มม. วัดด้วย probe เดียวกัน) — judged_by ต้องเป็น c2/c3/owner ห้าม builder ปิดเอง",
+   "status": "pending"
+  },
+  {
+   "day": 26,
+   "date": "2026-09-17",
+   "id": "STUDY-D26-rep-fabric-nodes",
+   "title": "PRACTICE REP 2 — procedural fabric node group ลง material_presets",
+   "why": "โน้ตวัน 10/23 ให้สูตร (noise→ramp×3 + BUMP + sheen); ทำเป็น preset ที่ amplitude bisect ได้ — ตอบ P2r-5 ด้วยมือเราเอง",
+   "fetch": null,
+   "deliverable": "preset ใหม่ + A/B บนผ้าในเฟรม",
+   "exam": "ข้อสอบจริง — A/B บนผ้าในเฟรมผ่าน C2+C3 ตามพิธี render ปกติ (R7b) + amplitude bisect บันทึกเป็นเลข — judged_by c2/c3/owner เท่านั้น",
+   "status": "pending"
+  },
+  {
+   "day": 27,
+   "date": "2026-09-18",
+   "id": "STUDY-D27-rep-folded",
+   "title": "PRACTICE REP 3 — folded-stack generator ตาม fold grammar ที่วัดได้",
+   "why": "ของในตู้ (ORD-2026-08-26) ต้องการกองผ้าที่ไม่เหมือน block; grammar จากวัน 10 กลุ่ม folded + วัน 16 — คลาสนี้ box+radius+displace = BUILD/R8b ไม่ละเมิด R8",
+   "fetch": null,
+   "deliverable": "generator diff + A/B ใน bay ตู้จริง",
+   "exam": "ข้อสอบจริง — กอง 3 แบบใน bay จริง A/B ตัดสินโดย C2 blind + jitter (rot/loc) ของกองที่ build วัดแล้วอยู่ในแบนด์ที่โน้ต folded สกัดจากของ pro — judged_by c2/c3/owner เท่านั้น",
+   "status": "pending"
+  },
+  {
+   "day": 28,
+   "date": "2026-09-19",
+   "id": "STUDY-D28-gap-sweep",
+   "title": "GAP SWEEP — เดิน category tree ทั้งคลัง + คลาสที่รู้แล้ววันนี้ว่ายังไม่มีวันเรียน: mirror(523·62%paid) / candle(451·65%) / bench(920·73% — มี GLB 2 ตัวบน shelf) / wardrobe-เฟอร์นิเจอร์(722) / type SCENE ทั้งก้อน(paid 3,420 — ห้องจัดเสร็จ = ใกล้ 'เข้าใจการออกแบบ' ที่สุดในคลัง)",
+   "why": "'เรียนให้หมด' ต้องมีวันที่เช็คว่าอะไรยังไม่ถูกเรียน — census ต่อ category (free/paid split) แล้วตัดสินเป็นรายการโหลดก้อนสุดท้าย; คลาสในหัวข้อรู้จาก docs/blenderkit-month-2026-08-22.md §1 อยู่แล้ววันนี้ ไม่ต้องรอ census 'ค้นพบ' (บทเรียน curriculum-hole-inside-a-covered-category) — census มีไว้หาช่องที่เรายังไม่รู้ว่าไม่รู้",
+   "fetch": {
+    "queries": [
+     "(category walk)",
+     "mirror",
+     "candle",
+     "bench",
+     "scene bedroom"
+    ],
+    "tier": "full_plan",
+    "n": 14,
+    "fenced": false
+   },
+   "deliverable": "census table + โหลดชุดสุดท้าย + note",
+   "exam": "INSTRUMENT: ตาราง census ครบทุก category ของ API (ไม่ใช่แค่ที่ผมนึกออก) + แถวโหลดใหม่อยู่ใน qa/blenderkit-fetch-log.json จริง",
+   "status": "pending"
+  },
+  {
+   "day": 29,
+   "date": "2026-09-20",
+   "id": "STUDY-D29-synthesis",
+   "title": "SYNTHESIS v2 — รวมทุกโน้ตเป็น curriculum ถาวร, staging เข้า knowledge/",
+   "why": "โน้ต REFERENCE tier ต้องถูกกลั่น (inbox_audit จะเตือนถ้าค้าง); ทุกกฎ map กับ P2/P4 row ที่มันรับใช้",
+   "fetch": null,
+   "deliverable": "knowledge/_inbox/model-study/2026-09-20-CURRICULUM.md พร้อมแผน distill",
+   "exam": "ทุกกฎใน CURRICULUM ระบุ (ก) โน้ตต้นทาง (ข) row ของเลนที่มันรับใช้ (ค) การวัดที่จะพิสูจน์มันในเฟรม — กฎที่ไม่มีครบสามข้อไม่ได้ไปต่อ · **ทุก 'คำถามที่ต้องพิสูจน์ด้วยพิกเซล' (~35 ข้อจาก 9 โน้ต) ถูก map เข้ารอบ build ที่มีชื่อ หรือ drop พร้อมเหตุผล — คิวคำถามที่ไม่มีผู้บริโภคคือโรคที่ไฟล์นี้เกิดมาแก้** · verifier ฝ่ายค้านอ่านซ้ำทั้งไฟล์ CURRICULUM และโน้ตทุกใบที่ยังไม่เคยผ่าน verifier",
+   "status": "pending"
+  },
+  {
+   "day": 30,
+   "date": "2026-09-21",
+   "id": "STUDY-D30-closeout",
+   "title": "วันสุดท้ายของสิทธิ์ — last-chance list + รายงานเดือนส่วนการเรียน",
+   "why": "หลังวันนี้ full-plan โหลดไม่ได้อีก; ทุกอย่างที่ synthesis ชี้ว่า 'จะเสียดาย' ต้องอยู่บนดิสก์ก่อนเที่ยงคืน; เขียนส่วน 'สิ่งที่เรียนได้' ประกบรายงาน D-119 (ตัวเลข C1/C2/C3 เป็นของ D-119 เดิม ไม่แตะ)",
+   "fetch": {
+    "queries": [
+     "(จาก last-chance list)"
+    ],
+    "tier": "full_plan",
+    "n": 15,
+    "fenced": false
+   },
+   "deliverable": "last-chance fetches + close-out ใน docs/blenderkit-study-2026-09-01.md",
+   "exam": "INSTRUMENT: ทุกแถวใน last-chance list มี fetch-log entry หรือเหตุผลปฏิเสธเป็นลายลักษณ์ + close-out เขียนสถานะ rep ทั้งสามตามคำตัดสินของกรรมการภายนอกตรง ๆ (รวมกรณีตก) — คำว่า 'ปั้นเองได้' จะปรากฏได้เฉพาะถ้า C2/C3/พี่พูด ไม่ใช่ผม",
+   "status": "pending"
+  }
+ ]
+}

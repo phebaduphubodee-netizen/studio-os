@@ -3680,6 +3680,33 @@
    "reverse_by": "`git revert` commit นี้ แล้วลบ D-182 — แต่ต้องบันทึกว่ายอมรับกลับไปใช้สีที่เลือกด้วยตา ซึ่งแปลว่า cct_k ในสเปคจะไม่ใช่ค่าที่เปล่งออกมาอีก. ถ้าจะถอนแค่ normalisation (กลับไป max=1 เพื่อให้เฟรมมืดลงตามสีที่อุ่นขึ้น): แก้ `lum` ใน blackbody_lin_rgb เป็น max(r,g,b) แล้วแก้ test_lamp_rgb_preserves_luminance — แต่ต้องรู้ตัวว่ากำลังผูกความสว่างกลับเข้ากับสีอีกครั้ง.",
    "obeys": "ORD-2026-09-01-learn-chocofur-course",
    "because_stance": "builder"
+  },
+  {
+   "id": "D-183",
+   "unit": "DELIV-001",
+   "subject": "trade-dress-in-frame-must-leave-before-any-client-facing-frame",
+   "decided_round": 94,
+   "decided_date": "2026-09-01",
+   "decided_by": "builder",
+   "question": "STUDY-D10 (ORD-2026-09-01-study-blenderkit-models) probe ซีน p2r91 ด้วยเครื่องเดียวกับที่ผ่า asset แล้วพบเครื่องหมายการค้าจริงในเฟรม: bookshelf_tray__acq1/acq2 ใช้ material 'Cartier Gold.001' ที่ Base Color = IMG:Cartier-logo.001 (2500x1200 sRGB, packed) และ hero bag ของ tw1 (asset 8f19d91a Boite Chapeau) มี LV_texture + monogram. docs/LICENSING.md เขียนอยู่แล้วว่า trade dress ไม่ถูกเคลียร์ด้วย licence — เฟรมที่ถือโลโก้แบรนด์จริงส่งลูกค้าได้ไหม และใครเป็นเจ้าของการเอาออก",
+   "in_effect": "ส่งไม่ได้ และเจ้าของคือรอบ build ถัดไปของเลน ไม่ใช่โน้ต REFERENCE: (1) เฟรมตระกูล p2r91 ที่ยังถือ Cartier-logo/LV monogram ถูกตีตรา NOT-CLIENT-FACING — ใช้ภายใน/เทียบ A-B ได้ ส่งออกไม่ได้; (2) การแก้ที่บันทึกไว้แล้วในโน้ต props: bookshelf_tray__acq1/acq2 สลับ material slot เป็น 'Rose Gold' (มีอยู่แล้วในไฟล์, acq0 ใช้อยู่ = พิสูจน์แล้วว่า slot สลับได้); (3) hero bag 8f19d91a เปลี่ยนเป็นกระเป๋าไม่มี monogram หรือถอดออกจากเฟรม — การหายไปเป็นการตัดสินใจที่บันทึก ไม่ใช่ความลืม; (4) รอบ build แรกที่แตะ scene ต้องทำสองข้อนี้ก่อนเรนเดอร์เฟรมอื่น. บันทึกไว้ตรงนี้เพราะโน้ตการศึกษาเป็น REFERENCE tier ที่ไม่มี gate อ่าน (โรคคิวไม่มีผู้บริโภค) — แถวนี้คือผู้บริโภคของ finding นั้น จนกว่าการแก้จะลง build_room แล้ว supersede แถวนี้ด้วย commit จริง",
+   "where": "knowledge/_inbox/model-study/2026-09-01-INDEX.md",
+   "in_effect_assert": [
+    {
+     "file": "knowledge/_inbox/model-study/2026-09-01-INDEX.md",
+     "pattern": "Cartier",
+     "why": "finding ต้องยังถูกบันทึกอยู่ — ถ้าบรรทัดนี้หาย แถวนี้ลอยและต้องถูกตรวจใหม่"
+    },
+    {
+     "file": "qa/blenderkit-study-curriculum.json",
+     "pattern": "D-183",
+     "why": "หลักสูตรต้องถือ debt นี้ให้เห็นทุก session จนกว่าจะ superseded — การแก้เป็นงานเลน แต่การตามคือหน้าที่ของโปรแกรมเรียนที่พบมัน"
+    }
+   ],
+   "because": "docs/LICENSING.md: trade dress is not cleared by a licence (กฎเดิม ไม่ใช่กฎใหม่) + panel-judges 08-28 เคยจับคลาสนี้แล้วหนึ่งครั้ง (ของรอด panel ลงเฟรมแล้ว occluded) — ครั้งนี้ของอยู่ในเฟรมเปิดเผย มองเห็นได้ และเป็นงานที่จะส่งลูกค้าจริงหลัง DELIV-001",
+   "reverse_by": "พี่ดูภาพแล้วบอกให้คงไว้ (เป็น owner_override ตามพิธี) หรือรอบ build แก้ทั้งสองข้อแล้วบันทึกแถวนี้ superseded พร้อม commit id และ probe ยืนยันว่า material หายจริง (built_as ฝังพิกัด — บทเรียน lamp-not-table)",
+   "obeys": "ORD-2026-09-01-study-blenderkit-models",
+   "because_stance": "builder"
   }
  ],
  "_assert_ratchet_from": "D-124"

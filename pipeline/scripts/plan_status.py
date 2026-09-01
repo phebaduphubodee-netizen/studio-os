@@ -579,6 +579,19 @@ def video_lines():
                     f"({e.__class__.__name__}). That is unknown, not zero."]
 
 
+def study_lines():
+    """BLENDERKIT DAILY STUDY (ORD-2026-09-01) — a hard-clock curriculum (full-plan
+    access dies 2026-09-21); a missed day prints as debt because the money already
+    spent does not come back for it. Advisory only — learning never blocks a frame."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import study_curriculum
+        return study_curriculum.report_lines()
+    except Exception as e:                                  # never break the brief
+        return ["", f"BLENDERKIT STUDY unknown — study_curriculum.py could not run "
+                    f"({e.__class__.__name__}). That is unknown, not zero."]
+
+
 def report(plan):
     lines = []
     cur = current(plan)
@@ -631,6 +644,7 @@ def report(plan):
     lines += coverage_lines()
     lines += skill_lines()
     lines += video_lines()
+    lines += study_lines()
 
     bad = unreadable_statuses(plan)
     if bad:

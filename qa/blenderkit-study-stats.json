@@ -1,0 +1,998 @@
+{
+ "_what": "Per-class construction statistics over the BlenderKit study dumps. Regenerate with: python pipeline/scripts/model_study_probe.py stats",
+ "_source": "assets/shared/blenderkit/_study/*.probe.json (gitignored cache; regenerate with `model_study_probe.py batch`)",
+ "_order": "ORD-2026-09-01-study-blenderkit-models",
+ "_caveat": "area_m2 (and every verts_per_m2 derived from it) is world-space from 2026-09-01 onward. Dumps written before that carried an averaged-scale approximation — see _mesh_row's comment. A stats file whose dumps predate the fix must be regenerated, not corrected by hand.",
+ "assets_probed": 71,
+ "classes": {
+  "?": {
+   "n_assets": 1,
+   "assets": [
+    "18261a8a"
+   ],
+   "objects_per_asset": {
+    "median": 2,
+    "min": 2,
+    "max": 2
+   },
+   "verts_per_asset": {
+    "median": 1220,
+    "min": 1220,
+    "max": 1220
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "subsurf_share": {
+    "median": 0.5,
+    "min": 0.5,
+    "max": 0.5
+   },
+   "quad_share": {
+    "median": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 23080.2,
+    "min": 23080.2,
+    "max": 23080.2
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 2,
+   "mat_procedural_only_share": 1.0,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.0
+  },
+  "basket_box": {
+   "n_assets": 3,
+   "assets": [
+    "7302438e",
+    "90a1129e",
+    "c590fee3"
+   ],
+   "objects_per_asset": {
+    "median": 1,
+    "min": 1,
+    "max": 3
+   },
+   "verts_per_asset": {
+    "median": 3658,
+    "min": 3298,
+    "max": 3962
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 7,
+    "min": 3,
+    "max": 7
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "quad_share": {
+    "median": 0.996,
+    "min": 0.99,
+    "max": 0.996
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.005
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 14479.8,
+    "min": 5173.0,
+    "max": 16276.4
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 5,
+   "mat_procedural_only_share": 0.0,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.0
+  },
+  "book_stack": {
+   "n_assets": 5,
+   "assets": [
+    "55486511",
+    "6afdfecd",
+    "9c2e5e24",
+    "d7d65e9d",
+    "e96bf8f6"
+   ],
+   "objects_per_asset": {
+    "median": 4,
+    "min": 3,
+    "max": 12
+   },
+   "verts_per_asset": {
+    "median": 1302,
+    "min": 800,
+    "max": 1760
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 3,
+    "min": 3,
+    "max": 4
+   },
+   "subsurf_share": {
+    "median": 1.0,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.987,
+    "min": 0.984,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 2328.4,
+    "min": 1277.2,
+    "max": 3294.95
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 20,
+   "mat_procedural_only_share": 0.15,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.0
+  },
+  "clock_small": {
+   "n_assets": 3,
+   "assets": [
+    "04a809ed",
+    "94bf975c",
+    "ed37bde3"
+   ],
+   "objects_per_asset": {
+    "median": 16,
+    "min": 3,
+    "max": 26
+   },
+   "verts_per_asset": {
+    "median": 8291,
+    "min": 7167,
+    "max": 9489
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 1,
+    "min": 1,
+    "max": 5
+   },
+   "subsurf_share": {
+    "median": 0.8,
+    "min": 0.533,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.974,
+    "min": 0.93,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.003,
+    "min": 0.0,
+    "max": 0.006
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 527102.4,
+    "min": 79219.55,
+    "max": 914247.0
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 15,
+   "mat_procedural_only_share": 0.733,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.0
+  },
+  "garment_hung": {
+   "n_assets": 10,
+   "assets": [
+    "03ede500",
+    "0c4fe8e5",
+    "13858ca1",
+    "1f6d368c",
+    "52ae357f",
+    "550f674a",
+    "6fc15682",
+    "91bbbed5",
+    "b8343587",
+    "ef06e40e"
+   ],
+   "objects_per_asset": {
+    "median": 2.0,
+    "min": 2,
+    "max": 4
+   },
+   "verts_per_asset": {
+    "median": 3749.5,
+    "min": 2830,
+    "max": 5422
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 4.0,
+    "min": 3,
+    "max": 5
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.95,
+    "min": 0.912,
+    "max": 0.999
+   },
+   "ngon_share": {
+    "median": 0.002,
+    "min": 0.0,
+    "max": 0.007
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 3302.6,
+    "min": 1874.6,
+    "max": 16380.0
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 18,
+   "mat_procedural_only_share": 0.444,
+   "mat_sheen_set_share": 0.222,
+   "mat_displacement_share": 0.0
+  },
+  "handbag": {
+   "n_assets": 2,
+   "assets": [
+    "8f19d91a",
+    "f8573a9c"
+   ],
+   "objects_per_asset": {
+    "median": 3.5,
+    "min": 2,
+    "max": 5
+   },
+   "verts_per_asset": {
+    "median": 36863.0,
+    "min": 9956,
+    "max": 63770
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 3.5,
+    "min": 3,
+    "max": 4
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "quad_share": {
+    "median": 0.959,
+    "min": 0.922,
+    "max": 0.996
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 191170.7,
+    "min": 31004.1,
+    "max": 351337.3
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 8,
+   "mat_procedural_only_share": 0.375,
+   "mat_sheen_set_share": 0.375,
+   "mat_displacement_share": 0.0
+  },
+  "hanger": {
+   "n_assets": 2,
+   "assets": [
+    "ce055de1",
+    "e4487f27"
+   ],
+   "objects_per_asset": {
+    "median": 1.0,
+    "min": 1,
+    "max": 1
+   },
+   "verts_per_asset": {
+    "median": 532.5,
+    "min": 366,
+    "max": 699
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 3.5,
+    "min": 3,
+    "max": 4
+   },
+   "subsurf_share": {
+    "median": 0.5,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.991,
+    "min": 0.982,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 15671.75,
+    "min": 12179.2,
+    "max": 19164.3
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 3,
+   "mat_procedural_only_share": 0.333,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.0
+  },
+  "headboard": {
+   "n_assets": 1,
+   "assets": [
+    "d7e2a7bc"
+   ],
+   "objects_per_asset": {
+    "median": 1,
+    "min": 1,
+    "max": 1
+   },
+   "verts_per_asset": {
+    "median": 78353,
+    "min": 78353,
+    "max": 78353
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 3,
+    "min": 3,
+    "max": 3
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "quad_share": {
+    "median": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 9776.4,
+    "min": 9776.4,
+    "max": 9776.4
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 1,
+   "mat_procedural_only_share": 0.0,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.0
+  },
+  "nightstand": {
+   "n_assets": 5,
+   "assets": [
+    "11ec5eeb",
+    "24c65eb4",
+    "6d4ccb0c",
+    "bc74535c",
+    "fbb98c0b"
+   ],
+   "objects_per_asset": {
+    "median": 3,
+    "min": 2,
+    "max": 8
+   },
+   "verts_per_asset": {
+    "median": 637,
+    "min": 336,
+    "max": 19818
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 6,
+    "min": 3,
+    "max": 14
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "quad_share": {
+    "median": 0.938,
+    "min": 0.919,
+    "max": 0.984
+   },
+   "ngon_share": {
+    "median": 0.054,
+    "min": 0.016,
+    "max": 0.074
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 704.15,
+    "min": 202.15,
+    "max": 2023.7
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 13,
+   "mat_procedural_only_share": 0.154,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.0
+  },
+  "potted_plant": {
+   "n_assets": 2,
+   "assets": [
+    "878fa112",
+    "a98c3dbb"
+   ],
+   "objects_per_asset": {
+    "median": 2.5,
+    "min": 1,
+    "max": 4
+   },
+   "verts_per_asset": {
+    "median": 57448.0,
+    "min": 31070,
+    "max": 83826
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 25.5,
+    "min": 22,
+    "max": 29
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "quad_share": {
+    "median": 0.919,
+    "min": 0.906,
+    "max": 0.931
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.001
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 36053.325,
+    "min": 10111.35,
+    "max": 61995.3
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 16,
+   "mat_procedural_only_share": 0.0,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.062
+  },
+  "rug": {
+   "n_assets": 1,
+   "assets": [
+    "0fd746ae"
+   ],
+   "objects_per_asset": {
+    "median": 1,
+    "min": 1,
+    "max": 1
+   },
+   "verts_per_asset": {
+    "median": 1585,
+    "min": 1585,
+    "max": 1585
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 3,
+    "min": 3,
+    "max": 3
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "quad_share": {
+    "median": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 210.9,
+    "min": 210.9,
+    "max": 210.9
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 1,
+   "mat_procedural_only_share": 0.0,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 1.0
+  },
+  "shoe_pair": {
+   "n_assets": 3,
+   "assets": [
+    "4152f818",
+    "7355c546",
+    "8e006d2e"
+   ],
+   "objects_per_asset": {
+    "median": 5,
+    "min": 2,
+    "max": 5
+   },
+   "verts_per_asset": {
+    "median": 3228,
+    "min": 897,
+    "max": 36536
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 3,
+    "min": 0,
+    "max": 5
+   },
+   "subsurf_share": {
+    "median": 1.0,
+    "min": 0.5,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.999,
+    "min": 0.009,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 17798.2,
+    "min": 16771.5,
+    "max": 159969.45
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 6,
+   "mat_procedural_only_share": 0.667,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.167
+  },
+  "table_lamp": {
+   "n_assets": 4,
+   "assets": [
+    "01bb0e45",
+    "18d17256",
+    "19f02d7d",
+    "dcebfd80"
+   ],
+   "objects_per_asset": {
+    "median": 6.0,
+    "min": 3,
+    "max": 12
+   },
+   "verts_per_asset": {
+    "median": 1090.0,
+    "min": 800,
+    "max": 9210
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 9.5,
+    "min": 0,
+    "max": 11
+   },
+   "subsurf_share": {
+    "median": 0.9,
+    "min": 0.667,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.995,
+    "min": 0.836,
+    "max": 0.997
+   },
+   "ngon_share": {
+    "median": 0.004,
+    "min": 0.001,
+    "max": 0.005
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 4959.225,
+    "min": 2195.9,
+    "max": 128002.45
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 13,
+   "mat_procedural_only_share": 0.538,
+   "mat_sheen_set_share": 0.0,
+   "mat_displacement_share": 0.385
+  },
+  "throw_folded": {
+   "n_assets": 10,
+   "assets": [
+    "0623e2fd",
+    "0b960a0d",
+    "0cb10427",
+    "2751554e",
+    "4fdb482d",
+    "91685141",
+    "b54819e4",
+    "b89bc1af",
+    "e54a717c",
+    "f601337c"
+   ],
+   "objects_per_asset": {
+    "median": 2.0,
+    "min": 1,
+    "max": 5
+   },
+   "verts_per_asset": {
+    "median": 18496.0,
+    "min": 1354,
+    "max": 91260
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 2.5,
+    "min": 0,
+    "max": 3
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.003,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 64600.8,
+    "min": 859.8,
+    "max": 524672.7
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 11,
+   "mat_procedural_only_share": 0.182,
+   "mat_sheen_set_share": 0.182,
+   "mat_displacement_share": 0.091
+  },
+  "tray_decor": {
+   "n_assets": 5,
+   "assets": [
+    "265d7b9b",
+    "49a3897a",
+    "654892e1",
+    "8d6dd7a7",
+    "d3644708"
+   ],
+   "objects_per_asset": {
+    "median": 2,
+    "min": 2,
+    "max": 23
+   },
+   "verts_per_asset": {
+    "median": 4506,
+    "min": 1708,
+    "max": 12246
+   },
+   "curves": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 5,
+    "min": 3,
+    "max": 12
+   },
+   "subsurf_share": {
+    "median": 0.75,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.998,
+    "min": 0.918,
+    "max": 0.999
+   },
+   "ngon_share": {
+    "median": 0.001,
+    "min": 0.0,
+    "max": 0.004
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 14829.6,
+    "min": 8309.5,
+    "max": 952066.1
+   },
+   "shapekey_meshes": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 16,
+   "mat_procedural_only_share": 0.375,
+   "mat_sheen_set_share": 0.062,
+   "mat_displacement_share": 0.062
+  },
+  "vase": {
+   "n_assets": 4,
+   "assets": [
+    "ac0d7cbf",
+    "ae43e44c",
+    "b4d3ed11",
+    "c9334eaf"
+   ],
+   "objects_per_asset": {
+    "median": 3.5,
+    "min": 2,
+    "max": 6
+   },
+   "verts_per_asset": {
+    "median": 1668.5,
+    "min": 562,
+    "max": 6404
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 1
+   },
+   "images_per_asset": {
+    "median": 1.0,
+    "min": 0,
+    "max": 3
+   },
+   "subsurf_share": {
+    "median": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.995,
+    "min": 0.944,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.001
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 28013.675,
+    "min": 1018.7,
+    "max": 281571.85
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 9,
+   "mat_procedural_only_share": 0.667,
+   "mat_sheen_set_share": 0.111,
+   "mat_displacement_share": 0.0
+  },
+  "whole_bed": {
+   "n_assets": 10,
+   "assets": [
+    "10b19e20",
+    "17aff0ff",
+    "317c797d",
+    "8968de2e",
+    "93862856",
+    "b43e2f5c",
+    "b4915f0a",
+    "b8359da9",
+    "d8be9e01",
+    "e2418055"
+   ],
+   "objects_per_asset": {
+    "median": 11.0,
+    "min": 2,
+    "max": 20
+   },
+   "verts_per_asset": {
+    "median": 854941.5,
+    "min": 655485,
+    "max": 1808470
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 4
+   },
+   "images_per_asset": {
+    "median": 12.0,
+    "min": 5,
+    "max": 43
+   },
+   "subsurf_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.8
+   },
+   "quad_share": {
+    "median": 0.257,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 28651.25,
+    "min": 742.5,
+    "max": 69090.1
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 59,
+   "mat_procedural_only_share": 0.119,
+   "mat_sheen_set_share": 0.593,
+   "mat_displacement_share": 0.424
+  }
+ }
+}
