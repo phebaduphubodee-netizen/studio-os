@@ -151,10 +151,14 @@
    },
    "deliverable": "note 2026-09-05-rug.md + candidate ส่งเลน P2",
    "exam": "ต้องรันหลัง D11b (ingest ซ่อมแล้ว — INDEX row วัน 14 พึ่งมัน) · โน้ตผ่าน verifier + **ยืนยันหรือหักล้าง hypothesis จาก n=1** (Recipe D + กฎ TOP-10 ข้อ 4 สร้างจากพรมตัวเดียว 0fd746ae — corpus ใหม่ ≥6 ตัวต้องบอกว่ามันเป็นกฎจริงหรือความบังเอิญ) + candidate ≥2 ตัวส่งเข้าเลนพร้อมเลข scale/pile — การตัดสินว่าพรม 'สวยขึ้น' เป็นของเฟรมเลน (C2/C3/ตาพี่) ไม่ใช่ของโน้ต",
-   "status": "pending",
+   "status": "done",
    "order": 14,
    "suggested_date": "2026-09-05",
-   "deadline": "2026-09-21"
+   "deadline": "2026-09-21",
+   "judged_by": "verifier-agent",
+   "exam_evidence": "knowledge/_inbox/model-study/2026-09-02-rug.md,qa/blenderkit-study-rugs.json,pipeline/scripts/rug_study_derive.py,pipeline/scripts/study_probe_read.py,qa/blenderkit-fetch-log.json",
+   "done_early_note": "ทำ 2026-09-02 ก่อนกำหนด (order 14) หลังพี่สั่งปลดเพดานจำนวนหน่วยต่อวัน",
+   "done_note": "EXAM ครบสามข้อ. (1) หักล้าง/ยืนยัน hypothesis จาก n=1: Recipe D + TOP-10 rule 4 มาจากพรมตัวเดียว 0fd746ae และอ้าง 4 อย่าง — corpus 8 ตัวหักล้าง 3 ข้อ: v/m2 \"210 พอ\" (211 คือก้นคลาส ต่ำกว่าตัวถัดไป 10.4x), AO เป็น idiom (จริงแค่ 1/8 คือตัวมันเอง), ขน 100% ใน shader (3/8 ไม่ได้ใช้ shader ทางเดียว, 2 ตัวไม่มี disp node เลย); ข้อ slab 26 mm ไม่ผิดแต่เป็นค่าสูงสุดไม่ใช่ค่าปกติ (9-26, median 19.5). ที่คมที่สุด: rug__acq0 ในซีน = 0fd746ae ตัวนั้นเอง ทุกหลัก — เราสร้างเกณฑ์คลาสจากของที่เราใช้อยู่ (flattering scorer รูปสะอาดที่สุด) และมันเป็นของ full_plan ที่จ่ายเงินซื้อ. (2) โน้ตผ่าน verifier ฝ่ายค้าน: ยื่น 33 ยืนยัน 13 (8 จุดจริง) หักล้าง 20 — แก้ครบ; สองข้อที่ผมผิดเองหนักสุดคือ tier ของ 0fd746ae (free -> full_plan) และการอ้างว่า d326591b ปั้นเส้นด้ายจริง ซึ่ง verifier หักล้างด้วยการนับพื้นที่ (surplus 1.98 < 2.0 = ไม่มีที่ให้เส้นด้าย, relief อยู่ในนอร์มัลแมป) จึงเปลี่ยนป้ายในสคริปต์เป็น mesh:dense-relief. (3) candidate >=2 ส่งเลนพร้อมเลข: 3efaabe9 (3006x2004x19, พอดี 0.97/0.80, 2750 v/m2 = 13x) และ 021601af (3000x1891x25, 0.97/0.76, 12046 v/m2 = 57x) — การตัดสินว่าสวยขึ้นเป็นของเฟรม ไม่ใช่ของโน้ต. ผลพลอยได้: เทสต์ fence ของ study_curriculum เคยผ่านแบบ vacuous ทันทีที่ D13 ปิดจริง จึงแก้ให้มันสร้าง defect เอง"
   },
   {
    "id": "STUDY-D15-seating",

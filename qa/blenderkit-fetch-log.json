@@ -4390,6 +4390,406 @@
     "refusal": null
    },
    "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T12:44:10-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+wall+art+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:12-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+painting+frame+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:13-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+plant+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:16-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+plant+pot+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:17-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+cushion+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:19-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+throw+blanket+is_free:true",
+   "pages": 1,
+   "n": 32,
+   "free": 32,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:20-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+tray+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:22-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+books+stack+is_free:true",
+   "pages": 1,
+   "n": 100,
+   "free": 100,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:44:23-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+carafe+is_free:true",
+   "pages": 1,
+   "n": 7,
+   "free": 7,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T12:52:37-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T12:54:03-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T12:56:51-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "bed bench upholstered",
+   "pages": 1,
+   "n": 12,
+   "free": 2,
+   "full_plan": 10,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:43-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "rug",
+   "pages": 2,
+   "n": 200,
+   "free": 122,
+   "full_plan": 78,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:46-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "carpet wool",
+   "pages": 2,
+   "n": 200,
+   "free": 175,
+   "full_plan": 25,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:48-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "berber rug",
+   "pages": 2,
+   "n": 13,
+   "free": 13,
+   "full_plan": 0,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:51-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "persian rug",
+   "pages": 2,
+   "n": 200,
+   "free": 15,
+   "full_plan": 185,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:57:53-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "shag rug",
+   "pages": 2,
+   "n": 5,
+   "free": 4,
+   "full_plan": 1,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T13:58:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "d326591b-509f-4755-a812-39aa8f8c1f14",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2846.2,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T13:59:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "217e01bc-f1ba-40b8-913a-77752d0bd8f6",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3842.3,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:17-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "f48cece3-6487-45c8-900e-eb30b6b0c7aa",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2186.0,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:28-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a8f4c331-e4f5-4bf9-b23f-6ef0086da13c",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2231.5,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "3efaabe9-24e9-48e1-bad7-aaa5ee13f999",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3002.8,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T13:59:35-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "9287710c-48ff-4000-bbfc-af15455617f1",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "9287710c-48ff-4000-bbfc-af15455617f1 offers no '2K' file (has: blend, gltf, gltf_godot, resolution_0_5K, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T13:59:41-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "9287710c-48ff-4000-bbfc-af15455617f1",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 4257.2,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T13:59:43-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "021601af-f4f6-441b-bb8d-06519918937c",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "021601af-f4f6-441b-bb8d-06519918937c offers no '2K' file (has: blend, resolution_0_5K, resolution_1K, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T13:59:48-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "021601af-f4f6-441b-bb8d-06519918937c",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "rug",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3000.0,
+    "band_mm": [
+     1000.0,
+     5000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
   }
  ]
 }

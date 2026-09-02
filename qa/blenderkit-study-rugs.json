@@ -1,0 +1,611 @@
+{
+ "_recipe": "STUDY-D14 (2026-09-02) rug study — the reproduction recipe for every number in",
+ "_recipe_d_claims": {
+  "slab_mm": 26,
+  "v_per_m2_is_enough": 210,
+  "base_chain": "AO<HUE_SAT<diffuse>>",
+  "pile_route": "shader (BUMP height + DISPLACEMENT), 100%",
+  "source": "knowledge/_inbox/model-study/2026-09-01-materials-rug.md Recipe D and the INDEX TOP-10 rule 4, both from n=1 (0fd746ae)"
+ },
+ "rugs": {
+  "0fd746ae": {
+   "file": "0fd746ae-5d11-41d8-a41f-101ba6b4ce50.probe.json",
+   "label": "Carpet (THE n=1 RECIPE D WAS BUILT FROM)",
+   "tier": "full_plan",
+   "why_in_corpus": "the single rug behind Recipe D and TOP-10 rule 4; it is IN the corpus so the rule is tested against its own source rather than around it",
+   "source": "blend",
+   "n_objects": 1,
+   "n_mesh": 1,
+   "n_images": 3,
+   "image_sizes": [
+    [
+     671,
+     996,
+     3
+    ]
+   ],
+   "mesh": {
+    "name": "Carpet",
+    "dims": [
+     2427,
+     3024,
+     26
+    ],
+    "thickness_mm": 26,
+    "verts": 1585,
+    "polys": 1536,
+    "quads": 1536,
+    "tris": 0,
+    "area_m2": 7.515,
+    "v_per_m2": 211,
+    "edge_proxy_mm": 69.9,
+    "surplus": 1.02,
+    "mods": []
+   },
+   "materials": [
+    {
+     "name": "Texture",
+     "nodes": 16,
+     "kinds": 9,
+     "disp_nodes": [
+      "DISPLACEMENT"
+     ],
+     "roughness": "0.5528",
+     "normal": "BUMP<IMG:Carpet Set-003.png>",
+     "base": "AMBIENT_OCCLUSION<HUE_SAT<IMG:Carpet Set-001.png>>",
+     "has_AO": true,
+     "has_HUE_SAT": true
+    }
+   ],
+   "pile_route": [
+    "shader:displacement-node"
+   ],
+   "all_mesh_names": [
+    "Carpet"
+   ]
+  },
+  "d326591b": {
+   "file": "d326591b-509f-4755-a812-39aa8f8c1f14.probe.json",
+   "label": "Athena Reversible Persian Rug",
+   "tier": "free",
+   "why_in_corpus": "the density extreme: 913k faces",
+   "source": "blend",
+   "n_objects": 1,
+   "n_mesh": 1,
+   "n_images": 4,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     2
+    ],
+    [
+     2000,
+     2000,
+     1
+    ],
+    [
+     1301,
+     1719,
+     1
+    ]
+   ],
+   "mesh": {
+    "name": "Athena Reversible Persian Rug",
+    "dims": [
+     1829,
+     2846,
+     9
+    ],
+    "thickness_mm": 9,
+    "verts": 951126,
+    "polys": 913106,
+    "quads": 913104,
+    "tris": 0,
+    "area_m2": 10.295,
+    "v_per_m2": 92387,
+    "edge_proxy_mm": 3.4,
+    "surplus": 1.98,
+    "mods": []
+   },
+   "materials": [
+    {
+     "name": "Material.001",
+     "nodes": 3,
+     "kinds": 3,
+     "disp_nodes": [],
+     "roughness": "0.5",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "IMG:Etiqueta MODELOs234352.jpg",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    },
+    {
+     "name": "Material.002",
+     "nodes": 2,
+     "kinds": 2,
+     "disp_nodes": [],
+     "roughness": "1.0",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "[0.8, 0.5963, 0.4646, 1.0]",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    },
+    {
+     "name": "occlusion.001",
+     "nodes": 2,
+     "kinds": 2,
+     "disp_nodes": [],
+     "roughness": "1.0",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "[0.0, 0.0, 0.0, 1.0]",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    },
+    {
+     "name": "Reese Hand Knotted Rug.001",
+     "nodes": 11,
+     "kinds": 9,
+     "disp_nodes": [],
+     "roughness": "1.0",
+     "normal": "NORMALMAP<IMG:tapete12312312__Normal.jpg.001>",
+     "base": "MIX<IMG:tapete12312312__BaseColor2.jpg.001>",
+     "has_AO": false,
+     "has_HUE_SAT": true
+    }
+   ],
+   "pile_route": [
+    "mesh:dense-relief"
+   ],
+   "all_mesh_names": [
+    "Athena Reversible Persian Rug"
+   ]
+  },
+  "217e01bc": {
+   "file": "217e01bc-f1ba-40b8-913a-77752d0bd8f6.probe.json",
+   "label": "Rug Classic",
+   "tier": "full_plan",
+   "why_in_corpus": "the paid density extreme: 634k faces",
+   "source": "blend",
+   "n_objects": 3,
+   "n_mesh": 2,
+   "n_images": 6,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     4
+    ],
+    [
+     1066,
+     826,
+     1
+    ],
+    [
+     500,
+     500,
+     1
+    ]
+   ],
+   "mesh": {
+    "name": "RUG_DISPLACE",
+    "dims": [
+     3351,
+     3837,
+     23
+    ],
+    "thickness_mm": 23,
+    "verts": 380016,
+    "polys": 633360,
+    "quads": 0,
+    "tris": 633360,
+    "area_m2": 30.848,
+    "v_per_m2": 12319,
+    "edge_proxy_mm": 9.9,
+    "surplus": 2.4,
+    "mods": [
+     "DISPLACE",
+     "DISPLACE"
+    ]
+   },
+   "materials": [
+    {
+     "name": "Beige Fabric 002_4k.001",
+     "nodes": 12,
+     "kinds": 9,
+     "disp_nodes": [],
+     "roughness": "GROUP<IMG:beige_fabric_002_roughness_xtm_4k.jpg.001>",
+     "normal": "BUMP<IMG:beige_fabric_002_displace_xtm_4k.jpg.001>",
+     "base": "MIX<IMG:beige_fabric_002_diffuse_xtm_4k.jpg.001>",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    },
+    {
+     "name": "RUB_BASE.001",
+     "nodes": 16,
+     "kinds": 9,
+     "disp_nodes": [
+      "DISPLACEMENT"
+     ],
+     "roughness": "0.3272",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "MIX<VALTORGB<IMG:Fabric_005_D.jpg.001>>",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    },
+    {
+     "name": "RUG_.001",
+     "nodes": 14,
+     "kinds": 8,
+     "disp_nodes": [],
+     "roughness": "0.5",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "MIX<MIX<VALTORGB<IMG:Fabric_005_D.jpg.001>>>",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    }
+   ],
+   "pile_route": [
+    "geometry:displace-modifier",
+    "shader:displacement-node"
+   ],
+   "all_mesh_names": [
+    "RUG_BASE",
+    "RUG_DISPLACE"
+   ]
+  },
+  "f48cece3": {
+   "file": "f48cece3-6487-45c8-900e-eb30b6b0c7aa.probe.json",
+   "label": "Soft Shaggy Rug",
+   "tier": "full_plan",
+   "why_in_corpus": "SHAG - the pile question at its sharpest",
+   "source": "blend",
+   "n_objects": 3,
+   "n_mesh": 2,
+   "n_images": 5,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     1
+    ],
+    [
+     1024,
+     1024,
+     4
+    ]
+   ],
+   "mesh": {
+    "name": "HemaseCarpetMain",
+    "dims": [
+     2044,
+     1232,
+     13
+    ],
+    "thickness_mm": 13,
+    "verts": 13958,
+    "polys": 23746,
+    "quads": 2468,
+    "tris": 20932,
+    "area_m2": 2.539,
+    "v_per_m2": 5497,
+    "edge_proxy_mm": 13.8,
+    "surplus": 1.01,
+    "mods": [
+     "SUBSURF(1,2)",
+     "WEIGHTED_NORMAL"
+    ]
+   },
+   "materials": [
+    {
+     "name": "vray HemaseCarpetBorder",
+     "nodes": 10,
+     "kinds": 8,
+     "disp_nodes": [],
+     "roughness": "0.5",
+     "normal": "NORMALMAP<IMG:HemaseCapetNormal.jpg>",
+     "base": "IMG:HemaseCapetBaseColor.jpg",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    },
+    {
+     "name": "vray HemaseCarpetMain",
+     "nodes": 12,
+     "kinds": 9,
+     "disp_nodes": [
+      "DISPLACEMENT"
+     ],
+     "roughness": "0.5",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "IMG:HemaseCarpetDiffuse.jpg",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    }
+   ],
+   "pile_route": [
+    "shader:displacement-node"
+   ],
+   "all_mesh_names": [
+    "HemaseCarpetBorder",
+    "HemaseCarpetMain"
+   ]
+  },
+  "a8f4c331": {
+   "file": "a8f4c331-e4f5-4bf9-b23f-6ef0086da13c.probe.json",
+   "label": "Modern Carpet",
+   "tier": "full_plan",
+   "why_in_corpus": "the catalogue simulation flag was set on it",
+   "source": "blend",
+   "n_objects": 1,
+   "n_mesh": 1,
+   "n_images": 5,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     4
+    ],
+    [
+     256,
+     256,
+     1
+    ]
+   ],
+   "mesh": {
+    "name": "Modern Carpet",
+    "dims": [
+     2232,
+     1612,
+     17
+    ],
+    "thickness_mm": 17,
+    "verts": 36366,
+    "polys": 36368,
+    "quads": 36360,
+    "tris": 8,
+    "area_m2": 7.257,
+    "v_per_m2": 5011,
+    "edge_proxy_mm": 14.1,
+    "surplus": 2.02,
+    "mods": [
+     "SUBSURF(1,2)",
+     "DISPLACE",
+     "PARTICLE_SYSTEM"
+    ]
+   },
+   "materials": [
+    {
+     "name": "Carpet Base",
+     "nodes": 2,
+     "kinds": 2,
+     "disp_nodes": [],
+     "roughness": "0.7",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "[0.1649, 0.1609, 0.1876, 1.0]",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    },
+    {
+     "name": "CarpetHair",
+     "nodes": 12,
+     "kinds": 8,
+     "disp_nodes": [],
+     "roughness": "IMG:Carpet_roughness.jpg.001",
+     "normal": "NORMALMAP<IMG:Carpet_normal.jpg.001>",
+     "base": "IMG:Carpet_color.jpg.001",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    }
+   ],
+   "pile_route": [
+    "geometry:particles",
+    "geometry:displace-modifier"
+   ],
+   "all_mesh_names": [
+    "Modern Carpet"
+   ]
+  },
+  "3efaabe9": {
+   "file": "3efaabe9-24e9-48e1-bad7-aaa5ee13f999.probe.json",
+   "label": "Rough Beige Rug",
+   "tier": "full_plan",
+   "why_in_corpus": "low-poly paid",
+   "source": "blend",
+   "n_objects": 2,
+   "n_mesh": 1,
+   "n_images": 4,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     4
+    ]
+   ],
+   "mesh": {
+    "name": "Rough Beige Rug.001",
+    "dims": [
+     2004,
+     3006,
+     19
+    ],
+    "thickness_mm": 19,
+    "verts": 17275,
+    "polys": 17024,
+    "quads": 17024,
+    "tris": 0,
+    "area_m2": 6.282,
+    "v_per_m2": 2750,
+    "edge_proxy_mm": 19.2,
+    "surplus": 1.04,
+    "mods": [
+     "SUBSURF(0,1)"
+    ]
+   },
+   "materials": [
+    {
+     "name": "Rug Beige 4K",
+     "nodes": 21,
+     "kinds": 13,
+     "disp_nodes": [
+      "DISPLACEMENT"
+     ],
+     "roughness": "VALTORGB<IMG:Rug Dark Beige 4K_Roughness.jpg>",
+     "normal": "NORMALMAP<IMG:Rug Dark Beige 4K_Normal.jpg>",
+     "base": "MIX<PROC:NOISE>",
+     "has_AO": false,
+     "has_HUE_SAT": true
+    }
+   ],
+   "pile_route": [
+    "shader:displacement-node"
+   ],
+   "all_mesh_names": [
+    "Rough Beige Rug.001"
+   ]
+  },
+  "9287710c": {
+   "file": "9287710c-48ff-4000-bbfc-af15455617f1.probe.json",
+   "label": "Contemporary carpet",
+   "tier": "free",
+   "why_in_corpus": "mid-poly free",
+   "source": "blend",
+   "n_objects": 1,
+   "n_mesh": 1,
+   "n_images": 1,
+   "image_sizes": [
+    [
+     800,
+     800,
+     1
+    ]
+   ],
+   "mesh": {
+    "name": "Contemporary carpet",
+    "dims": [
+     3038,
+     4257,
+     20
+    ],
+    "thickness_mm": 20,
+    "verts": 29021,
+    "polys": 28680,
+    "quads": 28680,
+    "tris": 0,
+    "area_m2": 13.225,
+    "v_per_m2": 2194,
+    "edge_proxy_mm": 21.5,
+    "surplus": 1.02,
+    "mods": [
+     "SUBSURF(1,2)"
+    ]
+   },
+   "materials": [
+    {
+     "name": "rug",
+     "nodes": 10,
+     "kinds": 10,
+     "disp_nodes": [
+      "DISPLACEMENT"
+     ],
+     "roughness": "0.9",
+     "normal": "[0.0, 0.0, 0.0]",
+     "base": "HUE_SAT<GAMMA<IMG:Sola+Geometric+Handmade+Tufted+Wool+Cream_",
+     "has_AO": false,
+     "has_HUE_SAT": true
+    }
+   ],
+   "pile_route": [
+    "shader:displacement-node"
+   ],
+   "all_mesh_names": [
+    "Contemporary carpet"
+   ]
+  },
+  "021601af": {
+   "file": "021601af-f4f6-441b-bb8d-06519918937c.probe.json",
+   "label": "Carpet geometric pattern",
+   "tier": "full_plan",
+   "why_in_corpus": "representative of the 7-asset 76,386-face vendor family that dominates the band, so the corpus is not silently one studio",
+   "source": "blend",
+   "n_objects": 1,
+   "n_mesh": 1,
+   "n_images": 4,
+   "image_sizes": [
+    [
+     690,
+     1024,
+     4
+    ]
+   ],
+   "mesh": {
+    "name": "Carpet geometric pattern",
+    "dims": [
+     1891,
+     3000,
+     25
+    ],
+    "thickness_mm": 25,
+    "verts": 76865,
+    "polys": 76386,
+    "quads": 76380,
+    "tris": 6,
+    "area_m2": 6.381,
+    "v_per_m2": 12046,
+    "edge_proxy_mm": 9.1,
+    "surplus": 1.12,
+    "mods": []
+   },
+   "materials": [
+    {
+     "name": "carpet kilim.001",
+     "nodes": 8,
+     "kinds": 5,
+     "disp_nodes": [
+      "DISPLACEMENT"
+     ],
+     "roughness": "0.6255",
+     "normal": "NORMALMAP<IMG:normal.jpg.002>",
+     "base": "IMG:color.jpg.002",
+     "has_AO": false,
+     "has_HUE_SAT": false
+    }
+   ],
+   "pile_route": [
+    "shader:displacement-node"
+   ],
+   "all_mesh_names": [
+    "Carpet geometric pattern"
+   ]
+  }
+ },
+ "ours": {
+  "name": "rug__acq0",
+  "dims": [
+   3024,
+   2427,
+   26
+  ],
+  "thickness_mm": 26,
+  "verts": 1585,
+  "area_m2": 7.52,
+  "v_per_m2": 211,
+  "edge_proxy_mm": 70.0,
+  "mods": [],
+  "materials": [
+   {
+    "name": "Texture",
+    "nodes": 5,
+    "kinds": 4,
+    "disp_nodes": [],
+    "roughness": "0.5528",
+    "normal": "NORMALMAP<IMG:Carpet Set-003>",
+    "base": "IMG:Carpet Set-001",
+    "has_AO": false,
+    "has_HUE_SAT": false
+   }
+  ],
+  "pile_route": [
+   "flat:none-of-the-above"
+  ]
+ }
+}

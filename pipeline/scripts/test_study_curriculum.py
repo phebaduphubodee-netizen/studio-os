@@ -100,7 +100,13 @@ def test_fenced_unit_may_not_move_while_its_gate_is_open(led):
     """The p2r86 contamination, refused by name: a paid fetch in a class whose
     free baseline has not run."""
     bad = copy.deepcopy(led)
-    _fenced(bad).update(status="in-progress")
+    u = _fenced(bad)
+    # CONSTRUCT the defect instead of borrowing it from the live ledger: on 2026-09-02
+    # STUDY-D13-baselines actually closed, every fence opened, and this assert began to
+    # pass vacuously — a negative control that real progress can disarm is not a control.
+    gate = (u.get("fetch") or {})["fence_gate"]
+    _unit(bad, gate).update(status="pending")
+    u.update(status="in-progress")
     assert any("fenced by" in f for f in sc.check(bad))
 
 
