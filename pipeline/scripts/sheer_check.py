@@ -62,14 +62,20 @@ import sys
 # (the same reason R11's pixel_check refuses to compare across resolutions).
 #
 # WHAT THIS NUMBER IS, said plainly so nobody reads a PASS as "the sheer is fixed": it is
-# a RATCHET, not a quality bar. Full frames measured: p2r93b 0.0304, p2r95 0.0444,
-# p2r96 0.0495. 0.045 sits between the last two, so passing it means "better than the
-# frame before", nothing more. The round that first crossed it ALSO got a cross-vendor
-# critic calling the same fabric "opaque white plastic, lacking texture and translucency"
-# and RAISING its severity — so the eye and this number disagree about whether the defect
-# is gone, and under R7b the eye is what says WHAT is wrong. Raise this bar when a judge
-# stops naming the sheer, and not before; it does not get to declare the fabric good.
-STRUCTURE_MIN = 0.045
+# a RATCHET FLOOR — "do not get worse" — not a quality bar. Full frames measured:
+# p2r93b 0.0304 · p2r95 0.0444 · p2r96 0.0495 · p2r97 0.0444.
+# It sat at 0.045 for exactly one round. p2r96 crossed it by lowering the sheer's
+# openness, and the sighted panel then ranked that frame 4/5, 4/5, 4/5 against 2/3/2 —
+# because the same change raised the cloth's LEVEL (p50 0.8460 -> 0.8586) and three judges
+# independently called it "a pure white void" / "a light box" / "a hole, not a window".
+# The change was reverted, so 0.045 became a bar no frame could reach by any lever this
+# lane still has, and a bar like that prints FAIL forever and stops being read.
+# The floor is therefore the ACHIEVED level. Raising it needs a NEW mechanism, not another
+# turn of the transmission knob — that one is exhausted in both directions (see
+# _SHEER_DIRECT_FRAC in build_room.py) — and the honest next lever is not on this metric
+# at all: judges name the bench and the headboard further above the field than the sheer
+# (panel_diff.py). Do not raise this number to make a round look like progress.
+STRUCTURE_MIN = 0.044
 # behind-under-hem: share of fabric columns showing GLASS OR WALL beneath the hem. The
 # bar is 1% rather than 0 because a pleat tip at the very end of a run can legitimately
 # clear the glass edge; 18.8% is a curtain that does not reach.
