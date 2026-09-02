@@ -283,6 +283,26 @@ def boxes_from_spec(spec, drop_shell=True, min_mm=1.0):
     measured, and it is stated here rather than hidden behind a name.
     """
     out = []
+    # THE CANONICAL ROOM-SPEC SCHEMA (added 2026-09-02, P2r-38). `masses` is the
+    # REPRODUCTION lane's shape; the client lane (PRJ-*/03_layout/*.CANONICAL.spec.json)
+    # carries `builtins` + `items` with corner x/y + w/d instead. Until this branch the
+    # rung above printed "ONE COMMAND CLEARS IT" and named a command that exited 2 with
+    # "no drawable masses" on every client spec in the repo — a guard whose stated
+    # remedy did not run on the lane it fires at, which is the same defect class as a
+    # rule with no reader. Corner+size here, centre+size there; both end as x0y0x1y1.
+    for m in list(spec.get("builtins", [])) + list(spec.get("items", [])):
+        n = m.get("name") or ""
+        try:
+            x, y = float(m["x"]), float(m["y"])
+            w, d = float(m["w"]), float(m["d"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if min(abs(w), abs(d)) < min_mm:
+            continue
+        if drop_shell and any(k in n.lower() for k in SHELL_TOKENS):
+            continue
+        out.append(dict(name=n, x0=min(x, x + w), y0=min(y, y + d),
+                        x1=max(x, x + w), y1=max(y, y + d)))
     for m in spec.get("masses", []):
         n = m.get("name") or ""
         c, sz = m.get("c"), m.get("s")

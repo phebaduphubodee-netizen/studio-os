@@ -502,6 +502,61 @@ def cam_from_spec(spec, res=(2400, 1800), eye_h=None):
             "res_w": res[0], "res_h": res[1]}
 
 
+def cam_from_render(path, res=None):
+    """A RENDERED FRAME's own camera -> the cam dict, read from its `.idmask.json`
+    sidecar. Raises rather than guessing.
+
+    WHY THIS EXISTS (2026-09-02, P2r-38). `cam_from_spec` reads `spec["eye_camera"]`
+    and nothing else. That is correct, and it is also how two readers of this repo came
+    to measure the wrong frame in the same hour: the frames under discussion
+    (p2r93a/p2r93b) are `--eyecam=` VARIANTS — lens 20, one of them yawed 6.82 deg —
+    while `eye_camera` is the committed lens-21 camera of record, deliberately untouched
+    while the owner's A/B is open. A bare `frame_geometry.py <spec>` run answered about
+    the camera of record and printed exactly like an answer about the frame on screen.
+
+    `--camera=<variant>` already existed and already failed loud on a typo, so nothing
+    was WIRED wrong. What was missing is that nothing forced the measurer to name the
+    camera, and "measured a different frame" printed identically to "measured this one"
+    — the same shape as this repo's own law that "could not look" must never print like
+    "looked and it was fine". Pointing at the render removes the choice: the camera comes
+    from the frame by construction, and a frame with no sidecar is refused, not assumed.
+    """
+    base = path
+    for ext in (".idmask.json", ".png", ".matmask.json", ".scene.json"):
+        if base.endswith(ext):
+            base = base[: -len(ext)]
+            break
+    side = base + ".idmask.json"
+    if not os.path.isfile(side):
+        raise SystemExit(f"frame_geometry: --from-render {path!r}: no camera sidecar at "
+                         f"{side} — a measurement about a frame whose camera cannot be "
+                         f"read is a measurement of a different frame, so this refuses "
+                         f"rather than falling back to spec.eye_camera")
+    with open(side, encoding="utf-8") as fh:
+        src = (json.load(fh) or {}).get("source") or {}
+    m = src.get("matrix")
+    if not m or len(m) < 3:
+        raise SystemExit(f"frame_geometry: {side} carries no camera matrix")
+    ex, ey, eye_h = float(m[0][3]), float(m[1][3]), float(m[2][3])
+    fx, fy, fz = -float(m[0][2]), -float(m[1][2]), -float(m[2][2])
+    if abs(fz) > 1e-3:
+        raise SystemExit(f"frame_geometry: {side} is a TILTED camera (forward z "
+                         f"{fz:+.4f}); every projection in this module assumes the level "
+                         f"two-point camera build_room builds, so it refuses instead of "
+                         f"reporting numbers that quietly mean something else")
+    n = math.hypot(fx, fy)
+    if n < 1e-9:
+        raise SystemExit(f"frame_geometry: {side} has a degenerate view direction")
+    rw, rh = (src.get("res") or [2400, 1800, 100])[:2]
+    if res:
+        rw, rh = res
+    return {"ex": ex, "ey": ey, "tx": ex + fx / n, "ty": ey + fy / n,
+            "eye_h": eye_h, "lens_mm": float(src.get("lens") or 26.0),
+            "shift_y": float((src.get("shift") or [0.0, 0.0])[1]),
+            "res_w": int(rw), "res_h": int(rh),
+            "_from": os.path.basename(base)}
+
+
 def main(argv):
     import argparse
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -510,6 +565,11 @@ def main(argv):
                     help="a name from the spec's eye_camera_variants, measured "
                          "instead of eye_camera. Same variant dict build_room's "
                          "--eyecam= uses, so there is ONE definition of a view.")
+    ap.add_argument("--from-render", default=None,
+                    help="a rendered frame (or its .idmask.json): take the camera from "
+                         "THAT FRAME's sidecar instead of the spec. Use it whenever the "
+                         "question is about a frame on screen — variants and eye_camera "
+                         "are different cameras and a bare run answers about eye_camera.")
     ap.add_argument("--res", default="2400x1800")
     ap.add_argument("--fstop", type=float, default=None,
                     help="report the CURRENT aperture's limits beside the derived one")
@@ -537,11 +597,25 @@ def main(argv):
                   file=sys.stderr)
             return 2
         spec = dict(spec, eye_camera=_vars[a.camera])
-    cam = cam_from_spec(spec, res=(W, H))
+    if a.from_render:
+        if a.camera:
+            print("frame_geometry: give --from-render OR --camera, not both — they are "
+                  "two different claims about which camera these numbers describe",
+                  file=sys.stderr)
+            return 2
+        cam = cam_from_render(a.from_render, res=(W, H))
+        _cam_id = f"render:{cam.pop('_from')}"
+    else:
+        cam = cam_from_spec(spec, res=(W, H))
+        _cam_id = f"variant:{a.camera}" if a.camera else "spec:eye_camera"
     if a.fstop:
         cam["fstop"] = a.fstop
         cam["focus_m"] = math.hypot(cam["tx"] - cam["ex"], cam["ty"] - cam["ey"])
-    print(json.dumps(framing_report(spec, cam), ensure_ascii=False, indent=1))
+    _rep = framing_report(spec, cam)
+    # NAME THE CAMERA IN THE OUTPUT. The numbers alone cannot tell a reader that they
+    # describe eye_camera rather than the variant the frame on screen was rendered on.
+    _rep["camera_of"] = _cam_id
+    print(json.dumps(_rep, ensure_ascii=False, indent=1))
     if a.solve:
         lo = a.stand_min_x if a.stand_min_x is not None else cam["ex"]
         stands = [round(lo + i * 0.02, 3) for i in range(int((cam["ex"] - lo) / 0.02) + 1)]

@@ -370,6 +370,16 @@ KNOWN_FRAMES = frozenset((
     # someone can render, so the probe must recognise it rather than RAISE on a frame
     # that legitimately exists — and the same file-pinned test caught this one too.
     "bed_foot_hero_2026-08-22",
+    # THE FOUR THE LIST DRIFTED BY ANYWAY (added 2026-09-02, P2r-38). The comment above
+    # says "this list cannot drift from the cameras that exist" — and it had, by four,
+    # because the test that pins it is not run by any gate: three rounds added spec
+    # variants and none added them here, so `check_render` would RAISE on
+    # `p2r93b_offaxis_ey1600` — a camera two exit panels have already scored. A pinned
+    # file only holds while something reads the pin.
+    "camera_of_record_2026-08-26_D152",   # D-152's block, kept as D-184's named reversal
+    "builtin_bay_hero_2026-08-28",        # D-175's camera, stood down by D-184, not deleted
+    "p2r93a_onaxis_pulled_back",          # the P2r-34 A/B pair, still awaiting his pick
+    "p2r93b_offaxis_ey1600",
 ))
 
 # Targets re-anchored 2026-07-28 to the measured pebble-fix geometry (standing king

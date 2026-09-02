@@ -224,3 +224,65 @@ def test_an_open_room_is_reported_not_failed():
                          {"ex": 0.0, "ey": 0.0, "tx": 1.0, "ty": 0.0, "eye_h": 1.6})
     assert r["open"] is True
     assert r["area_m2"] == 0.0
+
+
+# ------------------------------------------------------- cam_from_render (P2r-38) --
+# The defect these pin: `cam_from_spec` reads spec["eye_camera"] and nothing else, so a
+# bare run answers about the CAMERA OF RECORD while the frame on screen may have been
+# rendered on an --eyecam= variant — and both print identically. Two readers measured
+# the wrong frame that way in one hour.
+import json as _json
+import os as _os
+
+import pytest as _pytest
+
+_REPO = _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+_FRAME = _os.path.join(_REPO, "pipeline", "output",
+                       "room_bedroom_suite_eye_p2r93b.png")
+_SPECP = _os.path.join(_REPO, "projects", "PRJ-2026-002_c001-house", "03_layout",
+                       "master-suite.CANONICAL.spec.json")
+
+
+def _have_frame():
+    return _os.path.isfile(_FRAME) and _os.path.isfile(
+        _FRAME[:-4] + ".idmask.json")
+
+
+@_pytest.mark.skipif(not _have_frame(), reason="p2r93b frame not on disk")
+def test_from_render_reproduces_the_number_the_builder_printed():
+    """POSITIVE CONTROL, and the reason this is trustworthy rather than merely green:
+    build_room printed `FRAME CONTAINS ... at v=+0.3311` into the p2r93b log while
+    rendering that frame. cam_from_render must land on the same number from the frame's
+    own sidecar — and cam_from_spec must NOT, because it is a different camera."""
+    with open(_SPECP, encoding="utf-8") as fh:
+        spec = _json.load(fh)
+    cam_r = fg.cam_from_render(_FRAME)
+    v_render = fg.framing_report(spec, cam_r)["top_edge"]["v"]
+    assert v_render == _pytest.approx(0.3311, abs=5e-4), v_render
+    v_spec = fg.framing_report(spec, fg.cam_from_spec(spec))["top_edge"]["v"]
+    assert v_spec == _pytest.approx(0.3454, abs=5e-4), v_spec
+    assert abs(v_render - v_spec) > 0.01, "the two cameras must not be conflated"
+
+
+@_pytest.mark.skipif(not _have_frame(), reason="p2r93b frame not on disk")
+def test_from_render_reads_the_frames_own_lens_not_the_specs():
+    cam = fg.cam_from_render(_FRAME)
+    assert cam["lens_mm"] == 20.0          # the variant
+    with open(_SPECP, encoding="utf-8") as fh:
+        assert _json.load(fh)["eye_camera"]["lens_mm"] == 21    # the record
+
+
+def test_a_frame_with_no_sidecar_is_refused_not_assumed(tmp_path):
+    p = tmp_path / "nope.png"
+    p.write_bytes(b"")
+    with _pytest.raises(SystemExit, match="no camera sidecar"):
+        fg.cam_from_render(str(p))
+
+
+def test_a_tilted_camera_is_refused(tmp_path):
+    side = tmp_path / "t.idmask.json"
+    side.write_text(_json.dumps({"source": {
+        "matrix": [[1, 0, 0, 0], [0, 1, -0.5, 0], [0, 0, -0.86, 1.2]],
+        "lens": 24.0, "shift": [0.0, -0.1], "res": [2400, 1800, 100]}}))
+    with _pytest.raises(SystemExit, match="TILTED"):
+        fg.cam_from_render(str(side))
