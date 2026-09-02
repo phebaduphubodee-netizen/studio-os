@@ -297,13 +297,21 @@ def test_blocked_by_must_name_an_ask_he_is_actually_holding():
 
 
 def test_a_real_open_ask_is_a_legitimate_blocker():
-    # ASK-006 (the blind RANK sheet — his eye) rather than ASK-001: the 08-25
-    # queue drain (D-143) withdrew ASK-001 into the procurement sheet, and this
-    # test reads the LIVE ask ledger by design — a blocker must name something
-    # he is actually still holding. If ASK-006 ever closes, point this at any
-    # currently-open row; the test's premise is the liveness itself.
+    # Reads the LIVE ask ledger by design — a blocker must name something he is
+    # actually still holding. It used to hard-code ASK-001, then ASK-006, and
+    # went red each time he answered (2026-09-01: ASK-006 answered, the test had
+    # been failing at HEAD with nobody reading it). So it now takes the first
+    # OPEN row, whichever that is; with the queue at zero it skips loudly rather
+    # than asserting on a row that does not exist.
+    with open(os.path.join(REPO, "qa", "owner-asks.json"), encoding="utf-8") as f:
+        ledger = json.load(f)
+    rows = ledger["asks"] if isinstance(ledger, dict) else ledger
+    open_ids = [r["id"] for r in rows if r.get("status") == "open"]
+    if not open_ids:
+        import pytest
+        pytest.skip("no OPEN ask in qa/owner-asks.json — nothing to be blocked by")
     o = _order(status="not-obeyed", not_obeyed_because="x", since="2026-08-13",
-               blocked_by="ASK-006")
+               blocked_by=open_ids[0])
     assert OC.check_orders(_led([o]), REPO) == []
 
 

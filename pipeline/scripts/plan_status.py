@@ -247,9 +247,36 @@ def work_closed_since_review(plan):
     return sorted(_done_work_ids(plan) - _done_work_ids(before))
 
 
+REVIEW_FLOOR_DAYS = 7
+
+
+def _days_since_last_review(plan):
+    reviews = plan.get("reviews") or []
+    if not reviews:
+        return None
+    head = reviews[-1].get("commit")
+    if not head or head == "unknown":
+        return None
+    when = _git("show", "-s", "--format=%cI", head)
+    if not when:
+        return None
+    try:
+        import datetime as _dt
+        then = _dt.datetime.fromisoformat(when.strip())
+        return (_dt.datetime.now(then.tzinfo) - then).days
+    except ValueError:
+        return None
+
+
 def review_due(plan):
-    """(due, why). A review is due when work has closed since the last one — that
-    is the owner's condition, 'every time work finishes, after commit'."""
+    """(due, why). AMENDED 2026-09-01 (audit; owner "ลุย" on "review แผนทุกรอบ →
+    review เฉพาะตอนปิดเฟส"): the 2026-08-09 condition 'after every commit that
+    closes work' produced 94 reviews for 91 rounds, 75 change verdicts, P2's goal
+    rewritten 3x and its exit test 5x — while the exit test itself ran 0 times.
+    A review per round re-aims the plan faster than any frame can test the aim.
+    So: due when a PHASE closes unreviewed (unchanged), and otherwise only when
+    work has closed AND the last review is at least REVIEW_FLOOR_DAYS old — a
+    floor so the plan is still read, not a trigger that fires on every commit."""
     if any(p.get("status") == "done" and not p.get("_reviewed") for p in plan.get("phases", [])):
         return True, "a phase closed and has not been reviewed"
     closed = work_closed_since_review(plan)
@@ -258,8 +285,12 @@ def review_due(plan):
                        "closed is unknown (not zero)")
     if not closed:
         return False, "no work item has closed since the last review"
-    return True, f"{len(closed)} work item(s) closed since the last review: " \
-                 f"{', '.join(closed)}"
+    age = _days_since_last_review(plan)
+    if age is not None and age < REVIEW_FLOOR_DAYS:
+        return False, (f"{len(closed)} item(s) closed but the last review is {age}d old "
+                       f"(< {REVIEW_FLOOR_DAYS}d floor, amended 2026-09-01 — reviews "
+                       f"at phase close, not per round)")
+    return True, f"{len(closed)} work item(s) closed since the last review: "                  f"{', '.join(closed)}"
 
 
 def record_review(plan, verdicts, note="", commit=None):
@@ -592,6 +623,21 @@ def study_lines():
                     f"({e.__class__.__name__}). That is unknown, not zero."]
 
 
+def panel_lines():
+    """THE EXIT TEST'S OWN COUNTER (audit 2026-09-01: the plan's finish line —
+    three sighted judges, our frame shuffled blind among delivered frames — had
+    been rewritten five times and run zero times). exit_panel.py records every
+    run; this prints the last score and every full frame rendered since with no
+    panel. Advisory: it never blocks a render, it makes the debt visible."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import exit_panel
+        return [""] + exit_panel.status()
+    except Exception as e:                                  # never break the brief
+        return ["", f"EXIT PANEL unknown — exit_panel.py could not run "
+                    f"({e.__class__.__name__}). That is unknown, not zero."]
+
+
 def report(plan):
     lines = []
     cur = current(plan)
@@ -607,6 +653,7 @@ def report(plan):
         lines.append(f"            {cur['goal']}")
         lines.append(f"PROGRESS    {done}/{total} work items closed")
         lines.append(f"EXIT TEST   {cur['exit_test']}")
+    lines += panel_lines()
 
     nxt = next_work(plan)
     if nxt:

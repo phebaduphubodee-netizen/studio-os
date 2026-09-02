@@ -1,0 +1,92 @@
+{
+ "_what": "Every run of the plan's exit test (exit_panel.py): one row per judge per panel. Decoded through the key, so `ours` is the letter's content, not the letter. Read by plan_status via exit_panel.status().",
+ "runs": [
+  {
+   "at": "2026-09-01T19:58:57",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r91.png",
+   "render_sha1": "d1fed0dbffcd",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_send_audit",
+   "judge": "j1",
+   "ours_letter": "A",
+   "ours_score": 61,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F3": 74,
+    "OURS": 61,
+    "F1": 55,
+    "F2": 47,
+    "F4": 38
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F1",
+    "F2",
+    "F4"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F4",
+   "verdict_file": "C:/Users/teza_/.claude/projects/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/subagents/workflows/wf_926d5764-e77/journal.jsonl",
+   "note": "audit 2026-09-01 SEND panel, first run of the exit test in its own shape"
+  },
+  {
+   "at": "2026-09-01T19:58:58",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r91.png",
+   "render_sha1": "d1fed0dbffcd",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_send_audit",
+   "judge": "j2",
+   "ours_letter": "D",
+   "ours_score": 50,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F3": 72,
+    "F1": 61,
+    "F2": 58,
+    "OURS": 50,
+    "F4": 42
+   },
+   "order": [
+    "F3",
+    "F1",
+    "F2",
+    "OURS",
+    "F4"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F4",
+   "verdict_file": "C:/Users/teza_/.claude/projects/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/subagents/workflows/wf_926d5764-e77/journal.jsonl",
+   "note": "audit 2026-09-01 SEND panel"
+  },
+  {
+   "at": "2026-09-01T19:58:58",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r91.png",
+   "render_sha1": "d1fed0dbffcd",
+   "panel_dir": "C:\\Users\\teza_\\AppData\\Local\\Temp\\claude\\c--Users-teza--OneDrive-Desktop-PlingPeat\\f5ca859e-37aa-4712-995f-85e1b96625f1\\scratchpad\\panel_send_audit",
+   "judge": "j3",
+   "ours_letter": "B",
+   "ours_score": 58,
+   "ours_rank": 2,
+   "field": 5,
+   "scores": {
+    "F3": 82,
+    "OURS": 58,
+    "F1": 54,
+    "F2": 50,
+    "F4": 44
+   },
+   "order": [
+    "F3",
+    "OURS",
+    "F1",
+    "F2",
+    "F4"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "OURS",
+   "verdict_file": "C:/Users/teza_/.claude/projects/c--Users-teza--OneDrive-Desktop-PlingPeat/f5ca859e-37aa-4712-995f-85e1b96625f1/subagents/workflows/wf_926d5764-e77/journal.jsonl",
+   "note": "audit 2026-09-01 SEND panel"
+  }
+ ]
+}
