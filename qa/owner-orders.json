@@ -1446,8 +1446,38 @@
      "why": "'review เฉพาะตอนปิดเฟส' ต้องอยู่ใน trigger ไม่ใช่ในความตั้งใจ — 94 review/91 รอบคือ trigger เดิมทำงานตามที่เขียน"
     }
    ],
-   "closure_verdicts": [],
-   "note": "แถวนี้เป็น VISUAL: ปิดด้วย closure_verdicts จากแผงตาเห็น (fresh-context, blind) บนเฟรมที่รอบ P2r-34 ผลิต หรือคำพี่บนเฟรม. สิ่งที่วันนี้ทำแล้ว: audit record, แถวในแผน (review #95), exit_panel.py + log + ตัวนับ, review floor. สิ่งที่ยังไม่ทำ: เฟรม. ข้อความ 'AFTER EVERY COMMIT THAT CLOSES WORK, review the plan' ใน CLAUDE.md ขัดกับ floor ใหม่ — แก้ในคอมมิตถัดไปที่ CLAUDE.md ว่าง (pane อื่นถือ diff 22 บรรทัดอยู่ตอนนี้)"
+   "closure_verdicts": [
+    {
+     "at": "2026-09-02",
+     "frame": "pipeline/output/room_bedroom_suite_eye_p2r93b.png",
+     "panel": "qa/exit-panel-log.json (3 judges, blind, ours among 4 delivered frames)",
+     "scores": [
+      74,
+      73,
+      71
+     ],
+     "mean": 72.7,
+     "ranks": [
+      "2/5",
+      "3/5",
+      "2/5"
+     ],
+     "sendable": [
+      "sendable-after-minor-fixes",
+      "sendable-after-minor-fixes",
+      "sendable-after-minor-fixes"
+     ],
+     "judge_files": [
+      "panel_p2r93b/j1/ANSWER.json",
+      "panel_p2r93b/j2/ANSWER.json",
+      "panel_p2r93b/j3/ANSWER.json"
+     ],
+     "camera_in_top3": "0/3",
+     "light_from_nowhere_in_top3": "0/3",
+     "covers": "item 1 of his D list (P2r-34, camera + daylight key) ONLY"
+    }
+   ],
+   "note": "แถวนี้เป็น VISUAL: ปิดด้วย closure_verdicts จากแผงตาเห็น (fresh-context, blind) บนเฟรมที่รอบ P2r-34 ผลิต หรือคำพี่บนเฟรม. สิ่งที่วันนี้ทำแล้ว: audit record, แถวในแผน (review #95), exit_panel.py + log + ตัวนับ, review floor. สิ่งที่ยังไม่ทำ: เฟรม. ข้อความ 'AFTER EVERY COMMIT THAT CLOSES WORK, review the plan' ใน CLAUDE.md ขัดกับ floor ใหม่ — แก้ในคอมมิตถัดไปที่ CLAUDE.md ว่าง (pane อื่นถือ diff 22 บรรทัดอยู่ตอนนี้) || 2026-09-02: ITEM 1 OF FOUR IS CARRIED OUT AND RECORDED. p2r93b's panel meets P2r-34's clause literally (mean 72.7 > 56.3, p95/p5 6.03, camera 0/3, light 0/3) and the trend across four recorded panels is the real evidence: camera named 3/3 -> 3/3 -> 1/3 -> 0/3, light 3/3 -> 0/3 -> 0/3 -> 0/3. Item 3 (R10 on the wardrobe, P2r-36) is answered as D-191: KEEP, because 'no doors' is HIS call of 2026-07-16 from his own reference image and R13/D-072 is exactly the precedent against a builder overruling that; what is wrong is the CONTENTS, which is item 2's job. THE ROW STAYS not-obeyed: item 2 (palette/story, P2r-35) and item 4's standing panel are not done, and his sentence was about the WHOLE work, not one round. Two things the round produced that he should know: the bed is measurably too wide for this room at our own clearance standard (D-190, and I had wrongly refuted that critique last round using the critic's number instead of our vault's), and the exit panel's absolute mean cannot close anything (D-189, the fixed peer frames drift 41 points)."
   }
  ]
 }

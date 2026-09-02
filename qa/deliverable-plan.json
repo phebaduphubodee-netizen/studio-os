@@ -242,12 +242,24 @@
     },
     {
      "id": "P2r-34",
-     "status": "todo",
+     "status": "done",
      "added": "2026-09-01",
      "added_round": "audit-2026-09-01",
      "what": "ONE ROUND: CAMERA + DAYLIGHT KEY. The first run of this plan's own exit test (3 blind sighted judges, ours among 4 delivered frames; exit_panel.py, qa/exit-panel-log.json) scored p2r91 at 61/50/58 and all three judges put the same two items first: the room is lit from nowhere (no key, no contact shadow — luminance p95/p5 3.3x vs 5.0-5.4x on every delivered peer) and the camera throws the room away (chair sliced by the left edge, a dead oak wall as 40% of the left half, bed cut at the right). The progress panel ranked p2r78rc ABOVE p2r91 on exactly the camera. DO, in this order: (1) Skill camera-composition, then lighting-design — before any number is typed; (2) R12: open the drawing of record for the two walls this camera sees and settle whether an opening can exist there (the sheet outranks the wish; if the sheet gives no window, the key comes from the opening the sheet does give, or from a lamp hierarchy, and that is written down); (3) return to the p2r78rc hero framing (D-152 owner camera: bed + headboard one subject) or better — the judge's own line: 'wardrobe unit as the left anchor and the bed as the right'; (4) one daylight-shaped key from the off-frame left, general fill down a stop so the shelf LEDs and sconces read as light; (5) R5 quick first. CLOSE: a full frame whose exit panel (recorded via exit_panel.py record) has mean > 56.3, NO judge naming light-from-nowhere or the camera crop in their top-3 for ours, and a measured p95/p5 >= 5.0 on the full frame. What this round must NOT touch: bed, bedding, materials, GI settings.",
      "where": "pipeline/scripts/build_room.py (eye camera + element5 daylight key), projects/PRJ-2026-002_c001-house/00_intake (drawing of record — R12 check first), pipeline/scripts/exit_panel.py",
-     "why": "audit-2026-09-01-project-overview.md: render quality is AT the panel; what loses is light and camera, and in 52 rounds light got 3. The two levers every judge named first have never had a round together."
+     "why": "audit-2026-09-01-project-overview.md: render quality is AT the panel; what loses is light and camera, and in 52 rounds light got 3. The two levers every judge named first have never had a round together.",
+     "done": "2026-09-02",
+     "done_round": "p2r93",
+     "done_note": "CLOSED ON CAMERA B (p2r93b), and the clause was met literally, not argued into place: exit panel 74/73/71 (mean 72.7 > 56.3), p95/p5 6.03 >= 5.0, and NO judge naming light-from-nowhere or the camera crop in their top-3 — 0/3 on both. The trend across four recorded panels is the evidence, not the mean: camera named by 3/3 (p2r91) -> 3/3 (p2r92) -> 1/3 (p2r93a, on-axis, margin 6.8%) -> 0/3 (p2r93b, the same framing stepped 475 mm north so the view is 6.8 deg off the bed axis); light-from-nowhere named by 3/3 (p2r91) -> 0/3 on every frame since the key was solved through a NAMED pane. TWO LEVERS, both derived, neither typed: (a) D-188 the containment margin comes from the peer field (5-12% headroom; ours was 3.9%) and the lever turned out to be the LENS (21->20 mm), because camera_config._spot_is_clear proved the stand was already at the last clear station on its axis; (b) D-187 the sheer is the key's diffuser, fixed in two layers (material openness/forward-scatter, AND the sun's angular size behind a curtained pane) — the floor comb went from modulation 0.262 with a period on 5/5 rows to 0.168 with a period on 1/5, BELOW the un-sunlit control's own 0.206, and C3 filed zero sheer items this round after making it its single-fix last round. WHAT DID NOT CLOSE AND IS NOW ITS OWN ROW: the right-third window wall (P2r-38), named by 3/3 judges on BOTH p2r93a and p2r93b. Camera of record is UNCHANGED (still D-152) — A and B are variants and the choice is his, as D-118 and D-152 were: AB-p2r93-camera-2026-09-02.png is in the render path."
+    },
+    {
+     "id": "P2r-38",
+     "status": "todo",
+     "added": "2026-09-02",
+     "added_round": "p2r93",
+     "what": "THE WINDOW WALL IS A WHITE BLOCK WITH NOTHING IN IT — the item that replaced the camera as the panel's unanimous first complaint. 6 of 6 judges across p2r93a and p2r93b named it, plus C2 items 14/16/17 and C3 item 6, all independently: 'a featureless bright field', 'no view, no frame, no reveal, no sill, no mullion', 'the sheer hangs from nothing', 'no track, no pelmet, no header, no hooks', and (C3) 'the fabric reads opaque like plastic'. MEASURE FIRST, BECAUSE THE OBVIOUS READING IS WRONG: the wall is NOT clipped. Measured on the full frame, the sheer region reads p99 0.877, max 0.975, and only 0.1% of it above 0.95 — p2r92 actually reached max 1.000. So 'blown out' as an exposure claim is refuted; what actually changed is its MEDIAN (0.761 -> 0.831, a side effect of D-187's forward scatter) and what it has always lacked is CONTENT. Do not fix this by pulling exposure until the content question is answered. DO, in this order: (1) R12 — open the drawing of record for the south glazing and read what is actually there: head, jamb, sill, mullions, the slider's meeting stile, the Juliet rail outside (glz-slider's own note records a black-metal Juliet balcony rail in the owner's photo, and nothing in the frame shows it); (2) build what the sheet draws — the opening's frame and reveal, the curtain track/pelmet inside the 250 mm pocket the spec already carries, and something legible beyond the glass; (3) only then bracket the sheer's own value with --sheer-direct= and the exposure, with luma_range and the sheer-region histogram measured before and after. CLOSE: an exit panel where no judge names the window/right third in their top-3, AND a measured sheer-region p5-p95 spread that carries readable structure rather than one flat value.",
+     "where": "projects/PRJ-2026-002_c001-house/00_intake (drawing of record for the south glazing), projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json (room.openings, curtains pocket 250), pipeline/scripts/build_room.py (_curtain_sheer, curtain track)",
+     "why": "It is the only item every sighted judge has named on every frame since the camera was fixed, and it is a third of the picture. R10 applied to an absence: the room is sold on its daylight and never shows the opening the daylight comes through."
     },
     {
      "id": "P2r-35",
@@ -4953,8 +4965,73 @@
     "STY/STY-7",
     "STY/STY-8"
    ]
+  },
+  {
+   "commit": "74f240ee6bc1976f400057a9615016a2c52092a3",
+   "verdicts": {
+    "P2": "change: P2r-34 closed on p2r93b (camera 0/3, light 0/3, mean 72.7, p95/p5 6.03) and the item that REPLACED it as the panel's unanimous first complaint is now its own row, P2r-38 — the right-third window wall, named by 6 of 6 judges across both p2r93 frames plus C2 14/16/17 and C3 6. The change is not just the new row, it is what the round proved about the phase's own instruments: (1) the exit panel's ABSOLUTE MEAN cannot close anything (D-189 — the four fixed peer frames drift up to 41 points between runs, so a 3-judge mean carries SE 5.0 and a difference SE 7.1); what survives is the same-run gap-to-peers and the same-run rank, and P2r-34's own 'mean > 56.3' clause was a threshold comparing across differently-calibrated runs. Every future CLOSE clause in this phase states its bar as a same-run statistic or as a named-item count, never as a raw cross-run mean. (2) A critique may not be refuted with the CRITIC'S OWN number (D-190): I dismissed C2's bed-clearance item at p2r92 against the 600 mm C2 quoted, while our vault says 914 mm and CLAUDE.md ranks the vault above any outside figure. Re-measured properly the aisles are 780 mm and 694 mm, both short, and the root cause is that the bed is too wide for the room (clear span 3260 mm; 914 both sides needs a bed <= 1432 mm) — which converts ASK-002 from 'buy nicer bedding' into 'buy a narrower bed' and is a plan-level fact no render round can touch.",
+    "P4": "keep: untouched this round and its premise is unchanged — it owns the loose-object count (D7 still reads 5 vs 12 on both p2r93 frames) and P2r-35's styling round feeds it directly. Nothing measured this round argues about its ordering.",
+    "P3": "keep: the lighting phase gained work rather than changing shape. C2 filed five separate no-source / no-destination items on p2r93a (no contact shadow anywhere, the brass fittings light nothing, the downlights deliver no pool, the brightest mark on the headboard comes from no fitting, a warm band under the closed bench) and its own top-3 groups them. They belong exactly where this phase already points, and the key-through-a-named-pane machinery (D-185/D-187) built in P2 is the instrument P3 will use. Keep, with those items named.",
+    "P5": "keep: nothing this round bears on it. It stays the phase that cannot start until P2's owner-eye clause is satisfied, and his standing 'ยังดีไม่พอ' has not been withdrawn.",
+    "STY": "keep: the style program is what P2r-35 executes and this round did not touch it. Worth recording that the panel keeps confirming its premise from a direction STY did not predict — 'every surface from pillow to rug is the same warm brown' (j2 on B) and 'the only two colour events are a navy shirt and a stack of green textiles, both stuck in the far left' (C2 30) — so the chroma and distinct-finish counts STY already carries are measuring the right thing."
+   },
+   "changed": [
+    "P2"
+   ],
+   "note": "",
+   "done_at_review": [
+    "DRW/DRW-1",
+    "DRW/DRW-1b",
+    "DRW/DRW-2",
+    "DRW/DRW-3",
+    "DRW/DRW-4",
+    "DRW/DRW-5",
+    "P0/P0a",
+    "P0/P0b",
+    "P0/P0c",
+    "P0/P0d",
+    "P0/P0e",
+    "P0/P0f",
+    "P1/P1a",
+    "P1/P1b",
+    "P2/P2a",
+    "P2/P2b",
+    "P2/P2d",
+    "P2/P2e",
+    "P2/P2f",
+    "P2/P2g",
+    "P2/P2h",
+    "P2/P2i",
+    "P2/P2j",
+    "P2/P2k",
+    "P2/P2r-1",
+    "P2/P2r-15",
+    "P2/P2r-16",
+    "P2/P2r-17",
+    "P2/P2r-18",
+    "P2/P2r-19",
+    "P2/P2r-21",
+    "P2/P2r-24",
+    "P2/P2r-26",
+    "P2/P2r-27",
+    "P2/P2r-28",
+    "P2/P2r-3",
+    "P2/P2r-34",
+    "P2/P2r-37",
+    "P2/P2r-4",
+    "P2/P2r-6",
+    "P2/P2r-7",
+    "P2/P2r-8",
+    "P2/P2r-9",
+    "P3/P3a",
+    "P4/P4b",
+    "STY/STY-1",
+    "STY/STY-1b",
+    "STY/STY-7",
+    "STY/STY-8"
+   ]
   }
  ],
- "last_review_commit": "7028a6a6299b4ce2abe05233830c298cb08028c4",
+ "last_review_commit": "74f240ee6bc1976f400057a9615016a2c52092a3",
  "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }
