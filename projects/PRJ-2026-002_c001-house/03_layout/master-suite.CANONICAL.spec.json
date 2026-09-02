@@ -112,17 +112,17 @@
  },
  "eye_camera": {
   "stand_mm": [
-   1240,
-   1125
+   1500,
+   -200
   ],
   "aim_mm": [
-   5180,
-   1125
+   4003,
+   2800
   ],
-  "lens_mm": 21,
-  "shift_y": -0.0878,
+  "lens_mm": 18,
+  "shift_y": -0.0376,
   "eye_h_m": 1.05,
-  "note": "CAMERA OF RECORD SINCE 2026-08-26 — HIS CHOICE FROM THE A/B PAIR (D-152). He was shown room_bedroom_suite_eye_p2r78.png (the bed-foot hero he adopted at D-118) beside room_bedroom_suite_eye_p2r78rc.png (this one) with the trade stated in numbers, and answered with this frame's name. Decided the same way D-118 was decided: from the pair, by his eye, in one line. WHAT THIS CAMERA CONTAINS THAT THE OTHER DID NOT, measured before either render by pipeline/scripts/frame_geometry.py and printed as FRAME CONTAINS on every build: (1) the top of the BF14 slat wall and the wall/ceiling junction — on the outgoing camera that top edge projected to v=0.4533 against a frame half-height of 0.375, i.e. the room's own top edge sat OUTSIDE the picture, which is why three sighted readers called the frame a backdrop; (2) the foot bench's floor contact (v=-0.5223 vs -0.375 before), so the nearest mass in the frame stands on a floor; (3) the four cans that wash the slat wall (e5_trim_bf14_wash_*, z 2.74 m) were out of frustum, so the brightest event in the frame had no visible source — the ceiling coming into frame closes that with the same move. DERIVED, NOT TYPED: stand_mm is the westmost spot keeping 0.3 m clear of the BF09 bookshelf per camera_config._spot_is_clear; lens_mm and shift_y are the solve of those two containment constraints at 2% margin (frame_geometry.solve_framing, headroom 0.019 = 46 px) and test_frame_geometry re-solves them every run, so a hand-retuned lens fails a test rather than drifting. eye_h_m IS IN THE SPEC AND NOT ON THE COMMAND LINE: this framing only holds at 1.05 m, and it spent its A/B life as EYE_CAM_HEIGHT_M=1.05 typed in a shell. A render state that lives only in the command line is reverted by forgetting to type it (D-032), and an order carried out as an opt-in is an order that was not carried out (R13) — so his camera does not depend on anyone's shell. COST HE ACCEPTED, stated to him before he chose: the bed's own AABB drops from 0.344 to 0.175 of frame area. REVERSAL: eye_camera_variants['bed_foot_hero_2026-08-22'] holds the outgoing block verbatim — one --eyecam away, and D-152's reverse_by names it."
+  "note": "CAMERA OF RECORD SINCE 2026-08-28 — HIS CHOICE FROM THE A/B PAIR (D-175, answer: 'B'). It replaces the 2026-08-26 camera (D-152), which is kept whole as the variant `camera_of_record_2026-08-26_D152`. WHY IT EXISTS: he said 'ย้ายกล้อง' after the first contents round put 31 dressed masses in the scene and only 7 in the frame — the built-in he had just judged was a left-edge crop. EVERY NUMBER IS SOLVED, NOT TYPED (R9 applied to the lens): 273 legal standing spots (camera_config._spot_is_clear: inside the outline, 0.3 m of air, a line of sight to the aim) crossed with 3 lenses, measured by frame_geometry BEFORE any render; 27 satisfy both containment constraints (the room's top edge in frame, the nearest mass's floor contact in frame), and camera-composition's preference order over those 27 — longest lens that admits a solution, then largest bed share — picks this one. shift_y is the midpoint of the admissible interval, i.e. equal headroom top and bottom, not a stored nudge. MEASURED AGAINST THE CAMERA IT REPLACES: bed share 0.175 -> 0.206 (the bed reads LARGER, which is the axis D-118 was decided on), lens 21 -> 18 mm (more convergence over the bed length, the cost), and D7 loose styling objects in frustum 3 -> 5 with NO object moved."
  },
  "light_warm": [
   1.0,
@@ -735,6 +735,20 @@
    "shift_y": -0.0376,
    "eye_h_m": 1.05,
    "note": "CANDIDATE B for the A/B his ย้ายกล้อง asks for (D-174). Aimed at the FACE of BF09-3 so the dressed cells are the subject. EVERY NUMBER IS SOLVED, NOT TYPED (R9 applied to the lens). THE FIRST SWEEP WAS WRONG AND THE BUILD CAUGHT IT: it optimised the two containment constraints and never asked whether the camera could STAND there — stand (900,200) was refused by camera_config._spot_is_clear (within 0.3 m of a built-in / no line of sight). The second sweep filters on _spot_is_clear FIRST and then on containment: 27 of 273 legal stands satisfy both, and this is camera-composition preference order over them — longest lens that admits a solution (18 mm), then largest bed share (0.206). shift_y is the midpoint of the admissible interval (equal headroom). AND THE TRADE TURNED OUT NOT TO BE A TRADE: bed share 0.175 -> 0.206, i.e. the bed reads LARGER than on the camera of record, not smaller — which is the axis D-118 was decided on. What is spent is the lens: 21 -> 18 mm, more convergence over the bed length."
+  },
+  "camera_of_record_2026-08-26_D152": {
+   "stand_mm": [
+    1240,
+    1125
+   ],
+   "aim_mm": [
+    5180,
+    1125
+   ],
+   "lens_mm": 21,
+   "shift_y": -0.0878,
+   "eye_h_m": 1.05,
+   "note": "THE OUTGOING CAMERA OF RECORD. His choice from the A/B pair of 2026-08-26 (D-152), stood down 2026-08-28 when he answered 'B' to the next A/B pair (D-175). Kept whole so the reversal is one line: copy this back into eye_camera. It is also the frame every measurement before p2r90 was taken on, so any before/after that crosses 2026-08-28 must name which camera it used."
   }
  },
  "exterior": {
