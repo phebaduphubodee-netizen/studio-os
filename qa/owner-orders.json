@@ -246,9 +246,9 @@
    "scope": "class",
    "standing": true,
    "retired_by": null,
-   "status": "obeyed",
-   "since": "2026-08-10",
-   "not_obeyed_because": "HALF OF IT IS NOW DONE AND THE OTHER HALF IS HIS. p2r49 found the ledger's own reason was too kind: adding a DELIV-001 row to qa/curriculum-caps.json would have changed nothing, because `count_rounds` looks for spec_r<N>.json files this lane has none of and `count_full_frames` needs a spec `image` key the canonical spec does not carry — both returned 0, and 0 passes any cap. The BUILDER'S HALF is built: `rule_gate.count_rounds_room` (the highest round with a gate artefact, because R2 makes the artefact the round's record) and `count_full_frames_room` (beauty PNGs at the deliverable size with the id/mat masks removed — the pixel test alone over-counted this lane by nearly 2x), called from `check_room`, with 'R1 cap' removed from ROOM_LANE_NOT_APPLICABLE. The spend now prints at every gate: 47 rounds, 46 full frames, against a builder-proposed 12/20 in the plan that nothing ever enforced. THE NUMBER IS HIS: the caps file's own law says only the owner sets or extends a cap, so this row stays not-obeyed until ASK-023 is answered. Blocking the render instead would halt the lane on an unanswered ask, which R3 forbids by name.",
+   "status": "not-obeyed",
+   "since": "2026-09-02",
+   "not_obeyed_because": "HIS OWN LATER WORDS REMOVED THE HALF THAT WAS OBEYED. This order was carried out by making the cap 'a machine-read number that blocks' (see obeyed_how). On 2026-09-02 he answered the gate's refusal at 97 > 96 with \"ปลด cap เลย\" and the cap became the sentinel `uncapped`, so the third assertion — a NUMERIC cap_rounds for DELIV-001 — is false, and it is false because HE made it false. TWO THINGS THE BUILDER DID NOT DO, deliberately. It did not widen the assertion to accept the sentinel: that would change what his order requires in order to make his order pass, which is the D-072 wound by a politer name. And it did not retire the order, because retirement takes the whole row and this order's intent — that the builder can see what it is doing and can stop — is far larger than the cap, which was only ever one instrument for it. WHAT STILL SERVES THAT INTENT AND WAS NOT LIFTED: R1's per-mechanism stop-loss of two build+render cycles, the round/frame counter which still runs and still prints into the render path on every gate, and his eye (R3). What is gone is only the ceiling.",
    "obeyed_where": "qa/curriculum-caps.json",
    "obeyed_how": "2026-08-25 night: he answered ASK-023 through the debate approval (D-141, his verbatim in owner_override) — units.DELIV-001 carries the cap as two integers a program reads — 89/93 when this row was written, 96/105 since his 2026-08-29 extension (D-178). THE INTEGERS ARE DELIBERATELY NOT RESTATED AS A FACT HERE ANY MORE: this prose went stale the moment they moved, and nothing checks `obeyed_how`. What this order required was that the cap BE a machine-read number that blocks, which is true at either value, read by rule_gate.cap_check inside check_room on every build and BLOCKING on breach; breach also starts the real-client run (ORD-2026-08-22). The machine-readable half of R1 finally has its number, 28 days after the order.",
    "obeyed_assert": [
@@ -268,7 +268,8 @@
      "pattern": "\\\"DELIV-001\\\"[\\s\\S]{0,120}?\\\"cap_rounds\\\": \\d",
      "why": "THIS ONE IS EXPECTED TO FAIL and that is the honest interim state: a NUMERIC cap for DELIV-001 exists only when the owner sets one. The row prints not-obeyed until it holds"
     }
-   ]
+   ],
+   "blocked_by": "ASK-039"
   },
   {
    "id": "ORD-2026-08-08-build-order-dimension-objects-light",

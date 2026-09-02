@@ -991,11 +991,27 @@ def check_room(gate_spec, roster=None, spec=None, unit=None,
     _cap_v = cap_check(_row, _rounds, _frames)
     _declared = bool(_row and _row.get("cap_rounds") is not None
                      and _row.get("cap_full_frames") is not None)
+    _uncapped = bool(_row) and _row.get("cap_rounds") == "uncapped"
     note("R1 cap", True,
          f"{_rounds} round(s) / {_frames} full frame(s) spent; cap "
-         + (f"{_row.get('cap_rounds')}/{_row.get('cap_full_frames')}" if _declared
+         + ("UNCAPPED by the owner 2026-09-02 — the counter above is the whole "
+            "mechanism now, and the only remaining stop-loss on this unit is R1's "
+            "per-mechanism cap of 2 build+render cycles, which he did not lift"
+            if _uncapped else
+            f"{_row.get('cap_rounds')}/{_row.get('cap_full_frames')}" if _declared
             else "NOT SET — his call, ASK-023"))
-    if _declared:
+    if _uncapped:
+        v += _cap_v          # still catches an `uncapped` with nobody's name on it
+        # THE COUNTER OUTLIVES THE CAP. He lifted the ceiling, not the measurement,
+        # so the spend still prints into the render path on every frame — that line
+        # was the courtesy layer under a cap and is the WHOLE mechanism without one.
+        print(f"  R1 CAP: DELIV-001 has spent {_rounds} round(s) and {_frames} "
+              f"full-fidelity frame(s). UNCAPPED by the owner 2026-09-02 "
+              f"(\"{_row.get('uncapped_words', '')}\") after the gate refused a render "
+              f"at 97 > 96 — the ceiling is gone, this count is not. Still binding and "
+              f"NOT lifted: R1's per-mechanism stop-loss of 2 build+render cycles, and "
+              f"his eye (R3). Previous cap kept in the caps file under `_previous`.")
+    elif _declared:
         v += _cap_v
         # THE COUNTDOWN IS THE COURTESY LAYER, THE COUNTER IS THE MECHANISM
         # (D-141). Printed into the render path — his channel — so the budget
@@ -1665,9 +1681,27 @@ def cap_check(ledger_row, rounds_done, full_frames_done):
                 "has closed, cost 20 rounds and 37 full frames; TRN-002 passed "
                 "135% of that with no rule anywhere that noticed."]
     out = []
+    # UNCAPPED IS A STATE, NOT A DELETED KEY (2026-09-02, owner: "ปลด cap เลย").
+    # He lifted DELIV-001's cap outright rather than naming a bigger number, and there
+    # are two dishonest ways to write that down. Deleting the keys makes `cap is None`,
+    # which this function already calls a violation — correct, because a unit that never
+    # declared a cap and a unit whose cap was lifted are different facts and must not
+    # print the same. Typing a huge number launders "no cap" as a cap and would let a
+    # later reader believe R1 is still bounding the lane. So the row says `uncapped`,
+    # names WHO lifted it and quotes WHY, and the counter keeps running and keeps
+    # printing — the block goes, the number stays visible. R1's stopping power on this
+    # unit is now the builder's own R1 stop-loss per mechanism (2 cycles), which this
+    # never touched, plus his eye.
+    lifted = ledger_row.get("uncapped_by")
     for key, done in (("cap_rounds", rounds_done),
                       ("cap_full_frames", full_frames_done)):
         cap = ledger_row.get(key)
+        if cap == "uncapped":
+            if not lifted:
+                out.append(f"{key} says 'uncapped' but the row names no `uncapped_by`. "
+                           f"Only the owner lifts a cap (R3), and a lift with no name on "
+                           f"it is indistinguishable from a cap that was quietly deleted.")
+            continue
         if cap is None:
             out.append(f"ledger row declares no {key}")
         elif done > cap:
@@ -2238,7 +2272,9 @@ def check(spec, bundle_dir=None, inbox_root=None, require_seen=False,
                      f"but the render dir is unreadable ({render_dir!r}), so "
                      f"frames counted as 0 and the cap could not bite. A count "
                      f"that cannot run must not read as a count that passed.")
-        note("R1 cap", True, f"{unit}: {rounds} rounds, {frames} full frames"
+        _unc = (caps or {}).get("cap_rounds") == "uncapped"
+        note("R1 cap", True, (("UNCAPPED by the owner — the counter still runs: " if _unc
+                              else "") + f"{unit}: {rounds} rounds, {frames} full frames")
              + ("" if countable else f" — NO READABLE RENDER DIR ({render_dir!r})"))
     else:
         note("R1 cap", False, "no lane dir given, so no unit to look up")

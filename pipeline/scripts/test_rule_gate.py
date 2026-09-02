@@ -1575,3 +1575,44 @@ def test_the_cap_line_spends_the_open_tail_at_the_call_site(monkeypatch, capsys)
         "the cap counter took the smaller of two honest readings of its own lane")
     assert "OPEN ROUNDS: r58..r61" in out, (
         "four rounds that rendered and never wrote a gate artefact must be named")
+
+
+# ------------------------------------------------- the lifted cap (2026-09-02) ---------
+# The owner answered the gate's refusal at 97 > 96 with "ปลด cap เลย" — he lifted the
+# ceiling rather than naming a bigger number. These pin the three ways that could have
+# been written down dishonestly.
+def test_an_uncapped_row_does_not_block():
+    row = {"cap_rounds": "uncapped", "cap_full_frames": "uncapped",
+           "uncapped_by": "owner"}
+    assert RG.cap_check(row, 9999, 9999) == []
+
+
+def test_an_uncapped_row_with_nobody_s_name_still_blocks():
+    """A lift with no name on it is indistinguishable from a cap somebody quietly
+    deleted, so it must not pass."""
+    row = {"cap_rounds": "uncapped", "cap_full_frames": "uncapped"}
+    out = RG.cap_check(row, 1, 1)
+    assert len(out) == 2 and all("uncapped_by" in o for o in out)
+
+
+def test_a_missing_key_is_still_a_different_fact_from_uncapped():
+    """A unit that NEVER declared a cap and a unit whose cap was LIFTED are different
+    states and must not print the same. This is why the lift is a sentinel rather than
+    a deleted key."""
+    out = RG.cap_check({"cap_rounds": None, "cap_full_frames": None}, 1, 1)
+    assert out and all("declares no" in o for o in out)
+
+
+def test_a_real_cap_still_bites_after_the_sentinel_was_added():
+    out = RG.cap_check({"cap_rounds": 96, "cap_full_frames": 105}, 97, 50)
+    assert out and "exceeded" in out[0]
+
+
+def test_the_live_caps_file_records_who_lifted_it():
+    row = RG.load_caps("DELIV-001")
+    assert row is not None
+    if row.get("cap_rounds") == "uncapped":
+        assert row.get("uncapped_by") == "owner"
+        assert row.get("uncapped_words")
+        assert row.get("_previous", {}).get("cap_rounds"), (
+            "the previous numbers must survive, or restoring the cap is guesswork")
