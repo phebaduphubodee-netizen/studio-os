@@ -1263,7 +1263,21 @@ def instrument_digest(bands=None, ratios=None):
 #     curtains.py TOP_EMBED_M 0.03 / HEM_CLEAR_M 0.015 gives a drop of ~2785.
 INSTRUMENT_FROZEN_AT = "2026-08-24"
 INSTRUMENT_RESTAMPED_AT = "2026-09-02"
-INSTRUMENT_FROZEN_SHA = "5dd32d1fca793c212a0e7d5d041d315b2ffa5c8ea4be73e6c000f8422fdedc2e"
+# SECOND ADD OF THE SAME DAY (STUDY-D16-wardrobe): BANDS added ['wardrobe'], removed [],
+# edited []; MIN_DEPTH_RATIO added ['wardrobe'], edited [] — proven against 7cffe85. Again
+# the benign direction (an addition cannot change a verdict already given).
+#   wardrobe = (1800.0, 3000.0, "z") + MIN_DEPTH_RATIO 0.15
+#   BOTTOM, vault-cited: knowledge/ergonomics/casework-fixture-clearances-th-practice.md 2.2
+#     builds its internal-zone layouts from a PAPERROOM "ตู้เสื้อผ้าสูง 2 เมตร" reference, so
+#     2000 is the class's own reference height and 1800 sits below it with margin.
+#   TOP, our own room: the built-in millwork here runs floor-to-slab at 2800 (spec
+#     room.ceiling_mm 2800, and the tallest mill__ mesh in the p2r91 dump measures 2800);
+#     3000 admits the same case in a taller room.
+#   MIN_DEPTH_RATIO["wardrobe"] was first written 0.15 and is now None, same hour: the
+#   check is min(dims)/max(dims) over all three axes, so on a wardrobe RUN the denominator
+#   is the WIDTH, which the class does not bound. It refused a real 5663x810x2590 fitted
+#   run at 0.1431. Declared exempt rather than nudged — R9b.
+INSTRUMENT_FROZEN_SHA = "b265b594dbf424d19b1bcc97584b8b401d6bc43d41dac46ebbe286503c33e9c9"
 
 
 def load_results(path=None):

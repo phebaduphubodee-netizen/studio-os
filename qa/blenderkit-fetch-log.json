@@ -5003,6 +5003,207 @@
     "refusal": null
    },
    "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T16:10:57-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wardrobe organizer",
+   "pages": 2,
+   "n": 200,
+   "free": 85,
+   "full_plan": 115,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "closet storage",
+   "pages": 2,
+   "n": 200,
+   "free": 83,
+   "full_plan": 117,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:08-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "folded clothes",
+   "pages": 2,
+   "n": 200,
+   "free": 60,
+   "full_plan": 140,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:11-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "shelf decor set",
+   "pages": 2,
+   "n": 200,
+   "free": 82,
+   "full_plan": 118,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:11:17-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "closet",
+   "pages": 2,
+   "n": 200,
+   "free": 49,
+   "full_plan": 151,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T16:13:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T16:13:24-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "3e38f13d-906e-49b5-a922-5cee37b96d50",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "3e38f13d-906e-49b5-a922-5cee37b96d50 offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T16:14:07-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "3e38f13d-906e-49b5-a922-5cee37b96d50",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …\\scripts\\addons_core\\io_scene_gltf2\\extern_draco.dll\n16:13:52 | INFO: Starting glTF 2.0 export\n16:13:52 | INFO: Extracting primitive: Plane\n16:13:52 | INFO: Primitives created: 1\n16:13:52 |"
+  },
+  {
+   "at": "2026-09-02T16:14:30-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "885a71e4-b78a-4055-848a-05a5c1cba67a",
+   "fetched": false,
+   "exit": 2,
+   "refusal": "GLB export failed (blender exit 0, file missing): …-05-19 01:37:34)\nEXPORT_GLB subsurf_raised_to_render_levels=0\nINFO Draco mesh compression is available, use library at <path> Files\\Blender Foundation\\Blender 5.1\\5.1\\scripts\\addons_core\\io"
+  },
+  {
+   "at": "2026-09-02T16:14:31-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "748845d0-24a2-491f-9ac3-8e1dd49bcde3",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "748845d0-24a2-491f-9ac3-8e1dd49bcde3 offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T16:18:41-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "748845d0-24a2-491f-9ac3-8e1dd49bcde3",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "wardrobe",
+   "resolution": "blend",
+   "scale": {
+    "ok": false,
+    "measured_mm": 2590.2,
+    "band_mm": [
+     1800.0,
+     3000.0
+    ],
+    "refusal": "thinnest axis is 810.5 mm against a longest of 5663.4 — ratio 0.1431 below the class floor 0.15. This is a CUTOUT, not a wardrobe. A bounds check cannot see it, which is why this line exists"
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T16:18:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b19781fd-a05e-4611-81af-2fd9f088a0ac",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "wardrobe",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2773.7,
+    "band_mm": [
+     1800.0,
+     3000.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T16:20:40-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T16:21:00-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "748845d0-24a2-491f-9ac3-8e1dd49bcde3",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "wardrobe",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2590.2,
+    "band_mm": [
+     1800.0,
+     3000.0
+    ],
+    "refusal": null
+   }
   }
  ]
 }

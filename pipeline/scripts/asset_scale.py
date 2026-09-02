@@ -165,6 +165,25 @@ BANDS = {
                 "pipeline/scripts/curtains.py HEM_CLEAR_M 0.015 / TOP_EMBED_M "
                 "0.03 (our own drop ~2785); the 1400 floor is a declared "
                 "assumption under the catalogue's 1.59 m roman-blind minimum"),
+    # A WARDROBE IS A FULL-HEIGHT CASE, and its height is set by the room, not by what
+    # goes in it. THE BOTTOM IS VAULT-CITED: knowledge/ergonomics/casework-fixture-
+    # clearances-th-practice.md section 2.2 works its internal-zone layouts from a
+    # "ตู้เสื้อผ้าสูง 2 เมตร" reference (PAPERROOM sheets), so 2000 is the class's own
+    # reference height and 1800 sits below it with margin — under that it is a chest or a
+    # dresser, which is a different class with different internals.
+    # THE TOP IS OUR OWN ROOM: the built-in millwork in this project runs floor-to-slab at
+    # 2800 (master-suite.CANONICAL.spec.json room.ceiling_mm 2800; the tallest mill__ mesh
+    # in the p2r91 dump measures exactly 2800), and 3000 admits the same built-in in a
+    # taller room. A wardrobe does not chase MR55's 3.50 m shophouse ceiling — nobody
+    # reaches a shelf up there.
+    # The unit traps: an imperial-as-metres case lands near 64 mm, a cm-as-metres one near
+    # 250 m — both decades outside.
+    "wardrobe": (1800.0, 3000.0, "z",
+                 "knowledge/ergonomics/casework-fixture-clearances-th-practice.md 2.2 "
+                 "(PAPERROOM 'ตู้เสื้อผ้าสูง 2 เมตร' internal-zone sheets) for the floor, "
+                 "and projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL."
+                 "spec.json room.ceiling_mm 2800 — our own built-in runs floor-to-slab — "
+                 "for the top, opened to 3000 for the same case in a taller room"),
     "rug": (1000.0, 5000.0, "maxxy",
             "master-suite.CANONICAL.spec.json items[0] 3100 x 2500 mm; band "
             "spans a bedside runner to a whole-room rug"),
@@ -381,6 +400,26 @@ MIN_DEPTH_RATIO = {
     # that is still a curtain measures 0.05 m deep on a 5.04 m run (0.010),
     # while a pleated drape runs 0.28-1.11 m on ~3 m (0.09-0.37).
     "curtain": 0.01,
+    # WARDROBE IS DECLARED None, AND THE REASON IS A MISTAKE MADE AND CAUGHT THE SAME HOUR
+    # (2026-09-02, STUDY-D16). It was first written 0.15, reasoned from "550-650 mm carcass
+    # depth against a 1800-3000 mm height is about 0.2". That premise is about depth over
+    # HEIGHT. The check computes min(dims)/max(dims) over ALL THREE axes, so on a wardrobe
+    # RUN the denominator is the WIDTH, which the class does not bound: 748845d0 is a real
+    # 5663 x 810 x 2590 mm fitted run, its carcass is a correct 810 deep, and the 0.15 floor
+    # refused it at 0.1431 with the message "This is a CUTOUT, not a wardrobe".
+    # MEASURED, not illustrated: the four staged closets read 0.3068 / 0.2590 / 0.1921 /
+    # 0.1431, and with an 810 mm carcass the theoretical best any object this band admits
+    # can reach is 810/1800 = 0.45 (a 0.6 would need a longest axis of 1350, below the
+    # band's own floor, so it is unreachable — an earlier version of this comment claimed
+    # it). The class legitimately spans 0.14-0.31, a 0.15 floor sits inside that span, and
+    # so no floor here can separate a deep run from a facade.
+    # The fix is to declare the exemption rather than to nudge the floor until the sample
+    # passes, which is the move R9b names by name.
+    # WHAT IS STILL UNGUARDED, said out loud so it is not mistaken for coverage: a wardrobe
+    # delivered as a flat facade with no carcass depth would pass this class. Catching it
+    # needs depth measured against the DEPTH axis, not against the longest one — a change to
+    # the checker, not to this table, and it is not made here.
+    "wardrobe": None,
     # a rug IS a plane — this class is the reason MIN_DEPTH_RATIO carries None as
     # a DECLARED value rather than treating "absent" and "exempt" as the same
     "rug": None,

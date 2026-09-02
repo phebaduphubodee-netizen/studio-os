@@ -105,6 +105,17 @@ def check(led):
                 fails.append(f"{u['id']}: a practice rep is an exam — only "
                              f"{'/'.join(REP_JUDGES)} may close it, got {judge!r}")
             ev = u.get("exam_evidence") or ""
+            # the file's convention is ONE comma-separated string. A list is the shape a
+            # writer reaches for first and it used to reach `.split` and raise, taking
+            # session open down with a traceback — a type error must be a NAMED refusal.
+            if isinstance(ev, (list, tuple)):
+                fails.append(f"{u['id']}: exam_evidence is a {type(ev).__name__}; this "
+                             "file stores it as one comma-separated string — join it")
+                ev = ",".join(str(x) for x in ev)
+            elif not isinstance(ev, str):
+                fails.append(f"{u['id']}: exam_evidence is a {type(ev).__name__}, "
+                             "not a comma-separated string")
+                ev = ""
             if not ev:
                 fails.append(f"{u['id']}: done but exam_evidence is empty — "
                              "a study that landed nowhere was not done")

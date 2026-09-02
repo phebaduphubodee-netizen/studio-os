@@ -126,25 +126,39 @@ def test_skip_needs_a_recorded_reason(led):
 
 def test_skipped_is_not_counted_as_studied(led):
     """A skip is a legitimate outcome; it is not a lesson. The session-open line
-    must not let one read as the other."""
-    bad = copy.deepcopy(led)
-    u = _unit(bad, "STUDY-D15-seating")
-    u.update(status="skipped", skip_reason="probe test")
-    before = [l for l in sc.report_lines() if "เรียนแล้ว" in l][0]
-    n_before = before.split("เรียนแล้ว ")[1].split("/")[0]
+    must not let one read as the other.
 
+    BOTH SIDES ARE CONSTRUCTED, and that is the point of this version. The first
+    one named STUDY-D15-seating and compared against the LIVE file: it passed only
+    while D15 happened to be pending, and the moment D15 actually closed on
+    2026-09-02 the flip to `skipped` decremented a real count and the test broke on
+    progress rather than on a defect. A control that a closed unit can disarm is the
+    same fault as the fenced-unit test fixed the same day.
+    """
     import json
     import tempfile
-    fd, path = tempfile.mkstemp(suffix=".json")
-    os.close(fd)
-    try:
-        with open(path, "w", encoding="utf-8", newline="\n") as f:
-            json.dump(bad, f, ensure_ascii=False)
-        line = [l for l in sc.report_lines(path=path) if "เรียนแล้ว" in l][0]
-    finally:
-        os.unlink(path)
-    assert line.split("เรียนแล้ว ")[1].split("/")[0] == n_before
-    assert "ข้ามโดยบันทึกเหตุ 1" in line
+
+    def studied(doc):
+        fd, path = tempfile.mkstemp(suffix=".json")
+        os.close(fd)
+        try:
+            with open(path, "w", encoding="utf-8", newline=chr(10)) as f:
+                json.dump(doc, f, ensure_ascii=False)
+            line = [l for l in sc.report_lines(path=path) if "เรียนแล้ว" in l][0]
+        finally:
+            os.unlink(path)
+        return int(line.split("เรียนแล้ว ")[1].split("/")[0]), line
+
+    base = copy.deepcopy(led)
+    u = next(x for x in base["units"] if x.get("status") == "pending")
+    n_before, _ = studied(base)
+
+    bad = copy.deepcopy(base)
+    _unit(bad, u["id"]).update(status="skipped", skip_reason="probe test")
+    n_after, line = studied(bad)
+
+    assert n_after == n_before, f"skipping {u['id']} moved the studied count"
+    assert "ข้ามโดยบันทึกเหตุ" in line
 
 
 def test_unreadable_ledger_prints_unknown_not_zero():
@@ -221,3 +235,17 @@ def test_the_queue_is_ordered_and_not_a_calendar(led):
     assert nxt(a) and nxt(a) == nxt(b), "the queue moved because the calendar moved"
     orders = [int(l.split("#")[1].split(":")[0]) for l in nxt(a)]
     assert orders == sorted(orders)
+
+def test_exam_evidence_as_a_list_is_a_named_refusal_not_a_traceback(led):
+    """The list shape reached `.split` and raised. plan_status calls check() at session
+    open, so a wrong type has to come back as a failure line, not a stack trace."""
+    bad = copy.deepcopy(led)
+    u = next(x for x in bad["units"] if x.get("status") == "done")
+    u["exam_evidence"] = ["qa/blenderkit-study-curriculum.json",
+                          "pipeline/scripts/study_curriculum.py"]
+    fails = sc.check(bad)
+    assert any("exam_evidence is a list" in f for f in fails), fails
+    # and the paths inside it are still checked, rather than the row being skipped
+    u["exam_evidence"] = ["qa/no-such-file-here.json"]
+    fails = sc.check(bad)
+    assert any("no-such-file-here.json does not exist" in f for f in fails), fails

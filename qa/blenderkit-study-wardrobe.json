@@ -1,0 +1,1375 @@
+{
+ "_recipe": "STUDY-D16 (2026-09-02) wardrobe-internals study — the reproduction recipe for every",
+ "_struct_vol_frac": 0.06,
+ "sets": {
+  "3e38f13d": {
+   "file": "3e38f13d-906e-49b5-a922-5cee37b96d50.probe.json",
+   "label": "Polo Closet",
+   "tier": "full_plan",
+   "why_in_corpus": "the richest staged closet: 2.32 M faces",
+   "n_objects": 53,
+   "n_mesh": 52,
+   "n_materials": 38,
+   "n_images": 15,
+   "asset_bbox_mm": [
+    1665,
+    859,
+    2799
+   ],
+   "width_axis": "x",
+   "n_structure": 3,
+   "n_content": 49,
+   "structure_names": [
+    ".Closet.001",
+    "Level Holder.001",
+    "Levels.001"
+   ],
+   "rot_census": [
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     49
+    ]
+   ],
+   "rot_base": [
+    0,
+    0,
+    0
+   ],
+   "residual_census": [
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     49
+    ]
+   ],
+   "axis_aligned": true,
+   "pose_taxonomy": {
+    "on_axis": 49,
+    "tilt_le_5": 0,
+    "mid_angle": 0
+   },
+   "mid_angle_examples": [],
+   "rot_base_is_a_tie": false,
+   "n_levels": 5,
+   "levels": [
+    {
+     "z": [
+      420,
+      566
+     ],
+     "span_mm": 147,
+     "n_objects": 6,
+     "fill": 0.9,
+     "headroom_to_next_mm": 124,
+     "names": [
+      "Dark Folded Stack shirt.002",
+      "Dark Folded Stack shirt.003",
+      "DarkBlue Folded Stack shirt.002",
+      "DarkBlue Folded Stack shirt.003",
+      "Gray Folded Stack shirt",
+      "Gray Folded Stack shirt.001"
+     ]
+    },
+    {
+     "z": [
+      691,
+      837
+     ],
+     "span_mm": 147,
+     "n_objects": 6,
+     "fill": 0.9,
+     "headroom_to_next_mm": 102,
+     "names": [
+      "DarkGreen Folded Stack shirt.002",
+      "DarkGreen Folded Stack shirt.003",
+      "Purple Folded Stack shirt.002",
+      "Purple Folded Stack shirt.003",
+      "White Folded Stack shirt.002",
+      "White Folded Stack shirt.003"
+     ]
+    },
+    {
+     "z": [
+      939,
+      1825
+     ],
+     "span_mm": 886,
+     "n_objects": 22,
+     "fill": 0.9,
+     "headroom_to_next_mm": 120,
+     "names": [
+      "Folded redshirt under stack.",
+      "Folded shirt Seprate buttom.",
+      "Green Folded Stack shirt.002",
+      "Green Folded Stack shirt.003",
+      "Pink Folded Stack shirt.002",
+      "Pink Folded Stack shirt.003",
+      "Pink Lshirt on hanger.001",
+      "Pink mshirt on hanger.001"
+     ]
+    },
+    {
+     "z": [
+      1944,
+      2220
+     ],
+     "span_mm": 275,
+     "n_objects": 14,
+     "fill": 0.77,
+     "headroom_to_next_mm": 285,
+     "names": [
+      "Bag 1.001",
+      "Bag2.001",
+      "Bag3.001",
+      "Flask.011",
+      "Flask.012",
+      "Flask.013",
+      "Flask.014",
+      "Flask.015"
+     ]
+    },
+    {
+     "z": [
+      2504,
+      2621
+     ],
+     "span_mm": 117,
+     "n_objects": 1,
+     "fill": 0.61,
+     "headroom_to_next_mm": null,
+     "names": [
+      "Polo Closet text.001"
+     ]
+    }
+   ]
+  },
+  "885a71e4": {
+   "file": "885a71e4-b78a-4055-848a-05a5c1cba67a.probe.json",
+   "label": "WallCloset-Mens Classic",
+   "tier": "full_plan",
+   "why_in_corpus": "hanging + folded in one case",
+   "n_objects": 44,
+   "n_mesh": 43,
+   "n_materials": 58,
+   "n_images": 60,
+   "asset_bbox_mm": [
+    2135,
+    648,
+    2503
+   ],
+   "width_axis": "x",
+   "n_structure": 1,
+   "n_content": 42,
+   "structure_names": [
+    "wall-closet"
+   ],
+   "rot_census": [
+    [
+     [
+      90,
+      0,
+      0
+     ],
+     6
+    ],
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     6
+    ],
+    [
+     [
+      0,
+      0,
+      -2
+     ],
+     4
+    ],
+    [
+     [
+      90,
+      0,
+      89
+     ],
+     3
+    ],
+    [
+     [
+      0,
+      0,
+      36
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -150
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -78
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      163
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -131
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      6
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      20
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      -85,
+      -35
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      -92
+     ],
+     1
+    ],
+    [
+     [
+      28,
+      0,
+      -179
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      -49
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      -93
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      -84
+     ],
+     1
+    ],
+    [
+     [
+      -10,
+      -2,
+      148
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -52
+     ],
+     1
+    ],
+    [
+     [
+      -95,
+      6,
+      -133
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -80
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -101
+     ],
+     1
+    ],
+    [
+     [
+      180,
+      0,
+      0
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      -80
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -85
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      -170
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      -90
+     ],
+     1
+    ]
+   ],
+   "rot_base": [
+    90,
+    0,
+    0
+   ],
+   "residual_census": [
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     6
+    ],
+    [
+     [
+      -90,
+      0,
+      0
+     ],
+     6
+    ],
+    [
+     [
+      -90,
+      0,
+      -2
+     ],
+     4
+    ],
+    [
+     [
+      0,
+      0,
+      89
+     ],
+     3
+    ],
+    [
+     [
+      -90,
+      0,
+      36
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -150
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -78
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      163
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -131
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      6
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      20
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      -85,
+      -35
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -92
+     ],
+     1
+    ],
+    [
+     [
+      -62,
+      0,
+      -179
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -49
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -93
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -84
+     ],
+     1
+    ],
+    [
+     [
+      -100,
+      -2,
+      148
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -52
+     ],
+     1
+    ],
+    [
+     [
+      175,
+      6,
+      -133
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -80
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -101
+     ],
+     1
+    ],
+    [
+     [
+      90,
+      0,
+      0
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -80
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -85
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -170
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      -90
+     ],
+     1
+    ]
+   ],
+   "axis_aligned": false,
+   "pose_taxonomy": {
+    "on_axis": 17,
+    "tilt_le_5": 7,
+    "mid_angle": 18
+   },
+   "mid_angle_examples": [
+    [
+     "hanger",
+     [
+      175,
+      6,
+      -133
+     ],
+     43
+    ],
+    [
+     "belt.005",
+     [
+      -90,
+      0,
+      -131
+     ],
+     41
+    ],
+    [
+     "cylinder storage",
+     [
+      0,
+      0,
+      -49
+     ],
+     41
+    ],
+    [
+     "GiftBag",
+     [
+      -90,
+      0,
+      -52
+     ],
+     38
+    ],
+    [
+     "belt.001",
+     [
+      -90,
+      0,
+      36
+     ],
+     36
+    ],
+    [
+     "coat cleaner",
+     [
+      -90,
+      -85,
+      -35
+     ],
+     35
+    ]
+   ],
+   "rot_base_is_a_tie": true,
+   "n_levels": 3,
+   "levels": [
+    {
+     "z": [
+      40,
+      790
+     ],
+     "span_mm": 750,
+     "n_objects": 13,
+     "fill": 0.74,
+     "headroom_to_next_mm": 2,
+     "names": [
+      "belt.001",
+      "belt.002",
+      "belt.003",
+      "belt.004",
+      "cloth",
+      "cylinder storage",
+      "man_shoes_brown.001",
+      "man_shoes_brown.002"
+     ]
+    },
+    {
+     "z": [
+      792,
+      2063
+     ],
+     "span_mm": 1270,
+     "n_objects": 25,
+     "fill": 0.92,
+     "headroom_to_next_mm": 70,
+     "names": [
+      "Cuffed Beanie - Designer",
+      "Fedora_hat_bw.001",
+      "GiftBag",
+      "belt.005",
+      "buttom metal.001",
+      "buttom metal.002",
+      "buttom metal.003",
+      "buttom metal.004"
+     ]
+    },
+    {
+     "z": [
+      2133,
+      2400
+     ],
+     "span_mm": 267,
+     "n_objects": 4,
+     "fill": 0.88,
+     "headroom_to_next_mm": null,
+     "names": [
+      "2cushin",
+      "Fabrig Storage",
+      "leather socks box",
+      "leather socks box.001"
+     ]
+    }
+   ]
+  },
+  "748845d0": {
+   "file": "748845d0-24a2-491f-9ac3-8e1dd49bcde3.probe.json",
+   "label": "Large Wardrobe",
+   "tier": "full_plan",
+   "why_in_corpus": "a 5.66 m fitted RUN — and the asset whose 810 mm carcass my own new MIN_DEPTH_RATIO refused at 0.1431 before the ratio was declared None",
+   "n_objects": 151,
+   "n_mesh": 130,
+   "n_materials": 54,
+   "n_images": 146,
+   "asset_bbox_mm": [
+    5663,
+    810,
+    2590
+   ],
+   "width_axis": "x",
+   "n_structure": 6,
+   "n_content": 124,
+   "structure_names": [
+    "Box",
+    "Drawer",
+    "Frame",
+    "Plane",
+    "Shel",
+    "back"
+   ],
+   "rot_census": [
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     124
+    ]
+   ],
+   "rot_base": [
+    0,
+    0,
+    0
+   ],
+   "residual_census": [
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     124
+    ]
+   ],
+   "axis_aligned": true,
+   "pose_taxonomy": {
+    "on_axis": 124,
+    "tilt_le_5": 0,
+    "mid_angle": 0
+   },
+   "mid_angle_examples": [],
+   "rot_base_is_a_tie": false,
+   "n_levels": 3,
+   "levels": [
+    {
+     "z": [
+      44,
+      370
+     ],
+     "span_mm": 326,
+     "n_objects": 5,
+     "fill": 0.29,
+     "headroom_to_next_mm": 112,
+     "names": [
+      "Box14",
+      "Box15",
+      "Cloth8",
+      "Women_s_shoes.004",
+      "Women_s_shoes002.003"
+     ]
+    },
+    {
+     "z": [
+      482,
+      2149
+     ],
+     "span_mm": 1667,
+     "n_objects": 114,
+     "fill": 0.99,
+     "headroom_to_next_mm": 81,
+     "names": [
+      "20",
+      "23",
+      "Bag1",
+      "Box1",
+      "Box10",
+      "Box11",
+      "Box12",
+      "Box2"
+     ]
+    },
+    {
+     "z": [
+      2230,
+      2525
+     ],
+     "span_mm": 294,
+     "n_objects": 5,
+     "fill": 0.3,
+     "headroom_to_next_mm": null,
+     "names": [
+      "Bag2",
+      "Box13",
+      "Wardrob.001",
+      "Wardrob.002",
+      "Wardrob.003"
+     ]
+    }
+   ]
+  },
+  "b19781fd": {
+   "file": "b19781fd-a05e-4611-81af-2fd9f088a0ac.probe.json",
+   "label": "Closet and coffee",
+   "tier": "full_plan",
+   "why_in_corpus": "a closet staged with non-clothing props",
+   "n_objects": 64,
+   "n_mesh": 61,
+   "n_materials": 30,
+   "n_images": 35,
+   "asset_bbox_mm": [
+    533,
+    2284,
+    2774
+   ],
+   "width_axis": "y",
+   "n_structure": 3,
+   "n_content": 58,
+   "structure_names": [
+    "1 Guarda roupa e Cafe_.061",
+    "1 Guarda roupa e Cafe_.068",
+    "1 Guarda roupa e Cafe_.072"
+   ],
+   "rot_census": [
+    [
+     [
+      90,
+      0,
+      -180
+     ],
+     18
+    ],
+    [
+     [
+      0,
+      0,
+      90
+     ],
+     10
+    ],
+    [
+     [
+      90,
+      0,
+      176
+     ],
+     5
+    ],
+    [
+     [
+      90,
+      0,
+      177
+     ],
+     3
+    ],
+    [
+     [
+      85,
+      0,
+      -177
+     ],
+     3
+    ],
+    [
+     [
+      0,
+      0,
+      50
+     ],
+     2
+    ],
+    [
+     [
+      0,
+      0,
+      -2
+     ],
+     2
+    ],
+    [
+     [
+      0,
+      0,
+      48
+     ],
+     2
+    ],
+    [
+     [
+      0,
+      0,
+      -29
+     ],
+     2
+    ],
+    [
+     [
+      90,
+      0,
+      172
+     ],
+     2
+    ],
+    [
+     [
+      90,
+      0,
+      -174
+     ],
+     2
+    ],
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     2
+    ],
+    [
+     [
+      0,
+      0,
+      -90
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      152
+     ],
+     1
+    ],
+    [
+     [
+      0,
+      0,
+      60
+     ],
+     1
+    ],
+    [
+     [
+      85,
+      0,
+      174
+     ],
+     1
+    ],
+    [
+     [
+      85,
+      0,
+      176
+     ],
+     1
+    ]
+   ],
+   "rot_base": [
+    90,
+    0,
+    -180
+   ],
+   "residual_census": [
+    [
+     [
+      0,
+      0,
+      0
+     ],
+     18
+    ],
+    [
+     [
+      -90,
+      0,
+      -90
+     ],
+     10
+    ],
+    [
+     [
+      0,
+      0,
+      -4
+     ],
+     5
+    ],
+    [
+     [
+      0,
+      0,
+      -3
+     ],
+     3
+    ],
+    [
+     [
+      -5,
+      0,
+      3
+     ],
+     3
+    ],
+    [
+     [
+      -90,
+      0,
+      -130
+     ],
+     2
+    ],
+    [
+     [
+      -90,
+      0,
+      178
+     ],
+     2
+    ],
+    [
+     [
+      -90,
+      0,
+      -132
+     ],
+     2
+    ],
+    [
+     [
+      -90,
+      0,
+      151
+     ],
+     2
+    ],
+    [
+     [
+      0,
+      0,
+      -8
+     ],
+     2
+    ],
+    [
+     [
+      0,
+      0,
+      6
+     ],
+     2
+    ],
+    [
+     [
+      -90,
+      0,
+      -180
+     ],
+     2
+    ],
+    [
+     [
+      -90,
+      0,
+      90
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -28
+     ],
+     1
+    ],
+    [
+     [
+      -90,
+      0,
+      -120
+     ],
+     1
+    ],
+    [
+     [
+      -5,
+      0,
+      -6
+     ],
+     1
+    ],
+    [
+     [
+      -5,
+      0,
+      -4
+     ],
+     1
+    ]
+   ],
+   "axis_aligned": false,
+   "pose_taxonomy": {
+    "on_axis": 31,
+    "tilt_le_5": 14,
+    "mid_angle": 13
+   },
+   "mid_angle_examples": [
+    [
+     "1 Guarda roupa e Cafe_.006",
+     [
+      -90,
+      0,
+      -132
+     ],
+     42
+    ],
+    [
+     "1 Guarda roupa e Cafe_.007",
+     [
+      -90,
+      0,
+      -132
+     ],
+     42
+    ],
+    [
+     "1 Guarda roupa e Cafe_.002",
+     [
+      -90,
+      0,
+      -130
+     ],
+     40
+    ],
+    [
+     "1 Guarda roupa e Cafe_.003",
+     [
+      -90,
+      0,
+      -130
+     ],
+     40
+    ],
+    [
+     "1 Guarda roupa e Cafe_.021",
+     [
+      -90,
+      0,
+      -120
+     ],
+     30
+    ],
+    [
+     "1 Guarda roupa e Cafe_.008",
+     [
+      -90,
+      0,
+      151
+     ],
+     29
+    ]
+   ],
+   "rot_base_is_a_tie": false,
+   "n_levels": 4,
+   "levels": [
+    {
+     "z": [
+      28,
+      856
+     ],
+     "span_mm": 829,
+     "n_objects": 1,
+     "fill": 0.21,
+     "headroom_to_next_mm": 65,
+     "names": [
+      "1 Guarda roupa e Cafe_.058"
+     ]
+    },
+    {
+     "z": [
+      921,
+      1166
+     ],
+     "span_mm": 245,
+     "n_objects": 49,
+     "fill": 0.22,
+     "headroom_to_next_mm": 157,
+     "names": [
+      "1 Guarda roupa e Cafe_.002",
+      "1 Guarda roupa e Cafe_.003",
+      "1 Guarda roupa e Cafe_.004",
+      "1 Guarda roupa e Cafe_.005",
+      "1 Guarda roupa e Cafe_.006",
+      "1 Guarda roupa e Cafe_.007",
+      "1 Guarda roupa e Cafe_.008",
+      "1 Guarda roupa e Cafe_.009"
+     ]
+    },
+    {
+     "z": [
+      1323,
+      1623
+     ],
+     "span_mm": 300,
+     "n_objects": 1,
+     "fill": 0.2,
+     "headroom_to_next_mm": 116,
+     "names": [
+      "1 Guarda roupa e Cafe_.065"
+     ]
+    },
+    {
+     "z": [
+      1738,
+      2390
+     ],
+     "span_mm": 652,
+     "n_objects": 7,
+     "fill": 0.92,
+     "headroom_to_next_mm": null,
+     "names": [
+      "1 Guarda roupa e Cafe_.016",
+      "1 Guarda roupa e Cafe_.018",
+      "1 Guarda roupa e Cafe_.019",
+      "1 Guarda roupa e Cafe_.020",
+      "1 Guarda roupa e Cafe_.021",
+      "1 Guarda roupa e Cafe_.059",
+      "1 Guarda roupa e Cafe_.074"
+     ]
+    }
+   ]
+  }
+ },
+ "ours": {
+  "prefix": "mill__style_foldacq",
+  "n": 31,
+  "rot_census": [
+   [
+    [
+     0,
+     0,
+     0
+    ],
+    31
+   ]
+  ],
+  "axis_aligned": true,
+  "verts_each": [
+   17922,
+   22018,
+   47564,
+   47565,
+   47566,
+   47567
+  ],
+  "dims_each": [
+   [
+    206,
+    212,
+    55
+   ],
+   [
+    208,
+    221,
+    52
+   ],
+   [
+    212,
+    206,
+    55
+   ],
+   [
+    213,
+    219,
+    55
+   ],
+   [
+    214,
+    237,
+    50
+   ],
+   [
+    219,
+    213,
+    55
+   ],
+   [
+    221,
+    208,
+    52
+   ],
+   [
+    237,
+    214,
+    50
+   ],
+   [
+    282,
+    320,
+    104
+   ],
+   [
+    320,
+    282,
+    104
+   ],
+   [
+    352,
+    394,
+    193
+   ],
+   [
+    394,
+    352,
+    193
+   ]
+  ],
+  "note": "the p2r91 scene dump carries no world_bbox_mm, so levels and fill cannot be computed for ours from this dump — only pose and size"
+ }
+}

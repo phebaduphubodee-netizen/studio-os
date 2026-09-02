@@ -199,12 +199,16 @@
     "n": 6,
     "fenced": false
    },
-   "deliverable": "note 2026-09-07-wardrobe.md",
+   "deliverable": "note 2026-09-02-wardrobe.md",
    "exam": "โน้ตผ่าน verifier + grammar การจัดช่อง (จำนวน/ท่าวาง/ความว่าง) เป็นเลขจาก loc/rot จริงของ asset ที่โหลด — ให้รอบ contents ของเลนใช้",
-   "status": "pending",
+   "status": "done",
    "order": 16,
    "suggested_date": "2026-09-07",
-   "deadline": "2026-09-21"
+   "deadline": "2026-09-21",
+   "judged_by": "verifier-agent",
+   "done_date": "2026-09-02",
+   "exam_evidence": "knowledge/_inbox/model-study/2026-09-02-wardrobe.md,qa/blenderkit-study-wardrobe.json,pipeline/scripts/wardrobe_study_derive.py,pipeline/scripts/study_probe_read.py,qa/blenderkit-fetch-log.json",
+   "done_note": "4/4 full_plan probed from .blend (two failed GLB export = exit 2 could-not-run, not a failed asset). Exam answered with numbers: POSE 273 content objects censused (on_axis 221 / tilt<=5 21 / mid_angle 31); LEVEL 15 levels across 4 sets; FILL bimodal 0.20-0.30 vs 0.74-0.99, median 0.77; HEADROOM median 112 mm. VERIFIED: 22 findings filed by 3 opposing lenses, 13 confirmed by 2 independent refuters each. THE HEADLINE CLAIM WAS REFUTED BY MY OWN DATA — I wrote 'no mid-angle rotations exist' while 18/42 (43%) and 13/58 (22%) of two sets sit >5 deg off every multiple of 90, and my own table printed a +36 row on the same line. The derive script now COMPUTES the pose taxonomy instead of letting the note assert it. Two more real bugs fixed: FILL measured the x axis on a set that runs along y (reported DEPTH 0.79 where WIDTH is 0.21), and two full-height sheets at 1.0%/3.8% of volume slipped the content filter and bridged 748845d0's three shelves into one level (FULL_HEIGHT_FRAC added). Side effect on the instrument: MIN_DEPTH_RATIO['wardrobe'] was written 0.15 this hour and refused a real 5663x810x2590 fitted run at 0.1431 within minutes; declared None with the reason recorded rather than nudged (R9b), and what stays unguarded (a flat facade wardrobe) is written down."
   },
   {
    "id": "STUDY-D17-cushions",
