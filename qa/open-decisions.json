@@ -7,6 +7,29 @@
  "_the_cost_of_removing_the_rung": "R3 existed because builders catch only 30-50% of their own defects. Taking the owner out does not repeal the statistic — it moves the load onto C2 (fresh-context local) and C3 (Gemini), which are now the ONLY independent rungs between a defect and a delivered frame. A round that skips them is no longer cutting a corner; it is running with nothing.",
  "decisions": [
   {
+   "id": "D-196",
+   "unit": "DELIV-001",
+   "subject": "owner-confirms-the-foot-bench-reads-too-big",
+   "decided_round": 97,
+   "decided_date": "2026-09-02",
+   "decided_by": "owner",
+   "obeys": "ORD-2026-09-01-direction-after-audit",
+   "question": "ผมถามพี่ตรง ๆ ว่า 'ม้านั่งใหญ่เกินไปจริงไหม' — เพราะ panel_diff วัดได้ว่ามันคือช่องว่างที่ใหญ่ที่สุดระหว่างเรากับงานส่งจริง (เรา 83% · งานส่งจริง 29% · +54) และผมยังไม่เคยแตะมันเลยสักรอบ",
+   "in_effect": "**พี่ตอบว่า 'จริง' — ม้านั่งใหญ่เกินไป** และแถวนี้ล็อกกับพี่ ผมกลับเองไม่ได้ (R13) · วัดยืนยันหลังได้คำตอบ: ม้านั่งกินพิกเซล 301,915 = **51.4% ของพื้นที่พิกเซลเตียง** และ 6.99% ของทั้งเฟรม ทั้งที่ในแปลนมันคือ 56% ของความกว้างเตียงเท่านั้น · **และไม่ใช่ผลของกล้อง**: บนกล้อง A (on-axis) อัตราส่วนคือ 0.536 บนกล้อง B 0.514 — เท่ากัน ดังนั้นเปลี่ยนกล้องไม่ช่วย · **แต่ข้อ 'เยื้องแกน' ของ C2 (ข้อ 20) เป็นผลของกล้องล้วน ๆ และหักล้างด้วยการวัด**: แปลนวางจุดกึ่งกลางม้านั่งกับเตียงตรงกันเป๊ะที่ y=1126 บนกล้อง A เยื้อง +4 px (0.3% ของความกว้างเตียง) บนกล้อง B เยื้อง +85 px (6.2%) — เป็นราคาของการเอียง 6.8° ที่ A/B ยังไม่เคยตี",
+   "in_effect_assert": [
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "P2r-40",
+     "why": "คำของพี่ต้องมีงานรออยู่จริง ไม่ใช่แค่ถูกบันทึก"
+    }
+   ],
+   "reverse_by": "พี่ดูเฟรมใหม่แล้วบอกว่าเล็กไป -> คืนขนาด/รุ่นเดิม (git) · ถ้าพี่บอกว่าที่จริงมันโอเคอยู่แล้ว -> ลบแถวนี้ แล้ว P2r-40 กลับไปเริ่มที่หัวเตียงแทน",
+   "where": "qa/deliverable-plan.json, projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json",
+   "because": "R13 — คำสั่งพี่คือแถว ไม่ใช่ประโยค · และ R12 บังคับให้ประกาศข้อจำกัดตรงนี้: **แปลนวาดม้านั่งไว้เอง** SR-08 = 504x1008 มม. ink-matched ตั้งแต่ element 3 ดังนั้นการย่อ footprint คือการขัดแบบของลูกค้า ไม่ใช่การแก้ของเรา — คันโยกที่ไม่ขัดแบบคือ **รุ่น/ทรง** (ตอนนี้เป็นกล่องบุนวมไม่มีขา ตาเลยอ่านเป็นมวลตัน) และความสูงซึ่งแบบไม่ได้วาด",
+   "owner_override": "จริง",
+   "override_date": "2026-09-02"
+  },
+  {
    "id": "D-195",
    "unit": "DELIV-001",
    "subject": "blackout-colour-was-chosen-while-it-was-invisible",
