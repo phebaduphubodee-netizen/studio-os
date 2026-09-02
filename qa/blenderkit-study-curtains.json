@@ -1,0 +1,4725 @@
+{
+ "_recipe": "STUDY-D12 (2026-09-02) curtain study — the reproduction recipe for every number in",
+ "_ours_code": {
+  "curtains.py TOP_EMBED_M": 0.03,
+  "curtains.py HEM_CLEAR_M": 0.015,
+  "casement_sheers.py ROD_OFFSET_MM": 50.0,
+  "casement_sheers.py HEM_ABOVE_SILL_MM": 15.0,
+  "casement_sheers.py FULLNESS": 1.8
+ },
+ "sets": {
+  "b72cedda": {
+   "file": "b72cedda-ff26-4c02-8ce1-e991a2127f62.probe.json",
+   "label": "Curtains on rod",
+   "kind": "drape+sheer",
+   "source": "blend",
+   "n_objects": 5,
+   "n_mesh": 4,
+   "n_images": 11,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     11
+    ]
+   ],
+   "set_z": [
+    -25,
+    3277
+   ],
+   "hardware_objects": 1,
+   "hardware": [
+    {
+     "name": "rod",
+     "dims": [
+      3533,
+      232,
+      60
+     ],
+     "z": [
+      3182,
+      3242
+     ],
+     "x": [
+      -1839,
+      1694
+     ],
+     "verts": 840,
+     "polys": 864,
+     "quads": 608,
+     "tris": 192,
+     "area_m2": 0.693,
+     "v_per_m2": 1212,
+     "surplus_NOT_FOR_HANGING": 0.85,
+     "edge_proxy_mm": 30.0,
+     "mods": [],
+     "mats": {
+      "rod.001": {
+       "sheen": 0.0,
+       "rough": 0.838,
+       "base": "[0.0087, 0.0087, 0.0087, 1.0]",
+       "normal": "NORMALMAP<None>",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 95
+    }
+   ],
+   "fabric": [
+    {
+     "name": "CURTAIN_right",
+     "dims": [
+      1406,
+      162,
+      3301
+     ],
+     "z": [
+      -24,
+      3277
+     ],
+     "x": [
+      231,
+      1637
+     ],
+     "verts": 111708,
+     "polys": 111360,
+     "quads": 111360,
+     "tris": 0,
+     "area_m2": 6.097,
+     "v_per_m2": 18322,
+     "surplus_NOT_FOR_HANGING": 26.75,
+     "edge_proxy_mm": 7.4,
+     "mods": [
+      "SOLIDIFY"
+     ],
+     "mats": {
+      "CURTAIN.001": {
+       "sheen": 0.0,
+       "rough": "IMG:CURTAIN_Roughness.jpg.001",
+       "base": "IMG:CURTAIN_BaseColor.jpg.001",
+       "normal": "NORMALMAP<IMG:CURTAIN_Normal.jpg.001>",
+       "principled": true
+      }
+     },
+     "drop": 3301,
+     "x_span": 1406,
+     "fullness": 1.31,
+     "hem_above_floor": 2,
+     "head_over_rod": 35
+    },
+    {
+     "name": "CURTAIN_left",
+     "dims": [
+      1496,
+      213,
+      3299
+     ],
+     "z": [
+      -25,
+      3274
+     ],
+     "x": [
+      -1733,
+      -237
+     ],
+     "verts": 111708,
+     "polys": 111360,
+     "quads": 111360,
+     "tris": 0,
+     "area_m2": 6.15,
+     "v_per_m2": 18163,
+     "surplus_NOT_FOR_HANGING": 19.28,
+     "edge_proxy_mm": 7.4,
+     "mods": [
+      "SOLIDIFY"
+     ],
+     "mats": {
+      "CURTAIN.001": {
+       "sheen": 0.0,
+       "rough": "IMG:CURTAIN_Roughness.jpg.001",
+       "base": "IMG:CURTAIN_BaseColor.jpg.001",
+       "normal": "NORMALMAP<IMG:CURTAIN_Normal.jpg.001>",
+       "principled": true
+      }
+     },
+     "drop": 3299,
+     "x_span": 1496,
+     "fullness": 1.25,
+     "hem_above_floor": 0,
+     "head_over_rod": 31
+    },
+    {
+     "name": "SHEER",
+     "dims": [
+      1908,
+      106,
+      3261
+     ],
+     "z": [
+      9,
+      3270
+     ],
+     "x": [
+      -1163,
+      745
+     ],
+     "verts": 111708,
+     "polys": 111360,
+     "quads": 111360,
+     "tris": 0,
+     "area_m2": 6.77,
+     "v_per_m2": 16500,
+     "surplus_NOT_FOR_HANGING": 33.51,
+     "edge_proxy_mm": 7.8,
+     "mods": [],
+     "mats": {
+      "sheer.001": {
+       "sheen": 0.0,
+       "rough": "IMG:SHEER_Roughness.jpg",
+       "base": "IMG:SHEER_BaseColor.jpg",
+       "normal": "NORMALMAP<IMG:SHEER_Normal.jpg>",
+       "principled": true
+      }
+     },
+     "drop": 3261,
+     "x_span": 1908,
+     "fullness": 1.09,
+     "hem_above_floor": 35,
+     "head_over_rod": 28
+    }
+   ],
+   "all_mesh_names": [
+    "CURTAIN_left",
+    "CURTAIN_right",
+    "SHEER",
+    "rod"
+   ],
+   "fabric_x_span": 3370,
+   "hardware_x_span": 3533,
+   "rod_overhang_per_side": 82
+  },
+  "06fd1db1": {
+   "file": "06fd1db1-cd52-41d1-943f-8666d97f5aee.probe.json",
+   "label": "Simple curtains with rod (free)",
+   "kind": "drape",
+   "source": "blend",
+   "n_objects": 3,
+   "n_mesh": 2,
+   "n_images": 8,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     3
+    ],
+    [
+     1024,
+     1024,
+     5
+    ]
+   ],
+   "set_z": [
+    0,
+    2380
+   ],
+   "hardware_objects": 1,
+   "hardware": [
+    {
+     "name": "Rod",
+     "dims": [
+      2556,
+      115,
+      58
+     ],
+     "z": [
+      2322,
+      2380
+     ],
+     "x": [
+      -1268,
+      1287
+     ],
+     "verts": 15530,
+     "polys": 15454,
+     "quads": 15386,
+     "tris": 64,
+     "area_m2": 0.204,
+     "v_per_m2": 76166,
+     "surplus_NOT_FOR_HANGING": 0.69,
+     "edge_proxy_mm": 3.6,
+     "mods": [],
+     "mats": {
+      "Dirty metal": {
+       "sheen": 0.0,
+       "rough": "IMG:metal03_roughness.jpg",
+       "base": "IMG:metal03_diffuse.jpg",
+       "normal": "NORMALMAP<COMBXYZ<SEPXYZ<IMG:metal03_nor",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 58
+    }
+   ],
+   "fabric": [
+    {
+     "name": "Curtain",
+     "dims": [
+      2400,
+      178,
+      2346
+     ],
+     "z": [
+      0,
+      2347
+     ],
+     "x": [
+      -1199,
+      1201
+     ],
+     "verts": 16806,
+     "polys": 17270,
+     "quads": 15456,
+     "tris": 1814,
+     "area_m2": 5.272,
+     "v_per_m2": 3188,
+     "surplus_NOT_FOR_HANGING": 12.32,
+     "edge_proxy_mm": 17.9,
+     "mods": [],
+     "mats": {
+      "Fabric": {
+       "sheen": 0.0,
+       "rough": "INVERT<IMG:grey_wool_fabric_26_05_glossiness.jpg.001>",
+       "base": "MIX<HUE_SAT<IMG:beige_wool_fabric_26_19_",
+       "normal": "NORMALMAP<COMBXYZ<SEPXYZ<IMG:beige_wool_",
+       "principled": true
+      }
+     },
+     "drop": 2346,
+     "x_span": 2400,
+     "fullness": 0.94,
+     "hem_above_floor": 0,
+     "head_over_rod": -34
+    }
+   ],
+   "all_mesh_names": [
+    "Curtain",
+    "Rod"
+   ],
+   "fabric_x_span": 2400,
+   "hardware_x_span": 2556,
+   "rod_overhang_per_side": 78
+  },
+  "16d7a3a5": {
+   "file": "16d7a3a5-ce4b-4b1e-b21e-e85fd713c47a.probe.json",
+   "label": "Light linen curtains",
+   "kind": "drape",
+   "source": "blend",
+   "n_objects": 4,
+   "n_mesh": 3,
+   "n_images": 6,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     6
+    ]
+   ],
+   "set_z": [
+    -24,
+    2879
+   ],
+   "hardware_objects": 1,
+   "hardware": [
+    {
+     "name": "rod",
+     "dims": [
+      3295,
+      225,
+      75
+     ],
+     "z": [
+      2786,
+      2860
+     ],
+     "x": [
+      -1695,
+      1600
+     ],
+     "verts": 630,
+     "polys": 640,
+     "quads": 416,
+     "tris": 160,
+     "area_m2": 0.439,
+     "v_per_m2": 1434,
+     "surplus_NOT_FOR_HANGING": 0.59,
+     "edge_proxy_mm": 28.0,
+     "mods": [],
+     "mats": {
+      "rod": {
+       "sheen": 0.0,
+       "rough": 0.7725,
+       "base": "[0.0125, 0.0125, 0.0125, 1.0]",
+       "normal": "NORMALMAP<None>",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 93
+    }
+   ],
+   "fabric": [
+    {
+     "name": "curtainleft",
+     "dims": [
+      1429,
+      170,
+      2876
+     ],
+     "z": [
+      3,
+      2879
+     ],
+     "x": [
+      -1478,
+      -48
+     ],
+     "verts": 159191,
+     "polys": 157536,
+     "quads": 157536,
+     "tris": 0,
+     "area_m2": 5.95,
+     "v_per_m2": 26753,
+     "surplus_NOT_FOR_HANGING": 24.53,
+     "edge_proxy_mm": 6.1,
+     "mods": [
+      "SOLIDIFY"
+     ],
+     "mats": {
+      "curtain linen": {
+       "sheen": 0.0,
+       "rough": "IMG:DefaultMaterial_Roughness.jpg",
+       "base": "IMG:DefaultMaterial_BaseColor.jpg",
+       "normal": "NORMALMAP<IMG:DefaultMaterial_Normal.jpg",
+       "principled": true
+      }
+     },
+     "drop": 2876,
+     "x_span": 1429,
+     "fullness": 1.45,
+     "hem_above_floor": 27,
+     "head_over_rod": 18
+    },
+    {
+     "name": "curtain_right_2",
+     "dims": [
+      1463,
+      255,
+      2898
+     ],
+     "z": [
+      -24,
+      2874
+     ],
+     "x": [
+      -29,
+      1434
+     ],
+     "verts": 159191,
+     "polys": 157536,
+     "quads": 157536,
+     "tris": 0,
+     "area_m2": 5.689,
+     "v_per_m2": 27984,
+     "surplus_NOT_FOR_HANGING": 15.27,
+     "edge_proxy_mm": 6.0,
+     "mods": [
+      "SOLIDIFY"
+     ],
+     "mats": {
+      "curtain linen": {
+       "sheen": 0.0,
+       "rough": "IMG:DefaultMaterial_Roughness.jpg",
+       "base": "IMG:DefaultMaterial_BaseColor.jpg",
+       "normal": "NORMALMAP<IMG:DefaultMaterial_Normal.jpg",
+       "principled": true
+      }
+     },
+     "drop": 2898,
+     "x_span": 1464,
+     "fullness": 1.34,
+     "hem_above_floor": 0,
+     "head_over_rod": 14
+    }
+   ],
+   "all_mesh_names": [
+    "curtain_right_2",
+    "curtainleft",
+    "rod"
+   ],
+   "fabric_x_span": 2912,
+   "hardware_x_span": 3295,
+   "rod_overhang_per_side": 192
+  },
+  "dc081fef": {
+   "file": "dc081fef-8f2a-48a4-8bec-2c361f9f474e.probe.json",
+   "label": "Tulle Curtain w Decorative Edging",
+   "kind": "sheer+valance",
+   "source": "blend",
+   "n_objects": 7,
+   "n_mesh": 7,
+   "n_images": 0,
+   "image_sizes": [],
+   "set_z": [
+    0,
+    2996
+   ],
+   "hardware_objects": 2,
+   "hardware": [
+    {
+     "name": "Tulle Curtain w Decorative Edging 4",
+     "dims": [
+      1177,
+      30,
+      30
+     ],
+     "z": [
+      2934,
+      2964
+     ],
+     "x": [
+      -1726,
+      -549
+     ],
+     "verts": 254,
+     "polys": 270,
+     "quads": 234,
+     "tris": 36,
+     "area_m2": 0.114,
+     "v_per_m2": 2237,
+     "surplus_NOT_FOR_HANGING": 3.16,
+     "edge_proxy_mm": 21.2,
+     "mods": [],
+     "mats": {
+      "Tulle1": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture Brown": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[0.025, 0.0162, 0.0125, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Tulle Curtain w Decorative Edging 061-004": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 63
+    },
+    {
+     "name": "Tulle Curtain w Decorative Edging 5",
+     "dims": [
+      1177,
+      30,
+      30
+     ],
+     "z": [
+      2934,
+      2964
+     ],
+     "x": [
+      549,
+      1726
+     ],
+     "verts": 254,
+     "polys": 270,
+     "quads": 234,
+     "tris": 36,
+     "area_m2": 0.114,
+     "v_per_m2": 2238,
+     "surplus_NOT_FOR_HANGING": 3.16,
+     "edge_proxy_mm": 21.2,
+     "mods": [],
+     "mats": {
+      "Tulle1": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture Brown": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[0.025, 0.0162, 0.0125, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Tulle Curtain w Decorative Edging 061-004": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 63
+    }
+   ],
+   "fabric": [
+    {
+     "name": "Tulle Curtain w Decorative Edging",
+     "dims": [
+      1139,
+      324,
+      2985
+     ],
+     "z": [
+      0,
+      2985
+     ],
+     "x": [
+      576,
+      1714
+     ],
+     "verts": 55056,
+     "polys": 54127,
+     "quads": 54112,
+     "tris": 15,
+     "area_m2": 8.693,
+     "v_per_m2": 6333,
+     "surplus_NOT_FOR_HANGING": 23.55,
+     "edge_proxy_mm": 12.7,
+     "mods": [],
+     "mats": {
+      "Tulle1": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture Brown": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[0.025, 0.0162, 0.0125, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Tulle Curtain w Decorative Edging 061-004": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2985,
+     "x_span": 1139,
+     "fullness": 2.56,
+     "hem_above_floor": 0,
+     "head_over_rod": 21
+    },
+    {
+     "name": "Tulle Curtain w Decorative Edging 2",
+     "dims": [
+      1583,
+      120,
+      1364
+     ],
+     "z": [
+      1632,
+      2996
+     ],
+     "x": [
+      30,
+      1613
+     ],
+     "verts": 92731,
+     "polys": 91084,
+     "quads": 91084,
+     "tris": 0,
+     "area_m2": 4.756,
+     "v_per_m2": 19498,
+     "surplus_NOT_FOR_HANGING": 24.93,
+     "edge_proxy_mm": 7.2,
+     "mods": [],
+     "mats": {
+      "Tulle1": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture Brown": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[0.025, 0.0162, 0.0125, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Tulle Curtain w Decorative Edging 061-004": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1364,
+     "x_span": 1584,
+     "fullness": 2.2,
+     "hem_above_floor": 1632,
+     "head_over_rod": 33
+    },
+    {
+     "name": "Tulle Curtain w Decorative Edging 3",
+     "dims": [
+      3171,
+      154,
+      2894
+     ],
+     "z": [
+      2,
+      2896
+     ],
+     "x": [
+      -1537,
+      1634
+     ],
+     "verts": 46441,
+     "polys": 45703,
+     "quads": 45026,
+     "tris": 677,
+     "area_m2": 15.156,
+     "v_per_m2": 3064,
+     "surplus_NOT_FOR_HANGING": 31.14,
+     "edge_proxy_mm": 18.3,
+     "mods": [],
+     "mats": {
+      "Tulle1": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture Brown": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[0.025, 0.0162, 0.0125, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Tulle Curtain w Decorative Edging 061-004": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2894,
+     "x_span": 3171,
+     "fullness": 1.65,
+     "hem_above_floor": 2,
+     "head_over_rod": -67
+    },
+    {
+     "name": "Tulle Curtain w Decorative Edging 6",
+     "dims": [
+      1583,
+      120,
+      1364
+     ],
+     "z": [
+      1632,
+      2996
+     ],
+     "x": [
+      -1554,
+      29
+     ],
+     "verts": 92731,
+     "polys": 91084,
+     "quads": 91084,
+     "tris": 0,
+     "area_m2": 4.756,
+     "v_per_m2": 19498,
+     "surplus_NOT_FOR_HANGING": 24.93,
+     "edge_proxy_mm": 7.2,
+     "mods": [],
+     "mats": {
+      "Tulle1": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture Brown": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[0.025, 0.0162, 0.0125, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Tulle Curtain w Decorative Edging 061-004": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1364,
+     "x_span": 1584,
+     "fullness": 2.2,
+     "hem_above_floor": 1632,
+     "head_over_rod": 33
+    },
+    {
+     "name": "Tulle Curtain w Decorative Edging 7",
+     "dims": [
+      1116,
+      365,
+      2971
+     ],
+     "z": [
+      1,
+      2972
+     ],
+     "x": [
+      -1701,
+      -585
+     ],
+     "verts": 60881,
+     "polys": 59029,
+     "quads": 59028,
+     "tris": 1,
+     "area_m2": 9.673,
+     "v_per_m2": 6294,
+     "surplus_NOT_FOR_HANGING": 23.72,
+     "edge_proxy_mm": 12.8,
+     "mods": [],
+     "mats": {
+      "Tulle1": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture Brown": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[0.025, 0.0162, 0.0125, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Tulle Curtain w Decorative Edging 061-004": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2971,
+     "x_span": 1116,
+     "fullness": 2.92,
+     "hem_above_floor": 1,
+     "head_over_rod": 8
+    }
+   ],
+   "all_mesh_names": [
+    "Tulle Curtain w Decorative Edging",
+    "Tulle Curtain w Decorative Edging 2",
+    "Tulle Curtain w Decorative Edging 3",
+    "Tulle Curtain w Decorative Edging 4",
+    "Tulle Curtain w Decorative Edging 5",
+    "Tulle Curtain w Decorative Edging 6",
+    "Tulle Curtain w Decorative Edging 7"
+   ],
+   "fabric_x_span": 3415,
+   "hardware_x_span": 3453,
+   "rod_overhang_per_side": 19
+  },
+  "e30d9431": {
+   "file": "e30d9431-cf5a-459e-81f0-e083b0e7a3eb.probe.json",
+   "label": "Curtains with sheer",
+   "kind": "drape+sheer",
+   "source": "blend",
+   "n_objects": 4,
+   "n_mesh": 3,
+   "n_images": 10,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     10
+    ]
+   ],
+   "set_z": [
+    0,
+    3194
+   ],
+   "hardware_objects": 0,
+   "hardware": [],
+   "fabric": [
+    {
+     "name": "curtain_A",
+     "dims": [
+      1827,
+      259,
+      3193
+     ],
+     "z": [
+      0,
+      3192
+     ],
+     "x": [
+      319,
+      2146
+     ],
+     "verts": 140598,
+     "polys": 140276,
+     "quads": 140276,
+     "tris": 0,
+     "area_m2": 21.386,
+     "v_per_m2": 6574,
+     "surplus_NOT_FOR_HANGING": 45.19,
+     "edge_proxy_mm": 12.3,
+     "mods": [],
+     "mats": {
+      "curtain": {
+       "sheen": 0.0,
+       "rough": "IMG:curtain_Roughness.jpg",
+       "base": "IMG:curtain_BaseColor.jpg",
+       "normal": "NORMALMAP<IMG:curtain_Normal.jpg>",
+       "principled": true
+      }
+     },
+     "drop": 3193,
+     "x_span": 1827,
+     "fullness": 3.67,
+     "hem_above_floor": 0
+    },
+    {
+     "name": "curtainB",
+     "dims": [
+      1848,
+      248,
+      3193
+     ],
+     "z": [
+      0,
+      3193
+     ],
+     "x": [
+      -2196,
+      -349
+     ],
+     "verts": 140598,
+     "polys": 140276,
+     "quads": 140276,
+     "tris": 0,
+     "area_m2": 21.361,
+     "v_per_m2": 6582,
+     "surplus_NOT_FOR_HANGING": 46.71,
+     "edge_proxy_mm": 12.3,
+     "mods": [],
+     "mats": {
+      "curtain": {
+       "sheen": 0.0,
+       "rough": "IMG:curtain_Roughness.jpg",
+       "base": "IMG:curtain_BaseColor.jpg",
+       "normal": "NORMALMAP<IMG:curtain_Normal.jpg>",
+       "principled": true
+      }
+     },
+     "drop": 3193,
+     "x_span": 1848,
+     "fullness": 3.62,
+     "hem_above_floor": 0
+    },
+    {
+     "name": "sheer",
+     "dims": [
+      2525,
+      174,
+      3185
+     ],
+     "z": [
+      10,
+      3194
+     ],
+     "x": [
+      -1218,
+      1307
+     ],
+     "verts": 140598,
+     "polys": 140276,
+     "quads": 140276,
+     "tris": 0,
+     "area_m2": 21.229,
+     "v_per_m2": 6623,
+     "surplus_NOT_FOR_HANGING": 48.4,
+     "edge_proxy_mm": 12.3,
+     "mods": [],
+     "mats": {
+      "sheer": {
+       "sheen": 0.0,
+       "rough": "IMG:sheer_Roughness.jpg",
+       "base": "IMG:sheer_BaseColor.jpg",
+       "normal": "NORMALMAP<IMG:sheer_Normal.jpg>",
+       "principled": true
+      }
+     },
+     "drop": 3185,
+     "x_span": 2525,
+     "fullness": 2.64,
+     "hem_above_floor": 10
+    }
+   ],
+   "all_mesh_names": [
+    "curtainB",
+    "curtain_A",
+    "sheer"
+   ]
+  },
+  "caddb0d4": {
+   "file": "caddb0d4-ac25-4d78-8dfa-d379b96507a7.probe.json",
+   "label": "Silk and Wooden String Curtain",
+   "kind": "drape+string",
+   "source": "blend",
+   "n_objects": 5,
+   "n_mesh": 5,
+   "n_images": 2,
+   "image_sizes": [
+    [
+     2400,
+     4800,
+     2
+    ]
+   ],
+   "set_z": [
+    0,
+    2997
+   ],
+   "hardware_objects": 0,
+   "hardware": [],
+   "fabric": [
+    {
+     "name": "Silk and Wooden String Curtain",
+     "dims": [
+      1472,
+      78,
+      2990
+     ],
+     "z": [
+      1,
+      2991
+     ],
+     "x": [
+      -1471,
+      0
+     ],
+     "verts": 24562,
+     "polys": 22500,
+     "quads": 22478,
+     "tris": 22,
+     "area_m2": 12.041,
+     "v_per_m2": 2040,
+     "surplus_NOT_FOR_HANGING": 105.3,
+     "edge_proxy_mm": 23.1,
+     "mods": [],
+     "mats": {
+      "Tulle": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Wool1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Wool2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      }
+     },
+     "drop": 2990,
+     "x_span": 1472,
+     "fullness": 2.74,
+     "hem_above_floor": 1
+    },
+    {
+     "name": "Silk and Wooden String Curtain 1",
+     "dims": [
+      1052,
+      137,
+      2994
+     ],
+     "z": [
+      0,
+      2994
+     ],
+     "x": [
+      -1480,
+      -428
+     ],
+     "verts": 83576,
+     "polys": 82992,
+     "quads": 82992,
+     "tris": 0,
+     "area_m2": 4.946,
+     "v_per_m2": 16898,
+     "surplus_NOT_FOR_HANGING": 34.43,
+     "edge_proxy_mm": 7.7,
+     "mods": [],
+     "mats": {
+      "Tulle": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Wool1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Wool2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      }
+     },
+     "drop": 2994,
+     "x_span": 1052,
+     "fullness": 1.57,
+     "hem_above_floor": 0
+    },
+    {
+     "name": "Silk and Wooden String Curtain 2",
+     "dims": [
+      851,
+      15,
+      2975
+     ],
+     "z": [
+      5,
+      2980
+     ],
+     "x": [
+      -418,
+      433
+     ],
+     "verts": 1303704,
+     "polys": 1278252,
+     "quads": 1278252,
+     "tris": 0,
+     "area_m2": 5.073,
+     "v_per_m2": 257003,
+     "surplus_NOT_FOR_HANGING": 405.5,
+     "edge_proxy_mm": 2.0,
+     "mods": [],
+     "mats": {
+      "Wood": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "IMG:Silk and Wooden String Curtain 056-0",
+       "normal": "NORMALMAP<IMG:Silk and Wooden String Cur",
+       "principled": true
+      },
+      "Silk and Wooden String Curtain 056-007": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2975,
+     "x_span": 851,
+     "fullness": 2.0,
+     "hem_above_floor": 5
+    },
+    {
+     "name": "Silk and Wooden String Curtain 3",
+     "dims": [
+      1052,
+      137,
+      2994
+     ],
+     "z": [
+      0,
+      2994
+     ],
+     "x": [
+      428,
+      1480
+     ],
+     "verts": 83576,
+     "polys": 82992,
+     "quads": 82992,
+     "tris": 0,
+     "area_m2": 4.946,
+     "v_per_m2": 16898,
+     "surplus_NOT_FOR_HANGING": 34.43,
+     "edge_proxy_mm": 7.7,
+     "mods": [],
+     "mats": {
+      "Tulle": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Wool1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Wool2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      }
+     },
+     "drop": 2994,
+     "x_span": 1052,
+     "fullness": 1.57,
+     "hem_above_floor": 0
+    },
+    {
+     "name": "Silk and Wooden String Curtain 4",
+     "dims": [
+      1472,
+      78,
+      2994
+     ],
+     "z": [
+      4,
+      2997
+     ],
+     "x": [
+      -1,
+      1471
+     ],
+     "verts": 24562,
+     "polys": 22500,
+     "quads": 22478,
+     "tris": 22,
+     "area_m2": 12.042,
+     "v_per_m2": 2040,
+     "surplus_NOT_FOR_HANGING": 105.31,
+     "edge_proxy_mm": 23.1,
+     "mods": [],
+     "mats": {
+      "Tulle": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.6, 0.6, 0.6, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Wool1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Wool2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      }
+     },
+     "drop": 2994,
+     "x_span": 1472,
+     "fullness": 2.73,
+     "hem_above_floor": 4
+    }
+   ],
+   "all_mesh_names": [
+    "Silk and Wooden String Curtain",
+    "Silk and Wooden String Curtain 1",
+    "Silk and Wooden String Curtain 2",
+    "Silk and Wooden String Curtain 3",
+    "Silk and Wooden String Curtain 4"
+   ]
+  },
+  "ee15c366": {
+   "file": "ee15c366-d4da-459e-a0fc-9f4cd074d4cf.probe.json",
+   "label": "Roman Curtain",
+   "kind": "roman",
+   "source": "blend",
+   "n_objects": 4,
+   "n_mesh": 4,
+   "n_images": 0,
+   "image_sizes": [],
+   "set_z": [
+    34,
+    2516
+   ],
+   "hardware_objects": 0,
+   "hardware": [],
+   "fabric": [
+    {
+     "name": "Roman Curtain",
+     "dims": [
+      1171,
+      194,
+      2481
+     ],
+     "z": [
+      34,
+      2515
+     ],
+     "x": [
+      -2387,
+      -1215
+     ],
+     "verts": 209042,
+     "polys": 200231,
+     "quads": 200180,
+     "tris": 51,
+     "area_m2": 5.893,
+     "v_per_m2": 35475,
+     "surplus_NOT_FOR_HANGING": 25.93,
+     "edge_proxy_mm": 5.4,
+     "mods": [],
+     "mats": {
+      "metal": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.002, 0.002, 0.002, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "cotton1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton3": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "tulle1": {
+       "sheen": 0.0,
+       "rough": 0.7,
+       "base": "[0.5, 0.4349, 0.375, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "tulle2": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.1694, 0.1443, 0.1209, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2481,
+     "x_span": 1171,
+     "fullness": 2.03,
+     "hem_above_floor": 0
+    },
+    {
+     "name": "Roman Curtain2",
+     "dims": [
+      1171,
+      206,
+      2348
+     ],
+     "z": [
+      167,
+      2516
+     ],
+     "x": [
+      -1181,
+      -9
+     ],
+     "verts": 244926,
+     "polys": 235448,
+     "quads": 235388,
+     "tris": 60,
+     "area_m2": 5.792,
+     "v_per_m2": 42285,
+     "surplus_NOT_FOR_HANGING": 23.95,
+     "edge_proxy_mm": 5.0,
+     "mods": [],
+     "mats": {
+      "metal": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.002, 0.002, 0.002, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "cotton1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton3": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "tulle1": {
+       "sheen": 0.0,
+       "rough": 0.7,
+       "base": "[0.5, 0.4349, 0.375, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "tulle2": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.1694, 0.1443, 0.1209, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2348,
+     "x_span": 1171,
+     "fullness": 2.11,
+     "hem_above_floor": 134
+    },
+    {
+     "name": "Roman Curtain3",
+     "dims": [
+      1171,
+      227,
+      2222
+     ],
+     "z": [
+      293,
+      2515
+     ],
+     "x": [
+      26,
+      1197
+     ],
+     "verts": 244226,
+     "polys": 234877,
+     "quads": 234821,
+     "tris": 56,
+     "area_m2": 5.8,
+     "v_per_m2": 42105,
+     "surplus_NOT_FOR_HANGING": 21.79,
+     "edge_proxy_mm": 5.0,
+     "mods": [],
+     "mats": {
+      "metal": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.002, 0.002, 0.002, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "cotton1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton3": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "tulle1": {
+       "sheen": 0.0,
+       "rough": 0.7,
+       "base": "[0.5, 0.4349, 0.375, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "tulle2": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.1694, 0.1443, 0.1209, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2222,
+     "x_span": 1171,
+     "fullness": 2.23,
+     "hem_above_floor": 259
+    },
+    {
+     "name": "Roman Curtain4",
+     "dims": [
+      1171,
+      229,
+      2106
+     ],
+     "z": [
+      409,
+      2515
+     ],
+     "x": [
+      1230,
+      2402
+     ],
+     "verts": 260292,
+     "polys": 250622,
+     "quads": 250564,
+     "tris": 58,
+     "area_m2": 5.728,
+     "v_per_m2": 45439,
+     "surplus_NOT_FOR_HANGING": 21.32,
+     "edge_proxy_mm": 4.8,
+     "mods": [],
+     "mats": {
+      "metal": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.002, 0.002, 0.002, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "cotton1": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton2": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "cotton3": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "tulle1": {
+       "sheen": 0.0,
+       "rough": 0.7,
+       "base": "[0.5, 0.4349, 0.375, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "tulle2": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.1694, 0.1443, 0.1209, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 2106,
+     "x_span": 1171,
+     "fullness": 2.32,
+     "hem_above_floor": 375
+    }
+   ],
+   "all_mesh_names": [
+    "Roman Curtain",
+    "Roman Curtain2",
+    "Roman Curtain3",
+    "Roman Curtain4"
+   ]
+  },
+  "89167e7c": {
+   "file": "89167e7c-c092-4f38-80d3-9752b2c94f1b.probe.json",
+   "label": "Wooden Blinds Set (x5)",
+   "kind": "venetian",
+   "source": "blend",
+   "n_objects": 39,
+   "n_mesh": 39,
+   "n_images": 0,
+   "image_sizes": [],
+   "set_z": [
+    143,
+    1799
+   ],
+   "hardware_objects": 13,
+   "hardware": [
+    {
+     "name": "Wooden Blinds Set",
+     "dims": [
+      1789,
+      127,
+      31
+     ],
+     "z": [
+      144,
+      175
+     ],
+     "x": [
+      -5550,
+      -3761
+     ],
+     "verts": 6912,
+     "polys": 7020,
+     "quads": 6720,
+     "tris": 300,
+     "area_m2": 0.019,
+     "v_per_m2": 372354,
+     "surplus_NOT_FOR_HANGING": 0.08,
+     "edge_proxy_mm": 1.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 1655
+    },
+    {
+     "name": "Wooden Blinds Set 015",
+     "dims": [
+      1789,
+      130,
+      31
+     ],
+     "z": [
+      143,
+      174
+     ],
+     "x": [
+      -3322,
+      -1533
+     ],
+     "verts": 6912,
+     "polys": 7020,
+     "quads": 6720,
+     "tris": 300,
+     "area_m2": 0.019,
+     "v_per_m2": 372354,
+     "surplus_NOT_FOR_HANGING": 0.08,
+     "edge_proxy_mm": 1.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 1657
+    },
+    {
+     "name": "Wooden Blinds Set 034",
+     "dims": [
+      1789,
+      127,
+      28
+     ],
+     "z": [
+      1376,
+      1404
+     ],
+     "x": [
+      3319,
+      5108
+     ],
+     "verts": 6912,
+     "polys": 7020,
+     "quads": 6720,
+     "tris": 300,
+     "area_m2": 0.019,
+     "v_per_m2": 372354,
+     "surplus_NOT_FOR_HANGING": 0.08,
+     "edge_proxy_mm": 1.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 423
+    },
+    {
+     "name": "Wooden Blinds Set 038",
+     "dims": [
+      1789,
+      130,
+      31
+     ],
+     "z": [
+      497,
+      528
+     ],
+     "x": [
+      -1101,
+      688
+     ],
+     "verts": 6912,
+     "polys": 7020,
+     "quads": 6720,
+     "tris": 300,
+     "area_m2": 0.019,
+     "v_per_m2": 372354,
+     "surplus_NOT_FOR_HANGING": 0.08,
+     "edge_proxy_mm": 1.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 1302
+    },
+    {
+     "name": "Wooden Blinds Set 36",
+     "dims": [
+      1789,
+      127,
+      31
+     ],
+     "z": [
+      888,
+      919
+     ],
+     "x": [
+      1138,
+      2927
+     ],
+     "verts": 6912,
+     "polys": 7020,
+     "quads": 6720,
+     "tris": 300,
+     "area_m2": 0.019,
+     "v_per_m2": 372354,
+     "surplus_NOT_FOR_HANGING": 0.08,
+     "edge_proxy_mm": 1.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 912
+    },
+    {
+     "name": "Wooden Blinds Set 01",
+     "dims": [
+      6,
+      7,
+      5
+     ],
+     "z": [
+      1682,
+      1688
+     ],
+     "x": [
+      -4659,
+      -4653
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.0,
+     "v_per_m2": 2782609,
+     "surplus_NOT_FOR_HANGING": 5.91,
+     "edge_proxy_mm": 0.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 117
+    },
+    {
+     "name": "Wooden Blinds Set 02",
+     "dims": [
+      54,
+      7,
+      5
+     ],
+     "z": [
+      1682,
+      1688
+     ],
+     "x": [
+      -4683,
+      -4630
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.001,
+     "v_per_m2": 453258,
+     "surplus_NOT_FOR_HANGING": 3.83,
+     "edge_proxy_mm": 1.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 117
+    },
+    {
+     "name": "Wooden Blinds Set 03",
+     "dims": [
+      54,
+      7,
+      5
+     ],
+     "z": [
+      1682,
+      1688
+     ],
+     "x": [
+      -4683,
+      -4630
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.001,
+     "v_per_m2": 453258,
+     "surplus_NOT_FOR_HANGING": 3.83,
+     "edge_proxy_mm": 1.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 117
+    },
+    {
+     "name": "Wooden Blinds Set 04",
+     "dims": [
+      6,
+      7,
+      5
+     ],
+     "z": [
+      1682,
+      1688
+     ],
+     "x": [
+      -5519,
+      -5513
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.0,
+     "v_per_m2": 2782609,
+     "surplus_NOT_FOR_HANGING": 5.91,
+     "edge_proxy_mm": 0.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 117
+    },
+    {
+     "name": "Wooden Blinds Set 05",
+     "dims": [
+      54,
+      7,
+      5
+     ],
+     "z": [
+      1682,
+      1688
+     ],
+     "x": [
+      -5543,
+      -5490
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.001,
+     "v_per_m2": 453258,
+     "surplus_NOT_FOR_HANGING": 3.83,
+     "edge_proxy_mm": 1.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 117
+    },
+    {
+     "name": "Wooden Blinds Set 06",
+     "dims": [
+      54,
+      7,
+      5
+     ],
+     "z": [
+      1682,
+      1688
+     ],
+     "x": [
+      -5543,
+      -5490
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.001,
+     "v_per_m2": 453258,
+     "surplus_NOT_FOR_HANGING": 3.83,
+     "edge_proxy_mm": 1.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 117
+    },
+    {
+     "name": "Wooden Blinds Set 07",
+     "dims": [
+      54,
+      7,
+      5
+     ],
+     "z": [
+      1682,
+      1688
+     ],
+     "x": [
+      -3823,
+      -3770
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.001,
+     "v_per_m2": 453258,
+     "surplus_NOT_FOR_HANGING": 3.83,
+     "edge_proxy_mm": 1.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 117
+    },
+    {
+     "name": "Wooden Blinds Set 016",
+     "dims": [
+      8,
+      20,
+      5
+     ],
+     "z": [
+      772,
+      777
+     ],
+     "x": [
+      -1570,
+      -1562
+     ],
+     "verts": 640,
+     "polys": 640,
+     "quads": 640,
+     "tris": 0,
+     "area_m2": 0.001,
+     "v_per_m2": 1045752,
+     "surplus_NOT_FOR_HANGING": 3.92,
+     "edge_proxy_mm": 1.0,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "rod_drop_from_set_top": 1028
+    }
+   ],
+   "fabric": [
+    {
+     "name": "Wooden Blinds Set 010",
+     "dims": [
+      1748,
+      51,
+      1464
+     ],
+     "z": [
+      223,
+      1688
+     ],
+     "x": [
+      -5518,
+      -3770
+     ],
+     "verts": 40960,
+     "polys": 40960,
+     "quads": 40960,
+     "tris": 0,
+     "area_m2": 0.04,
+     "v_per_m2": 1025051,
+     "surplus_NOT_FOR_HANGING": 0.45,
+     "edge_proxy_mm": 1.0,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1464,
+     "x_span": 1748,
+     "fullness": 0.02,
+     "hem_above_floor": 81,
+     "head_over_rod": 0
+    },
+    {
+     "name": "Wooden Blinds Set 011",
+     "dims": [
+      1905,
+      76,
+      1498
+     ],
+     "z": [
+      190,
+      1688
+     ],
+     "x": [
+      -5645,
+      -3740
+     ],
+     "verts": 3874,
+     "polys": 3916,
+     "quads": 3774,
+     "tris": 136,
+     "area_m2": 0.053,
+     "v_per_m2": 73615,
+     "surplus_NOT_FOR_HANGING": 0.37,
+     "edge_proxy_mm": 3.7,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1498,
+     "x_span": 1905,
+     "fullness": 0.02,
+     "hem_above_floor": 47,
+     "head_over_rod": 1
+    },
+    {
+     "name": "Wooden Blinds Set 012",
+     "dims": [
+      1757,
+      124,
+      1545
+     ],
+     "z": [
+      148,
+      1693
+     ],
+     "x": [
+      -5534,
+      -3777
+     ],
+     "verts": 2556,
+     "polys": 2550,
+     "quads": 2550,
+     "tris": 0,
+     "area_m2": 0.785,
+     "v_per_m2": 3254,
+     "surplus_NOT_FOR_HANGING": 3.6,
+     "edge_proxy_mm": 17.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1545,
+     "x_span": 1757,
+     "fullness": 0.29,
+     "hem_above_floor": 6,
+     "head_over_rod": 6
+    },
+    {
+     "name": "Wooden Blinds Set 013",
+     "dims": [
+      1720,
+      5,
+      1524
+     ],
+     "z": [
+      180,
+      1704
+     ],
+     "x": [
+      -3287,
+      -1566
+     ],
+     "verts": 546,
+     "polys": 594,
+     "quads": 486,
+     "tris": 108,
+     "area_m2": 0.028,
+     "v_per_m2": 19179,
+     "surplus_NOT_FOR_HANGING": 3.52,
+     "edge_proxy_mm": 7.3,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1524,
+     "x_span": 1720,
+     "fullness": 0.01,
+     "hem_above_floor": 38,
+     "head_over_rod": 17
+    },
+    {
+     "name": "Wooden Blinds Set 014",
+     "dims": [
+      1757,
+      124,
+      1545
+     ],
+     "z": [
+      147,
+      1692
+     ],
+     "x": [
+      -3306,
+      -1549
+     ],
+     "verts": 2556,
+     "polys": 2550,
+     "quads": 2550,
+     "tris": 0,
+     "area_m2": 0.785,
+     "v_per_m2": 3254,
+     "surplus_NOT_FOR_HANGING": 3.6,
+     "edge_proxy_mm": 17.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1545,
+     "x_span": 1757,
+     "fullness": 0.29,
+     "hem_above_floor": 5,
+     "head_over_rod": 4
+    },
+    {
+     "name": "Wooden Blinds Set 017",
+     "dims": [
+      1984,
+      103,
+      1418
+     ],
+     "z": [
+      183,
+      1601
+     ],
+     "x": [
+      -3420,
+      -1436
+     ],
+     "verts": 54496,
+     "polys": 54600,
+     "quads": 54600,
+     "tris": 0,
+     "area_m2": 10.892,
+     "v_per_m2": 5003,
+     "surplus_NOT_FOR_HANGING": 53.42,
+     "edge_proxy_mm": 14.1,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1418,
+     "x_span": 1983,
+     "fullness": 3.87,
+     "hem_above_floor": 41,
+     "head_over_rod": -86
+    },
+    {
+     "name": "Wooden Blinds Set 018",
+     "dims": [
+      1905,
+      116,
+      1504
+     ],
+     "z": [
+      183,
+      1686
+     ],
+     "x": [
+      -3417,
+      -1512
+     ],
+     "verts": 58274,
+     "polys": 58316,
+     "quads": 58174,
+     "tris": 136,
+     "area_m2": 0.109,
+     "v_per_m2": 536257,
+     "surplus_NOT_FOR_HANGING": 0.49,
+     "edge_proxy_mm": 1.4,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1504,
+     "x_span": 1905,
+     "fullness": 0.04,
+     "hem_above_floor": 40,
+     "head_over_rod": -1
+    },
+    {
+     "name": "Wooden Blinds Set 019",
+     "dims": [
+      2000,
+      136,
+      1643
+     ],
+     "z": [
+      154,
+      1798
+     ],
+     "x": [
+      -3428,
+      -1428
+     ],
+     "verts": 8664,
+     "polys": 8660,
+     "quads": 8660,
+     "tris": 0,
+     "area_m2": 1.584,
+     "v_per_m2": 5471,
+     "surplus_NOT_FOR_HANGING": 5.81,
+     "edge_proxy_mm": 13.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1643,
+     "x_span": 2000,
+     "fullness": 0.48,
+     "hem_above_floor": 12,
+     "head_over_rod": 110
+    },
+    {
+     "name": "Wooden Blinds Set 020",
+     "dims": [
+      1758,
+      127,
+      1184
+     ],
+     "z": [
+      502,
+      1685
+     ],
+     "x": [
+      -1083,
+      675
+     ],
+     "verts": 17256,
+     "polys": 17250,
+     "quads": 17250,
+     "tris": 0,
+     "area_m2": 0.512,
+     "v_per_m2": 33680,
+     "surplus_NOT_FOR_HANGING": 2.29,
+     "edge_proxy_mm": 5.4,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1184,
+     "x_span": 1758,
+     "fullness": 0.25,
+     "hem_above_floor": 359,
+     "head_over_rod": -2
+    },
+    {
+     "name": "Wooden Blinds Set 021",
+     "dims": [
+      1905,
+      119,
+      1498
+     ],
+     "z": [
+      190,
+      1687
+     ],
+     "x": [
+      -1197,
+      708
+     ],
+     "verts": 55074,
+     "polys": 55116,
+     "quads": 54974,
+     "tris": 136,
+     "area_m2": 0.106,
+     "v_per_m2": 521490,
+     "surplus_NOT_FOR_HANGING": 0.47,
+     "edge_proxy_mm": 1.4,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1498,
+     "x_span": 1905,
+     "fullness": 0.04,
+     "hem_above_floor": 47,
+     "head_over_rod": 0
+    },
+    {
+     "name": "Wooden Blinds Set 022",
+     "dims": [
+      1722,
+      4,
+      779
+     ],
+     "z": [
+      914,
+      1692
+     ],
+     "x": [
+      1172,
+      2893
+     ],
+     "verts": 546,
+     "polys": 594,
+     "quads": 486,
+     "tris": 108,
+     "area_m2": 0.015,
+     "v_per_m2": 37513,
+     "surplus_NOT_FOR_HANGING": 2.28,
+     "edge_proxy_mm": 5.2,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 779,
+     "x_span": 1722,
+     "fullness": 0.01,
+     "hem_above_floor": 771,
+     "head_over_rod": 5
+    },
+    {
+     "name": "Wooden Blinds Set 023",
+     "dims": [
+      1981,
+      108,
+      718
+     ],
+     "z": [
+      932,
+      1650
+     ],
+     "x": [
+      1041,
+      3022
+     ],
+     "verts": 37728,
+     "polys": 37800,
+     "quads": 37800,
+     "tris": 0,
+     "area_m2": 7.541,
+     "v_per_m2": 5003,
+     "surplus_NOT_FOR_HANGING": 35.21,
+     "edge_proxy_mm": 14.1,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 718,
+     "x_span": 1981,
+     "fullness": 5.3,
+     "hem_above_floor": 789,
+     "head_over_rod": -37
+    },
+    {
+     "name": "Wooden Blinds Set 024",
+     "dims": [
+      1905,
+      119,
+      1498
+     ],
+     "z": [
+      188,
+      1686
+     ],
+     "x": [
+      1043,
+      2948
+     ],
+     "verts": 43554,
+     "polys": 43596,
+     "quads": 43454,
+     "tris": 136,
+     "area_m2": 0.095,
+     "v_per_m2": 460426,
+     "surplus_NOT_FOR_HANGING": 0.42,
+     "edge_proxy_mm": 1.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1498,
+     "x_span": 1905,
+     "fullness": 0.03,
+     "hem_above_floor": 46,
+     "head_over_rod": -1
+    },
+    {
+     "name": "Wooden Blinds Set 025",
+     "dims": [
+      2000,
+      136,
+      1292
+     ],
+     "z": [
+      508,
+      1799
+     ],
+     "x": [
+      -1208,
+      792
+     ],
+     "verts": 8664,
+     "polys": 8660,
+     "quads": 8660,
+     "tris": 0,
+     "area_m2": 1.584,
+     "v_per_m2": 5471,
+     "surplus_NOT_FOR_HANGING": 5.81,
+     "edge_proxy_mm": 13.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1292,
+     "x_span": 2000,
+     "fullness": 0.61,
+     "hem_above_floor": 365,
+     "head_over_rod": 112
+    },
+    {
+     "name": "Wooden Blinds Set 026",
+     "dims": [
+      1981,
+      103,
+      262
+     ],
+     "z": [
+      1420,
+      1681
+     ],
+     "x": [
+      3222,
+      5203
+     ],
+     "verts": 39824,
+     "polys": 39900,
+     "quads": 39900,
+     "tris": 0,
+     "area_m2": 7.96,
+     "v_per_m2": 5003,
+     "surplus_NOT_FOR_HANGING": 39.16,
+     "edge_proxy_mm": 14.1,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 262,
+     "x_span": 1981,
+     "fullness": 15.35,
+     "hem_above_floor": 1277,
+     "head_over_rod": -6
+    },
+    {
+     "name": "Wooden Blinds Set 027",
+     "dims": [
+      2000,
+      136,
+      901
+     ],
+     "z": [
+      897,
+      1798
+     ],
+     "x": [
+      1032,
+      3032
+     ],
+     "verts": 8664,
+     "polys": 8660,
+     "quads": 8660,
+     "tris": 0,
+     "area_m2": 1.584,
+     "v_per_m2": 5471,
+     "surplus_NOT_FOR_HANGING": 5.81,
+     "edge_proxy_mm": 13.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 901,
+     "x_span": 2000,
+     "fullness": 0.88,
+     "hem_above_floor": 754,
+     "head_over_rod": 110
+    },
+    {
+     "name": "Wooden Blinds Set 028",
+     "dims": [
+      1722,
+      4,
+      382
+     ],
+     "z": [
+      1401,
+      1784
+     ],
+     "x": [
+      3352,
+      5074
+     ],
+     "verts": 546,
+     "polys": 594,
+     "quads": 486,
+     "tris": 108,
+     "area_m2": 0.007,
+     "v_per_m2": 76321,
+     "surplus_NOT_FOR_HANGING": 1.12,
+     "edge_proxy_mm": 3.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 382,
+     "x_span": 1722,
+     "fullness": 0.01,
+     "hem_above_floor": 1259,
+     "head_over_rod": 96
+    },
+    {
+     "name": "Wooden Blinds Set 029",
+     "dims": [
+      1722,
+      4,
+      1181
+     ],
+     "z": [
+      524,
+      1705
+     ],
+     "x": [
+      -1068,
+      654
+     ],
+     "verts": 546,
+     "polys": 594,
+     "quads": 486,
+     "tris": 108,
+     "area_m2": 0.022,
+     "v_per_m2": 24743,
+     "surplus_NOT_FOR_HANGING": 3.46,
+     "edge_proxy_mm": 6.4,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1181,
+     "x_span": 1722,
+     "fullness": 0.01,
+     "hem_above_floor": 381,
+     "head_over_rod": 17
+    },
+    {
+     "name": "Wooden Blinds Set 030",
+     "dims": [
+      1981,
+      109,
+      1130
+     ],
+     "z": [
+      542,
+      1673
+     ],
+     "x": [
+      -1199,
+      782
+     ],
+     "verts": 50304,
+     "polys": 50400,
+     "quads": 50400,
+     "tris": 0,
+     "area_m2": 10.054,
+     "v_per_m2": 5003,
+     "surplus_NOT_FOR_HANGING": 46.52,
+     "edge_proxy_mm": 14.1,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1130,
+     "x_span": 1981,
+     "fullness": 4.49,
+     "hem_above_floor": 399,
+     "head_over_rod": -15
+    },
+    {
+     "name": "Wooden Blinds Set 031",
+     "dims": [
+      2000,
+      136,
+      416
+     ],
+     "z": [
+      1383,
+      1799
+     ],
+     "x": [
+      3212,
+      5212
+     ],
+     "verts": 8664,
+     "polys": 8660,
+     "quads": 8660,
+     "tris": 0,
+     "area_m2": 1.584,
+     "v_per_m2": 5471,
+     "surplus_NOT_FOR_HANGING": 5.81,
+     "edge_proxy_mm": 13.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 416,
+     "x_span": 2000,
+     "fullness": 1.9,
+     "hem_above_floor": 1240,
+     "head_over_rod": 112
+    },
+    {
+     "name": "Wooden Blinds Set 032",
+     "dims": [
+      2000,
+      136,
+      1643
+     ],
+     "z": [
+      156,
+      1799
+     ],
+     "x": [
+      -5656,
+      -3656
+     ],
+     "verts": 8664,
+     "polys": 8660,
+     "quads": 8660,
+     "tris": 0,
+     "area_m2": 1.584,
+     "v_per_m2": 5471,
+     "surplus_NOT_FOR_HANGING": 5.81,
+     "edge_proxy_mm": 13.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1643,
+     "x_span": 2000,
+     "fullness": 0.48,
+     "hem_above_floor": 13,
+     "head_over_rod": 112
+    },
+    {
+     "name": "Wooden Blinds Set 033",
+     "dims": [
+      1905,
+      119,
+      1504
+     ],
+     "z": [
+      184,
+      1688
+     ],
+     "x": [
+      3224,
+      5128
+     ],
+     "verts": 45474,
+     "polys": 45516,
+     "quads": 45374,
+     "tris": 136,
+     "area_m2": 0.096,
+     "v_per_m2": 471566,
+     "surplus_NOT_FOR_HANGING": 0.43,
+     "edge_proxy_mm": 1.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1504,
+     "x_span": 1905,
+     "fullness": 0.03,
+     "hem_above_floor": 41,
+     "head_over_rod": 1
+    },
+    {
+     "name": "Wooden Blinds Set 035",
+     "dims": [
+      1758,
+      118,
+      304
+     ],
+     "z": [
+      1382,
+      1686
+     ],
+     "x": [
+      3336,
+      5095
+     ],
+     "verts": 40716,
+     "polys": 40710,
+     "quads": 40710,
+     "tris": 0,
+     "area_m2": 0.248,
+     "v_per_m2": 164414,
+     "surplus_NOT_FOR_HANGING": 1.19,
+     "edge_proxy_mm": 2.5,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 304,
+     "x_span": 1758,
+     "fullness": 0.46,
+     "hem_above_floor": 1239,
+     "head_over_rod": -2
+    },
+    {
+     "name": "Wooden Blinds Set 037",
+     "dims": [
+      1752,
+      127,
+      795
+     ],
+     "z": [
+      892,
+      1687
+     ],
+     "x": [
+      1156,
+      2908
+     ],
+     "verts": 17256,
+     "polys": 17250,
+     "quads": 17250,
+     "tris": 0,
+     "area_m2": 0.37,
+     "v_per_m2": 46618,
+     "surplus_NOT_FOR_HANGING": 1.66,
+     "edge_proxy_mm": 4.6,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 795,
+     "x_span": 1752,
+     "fullness": 0.27,
+     "hem_above_floor": 749,
+     "head_over_rod": 0
+    },
+    {
+     "name": "Wooden Blinds Set 08",
+     "dims": [
+      1721,
+      10,
+      1506
+     ],
+     "z": [
+      178,
+      1683
+     ],
+     "x": [
+      -5516,
+      -3794
+     ],
+     "verts": 13902,
+     "polys": 13932,
+     "quads": 13860,
+     "tris": 72,
+     "area_m2": 0.018,
+     "v_per_m2": 783741,
+     "surplus_NOT_FOR_HANGING": 0.99,
+     "edge_proxy_mm": 1.1,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1506,
+     "x_span": 1721,
+     "fullness": 0.01,
+     "hem_above_floor": 35,
+     "head_over_rod": -4
+    },
+    {
+     "name": "Wooden Blinds Set 09",
+     "dims": [
+      1981,
+      15,
+      1502
+     ],
+     "z": [
+      182,
+      1684
+     ],
+     "x": [
+      -5647,
+      -3666
+     ],
+     "verts": 44016,
+     "polys": 44100,
+     "quads": 44100,
+     "tris": 0,
+     "area_m2": 8.798,
+     "v_per_m2": 5003,
+     "surplus_NOT_FOR_HANGING": 288.36,
+     "edge_proxy_mm": 14.1,
+     "mods": [],
+     "mats": {
+      "Texture1 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.01, 0.01, 0.01, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture2 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0485, 0.0485, 0.0485, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture3 ": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      },
+      "Texture4 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0044, 0.0044, 0.0044, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture5 ": {
+       "sheen": 0.0,
+       "rough": 0.5,
+       "base": "[0.0478, 0.0478, 0.0478, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Texture6 ": {
+       "sheen": 0.0,
+       "rough": 0.5528,
+       "base": "[0.0078, 0.0078, 0.0078, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     },
+     "drop": 1502,
+     "x_span": 1981,
+     "fullness": 2.96,
+     "hem_above_floor": 39,
+     "head_over_rod": -4
+    }
+   ],
+   "all_mesh_names": [
+    "Wooden Blinds Set",
+    "Wooden Blinds Set 01",
+    "Wooden Blinds Set 010",
+    "Wooden Blinds Set 011",
+    "Wooden Blinds Set 012",
+    "Wooden Blinds Set 013",
+    "Wooden Blinds Set 014",
+    "Wooden Blinds Set 015",
+    "Wooden Blinds Set 016",
+    "Wooden Blinds Set 017",
+    "Wooden Blinds Set 018",
+    "Wooden Blinds Set 019",
+    "Wooden Blinds Set 02",
+    "Wooden Blinds Set 020",
+    "Wooden Blinds Set 021",
+    "Wooden Blinds Set 022",
+    "Wooden Blinds Set 023",
+    "Wooden Blinds Set 024",
+    "Wooden Blinds Set 025",
+    "Wooden Blinds Set 026",
+    "Wooden Blinds Set 027",
+    "Wooden Blinds Set 028",
+    "Wooden Blinds Set 029",
+    "Wooden Blinds Set 03",
+    "Wooden Blinds Set 030",
+    "Wooden Blinds Set 031",
+    "Wooden Blinds Set 032",
+    "Wooden Blinds Set 033",
+    "Wooden Blinds Set 034",
+    "Wooden Blinds Set 035",
+    "Wooden Blinds Set 037",
+    "Wooden Blinds Set 038",
+    "Wooden Blinds Set 04",
+    "Wooden Blinds Set 05",
+    "Wooden Blinds Set 06",
+    "Wooden Blinds Set 07",
+    "Wooden Blinds Set 08",
+    "Wooden Blinds Set 09",
+    "Wooden Blinds Set 36"
+   ],
+   "fabric_x_span": 10869,
+   "hardware_x_span": 10658,
+   "rod_overhang_per_side": -105
+  }
+ },
+ "ours": {
+  "curtain__east_blackout": {
+   "dims": [
+    98,
+    95,
+    2815
+   ],
+   "verts": 441,
+   "area_m2": 2.08,
+   "v_per_m2": 212,
+   "fullness": 7.53,
+   "edge_proxy_mm": 73.6,
+   "mods": [],
+   "mats": {
+    "curtain_opaque": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "curtain__east_privacy": {
+   "dims": [
+    64,
+    529,
+    2815
+   ],
+   "verts": 549,
+   "area_m2": 2.29,
+   "v_per_m2": 240,
+   "fullness": 1.54,
+   "edge_proxy_mm": 69.0,
+   "mods": [],
+   "mats": {
+    "curtain_sheer": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "curtain__south_blackout": {
+   "dims": [
+    954,
+    129,
+    2815
+   ],
+   "verts": 3789,
+   "area_m2": 23.36,
+   "v_per_m2": 162,
+   "fullness": 8.7,
+   "edge_proxy_mm": 83.4,
+   "mods": [],
+   "mats": {
+    "curtain_opaque": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "curtain__south_privacy": {
+   "dims": [
+    5301,
+    84,
+    2815
+   ],
+   "verts": 5733,
+   "area_m2": 28.22,
+   "v_per_m2": 203,
+   "fullness": 1.89,
+   "edge_proxy_mm": 74.5,
+   "mods": [],
+   "mats": {
+    "curtain_sheer": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "curtain__west_blackout": {
+   "dims": [
+    130,
+    203,
+    2815
+   ],
+   "verts": 873,
+   "area_m2": 5.38,
+   "v_per_m2": 162,
+   "fullness": 9.41,
+   "edge_proxy_mm": 83.7,
+   "mods": [],
+   "mats": {
+    "curtain_opaque": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "curtain__west_privacy": {
+   "dims": [
+    85,
+    1129,
+    2815
+   ],
+   "verts": 1197,
+   "area_m2": 6.0,
+   "v_per_m2": 200,
+   "fullness": 1.89,
+   "edge_proxy_mm": 75.4,
+   "mods": [],
+   "mats": {
+    "curtain_sheer": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "sheer__glz_west_win1": {
+   "dims": [
+    53,
+    580,
+    1185
+   ],
+   "verts": 146,
+   "area_m2": 1.14,
+   "v_per_m2": 128,
+   "fullness": 1.66,
+   "edge_proxy_mm": 125.7,
+   "mods": [],
+   "mats": {
+    "curtain_sheer": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "sheer__glz_west_win2": {
+   "dims": [
+    48,
+    580,
+    1185
+   ],
+   "verts": 146,
+   "area_m2": 1.04,
+   "v_per_m2": 141,
+   "fullness": 1.51,
+   "edge_proxy_mm": 120.0,
+   "mods": [],
+   "mats": {
+    "curtain_sheer": {
+     "sheen": 0.4,
+     "rough": "MAP_RANGE<MIX_RGB<PROC:NOISE>>",
+     "base": "MIX_RGB<MAP_RANGE<MIX_RGB<PROC:NOISE>>>",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  }
+ },
+ "ours_hardware_objects": 0,
+ "ours_hardware_scan": {
+  "words": [
+   "rod",
+   "track",
+   "rail",
+   "ring",
+   "pole",
+   "pelmet",
+   "bracket",
+   "finial",
+   "grommet"
+  ],
+  "meshes_scanned": 501,
+  "matched_anywhere_in_scene": 31,
+  "of_those_named_for_a_curtain": 0,
+  "non_curtain_matches": [
+   "e5_cove_pelmet",
+   "e5_cove_pelmet_ret_n",
+   "e5_cove_pelmet_ret_s",
+   "mill__acc_towelbar_rail__brass",
+   "mill__bayBF09-1-0_rail_full__brass",
+   "mill__bayBF09-1-0_rail_full_sock0__brass",
+   "mill__bayBF09-1-0_rail_full_sock1__brass",
+   "mill__bayBF09-1-0_rail_short0__brass",
+   "mill__bayBF09-1-0_rail_short0_sock0__brass",
+   "mill__bayBF09-1-0_rail_short0_sock1__brass",
+   "mill__bayBF09-1-0_rail_short1__brass",
+   "mill__bayBF09-1-0_rail_short1_sock0__brass",
+   "mill__bayBF09-1-0_rail_short1_sock1__brass",
+   "mill__bayBF09-1-1_rail_full__brass",
+   "mill__bayBF09-1-1_rail_full_sock0__brass",
+   "mill__bayBF09-1-1_rail_full_sock1__brass",
+   "mill__bayBF09-1-1_rail_short0__brass",
+   "mill__bayBF09-1-1_rail_short0_sock0__brass",
+   "mill__bayBF09-1-1_rail_short0_sock1__brass",
+   "mill__bayBF09-1-1_rail_short1__brass",
+   "mill__bayBF09-1-1_rail_short1_sock0__brass",
+   "mill__bayBF09-1-1_rail_short1_sock1__brass",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_full",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_full_sock0",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_full_sock1",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_short0",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_short0_sock0",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_short0_sock1",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_short1",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_short1_sock0",
+   "mill__ตู้เสื้อผ้าเหนือเตียง_BF09-3__rail_short1_sock1"
+  ]
+ }
+}

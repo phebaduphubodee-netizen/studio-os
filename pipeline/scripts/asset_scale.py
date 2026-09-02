@@ -140,6 +140,31 @@ BANDS = {
                    "master-suite.CANONICAL.spec.json items[2] h=450 + "
                    "knowledge/ergonomics/residential-clearances.md (seat "
                    "406-432); a backless bed-end bench is seat height and no more"),
+    # A CURTAIN IS A DROP, and the drop is set by the ROOM it hangs in, not by
+    # the window. Our own room is 2800 mm to the slab and `curtains.py` hangs
+    # from the ceiling (TOP_EMBED_M 0.03 into it) to a 15 mm hem float, so the
+    # drop this lane needs is ~2785.
+    # THE TOP IS CODE-DERIVED, and it was widened from a round 3300 the same
+    # hour it was written, because the guard refused a real 3302.4 mm curtain
+    # by 2.4 mm — a band edge chosen for tidiness, not from a premise, which is
+    # the shape R9b names. MR55 sets floor-to-floor at 2.60 m for a dwelling and
+    # 3.50 m for the tallest room class that still gets curtains (a shophouse
+    # ground floor / ห้องขายสินค้า-ห้องประชุม), so 3500 is the tallest drop a
+    # curtain in this market can legitimately have.
+    # THE BOTTOM IS A DECLARED ASSUMPTION: the class also holds sill-length and
+    # roman/venetian types whose drop is a window height, and the 2026-09-02
+    # catalogue measures those at 1.59-2.48 m, so 1400 sits below the observed
+    # floor with margin rather than on it.
+    # The unit traps it exists to catch: an imperial-as-metres drop lands near
+    # 85 mm, a cm-as-metres one near 280 m.
+    "curtain": (1400.0, 3500.0, "z",
+                "knowledge/codes-th/mr55-residential-dimensions.md floor-to-"
+                "floor 2.60 m dwelling / 3.50 m shophouse-ground (the top) + "
+                "projects/PRJ-2026-002_c001-house/03_layout/master-suite."
+                "CANONICAL.spec.json room.ceiling_mm 2800 with "
+                "pipeline/scripts/curtains.py HEM_CLEAR_M 0.015 / TOP_EMBED_M "
+                "0.03 (our own drop ~2785); the 1400 floor is a declared "
+                "assumption under the catalogue's 1.59 m roman-blind minimum"),
     "rug": (1000.0, 5000.0, "maxxy",
             "master-suite.CANONICAL.spec.json items[0] 3100 x 2500 mm; band "
             "spans a bedside runner to a whole-room rug"),
@@ -350,6 +375,12 @@ MIN_DEPTH_RATIO = {
     "whole_bed": 0.10,      # a dressed bed is a volume for the same reason
     "nightstand": 0.20,
     "bench_seat": 0.15,
+    # a curtain hangs flat but is NOT a plane: the pleats give it real plan
+    # depth, and a pleatless one is the billboard this study is looking for.
+    # The 2026-09-02 catalogue's own spread is the floor: the flattest curtain
+    # that is still a curtain measures 0.05 m deep on a 5.04 m run (0.010),
+    # while a pleated drape runs 0.28-1.11 m on ~3 m (0.09-0.37).
+    "curtain": 0.01,
     # a rug IS a plane — this class is the reason MIN_DEPTH_RATIO carries None as
     # a DECLARED value rather than treating "absent" and "exempt" as the same
     "rug": None,

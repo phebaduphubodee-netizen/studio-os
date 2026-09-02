@@ -16,6 +16,7 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import madebed_study_derive as M  # noqa: E402
+import study_probe_read as SPR  # noqa: E402
 
 
 def _obj(name, lo, hi, verts=100, quads=0, tris=0, ngons=0, area=1.0, mats=()):
@@ -86,6 +87,9 @@ def test_loft_hem_and_pillow_offsets_are_measured_from_the_named_planes(tmp_path
         {"source": "blend", "images": [], "materials": [],
          "objects": [_obj("bed__cloth__acq0", (0, 0, 0), (1, 1, 1), quads=4, area=1.0)]}), encoding="utf-8")
     out = tmp_path / "out.json"
+    # the dump readers live in study_probe_read now, so STUDY must be patched THERE —
+    # patching the caller's re-export would leave load() reading the real shelf
+    monkeypatch.setattr(SPR, "STUDY", str(study))
     monkeypatch.setattr(M, "STUDY", str(study))
     monkeypatch.setattr(M, "OUT", str(out))
     monkeypatch.setattr(M, "SETS", {"zz111111": ("synthetic", "Matt", ["Cloth"], ["Pill"])})

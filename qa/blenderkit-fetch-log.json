@@ -4064,6 +4064,332 @@
     ],
     "refusal": null
    }
+  },
+  {
+   "at": "2026-09-02T10:03:51-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T10:04:09-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain",
+   "pages": 2,
+   "n": 200,
+   "free": 43,
+   "full_plan": 157,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:12-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain track",
+   "pages": 2,
+   "n": 200,
+   "free": 42,
+   "full_plan": 158,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:15-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "sheer curtain",
+   "pages": 2,
+   "n": 200,
+   "free": 85,
+   "full_plan": 115,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:18-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "curtain rod",
+   "pages": 2,
+   "n": 200,
+   "free": 41,
+   "full_plan": 159,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:04:20-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "drapery",
+   "pages": 2,
+   "n": 200,
+   "free": 172,
+   "full_plan": 28,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T10:07:48-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b72cedda-ff26-4c02-8ce1-e991a2127f62",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": false,
+    "measured_mm": 3302.4,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:07:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "06fd1db1-cd52-41d1-943f-8666d97f5aee",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2380.0,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T10:08:07-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e30d9431-cf5a-459e-81f0-e083b0e7a3eb",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3194.9,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:08:10-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dc081fef-8f2a-48a4-8bec-2c361f9f474e",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "dc081fef-8f2a-48a4-8bec-2c361f9f474e offers no '2K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:08:13-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ee15c366-d4da-459e-a0fc-9f4cd074d4cf",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "ee15c366-d4da-459e-a0fc-9f4cd074d4cf offers no '2K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:08:15-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "89167e7c-c092-4f38-80d3-9752b2c94f1b",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "89167e7c-c092-4f38-80d3-9752b2c94f1b offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:08:30-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "16d7a3a5-ce4b-4b1e-b21e-e85fd713c47a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2902.8,
+    "band_mm": [
+     1400.0,
+     3300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:08:32-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "caddb0d4-ac25-4d78-8dfa-d379b96507a7",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "caddb0d4-ac25-4d78-8dfa-d379b96507a7 offers no '2K' file (has: blend, gltf, gltf_godot, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T10:09:44-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "b72cedda-ff26-4c02-8ce1-e991a2127f62",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": false,
+   "assert_class": "curtain",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3302.4,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T10:09:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dc081fef-8f2a-48a4-8bec-2c361f9f474e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2996.2,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:10:09-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ee15c366-d4da-459e-a0fc-9f4cd074d4cf",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2481.8,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:10:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "89167e7c-c092-4f38-80d3-9752b2c94f1b",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1656.6,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T10:10:43-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "caddb0d4-ac25-4d78-8dfa-d379b96507a7",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "curtain",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2997.1,
+    "band_mm": [
+     1400.0,
+     3500.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
   }
  ]
 }

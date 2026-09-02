@@ -33,10 +33,11 @@ dispute it against the dump's own object list. Two assignments WERE disputed and
 ROLE_DISPUTES carries what the reader must know before using them. It is written into
 the output so the note and the artifact cannot drift apart.
 """
-import glob, json, math, os, sys
+import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from study_probe_read import (REPO, STUDY, edge_proxy_mm, find, img_sizes,  # noqa: E402
+                              load, mat_row, mods)
 sys.stdout.reconfigure(encoding="utf-8")
-REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-STUDY = os.path.join(REPO, "assets", "shared", "blenderkit", "_study")
 OUT = os.path.join(REPO, "qa", "blenderkit-study-madebed.json")
 
 # asset prefix -> (label, mattress object name, cloth-layer object names, pillow object names)
@@ -72,61 +73,6 @@ OURS = ["bed__cloth__acq0", "bed__headset0__acq1", "bed__frame__acq1", "bed__fra
         "bed__headboard", "bed__head_shim", "deco_bedthrow__acq0", "Sheet"]
 
 
-def load(prefix):
-    fs = glob.glob(os.path.join(STUDY, prefix + "*.probe.json"))
-    assert len(fs) == 1, (prefix, fs)
-    return os.path.basename(fs[0]), json.load(open(fs[0], encoding="utf-8"))
-
-
-def find(d, name):
-    for o in d["objects"]:
-        if o["name"] == name and o["type"] == "MESH":
-            return o
-    hits = [o for o in d["objects"] if o["type"] == "MESH" and o["name"].startswith(name)]
-    if len(hits) == 1:      # Keywest sets suffix the same mesh names differently (.001 etc.)
-        return hits[0]
-    raise KeyError((name, [h["name"] for h in hits]))
-
-
-def edge_proxy_mm(o):
-    """Square root of area per QUAD-EQUIVALENT face, in mm. See the module docstring:
-    this is not the repo's `bedcloth_fit.edge_mm` (true median edge) and cannot be —
-    a probe dump carries no edge list. Two tris make one quad-equivalent, so a mesh
-    that is half quads and half tris is scored on the same footing as either."""
-    m = o["mesh"]
-    faces = m["quads"] + m["tris"] / 2.0 + m.get("ngons", 0)
-    if not faces:                          # a dump that lost its face counts
-        faces = m["polys"]
-    return math.sqrt(m["area_m2"] / faces) * 1000.0 if faces else float("nan")
-
-
-def mat_row(d, name):
-    for mt in d["materials"]:
-        if mt["name"] == name:
-            p = mt.get("principled") or {}
-            return {"sheen": p.get("Sheen Weight"), "rough": p.get("Roughness"),
-                    "base": str(p.get("Base Color"))[:40], "normal": str(p.get("Normal"))[:40],
-                    "principled": "BSDF_PRINCIPLED" in (mt.get("node_hist") or {})}
-    return None
-
-
-def _img_sizes(d):
-    """Packed-image size census for a set, as [[w, h, count], ...] largest area first.
-    The note's per-asset table quotes these; without them here the annotation is
-    hand-read prose that nothing regenerates, which is how two verifier rounds each
-    found a wrong image band in that column."""
-    hist = {}
-    for i in d.get("images", []):
-        k = tuple(i["size"])
-        hist[k] = hist.get(k, 0) + 1
-    return [[w, h, n] for (w, h), n in sorted(hist.items(), key=lambda kv: -kv[0][0] * kv[0][1])]
-
-
-def _mods(o):
-    return [x["type"] + (f"({x.get('levels')},{x.get('render_levels')})" if x["type"] == "SUBSURF" else "")
-            for x in o.get("modifiers", [])]
-
-
 def main():
     out = {"_recipe": __doc__.strip().splitlines()[0], "_role_disputes": ROLE_DISPUTES,
            "sets": {}, "pillow_sets": {}}
@@ -137,9 +83,9 @@ def main():
         mtop = mo["world_bbox_mm"]["max"][2]; mbot = mo["world_bbox_mm"]["min"][2]
         row = {"file": fn, "label": label, "source": d["source"], "bed_min_z": round(zmin_all, 1),
                "n_images": len(d.get("images", [])),
-               "image_sizes": _img_sizes(d),
+               "image_sizes": img_sizes(d),
                "mattress": {"name": matt, "dims": [round(x) for x in mo["dims_mm"]], "z": [round(mbot), round(mtop)],
-                            "thick": round(mtop - mbot), "verts": mo["mesh"]["verts"], "mods": _mods(mo)},
+                            "thick": round(mtop - mbot), "verts": mo["mesh"]["verts"], "mods": mods(mo)},
                "layers": [], "pillows": []}
         for n in layers:
             o = find(d, n); bb = o["world_bbox_mm"]; m = o["mesh"]
@@ -150,7 +96,7 @@ def main():
                 "verts": m["verts"], "polys": m["polys"], "quads": m["quads"], "tris": m["tris"],
                 "area_m2": round(m["area_m2"], 3), "v_per_m2": round(m["verts_per_m2"]),
                 "surplus": round(m["area_m2"] / (o["dims_mm"][0] * o["dims_mm"][1] * 1e-6), 2),
-                "edge_proxy_mm": round(edge_proxy_mm(o), 1), "mods": _mods(o),
+                "edge_proxy_mm": round(edge_proxy_mm(o), 1), "mods": mods(o),
                 "mats": {mn: mat_row(d, mn) for mn in o["materials"]}})
         for n in pillows:
             o = find(d, n); bb = o["world_bbox_mm"]; m = o["mesh"]
@@ -159,7 +105,7 @@ def main():
                 "top_over_mattress_top": round(bb["max"][2] - mtop),
                 "bottom_over_mattress_top": round(bb["min"][2] - mtop),
                 "verts": m["verts"], "v_per_m2": round(m["verts_per_m2"]), "edge_proxy_mm": round(edge_proxy_mm(o), 1),
-                "mods": _mods(o), "mats": {mn: mat_row(d, mn) for mn in o["materials"]}})
+                "mods": mods(o), "mats": {mn: mat_row(d, mn) for mn in o["materials"]}})
         out["sets"][pre] = row
 
     for pre, label in PILLOW_SETS.items():
@@ -171,7 +117,7 @@ def main():
             m = o["mesh"]
             row["objects"].append({"name": o["name"], "dims": [round(x) for x in o["dims_mm"]], "verts": m["verts"],
                 "polys": m["polys"], "quads": m["quads"], "tris": m["tris"], "v_per_m2": round(m["verts_per_m2"]),
-                "edge_proxy_mm": round(edge_proxy_mm(o), 1), "mods": _mods(o),
+                "edge_proxy_mm": round(edge_proxy_mm(o), 1), "mods": mods(o),
                 "mats": {mn: mat_row(d, mn) for mn in o["materials"]}})
         row["images"] = [(i["name"], i["size"]) for i in d["images"]]
         out["pillow_sets"][pre] = row
@@ -183,7 +129,7 @@ def main():
         o = find(do, n); m = o["mesh"]
         ours[n] = {"dims": [round(x) for x in o["dims_mm"]], "loc_z": round(o["loc_mm"][2]), "verts": m["verts"],
                    "polys": m["polys"], "quads": m["quads"], "tris": m["tris"], "area_m2": round(m["area_m2"], 3),
-                   "v_per_m2": round(m["verts_per_m2"]), "edge_proxy_mm": round(edge_proxy_mm(o), 1), "mods": _mods(o),
+                   "v_per_m2": round(m["verts_per_m2"]), "edge_proxy_mm": round(edge_proxy_mm(o), 1), "mods": mods(o),
                    "mats": {mn: mat_row(do, mn) for mn in o["materials"]}}
     out["ours"] = ours
 
