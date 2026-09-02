@@ -30,6 +30,88 @@
     "verdict_for_C2": "Zero paid passes. And the class's real problem is untouched by either tier: nothing on the shelf, free or paid, is BOTH the drawn 1:2.0 proportion AND inside the style envelope. ASK-024 stands, now with the paid tier measured instead of assumed.",
     "makes_ASK_024_sharper": "The gap claim used to rest on a free-only search of 68 cached folders (D-074's error, 'unbought is not unavailable'). It now rests on the whole catalogue at the drawn size: 6 candidates, both tiers, one panel pass, zero that fix the 78.0% width."
    }
+  },
+  "wall_art": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "3 of 20 free thumbnails (B, C, O) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "7 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 157 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/wall_art/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "Autumn Paths – 3D Visualization Series",
+     "Autumn Landscape Wall Art Set",
+     "Forest Wall Art Set nature"
+    ]
+   },
+   "paid_result": null
+  },
+  "plant": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "9 of 20 free thumbnails (C, E, F, I, J, O, P, R, S) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "18 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 162 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/plant/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "Indoor Table  Plant",
+     "Banana  Plants",
+     "Snake plant in a pot",
+     "Fiddle Leaf Plant",
+     "Banana  Plants",
+     "Indoor potted plant",
+     "Palm plant",
+     "Modular ficus plant",
+     "Small Monstera plant"
+    ]
+   },
+   "paid_result": null
+  },
+  "cushion_throw": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "4 of 20 free thumbnails (A, D, L, S) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "8 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 127 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/cushion_throw/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "3 cushion set",
+     "Cushion",
+     "Cushion",
+     "Cushion"
+    ]
+   },
+   "paid_result": null
+  },
+  "nightstand_objects": {
+   "control": false,
+   "free_baseline": {
+    "when": "2026-09-02 (STUDY-D13-baselines)",
+    "panel_passing_of_seen": "6 of 20 free thumbnails (C, H, K, M, P, R) — >=2 of 3 blind judges answered `inside`",
+    "also_edge_or_better": "9 of 20 reached >=2 judges at inside-or-edge",
+    "selection": "the frozen queries for this class, --free-only, merged in the frozen query order, deduped, FIRST 20 taken from a pool of 207 — no size window and no builder ranking, so this is the free tier as the catalogue itself orders it",
+    "panel": "3 fresh blind judges, frozen prompt docs/blenderkit-month/style-panel-prompt.md, the SAME five anchors as the 2026-08-23 bolzan and 2026-08-24 runs, deterministic sha1(id) letters, judges told nothing of tier. _private/deliv-001/style-panel-2026-09-02/nightstand_objects/ (_key.json = letter->asset, verdicts.json = all 60 verdicts)",
+    "passing_names": [
+     "Decpration Tray",
+     "Aluminum Tray",
+     "Wooden Serving Tray 38x25x4",
+     "Little Cloud Tray",
+     "Square Bamboo Tray",
+     "Rectangular Tray"
+    ]
+   },
+   "paid_result": null
+  },
+  "hung_garments": {
+   "control": false,
+   "free_baseline": null,
+   "free_baseline_status": "CANNOT BE RUN — CONTAMINATED, recorded as fact rather than left blank",
+   "why": "The frozen pass rule requires the free baseline BEFORE the first paid fetch in the class ('a class whose free baseline is not recorded before its first paid fetch does not count toward C2 — it was measured in the wrong order'). p2r86 fetched paid hung_garments before any baseline existed, so the order is already broken and no baseline taken now could repair it: this class is out of C2 permanently. Running one anyway would produce a number that LOOKS like the other four and is not the same measurement — which is why the D13 unit's own exam says to record it and run the remaining four.",
+   "when_recorded": "2026-09-02 (STUDY-D13-baselines)",
+   "paid_result": null
   }
  },
  "out_of_test": {
@@ -77,5 +159,6 @@
    }
   },
   "note": "Counts are name-hits inside a server-side dimension window derived from each slot; `all` saturates at the page cap of 300 for the last three. The census is a claim about the SHELF, not about whether any of them passes a panel."
- }
+ },
+ "_c2_arithmetic_2026_09_02": "READ THIS BEFORE SCORING C2. The pass rule frozen in qa/blenderkit-month-classes.json counts only NON-CONTROL classes 'whose free_baseline recorded 0 panel-passing pieces out of 20', and needs >= 3 of them. As of 2026-09-02 every one of the four classes measured today came back NON-ZERO (wall_art 3, plant 9, cushion_throw 4, nightstand_objects 6), and the fifth non-control class (hung_garments) was contaminated at p2r86 by a paid fetch taken before its baseline. There are therefore ZERO qualifying classes, and C2 CANNOT PASS as written. That is a RESULT, not a defect in the rule: the rule was frozen before the candidates were seen precisely so it could come out this way, and what it measured is that the FREE tier already supplies panel-passing pieces in all four fenced classes. Whether that verdict stands, and what it means for the subscription, is D-119's owner decision — the builder must not rewrite the rule to make it passable, which is the flattering-scorer defect this repo has already logged fourteen times."
 }

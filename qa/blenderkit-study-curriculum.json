@@ -127,10 +127,13 @@
    },
    "deliverable": "baseline verdicts ใน _private/deliv-001/ + บรรทัดใน status",
    "exam": "INSTRUMENT ตัดสิน ไม่ใช่ผม: `blenderkit.py status` เลิกพิมพ์ 4 คลาสนั้นในรายการ 'free baseline still to run' — สำเนา output แนบเป็นหลักฐาน",
-   "status": "pending",
+   "status": "done",
    "order": 13,
    "suggested_date": "2026-09-04",
-   "deadline": null
+   "deadline": null,
+   "judged_by": "instrument",
+   "exam_evidence": "qa/blenderkit-month-results.json,pipeline/scripts/blenderkit.py,docs/blenderkit-month/style-panel-prompt.md",
+   "done_note": "EXAM (instrument, not me): `blenderkit.py status` now prints 'free baseline still to run BEFORE a paid fetch in that class: hung_garments' — the four fenced classes are gone from that list. 12 blind judges (3 per class, frozen prompt, the SAME five anchors as the 2026-08-23/08-24 panels, deterministic sha1 letters, tier never revealed) scored 20 free thumbnails per class, 240 verdicts, all 20/20 complete. RESULT: wall_art 3/20 panel-passing, plant 9/20, cushion_throw 4/20, nightstand_objects 6/20. THE CONSEQUENCE IS THE FINDING: D-119's frozen C2 pass rule counts only non-control classes whose free baseline recorded ZERO passing pieces, and needs >=3 of them. All four came back non-zero and the fifth (hung_garments) was contaminated at p2r86, so there are ZERO qualifying classes and C2 CANNOT PASS as written. That is the rule working, not breaking: it was frozen before the candidates were seen so it could come out this way, and what it measured is that the FREE tier already supplies panel-passing pieces in every fenced class. Rewriting it to be passable is the flattering-scorer defect — it stays as frozen and goes to the owner as D-119's call. Side effect handled: adding the `curtain` band flipped the instrument freeze to CHANGED; proven addition-only against c8cee62 and re-stamped with the band and its MR55 source named in blenderkit.py, per what `status` demands."
   },
   {
    "id": "STUDY-D14-rug",

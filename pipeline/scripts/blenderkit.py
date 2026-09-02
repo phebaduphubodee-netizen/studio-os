@@ -1240,9 +1240,30 @@ def instrument_digest(bands=None, ratios=None):
 # FROZEN_AT stays 2026-08-24: it records when the freeze STARTED — its own test says
 # the instrument "cannot speak for 08-22..08-24 and must not imply it can" — so moving
 # it to the re-stamp date would erase the honest gap. The SHA is what tracks the bands.
+#
+# RE-STAMPED AGAIN 2026-09-02 (STUDY-D12-curtains), and this time the freeze caught it the
+# same hour rather than two days later. ONE band was added and nothing was edited or
+# removed — proven by diffing BANDS and MIN_DEPTH_RATIO against c8cee62, the commit before
+# the curtain work: BANDS added ['curtain'], removed [], edited []; MIN_DEPTH_RATIO added
+# ['curtain'], edited []. So this is the same benign direction as the 08-26 re-stamp (an
+# addition cannot change a verdict already given, because no asset was ever measured
+# against a band that did not exist).
+#
+# WHICH BAND MOVED AND ITS CITED SOURCE, which is what `status` demands out loud:
+#   curtain = (1400.0, 3500.0, "z") + MIN_DEPTH_RATIO 0.01
+#   TOP, code-derived: knowledge/codes-th/mr55-residential-dimensions.md floor-to-floor
+#     2.60 m for a dwelling and 3.50 m for the tallest room class that still gets curtains
+#     (ห้องแถว/ตึกแถว ชั้นล่าง, ห้องขายสินค้า-ห้องประชุม). It was widened from a round 3300
+#     the same hour it was written, because the guard refused a real 3302.4 mm curtain by
+#     2.4 mm — a band edge picked for tidiness rather than from a premise is the shape R9b
+#     names, and the fix is to derive the edge, never to nudge it to fit the sample.
+#   BOTTOM, declared assumption: sill-length and roman/venetian drops measured 1.59-2.48 m
+#     in the 2026-09-02 catalogue, so 1400 sits below the observed floor with margin.
+#   Our own room is the sanity check: ceiling 2800 (master-suite.CANONICAL.spec.json) with
+#     curtains.py TOP_EMBED_M 0.03 / HEM_CLEAR_M 0.015 gives a drop of ~2785.
 INSTRUMENT_FROZEN_AT = "2026-08-24"
-INSTRUMENT_RESTAMPED_AT = "2026-08-26"
-INSTRUMENT_FROZEN_SHA = "e49106d7d175a0e9b7514c09784d64758e8e53ae24ff41158561d598ac735a90"
+INSTRUMENT_RESTAMPED_AT = "2026-09-02"
+INSTRUMENT_FROZEN_SHA = "5dd32d1fca793c212a0e7d5d041d315b2ffa5c8ea4be73e6c000f8422fdedc2e"
 
 
 def load_results(path=None):
