@@ -459,13 +459,13 @@
     "sheet_symbol": "S2 (draws SOUTH), 2-layer — drawn on the sheet"
    }
   ],
-  "still_owner": "heights (head/pelmet height — no z on a furniture plan), track hardware/fabric SKU, and the physical curtain-track cross-section are SILENT on this tier — supplier/RCP questions, do not invent.",
+  "still_owner": "heights (head/pelmet height — no z on a furniture plan), track hardware/fabric SKU, and the physical curtain-track cross-section are SILENT on this tier — supplier/RCP questions, do not invent. AMENDED 2026-09-02 (P2r-38, D-192) — RENDER TIER ONLY, and only because building nothing was measured to be the worse lie: six of six sighted judges plus C2 and C3 read the window wall as fabric that \"hangs from nothing\", and a census of the frame agrees — 455 of 706 sheer columns run off the top frame edge and 233 of the remaining 251 touch the ceiling with a zero-row junction whose step is the WRONG SIGN. So `glazing_header.py` now builds a pelmet board on each of the three legs, with its DROP (150 mm) and SECTION (18 mm) carried as DECLARED ASSUMPTIONS, bracketed by --pelmet-drop= and printed into the render path at every build. This does NOT resolve the key above: the real head height, the track hardware and the physical cross-section remain the owner's/supplier's, the render shows a depiction and not a specification, and his sentence on the image replaces the [est] — the same standing this spec already gives exterior.juliet_rail, an element we can see but cannot dimension. What is now FORBIDDEN is the silent version: a drop typed into the builder with no [est] and no print.",
   "render_state": {
    "_provenance": "RENDER CONVENTION (Claude, 2026-07-17 curtain-materializer build) — owner-vetoable DATA, encoded here so the scene state can never be reverted by an omission (the D7 lesson). Day-scene default: the sheer DRAWN across the glass (softly veiling the view is its whole job by day), the blackout PARKED off the glass. Park zones are geometry, not taste: west parks NORTH of the glass on the owner-traced track (y451..2650); east parks in the 250.8 slot behind BF14 (y-148.6..110 — exactly where the sheet's S2 symbol stacks its fabric). The SOUTH leg's track has no off-glass run (the glass is corner-to-corner), so its parked blackout stacks IN FRONT of glass at the WEST end ('lo') — physically honest, disclosed at build time, owner may re-park it east.",
    "blackout": "parked",
    "privacy": "drawn",
    "park_end_over_glass": {
-    "south": "lo"
+    "south": "hi"
    },
    "fabric_rgba_linear": {
     "_why": "COMPOSITION, not SKU (fabric SKU stays still_owner): the opaque layer JOINS the ~60% plaster ground — Albers grounding from the curtain DR (3ce5f5e): a light curtain on a light ground has its diversion 'reduced if not obliterated', which is what D1-A wants so the oak keeps its 30%. Values are LINEAR for Blender default_value (the 'looks right in sRGB renders pale pink' lesson).",

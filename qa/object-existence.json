@@ -25,6 +25,33 @@
  ],
  "objects": [
   {
+   "assembly": "e5_trim_bf14_wash_0",
+   "identity": "Trim ring of the BF14 slat-wall wash luminaire, in the ceiling plane at z~2.79 m.",
+   "exists": "not-in-drawing: element 5 RCP — same tier as every other luminaire in this room; a furniture plan carries no reflected ceiling",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "INHERITED DEBT, discharged here rather than absorbed silently. These two arrived in the frame in an earlier round (they are already listed unrowed in the p2r93b build log, before P2r-38 touched anything) and the ratchet has been printing them since. Rowing them is carrying the rule out, not hiding a miss: they are the trim ring and aperture disc of the BF14 slat-wall WASH fixture, the same two-part construction every downlight in this room already carries a row for (e5_trim_dl*/e5_lens_dl*), and the wash they belong to is the light that explains the graze down the battens — the brightest thing in the upper frame would otherwise come from nowhere."
+  },
+  {
+   "assembly": "e5_lens_bf14_wash_0",
+   "identity": "Emitting aperture disc of the BF14 slat-wall wash luminaire, inside its trim ring.",
+   "exists": "not-in-drawing: element 5 RCP — same tier as every other luminaire in this room; a furniture plan carries no reflected ceiling",
+   "held_by": "e5_trim_bf14_wash_0",
+   "operable": false,
+   "verdict": "keep",
+   "why": "INHERITED DEBT, discharged here rather than absorbed silently. These two arrived in the frame in an earlier round (they are already listed unrowed in the p2r93b build log, before P2r-38 touched anything) and the ratchet has been printing them since. Rowing them is carrying the rule out, not hiding a miss: they are the trim ring and aperture disc of the BF14 slat-wall WASH fixture, the same two-part construction every downlight in this room already carries a row for (e5_trim_dl*/e5_lens_dl*), and the wash they belong to is the light that explains the graze down the battens — the brightest thing in the upper frame would otherwise come from nowhere."
+  },
+  {
+   "assembly": "pelmet",
+   "identity": "แผ่นบังราง (curtain header / pelmet) — a board hung from the ceiling at the room edge of the 250 mm curtain pocket, on each of the three legs of the glass-L. It is what the curtain hangs BEHIND: the thing that gives the fabric a top.",
+   "exists": "not-in-drawing: the drawing of record is a FURNITURE PLAN — it carries no elevation, and draws no track along the south facade at all (only the S1 west and S2 east curtain symbols). `curtains.still_owner` names pelmet height and track cross-section as supplier/RCP questions, so no height is read from ink. What the sheet DOES carry is the 250 mm pocket itself, ink-measured at three legs (west 250.8 / south 247.6 / east 250.8, agreeing within one 15.87 mm ink stroke), and the spec's own makeup_decision cites the NITAS recessed-pocket tier for it — a pocket whose declared purpose is to CONCEAL a track implies the board that conceals it. DECLARED ASSUMPTION at render tier (D-193): drop 150 mm x section 18 mm, --pelmet-drop= brackets it, printed every build, and his sentence on the image replaces the [est].",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "R10 SENSE is satisfiable without the sheet here, and the absence was the bigger lie. Six of six sighted judges across two frames, plus C2 (three items) and C3 (one), read the fabric as hanging from nothing — and the frame agrees on measurement, not taste: 455 of 706 sheer columns run off the top frame edge, and 233 of the remaining 251 meet the ceiling with a zero-row junction whose luma step is the WRONG SIGN. A board 150 mm deep at the pocket edge is manufacturable, is held by the slab it hangs from, and consumes no pocket depth the fabric uses (the return that would have was CAPPED by measurement to 6 mm and dropped — see glazing_header._return_cap). It leaves the frame the moment he says so: one flag, or one line in build_room."
+  },
+  {
    "assembly": "wall_4",
    "identity": "A segment of the room's perimeter wall — a prism extruded from room.outline_mm by wall_thk_mm 100, cut by the openings the spec declares. Not a discretionary object: it is the envelope the DXF gives.",
    "exists": "sheet:outline — the perimeter is ink-trued and owner-adopted (room.outline_mm, corrections_applied #9/#11)",
