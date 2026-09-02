@@ -1880,7 +1880,9 @@ def add_suite_eye_camera(spec, outline_m, h):
     # lane B: in the story state this fill DEMOTES (study: our strongest source was
     # this cool fill = the measured no-key signature; a fill must never out-power keys)
     fill_data = bpy.data.lights.new("Fill", type='AREA')
-    fill_data.energy = 60 * _e5.story_scales(_LIGHT_STORY)["fill"]
+    _fl = float(globals().get("_FILL_LEVEL", 1.0))
+    fill_data.energy = 60 * _e5.story_scales(_LIGHT_STORY)["fill"] * _fl
+    print(f"  fill: {fill_data.energy:.2f} W behind the lens (story fill x level {_fl:.2f})")
     fill_data.size = 2.0
     try:
         fill_data.color = (0.85, 0.90, 1.0)
@@ -2905,7 +2907,79 @@ _DUVET_TUCKS = False
 # Reverse: --no-key-sun renders the A leg (byte-identical rig to p2r77). The energy is
 # still bracketed with --key-sun=<W> per the amplitude-bisect law.
 _KEY_SUN = True
-_KEY_SUN_W = 2.0
+# 2.0 W/m2 was the p2r78 value, chosen on a sun that 2a13fe6 shows was never linked
+# (see _add_story_daylight). SETTLED 8.0 at p2r92 (D-185) on the quick bracket below,
+# under a sun that is in the scene and aimed through the pane in the picture.
+# Reverse: --key-sun=2.
+_KEY_SUN_W = 8.0
+# p2r92 (P2r-34, ORD-2026-09-01 item 1): the key is SOLVED THROUGH A NAMED OPENING.
+# `_KEY_THROUGH` names an id in room.openings; the beam is derived by key_sun.py
+# (pure) against THAT pane's inward normal, with the azimuth offset and the elevation
+# printed as DECLARED ASSUMPTIONS, and the pane's floor patch projected into the
+# frame and refused when it lands outside it. None keeps the p2r35-p2r91 derivation
+# (area-weighted normal of the OUT-OF-FRUSTUM portals) — which on any camera that
+# shows a window is the wrong pane by construction: `daylight_portals` skips the
+# glass inside the view, so the window in the picture was the one the sun could
+# not come through. The panel of 2026-09-01 read the result as "lit from nowhere".
+# SETTLED AS THE DEFAULT AT p2r92 (D-185): the pane is `glz-slider` — the south
+# glass in frame at the right edge of the D-152 camera, the only opening the sheet
+# gives on a wall that camera sees (R12: the walls at left carry none). +45 deg puts
+# the sun to the south-east; the beam's dot with the pane normal is +0.603 and its
+# floor patch lands on the rug, the bed and the bench (key_sun.solve, printed on
+# every build). Reverse: --key-through= with an empty id is refused, so the reverse is
+# the two constants below (None / 0.0), or --no-key-sun for no directional light.
+_KEY_THROUGH = "glz-slider"
+_KEY_AZ_DEG = 45.0
+_KEY_ELEV = None            # None -> KEY_SUN_ELEVATION (0.55 rad, declared below)
+# The behind-the-lens fill at 1.0 is what p2r91 shipped. --fill-level=<f> scales it
+# (a stop down = 0.5); it is a separate lever from the portals (--daylight-level=) and
+# the sun (--key-sun=) so power is never carried by a lever that also carries colour.
+# SETTLED 0.5 (a stop down) at p2r92 (D-185). Reverse: --fill-level=1.
+_FILL_LEVEL = 0.5
+# p2r93 (P2r-34 leg 2): THE SHEER IS THE KEY'S DIFFUSER, AND IT WAS A PERFORATED SCREEN.
+# Two independent eyes on p2r92 (C3 #1; exit-panel judge j2 #3) named the sunlit rug's
+# hard comb of stripes; the 100% crop shows they are the drawn sheer's own pleat
+# shadows — the Alpha-only voile passes 62% of every ray STRAIGHT THROUGH and scatters
+# nothing forward, so one crossing vs three (a pleat) is 0.62 vs 0.24 on the floor,
+# printed at the wave's period (stripe_mod: period 55-77 px, autocorr peak 0.33-0.53,
+# vs none in the unlit rug). A real voile transmits mostly by SCATTERING through its
+# yarns; only the openness factor goes straight through. `_SHEER_DIRECT_FRAC` is the
+# share of the TRANSMITTED light that is direct (the openness); the rest is a
+# Translucent lobe. Total transmittance stays 1 - sheer_alpha so the room's energy
+# through the pane is unchanged to first order. DECLARED ASSUMPTION — the vault marks
+# BSDF transmission values for sheers as GAP (knowledge/styles/color-composition.md:350)
+# and the one research ask on it (docs/research/2026-09-01-sheer-btdf/) returned 0
+# grounding chunks, so its numbers are quarantined, not adopted. Bracketed by two
+# instruments instead: the comb must go (stripe_mod) while p95/p5 stays >= 5.0
+# (luma_range; the sun's W is the power lever if the range drops).
+# Reverse: --sheer-alpha-only (the p2r92 material, bit-for-bit) or --sheer-direct=<f>.
+_SHEER_DIRECT_FRAC = 0.30
+# p2r92 leg c: the dark end of the range (p5) is set by the SUM of the ambient
+# sources, not by the sun — the 8 W key through the named pane moved p95/p5 from
+# 3.17x to 3.42x while 18 story-dimmed cans, the HDRI at 0.55 x 2.3 and 34 W of
+# portals kept every corner at the same value. These scale the two layers that
+# had no lever (the portals already have --daylight-level=). 1.0 = the story
+# scales exactly; a day frame runs its recessed cans at a whisper. The lens glow
+# of every can follows the same factor so a dimmed can LOOKS dimmed (a bright
+# lens over a dark pool is the R10 SENSE item 'a fixture that emits nothing').
+#
+# THE BRACKET THAT SETTLED THEM (quick rung, D-152 camera, luma_range p95/p5 on the
+# full 1200x900 playblast; the delivered peers measure 5.0-5.4x):
+#   p2r92a  sun 2 W portal-derived, fill 1.0, portals 0.20, ambient 1.0, hdri 1.0  3.17x
+#   p2r92b  sun 8 W through glz-slider, fill 0.5, portals 0.20, amb 1.0, hdri 1.0  3.42x
+#   p2r92c  + portals 0.10, ambient 0.25, hdri 0.60                                4.90x
+#   p2r92d  + portals 0.10, ambient 0.15, hdri 0.45                                5.33x
+# The sun alone moved the range by 0.25x; the ambient sum moved it by 1.9x — which is
+# the lighting-design law that flatness is a RANGE and the knob that moves a range is
+# rarely the one that moves brightness. Settled at the d leg (in the peer band, 0.8% of
+# pixels below 0.08 against the peers' 1.0-1.3%, nothing crushed). Reverse:
+# --ambient-level=1 --hdri-level=1 --daylight-level=0.2 (each is one flag).
+_AMBIENT_LEVEL = 0.15
+_HDRI_LEVEL = 0.45
+# The portals' share of the daylight budget. 0.20 was the p2r78 settlement (D-146,
+# read from _add_story_daylight); it lived only as the getter's fallback until p2r92,
+# when the bracket above settled 0.10 as the default. Reverse: --daylight-level=0.2.
+_DAYLIGHT_LEVEL = 0.10
 _GRAVITY_RAMP = True
 _BENCH_DENT = True
 # p2r29 (P4-parallel head a): the sconces' EMITTING APERTURES. The story state
@@ -4096,9 +4170,56 @@ def _curtain_sheer(name, rgba, alpha):
     # which is simply false — but velvet is a PILE whose identity is directional sheen, and
     # putting that scatter on a voile is MA-01 material mismatch.
     m = _woven(name, rgba, 0.6, _matpre.cloth_args("plain"), sheen=1.0)
-    _nt, bsdf = _principled(m)
-    if bsdf:
+    nt, bsdf = _principled(m)
+    if not bsdf:
+        return m
+    direct = globals().get("_SHEER_DIRECT_FRAC")
+    if direct is None:
+        # p2r35-p2r92 model: coverage as Alpha, every non-covered ray straight through.
         _set(bsdf, "Alpha", alpha)
+        print(f"  sheer '{name}': ALPHA-ONLY (coverage {alpha:.2f}, straight-through "
+              f"{1 - alpha:.2f}, no forward scatter) — the p2r92 diffuser")
+        return m
+    # p2r93: openness (straight through) + Translucent (forward scatter) + the woven
+    # Principled (reflection, sheen, weave) — see _SHEER_DIRECT_FRAC.
+    direct = float(direct)
+    if not 0.0 <= direct <= 1.0:
+        raise ValueError(f"_SHEER_DIRECT_FRAC={direct}: a share of the transmitted light, 0..1")
+    t_total = 1.0 - alpha                       # the spec's own number, unchanged
+    openness = t_total * direct                 # straight-through share of ALL rays
+    t_dif = t_total - openness                  # forward-scattered share of ALL rays
+    fabric = 1.0 - openness                     # rays that meet the yarns
+    trans_share = t_dif / fabric if fabric > 1e-9 else 0.0
+    out = next((n for n in nt.nodes if n.type == "OUTPUT_MATERIAL"), None)
+    if out is None:
+        raise RuntimeError(f"sheer '{name}': the woven tree has no material output")
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    tl = nt.nodes.new("ShaderNodeBsdfTranslucent")
+    tl.inputs["Color"].default_value = rgba
+    # the yarns scatter with the same albedo variation and relief the reflection uses
+    for sock in ("Base Color", "Normal"):
+        src = bsdf.inputs.get(sock)
+        if src is not None and src.is_linked:
+            dst = tl.inputs.get("Color" if sock == "Base Color" else "Normal")
+            if dst is not None:
+                nt.links.new(src.links[0].from_socket, dst)
+    mix_f = nt.nodes.new("ShaderNodeMixShader")     # the yarn: reflect vs scatter through
+    mix_f.inputs["Fac"].default_value = trans_share
+    nt.links.new(bsdf.outputs["BSDF"], mix_f.inputs[1])
+    nt.links.new(tl.outputs["BSDF"], mix_f.inputs[2])
+    mix_o = nt.nodes.new("ShaderNodeMixShader")     # the weave: hole vs yarn
+    mix_o.inputs["Fac"].default_value = fabric
+    nt.links.new(tr.outputs["BSDF"], mix_o.inputs[1])
+    nt.links.new(mix_f.outputs["Shader"], mix_o.inputs[2])
+    for lk in list(nt.links):
+        if lk.to_node == out and lk.to_socket.name == "Surface":
+            nt.links.remove(lk)
+    nt.links.new(mix_o.outputs["Shader"], out.inputs["Surface"])
+    _set(bsdf, "Alpha", 1.0)                        # coverage now lives in the mix
+    print(f"  sheer '{name}': openness {openness:.3f} straight through + {t_dif:.3f} "
+          f"forward-scattered (Translucent) + {fabric * (1 - trans_share):.3f} reflected "
+          f"— total transmittance {t_total:.2f} = 1 - sheer_alpha {alpha:.2f}; direct "
+          f"share {direct:.2f} [DECLARED ASSUMPTION, see _SHEER_DIRECT_FRAC]")
     return m
 
 
@@ -7630,7 +7751,7 @@ def _add_e5_lights(spec, h_m):
         _nt = _lens_m.node_tree
         _em = _nt.nodes.new("ShaderNodeEmission")
         _em.inputs["Color"].default_value = (1.0, 0.86, 0.70, 1.0)
-        _em.inputs["Strength"].default_value = 30.0
+        _em.inputs["Strength"].default_value = 30.0 * float(globals().get("_AMBIENT_LEVEL", 1.0))
         _out = _nt.nodes.get("Material Output")
         _nt.links.new(_em.outputs[0], _out.inputs["Surface"])
 
@@ -7674,7 +7795,9 @@ def _add_e5_lights(spec, h_m):
         # only: the CD state keeps its signed 0.22 everywhere.
         ld.size = 0.11 if (spec.get("_light_story")
                            and "wardrobe" in str(f["zone"])) else 0.22
-        ld.energy = f["watts"] * (0.88 + 0.24 * _det01(f"e5a{i}")) * _e5.ambient_scale(_sc, f["zone"])
+        ld.energy = (f["watts"] * (0.88 + 0.24 * _det01(f"e5a{i}"))
+                     * _e5.ambient_scale(_sc, f["zone"])
+                     * float(globals().get("_AMBIENT_LEVEL", 1.0)))
         if spec.get("_light_story"):
             _ies_beam(ld, "5.ies", norm=0.20)    # Halo H7t-301 recessed open trim —
             #                                      the pack's one true recessed-can profile
@@ -7939,7 +8062,19 @@ def _add_story_daylight(spec):
     # reason stands on the measurement instead: these portals were over-powered for
     # the story the room declares. Bracketed with --daylight-level=<f>; at 1.0 the
     # portals are exactly what p2r77 shipped.
-    _dsplit = float(globals().get("_DAYLIGHT_LEVEL", 0.20))
+    #
+    # AND THE "0.017 CODES" ABOVE WAS MEASURED ON A SUN THAT WAS NOT IN THE SCENE.
+    # Found 2026-09-01 while re-reading this for P2r-34: the four bracket legs it
+    # cites (p2r78, 0-16 W/m2) ran under the 2a13fe6 defect — `_add_key_sun` built the
+    # datablock and never linked it, so every leg measured the same rig with a
+    # different number typed into a light Blender did not render. "All within noise
+    # of each other" is exactly what four identical renders look like. p2r91 was the
+    # first full frame with a linked sun; the bracket is redone at p2r92 with the
+    # sun both linked and aimed through a NAMED pane (see _KEY_THROUGH). The sentence
+    # above stays as the record of what was believed and why it could be believed:
+    # a measurement of a light's contribution that never asked whether the light
+    # was there.
+    _dsplit = float(globals().get("_DAYLIGHT_LEVEL", 0.10))
     n, watts = 0, 0.0
     for p in _e5.daylight_portals(spec, stand, aim):
         ld = bpy.data.lights.new(f"story_daylight_{p['name']}", type='AREA')
@@ -7991,6 +8126,23 @@ KEY_SUN_ROTATION = 2.3          # fallback only — reached solely if portal sol
 # chosen softness is what makes the shadow edge honest; every softening knob in this
 # scene already lives in the AREA emitters.
 KEY_SUN_ANGLE = 0.00918
+# p2r93 (P2r-34 leg 2): THE SUN THE ROOM SEES IS THE SUN AFTER THE SHEER. Every path
+# from the key enters through a pane the 3-pleat sheer covers (curtains.count 3, one per
+# leg of the glass-L), and a woven voile does not pass the disc unchanged: its BTDF has a
+# narrow forward lobe a few degrees wide, so the shadow of anything behind the sheer is
+# the sun CONVOLVED with that lobe. Rendered with the bare 0.526 deg disc, the pleats
+# printed a hard comb on the floor at every quick leg of p2r92/p2r93 (stripe_mod: period
+# 55-77 px, autocorr 0.33-0.53 at full size) — C3 #1 and judge j2 #3 on p2r92 — and the
+# Translucent-mix sheer (see _SHEER_DIRECT_FRAC) did not remove it, because Cycles
+# carries the sun to the floor on SHADOW RAYS, which are straight lines through the
+# openness fraction whatever the fabric does to camera rays. The one honest place for
+# the lobe is therefore the sun's own angular size, and only while the named pane is
+# behind a sheer. The width is a DECLARED ASSUMPTION (vault GAP: no measured voile BTDF;
+# the 2026-09-01 research ask returned 0 grounding chunks and is quarantined under
+# docs/research/2026-09-01-sheer-btdf/) bracketed by the floor measurement: at a 1.5 m
+# throw a 0.07 rad (4 deg) lobe blurs the ~110 mm pleat comb by ~105 mm, i.e. by about
+# one bar. Reverse: --key-sun-lobe=0 restores the bare disc.
+_KEY_SUN_LOBE = 0.07
 
 
 def _add_key_sun(spec):
@@ -8057,7 +8209,45 @@ def _add_key_sun(spec):
     # Solve it forward instead of negating: we want d_xy parallel to the area-weighted
     # INWARD normal n, and d_xy = sin(theta) * (-sin rot, cos rot), so rot = atan2(-nx, ny).
     _az, _nvec = None, None
+    _elev = float(globals().get("_KEY_ELEV") or KEY_SUN_ELEVATION)
+    _through = globals().get("_KEY_THROUGH")
+    _ksol = None
+    if _through:
+        # p2r92: the pane is NAMED and the beam is proven against IT (see _KEY_THROUGH).
+        # key_sun is pure and runs the same derivation under plain python, so the
+        # numbers printed here can be reproduced without Blender:
+        #   python pipeline/scripts/key_sun.py <spec> --through <id> --az <deg> --camera <variant>
+        import key_sun as _ks
+        try:
+            _kcam = _ks.cam_for(spec, None)
+        except BaseException as _ke:                     # noqa: BLE001
+            raise SystemExit(f"--eye key sun REFUSED: cannot read the eye camera for the "
+                             f"floor-patch projection ({_ke}) — a key whose landing cannot "
+                             f"be placed in the frame is not a derivation")
+        try:
+            _ksol = _ks.solve(spec, _through, float(globals().get("_KEY_AZ_DEG", 0.0)),
+                              _elev, cam=_kcam, stand_mm=(_kcam["ex"] / _ks.MM,
+                                                          _kcam["ey"] / _ks.MM))
+        except _ks.KeySunError as _ke:
+            raise SystemExit(f"--eye {_ke}")
+        if _ksol["patch_in_frame"] is not True:
+            raise SystemExit(
+                f"--eye key sun REFUSED: the floor patch of {_through!r} projects OUTSIDE "
+                f"the frame (uv {_ksol.get('patch_uv')}) — the beam would light what the "
+                f"viewer cannot see, which is the 'lit from nowhere' verdict rebuilt with "
+                f"a sun. Change --key-az or name the pane that is in the picture.")
+        if not _ksol["lands_on"]:
+            raise SystemExit(
+                f"--eye key sun REFUSED: the floor patch of {_through!r} lands on no listed "
+                f"mass — a key that touches nothing named has lit nothing the R10 test "
+                f"can point at")
+        _fr = _ksol["opening"]
+        _nvec = (_fr["nx"], _fr["ny"])
+        _az = _ksol["euler"][2]
+        print("  " + _ks.describe(_ksol))
     try:
+        if _through:
+            raise StopIteration("named pane")             # skip the portal average
         _cam = spec.get("eye_camera") or {}
         _ports = _e5.daylight_portals(spec, _cam.get("stand_mm"), _cam.get("aim_mm"))
         _ax = sum(p["nx"] * p["area_m2"] for p in _ports)
@@ -8066,6 +8256,8 @@ def _add_key_sun(spec):
         if _an > 1e-9:
             _nvec = (_ax / _an, _ay / _an)
             _az = math.atan2(-_nvec[0], _nvec[1])
+    except StopIteration:
+        pass                                             # named pane already solved
     except Exception as _ae:                             # noqa: BLE001
         print(f"  key sun: portal azimuth unavailable ({_ae}) — falling back to the "
               f"orphaned constant, which a ray-cast has already shown reaches "
@@ -8078,10 +8270,18 @@ def _add_key_sun(spec):
     sd = bpy.data.lights.new("key_sun", type='SUN')
     sd.energy = _KEY_SUN_W
     sd.color = _e5.DAYLIGHT_RGB
+    _lobe = float(globals().get("_KEY_SUN_LOBE") or 0.0)
+    _sheer_over_pane = bool(_through) and bool(
+        (spec.get("curtains") or spec.get("room", {}).get("curtains") or {}).get("layers"))
+    _disc = _lobe if (_lobe > 0.0 and _sheer_over_pane) else KEY_SUN_ANGLE
     try:
-        sd.angle = KEY_SUN_ANGLE
+        sd.angle = _disc
     except Exception:                                    # noqa: BLE001
         pass
+    if _disc != KEY_SUN_ANGLE:
+        print(f"  key sun: disc widened to {_disc:.3f} rad ({math.degrees(_disc):.1f} deg) — "
+              f"the sun AFTER the sheer's forward lobe over {_through!r} [DECLARED "
+              f"ASSUMPTION, see _KEY_SUN_LOBE; --key-sun-lobe=0 restores the bare disc]")
     # AND THE GLASS MUST STOP CASTING A SHADOW. Cycles treats a transmissive surface as
     # an OPAQUE blocker on shadow rays by default, so a sun outside a glazed opening is
     # shadowed by the very window it should be shining through: the portal-derived beam
@@ -8114,7 +8314,7 @@ def _add_key_sun(spec):
     # past +-0.7 — zero light, not weak light. Caught only because the amplitude-bisect
     # law demands a LOUD bracket before a settled value; at the intended 2.0 W this would
     # have read as "the mechanism does not reach the frame" and killed a correct idea.
-    so.rotation_euler = (1.5707963 - KEY_SUN_ELEVATION, 0.0, _rot)
+    so.rotation_euler = (1.5707963 - _elev, 0.0, _rot)
     #
     # THE BEAM IS RE-DERIVED FROM THE ROTATION WE JUST SET AND CHECKED AGAINST THE
     # GLASS — fail-closed, because this is the second time this one function has
@@ -8123,7 +8323,7 @@ def _add_key_sun(spec):
     # reaches the frame". A direction cannot be verified by an amount. So: recompute
     # the emission vector from the object's own euler, dot it with the aperture's
     # inward normal, and REFUSE to render a beam that is not entering the room.
-    _th = 1.5707963 - KEY_SUN_ELEVATION
+    _th = 1.5707963 - _elev
     _beam = (-math.sin(_th) * math.sin(_rot),
              math.sin(_th) * math.cos(_rot),
              -math.cos(_th))
@@ -8133,7 +8333,8 @@ def _add_key_sun(spec):
             raise SystemExit(
                 f"--eye key sun REFUSED: the beam ({_beam[0]:+.3f},{_beam[1]:+.3f}) "
                 f"is not entering the room through its own glass — dot with the "
-                f"area-weighted inward normal ({_nvec[0]:+.3f},{_nvec[1]:+.3f}) is "
+                f"{'named pane ' + repr(_through) if _through else 'area-weighted'} inward "
+                f"normal ({_nvec[0]:+.3f},{_nvec[1]:+.3f}) is "
                 f"{_dot:+.3f}, under the 0.30 floor. At exactly 0.000 the sunlight "
                 f"runs ALONG the plane of the window, which is what shipped from "
                 f"p2r35 to p2r77 and read as 'the room is evenly lit'. Fix the "
@@ -8169,10 +8370,19 @@ def _add_key_sun(spec):
             "not in the view layer, so it renders nothing. This is the 2a13fe6 "
             "defect: a light that passes every property check and emits no light. "
             "Never downgrade this to a warning — a warning is how it shipped.")
-    print(f"  KEY SUN: {sd.energy:.2f} W/m2, disc {KEY_SUN_ANGLE:.5f} rad "
-          f"(the real sun's 0.526 deg), elevation {KEY_SUN_ELEVATION} rad / "
-          f"azimuth {math.degrees(_rot):.0f} deg DERIVED from the daylight portals' own "
-          f"area-weighted normals — enters through the glazed openings only")
+    if _through:
+        print(f"  KEY SUN: {sd.energy:.2f} W/m2, disc {_disc:.5f} rad "
+              f"({'the real sun' if _disc == KEY_SUN_ANGLE else 'sun after sheer, real disc'} "
+              f"0.526 deg), elevation {_elev:.3f} rad [DECLARED] / "
+              f"rotation {math.degrees(_rot):.0f} deg SOLVED through the named pane "
+              f"{_through!r} at az {float(globals().get('_KEY_AZ_DEG', 0.0)):+.1f} deg "
+              f"[DECLARED] — its floor patch is in the frame on "
+              f"{', '.join(n for n, _ in _ksol['lands_on'])}")
+    else:
+        print(f"  KEY SUN: {sd.energy:.2f} W/m2, disc {KEY_SUN_ANGLE:.5f} rad "
+              f"(the real sun's 0.526 deg), elevation {_elev} rad / "
+              f"azimuth {math.degrees(_rot):.0f} deg DERIVED from the daylight portals' own "
+              f"area-weighted normals — enters through the glazed openings only")
     return 1
 
 
@@ -11960,6 +12170,71 @@ def place_model(path, x, y, w, d, h, rot=0.0, z0=0.0, retint_fabric=False,
                 if it.users == 0:
                     coll.remove(it)
         return False
+    # TRADE DRESS (D-183 -> D-186, 2026-09-01). A licence never clears a brand mark
+    # (docs/LICENSING.md): the Cartier logo rode into p2r91 on a bookshelf tray's
+    # material IMAGE, and the model study found it — no gate did, because no gate read
+    # material or image names. The lexicon lives in trade_dress.py (pure, tested under
+    # plain python); it is a LEXICON, not an object list (R9b), so the next branded
+    # asset trips it without being named here. What it cannot do is read pixels: a
+    # mark baked into a texture named "albedo.png" passes by name, and that is a
+    # DECLARED GAP printed below, not a clean bill. Reverse: --allow-trade-dress ships
+    # the mesh knowingly and prints that it did.
+    import trade_dress as _td
+    _tdm = {}
+    for _o in meshes:
+        for _sl in getattr(_o, "material_slots", []):
+            _m = _sl.material
+            if not _m:
+                continue
+            _imgs = set(_tdm.get(_m.name, ()))
+            if _m.use_nodes:
+                for _n in _m.node_tree.nodes:
+                    if _n.type == 'TEX_IMAGE' and _n.image:
+                        _imgs.add(_n.image.name)
+                        if _n.image.filepath:
+                            _imgs.add(os.path.basename(_n.image.filepath))
+            _tdm[_m.name] = sorted(_imgs)
+    _tdh = _td.scan(_tdm)
+    if _tdh:
+        _allow = "--allow-trade-dress" in _post_dashdash()
+        for _mn, _bad in _tdh.items():
+            _sub = _td.pick_substitute(_mn, _tdm)
+            if _sub is None and not _allow:
+                _mats = {sl.material for o in news for sl in getattr(o, "material_slots", [])
+                         if sl.material}
+                _imgd = {n.image for m in _mats if m.use_nodes for n in m.node_tree.nodes
+                         if n.type == 'TEX_IMAGE' and n.image}
+                _mshd = {o.data for o in news if o.type == 'MESH' and o.data}
+                for o in news:
+                    bpy.data.objects.remove(o, do_unlink=True)
+                for coll, items in ((bpy.data.meshes, _mshd), (bpy.data.materials, _mats),
+                                    (bpy.data.images, _imgd)):
+                    for it in items:
+                        if it.users == 0:
+                            coll.remove(it)
+                raise SystemExit(
+                    f"TRADE DRESS REFUSED: {os.path.basename(path)} material {_mn!r} carries a "
+                    f"brand mark ({', '.join(_bad)}) and has no clean sibling material to stand "
+                    f"in. A licence never clears trade dress (docs/LICENSING.md, D-183). Choose "
+                    f"another asset, or pass --allow-trade-dress to ship it knowingly.")
+            if _sub is None:
+                print(f"  TRADE DRESS ALLOWED (--allow-trade-dress): {os.path.basename(path)} "
+                      f"material {_mn!r} ships WITH its brand mark ({', '.join(_bad)})")
+                continue
+            _subm = bpy.data.materials.get(_sub)
+            _nsw = 0
+            for _o in meshes:
+                for _sl in getattr(_o, "material_slots", []):
+                    if _sl.material and _sl.material.name == _mn:
+                        _sl.material = _subm
+                        _nsw += 1
+            print(f"  TRADE DRESS: {os.path.basename(path)} material {_mn!r} "
+                  f"({', '.join(_bad)}) swapped for its clean sibling {_sub!r} on {_nsw} slot(s)"
+                  f" — a licence never clears a brand mark (docs/LICENSING.md, D-183)")
+        globals()["_TRADE_DRESS_SWAPS"] = globals().get("_TRADE_DRESS_SWAPS", 0) + len(_tdh)
+    print(f"  trade dress: {len(_tdm)} material(s) / {sum(len(v) for v in _tdm.values())} "
+          f"image name(s) read on {os.path.basename(path)}; {len(_tdh)} branded"
+          f" — names only, pixels unread (declared blind spot)")
     for o in roots:
         o.scale = tuple(v * s for v in o.scale)
     bpy.context.view_layer.update()
@@ -13000,7 +13275,10 @@ def build_suite(spec, label="suite"):
         _wargs = _exterior_world_args(spec, "brown_photostudio_02", 0.3, 30.0, -0.1,
                                       "AgX - Medium High Contrast")
         _hs = _e5.story_scales(bool(spec.get("_light_story")))["hdri"]
-        _hdri_world(_wargs[0], _wargs[1] * _hs, *_wargs[2:])
+        _hl = float(globals().get("_HDRI_LEVEL", 1.0))
+        _hdri_world(_wargs[0], _wargs[1] * _hs * _hl, *_wargs[2:])
+        print(f"  hdri: '{_wargs[0]}' strength {_wargs[1] * _hs * _hl:.3f} "
+              f"(declared {_wargs[1]:.2f} x story {_hs:.2f} x level {_hl:.2f})")
         if spec.get("_light_story"):
             # story mode: trim exposure so the dimmed ambient lets the lamp
             # pools and slat-wash accents read as pools (the whole point of
@@ -13535,6 +13813,55 @@ if __name__ == "__main__":
         # a spelling so the p2r78 bracket legs re-run verbatim from the gate.
         globals()["_DAYLIGHT_LEVEL"] = float(_dsp)
         print(f"  [calibration] daylight portals scaled to {_dsp} of budget")
+    _kt = next((a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--key-through=")), None)
+    if _kt:
+        # p2r92: the key enters through a NAMED pane (see _KEY_THROUGH). The pure
+        # derivation prints under plain python: key_sun.py <spec> --through <id> ...
+        globals()["_KEY_THROUGH"] = _kt
+        print(f"  [calibration] key sun solved through opening {_kt!r}")
+    _ka = next((a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--key-az=")), None)
+    if _ka:
+        globals()["_KEY_AZ_DEG"] = float(_ka)
+        print(f"  [calibration] key sun azimuth offset {_ka} deg from the pane normal "
+              f"(DECLARED ASSUMPTION — no site latitude/time in the brief)")
+    _kel = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--key-elev=")), None)
+    if _kel:
+        globals()["_KEY_ELEV"] = float(_kel)
+        print(f"  [calibration] key sun elevation {_kel} rad (DECLARED ASSUMPTION)")
+    _fll = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--fill-level=")), None)
+    if _fll:
+        globals()["_FILL_LEVEL"] = float(_fll)
+        print(f"  [calibration] behind-the-lens fill scaled to {_fll} of the story fill")
+    _aml = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--ambient-level=")), None)
+    if _aml:
+        globals()["_AMBIENT_LEVEL"] = float(_aml)
+        print(f"  [calibration] recessed-can ambient scaled to {_aml} of the story level")
+    _hdl = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--hdri-level=")), None)
+    if _hdl:
+        globals()["_HDRI_LEVEL"] = float(_hdl)
+        print(f"  [calibration] HDRI environment scaled to {_hdl} of the story level")
+    if "--sheer-alpha-only" in _post_dashdash():
+        # p2r93 reversal: the p2r92 sheer (Alpha coverage, no forward scatter).
+        globals()["_SHEER_DIRECT_FRAC"] = None
+        print("  [calibration] sheer diffuser: ALPHA-ONLY (p2r92 material)")
+    _ksl = next((a.split("=", 1)[1] for a in _post_dashdash()
+                 if a.startswith("--key-sun-lobe=")), None)
+    if _ksl is not None:
+        globals()["_KEY_SUN_LOBE"] = float(_ksl)
+        print(f"  [calibration] key sun disc after the sheer = {_ksl} rad "
+              f"(0 = bare 0.526 deg disc; see _KEY_SUN_LOBE)")
+    _sd = next((a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--sheer-direct=")), None)
+    if _sd:
+        globals()["_SHEER_DIRECT_FRAC"] = float(_sd)
+        print(f"  [calibration] sheer direct share {_sd} of the transmitted light "
+              f"(DECLARED ASSUMPTION — see _SHEER_DIRECT_FRAC)")
     if "--bench-throw" in _post_dashdash():
         # A leg of the p2r78 one-cloth-per-surface change (see _dress_scene [2])
         globals()["_BENCH_THROW"] = True
