@@ -1356,10 +1356,12 @@
    "verbatim_amendments": [
     "ไม่ใช่แค่ของที่อยู่ในเครื่องผมอยู่แล้ว วางแผนเรียนให้หมด",
     "ผมจะสั่งให้คุณเรียนทุกวัน จนกว่าจะถึงวันหมด",
-    "สิ่งที่ผมกลัวคือคุณชอบข้ามงานในงาน (สรุปว่าเสร็จแล้ว เรียนเสร็จแล้ว ทำได้แล้ว แต่พอผมเป็นเช็คก็เจอว่ามันห่วย)"
+    "สิ่งที่ผมกลัวคือคุณชอบข้ามงานในงาน (สรุปว่าเสร็จแล้ว เรียนเสร็จแล้ว ทำได้แล้ว แต่พอผมเป็นเช็คก็เจอว่ามันห่วย)",
+    "เรียนได้แค่วันละเรื่องหรอ?",
+    "งั้นแก้แผนให้เรียนกี่เรื่องก็ได้ต่อวัน"
    ],
    "recorded_at": "docs/blenderkit-study-2026-09-01.md",
-   "commands": "เรียนจากคลัง BlenderKit ทั้งคลัง ไม่ใช่แค่ 71 ไฟล์บนเครื่อง และเรียนทุกวันจนวัน 30 (2026-09-21) — พี่เป็นคนสั่งเปิดวันเรียน หลักสูตรเป็นข้อมูลใน qa/blenderkit-study-curriculum.json (22 หน่วย ทุกหน่วยผูก defect ที่เลนวัดได้จริง) อ่านโดย study_curriculum.py ที่ plan_status พิมพ์ทุก session — หน่วยที่เลยวันพิมพ์เป็นหนี้เอง. สิ่งที่หมดอายุวัน 30 คือสิทธิ์โหลด ไม่ใช่ไฟล์ที่โหลดแล้ว และ bottleneck ที่การเรียนตอบคือ vocabulary ของ kernel (harness audit 2026-08-31: ปั้นชน stop-loss ทั้งที่ massing <2%). วิธีต่อวัน: fetch → probe โครงสร้าง (topology/modifier/node tree เป็นตัวเลข) → เทียบ kernel เรา → โน้ตที่ทุกข้อถือตัวเลขจาก dump → practice rep เฉพาะคลาส BUILD. รั้วประกาศไว้ก่อน: ชั้นนี้อ่านโครงสร้างไม่ใช่พิกเซล (ครึ่งพิกเซลคือ R4 ของ D-119) · ห้าม paid fetch ในคลาส C2 ที่ยังไม่มี free baseline (วัน 13 คือวันปลด fence) · practice rep ไม่ละเมิด R8 — ข้อค้นพบที่ชี้ว่า free-form คลาสไหนปั้นถึงแล้ว = ข้อเสนอแก้ R8 ยื่นพี่ ไม่ใช่การละเมิดเงียบ ๆ.",
+   "commands": "เรียนจากคลัง BlenderKit ทั้งคลัง ไม่ใช่แค่ 71 ไฟล์บนเครื่อง และเรียนทุกวันจนวัน 30 (2026-09-21) — พี่เป็นคนสั่งเปิดวันเรียน หลักสูตรเป็นข้อมูลใน qa/blenderkit-study-curriculum.json (22 หน่วย ทุกหน่วยผูก defect ที่เลนวัดได้จริง) อ่านโดย study_curriculum.py ที่ plan_status พิมพ์ทุก session — หน่วยที่เลยวันพิมพ์เป็นหนี้เอง. สิ่งที่หมดอายุวัน 30 คือสิทธิ์โหลด ไม่ใช่ไฟล์ที่โหลดแล้ว และ bottleneck ที่การเรียนตอบคือ vocabulary ของ kernel (harness audit 2026-08-31: ปั้นชน stop-loss ทั้งที่ massing <2%). วิธีต่อวัน: fetch → probe โครงสร้าง (topology/modifier/node tree เป็นตัวเลข) → เทียบ kernel เรา → โน้ตที่ทุกข้อถือตัวเลขจาก dump → practice rep เฉพาะคลาส BUILD. รั้วประกาศไว้ก่อน: ชั้นนี้อ่านโครงสร้างไม่ใช่พิกเซล (ครึ่งพิกเซลคือ R4 ของ D-119) · ห้าม paid fetch ในคลาส C2 ที่ยังไม่มี free baseline (วัน 13 คือวันปลด fence) · practice rep ไม่ละเมิด R8 — ข้อค้นพบที่ชี้ว่า free-form คลาสไหนปั้นถึงแล้ว = ข้อเสนอแก้ R8 ยื่นพี่ ไม่ใช่การละเมิดเงียบ ๆ. | AMENDED 2026-09-02: the daily-ness stands ('เรียนทุกวัน') but the RATE is uncapped — any number of units per day. The curriculum stops being a calendar of one-per-day and becomes an ORDERED QUEUE against the 2026-09-21 deadline, because the thing that expires is the paid fetch, not the note-writing.",
    "subject": "study-blenderkit-models",
    "scope": "class",
    "units": [

@@ -145,3 +145,73 @@ def test_unreadable_ledger_prints_unknown_not_zero():
     lines = sc.report_lines(path="qa/definitely-not-here.json")
     assert any("unknown" in l for l in lines)
     assert not any("เรียนแล้ว 0" in l for l in lines)
+
+
+# --------------------------------------------------------------------------
+# PACE UNCAPPED 2026-09-02 ("งั้นแก้แผนให้เรียนกี่เรื่องก็ได้ต่อวัน"). The calendar
+# is gone; what replaces it is a queue plus one number that can go red. These
+# tests hold that number's ability to go red — a burn rate that cannot fail is
+# the same thing as the schedule it replaced.
+# --------------------------------------------------------------------------
+def _write(doc):
+    import json
+    import tempfile
+    fd, path = tempfile.mkstemp(suffix=".json")
+    os.close(fd)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(doc, f, ensure_ascii=False)
+    return path
+
+
+def test_pacing_declaration_missing_is_refused(led):
+    """Without it the next session reads `suggested_date` and quietly goes back to
+    one unit per day — R13: an order is a row, and a row that is absent is not obeyed."""
+    bad = copy.deepcopy(led)
+    bad["clock"].pop("pacing")
+    assert any("any-number-per-day" in f for f in sc.check(bad))
+
+
+def test_a_paid_unit_with_no_order_is_refused(led):
+    bad = copy.deepcopy(led)
+    u = next(u for u in bad["units"]
+             if u.get("deadline") and u["status"] in sc.OPEN_STATUSES)
+    u["order"] = None
+    assert any(u["id"] in f and "cannot be queued" in f for f in sc.check(bad))
+
+
+def test_burn_rate_goes_red_when_paid_units_outnumber_the_days_left(led):
+    """NEGATIVE CONTROL for the one line that can fail: with more paid units open
+    than days of access remaining, one-a-day no longer reaches the end and the
+    reader must say so."""
+    import datetime
+    bad = copy.deepcopy(led)
+    for u in bad["units"]:                       # every paid unit still to do
+        if u.get("deadline"):
+            u["status"] = "pending"
+    near = datetime.date.fromisoformat(bad["clock"]["last_day"]) - datetime.timedelta(days=2)
+    path = _write(bad)
+    try:
+        lines = sc.report_lines(path=path, today=near)
+    finally:
+        os.unlink(path)
+    assert any("BURN RATE" in l for l in lines)
+    assert any(l.startswith("  !!") and "ไปไม่ถึงแล้ว" in l for l in lines)
+
+
+def test_burn_rate_stays_quiet_when_there_is_room(led):
+    """POSITIVE CONTROL: the same line must NOT cry on the real file today, or it
+    becomes noise and stops being read."""
+    lines = sc.report_lines()
+    assert any("BURN RATE" in l for l in lines)
+    assert not any("ไปไม่ถึงแล้ว" in l for l in lines)
+
+
+def test_the_queue_is_ordered_and_not_a_calendar(led):
+    """`ถัดไป` must follow `order`, and must not depend on today's date."""
+    import datetime
+    a = sc.report_lines(today=datetime.date(2026, 9, 3))
+    b = sc.report_lines(today=datetime.date(2026, 9, 10))
+    nxt = lambda ls: [l for l in ls if l.strip().startswith("ถัดไป")]
+    assert nxt(a) and nxt(a) == nxt(b), "the queue moved because the calendar moved"
+    orders = [int(l.split("#")[1].split(":")[0]) for l in nxt(a)]
+    assert orders == sorted(orders)

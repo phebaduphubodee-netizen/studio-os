@@ -8,8 +8,20 @@ before this file was written (357/22 critic items, 61/39 DR units, 21/2 gate
 verdicts, the six 54-day skills, the 08-15 audit that was itself unconsumed).
 ORD-2026-09-01-study-blenderkit-models is a DAILY program ("ผมจะสั่งให้คุณเรียน
 ทุกวัน จนกว่าจะถึงวันหมด") against a hard clock (full-plan access ends
-2026-09-21); a missed day must therefore PRINT as debt at session open, because
-the money already spent does not come back for it.
+2026-09-21).
+
+PACE AMENDED 2026-09-02 ("งั้นแก้แผนให้เรียนกี่เรื่องก็ได้ต่อวัน"): the daily-ness
+stands, the RATE is uncapped. What the one-per-day calendar was doing wrong is worth
+keeping written down, because the shape recurs: it bundled a PERISHABLE step (the paid
+fetch, which dies with the subscription) with a PERMANENT one (the note and its
+opposing verification, which runs off 1.3 MB of probe dumps forever), so the
+subscription was being spent at the speed of note-writing — and the last paid unit sat
+on the expiry date itself with zero slack.
+
+So this reader no longer asks "what was scheduled for today". `order` is a priority,
+`deadline` is real and only paid units carry one, and the line that can FAIL is the
+BURN RATE: paid units still open against days of access left. A calendar that nobody
+can miss is not a schedule; a burn rate that goes red is.
 
 Advisory only — learning never blocks a frame (same law as video_curriculum).
 Unreadable prints UNKNOWN, never nothing, never zero.
@@ -102,6 +114,18 @@ def check(led):
                     if p and ("/" in p or "\\" in p) and not os.path.exists(
                             os.path.join(REPO, p)):
                         fails.append(f"{u['id']}: exam_evidence {p} does not exist")
+    # the pace is an ORDER (R13: an order is a row, not a sentence), so its absence
+    # from the file is a defect rather than a default — without this the next session
+    # reads a `suggested_date` column and quietly goes back to one unit per day.
+    pace = (led.get("clock") or {}).get("pacing") or {}
+    if pace.get("rule") != "any-number-per-day":
+        fails.append("clock.pacing.rule is not 'any-number-per-day' — the owner "
+                     "uncapped the rate on 2026-09-02 ('งั้นแก้แผนให้เรียนกี่เรื่องก็ได้ต่อวัน'); "
+                     "a file that does not say so will be read as a one-per-day calendar again")
+    for u in led.get("units", []):
+        if u.get("status") in OPEN_STATUSES and u.get("deadline") and not u.get("order"):
+            fails.append(f"{u['id']}: carries a paid deadline but no order — it cannot be "
+                         "queued, and an unqueued paid unit is the one that gets left behind")
     return fails
 
 
@@ -127,15 +151,30 @@ def report_lines(path=LEDGER, today=None):
     if skipped:
         head += f" · ข้ามโดยบันทึกเหตุ {skipped}"
     out = ["", head + f" · สิทธิ์ full-plan เหลือ {max(days_left, 0)} วัน"]
-    todays = [u for u in units if u.get("date") == today.isoformat()]
-    for u in todays:
-        out.append(f"  วันนี้: {u['id']} — {u['title']} [{u.get('status')}]")
-    debt = [u for u in units
-            if u.get("status") in OPEN_STATUSES and u.get("date", "9999") < today.isoformat()]
-    for u in debt:
-        out.append(f"  !! ค้าง [{u['date']}] {u['id']} — {u['title'][:60]}")
-    if not todays and days_left >= 0 and not debt:
-        out.append("  (วันนี้ไม่มีหน่วยตามตาราง — ตารางอยู่ที่ qa/blenderkit-study-curriculum.json)")
+    # NEXT UP by priority, not by date — any number of these may be taken today
+    pend = sorted((u for u in units if u.get("status") in OPEN_STATUSES),
+                  key=lambda u: (u.get("order") or 999, u["id"]))
+    done_ids = {u["id"] for u in units if u.get("status") in DONE_STATUSES}
+    for u in pend[:4]:
+        gate = (u.get("fetch") or {}).get("fence_gate")
+        tag = "  [ต้องจ่าย]" if u.get("deadline") else ""
+        if gate and gate not in done_ids:
+            tag += f"  [ยังติด fence {gate}]"
+        out.append(f"  ถัดไป #{u.get('order')}: {u['id']} — {u['title'][:52]}{tag}")
+    if len(pend) > 4:
+        out.append(f"  … อีก {len(pend) - 4} หน่วยในคิว (qa/blenderkit-study-curriculum.json)")
+
+    # THE LINE THAT CAN FAIL. Free units keep forever; paid ones die with the
+    # subscription, so this is the only number that carries a real deadline.
+    paid_open = [u for u in units if u.get("deadline") and u.get("status") in OPEN_STATUSES]
+    if paid_open:
+        out.append(f"  BURN RATE: หน่วยที่ต้องใช้สิทธิ์และยังไม่ปิด {len(paid_open)} · "
+                   f"เหลือ {max(days_left, 0)} วัน · ต้องปิดเฉลี่ย "
+                   f"{len(paid_open) / max(days_left, 1):.1f} หน่วย/วัน")
+        if len(paid_open) > max(days_left, 0):
+            out.append(f"  !! หน่วยที่ต้องจ่าย {len(paid_open)} > วันที่เหลือ {max(days_left, 0)} — "
+                       f"อัตราหนึ่งหน่วยต่อวันไปไม่ถึงแล้ว ต้องรวบ fetch ของหลายหน่วยในวันเดียว "
+                       f"(ครึ่งที่หมดอายุคือการดึง ไม่ใช่การเขียนโน้ต)")
     if days_left < 0:
         open_left = [u for u in units if u.get("status") in OPEN_STATUSES]
         out.append(f"  สิทธิ์หมดแล้ว ({led['clock']['last_day']}) — หน่วยที่ไม่จบ "
