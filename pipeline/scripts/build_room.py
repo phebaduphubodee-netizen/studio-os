@@ -48,6 +48,8 @@ import curtains       # bpy-free pure logic: fabric ribbons from curtain_track/c
 #   data the canonical spec carried since 2026-07-16 with NO consumer, so every render showed bare
 #   glass where the owner decided fabric (3ce5f5e measured that omission as a "pale band" finding)
 import exterior       # bpy-free pure logic: the view OUT of the glass — spec-declared garden HDRI
+import glazing_header  # bpy-free pure logic: the pelmet the curtains hang behind — the one
+#   named window item that is NOT behind a drawn sheer (P2r-38)
 #   + the Juliet rail the owner's photo shows outside the slider (option B, 2026-07-17b). Same law:
 #   the studio-HDRI default must not be able to silently override a decided exterior.
 import element5_lighting as _e5   # bpy-free pure logic: the 3 real light layers (element 5) —
@@ -4365,6 +4367,64 @@ def _add_juliet_rail(spec):
     return len(parts)
 
 
+def _add_curtain_header(spec):
+    """Materialize the pelmet the curtains hang behind (ALL layout pure + unit-tested in
+    glazing_header.py; here each board is only a box + the SAME plaster the cove pelmet
+    already wears, so this adds no sixth unsigned material family).
+
+    WHY IT IS A BOARD AND NOT A WINDOW FRAME (P2r-38, 2026-09-02). Six of six sighted
+    judges plus C2 and C3 read the right third as a bright field where "the sheer hangs
+    from nothing" and there is "no track, no pelmet, no header". The lane's first
+    instinct — build the frame, the reveal, the mullions — was priced before it was
+    written and refused by the measurement: `glazing` reaches 931 px (0.022% of frame)
+    and `juliet_black_steel` reaches 0 px on 16 parts that the scene's own dump marks
+    `in_frustum: true`. Everything behind a corner-to-corner drawn sheer is worth
+    nothing, and the rail is the positive control that proves it. The header is the one
+    named item that is NOT behind the fabric: the pocket's room edge is in front of
+    every layer, so this board is occluded by exactly nothing.
+
+    Dims are DECLARED ASSUMPTIONS, and `curtains.still_owner` is amended in the same
+    commit rather than quietly overruled — it names pelmet height and track section as
+    supplier/RCP questions. Same treatment `_add_juliet_rail` gives a rail it can see
+    but cannot dimension: build it, say it is [est], print it into the render path,
+    let the owner overrule it from the image (R3)."""
+    parts, meta = glazing_header.header_parts(
+        spec,
+        drop_mm=globals().get("_PELMET_DROP_MM"),
+        thick_mm=globals().get("_PELMET_THICK_MM"))
+    if not parts:
+        return 0
+    # REUSE THE DATABLOCK, NEVER MINT A SECOND ONE. Measured on p2r94 the first time
+    # this ran: `_material_from_preset` always calls `bpy.data.materials.new`, this
+    # materializer happens to run BEFORE the e5 cove pelmet, so it took the plain name
+    # `e5_pelmet` and Blender renamed the EXISTING cove pelmet to `e5_pelmet.001`. The
+    # pixels were fine and the material census was not — the matmask split one family in
+    # two and `e5_pelmet` fell 55,553 -> 13,309, which reads exactly like a pelmet that
+    # lost 42k pixels. Every rung keyed on the material name would have inherited that.
+    # Same plaster, one datablock, whichever materializer gets there first.
+    # same plaster the e5 cove pelmet wears, and the SAME DATABLOCK: whichever
+    # materializer reaches the name first builds it and the other reuses it
+    # (_material_from_preset is reuse-by-name since P2r-38; before that this call minted
+    # `e5_pelmet` and renamed the cove's to `e5_pelmet.001`, splitting the census in two)
+    mat = _material_from_preset("e5_pelmet", "cool_plaster")
+    for p in parts:
+        o = add_box(p["name"], p["x"], p["y"], p["z"], p["dx"], p["dy"], p["dz"])
+        o.data.materials.append(mat)
+        o["ph_model"] = True
+    print(f"  curtain header: {len(parts)} pelmet board(s) on {meta['legs']} leg(s), "
+          f"drop {meta['drop_mm']:.0f} mm x section {meta['thick_mm']:.0f} mm at the "
+          f"pocket's room edge [DECLARED ASSUMPTION — no elevation on a furniture "
+          f"plan; --pelmet-drop= moves it, owner overrules from the image]")
+    if meta.get("return_dropped"):
+        # the honest half: a stiffener that cannot fit is ABSENT and says so, rather
+        # than shipping 18 mm of solid board through the blackout's swept envelope
+        print(f"  curtain header: bottom return DROPPED — the pocket leaves "
+              f"{meta['pocket_free_room_side_mm']:.0f} mm room-side of the front layer, "
+              f"so the cap is {meta['return_cap_mm']:.0f} mm, under the "
+              f"{glazing_header.RETURN_MIN_MM:.0f} mm floor")
+    return len(parts)
+
+
 def _add_vanity_mirror(spec):
     """Materialize the frameless makeup mirror (ELEMENT 2 D2-3) on the wall between the two west
     casement windows, behind the BF11 kneehole. DATA from the vanity builtin's `design.mirror` — a
@@ -7233,9 +7293,57 @@ def _material_from_preset(mat_name, preset_key):
     """Build ONE material from a spec-selected preset via the SAME factories the legacy
     palette uses. All authoring bounds (albedo band clamp, roughness floor/ceil, binary
     metalness, sRGB->linear) are enforced inside material_presets.factory_args — nothing
-    implausible can arrive here."""
+    implausible can arrive here.
+
+    ONE NAME IS ONE MATERIAL (2026-09-02, P2r-38). Every factory below ends in
+    `bpy.data.materials.new`, which SILENTLY RENAMES a collision to `<name>.001`. That is
+    invisible in geometry and fatal to measurement: the matmask, the value ladder and the
+    style census all key on the material NAME, so the second caller of a name splits one
+    family into two and every rung reads half of it. Measured the hour this was written —
+    `_add_curtain_header` asked for `e5_pelmet` before the e5 cove pelmet did, took the
+    plain name, and pushed the EXISTING cove pelmet to `e5_pelmet.001`; the material's
+    census fell 55,553 -> 13,309 px and read exactly like a pelmet that lost 42k pixels.
+    Nothing failed, and the number was wrong in a way no test asked about.
+
+    So the same name returns the same datablock — and asking for one name with a
+    DIFFERENT preset RAISES rather than handing back whichever material won the race,
+    because that is two materials wearing one name and the census cannot represent it.
+
+    THE HOLE THIS DOES NOT CLOSE, said rather than left for the next reader to find: the
+    conflict check reads a `preset_key` stamp that only THIS function sets, so a material
+    of the same name built by another route (`_solid`, `_painted`, … directly) carries no
+    stamp and is reused here without proof that it is the same thing. Checked when this
+    was written: zero literal names are built by both routes, and the only dynamic
+    direct-route name is `book{bi}` (:5671), so nothing collides today. `hanger_brass`
+    (:6508) had already hand-rolled this same get-or-create for its own call site, which
+    is what said the general version was owed."""
     a = _matpre.factory_args(preset_key)
     f = a["factory"]
+    _have = bpy.data.materials.get(mat_name)
+    if _have is not None:
+        _was = _have.get("preset_key")
+        if _was is not None and _was != preset_key:
+            raise ValueError(
+                f"material {mat_name!r} already exists built from preset {_was!r}, but "
+                f"was just requested from preset {preset_key!r}. One name is one "
+                f"material — every mask and census in this repo keys on the name, so "
+                f"two presets under one name cannot be measured apart. Give the second "
+                f"one its own name, or make both call sites agree on the preset.")
+        return _have
+    _m = _material_from_preset_build(mat_name, preset_key, a, f)
+    if _m is not None:
+        # the stamp the guard above reads. Set here, once, rather than in each of the
+        # eight factory branches — a per-branch stamp is how one of them ends up missing it.
+        try:
+            _m["preset_key"] = preset_key
+        except Exception:                                # noqa: BLE001
+            pass
+    return _m
+
+
+def _material_from_preset_build(mat_name, preset_key, a, f):
+    """The factory dispatch itself. Split out of `_material_from_preset` so the
+    reuse/stamp logic wraps every branch instead of being repeated inside them."""
     if f == "pbr":
         return _pbr_material(mat_name, a.get("slug") or FLOOR_SLUG,
                              base_tint=a.get("tint"), variation=a.get("variation", 0.0))
@@ -12654,6 +12762,7 @@ def build_suite(spec, label="suite"):
         _add_curtains(spec, h)
         _add_casement_sheers(spec)  # ELEMENT 6: AFTER _add_curtains (it owns curtain_sheer)
         _add_juliet_rail(spec)   # outside the glass — same solid-wall reason for the skip
+        _add_curtain_header(spec)  # in FRONT of every layer, so nothing occludes it
         _add_vanity_mirror(spec)  # ELEMENT 2: frameless mirror on the wall between the west windows
 
     # loose furniture: a REAL CC0 model (Poly Haven) when the kind is mapped + cached,
@@ -13856,6 +13965,15 @@ if __name__ == "__main__":
         globals()["_KEY_SUN_LOBE"] = float(_ksl)
         print(f"  [calibration] key sun disc after the sheer = {_ksl} rad "
               f"(0 = bare 0.526 deg disc; see _KEY_SUN_LOBE)")
+    _pd = next((a.split("=", 1)[1] for a in _post_dashdash()
+                if a.startswith("--pelmet-drop=")), None)
+    if _pd is not None:
+        # the pelmet's drop is a DECLARED ASSUMPTION (no elevation on a furniture plan,
+        # and curtains.still_owner names pelmet height a supplier/RCP question), so it
+        # is bracketed from the command line and PRINTED — never quietly retuned.
+        globals()["_PELMET_DROP_MM"] = float(_pd)
+        print(f"  [calibration] curtain-header drop {_pd} mm "
+              f"(DECLARED ASSUMPTION — see glazing_header.DROP_MM)")
     _sd = next((a.split("=", 1)[1] for a in _post_dashdash()
                 if a.startswith("--sheer-direct=")), None)
     if _sd:

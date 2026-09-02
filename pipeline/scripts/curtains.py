@@ -232,18 +232,22 @@ def _wave(lo, hi, lam, amp):
             for i in range(steps + 1)]
 
 
-def curtain_ribbons(spec):
-    """spec (mm) -> fabric ribbons (METRES) for build_room to extrude.
+def curtain_legs(spec):
+    """spec (mm) -> {c, room, outline, pocket, layers, legs} — the curtain GEOMETRY,
+    with no fabric and no render state, or None when the spec has no curtains block.
 
-    Returns [] when the spec has no `curtains` block (opt-in, like millwork's
-    open:true — a spec without curtain data renders exactly as before). Each ribbon:
-      {name, leg, role, type, state, n_folds, over_glass_park,
-       pts: [(x_m, y_m), ...],  # plan polyline of the hanging fabric
-       z0, z1}                   # metres; z1 sits above the ceiling plane (hidden top)
+    EXTRACTED FROM `curtain_ribbons` 2026-09-02 (P2r-38) WITH NO BEHAVIOUR CHANGE, so
+    that a SECOND consumer — `glazing_header.py`, which hangs the pelmet the fabric
+    disappears behind — reads the legs the fabric actually hangs on instead of
+    re-deriving them from the same spec keys. Two derivations of one geometry is the
+    defect this repo keeps paying for: they agree on the day they are written and
+    diverge on the first edit, and nothing fails when they do. The header's run is not
+    "the track path" and not "the glass run" — it is the leg, which is their trimmed
+    intersection, and only this function knows how that trim is made.
     """
     c = (spec or {}).get("curtains")
     if not c:
-        return []
+        return None
     room = spec.get("room") or {}
     outline = [(float(x), float(y)) for x, y in room.get("outline_mm") or []]
     if len(outline) < 3:
@@ -308,6 +312,25 @@ def curtain_ribbons(spec):
                          f"geometry yields {len(legs)} leg(s) "
                          f"({[l['name'] for l in legs]}) — the spec disagrees with "
                          "itself; fix the data, do not render a lie")
+
+    return {"c": c, "room": room, "outline": outline, "pocket": pocket,
+            "layers": layers, "legs": legs}
+
+
+def curtain_ribbons(spec):
+    """spec (mm) -> fabric ribbons (METRES) for build_room to extrude.
+
+    Returns [] when the spec has no `curtains` block (opt-in, like millwork's
+    open:true — a spec without curtain data renders exactly as before). Each ribbon:
+      {name, leg, role, type, state, n_folds, over_glass_park,
+       pts: [(x_m, y_m), ...],  # plan polyline of the hanging fabric
+       z0, z1}                   # metres; z1 sits above the ceiling plane (hidden top)
+    """
+    _g = curtain_legs(spec)
+    if _g is None:
+        return []
+    c, room, outline = _g["c"], _g["room"], _g["outline"]
+    pocket, layers, legs = _g["pocket"], _g["layers"], _g["legs"]
 
     states = _render_states(c, layers)
     park_ends = ((c.get("render_state") or {}).get("park_end_over_glass") or {})
