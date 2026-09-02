@@ -257,9 +257,71 @@
      "status": "todo",
      "added": "2026-09-02",
      "added_round": "p2r93",
-     "what": "THE WINDOW WALL IS A WHITE BLOCK WITH NOTHING IN IT — the item that replaced the camera as the panel's unanimous first complaint. 6 of 6 judges across p2r93a and p2r93b named it, plus C2 items 14/16/17 and C3 item 6, all independently: 'a featureless bright field', 'no view, no frame, no reveal, no sill, no mullion', 'the sheer hangs from nothing', 'no track, no pelmet, no header, no hooks', and (C3) 'the fabric reads opaque like plastic'. MEASURE FIRST, BECAUSE THE OBVIOUS READING IS WRONG: the wall is NOT clipped. Measured on the full frame, the sheer region reads p99 0.877, max 0.975, and only 0.1% of it above 0.95 — p2r92 actually reached max 1.000. So 'blown out' as an exposure claim is refuted; what actually changed is its MEDIAN (0.761 -> 0.831, a side effect of D-187's forward scatter) and what it has always lacked is CONTENT. Do not fix this by pulling exposure until the content question is answered. DO, in this order: (1) R12 — open the drawing of record for the south glazing and read what is actually there: head, jamb, sill, mullions, the slider's meeting stile, the Juliet rail outside (glz-slider's own note records a black-metal Juliet balcony rail in the owner's photo, and nothing in the frame shows it); (2) build what the sheet draws — the opening's frame and reveal, the curtain track/pelmet inside the 250 mm pocket the spec already carries, and something legible beyond the glass; (3) only then bracket the sheer's own value with --sheer-direct= and the exposure, with luma_range and the sheer-region histogram measured before and after. CLOSE: an exit panel where no judge names the window/right third in their top-3, AND a measured sheer-region p5-p95 spread that carries readable structure rather than one flat value.",
+     "what": "THE WINDOW WALL — HALF DONE AT p2r95, AND THE HALF THAT IS LEFT IS NAMED. AMENDED 2026-09-02 after the round ran: THE ORIGINAL ORDERING WAS WRONG AND THE MEASUREMENT SAYS SO. This row used to say 'build the opening's frame and reveal, the curtain track/pelmet, and something legible beyond the glass'. Measured on the frame of record BEFORE any code was written: `glazing` reaches 931 px (0.022% of frame), `juliet_black_steel` reaches 0 px on 16 parts the scene dump marks `in_frustum: true`, and a 2%-99.5% contrast stretch under the sheer transmits NOTHING. The rail is the positive control: built, wired, in frustum, zero pixels. So the frame/reveal/mullion (930 px) and anything beyond the glass (0 px) are OCCLUSION-BOUND — they are rows for after the fabric changes, not work for now (D-192). The diagnosis is camera-robust: p2r93a reads glazing 425 px / juliet 0 / opaque 0 on the other A/B leg. DONE THIS ROUND (p2r94/p2r95, 4 of 5 bars crossed): the PELMET, which is the one named item NOT behind the fabric because the pocket's room edge sits in front of every layer (`glazing_header.py`, drop 300 mm [est], D-193); and the parked blackout brought into frame by ONE token, `park_end_over_glass.south` lo->hi, from x[0.110..1.064] which is BEHIND THE LENS (D-194). Fabric columns with something holding their top: 18 -> 364 of 706. curtain_opaque: 0 -> 151,319 px. Window-band p5-p95: 0.193 -> 0.442. WHAT IS LEFT, and it is one mechanism: the SHEER ITSELF. The only instrument bar that failed is the flat value lid (46.65% of the window band inside [0.80,0.90), bar <=40%), and all three sighted judges independently named the window in their top-3 using the word 'clipped to pure white' — which the pixels refute (p99 0.8770, max 0.9331, 0.000% above 0.95, 0 px at 1.0). Per R7b the eye is right about WHAT and the instrument decides WHICH KNOB, and here they point at the same one. THREE SUB-ITEMS, all on the fabric: (a) TRANSMISSION — bracket `--sheer-direct=` (D-187's own reverse lever) until the [0.80,0.90) share drops under 40%; do NOT pull exposure, the frame does not clip. (b) THE HEM — C2 filed it and measurement confirmed: 333 of 523 sheer columns (63.7%) have floor visible directly under the fabric, with 12 adjacent-column steps over 5 px. `curtains.HEM_CLEAR_M`. No instrument had ever looked at the hem. (c) THE REPEAT — autocorrelation peaks at lag 38 px (0.195 vs a 0.036 floor, 5.4x), and three independent judges called the sheer 'blinds' / 'vertical louvres' (C3 item 8, j2, j3). R8 forbids a third hand-modelled pleat round on drapery: if the bracket fails, the route is ACQUIRE, not another generator round.",
      "where": "projects/PRJ-2026-002_c001-house/00_intake (drawing of record for the south glazing), projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json (room.openings, curtains pocket 250), pipeline/scripts/build_room.py (_curtain_sheer, curtain track)",
-     "why": "It is the only item every sighted judge has named on every frame since the camera was fixed, and it is a third of the picture. R10 applied to an absence: the room is sold on its daylight and never shows the opening the daylight comes through."
+     "why": "The original CLOSE condition carried a flattering-scorer trap and it is replaced: 'a measured sheer-region p5-p95 spread' goes vacuous the moment the sheer shrinks or leaves the frame, because the region is defined by the thing being judged. The bar is now a FIXED RECTANGLE IN IMAGE SPACE — cols 1694-2399 x rows 0-999 of the 2400x1800 frame — so removing fabric cannot pass it. Second correction, and it is the one worth keeping: the terminus bar of '>=350 held columns' was written without knowing that 437 of 706 columns run off the TOP FRAME EDGE and can never be held at this camera; the reachable ceiling was 269 and the 150 mm pelmet took 267 of it. A deeper board passes not by holding more of the same columns but by REDUCING the off-edge count (437 -> 342). A bar set without knowing what the camera can reach is a bar that measures the camera.",
+     "close": "Window band W = cols 1694-2399 x rows 0-999, luma Rec.709 on the sRGB PNG: share inside [0.80,0.90) <= 40% (p2r95: 46.65%), AND sheer columns with floor directly beneath the hem <= 5% (p2r95: 63.7%), AND an exit panel where no judge names the window / right third in their top-3, scored per D-189 by rank and gap-to-peers within the same run — never by a raw mean across runs.",
+     "measured_2026_09_02": {
+      "frame": "pipeline/output/room_bedroom_suite_eye_p2r95.png",
+      "camera": "variant p2r93b_offaxis_ey1600 (eye_camera untouched; the A/B is still his)",
+      "bars": {
+       "spread_p5_p95": [
+        0.193,
+        0.442,
+        ">=0.30 PASS"
+       ],
+       "share_080_090_pct": [
+        62.74,
+        46.65,
+        "<=40 FAIL"
+       ],
+       "px_below_060": [
+        21577,
+        148251,
+        ">=100000 PASS"
+       ],
+       "curtain_opaque_px": [
+        0,
+        151319,
+        ">=100000 PASS"
+       ],
+       "held_columns": [
+        "18/706",
+        "364/706",
+        ">=350 PASS (reachable ceiling 269 at 150mm)"
+       ]
+      },
+      "panel": {
+       "ranks": [
+        2,
+        3,
+        2
+       ],
+       "gap_to_best_peer": -10.3,
+       "prev_ranks": [
+        2,
+        3,
+        2
+       ],
+       "prev_gap": -9.7,
+       "verdict": "no measurable change — ranks identical, gap within the +/-14 band of D-189"
+      },
+      "judges_naming_window_top3": "3 of 3 — close condition NOT met"
+     }
+    },
+    {
+     "id": "P2r-39",
+     "status": "todo",
+     "added": "2026-09-02",
+     "added_round": 95,
+     "what": "THE SHEER ITSELF — transmission, hem, repeat. The three sub-items P2r-38 measured and could not reach: (a) bracket `--sheer-direct=` until the window band's [0.80,0.90) share drops under 40% — the frame does NOT clip (max 0.9331, 0 px at 1.0), so exposure is the wrong knob and is refused by name; (b) the hem — 333 of 523 columns show floor directly under the fabric (`curtains.HEM_CLEAR_M`); (c) the 38 px fold repeat that three independent judges read as vertical blinds. R8 STOP-LOSS APPLIES BY NAME: drapery is an ACQUIRE class and curtains.py has already had two shape rounds, so if the transmission bracket fails the next move is a purchase, not a third generator round.",
+     "where": [
+      "pipeline/scripts/build_room.py (_curtain_sheer, _SHEER_DIRECT_FRAC)",
+      "pipeline/scripts/curtains.py (HEM_CLEAR_M, fold wavelength)",
+      "qa/open-decisions.json (D-187 amend)"
+     ],
+     "why": "This is the one lever the eye and the instruments agree on. The only failing bar and the unanimous judge complaint are the same phenomenon under two names, and R7b says the eye decides WHAT is wrong while the measurement decides WHICH KNOB.",
+     "close": "window-band [0.80,0.90) share <= 40%, hem-with-floor-under <= 5%, and no judge naming the window in top-3 (D-189 scoring)."
     },
     {
      "id": "P2r-35",
