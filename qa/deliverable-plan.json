@@ -241,6 +241,44 @@
      "what": "MILLWORK CANNOT-BE-BUILT PASS, PART (a): EVERY HANG RAIL IS CARRIED AT BOTH ENDS. MEASURED, not read (p2r84 scene dump): every rail stops 40mm short of BOTH gables (BF09-3 cell x2.371-3.103 vs rail x2.41-3.06; millwork's own l0+0.04 / lw-0.08 inset) — a brass tube carried at neither end, in nine cells, shipped on every frame this lane has produced, and C2 filed it by eye at p2r84 as A4 ('ราวตัดจบกลางอากาศ'). DO: rails land ON their gables — the inset exists to avoid coincident faces, so the fix is an embed plus a socket flange, never a nudge — AND the class gets a rung, because placement_check convicts only 7 of the 9 (two are excused by the clothes hanging on them). CLOSE: every rail carried in the built scene, a rung that reads the load path off the dump and blocks the render, and one full frame where neither critic files a floating-rail item. PARTS (b) and (c) SPLIT OUT to P2r-29 at p2r85 — a work item that cannot be done or not-done is two items (plan_status's own status law)."
     },
     {
+     "id": "P2r-34",
+     "status": "todo",
+     "added": "2026-09-01",
+     "added_round": "audit-2026-09-01",
+     "what": "ONE ROUND: CAMERA + DAYLIGHT KEY. The first run of this plan's own exit test (3 blind sighted judges, ours among 4 delivered frames; exit_panel.py, qa/exit-panel-log.json) scored p2r91 at 61/50/58 and all three judges put the same two items first: the room is lit from nowhere (no key, no contact shadow — luminance p95/p5 3.3x vs 5.0-5.4x on every delivered peer) and the camera throws the room away (chair sliced by the left edge, a dead oak wall as 40% of the left half, bed cut at the right). The progress panel ranked p2r78rc ABOVE p2r91 on exactly the camera. DO, in this order: (1) Skill camera-composition, then lighting-design — before any number is typed; (2) R12: open the drawing of record for the two walls this camera sees and settle whether an opening can exist there (the sheet outranks the wish; if the sheet gives no window, the key comes from the opening the sheet does give, or from a lamp hierarchy, and that is written down); (3) return to the p2r78rc hero framing (D-152 owner camera: bed + headboard one subject) or better — the judge's own line: 'wardrobe unit as the left anchor and the bed as the right'; (4) one daylight-shaped key from the off-frame left, general fill down a stop so the shelf LEDs and sconces read as light; (5) R5 quick first. CLOSE: a full frame whose exit panel (recorded via exit_panel.py record) has mean > 56.3, NO judge naming light-from-nowhere or the camera crop in their top-3 for ours, and a measured p95/p5 >= 5.0 on the full frame. What this round must NOT touch: bed, bedding, materials, GI settings.",
+     "where": "pipeline/scripts/build_room.py (eye camera + element5 daylight key), projects/PRJ-2026-002_c001-house/00_intake (drawing of record — R12 check first), pipeline/scripts/exit_panel.py",
+     "why": "audit-2026-09-01-project-overview.md: render quality is AT the panel; what loses is light and camera, and in 52 rounds light got 3. The two levers every judge named first have never had a round together."
+    },
+    {
+     "id": "P2r-35",
+     "status": "todo",
+     "added": "2026-09-01",
+     "added_round": "audit-2026-09-01",
+     "what": "PALETTE + STORY — the round ORD-2026-08-23-style-before-objects and ORD-2026-08-25c-story-driven-styling have been owed since August. The panel's third unanimous item: 'mono-grey + a half-empty closet = asset-library dressing, not someone's clothes'. Measured against the peers: bed-region chroma p95 0.22 (peers 0.31-0.52), distinct finishes 2, art/mirror/TV 0. DO: Skill styling-narrative first; then white linen on the bed (a purchase, not a sim), ONE dark anchor mass, ONE accent hue carried by 2-3 objects, art or a mirror in the dressing zone, the closet to lived density (folded stacks with colour variety, boxes, a bag, a second hanger row) per ORD-2026-08-26 and 08-28c. CLOSE: exit panel recorded with no judge naming 'mono' / 'empty closet' / 'catalogue' in ours' top-3; distinct finishes >= 4 by the matmask; bed-region chroma p95 >= 0.30.",
+     "where": "pipeline/scripts/build_room.py (styling block), qa/style-of-record.json, pipeline/scripts/exit_panel.py",
+     "why": "two standing owner orders on this subject are not-obeyed in qa/owner-orders.json; the panel found the frame loses on exactly what they order."
+    },
+    {
+     "id": "P2r-36",
+     "status": "todo",
+     "added": "2026-09-01",
+     "added_round": "audit-2026-09-01",
+     "what": "R10 ON THE HERO: the doorless open wardrobe faced from the bed. The progress panel's 'never changed in any iteration' list names it — 'decorated instead of questioned'. Apply R10's four questions to the WALL, not the shelves: (1) IDENTITY — what does the sheet draw at BF09-3, doors or open bays? (2) EXISTS — point at it in the drawing of record (R12; the sheet outranks every derivation); (3) SENSE — does a bedroom whose bed faces open clothing storage read as a finished room to the three judges, and does the client's own drawing intend that face to be seen from the bed? (4) VERDICT — keep / fix with a number (doors, a sheer, a different camera side) / remove / unresolved-and-why. The verdict is a decision row in qa/open-decisions.json with `where` naming the spec, reversible by him from the image. CLOSE: the row exists, and the frame P2r-34 or P2r-35 ships reflects it.",
+     "where": "projects/PRJ-2026-002_c001-house/00_intake (sheet), projects/PRJ-2026-002_c001-house/03_layout/master-suite.CANONICAL.spec.json (BF09-3), qa/open-decisions.json",
+     "why": "R10 was applied to lamps, piers and props; it was never applied to the largest mass in the frame."
+    },
+    {
+     "id": "P2r-37",
+     "status": "done",
+     "added": "2026-09-01",
+     "added_round": "audit-2026-09-01",
+     "done": "2026-09-01",
+     "done_round": "audit-2026-09-01",
+     "what": "THE EXIT TEST AS ONE COMMAND. The plan's finish line (three blind sighted judges, our frame shuffled among delivered frames) had been rewritten 5 times and run 0 times in its own shape across 91 rounds, because assembling it was twenty manual steps. Built: pipeline/scripts/exit_panel.py — `build <render> --out <dir>` makes one pack per judge (A-E, long edge 1600, distinct shuffle, the fixed question, key OUTSIDE the packs), `record` decodes a judge's answer through the key into qa/exit-panel-log.json, `status` prints the last score, the history and every full frame rendered since with no panel (the counter). plan_status prints it under EXIT TEST at every session open. The delivered-frame pool lives under _private/ and never enters git.",
+     "where": "pipeline/scripts/exit_panel.py, qa/exit-panel-log.json, pipeline/scripts/plan_status.py (panel_lines)",
+     "done_note": "first run recorded from the audit packs: p2r91 = 61/50/58 (mean 56.3), rank 2/4/2 of 5, 3/3 sendable-after-minor-fixes. R13's sentence applied to a test: a rung assembled by hand is a rung that was not run."
+    },
+    {
      "id": "P2r-29",
      "status": "todo",
      "added": "2026-08-27",
@@ -250,35 +288,47 @@
     },
     {
      "id": "P2r-30",
-     "status": "todo",
+     "status": "blocked",
      "added": "2026-08-27",
      "added_round": "p2r85b",
      "where": "pipeline/scripts/carry_check.py (FIXED-IN containment cut), qa/carry-ledger.json",
-     "what": "CARRY_CHECK'S FIXED-IN IS TOO LOOSE, AND THE EYE PROVED IT ON THE RUNG'S FIRST LIVE FRAME. C2 read p2r85 and filed that the wardrobe garment 'hangs from nothing'; the scene agrees to the millimetre (BF09-3 rail z1850-1880, garment top 1735 = 115 mm of air) and the rung PASSED it, because the garment pokes ~20 mm into the carcass back panel and a flat 5 mm overlap on three axes is read as 'let into'. That overlap is 2.7% of the garment's own depth. DO: require the FIXED-IN overlap to be at least a fraction of the CARRIED object's own extent on every axis, and pick the fraction from the data rather than from a round number — the sweep on the p2r85 frame is already measured: 10% takes UNCARRIED 32 -> 68, 25% -> 78. IT IS A SEPARATE ROUND BECAUSE MOST OF THAT DIFFERENCE IS REAL, NOT NOISE: the in-frame curtains whose tops vanish into the ceiling slab with no pocket (all three critics have filed it by eye and no rung can see it), the book covers C2 measured floating over their own blocks with a shadow in the gap, the bed cloth and Sheet already rowed for their 1 mm contact gaps. So the cut arrives WITH its triage, not inside the round that shipped the rung. CLOSE: the cut is in, every newly-exposed mass is either fixed or rowed with a named restart, and the rung's docstring stops carrying this hole as a declared blind spot."
+     "what": "CARRY_CHECK'S FIXED-IN IS TOO LOOSE, AND THE EYE PROVED IT ON THE RUNG'S FIRST LIVE FRAME. C2 read p2r85 and filed that the wardrobe garment 'hangs from nothing'; the scene agrees to the millimetre (BF09-3 rail z1850-1880, garment top 1735 = 115 mm of air) and the rung PASSED it, because the garment pokes ~20 mm into the carcass back panel and a flat 5 mm overlap on three axes is read as 'let into'. That overlap is 2.7% of the garment's own depth. DO: require the FIXED-IN overlap to be at least a fraction of the CARRIED object's own extent on every axis, and pick the fraction from the data rather than from a round number — the sweep on the p2r85 frame is already measured: 10% takes UNCARRIED 32 -> 68, 25% -> 78. IT IS A SEPARATE ROUND BECAUSE MOST OF THAT DIFFERENCE IS REAL, NOT NOISE: the in-frame curtains whose tops vanish into the ceiling slab with no pocket (all three critics have filed it by eye and no rung can see it), the book covers C2 measured floating over their own blocks with a shadow in the gap, the bed cloth and Sheet already rowed for their 1 mm contact gaps. So the cut arrives WITH its triage, not inside the round that shipped the rung. CLOSE: the cut is in, every newly-exposed mass is either fixed or rowed with a named restart, and the rung's docstring stops carrying this hole as a declared blind spot.",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "parked 2026-09-01 by ORD-2026-09-01-direction-after-audit (his 'ลุย' on the audit's D list): instrument work in P2 stops until a frame has passed a camera+light round through the exit panel. Not dropped — the reason it was filed still stands; it re-opens when the panel says the frame no longer loses on light and camera.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-31",
-     "status": "todo",
+     "status": "blocked",
      "added": "2026-08-27",
      "added_round": "p2r85b",
      "where": "pipeline/scripts/build_room.py (the pool-hang wire hanger), pipeline/scripts/scene_dump.py",
-     "what": "THE WIRE HANGER IS A CURVE, AND EVERY RUNG IN THIS REPO IS MESH-ONLY — so the one part that makes a hanging garment believable is invisible to all of them. C2 filed p2r85 by eye: 'there is no hanger and no hook — a ~70 px vertical gap of bare wood with nothing in it'. MEASURED THREE WAYS. (1) The gap is BY DESIGN: `_HANG_RESERVE = 0.150` settles a garment's top 150 mm x s_fit below the bar so a hanger can bridge it. (2) The hanger IS BUILT — a probe of the saved .blend finds 37 objects named *_hanger, type CURVE, bevel 1.8 mm, material hanger_brass, hide_render False. (3) NOTHING IN THIS REPO CAN SEE THEM: `scene_dump.dump` skips `ob.type != 'MESH'`, and the material mask enumerates MESH material slots, so a curve's material is not even in the mask's 129-material id list. carry_check, existence_check, D7, dim_check and the map census are therefore all blind to 37 objects that render. In the p2r85 frame the ONE visible hung garment sits at the left edge with its plan centre — and so its hanger — outside the frame, so what a client sees is a shirt attached to nothing. DO: (a) convert the hanger to a MESH at build time through the data API (`to_mesh` on the evaluated object, then a new MESH object — never `bpy.ops` on geometry), so every rung that reads the dump can see it and carry_check can hold it to hanging on its rail; (b) the pool-hang placement must not leave a garment in frame whose hanger is cropped out of it. CLOSE: hangers appear in the scene dump, carry_check reports them HUNG-ON their rail, and a critic looking at the frame can point at one."
+     "what": "THE WIRE HANGER IS A CURVE, AND EVERY RUNG IN THIS REPO IS MESH-ONLY — so the one part that makes a hanging garment believable is invisible to all of them. C2 filed p2r85 by eye: 'there is no hanger and no hook — a ~70 px vertical gap of bare wood with nothing in it'. MEASURED THREE WAYS. (1) The gap is BY DESIGN: `_HANG_RESERVE = 0.150` settles a garment's top 150 mm x s_fit below the bar so a hanger can bridge it. (2) The hanger IS BUILT — a probe of the saved .blend finds 37 objects named *_hanger, type CURVE, bevel 1.8 mm, material hanger_brass, hide_render False. (3) NOTHING IN THIS REPO CAN SEE THEM: `scene_dump.dump` skips `ob.type != 'MESH'`, and the material mask enumerates MESH material slots, so a curve's material is not even in the mask's 129-material id list. carry_check, existence_check, D7, dim_check and the map census are therefore all blind to 37 objects that render. In the p2r85 frame the ONE visible hung garment sits at the left edge with its plan centre — and so its hanger — outside the frame, so what a client sees is a shirt attached to nothing. DO: (a) convert the hanger to a MESH at build time through the data API (`to_mesh` on the evaluated object, then a new MESH object — never `bpy.ops` on geometry), so every rung that reads the dump can see it and carry_check can hold it to hanging on its rail; (b) the pool-hang placement must not leave a garment in frame whose hanger is cropped out of it. CLOSE: hangers appear in the scene dump, carry_check reports them HUNG-ON their rail, and a critic looking at the frame can point at one.",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "parked 2026-09-01 by ORD-2026-09-01-direction-after-audit (his 'ลุย' on the audit's D list): instrument work in P2 stops until a frame has passed a camera+light round through the exit panel. Not dropped — the reason it was filed still stands; it re-opens when the panel says the frame no longer loses on light and camera.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-32",
-     "status": "todo",
+     "status": "blocked",
      "added": "2026-08-27",
      "added_round": "p2r85b",
      "where": "pipeline/scripts/p2_exit.py (CROPS['rug_edge'])",
-     "what": "THE RUG_EDGE RUNG PASSES A RUG THAT HAS NO EDGE — the flattering-scorer class again, and the rung's own report-only line already says so. On the p2r85 frame it printed 'edge 10-90% rise width median = 12.0 px vs cut >= 3.0 -> ROLLED (pass)' and, one line below, 'a wide soft ramp passes the rise cut whether the object has thickness or is painted on'. C2 measured the boundary from the pixels and I reproduced it independently: floor 164.92 -> rug 163.67 = |step| 1.25 codes at x=200, and 155.75 -> 156.17 = 0.42 codes at x=300 (6.25 at x=100). The transition is a 1-2 px anti-aliased dark line between two surfaces of essentially equal luminance. Micro-detail agrees: mean |dI/dx| rug 1.50 vs floor 2.14, and the rug region sampled is NEARER the camera. THE CUT MEASURES THE WIDTH OF A RAMP AND NEVER ITS AMPLITUDE, so a 12 px ramp between two surfaces one code apart reads as a rolled edge. DO: add an AMPLITUDE floor to the rung (the step between the two plateaus, in codes, at the same columns the rise is measured on) and re-baseline it against the anchor pool, not against our own frame. CLOSE: the rung fails this frame, or the rug gets an edge that passes both terms."
+     "what": "THE RUG_EDGE RUNG PASSES A RUG THAT HAS NO EDGE — the flattering-scorer class again, and the rung's own report-only line already says so. On the p2r85 frame it printed 'edge 10-90% rise width median = 12.0 px vs cut >= 3.0 -> ROLLED (pass)' and, one line below, 'a wide soft ramp passes the rise cut whether the object has thickness or is painted on'. C2 measured the boundary from the pixels and I reproduced it independently: floor 164.92 -> rug 163.67 = |step| 1.25 codes at x=200, and 155.75 -> 156.17 = 0.42 codes at x=300 (6.25 at x=100). The transition is a 1-2 px anti-aliased dark line between two surfaces of essentially equal luminance. Micro-detail agrees: mean |dI/dx| rug 1.50 vs floor 2.14, and the rug region sampled is NEARER the camera. THE CUT MEASURES THE WIDTH OF A RAMP AND NEVER ITS AMPLITUDE, so a 12 px ramp between two surfaces one code apart reads as a rolled edge. DO: add an AMPLITUDE floor to the rung (the step between the two plateaus, in codes, at the same columns the rise is measured on) and re-baseline it against the anchor pool, not against our own frame. CLOSE: the rung fails this frame, or the rug gets an edge that passes both terms.",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "parked 2026-09-01 by ORD-2026-09-01-direction-after-audit (his 'ลุย' on the audit's D list): instrument work in P2 stops until a frame has passed a camera+light round through the exit panel. Not dropped — the reason it was filed still stands; it re-opens when the panel says the frame no longer loses on light and camera.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-33",
-     "status": "todo",
+     "status": "blocked",
      "added": "2026-08-27",
      "added_round": "p2r86",
      "where": "pipeline/scripts/build_room.py (_b3_story cell resolution)",
-     "what": "A STORY ROW NAMES A CELL AND NOTHING ASKS WHETHER THE CAMERA CAN SEE THAT CELL. p2r86 bought nine pieces, one survived every gate (scale door, blind 3-lens panel, cell-width fit) and landed on the drawer tower's `tw1` — and the dump answers `in_frustum=True, occluded=True` on all three of its meshes. D7 still reads 4 loose items and the frame did not change by one pixel. THIS IS p2r84'S FINDING ONE LEVEL DOWN: that round found the vessel pair matched into the WALK-IN's cell by alphabetical host order and fixed the HOST ordering (camera-visible hosts first). The CELL level was never asked, and the answer has been in the scene dump since P4b — `occluded` is written for every item-carrying mass and no placement code reads it. DO: resolve `_b3_story` level tokens against cells the record camera can actually SEE — either by pre-ranking the cells with a visibility probe of the built geometry, or by re-placing loudly when a placed piece comes back occluded. A piece placed where nobody can see it is not styling, it is inventory. CLOSE: every row in the block either lands in a cell the camera sees, or prints that it was placed for the room rather than for the frame."
+     "what": "A STORY ROW NAMES A CELL AND NOTHING ASKS WHETHER THE CAMERA CAN SEE THAT CELL. p2r86 bought nine pieces, one survived every gate (scale door, blind 3-lens panel, cell-width fit) and landed on the drawer tower's `tw1` — and the dump answers `in_frustum=True, occluded=True` on all three of its meshes. D7 still reads 4 loose items and the frame did not change by one pixel. THIS IS p2r84'S FINDING ONE LEVEL DOWN: that round found the vessel pair matched into the WALK-IN's cell by alphabetical host order and fixed the HOST ordering (camera-visible hosts first). The CELL level was never asked, and the answer has been in the scene dump since P4b — `occluded` is written for every item-carrying mass and no placement code reads it. DO: resolve `_b3_story` level tokens against cells the record camera can actually SEE — either by pre-ranking the cells with a visibility probe of the built geometry, or by re-placing loudly when a placed piece comes back occluded. A piece placed where nobody can see it is not styling, it is inventory. CLOSE: every row in the block either lands in a cell the camera sees, or prints that it was placed for the room rather than for the frame.",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "parked 2026-09-01 by ORD-2026-09-01-direction-after-audit (his 'ลุย' on the audit's D list): instrument work in P2 stops until a frame has passed a camera+light round through the exit panel. Not dropped — the reason it was filed still stands; it re-opens when the panel says the frame no longer loses on light and camera.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-2",
@@ -411,31 +461,43 @@
      "id": "P2r-11",
      "what": "THE TWO PILLOW PAIRS ARE THE SAME PILLOWS (C2 §12, p2r39): the left pair and the right pair share the same crown peak, the same triangular flap crease and the same corner ear, because D-025 places ONE acquired combo TWICE. C2's words: at full-frame size the eye reads 'copy-paste' before it reads 'pair'. Root cause was NAMED at p2r11 as 'instance identity of the pillow combo' and never built. BUILD: per-instance identity that cannot be a re-tint — mirror plus a per-instance deformation (the same family as the garment per-cluster tokens, D-029), derived from the instance index, never hand-placed. INSTRUMENT: cross-correlate the two pillow-pair crops; the peak must fall below the floor a mirrored-but-undeformed pair produces. CLOSE: below floor + no critic duplicate-bedding item.",
      "where": "pipeline/scripts/build_room.py (_place_pillow_combo)",
-     "status": "todo",
-     "_why_now_2026-08-16": "It is an ACQUIRED-object defect, so it belongs to P2's own half rather than to styling: acquiring one good mesh and stamping it twice buys the mesh's quality and its signature at the same time. The instrument this needs does not exist yet and must be built before the fix, per the phase's own law."
+     "status": "blocked",
+     "_why_now_2026-08-16": "It is an ACQUIRED-object defect, so it belongs to P2's own half rather than to styling: acquiring one good mesh and stamping it twice buys the mesh's quality and its signature at the same time. The instrument this needs does not exist yet and must be built before the fix, per the phase's own law.",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "stopped 2026-09-01 by ORD-2026-09-01-direction-after-audit: no more bed rounds. bedding-stiff was filed in 63 of 63 critiqued rounds after ~24 bed-cloth rounds — that is the limit of the piece in the frame, not of its tuning (R13's class-vs-instance law: the answer to a bought piece that fails is a different purchase, ASK-002). Re-opens only with a new bed asset in the frame.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-12",
      "what": "DOES THE CLOTH HAVE A READABLE HEM AT ALL (C2 #1 and C3 #1, p2r41, independently and as each critic's single fix): C2's words — 'there is no readable hem, seam or selvedge on any side, so the eye cannot tell how wide the cloth is or what it is lying on'; C3's — 'the white part reads as a flat sheet laid on the grey with no fold or seam between the two colours'. THE GAP IS IN OUR HARNESS, not only in the frame: `cloth_edge` asks whether an edge CASTS A LINE and therefore PRESUMES one exists, so a cloth with no terminating edge in view scores as a cloth whose edges are fine. Nothing in the repo asks whether a cloth mass HAS a boundary the eye can find. INSTRUMENT: from the matmask, for each bedding material take its own rendered region and measure what share of its silhouette perimeter is a contact with ANOTHER cloth or a free silhouette carrying a measurable transition — a mass whose perimeter is mostly frame-edge or mostly one flat interior reads as a plane. Declare the cut from the delivered anchor's own comforter before judging our frame (instrument-before-build). CLOSE: cut declared and held on a full frame + neither critic files a no-edge bedding item.",
      "where": "pipeline/scripts/p2_exit.py + pipeline/scripts/edge_shadow.py",
-     "status": "todo",
+     "status": "blocked",
      "why_now": "p2r41: both independent critics made this their SINGLE FIX, from different vendors and different prompts, and our own rung structurally cannot see it. That is the R7b pairing working exactly as written — the eye found WHAT is wrong and named a question no instrument here asks.",
      "refuted_designs": "TWO designs were built and MEASURED on p2r39 and p2r41 the same afternoon the row was filed, and NEITHER separates the frame both critics failed from anything else. Recorded so the next session does not re-invent them. (1) READABLE PERIMETER — walk each bedding mask's outline, step 3 px inward and outward along the outward normal, count the share of perimeter with a luminance difference >= 3 codes (frame-border perimeter excluded and reported). RESULT: 89.8-96.0% on EVERY bedding material on BOTH legs, including the pillow that certainly reads. It fails because a material boundary almost always carries some albedo step, so it answers 'is there contrast at the outline' when the critics are saying 'there is no hem, seam or selvedge to find'. Code deleted rather than left with a corrected docstring: a metric that cannot separate is worse than a missing one, and one left in the tree gets wired. (2) FLAT SHARE vs DELIVERED WORK — share of a cloth's own eroded core pixels whose local 4-32 px band energy falls below the delivered anchor comforter's own p10 (0.417). RESULT: coverlet 6.3% / throw 11.5% / pillow 1.6% on p2r39 against coverlet 10.1% / duvet 1.4% / pillow 1.2% on p2r41, i.e. both legs sit around a delivered comforter's own 10% by construction. Bedding pixels below the delivered floor come to 0.94% and 0.91% of the whole frame on the two legs — against C2's 'nearly a quarter of the frame'. WHAT THAT LEAVES: the eye is reading something at a scale or of a kind neither the 4-32 px band nor the outline captures, and the next attempt should start by finding a measurement that PUTS THE TWO LEGS APART FIRST, on frames whose verdicts are already known, before any cut is declared.",
-     "successor_design": "RECORDED 2026-08-18 from knowledge/_inbox/dr-cloth-read-discriminator-2026-08-17.md so the next session does not invent a FOURTH instrument in the dead family. The DR's central honest finding: the fold-statistics literature this row hoped to copy (crease frequency spectra, fold radius distributions, fold-scale hierarchy) DOES NOT EXIST — the corpus's own synthesis says NOT IN SOURCES — so instrument-hunting in literature is CLOSED as a route. What IS sourced and buildable is a PREDICTOR, a different class from all three refuted designs: the PNAS draping scaling laws (gravity length ell_g=(B/(rho*g*h))^(1/3); fold wavelength lambda ~ ell_g^(3/4) * L^(1/4); fold count n ~ (R/ell_g)^(3/4)) let us COMPUTE the expected fold count and wavelength for a declared fabric class and drop length, then measure the frame against the prediction. The three refuted designs measured PRESENCE of detail and could not separate; a predictor tests STRUCTURE against physics, so a duvet with uniform resonator folds fails it while a real drape passes. Same unit also warns the sighted-panel method itself: static-image judgments confound optical with mechanical properties (perception literature) — recorded, unresolved, belongs to P5's method notes."
+     "successor_design": "RECORDED 2026-08-18 from knowledge/_inbox/dr-cloth-read-discriminator-2026-08-17.md so the next session does not invent a FOURTH instrument in the dead family. The DR's central honest finding: the fold-statistics literature this row hoped to copy (crease frequency spectra, fold radius distributions, fold-scale hierarchy) DOES NOT EXIST — the corpus's own synthesis says NOT IN SOURCES — so instrument-hunting in literature is CLOSED as a route. What IS sourced and buildable is a PREDICTOR, a different class from all three refuted designs: the PNAS draping scaling laws (gravity length ell_g=(B/(rho*g*h))^(1/3); fold wavelength lambda ~ ell_g^(3/4) * L^(1/4); fold count n ~ (R/ell_g)^(3/4)) let us COMPUTE the expected fold count and wavelength for a declared fabric class and drop length, then measure the frame against the prediction. The three refuted designs measured PRESENCE of detail and could not separate; a predictor tests STRUCTURE against physics, so a duvet with uniform resonator folds fails it while a real drape passes. Same unit also warns the sighted-panel method itself: static-image judgments confound optical with mechanical properties (perception literature) — recorded, unresolved, belongs to P5's method notes.",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "stopped 2026-09-01 by ORD-2026-09-01-direction-after-audit: no more bed rounds. bedding-stiff was filed in 63 of 63 critiqued rounds after ~24 bed-cloth rounds — that is the limit of the piece in the frame, not of its tuning (R13's class-vs-instance law: the answer to a bought piece that fails is a different purchase, ASK-002). Re-opens only with a new bed asset in the frame.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-13",
      "what": "BED CLOTH SURFACE, AND THE PARAMETER THAT OWNS IT. p2r43 fixed the bed's VALUE (check_render CLEAN for the first time since 2026-07-23, coverlet inside delivered work's 0.51-0.67 band) and BOTH critics still named the cloth first: C3 'ผ้าห่มดูแข็งทื่อ เหมือนแผ่นพลาสติก ไม่มีน้ำหนัก', C2 'reads as painted rigid plastic, not cloth'. Measured: mask-scoped weave energy on bed_throw's own pixels = 0.577x of delivered work, while the frame's whole-image octave structure PASSES (D5 11.03 in a 6.45-12.80 band) - so this is a per-cloth surface question and the frame-level rung cannot see it. THE MECHANISM, and it is the tonal ladder's own defect one parameter over: SHEEN has no owner. One signed cloth family (D3-2 stonewashed linen) is authored at sheen 0.2 (bed_base), 0.3 (bed_coverlet), 0.7 (bed_duvet) and 0.8 (bed_pillow), typed at four _woven call sites, exactly as each builder used to type its own colour tuple before value_ladder existed. 0.7-0.8 in Blender's Principled is a satin/velvet lobe, not linen. AND IT IS NOT COSMETIC: sheen measurably owns the top of the value ladder - the albedo gamma measured per rung falls 1.11 (sheen 0.2) -> 0.73 (0.3) -> 0.22 (0.7) -> 0.41 (0.8), so a sheen change moves the ladder and must go THROUGH value_ladder, not beside it. DO: give sheen a rung table in value_ladder beside TONES, set the linen family to one value, re-solve the affected tones with the 3-point power fit (the method is validated: every rung landed within 3.3 codes of prediction this round), and check the weave energy on the cloth's OWN pixels against delivered work. CHEAP NOW: BUILD_ROOM_MASK_ON_QUICK=1 measures a material change on a playblast - controlled this round at 0.2 codes (bed__mattress 136.3 full vs 136.5 quick). CLOSE: mask-scoped weave energy >= 0.8x of delivered work on the bed cloth's OWN pixels, check_render still CLEAN, and neither critic top-3 carries a cloth-surface item. SCOPE CORRECTED p2r44: this row was written against bed_throw / bed_duvet / bed_coverlet, which are the HAND-SIMULATED bakes his 2026-08-14 and 2026-08-15 orders took out of this frame — so as written it is work on the class he removed. The mechanism survives the correction intact and is arguably sharper on the acquire leg: an acquired mesh wears retinted materials (D-065/D-077) whose sheen is typed at the retint site exactly as the four _woven call sites typed theirs, so SHEEN STILL HAS NO OWNER and the rung table in value_ladder is still the fix. Measure it on the acquired cover mask, not on bakes that no longer exist.",
-     "status": "todo",
+     "status": "blocked",
      "why": "Three independent judges - C2, C3 and the builder's own LOOK - named the same item first on p2r43, and the owner's verdict that opened this round was about the same cloth. Re-scoped to the acquired cloth at p2r44 (ORD-2026-08-14/08-15).",
-     "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py"
+     "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "stopped 2026-09-01 by ORD-2026-09-01-direction-after-audit: no more bed rounds. bedding-stiff was filed in 63 of 63 critiqued rounds after ~24 bed-cloth rounds — that is the limit of the piece in the frame, not of its tuning (R13's class-vs-instance law: the answer to a bought piece that fails is a different purchase, ASK-002). Re-opens only with a new bed asset in the frame.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-14",
      "what": "THE ACQUIRED CLOTH'S TONE HAS NO ENFORCER. p2r44 carried out his 2026-08-14/08-15 orders and the acquired cover now renders 163.5 where the coverlet rung's signed target is 142.0 (+21.5, tolerance +-8.0) — REPORTED and not enforced, because D-077 rules that an acquired rung is scored on ORDER and SPAN only. That rule's REASON is sound (the point target was solved on the solver's own geometry under one light, and scoring a bought mesh against another mesh's figure is this repo's own named defect) and its CONSEQUENCE is not: the frame now ships 21 codes off the ladder the DD signed, with no rung able to object. DO: give an acquired rung a target that is honestly ITS OWN — either retint the cover into the signed tone the way case goods already are (D-065) and enforce the point target on the retinted material, or derive a per-acquisition target from the ANCHOR POOL (R4) rather than from our own earlier render (D-058's refusal still binds: never re-anchor to what our frame happens to show). CLOSE: every visible ladder rung is either enforced or carries a target derived from something outside this lane's own output, and the gate prints which is which.",
-     "status": "todo",
+     "status": "blocked",
      "why": "Named by the round that fixed the order, in the gate that fixed it — obeying the order created this gap, and a gap created by obedience is exactly the kind that gets absorbed silently.",
-     "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py"
+     "where": "pipeline/scripts/value_ladder.py, pipeline/scripts/build_room.py",
+     "blocked_by": "ORD-2026-09-01-direction-after-audit",
+     "blocked_note": "stopped 2026-09-01 by ORD-2026-09-01-direction-after-audit: no more bed rounds. bedding-stiff was filed in 63 of 63 critiqued rounds after ~24 bed-cloth rounds — that is the limit of the piece in the frame, not of its tuning (R13's class-vs-instance law: the answer to a bought piece that fails is a different purchase, ASK-002). Re-opens only with a new bed asset in the frame.",
+     "blocked_since": "2026-09-01"
     },
     {
      "id": "P2r-15",
@@ -578,7 +640,8 @@
    "goal_superseded_p2r45": "Texture-map coverage from 4.9% toward the 50-66% measured in delivered work; every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps; no flat-shaded curved silhouette survives.",
    "goal_superseded_p2r47": "SUPERSEDED 2026-08-17 (review #54, verdict 'change'). The p2r45 re-aim named MESH TESSELLATION as the phase's strongest lever, on the measurement that the acquired cover ran 43.2 mm against acquired pillows at 4.5-10.3 mm. p2r47 bought a cover at 10.7 mm — INSIDE that band — and both independent critics still ranked the bedding #1 and called it stiff, plastic, 'clay, not cloth'. C2 filed the identical item against the 4.5/10.3 mm pillows in as many words ('One systemic error, not four', covering pillows, folded throw and hung garments). A 2.4x range of tessellation that reads identically to two designers is not the lever, and the cut calibrated on it cannot separate what they are seeing. The goal below replaces it. The HAND-BUILT MASSES half of the p2r45 aim is unchanged and still live.",
    "goal_superseded_p2r49": "WHAT THE FRAME IS SHORT OF, measured at p2r47 by two independent critics and by the instruments that disagreed with them. THREE LEVERS, in the order the evidence ranks them: (1) THE BED IS HALF MADE — coverage 94.0% by ray and 'reads as a fitted mattress protector' (C2 #1) are both TRUE, because the ray counts cloth-above-mattress and cannot tell a duvet from a flat sheet (D-095). Measure DUVET SHARE separately and re-bench the shelf on it. (2) THE ACQUISITION CHANNEL, now that it works: per-triangle exports are importable (glb_flatten), the density screen reads objects instead of primitives, and the fit is solved on the cover part — so 29 candidates have now been benched against this bed against 10 in the lane's whole history, and the fold-structure complaint survives all of them. That makes ASK-002 a MEASURED procurement ask rather than a wish. (3) THE R10 QUESTION NO INSTRUMENT HERE ASKS — both critics filed objects that could not be built or used: a foot bench of two stacked cushions with no load path, drawer fronts with no pull and no push-to-open, and no skirting, sockets or switches anywhere in the room. Plus the unchanged half of the p2r45 aim: every R8-ACQUIRE class object becomes an acquired mesh with its own PBR maps, and no flat-shaded curved silhouette survives.",
-   "_queue_2026-08-27_p2r85": "P2r-28 MOVED TO THE HEAD OF THIS ARRAY, and the move is the point. Review #87 recorded 'it now leads the queue ahead of P2r-2/P2r-5' as a SENTENCE in the review verdict, and plan_status.next_work reads ORDER — nothing else. So the very next session opened with DO NEXT printing P2r-2 first, exactly as if the review had never happened. Same shape as _reranked and _queue_2026-08-15_r36 above: three keys on this phase describe an ordering and none of them has a reader. The array IS the queue; a re-rank that does not move a row did not happen."
+   "_queue_2026-08-27_p2r85": "P2r-28 MOVED TO THE HEAD OF THIS ARRAY, and the move is the point. Review #87 recorded 'it now leads the queue ahead of P2r-2/P2r-5' as a SENTENCE in the review verdict, and plan_status.next_work reads ORDER — nothing else. So the very next session opened with DO NEXT printing P2r-2 first, exactly as if the review had never happened. Same shape as _reranked and _queue_2026-08-15_r36 above: three keys on this phase describe an ordering and none of them has a reader. The array IS the queue; a re-rank that does not move a row did not happen.",
+   "_queue_2026-09-01_audit": "ORDER AFTER THE AUDIT (his 'ลุย'): P2r-34 (camera+key) → P2r-36 (R10 on the wardrobe, decided from the sheet, can run inside the same build) → P2r-35 (palette/story) → P2r-29 (SENSE list) → P2r-2/P2r-5/P2c/P2r-10/P2r-20/P2r-22/P2r-23/P2r-25. Parked: P2r-30/31/32/33 (instruments). Stopped: P2r-11/12/13/14 (bed). Every full frame gets the exit panel (P2r-37) — the OWED counter prints at session open."
   },
   {
    "id": "P4",
@@ -4825,8 +4888,73 @@
     "STY/STY-7",
     "STY/STY-8"
    ]
+  },
+  {
+   "commit": "7028a6a6299b4ce2abe05233830c298cb08028c4",
+   "verdicts": {
+    "P2": "change: the plan's own exit test ran for the first time in 91 rounds (p2r91: 61/50/58, all three judges 'sendable-after-minor-fixes', beats 3 of 4 delivered peers on at least 2 ballots) and every judge put the same two levers first — light-from-nowhere and the camera — which had 3 rounds out of 52 between them. ADDED P2r-34 (one round camera + daylight key, R12 sheet check first), P2r-35 (palette/story = the two unobeyed styling orders), P2r-36 (R10 on the doorless wardrobe hero), P2r-37 done (exit_panel.py — the exit test as one command). BLOCKED by ORD-2026-09-01-direction-after-audit: P2r-30/31/32/33 (instrument work parks until a frame passes the panel on light+camera) and P2r-11/12/13/14 (bed rounds stop — bedding-stiff 63/63 is the asset's limit, the answer is a different purchase). Queue order in P2._queue_2026-09-01_audit.",
+    "P4": "keep: unchanged — P4 still starts only after the P2 frame is at the panel; the audit did not move its scope, and ORD-2026-08-26 (world-standard front-door rung before P4) is already obeyed.",
+    "P3": "keep: unchanged — the audit found render quality (noise/materials/GI) AT panel level, so the engine/material lane has no new debt; 'do not touch' is the audit's own instruction.",
+    "P5": "change: the exit test is now MACHINERY, not prose — exit_panel.py builds the packs (ours + 4 delivered frames, A-E, long edge 1600, key outside), records each judge through the key into qa/exit-panel-log.json, and plan_status prints the last score + the count of full frames rendered since with no panel (OWED) at every session open. P5's finish line reads the log, not a hand-assembled sheet. First recorded run: p2r91 mean 56.3, rank 2/4/2.",
+    "STY": "keep: unchanged in scope — but its next round IS P2r-35, which now sits in the P2 queue behind the camera+key round; STY does not run in parallel with it."
+   },
+   "changed": [
+    "P2",
+    "P5"
+   ],
+   "note": "review #95 — recorded at the owner's order (ORD-2026-09-01-direction-after-audit, his 'ลุย' on the audit's D list), not at a round close. Also amended the review trigger itself: review_due now has a 7-day floor unless a phase closed unreviewed (94 reviews / 91 rounds was the trigger working as written — reviews at phase close, not per round). CLAUDE.md's 'AFTER EVERY COMMIT THAT CLOSES WORK' sentence still says the old trigger; deferred because another pane holds an uncommitted CLAUDE.md diff.",
+   "done_at_review": [
+    "DRW/DRW-1",
+    "DRW/DRW-1b",
+    "DRW/DRW-2",
+    "DRW/DRW-3",
+    "DRW/DRW-4",
+    "DRW/DRW-5",
+    "P0/P0a",
+    "P0/P0b",
+    "P0/P0c",
+    "P0/P0d",
+    "P0/P0e",
+    "P0/P0f",
+    "P1/P1a",
+    "P1/P1b",
+    "P2/P2a",
+    "P2/P2b",
+    "P2/P2d",
+    "P2/P2e",
+    "P2/P2f",
+    "P2/P2g",
+    "P2/P2h",
+    "P2/P2i",
+    "P2/P2j",
+    "P2/P2k",
+    "P2/P2r-1",
+    "P2/P2r-15",
+    "P2/P2r-16",
+    "P2/P2r-17",
+    "P2/P2r-18",
+    "P2/P2r-19",
+    "P2/P2r-21",
+    "P2/P2r-24",
+    "P2/P2r-26",
+    "P2/P2r-27",
+    "P2/P2r-28",
+    "P2/P2r-3",
+    "P2/P2r-37",
+    "P2/P2r-4",
+    "P2/P2r-6",
+    "P2/P2r-7",
+    "P2/P2r-8",
+    "P2/P2r-9",
+    "P3/P3a",
+    "P4/P4b",
+    "STY/STY-1",
+    "STY/STY-1b",
+    "STY/STY-7",
+    "STY/STY-8"
+   ]
   }
  ],
- "last_review_commit": "ec68c3053eaa054221882e0e2af208766af82fd4",
+ "last_review_commit": "7028a6a6299b4ce2abe05233830c298cb08028c4",
  "_phase_order_2026-08-16": "P4 MOVED AHEAD OF P3. The owner corrected the builder twice on the same axis in one session ('P2 ยังไม่เสร็จดีเลย', and before that on going to light), and the second time it was clear the plan itself was the source: the phase array read P2 objects -> P3 LIGHT -> P4 styling objects, so light sat BETWEEN the two object phases and any reader walking the file in order would propose exactly the sequence he keeps rejecting. His standing build-order rule (2026-08-08) is dimension -> objects -> light, because light is SOLVED FROM GEOMETRY and doing it early buries geometry error in an invisible light/material table (measured once at 240 W against 37 W). Order is now objects (P2 + P4) -> light (P3) -> judgement (P5). MEASUREMENT THAT FORCED IT, from p2r36: the frame carries SEVEN loose items in frustum [bench_throw, book0, book1, fold16, fold18, fold20, fold22] against P4's own target of >=12, and those seven are one throw, two books and four folded laundry stacks — no art, no plant, no tray, no vase, nothing on a nightstand but a lamp. In the debt ledger the ABSENCE classes outrank the FINISH classes: empty-frame 23 and styling-zero 19 against wood-texture 22. An absent object cannot be repaired by any amount of surface work."
 }

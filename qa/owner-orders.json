@@ -1395,6 +1395,59 @@
     }
    ],
    "note": "เริ่ม 2026-09-01 (วัน 10 ของ month clock, เหลือ 20 วันของสิทธิ์ full-plan). ตัวอย่างแรกพิสูจน์วิธีแล้ว: เสื้อเชิ้ตแขวน full-plan = quad cage 2,332 verts + SUBSURF (~1,600 verts/m²) + ผ้า procedural ล้วนมี Sheen 0.2 — สวนกับสมมติฐาน sim-หนา ที่พาเราชน stop-loss. โน้ตกลั่นลง knowledge/_inbox/model-study/ (REFERENCE tier จนกว่าจะกลั่นเข้า knowledge/ ตาม flow)."
+  },
+  {
+   "id": "ORD-2026-09-01-direction-after-audit",
+   "date": "2026-09-01",
+   "verbatim": "ส่วนตัวผมมองว่างานยังแย่ และดูไม่มีทิศทาง ไม่รู้ว่าต้องปรับหรือพัฒนาอะไรก่อน",
+   "verbatim_amendments": [
+    "ลุย"
+   ],
+   "recorded_at": "projects/PRJ-2026-002_c001-house/04_visualization/audit-2026-09-01-project-overview.md",
+   "commands": "พี่ขอให้ดูภาพรวมในฐานะ project auditor + interior designer แล้วบอกว่าต้องปรับอะไรก่อน — แล้วตอบ 'ลุย' บนรายการ D ของรายงาน (audit-2026-09-01-project-overview.md §D). สิ่งที่ 'ลุย' อนุมัติ: (ทำ) 1. รอบเดียว กล้อง+แสง — framing hero แบบ p2r78rc + key แสงวันจากช่องเปิดซ้าย เป้า p95/p5 3.3x→≥5x, เช็คแบบของจริงก่อน (R12) [P2r-34] · 2. palette/story — ลินินขาว, anchor เข้ม 1, accent 1, art/กระจกโซนแต่งตัว, ตู้ถึงความหนาแน่นแบบมีคนอยู่ (= ORD-08-23 + ORD-08-25c ที่ค้าง) [P2r-35] · 3. R10 กับตู้เปิดไม่มีบานที่เป็น hero — ถามว่าควรอยู่/ควรเป็นแบบนี้ไหม ไม่ใช่ตกแต่งต่อ [P2r-36] · 4. แผงตาเห็น blind (รูปเดียวกับ exit test) หลังทุกเฟรมเต็ม — exit_panel.py, ผลลง qa/exit-panel-log.json, ตัวนับ OWED พิมพ์ทุก session [P2r-37 built]. (หยุด) review แผนทุกรอบ → เฉพาะตอนปิดเฟส (plan_status.review_due floor 7 วัน — แก้ข้อความใน CLAUDE.md ค้างไว้เพราะ pane อื่นถือไฟล์นั้นอยู่) · งานเครื่องมือ 7 ชิ้นใน P2 พัก (P2r-30/31/32/33 blocked) · รอบเตียงหยุด (P2r-11/12/13/14 blocked — 63/63 คือขีดจำกัดของชิ้นที่ซื้อ ทางออกคือซื้อชิ้นอื่น) · intake วิดีโอ/model-study ใหม่หยุดจนกว่า knowledge 3,000 บรรทัดจะมีโค้ดอ่าน (ยกเว้น ORD-2026-09-01-study-blenderkit-models ซึ่งพี่สั่งเองและมีวันหมดอายุ) · C3-first เลิก — เลือกหัวข้อรอบจาก SENSE/DESIGN ของ C2 ก่อน REALISM ของ C3. (ไม่แตะ) engine/materials/GI/noise · millwork · acquisition pipeline.",
+   "subject": "direction-after-audit-2026-09-01",
+   "scope": "class",
+   "units": [
+    "DELIV-001"
+   ],
+   "standing": true,
+   "retired_by": null,
+   "visual": true,
+   "status": "not-obeyed",
+   "since": "2026-09-01",
+   "not_obeyed_because": "ทิศทางลงเป็นแถวในแผนแล้ว (P2r-34/35/36 + 8 แถว blocked) และแผงรันครั้งแรกบน p2r91 แล้ว แต่ยังไม่มีเฟรมไหนผ่านรอบกล้อง+แสง — คำว่า 'งานยังแย่' เป็นคำตัดสินจากตา จึงปิดได้ด้วยตาเท่านั้น: แผง exit ให้คะแนนเฟรมใหม่สูงกว่า 56.3 และไม่มีกรรมการยก light-from-nowhere/กล้องขึ้น top-3 หรือคำพี่บนเฟรม",
+   "blocked_by": null,
+   "restart_by": "P2r-34: camera+daylight-key round → full frame → `exit_panel.py build` + 3 fresh judges → `exit_panel.py record` ×3 → closure_verdicts = the judges' answer files; then P2r-36 and P2r-35 the same way. The row flips to obeyed only on a recorded panel that beats p2r91's 56.3 with no judge naming light or camera first.",
+   "obeyed_where": "qa/deliverable-plan.json,pipeline/scripts/exit_panel.py,qa/exit-panel-log.json,pipeline/scripts/plan_status.py,projects/PRJ-2026-002_c001-house/04_visualization/audit-2026-09-01-project-overview.md",
+   "obeyed_assert": [
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "\"id\": \"P2r-34\"",
+     "why": "ข้อ 1 ของ D ต้องเป็นแถวในแผนที่ next_work พิมพ์ ไม่ใช่ประโยคในรายงาน — audit ครั้งที่ 08-22 และ 08-25 กลายเป็นกฎแล้วไม่กลายเป็นรอบ"
+    },
+    {
+     "file": "qa/deliverable-plan.json",
+     "pattern": "\"blocked_by\": \"ORD-2026-09-01-direction-after-audit\"",
+     "why": "'หยุด' ต้องอ่านได้จากสถานะแถว — งานเครื่องมือและรอบเตียงที่ 'พัก' โดยไม่มีสถานะคือคิวที่จะถูกหยิบกลับมาในรอบถัดไป"
+    },
+    {
+     "file": "pipeline/scripts/exit_panel.py",
+     "pattern": "^def record\\(",
+     "why": "แผงหลังทุกเฟรมเต็มต้องเป็นคำสั่งเดียว — exit test ที่ประกอบมือคือ exit test ที่รัน 0 ครั้งใน 91 รอบ"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "lines \\+= panel_lines\\(\\)",
+     "why": "ตัวนับ 'เฟรมเต็มที่ยังไม่ผ่านแผง' ต้องพิมพ์ตอนเปิด session ไม่งั้นข้อ 4 คือ R13 อีกแถว"
+    },
+    {
+     "file": "pipeline/scripts/plan_status.py",
+     "pattern": "REVIEW_FLOOR_DAYS = 7",
+     "why": "'review เฉพาะตอนปิดเฟส' ต้องอยู่ใน trigger ไม่ใช่ในความตั้งใจ — 94 review/91 รอบคือ trigger เดิมทำงานตามที่เขียน"
+    }
+   ],
+   "closure_verdicts": [],
+   "note": "แถวนี้เป็น VISUAL: ปิดด้วย closure_verdicts จากแผงตาเห็น (fresh-context, blind) บนเฟรมที่รอบ P2r-34 ผลิต หรือคำพี่บนเฟรม. สิ่งที่วันนี้ทำแล้ว: audit record, แถวในแผน (review #95), exit_panel.py + log + ตัวนับ, review floor. สิ่งที่ยังไม่ทำ: เฟรม. ข้อความ 'AFTER EVERY COMMIT THAT CLOSES WORK, review the plan' ใน CLAUDE.md ขัดกับ floor ใหม่ — แก้ในคอมมิตถัดไปที่ CLAUDE.md ว่าง (pane อื่นถือ diff 22 บรรทัดอยู่ตอนนี้)"
   }
  ]
 }
