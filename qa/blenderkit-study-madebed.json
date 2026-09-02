@@ -1,0 +1,3329 @@
+{
+ "_recipe": "STUDY-D11 (2026-09-02) made-bed study — the reproduction recipe for every number in",
+ "_role_disputes": {
+  "afcfd29e/Mattress": "The object named 'Mattress' (1857x830) is only the strip of the sleeping surface left exposed by the covers; the bed itself is a double whose deck is 'Bed_Base' 2069x2270. TOP Z, and therefore every loft and hem, is unaffected. Its dims_mm must NOT be used as a mattress size, and this set is excluded from any coverage-of-length or overhang-per-side statistic.",
+  "ee42aa0e/Bed.008+Bed.009": "Listed as pillows; they sit in the gap behind the mattress head (bottom 253 mm BELOW the mattress top, Velvet, not the pillow fabric) and are headboard cushions, not pillows on the bed. Excluded from every pillow range."
+ },
+ "sets": {
+  "ee42aa0e": {
+   "file": "ee42aa0e-7c9d-4f04-8507-2a3406f021f5.probe.json",
+   "label": "Cozy bed",
+   "source": "blend",
+   "bed_min_z": -0.0,
+   "n_images": 8,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     7
+    ],
+    [
+     976,
+     468,
+     1
+    ]
+   ],
+   "mattress": {
+    "name": "Mattress",
+    "dims": [
+     1649,
+     2000,
+     246
+    ],
+    "z": [
+     195,
+     441
+    ],
+    "thick": 246,
+    "verts": 11798,
+    "mods": [
+     "NODES"
+    ]
+   },
+   "layers": [
+    {
+     "name": "Base.001",
+     "dims": [
+      1708,
+      2302,
+      77
+     ],
+     "z": [
+      116,
+      193
+     ],
+     "loft_over_mattress_top": -248,
+     "hem_above_floor": 116,
+     "verts": 154610,
+     "polys": 154560,
+     "quads": 154560,
+     "tris": 0,
+     "area_m2": 8.432,
+     "v_per_m2": 18336,
+     "surplus": 2.15,
+     "edge_proxy_mm": 7.4,
+     "mods": [
+      "NODES"
+     ],
+     "mats": {
+      "fabric.003": {
+       "sheen": 0.04,
+       "rough": "IMG:Fabric066_2K_Roughness.jpg",
+       "base": "HUE_SAT<CURVE_RGB<IMG:Fabric066_2K_Color",
+       "normal": "BUMP<IMG:everytexture.com-stock-fabric-t",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.003",
+     "dims": [
+      1748,
+      2079,
+      323
+     ],
+     "z": [
+      157,
+      479
+     ],
+     "loft_over_mattress_top": 38,
+     "hem_above_floor": 157,
+     "verts": 103986,
+     "polys": 206966,
+     "quads": 0,
+     "tris": 206966,
+     "area_m2": 5.836,
+     "v_per_m2": 17819,
+     "surplus": 1.61,
+     "edge_proxy_mm": 7.5,
+     "mods": [],
+     "mats": {
+      "fabric": {
+       "sheen": 0.04,
+       "rough": "IMG:Fabric066_2K_Roughness.jpg",
+       "base": "HUE_SAT<CURVE_RGB<IMG:Fabric066_2K_Color",
+       "normal": "BUMP<IMG:everytexture.com-stock-fabric-t",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.002",
+     "dims": [
+      2049,
+      1573,
+      520
+     ],
+     "z": [
+      2,
+      522
+     ],
+     "loft_over_mattress_top": 80,
+     "hem_above_floor": 2,
+     "verts": 100473,
+     "polys": 185710,
+     "quads": 0,
+     "tris": 185710,
+     "area_m2": 8.441,
+     "v_per_m2": 11903,
+     "surplus": 2.62,
+     "edge_proxy_mm": 9.5,
+     "mods": [],
+     "mats": {
+      "fabric": {
+       "sheen": 0.04,
+       "rough": "IMG:Fabric066_2K_Roughness.jpg",
+       "base": "HUE_SAT<CURVE_RGB<IMG:Fabric066_2K_Color",
+       "normal": "BUMP<IMG:everytexture.com-stock-fabric-t",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.001",
+     "dims": [
+      2026,
+      1071,
+      548
+     ],
+     "z": [
+      1,
+      549
+     ],
+     "loft_over_mattress_top": 108,
+     "hem_above_floor": 1,
+     "verts": 112790,
+     "polys": 213138,
+     "quads": 0,
+     "tris": 213138,
+     "area_m2": 6.613,
+     "v_per_m2": 17055,
+     "surplus": 3.05,
+     "edge_proxy_mm": 7.9,
+     "mods": [],
+     "mats": {
+      "Velvet": {
+       "sheen": 0.08,
+       "rough": "IMG:Fabric039_2K_Roughness.jpg",
+       "base": "MIX<PROC:NOISE>",
+       "normal": "NORMALMAP<IMG:Fabric039_2K_NormalGL.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed",
+     "dims": [
+      2240,
+      509,
+      557
+     ],
+     "z": [
+      1,
+      559
+     ],
+     "loft_over_mattress_top": 118,
+     "hem_above_floor": 1,
+     "verts": 68962,
+     "polys": 125688,
+     "quads": 0,
+     "tris": 125688,
+     "area_m2": 4.023,
+     "v_per_m2": 17140,
+     "surplus": 3.53,
+     "edge_proxy_mm": 8.0,
+     "mods": [],
+     "mats": {
+      "fabric.002": {
+       "sheen": 0.04,
+       "rough": "IMG:Fabric066_2K_Roughness.jpg",
+       "base": "HUE_SAT<CURVE_RGB<IMG:Fabric066_2K_Color",
+       "normal": "BUMP<IMG:everytexture.com-stock-fabric-t",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "Bed.004",
+     "dims": [
+      634,
+      326,
+      203
+     ],
+     "z": [
+      451,
+      654
+     ],
+     "top_over_mattress_top": 213,
+     "bottom_over_mattress_top": 10,
+     "verts": 10864,
+     "v_per_m2": 18622,
+     "edge_proxy_mm": 7.5,
+     "mods": [],
+     "mats": {
+      "fabric.001": {
+       "sheen": 0.04,
+       "rough": "IMG:Fabric066_2K_Roughness.jpg",
+       "base": "HUE_SAT<CURVE_RGB<IMG:Fabric066_2K_Color",
+       "normal": "BUMP<IMG:everytexture.com-stock-fabric-t",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.005",
+     "dims": [
+      636,
+      328,
+      191
+     ],
+     "z": [
+      452,
+      642
+     ],
+     "top_over_mattress_top": 201,
+     "bottom_over_mattress_top": 11,
+     "verts": 10835,
+     "v_per_m2": 18587,
+     "edge_proxy_mm": 7.5,
+     "mods": [],
+     "mats": {
+      "fabric.001": {
+       "sheen": 0.04,
+       "rough": "IMG:Fabric066_2K_Roughness.jpg",
+       "base": "HUE_SAT<CURVE_RGB<IMG:Fabric066_2K_Color",
+       "normal": "BUMP<IMG:everytexture.com-stock-fabric-t",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.006",
+     "dims": [
+      449,
+      255,
+      186
+     ],
+     "z": [
+      452,
+      638
+     ],
+     "top_over_mattress_top": 197,
+     "bottom_over_mattress_top": 11,
+     "verts": 5650,
+     "v_per_m2": 19089,
+     "edge_proxy_mm": 7.4,
+     "mods": [],
+     "mats": {
+      "Velvet.003": {
+       "sheen": 0.08,
+       "rough": "IMG:Fabric039_2K_Roughness.jpg",
+       "base": "MIX<PROC:NOISE>",
+       "normal": "NORMALMAP<IMG:Fabric039_2K_NormalGL.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.007",
+     "dims": [
+      453,
+      246,
+      161
+     ],
+     "z": [
+      452,
+      613
+     ],
+     "top_over_mattress_top": 172,
+     "bottom_over_mattress_top": 11,
+     "verts": 5669,
+     "v_per_m2": 19164,
+     "edge_proxy_mm": 7.4,
+     "mods": [],
+     "mats": {
+      "Velvet.003": {
+       "sheen": 0.08,
+       "rough": "IMG:Fabric039_2K_Roughness.jpg",
+       "base": "MIX<PROC:NOISE>",
+       "normal": "NORMALMAP<IMG:Fabric039_2K_NormalGL.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.008",
+     "dims": [
+      862,
+      276,
+      458
+     ],
+     "z": [
+      188,
+      646
+     ],
+     "top_over_mattress_top": 205,
+     "bottom_over_mattress_top": -253,
+     "verts": 21379,
+     "v_per_m2": 18478,
+     "edge_proxy_mm": 7.5,
+     "mods": [],
+     "mats": {
+      "Velvet": {
+       "sheen": 0.08,
+       "rough": "IMG:Fabric039_2K_Roughness.jpg",
+       "base": "MIX<PROC:NOISE>",
+       "normal": "NORMALMAP<IMG:Fabric039_2K_NormalGL.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed.009",
+     "dims": [
+      861,
+      278,
+      458
+     ],
+     "z": [
+      189,
+      646
+     ],
+     "top_over_mattress_top": 205,
+     "bottom_over_mattress_top": -252,
+     "verts": 21418,
+     "v_per_m2": 18508,
+     "edge_proxy_mm": 7.5,
+     "mods": [],
+     "mats": {
+      "Velvet": {
+       "sheen": 0.08,
+       "rough": "IMG:Fabric039_2K_Roughness.jpg",
+       "base": "MIX<PROC:NOISE>",
+       "normal": "NORMALMAP<IMG:Fabric039_2K_NormalGL.jpg>",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "62253e5c": {
+   "file": "62253e5c-3402-4741-a1d9-7a9f6beed3dd.probe.json",
+   "label": "Wyller Bed",
+   "source": "blend",
+   "bed_min_z": -0.1,
+   "n_images": 13,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     1
+    ],
+    [
+     1680,
+     1260,
+     1
+    ],
+    [
+     1024,
+     1024,
+     8
+    ],
+    [
+     768,
+     768,
+     2
+    ],
+    [
+     250,
+     244,
+     1
+    ]
+   ],
+   "mattress": {
+    "name": "mattres",
+    "dims": [
+     2088,
+     2115,
+     281
+    ],
+    "z": [
+     340,
+     621
+    ],
+    "thick": 281,
+    "verts": 32342,
+    "mods": [
+     "SUBSURF(1,2)"
+    ]
+   },
+   "layers": [
+    {
+     "name": "blanket",
+     "dims": [
+      2434,
+      1160,
+      538
+     ],
+     "z": [
+      164,
+      703
+     ],
+     "loft_over_mattress_top": 82,
+     "hem_above_floor": 164,
+     "verts": 39286,
+     "polys": 38653,
+     "quads": 38645,
+     "tris": 8,
+     "area_m2": 5.69,
+     "v_per_m2": 6904,
+     "surplus": 2.01,
+     "edge_proxy_mm": 12.1,
+     "mods": [
+      "SUBSURF(1,2)"
+     ],
+     "mats": {
+      "Fabric_BeigeBlanket": {
+       "sheen": 0.0,
+       "rough": "IMG:Fabric036_2K_Roughness.jpg.001",
+       "base": "MIX<IMG:Fabric036_2K_Color.jpg.001>",
+       "normal": "NORMALMAP<COMBINE_COLOR<SEPARATE_COLOR<I",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "bed shawl",
+     "dims": [
+      668,
+      2318,
+      280
+     ],
+     "z": [
+      399,
+      680
+     ],
+     "loft_over_mattress_top": 59,
+     "hem_above_floor": 399,
+     "verts": 51285,
+     "polys": 50444,
+     "quads": 50400,
+     "tris": 22,
+     "area_m2": 2.796,
+     "v_per_m2": 18342,
+     "surplus": 1.81,
+     "edge_proxy_mm": 7.4,
+     "mods": [],
+     "mats": {
+      "blanket Velvet": {
+       "sheen": 0.1513,
+       "rough": 0.94,
+       "base": "MIX<MIX<MIX<VALTORGB<HUE_SAT<NEW_GEOMETR",
+       "normal": "BUMP<VALTORGB<IMG:Map #116.002>>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "PillowIvory Left",
+     "dims": [
+      800,
+      331,
+      413
+     ],
+     "z": [
+      585,
+      998
+     ],
+     "top_over_mattress_top": 377,
+     "bottom_over_mattress_top": -35,
+     "verts": 20310,
+     "v_per_m2": 22697,
+     "edge_proxy_mm": 6.6,
+     "mods": [
+      "SUBSURF(1,2)"
+     ],
+     "mats": {
+      "Fabric_IvoryPillow": {
+       "sheen": 0.0,
+       "rough": "IMG:Fabric036_2K_Roughness.jpg.001",
+       "base": "MIX<IMG:Fabric036_2K_Color.jpg.001>",
+       "normal": "NORMALMAP<COMBINE_COLOR<SEPARATE_COLOR<I",
+       "principled": true
+      },
+      "Fabric_SteelBlue": {
+       "sheen": 0.0,
+       "rough": "IMG:Fabric036_2K_Roughness.jpg.001",
+       "base": "MIX<IMG:Fabric036_2K_Color.jpg.001>",
+       "normal": "NORMALMAP<COMBINE_COLOR<SEPARATE_COLOR<I",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "PillowIvory Right",
+     "dims": [
+      800,
+      331,
+      413
+     ],
+     "z": [
+      585,
+      998
+     ],
+     "top_over_mattress_top": 377,
+     "bottom_over_mattress_top": -35,
+     "verts": 20310,
+     "v_per_m2": 22697,
+     "edge_proxy_mm": 6.6,
+     "mods": [
+      "SUBSURF(1,2)"
+     ],
+     "mats": {
+      "Fabric_IvoryPillow": {
+       "sheen": 0.0,
+       "rough": "IMG:Fabric036_2K_Roughness.jpg.001",
+       "base": "MIX<IMG:Fabric036_2K_Color.jpg.001>",
+       "normal": "NORMALMAP<COMBINE_COLOR<SEPARATE_COLOR<I",
+       "principled": true
+      },
+      "Fabric_SteelBlue": {
+       "sheen": 0.0,
+       "rough": "IMG:Fabric036_2K_Roughness.jpg.001",
+       "base": "MIX<IMG:Fabric036_2K_Color.jpg.001>",
+       "normal": "NORMALMAP<COMBINE_COLOR<SEPARATE_COLOR<I",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Fur Pillow",
+     "dims": [
+      930,
+      259,
+      277
+     ],
+     "z": [
+      614,
+      892
+     ],
+     "top_over_mattress_top": 271,
+     "bottom_over_mattress_top": -6,
+     "verts": 20310,
+     "v_per_m2": 28595,
+     "edge_proxy_mm": 5.9,
+     "mods": [
+      "PARTICLE_SYSTEM"
+     ],
+     "mats": {
+      "FauxIvoryFurPillow": {
+       "sheen": 0.0,
+       "rough": "IMG:Fabric036_2K_Roughness.jpg.001",
+       "base": "MIX<IMG:FauxIvoryFurPillow2.jpg>",
+       "normal": "NORMALMAP<COMBINE_COLOR<SEPARATE_COLOR<I",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Francesca Hand Embroidered Throw Pillow Left",
+     "dims": [
+      244,
+      595,
+      512
+     ],
+     "z": [
+      594,
+      1106
+     ],
+     "top_over_mattress_top": 485,
+     "bottom_over_mattress_top": -27,
+     "verts": 89262,
+     "v_per_m2": 128794,
+     "edge_proxy_mm": 2.8,
+     "mods": [],
+     "mats": {
+      "Francesca Hand Embroidered Throw Pillow A": {
+       "sheen": 0.3,
+       "rough": 0.9,
+       "base": "IMG:PotteryBarnFrancesca_HandEmbroidered",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Francesca Hand Embroidered Throw Pillow B": {
+       "sheen": 0.3,
+       "rough": 0.9,
+       "base": "IMG:PotteryBarnFrancesca_HandEmbroidered",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Francesca Hand Embroidered Throw Pillow Middle",
+     "dims": [
+      244,
+      595,
+      512
+     ],
+     "z": [
+      594,
+      1106
+     ],
+     "top_over_mattress_top": 485,
+     "bottom_over_mattress_top": -27,
+     "verts": 89262,
+     "v_per_m2": 128794,
+     "edge_proxy_mm": 2.8,
+     "mods": [],
+     "mats": {
+      "Francesca Hand Embroidered Throw Pillow A": {
+       "sheen": 0.3,
+       "rough": 0.9,
+       "base": "IMG:PotteryBarnFrancesca_HandEmbroidered",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Francesca Hand Embroidered Throw Pillow B": {
+       "sheen": 0.3,
+       "rough": 0.9,
+       "base": "IMG:PotteryBarnFrancesca_HandEmbroidered",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Francesca Hand Embroidered Throw Pillow Right",
+     "dims": [
+      244,
+      595,
+      512
+     ],
+     "z": [
+      594,
+      1106
+     ],
+     "top_over_mattress_top": 485,
+     "bottom_over_mattress_top": -27,
+     "verts": 89262,
+     "v_per_m2": 128794,
+     "edge_proxy_mm": 2.8,
+     "mods": [],
+     "mats": {
+      "Francesca Hand Embroidered Throw Pillow A": {
+       "sheen": 0.3,
+       "rough": 0.9,
+       "base": "IMG:PotteryBarnFrancesca_HandEmbroidered",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      },
+      "Francesca Hand Embroidered Throw Pillow B": {
+       "sheen": 0.3,
+       "rough": 0.9,
+       "base": "IMG:PotteryBarnFrancesca_HandEmbroidered",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "afcfd29e": {
+   "file": "afcfd29e-71cb-4e7c-bc0a-a705cd23a14a.probe.json",
+   "label": "Dream Bed",
+   "source": "blend",
+   "bed_min_z": -0.0,
+   "n_images": 18,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     9
+    ],
+    [
+     1500,
+     1500,
+     1
+    ],
+    [
+     900,
+     900,
+     1
+    ],
+    [
+     640,
+     640,
+     2
+    ],
+    [
+     544,
+     544,
+     1
+    ],
+    [
+     500,
+     500,
+     2
+    ],
+    [
+     450,
+     450,
+     2
+    ]
+   ],
+   "mattress": {
+    "name": "Mattress",
+    "dims": [
+     1857,
+     830,
+     308
+    ],
+    "z": [
+     221,
+     528
+    ],
+    "thick": 308,
+    "verts": 53884,
+    "mods": []
+   },
+   "layers": [
+    {
+     "name": "Mattress_cover",
+     "dims": [
+      1858,
+      595,
+      387
+     ],
+     "z": [
+      199,
+      587
+     ],
+     "loft_over_mattress_top": 58,
+     "hem_above_floor": 199,
+     "verts": 55957,
+     "polys": 55370,
+     "quads": 55370,
+     "tris": 0,
+     "area_m2": 1.6,
+     "v_per_m2": 34967,
+     "surplus": 1.45,
+     "edge_proxy_mm": 5.4,
+     "mods": [],
+     "mats": {
+      "Mattress_cover_fabric": {
+       "sheen": 0.2,
+       "rough": "IMG:umonab2dy_4K_Roughness.jpg",
+       "base": "IMG:umonab2dy_4K_Albedo.jpg",
+       "normal": "NORMALMAP<IMG:umonab2dy_4K_Normal.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed_main_cover",
+     "dims": [
+      1872,
+      1334,
+      316
+     ],
+     "z": [
+      217,
+      533
+     ],
+     "loft_over_mattress_top": 4,
+     "hem_above_floor": 217,
+     "verts": 77163,
+     "polys": 76475,
+     "quads": 76452,
+     "tris": 7,
+     "area_m2": 3.719,
+     "v_per_m2": 20750,
+     "surplus": 1.49,
+     "edge_proxy_mm": 7.0,
+     "mods": [],
+     "mats": {
+      "Bed_main_cover_fabric": {
+       "sheen": 0.2,
+       "rough": 1.0,
+       "base": "IMG:dream_bed_fabric_05.jpg",
+       "normal": "BUMP<IMG:dream_bed_fabric_05_b.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Secondary_cover",
+     "dims": [
+      2191,
+      1468,
+      538
+     ],
+     "z": [
+      102,
+      640
+     ],
+     "loft_over_mattress_top": 111,
+     "hem_above_floor": 102,
+     "verts": 51771,
+     "polys": 50607,
+     "quads": 50575,
+     "tris": 32,
+     "area_m2": 4.356,
+     "v_per_m2": 11885,
+     "surplus": 1.35,
+     "edge_proxy_mm": 9.3,
+     "mods": [],
+     "mats": {
+      "Secondary_cover_fabric": {
+       "sheen": 0.2,
+       "rough": "IMG:sjfvdh0c_4K_Roughness.jpg",
+       "base": "HUE_SAT<IMG:sjfvdh0c_4K_Albedo.jpg>",
+       "normal": "NORMALMAP<IMG:sjfvdh0c_4K_Normal.jpg>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "Main_pillows",
+     "dims": [
+      1623,
+      475,
+      326
+     ],
+     "z": [
+      510,
+      836
+     ],
+     "top_over_mattress_top": 307,
+     "bottom_over_mattress_top": -18,
+     "verts": 73012,
+     "v_per_m2": 43631,
+     "edge_proxy_mm": 4.8,
+     "mods": [],
+     "mats": {
+      "Pillow_cloth": {
+       "sheen": 0.2,
+       "rough": "IMG:sbklx0p_4K_Roughness.jpg",
+       "base": "IMG:sbklx0p_4K_Albedo.jpg",
+       "normal": "NORMALMAP<IMG:sbklx0p_4K_Normal.jpg>",
+       "principled": true
+      },
+      "Pillow_cloth_dark": {
+       "sheen": 0.2,
+       "rough": "IMG:sbklx0p_4K_Roughness.jpg",
+       "base": "HUE_SAT<IMG:sbklx0p_4K_Albedo.jpg>",
+       "normal": "NORMALMAP<IMG:sbklx0p_4K_Normal.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Support_pillows",
+     "dims": [
+      1630,
+      188,
+      164
+     ],
+     "z": [
+      502,
+      666
+     ],
+     "top_over_mattress_top": 138,
+     "bottom_over_mattress_top": -27,
+     "verts": 13968,
+     "v_per_m2": 16571,
+     "edge_proxy_mm": 7.9,
+     "mods": [],
+     "mats": {
+      "Support_pilows_fabric": {
+       "sheen": 0.2,
+       "rough": "IMG:sbklx0p_4K_Roughness.jpg",
+       "base": "HUE_SAT<IMG:sbklx0p_4K_Albedo.jpg>",
+       "normal": "NORMALMAP<IMG:sbklx0p_4K_Normal.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Decoration_pillows",
+     "dims": [
+      1089,
+      223,
+      314
+     ],
+     "z": [
+      514,
+      828
+     ],
+     "top_over_mattress_top": 299,
+     "bottom_over_mattress_top": -14,
+     "verts": 43884,
+     "v_per_m2": 73959,
+     "edge_proxy_mm": 3.7,
+     "mods": [],
+     "mats": {
+      "Decor_pillow_fabric": {
+       "sheen": 0.2,
+       "rough": 1.0,
+       "base": "IMG:2021051920164.jpg",
+       "normal": "BUMP<IMG:2021051920020.jpg>",
+       "principled": true
+      },
+      "Buttons": {
+       "sheen": 0.2,
+       "rough": 1.0,
+       "base": "HUE_SAT<IMG:2021051920172.jpg>",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "1f83314d": {
+   "file": "1f83314d-f3e6-4bd8-ab93-83bc473a8b42.probe.json",
+   "label": "Messy bed (unmade control)",
+   "source": "blend",
+   "bed_min_z": -7.7,
+   "n_images": 6,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     2
+    ],
+    [
+     1024,
+     1024,
+     2
+    ],
+    [
+     750,
+     750,
+     1
+    ],
+    [
+     976,
+     468,
+     1
+    ]
+   ],
+   "mattress": {
+    "name": "Cube",
+    "dims": [
+     1900,
+     2000,
+     88
+    ],
+    "z": [
+     1,
+     89
+    ],
+    "thick": 88,
+    "verts": 4174,
+    "mods": [
+     "NODES"
+    ]
+   },
+   "layers": [
+    {
+     "name": "BED EXPORT.004",
+     "dims": [
+      1932,
+      2024,
+      320
+     ],
+     "z": [
+      82,
+      402
+     ],
+     "loft_over_mattress_top": 313,
+     "hem_above_floor": 89,
+     "verts": 113284,
+     "polys": 225526,
+     "quads": 0,
+     "tris": 225526,
+     "area_m2": 6.31,
+     "v_per_m2": 17954,
+     "surplus": 1.61,
+     "edge_proxy_mm": 7.5,
+     "mods": [],
+     "mats": {
+      "Brown fabric.004": {
+       "sheen": 0.0303,
+       "rough": 0.94,
+       "base": "HUE_SAT<REROUTE<BRIGHTCONTRAST<MIX<MIX<M",
+       "normal": "BUMP<VALTORGB<IMG:pillow_bump.jpg.002>>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "BED EXPORT.003",
+     "dims": [
+      2372,
+      2022,
+      491
+     ],
+     "z": [
+      1,
+      492
+     ],
+     "loft_over_mattress_top": 404,
+     "hem_above_floor": 9,
+     "verts": 127789,
+     "polys": 252291,
+     "quads": 0,
+     "tris": 252291,
+     "area_m2": 7.635,
+     "v_per_m2": 16736,
+     "surplus": 1.59,
+     "edge_proxy_mm": 7.8,
+     "mods": [],
+     "mats": {
+      "Brown fabric.004": {
+       "sheen": 0.0303,
+       "rough": 0.94,
+       "base": "HUE_SAT<REROUTE<BRIGHTCONTRAST<MIX<MIX<M",
+       "normal": "BUMP<VALTORGB<IMG:pillow_bump.jpg.002>>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "BED EXPORT.005",
+     "dims": [
+      2607,
+      1872,
+      494
+     ],
+     "z": [
+      -8,
+      486
+     ],
+     "loft_over_mattress_top": 398,
+     "hem_above_floor": 0,
+     "verts": 114751,
+     "polys": 228340,
+     "quads": 0,
+     "tris": 228340,
+     "area_m2": 6.257,
+     "v_per_m2": 18340,
+     "surplus": 1.28,
+     "edge_proxy_mm": 7.4,
+     "mods": [],
+     "mats": {
+      "Brown fabric.003": {
+       "sheen": 0.0303,
+       "rough": 0.94,
+       "base": "HUE_SAT<REROUTE<BRIGHTCONTRAST<MIX<MIX<M",
+       "normal": "BUMP<VALTORGB<IMG:pillow_bump.jpg.002>>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "BED EXPORT.001",
+     "dims": [
+      922,
+      271,
+      316
+     ],
+     "z": [
+      378,
+      694
+     ],
+     "top_over_mattress_top": 606,
+     "bottom_over_mattress_top": 290,
+     "verts": 16040,
+     "v_per_m2": 16676,
+     "edge_proxy_mm": 8.1,
+     "mods": [],
+     "mats": {
+      "Velvet": {
+       "sheen": 0.08,
+       "rough": "IMG:Fabric039_2K_Roughness.jpg",
+       "base": "MIX<PROC:NOISE>",
+       "normal": "NORMALMAP<IMG:Fabric039_2K_NormalGL.jpg>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "BED EXPORT.002",
+     "dims": [
+      926,
+      294,
+      322
+     ],
+     "z": [
+      402,
+      724
+     ],
+     "top_over_mattress_top": 635,
+     "bottom_over_mattress_top": 314,
+     "verts": 16041,
+     "v_per_m2": 16766,
+     "edge_proxy_mm": 8.1,
+     "mods": [],
+     "mats": {
+      "Velvet": {
+       "sheen": 0.08,
+       "rough": "IMG:Fabric039_2K_Roughness.jpg",
+       "base": "MIX<PROC:NOISE>",
+       "normal": "NORMALMAP<IMG:Fabric039_2K_NormalGL.jpg>",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "ba112721": {
+   "file": "ba112721-b9de-4f39-add0-cca49c37c626.probe.json",
+   "label": "Rattan headboard bed",
+   "source": "blend",
+   "bed_min_z": -47.6,
+   "n_images": 0,
+   "image_sizes": [],
+   "mattress": {
+    "name": "Bed-Sheet",
+    "dims": [
+     1495,
+     2006,
+     310
+    ],
+    "z": [
+     163,
+     473
+    ],
+    "thick": 310,
+    "verts": 161560,
+    "mods": [
+     "COLLISION",
+     "NODES"
+    ]
+   },
+   "layers": [
+    {
+     "name": "Bed-Cover-Bottom",
+     "dims": [
+      1626,
+      1298,
+      294
+     ],
+     "z": [
+      188,
+      482
+     ],
+     "loft_over_mattress_top": 9,
+     "hem_above_floor": 236,
+     "verts": 752841,
+     "polys": 751216,
+     "quads": 751216,
+     "tris": 0,
+     "area_m2": 3.047,
+     "v_per_m2": 247103,
+     "surplus": 1.44,
+     "edge_proxy_mm": 2.0,
+     "mods": [],
+     "mats": {
+      "Fabric": {
+       "sheen": 1.0,
+       "rough": 0.8,
+       "base": "VALTORGB<PROC:MAGIC>",
+       "normal": "BUMP<PROC:MAGIC>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed-Cover-Top",
+     "dims": [
+      1604,
+      375,
+      254
+     ],
+     "z": [
+      259,
+      513
+     ],
+     "loft_over_mattress_top": 40,
+     "hem_above_floor": 306,
+     "verts": 146594,
+     "polys": 146592,
+     "quads": 146592,
+     "tris": 0,
+     "area_m2": 1.48,
+     "v_per_m2": 99068,
+     "surplus": 2.46,
+     "edge_proxy_mm": 3.2,
+     "mods": [
+      "SUBSURF(1,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "mats": {
+      "Fabric": {
+       "sheen": 1.0,
+       "rough": 0.8,
+       "base": "VALTORGB<PROC:MAGIC>",
+       "normal": "BUMP<PROC:MAGIC>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "Bed-Pillow",
+     "dims": [
+      666,
+      421,
+      219
+     ],
+     "z": [
+      382,
+      835
+     ],
+     "top_over_mattress_top": 362,
+     "bottom_over_mattress_top": -91,
+     "verts": 64482,
+     "v_per_m2": 98498,
+     "edge_proxy_mm": 3.2,
+     "mods": [],
+     "mats": {
+      "Fabric-dark": {
+       "sheen": 1.0,
+       "rough": 0.8,
+       "base": "HUE_SAT<VALTORGB<PROC:MAGIC>>",
+       "normal": "BUMP<PROC:MAGIC>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed-Pillow.001",
+     "dims": [
+      672,
+      423,
+      245
+     ],
+     "z": [
+      365,
+      837
+     ],
+     "top_over_mattress_top": 364,
+     "bottom_over_mattress_top": -108,
+     "verts": 64482,
+     "v_per_m2": 96983,
+     "edge_proxy_mm": 3.2,
+     "mods": [],
+     "mats": {
+      "Fabric": {
+       "sheen": 1.0,
+       "rough": 0.8,
+       "base": "VALTORGB<PROC:MAGIC>",
+       "normal": "BUMP<PROC:MAGIC>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed-Pillow.002",
+     "dims": [
+      698,
+      416,
+      219
+     ],
+     "z": [
+      378,
+      827
+     ],
+     "top_over_mattress_top": 354,
+     "bottom_over_mattress_top": -95,
+     "verts": 64482,
+     "v_per_m2": 97259,
+     "edge_proxy_mm": 3.2,
+     "mods": [],
+     "mats": {
+      "Fabric-dark": {
+       "sheen": 1.0,
+       "rough": 0.8,
+       "base": "HUE_SAT<VALTORGB<PROC:MAGIC>>",
+       "normal": "BUMP<PROC:MAGIC>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Bed-Pillow.003",
+     "dims": [
+      665,
+      421,
+      219
+     ],
+     "z": [
+      382,
+      835
+     ],
+     "top_over_mattress_top": 362,
+     "bottom_over_mattress_top": -91,
+     "verts": 64482,
+     "v_per_m2": 98224,
+     "edge_proxy_mm": 3.2,
+     "mods": [],
+     "mats": {
+      "Fabric": {
+       "sheen": 1.0,
+       "rough": 0.8,
+       "base": "VALTORGB<PROC:MAGIC>",
+       "normal": "BUMP<PROC:MAGIC>",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "a682383b": {
+   "file": "a682383b-dfca-4044-9491-14d074f620f9.probe.json",
+   "label": "Ikea double bed",
+   "source": "blend",
+   "bed_min_z": -3.0,
+   "n_images": 14,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     14
+    ]
+   ],
+   "mattress": {
+    "name": "Mattress",
+    "dims": [
+     1511,
+     1862,
+     168
+    ],
+    "z": [
+     367,
+     534
+    ],
+    "thick": 168,
+    "verts": 9090,
+    "mods": [
+     "WEIGHTED_NORMAL"
+    ]
+   },
+   "layers": [
+    {
+     "name": "blanket",
+     "dims": [
+      1778,
+      1582,
+      550
+     ],
+     "z": [
+      131,
+      681
+     ],
+     "loft_over_mattress_top": 147,
+     "hem_above_floor": 134,
+     "verts": 276226,
+     "polys": 276224,
+     "quads": 276224,
+     "tris": 0,
+     "area_m2": 8.823,
+     "v_per_m2": 31306,
+     "surplus": 3.14,
+     "edge_proxy_mm": 5.7,
+     "mods": [
+      "WEIGHTED_NORMAL"
+     ],
+     "mats": {
+      "Floral Fabric": {
+       "sheen": 0.0,
+       "rough": "VALTORGB<IMG:floral_23_roughness.jpg>",
+       "base": "HUE_SAT<MIX<IMG:floral_23_color.jpg>>",
+       "normal": "NORMALMAP<IMG:floral_23_normal.jpg>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "Pillow",
+     "dims": [
+      1127,
+      504,
+      200
+     ],
+     "z": [
+      510,
+      710
+     ],
+     "top_over_mattress_top": 175,
+     "bottom_over_mattress_top": -24,
+     "verts": 68620,
+     "v_per_m2": 26698,
+     "edge_proxy_mm": 6.1,
+     "mods": [
+      "WEIGHTED_NORMAL"
+     ],
+     "mats": {
+      "Fabric": {
+       "sheen": 0.0,
+       "rough": "IMG:fabric_131_roughness.jpg",
+       "base": "IMG:fabric_131_color.jpg",
+       "normal": "NORMALMAP<COMBXYZ<SEPXYZ<IMG:fabric_131_",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "e2418055": {
+   "file": "e2418055-2a3f-4cdc-9f04-3bd851b4cef9.probe.json",
+   "label": "Metropol — IN FRAME (D-121)",
+   "source": "blend",
+   "bed_min_z": 0.0,
+   "n_images": 5,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     1
+    ],
+    [
+     1024,
+     1024,
+     1
+    ],
+    [
+     992,
+     744,
+     1
+    ],
+    [
+     800,
+     800,
+     1
+    ],
+    [
+     500,
+     500,
+     1
+    ]
+   ],
+   "mattress": {
+    "name": "Matress",
+    "dims": [
+     1786,
+     1980,
+     247
+    ],
+    "z": [
+     273,
+     520
+    ],
+    "thick": 247,
+    "verts": 177074,
+    "mods": []
+   },
+   "layers": [
+    {
+     "name": "Blanket",
+     "dims": [
+      2013,
+      1358,
+      435
+     ],
+     "z": [
+      109,
+      543
+     ],
+     "loft_over_mattress_top": 24,
+     "hem_above_floor": 109,
+     "verts": 195250,
+     "polys": 194068,
+     "quads": 194068,
+     "tris": 0,
+     "area_m2": 5.298,
+     "v_per_m2": 36856,
+     "surplus": 1.94,
+     "edge_proxy_mm": 5.2,
+     "mods": [],
+     "mats": {
+      "Light Beige Fabric": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      }
+     }
+    },
+    {
+     "name": "Sheet",
+     "dims": [
+      2079,
+      576,
+      460
+     ],
+     "z": [
+      81,
+      541
+     ],
+     "loft_over_mattress_top": 21,
+     "hem_above_floor": 81,
+     "verts": 728183,
+     "polys": 662115,
+     "quads": 661020,
+     "tris": 1095,
+     "area_m2": 6.021,
+     "v_per_m2": 120948,
+     "surplus": 5.03,
+     "edge_proxy_mm": 3.0,
+     "mods": [],
+     "mats": {
+      "Brown textured fabric": {
+       "sheen": 0.0,
+       "rough": 0.8,
+       "base": "IMG:3",
+       "normal": "NORMALMAP<COMBINE_COLOR<SEPARATE_COLOR<I",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "Cusions",
+     "dims": [
+      1836,
+      593,
+      429
+     ],
+     "z": [
+      428,
+      857
+     ],
+     "top_over_mattress_top": 337,
+     "bottom_over_mattress_top": -92,
+     "verts": 137073,
+     "v_per_m2": 40536,
+     "edge_proxy_mm": 5.0,
+     "mods": [],
+     "mats": {
+      "White Fabric": {
+       "sheen": 0.0,
+       "rough": 1.0,
+       "base": "[1.0, 1.0, 1.0, 1.0]",
+       "normal": "BUMP<IMG:Bump.jpg>",
+       "principled": true
+      },
+      "Light Beige Fabric": {
+       "sheen": null,
+       "rough": null,
+       "base": "None",
+       "normal": "None",
+       "principled": false
+      }
+     }
+    }
+   ]
+  },
+  "81d895fd": {
+   "file": "81d895fd-ab4b-4d44-8c4c-126f386083d6.probe.json",
+   "label": "previous frame (D-109/110)",
+   "source": "glb-import",
+   "bed_min_z": -8.6,
+   "n_images": 9,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     6
+    ],
+    [
+     2500,
+     825,
+     2
+    ],
+    [
+     1552,
+     512,
+     1
+    ]
+   ],
+   "mattress": {
+    "name": "Cube.015",
+    "dims": [
+     1400,
+     1900,
+     200
+    ],
+    "z": [
+     221,
+     421
+    ],
+    "thick": 200,
+    "verts": 129,
+    "mods": []
+   },
+   "layers": [
+    {
+     "name": "Plane.029",
+     "dims": [
+      1578,
+      2047,
+      358
+     ],
+     "z": [
+      96,
+      454
+     ],
+     "loft_over_mattress_top": 33,
+     "hem_above_floor": 105,
+     "verts": 113587,
+     "polys": 215168,
+     "quads": 0,
+     "tris": 215168,
+     "area_m2": 4.343,
+     "v_per_m2": 26154,
+     "surplus": 1.34,
+     "edge_proxy_mm": 6.4,
+     "mods": [],
+     "mats": {
+      "Procedural Fabric": {
+       "sheen": 1.0,
+       "rough": 1.0,
+       "base": "[1.0, 1.0, 1.0, 1.0]",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Plane.030",
+     "dims": [
+      1712,
+      1856,
+      543
+     ],
+     "z": [
+      0,
+      544
+     ],
+     "loft_over_mattress_top": 122,
+     "hem_above_floor": 9,
+     "verts": 375278,
+     "polys": 691968,
+     "quads": 0,
+     "tris": 691968,
+     "area_m2": 8.505,
+     "v_per_m2": 44125,
+     "surplus": 2.68,
+     "edge_proxy_mm": 5.0,
+     "mods": [],
+     "mats": {
+      "Fabric.003": {
+       "sheen": 1.0,
+       "rough": "SEPARATE_COLOR<IMG:Fabric036_2K_Roughness>",
+       "base": "IMG:Fabric036_2K_Color",
+       "normal": "NORMALMAP<IMG:Fabric036_2K_Normal>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Plane.038",
+     "dims": [
+      1988,
+      947,
+      636
+     ],
+     "z": [
+      -9,
+      628
+     ],
+     "loft_over_mattress_top": 206,
+     "hem_above_floor": 0,
+     "verts": 28158,
+     "polys": 42624,
+     "quads": 0,
+     "tris": 42624,
+     "area_m2": 6.028,
+     "v_per_m2": 4671,
+     "surplus": 3.2,
+     "edge_proxy_mm": 16.8,
+     "mods": [],
+     "mats": {
+      "Procedural Fabric.001": {
+       "sheen": 1.0,
+       "rough": 1.0,
+       "base": "VERTEX_COLOR",
+       "normal": "[0.0, 0.0, 0.0]",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "Plane.031",
+     "dims": [
+      773,
+      402,
+      320
+     ],
+     "z": [
+      441,
+      761
+     ],
+     "top_over_mattress_top": 340,
+     "bottom_over_mattress_top": 20,
+     "verts": 61969,
+     "v_per_m2": 75570,
+     "edge_proxy_mm": 3.9,
+     "mods": [],
+     "mats": {
+      "Fabric 124": {
+       "sheen": 0.0,
+       "rough": "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+       "base": "IMG:fabric_124_albedo-2K",
+       "normal": "NORMALMAP<IMG:fabric_124_normal-2K>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Plane.032",
+     "dims": [
+      711,
+      367,
+      370
+     ],
+     "z": [
+      394,
+      764
+     ],
+     "top_over_mattress_top": 343,
+     "bottom_over_mattress_top": -27,
+     "verts": 62078,
+     "v_per_m2": 86750,
+     "edge_proxy_mm": 3.6,
+     "mods": [],
+     "mats": {
+      "Fabric 124.001": {
+       "sheen": 0.0,
+       "rough": "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+       "base": "IMG:fabric_124_albedo-2K",
+       "normal": "NORMALMAP<IMG:fabric_124_normal-2K>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Plane.033",
+     "dims": [
+      559,
+      261,
+      324
+     ],
+     "z": [
+      430,
+      755
+     ],
+     "top_over_mattress_top": 334,
+     "bottom_over_mattress_top": 9,
+     "verts": 61969,
+     "v_per_m2": 161018,
+     "edge_proxy_mm": 2.6,
+     "mods": [],
+     "mats": {
+      "Fabric 124": {
+       "sheen": 0.0,
+       "rough": "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+       "base": "IMG:fabric_124_albedo-2K",
+       "normal": "NORMALMAP<IMG:fabric_124_normal-2K>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Plane.035",
+     "dims": [
+      543,
+      257,
+      247
+     ],
+     "z": [
+      460,
+      708
+     ],
+     "top_over_mattress_top": 287,
+     "bottom_over_mattress_top": 39,
+     "verts": 61969,
+     "v_per_m2": 154859,
+     "edge_proxy_mm": 2.7,
+     "mods": [],
+     "mats": {
+      "Fabric 124": {
+       "sheen": 0.0,
+       "rough": "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+       "base": "IMG:fabric_124_albedo-2K",
+       "normal": "NORMALMAP<IMG:fabric_124_normal-2K>",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "bk_daxing": {
+   "file": "bk_daxing.probe.json",
+   "label": "Keywest Daxing",
+   "source": "glb-import",
+   "bed_min_z": 0.4,
+   "n_images": 6,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     3
+    ],
+    [
+     1600,
+     1600,
+     1
+    ],
+    [
+     1080,
+     1080,
+     2
+    ]
+   ],
+   "mattress": {
+    "name": "sheet",
+    "dims": [
+     1810,
+     1576,
+     308
+    ],
+    "z": [
+     389,
+     697
+    ],
+    "thick": 308,
+    "verts": 26746,
+    "mods": []
+   },
+   "layers": [
+    {
+     "name": "sheet 02",
+     "dims": [
+      1799,
+      749,
+      282
+     ],
+     "z": [
+      398,
+      680
+     ],
+     "loft_over_mattress_top": -16,
+     "hem_above_floor": 398,
+     "verts": 7078,
+     "polys": 13559,
+     "quads": 0,
+     "tris": 13559,
+     "area_m2": 1.976,
+     "v_per_m2": 3582,
+     "surplus": 1.47,
+     "edge_proxy_mm": 17.1,
+     "mods": [],
+     "mats": {
+      "White Fabric": {
+       "sheen": 1.0,
+       "rough": 0.6,
+       "base": "IMG:fabric8_difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "blanquet",
+     "dims": [
+      2120,
+      668,
+      640
+     ],
+     "z": [
+      131,
+      771
+     ],
+     "loft_over_mattress_top": 74,
+     "hem_above_floor": 130,
+     "verts": 6677,
+     "polys": 12992,
+     "quads": 0,
+     "tris": 12992,
+     "area_m2": 3.445,
+     "v_per_m2": 1938,
+     "surplus": 2.43,
+     "edge_proxy_mm": 23.0,
+     "mods": [],
+     "mats": {
+      "Fur_black": {
+       "sheen": 1.0,
+       "rough": "SEPARATE_COLOR<IMG:fur-1_smooth>",
+       "base": "IMG:fur-1_diffuse",
+       "normal": "NORMALMAP<IMG:fur-1_bump>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "cuishon 1",
+     "dims": [
+      1560,
+      419,
+      318
+     ],
+     "z": [
+      670,
+      987
+     ],
+     "top_over_mattress_top": 290,
+     "bottom_over_mattress_top": -27,
+     "verts": 13190,
+     "v_per_m2": 8195,
+     "edge_proxy_mm": 11.2,
+     "mods": [],
+     "mats": {
+      "White Fabric": {
+       "sheen": 1.0,
+       "rough": 0.6,
+       "base": "IMG:fabric8_difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "chuishion 2",
+     "dims": [
+      1628,
+      236,
+      421
+     ],
+     "z": [
+      666,
+      1087
+     ],
+     "top_over_mattress_top": 391,
+     "bottom_over_mattress_top": -30,
+     "verts": 12488,
+     "v_per_m2": 7524,
+     "edge_proxy_mm": 11.6,
+     "mods": [],
+     "mats": {
+      "fabric 1": {
+       "sheen": 1.0,
+       "rough": 1.0,
+       "base": "IMG:fabric4__difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "bk_phoenix": {
+   "file": "bk_phoenix.probe.json",
+   "label": "Keywest Phoenix",
+   "source": "glb-import",
+   "bed_min_z": -0.6,
+   "n_images": 6,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     3
+    ],
+    [
+     1600,
+     1600,
+     1
+    ],
+    [
+     1080,
+     1080,
+     2
+    ]
+   ],
+   "mattress": {
+    "name": "sheet",
+    "dims": [
+     1576,
+     308,
+     1810
+    ],
+    "z": [
+     390,
+     698
+    ],
+    "thick": 308,
+    "verts": 26746,
+    "mods": []
+   },
+   "layers": [
+    {
+     "name": "sheet 02",
+     "dims": [
+      749,
+      282,
+      1799
+     ],
+     "z": [
+      400,
+      682
+     ],
+     "loft_over_mattress_top": -16,
+     "hem_above_floor": 400,
+     "verts": 7078,
+     "polys": 13559,
+     "quads": 0,
+     "tris": 13559,
+     "area_m2": 1.976,
+     "v_per_m2": 3582,
+     "surplus": 9.36,
+     "edge_proxy_mm": 17.1,
+     "mods": [],
+     "mats": {
+      "White Fabric": {
+       "sheen": 1.0,
+       "rough": 0.6,
+       "base": "IMG:fabric8_difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "blanquet",
+     "dims": [
+      664,
+      2120,
+      697
+     ],
+     "z": [
+      38,
+      850
+     ],
+     "loft_over_mattress_top": 152,
+     "hem_above_floor": 39,
+     "verts": 6677,
+     "polys": 12992,
+     "quads": 0,
+     "tris": 12992,
+     "area_m2": 3.446,
+     "v_per_m2": 1938,
+     "surplus": 2.45,
+     "edge_proxy_mm": 23.0,
+     "mods": [],
+     "mats": {
+      "Fur": {
+       "sheen": 1.0,
+       "rough": "SEPARATE_COLOR<IMG:fur-1_smooth>",
+       "base": "IMG:fur-1_diffuse",
+       "normal": "NORMALMAP<IMG:fur-1_bump>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "cuishon 1",
+     "dims": [
+      419,
+      318,
+      1560
+     ],
+     "z": [
+      671,
+      988
+     ],
+     "top_over_mattress_top": 290,
+     "bottom_over_mattress_top": -27,
+     "verts": 13190,
+     "v_per_m2": 8195,
+     "edge_proxy_mm": 11.2,
+     "mods": [],
+     "mats": {
+      "White Fabric": {
+       "sheen": 1.0,
+       "rough": 0.6,
+       "base": "IMG:fabric8_difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "chuishion 2",
+     "dims": [
+      236,
+      421,
+      1628
+     ],
+     "z": [
+      667,
+      1088
+     ],
+     "top_over_mattress_top": 391,
+     "bottom_over_mattress_top": -30,
+     "verts": 12488,
+     "v_per_m2": 7524,
+     "edge_proxy_mm": 11.6,
+     "mods": [],
+     "mats": {
+      "fabric 2": {
+       "sheen": 1.0,
+       "rough": 0.8727,
+       "base": "IMG:fabric4__difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    }
+   ]
+  },
+  "bk_stansted": {
+   "file": "bk_stansted.probe.json",
+   "label": "Keywest Stansted",
+   "source": "glb-import",
+   "bed_min_z": 0.4,
+   "n_images": 6,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     3
+    ],
+    [
+     1600,
+     1600,
+     1
+    ],
+    [
+     1080,
+     1080,
+     2
+    ]
+   ],
+   "mattress": {
+    "name": "sheet",
+    "dims": [
+     1810,
+     1576,
+     308
+    ],
+    "z": [
+     389,
+     697
+    ],
+    "thick": 308,
+    "verts": 26746,
+    "mods": []
+   },
+   "layers": [
+    {
+     "name": "sheet 02",
+     "dims": [
+      1799,
+      749,
+      282
+     ],
+     "z": [
+      398,
+      680
+     ],
+     "loft_over_mattress_top": -16,
+     "hem_above_floor": 398,
+     "verts": 7078,
+     "polys": 13559,
+     "quads": 0,
+     "tris": 13559,
+     "area_m2": 1.976,
+     "v_per_m2": 3582,
+     "surplus": 1.47,
+     "edge_proxy_mm": 17.1,
+     "mods": [],
+     "mats": {
+      "White Fabric": {
+       "sheen": 1.0,
+       "rough": 0.6,
+       "base": "IMG:fabric8_difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "blanquet",
+     "dims": [
+      2120,
+      668,
+      640
+     ],
+     "z": [
+      131,
+      771
+     ],
+     "loft_over_mattress_top": 74,
+     "hem_above_floor": 130,
+     "verts": 6677,
+     "polys": 12992,
+     "quads": 0,
+     "tris": 12992,
+     "area_m2": 3.445,
+     "v_per_m2": 1938,
+     "surplus": 2.43,
+     "edge_proxy_mm": 23.0,
+     "mods": [],
+     "mats": {
+      "Fur_black": {
+       "sheen": 1.0,
+       "rough": "SEPARATE_COLOR<IMG:fur-1_smooth>",
+       "base": "IMG:fur-1_diffuse",
+       "normal": "NORMALMAP<IMG:fur-1_bump>",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "pillows": [
+    {
+     "name": "cuishon 1",
+     "dims": [
+      1560,
+      419,
+      318
+     ],
+     "z": [
+      670,
+      987
+     ],
+     "top_over_mattress_top": 290,
+     "bottom_over_mattress_top": -27,
+     "verts": 13190,
+     "v_per_m2": 8195,
+     "edge_proxy_mm": 11.2,
+     "mods": [],
+     "mats": {
+      "White Fabric": {
+       "sheen": 1.0,
+       "rough": 0.6,
+       "base": "IMG:fabric8_difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "chuishion 2",
+     "dims": [
+      1628,
+      236,
+      421
+     ],
+     "z": [
+      666,
+      1087
+     ],
+     "top_over_mattress_top": 391,
+     "bottom_over_mattress_top": -30,
+     "verts": 12488,
+     "v_per_m2": 7524,
+     "edge_proxy_mm": 11.6,
+     "mods": [],
+     "mats": {
+      "fabric 1": {
+       "sheen": 1.0,
+       "rough": 1.0,
+       "base": "IMG:fabric4__difuse",
+       "normal": "NORMALMAP<IMG:fabric_bump1>",
+       "principled": true
+      }
+     }
+    }
+   ]
+  }
+ },
+ "pillow_sets": {
+  "45daf5df": {
+   "file": "45daf5df-7d9b-472e-a164-0ebc554583af.probe.json",
+   "label": "Pillow Set A",
+   "objects": [
+    {
+     "name": "LovePillow.003",
+     "dims": [
+      333,
+      953,
+      343
+     ],
+     "verts": 14450,
+     "polys": 13920,
+     "quads": 13920,
+     "tris": 0,
+     "v_per_m2": 16563,
+     "edge_proxy_mm": 7.9,
+     "mods": [
+      "SOLIDIFY"
+     ],
+     "mats": {
+      "Pillow.001": {
+       "sheen": 0.03,
+       "rough": 0.9,
+       "base": "[0.8565, 0.8081, 0.7571, 1.0]",
+       "normal": "BUMP<IMG:Chocofur_Fabric_Solid_21_diff.j",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Pillow.005",
+     "dims": [
+      253,
+      725,
+      371
+     ],
+     "verts": 10514,
+     "polys": 10080,
+     "quads": 10080,
+     "tris": 0,
+     "v_per_m2": 17415,
+     "edge_proxy_mm": 7.7,
+     "mods": [
+      "SOLIDIFY"
+     ],
+     "mats": {
+      "Pillow.002": {
+       "sheen": 0.01,
+       "rough": 0.9,
+       "base": "[0.084, 0.1648, 0.2283, 1.0]",
+       "normal": "BUMP<IMG:Chocofur_Fabric_Solid_21_diff.j",
+       "principled": true
+      }
+     }
+    },
+    {
+     "name": "Pillow.006",
+     "dims": [
+      300,
+      723,
+      390
+     ],
+     "verts": 10514,
+     "polys": 10080,
+     "quads": 10080,
+     "tris": 0,
+     "v_per_m2": 16408,
+     "edge_proxy_mm": 8.0,
+     "mods": [
+      "SOLIDIFY"
+     ],
+     "mats": {
+      "Pillow.002": {
+       "sheen": 0.01,
+       "rough": 0.9,
+       "base": "[0.084, 0.1648, 0.2283, 1.0]",
+       "normal": "BUMP<IMG:Chocofur_Fabric_Solid_21_diff.j",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "images": [
+    [
+     "Chocofur_Fabric_Solid_21_diff.jpg",
+     [
+      2048,
+      2048
+     ]
+    ]
+   ]
+  },
+  "2767f3fa": {
+   "file": "2767f3fa-8d08-427b-8d0c-1fbebd208a19.probe.json",
+   "label": "Cylinder pillow (bolster)",
+   "objects": [
+    {
+     "name": "Cylinder Pillow Beige",
+     "dims": [
+      705,
+      263,
+      250
+     ],
+     "verts": 9843,
+     "polys": 10687,
+     "quads": 9331,
+     "tris": 1356,
+     "v_per_m2": 15119,
+     "edge_proxy_mm": 8.1,
+     "mods": [
+      "SUBSURF(1,2)"
+     ],
+     "mats": {
+      "Cylinder_Pillow_Beige.001": {
+       "sheen": 0.0,
+       "rough": "IMG:FABRIC_1_FRONT_1510_Roughness.1001.jpg.001",
+       "base": "IMG:FABRIC_1_FRONT_1510_BaseColor.1001.j",
+       "normal": "NORMALMAP<IMG:FABRIC_1_FRONT_1510_Normal",
+       "principled": true
+      }
+     }
+    }
+   ],
+   "images": [
+    [
+     "FABRIC_1_FRONT_1510_Alpha.1001.jpg.001",
+     [
+      2048,
+      2048
+     ]
+    ],
+    [
+     "FABRIC_1_FRONT_1510_BaseColor.1001.jpg.001",
+     [
+      2048,
+      2048
+     ]
+    ],
+    [
+     "FABRIC_1_FRONT_1510_Displacement.1001.jpg.001",
+     [
+      2048,
+      2048
+     ]
+    ],
+    [
+     "FABRIC_1_FRONT_1510_Emission.1001.jpg.001",
+     [
+      2048,
+      2048
+     ]
+    ],
+    [
+     "FABRIC_1_FRONT_1510_Metallic.1001.jpg.001",
+     [
+      2048,
+      2048
+     ]
+    ],
+    [
+     "FABRIC_1_FRONT_1510_Normal.1001.jpg.001",
+     [
+      2048,
+      2048
+     ]
+    ],
+    [
+     "FABRIC_1_FRONT_1510_Roughness.1001.jpg.001",
+     [
+      2048,
+      2048
+     ]
+    ]
+   ]
+  }
+ },
+ "ours": {
+  "bed__cloth__acq0": {
+   "dims": [
+    1358,
+    2013,
+    435
+   ],
+   "loc_z": 0,
+   "verts": 195250,
+   "polys": 388136,
+   "quads": 0,
+   "tris": 388136,
+   "area_m2": 5.298,
+   "v_per_m2": 36850,
+   "edge_proxy_mm": 5.2,
+   "mods": [],
+   "mats": {
+    "bed_duvet": {
+     "sheen": 0.4,
+     "rough": "MATH<MATH<IMG:rough_linen_Rough_2k.jpg>>",
+     "base": "MIX_RGB<MIX_RGB<MAP_RANGE<MIX_RGB<PROC:N",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "bed__headset0__acq1": {
+   "dims": [
+    593,
+    1836,
+    429
+   ],
+   "loc_z": 0,
+   "verts": 137073,
+   "polys": 273725,
+   "quads": 0,
+   "tris": 273725,
+   "area_m2": 3.386,
+   "v_per_m2": 40482,
+   "edge_proxy_mm": 5.0,
+   "mods": [],
+   "mats": {
+    "bed_duvet": {
+     "sheen": 0.4,
+     "rough": "MATH<MATH<IMG:rough_linen_Rough_2k.jpg>>",
+     "base": "MIX_RGB<MIX_RGB<MAP_RANGE<MIX_RGB<PROC:N",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "bed__frame__acq1": {
+   "dims": [
+    1980,
+    1786,
+    247
+   ],
+   "loc_z": 0,
+   "verts": 177074,
+   "polys": 353018,
+   "quads": 0,
+   "tris": 353018,
+   "area_m2": 6.499,
+   "v_per_m2": 27248,
+   "edge_proxy_mm": 6.1,
+   "mods": [],
+   "mats": {
+    "bed_mattress": {
+     "sheen": 0.4,
+     "rough": "MATH<MATH<IMG:rough_linen_Rough_2k.jpg>>",
+     "base": "MIX_RGB<MIX_RGB<MAP_RANGE<MIX_RGB<PROC:N",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "bed__frame__acq0": {
+   "dims": [
+    2033,
+    1842,
+    352
+   ],
+   "loc_z": 0,
+   "verts": 1078,
+   "polys": 2112,
+   "quads": 0,
+   "tris": 2112,
+   "area_m2": 4.441,
+   "v_per_m2": 243,
+   "edge_proxy_mm": 64.8,
+   "mods": [],
+   "mats": {
+    "bed_base": {
+     "sheen": 0.2,
+     "rough": "MATH<MATH<IMG:rough_linen_Rough_2k.jpg>>",
+     "base": "MIX_RGB<MIX_RGB<MAP_RANGE<MIX_RGB<PROC:N",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "bed__base__acq0": {
+   "dims": [
+    1870,
+    1649,
+    59
+   ],
+   "loc_z": 0,
+   "verts": 32,
+   "polys": 44,
+   "quads": 0,
+   "tris": 44,
+   "area_m2": 0.076,
+   "v_per_m2": 421,
+   "edge_proxy_mm": 58.8,
+   "mods": [],
+   "mats": {
+    "bed_base": {
+     "sheen": 0.2,
+     "rough": "MATH<MATH<IMG:rough_linen_Rough_2k.jpg>>",
+     "base": "MIX_RGB<MIX_RGB<MAP_RANGE<MIX_RGB<PROC:N",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "bed__headboard": {
+   "dims": [
+    144,
+    2059,
+    1666
+   ],
+   "loc_z": 0,
+   "verts": 78353,
+   "polys": 156288,
+   "quads": 0,
+   "tris": 156288,
+   "area_m2": 8.022,
+   "v_per_m2": 9767,
+   "edge_proxy_mm": 10.1,
+   "mods": [],
+   "mats": {
+    "bed_base": {
+     "sheen": 0.2,
+     "rough": "MATH<MATH<IMG:rough_linen_Rough_2k.jpg>>",
+     "base": "MIX_RGB<MIX_RGB<MAP_RANGE<MIX_RGB<PROC:N",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "bed__head_shim": {
+   "dims": [
+    55,
+    1786,
+    130
+   ],
+   "loc_z": 0,
+   "verts": 8,
+   "polys": 6,
+   "quads": 6,
+   "tris": 0,
+   "area_m2": 0.675,
+   "v_per_m2": 12,
+   "edge_proxy_mm": 335.4,
+   "mods": [
+    "BEVEL"
+   ],
+   "mats": {
+    "bed_base": {
+     "sheen": 0.2,
+     "rough": "MATH<MATH<IMG:rough_linen_Rough_2k.jpg>>",
+     "base": "MIX_RGB<MIX_RGB<MAP_RANGE<MIX_RGB<PROC:N",
+     "normal": "BUMP<MIX_RGB<PROC:NOISE>>",
+     "principled": true
+    }
+   }
+  },
+  "deco_bedthrow__acq0": {
+   "dims": [
+    427,
+    435,
+    127
+   ],
+   "loc_z": 0,
+   "verts": 49489,
+   "polys": 96946,
+   "quads": 0,
+   "tris": 96946,
+   "area_m2": 0.523,
+   "v_per_m2": 94693,
+   "edge_proxy_mm": 3.3,
+   "mods": [],
+   "mats": {
+    "acq_bed_throw": {
+     "sheen": 0.0,
+     "rough": 1.0,
+     "base": "IMG:0_4",
+     "normal": "NORMALMAP<IMG:2_4>",
+     "principled": true
+    }
+   }
+  },
+  "Sheet": {
+   "dims": [
+    576,
+    2079,
+    460
+   ],
+   "loc_z": 0,
+   "verts": 759156,
+   "polys": 1323135,
+   "quads": 0,
+   "tris": 1323135,
+   "area_m2": 6.022,
+   "v_per_m2": 126062,
+   "edge_proxy_mm": 3.0,
+   "mods": [
+    "BEVEL"
+   ],
+   "mats": {
+    "Brown textured fabric": {
+     "sheen": 0.0,
+     "rough": 0.8,
+     "base": "IMG:3",
+     "normal": "NORMALMAP<IMG:3n>",
+     "principled": true
+    },
+    "furn_neutral": {
+     "sheen": 0.0,
+     "rough": 0.55,
+     "base": "[0.52, 0.5, 0.48, 1.0]",
+     "normal": "[0.0, 0.0, 0.0]",
+     "principled": true
+    }
+   }
+  }
+ },
+ "sheen_census": [
+  [
+   "ee42aa0e",
+   "Base.001",
+   "fabric.003",
+   0.04,
+   "IMG:Fabric066_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.003",
+   "fabric",
+   0.04,
+   "IMG:Fabric066_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.002",
+   "fabric",
+   0.04,
+   "IMG:Fabric066_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.001",
+   "Velvet",
+   0.08,
+   "IMG:Fabric039_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed",
+   "fabric.002",
+   0.04,
+   "IMG:Fabric066_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.004",
+   "fabric.001",
+   0.04,
+   "IMG:Fabric066_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.005",
+   "fabric.001",
+   0.04,
+   "IMG:Fabric066_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.006",
+   "Velvet.003",
+   0.08,
+   "IMG:Fabric039_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.007",
+   "Velvet.003",
+   0.08,
+   "IMG:Fabric039_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.008",
+   "Velvet",
+   0.08,
+   "IMG:Fabric039_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ee42aa0e",
+   "Bed.009",
+   "Velvet",
+   0.08,
+   "IMG:Fabric039_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "62253e5c",
+   "blanket",
+   "Fabric_BeigeBlanket",
+   0.0,
+   "IMG:Fabric036_2K_Roughness.jpg.001",
+   true
+  ],
+  [
+   "62253e5c",
+   "bed shawl",
+   "blanket Velvet",
+   0.1513,
+   0.94,
+   true
+  ],
+  [
+   "62253e5c",
+   "PillowIvory Left",
+   "Fabric_IvoryPillow",
+   0.0,
+   "IMG:Fabric036_2K_Roughness.jpg.001",
+   true
+  ],
+  [
+   "62253e5c",
+   "PillowIvory Left",
+   "Fabric_SteelBlue",
+   0.0,
+   "IMG:Fabric036_2K_Roughness.jpg.001",
+   true
+  ],
+  [
+   "62253e5c",
+   "PillowIvory Right",
+   "Fabric_IvoryPillow",
+   0.0,
+   "IMG:Fabric036_2K_Roughness.jpg.001",
+   true
+  ],
+  [
+   "62253e5c",
+   "PillowIvory Right",
+   "Fabric_SteelBlue",
+   0.0,
+   "IMG:Fabric036_2K_Roughness.jpg.001",
+   true
+  ],
+  [
+   "62253e5c",
+   "Fur Pillow",
+   "FauxIvoryFurPillow",
+   0.0,
+   "IMG:Fabric036_2K_Roughness.jpg.001",
+   true
+  ],
+  [
+   "62253e5c",
+   "Francesca Hand Embroidered Throw Pillow Left",
+   "Francesca Hand Embroidered Throw Pillow A",
+   0.3,
+   0.9,
+   true
+  ],
+  [
+   "62253e5c",
+   "Francesca Hand Embroidered Throw Pillow Left",
+   "Francesca Hand Embroidered Throw Pillow B",
+   0.3,
+   0.9,
+   true
+  ],
+  [
+   "62253e5c",
+   "Francesca Hand Embroidered Throw Pillow Middle",
+   "Francesca Hand Embroidered Throw Pillow A",
+   0.3,
+   0.9,
+   true
+  ],
+  [
+   "62253e5c",
+   "Francesca Hand Embroidered Throw Pillow Middle",
+   "Francesca Hand Embroidered Throw Pillow B",
+   0.3,
+   0.9,
+   true
+  ],
+  [
+   "62253e5c",
+   "Francesca Hand Embroidered Throw Pillow Right",
+   "Francesca Hand Embroidered Throw Pillow A",
+   0.3,
+   0.9,
+   true
+  ],
+  [
+   "62253e5c",
+   "Francesca Hand Embroidered Throw Pillow Right",
+   "Francesca Hand Embroidered Throw Pillow B",
+   0.3,
+   0.9,
+   true
+  ],
+  [
+   "afcfd29e",
+   "Mattress_cover",
+   "Mattress_cover_fabric",
+   0.2,
+   "IMG:umonab2dy_4K_Roughness.jpg",
+   true
+  ],
+  [
+   "afcfd29e",
+   "Bed_main_cover",
+   "Bed_main_cover_fabric",
+   0.2,
+   1.0,
+   true
+  ],
+  [
+   "afcfd29e",
+   "Secondary_cover",
+   "Secondary_cover_fabric",
+   0.2,
+   "IMG:sjfvdh0c_4K_Roughness.jpg",
+   true
+  ],
+  [
+   "afcfd29e",
+   "Main_pillows",
+   "Pillow_cloth",
+   0.2,
+   "IMG:sbklx0p_4K_Roughness.jpg",
+   true
+  ],
+  [
+   "afcfd29e",
+   "Main_pillows",
+   "Pillow_cloth_dark",
+   0.2,
+   "IMG:sbklx0p_4K_Roughness.jpg",
+   true
+  ],
+  [
+   "afcfd29e",
+   "Support_pillows",
+   "Support_pilows_fabric",
+   0.2,
+   "IMG:sbklx0p_4K_Roughness.jpg",
+   true
+  ],
+  [
+   "afcfd29e",
+   "Decoration_pillows",
+   "Decor_pillow_fabric",
+   0.2,
+   1.0,
+   true
+  ],
+  [
+   "afcfd29e",
+   "Decoration_pillows",
+   "Buttons",
+   0.2,
+   1.0,
+   true
+  ],
+  [
+   "1f83314d",
+   "BED EXPORT.004",
+   "Brown fabric.004",
+   0.0303,
+   0.94,
+   true
+  ],
+  [
+   "1f83314d",
+   "BED EXPORT.003",
+   "Brown fabric.004",
+   0.0303,
+   0.94,
+   true
+  ],
+  [
+   "1f83314d",
+   "BED EXPORT.005",
+   "Brown fabric.003",
+   0.0303,
+   0.94,
+   true
+  ],
+  [
+   "1f83314d",
+   "BED EXPORT.001",
+   "Velvet",
+   0.08,
+   "IMG:Fabric039_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "1f83314d",
+   "BED EXPORT.002",
+   "Velvet",
+   0.08,
+   "IMG:Fabric039_2K_Roughness.jpg",
+   true
+  ],
+  [
+   "ba112721",
+   "Bed-Cover-Bottom",
+   "Fabric",
+   1.0,
+   0.8,
+   true
+  ],
+  [
+   "ba112721",
+   "Bed-Cover-Top",
+   "Fabric",
+   1.0,
+   0.8,
+   true
+  ],
+  [
+   "ba112721",
+   "Bed-Pillow",
+   "Fabric-dark",
+   1.0,
+   0.8,
+   true
+  ],
+  [
+   "ba112721",
+   "Bed-Pillow.001",
+   "Fabric",
+   1.0,
+   0.8,
+   true
+  ],
+  [
+   "ba112721",
+   "Bed-Pillow.002",
+   "Fabric-dark",
+   1.0,
+   0.8,
+   true
+  ],
+  [
+   "ba112721",
+   "Bed-Pillow.003",
+   "Fabric",
+   1.0,
+   0.8,
+   true
+  ],
+  [
+   "a682383b",
+   "blanket",
+   "Floral Fabric",
+   0.0,
+   "VALTORGB<IMG:floral_23_roughness.jpg>",
+   true
+  ],
+  [
+   "a682383b",
+   "Pillow",
+   "Fabric",
+   0.0,
+   "IMG:fabric_131_roughness.jpg",
+   true
+  ],
+  [
+   "e2418055",
+   "Blanket",
+   "Light Beige Fabric",
+   null,
+   null,
+   false
+  ],
+  [
+   "e2418055",
+   "Sheet",
+   "Brown textured fabric",
+   0.0,
+   0.8,
+   true
+  ],
+  [
+   "e2418055",
+   "Cusions",
+   "White Fabric",
+   0.0,
+   1.0,
+   true
+  ],
+  [
+   "e2418055",
+   "Cusions",
+   "Light Beige Fabric",
+   null,
+   null,
+   false
+  ],
+  [
+   "81d895fd",
+   "Plane.029",
+   "Procedural Fabric",
+   1.0,
+   1.0,
+   true
+  ],
+  [
+   "81d895fd",
+   "Plane.030",
+   "Fabric.003",
+   1.0,
+   "SEPARATE_COLOR<IMG:Fabric036_2K_Roughness>",
+   true
+  ],
+  [
+   "81d895fd",
+   "Plane.038",
+   "Procedural Fabric.001",
+   1.0,
+   1.0,
+   true
+  ],
+  [
+   "81d895fd",
+   "Plane.031",
+   "Fabric 124",
+   0.0,
+   "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+   true
+  ],
+  [
+   "81d895fd",
+   "Plane.032",
+   "Fabric 124.001",
+   0.0,
+   "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+   true
+  ],
+  [
+   "81d895fd",
+   "Plane.033",
+   "Fabric 124",
+   0.0,
+   "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+   true
+  ],
+  [
+   "81d895fd",
+   "Plane.035",
+   "Fabric 124",
+   0.0,
+   "SEPARATE_COLOR<IMG:fabric_124_roughness-2K>",
+   true
+  ],
+  [
+   "bk_daxing",
+   "sheet 02",
+   "White Fabric",
+   1.0,
+   0.6,
+   true
+  ],
+  [
+   "bk_daxing",
+   "blanquet",
+   "Fur_black",
+   1.0,
+   "SEPARATE_COLOR<IMG:fur-1_smooth>",
+   true
+  ],
+  [
+   "bk_daxing",
+   "cuishon 1",
+   "White Fabric",
+   1.0,
+   0.6,
+   true
+  ],
+  [
+   "bk_daxing",
+   "chuishion 2",
+   "fabric 1",
+   1.0,
+   1.0,
+   true
+  ],
+  [
+   "bk_phoenix",
+   "sheet 02",
+   "White Fabric",
+   1.0,
+   0.6,
+   true
+  ],
+  [
+   "bk_phoenix",
+   "blanquet",
+   "Fur",
+   1.0,
+   "SEPARATE_COLOR<IMG:fur-1_smooth>",
+   true
+  ],
+  [
+   "bk_phoenix",
+   "cuishon 1",
+   "White Fabric",
+   1.0,
+   0.6,
+   true
+  ],
+  [
+   "bk_phoenix",
+   "chuishion 2",
+   "fabric 2",
+   1.0,
+   0.8727,
+   true
+  ],
+  [
+   "bk_stansted",
+   "sheet 02",
+   "White Fabric",
+   1.0,
+   0.6,
+   true
+  ],
+  [
+   "bk_stansted",
+   "blanquet",
+   "Fur_black",
+   1.0,
+   "SEPARATE_COLOR<IMG:fur-1_smooth>",
+   true
+  ],
+  [
+   "bk_stansted",
+   "cuishon 1",
+   "White Fabric",
+   1.0,
+   0.6,
+   true
+  ],
+  [
+   "bk_stansted",
+   "chuishion 2",
+   "fabric 1",
+   1.0,
+   1.0,
+   true
+  ],
+  [
+   "45daf5df",
+   "LovePillow.003",
+   "Pillow.001",
+   0.03,
+   0.9,
+   true
+  ],
+  [
+   "45daf5df",
+   "Pillow.005",
+   "Pillow.002",
+   0.01,
+   0.9,
+   true
+  ],
+  [
+   "45daf5df",
+   "Pillow.006",
+   "Pillow.002",
+   0.01,
+   0.9,
+   true
+  ],
+  [
+   "2767f3fa",
+   "Cylinder Pillow Beige",
+   "Cylinder_Pillow_Beige.001",
+   0.0,
+   "IMG:FABRIC_1_FRONT_1510_Roughness.1001.jpg.001",
+   true
+  ]
+ ]
+}

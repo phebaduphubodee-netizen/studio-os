@@ -206,14 +206,30 @@ Their terms are silent on AI/ML use (docs/LICENSING.md) — treated as
 unanswered, not as permitted.
 """
 
+# BAKE AT RENDER RESOLUTION (STUDY-D11b, 2026-09-02). `export_apply=True` bakes
+# every modifier through the VIEWPORT depsgraph, so a SUBSURF at viewport 1 /
+# render 2 reaches the GLB with a quarter of the faces the vendor renders it at
+# — and the vendor's own file says so: 97 of the 142 SUBSURF/MULTIRES rows in
+# the day-10 dumps carry levels < render_levels (every bed on the shelf among
+# them). The fix is one assignment per modifier, made in memory on a file that
+# is never saved (-Y, no save call), so the .blend on the shelf is untouched.
+# The count is PRINTED so a fetch log can prove which GLBs were baked how.
 EXPORT_SCRIPT = """import bpy, sys
 out = sys.argv[sys.argv.index('--') + 1]
 try:
     bpy.ops.preferences.addon_enable(module='io_scene_gltf2')
 except Exception:
     pass
+raised = 0
+for ob in bpy.data.objects:
+    for m in ob.modifiers:
+        if m.type in ('SUBSURF', 'MULTIRES') and m.levels < m.render_levels:
+            m.levels = m.render_levels
+            raised += 1
+print('EXPORT_GLB subsurf_raised_to_render_levels=%d' % raised)
 bpy.ops.export_scene.gltf(filepath=out, export_format='GLB', export_apply=True)
 """
+EXPORT_BAKE = "subsurf@render_levels"   # stamped into SOURCE.json.derived_from
 
 _LOCAL_PATH = re.compile(r"[A-Za-z]:[\\/][^\s'\"]+|/(?:Users|home)/[^\s'\"]+|_private/[^\s'\"]+")
 
@@ -1093,7 +1109,7 @@ def fetch(asset_base_id, key=None, cls=None, resolution="blend",
         fetched_now = True
         derived_from = (f"{fe.get('filename') or fe.get('downloadUrl')} (fileType "
                         f"{fe.get('fileType')}) -> GLB via headless Blender "
-                        f"export_scene.gltf export_apply=True")
+                        f"export_scene.gltf export_apply=True {EXPORT_BAKE}")
         if drop_blend:
             try:
                 os.remove(blend)

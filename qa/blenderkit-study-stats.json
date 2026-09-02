@@ -2,8 +2,12 @@
  "_what": "Per-class construction statistics over the BlenderKit study dumps. Regenerate with: python pipeline/scripts/model_study_probe.py stats",
  "_source": "assets/shared/blenderkit/_study/*.probe.json (gitignored cache; regenerate with `model_study_probe.py batch`)",
  "_order": "ORD-2026-09-01-study-blenderkit-models",
- "_caveat": "area_m2 (and every verts_per_m2 derived from it) is world-space from 2026-09-01 onward. Dumps written before that carried an averaged-scale approximation — see _mesh_row's comment. A stats file whose dumps predate the fix must be regenerated, not corrected by hand.",
- "assets_probed": 71,
+ "_caveat": "area_m2 (and every verts_per_m2 derived from it) is world-space from 2026-09-01 onward; the first dumps used an averaged-scale approximation (see _mesh_row's comment). The day-10 sample (03ede500, 0b960a0d, 17aff0ff: 19 meshes, uniform scale, 0 moved) was then FALSIFIED as a corpus claim by the STUDY-D11b full re-probe of all 71 .blend entries (batch --force, 2026-09-01 21:36, 0 failed): 2 of 17 classes moved on verts_per_m2 — clock_small median 527,102 -> 863,951 (+64%, non-uniform object scale on a miniature) and book_stack median 2,328 -> 2,517 (+8%, min 1,277 -> 2,070). Every other class was bit-identical. The day-10 notes were corrected to these numbers with the delta recorded beside each (INDEX §3, lamp note).",
+ "assets_probed": 79,
+ "dumps_by_source": {
+  "blend": 79,
+  "glb-import": 13
+ },
  "classes": {
   "?": {
    "n_assets": 1,
@@ -162,8 +166,8 @@
     "max": 0.0
    },
    "median_verts_per_m2_significant_meshes": {
-    "median": 2328.4,
-    "min": 1277.2,
+    "median": 2517.0,
+    "min": 2070.2,
     "max": 3294.95
    },
    "shapekey_meshes": {
@@ -219,9 +223,9 @@
     "max": 0.006
    },
    "median_verts_per_m2_significant_meshes": {
-    "median": 527102.4,
+    "median": 863950.9,
     "min": 79219.55,
-    "max": 914247.0
+    "max": 878175.6
    },
    "shapekey_meshes": {
     "median": 0,
@@ -522,6 +526,62 @@
    "mat_procedural_only_share": 0.154,
    "mat_sheen_set_share": 0.0,
    "mat_displacement_share": 0.0
+  },
+  "pillow_set_lying": {
+   "n_assets": 2,
+   "assets": [
+    "2767f3fa",
+    "45daf5df"
+   ],
+   "objects_per_asset": {
+    "median": 2.5,
+    "min": 1,
+    "max": 4
+   },
+   "verts_per_asset": {
+    "median": 22660.5,
+    "min": 9843,
+    "max": 35478
+   },
+   "curves": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "images_per_asset": {
+    "median": 4.0,
+    "min": 1,
+    "max": 7
+   },
+   "subsurf_share": {
+    "median": 0.5,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "quad_share": {
+    "median": 0.937,
+    "min": 0.873,
+    "max": 1.0
+   },
+   "ngon_share": {
+    "median": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 15841.4,
+    "min": 15119.4,
+    "max": 16563.4
+   },
+   "shapekey_meshes": {
+    "median": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "materials_seen": 3,
+   "mat_procedural_only_share": 0.0,
+   "mat_sheen_set_share": 0.667,
+   "mat_displacement_share": 0.333
   },
   "potted_plant": {
    "n_assets": 2,
@@ -931,18 +991,24 @@
    "mat_displacement_share": 0.0
   },
   "whole_bed": {
-   "n_assets": 10,
+   "n_assets": 16,
    "assets": [
     "10b19e20",
     "17aff0ff",
+    "1f83314d",
     "317c797d",
+    "62253e5c",
     "8968de2e",
     "93862856",
+    "a682383b",
+    "afcfd29e",
     "b43e2f5c",
     "b4915f0a",
     "b8359da9",
+    "ba112721",
     "d8be9e01",
-    "e2418055"
+    "e2418055",
+    "ee42aa0e"
    ],
    "objects_per_asset": {
     "median": 11.0,
@@ -950,8 +1016,8 @@
     "max": 20
    },
    "verts_per_asset": {
-    "median": 854941.5,
-    "min": 655485,
+    "median": 808894.5,
+    "min": 354054,
     "max": 1808470
    },
    "curves": {
@@ -961,7 +1027,7 @@
    },
    "images_per_asset": {
     "median": 12.0,
-    "min": 5,
+    "min": 0,
     "max": 43
    },
    "subsurf_share": {
@@ -970,7 +1036,7 @@
     "max": 0.8
    },
    "quad_share": {
-    "median": 0.257,
+    "median": 0.688,
     "min": 0.0,
     "max": 1.0
    },
@@ -980,19 +1046,135 @@
     "max": 0.0
    },
    "median_verts_per_m2_significant_meshes": {
-    "median": 28651.25,
+    "median": 20847.775,
     "min": 742.5,
-    "max": 69090.1
+    "max": 98361.2
    },
    "shapekey_meshes": {
     "median": 0.0,
     "min": 0,
     "max": 0
    },
-   "materials_seen": 59,
-   "mat_procedural_only_share": 0.119,
-   "mat_sheen_set_share": 0.593,
-   "mat_displacement_share": 0.424
+   "materials_seen": 99,
+   "mat_procedural_only_share": 0.141,
+   "mat_sheen_set_share": 0.586,
+   "mat_displacement_share": 0.354
+  }
+ },
+ "_glb_import_caveat": "classes_glb_import holds shelf entries that exist only as GLB (probed via import_scene.gltf). Geometry counts are POST-BAKE (modifiers applied by the exporter at whatever level it used); no modifier, node-tree or sheen field is reported because those are the importer's rebuild, not the vendor's construction.",
+ "classes_glb_import": {
+  "?": {
+   "n_assets": 3,
+   "assets": [
+    "bk_daxin",
+    "bk_phoen",
+    "bk_stans"
+   ],
+   "objects_per_asset": {
+    "median": 12,
+    "min": 12,
+    "max": 13
+   },
+   "verts_per_asset": {
+    "median": 558228,
+    "min": 324253,
+    "max": 1090665
+   },
+   "images_per_asset": {
+    "median": 6,
+    "min": 6,
+    "max": 6
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 7524.0,
+    "min": 6185.65,
+    "max": 7524.0
+   }
+  },
+  "bench_seat": {
+   "n_assets": 2,
+   "assets": [
+    "5b8e98d7",
+    "aab1e047"
+   ],
+   "objects_per_asset": {
+    "median": 2.0,
+    "min": 1,
+    "max": 3
+   },
+   "verts_per_asset": {
+    "median": 14123.5,
+    "min": 4022,
+    "max": 24225
+   },
+   "images_per_asset": {
+    "median": 7.5,
+    "min": 6,
+    "max": 9
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 9681.575,
+    "min": 2090.7,
+    "max": 17272.45
+   }
+  },
+  "nightstand": {
+   "n_assets": 7,
+   "assets": [
+    "1cf77b3a",
+    "341b04e0",
+    "6239feef",
+    "6e95a09b",
+    "9d193cdc",
+    "b0f7d7c0",
+    "e7e2deeb"
+   ],
+   "objects_per_asset": {
+    "median": 1,
+    "min": 1,
+    "max": 20
+   },
+   "verts_per_asset": {
+    "median": 5772,
+    "min": 580,
+    "max": 14736
+   },
+   "images_per_asset": {
+    "median": 2,
+    "min": 0,
+    "max": 3
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 2928.2,
+    "min": 265.2,
+    "max": 7648.7
+   }
+  },
+  "whole_bed": {
+   "n_assets": 1,
+   "assets": [
+    "81d895fd"
+   ],
+   "objects_per_asset": {
+    "median": 16,
+    "min": 16,
+    "max": 16
+   },
+   "verts_per_asset": {
+    "median": 801242,
+    "min": 801242,
+    "max": 801242
+   },
+   "images_per_asset": {
+    "median": 9,
+    "min": 9,
+    "max": 9
+   },
+   "median_verts_per_m2_significant_meshes": {
+    "median": 4671.1,
+    "min": 4671.1,
+    "max": 4671.1
+   }
   }
  }
 }

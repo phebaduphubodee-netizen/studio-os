@@ -3783,6 +3783,287 @@
    "free": 21,
    "full_plan": 79,
    "fetched": false
+  },
+  {
+   "at": "2026-09-01T20:57:37-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-01T21:34:01-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bed set",
+   "pages": 2,
+   "n": 32,
+   "free": 11,
+   "full_plan": 21,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:04-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bedding",
+   "pages": 2,
+   "n": 200,
+   "free": 48,
+   "full_plan": 152,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:07-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+duvet",
+   "pages": 2,
+   "n": 200,
+   "free": 30,
+   "full_plan": 170,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:08-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+made bed",
+   "pages": 2,
+   "n": 26,
+   "free": 11,
+   "full_plan": 15,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:11-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+bolster",
+   "pages": 2,
+   "n": 200,
+   "free": 95,
+   "full_plan": 105,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:34:14-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "asset_type:model+pillow set",
+   "pages": 2,
+   "n": 200,
+   "free": 49,
+   "full_plan": 151,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-01T21:42:49-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ee42aa0e-7c9d-4f04-8507-2a3406f021f5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3175.2,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:09-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "62253e5c-3402-4741-a1d9-7a9f6beed3dd",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2432.6,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:24-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "afcfd29e-71cb-4e7c-bc0a-a705cd23a14a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2287.3,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:37-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "1f83314d-f3e6-4bd8-ab93-83bc473a8b42",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 3509.2,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-01T21:43:38-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ba112721-b9de-4f39-add0-cca49c37c626",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "ba112721-b9de-4f39-add0-cca49c37c626 offers no '2K' file (has: blend, thumbnail)"
+  },
+  {
+   "at": "2026-09-01T21:43:49-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a682383b-dfca-4044-9491-14d074f620f9",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2033.6,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T21:43:53-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "45daf5df-7d9b-472e-a164-0ebc554583af",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 390.5,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T21:43:59-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "2767f3fa-8d08-427b-8d0c-1fbebd208a19",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 249.6,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-01T21:45:10-04:00",
+   "date_local": "2026-09-01",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "ba112721-b9de-4f39-add0-cca49c37c626",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "whole_bed",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 2171.7,
+    "band_mm": [
+     1900.0,
+     3600.0
+    ],
+    "refusal": null
+   }
   }
  ]
 }

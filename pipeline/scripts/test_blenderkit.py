@@ -332,6 +332,52 @@ class TestCacheAndLog(unittest.TestCase):
         self.assertEqual(cmd[:5], ["blender.exe", "-b", "--factory-startup", "-Y", "-noaudio"])
         self.assertEqual(cmd[-1], "a.glb")
 
+    def test_export_script_raises_subsurf_to_render_levels_before_baking(self):
+        """STUDY-D11b: export_apply bakes through the viewport depsgraph, so the
+        script must lift viewport levels to render_levels BEFORE the export
+        call, on SUBSURF and MULTIRES, and print the count. Executed against a
+        fake bpy so the ORDER of the two statements is what is pinned."""
+        src = BK.EXPORT_SCRIPT
+        self.assertLess(src.index("m.levels = m.render_levels"),
+                        src.index("bpy.ops.export_scene.gltf("))
+        self.assertIn("'MULTIRES'", src)
+        self.assertIn("export_apply=True", src)
+        compile(src, "<EXPORT_SCRIPT>", "exec")     # it is a valid program
+
+        class _M:
+            def __init__(s, t, lv, rl):
+                s.type, s.levels, s.render_levels = t, lv, rl
+
+        class _O:
+            def __init__(s, mods):
+                s.modifiers = mods
+        mods = [_M("SUBSURF", 1, 2), _M("MULTIRES", 1, 3), _M("BEVEL", 0, 0),
+                _M("SUBSURF", 2, 2)]
+        calls = []
+
+        class _NS:
+            def __getattr__(s, k):
+                return _NS()
+
+            def __call__(s, *a, **kw):
+                calls.append(kw)
+                return {"FINISHED"}
+        fake_bpy = type("bpy", (), {"data": type("d", (), {"objects": [_O(mods)]})(),
+                                    "ops": _NS()})()
+        printed = []
+        saved_argv = sys.argv
+        sys.modules["bpy"], sys.argv = fake_bpy, ["x", "--", "o.glb"]
+        try:
+            exec(compile(src, "<EXPORT_SCRIPT>", "exec"), {"print": printed.append})
+        finally:
+            del sys.modules["bpy"]
+            sys.argv = saved_argv
+        self.assertEqual([m.levels for m in mods], [2, 3, 0, 2])   # bevel untouched
+        self.assertEqual(printed, ["EXPORT_GLB subsurf_raised_to_render_levels=2"])
+        self.assertEqual(calls[-1]["export_apply"], True)
+        self.assertEqual(calls[-1]["filepath"], "o.glb")
+        self.assertIn(BK.EXPORT_BAKE, "subsurf@render_levels")
+
 
 class TestOrderAssertion(unittest.TestCase):
     """The ORDER's obeyed_assert pattern is read from the ledger row, run on a
