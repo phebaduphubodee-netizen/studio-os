@@ -58,8 +58,17 @@ import sys
 
 # ---- the bars. Both are LOOK-chosen against this lane's own frames and say so. -------
 # RMS contrast, measured on FULL-FIDELITY frames only — a playblast is half the
-# resolution per axis and resolves different detail, so its numbers set no bar here
+# resolution per axis and resolves different detail, so its numbers do not transfer here
 # (the same reason R11's pixel_check refuses to compare across resolutions).
+#
+# WHAT THIS NUMBER IS, said plainly so nobody reads a PASS as "the sheer is fixed": it is
+# a RATCHET, not a quality bar. Full frames measured: p2r93b 0.0304, p2r95 0.0444,
+# p2r96 0.0495. 0.045 sits between the last two, so passing it means "better than the
+# frame before", nothing more. The round that first crossed it ALSO got a cross-vendor
+# critic calling the same fabric "opaque white plastic, lacking texture and translucency"
+# and RAISING its severity — so the eye and this number disagree about whether the defect
+# is gone, and under R7b the eye is what says WHAT is wrong. Raise this bar when a judge
+# stops naming the sheer, and not before; it does not get to declare the fabric good.
 STRUCTURE_MIN = 0.045
 # behind-under-hem: share of fabric columns showing GLASS OR WALL beneath the hem. The
 # bar is 1% rather than 0 because a pleat tip at the very end of a run can legitimately

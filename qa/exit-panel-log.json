@@ -435,6 +435,93 @@
    "odd_one_out": "F2",
    "verdict_file": "_private/deliv-001/exit-panel-p2r95/j3/ANSWER.md",
    "note": "P2r-38 pelmet+park"
+  },
+  {
+   "at": "2026-09-02T12:28:16",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r96.png",
+   "render_sha1": "d12100bb90e3",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r96",
+   "judge": "j1",
+   "ours_letter": "E",
+   "ours_score": 56,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F3": 76,
+    "F2": 41,
+    "F1": 62,
+    "F4": 79,
+    "OURS": 56
+   },
+   "order": [
+    "F4",
+    "F3",
+    "F1",
+    "OURS",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r96/j1/ANSWER.md",
+   "note": "P2r-39 sheer direct 0.10 + hem"
+  },
+  {
+   "at": "2026-09-02T12:28:17",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r96.png",
+   "render_sha1": "d12100bb90e3",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r96",
+   "judge": "j2",
+   "ours_letter": "D",
+   "ours_score": 62,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F2": 48,
+    "F1": 77,
+    "F4": 73,
+    "OURS": 62,
+    "F3": 79
+   },
+   "order": [
+    "F3",
+    "F1",
+    "F4",
+    "OURS",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r96/j2/ANSWER.md",
+   "note": ""
+  },
+  {
+   "at": "2026-09-02T12:28:18",
+   "render": "pipeline/output/room_bedroom_suite_eye_p2r96.png",
+   "render_sha1": "d12100bb90e3",
+   "panel_dir": "C:\\Users\\teza_\\OneDrive\\Desktop\\PlingPeat\\_private\\deliv-001\\exit-panel-p2r96",
+   "judge": "j3",
+   "ours_letter": "C",
+   "ours_score": 63,
+   "ours_rank": 4,
+   "field": 5,
+   "scores": {
+    "F1": 72,
+    "F4": 78,
+    "OURS": 63,
+    "F3": 82,
+    "F2": 36
+   },
+   "order": [
+    "F3",
+    "F4",
+    "F1",
+    "OURS",
+    "F2"
+   ],
+   "ours_sendable": "sendable-after-minor-fixes",
+   "odd_one_out": "F2",
+   "verdict_file": "_private/deliv-001/exit-panel-p2r96/j3/ANSWER.md",
+   "note": ""
   }
  ]
 }

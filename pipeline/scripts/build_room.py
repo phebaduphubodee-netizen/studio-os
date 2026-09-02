@@ -2989,10 +2989,29 @@ _FILL_LEVEL = 0.5
 # Structure falls monotonically as openness rises: more straight-through means more of a
 # blurred garden washing out the fold shading that IS the structure. So the lever points
 # DOWN, and 0.90 passing the band bar is the bar failing, not the frame improving.
-# NOT claimed: that 0.10 is the physically right openness for a voile. The vault has no
-# such number (knowledge/styles/color-composition.md:350 names it a GAP) and the DR is
-# quarantined, so this is a LOOK-chosen value with its sweep printed above, nothing more.
-_SHEER_DIRECT_FRAC = 0.10
+# NOT claimed: that any of these is the physically right openness for a voile. The vault
+# has no such number (knowledge/styles/color-composition.md:350 names it a GAP) and the
+# DR is quarantined.
+#
+# REVERTED TO 0.30 THE SAME DAY, BY THE PANEL (P2r-39, p2r96). 0.10 was adopted because it
+# won the local-detail sweep above (+11% RMS contrast at full fidelity, 0.0444 -> 0.0495,
+# crossing the rung's bar). Three independent sighted judges then ranked that frame
+# 4/5, 4/5, 4/5 against the same four delivered peers — down from 2/5, 3/5, 2/5 — with
+# gap-to-best-peer falling -10.3 -> -19.7, and ALL THREE described the window in the same
+# new way: "a pure white void", "a light box", "a hole, not a window".
+# THE MECHANISM IS MEASURED, so this is not a taste reversal: less openness means more of
+# the transmitted light arrives as FORWARD SCATTER, which is a glow rather than an image,
+# so the cloth's own level rose (sheer p50 0.8460 -> 0.8586, p95 0.8734 -> 0.8852) while
+# its texture rose too. The structure gain was real and was outweighed by reading whiter.
+#
+# WHAT THIS ROUND ACTUALLY ESTABLISHED, and it is worth more than the number: THIS KNOB IS
+# EXHAUSTED IN BOTH DIRECTIONS. Up (0.60, 0.90) flattens the cloth 44%. Down (0.10) makes
+# it glow brighter. Neither puts anything BEHIND the glass, which is what every judge and
+# both critics have actually been asking for across four rounds. The remaining lever is
+# not on this line at all — it is the curtain STATE (D-192's own `reverse_by`), because
+# `glazing` reaches 931 px and the Juliet rail 0 px behind a fully drawn sheer. Do not
+# re-bracket this constant; the sweep is above and the panel has already answered.
+_SHEER_DIRECT_FRAC = 0.30
 # p2r92 leg c: the dark end of the range (p5) is set by the SUM of the ambient
 # sources, not by the sun — the 8 W key through the named pane moved p95/p5 from
 # 3.17x to 3.42x while 18 story-dimmed cans, the HDRI at 0.55 x 2.3 and 34 W of
