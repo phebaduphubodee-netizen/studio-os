@@ -776,6 +776,23 @@ def _score_deliverable(name, quick=False, frame=True):
             _ladder_stop = ("a rung of the signed tonal ladder is off its target"
                             if _lr.returncode == 1 else
                             f"COULD NOT RUN (exit {_lr.returncode}) — not a pass")
+    # THE WINDOW WALL'S TWO NUMBERS, into the render path (P2r-39, 2026-09-02). Both were
+    # measured by hand for two rounds and neither had a reader, which is this repo's most
+    # expensive recurring shape. Spawned for the same reason as the ladder above: PIL and
+    # numpy are not in Blender's bundled Python. Advisory by design — it REPORTS, it does
+    # not stop the build, because the structure bar is a LOOK-chosen number on one lane's
+    # frames and a bar like that has no business failing another lane's render.
+    _mm = os.path.join(_out_dir, f"room_{name}.matmask.png")
+    if frame and not quick and os.path.isfile(_mm) and os.path.isfile(_beauty):
+        _sr = subprocess.run(
+            [py, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "sheer_check.py"), _beauty],
+            capture_output=True, text=True, encoding="utf-8",
+            errors="replace", env=env)
+        for ln in ((_sr.stdout or "") + (_sr.stderr or "")).splitlines():
+            if ln.strip():
+                print(f"  {ln}")
+
     elif frame and not quick:
         # A DELIVERABLE FRAME WITH NO MASK IS NOT A DELIVERABLE FRAME. The mask
         # is written a hundred lines above by this same function; if it is not
@@ -2955,7 +2972,27 @@ _FILL_LEVEL = 0.5
 # instruments instead: the comb must go (stripe_mod) while p95/p5 stays >= 5.0
 # (luma_range; the sun's W is the power lever if the range drops).
 # Reverse: --sheer-alpha-only (the p2r92 material, bit-for-bit) or --sheer-direct=<f>.
-_SHEER_DIRECT_FRAC = 0.30
+# BRACKETED 2026-09-02 (P2r-39), five quick playblasts on the frame of record, because
+# the one research ask returned 0 grounding chunks and the vault marks openness/BSDF
+# transmission for sheers as a GAP in its own words — so this number is measured against
+# the picture, never read off a datasheet that does not exist here.
+# Metric is LOCAL DETAIL (std of L - blur(L) over the fabric field): level-invariant, so
+# a uniform darkening cannot fake it. That mattered, because the plan's inherited bar
+# ("share of the window band inside [0.80,0.90) <= 40%") IS fakeable that way and this
+# sweep caught it doing exactly that:
+#     direct   spread   localSTD   [.80,.90)
+#     alpha-only 0.344   0.0222      2.98%     <- the p2r92 material
+#     0.10       0.444   0.0456     47.22%     <- most structure
+#     0.30       0.434   0.0367     47.89%     <- was default
+#     0.60       0.408   0.0241     50.54%
+#     0.90       0.364   0.0204      8.89%     <- "passes" the bar by going dark, -44% detail
+# Structure falls monotonically as openness rises: more straight-through means more of a
+# blurred garden washing out the fold shading that IS the structure. So the lever points
+# DOWN, and 0.90 passing the band bar is the bar failing, not the frame improving.
+# NOT claimed: that 0.10 is the physically right openness for a voile. The vault has no
+# such number (knowledge/styles/color-composition.md:350 names it a GAP) and the DR is
+# quarantined, so this is a LOOK-chosen value with its sweep printed above, nothing more.
+_SHEER_DIRECT_FRAC = 0.10
 # p2r92 leg c: the dark end of the range (p5) is set by the SUM of the ambient
 # sources, not by the sun — the 8 W key through the named pane moved p95/p5 from
 # 3.17x to 3.42x while 18 story-dimmed cans, the HDRI at 0.55 x 2.3 and 34 W of

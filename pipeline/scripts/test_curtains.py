@@ -501,3 +501,43 @@ def test_lattice_breaks_the_metronome():
 def test_lattice_deterministic():
     rb = _get(_ribbons(), "east", "privacy")
     assert C.ribbon_mesh(rb) == C.ribbon_mesh(rb)
+
+
+# ------------------------------------------------------- the hem (P2r-39, 2026-09-02) --
+# WHY THESE EXIST: HEM_CLEAR_M sat at 0.015 with no source and HEM_WANDER_M at 0.032 on
+# top of it, so the hem floated 15-47 mm and 63.7% of the sheer's columns showed floor
+# underneath in the render. Nothing in this file looked at a hem, so nothing failed.
+def test_hem_grazes_the_floor_within_the_cited_band():
+    """The cited grammar is 'hem 3-6 mm clear' (inbox-tier drapery-designer study,
+    2026-08-28). The BASE clearance must sit in that band — not above it."""
+    assert 0.003 <= C.HEM_CLEAR_M <= 0.006, C.HEM_CLEAR_M
+
+
+def test_the_hems_highest_point_still_grazes():
+    """The wander is deliberate (it is what stopped the hem reading as matched spikes),
+    so this pins the SUM rather than banning it: even at full wander the hem must stay
+    in a grazing read, not float."""
+    top = C.HEM_CLEAR_M + C.HEM_WANDER_M
+    assert top <= 0.015, f"hem tops out {top * 1000:.0f} mm off the floor"
+
+
+def test_the_wander_mechanism_is_not_deleted():
+    """Positive control for the test above: a future round must not satisfy the grazing
+    bound by zeroing the irregularity, which would buy back the metronomic hem a LOOK
+    round already paid to remove."""
+    assert C.HEM_WANDER_M > 0.0
+    assert C._HEM_WAVES and C._HEM_PLEAT_FRAC > 0.0
+
+
+def test_built_ribbons_actually_hang_at_that_height(spec_fixture=None):
+    """End-to-end: the constants above are only worth pinning if the geometry uses them."""
+    import io as _io, json as _json, os as _os
+    p = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(
+        _os.path.abspath(__file__)))), "projects", "PRJ-2026-002_c001-house", "03_layout",
+        "master-suite.CANONICAL.spec.json")
+    with _io.open(p, encoding="utf-8") as fh:
+        spec = _json.load(fh)
+    rbs = C.curtain_ribbons(spec)
+    assert rbs
+    for rb in rbs:
+        assert rb["z0"] == C.HEM_CLEAR_M, rb["name"]

@@ -47,7 +47,21 @@ LAYER_GAP_MM = 5.0    # air between adjacent layers' swept envelopes
 
 # --- render conventions (CONVENTION tier — the NLM curtain DR refused fold geometry as
 # outside-corpus twice, so these are honest defaults, not grounded values) ----------------
-HEM_CLEAR_M = 0.015          # hem floats off the floor
+# HEM CLEARANCE — CITED, not chosen (2026-09-02, P2r-39). Was 0.015 with no source, and
+# with HEM_WANDER_M on top the hem actually floated 15-47 mm. Measured on p2r95: 333 of
+# 523 sheer columns (63.7%) show FLOOR directly under the fabric — C2 filed it by eye
+# ("each strip terminates at its own height, timber floor is visible underneath several
+# of them") before any instrument had ever looked at a hem. The number now comes from a
+# working drapery designer, staged in this repo since 2026-08-28 and unread until now:
+# knowledge/_inbox/video-study/2026-08-28-drapery-grammar-and-the-triforce-of-realism-
+# JgQdCad1Iiw.md — "hem 3-6 mm clear", the alternative being to graze or puddle. INBOX
+# TIER, so it is cited as guidance and not as statute.
+# R9, not R8: this is a CONTACT (the floor is right there), so it is derived from a rule
+# rather than typed — it is not a third shape iteration on drapery, which R8 forbids by
+# name. What this generator still CANNOT do is puddle: a swept ribbon has no way to let
+# cloth pool on the floor, and faking one is exactly the free-form modelling R8 sends to
+# ACQUIRE. Declared here rather than attempted.
+HEM_CLEAR_M = 0.004          # hem grazes the floor (cited band 3-6 mm)
 TOP_EMBED_M = 0.03           # top edge pokes INTO the ceiling slab: recessed-track read,
                              # raw fabric edge hidden without inventing an RCP pelmet
 WAVELEN_MM = {"s_fold": 150.0, "3_pleat": 100.0}    # drawn fold wavelength per heading
@@ -430,7 +444,15 @@ def curtain_ribbons(spec):
 # is the track's own wave byte-for-byte, and everything the law adds decays to zero at
 # the ribbon's two ENDS so the L-corner mitre meets are preserved.
 RIBBON_RINGS = 8             # vertical rings hem→ceiling (smooth-shaded, 8 is plenty)
-HEM_WANDER_M = 0.032         # hem rises up to this above HEM_CLEAR — never below it
+# SCALED, NOT REMOVED (2026-09-02, P2r-39). The wander is why the hem stopped reading as
+# "a row of matched spikes", and that was earned by a LOOK round — deleting it would buy
+# back the metronome. But at 32 mm on top of a 15 mm clearance it was the other half of
+# why 63.7% of columns showed floor underneath. The MECHANISM is untouched (same waves,
+# same incommensurate frequencies, same end taper); only its amplitude is scaled so the
+# hem's highest point still lands inside a grazing read: 4 + 9 = 13 mm at the top.
+# If a re-measure still finds floor under the fabric, the answer is NOT a third amplitude
+# — it is that a swept ribbon cannot make a hem that rests on a floor (R8 -> ACQUIRE).
+HEM_WANDER_M = 0.009         # hem rises up to this above HEM_CLEAR — never below it
 PRIMARY_DECAY = 0.30         # how much of the track wave the free hem gives up
 SECONDARY_FRAC = 0.38        # irregular multi-wavelength crease share at the hem
 END_TAPER = 0.05             # run-fraction over which hem-law terms fade at the ends
