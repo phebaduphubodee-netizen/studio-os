@@ -4790,6 +4790,219 @@
     "refusal": null
    },
    "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:22:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "armchair",
+   "pages": 2,
+   "n": 200,
+   "free": 45,
+   "full_plan": 155,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:25-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "lounge chair",
+   "pages": 2,
+   "n": 200,
+   "free": 60,
+   "full_plan": 140,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:29-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "ottoman",
+   "pages": 2,
+   "n": 200,
+   "free": 56,
+   "full_plan": 144,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "accent chair",
+   "pages": 2,
+   "n": 200,
+   "free": 70,
+   "full_plan": 130,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:22:36-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "upholstered chair",
+   "pages": 2,
+   "n": 200,
+   "free": 62,
+   "full_plan": 138,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T15:23:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a34e3cdf-3c4d-4d42-86b3-4983041a30ad",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 793.4,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:24:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "62520f38-c105-4ba0-9da7-630385d79af6",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 798.5,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T15:24:35-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e0095b9b-011b-4dba-a15c-2f1dc4137008",
+   "fetched": false,
+   "exit": 1,
+   "refusal": "e0095b9b-011b-4dba-a15c-2f1dc4137008 offers no '2K' file (has: blend, gltf, gltf_godot, resolution_0_5K, thumbnail)"
+  },
+  {
+   "at": "2026-09-02T15:24:54-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e0095b9b-011b-4dba-a15c-2f1dc4137008",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 877.5,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:25:10-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "33c5f315-9c8a-47d6-bf78-20fea703aaa1",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 821.9,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:26:40-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "10542494-93ae-4480-9f2e-0c52cedd3993",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "ottoman",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 690.1,
+    "band_mm": [
+     250.0,
+     800.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T15:26:59-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "6429a852-65eb-45d5-9b7d-be39b4e9bf52",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "chair",
+   "resolution": "2K",
+   "scale": {
+    "ok": true,
+    "measured_mm": 647.5,
+    "band_mm": [
+     600.0,
+     1300.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
   }
  ]
 }

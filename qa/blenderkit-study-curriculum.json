@@ -176,10 +176,14 @@
    },
    "deliverable": "note 2026-09-06-seating.md",
    "exam": "โน้ตผ่าน verifier + ระบุเป็นเลขว่าเบาะ pro ต่างจาก tub chair เราตรงไหน (density/ตะเข็บ/piping — เทียบ _ours dump)",
-   "status": "pending",
+   "status": "done",
    "order": 15,
    "suggested_date": "2026-09-06",
-   "deadline": "2026-09-21"
+   "deadline": "2026-09-21",
+   "judged_by": "verifier-agent",
+   "exam_evidence": "knowledge/_inbox/model-study/2026-09-02-seating.md,qa/blenderkit-study-seating.json,pipeline/scripts/seating_study_derive.py,pipeline/scripts/study_probe_read.py,qa/blenderkit-fetch-log.json",
+   "done_early_note": "ทำ 2026-09-02 ก่อนกำหนด (order 15) หลังพี่ปลดเพดานจำนวนหน่วยต่อวัน",
+   "done_note": "EXAM: ระบุเป็นเลขว่าเบาะ pro ต่างจากของเราตรงไหน. คำตอบ: pro แยกเมชเป็นสามแถบความหนาแน่น และแถบที่สามคือตะเข็บที่ถูกโมเดลเป็น object ของตัวเอง — 33c5f315 ส่ง object ชื่อ Sewing มาตรง ๆ (207,872 v ที่ 17.8M v/m2 edge 0.2mm วัสดุ Linha_Costura) หนาแน่นกว่าเบาะในตัวเดียวกัน 309-315x; 3 ใน 6 ตัวมีชิ้นแบบนี้ ของเรามี 0. เบาะจริงของ pro 55,834-471,211 v/m2 (21 ชิ้น) ของเรา 626-4,677 = ตกอยู่ในแถบ shell ที่ pro ใช้ทำโครงและขา ทั้งหมด — เบาะที่ดีที่สุดของเรา ต่ำกว่าเบาะ pro ที่เบาที่สุด 11.9x และแย่ที่สุด 89.2x. PREMISE ของหน่วยแก้แล้ว: tub chair ในเฟรมไม่ใช่ของปั้นเอง — ของนั่งทุกชิ้นเป็นของซื้อ (__acq) _build_tub_chair ยังถูกเรียกที่ build_room.py:13136 แต่ไม่มีผลผลิตในเฟรมนี้. verifier: ยื่น 21 ยืนยัน 13 (8 จุดจริง) หักล้าง 8 แก้ครบ — เกือบทุกจุดที่ยืนยันคือผมพูดเกินหลักฐาน (อ้าง \"หนึ่งลำดับ\" ทั้งที่เป็น 2.1x/1.7x, อัตราส่วนตะเข็บที่หารข้าม asset, และเลขหัวข้อ 5.3x ที่คิดจากขาไม่ใช่เบาะ ของจริง 11.9x)"
   },
   {
    "id": "STUDY-D16-wardrobe",

@@ -1,0 +1,1022 @@
+{
+ "_recipe": "STUDY-D15 (2026-09-02) upholstered-seating study — the reproduction recipe for every",
+ "_bands": {
+  "shell_max_v_per_m2": 25000.0,
+  "detail_min_v_per_m2": 1000000.0
+ },
+ "seats": {
+  "a34e3cdf": {
+   "file": "a34e3cdf-3c4d-4d42-86b3-4983041a30ad.probe.json",
+   "label": "Sheriff Armchair",
+   "tier": "full_plan",
+   "why_in_corpus": "the density extreme: 3.19 M faces",
+   "source": "blend",
+   "n_objects": 7,
+   "n_mesh": 6,
+   "n_materials": 4,
+   "n_images": 10,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     1
+    ],
+    [
+     512,
+     512,
+     9
+    ]
+   ],
+   "total_verts": 3140413,
+   "counts": {
+    "shell": 1,
+    "upholstery": 4,
+    "detail": 1
+   },
+   "upholstery_v_per_m2": [
+    312586,
+    223787,
+    115934,
+    114861
+   ],
+   "detail_v_per_m2": [
+    1717229
+   ],
+   "meshes": [
+    {
+     "name": "SheriffArmchair_LeatherStraps",
+     "dims": [
+      826,
+      870,
+      385
+     ],
+     "verts": 2255214,
+     "area_m2": 1.3133,
+     "v_per_m2": 1717229,
+     "edge_proxy_mm": 0.8,
+     "band": "detail",
+     "mods": [],
+     "materials": [
+      "M_Leather_05",
+      "M_Wood_29"
+     ]
+    },
+    {
+     "name": "SheriffArmchair_CushionSeat",
+     "dims": [
+      801,
+      829,
+      222
+     ],
+     "verts": 503561,
+     "area_m2": 1.611,
+     "v_per_m2": 312586,
+     "edge_proxy_mm": 1.8,
+     "band": "upholstery",
+     "mods": [
+      "NODES"
+     ],
+     "materials": [
+      "M_Leather_12"
+     ]
+    },
+    {
+     "name": "SheriffArmchair_CushionBack",
+     "dims": [
+      963,
+      461,
+      213
+     ],
+     "verts": 236549,
+     "area_m2": 1.057,
+     "v_per_m2": 223787,
+     "edge_proxy_mm": 2.1,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "M_Leather_12"
+     ]
+    },
+    {
+     "name": "SheriffArmchair_CushionArm_02",
+     "dims": [
+      233,
+      628,
+      186
+     ],
+     "verts": 61947,
+     "area_m2": 0.5343,
+     "v_per_m2": 115934,
+     "edge_proxy_mm": 2.9,
+     "band": "upholstery",
+     "mods": [
+      "NODES"
+     ],
+     "materials": [
+      "M_Leather_12"
+     ]
+    },
+    {
+     "name": "SheriffArmchair_CushionArm_01",
+     "dims": [
+      246,
+      634,
+      214
+     ],
+     "verts": 62527,
+     "area_m2": 0.5444,
+     "v_per_m2": 114861,
+     "edge_proxy_mm": 3.0,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "M_Leather_12"
+     ]
+    },
+    {
+     "name": "SheriffArmchair_WoodStructure",
+     "dims": [
+      874,
+      889,
+      789
+     ],
+     "verts": 20615,
+     "area_m2": 1.6166,
+     "v_per_m2": 12752,
+     "edge_proxy_mm": 9.0,
+     "band": "shell",
+     "mods": [
+      "NODES"
+     ],
+     "materials": [
+      "M_Wood_29",
+      "M_Plastic"
+     ]
+    }
+   ]
+  },
+  "62520f38": {
+   "file": "62520f38-c105-4ba0-9da7-630385d79af6.probe.json",
+   "label": "Upholstered Accent Chair",
+   "tier": "free",
+   "why_in_corpus": "the SECOND-densest free single seat, 1.07 M faces — the free extreme is 6c4752d5 Leather lounge chair at 1.31 M, which was not fetched",
+   "source": "blend",
+   "n_objects": 12,
+   "n_mesh": 11,
+   "n_materials": 12,
+   "n_images": 15,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     14
+    ],
+    [
+     1136,
+     1136,
+     1
+    ]
+   ],
+   "total_verts": 1078466,
+   "counts": {
+    "shell": 1,
+    "upholstery": 10,
+    "detail": 0
+   },
+   "upholstery_v_per_m2": [
+    471211,
+    411251,
+    181698,
+    160022,
+    146690,
+    143120,
+    134525,
+    120221,
+    78216,
+    78216
+   ],
+   "detail_v_per_m2": [],
+   "meshes": [
+    {
+     "name": "Plane.012",
+     "dims": [
+      579,
+      201,
+      349
+     ],
+     "verts": 323830,
+     "area_m2": 0.6872,
+     "v_per_m2": 471211,
+     "edge_proxy_mm": 1.5,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Plane.006",
+     "dims": [
+      562,
+      379,
+      117
+     ],
+     "verts": 322020,
+     "area_m2": 0.783,
+     "v_per_m2": 411251,
+     "edge_proxy_mm": 1.6,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Plane.011",
+     "dims": [
+      544,
+      214,
+      356
+     ],
+     "verts": 90098,
+     "area_m2": 0.4959,
+     "v_per_m2": 181698,
+     "edge_proxy_mm": 2.4,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Plane.010",
+     "dims": [
+      544,
+      395,
+      121
+     ],
+     "verts": 90146,
+     "area_m2": 0.5633,
+     "v_per_m2": 160022,
+     "edge_proxy_mm": 2.5,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Cube.020",
+     "dims": [
+      552,
+      56,
+      70
+     ],
+     "verts": 37800,
+     "area_m2": 0.2577,
+     "v_per_m2": 146690,
+     "edge_proxy_mm": 2.6,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Cube.014",
+     "dims": [
+      552,
+      74,
+      66
+     ],
+     "verts": 37800,
+     "area_m2": 0.2641,
+     "v_per_m2": 143120,
+     "edge_proxy_mm": 2.6,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Cube.011",
+     "dims": [
+      621,
+      218,
+      374
+     ],
+     "verts": 61344,
+     "area_m2": 0.456,
+     "v_per_m2": 134525,
+     "edge_proxy_mm": 2.7,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Plane.007",
+     "dims": [
+      622,
+      389,
+      179
+     ],
+     "verts": 60072,
+     "area_m2": 0.4997,
+     "v_per_m2": 120221,
+     "edge_proxy_mm": 2.9,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Cube.010",
+     "dims": [
+      548,
+      63,
+      63
+     ],
+     "verts": 26352,
+     "area_m2": 0.3369,
+     "v_per_m2": 78216,
+     "edge_proxy_mm": 3.6,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Cube.018",
+     "dims": [
+      548,
+      60,
+      59
+     ],
+     "verts": 26352,
+     "area_m2": 0.3369,
+     "v_per_m2": 78216,
+     "edge_proxy_mm": 3.6,
+     "band": "upholstery",
+     "mods": [
+      "SUBSURF(0,1)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "1 den",
+      "2 xam",
+      "122",
+      "red",
+      "s",
+      "white",
+      "13",
+      "orange",
+      "green",
+      "yellow",
+      "11"
+     ]
+    },
+    {
+     "name": "Cube.003",
+     "dims": [
+      616,
+      781,
+      798
+     ],
+     "verts": 2652,
+     "area_m2": 1.0449,
+     "v_per_m2": 2538,
+     "edge_proxy_mm": 19.9,
+     "band": "shell",
+     "mods": [
+      "SUBSURF(1,2)",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "go "
+     ]
+    }
+   ]
+  },
+  "e0095b9b": {
+   "file": "e0095b9b-011b-4dba-a15c-2f1dc4137008.probe.json",
+   "label": "Apex Linen Lounge Chair",
+   "tier": "full_plan",
+   "why_in_corpus": "linen rather than leather",
+   "source": "blend",
+   "n_objects": 6,
+   "n_mesh": 4,
+   "n_materials": 3,
+   "n_images": 14,
+   "image_sizes": [
+    [
+     1024,
+     1024,
+     14
+    ]
+   ],
+   "total_verts": 312809,
+   "counts": {
+    "shell": 1,
+    "upholstery": 3,
+    "detail": 0
+   },
+   "upholstery_v_per_m2": [
+    130551,
+    117775,
+    117195
+   ],
+   "detail_v_per_m2": [],
+   "meshes": [
+    {
+     "name": "Armchair.006",
+     "dims": [
+      448,
+      466,
+      180
+     ],
+     "verts": 48915,
+     "area_m2": 0.3747,
+     "v_per_m2": 130551,
+     "edge_proxy_mm": 2.8,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "hessian_380.002"
+     ]
+    },
+    {
+     "name": "Armchair.001",
+     "dims": [
+      708,
+      690,
+      268
+     ],
+     "verts": 143868,
+     "area_m2": 1.2215,
+     "v_per_m2": 117775,
+     "edge_proxy_mm": 2.9,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "hessian_380.002"
+     ]
+    },
+    {
+     "name": "Armchair.005",
+     "dims": [
+      657,
+      334,
+      581
+     ],
+     "verts": 119894,
+     "area_m2": 1.023,
+     "v_per_m2": 117195,
+     "edge_proxy_mm": 2.9,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "hessian_380.002"
+     ]
+    },
+    {
+     "name": "Frame.001",
+     "dims": [
+      748,
+      807,
+      630
+     ],
+     "verts": 132,
+     "area_m2": 1.2674,
+     "v_per_m2": 104,
+     "edge_proxy_mm": 103.6,
+     "band": "shell",
+     "mods": [
+      "BEVEL",
+      "WEIGHTED_NORMAL"
+     ],
+     "materials": [
+      "rosewood_veneer1.001"
+     ]
+    }
+   ]
+  },
+  "33c5f315": {
+   "file": "33c5f315-9c8a-47d6-bf78-20fea703aaa1.probe.json",
+   "label": "Otio Welsh Taupe Lounge Chair",
+   "tier": "full_plan",
+   "why_in_corpus": "ships an object named `Sewing` — the seam question answered by the vendor",
+   "source": "blend",
+   "n_objects": 5,
+   "n_mesh": 4,
+   "n_materials": 3,
+   "n_images": 7,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     4
+    ],
+    [
+     1500,
+     1500,
+     1
+    ],
+    [
+     1250,
+     1250,
+     1
+    ],
+    [
+     1181,
+     1181,
+     1
+    ]
+   ],
+   "total_verts": 346646,
+   "counts": {
+    "shell": 0,
+    "upholstery": 3,
+    "detail": 1
+   },
+   "upholstery_v_per_m2": [
+    57643,
+    56601,
+    26326
+   ],
+   "detail_v_per_m2": [
+    17824730
+   ],
+   "meshes": [
+    {
+     "name": "Sewing",
+     "dims": [
+      562,
+      804,
+      572
+     ],
+     "verts": 207872,
+     "area_m2": 0.0117,
+     "v_per_m2": 17824730,
+     "edge_proxy_mm": 0.2,
+     "band": "detail",
+     "mods": [],
+     "materials": [
+      "Linha_Costura"
+     ]
+    },
+    {
+     "name": "Cushion_Back",
+     "dims": [
+      577,
+      304,
+      582
+     ],
+     "verts": 50306,
+     "area_m2": 0.8727,
+     "v_per_m2": 57643,
+     "edge_proxy_mm": 4.2,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "MATERIAL_ARMCHAIR_FABRIC"
+     ]
+    },
+    {
+     "name": "Cushion",
+     "dims": [
+      581,
+      580,
+      199
+     ],
+     "verts": 48370,
+     "area_m2": 0.8546,
+     "v_per_m2": 56601,
+     "edge_proxy_mm": 4.2,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "MATERIAL_ARMCHAIR_FABRIC"
+     ]
+    },
+    {
+     "name": "WOOD",
+     "dims": [
+      676,
+      862,
+      721
+     ],
+     "verts": 40098,
+     "area_m2": 1.5231,
+     "v_per_m2": 26326,
+     "edge_proxy_mm": 6.2,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "Wood Plain Dark 008_4k.001"
+     ]
+    }
+   ]
+  },
+  "10542494": {
+   "file": "10542494-93ae-4480-9f2e-0c52cedd3993.probe.json",
+   "label": "Ottoman",
+   "tier": "full_plan",
+   "why_in_corpus": "the ottoman class, and a ONE-object asset. NOTE it is not from the 504-row single-seat pool: its plan is 1978 x 922 mm, so the <=1.20 m single-seat cut excludes it and it was taken from the 631-row band pool as a deliberate class exception",
+   "source": "blend",
+   "n_objects": 1,
+   "n_mesh": 1,
+   "n_materials": 2,
+   "n_images": 12,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     12
+    ]
+   ],
+   "total_verts": 937553,
+   "counts": {
+    "shell": 0,
+    "upholstery": 1,
+    "detail": 0
+   },
+   "upholstery_v_per_m2": [
+    195128
+   ],
+   "detail_v_per_m2": [],
+   "meshes": [
+    {
+     "name": "Ottoman",
+     "dims": [
+      1978,
+      922,
+      690
+     ],
+     "verts": 937553,
+     "area_m2": 4.8048,
+     "v_per_m2": 195128,
+     "edge_proxy_mm": 2.3,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "FabricUpholsteryCordWeave001_4K",
+      "FabricUpholsteryVelvetPolyesterMatte001_4K"
+     ]
+    }
+   ]
+  },
+  "6429a852": {
+   "file": "6429a852-65eb-45d5-9b7d-be39b4e9bf52.probe.json",
+   "label": "Lc3",
+   "tier": "full_plan",
+   "why_in_corpus": "a classic frame-and-cushion chair",
+   "source": "blend",
+   "n_objects": 7,
+   "n_mesh": 6,
+   "n_materials": 3,
+   "n_images": 7,
+   "image_sizes": [
+    [
+     2048,
+     2048,
+     7
+    ]
+   ],
+   "total_verts": 270602,
+   "counts": {
+    "shell": 1,
+    "upholstery": 2,
+    "detail": 3
+   },
+   "upholstery_v_per_m2": [
+    55834,
+    48812
+   ],
+   "detail_v_per_m2": [
+    4772881,
+    4772881,
+    4772881
+   ],
+   "meshes": [
+    {
+     "name": "LC3 Armchair",
+     "dims": [
+      847,
+      10,
+      11
+     ],
+     "verts": 1408,
+     "area_m2": 0.0003,
+     "v_per_m2": 4772881,
+     "edge_proxy_mm": 0.5,
+     "band": "detail",
+     "mods": [],
+     "materials": [
+      "BrushedMetal"
+     ]
+    },
+    {
+     "name": "Ring_Back_1",
+     "dims": [
+      596,
+      10,
+      11
+     ],
+     "verts": 1408,
+     "area_m2": 0.0003,
+     "v_per_m2": 4772881,
+     "edge_proxy_mm": 0.5,
+     "band": "detail",
+     "mods": [],
+     "materials": [
+      "BrushedMetal"
+     ]
+    },
+    {
+     "name": "Rings_Back_2",
+     "dims": [
+      533,
+      10,
+      11
+     ],
+     "verts": 1408,
+     "area_m2": 0.0003,
+     "v_per_m2": 4772881,
+     "edge_proxy_mm": 0.5,
+     "band": "detail",
+     "mods": [],
+     "materials": [
+      "BrushedMetal"
+     ]
+    },
+    {
+     "name": "LC3_V2_SmallFolds",
+     "dims": [
+      1000,
+      735,
+      532
+     ],
+     "verts": 241598,
+     "area_m2": 4.3271,
+     "v_per_m2": 55834,
+     "edge_proxy_mm": 4.2,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "Leather "
+     ]
+    },
+    {
+     "name": "Frame",
+     "dims": [
+      993,
+      731,
+      487
+     ],
+     "verts": 23618,
+     "area_m2": 0.4839,
+     "v_per_m2": 48812,
+     "edge_proxy_mm": 4.5,
+     "band": "upholstery",
+     "mods": [],
+     "materials": [
+      "BrushedMetal",
+      "Rubber_Feet"
+     ]
+    },
+    {
+     "name": "LC3 armchair",
+     "dims": [
+      944,
+      671,
+      32
+     ],
+     "verts": 1162,
+     "area_m2": 1.4451,
+     "v_per_m2": 804,
+     "edge_proxy_mm": 35.3,
+     "band": "shell",
+     "mods": [],
+     "materials": [
+      "BrushedMetal"
+     ]
+    }
+   ]
+  }
+ },
+ "ours": {
+  "bench__acq0": {
+   "name": "bench__acq0",
+   "dims": [
+    393,
+    1000,
+    366
+   ],
+   "verts": 10782,
+   "area_m2": 2.3055,
+   "v_per_m2": 4677,
+   "edge_proxy_mm": 14.6,
+   "band": "shell",
+   "mods": [],
+   "materials": [
+    "acq_bench_seat"
+   ]
+  },
+  "bench__acq1": {
+   "name": "bench__acq1",
+   "dims": [
+    296,
+    809,
+    61
+   ],
+   "verts": 4400,
+   "area_m2": 0.4211,
+   "v_per_m2": 10449,
+   "edge_proxy_mm": 9.9,
+   "band": "shell",
+   "mods": [],
+   "materials": [
+    "acq_dark_leg",
+    "acq_dark_leg.001"
+   ]
+  },
+  "stool__acq0": {
+   "name": "stool__acq0",
+   "dims": [
+    270,
+    356,
+    15
+   ],
+   "verts": 100,
+   "area_m2": 0.0344,
+   "v_per_m2": 2906,
+   "edge_proxy_mm": 21.9,
+   "band": "shell",
+   "mods": [],
+   "materials": [
+    "acq_stool_uph",
+    "acq_stool_uph"
+   ]
+  },
+  "stool__acq1": {
+   "name": "stool__acq1",
+   "dims": [
+    372,
+    423,
+    390
+   ],
+   "verts": 484,
+   "area_m2": 0.1064,
+   "v_per_m2": 4550,
+   "edge_proxy_mm": 14.6,
+   "band": "shell",
+   "mods": [],
+   "materials": [
+    "acq_stool_uph",
+    "acq_stool_uph",
+    "acq_dark_leg.002",
+    "acq_stool_uph"
+   ]
+  },
+  "stool__acq2": {
+   "name": "stool__acq2",
+   "dims": [
+    433,
+    546,
+    329
+   ],
+   "verts": 642,
+   "area_m2": 1.0251,
+   "v_per_m2": 626,
+   "edge_proxy_mm": 39.8,
+   "band": "shell",
+   "mods": [],
+   "materials": [
+    "acq_stool_uph"
+   ]
+  }
+ },
+ "ours_note": "every upholstered mesh in the p2r91 scene. There is no hand-built tub chair in this frame: `_build_tub_chair` exists in build_room.py but nothing it makes is in the dump, so the comparison the exam asks for is against the ACQUIRED bench and stools that are actually there."
+}
