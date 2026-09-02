@@ -112,17 +112,17 @@
  },
  "eye_camera": {
   "stand_mm": [
-   1500,
-   -200
+   1240,
+   1125
   ],
   "aim_mm": [
-   4003,
-   2800
+   5180,
+   1125
   ],
-  "lens_mm": 18,
-  "shift_y": -0.0376,
+  "lens_mm": 21,
+  "shift_y": -0.0878,
   "eye_h_m": 1.05,
-  "note": "CAMERA OF RECORD SINCE 2026-08-28 — HIS CHOICE FROM THE A/B PAIR (D-175, answer: 'B'). It replaces the 2026-08-26 camera (D-152), which is kept whole as the variant `camera_of_record_2026-08-26_D152`. WHY IT EXISTS: he said 'ย้ายกล้อง' after the first contents round put 31 dressed masses in the scene and only 7 in the frame — the built-in he had just judged was a left-edge crop. EVERY NUMBER IS SOLVED, NOT TYPED (R9 applied to the lens): 273 legal standing spots (camera_config._spot_is_clear: inside the outline, 0.3 m of air, a line of sight to the aim) crossed with 3 lenses, measured by frame_geometry BEFORE any render; 27 satisfy both containment constraints (the room's top edge in frame, the nearest mass's floor contact in frame), and camera-composition's preference order over those 27 — longest lens that admits a solution, then largest bed share — picks this one. shift_y is the midpoint of the admissible interval, i.e. equal headroom top and bottom, not a stored nudge. MEASURED AGAINST THE CAMERA IT REPLACES: bed share 0.175 -> 0.206 (the bed reads LARGER, which is the axis D-118 was decided on), lens 21 -> 18 mm (more convergence over the bed length, the cost), and D7 loose styling objects in frustum 3 -> 5 with NO object moved."
+  "note": "CAMERA OF RECORD SINCE 2026-09-01 — HIS CHOICE, TWICE. First from the A/B pair of 2026-08-26 (D-152), then again on 2026-09-01 when he answered 'ลุย' to the audit's D-1 ('กลับไป framing แบบ p2r78rc') after the plan's first exit panel scored the 08-28 camera (D-175) as throwing the room away (D-184, ORD-2026-09-01-direction-after-audit). The block is the D-152 block verbatim — stand (1240,1125) aim (5180,1125) lens 21 shift -0.0878 eye 1.05 — so every measurement taken on p2r78rc..p2r89 is on THIS camera again, and any before/after that crosses 2026-08-28 or 2026-09-01 must name which camera it used. What the D-152 note said still holds and is kept under the variant `camera_of_record_2026-08-26_D152`: the room's top edge in frame (v=0.4533 was outside on the bed-foot camera), the bench's floor contact in frame, the four BF14 wash cans in frustum. REVERSAL: --eyecam=builtin_bay_hero_2026-08-28 for one render; copy that variant back into eye_camera to stand this down again (D-184 reverse_by)."
  },
  "light_warm": [
   1.0,
@@ -734,7 +734,7 @@
    "lens_mm": 18,
    "shift_y": -0.0376,
    "eye_h_m": 1.05,
-   "note": "CANDIDATE B for the A/B his ย้ายกล้อง asks for (D-174). Aimed at the FACE of BF09-3 so the dressed cells are the subject. EVERY NUMBER IS SOLVED, NOT TYPED (R9 applied to the lens). THE FIRST SWEEP WAS WRONG AND THE BUILD CAUGHT IT: it optimised the two containment constraints and never asked whether the camera could STAND there — stand (900,200) was refused by camera_config._spot_is_clear (within 0.3 m of a built-in / no line of sight). The second sweep filters on _spot_is_clear FIRST and then on containment: 27 of 273 legal stands satisfy both, and this is camera-composition preference order over them — longest lens that admits a solution (18 mm), then largest bed share (0.206). shift_y is the midpoint of the admissible interval (equal headroom). AND THE TRADE TURNED OUT NOT TO BE A TRADE: bed share 0.175 -> 0.206, i.e. the bed reads LARGER than on the camera of record, not smaller — which is the axis D-118 was decided on. What is spent is the lens: 21 -> 18 mm, more convergence over the bed length."
+   "note": "CAMERA OF RECORD 2026-08-28 -> 2026-09-01 (D-175, his 'B'), STOOD DOWN 2026-09-01 (D-184, his 'ลุย' on the audit's D-1: 'กลับไป framing แบบ p2r78rc'). Kept whole so the reversal is one --eyecam flag. WHAT THE EXIT PANEL SAID ABOUT IT (qa/exit-panel-log.json, p2r91, 3 blind sighted judges): the camera throws the room away — chair sliced by the left edge, a dead oak wall as 40% of the left half, bed cut at the right; and the progress panel ranked p2r78rc (D-152) above p2r91 on exactly the camera. Its own numbers still hold (bed share 0.206, 27/273 legal stands) — what they never measured is whether the frame READS, which is the rung a containment solve does not have. CANDIDATE B for the A/B his ย้ายกล้อง asks for (D-174). Aimed at the FACE of BF09-3 so the dressed cells are the subject. EVERY NUMBER IS SOLVED, NOT TYPED (R9 applied to the lens). THE FIRST SWEEP WAS WRONG AND THE BUILD CAUGHT IT: it optimised the two containment constraints and never asked whether the camera could STAND there — stand (900,200) was refused by camera_config._spot_is_clear (within 0.3 m of a built-in / no line of sight). The second sweep filters on _spot_is_clear FIRST and then on containment: 27 of 273 legal stands satisfy both, and this is camera-composition preference order over them — longest lens that admits a solution (18 mm), then largest bed share (0.206). shift_y is the midpoint of the admissible interval (equal headroom). AND THE TRADE TURNED OUT NOT TO BE A TRADE: bed share 0.175 -> 0.206, i.e. the bed reads LARGER than on the camera of record, not smaller — which is the axis D-118 was decided on. What is spent is the lens: 21 -> 18 mm, more convergence over the bed length."
   },
   "camera_of_record_2026-08-26_D152": {
    "stand_mm": [
@@ -749,6 +749,34 @@
    "shift_y": -0.0878,
    "eye_h_m": 1.05,
    "note": "THE OUTGOING CAMERA OF RECORD. His choice from the A/B pair of 2026-08-26 (D-152), stood down 2026-08-28 when he answered 'B' to the next A/B pair (D-175). Kept whole so the reversal is one line: copy this back into eye_camera. It is also the frame every measurement before p2r90 was taken on, so any before/after that crosses 2026-08-28 must name which camera it used."
+  },
+  "p2r93a_onaxis_pulled_back": {
+   "stand_mm": [
+    1210,
+    1125
+   ],
+   "aim_mm": [
+    5180,
+    1125
+   ],
+   "lens_mm": 20,
+   "shift_y": -0.0802,
+   "eye_h_m": 1.05,
+   "note": "P2r-34 leg 2, candidate A (2026-09-01, re-solved 09-02): the camera of record (D-152/D-184) with the containment margin the peers carry — top edge and nearest floor contact each 0.0513 v inside the frame (6.8% of frame height; the peers' 5-12%, read off a local-only contact sheet; the record's 0.0296 v / 3.9% is what the exit panel read as 'the bench sits on the bottom edge' and 'top-edge crop'). DERIVED by frame_geometry.solve_framing, not typed. WHAT THE DERIVATION FOUND: the record stand (1240,1125) was already AT the last clear station of its own axis — camera_config._spot_is_clear refuses anything nearer than 0.3 m to the west bookshelf (AABB x1 0.906 m), so the last clear x is 1.21 m and 'pull back' buys 30 mm. The first draft of this row typed x=1.00 from a 50 mm clearance test of its own and the build refused it (one wasted quick attempt, logged). So the lever is the LENS, not the stand: 21 -> 20 mm is the longest lens that contains both edges at >= 0.05 v from this station (21 mm reaches 0.035 v only; 18 mm reaches 0.084 v but drops the bed to 0.128 of the frame). Bed share 0.154 (record 0.175), bench 0.116, f/5.2 at 2.6 m. Eye 1.05 and aim unchanged — his choice, twice."
+  },
+  "p2r93b_offaxis_ey1600": {
+   "stand_mm": [
+    1210,
+    1600
+   ],
+   "aim_mm": [
+    5180,
+    1125
+   ],
+   "lens_mm": 20,
+   "shift_y": -0.0767,
+   "eye_h_m": 1.05,
+   "note": "P2r-34 leg 2, candidate B (2026-09-01, re-solved 09-02): candidate A stepped 475 mm north on the same x (1.21 m, the last clear station by camera_config's rule), aim unchanged, so the view is 6.8 deg off the bed axis — judge j3's 'slightly off-axis'. Same lens 20 and eye 1.05 as A so the pair differs in ONE thing. Solved by frame_geometry.solve_framing at the largest margin this station reaches: 0.044 v top and bottom (5.9% of frame height — inside the peers' 5-12%, below A's 6.8%). Bed share 0.156, bench 0.112, f/5.2. Further north (ey 2.0+) the BF09-3 wardrobe becomes an uncontainable near mass at 1.2-1.3 m — that is why 'wardrobe as the left anchor' cannot be had from this side at any lens 18-28 mm; measured, not taste."
   }
  },
  "exterior": {

@@ -858,6 +858,24 @@
    "why": "Rides its trim. New-to-frame by camera move (D-175)."
   },
   {
+   "assembly": "e5_trim_dl2",
+   "identity": "Recessed downlight trim ring, 96 mm, sitting in the ceiling plane (east row, dl2).",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "IT ARRIVED WITH THE CAMERA, NOT WITH A BUILD (the e5_cove_pelmet_ret_s sentence, second instance): dl2 is the east-row recessed can at (4.70, 0.11) m, in the ceiling plane at z 2794-2800 like dl5/dl8/dl9/dl16/dl17 (same _recessed_trim, same p2r49/p2r50 fix, aabb read off the p2r93a_q scene dump). It had no row because no frame ever showed it: the p2r93 camera (P2r-34 leg 2, candidate A) keeps the D-152 axis and takes the lens from 21 to 20 mm so the top edge and the bench contact sit 0.05 v inside the frame, and the wider field admits this can at the frame's top-right. Same fixture family as the five rowed cans; nothing new was built."
+  },
+  {
+   "assembly": "e5_lens_dl2",
+   "identity": "The emitting aperture disc inside downlight trim dl2.",
+   "exists": "not-in-drawing: element 5 RCP",
+   "held_by": "ceiling",
+   "operable": false,
+   "verdict": "keep",
+   "why": "IT ARRIVED WITH THE CAMERA, NOT WITH A BUILD (the e5_cove_pelmet_ret_s sentence, second instance): dl2 is the east-row recessed can at (4.70, 0.11) m, in the ceiling plane at z 2794-2800 like dl5/dl8/dl9/dl16/dl17 (same _recessed_trim, same p2r49/p2r50 fix, aabb read off the p2r93a_q scene dump). It had no row because no frame ever showed it: the p2r93 camera (P2r-34 leg 2, candidate A) keeps the D-152 axis and takes the lens from 21 to 20 mm so the top edge and the bench contact sit 0.05 v inside the frame, and the wider field admits this can at the frame's top-right. Same fixture family as the five rowed cans; nothing new was built. This row rides its trim."
+  },
+  {
    "assembly": "e5_lens_tub_wash_0",
    "identity": "The emitting aperture disc inside the tub-wash accent trim 0 (ensuite dry strip).",
    "exists": "not-in-drawing: element 5 RCP (D-E5-8)",
