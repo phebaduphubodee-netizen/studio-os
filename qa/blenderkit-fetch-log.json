@@ -5204,6 +5204,233 @@
     ],
     "refusal": null
    }
+  },
+  {
+   "at": "2026-09-02T17:00:47-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T17:00:58-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "cushion",
+   "pages": 2,
+   "n": 200,
+   "free": 63,
+   "full_plan": 137,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T17:01:00-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw pillow",
+   "pages": 2,
+   "n": 140,
+   "free": 42,
+   "full_plan": 98,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T17:01:03-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "throw blanket",
+   "pages": 2,
+   "n": 138,
+   "free": 42,
+   "full_plan": 96,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T17:04:49-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "e5fc6314-4935-40da-aa59-f453ccd8d9e4",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_standing",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 499.2,
+    "band_mm": [
+     350.0,
+     800.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-02T17:05:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "c4450c29-d8d8-4cf8-87d0-59de63cccb8a",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 346.0,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:07-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "aac13b32-4f80-41c6-ac05-03a50286e6d5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 167.9,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:13-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "402c662f-417f-4511-9937-19d5cdaa2b46",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 178.5,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:33-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "da65b0fa-93a5-4557-845e-49678fd45b08",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 292.3,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T17:06:44-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "7ca290af-d472-4f5e-8627-8188c514a6ea",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pillow_set_lying",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 226.6,
+    "band_mm": [
+     120.0,
+     420.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:33:16-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "pendant lamp",
+   "pages": 2,
+   "n": 200,
+   "free": 64,
+   "full_plan": 136,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T20:33:19-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "wall lamp",
+   "pages": 2,
+   "n": 200,
+   "free": 98,
+   "full_plan": 102,
+   "fetched": false
+  },
+  {
+   "at": "2026-09-02T20:33:21-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "search",
+   "probe": true,
+   "key_present": true,
+   "query": "floor lamp",
+   "pages": 2,
+   "n": 200,
+   "free": 63,
+   "full_plan": 137,
+   "fetched": false
   }
  ]
 }

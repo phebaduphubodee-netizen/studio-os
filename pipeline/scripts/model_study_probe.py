@@ -163,6 +163,42 @@ def _mesh_row(ob):
             ar = np.empty(len(tmp.polygons), dtype=np.float64)
             tmp.polygons.foreach_get("area", ar)
             row["area_m2"] = round(float(ar.sum()), 6)
+            # PER MATERIAL SLOT — faces and world area. Added 2026-09-02 (STUDY-D17)
+            # because the dump recorded which materials an object DECLARES and never
+            # which faces actually WEAR them, and those are different claims: an
+            # object with two fabric slots may be two-tone, or may have one slot
+            # nobody painted. The note that needed it could only say "2 slots" and
+            # had to leave "did we discard a second fabric" unanswered. The polygon
+            # order of the copy matches the original, so material_index is read off
+            # `me` and paired with the world areas from `tmp`.
+            mi = np.empty(n_poly, dtype=np.int32)
+            me.polygons.foreach_get("material_index", mi)
+            slots = [s.material.name if s.material else None
+                     for s in ob.material_slots]
+            per = []
+            for i in range(max(len(slots), int(mi.max()) + 1 if n_poly else 0)):
+                sel = mi == i
+                per.append({"slot": i,
+                            "material": slots[i] if i < len(slots) else None,
+                            "faces": int(sel.sum()),
+                            "area_m2": round(float(ar[sel].sum()), 6)})
+            row["per_slot"] = per
+            row["slots_with_no_face"] = [q["material"] for q in per if not q["faces"]]
+            # FACE-AREA DISPERSION. Added 2026-09-02 (STUDY-D17 round 2) because a study
+            # note concluded "we spread polygons evenly across the whole cloth while the
+            # pros concentrate theirs" from a single MEAN face size — and a mean carries
+            # no information about how faces are distributed inside one mesh. A mesh that
+            # is dense at a seam and coarse elsewhere has the same mean as a uniform one.
+            # p90/p10 is the spread a mean hides; cv is its scale-free form.
+            pos = ar[ar > 0]
+            if pos.size:
+                q10, q50, q90 = (float(v) for v in np.percentile(pos, [10, 50, 90]))
+                row["face_area_mm2"] = {
+                    "p10": round(q10 * 1e6, 4), "p50": round(q50 * 1e6, 4),
+                    "p90": round(q90 * 1e6, 4),
+                    "p90_over_p10": (round(q90 / q10, 2) if q10 > 0 else None),
+                    "cv": round(float(pos.std() / pos.mean()), 3) if pos.mean() else None,
+                }
         finally:
             bpy.data.meshes.remove(tmp)
         sm = np.empty(n_poly, dtype=bool)

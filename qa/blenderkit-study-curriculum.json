@@ -225,12 +225,16 @@
     "fenced": true,
     "fence_gate": "STUDY-D13-baselines"
    },
-   "deliverable": "note 2026-09-08-cushions.md",
+   "deliverable": "note 2026-09-02-cushions.md",
    "exam": "โน้ตผ่าน verifier + เลขการกอง/การหมุนหมอน pro เทียบหมอนในเฟรมเรา (_ours)",
-   "status": "pending",
+   "status": "done",
    "order": 17,
    "suggested_date": "2026-09-08",
-   "deadline": "2026-09-21"
+   "deadline": "2026-09-21",
+   "judged_by": "verifier-agent",
+   "done_date": "2026-09-02",
+   "exam_evidence": "knowledge/_inbox/model-study/2026-09-02-cushions.md,qa/blenderkit-study-cushions.json,pipeline/scripts/cushion_study_derive.py,pipeline/scripts/test_cushion_study_derive.py,pipeline/scripts/model_study_probe.py,qa/blenderkit-fetch-log.json",
+   "done_note": "6/6 fetched (5 full_plan + 1 free), scale asserted at ingest, all probed from .blend. The exam wanted knife-vs-box edge AND the stacking/rotation numbers. CONSTRUCTION is answered: 3 of 6 split into a coarse shell plus separate fine trim (edge spread 12.3-37.2x, 94.2-99.6% of verts outside the body); MATERIAL separation follows only 2 of 3. Knife-vs-box is NOT answered and the note says so -- a bbox cannot see the perimeter section; what is answered is flat (0.27-0.39) vs box-shaped (0.94). POSE needed a second corpus: five of the six are product shots, so arrangement was measured on the STUDY-D11 made-bed corpus already on disk (44.9 deg constant per scene on one bed, a 2x2 grid proved from centres against the headboard at +y, side-by-side vs front-back footprint overlap) plus c4450c29, which turned out to be a real staged pair offset 186 mm. THE LANE-RELEVANT FINDING: our whole head-end arrangement is one acquired mesh -- e2418055's own 'Cusions' -- which ships TWO fabrics on real faces (57.3%/42.7%, no empty slot) that survive into the .glb and reach the scene as ONE material. Where they are lost is not yet located, but a positive control (21 of 148 acquired objects hold multiple slots, and stool__acq0 holds a duplicated slot) shows it is not a pipeline limitation. VERIFIED TWICE. Round 1 filed 38 but 66 of 79 judges died on a session limit and 31 findings went unjudged -- and the harness scored unjudged as refuted, which is fail-open; that bug is fixed (UNJUDGED is its own loud status) and all 31 were judged by hand. Round 2 ran 118/118 clean: 57 filed, 28 confirmed, 29 refuted, 0 unjudged. TWO OF MY OWN INSTRUMENTS WERE WRONG. z_rank rounded to whole mm BEFORE sorting and then used list.index(), inventing a 3,3,2,2 split across four pillows whose z is the strict minimum on all four -- and I wrote an explanation for the figure that did not exist. And 'we spread polygons evenly' was an inference a MEAN cannot support, so face-area dispersion went into the probe: measured, it holds and is stronger than the guess (ours p90/p10 1.04, cv 0.088; pro shells 24.3 / 870.8 / 28,339.6). DECLARED CONTAMINATION: I chose two of the six BECAUSE they had the structure I then counted (why_in_corpus says so in the artifact), so the 3-of-6 rate is a fact about my selection, not about the shelf."
   },
   {
    "id": "STUDY-D18-lighting-fixtures",

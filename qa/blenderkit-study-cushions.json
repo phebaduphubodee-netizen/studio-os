@@ -1,0 +1,1621 @@
+{
+ "_recipe": "STUDY-D17 (2026-09-02) cushion/throw study — the reproduction recipe for every number in",
+ "_vault_face_sizes_mm": {
+  "euro_sham": [
+   686,
+   686,
+   "knowledge/_inbox/dr-made-bed-grammar-2026-08-17.md L90,L102 (27x27 in)"
+  ],
+  "standard_sham": [
+   533,
+   686,
+   "knowledge/_inbox/dr-made-bed-grammar-2026-08-17.md L92 (21x27 in)"
+  ],
+  "boudoir": [
+   305,
+   406,
+   "knowledge/_inbox/dr-made-bed-grammar-2026-08-17.md L93,L104 (12x16 in)"
+  ],
+  "king_pillow": [
+   500,
+   900,
+   "knowledge/_inbox/dr-made-bed-grammar-2026-08-17.md L103,L166"
+  ],
+  "bolster": [
+   230,
+   800,
+   "knowledge/_inbox/dr-made-bed-grammar-2026-08-17.md L163"
+  ]
+ },
+ "construction": {
+  "e5fc6314": {
+   "file": "e5fc6314-4935-40da-aa59-f453ccd8d9e4.probe.json",
+   "label": "3 cushion set",
+   "tier": "free",
+   "asserted_class": "pillow_set_standing",
+   "why_in_corpus": "the free tier's own panel-passing piece from STUDY-D13 — the free/paid comparison inside the class, not a filler",
+   "n_mesh": 1,
+   "n_materials": 1,
+   "n_images": 0,
+   "asset_dims_mm": [
+    957,
+    790,
+    499
+   ],
+   "objects": [
+    {
+     "name": "3 cushion set",
+     "dims_mm": [
+      957,
+      790,
+      499
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 74670,
+     "faces": 74664,
+     "edge_proxy_mm": 4.55,
+     "materials": [
+      "Material.001"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Material.001",
+       "faces": 74664,
+       "area_m2": 1.542467,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 13.2497,
+      "p50": 20.4933,
+      "p90": 28.3578,
+      "p90_over_p10": 2.14,
+      "cv": 0.27
+     }
+    }
+   ],
+   "body_name": "3 cushion set",
+   "body_edge_proxy_mm": 4.55,
+   "finest_edge_proxy_mm": 4.55,
+   "body_is_a_tie": false,
+   "edge_spread": 1.0,
+   "detail_vert_share": null,
+   "total_verts": 74670
+  },
+  "c4450c29": {
+   "file": "c4450c29-d8d8-4cf8-87d0-59de63cccb8a.probe.json",
+   "label": "Fabric Cushions",
+   "tier": "full_plan",
+   "asserted_class": "pillow_set_lying",
+   "why_in_corpus": "a pair, two sizes",
+   "n_mesh": 2,
+   "n_materials": 2,
+   "n_images": 4,
+   "asset_dims_mm": [
+    817,
+    455,
+    346
+   ],
+   "objects": [
+    {
+     "name": "L_pillow",
+     "dims_mm": [
+      817,
+      302,
+      346
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 13452,
+     "faces": 13450,
+     "edge_proxy_mm": 7.69,
+     "materials": [
+      "S_pillow"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "S_pillow",
+       "faces": 13450,
+       "area_m2": 0.795571,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 38.4413,
+      "p50": 64.7917,
+      "p90": 68.7734,
+      "p90_over_p10": 1.79,
+      "cv": 0.279
+     }
+    },
+    {
+     "name": "S_pillow",
+     "dims_mm": [
+      606,
+      236,
+      270
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 7842,
+     "faces": 7840,
+     "edge_proxy_mm": 7.71,
+     "materials": [
+      "L_Pillow"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "L_Pillow",
+       "faces": 7840,
+       "area_m2": 0.466417,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 13.0813,
+      "p50": 68.137,
+      "p90": 68.7324,
+      "p90_over_p10": 5.25,
+      "cv": 0.319
+     }
+    }
+   ],
+   "body_name": "S_pillow",
+   "body_edge_proxy_mm": 7.71,
+   "finest_edge_proxy_mm": 7.69,
+   "body_is_a_tie": false,
+   "edge_spread": 1.0,
+   "detail_vert_share": null,
+   "total_verts": 21294
+  },
+  "aac13b32": {
+   "file": "aac13b32-4f80-41c6-ac05-03a50286e6d5.probe.json",
+   "label": "Throw Pillow",
+   "tier": "full_plan",
+   "asserted_class": "pillow_set_lying",
+   "why_in_corpus": "the densest single cushion on the shelf at 396k faces",
+   "n_mesh": 4,
+   "n_materials": 1,
+   "n_images": 2,
+   "asset_dims_mm": [
+    641,
+    355,
+    168
+   ],
+   "objects": [
+    {
+     "name": "Object026.002",
+     "dims_mm": [
+      641,
+      136,
+      20
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 184220,
+     "faces": 183000,
+     "edge_proxy_mm": 0.6,
+     "materials": [
+      "Material",
+      "Material"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Material",
+       "faces": 154200,
+       "area_m2": 0.056574,
+       "area_share": 0.8448
+      },
+      {
+       "slot": 1,
+       "material": "Material",
+       "faces": 28800,
+       "area_m2": 0.010393,
+       "area_share": 0.1552
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 0.0281,
+      "p50": 0.3577,
+      "p90": 0.687,
+      "p90_over_p10": 24.47,
+      "cv": 0.656
+     }
+    },
+    {
+     "name": "Object026",
+     "dims_mm": [
+      594,
+      139,
+      18
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 136504,
+     "faces": 135600,
+     "edge_proxy_mm": 0.6,
+     "materials": [
+      "Material",
+      "Material"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Material",
+       "faces": 105300,
+       "area_m2": 0.038401,
+       "area_share": 0.7753
+      },
+      {
+       "slot": 1,
+       "material": "Material",
+       "faces": 30300,
+       "area_m2": 0.011129,
+       "area_share": 0.2247
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 0.0265,
+      "p50": 0.34,
+      "p90": 0.7192,
+      "p90_over_p10": 27.1,
+      "cv": 0.703
+     }
+    },
+    {
+     "name": "Object026.003",
+     "dims_mm": [
+      602,
+      96,
+      19
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 76708,
+     "faces": 76200,
+     "edge_proxy_mm": 0.56,
+     "materials": [
+      "Material",
+      "Material"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Material",
+       "faces": 64200,
+       "area_m2": 0.019954,
+       "area_share": 0.8432
+      },
+      {
+       "slot": 1,
+       "material": "Material",
+       "faces": 12000,
+       "area_m2": 0.003712,
+       "area_share": 0.1568
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 0.0241,
+      "p50": 0.2913,
+      "p90": 0.6049,
+      "p90_over_p10": 25.05,
+      "cv": 0.704
+     }
+    },
+    {
+     "name": "Box002",
+     "dims_mm": [
+      581,
+      342,
+      168
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 1642,
+     "faces": 1639,
+     "edge_proxy_mm": 16.56,
+     "materials": [
+      "Material"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Material",
+       "faces": 1639,
+       "area_m2": 0.449074,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 1.033,
+      "p50": 35.4831,
+      "p90": 899.5649,
+      "p90_over_p10": 870.8,
+      "cv": 1.605
+     }
+    }
+   ],
+   "body_name": "Box002",
+   "body_edge_proxy_mm": 16.56,
+   "finest_edge_proxy_mm": 0.56,
+   "body_is_a_tie": false,
+   "edge_spread": 29.6,
+   "detail_vert_share": 0.9959,
+   "total_verts": 399074
+  },
+  "402c662f": {
+   "file": "402c662f-417f-4511-9937-19d5cdaa2b46.probe.json",
+   "label": "Francesca Hand Embroidered Throw Pillow",
+   "tier": "full_plan",
+   "asserted_class": "pillow_set_lying",
+   "why_in_corpus": "square, embroidered — and the SAME asset that appears posed inside the made-bed set 62253e5c, so product and pose can be read off one mesh",
+   "n_mesh": 1,
+   "n_materials": 2,
+   "n_images": 1,
+   "asset_dims_mm": [
+    661,
+    658,
+    179
+   ],
+   "objects": [
+    {
+     "name": "Francesca Hand Embroidered Throw Pillow.001",
+     "dims_mm": [
+      661,
+      658,
+      178
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 89262,
+     "faces": 89260,
+     "edge_proxy_mm": 3.14,
+     "materials": [
+      "Francesca Hand Embroidered Throw Pillow A",
+      "Francesca Hand Embroidered Throw Pillow B"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Francesca Hand Embroidered Throw Pillow A",
+       "faces": 44630,
+       "area_m2": 0.437818,
+       "area_share": 0.4988
+      },
+      {
+       "slot": 1,
+       "material": "Francesca Hand Embroidered Throw Pillow B",
+       "faces": 44630,
+       "area_m2": 0.439901,
+       "area_share": 0.5012
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 4.8286,
+      "p50": 10.1767,
+      "p90": 14.2485,
+      "p90_over_p10": 2.95,
+      "cv": 0.369
+     }
+    }
+   ],
+   "body_name": "Francesca Hand Embroidered Throw Pillow.001",
+   "body_edge_proxy_mm": 3.14,
+   "finest_edge_proxy_mm": 3.14,
+   "body_is_a_tie": false,
+   "edge_spread": 1.0,
+   "detail_vert_share": null,
+   "total_verts": 89262
+  },
+  "da65b0fa": {
+   "file": "da65b0fa-93a5-4557-845e-49678fd45b08.probe.json",
+   "label": "Corindi Pillow",
+   "tier": "full_plan",
+   "asserted_class": "pillow_set_lying",
+   "why_in_corpus": "310x303x292 — nearly cubic, the box-edge end of the class",
+   "n_mesh": 2,
+   "n_materials": 2,
+   "n_images": 4,
+   "asset_dims_mm": [
+    310,
+    303,
+    292
+   ],
+   "objects": [
+    {
+     "name": "Stick",
+     "dims_mm": [
+      310,
+      268,
+      290
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 25090,
+     "faces": 23160,
+     "edge_proxy_mm": 0.48,
+     "materials": [
+      "Material.001"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Material.001",
+       "faces": 23160,
+       "area_m2": 0.005316,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 0.1461,
+      "p50": 0.2721,
+      "p90": 0.2724,
+      "p90_over_p10": 1.86,
+      "cv": 0.261
+     }
+    },
+    {
+     "name": "Sphere",
+     "dims_mm": [
+      310,
+      303,
+      292
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 962,
+     "faces": 974,
+     "edge_proxy_mm": 17.87,
+     "materials": [
+      "Material"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Material",
+       "faces": 974,
+       "area_m2": 0.305819,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 0.0369,
+      "p50": 48.7076,
+      "p90": 1044.6734,
+      "p90_over_p10": 28339.56,
+      "cv": 1.316
+     }
+    }
+   ],
+   "body_name": "Sphere",
+   "body_edge_proxy_mm": 17.87,
+   "finest_edge_proxy_mm": 0.48,
+   "body_is_a_tie": false,
+   "edge_spread": 37.2,
+   "detail_vert_share": 0.9631,
+   "total_verts": 26052
+  },
+  "7ca290af": {
+   "file": "7ca290af-d472-4f5e-8627-8188c514a6ea.probe.json",
+   "label": "The Needle Lace Handcraft Pillow",
+   "tier": "full_plan",
+   "asserted_class": "pillow_set_lying",
+   "why_in_corpus": "lace trim as its own mesh",
+   "n_mesh": 3,
+   "n_materials": 3,
+   "n_images": 15,
+   "asset_dims_mm": [
+    452,
+    455,
+    227
+   ],
+   "objects": [
+    {
+     "name": "Rope",
+     "dims_mm": [
+      437,
+      440,
+      11
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 29261,
+     "faces": 29261,
+     "edge_proxy_mm": 1.24,
+     "materials": [
+      "Rope"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Rope",
+       "faces": 29261,
+       "area_m2": 0.045146,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 1.2194,
+      "p50": 1.6103,
+      "p90": 1.7,
+      "p90_over_p10": 1.39,
+      "cv": 0.172
+     }
+    },
+    {
+     "name": "Plillow",
+     "dims_mm": [
+      422,
+      425,
+      227
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 1850,
+     "faces": 1848,
+     "edge_proxy_mm": 15.25,
+     "materials": [
+      "Pillow"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Pillow",
+       "faces": 1848,
+       "area_m2": 0.429721,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 17.0825,
+      "p50": 376.3742,
+      "p90": 414.555,
+      "p90_over_p10": 24.27,
+      "cv": 0.796
+     }
+    },
+    {
+     "name": "Margin",
+     "dims_mm": [
+      452,
+      455,
+      8
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "verts": 704,
+     "faces": 704,
+     "edge_proxy_mm": 10.7,
+     "materials": [
+      "Margin"
+     ],
+     "per_slot": [
+      {
+       "slot": 0,
+       "material": "Margin",
+       "faces": 704,
+       "area_m2": 0.080639,
+       "area_share": 1.0
+      }
+     ],
+     "face_area_mm2": {
+      "p10": 34.8764,
+      "p50": 60.6956,
+      "p90": 325.3097,
+      "p90_over_p10": 9.33,
+      "cv": 0.959
+     }
+    }
+   ],
+   "body_name": "Plillow",
+   "body_edge_proxy_mm": 15.25,
+   "finest_edge_proxy_mm": 1.24,
+   "body_is_a_tie": false,
+   "edge_spread": 12.3,
+   "detail_vert_share": 0.9419,
+   "total_verts": 31815
+  }
+ },
+ "arrangement": {
+  "ee42aa0e": {
+   "file": "ee42aa0e-7c9d-4f04-8507-2a3406f021f5.probe.json",
+   "n_mesh": 14,
+   "n_pillow_named": 0,
+   "long_axis": null,
+   "short_axis": null,
+   "bed_plan_mm": [
+    3175,
+    2505
+   ],
+   "plan_ratio": 1.27,
+   "plan_is_near_tie": false,
+   "pillows": [],
+   "distinct_lean_deg": [],
+   "leaning": [],
+   "overlaps": [],
+   "unmatched_mesh_names": [
+    "Base",
+    "Base.001",
+    "Base.002",
+    "Bed",
+    "Bed.001",
+    "Bed.002",
+    "Bed.003",
+    "Bed.004",
+    "Bed.005",
+    "Bed.006",
+    "Bed.007",
+    "Bed.008",
+    "Bed.009",
+    "Mattress"
+   ],
+   "all_mesh_names": [
+    "Base",
+    "Base.001",
+    "Base.002",
+    "Bed",
+    "Bed.001",
+    "Bed.002",
+    "Bed.003",
+    "Bed.004",
+    "Bed.005",
+    "Bed.006",
+    "Bed.007",
+    "Bed.008",
+    "Bed.009",
+    "Mattress"
+   ]
+  },
+  "62253e5c": {
+   "file": "62253e5c-3402-4741-a1d9-7a9f6beed3dd.probe.json",
+   "n_mesh": 13,
+   "n_pillow_named": 6,
+   "long_axis": "x",
+   "short_axis": "y",
+   "bed_plan_mm": [
+    2434,
+    2245
+   ],
+   "plan_ratio": 1.08,
+   "plan_is_near_tie": true,
+   "pillows": [
+    {
+     "name": "PillowIvory Left",
+     "dims_local_mm": [
+      800,
+      331,
+      413
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 413,
+     "world_extents_mm": [
+      800,
+      331,
+      413
+     ],
+     "z_rank": 2,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 585,
+     "z_top_mm": 998,
+     "verts": 20310,
+     "edge_proxy_mm": 6.64
+    },
+    {
+     "name": "PillowIvory Right",
+     "dims_local_mm": [
+      800,
+      331,
+      413
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 413,
+     "world_extents_mm": [
+      800,
+      331,
+      413
+     ],
+     "z_rank": 2,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 585,
+     "z_top_mm": 998,
+     "verts": 20310,
+     "edge_proxy_mm": 6.64
+    },
+    {
+     "name": "Francesca Hand Embroidered Throw Pillow Left",
+     "dims_local_mm": [
+      244,
+      595,
+      512
+     ],
+     "rot_deg": [
+      0,
+      0,
+      -90
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 512,
+     "world_extents_mm": [
+      595,
+      244,
+      512
+     ],
+     "z_rank": 2,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 594,
+     "z_top_mm": 1106,
+     "verts": 89262,
+     "edge_proxy_mm": 2.79
+    },
+    {
+     "name": "Francesca Hand Embroidered Throw Pillow Middle",
+     "dims_local_mm": [
+      244,
+      595,
+      512
+     ],
+     "rot_deg": [
+      0,
+      0,
+      -90
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 512,
+     "world_extents_mm": [
+      595,
+      244,
+      512
+     ],
+     "z_rank": 2,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 594,
+     "z_top_mm": 1106,
+     "verts": 89262,
+     "edge_proxy_mm": 2.79
+    },
+    {
+     "name": "Francesca Hand Embroidered Throw Pillow Right",
+     "dims_local_mm": [
+      244,
+      595,
+      512
+     ],
+     "rot_deg": [
+      0,
+      0,
+      -90
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 512,
+     "world_extents_mm": [
+      595,
+      244,
+      512
+     ],
+     "z_rank": 2,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 594,
+     "z_top_mm": 1106,
+     "verts": 89262,
+     "edge_proxy_mm": 2.79
+    },
+    {
+     "name": "Fur Pillow",
+     "dims_local_mm": [
+      930,
+      259,
+      277
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 277,
+     "world_extents_mm": [
+      930,
+      259,
+      277
+     ],
+     "z_rank": 2,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 614,
+     "z_top_mm": 892,
+     "verts": 20310,
+     "edge_proxy_mm": 5.91
+    }
+   ],
+   "distinct_lean_deg": [
+    0.0
+   ],
+   "leaning": [],
+   "overlaps": [
+    {
+     "a": "Fur Pillow",
+     "b": "PillowIvory Right",
+     "overlap_long_mm": 490,
+     "overlap_short_mm": 111,
+     "long_frac": 0.61,
+     "short_frac": 0.43
+    },
+    {
+     "a": "Francesca Hand Embroidered Throw Pillow Middle",
+     "b": "Fur Pillow",
+     "overlap_long_mm": 595,
+     "overlap_short_mm": 0,
+     "long_frac": 1.0,
+     "short_frac": 0.0
+    },
+    {
+     "a": "Francesca Hand Embroidered Throw Pillow Left",
+     "b": "PillowIvory Left",
+     "overlap_long_mm": 512,
+     "overlap_short_mm": 57,
+     "long_frac": 0.86,
+     "short_frac": 0.23
+    },
+    {
+     "a": "Fur Pillow",
+     "b": "PillowIvory Left",
+     "overlap_long_mm": 454,
+     "overlap_short_mm": 111,
+     "long_frac": 0.57,
+     "short_frac": 0.43
+    },
+    {
+     "a": "Francesca Hand Embroidered Throw Pillow Right",
+     "b": "PillowIvory Right",
+     "overlap_long_mm": 484,
+     "overlap_short_mm": 57,
+     "long_frac": 0.81,
+     "short_frac": 0.23
+    },
+    {
+     "a": "Francesca Hand Embroidered Throw Pillow Middle",
+     "b": "PillowIvory Right",
+     "overlap_long_mm": 316,
+     "overlap_short_mm": 57,
+     "long_frac": 0.53,
+     "short_frac": 0.23
+    },
+    {
+     "a": "Francesca Hand Embroidered Throw Pillow Middle",
+     "b": "PillowIvory Left",
+     "overlap_long_mm": 294,
+     "overlap_short_mm": 57,
+     "long_frac": 0.49,
+     "short_frac": 0.23
+    },
+    {
+     "a": "PillowIvory Left",
+     "b": "PillowIvory Right",
+     "overlap_long_mm": 15,
+     "overlap_short_mm": 331,
+     "long_frac": 0.02,
+     "short_frac": 1.0
+    }
+   ],
+   "unmatched_mesh_names": [
+    "Body bed Front",
+    "Body bed Headboard",
+    "Body bed sides",
+    "Legs",
+    "bed shawl",
+    "blanket",
+    "mattres"
+   ],
+   "all_mesh_names": [
+    "Body bed Front",
+    "Body bed Headboard",
+    "Body bed sides",
+    "Francesca Hand Embroidered Throw Pillow Left",
+    "Francesca Hand Embroidered Throw Pillow Middle",
+    "Francesca Hand Embroidered Throw Pillow Right",
+    "Fur Pillow",
+    "Legs",
+    "PillowIvory Left",
+    "PillowIvory Right",
+    "bed shawl",
+    "blanket",
+    "mattres"
+   ]
+  },
+  "afcfd29e": {
+   "file": "afcfd29e-71cb-4e7c-bc0a-a705cd23a14a.probe.json",
+   "n_mesh": 10,
+   "n_pillow_named": 3,
+   "long_axis": "y",
+   "short_axis": "x",
+   "bed_plan_mm": [
+    2191,
+    2287
+   ],
+   "plan_ratio": 1.04,
+   "plan_is_near_tie": true,
+   "pillows": [
+    {
+     "name": "Support_pillows",
+     "dims_local_mm": [
+      1630,
+      188,
+      164
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 164,
+     "world_extents_mm": [
+      1630,
+      188,
+      164
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 502,
+     "z_top_mm": 666,
+     "verts": 13968,
+     "edge_proxy_mm": 7.89
+    },
+    {
+     "name": "Main_pillows",
+     "dims_local_mm": [
+      1623,
+      475,
+      326
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 326,
+     "world_extents_mm": [
+      1623,
+      475,
+      326
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 510,
+     "z_top_mm": 836,
+     "verts": 73012,
+     "edge_proxy_mm": 4.79
+    },
+    {
+     "name": "Decoration_pillows",
+     "dims_local_mm": [
+      1089,
+      223,
+      314
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 314,
+     "world_extents_mm": [
+      1089,
+      223,
+      314
+     ],
+     "z_rank": 2,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 514,
+     "z_top_mm": 828,
+     "verts": 43884,
+     "edge_proxy_mm": 3.68
+    }
+   ],
+   "distinct_lean_deg": [
+    0.0
+   ],
+   "leaning": [],
+   "overlaps": [
+    {
+     "a": "Main_pillows",
+     "b": "Support_pillows",
+     "overlap_long_mm": 188,
+     "overlap_short_mm": 1623,
+     "long_frac": 1.0,
+     "short_frac": 1.0
+    },
+    {
+     "a": "Decoration_pillows",
+     "b": "Main_pillows",
+     "overlap_long_mm": 171,
+     "overlap_short_mm": 1089,
+     "long_frac": 0.77,
+     "short_frac": 1.0
+    },
+    {
+     "a": "Decoration_pillows",
+     "b": "Support_pillows",
+     "overlap_long_mm": 0,
+     "overlap_short_mm": 1089,
+     "long_frac": 0.0,
+     "short_frac": 1.0
+    }
+   ],
+   "unmatched_mesh_names": [
+    "Bed_Base",
+    "Bed_legs",
+    "Bed_main_cover",
+    "Mattress",
+    "Mattress_cover",
+    "Secondary_cover",
+    "Upholstery"
+   ],
+   "all_mesh_names": [
+    "Bed_Base",
+    "Bed_legs",
+    "Bed_main_cover",
+    "Decoration_pillows",
+    "Main_pillows",
+    "Mattress",
+    "Mattress_cover",
+    "Secondary_cover",
+    "Support_pillows",
+    "Upholstery"
+   ]
+  },
+  "1f83314d": {
+   "file": "1f83314d-f3e6-4bd8-ab93-83bc473a8b42.probe.json",
+   "n_mesh": 7,
+   "n_pillow_named": 0,
+   "long_axis": null,
+   "short_axis": null,
+   "bed_plan_mm": [
+    3509,
+    2521
+   ],
+   "plan_ratio": 1.39,
+   "plan_is_near_tie": false,
+   "pillows": [],
+   "distinct_lean_deg": [],
+   "leaning": [],
+   "overlaps": [],
+   "unmatched_mesh_names": [
+    "BED EXPORT.001",
+    "BED EXPORT.002",
+    "BED EXPORT.003",
+    "BED EXPORT.004",
+    "BED EXPORT.005",
+    "Cube",
+    "Cube.001"
+   ],
+   "all_mesh_names": [
+    "BED EXPORT.001",
+    "BED EXPORT.002",
+    "BED EXPORT.003",
+    "BED EXPORT.004",
+    "BED EXPORT.005",
+    "Cube",
+    "Cube.001"
+   ]
+  },
+  "ba112721": {
+   "file": "ba112721-b9de-4f39-add0-cca49c37c626.probe.json",
+   "n_mesh": 10,
+   "n_pillow_named": 4,
+   "long_axis": "y",
+   "short_axis": "x",
+   "bed_plan_mm": [
+    1662,
+    2172
+   ],
+   "plan_ratio": 1.31,
+   "plan_is_near_tie": false,
+   "pillows": [
+    {
+     "name": "Bed-Pillow.001",
+     "dims_local_mm": [
+      672,
+      423,
+      245
+     ],
+     "rot_deg": [
+      45,
+      0,
+      -9
+     ],
+     "lean_deg": 44.9,
+     "presents_mm": 472,
+     "world_extents_mm": [
+      738,
+      571,
+      472
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 365,
+     "z_top_mm": 837,
+     "verts": 64482,
+     "edge_proxy_mm": 3.21
+    },
+    {
+     "name": "Bed-Pillow.002",
+     "dims_local_mm": [
+      698,
+      416,
+      219
+     ],
+     "rot_deg": [
+      45,
+      0,
+      0
+     ],
+     "lean_deg": 44.9,
+     "presents_mm": 449,
+     "world_extents_mm": [
+      698,
+      450,
+      449
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": true,
+     "z_bottom_mm": 378,
+     "z_top_mm": 827,
+     "verts": 64482,
+     "edge_proxy_mm": 3.21
+    },
+    {
+     "name": "Bed-Pillow",
+     "dims_local_mm": [
+      666,
+      421,
+      219
+     ],
+     "rot_deg": [
+      45,
+      0,
+      0
+     ],
+     "lean_deg": 44.9,
+     "presents_mm": 453,
+     "world_extents_mm": [
+      666,
+      453,
+      453
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": true,
+     "z_bottom_mm": 382,
+     "z_top_mm": 835,
+     "verts": 64482,
+     "edge_proxy_mm": 3.19
+    },
+    {
+     "name": "Bed-Pillow.003",
+     "dims_local_mm": [
+      665,
+      421,
+      219
+     ],
+     "rot_deg": [
+      45,
+      0,
+      0
+     ],
+     "lean_deg": 44.9,
+     "presents_mm": 453,
+     "world_extents_mm": [
+      665,
+      453,
+      453
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": true,
+     "z_bottom_mm": 382,
+     "z_top_mm": 835,
+     "verts": 64482,
+     "edge_proxy_mm": 3.19
+    }
+   ],
+   "distinct_lean_deg": [
+    44.9
+   ],
+   "leaning": [
+    "Bed-Pillow",
+    "Bed-Pillow.001",
+    "Bed-Pillow.002",
+    "Bed-Pillow.003"
+   ],
+   "overlaps": [
+    {
+     "a": "Bed-Pillow",
+     "b": "Bed-Pillow.001",
+     "overlap_long_mm": 278,
+     "overlap_short_mm": 666,
+     "long_frac": 0.61,
+     "short_frac": 1.0
+    },
+    {
+     "a": "Bed-Pillow.002",
+     "b": "Bed-Pillow.003",
+     "overlap_long_mm": 212,
+     "overlap_short_mm": 663,
+     "long_frac": 0.47,
+     "short_frac": 1.0
+    },
+    {
+     "a": "Bed-Pillow.001",
+     "b": "Bed-Pillow.002",
+     "overlap_long_mm": 450,
+     "overlap_short_mm": 50,
+     "long_frac": 1.0,
+     "short_frac": 0.07
+    },
+    {
+     "a": "Bed-Pillow",
+     "b": "Bed-Pillow.003",
+     "overlap_long_mm": 453,
+     "overlap_short_mm": 8,
+     "long_frac": 1.0,
+     "short_frac": 0.01
+    },
+    {
+     "a": "Bed-Pillow.001",
+     "b": "Bed-Pillow.003",
+     "overlap_long_mm": 278,
+     "overlap_short_mm": 52,
+     "long_frac": 0.61,
+     "short_frac": 0.08
+    },
+    {
+     "a": "Bed-Pillow",
+     "b": "Bed-Pillow.002",
+     "overlap_long_mm": 212,
+     "overlap_short_mm": 6,
+     "long_frac": 0.47,
+     "short_frac": 0.01
+    }
+   ],
+   "unmatched_mesh_names": [
+    "Bed-Base",
+    "Bed-Cover-Bottom",
+    "Bed-Cover-Top",
+    "Bed-Feet",
+    "Bed-Sheet",
+    "BezierCurve.002"
+   ],
+   "all_mesh_names": [
+    "Bed-Base",
+    "Bed-Cover-Bottom",
+    "Bed-Cover-Top",
+    "Bed-Feet",
+    "Bed-Pillow",
+    "Bed-Pillow.001",
+    "Bed-Pillow.002",
+    "Bed-Pillow.003",
+    "Bed-Sheet",
+    "BezierCurve.002"
+   ]
+  },
+  "a682383b": {
+   "file": "a682383b-dfca-4044-9491-14d074f620f9.probe.json",
+   "n_mesh": 4,
+   "n_pillow_named": 1,
+   "long_axis": null,
+   "short_axis": null,
+   "bed_plan_mm": [
+    1778,
+    2034
+   ],
+   "plan_ratio": 1.14,
+   "plan_is_near_tie": true,
+   "pillows": [
+    {
+     "name": "Pillow",
+     "dims_local_mm": [
+      1127,
+      504,
+      200
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 200,
+     "world_extents_mm": [
+      1127,
+      504,
+      200
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 510,
+     "z_top_mm": 710,
+     "verts": 68620,
+     "edge_proxy_mm": 6.12
+    }
+   ],
+   "distinct_lean_deg": [
+    0.0
+   ],
+   "leaning": [],
+   "overlaps": [],
+   "unmatched_mesh_names": [
+    "Double bed",
+    "Mattress",
+    "blanket"
+   ],
+   "all_mesh_names": [
+    "Double bed",
+    "Mattress",
+    "Pillow",
+    "blanket"
+   ]
+  },
+  "e2418055": {
+   "file": "e2418055-2a3f-4cdc-9f04-3bd851b4cef9.probe.json",
+   "n_mesh": 7,
+   "n_pillow_named": 1,
+   "long_axis": null,
+   "short_axis": null,
+   "bed_plan_mm": [
+    2079,
+    2378
+   ],
+   "plan_ratio": 1.14,
+   "plan_is_near_tie": true,
+   "pillows": [
+    {
+     "name": "Cusions",
+     "dims_local_mm": [
+      1836,
+      593,
+      429
+     ],
+     "rot_deg": [
+      0,
+      0,
+      0
+     ],
+     "lean_deg": 0.0,
+     "presents_mm": 429,
+     "world_extents_mm": [
+      1836,
+      593,
+      429
+     ],
+     "z_rank": 3,
+     "z_rank_is_near_tie": false,
+     "z_bottom_mm": 428,
+     "z_top_mm": 857,
+     "verts": 137073,
+     "edge_proxy_mm": 4.97
+    }
+   ],
+   "distinct_lean_deg": [
+    0.0
+   ],
+   "leaning": [],
+   "overlaps": [],
+   "unmatched_mesh_names": [
+    "Bed Frame",
+    "Bed Support ",
+    "Blanket",
+    "Head board",
+    "Matress",
+    "Sheet"
+   ],
+   "all_mesh_names": [
+    "Bed Frame",
+    "Bed Support ",
+    "Blanket",
+    "Cusions",
+    "Head board",
+    "Matress",
+    "Sheet"
+   ]
+  },
+  "81d895fd": {
+   "file": "81d895fd-ab4b-4d44-8c4c-126f386083d6.probe.json",
+   "n_mesh": 15,
+   "n_pillow_named": 0,
+   "long_axis": null,
+   "short_axis": null,
+   "bed_plan_mm": [
+    2759,
+    2280
+   ],
+   "plan_ratio": 1.21,
+   "plan_is_near_tie": false,
+   "pillows": [],
+   "distinct_lean_deg": [],
+   "leaning": [],
+   "overlaps": [],
+   "unmatched_mesh_names": [
+    "Cube.015",
+    "Cube.016",
+    "Plane.029",
+    "Plane.030",
+    "Plane.031",
+    "Plane.032",
+    "Plane.033",
+    "Plane.035",
+    "Plane.038",
+    "Wall_Fabric_1.003",
+    "Wall_Fabric_2.003",
+    "body closet.001",
+    "body closet.002",
+    "door closet.001",
+    "door closet.002"
+   ],
+   "all_mesh_names": [
+    "Cube.015",
+    "Cube.016",
+    "Plane.029",
+    "Plane.030",
+    "Plane.031",
+    "Plane.032",
+    "Plane.033",
+    "Plane.035",
+    "Plane.038",
+    "Wall_Fabric_1.003",
+    "Wall_Fabric_2.003",
+    "body closet.001",
+    "body closet.002",
+    "door closet.001",
+    "door closet.002"
+   ]
+  }
+ },
+ "ours": {
+  "objects": [
+   {
+    "name": "bed__headset0__acq1",
+    "dims_local_mm": [
+     593,
+     1836,
+     429
+    ],
+    "rot_deg": [
+     0,
+     0,
+     0
+    ],
+    "lean_deg": 0.0,
+    "verts": 137073,
+    "edge_proxy_mm": 4.97,
+    "materials": [
+     "bed_duvet"
+    ],
+    "n_materials_on_this_object": 1,
+    "per_slot": null,
+    "face_area_mm2": null
+   },
+   {
+    "name": "deco_bedthrow__acq0",
+    "dims_local_mm": [
+     427,
+     435,
+     127
+    ],
+    "rot_deg": [
+     0,
+     0,
+     15
+    ],
+    "lean_deg": 0.0,
+    "verts": 49489,
+    "edge_proxy_mm": 3.28,
+    "materials": [
+     "acq_bed_throw"
+    ],
+    "n_materials_on_this_object": 1,
+    "per_slot": null,
+    "face_area_mm2": null
+   }
+  ],
+  "source_object": {
+   "asset": "e2418055",
+   "name": "Cusions",
+   "dims_mm": [
+    1836,
+    593,
+    429
+   ],
+   "verts": 137073,
+   "quads": 136864,
+   "tris": 0,
+   "area_m2": 3.381475,
+   "edge_proxy_mm": 4.9706,
+   "materials": [
+    "White Fabric",
+    "Light Beige Fabric"
+   ],
+   "per_slot": [
+    {
+     "slot": 0,
+     "material": "White Fabric",
+     "faces": 77220,
+     "area_m2": 1.939206,
+     "area_share": 0.5735
+    },
+    {
+     "slot": 1,
+     "material": "Light Beige Fabric",
+     "faces": 59644,
+     "area_m2": 1.442269,
+     "area_share": 0.4265
+    }
+   ],
+   "slots_with_no_face": [],
+   "face_area_mm2": {
+    "p10": 24.2345,
+    "p50": 25.1531,
+    "p90": 25.317,
+    "p90_over_p10": 1.04,
+    "cv": 0.088
+   },
+   "why": "bed__headset0__acq1 in our frame IS this object: same 137,073 verts, same dims with axes swapped, area within 0.13%, edge_proxy 4.97 both. Ours arrives triangulated and with every slot replaced by one material (build_room.py:8996 replace_material=sham_mat)."
+  },
+  "pillow_named_objects_in_scene": [],
+  "n_pillow_named": 0,
+  "note": "the whole head-end arrangement is ONE acquired mesh with ONE material, so it has no per-pillow pose, no per-pillow fabric and nothing to count"
+ }
+}
