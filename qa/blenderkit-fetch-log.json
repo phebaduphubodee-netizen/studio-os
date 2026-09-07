@@ -5431,6 +5431,167 @@
    "free": 63,
    "full_plan": 137,
    "fetched": false
+  },
+  {
+   "at": "2026-09-02T20:52:55-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
+  },
+  {
+   "at": "2026-09-02T20:53:20-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a2ff3a79-aa21-43ac-a433-eb173edfae99",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pendant_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 689.8,
+    "band_mm": [
+     150.0,
+     1200.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:53:29-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a6068c83-3f5a-4c2e-9dec-83d1e0e56dae",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pendant_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1143.0,
+    "band_mm": [
+     150.0,
+     1200.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:53:34-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "dafcda42-8866-47f1-b1d5-cfe14bcce47e",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "pendant_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 150.0,
+    "band_mm": [
+     150.0,
+     1200.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:54:04-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "85f6c3d5-881f-41b9-8df8-2558fcb6664d",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "floor_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1516.8,
+    "band_mm": [
+     1200.0,
+     1900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:54:22-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a6313486-c051-44cf-a1da-56ae35af21a5",
+   "tier": "full_plan",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "wall_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 704.1,
+    "band_mm": [
+     100.0,
+     900.0
+    ],
+    "refusal": null
+   },
+   "criteria_sha256": "d95d5e9d8ad2a6688e836b1f0140a9378a9f4471bda08ee3156929831b50eb21"
+  },
+  {
+   "at": "2026-09-02T20:54:41-04:00",
+   "date_local": "2026-09-02",
+   "cmd": "fetch",
+   "probe": false,
+   "key_present": true,
+   "asset": "a8348982-1590-4606-ac18-eed82475fb5e",
+   "tier": "free",
+   "fetched": true,
+   "fetched_now": true,
+   "assert_class": "floor_lamp",
+   "resolution": "blend",
+   "scale": {
+    "ok": true,
+    "measured_mm": 1605.1,
+    "band_mm": [
+     1200.0,
+     1900.0
+    ],
+    "refusal": null
+   }
+  },
+  {
+   "at": "2026-09-07T18:03:52-04:00",
+   "date_local": "2026-09-07",
+   "cmd": "status",
+   "probe": false,
+   "key_present": true,
+   "fetched": false,
+   "me": {
+    "currentPlanName": "Full",
+    "remainingPrivateQuota": "2147483647"
+   }
   }
  ]
 }

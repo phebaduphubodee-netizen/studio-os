@@ -250,12 +250,16 @@
     "n": 6,
     "fenced": false
    },
-   "deliverable": "note 2026-09-09-lighting-fixtures.md",
+   "deliverable": "note 2026-09-02-lighting-fixtures.md",
    "exam": "โน้ตผ่าน verifier + คำตอบเป็นเลขว่า pro ทำสายไฟ/หลอด/ขั้วยังไง (object แยกไหม กี่ verts, CURVE bevel เท่าไร) — ป้อนตรงเข้า sense-item ของเลน",
-   "status": "pending",
+   "status": "done",
    "order": 18,
    "suggested_date": "2026-09-09",
-   "deadline": "2026-09-21"
+   "deadline": "2026-09-21",
+   "judged_by": "verifier-agent",
+   "done_date": "2026-09-02",
+   "exam_evidence": "knowledge/_inbox/model-study/2026-09-02-lighting-fixtures.md,qa/blenderkit-study-lighting.json,pipeline/scripts/lighting_study_derive.py,pipeline/scripts/test_lighting_study_derive.py,pipeline/scripts/study_probe_read.py,pipeline/scripts/model_study_probe.py,qa/blenderkit-fetch-log.json",
+   "done_note": "6/6 fetched (5 full_plan + 1 free), scale asserted at ingest against three NEW declared-assumption bands (pendant_lamp / floor_lamp / wall_lamp); the vault bounds where a lamp GOES and has no row for any fixture's SIZE, so the bands say 'declared assumption' in their own source string. pendant_lamp is bounded on PLAN, not z, deliberately: z is the drop and the drop is what this unit studies -- a z band would refuse an asset for carrying the property under test. Instrument freeze re-stamped with that record. THE EXAM PRESUMED CURVES AND THE CORPUS HAS NONE. `study_probe_read.curves/lights/bevel_mm` were written for this unit because every rung in the repo reads MESH only; all six lamps have zero CURVE objects. The absence carries a positive control -- the same reader finds 23 CURVEs in our own scene at bevel 1.8 mm -- so the zero is a reading, not a failure to look. WHAT SURVIVED VERIFICATION: no file ships a slender single-member cord (the one object NAMED `Wire` is 530 mm across, a suspension cage); 3 of 6 model a discrete bulb at 1,762-20,532 verts and 119,872-1,490,936 verts/m2 against 6,645 for the bought lamp in our frame (18x-224x per unit area); every asset carries exactly one emitting material, on the BULB, never on the body. WHAT VERIFICATION KILLED, and it was most of the headline. (1) `Emmiter`, which I filed as the corpus's densest bulb, is a DEGENERATE mesh -- 456 mm bbox, 120 mm2 of total surface across 31,696 faces. I counted it on the strength of its NAME, the exact move the same note refuses one section earlier for `Wire`. Bulb rate drops 4/6 -> 3/6 and the vert range loses its top. `surface_vs_bbox` now measures R10's identity question as a number: real bulbs 0.49-1.11, this thing 0.00015. (2) I called a vertex COUNT ratio a density -- 5.0x by count, 224x by density -- and picked the top of a range that straddles our own number (the free bulb has FEWER verts than our lamp). (3) 'Our' table lamp is an ACQUIRED asset, so the marquee comparison was pro against pro. (4) The claim that nothing of ours glows is refuted by my own detector on my own dump: 5 emitting materials on 41 objects, four of them the sconce lenses this unit dissects -- and the script had never RUN that test on our side, the zero was prose. (5) I used the vault's cord-grammar row backwards: it files the absence as the DEFECT, and I cited it to recommend closing the sense-item. That item stays OPEN. (6) 37 hangers vs 23 CURVEs was two numbers for one population (37 named, 23 CURVE, 14 EMPTY). (7) 'strength-only flags everything' is wrong in both directions: 64% of the corpus, and zero in dafcda42. Also fixed a real bug -- a LINKED Emission Color is recorded as a string and `max(ec[:3])` returned a character. VERIFICATION WAS INCOMPLETE AND IS RECORDED AS SUCH: 57 filed, 26 confirmed, 24 refuted, and 7 UNJUDGED because 16 judge agents died on the weekly limit. All 7 were adjudicated by hand and all 7 were right -- they include the degenerate-mesh and acquired-lamp findings above."
   },
   {
    "id": "STUDY-D19-hardware",

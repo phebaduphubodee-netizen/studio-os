@@ -42,6 +42,39 @@ def find(d, name):
     raise KeyError((name, [h["name"] for h in hits]))
 
 
+def curves(d):
+    """CURVE objects. Every study script before D18 read `meshes` only, and this repo has
+    already paid for that once: 37 clothes hangers in the frame are CURVE objects, so not one
+    rung could see them (placement, carry, census — all mesh-only). A lamp cord is the same
+    shape of object: it is authored as a bevelled curve, not a mesh, so a study that asks
+    "does the pro model a cord" and looks at meshes will answer "no" for every asset."""
+    return [o for o in d["objects"] if o.get("type") == "CURVE" and "curve" in o]
+
+
+def lights(d):
+    """LIGHT objects — the emitters. A fixture can read as lit because it carries a lamp
+    datablock, because its material emits, or both, and those are different builds."""
+    return [o for o in d["objects"] if o.get("type") == "LIGHT"]
+
+
+def bevel_mm(o):
+    """the radius a curve is swept with, in mm. This is the number that decides whether a
+    cord reads as a cord or as a wire with no thickness; 0.0 means the curve is unswept and
+    renders as nothing at all."""
+    return round((o["curve"].get("bevel_depth") or 0.0) * 1000.0, 3)
+
+
+def emissive(d):
+    """material names whose node histogram contains an EMISSION node, i.e. the surfaces that
+    are themselves a light. Returns [] when the dump carries no node histogram."""
+    out = []
+    for m in d.get("materials", []):
+        h = m.get("node_hist") or {}
+        if h.get("EMISSION") or h.get("BSDF_EMISSION"):
+            out.append(m["name"])
+    return out
+
+
 def meshes(d):
     return [o for o in d["objects"] if o["type"] == "MESH"]
 

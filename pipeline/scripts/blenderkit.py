@@ -1277,7 +1277,27 @@ INSTRUMENT_RESTAMPED_AT = "2026-09-02"
 #   check is min(dims)/max(dims) over all three axes, so on a wardrobe RUN the denominator
 #   is the WIDTH, which the class does not bound. It refused a real 5663x810x2590 fitted
 #   run at 0.1431. Declared exempt rather than nudged — R9b.
-INSTRUMENT_FROZEN_SHA = "b265b594dbf424d19b1bcc97584b8b401d6bc43d41dac46ebbe286503c33e9c9"
+# THIRD ADD OF THE SAME DAY (STUDY-D18-lighting-fixtures): BANDS added ['floor_lamp',
+# 'pendant_lamp', 'wall_lamp'], removed [], edited [] — proven against HEAD; MIN_DEPTH_RATIO
+# added the same three, all None. Benign direction again: an addition cannot change a verdict
+# already given, and no existing band moved.
+#   THE VAULT BOUNDS WHERE A LAMP GOES, NOT HOW BIG IT IS. Searched 2026-09-02: it carries the
+#     pendant's bottom at 762-914 mm above a dining table (lumen-method-and-fixture-placement.md
+#     :127-128) and the bedside sconce at 1397-1524 mm AFFL with its shade bottom 305-508 above
+#     the mattress (ANSWER_gemini_q5-hero-light-practice_grounded.md:86-87) — both PLACEMENT.
+#     For fixture SIZE there is no row for any of the three, and for floor lamps no row at all.
+#     So all three bands are DECLARED ASSUMPTIONS and say so in their own source string, rather
+#     than borrowing the authority of the placement rows they sit next to.
+#   THE AXIS WAS THE REAL DECISION, and it is the wardrobe lesson applied eight hours later
+#     instead of eight hours too late: a pendant's z is its DROP, and the drop is precisely what
+#     D18 was set to measure. A z band would refuse an asset for carrying the property under
+#     test. pendant_lamp is therefore bounded on "maxxy" — its plan size, which the room really
+#     does constrain — and never on z.
+#   ALL THREE MIN_DEPTH_RATIO ARE None: the check is min/max across all three axes, so on a lamp
+#     the denominator is a drop, a stem or an arm, none of which the class bounds. It would be
+#     measuring slenderness, which is a style choice. Declared exempt, with the still-unguarded
+#     case (a billboard-flat lamp) written down beside it — R9b.
+INSTRUMENT_FROZEN_SHA = "a64fbd34c62057df8e6606a1e3b2e04d5867f72414a574ea3c879502e85d567a"
 
 
 def load_results(path=None):

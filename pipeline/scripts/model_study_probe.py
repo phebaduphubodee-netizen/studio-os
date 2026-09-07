@@ -246,7 +246,13 @@ def _principled_report(mat):
                 return n.type + "<" + got + ">"
         return n.type
     p = principled[0]
-    for key in ("Base Color", "Roughness", "Metallic", "Normal", "Sheen Weight",
+    # "Emission Color" joins the list 2026-09-02 (STUDY-D18). Emission Strength alone
+    # cannot answer "does this surface glow": 1.0 is Blender's DEFAULT, so a lamp whose
+    # bulb material reads Strength 1.0 with a BLACK emission colour emits nothing, and a
+    # study that reads only the strength would report every Principled material in the
+    # file as an emitter. Two lamps in this unit sit exactly there.
+    for key in ("Base Color", "Emission Color", "Roughness", "Metallic", "Normal",
+                "Sheen Weight",
                 "Sheen", "Transmission Weight", "Transmission", "Coat Weight",
                 "Clearcoat", "Alpha", "Subsurface Weight", "Emission Strength"):
         sock = p.inputs.get(key)

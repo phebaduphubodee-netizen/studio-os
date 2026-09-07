@@ -225,6 +225,36 @@ BANDS = {
     # surface, never a floor fixture. Band spans a compact accent lamp to a
     # tall buffet lamp; what it is FOR is the traps: an imperial-exported
     # 600 mm lamp lands at 15.2 and a metres-as-mm one at 0.6, both decades out.
+    # THREE LAMP CLASSES, 2026-09-02 (STUDY-D18). THE VAULT BOUNDS WHERE A LAMP GOES, NOT HOW
+    # BIG IT IS: it has the pendant's bottom at 762-914 mm above a dining table
+    # (knowledge/lighting/lumen-method-and-fixture-placement.md:127-128,
+    # knowledge/_inbox/interior-ai/INTERIOR-DESIGN-KB.md:111), the bedside sconce's centre at
+    # 1397-1524 mm AFFL and its shade bottom 305-508 mm above the mattress
+    # (docs/research/2026-08-08-upgrade-dr/ANSWER_gemini_q5-hero-light-practice_grounded.md:86-87),
+    # and NO ROW AT ALL for floor-lamp height or for any fixture's own size. So all three bands
+    # below are DECLARED ASSUMPTIONS, said out loud rather than dressed as citations.
+    #
+    # AND THE AXIS IS THE PART THAT NEEDED THINKING, because of the wardrobe band written eight
+    # hours earlier: a pendant's z is dominated by its DROP, and the drop is the exact thing this
+    # unit was set to study. A band on z would refuse an asset for having the property under test.
+    # So the pendant is bounded on its PLAN size, which the room constrains, and never on z.
+    "pendant_lamp": (150.0, 1200.0, "maxxy",
+                     "declared assumption. The vault sizes a pendant only RELATIVE to what it "
+                     "hangs over (1/2-2/3 of the table width, INTERIOR-DESIGN-KB.md:111), so "
+                     "this is the absolute plan band that ratio implies over real tables: 150 "
+                     "is a single narrow glass pendant, 1200 admits a wide multi-arm fixture. "
+                     "Deliberately NOT on z: z is the drop, and the drop is what D18 studies"),
+    "floor_lamp": (1200.0, 1900.0, "z",
+                   "declared assumption. knowledge/ has NO row for floor-lamp height (searched "
+                   "2026-09-02). Anchored to the two horizons it must sit between: the bedside "
+                   "sconce centre at 1397-1524 mm AFFL (the shade horizon a standing lamp shares) "
+                   "and the room's 2800 ceiling in master-suite.CANONICAL.spec.json. Below 1200 "
+                   "it is a table lamp standing on the floor; above 1900 it reads as a column"),
+    "wall_lamp": (100.0, 900.0, "z",
+                  "declared assumption for the FIXTURE'S OWN extent, which is a different "
+                  "quantity from the mount height the vault does carry (1397-1524 mm AFFL to "
+                  "centre). A sconce is hand-to-forearm sized: below 100 it is a downlight trim, "
+                  "above 900 it is a wall-mounted column"),
     "table_lamp": (250.0, 1100.0, "z",
                    "projects/PRJ-2026-002_c001-house/03_layout/"
                    "master-suite.CANONICAL.spec.json items[3..4] (h=580 "
@@ -429,6 +459,20 @@ MIN_DEPTH_RATIO = {
     "ottoman": 0.30,
     # a lamp's shade and base are round-ish in plan; even a slim candlestick
     # buffet lamp keeps ~1/10 of its height in depth — a flat cutout does not
+    # ALL THREE LAMP CLASSES ARE DECLARED None, AND THE REASON IS THE ONE THE WARDROBE BAND
+    # TAUGHT THE SAME DAY: this check is min(dims)/max(dims) across ALL THREE AXES, so the
+    # denominator is whatever the object's longest axis happens to be. On a lamp that axis is a
+    # DROP, a STEM or an ARM — none of which the class bounds — so the ratio measures how
+    # slender the designer made the fixture, which is a style choice and not a correctness
+    # signal. A 150 x 150 x 659 pendant reads 0.23 and a 1143 x 219 x 1186 multi-pendant reads
+    # 0.18, and both are correct objects.
+    # WHAT IS STILL UNGUARDED, said out loud so it is not mistaken for coverage: a lamp
+    # delivered as a flat billboard would pass. Catching that needs depth measured against the
+    # fixture's own depth axis, not against its longest one — a change to the checker, not to
+    # this table, and it is not made here.
+    "pendant_lamp": None,
+    "floor_lamp": None,
+    "wall_lamp": None,
     "table_lamp": 0.10,
 }
 
